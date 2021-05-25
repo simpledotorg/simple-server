@@ -1163,26 +1163,72 @@ ActiveRecord::Schema.define(version: 2021_06_03_193527) do
        JOIN patients p ON ((e.patient_id = p.id)))
     ORDER BY e.patient_id, cal.month_date, e.encountered_on DESC;
   SQL
+  create_view "reporting_facilities", materialized: true, sql_definition: <<-SQL
+      SELECT facility_regions.source_id AS facility_id,
+      facility_regions.id AS facility_region_id,
+      facility_regions.name AS facility_name,
+      facility_regions.slug AS facility_slug,
+      block_regions.id AS block_region_id,
+      block_regions.name AS block_name,
+      block_regions.slug AS block_slug,
+      district_regions.source_id AS district_id,
+      district_regions.id AS district_region_id,
+      district_regions.name AS district_name,
+      district_regions.slug AS district_slug,
+      state_regions.id AS state_region_id,
+      state_regions.name AS state_name,
+      state_regions.slug AS state_slug,
+      org_regions.source_id AS organization_id,
+      org_regions.id AS organization_region_id,
+      org_regions.name AS organization_name,
+      org_regions.slug AS organization_slug
+     FROM ((((regions facility_regions
+       JOIN regions block_regions ON ((block_regions.path = subpath(facility_regions.path, 0, '-1'::integer))))
+       JOIN regions district_regions ON ((district_regions.path = subpath(block_regions.path, 0, '-1'::integer))))
+       JOIN regions state_regions ON ((state_regions.path = subpath(district_regions.path, 0, '-1'::integer))))
+       JOIN regions org_regions ON ((org_regions.path = subpath(state_regions.path, 0, '-1'::integer))))
+    WHERE ((facility_regions.region_type)::text = 'facility'::text);
+  SQL
   create_view "patient_states_per_month", materialized: true, sql_definition: <<-SQL
       SELECT DISTINCT ON (p.id, cal.month_date) p.id,
-      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at)) AS recorded_at,
-      p.deleted_at,
       p.status,
       p.gender,
       p.age,
       p.age_updated_at,
       p.date_of_birth,
+      p.deleted_at,
+      mh.hypertension,
       cal.month,
       cal.year,
       cal.month_date,
       cal.month_string,
+      p.assigned_facility_id AS patient_assigned_facility_id,
+      assigned_facility.facility_slug AS assigned_facility_slug,
+      assigned_facility.facility_region_id AS assigned_facility_region_id,
+      assigned_facility.block_slug AS assigned_block_slug,
+      assigned_facility.block_region_id AS assigned_block_region_id,
+      assigned_facility.district_slug AS assigned_district_slug,
+      assigned_facility.district_region_id AS assigned_district_region_id,
+      assigned_facility.state_slug AS assigned_state_slug,
+      assigned_facility.state_region_id AS assigned_state_region_id,
+      assigned_facility.organization_slug AS assigned_organization_slug,
+      assigned_facility.organization_region_id AS assigned_organization_region_id,
+      p.registration_facility_id AS patient_registration_facility_id,
+      registration_facility.facility_slug AS registration_facility_slug,
+      registration_facility.facility_region_id AS registration_facility_region_id,
+      registration_facility.block_slug AS registration_block_slug,
+      registration_facility.block_region_id AS registration_block_region_id,
+      registration_facility.district_slug AS registration_district_slug,
+      registration_facility.district_region_id AS registration_district_region_id,
+      registration_facility.state_slug AS registration_state_slug,
+      registration_facility.state_region_id AS registration_state_region_id,
+      registration_facility.organization_slug AS registration_organization_slug,
+      registration_facility.organization_region_id AS registration_organization_region_id,
+      bpot.blood_pressure_recorded_at AS bp_recorded_at,
       bpot.systolic,
       bpot.diastolic,
-      mh.hypertension,
-      bpot.blood_pressure_recorded_at AS bp_recorded_at,
       eot.encountered_at,
-      p.assigned_facility_id AS patient_assigned_facility_id,
-      p.registration_facility_id AS patient_registration_facility_id,
+      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at)) AS recorded_at,
       (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at))))) AS months_since_registration,
           CASE
               WHEN ((mh.hypertension = 'yes'::text) AND ((bpot.systolic >= 180) OR (bpot.diastolic >= 110))) THEN 'Stage 3'::text
@@ -1216,37 +1262,13 @@ ActiveRecord::Schema.define(version: 2021_06_03_193527) do
               ELSE 'Undefined'::text
           END AS time_since_last_bp,
       (((((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at))))) >= (12)::double precision) AND ((bpot.months_since_bp_observation IS NULL) OR (bpot.months_since_bp_observation >= (12)::double precision)) AND (mh.hypertension = 'yes'::text) AND ((p.status)::text <> 'dead'::text) AND (p.deleted_at IS NULL)) AS lost_to_follow_up
-     FROM ((((patients p
+     FROM ((((((patients p
        LEFT JOIN calendar_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at)), 'YYYY-MM'::text) <= to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))))
        LEFT JOIN patient_blood_pressures_per_month bpot ON (((p.id = bpot.patient_id) AND (cal.month = bpot.month) AND (cal.year = bpot.year))))
        LEFT JOIN patient_encounters_per_month eot ON (((p.id = eot.patient_id) AND (cal.month = eot.month) AND (cal.year = eot.year))))
        LEFT JOIN medical_histories mh ON ((p.id = mh.patient_id)))
+       JOIN reporting_facilities registration_facility ON ((registration_facility.facility_id = p.registration_facility_id)))
+       JOIN reporting_facilities assigned_facility ON ((assigned_facility.facility_id = p.assigned_facility_id)))
     ORDER BY p.id, cal.month_date;
-  SQL
-  create_view "reporting_facilities", materialized: true, sql_definition: <<-SQL
-      SELECT facility_regions.source_id AS facility_id,
-      facility_regions.id AS facility_region_id,
-      facility_regions.name AS facility_name,
-      facility_regions.slug AS facility_slug,
-      block_regions.id AS block_region_id,
-      block_regions.name AS block_name,
-      block_regions.slug AS block_slug,
-      district_regions.source_id AS district_id,
-      district_regions.id AS district_region_id,
-      district_regions.name AS district_name,
-      district_regions.slug AS district_slug,
-      state_regions.id AS state_region_id,
-      state_regions.name AS state_name,
-      state_regions.slug AS state_slug,
-      org_regions.source_id AS organization_id,
-      org_regions.id AS organization_region_id,
-      org_regions.name AS organization_name,
-      org_regions.slug AS organization_slug
-     FROM ((((regions facility_regions
-       JOIN regions block_regions ON ((block_regions.path = subpath(facility_regions.path, 0, '-1'::integer))))
-       JOIN regions district_regions ON ((district_regions.path = subpath(block_regions.path, 0, '-1'::integer))))
-       JOIN regions state_regions ON ((state_regions.path = subpath(district_regions.path, 0, '-1'::integer))))
-       JOIN regions org_regions ON ((org_regions.path = subpath(state_regions.path, 0, '-1'::integer))))
-    WHERE ((facility_regions.region_type)::text = 'facility'::text);
   SQL
 end
