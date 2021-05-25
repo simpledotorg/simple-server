@@ -95,10 +95,6 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
     end
   end
 
-  describe "#download_drug_stocks_report" do
-    #  it calls DrugStocksReportExporter with the right query object
-  end
-
   describe "GET #new" do
     context "as power_user" do
       let(:facility) { facility_group_with_stock_tracked.facilities.first }
