@@ -51,7 +51,7 @@ class Communication < ApplicationRecord
                                             device_created_at: DateTime.current,
                                             device_updated_at: DateTime.current)
       logger.info class: self.class.name, msg: "create_with_twilio_details", communication: communication.id,
-                  communication_type: communication_type, appointment_id: appointment.id, result: twilio_msg_status
+                  communication_type: communication_type, appointment_id: appointment&.id, result: twilio_msg_status
     end
   end
 
