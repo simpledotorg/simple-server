@@ -51,7 +51,7 @@ SELECT
     bps.blood_pressure_recorded_at AS bp_recorded_at,
     bps.systolic,
     bps.diastolic,
-    visits.visited AS visited_at,
+    visits.visited_at AS visited_at,
     p.recorded_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')) as recorded_at,
 
 
