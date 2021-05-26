@@ -126,7 +126,7 @@ class Facility < ApplicationRecord
     )
   end
 
-  def update_region
+  private def update_region
     region.reparent_to = block_region
     region.name = name
     region.save!
@@ -141,19 +141,12 @@ class Facility < ApplicationRecord
     self
   end
 
-  private :update_region
-  # ----------------
-
   def hypertension_follow_ups_by_period(*args)
-    patients
-      .hypertension_follow_ups_by_period(*args)
-      .where(blood_pressures: {facility: self})
+    patients.hypertension_follow_ups_by_period(*args).where(blood_pressures: {facility: self})
   end
 
   def diabetes_follow_ups_by_period(*args)
-    patients
-      .diabetes_follow_ups_by_period(*args)
-      .where(blood_sugars: {facility: self})
+    patients.diabetes_follow_ups_by_period(*args).where(blood_sugars: {facility: self})
   end
 
   # For compatibility w/ parent FacilityGroups
@@ -238,4 +231,39 @@ class Facility < ApplicationRecord
     return unless facility_size
     I18n.t("activerecord.facility.facility_size.#{facility_size}", default: facility_size.capitalize)
   end
+
+  def locale
+    LOCALE_MAP.dig(country.downcase, state.downcase) || LOCALE_MAP.dig(country.downcase, "default") || LOCALE_MAP["default"]
+  end
+
+  LOCALE_MAP = {
+    "bangladesh" => {"default" => "bn-BD"},
+    "default" => "en",
+    "ethiopia" => {
+      "addis ababa" => "am-ET",
+      "amhara" => "am-ET",
+      "default" => "am-ET",
+      "dire dawa" => "am-ET",
+      "oromia" => "om-ET",
+      "somali" => "so-ET",
+      "tigray" => "ti-ET"
+    },
+    "india" => {
+      "andhra pradesh" => "te-IN",
+      "bihar" => "hi-IN",
+      "default" => "hi-IN",
+      "jharkhand" => "hi-IN",
+      "karnataka" => "kn-IN",
+      "maharashtra" => "mr-IN",
+      "nagaland" => "en",
+      "puducherry" => "ta-IN",
+      "punjab" => "pa-Guru-IN",
+      "rajasthan" => "hi-IN",
+      "sikkim" => "hi-IN",
+      "tamil nadu" => "ta-IN",
+      "telangana" => "te-IN",
+      "uttar pradesh" => "hi-IN",
+      "west bengal" => "bn-IN"
+    }
+  }.freeze
 end

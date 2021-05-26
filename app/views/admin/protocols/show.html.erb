@@ -1,25 +1,31 @@
 <div class="page-header">
   <div class="page-title">
     <nav class="breadcrumb">
-      <%= link_to "Protocols", admin_protocols_path, class: "#{active_controller?("admin/protocols")}" %>
+      <%= link_to "Medication lists", admin_protocols_path, class: "#{active_controller?("admin/protocols")}" %>
       <i class="fas fa-chevron-right"></i> <%= @protocol.name %>
     </nav>
     <h1 class="page-title">
       <%= @protocol.name %>
     </h1>
-    <p id="Follow up days">
-      <strong>Follow up days:</strong> <%= @protocol.follow_up_days %>
-    </p>
   </div>
   <nav class="page-nav">
     <% if current_admin.accessible_organizations(:manage).any? || current_admin.power_user? %>
-      <%= link_to "Edit protocol", edit_admin_protocol_path(@protocol), class: "btn btn-sm btn-outline-primary", id: "Edit protocol" %>
-      <%= link_to new_admin_protocol_protocol_drug_path(@protocol), class: "btn btn-sm btn-success", id: "Add protocol drug" do %>
-        <i class="fas fa-plus mr-1"></i> Add protocol drug
+      <%= link_to "Edit medication list", edit_admin_protocol_path(@protocol), class: "btn btn-sm btn-outline-primary", id: "Edit medication list" %>
+      <%= link_to new_admin_protocol_protocol_drug_path(@protocol), class: "btn btn-sm btn-success", id: "Add medication" do %>
+        <i class="fas fa-plus mr-1"></i> Medication
       <% end %>
     <% end %>
   </nav>
 </div>
+
+<h3 class="mt-4">Default follow-up period</h3>
+<p>Set the default period shown in the Android app for creating follow-up visit reminders. Often this is "28 days" to ensure patients visit on the same day of the week, within 1 month.</p>
+<p id="Follow up days">
+  <strong>Follow-up days:</strong> <%= @protocol.follow_up_days %> days  <%= link_to "EDIT", edit_admin_protocol_path(@protocol), class: "ml-4", id: "Edit days" %>
+</p>
+
+<h3 class="mt-5">Medications list</h3>
+<p class="mb-4">Include common anti-hypertensive (and diabetes) medications as per the regional protocol and also commonly dispensed alternative medications and dosages. Try to keep the list to &lt;10 medications, if possible.</p>
 
 <% @protocol_drugs.sort_by(&:name).each do |protocol_drug| %>
   <div class="card" name="<%= protocol_drug.name %>">

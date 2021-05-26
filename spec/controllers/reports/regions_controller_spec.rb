@@ -513,8 +513,10 @@ RSpec.describe Reports::RegionsController, type: :controller do
       facility
       sign_in(cvho.email_authentication)
 
-      get :monthly_district_data_report, params: {id: region.slug, report_scope: "facility_district", format: "csv"}
+      get :monthly_district_data_report, params: {id: region.name, report_scope: "facility_district", format: "csv"}
+
       expect(response.status).to eq(200)
+      expect(response.body).to include(facility.name)
     end
 
     it "passes the provided period to the csv service" do

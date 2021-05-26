@@ -7,10 +7,9 @@ end
 
 RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
   describe "#create" do
-    let!(:callback_url) { api_v3_twilio_sms_delivery_url(host: request.host) }
-
+    let(:callback_url) { api_v3_twilio_sms_delivery_url(host: request.host) }
     let(:base_session_id) { SecureRandom.uuid }
-    let!(:base_callback_params) do
+    let(:base_callback_params) do
       {"SmsSid" => base_session_id,
        "SmsStatus" => "delivered",
        "MessageSid" => base_session_id,
@@ -98,46 +97,45 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
           expect(twilio_sms_delivery_detail.delivered_on).to be_nil
         end
 
-        it "schedules a fallback SMS if a whatsapp message failed" do
-          expect(Statsd.instance).to receive(:increment).with("twilio_callback.missed_visit_whatsapp_reminder.failed")
+        it "logs failure and does not queue a retry when there is no next communication type" do
           session_id = SecureRandom.uuid
-          fallback_time = 5.minutes.from_now
-          communication = create(:communication, :missed_visit_whatsapp_reminder)
+          notification = create(:notification)
+          create(:communication, :missed_visit_whatsapp_reminder, notification: notification)
+          communication = create(:communication, :missed_visit_sms_reminder, notification: notification)
           create(:twilio_sms_delivery_detail, session_id: session_id, result: "queued", communication: communication)
-
-          allow(Communication).to receive(:next_messaging_time).and_return(fallback_time)
 
           params = base_callback_params.merge(
             "MessageSid" => session_id,
             "MessageStatus" => "failed"
           )
-
-          expect(AppointmentNotification::Worker).to receive(:perform_at).with(
-            fallback_time,
-            communication.appointment_id,
-            "missed_visit_sms_reminder"
-          )
-
           set_twilio_signature_header(callback_url, params)
+
+          expect(AppointmentNotification::Worker).not_to receive(:perform_at)
+          expect(Statsd.instance).to receive(:increment).with("twilio_callback.missed_visit_sms_reminder.failed")
+
           post :create, params: params
         end
 
-        it "does not schedule a fallback SMS if an SMS failed" do
+        it "logs failure and schedules a new attempt if the first attempt failed and there is a next communication type" do
           session_id = SecureRandom.uuid
           fallback_time = 5.minutes.from_now
-          communication = create(:communication, :missed_visit_sms_reminder)
+          notification = create(:notification)
+          communication = create(:communication, :missed_visit_whatsapp_reminder, notification: notification)
           create(:twilio_sms_delivery_detail, session_id: session_id, result: "queued", communication: communication)
-
-          allow(Communication).to receive(:next_messaging_time).and_return(fallback_time)
 
           params = base_callback_params.merge(
             "MessageSid" => session_id,
             "MessageStatus" => "failed"
           )
-
-          expect(AppointmentNotification::Worker).not_to receive(:perform_at)
-
           set_twilio_signature_header(callback_url, params)
+
+          allow(Communication).to receive(:next_messaging_time).and_return(fallback_time)
+          expect(AppointmentNotification::Worker).to receive(:perform_at).with(
+            fallback_time,
+            communication.notification.id
+          )
+          expect(Statsd.instance).to receive(:increment).with("twilio_callback.missed_visit_whatsapp_reminder.failed")
+
           post :create, params: params
         end
       end
@@ -151,6 +149,14 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
 
         expect(response).to have_http_status(403)
         expect(TwilioSmsDeliveryDetail.count).to be(0)
+      end
+    end
+
+    context ":not_found" do
+      it "returns 404 when twilio detail is not found" do
+        set_twilio_signature_header(callback_url, base_callback_params)
+        post :create, params: base_callback_params
+        expect(response).to have_http_status(404)
       end
     end
   end

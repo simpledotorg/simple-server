@@ -10,8 +10,8 @@ class Appointment < ApplicationRecord
   belongs_to :facility
   belongs_to :creation_facility, class_name: "Facility", optional: true
 
+  has_many :notifications, as: :subject
   has_many :communications
-  has_many :appointment_reminders
 
   ANONYMIZED_DATA_FIELDS = %w[id patient_id created_at registration_facility_name user_id scheduled_date
     overdue status agreed_to_visit remind_on]
@@ -41,6 +41,8 @@ class Appointment < ApplicationRecord
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
+  after_update :cancel_reminders, if: proc { |appt| appt.saved_changes["status"] && !appt.status_scheduled? }
+
   scope :for_sync, -> { with_discarded }
 
   def self.between(start_date, end_date)
@@ -65,6 +67,8 @@ class Appointment < ApplicationRecord
     overdue_by(days_overdue)
       .joins(:patient)
       .merge(Patient.contactable)
+      .left_joins(:notifications)
+      .where(notifications: {id: nil})
   end
 
   def days_overdue
@@ -89,12 +93,6 @@ class Appointment < ApplicationRecord
 
   def overdue_for_under_a_month?
     scheduled? && scheduled_date > 30.days.ago
-  end
-
-  def cancel_reason_is_present_if_cancelled
-    if status == :cancelled && !cancel_reason.present?
-      errors.add(:cancel_reason, "should be present for cancelled appointments")
-    end
   end
 
   def mark_remind_to_call_later
@@ -148,6 +146,23 @@ class Appointment < ApplicationRecord
   end
 
   def previously_communicated_via?(communication_type)
-    communications.latest_by_type(communication_type)&.attempted?
+    latest_notification = notifications.includes(:communications)
+      .where(communications: {communication_type: communication_type})
+      .order(created_at: :desc)
+      .first
+    latest_notification&.communications&.any? { |c| c.attempted? }
+  end
+
+  private
+
+  def cancel_reason_is_present_if_cancelled
+    if status == :cancelled && !cancel_reason.present?
+      errors.add(:cancel_reason, "should be present for cancelled appointments")
+    end
+  end
+
+  def cancel_reminders
+    reminders = notifications.where(status: ["pending", "scheduled"])
+    reminders.update_all(status: "cancelled")
   end
 end

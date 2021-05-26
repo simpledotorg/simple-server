@@ -100,6 +100,15 @@ class Api::V4::Schema
       }
     end
 
+    def lookup_response
+      {
+        type: :object,
+        properties: {
+          patients: {"$ref" => "#/definitions/lookup_patients"}
+        }
+      }
+    end
+
     def patient_response
       {
         type: :object,

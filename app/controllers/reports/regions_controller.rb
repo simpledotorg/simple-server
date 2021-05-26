@@ -54,10 +54,16 @@ class Reports::RegionsController < AdminController
   end
 
   def details
-    authorize { current_admin.accessible_facilities(:view_reports).any? }
-
-    @show_current_period = true
     @period = Period.month(Time.current)
+    @period_range = Range.new(@period.advance(months: -5), @period)
+
+    regions = if @region.facility_region?
+      [@region]
+    else
+      [@region, @region.facility_regions].flatten
+    end
+    @repository = Reports::Repository.new(regions, periods: @period_range)
+
     @dashboard_analytics = @region.dashboard_analytics(period: @period.type,
                                                        prev_periods: 6,
                                                        include_current_period: true)
@@ -109,8 +115,7 @@ class Reports::RegionsController < AdminController
       case report_scope
       when "facility_district"
         scope = current_admin.accessible_facilities(:view_reports)
-        region = current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id])
-        FacilityDistrict.new(name: region.name, scope: scope)
+        FacilityDistrict.new(name: report_params[:id], scope: scope)
       when "district"
         current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id])
       else

@@ -6,7 +6,7 @@ class MonthlyDistrictDataService
     @months = period.downto(5).reverse
     regions = region.facility_regions.to_a << region
     @repo = Reports::Repository.new(regions, periods: period)
-    @dashboard_analytics = region.dashboard_analytics(period: period.type, prev_periods: 6)
+    @dashboard_analytics = DistrictAnalyticsQuery.new(region, :month, 6, period.value, include_current_period: true).call
   end
 
   def report
@@ -31,7 +31,7 @@ class MonthlyDistrictDataService
       "Follow-up patients",
       Array.new(5, nil),
       "Treatment outcomes of patients under care",
-      Array.new(3, nil),
+      Array.new(4, nil),
       "Drug availability",
       Array.new(2, nil)
     ].flatten
@@ -51,12 +51,13 @@ class MonthlyDistrictDataService
       "Total assigned patients",
       "Lost to follow-up patients",
       "Dead patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})",
-      "Patients under care",
+      "Patients under care as of #{period.end.strftime("%e-%b-%Y")}",
       month_labels,
       month_labels,
+      "Patients under care as of #{period.adjusted_period.end.strftime("%e-%b-%Y")}",
       "Patients with BP controlled",
       "Patients with BP not controlled",
-      "Patients with a missed visits",
+      "Patients with a missed visit",
       "Patients with a visit but no BP taken",
       "Amlodipine",
       "ARBs/ACE Inhibitors",
@@ -86,6 +87,7 @@ class MonthlyDistrictDataService
         monthly_count = dashboard_analytics.dig(facility.source.id, :follow_up_patients_by_period, month.value) || 0
         hsh["follow_ups_#{month.value}".to_sym] = monthly_count
       }
+
       facility_data = {
         serial_number: index + 1,
         district_name: region.name,
@@ -107,7 +109,12 @@ class MonthlyDistrictDataService
     dead_count = region.assigned_patients.with_hypertension.status_dead.count
     assigned_patients_count = repo.cumulative_assigned_patients_count.dig(region.slug, period) || 0
     ltfu_count = repo.ltfu_counts.dig(region.slug, period) || 0
-    patients_under_care_count = assigned_patients_count - ltfu_count
+    patients_under_care = assigned_patients_count - ltfu_count
+    controlled_count = repo.controlled_patients_count.dig(region.slug, period) || 0
+    uncontrolled_count = repo.uncontrolled_patients_count.dig(region.slug, period) || 0
+    missed_visits = repo.missed_visits.dig(region.slug, period) || 0
+    no_bp_taken = repo.visited_without_bp_taken.dig(region.slug, period) || 0
+    adjusted_patients_under_care = repo.adjusted_patient_counts.dig(region.slug, period) || 0
 
     {
       estimated_hypertension_population: nil,
@@ -115,13 +122,14 @@ class MonthlyDistrictDataService
       total_assigned: assigned_patients_count,
       ltfu: ltfu_count,
       dead: dead_count,
-      under_care: patients_under_care_count,
+      patients_under_care: patients_under_care,
       **registered_by_month,
       **follow_ups_by_month,
-      controlled_count: repo.controlled_patients_count.dig(region.slug, period) || 0,
-      uncontrolled_count: repo.uncontrolled_patients_count.dig(region.slug, period) || 0,
-      missed_visits: repo.missed_visits.dig(region.slug, period) || 0,
-      no_bp_taken: repo.visited_without_bp_taken.dig(region.slug, period) || 0,
+      adjusted_patients_under_care: adjusted_patients_under_care,
+      controlled_count: controlled_count,
+      uncontrolled_count: uncontrolled_count,
+      missed_visits: missed_visits,
+      no_bp_taken: no_bp_taken,
       amlodipine: nil,
       arbs_and_ace_inhibitors: nil,
       diurectic: nil

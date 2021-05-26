@@ -3,82 +3,75 @@ class AppointmentNotification::Worker
   include Sidekiq::Worker
 
   sidekiq_options queue: :high
-
-  DEFAULT_LOCALE = :en
+  delegate :logger, to: Rails
 
   def metrics
     @metrics ||= Metrics.with_object(self)
   end
 
-  def perform(appointment_id, communication_type, locale = nil)
+  def perform(notification_id)
     metrics.increment("attempts")
-    unless Flipper.enabled?(:appointment_reminders)
+    unless Flipper.enabled?(:notifications) || Flipper.enabled?(:experiment)
+      logger.info class: self.class.name, msg: "notifications feature is disabled"
       metrics.increment("skipped.feature_disabled")
       return
     end
-
-    appointment = Appointment.find_by(id: appointment_id)
-    unless appointment
-      metrics.increment("skipped.missed_appointment")
-      logger.warn "Appointment #{appointment_id} not found, skipping notification"
-      return
-    end
-
-    if appointment.previously_communicated_via?(communication_type)
+    notification = Notification.includes(:subject, :patient).find(notification_id)
+    communication_type = notification.next_communication_type
+    unless communication_type
       metrics.increment("skipped.previously_communicated")
       return
     end
 
-    patient_phone_number = appointment.patient.latest_mobile_number
-    message = appointment_message(appointment, communication_type, locale)
-
-    begin
-      notification_service = NotificationService.new
-
-      response = if communication_type == "missed_visit_whatsapp_reminder"
-        notification_service.send_whatsapp(patient_phone_number, message, callback_url).tap do |resp|
-          metrics.increment("sent.whatsapp")
-        end
-      else
-        notification_service.send_sms(patient_phone_number, message, callback_url).tap do |response|
-          metrics.increment("sent.sms")
-        end
-      end
-
-      Communication.create_with_twilio_details!(
-        appointment: appointment,
-        twilio_sid: response.sid,
-        twilio_msg_status: response.status,
-        communication_type: communication_type
-      )
-    rescue Twilio::REST::TwilioError => e
-      metrics.increment(:error)
-      report_error(e)
+    unless notification.status_scheduled?
+      metrics.increment("skipped.not_scheduled")
+      return
     end
+
+    send_message(notification, communication_type)
   end
 
   private
 
-  def appointment_message(appointment, communication_type, locale)
-    I18n.t(
-      "sms.appointment_reminders.#{communication_type}",
-      facility_name: appointment.facility.name,
-      locale: appointment_locale(appointment, locale)
+  def send_message(notification, communication_type)
+    notification_service = NotificationService.new
+
+    if communication_type == "missed_visit_whatsapp_reminder"
+      notification_service.send_whatsapp(
+        notification.patient.latest_mobile_number,
+        notification.localized_message,
+        callback_url
+      ).tap do |response|
+        metrics.increment("sent.whatsapp")
+      end
+    else
+      notification_service.send_sms(
+        notification.patient.latest_mobile_number,
+        notification.localized_message,
+        callback_url
+      ).tap do |response|
+        metrics.increment("sent.sms")
+      end
+    end
+    logger.info class: self.class.name, msg: "send_message", failed: !!notification_service.failed?,
+                communication_type: communication_type, notification_id: notification.id
+
+    return if notification_service.failed?
+
+    ActiveRecord::Base.transaction do
+      create_communication(notification, communication_type, notification_service.response)
+      notification.status_sent!
+    end
+  end
+
+  def create_communication(notification, communication_type, response)
+    Communication.create_with_twilio_details!(
+      appointment: notification.subject,
+      notification: notification,
+      twilio_sid: response.sid,
+      twilio_msg_status: response.status,
+      communication_type: communication_type
     )
-  end
-
-  def appointment_locale(appointment, locale)
-    locale || appointment.patient.address&.locale || DEFAULT_LOCALE
-  end
-
-  def report_error(e)
-    Sentry.capture_message("Error while processing appointment notifications",
-      extra: {
-        exception: e.to_s
-      },
-      tags: {
-        type: "appointment-notification-job"
-      })
   end
 
   def callback_url

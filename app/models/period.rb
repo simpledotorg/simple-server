@@ -31,6 +31,11 @@ class Period
     end
   end
 
+  # Return the common formatteer so groupdate can return Period keys instead of dates
+  def self.formatter(period_type)
+    lambda { |v| period_type == :quarter ? Period.quarter(v) : Period.month(v) }
+  end
+
   def initialize(attributes = {})
     super
     self.type = type.intern if type
@@ -159,11 +164,11 @@ class Period
     "<Period type:#{type} value=#{value}>"
   end
 
-  def to_s
+  def to_s(format = :mon_year)
     if quarter?
       value.to_s
     else
-      value.to_s(:mon_year)
+      value.to_s(format)
     end
   end
 
