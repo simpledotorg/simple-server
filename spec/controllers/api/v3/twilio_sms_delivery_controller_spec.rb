@@ -137,6 +137,8 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
           expect(Statsd.instance).to receive(:increment).with("twilio_callback.missed_visit_whatsapp_reminder.failed")
 
           post :create, params: params
+
+          expect(communication.notification.reload.status).to eq("scheduled")
         end
       end
     end
