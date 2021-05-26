@@ -105,7 +105,7 @@ SIMPLE_SERVER_HOST=<HTTPS URL>
 SIMPLE_SERVER_HOST_PROTOCOL=https
 ```
 
-In the server repo, open `app/views/api/manifests/show.json.jbuilder`. Change:
+Alternatively, you can make the change on the server side. In the server repo, open `app/views/api/manifests/show.json.jbuilder`. Change:
 ```
 json.endpoint "#{ENV["SIMPLE_SERVER_HOST_PROTOCOL"]}://#{ENV["SIMPLE_SERVER_HOST"]}/api/"
 ```
