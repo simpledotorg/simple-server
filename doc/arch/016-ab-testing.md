@@ -16,7 +16,7 @@ Patients who last visited the clinic 35-365 days ago will be referred to here as
 
 Those two types of experiments will require small process differences. When the patient has an upcoming appointment, the reminders must be sent relative to the appointment date. Messages can be sent before, on, or after the appointment date.
 
-That doesn't make sense for patients who do not have upcoming appointments. Messages for stale patients will start on the same day the patient is added to the experiment. There are many patients who fall into this category, and we don't want to risk driving too many patients back to care at once and overwhelming clinics. To mitigate that possibility, we will add 10,000 patients per day to the experiment and schedule their reminders to be sent starting on the day they were added to the experiment. Because patients can receive no reminders, a single reminder, or a series of reminders, the actual number of reminders sent per day may exceed 10,000.
+That doesn't make sense for patients who do not have upcoming appointments. Messages for stale patients will start on the same day the patient is added to the experiment. There are many patients who fall into this category, and we don't want to risk driving too many patients back to care at once and overwhelming clinics. To mitigate that possibility, we will add 10,000 patients per day to the experiment and schedule their reminders to be sent starting on the day they were added to the experiment. Because patients can receive no reminders, a single reminder, or a series of reminders, the actual number of reminders sent on any given day may exceed 10,000.
 
 In both types of experiments, patients will be randomly placed into treatment groups. Treatment groups will define the message texts, number of messages, and when to send the messages. Test patients will not receive the pre-existing text message sent three days after they miss an appointment. Control group patients will receive no messages at all.
 
@@ -37,23 +37,35 @@ Subjects for stale patient experiments will be selected for having last visited 
 ## Treatment Group Assignment
 
 Patients will be assigned to treatment groups completely at random during the patient selection process. The patient's treatment group assignment will be captured via the TreatmentGroupMembership model.
+
 ## Test workflow
 
+Experiment setup:
+- experiments can be set up by adding a data migration to db/data.
+- an example of how to set up an experiment can be found in lib/seed/experiment_seeder.rb
+
 Active patient experiment:
-- experiment will be started by running a script either manually or by scheduling it ### name script
-- that script will select patients appropriate to the experiment
+- experiment will be started by running a script either manually or by scheduling it.
+- the job can be run like so: `ExperimentControlServerice.start_current_patient_experiment(name, days_til_start, days_til_end, percentage_of_patients = 100)`
+- the `percentage_of_patients` argument is optional and defaults to 100
+- that script will select patients according to the selection criteria
 - it will then assign all eligible patients to treatment groups at random
 - it will create all notifications for experiment patients, based on the date of their next appointment and the information in their treatment group's reminder templates. These will be marked as "pending" and will not be sent at this time.
-- a cron job will run every day and search for any pending notifications that should be sent that day
-- that cron will schedule individual text messages to be sent out that day
+- we will need to schedule a cron job to run this task every day during the experiment: `AppointmentNotification::ScheduleExperimentReminders.perform`
+  - that job will run every day and search for any pending notifications with a remind_on of today, mark the notification as "scheduled", and schedule a sidekiq worker to send the notification during the notification window
 - in India, text messages will first be sent as WhatsApp messages. If the WhatsApp message fails, we will resend the message as SMS.
 - in Bangladesh, text messages will first be sent as Imo messages. If the Imo message fails, we will resend the message as SMS.
 
 Stale patient experiment:
-- experiment must be scheduled by cron because the selection process is not a one-time occurrence
-- patient selection must occur every day of the experiment to ensure that patients do not become ineligible (by returning to care) between selection and the time their reminder is sent.
-- the scheduled script selects 10,000 patients per day to send reminders to, assigns them to a treatment group, and creates notifications appropriate for that group
+- stale patient selection is run via the command: `ExperimentControlService.schedule_daily_stale_patient_notifications(name, patients_per_day: PATIENTS_PER_DAY)`
+- the `patients_per_day` argument is optional and defaults to 10,000
+- this job should be scheduled because patient selection must occur every day of the experiment to ensure that patients do not become ineligible (by returning to care) between selection and the time their reminder is sent.
+- this job selects the specified number of patients per day to send reminders to, assigns them to treatment groups, and creates notifications appropriate for their group
 - patients in the control group will receive no reminders while other groups may receive multiple reminders over a period of days
+
+Experiment cleanup:
+- after an experiment is over, it's state should be changed to "complete"
+- it's important to note that notifications can be scheduled beyond the experiment end date due to the cascading nature of notifications. The end date is used by the selection process and not to prevent notifications from being sent.
 
 ## Data modelling
 
@@ -95,4 +107,4 @@ Some issues with existing code were discovered and corrected in the development 
 
 ## Ending an experiment early
 
-The rake tasks will be guarded by a feature flag, which will allow us to quickly prevent all experiment messages from being sent. We will also write a script for changing the experiment state to "complete" and marking all notifications as "cancelled".
+If we need to end an experiment early, we can do it by running `ExperimentControlService.terminate_experiment(name)`. This will change the experiment state to "complete" and marking all notifications as "cancelled".
