@@ -140,6 +140,44 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
 
           expect(communication.notification.reload.status).to eq("scheduled")
         end
+
+        context "For communication with no appointment" do
+          it "logs failure and schedules a new attempt if the first attempt failed and there is a next communication type" do
+            twilio_client = double("TwilioClientDouble")
+            twilio_response = double("TwilioClientResponseDouble")
+            allow(twilio_client).to receive_message_chain("messages.create").and_return(twilio_response)
+            allow(twilio_response).to receive(:sid).and_return(nil)
+            allow(twilio_response).to receive(:status).and_return(nil)
+            allow_any_instance_of(NotificationService).to receive(:client).and_return(twilio_client)
+
+            session_id = SecureRandom.uuid
+            fallback_time = 5.minutes.from_now
+            notification = create(:notification, message: "notifications.covid.medication_reminder")
+            communication = create(:communication, :missed_visit_whatsapp_reminder, notification: notification)
+            create(:twilio_sms_delivery_detail, session_id: session_id, result: "queued", communication: communication)
+            enable_flag(:experiment)
+
+            params = base_callback_params.merge(
+              "MessageSid" => session_id,
+              "MessageStatus" => "failed"
+            )
+            set_twilio_signature_header(callback_url, params)
+
+            allow(Communication).to receive(:next_messaging_time).and_return(fallback_time)
+            allow(AppointmentNotification::Worker).to receive(:perform_at).and_call_original
+
+            expect(AppointmentNotification::Worker).to receive(:perform_at).with(
+              fallback_time,
+              communication.notification.id
+            )
+
+            post :create, params: params
+
+            expect(communication.notification.reload.status).to eq("scheduled")
+            AppointmentNotification::Worker.drain
+            expect(communication.notification.reload.status).to eq("sent")
+          end
+        end
       end
     end
 
