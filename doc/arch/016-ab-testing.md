@@ -4,7 +4,7 @@
 
 Our primary goal at Simple is to reduce deaths from cardiovascular disease. To be able to do that, we need patients to return to the clinic for care. Currently, when a patient misses their follow-up appointment date by three days, we send them a polite text message through Whatsapp (in India) and SMS reminding them to continue taking their medicine and to return to their clinic to get more. That is our last attempt via text to convince a patient to return.
 
-We would like to know if a different message or sending the message at a different time relative to their appointment date would result in a higher rate of patient return.
+We would like to know if a different message or sending the message on a different date relative to their appointment date would result in a higher rate of patient return.
 
 Additionally, we would like patients who have recently stopped visiting their clinic to return to care, and we would like to know what type of message and frequency of message would be most effective for convincing these patients to return to care.
 
@@ -14,15 +14,15 @@ We will develop a framework for testing different messages, message delivery dat
 
 That framework will be able to run experiments for both patients who have upcoming appointments as well as patients who do not because they have not visited their clinic recently.
 
-Patients who have upcoming appointments will be referred to here as as "active patients".
+Patients who have appointments scheduled during the experiment date range will be referred to here as as "active patients".
 
 Patients who last visited the clinic 35-365 days ago will be referred to here as "stale patients". We chose 35 days because most patients are expected to return to clinic monthly so a patient who hasn't been into clinic in over 35 days is probably late, and we chose 365 days as a cutoff because patients who haven't been to clinic in over a year are considered lost to follow up.
 
-Those two types of experiments will require small process differences. When the patient has an upcoming appointment, the reminders must be sent relative to the appointment date.
+Those two types of experiments will require small process differences. When the patient has an upcoming appointment, the reminders must be sent relative to the appointment date. Messages can be sent before, on, or after the appointment date.
 
-That doesn't make sense for patients who do not have upcoming appointments, so their reminders can be sent at any time. There are many patients who fall into this category, and we don't want to risk driving too many patients back to care at once and overwhelming clinics. To mitigate that possibility, we will add 10,000 patients per day to the experiment and schedule their reminders to be sent starting the same day. Because patients can receive no reminders, a single reminder, or a series of reminders, the actual number of reminders sent per day may exceed 10,000.
+That doesn't make sense for patients who do not have upcoming appointments. Messages for stale patients will start on the same day the patient is added to the experiment. There are many patients who fall into this category, and we don't want to risk driving too many patients back to care at once and overwhelming clinics. To mitigate that possibility, we will add 10,000 patients per day to the experiment and schedule their reminders to be sent starting on the day they were added to the experiment. Because patients can receive no reminders, a single reminder, or a series of reminders, the actual number of reminders sent per day may exceed 10,000.
 
-In both types of experiments, patients will be randomly placed into treatment groups. Treatment groups will define the message texts, number of messages, and when to send the messages. Test patients will not receive the pre-existing text message sent three days after they miss an appointment.
+In both types of experiments, patients will be randomly placed into treatment groups. Treatment groups will define the message texts, number of messages, and when to send the messages. Test patients will not receive the pre-existing text message sent three days after they miss an appointment. Control group patients will receive no messages at all.
 
 ## Patient Selection Criteria
 
@@ -32,7 +32,7 @@ All patients must meet the following criteria for selection:
 - at least 18 years old
 - hypertensive
 - has a phone capable of receiving text messages. We verify this via Exotel.
-- have not taken part in an experiment in the past 14 days. This will not matter for the first experiment but will for subsequent experiments.
+- is not in an ongoing experiment or one that ended within the past 14 days.
 
 Subjects for active patient experiments will be selected for having an appointment scheduled during the experiment date range.
 
