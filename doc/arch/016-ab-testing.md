@@ -2,11 +2,7 @@
 
 ## Context
 
-Our primary goal at Simple is to reduce deaths from cardiovascular disease. To be able to do that, we need patients to return to the clinic for care. Currently, when a patient misses their follow-up appointment date by three days, we send them a polite text message through Whatsapp (in India) and SMS reminding them to continue taking their medicine and to return to their clinic to get more. That is our last attempt via text to convince a patient to return.
-
-We would like to know if a different message or sending the message on a different date relative to their appointment date would result in a higher rate of patient return.
-
-Additionally, we would like patients who have recently stopped visiting their clinic to return to care, and we would like to know what type of message and frequency of message would be most effective for convincing these patients to return to care.
+Our primary goal at Simple is to reduce deaths from cardiovascular disease. To be able to do that, we need patients to return to the clinic for care. Currently, when a patient misses their follow-up appointment date by three days, we send them a polite text message reminding them to continue taking their medicine and to return to their clinic to get more. That is our last attempt via text to convince a patient to return. We would like to know if a different message or sending the message on a different date relative to their appointment date would result in a higher rate of patient return. Additionally, we would like patients who have recently stopped visiting their clinic to return to care, and we would like to know what type of message and frequency of message would be most effective for convincing these patients to return to care.
 
 ## Decision
 
@@ -36,19 +32,19 @@ All patients must meet the following criteria for selection:
 
 Subjects for active patient experiments will be selected for having an appointment scheduled during the experiment date range.
 
-Subjects for stale patient experiments will be selected for having last visited the clinic 35-365 days ago. To ensure that the two experiment subject groups are entirely mutually exclusive, we also filter out any patients who have an appointment scheduled during the experiment.
+Subjects for stale patient experiments will be selected for having last visited the clinic 35-365 days ago. We also filter out any patients who have an appointment scheduled in the future. This prevents messaging patients needlessly and also ensures that our experiment patient pools are mutually exclusive.
 
 ## Treatment Group Assignment
 
-Patients will be assigned to treatment groups completely at random using a simple Ruby randomization technique during the patient selection process. The patient's treatment group assignment will be captured via the TreatmentGroupMembership model.
+Patients will be assigned to treatment groups completely at random during the patient selection process. The patient's treatment group assignment will be captured via the TreatmentGroupMembership model.
 ## Test workflow
 
 Active patient experiment:
-- experiment will be started by running a script either manually or by scheduling it
+- experiment will be started by running a script either manually or by scheduling it ### name script
 - that script will select patients appropriate to the experiment
 - it will then assign all eligible patients to treatment groups at random
-- it will create all appointment reminders for experiment patients, based on the date of their next appointment and the information in their treatment group's reminder templates. These will be marked as "pending" and will not be sent at this time.
-- a cron job will run every day and search for any pending appointment reminders that should be sent that day
+- it will create all notifications for experiment patients, based on the date of their next appointment and the information in their treatment group's reminder templates. These will be marked as "pending" and will not be sent at this time.
+- a cron job will run every day and search for any pending notifications that should be sent that day
 - that cron will schedule individual text messages to be sent out that day
 - in India, text messages will first be sent as WhatsApp messages. If the WhatsApp message fails, we will resend the message as SMS.
 - in Bangladesh, text messages will first be sent as Imo messages. If the Imo message fails, we will resend the message as SMS.
@@ -56,7 +52,7 @@ Active patient experiment:
 Stale patient experiment:
 - experiment must be scheduled by cron because the selection process is not a one-time occurrence
 - patient selection must occur every day of the experiment to ensure that patients do not become ineligible (by returning to care) between selection and the time their reminder is sent.
-- the scheduled script selects 10,000 patients per day to send reminders to, assigns them to a treatment group, and creates appointment reminders appropriate for that group
+- the scheduled script selects 10,000 patients per day to send reminders to, assigns them to a treatment group, and creates notifications appropriate for that group
 - patients in the control group will receive no reminders while other groups may receive multiple reminders over a period of days
 
 ## Data modelling
@@ -65,8 +61,8 @@ The A/B framework introduces five new models.
 
 - Experiment: This defines the type (active or stale) and date range of the experiment.
 - TreatmentGroup: Treatment groups are used to determine which messages a patient will receive and when they will receive them, but they do not contain any information about the messages. Treatment groups can have zero or more reminder templates, which contain the message information. This design is intended to be flexible enough to allow us to test with any number of messages and even allows us to test the same type of messages with different delivery cadences.
-- Reminder template: A reminder template captures the message we want to send and when (relative to appointment date) we want to send it. A zero value means to send the message on the appointment date, a negative value means to send the message before the appointment, and positive value means to send the message after the appointment date.
-- AppointmentReminder: this represents a message that is either scheduled to be sent or has already been sent. It will capture the message and scheduled delivery date. This will also be used moving forward to capture our non-experiment appointment notifications.
+- ReminderTemplate: A reminder template captures the message we want to send and when (relative to appointment date) we want to send it. A zero value means to send the message on the appointment date, a negative value means to send the message before the appointment, and positive value means to send the message after the appointment date.
+- Notification: this represents a message that is either scheduled to be sent or has already been sent. It will capture the message and scheduled delivery date. This will also be used moving forward to capture our non-experiment appointment notifications.
 - TreatmentGroupMembership: this is a join table between TreatmentGroup and Patient that allows us to track which patients were in each treatment group.
 
 ## Supported languages
@@ -95,8 +91,8 @@ Telugu
 
 ## Consequences
 
-Some issues with existing code were discovered and corrected in the development process, but this feature should have no impact on existing functionality. We will be using the appointment reminder model to provide a historical record of sent appointment notifications moving forward, but that will not impact the user experience.
+Some issues with existing code were discovered and corrected in the development process, but this feature should have no impact on existing functionality. We will be using the notification model to provide a historical record of sent appointment notifications moving forward, but that will not impact the user experience.
 
 ## Ending an experiment early
 
-The rake tasks will be guarded by a feature flag, which will allow us to quickly prevent all experiment messages from being sent. We will also write a script for changing the experiment state to "complete" and marking all appointment reminders as "cancelled".
+The rake tasks will be guarded by a feature flag, which will allow us to quickly prevent all experiment messages from being sent. We will also write a script for changing the experiment state to "complete" and marking all notifications as "cancelled".
