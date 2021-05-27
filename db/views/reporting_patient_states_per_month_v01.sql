@@ -108,11 +108,11 @@ SELECT
 FROM patients p
 -- Only fetch BPs that happened on or before the selected calendar month
 -- We use year and month comparisons to avoid timezone errors
-LEFT OUTER JOIN calendar_months cal
+LEFT OUTER JOIN reporting_calendar_months cal
     ON to_char(p.recorded_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')), 'YYYY-MM') <= to_char(cal.month_date, 'YYYY-MM')
-LEFT OUTER JOIN patient_blood_pressures_per_month bps
+LEFT OUTER JOIN reporting_patient_blood_pressures_per_month bps
     ON p.id = bps.patient_id AND cal.month = bps.month AND cal.year = bps.year
-LEFT OUTER JOIN patient_visits_per_month visits
+LEFT OUTER JOIN reporting_patient_visits_per_month visits
     ON p.id = visits.patient_id AND cal.month = visits.month AND cal.year = visits.year
 LEFT OUTER JOIN medical_histories mh
     ON p.id = mh.patient_id

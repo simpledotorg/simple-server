@@ -22,7 +22,7 @@ SELECT
     AS months_since_visit
 
 FROM patients p
-LEFT OUTER JOIN calendar_months cal
+LEFT OUTER JOIN reporting_calendar_months cal
     ON to_char(p.recorded_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')), 'YYYY-MM') <= to_char(cal.month_date, 'YYYY-MM')
 -- Only fetch Encounters that happened on or before the selected calendar month
 -- We use year and month comparisons to avoid timezone errors
