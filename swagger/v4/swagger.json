@@ -158,54 +158,6 @@
         }
       }
     },
-    "/drugs/sync": {
-      "get": {
-        "summary": "Syncs drug data from server to device.",
-        "tags": [
-          "Drug"
-        ],
-        "parameters": [
-          {
-            "name": "HTTP_X_FACILITY_ID",
-            "in": "header",
-            "type": "uuid"
-          },
-          {
-            "name": "process_token",
-            "type": "string",
-            "format": "byte",
-            "description": "Token containing all the information needed to process batch requests from the user",
-            "in": "query"
-          },
-          {
-            "in": "query",
-            "name": "limit",
-            "type": "integer",
-            "description": "Number of record to retrieve (a.k.a batch-size)"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "returns drugs",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "drugs": {
-                  "$ref": "#/definitions/drugs"
-                },
-                "process_token": {
-                  "$ref": "#/definitions/process_token"
-                }
-              },
-              "required": [
-                "drugs",
-                "process_token"
-              ]
-            }
-          }
-        }
-      }
-    },
     "/facility_teleconsultations/{facility_id}": {
       "get": {
         "summary": "Fetch a facility's teleconsultation phone number",
@@ -279,6 +231,54 @@
           },
           "401": {
             "description": "User not authorized"
+          }
+        }
+      }
+    },
+    "/medications/sync": {
+      "get": {
+        "summary": "Syncs medication data from server to device.",
+        "tags": [
+          "Medication"
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "process_token",
+            "type": "string",
+            "format": "byte",
+            "description": "Token containing all the information needed to process batch requests from the user",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns medications",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "medications": {
+                  "$ref": "#/definitions/medications"
+                },
+                "process_token": {
+                  "$ref": "#/definitions/process_token"
+                }
+              },
+              "required": [
+                "medications",
+                "process_token"
+              ]
+            }
           }
         }
       }
@@ -393,6 +393,61 @@
           },
           "401": {
             "description": "Invalid patient ID header"
+          }
+        }
+      }
+    },
+    "/patients/{identifier}": {
+      "get": {
+        "summary": "Lookup a patient all their records synchronously given their full business identifier",
+        "tags": [
+          "Patient"
+        ],
+        "security": [
+          {
+            "access_token": [
+
+            ],
+            "user_id": [
+
+            ],
+            "facility_id": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "identifier",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "patient lookup successful",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "patients": {
+                  "$ref": "#/definitions/lookup_patients"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No patients found with this identifier"
           }
         }
       }
@@ -701,33 +756,250 @@
       "format": "byte",
       "description": "Token containing all the information needed to process batch requests from the user"
     },
-    "timestamp": {
-      "type": "string",
-      "format": "date-time",
-      "description": "Timestamp with millisecond precision."
+    "activate_user": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "password": {
+          "$ref": "#/definitions/non_empty_string"
+        }
+      },
+      "required": [
+        "id",
+        "password"
+      ]
     },
-    "uuid": {
-      "type": "string",
-      "format": "uuid",
-      "pattern": "[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}"
-    },
-    "non_empty_string": {
-      "type": "string",
-      "minLength": 1,
-      "description": "This string should not be empty."
-    },
-    "nullable_timestamp": {
+    "address": {
       "type": [
-        "string",
-        "null"
+        "null",
+        "object"
       ],
-      "format": "date-time",
-      "description": "Timestamp with millisecond precision."
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "street_address": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "village_or_colony": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "zone": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "district": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "state": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "country": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "pin": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "app_user_capabilities": {
+      "type": "object",
+      "properties": {
+        "can_teleconsult": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no"
+          ]
+        }
+      }
+    },
+    "appointment": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "patient_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "facility_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "creation_facility_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "scheduled_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "scheduled",
+            "cancelled",
+            "visited"
+          ]
+        },
+        "cancel_reason": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "enum": [
+            "not_responding",
+            "moved",
+            "dead",
+            "invalid_phone_number",
+            "public_hospital_transfer",
+            "moved_to_private",
+            "other",
+            null
+          ]
+        },
+        "remind_on": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "agreed_to_visit": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "appointment_type": {
+          "type": "string",
+          "enum": [
+            "manual",
+            "automatic"
+          ]
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "patient_id",
+        "facility_id",
+        "scheduled_date",
+        "status",
+        "created_at",
+        "updated_at",
+        "appointment_type"
+      ]
+    },
+    "appointments": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/appointment"
+      }
     },
     "bcrypt_password": {
       "type": "string",
       "pattern": "^\\$[0-9a-z]{2}\\$[0-9]{2}\\$[A-Za-z0-9\\.\\/]{53}$",
       "description": "Bcrypt password digest"
+    },
+    "blood_pressure": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "systolic": {
+          "type": "integer"
+        },
+        "diastolic": {
+          "type": "integer"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "recorded_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "patient_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "facility_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "user_id": {
+          "$ref": "#/definitions/uuid"
+        }
+      },
+      "required": [
+        "systolic",
+        "diastolic",
+        "created_at",
+        "updated_at",
+        "patient_id",
+        "facility_id",
+        "user_id"
+      ]
+    },
+    "blood_pressures": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/blood_pressure"
+      }
     },
     "blood_sugar": {
       "type": "object",
@@ -789,6 +1061,72 @@
         "$ref": "#/definitions/blood_sugar"
       }
     },
+    "facility_medical_officer": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "facility_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "medical_officers": {
+          "type": [
+            "null",
+            "array"
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$ref": "#/definitions/uuid"
+              },
+              "full_name": {
+                "$ref": "#/definitions/non_empty_string"
+              },
+              "teleconsultation_phone_number": {
+                "$ref": "#/definitions/non_empty_string"
+              }
+            }
+          }
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        }
+      }
+    },
+    "facility_medical_officers": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/facility_medical_officer"
+      }
+    },
+    "find_user": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "sync_approval_status": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
     "login_patient": {
       "type": "object",
       "properties": {
@@ -810,6 +1148,371 @@
           }
         }
       }
+    },
+    "lookup_patient": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "gender": {
+          "type": "string",
+          "enum": [
+            "male",
+            "female",
+            "transgender"
+          ]
+        },
+        "full_name": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "dead",
+            "migrated",
+            "unresponsive",
+            "inactive"
+          ]
+        },
+        "date_of_birth": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "age": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "When age is present, age_updated_at must be present as well."
+        },
+        "age_updated_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "recorded_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "registration_facility_id": {
+          "$ref": "#/definitions/nullable_uuid"
+        },
+        "assigned_facility_id": {
+          "$ref": "#/definitions/nullable_uuid"
+        },
+        "reminder_consent": {
+          "type": "string",
+          "enum": [
+            "granted",
+            "denied"
+          ]
+        },
+        "deleted_reason": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "enum": [
+            "duplicate",
+            "unknown",
+            "accidental_registration",
+            null
+          ]
+        },
+        "address": {
+          "$ref": "#/definitions/address"
+        },
+        "phone_numbers": {
+          "$ref": "#/definitions/phone_numbers"
+        },
+        "business_identifiers": {
+          "$ref": "#/definitions/patient_business_identifiers"
+        },
+        "appointments": {
+          "$ref": "#/definitions/appointments"
+        },
+        "blood_pressures": {
+          "$ref": "#/definitions/blood_pressures"
+        },
+        "blood_sugars": {
+          "$ref": "#/definitions/blood_sugars"
+        },
+        "medical_history": {
+          "$ref": "#/definitions/medical_history"
+        },
+        "prescription_drugs": {
+          "$ref": "#/definitions/prescription_drugs"
+        },
+        "retention": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "temporary",
+                "permanent"
+              ]
+            },
+            "duration_seconds": {
+              "type": "integer"
+            }
+          }
+        }
+      },
+      "required": [
+        "appointments",
+        "blood_pressures",
+        "blood_sugars",
+        "medical_history",
+        "prescription_drugs",
+        "retention"
+      ],
+      "description": "Sync a single patient to a device"
+    },
+    "lookup_patients": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/lookup_patient"
+      }
+    },
+    "medical_history": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "patient_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "prior_heart_attack": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
+        "prior_stroke": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
+        "chronic_kidney_disease": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
+        "receiving_treatment_for_hypertension": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
+        "diabetes": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
+        "hypertension": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
+        "diagnosed_with_hypertension": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "patient_id",
+        "prior_heart_attack",
+        "prior_stroke",
+        "chronic_kidney_disease",
+        "receiving_treatment_for_hypertension",
+        "diabetes",
+        "diagnosed_with_hypertension",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "medical_officer": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "full_name": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "teleconsultation_phone_number": {
+          "$ref": "#/definitions/non_empty_string"
+        }
+      }
+    },
+    "medication": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "name": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "category": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "hypertension_ccb",
+            "hypertension_arb",
+            "hypertension_diuretic",
+            "hypertension_ace",
+            "hypertension_other",
+            "diabetes",
+            "other",
+            null
+          ]
+        },
+        "frequency": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "one_per_day",
+            "two_per_day",
+            "three_per_day",
+            "four_per_day",
+            null
+          ]
+        },
+        "composition": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dosage": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "rxnorm_code": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "protocol": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "yes",
+            "no"
+          ]
+        },
+        "common": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "yes",
+            "no"
+          ]
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "medications": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/medication"
+      }
+    },
+    "non_empty_string": {
+      "type": "string",
+      "minLength": 1,
+      "description": "This string should not be empty."
+    },
+    "nullable_timestamp": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "description": "Timestamp with millisecond precision."
+    },
+    "nullable_uuid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uuid",
+      "pattern": "[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}"
     },
     "patient": {
       "type": "object",
@@ -1248,11 +1951,31 @@
         }
       }
     },
-    "user": {
+    "patient_business_identifier": {
       "type": "object",
       "properties": {
         "id": {
           "$ref": "#/definitions/uuid"
+        },
+        "identifier": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "identifier_type": {
+          "type": "string",
+          "enum": [
+            "simple_bp_passport",
+            "bangladesh_national_id",
+            "ethiopia_medical_record"
+          ]
+        },
+        "metadata_version": {
+          "type": "string"
+        },
+        "metadata": {
+          "type": "string"
         },
         "deleted_at": {
           "$ref": "#/definitions/nullable_timestamp"
@@ -1262,143 +1985,78 @@
         },
         "updated_at": {
           "$ref": "#/definitions/timestamp"
-        },
-        "full_name": {
-          "$ref": "#/definitions/non_empty_string"
-        },
-        "phone_number": {
-          "$ref": "#/definitions/non_empty_string"
-        },
-        "password_digest": {
-          "$ref": "#/definitions/bcrypt_password"
-        },
-        "registration_facility_id": {
-          "$ref": "#/definitions/uuid"
-        },
-        "sync_approval_status": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "sync_approval_status_reason": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "capabilities": {
-          "type": "object",
-          "properties": {
-            "can_teleconsult": {
-              "type": "string",
-              "enum": [
-                "yes",
-                "no"
-              ]
-            }
-          }
-        },
-        "teleconsultation_phone_number": {
-          "$ref": "#/definitions/non_empty_string"
         }
       },
       "required": [
         "id",
         "created_at",
         "updated_at",
-        "full_name",
-        "phone_number",
-        "password_digest",
-        "registration_facility_id"
+        "identifier",
+        "identifier_type"
       ]
     },
-    "find_user": {
+    "patient_business_identifiers": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/patient_business_identifier"
+      }
+    },
+    "phone_number": {
       "type": "object",
       "properties": {
         "id": {
           "$ref": "#/definitions/uuid"
         },
-        "sync_approval_status": {
-          "type": [
-            "string",
-            "null"
-          ]
-        }
-      },
-      "required": [
-        "id"
-      ]
-    },
-    "activate_user": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "$ref": "#/definitions/uuid"
-        },
-        "password": {
+        "number": {
           "$ref": "#/definitions/non_empty_string"
+        },
+        "phone_type": {
+          "type": "string",
+          "enum": [
+            "mobile",
+            "landline"
+          ]
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
         }
       },
       "required": [
         "id",
-        "password"
+        "created_at",
+        "updated_at",
+        "number"
       ]
     },
-    "app_user_capabilities": {
-      "type": "object",
-      "properties": {
-        "can_teleconsult": {
-          "type": "string",
-          "enum": [
-            "yes",
-            "no"
-          ]
-        }
+    "phone_numbers": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/phone_number"
       }
     },
-    "medical_officer": {
+    "prescription_drug": {
       "type": "object",
       "properties": {
         "id": {
           "$ref": "#/definitions/uuid"
         },
-        "full_name": {
-          "$ref": "#/definitions/non_empty_string"
-        },
-        "teleconsultation_phone_number": {
-          "$ref": "#/definitions/non_empty_string"
-        }
-      }
-    },
-    "facility_medical_officer": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "$ref": "#/definitions/uuid"
-        },
-        "facility_id": {
-          "$ref": "#/definitions/uuid"
-        },
-        "medical_officers": {
-          "type": [
-            "null",
-            "array"
-          ],
-          "items": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "$ref": "#/definitions/uuid"
-              },
-              "full_name": {
-                "$ref": "#/definitions/non_empty_string"
-              },
-              "teleconsultation_phone_number": {
-                "$ref": "#/definitions/non_empty_string"
-              }
-            }
-          }
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
         },
         "created_at": {
           "$ref": "#/definitions/timestamp"
@@ -1406,18 +2064,68 @@
         "updated_at": {
           "$ref": "#/definitions/timestamp"
         },
-        "deleted_at": {
-          "$ref": "#/definitions/nullable_timestamp"
+        "name": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "dosage": {
+          "type": "string"
+        },
+        "rxnorm_code": {
+          "type": "string"
+        },
+        "is_protocol_drug": {
+          "type": "boolean"
+        },
+        "is_deleted": {
+          "type": "boolean"
+        },
+        "patient_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "facility_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "frequency": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "OD",
+            "BD",
+            "QDS",
+            "TDS",
+            null
+          ]
+        },
+        "duration_in_days": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "teleconsultation_id": {
+          "$ref": "#/definitions/nullable_uuid"
         }
-      }
+      },
+      "required": [
+        "id",
+        "created_at",
+        "updated_at",
+        "name",
+        "is_protocol_drug",
+        "is_deleted",
+        "patient_id",
+        "facility_id"
+      ]
     },
-    "facility_medical_officers": {
+    "prescription_drugs": {
       "type": [
         "null",
         "array"
       ],
       "items": {
-        "$ref": "#/definitions/facility_medical_officer"
+        "$ref": "#/definitions/prescription_drug"
       }
     },
     "teleconsultation": {
@@ -1520,81 +2228,19 @@
         "$ref": "#/definitions/teleconsultation"
       }
     },
-    "drug": {
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp with millisecond precision."
+    },
+    "user": {
       "type": "object",
       "properties": {
         "id": {
           "$ref": "#/definitions/uuid"
         },
-        "name": {
-          "$ref": "#/definitions/non_empty_string"
-        },
-        "category": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "enum": [
-            "hypertension_ccb",
-            "hypertension_arb",
-            "hypertension_diuretic",
-            "hypertension_ace",
-            "hypertension_other",
-            "diabetes",
-            "other",
-            null
-          ]
-        },
-        "frequency": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "enum": [
-            "one_per_day",
-            "two_per_day",
-            "three_per_day",
-            "four_per_day",
-            null
-          ]
-        },
-        "composition": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "dosage": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "rxnorm_code": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "protocol": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "enum": [
-            "yes",
-            "no"
-          ]
-        },
-        "common": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "enum": [
-            "yes",
-            "no"
-          ]
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
         },
         "created_at": {
           "$ref": "#/definitions/timestamp"
@@ -1602,25 +2248,60 @@
         "updated_at": {
           "$ref": "#/definitions/timestamp"
         },
-        "deleted_at": {
-          "$ref": "#/definitions/nullable_timestamp"
+        "full_name": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "phone_number": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "password_digest": {
+          "$ref": "#/definitions/bcrypt_password"
+        },
+        "registration_facility_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "sync_approval_status": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sync_approval_status_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "capabilities": {
+          "type": "object",
+          "properties": {
+            "can_teleconsult": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no"
+              ]
+            }
+          }
+        },
+        "teleconsultation_phone_number": {
+          "$ref": "#/definitions/non_empty_string"
         }
       },
       "required": [
         "id",
-        "name",
         "created_at",
-        "updated_at"
+        "updated_at",
+        "full_name",
+        "phone_number",
+        "password_digest",
+        "registration_facility_id"
       ]
     },
-    "drugs": {
-      "type": [
-        "null",
-        "array"
-      ],
-      "items": {
-        "$ref": "#/definitions/drug"
-      }
+    "uuid": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}"
     }
   },
   "securityDefinitions": {
