@@ -28,14 +28,18 @@ LEFT OUTER JOIN reporting_calendar_months cal
 -- We use year and month comparisons to avoid timezone errors
 LEFT OUTER JOIN encounters e
     ON e.patient_id = p.id
+    AND e.deleted_at IS NULL
     AND to_char(e.encountered_on AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')), 'YYYY-MM') <= to_char(cal.month_date, 'YYYY-MM')
 LEFT OUTER JOIN prescription_drugs pd
     ON pd.patient_id = p.id
+    AND pd.deleted_at IS NULL
     AND to_char(pd.device_created_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')), 'YYYY-MM') <= to_char(cal.month_date, 'YYYY-MM')
 LEFT OUTER JOIN appointments app
     ON app.patient_id = p.id
+    AND app.deleted_at IS NULL
     AND to_char(app.device_created_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')), 'YYYY-MM') <= to_char(cal.month_date, 'YYYY-MM')
 -- Ensure most recent visit is fetched
+WHERE p.deleted_at IS NULL
 ORDER BY
     p.id,
     cal.month_date,

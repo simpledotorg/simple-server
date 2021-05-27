@@ -8,7 +8,6 @@ SELECT
     p.age,
     p.age_updated_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')) AS age_updated_at,
     p.date_of_birth,
-    p.deleted_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')) AS deleted_at,
     mh.hypertension as hypertension,
 
     ------------------------------------------------------------
@@ -102,7 +101,6 @@ SELECT
       AND (bps.months_since_bp_observation IS NULL OR bps.months_since_bp_observation >= 12)
       AND mh.hypertension = 'yes'
       AND p.status <> 'dead'
-      AND p.deleted_at IS NULL
     ) AS lost_to_follow_up
 
 FROM patients p
@@ -116,10 +114,12 @@ LEFT OUTER JOIN reporting_patient_visits_per_month visits
     ON p.id = visits.patient_id AND cal.month = visits.month AND cal.year = visits.year
 LEFT OUTER JOIN medical_histories mh
     ON p.id = mh.patient_id
+    AND mh.deleted_at IS NULL
 INNER JOIN reporting_facilities registration_facility
     ON registration_facility.facility_id = p.registration_facility_id
 INNER JOIN reporting_facilities assigned_facility
     ON assigned_facility.facility_id = p.assigned_facility_id
+WHERE p.deleted_at IS NULL
 ORDER BY
     p.id,
     cal.month_date ASC

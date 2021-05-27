@@ -28,7 +28,8 @@ FROM blood_pressures bp
 -- We use year and month comparisons to avoid timezone errors
 LEFT OUTER JOIN reporting_calendar_months cal
 ON to_char(bp.recorded_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')), 'YYYY-MM') <= to_char(cal.month_date, 'YYYY-MM')
-INNER JOIN patients p ON bp.patient_id = p.id
+INNER JOIN patients p ON bp.patient_id = p.id AND p.deleted_at IS NULL
+WHERE bp.deleted_at IS NULL
 ORDER BY
 -- Ensure most recent BP is fetched
     bp.patient_id,
