@@ -346,21 +346,17 @@ describe ExperimentControlService, type: :model do
       }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
-    it "changes experiment state to 'complete'" do
-      experiment = create(:experiment, state: "running")
-      expect {
-        ExperimentControlService.abort_experiment(experiment.name)
-      }.to change { experiment.reload.state }.from("running").to("complete")
-    end
-
-    it "changes pending and scheduled notification statuses to 'cancelled'" do
-      experiment = create(:experiment)
+    it "changes experiment state to 'cancelled' and changes pending and scheduled notification statuses to 'cancelled'" do
+      experiment = create(:experiment, state: "new")
       patient = create(:patient)
+
       pending_notification = create(:notification, experiment: experiment, patient: patient, status: "pending")
       scheduled_notification = create(:notification, experiment: experiment, patient: patient, status: "scheduled")
       sent_notification = create(:notification, experiment: experiment, patient: patient, status: "sent")
 
-      ExperimentControlService.abort_experiment(experiment.name)
+      expect {
+        ExperimentControlService.abort_experiment(experiment.name)
+      }.to change { experiment.reload.state }.to("cancelled")
       expect(pending_notification.reload.status).to eq("cancelled")
       expect(scheduled_notification.reload.status).to eq("cancelled")
       expect(sent_notification.reload.status).to eq("sent")
