@@ -6,9 +6,9 @@ SELECT
     p.status,
     p.gender,
     p.age,
-    p.age_updated_at,
+    p.age_updated_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')) AS age_updated_at,
     p.date_of_birth,
-    p.deleted_at,
+    p.deleted_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')) AS deleted_at,
     mh.hypertension as hypertension,
 
     ------------------------------------------------------------
