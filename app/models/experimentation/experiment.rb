@@ -15,6 +15,7 @@ module Experimentation
       new: "new",
       selecting: "selecting",
       running: "running",
+      cancelled: "cancelled",
       complete: "complete"
     }, _suffix: true
 

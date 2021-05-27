@@ -16,7 +16,12 @@ class AppointmentNotification::Worker
       metrics.increment("skipped.feature_disabled")
       return
     end
-    notification = Notification.includes(:subject, :patient).find(notification_id)
+    notification = Notification.includes(:subject, :patient, :experiment).find(notification_id)
+    if notification.status_cancelled? || notification.experiment&.cancelled_state?
+      logger.info class: self.class.name, msg: "notification is cancelled"
+      metrics.increment("skipped.notification_cancelled")
+      return
+    end
     communication_type = notification.next_communication_type
     unless communication_type
       metrics.increment("skipped.previously_communicated")

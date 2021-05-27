@@ -170,5 +170,25 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
         described_class.drain
       }.to raise_error(ActiveRecord::RecordNotFound)
     end
+
+    it "does not send if the notification is cancelled" do
+      mock_successful_delivery
+      notification.update!(status: "cancelled")
+      expect {
+        described_class.perform_async(notification.id)
+        described_class.drain
+      }.not_to change { Communication.count }
+    end
+
+    it "does not send if the notification belongs to a cancelled experiment" do
+      mock_successful_delivery
+      experiment = create(:experiment, state: "cancelled")
+      notification.update!(experiment_id: experiment.id)
+      expect {
+        described_class.perform_async(notification.id)
+        described_class.drain
+      }.not_to change { Communication.count }
+      expect(notification.reload.status).to eq("scheduled")
+    end
   end
 end

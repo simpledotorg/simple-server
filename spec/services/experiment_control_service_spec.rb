@@ -199,18 +199,17 @@ describe ExperimentControlService, type: :model do
 
   describe "self.schedule_daily_stale_patient_notifications" do
     it "excludes patients who have recently been in an experiment" do
-      old_experiment = create(:experiment, :with_treatment_group, name: "old", start_date: 2.days.ago, end_date: 1.day.ago)
-      old_group = old_experiment.treatment_groups.first
+      recent_experiment = create(:experiment, :with_treatment_group, name: "old", start_date: 2.days.ago, end_date: 1.day.ago)
 
-      older_experiment = create(:experiment, :with_treatment_group, name: "older", start_date: 16.days.ago, end_date: 15.day.ago)
-      older_group = older_experiment.treatment_groups.first
+      old_experiment = create(:experiment, :with_treatment_group, name: "older", start_date: 16.days.ago, end_date: 15.day.ago)
+      old_experiment.treatment_groups.first
 
       patient1 = create(:patient, age: 80)
-      old_group.treatment_group_memberships.create!(patient: patient1)
+      recent_experiment.treatment_groups.first.patients << patient1
       create(:blood_sugar, patient: patient1, device_created_at: 100.days.ago)
 
       patient2 = create(:patient, age: 80)
-      older_group.treatment_group_memberships.create!(patient: patient2)
+      old_experiment.treatment_groups.first.patients << patient2
       create(:blood_pressure, patient: patient2, device_created_at: 100.days.ago)
 
       patient3 = create(:patient, age: 80)
@@ -316,19 +315,41 @@ describe ExperimentControlService, type: :model do
         ExperimentControlService.schedule_daily_stale_patient_notifications(experiment.name, patients_per_day: 1)
       }.to change { Experimentation::TreatmentGroupMembership.count }.by(1)
     end
+
+    it "does not create notifications or update experiment status if today is before the experiment before date" do
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients", start_date: 1.day.from_now, end_date: 1.week.from_now)
+      patient1 = create(:patient, age: 80)
+      create(:blood_pressure, patient: patient1, device_created_at: 100.days.ago)
+
+      expect {
+        ExperimentControlService.schedule_daily_stale_patient_notifications(experiment.name)
+      }.not_to change { Experimentation::TreatmentGroupMembership.count }
+      expect(experiment.reload.state).to eq("new")
+    end
+
+    it "changes the experiment date to complete and does not create notifications if today is after the experiment end date" do
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients", start_date: 1.week.ago, end_date: 1.day.ago)
+      patient1 = create(:patient, age: 80)
+      create(:blood_pressure, patient: patient1, device_created_at: 100.days.ago)
+
+      expect {
+        ExperimentControlService.schedule_daily_stale_patient_notifications(experiment.name)
+      }.to change { experiment.reload.state }.from("new").to("complete")
+      expect(Experimentation::TreatmentGroupMembership.count).to eq(0)
+    end
   end
 
-  describe "self.terminate_experiment" do
+  describe "self.abort_experiment" do
     it "raises error if experiment is not found" do
       expect {
-        ExperimentControlService.terminate_experiment("fake")
+        ExperimentControlService.abort_experiment("fake")
       }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
     it "changes experiment state to 'complete'" do
       experiment = create(:experiment, state: "running")
       expect {
-        ExperimentControlService.terminate_experiment(experiment.name)
+        ExperimentControlService.abort_experiment(experiment.name)
       }.to change { experiment.reload.state }.from("running").to("complete")
     end
 
@@ -339,7 +360,7 @@ describe ExperimentControlService, type: :model do
       scheduled_notification = create(:notification, experiment: experiment, patient: patient, status: "scheduled")
       sent_notification = create(:notification, experiment: experiment, patient: patient, status: "sent")
 
-      ExperimentControlService.terminate_experiment(experiment.name)
+      ExperimentControlService.abort_experiment(experiment.name)
       expect(pending_notification.reload.status).to eq("cancelled")
       expect(scheduled_notification.reload.status).to eq("cancelled")
       expect(sent_notification.reload.status).to eq("sent")
