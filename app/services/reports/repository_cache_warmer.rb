@@ -18,10 +18,7 @@ class Reports::RepositoryCacheWarmer
   def call
     repository.missed_visits
     repository.missed_visits_rate
-    if region.facility_region?
-      repository.hypertension_follow_ups(group_by: "blood_pressures.user_id")
-    else
-      repository.hypertension_follow_ups
-    end
+    repository.hypertension_follow_ups
+    repository.hypertension_follow_ups(group_by: "blood_pressures.user_id") if region.facility_region?
   end
 end
