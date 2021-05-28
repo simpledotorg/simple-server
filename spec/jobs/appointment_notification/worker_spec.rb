@@ -170,5 +170,58 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
         described_class.drain
       }.to raise_error(ActiveRecord::RecordNotFound)
     end
+
+    describe "medication reminder experiment" do
+      it "provides a sender if available" do
+        mock_successful_delivery
+        allow(ENV).to receive(:fetch).and_call_original
+        allow(ENV).to receive(:fetch).with("TWILIO_COVID_REMINDER_NUMBERS", "").and_return("+testnumber111,+testnumber222,+testnumber333")
+        experiment = create(:experiment, experiment_type: "medication_reminder")
+        allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("missed_visit_sms_reminder")
+        allow_any_instance_of(Notification).to receive(:experiment).and_return(experiment)
+
+        expect(NotificationService).to receive(:new).with(sms_sender: /testnumber/).and_call_original
+        expect_any_instance_of(NotificationService).to receive(:send_sms)
+        described_class.perform_async(notification.id)
+        described_class.drain
+      end
+
+      it "does not provide a sender if unavailable" do
+        mock_successful_delivery
+        allow(ENV).to receive(:fetch).and_call_original
+        allow(ENV).to receive(:fetch).with("TWILIO_COVID_REMINDER_NUMBERS", "").and_return("")
+        experiment = create(:experiment, experiment_type: "medication_reminder")
+        allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("missed_visit_sms_reminder")
+        allow_any_instance_of(Notification).to receive(:experiment).and_return(experiment)
+
+        expect(NotificationService).to receive(:new).with(no_args).and_call_original
+        expect_any_instance_of(NotificationService).to receive(:send_sms)
+        described_class.perform_async(notification.id)
+        described_class.drain
+      end
+
+      it "does not provide a sender if the notification is not part of a medication reminder experiment" do
+        mock_successful_delivery
+        experiment = create(:experiment, experiment_type: "current_patients")
+        allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("missed_visit_sms_reminder")
+        allow_any_instance_of(Notification).to receive(:experiment).and_return(experiment)
+
+        expect(NotificationService).to receive(:new).with(no_args).and_call_original
+        expect_any_instance_of(NotificationService).to receive(:send_sms)
+        described_class.perform_async(notification.id)
+        described_class.drain
+      end
+
+      it "does not provide a sender if the notification does not have an experiment" do
+        mock_successful_delivery
+        allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("missed_visit_sms_reminder")
+        allow_any_instance_of(Notification).to receive(:experiment).and_return(nil)
+
+        expect(NotificationService).to receive(:new).with(no_args).and_call_original
+        expect_any_instance_of(NotificationService).to receive(:send_sms)
+        described_class.perform_async(notification.id)
+        described_class.drain
+      end
+    end
   end
 end
