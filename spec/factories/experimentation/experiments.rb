@@ -1,5 +1,6 @@
 FactoryBot.define do
   factory :experiment, class: Experimentation::Experiment do
+    id { SecureRandom.uuid }
     name { Faker::Lorem.unique.word }
     state { "new" }
     experiment_type { "current_patients" }

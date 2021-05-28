@@ -91,4 +91,35 @@ RSpec.describe PrescriptionDrug, type: :model do
       end
     end
   end
+
+  describe "medication reminder logging" do
+    it "logs when patient is part of the medication_reminder experiment" do
+      patient = create(:patient)
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "medication_reminder")
+      experiment.treatment_groups.first.patients << patient
+      notification = create(:notification, patient: patient, experiment: experiment)
+      Timecop.freeze do
+        communication = create(:communication, :missed_visit_whatsapp_reminder, notification: notification)
+        create(:twilio_sms_delivery_detail, :delivered, communication: communication, delivered_on: 1.day.ago)
+        facility = create(:facility)
+
+        time_till_visit = Time.current - communication.detailable.delivered_on
+        expected_logs = {
+          class: described_class.name,
+          msg: "log_medication_reminder_success",
+          treatment_group_membership: patient.treatment_group_memberships.first.id,
+          facility_id: facility.id,
+          time_till_visit: time_till_visit
+        }
+
+        expect(Rails.logger).to receive(:info).with(expected_logs)
+        create(:prescription_drug, patient: patient, facility: facility)
+      end
+    end
+
+    it "does not log when a patient is not part of the medication_reminder experiment" do
+      expect(Rails.logger).not_to receive(:info)
+      create(:prescription_drug)
+    end
+  end
 end
