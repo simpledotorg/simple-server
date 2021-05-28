@@ -47,11 +47,11 @@ class PrescriptionDrug < ApplicationRecord
   # this code should only be temporary, as it's part of monitoring a one-off experiment
   # https://app.clubhouse.io/simpledotorg/story/3642/remove-unnecessary-medication-reminder-code
   def log_medication_reminder_success
-    experiment_membership = patient.treatment_group_memberships.find {|membership| membership.treatment_group.experiment.experiment_type == "medication_reminder" }
+    experiment_membership = patient.treatment_group_memberships.find { |membership| membership.treatment_group.experiment.experiment_type == "medication_reminder" }
     return unless experiment_membership
     experiment = experiment_membership.treatment_group.experiment
     notification = patient.notifications.find_by(experiment_id: experiment.id)
-    communication = notification.communications.find {|communication| communication.successful? }
+    communication = notification.communications.find { |communication| communication.successful? }
     return unless communication
     time_till_visit = device_created_at - communication.detailable.delivered_on
 
