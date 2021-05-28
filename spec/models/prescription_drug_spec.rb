@@ -98,12 +98,13 @@ RSpec.describe PrescriptionDrug, type: :model do
       experiment = create(:experiment, :with_treatment_group, experiment_type: "medication_reminder")
       experiment.treatment_groups.first.patients << patient
       notification = create(:notification, patient: patient, experiment: experiment)
-      Timecop.freeze do
+      now = Time.current
+      Timecop.freeze(now) do
         communication = create(:communication, :missed_visit_whatsapp_reminder, notification: notification)
         create(:twilio_sms_delivery_detail, :delivered, communication: communication, delivered_on: 1.day.ago)
         facility = create(:facility)
 
-        time_till_visit = Time.current - communication.detailable.delivered_on
+        time_till_visit = now - communication.detailable.delivered_on
         expected_logs = {
           class: described_class.name,
           msg: "log_medication_reminder_success",
