@@ -33,6 +33,23 @@ RSpec.describe NotificationService do
     end
   end
 
+  describe "specifying an SMS sender" do
+    it "uses the provided SMS sender number in production" do
+      stub_const("SIMPLE_SERVER_ENV", "production")
+      notification_service = NotificationService.new(sms_sender: "1234567890")
+      expect(notification_service.twilio_sender_sms_number).to eq("1234567890")
+    end
+
+    it "uses the test number in test environments" do
+      notification_service = NotificationService.new(sms_sender: "1234567890")
+      expect(notification_service.twilio_sender_sms_number).to eq(NotificationService::TWILIO_TEST_SMS_NUMBER)
+    end
+
+    it "uses the primary number when no explicit sender is specified" do
+      expect(notification_service.twilio_sender_sms_number).to eq(ENV.fetch("TWILIO_PHONE_NUMBER"))
+    end
+  end
+
   describe "#send_sms" do
     it "correctly calls the Twilio API" do
       stub_client

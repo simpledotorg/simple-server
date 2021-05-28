@@ -34,7 +34,11 @@ class AppointmentNotification::Worker
   private
 
   def send_message(notification, communication_type)
-    notification_service = NotificationService.new
+    notification_service = if notification.experiment&.experiment_type == "medication_reminder" && medication_reminder_sms_sender
+      NotificationService.new(sms_sender: medication_reminder_sms_sender)
+    else
+      NotificationService.new
+    end
 
     if communication_type == "missed_visit_whatsapp_reminder"
       notification_service.send_whatsapp(
@@ -53,8 +57,18 @@ class AppointmentNotification::Worker
         metrics.increment("sent.sms")
       end
     end
-    logger.info class: self.class.name, msg: "send_message", failed: !!notification_service.failed?,
-                communication_type: communication_type, notification_id: notification.id
+
+    log_info = {
+      class: self.class.name,
+      msg: "send_message",
+      failed: !!notification_service.failed?,
+      error: notification_service.error,
+      sender: medication_reminder_sms_sender || "default",
+      communication_type: communication_type,
+      notification_id: notification.id
+    }
+
+    logger.info log_info
 
     return if notification_service.failed?
 
@@ -79,5 +93,13 @@ class AppointmentNotification::Worker
       host: ENV.fetch("SIMPLE_SERVER_HOST"),
       protocol: ENV.fetch("SIMPLE_SERVER_HOST_PROTOCOL")
     )
+  end
+
+  def medication_reminder_sms_sender
+    @medication_reminder_sms_sender ||= medication_reminder_sms_senders.sample
+  end
+
+  def medication_reminder_sms_senders
+    ENV.fetch("TWILIO_COVID_REMINDER_NUMBERS", "").split(",").map(&:strip)
   end
 end

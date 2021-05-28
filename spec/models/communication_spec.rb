@@ -17,7 +17,7 @@ describe Communication, type: :model do
   end
 
   context "Utilities" do
-    describe ".next_appointment_time" do
+    describe ".next_messaging_time" do
       before do
         @original_time_zone = Time.zone
         Time.zone = Rails.application.config.country[:time_zone]
@@ -44,6 +44,14 @@ describe Communication, type: :model do
       it "returns the next time tomorrow if currently after the messaging window" do
         Timecop.freeze(Time.zone.parse("January 1, 2020 4:30pm")) do
           expect(Communication.next_messaging_time).to eq(Time.zone.parse("January 2, 2020 10:00am"))
+        end
+      end
+
+      it "returns the current time if send_notifications_immediately flag is enabled" do
+        Flipper.enable(:disregard_messaging_window)
+        now = "January 1, 2020 4:00am"
+        Timecop.freeze(Time.zone.parse(now)) do
+          expect(Communication.next_messaging_time).to eq(Time.zone.parse(now))
         end
       end
     end
