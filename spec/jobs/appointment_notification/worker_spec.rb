@@ -76,6 +76,17 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       described_class.drain
     end
 
+    it "sends sms when notification's next_communication_type is sms" do
+      mock_successful_delivery
+      allow_any_instance_of(Notification).to receive(:next_communication_type).and_return(nil)
+
+      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.skipped.no_next_communication_type")
+      expect {
+        described_class.perform_async(notification.id)
+        described_class.drain
+      }.not_to change { Communication.count }
+    end
+
     it "creates a Communication with twilio response status and sid" do
       mock_successful_delivery
 
@@ -96,7 +107,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       create(:communication, :missed_visit_whatsapp_reminder, notification: notification)
       create(:communication, :missed_visit_sms_reminder, notification: notification)
 
-      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.skipped.previously_communicated")
+      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.skipped.no_next_communication_type")
       expect_any_instance_of(NotificationService).not_to receive(:send_whatsapp)
       expect {
         described_class.perform_async(notification.id)

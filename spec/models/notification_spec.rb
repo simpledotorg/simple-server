@@ -64,5 +64,19 @@ describe Notification, type: :model do
         expect(notification.next_communication_type).to eq(nil)
       end
     end
+
+    context "when notification is cancelled" do
+      it "returns nil" do
+        notification.status_cancelled!
+        expect(notification.next_communication_type).to eq(nil)
+      end
+    end
+
+    context "when experiment is cancelled" do
+      it "returns nil" do
+        notification.experiment.cancelled_state!
+        expect(notification.next_communication_type).to eq(nil)
+      end
+    end
   end
 end
