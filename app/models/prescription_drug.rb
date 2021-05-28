@@ -60,7 +60,7 @@ class PrescriptionDrug < ApplicationRecord
       msg: "log_medication_reminder_success",
       treatment_group_membership: experiment_membership.id, # for tracking patient without exposing patient id
       facility_id: facility.id,
-      time_till_visit: time_till_visit
+      time_till_visit: time_till_visit.round
     }
 
     logger.info(log_info)

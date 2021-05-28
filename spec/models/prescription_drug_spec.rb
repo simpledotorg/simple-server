@@ -110,7 +110,7 @@ RSpec.describe PrescriptionDrug, type: :model do
           msg: "log_medication_reminder_success",
           treatment_group_membership: patient.treatment_group_memberships.first.id,
           facility_id: facility.id,
-          time_till_visit: time_till_visit
+          time_till_visit: time_till_visit.round
         }
 
         expect(Rails.logger).to receive(:info).with(expected_logs)
