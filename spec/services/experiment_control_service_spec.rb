@@ -327,7 +327,7 @@ describe ExperimentControlService, type: :model do
       expect(experiment.reload.state).to eq("new")
     end
 
-    it "changes the experiment date to complete and does not create notifications if today is after the experiment end date" do
+    it "changes the experiment state to 'complete' and does not create notifications if today is after the experiment end date" do
       experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients", start_date: 1.week.ago, end_date: 1.day.ago)
       patient1 = create(:patient, age: 80)
       create(:blood_pressure, patient: patient1, device_created_at: 100.days.ago)

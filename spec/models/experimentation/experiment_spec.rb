@@ -28,7 +28,7 @@ RSpec.describe Experimentation::Experiment, type: :model do
 
     it "can only be updated to a complete and valid date range" do
       experiment = create(:experiment)
-      experiment.update(start_date: Date.today)
+      experiment.update(start_date: Date.today, end_date: nil)
       expect(experiment).to be_invalid
       experiment.update(start_date: nil, end_date: Date.today)
       expect(experiment).to be_invalid
