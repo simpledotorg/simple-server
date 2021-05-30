@@ -108,8 +108,6 @@ RSpec.describe PrescriptionDrug, type: :model do
         expected_logs = {
           class: described_class.name,
           msg: "log_medication_reminder_success",
-          treatment_group_membership: patient.treatment_group_memberships.first.id,
-          facility_id: facility.id,
           time_till_visit: time_till_visit.round
         }
 
