@@ -12,6 +12,20 @@ Datadog.configure do |c|
   c.use :rails, analytics_enabled: true
   c.use :rack, headers: {request: %w[X-USER-ID X-FACILITY-ID X-SYNC-REGION-ID], response: %w[Content-Type X-Request-ID]}
   c.use :sidekiq, analytics_enabled: true
+
+  if defined?(:Debase)
+    if Datadog::VERSION::STRING != "0.43.0"
+      raise "Since you updated ddtrace, please check if this workaround is still needed"
+    end
+
+    module FixThreadLocalContext
+      def local(thread = Thread.current)
+        thread[@key] ||= Datadog::Context.new
+      end
+    end
+
+    Datadog::ThreadLocalContext.prepend FixThreadLocalContext
+  end
 end
 
 require "statsd"

@@ -3,8 +3,9 @@ require "rails_helper"
 describe DrugStock, type: :model do
   describe "Associations" do
     it { should belong_to(:user) }
-    it { should belong_to(:facility) }
+    it { should belong_to(:facility).optional }
     it { should belong_to(:protocol_drug) }
+    it { should belong_to(:region) }
   end
 
   describe "Validations" do
@@ -27,21 +28,25 @@ describe DrugStock, type: :model do
       end_of_january = Date.strptime("Jan-2021", "%b-%Y").end_of_month
       _jan_drug_1_stock_1 = create(:drug_stock,
         facility: facility,
+        region: facility.region,
         protocol_drug: protocol_drug,
         for_end_of_month: end_of_january,
         created_at: 25.minute.ago)
       jan_drug_1_stock_2 = create(:drug_stock,
         facility: facility,
+        region: facility.region,
         protocol_drug: protocol_drug,
         for_end_of_month: end_of_january,
         created_at: 5.minute.ago)
       _jan_drug_2_stock_1 = create(:drug_stock,
         facility: facility,
+        region: facility.region,
         protocol_drug: protocol_drug_2,
         for_end_of_month: end_of_january,
         created_at: 25.minute.ago)
       jan_drug_2_stock_2 = create(:drug_stock,
         facility: facility,
+        region: facility.region,
         protocol_drug: protocol_drug_2,
         for_end_of_month: end_of_january,
         created_at: 5.minute.ago)

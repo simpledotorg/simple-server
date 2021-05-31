@@ -10,9 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_18_212747) do
+ActiveRecord::Schema.define(version: 2021_05_31_010811) do
 
   # These are extensions that must be enabled in order to support this database
+  enable_extension "fuzzystrmatch"
   enable_extension "ltree"
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -148,7 +149,9 @@ ActiveRecord::Schema.define(version: 2021_05_18_212747) do
     t.index ["user_id"], name: "index_communications_on_user_id"
   end
 
-  create_table "data_migrations", primary_key: "version", id: :string, force: :cascade do |t|
+  create_table "data_migrations", id: false, force: :cascade do |t|
+    t.string "version", null: false
+    t.index ["version"], name: "unique_data_migrations", unique: true
   end
 
   create_table "deduplication_logs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -164,7 +167,7 @@ ActiveRecord::Schema.define(version: 2021_05_18_212747) do
   end
 
   create_table "drug_stocks", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "facility_id", null: false
+    t.uuid "facility_id"
     t.uuid "user_id", null: false
     t.uuid "protocol_drug_id", null: false
     t.integer "in_stock"
@@ -173,6 +176,7 @@ ActiveRecord::Schema.define(version: 2021_05_18_212747) do
     t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "region_id"
     t.index ["facility_id"], name: "index_drug_stocks_on_facility_id"
     t.index ["protocol_drug_id"], name: "index_drug_stocks_on_protocol_drug_id"
     t.index ["user_id"], name: "index_drug_stocks_on_user_id"
@@ -278,6 +282,7 @@ ActiveRecord::Schema.define(version: 2021_05_18_212747) do
     t.string "facility_size"
     t.integer "monthly_estimated_opd_load"
     t.boolean "enable_teleconsultation", default: false, null: false
+    t.uuid "drug_stock_parent_id"
     t.index "to_tsvector('simple'::regconfig, COALESCE((name)::text, ''::text))", name: "index_gin_facilities_on_name", using: :gin
     t.index "to_tsvector('simple'::regconfig, COALESCE((slug)::text, ''::text))", name: "index_gin_facilities_on_slug", using: :gin
     t.index ["deleted_at"], name: "index_facilities_on_deleted_at"

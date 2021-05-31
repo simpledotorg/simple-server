@@ -20,6 +20,7 @@ RSpec.describe DrugStocksReportExporter do
         protocol_drug = protocol.protocol_drugs.find_by(rxnorm_code: rxnorm_code)
         create(:drug_stock,
           facility: facility,
+          region: facility.region,
           protocol_drug: protocol_drug,
           in_stock: drug_stock[:in_stock],
           received: drug_stock[:received])

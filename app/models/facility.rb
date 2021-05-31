@@ -49,6 +49,9 @@ class Facility < ApplicationRecord
     class_name: "Patient",
     foreign_key: "assigned_facility_id"
 
+  belongs_to :drug_stock_parent, class_name: "Facility", foreign_key: "drug_stock_parent_id", optional: true
+  has_many :drug_stock_children, class_name: "Facility", foreign_key: "drug_stock_parent_id"
+
   pg_search_scope :search_by_name, against: {name: "A", slug: "B"}, using: {tsearch: {prefix: true}}
   scope :with_block_region_id, -> {
     joins("INNER JOIN regions facility_regions ON facility_regions.source_id = facilities.id")
@@ -96,6 +99,7 @@ class Facility < ApplicationRecord
     }
   validates :enable_diabetes_management, inclusion: {in: [true, false]}
   validate :valid_block, if: -> { facility_group.present? }
+  validate :valid_drug_stock_parent, if: -> { drug_stock_parent.present? }
 
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, :organization_id, to: :facility_group, allow_nil: true
@@ -215,6 +219,12 @@ class Facility < ApplicationRecord
   def valid_block
     unless facility_group.region.block_regions.pluck(:name).include?(block)
       errors.add(:zone, "not present in the facility group")
+    end
+  end
+
+  def valid_drug_stock_parent
+    unless facility_size == "community" && drug_stock_parent.facility_size != "community"
+      errors.add(:drug_stock_parent, "is not a valid Drug Stock Parent for this facility")
     end
   end
 

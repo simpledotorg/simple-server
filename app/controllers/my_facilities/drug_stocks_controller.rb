@@ -8,6 +8,7 @@ class MyFacilities::DrugStocksController < AdminController
   before_action :authorize_my_facilities
   after_action :verify_authorization_attempted
   before_action :set_facility, only: [:new, :create]
+  before_action :set_region, only: [:new, :create]
   before_action :set_for_end_of_month
   before_action :drug_stocks_enabled?
 
@@ -37,7 +38,7 @@ class MyFacilities::DrugStocksController < AdminController
   end
 
   def create
-    DrugStocksCreator.call(current_admin, @facility, @for_end_of_month, drug_stocks_params[:drug_stocks])
+    DrugStocksCreator.call(user: current_admin, facility: @facility, month: @for_end_of_month, drug_stock_params: drug_stock_params[:drug_stocks])
     redirect_to redirect_url, notice: "Saved drug stocks"
   rescue ActiveRecord::RecordInvalid
     redirect_to redirect_url, alert: "Something went wrong, Drug Stocks were not saved."
@@ -74,7 +75,15 @@ class MyFacilities::DrugStocksController < AdminController
     @facility = authorize { current_admin.accessible_facilities(:manage).find_by_id(params[:facility_id]) }
   end
 
-  def drug_stocks_params
+  def set_region
+    @region = if @facility
+      @facility.region
+    else
+      authorize { current_admin.accessible_district_regions(:manage).find_by_id(params[:region_id]) }
+    end
+  end
+
+  def drug_stock_params
     params.permit(
       :for_end_of_month,
       drug_stocks:

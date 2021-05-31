@@ -40,6 +40,7 @@ RSpec.describe DrugStocksQuery do
           create(:drug_stock,
             user: user,
             facility: facility,
+            region: facility.region,
             protocol_drug: protocol_drug,
             in_stock: drug_stock[:in_stock],
             received: drug_stock[:received])
@@ -102,7 +103,7 @@ RSpec.describe DrugStocksQuery do
         facilities.map { |facility|
           stocks_by_rxnorm.map do |(rxnorm_code, drug_stock)|
             protocol_drug = protocol.protocol_drugs.find_by(rxnorm_code: rxnorm_code)
-            create(:drug_stock, user: user, facility: facility, protocol_drug: protocol_drug, in_stock: drug_stock[:in_stock])
+            create(:drug_stock, user: user, facility: facility, region: facility.region, protocol_drug: protocol_drug, in_stock: drug_stock[:in_stock])
           end
         }.flatten
       }
@@ -166,6 +167,7 @@ RSpec.describe DrugStocksQuery do
           create(:drug_stock,
             user: user,
             facility: facility,
+            region: facility.region,
             protocol_drug: protocol_drug,
             in_stock: drug_stock[:in_stock],
             received: drug_stock[:received])
@@ -178,6 +180,7 @@ RSpec.describe DrugStocksQuery do
           create(:drug_stock,
             user: user,
             facility: facility,
+            region: facility.region,
             protocol_drug: protocol_drug,
             in_stock: drug_stock[:in_stock],
             for_end_of_month: (Date.today - 1.month).end_of_month)

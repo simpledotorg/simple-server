@@ -131,7 +131,8 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
         facility.reload
 
         expect(facility.attributes.except("id", "created_at", "updated_at", "deleted_at", "slug",
-          "facility_group_name", "latitude", "longitude", "organization_name", "district", "state"))
+          "facility_group_name", "latitude", "longitude", "organization_name", "district", "state",
+          "drug_stock_parent_id"))
           .to eq new_attributes.with_indifferent_access
       end
 
