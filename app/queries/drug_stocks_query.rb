@@ -42,7 +42,28 @@ class DrugStocksQuery
   end
 
   def patient_counts
-    @patient_counts ||= Patient.where(assigned_facility_id: @facilities).group(:assigned_facility).count
+    @patient_counts = Patient
+      .for_reports(exclude_ltfu_as_of: @for_end_of_month)
+      .where(assigned_facility_id: @facilities)
+      .group(:assigned_facility)
+      .count
+
+    facilities_with_children = Facility
+      .where(id: @facilities)
+      .where(id: Facility.joins(:drug_stock_parent).distinct(:drug_stock_parent).pluck(:drug_stock_parent_id))
+
+    facilities_with_children.each do |facility|
+      child_counts = Patient
+        .for_reports(exclude_ltfu_as_of: @for_end_of_month)
+        .where(assigned_facility_id: facility.drug_stock_children)
+        .group(:assigned_facility)
+        .count
+
+      consolidated_count = child_counts.values.sum + @patient_counts[facility]
+      @patient_counts[facility] = consolidated_count
+    end
+
+    @patient_counts
   end
 
   def drug_stocks

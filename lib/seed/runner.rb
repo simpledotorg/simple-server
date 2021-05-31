@@ -83,7 +83,7 @@ module Seed
       Facility.all.each do |facility|
         user = facility.users.first
         facility.protocol.protocol_drugs.where(stock_tracked: true).each do |protocol_drug|
-          FactoryBot.create(:drug_stock, facility: facility, user: user, protocol_drug: protocol_drug)
+          FactoryBot.create(:drug_stock, facility: facility, region: facility.region, user: user, protocol_drug: protocol_drug)
         end
       end
     end
