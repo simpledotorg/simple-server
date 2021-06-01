@@ -5,7 +5,11 @@ module PatientReportableMatview
 
   included do
     def self.refresh
-      Scenic.database.refresh_materialized_view(table_name, concurrently: true, cascade: false)
+      ActiveRecord::Base.transaction do
+        ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{CountryConfig.current[:time_zone]}'")
+
+        Scenic.database.refresh_materialized_view(table_name, concurrently: true, cascade: false)
+      end
     end
 
     scope :with_hypertension, -> { where("medical_history_hypertension = ?", "yes") }
