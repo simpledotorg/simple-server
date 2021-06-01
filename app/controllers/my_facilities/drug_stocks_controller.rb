@@ -31,6 +31,16 @@ class MyFacilities::DrugStocksController < AdminController
     end
   end
 
+  def download_drug_consumption
+    create_drug_report
+
+    respond_to do |format|
+      format.csv do
+        send_data DrugConsumptionReportExporter.csv(@query), filename: "drug-consumption-report-#{@for_end_of_month_display}.csv"
+      end
+    end
+  end
+
   def new
     session[:report_url_with_filters] ||= request.referer
     @drug_stocks = DrugStock.latest_for_facilities_grouped_by_protocol_drug(@facility, @for_end_of_month)
