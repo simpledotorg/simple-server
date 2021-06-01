@@ -8,7 +8,7 @@ class DrugConsumptionReportExporter
   def initialize(drug_stocks_query)
     @query = drug_stocks_query
     @drugs_by_category = drug_stocks_query.protocol_drugs_by_category
-    @report = @query.drug_stocks_report
+    @report = @query.drug_consumption_report
     @for_end_of_month = drug_stocks_query.for_end_of_month
   end
 
