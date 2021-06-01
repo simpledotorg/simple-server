@@ -35,6 +35,11 @@ RSpec.describe Experimentation::Experiment, type: :model do
       experiment.update(start_date: Date.today, end_date: Date.today + 3.days)
       expect(experiment).to be_valid
     end
+
+    it "only allows one instance of type 'medication_reminder'" do
+      _existing = create(:experiment, experiment_type: "medication_reminder")
+      expect(build(:experiment, experiment_type: "medication_reminder")).to be_invalid
+    end
   end
 
   describe "#random_treatment_group" do

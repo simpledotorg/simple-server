@@ -38,13 +38,6 @@ RSpec.describe PatientsExporter, type: :model do
     )
   }
 
-  let(:timestamp) do
-    [
-      "Report generated at:",
-      now
-    ]
-  end
-
   let(:headers) do
     [
       "Registration Date",
@@ -156,19 +149,19 @@ RSpec.describe PatientsExporter, type: :model do
   end
 
   describe "#csv" do
-    let(:now) { Time.current }
-    let(:patient_batch) { Patient.where(id: patient.id) }
-
     it "generates a CSV of patient records" do
-      skip "intermittent test blocking deploys"
-      travel_to now do
+      Timecop.freeze do
+        timestamp = ["Report generated at:", Time.current]
+
         actual_csv = timestamp.to_csv + headers.to_csv + fields.to_csv
         expect(subject.csv(Patient.all).to_s.strip).to eq(actual_csv.to_s.strip)
       end
     end
 
     it "generates a blank CSV (only headers) if no patients exist" do
-      travel_to now do
+      Timecop.freeze do
+        timestamp = ["Report generated at:", Time.current]
+
         expect(subject.csv(Patient.none)).to eq(timestamp.to_csv + headers.to_csv)
       end
     end

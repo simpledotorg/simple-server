@@ -238,7 +238,7 @@ module PatientImport
         created_at: timestamp(created_at),
         updated_at: timestamp(created_at),
         is_deleted: false
-      }
+      }.compact
     end
 
     def protocol_drug?(medication)
