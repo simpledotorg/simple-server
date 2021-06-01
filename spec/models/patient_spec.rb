@@ -187,6 +187,21 @@ describe Patient, type: :model do
         expect(described_class.ltfu_as_of(Time.current)).to include(ltfu_patient)
       end
 
+      it "excludes patient who is not LTFU because they were registered recently" do
+        not_ltfu_patient = Timecop.freeze(6.months.ago) { create(:patient) }
+        refresh_views
+
+        expect(described_class.ltfu_as_of(Time.current)).not_to include(not_ltfu_patient)
+      end
+
+      it "excludes patient who is not LTFU because they had a BP recently" do
+        not_ltfu_patient = Timecop.freeze(2.years.ago) { create(:patient) }
+        Timecop.freeze(6.months.ago) { create(:blood_pressure, patient: not_ltfu_patient) }
+        refresh_views
+
+        expect(described_class.ltfu_as_of(Time.current)).not_to include(not_ltfu_patient)
+      end
+
       describe "timezone-specific boundaries" do
         around do |example|
           Time.use_zone(reporting_timezone) do
@@ -271,21 +286,6 @@ describe Patient, type: :model do
           expect(described_class.ltfu_as_of(end_of_month)).to include(ltfu_patient)
         end
       end
-
-      it "excludes patient who is not LTFU because they were registered recently" do
-        not_ltfu_patient = Timecop.freeze(6.months.ago) { create(:patient) }
-        refresh_views
-
-        expect(described_class.ltfu_as_of(Time.current)).not_to include(not_ltfu_patient)
-      end
-
-      it "excludes patient who is not LTFU because they had a BP recently" do
-        not_ltfu_patient = Timecop.freeze(2.years.ago) { create(:patient) }
-        Timecop.freeze(6.months.ago) { create(:blood_pressure, patient: not_ltfu_patient) }
-        refresh_views
-
-        expect(described_class.ltfu_as_of(Time.current)).not_to include(not_ltfu_patient)
-      end
     end
 
     describe ".not_ltfu_as_of" do
@@ -309,6 +309,91 @@ describe Patient, type: :model do
         refresh_views
 
         expect(described_class.not_ltfu_as_of(Time.current)).to include(not_ltfu_patient)
+      end
+
+      describe "timezone-specific boundaries" do
+        around do |example|
+          Time.use_zone(reporting_timezone) do
+            Groupdate.time_zone = reporting_timezone
+            example.run
+            Groupdate.time_zone = nil
+          end
+        end
+
+        it "bp cutoffs for a year ago" do
+          # For any provided date in June in the local timezone, the LTFU BP cutoff is the end of June 30 of the
+          # previous year in the local timezone.
+          #
+          # Eg. For any date provided in June 2021, the cutoff is the June 30-Jul 1 boundary of 2020
+
+          long_ago = 5.years.ago
+          under_a_year_ago = Time.zone.local(2020, 7, 1, 0, 0, 1)    # Beginning of July 1 2020 in local timezone
+          over_a_year_ago = Time.zone.local(2020, 6, 30, 23, 59, 59) # End of June 30 2020 in local timezone
+          beginning_of_month = Time.zone.local(2021, 6, 1, 0, 0, 0)  # Beginning of June 1 2021 in local timezone
+          end_of_month = Time.zone.local(2021, 6, 30, 23, 59, 59)    # End of June 30 2021 in local timezone
+
+          not_ltfu_patient = create(:patient, recorded_at: long_ago)
+          ltfu_patient = create(:patient, recorded_at: long_ago)
+
+          create(:blood_pressure, patient: not_ltfu_patient, recorded_at: under_a_year_ago)
+          create(:blood_pressure, patient: ltfu_patient, recorded_at: over_a_year_ago)
+          refresh_views
+
+          expect(described_class.not_ltfu_as_of(beginning_of_month)).to include(not_ltfu_patient)
+          expect(described_class.not_ltfu_as_of(end_of_month)).to include(not_ltfu_patient)
+
+          expect(described_class.not_ltfu_as_of(beginning_of_month)).not_to include(ltfu_patient)
+          expect(described_class.not_ltfu_as_of(end_of_month)).not_to include(ltfu_patient)
+        end
+
+        it "bp cutoffs for now" do
+          # For any provided date in June in the local timezone, the LTFU BP ending cutoff is the time provided
+
+          long_ago = 5.years.ago
+          under_a_year_ago = Time.zone.local(2020, 7, 1, 0, 0, 1)    # Beginning of July 1 2020 in local timezone
+          over_a_year_ago = Time.zone.local(2020, 6, 30, 23, 59, 59) # End of June 30 2020 in local timezone
+          beginning_of_month = Time.zone.local(2021, 6, 1, 0, 0, 0)  # Beginning of June 1 2021 in local timezone
+          a_moment_ago = beginning_of_month - 1.minute        # A moment before the provided date
+          a_moment_from_now = beginning_of_month + 1.minute   # A moment after the provided date
+
+          end_of_month = Time.zone.local(2021, 6, 30, 23, 59, 59)    # End of June 30 2021 in local timezone
+
+          not_ltfu_patient = create(:patient, recorded_at: long_ago)
+          ltfu_patient = create(:patient, recorded_at: long_ago)
+
+          create(:blood_pressure, patient: not_ltfu_patient, recorded_at: a_moment_ago)
+          create(:blood_pressure, patient: ltfu_patient, recorded_at: a_moment_from_now)
+          refresh_views
+
+          expect(described_class.not_ltfu_as_of(beginning_of_month)).to include(not_ltfu_patient)
+          expect(described_class.not_ltfu_as_of(beginning_of_month)).not_to include(ltfu_patient)
+
+          # Both patients are not LTFU at the end of the month
+          expect(described_class.not_ltfu_as_of(end_of_month)).to include(not_ltfu_patient)
+          expect(described_class.not_ltfu_as_of(end_of_month)).to include(ltfu_patient)
+        end
+
+        it "registration cutoffs for a year ago" do
+          # For any provided date in June in the local timezone, the LTFU registration cutoff is the end of June 30 of
+          # the previous year in the local timezone
+          #
+          # Eg. For any date provided in June 2021, the cutoff is the June 30-Jul 1 boundary of 2020
+
+          under_a_year_ago = Time.zone.local(2020, 7, 1, 0, 0, 1)    # Beginning of July 1 2020 in local timezone
+          over_a_year_ago = Time.zone.local(2020, 6, 30, 23, 59, 59) # End of June 30 2020 in local timezone
+          beginning_of_month = Time.zone.local(2021, 6, 1, 0, 0, 0)  # Beginning of June 1 2021 in local timezone
+          end_of_month = Time.zone.local(2021, 6, 30, 23, 59, 59)    # End of June 30 2021 in local timezone
+
+          not_ltfu_patient = create(:patient, recorded_at: under_a_year_ago)
+          ltfu_patient = create(:patient, recorded_at: over_a_year_ago)
+          refresh_views
+
+          expect(described_class.not_ltfu_as_of(beginning_of_month)).to include(not_ltfu_patient)
+          expect(described_class.not_ltfu_as_of(end_of_month)).to include(not_ltfu_patient)
+
+          expect(described_class.not_ltfu_as_of(beginning_of_month)).not_to include(ltfu_patient)
+          expect(described_class.not_ltfu_as_of(end_of_month)).not_to include(ltfu_patient)
+        end
       end
     end
   end

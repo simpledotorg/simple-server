@@ -22,10 +22,14 @@ module PatientReportable
     end
 
     scope :not_ltfu_as_of, ->(date) do
+      bp_start = reporting_timestamp((date - LTFU_TIME).end_of_month)
+      bp_end = reporting_timestamp(date)
+      patient_registration_cutoff = (date - LTFU_TIME).end_of_month
+
       joins("LEFT OUTER JOIN latest_blood_pressures_per_patient_per_months
              ON patients.id = latest_blood_pressures_per_patient_per_months.patient_id")
         .where("bp_recorded_at > ? AND bp_recorded_at < ? OR patients.recorded_at >= ?",
-          ltfu_time_ago(date), date, ltfu_time_ago(date))
+          bp_start, bp_end, patient_registration_cutoff)
         .distinct(:patient_id)
     end
 
@@ -42,10 +46,6 @@ module PatientReportable
     # Returns a plain timestamp to be interpreted in reporting time, for use with materialized views
     def self.reporting_timestamp(time)
       time + time.utc_offset
-    end
-
-    def self.ltfu_time_ago(date)
-      (date.to_date - LTFU_TIME).end_of_month
     end
   end
 end
