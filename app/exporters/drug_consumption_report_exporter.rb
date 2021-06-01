@@ -91,7 +91,6 @@ class DrugConsumptionReportExporter
           consumed = facility_report.dig(drug_category, drug, :consumed)
           next "?" if consumed.nil? || consumed == "error"
           consumed
-
         end
       end
 
@@ -105,4 +104,3 @@ class DrugConsumptionReportExporter
     [facility_name] + drug_consumption_cells + overall_consumption_cells
   end
 end
-
