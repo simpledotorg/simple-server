@@ -430,4 +430,21 @@ RSpec.describe Facility, type: :model do
       end
     end
   end
+
+  describe "#locale" do
+    it "determines locale based on country and state" do
+      facility = create(:facility, country: "India", state: "West Bengal")
+      expect(facility.locale).to eq "bn-IN"
+    end
+
+    it "determines locale based on country if state is not found" do
+      facility = create(:facility, country: "India", state: "Wyoming")
+      expect(facility.locale).to eq "hi-IN"
+    end
+
+    it "defaults to English if the country is not found" do
+      facility = create(:facility, country: "Pakistan")
+      expect(facility.locale).to eq "en"
+    end
+  end
 end

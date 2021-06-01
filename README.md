@@ -80,13 +80,16 @@ rake yarn:install
 rails db:setup
 ```
 
+We cleanup old migration files every once in a while and so running `db:migrate` would not work for the initial setup.
+While setting up a fresh DB you will need to load the schema first with `db:schema:load`. `db:setup` already takes care of this. 
+
 #### Developing with the Android app
 
 To run [simple-android](https://github.com/simpledotorg/simple-android/) app with the server running locally, you can
 use [ngrok](https://ngrok.com).
 
 ```bash
-brew cask install ngrok
+brew install --cask ngrok
 rails server
 ngrok http 3000
 ```
@@ -103,6 +106,15 @@ In the `.env.development.local` (you can create this file if it doesn't exist),
 ```
 SIMPLE_SERVER_HOST=<HTTPS URL>
 SIMPLE_SERVER_HOST_PROTOCOL=https
+```
+
+Alternatively, you can make the change on the server side. In the server repo, open `app/views/api/manifests/show.json.jbuilder`. Change:
+```
+json.endpoint "#{ENV["SIMPLE_SERVER_HOST_PROTOCOL"]}://#{ENV["SIMPLE_SERVER_HOST"]}/api/"
+```
+to:
+```
+json.endpoint "<HTTPS URL>/api/"
 ```
 
 #### Workers

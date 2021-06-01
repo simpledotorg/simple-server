@@ -205,4 +205,14 @@ RSpec.describe PatientImport::SpreadsheetTransformer do
       )
     end
   end
+
+  context "when rxnorm code is missing" do
+    it "omits rxnorm code from the payload" do
+      params = PatientImport::SpreadsheetTransformer.call(data, facility: facility)
+
+      patient = params.find { |p| p[:patient][:full_name] == "No Rxnorm Code" }.deep_symbolize_keys
+
+      expect(patient[:prescription_drugs].first).not_to have_key(:rxnorm_code)
+    end
+  end
 end
