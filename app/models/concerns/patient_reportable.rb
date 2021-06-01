@@ -10,10 +10,14 @@ module PatientReportable
     scope :excluding_dead, -> { where.not(status: :dead) }
 
     scope :ltfu_as_of, ->(date) do
+      bp_start = reporting_timestamp((date - LTFU_TIME).end_of_month)
+      bp_end = reporting_timestamp(date)
+      patient_registration_cutoff = (date - LTFU_TIME).end_of_month
+
       joins("LEFT OUTER JOIN latest_blood_pressures_per_patient_per_months
              ON patients.id = latest_blood_pressures_per_patient_per_months.patient_id
-             AND #{sanitize_sql(["bp_recorded_at > ? AND bp_recorded_at < ?", reporting_timestamp((date - LTFU_TIME).end_of_month), date])}")
-        .where("bp_recorded_at IS NULL AND patients.recorded_at <= ?", (date - LTFU_TIME).end_of_month)
+             AND #{sanitize_sql(["bp_recorded_at > ? AND bp_recorded_at < ?", bp_start, bp_end])}")
+        .where("bp_recorded_at IS NULL AND patients.recorded_at <= ?", patient_registration_cutoff)
         .distinct(:patient_id)
     end
 
