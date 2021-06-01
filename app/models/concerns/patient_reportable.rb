@@ -9,10 +9,10 @@ module PatientReportable
     scope :with_hypertension, -> { joins(:medical_history).merge(MedicalHistory.hypertension_yes).distinct }
     scope :excluding_dead, -> { where.not(status: :dead) }
 
-    scope :ltfu_as_of, ->(date) do
-      bp_start = reporting_timestamp((date - LTFU_TIME).end_of_month)
-      bp_end = reporting_timestamp(date)
-      patient_registration_cutoff = (date - LTFU_TIME).end_of_month
+    scope :ltfu_as_of, ->(time) do
+      bp_start = reporting_timestamp((time - LTFU_TIME).end_of_month)
+      bp_end = reporting_timestamp(time)
+      patient_registration_cutoff = (time - LTFU_TIME).end_of_month
 
       joins("LEFT OUTER JOIN latest_blood_pressures_per_patient_per_months
              ON patients.id = latest_blood_pressures_per_patient_per_months.patient_id
@@ -21,10 +21,10 @@ module PatientReportable
         .distinct(:patient_id)
     end
 
-    scope :not_ltfu_as_of, ->(date) do
-      bp_start = reporting_timestamp((date - LTFU_TIME).end_of_month)
-      bp_end = reporting_timestamp(date)
-      patient_registration_cutoff = (date - LTFU_TIME).end_of_month
+    scope :not_ltfu_as_of, ->(time) do
+      bp_start = reporting_timestamp((time - LTFU_TIME).end_of_month)
+      bp_end = reporting_timestamp(time)
+      patient_registration_cutoff = (time - LTFU_TIME).end_of_month
 
       joins("LEFT OUTER JOIN latest_blood_pressures_per_patient_per_months
              ON patients.id = latest_blood_pressures_per_patient_per_months.patient_id")

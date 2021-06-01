@@ -80,7 +80,7 @@ class ControlRateCohortQuery
   def overall_patients
     @overall_patients ||=
       Patient
-        .for_reports(exclude_ltfu_as_of: Date.today.end_of_month)
+        .for_reports(exclude_ltfu_as_of: Date.today.end_of_month.end_of_day)
         .where(assigned_facility: facilities)
         .where("recorded_at < ?", Time.current.beginning_of_day - REGISTRATION_BUFFER)
   end
