@@ -31,8 +31,8 @@ RSpec.describe EarliestPatientDataQuery do
 
   context "in a reporting time zone" do
     around do |example|
-      Time.use_zone(CountryConfig.current[:time_zone]) do
-        Groupdate.time_zone = CountryConfig.current[:time_zone]
+      Time.use_zone(Period::ANALYTICS_TIME_ZONE) do
+        Groupdate.time_zone = Period::ANALYTICS_TIME_ZONE
         example.run
         Groupdate.time_zone = nil
       end

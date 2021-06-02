@@ -5,7 +5,7 @@ RSpec.describe PatientImport::Importer do
     it "imports valid patient information" do
       facility = create(:facility)
       admin = create(:admin)
-      timezone = CountryConfig.current[:time_zone]
+      timezone = Period::ANALYTICS_TIME_ZONE
       data = file_fixture("patient_import_test.csv").read
 
       params = PatientImport::SpreadsheetTransformer.call(data, facility: facility)

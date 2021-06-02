@@ -1,7 +1,7 @@
 require "rails_helper"
 
 describe Patient, type: :model do
-  let(:reporting_timezone) { CountryConfig.current[:time_zone] }
+  let(:reporting_timezone) { Period::ANALYTICS_TIME_ZONE }
   def refresh_views
     ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{reporting_timezone}'")
     LatestBloodPressuresPerPatientPerMonth.refresh
