@@ -27,9 +27,9 @@ RSpec.describe BPMeasuresQuery do
       create(:blood_pressure, facility: facility, patient: patient, recorded_at: 2.months.ago, user: user_2)
       create(:blood_pressure, facility: facility, patient: patient, recorded_at: 2.months.ago, user: user_2)
       expected = {
-        Period.month("January 2021") => { user_1.id => 1, user_2.id => 0},
-        Period.month("February 2021") => { user_1.id => 0, user_2.id => 0},
-        Period.month("March 2021") => { user_1.id => 0, user_2.id => 2}
+        Period.month("January 2021") => {user_1.id => 1, user_2.id => 0},
+        Period.month("February 2021") => {user_1.id => 0, user_2.id => 0},
+        Period.month("March 2021") => {user_1.id => 0, user_2.id => 2}
 
       }
       expect(described_class.new.count(facility, :month, group_by: :user_id)).to eq(expected)
