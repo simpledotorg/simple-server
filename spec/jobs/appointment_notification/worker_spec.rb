@@ -76,7 +76,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       described_class.drain
     end
 
-    it "sends sms when notification's next_communication_type is sms" do
+    it "does not send a communication when notification's next_communication_type is nil" do
       mock_successful_delivery
       allow_any_instance_of(Notification).to receive(:next_communication_type).and_return(nil)
 
