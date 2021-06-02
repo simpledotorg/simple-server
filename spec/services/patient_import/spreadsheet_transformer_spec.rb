@@ -240,13 +240,17 @@ RSpec.describe PatientImport::SpreadsheetTransformer do
 
       expect(patient[:patient][:gender]).to eq("transgender")
     end
+  end
+
+  context "for unrecognized genders" do
+    let(:fixture_path) { File.join(Rails.root, "spec", "fixtures", "files", "patient_import_invalid_data_test.xlsx") }
 
     it "passes unrecognized values through untouched" do
       params = PatientImport::SpreadsheetTransformer.call(data, facility: facility)
 
       patient = params.find { |p| p[:patient][:full_name] == "Random Gender" }.deep_symbolize_keys
 
-      expect(patient[:patient][:gender]).to eq("Random gender")
+      expect(patient[:patient][:gender]).to eq("Potato")
     end
   end
 
