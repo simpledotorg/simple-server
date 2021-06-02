@@ -219,7 +219,7 @@ module PatientImport
     end
 
     def patient_status(row)
-      row[:died]&.downcase.in?(["yes", "y"]) ? Patient.statuses["dead"] : Patient.statuses["active"]
+      row[:died].presence&.downcase.in?(["yes", "y"]) ? Patient.statuses["dead"] : Patient.statuses["active"]
     end
 
     def medication(name:, patient_id:, created_at:)
@@ -267,7 +267,7 @@ module PatientImport
     end
 
     def gender(value)
-      case value.downcase
+      case value.presence&.downcase
       when "m", "male"
         "male"
       when "f", "female"
