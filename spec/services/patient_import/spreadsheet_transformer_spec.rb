@@ -240,6 +240,14 @@ RSpec.describe PatientImport::SpreadsheetTransformer do
 
       expect(patient[:patient][:gender]).to eq("transgender")
     end
+
+    it "passes unrecognized values through untouched" do
+      params = PatientImport::SpreadsheetTransformer.call(data, facility: facility)
+
+      patient = params.find { |p| p[:patient][:full_name] == "Random Gender" }.deep_symbolize_keys
+
+      expect(patient[:patient][:gender]).to eq("Random gender")
+    end
   end
 
   context "for abbreviated died? status" do
@@ -255,6 +263,14 @@ RSpec.describe PatientImport::SpreadsheetTransformer do
       params = PatientImport::SpreadsheetTransformer.call(data, facility: facility)
 
       patient = params.find { |p| p[:patient][:full_name] == "Died Abbrev N" }.deep_symbolize_keys
+
+      expect(patient[:patient][:status]).to eq("active")
+    end
+
+    it "considers unrecognized values as 'no'" do
+      params = PatientImport::SpreadsheetTransformer.call(data, facility: facility)
+
+      patient = params.find { |p| p[:patient][:full_name] == "Died Abbrev Random" }.deep_symbolize_keys
 
       expect(patient[:patient][:status]).to eq("active")
     end
