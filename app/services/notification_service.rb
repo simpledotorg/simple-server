@@ -12,7 +12,7 @@ class NotificationService
   TWILIO_TEST_SMS_NUMBER = "+15005550006"
   TWILIO_TEST_WHATSAPP_NUMBER = "+14155238886"
 
-  def initialize
+  def initialize(sms_sender: nil)
     @test_mode = !SimpleServer.env.production?
 
     @twilio_account_sid = ENV.fetch("TWILIO_ACCOUNT_SID")
@@ -21,7 +21,13 @@ class NotificationService
     @twilio_test_account_sid = ENV.fetch("TWILIO_TEST_ACCOUNT_SID")
     @twilio_test_auth_token = ENV.fetch("TWILIO_TEST_AUTH_TOKEN")
 
-    @twilio_sender_sms_number = test_mode? ? TWILIO_TEST_SMS_NUMBER : ENV.fetch("TWILIO_PHONE_NUMBER")
+    @twilio_sender_sms_number = if test_mode?
+      TWILIO_TEST_SMS_NUMBER
+    elsif sms_sender
+      sms_sender
+    else
+      ENV.fetch("TWILIO_PHONE_NUMBER")
+    end
     @twilio_sender_whatsapp_number = test_mode? ? TWILIO_TEST_WHATSAPP_NUMBER : ENV.fetch("TWILIO_PHONE_NUMBER")
 
     @client = if @test_mode

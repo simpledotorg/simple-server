@@ -39,7 +39,7 @@ RSpec.describe Experimentation::Experiment, type: :model do
     end
 
     it "only allows one instance of type 'medication_reminder'" do
-      existing = create(:experiment, experiment_type: "medication_reminder")
+      _existing = create(:experiment, experiment_type: "medication_reminder")
       expect(build(:experiment, experiment_type: "medication_reminder")).to be_invalid
     end
   end

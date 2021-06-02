@@ -17,7 +17,7 @@ describe Communication, type: :model do
   end
 
   context "Utilities" do
-    describe ".next_appointment_time" do
+    describe ".next_messaging_time" do
       before do
         @original_time_zone = Time.zone
         Time.zone = Rails.application.config.country[:time_zone]
@@ -46,6 +46,14 @@ describe Communication, type: :model do
           expect(Communication.next_messaging_time).to eq(Time.zone.parse("January 2, 2020 10:00am"))
         end
       end
+
+      it "returns the current time if send_notifications_immediately flag is enabled" do
+        Flipper.enable(:disregard_messaging_window)
+        now = "January 1, 2020 4:00am"
+        Timecop.freeze(Time.zone.parse(now)) do
+          expect(Communication.next_messaging_time).to eq(Time.zone.parse(now))
+        end
+      end
     end
 
     describe ".create_with_twilio_details!" do
@@ -55,6 +63,18 @@ describe Communication, type: :model do
         notification = create(:notification, subject: appt, patient: patient)
         expect {
           Communication.create_with_twilio_details!(appointment: notification.subject,
+                                                    twilio_sid: SecureRandom.uuid,
+                                                    twilio_msg_status: "sent",
+                                                    communication_type: :missed_visit_sms_reminder,
+                                                    notification: notification)
+        }.to change { Communication.count }.by(1)
+          .and change { TwilioSmsDeliveryDetail.count }.by(1)
+      end
+
+      it "does not require an appointment" do
+        notification = create(:notification)
+        expect {
+          Communication.create_with_twilio_details!(appointment: nil,
                                                     twilio_sid: SecureRandom.uuid,
                                                     twilio_msg_status: "sent",
                                                     communication_type: :missed_visit_sms_reminder,
