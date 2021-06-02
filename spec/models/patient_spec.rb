@@ -218,10 +218,10 @@ describe Patient, type: :model do
           # Eg. For any date provided in June 2021, the cutoff is the June 30-Jul 1 boundary of 2020
 
           long_ago = 5.years.ago
-          under_a_year_ago = Time.zone.local(2020, 7, 1, 0, 0, 1)    # Beginning of July 1 2020 in local timezone
+          under_a_year_ago = Time.zone.local(2020, 7, 1, 0, 0, 1) # Beginning of July 1 2020 in local timezone
           over_a_year_ago = Time.zone.local(2020, 6, 30, 23, 59, 59) # End of June 30 2020 in local timezone
-          beginning_of_month = Time.zone.local(2021, 6, 1, 0, 0, 0)  # Beginning of June 1 2021 in local timezone
-          end_of_month = Time.zone.local(2021, 6, 30, 23, 59, 59)    # End of June 30 2021 in local timezone
+          beginning_of_month = Time.zone.local(2021, 6, 1, 0, 0, 0) # Beginning of June 1 2021 in local timezone
+          end_of_month = Time.zone.local(2021, 6, 30, 23, 59, 59) # End of June 30 2021 in local timezone
 
           not_ltfu_patient = create(:patient, recorded_at: long_ago)
           ltfu_patient = create(:patient, recorded_at: long_ago)
@@ -241,13 +241,13 @@ describe Patient, type: :model do
           # For any provided date in June in the local timezone, the LTFU BP ending cutoff is the time provided
 
           long_ago = 5.years.ago
-          under_a_year_ago = Time.zone.local(2020, 7, 1, 0, 0, 1)    # Beginning of July 1 2020 in local timezone
+          under_a_year_ago = Time.zone.local(2020, 7, 1, 0, 0, 1) # Beginning of July 1 2020 in local timezone
           over_a_year_ago = Time.zone.local(2020, 6, 30, 23, 59, 59) # End of June 30 2020 in local timezone
-          beginning_of_month = Time.zone.local(2021, 6, 1, 0, 0, 0)  # Beginning of June 1 2021 in local timezone
-          a_moment_ago = beginning_of_month - 1.minute        # A moment before the provided date
-          a_moment_from_now = beginning_of_month + 1.minute   # A moment after the provided date
+          beginning_of_month = Time.zone.local(2021, 6, 1, 0, 0, 0) # Beginning of June 1 2021 in local timezone
+          a_moment_ago = beginning_of_month - 1.minute # A moment before the provided date
+          a_moment_from_now = beginning_of_month + 1.minute # A moment after the provided date
 
-          end_of_month = Time.zone.local(2021, 6, 30, 23, 59, 59)    # End of June 30 2021 in local timezone
+          end_of_month = Time.zone.local(2021, 6, 30, 23, 59, 59) # End of June 30 2021 in local timezone
 
           not_ltfu_patient = create(:patient, recorded_at: long_ago)
           ltfu_patient = create(:patient, recorded_at: long_ago)
@@ -270,10 +270,10 @@ describe Patient, type: :model do
           #
           # Eg. For any date provided in June 2021, the cutoff is the June 30-Jul 1 boundary of 2020
 
-          under_a_year_ago = Time.zone.local(2020, 7, 1, 0, 0, 1)    # Beginning of July 1 2020 in local timezone
+          under_a_year_ago = Time.zone.local(2020, 7, 1, 0, 0, 1) # Beginning of July 1 2020 in local timezone
           over_a_year_ago = Time.zone.local(2020, 6, 30, 23, 59, 59) # End of June 30 2020 in local timezone
-          beginning_of_month = Time.zone.local(2021, 6, 1, 0, 0, 0)  # Beginning of June 1 2021 in local timezone
-          end_of_month = Time.zone.local(2021, 6, 30, 23, 59, 59)    # End of June 30 2021 in local timezone
+          beginning_of_month = Time.zone.local(2021, 6, 1, 0, 0, 0) # Beginning of June 1 2021 in local timezone
+          end_of_month = Time.zone.local(2021, 6, 30, 23, 59, 59) # End of June 30 2021 in local timezone
 
           not_ltfu_patient = create(:patient, recorded_at: under_a_year_ago)
           ltfu_patient = create(:patient, recorded_at: over_a_year_ago)
@@ -327,10 +327,10 @@ describe Patient, type: :model do
           # Eg. For any date provided in June 2021, the cutoff is the June 30-Jul 1 boundary of 2020
 
           long_ago = 5.years.ago
-          under_a_year_ago = Time.zone.local(2020, 7, 1, 0, 0, 1)    # Beginning of July 1 2020 in local timezone
+          under_a_year_ago = Time.zone.local(2020, 7, 1, 0, 0, 1) # Beginning of July 1 2020 in local timezone
           over_a_year_ago = Time.zone.local(2020, 6, 30, 23, 59, 59) # End of June 30 2020 in local timezone
-          beginning_of_month = Time.zone.local(2021, 6, 1, 0, 0, 0)  # Beginning of June 1 2021 in local timezone
-          end_of_month = Time.zone.local(2021, 6, 30, 23, 59, 59)    # End of June 30 2021 in local timezone
+          beginning_of_month = Time.zone.local(2021, 6, 1, 0, 0, 0) # Beginning of June 1 2021 in local timezone
+          end_of_month = Time.zone.local(2021, 6, 30, 23, 59, 59) # End of June 30 2021 in local timezone
 
           not_ltfu_patient = create(:patient, recorded_at: long_ago)
           ltfu_patient = create(:patient, recorded_at: long_ago)
@@ -350,13 +350,13 @@ describe Patient, type: :model do
           # For any provided date in June in the local timezone, the LTFU BP ending cutoff is the time provided
 
           long_ago = 5.years.ago
-          under_a_year_ago = Time.zone.local(2020, 7, 1, 0, 0, 1)    # Beginning of July 1 2020 in local timezone
+          under_a_year_ago = Time.zone.local(2020, 7, 1, 0, 0, 1) # Beginning of July 1 2020 in local timezone
           over_a_year_ago = Time.zone.local(2020, 6, 30, 23, 59, 59) # End of June 30 2020 in local timezone
-          beginning_of_month = Time.zone.local(2021, 6, 1, 0, 0, 0)  # Beginning of June 1 2021 in local timezone
-          a_moment_ago = beginning_of_month - 1.minute        # A moment before the provided date
-          a_moment_from_now = beginning_of_month + 1.minute   # A moment after the provided date
+          beginning_of_month = Time.zone.local(2021, 6, 1, 0, 0, 0) # Beginning of June 1 2021 in local timezone
+          a_moment_ago = beginning_of_month - 1.minute # A moment before the provided date
+          a_moment_from_now = beginning_of_month + 1.minute # A moment after the provided date
 
-          end_of_month = Time.zone.local(2021, 6, 30, 23, 59, 59)    # End of June 30 2021 in local timezone
+          end_of_month = Time.zone.local(2021, 6, 30, 23, 59, 59) # End of June 30 2021 in local timezone
 
           not_ltfu_patient = create(:patient, recorded_at: long_ago)
           ltfu_patient = create(:patient, recorded_at: long_ago)
@@ -379,10 +379,10 @@ describe Patient, type: :model do
           #
           # Eg. For any date provided in June 2021, the cutoff is the June 30-Jul 1 boundary of 2020
 
-          under_a_year_ago = Time.zone.local(2020, 7, 1, 0, 0, 1)    # Beginning of July 1 2020 in local timezone
+          under_a_year_ago = Time.zone.local(2020, 7, 1, 0, 0, 1) # Beginning of July 1 2020 in local timezone
           over_a_year_ago = Time.zone.local(2020, 6, 30, 23, 59, 59) # End of June 30 2020 in local timezone
-          beginning_of_month = Time.zone.local(2021, 6, 1, 0, 0, 0)  # Beginning of June 1 2021 in local timezone
-          end_of_month = Time.zone.local(2021, 6, 30, 23, 59, 59)    # End of June 30 2021 in local timezone
+          beginning_of_month = Time.zone.local(2021, 6, 1, 0, 0, 0) # Beginning of June 1 2021 in local timezone
+          end_of_month = Time.zone.local(2021, 6, 30, 23, 59, 59) # End of June 30 2021 in local timezone
 
           not_ltfu_patient = create(:patient, recorded_at: under_a_year_ago)
           ltfu_patient = create(:patient, recorded_at: over_a_year_ago)
