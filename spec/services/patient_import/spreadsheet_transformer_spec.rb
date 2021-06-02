@@ -275,4 +275,14 @@ RSpec.describe PatientImport::SpreadsheetTransformer do
       expect(patient[:patient][:status]).to eq("active")
     end
   end
+
+  context "with no registration date" do
+    it "ignores the row" do
+      params = PatientImport::SpreadsheetTransformer.call(data, facility: facility)
+
+      patient_names = params.map { |p| p[:patient][:full_name] }
+
+      expect(patient_names).not_to include("No Registration Date")
+    end
+  end
 end

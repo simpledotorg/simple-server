@@ -13,8 +13,10 @@ module PatientImport
 
     def call
       rows.map do |row|
+        next if row[:registration_date].blank?
+
         params_for(row)
-      end
+      end.compact
     end
 
     def rows
