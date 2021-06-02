@@ -1,5 +1,6 @@
 class FollowUpsQuery
   def hypertension(region, period_type, group_by: nil)
+    # TODO: fix timezone issue
     query = Patient.joins(:blood_pressures)
       .where("patients.recorded_at < #{BloodPressure.date_to_period_sql("blood_pressures.recorded_at", period_type)}")
       .group_by_period(period_type, "blood_pressures.recorded_at", format: Period.formatter(period_type))
@@ -20,6 +21,7 @@ class FollowUpsQuery
     table_name = model_name.table_name.to_sym
     time_column_with_table_name = "#{table_name}.#{time_column}"
 
+    # TODO: fix timezone issue
     relation = Patient.joins(table_name)
       .where("patients.recorded_at < #{model_name.date_to_period_sql(time_column_with_table_name, period)}")
       .group_by_period(period, time_column_with_table_name, current: current, last: last)
