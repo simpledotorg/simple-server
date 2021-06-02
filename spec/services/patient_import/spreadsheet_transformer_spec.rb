@@ -215,4 +215,30 @@ RSpec.describe PatientImport::SpreadsheetTransformer do
       expect(patient[:prescription_drugs].first).not_to have_key(:rxnorm_code)
     end
   end
+
+  context "for abbreviated genders" do
+    it "recognizes 'm'" do
+      params = PatientImport::SpreadsheetTransformer.call(data, facility: facility)
+
+      patient = params.find { |p| p[:patient][:full_name] == "Gender Abbrev M" }.deep_symbolize_keys
+
+      expect(patient[:patient][:gender]).to eq("male")
+    end
+
+    it "recognizes 'f'" do
+      params = PatientImport::SpreadsheetTransformer.call(data, facility: facility)
+
+      patient = params.find { |p| p[:patient][:full_name] == "Gender Abbrev F" }.deep_symbolize_keys
+
+      expect(patient[:patient][:gender]).to eq("female")
+    end
+
+    it "recognizes 't'" do
+      params = PatientImport::SpreadsheetTransformer.call(data, facility: facility)
+
+      patient = params.find { |p| p[:patient][:full_name] == "Gender Abbrev T" }.deep_symbolize_keys
+
+      expect(patient[:patient][:gender]).to eq("transgender")
+    end
+  end
 end

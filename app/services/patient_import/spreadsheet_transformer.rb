@@ -38,7 +38,7 @@ module PatientImport
           full_name: row[:full_name],
           age: row[:age].to_i,
           age_updated_at: timestamp(row[:registration_date]),
-          gender: row[:gender].downcase,
+          gender: gender(row[:gender]),
           status: patient_status(row),
           created_at: timestamp(row[:registration_date]),
           updated_at: timestamp(row[:registration_date]),
@@ -263,6 +263,19 @@ module PatientImport
 
       Medication.all.to_a.find do |medication|
         name.gsub(/\s+/, "") == "#{medication.name}#{medication.dosage}#{localized_frequency(medication)}".gsub(/\s+/, "")
+      end
+    end
+
+    def gender(value)
+      case value.downcase
+      when "m", "male"
+        "male"
+      when "f", "female"
+        "female"
+      when "t", "transgender"
+        "transgender"
+      else
+        value
       end
     end
 
