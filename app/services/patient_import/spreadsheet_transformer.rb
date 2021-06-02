@@ -62,12 +62,12 @@ module PatientImport
         medical_history: {
           id: medical_history_id,
           patient_id: patient_id,
-          hypertension: row[:medical_history_hypertension].downcase,
-          diabetes: row[:medical_history_diabetes].downcase,
-          prior_heart_attack: row[:medical_history_heart_attack].downcase,
-          prior_stroke: row[:medical_history_stroke].downcase,
-          chronic_kidney_disease: row[:medical_history_kidney_disease].downcase,
-          diagnosed_with_hypertension: row[:medical_history_hypertension].downcase,
+          hypertension: history(row[:medical_history_hypertension]),
+          diabetes: history(row[:medical_history_diabetes]),
+          prior_heart_attack: history(row[:medical_history_heart_attack]),
+          prior_stroke: history(row[:medical_history_stroke]),
+          chronic_kidney_disease: history(row[:medical_history_kidney_disease]),
+          diagnosed_with_hypertension: history(row[:medical_history_hypertension]),
           receiving_treatment_for_hypertension: "yes",
           created_at: timestamp(row[:registration_date]),
           updated_at: timestamp(row[:registration_date])
@@ -264,6 +264,10 @@ module PatientImport
       Medication.all.to_a.find do |medication|
         name.gsub(/\s+/, "") == "#{medication.name}#{medication.dosage}#{localized_frequency(medication)}".gsub(/\s+/, "")
       end
+    end
+
+    def history(value)
+      value.presence&.downcase || "unknown"
     end
 
     def timestamp(time)
