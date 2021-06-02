@@ -1,3 +1,5 @@
+require "tasks/scripts/covid_medication_reminders"
+
 namespace :appointment_notification do
   desc "Send automatic SMS reminder to patients who missed their scheduled visit by three days"
   task three_days_after_missed_visit: :environment do
@@ -6,6 +8,8 @@ namespace :appointment_notification do
 
   desc "Schedule one time COVID medication reminders for next communication window"
   task :covid_medication_reminders, [:number_of_patients] => :environment do |_t, args|
-    CovidMedicationReminders.call(number_of_patients: args[:number_of_patients]&.to_i)
+    raise "Number of patients required" unless args[:number_of_patients].present?
+
+    CovidMedicationReminders.call(number_of_patients: args[:number_of_patients].to_i)
   end
 end
