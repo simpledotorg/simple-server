@@ -241,4 +241,22 @@ RSpec.describe PatientImport::SpreadsheetTransformer do
       expect(patient[:patient][:gender]).to eq("transgender")
     end
   end
+
+  context "for abbreviated died? status" do
+    it "recognizes 'Y'" do
+      params = PatientImport::SpreadsheetTransformer.call(data, facility: facility)
+
+      patient = params.find { |p| p[:patient][:full_name] == "Died Abbrev Y" }.deep_symbolize_keys
+
+      expect(patient[:patient][:status]).to eq("dead")
+    end
+
+    it "recognizes 'N'" do
+      params = PatientImport::SpreadsheetTransformer.call(data, facility: facility)
+
+      patient = params.find { |p| p[:patient][:full_name] == "Died Abbrev N" }.deep_symbolize_keys
+
+      expect(patient[:patient][:status]).to eq("active")
+    end
+  end
 end
