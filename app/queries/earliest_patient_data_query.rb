@@ -23,6 +23,7 @@ class EarliestPatientDataQuery
         AND (patients.assigned_facility_id in :facility_ids OR patients.registration_facility_id in :facility_ids)
     SQL
     return nil if sql.values.first.blank?
-    Time.zone.parse(sql.values.first)
+    # we store timestamps in UTC in the app tables
+    Time.find_zone("UTC").parse(sql.values.first).in_time_zone(Time.zone)
   end
 end
