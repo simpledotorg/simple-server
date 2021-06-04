@@ -44,9 +44,9 @@ RSpec.describe LatestBloodPressuresPerPatientPerMonth, type: :model do
         mat_view_row = described_class.find_by!(patient: ltfu_patient)
 
         raw_recorded_at = described_class.connection.select_one("SELECT patient_recorded_at FROM #{described_class.table_name}")
-        expect(raw_recorded_at["patient_recorded_at"]).to eq("2018-01-15 12:00:00+00")
+        expect(raw_recorded_at["patient_recorded_at"]).to eq("2018-01-15 12:00:00")
         raw_recorded_at_in_utc = described_class.connection.select_one("SELECT patient_recorded_at AT TIME ZONE 'UTC' as patient_recorded_at FROM #{described_class.table_name}")
-        expect(raw_recorded_at_in_utc["patient_recorded_at"]).to eq("2018-01-15 12:00:00")
+        expect(raw_recorded_at_in_utc["patient_recorded_at"]).to eq("2018-01-15 12:00:00+00")
 
         expect(mat_view_row.patient_recorded_at).to eq(ltfu_patient.recorded_at)
         expect(mat_view_row.bp_recorded_at).to eq(bp.recorded_at)
