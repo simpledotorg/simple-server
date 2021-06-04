@@ -211,7 +211,7 @@ describe Patient, type: :model do
           end
         end
 
-        it "bp cutoffs for a year ago" do
+        fit "bp cutoffs for a year ago" do
           # For any provided date in June in the local timezone, the LTFU BP cutoff is the end of June 30 of the
           # previous year in the local timezone.
           #
