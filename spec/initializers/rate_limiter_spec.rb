@@ -1,20 +1,5 @@
 require "rails_helper"
 
-def setup_patient_lookup_request
-  patient = create(:patient)
-  user = patient.registration_user
-  facility = patient.registration_facility
-  {
-    headers: {
-      "HTTP_X_USER_ID" => user.id,
-      "HTTP_X_FACILITY_ID" => facility.id,
-      "HTTP_AUTHORIZATION" => "Bearer #{user.access_token}",
-      "Accept" => "application/json"
-    },
-    identifier: patient.business_identifiers.first.identifier
-  }
-end
-
 # Since Rate limiting is a controller middleware concern, we mark this test as a "controller"
 describe "RateLimiter", type: :controller do
   include Rack::Test::Methods
@@ -164,6 +149,21 @@ describe "RateLimiter", type: :controller do
   end
 
   describe "throttle patient lookup API" do
+    def setup_patient_lookup_request
+      patient = create(:patient)
+      user = patient.registration_user
+      facility = patient.registration_facility
+      {
+        headers: {
+          "HTTP_X_USER_ID" => user.id,
+          "HTTP_X_FACILITY_ID" => facility.id,
+          "HTTP_AUTHORIZATION" => "Bearer #{user.access_token}",
+          "Accept" => "application/json"
+        },
+        identifier: patient.business_identifiers.first.identifier
+      }
+    end
+
     before(:each, type: :controller) do
       @request.remote_addr = "127.0.0.1"
     end
