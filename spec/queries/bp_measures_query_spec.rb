@@ -19,6 +19,25 @@ RSpec.describe BPMeasuresQuery do
     end
   end
 
+  def ist_zone
+    @ist_zone ||= Time.find_zone(Period::ANALYTICS_TIME_ZONE)
+  end
+
+  it "handles period boundaries correctly, taking into account time zones" do
+    facility = create(:facility)
+    end_of_jan = ist_zone.parse("January 31st 23:59:59 IST")
+    beg_of_feb = ist_zone.parse("February 1st 00:00:00 IST")
+    create(:blood_pressure, facility: facility, recorded_at: end_of_jan, user: user_1)
+    create(:blood_pressure, facility: facility, recorded_at: beg_of_feb, user: user_2)
+    Time.use_zone(ist_zone) do
+      expected = {
+        Period.month("January 2021") => 1,
+        Period.month("February 2021") => 1,
+      }
+      expect(described_class.new.count(facility, :month)).to eq(expected)
+    end
+  end
+
   it "can return counts of BPs per period per user" do
     facility = create(:facility)
     Timecop.freeze("May 5th 2021") do
