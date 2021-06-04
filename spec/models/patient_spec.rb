@@ -3,8 +3,10 @@ require "rails_helper"
 describe Patient, type: :model do
   let(:reporting_timezone) { Period::ANALYTICS_TIME_ZONE }
   def refresh_views
-    ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{reporting_timezone}'")
+    original = ActiveRecord::Base.connection.execute("SELECT current_setting('TIMEZONE')").first["current_setting"]
+    ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{Period::ANALYTICS_TIME_ZONE}'")
     LatestBloodPressuresPerPatientPerMonth.refresh
+    ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE #{original}")
   end
 
   subject(:patient) { build(:patient) }
@@ -203,49 +205,56 @@ describe Patient, type: :model do
       end
 
       describe "timezone-specific boundaries" do
-        around do |example|
+        def with_reporting_time_zones(&blk)
           Time.use_zone(reporting_timezone) do
             Groupdate.time_zone = reporting_timezone
-            example.run
+            blk.call
             Groupdate.time_zone = nil
           end
         end
 
-        fit "bp cutoffs for a year ago" do
+        it "bp cutoffs for a year ago" do
           # For any provided date in June in the local timezone, the LTFU BP cutoff is the end of June 30 of the
           # previous year in the local timezone.
           #
           # Eg. For any date provided in June 2021, the cutoff is the June 30-Jul 1 boundary of 2020
 
           long_ago = 5.years.ago
-          under_a_year_ago = Time.zone.local(2020, 7, 1, 0, 0, 1) # Beginning of July 1 2020 in local timezone
-          over_a_year_ago = Time.zone.local(2020, 6, 30, 23, 59, 59) # End of June 30 2020 in local timezone
-          beginning_of_month = Time.zone.local(2021, 6, 1, 0, 0, 0) # Beginning of June 1 2021 in local timezone
-          end_of_month = Time.zone.local(2021, 6, 30, 23, 59, 59) # End of June 30 2021 in local timezone
+
+          # We explicitly set the times in the reporting TZ here, but don't use the block helper because its a hassle w/
+          # all the local vars we need
+          timezone = Time.find_zone(reporting_timezone)
+          under_a_year_ago = timezone.local(2020, 7, 1, 0, 0, 1) # Beginning of July 1 2020 in local timezone
+          over_a_year_ago = timezone.local(2020, 6, 30, 23, 59, 59) # End of June 30 2020 in local timezone
+          beginning_of_month = timezone.local(2021, 6, 1, 0, 0, 0) # Beginning of June 1 2021 in local timezone
+          end_of_month = timezone.local(2021, 6, 30, 23, 59, 59) # End of June 30 2021 in local timezone
 
           not_ltfu_patient = create(:patient, recorded_at: long_ago)
           ltfu_patient = create(:patient, recorded_at: long_ago)
 
           create(:blood_pressure, patient: not_ltfu_patient, recorded_at: under_a_year_ago)
           create(:blood_pressure, patient: ltfu_patient, recorded_at: over_a_year_ago)
-          refresh_views
+          with_reporting_time_zones do # We don't actually need this, but its a nice sanity check
+            refresh_views
 
-          expect(described_class.ltfu_as_of(beginning_of_month)).not_to include(not_ltfu_patient)
-          expect(described_class.ltfu_as_of(end_of_month)).not_to include(not_ltfu_patient)
+            expect(described_class.ltfu_as_of(beginning_of_month)).not_to include(not_ltfu_patient)
+            expect(described_class.ltfu_as_of(end_of_month)).not_to include(not_ltfu_patient)
 
-          expect(described_class.ltfu_as_of(beginning_of_month)).to include(ltfu_patient)
-          expect(described_class.ltfu_as_of(end_of_month)).to include(ltfu_patient)
+            expect(described_class.ltfu_as_of(beginning_of_month)).to include(ltfu_patient)
+            expect(described_class.ltfu_as_of(end_of_month)).to include(ltfu_patient)
+          end
         end
 
         it "bp cutoffs for now" do
           # For any provided date in June in the local timezone, the LTFU BP ending cutoff is the time provided
 
           long_ago = 5.years.ago
-          beginning_of_month = Time.zone.local(2021, 6, 1, 0, 0, 0) # Beginning of June 1 2021 in local timezone
+          timezone = Time.find_zone(reporting_timezone)
+          beginning_of_month = timezone.local(2021, 6, 1, 0, 0, 0) # Beginning of June 1 2021 in local timezone
           a_moment_ago = beginning_of_month - 1.minute # A moment before the provided date
           a_moment_from_now = beginning_of_month + 1.minute # A moment after the provided date
 
-          end_of_month = Time.zone.local(2021, 6, 30, 23, 59, 59) # End of June 30 2021 in local timezone
+          end_of_month = timezone.local(2021, 6, 30, 23, 59, 59) # End of June 30 2021 in local timezone
 
           not_ltfu_patient = create(:patient, recorded_at: long_ago)
           ltfu_patient = create(:patient, recorded_at: long_ago)
@@ -268,10 +277,12 @@ describe Patient, type: :model do
           #
           # Eg. For any date provided in June 2021, the cutoff is the June 30-Jul 1 boundary of 2020
 
-          under_a_year_ago = Time.zone.local(2020, 7, 1, 0, 0, 1) # Beginning of July 1 2020 in local timezone
-          over_a_year_ago = Time.zone.local(2020, 6, 30, 23, 59, 59) # End of June 30 2020 in local timezone
-          beginning_of_month = Time.zone.local(2021, 6, 1, 0, 0, 0) # Beginning of June 1 2021 in local timezone
-          end_of_month = Time.zone.local(2021, 6, 30, 23, 59, 59) # End of June 30 2021 in local timezone
+          timezone = Time.find_zone(reporting_timezone)
+
+          under_a_year_ago = timezone.local(2020, 7, 1, 0, 0, 1) # Beginning of July 1 2020 in local timezone
+          over_a_year_ago = timezone.local(2020, 6, 30, 23, 59, 59) # End of June 30 2020 in local timezone
+          beginning_of_month = timezone.local(2021, 6, 1, 0, 0, 0) # Beginning of June 1 2021 in local timezone
+          end_of_month = timezone.local(2021, 6, 30, 23, 59, 59) # End of June 30 2021 in local timezone
 
           not_ltfu_patient = create(:patient, recorded_at: under_a_year_ago)
           ltfu_patient = create(:patient, recorded_at: over_a_year_ago)
