@@ -106,7 +106,7 @@ Punjabi
 Tamil
 Telugu
 
-# Notification window
+## Notification window
 
 We want to ensure that we only send notifications during appropriate hours. ...
 
@@ -116,4 +116,4 @@ Some issues with existing code were discovered and corrected in the development 
 
 ## Ending an experiment early
 
-If we need to end an experiment early, we can do it by running `ExperimentControlService.abort_experiment(name)`. This will change the experiment state to "cancelled" and marking all notifications as "cancelled". This will prevent any notifications that have already been scheduled from being sent.
+If we need to end an experiment early, we can do it by running `ExperimentControlService.abort_experiment(name)`. This will change the experiment state to "cancelled" and marking all notifications as "cancelled", which will prevent any notifications that have already been scheduled from being sent.
