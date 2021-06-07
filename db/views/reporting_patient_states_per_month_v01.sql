@@ -83,7 +83,15 @@ SELECT
         ) THEN 'under_care'
         ELSE 'lost_to_follow_up'
         END
-        AS care_state
+        AS care_state,
+
+    CASE
+        WHEN (visits.months_since_visit >= 3 OR visits.months_since_visit is NULL) THEN 'missed_visit'
+        WHEN (bps.months_since_bp_observation >= 3 OR bps.months_since_bp_observation is NULL) THEN 'visited_no_bp'
+        WHEN (bps.systolic < 140 AND bps.diastolic < 90) THEN 'controlled'
+        ELSE 'uncontrolled'
+        END
+        AS treatment_outcome_in_last_3_months
 
 FROM patients p
 LEFT OUTER JOIN reporting_months cal
