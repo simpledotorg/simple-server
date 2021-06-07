@@ -221,7 +221,7 @@ module PatientImport
     end
 
     def patient_status(row)
-      row[:died].presence&.downcase.in?(["yes", "y"]) ? Patient.statuses["dead"] : Patient.statuses["active"]
+      row[:died]&.downcase&.in?(["yes", "y"]) ? Patient.statuses["dead"] : Patient.statuses["active"]
     end
 
     def medication(name:, patient_id:, created_at:)

@@ -183,7 +183,7 @@
               <% end %>
               <% @period_range.each do |period| %>
                 <td class="ta-center">
-                  <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.dig(resource.id, :bp_measures_by_period, period.value))) %>
+                  <%= number_or_dash_with_delimiter(@repository.bp_measures_by_user.dig(@region.slug, period, resource.id)) %>
                 </td>
               <% end %>
             </tr>
