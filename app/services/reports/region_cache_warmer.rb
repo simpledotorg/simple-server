@@ -32,7 +32,7 @@ module Reports
     end
 
     def warm_region_cache(region)
-      Time.use_zone(Period::REPORTING_TIMEZONE) do
+      Time.use_zone(Period::REPORTING_TIME_ZONE) do
         RequestStore.store[:bust_cache] = true
 
         notify "starting region caching for region #{region.id}"

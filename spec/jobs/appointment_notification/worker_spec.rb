@@ -76,6 +76,17 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       described_class.drain
     end
 
+    it "does not send a communication when notification's next_communication_type is nil" do
+      mock_successful_delivery
+      allow_any_instance_of(Notification).to receive(:next_communication_type).and_return(nil)
+
+      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.skipped.no_next_communication_type")
+      expect {
+        described_class.perform_async(notification.id)
+        described_class.drain
+      }.not_to change { Communication.count }
+    end
+
     it "creates a Communication with twilio response status and sid" do
       mock_successful_delivery
 
@@ -96,7 +107,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       create(:communication, :missed_visit_whatsapp_reminder, notification: notification)
       create(:communication, :missed_visit_sms_reminder, notification: notification)
 
-      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.skipped.previously_communicated")
+      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.skipped.no_next_communication_type")
       expect_any_instance_of(NotificationService).not_to receive(:send_whatsapp)
       expect {
         described_class.perform_async(notification.id)
@@ -169,6 +180,26 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
         described_class.perform_async("does-not-exist")
         described_class.drain
       }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "does not send if the notification is cancelled" do
+      mock_successful_delivery
+      notification.update!(status: "cancelled")
+      expect {
+        described_class.perform_async(notification.id)
+        described_class.drain
+      }.not_to change { Communication.count }
+    end
+
+    it "does not send if the notification belongs to a cancelled experiment" do
+      mock_successful_delivery
+      experiment = create(:experiment, state: "cancelled")
+      notification.update!(experiment_id: experiment.id)
+      expect {
+        described_class.perform_async(notification.id)
+        described_class.drain
+      }.not_to change { Communication.count }
+      expect(notification.reload.status).to eq("scheduled")
     end
 
     describe "medication reminder experiment" do
