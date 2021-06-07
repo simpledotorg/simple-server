@@ -7,7 +7,7 @@ RSpec.describe LatestBloodPressuresPerPatientPerMonth, type: :model do
 
   def refresh_views_with_pg_set_to_reporting_time_zone
     original = ActiveRecord::Base.connection.execute("SELECT current_setting('TIMEZONE')").first["current_setting"]
-    ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{Period::ANALYTICS_TIME_ZONE}'")
+    ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{Period::REPORTING_TIME_ZONE}'")
     described_class.refresh
     ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE #{original}")
   end
@@ -23,7 +23,7 @@ RSpec.describe LatestBloodPressuresPerPatientPerMonth, type: :model do
       expect(ActiveRecord::Base.default_timezone).to eq(:utc)
 
       timestamp_in_utc = Time.zone.parse("January 15th 2018 12:00:00 UTC")
-      timestamp_in_ist = timestamp_in_utc.in_time_zone(Period::ANALYTICS_TIME_ZONE)
+      timestamp_in_ist = timestamp_in_utc.in_time_zone(Period::REPORTING_TIME_ZONE)
       # We keep the timezone in UTC for creation of our fixtures.
       # This better emulates what happens in the app, because our sync APIs DO NOT have a default time zone
       # set (so we default to UTC), and I assume (and hope) that times get correctly parsed from the string
@@ -38,7 +38,7 @@ RSpec.describe LatestBloodPressuresPerPatientPerMonth, type: :model do
       #   1) populating materialized views
       #   2) retrieving data to show in reports
       # This is to verify that times are consistent and correct and respect Rails auto conversion to TimeWithZone
-      Time.use_zone(Period::ANALYTICS_TIME_ZONE) do
+      Time.use_zone(Period::REPORTING_TIME_ZONE) do
         expect(Time.zone.name).to eq("Asia/Kolkata")
         refresh_views_with_pg_set_to_reporting_time_zone
         mat_view_row = described_class.find_by!(patient: ltfu_patient)
