@@ -52,7 +52,7 @@ class MyFacilities::FacilityPerformanceController < AdminController
   end
 
   def set_time_zone
-    Time.use_zone(Period::REPORTING_TIMEZONE) { yield }
+    Time.use_zone(Period::REPORTING_TIME_ZONE) { yield }
   end
 
   def authorize_my_facilities

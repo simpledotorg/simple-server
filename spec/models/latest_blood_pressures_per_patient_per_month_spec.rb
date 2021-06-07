@@ -5,45 +5,60 @@ RSpec.describe LatestBloodPressuresPerPatientPerMonth, type: :model do
     described_class.refresh
   end
 
+  def refresh_views_with_pg_set_to_reporting_time_zone
+    original = ActiveRecord::Base.connection.execute("SELECT current_setting('TIMEZONE')").first["current_setting"]
+    ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{Period::REPORTING_TIME_ZONE}'")
+    described_class.refresh
+    ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE #{original}")
+  end
+
   describe "Associations" do
     it { should belong_to(:patient) }
   end
 
-  describe "Scopes" do
-    describe ".ltfu_as_of" do
-      it "includes BP for patient who is LTFU" do
-        ltfu_patient = Timecop.freeze(2.years.ago) { create(:patient) }
-        Timecop.freeze(2.years.ago) { create(:blood_pressure, patient: ltfu_patient) }
-        refresh_views
+  describe "handling time zones" do
+    it "stores mat view timestamps in UTC to stay consistent with the source application tables" do
+      # Sanity checks - make sure we are all UTC.
+      expect(Time.zone.name).to eq("UTC")
+      expect(ActiveRecord::Base.default_timezone).to eq(:utc)
 
-        expect(described_class.ltfu_as_of(Time.current).pluck(:patient_id)).to include(ltfu_patient.id)
+      timestamp_in_utc = Time.zone.parse("January 15th 2018 12:00:00 UTC")
+      timestamp_in_ist = timestamp_in_utc.in_time_zone(Period::REPORTING_TIME_ZONE)
+      # We keep the timezone in UTC for creation of our fixtures.
+      # This better emulates what happens in the app, because our sync APIs DO NOT have a default time zone
+      # set (so we default to UTC), and I assume (and hope) that times get correctly parsed from the string
+      # format sent by clients (probably ISO8601 from the JSON payloads).
+      ltfu_patient, bp = Timecop.freeze(timestamp_in_utc) do
+        ltfu_patient = create(:patient)
+        bp = create(:blood_pressure, patient: ltfu_patient)
+        [ltfu_patient, bp]
       end
 
-      it "excludes BP for patient who is not LTFU" do
-        not_ltfu_patient = Timecop.freeze(2.years.ago) { create(:patient) }
-        Timecop.freeze(6.months.ago) { create(:blood_pressure, patient: not_ltfu_patient) }
-        refresh_views
+      # We now switch to our reporting time zone, which represents the state where we are either
+      #   1) populating materialized views
+      #   2) retrieving data to show in reports
+      # This is to verify that times are consistent and correct and respect Rails auto conversion to TimeWithZone
+      Time.use_zone(Period::REPORTING_TIME_ZONE) do
+        expect(Time.zone.name).to eq("Asia/Kolkata")
+        refresh_views_with_pg_set_to_reporting_time_zone
+        mat_view_row = described_class.find_by!(patient: ltfu_patient)
 
-        expect(described_class.ltfu_as_of(Time.current)).not_to include(not_ltfu_patient)
+        raw_recorded_at = described_class.connection.select_one("SELECT patient_recorded_at FROM #{described_class.table_name}")
+        expect(raw_recorded_at["patient_recorded_at"]).to eq("2018-01-15 12:00:00")
+        raw_recorded_at_in_utc = described_class.connection.select_one("SELECT patient_recorded_at AT TIME ZONE 'UTC' as patient_recorded_at FROM #{described_class.table_name}")
+        expect(raw_recorded_at_in_utc["patient_recorded_at"]).to eq("2018-01-15 12:00:00+00")
+
+        expect(mat_view_row.patient_recorded_at).to eq(ltfu_patient.recorded_at)
+        expect(mat_view_row.bp_recorded_at).to eq(bp.recorded_at)
+
+        expect(ltfu_patient.recorded_at).to eq(timestamp_in_utc)
+        expect(ltfu_patient.recorded_at).to eq(timestamp_in_ist) # Note that these are equal, even with different time zones
+        expect(mat_view_row.patient_recorded_at).to eq(timestamp_in_utc)
       end
-    end
 
-    describe ".not_ltfu_as_of" do
-      it "excludes patient who is LTFU" do
-        ltfu_patient = Timecop.freeze(2.years.ago) { create(:patient) }
-        Timecop.freeze(2.years.ago) { create(:blood_pressure, patient: ltfu_patient) }
-        refresh_views
-
-        expect(described_class.not_ltfu_as_of(Time.current)).not_to include(ltfu_patient)
-      end
-
-      it "includes patient who is not LTFU" do
-        not_ltfu_patient = Timecop.freeze(2.years.ago) { create(:patient) }
-        Timecop.freeze(6.months.ago) { create(:blood_pressure, patient: not_ltfu_patient) }
-        refresh_views
-
-        expect(described_class.not_ltfu_as_of(Time.current).pluck(:patient_id)).to include(not_ltfu_patient.id)
-      end
+      mat_view_row = described_class.find_by!(patient: ltfu_patient)
+      expect(mat_view_row.patient_recorded_at).to eq(ltfu_patient.recorded_at)
+      expect(mat_view_row.bp_recorded_at).to eq(bp.recorded_at)
     end
   end
 
