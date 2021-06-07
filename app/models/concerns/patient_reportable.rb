@@ -10,20 +10,20 @@ module PatientReportable
     scope :excluding_dead, -> { where.not(status: :dead) }
 
     scope :ltfu_as_of, ->(time) do
-      ltfu_at = (time - LTFU_TIME).end_of_month
+      last_bp_after = (time - LTFU_TIME).end_of_month
       joins("LEFT OUTER JOIN latest_blood_pressures_per_patient_per_months
              ON patients.id = latest_blood_pressures_per_patient_per_months.patient_id
-             AND #{sanitize_sql(["bp_recorded_at > ? AND bp_recorded_at < ?", ltfu_at, time])}")
-        .where("bp_recorded_at IS NULL AND patients.recorded_at <= ?", ltfu_at)
+             AND #{sanitize_sql(["bp_recorded_at > ? AND bp_recorded_at < ?", last_bp_after, time])}")
+        .where("bp_recorded_at IS NULL AND patients.recorded_at <= ?", last_bp_after)
         .distinct(:patient_id)
     end
 
     scope :not_ltfu_as_of, ->(time) do
-      ltfu_at = (time - LTFU_TIME).end_of_month
+      last_bp_after = (time - LTFU_TIME).end_of_month
       joins("LEFT OUTER JOIN latest_blood_pressures_per_patient_per_months
              ON patients.id = latest_blood_pressures_per_patient_per_months.patient_id")
         .where("bp_recorded_at > ? AND bp_recorded_at < ? OR patients.recorded_at >= ?",
-          ltfu_at, time, ltfu_at)
+          last_bp_after, time, ltfu_at)
         .distinct(:patient_id)
     end
 
