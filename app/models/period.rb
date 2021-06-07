@@ -9,6 +9,10 @@ class Period
 
   attr_accessor :type, :value
 
+  def self.current
+    month(Date.current)
+  end
+
   def self.month(date)
     new(type: :month, value: date.to_date)
   end
