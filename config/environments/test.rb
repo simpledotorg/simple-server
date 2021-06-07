@@ -2,7 +2,7 @@ Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
   # Use a memory store for tests for speed and simplicity.
-  config.cache_store = :memory_store, {size: 64.megabytes}
+  config.cache_store = :memory_store
 
   # The test environment is used exclusively to run your application's
   # test suite. You never need to work with it otherwise. Remember that
