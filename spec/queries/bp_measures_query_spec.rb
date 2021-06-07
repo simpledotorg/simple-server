@@ -32,7 +32,7 @@ RSpec.describe BPMeasuresQuery do
     Time.use_zone(ist_zone) do
       expected = {
         Period.month("January 2021") => 1,
-        Period.month("February 2021") => 1,
+        Period.month("February 2021") => 1
       }
       expect(described_class.new.count(facility, :month)).to eq(expected)
     end
