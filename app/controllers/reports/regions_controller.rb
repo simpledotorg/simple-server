@@ -217,7 +217,7 @@ class Reports::RegionsController < AdminController
   end
 
   def set_time_zone
-    time_zone = Period::ANALYTICS_TIME_ZONE
+    time_zone = Period::REPORTING_TIME_ZONE
 
     Groupdate.time_zone = time_zone
 

@@ -28,4 +28,24 @@ RSpec.describe EarliestPatientDataQuery do
     facility_group = create(:facility_group)
     expect(EarliestPatientDataQuery.call(facility_group.region)).to be_nil
   end
+
+  context "in a reporting time zone" do
+    around do |example|
+      Time.use_zone(CountryConfig.current[:time_zone]) do
+        Groupdate.time_zone = CountryConfig.current[:time_zone]
+        example.run
+        Groupdate.time_zone = nil
+      end
+    end
+
+    it "returns the correct earliest registration/assigned time" do
+      registration_time = Time.zone.local(2020, 6, 30, 23, 59, 59)
+
+      facility = FactoryBot.create(:facility)
+      region = facility.region
+      patient = create(:patient, recorded_at: registration_time, assigned_facility: facility, registration_user: user)
+
+      expect(EarliestPatientDataQuery.call(region).utc).to eq(patient.recorded_at.utc)
+    end
+  end
 end
