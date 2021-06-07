@@ -20,7 +20,7 @@ RSpec.describe BPMeasuresQuery do
   end
 
   def ist_zone
-    @ist_zone ||= Time.find_zone(Period::REPORTING_TIMEZONE)
+    @ist_zone ||= Time.find_zone(Period::REPORTING_TIME_ZONE)
   end
 
   it "handles period boundaries correctly, taking into account time zones" do
