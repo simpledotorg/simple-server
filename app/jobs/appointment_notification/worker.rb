@@ -16,10 +16,11 @@ class AppointmentNotification::Worker
       metrics.increment("skipped.feature_disabled")
       return
     end
+
     notification = Notification.includes(:subject, :patient).find(notification_id)
     communication_type = notification.next_communication_type
     unless communication_type
-      metrics.increment("skipped.previously_communicated")
+      metrics.increment("skipped.no_next_communication_type")
       return
     end
 
