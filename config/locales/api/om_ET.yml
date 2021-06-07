@@ -1,4 +1,4 @@
-om-ET:
+om:
   date:
     month_names: [~, "Amajji", "Guraandhala", "Bitootessa", "Ebla", "Caamsaa", "Waxabajjii", "Adoolessa", "Hagayya", "Fulbaana", "Onkoloolessa", "Sadaasa", "Muddee"]
     abbr_month_names: [~, "Amajjii", "Guraandhala", "Bitootessa", "Ebla", "Caamsaa", "Waxabajjii", "Adooleessa", "Hagayya", "Fulbaana", "Onkoloolessa", "Sadaasa", "Mud"]
@@ -15,8 +15,8 @@ om-ET:
   sms:
     request_otp: "<#> %{otp}koodii mirkaneeffannaa kee isa salphaadha\n%{app_signature}"
     appointment_reminders:
-      missed_visit_sms_reminder: "Hojjattoonni keenya kan %{facility_name} waa’ee kee fii waa’e fayyummaa onnee keetii yaaddaa jiru. Maaloo dawaa dhiibbaa dhiigaa kee itti fufi. Dawaa kee jiddu gala dhiyeenyaa jiru irraa walitti qabadhu. ANM yookan ASHA kee qunnami."
-      missed_visit_whatsapp_reminder: "Hojjattoonni keenya kan %{facility_name} waa’ee kee fii waa’e fayyummaa onnee keetii yaaddaa jiru. Maaloo dawaa dhiibbaa dhiigaa kee itti fufi. Dawaa kee jiddu gala dhiyeenyaa jiru irraa walitti qabadhu. ANM yookan ASHA kee qunnami."
+      missed_visit_sms_reminder: "Hojjattoonni keenya kan %{facility_name} waa’ee kee fii waa’e fayyummaa onnee keetii yaaddaa jiru. Maaloo dawaa dhiibbaa dhiigaa kee itti fufi. Dawaa kee jiddu gala dhiyeenyaa jiru irraa walitti qabadhu."
+      missed_visit_whatsapp_reminder: "Hojjattoonni keenya kan %{facility_name} waa’ee kee fii waa’e fayyummaa onnee keetii yaaddaa jiru. Maaloo dawaa dhiibbaa dhiigaa kee itti fufi. Dawaa kee jiddu gala dhiyeenyaa jiru irraa walitti qabadhu."
     patient_request_otp: "<#>%{otp}koodii Paaspoortii mirkaneeffannaa PB keetiti\n%{app_signature}"
   dashboard:
     graphics:
@@ -61,7 +61,7 @@ om-ET:
     result_from_last_visit_in: "Bu'aa daawwannaa yeroo darberra"
     no_patients: "Dhukkubsataan hin jiru"
     cohort_report_footnote_1: "Afree waggaa galmee boodaa keessatti dhaawwannaa dhihoo <em>bakka kamittuu</em> taasifame."
-    cohort_report_footnote_2: "Dhukkubsatootni dhiibbaa dhiigaa hundumtuu bakka kanatti qajeelfamu, kan afree waggaa keessatti galmaa'an. Dhukkubsatootni du'anii fi hordoffii hin qabne keessaa baafamanii jiru."
+    cohort_report_footnote_2: "Dhukkubsattooti gara bakka kanaatti qajeelfaman, kan kurmaana kana keessatti galmaa'aniidha. dhukkubsatattootni du'an hin hammatamne."
     cohort_report_footnote_3: "Dhukkubsattootni irra deddeebin daawwatamaniiru taanan, BP'n isaanii too'annaa BPtiif oole."
     all_hypertension_and_diabetes: "Dhiibbaa dhiigaa fi sukkaara hunda"
     hypertension_controlled_numerator: "Ji'oota 3 darban keessatti dhukkubsatoota <em>bakka kamittuu</em> BP isaaniii daawwannaa xumuraa irratti <140/90 ta'e"
