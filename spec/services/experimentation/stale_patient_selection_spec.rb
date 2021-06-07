@@ -72,7 +72,6 @@ RSpec.describe Experimentation::StalePatientSelection, type: :model do
     create(:blood_pressure, patient: patient, device_created_at: 90.days.ago)
     patient.appointments << create(:appointment, scheduled_date: 90.days.ago, status: "scheduled")
 
-
     result = described_class.call(start_date: Date.tomorrow)
 
     expect(result).to contain_exactly(patient.id)
