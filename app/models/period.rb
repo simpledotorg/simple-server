@@ -1,6 +1,6 @@
 class Period
   REGISTRATION_BUFFER_MONTHS = 3
-  REPORTING_TIMEZONE = CountryConfig.current[:time_zone] || "Asia/Kolkata"
+  REPORTING_TIME_ZONE = CountryConfig.current[:time_zone] || "Asia/Kolkata"
 
   include Comparable
   include ActiveModel::Model
