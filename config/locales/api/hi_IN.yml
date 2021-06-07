@@ -1,4 +1,4 @@
-hi-IN:
+hi_IN:
   date:
     month_names: [~, "जनवरी", "फरवरी", "मार्च", "अप्रैल", "मई", "जून", "जुलाई", "अगस्त", "सितंबर", "अक्टूबर", "नवंबर", "दिसंबर"]
     abbr_month_names: [~, "जनवरी", "फ़रवरी", "मार्च", "अप्रैल", "मई", "जून", "जुलाई", "अगस्त", "सितंबर", "अक्टूबर", "नवंबर", "दिसंबर"]
@@ -15,8 +15,8 @@ hi-IN:
   sms:
     request_otp: "<#> %{otp} आपका सिम्पल कोड है\n%{app_signature}"
     appointment_reminders:
-      missed_visit_sms_reminder: "%{facility_name} के हमारे कर्मचारी आपके और आपके दिल के स्वास्थ्य का ख्याल रखते हैं। कृपया अपने रक्तचाप की दवाइयाँ जारी रखें। नज़दीकी उप केंद्र से अपनी दवाई ले लें। अपने ANM या ASHA से संपर्क करें।"
-      missed_visit_whatsapp_reminder: "%{facility_name} के हमारे कर्मचारी आपके और आपके दिल के स्वास्थ्य का ख्याल रखते हैं। कृपया अपने रक्तचाप की दवाइयाँ जारी रखें। नज़दीकी उप केंद्र से अपनी दवाई ले लें। अपने ANM या ASHA से संपर्क करें।"
+      missed_visit_sms_reminder: "%{facility_name} के हमारे कर्मचारी आपके और आपके दिल के स्वास्थ्य का ख्याल रख रहे हैं। कृपया अपने रक्तचाप की दवाइयाँ जारी रखें। नज़दीकी उप केंद्र से अपनी दवाई ले लें।"
+      missed_visit_whatsapp_reminder: "%{facility_name} के हमारे कर्मचारी आपके और आपके दिल के स्वास्थ्य का ख्याल रख रहे हैं। कृपया अपने रक्तचाप की दवाइयाँ जारी रखें। नज़दीकी उप केंद्र से अपनी दवाई ले लें।"
     patient_request_otp: "<#> %{otp} आपका BP पासपोर्ट सत्यापन कोड है\n%{app_signature}"
   dashboard:
     graphics:
@@ -61,7 +61,7 @@ hi-IN:
     result_from_last_visit_in: "इसमें पिछली विज़िट के परिणाम"
     no_patients: "कोई रोगी नहीं"
     cohort_report_footnote_1: "रेजिस्ट्रेशन के बाद तिमाही में किसी भी सुविधा में पिछली फ़ॉलो-अप विज़िट।"
-    cohort_report_footnote_2: "सभी HTN रोगियों के लिए यह सुविधा निर्धारित की गई है, जो तिमाही में रजिस्टर की गई है।"
+    cohort_report_footnote_2: "All hypertension patients assigned to this facility, registered in a quarter. Dead patients are excluded."
     cohort_report_footnote_3: "अगर रोगी ने कई बार विज़िट किया है, उनके पिछले बीपी को बीपी के नियंत्रण के लिए उपयोग किया जाता है।"
     all_hypertension_and_diabetes: "सभी हाइपरटेंशन और मधुमेह"
     hypertension_controlled_numerator: "<em>किसी भी सुविधा</em> में पिछले 3 महीनों में, जिन रोगियों का कम से कम एक बीपी माप है। बिलकुल हाल में, जिस रोगी को विज़िट किया उनका बीपी&nbsp;&lt;140 और &lt;90 है।"
