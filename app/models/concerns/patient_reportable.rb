@@ -23,7 +23,7 @@ module PatientReportable
       joins("LEFT OUTER JOIN latest_blood_pressures_per_patient_per_months
              ON patients.id = latest_blood_pressures_per_patient_per_months.patient_id")
         .where("bp_recorded_at > ? AND bp_recorded_at < ? OR patients.recorded_at >= ?",
-          last_bp_after, time, ltfu_at)
+          last_bp_after, time, last_bp_after)
         .distinct(:patient_id)
     end
 
