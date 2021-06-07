@@ -2,6 +2,7 @@ module Experimentation
   class Experiment < ActiveRecord::Base
     has_many :treatment_groups, dependent: :delete_all
     has_many :patients, through: :treatment_groups
+    has_many :notifications
 
     validates :name, presence: true, uniqueness: true
     validates :state, presence: true
@@ -14,6 +15,7 @@ module Experimentation
       new: "new",
       selecting: "selecting",
       running: "running",
+      cancelled: "cancelled",
       complete: "complete"
     }, _suffix: true
 
