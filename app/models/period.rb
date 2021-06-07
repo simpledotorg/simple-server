@@ -9,6 +9,7 @@ class Period
 
   attr_accessor :type, :value
 
+  # Return the current month Period
   def self.current
     month(Date.current)
   end
@@ -40,6 +41,8 @@ class Period
     lambda { |v| period_type == :quarter ? Period.quarter(v) : Period.month(v) }
   end
 
+  # Create a Period with an attributes hash of type and value.
+  # Note that we call super here to allow ActiveModel::Model to setup the attributes hash.
   def initialize(attributes = {})
     super
     self.type = type.intern if type
@@ -54,6 +57,8 @@ class Period
     {type: type, value: value}
   end
 
+  # Returns a new Period adjusted by the registration buffer. This is used in our denominators to determine
+  # control rates, so that new patients aren't included in the calculations.
   def adjusted_period
     advance(months: -REGISTRATION_BUFFER_MONTHS)
   end
