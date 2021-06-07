@@ -41,6 +41,8 @@ describe Patient, type: :model do
     it { is_expected.to have_many(:appointments) }
     it { is_expected.to have_many(:notifications) }
     it { is_expected.to have_many(:treatment_group_memberships) }
+    it { is_expected.to have_many(:treatment_groups).through(:treatment_group_memberships) }
+    it { is_expected.to have_many(:experiments).through(:treatment_groups) }
     it { is_expected.to have_many(:teleconsultations) }
 
     it { is_expected.to have_many(:encounters) }
