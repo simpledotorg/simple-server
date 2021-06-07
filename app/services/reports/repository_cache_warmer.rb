@@ -19,6 +19,9 @@ class Reports::RepositoryCacheWarmer
     repository.missed_visits
     repository.missed_visits_rate
     repository.hypertension_follow_ups
-    repository.hypertension_follow_ups(group_by: "blood_pressures.user_id") if region.facility_region?
+    if region.facility_region?
+      repository.hypertension_follow_ups(group_by: "blood_pressures.user_id")
+      repository.bp_measures_by_user
+    end
   end
 end
