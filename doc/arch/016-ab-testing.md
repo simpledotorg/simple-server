@@ -62,7 +62,7 @@ Patients will be assigned to treatment groups completely at random during the pa
 - Then the messages will need to be scheduled for delivery. See [here](#notification-scheduling).
 
 ### Notification scheduling
-- notifications are scheduled via a job that will need to be scheduled to run every day during the experiment
+- notifications are scheduled via a job that will need to be scheduled to run every day during the experiment before the [notification window](#notification-window)
 - the job can be run via the command: `AppointmentNotification::ScheduleExperimentReminders.perform`
 - it will search for any pending notifications with a remind_on of today, mark the notification as "scheduled", and schedule a sidekiq worker to send the notification during the [notification window](#notification-window)
 - in India, text messages will first be sent as WhatsApp messages. If the WhatsApp message fails, we will resend the message as SMS.
@@ -108,7 +108,9 @@ Telugu
 
 ## Notification window
 
-We want to ensure that we only send notifications during appropriate hours. ...
+We want to ensure that we only send notifications during appropriate hours. We initially send messages through Whatsapp or Imo, then fall back to SMS. If the callback from Whatsapp/Imo tells us the message failed, we schedule the message to resend either immediately or during the messaging window tomorrow.
+
+Because these experiments will dramatically increase the number of notifications being sent daily, we are expanding the notifications window. Currently, the window is from 10am-4pm IST. Later experiments will likely test sending messages at different times of day.
 
 ## Consequences
 
