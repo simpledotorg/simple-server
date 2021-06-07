@@ -10,6 +10,7 @@ describe "RateLimiter", type: :controller do
 
   around(:example) do |example|
     Rails.cache.clear
+    Rack::Attack.reset!
     example.run
     Rails.cache.clear
   end
