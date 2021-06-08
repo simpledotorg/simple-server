@@ -13,6 +13,7 @@ RSpec.describe Reports::Repository, type: :model do
   let(:july_2020) { Time.parse("July 15, 2020 00:00:00+00:00") }
   let(:jan_2019) { Time.parse("January 1st, 2019 00:00:00+00:00") }
   let(:jan_2020) { Time.parse("January 1st, 2020 00:00:00+00:00") }
+  let(:jan_2021) { Time.parse("January 1st, 2021 00:00:00+00:00") }
   let(:july_2018) { Time.parse("July 1st, 2018 00:00:00+00:00") }
   let(:july_2020) { Time.parse("July 1st, 2020 00:00:00+00:00") }
 
@@ -21,6 +22,13 @@ RSpec.describe Reports::Repository, type: :model do
       LatestBloodPressuresPerPatientPerMonth.refresh
       LatestBloodPressuresPerPatientPerQuarter.refresh
       PatientRegistrationsPerDayPerFacility.refresh
+      new_mat_views = %i[reporting_facilities reporting_patient_blood_pressures_per_month reporting_patient_visits_per_month]
+      new_mat_views.each do |name|
+        ActiveRecord::Base.connection.execute(
+          "REFRESH MATERIALIZED VIEW #{name} WITH DATA"
+        )
+      end
+      ReportingPatientStatesPerMonth.refresh
     end
   end
 
@@ -122,33 +130,47 @@ RSpec.describe Reports::Repository, type: :model do
       facility_1_controlled = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
       facility_1_uncontrolled = create_list(:patient, 2, full_name: "uncontrolled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
       facility_2_controlled = create(:patient, full_name: "other facility", recorded_at: jan_2019, assigned_facility: facility_2, registration_user: user)
+      bp_recorded_at = Time.parse("December 15th 2019").to_period
       Timecop.freeze(jan_2020) do
         (facility_1_controlled << facility_2_controlled).map do |patient|
-          create(:blood_pressure, :under_control, facility: facility_1, patient: patient, recorded_at: 15.days.ago, user: user)
+          # BP recorded Dec 2019, so Controlled in Dec 2019, Jan 2020, and Feb 2020
+          create(:blood_pressure, :under_control, facility: facility_1, patient: patient, recorded_at: bp_recorded_at.value, user: user)
         end
         facility_1_uncontrolled.map do |patient|
-          create(:blood_pressure, :hypertensive, facility: facility_1, patient: patient, recorded_at: 15.days.ago)
+          create(:blood_pressure, :hypertensive, facility: facility_1, patient: patient, recorded_at: bp_recorded_at.value)
         end
       end
       refresh_views
 
-      expected_counts = {
-        facility_1.slug => {
-          jan_2020.to_period => 2
-        }
+      slug = facility_1.slug
+      control_range = (bp_recorded_at..bp_recorded_at.advance(months: 2))
+      range = (jan_2019.to_period..jan_2021.to_period)
+      expected_counts, expected_rates = {}, {}
+      range.each { |p|
+        if control_range.cover?(p)
+          expected_counts[p] = 2
+          expected_rates[p] = 50
+        else
+          expected_counts[p] = 0
+          expected_rates[p] = 0
+        end
       }
-      expected_rates = {
-        facility_1.slug => {
-          jan_2020.to_period => 50
-        }
-      }
-      repo = Reports::Repository.new(facility_1.region, periods: jan_2020.to_period)
+
+      repo = Reports::Repository.new(facility_1.region, periods: range)
       (jan_2019.to_period..jan_2020.to_period).each do |period|
         count = repo.cumulative_assigned_patients_count[facility_1.slug][period]
         expect(count).to eq(4), "expected 4 assigned patients for #{period} but got #{count}"
       end
-      expect(repo.controlled_patients_count).to eq(expected_counts)
-      expect(repo.controlled_patients_rate).to eq(expected_rates)
+
+      expect(repo.controlled_patients_count[slug]).to eq(expected_counts)
+      expect(repo.controlled_patients_rate[slug]).to eq(expected_rates)
+
+      repo_v2 = Reports::Repository.new(facility_1.region, periods: range, reporting_pipeline: true)
+      expected_counts.each do |period, count|
+        actual = repo_v2.controlled_patients_count[slug][period]
+        expect(actual).to eq(count), "expected #{count} for #{period}, but got #{actual}"
+      end
+      expect(repo_v2.controlled_patients_rate[slug]).to eq(expected_rates)
     end
 
     it "gets controlled counts and rates for one month" do

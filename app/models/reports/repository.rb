@@ -4,7 +4,7 @@ module Reports
     include Memery
     PERCENTAGE_PRECISION = 0
 
-    def initialize(regions, periods:)
+    def initialize(regions, periods:, reporting_pipeline: false)
       @regions = Array(regions)
       @periods = if periods.is_a?(Period)
         Range.new(periods, periods)
@@ -21,6 +21,7 @@ module Reports
       @follow_ups_query = FollowUpsQuery.new
       @no_bp_measure_query = NoBPMeasureQuery.new
       @registered_patients_query = RegisteredPatientsQuery.new
+      @reporting_pipeline = reporting_pipeline
     end
 
     attr_reader :assigned_patients_query
@@ -156,9 +157,33 @@ module Reports
       end
     end
 
+    def use_reporting_pipeline?
+      @reporting_pipeline
+    end
+
+    def month_date_formatter(period_type)
+      lambda { |v| period_type == :quarter ? Period.quarter(v) : Period.month(v) }
+    end
+
+    # scope :with_hypertension, -> { where("medical_history_hypertension = ?", "yes") }
+    # scope :excluding_dead, -> { where.not(patient_status: :dead) }
+
     memoize def controlled_patients_count
-      region_period_cached_query(__method__) do |entry|
-        control_rate_query.controlled(entry.region, entry.period).count
+      if use_reporting_pipeline?
+        regions.each_with_object({}) do |region, result|
+          region_result = ReportingPatientStatesPerMonth.where(
+            assigned_facility: region.facilities,
+            last_bp_state: :controlled,
+            care_state: :under_care)
+            .where("months_since_bp < ?", 3)
+            .group_by_period(:month, :month_date, {format: month_date_formatter(:month)}).count
+          region_result.default = 0
+          result[region.slug] = region_result
+        end
+      else
+        region_period_cached_query(__method__) do |entry|
+          control_rate_query.controlled(entry.region, entry.period).count
+        end
       end
     end
 
