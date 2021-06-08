@@ -17,6 +17,7 @@ module Reports
       @assigned_patients_query = AssignedPatientsQuery.new
       @bp_measures_query = BPMeasuresQuery.new
       @control_rate_query = ControlRateQuery.new
+      @control_rate_query_v2 = ControlRateQueryV2.new
       @earliest_patient_data_query = EarliestPatientDataQuery.new
       @follow_ups_query = FollowUpsQuery.new
       @no_bp_measure_query = NoBPMeasureQuery.new
@@ -171,14 +172,9 @@ module Reports
     memoize def controlled_patients_count
       if use_reporting_pipeline?
         regions.each_with_object({}) do |region, result|
-          region_result = ReportingPatientStatesPerMonth.where(
-            assigned_facility: region.facilities,
-            last_bp_state: :controlled,
-            care_state: :under_care)
-            .where("months_since_bp < ?", 3)
-            .group_by_period(:month, :month_date, {format: month_date_formatter(:month)}).count
-          region_result.default = 0
-          result[region.slug] = region_result
+          counts = @control_rate_query_v2.controlled(region).count
+          counts.default = 0
+          result[region.slug] = counts
         end
       else
         region_period_cached_query(__method__) do |entry|
