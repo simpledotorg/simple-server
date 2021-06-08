@@ -76,7 +76,7 @@ RSpec.describe DrugConsumptionReportExporter do
         1000, 0, -1000,
         0, -3000,
         "?", "?",
-       -1000, -6000, "?"]
+        -1000, -6000, "?"]
 
     facility_2_row =
       [facilities.second.name,
