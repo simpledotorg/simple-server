@@ -7,6 +7,6 @@ class FacilityBusinessIdentifier < ApplicationRecord
 
   validates :identifier, presence: true
   validates :identifier_type, presence: true
-  validates :identifier_type, uniqueness: { scope: :facility_id }
+  validates :identifier_type, uniqueness: {scope: :facility_id}
   validates :facility, presence: true
 end
