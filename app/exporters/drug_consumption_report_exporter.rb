@@ -42,10 +42,7 @@ class DrugConsumptionReportExporter
   def drug_names_header
     drug_name_cells =
       @drugs_by_category.flat_map do |_drug_category, drugs|
-        drug_columns = drugs.map do |drug|
-          "#{drug.name} #{drug.dosage}"
-        end
-        drug_columns
+        drugs.map { |drug| "#{drug.name} #{drug.dosage}" }
       end
 
     drug_category_name_cells =
@@ -61,16 +58,14 @@ class DrugConsumptionReportExporter
       @drugs_by_category.flat_map do |drug_category, drugs|
         drugs.map do |drug|
           consumed = @report[:all].dig(drug_category, drug, :consumed)
-          next "?" if consumed.nil? || consumed == "error"
-          consumed
+          formatted_consumption_value(consumed)
         end
       end
 
     overall_consumption_cells =
       @drugs_by_category.flat_map do |drug_category, _drugs|
         total = @report.dig(:all, drug_category, :base_doses, :total)
-        next "?" if total.nil? || total == "error"
-        total
+        formatted_consumption_value(total)
       end
 
     ["All"] + drug_consumption_cells + overall_consumption_cells
@@ -89,18 +84,24 @@ class DrugConsumptionReportExporter
       @drugs_by_category.flat_map do |drug_category, drugs|
         drugs.map do |drug|
           consumed = facility_report.dig(drug_category, drug, :consumed)
-          next "?" if consumed.nil? || consumed == "error"
-          consumed
+          formatted_consumption_value(consumed)
         end
       end
 
     overall_consumption_cells =
       @drugs_by_category.flat_map do |drug_category, _drugs|
         total = facility_report.dig(drug_category, :base_doses, :total)
-        next "?" if total.nil? || total == "error"
-        total
+        formatted_consumption_value(total)
       end
 
     [facility_name] + drug_consumption_cells + overall_consumption_cells
+  end
+
+  def formatted_consumption_value(consumption_value)
+    if consumption_value.nil? || consumption_value == "error"
+      "?"
+    else
+      consumption_value
+    end
   end
 end
