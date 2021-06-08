@@ -3,6 +3,7 @@ class Reports::RegionsController < AdminController
   include GraphicsDownload
 
   before_action :set_period, only: [:show, :cohort]
+  before_action :set_reporting_pipeline
   before_action :set_page, only: [:details]
   before_action :set_per_page, only: [:details]
   before_action :find_region, except: [:index, :monthly_district_data_report]
@@ -238,5 +239,9 @@ class Reports::RegionsController < AdminController
   def percentage(numerator, denominator)
     return 0 if denominator == 0 || numerator == 0
     ((numerator.to_f / denominator) * 100).round(2)
+  end
+
+  def set_reporting_pipeline
+    RequestStore[:reporting_pipeline] = true if params[:reporting_pipeline]
   end
 end

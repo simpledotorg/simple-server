@@ -22,7 +22,11 @@ module Reports
       @follow_ups_query = FollowUpsQuery.new
       @no_bp_measure_query = NoBPMeasureQuery.new
       @registered_patients_query = RegisteredPatientsQuery.new
-      @reporting_pipeline = reporting_pipeline
+      @reporting_pipeline = reporting_pipeline || RequestStore[:reporting_pipeline]
+    end
+
+    def use_reporting_pipeline?
+      @reporting_pipeline
     end
 
     attr_reader :assigned_patients_query
@@ -156,10 +160,6 @@ module Reports
         facility_ids = entry.region.facility_ids
         Patient.for_reports.where(assigned_facility: facility_ids).ltfu_as_of(entry.period.end).count
       end
-    end
-
-    def use_reporting_pipeline?
-      true || @reporting_pipeline
     end
 
     def month_date_formatter(period_type)
