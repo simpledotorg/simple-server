@@ -168,7 +168,7 @@ RSpec.describe Reports::Repository, type: :model do
       repo_v2 = Reports::Repository.new(facility_1.region, periods: range, reporting_pipeline: true)
       expected_counts.each do |period, count|
         actual = repo_v2.controlled_patients_count[slug][period]
-        expect(actual).to eq(count), "expected #{count} for #{period}, but got #{actual}"
+        expect(actual).to eq(count), "expected #{count} for #{period}, but got #{actual.inspect}"
       end
       expect(repo_v2.controlled_patients_rate[slug]).to eq(expected_rates)
     end

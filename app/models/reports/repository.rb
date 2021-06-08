@@ -159,7 +159,7 @@ module Reports
     end
 
     def use_reporting_pipeline?
-      @reporting_pipeline
+      true || @reporting_pipeline
     end
 
     def month_date_formatter(period_type)
@@ -172,9 +172,7 @@ module Reports
     memoize def controlled_patients_count
       if use_reporting_pipeline?
         regions.each_with_object({}) do |region, result|
-          counts = @control_rate_query_v2.controlled(region).count
-          counts.default = 0
-          result[region.slug] = counts
+          result[region.slug] = @control_rate_query_v2.controlled_counts(region, range: periods)
         end
       else
         region_period_cached_query(__method__) do |entry|
