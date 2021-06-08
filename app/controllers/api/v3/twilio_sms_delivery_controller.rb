@@ -3,7 +3,7 @@ class Api::V3::TwilioSmsDeliveryController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def create
-    twilio_message = TwilioSmsDeliveryDetail.find_by(session_id: message_session_id)
+    twilio_message = TwilioSmsDeliveryDetail.includes(communication: :notification).find_by(session_id: message_session_id)
     return head :not_found unless twilio_message
 
     twilio_message.update(update_params)
@@ -12,10 +12,11 @@ class Api::V3::TwilioSmsDeliveryController < ApplicationController
     event = [communication_type, twilio_message.result].join(".")
     metrics.increment(event)
 
-    if communication_type == "missed_visit_whatsapp_reminder" && twilio_message.unsuccessful?
-      appointment_reminder_id = twilio_message.communication.appointment_reminder_id
+    reminder = twilio_message.communication.notification
 
-      AppointmentNotification::Worker.perform_at(Communication.next_messaging_time, appointment_reminder_id, "missed_visit_sms_reminder")
+    if twilio_message.unsuccessful? && reminder&.next_communication_type
+      reminder.status_scheduled!
+      AppointmentNotification::Worker.perform_at(Communication.next_messaging_time, reminder.id)
     end
 
     head :ok

@@ -42,8 +42,10 @@ class Patient < ApplicationRecord
   has_many :facilities, -> { distinct }, through: :blood_pressures
   has_many :users, -> { distinct }, through: :blood_pressures
   has_many :appointments
-  has_many :appointment_reminders
+  has_many :notifications
   has_many :treatment_group_memberships, class_name: "Experimentation::TreatmentGroupMembership"
+  has_many :treatment_groups, through: :treatment_group_memberships, class_name: "Experimentation::TreatmentGroup"
+  has_many :experiments, through: :treatment_groups, class_name: "Experimentation::Experiment"
   has_one :medical_history
   has_many :teleconsultations
 

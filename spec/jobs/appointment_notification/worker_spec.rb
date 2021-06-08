@@ -1,180 +1,258 @@
 require "rails_helper"
 
 RSpec.describe AppointmentNotification::Worker, type: :job do
-  before do
-    Flipper.enable(:appointment_reminders)
-    allow(Statsd.instance).to receive(:increment).with(anything)
-  end
-
   describe "#perform" do
-    let(:reminder) { create(:appointment_reminder, status: "scheduled", message: "sms.appointment_reminders.missed_visit_whatsapp_reminder") }
-    let(:communication_type) { "missed_visit_whatsapp_reminder" }
-    let(:notification_service) { double }
-
-    def mock_successful_delivery
-      allow_any_instance_of(NotificationService).to receive(:send_whatsapp).and_return(notification_service)
-      allow(notification_service).to receive(:status).and_return("sent")
-      allow(notification_service).to receive(:sid).and_return("12345")
+    before do
+      Flipper.enable(:notifications)
+      allow(Statsd.instance).to receive(:increment).with(anything)
     end
 
-    it "sends a whatsapp message when communication_type is whatsapp" do
+    let(:notification) {
+      create(:notification,
+        subject: create(:appointment),
+        status: "scheduled",
+        message: "#{Notification::APPOINTMENT_REMINDER_MSG_PREFIX}.missed_visit_whatsapp_reminder")
+    }
+
+    def mock_successful_delivery
+      response_double = double
+      allow_any_instance_of(NotificationService).to receive(:response).and_return(response_double)
+      allow(response_double).to receive(:status).and_return("sent")
+      allow(response_double).to receive(:sid).and_return("12345")
+      twilio_client = double
+      allow_any_instance_of(NotificationService).to receive(:client).and_return(twilio_client)
+      allow(twilio_client).to receive_message_chain("messages.create")
+    end
+
+    it "logs but creates nothing when notifications and experiment flags are disabled" do
+      Flipper.disable(:notifications)
+      Flipper.disable(:experiment)
+
+      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.skipped.feature_disabled")
+      expect {
+        described_class.perform_async(notification.id)
+        described_class.drain
+      }.not_to change { Communication.count }
+    end
+
+    it "creates communications when notifications is enabled" do
       mock_successful_delivery
+
+      expect {
+        described_class.perform_async(notification.id)
+        described_class.drain
+      }.to change { Communication.count }.by(1)
+    end
+
+    it "creates communications when experiment is enabled" do
+      Flipper.disable(:notifications)
+      Flipper.enable(:experiment)
+
+      mock_successful_delivery
+
+      expect {
+        described_class.perform_async(notification.id)
+        described_class.drain
+      }.to change { Communication.count }.by(1)
+    end
+
+    it "sends a whatsapp message when notification's next_communication_type is whatsapp" do
+      mock_successful_delivery
+      allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("missed_visit_whatsapp_reminder")
 
       expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.sent.whatsapp")
       expect_any_instance_of(NotificationService).to receive(:send_whatsapp)
-      described_class.perform_async(reminder.id, communication_type)
+      described_class.perform_async(notification.id)
       described_class.drain
     end
 
-    it "sends sms when communication_type is sms" do
-      allow_any_instance_of(NotificationService).to receive(:send_sms).and_return(notification_service)
-      allow(notification_service).to receive(:status).and_return("sent")
-      allow(notification_service).to receive(:sid).and_return("12345")
+    it "sends sms when notification's next_communication_type is sms" do
+      mock_successful_delivery
+      allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("missed_visit_sms_reminder")
 
       expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.sent.sms")
       expect_any_instance_of(NotificationService).to receive(:send_sms)
-      described_class.perform_async(reminder.id, "missed_visit_sms_reminder")
+      described_class.perform_async(notification.id)
       described_class.drain
+    end
+
+    it "does not send a communication when notification's next_communication_type is nil" do
+      mock_successful_delivery
+      allow_any_instance_of(Notification).to receive(:next_communication_type).and_return(nil)
+
+      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.skipped.no_next_communication_type")
+      expect {
+        described_class.perform_async(notification.id)
+        described_class.drain
+      }.not_to change { Communication.count }
     end
 
     it "creates a Communication with twilio response status and sid" do
       mock_successful_delivery
 
       expect(Communication).to receive(:create_with_twilio_details!).with(
-        appointment: reminder.appointment,
-        appointment_reminder: reminder,
+        appointment: notification.subject,
+        notification: notification,
         twilio_sid: "12345",
         twilio_msg_status: "sent",
-        communication_type: communication_type
+        communication_type: "missed_visit_sms_reminder"
       ).and_call_original
       expect {
-        described_class.perform_async(reminder.id, communication_type)
+        described_class.perform_async(notification.id)
         described_class.drain
       }.to change { Communication.count }.by(1)
     end
 
-    it "does not create a NotificationService or Communication if appointment has previously been successfully communicated" do
-      mock_successful_delivery
+    it "does not create a NotificationService or Communication if notification has been previously attempted by all available methods" do
+      create(:communication, :missed_visit_whatsapp_reminder, notification: notification)
+      create(:communication, :missed_visit_sms_reminder, notification: notification)
 
-      previous_communication = create(:communication, :missed_visit_whatsapp_reminder, appointment: reminder.appointment)
-      create(:twilio_sms_delivery_detail, :sent, communication: previous_communication)
-
+      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.skipped.no_next_communication_type")
       expect_any_instance_of(NotificationService).not_to receive(:send_whatsapp)
       expect {
-        described_class.perform_async(reminder.id, communication_type)
+        described_class.perform_async(notification.id)
         described_class.drain
       }.not_to change { Communication.count }
     end
 
-    it "creates a NotificationService and Communication if attempt has previously been made and failed" do
+    it "does not attempt to resend the same communication type even if previous attempt failed" do
       mock_successful_delivery
 
-      previous_communication = create(:communication, :missed_visit_whatsapp_reminder, appointment: reminder.appointment)
-      create(:twilio_sms_delivery_detail, :failed, communication: previous_communication)
+      previous_whatsapp = create(:communication, :missed_visit_whatsapp_reminder, notification: notification)
+      create(:twilio_sms_delivery_detail, :failed, communication: previous_whatsapp)
 
-      expect_any_instance_of(NotificationService).to receive(:send_whatsapp)
-      expect {
-        described_class.perform_async(reminder.id, communication_type)
-        described_class.drain
-      }.to change { Communication.count }.by(1)
+      expect_any_instance_of(NotificationService).to receive(:send_sms)
+      described_class.perform_async(notification.id)
+      described_class.drain
     end
 
-    it "updates the appointment reminder status to 'sent'" do
+    it "updates the appointment notification status to 'sent'" do
       mock_successful_delivery
 
       expect {
-        described_class.perform_async(reminder.id, communication_type)
+        described_class.perform_async(notification.id)
         described_class.drain
-      }.to change { reminder.reload.status }.from("scheduled").to("sent")
+      }.to change { notification.reload.status }.from("scheduled").to("sent")
     end
 
-    it "selects the message language based on patient address" do
+    it "localizes the message based on facility state, not patient address" do
       mock_successful_delivery
-      reminder.patient.address.update(state: "punjab")
+      notification.patient.address.update!(state: "maharashtra")
+      notification.subject.facility.update!(state: "punjab")
       localized_message = I18n.t(
-        reminder.message,
+        notification.message,
         {
-          facility_name: reminder.appointment.facility.name,
+          facility_name: notification.subject.facility.name,
           locale: "pa-Guru-IN"
         }
       )
 
-      expect_any_instance_of(NotificationService).to receive(:send_whatsapp).with(
-        reminder.patient.latest_mobile_number,
+      expect_any_instance_of(NotificationService).to receive(:send_sms).with(
+        notification.patient.latest_mobile_number,
         localized_message,
         "https://localhost/api/v3/twilio_sms_delivery"
       )
-      described_class.perform_async(reminder.id, communication_type)
+      described_class.perform_async(notification.id)
       described_class.drain
     end
 
-    it "defaults to English if the patient has no address" do
-      mock_successful_delivery
+    it "does not create a communication or update notification status if the notification status is not 'scheduled'" do
+      notification = create(:notification, status: "pending")
 
-      reminder.patient.update!(address_id: nil)
-      localized_message = I18n.t(
-        reminder.message,
-        {
-          facility_name: reminder.appointment.facility.name,
-          locale: "en"
-        }
-      )
-
-      expect_any_instance_of(NotificationService).to receive(:send_whatsapp).with(
-        reminder.patient.latest_mobile_number,
-        localized_message,
-        "https://localhost/api/v3/twilio_sms_delivery"
-      )
-      described_class.perform_async(reminder.id, communication_type)
-      described_class.drain
-    end
-
-    it "defaults to English if patient's address is invalid" do
-      mock_successful_delivery
-
-      reminder.patient.address.update!(state: "Unknown State")
-      localized_message = I18n.t(
-        reminder.message,
-        {
-          facility_name: reminder.appointment.facility.name,
-          locale: "en"
-        }
-      )
-
-      expect_any_instance_of(NotificationService).to receive(:send_whatsapp).with(
-        reminder.patient.latest_mobile_number,
-        localized_message,
-        "https://localhost/api/v3/twilio_sms_delivery"
-      )
-      described_class.perform_async(reminder.id, communication_type)
-      described_class.drain
-    end
-
-    it "reports an error and does not create a communication if the appointment notification status is not 'scheduled'" do
-      appointment_reminder = create(:appointment_reminder, status: "pending")
-
-      expect(Sentry).to receive(:capture_message)
+      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.skipped.not_scheduled")
       expect {
-        described_class.perform_async(appointment_reminder.id, communication_type)
+        described_class.perform_async(notification.id)
         described_class.drain
       }.not_to change { Communication.count }
-      expect(appointment_reminder.reload.status).to eq("pending")
+      expect(notification.reload.status).to eq("pending")
     end
 
-    it "reports an error and does not create a communication if an error is received from twilio" do
-      expect(Sentry).to receive(:capture_message)
+    it "does not create a communication or update notification status if an error is received from twilio" do
       expect {
-        described_class.perform_async(reminder.id, communication_type)
+        described_class.perform_async(notification.id)
         described_class.drain
       }.not_to change { Communication.count }
-      expect(reminder.reload.status).to eq("scheduled")
+      expect(notification.reload.status).to eq("scheduled")
     end
 
-    it "raises an error if appointment reminder is not found" do
+    it "raises an error if appointment notification is not found" do
       expect {
-        described_class.perform_async("does-not-exist", communication_type)
+        described_class.perform_async("does-not-exist")
         described_class.drain
       }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "does not send if the notification is cancelled" do
+      mock_successful_delivery
+      notification.update!(status: "cancelled")
+      expect {
+        described_class.perform_async(notification.id)
+        described_class.drain
+      }.not_to change { Communication.count }
+    end
+
+    it "does not send if the notification belongs to a cancelled experiment" do
+      mock_successful_delivery
+      experiment = create(:experiment, state: "cancelled")
+      notification.update!(experiment_id: experiment.id)
+      expect {
+        described_class.perform_async(notification.id)
+        described_class.drain
+      }.not_to change { Communication.count }
+      expect(notification.reload.status).to eq("scheduled")
+    end
+
+    describe "medication reminder experiment" do
+      it "provides a sender if available" do
+        mock_successful_delivery
+        allow(ENV).to receive(:fetch).and_call_original
+        allow(ENV).to receive(:fetch).with("TWILIO_COVID_REMINDER_NUMBERS", "").and_return("+testnumber111,+testnumber222,+testnumber333")
+        experiment = create(:experiment, experiment_type: "medication_reminder")
+        allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("missed_visit_sms_reminder")
+        allow_any_instance_of(Notification).to receive(:experiment).and_return(experiment)
+
+        expect(NotificationService).to receive(:new).with(sms_sender: /testnumber/).and_call_original
+        expect_any_instance_of(NotificationService).to receive(:send_sms)
+        described_class.perform_async(notification.id)
+        described_class.drain
+      end
+
+      it "does not provide a sender if unavailable" do
+        mock_successful_delivery
+        allow(ENV).to receive(:fetch).and_call_original
+        allow(ENV).to receive(:fetch).with("TWILIO_COVID_REMINDER_NUMBERS", "").and_return("")
+        experiment = create(:experiment, experiment_type: "medication_reminder")
+        allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("missed_visit_sms_reminder")
+        allow_any_instance_of(Notification).to receive(:experiment).and_return(experiment)
+
+        expect(NotificationService).to receive(:new).with(no_args).and_call_original
+        expect_any_instance_of(NotificationService).to receive(:send_sms)
+        described_class.perform_async(notification.id)
+        described_class.drain
+      end
+
+      it "does not provide a sender if the notification is not part of a medication reminder experiment" do
+        mock_successful_delivery
+        experiment = create(:experiment, experiment_type: "current_patients")
+        allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("missed_visit_sms_reminder")
+        allow_any_instance_of(Notification).to receive(:experiment).and_return(experiment)
+
+        expect(NotificationService).to receive(:new).with(no_args).and_call_original
+        expect_any_instance_of(NotificationService).to receive(:send_sms)
+        described_class.perform_async(notification.id)
+        described_class.drain
+      end
+
+      it "does not provide a sender if the notification does not have an experiment" do
+        mock_successful_delivery
+        allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("missed_visit_sms_reminder")
+        allow_any_instance_of(Notification).to receive(:experiment).and_return(nil)
+
+        expect(NotificationService).to receive(:new).with(no_args).and_call_original
+        expect_any_instance_of(NotificationService).to receive(:send_sms)
+        described_class.perform_async(notification.id)
+        described_class.drain
+      end
     end
   end
 end

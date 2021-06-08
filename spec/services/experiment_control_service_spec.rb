@@ -128,13 +128,13 @@ describe ExperimentControlService, type: :model do
 
       ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
 
-      reminder1 = AppointmentReminder.find_by(patient: patient, appointment: upcoming_appointment1)
+      reminder1 = Notification.find_by(patient: patient, subject: upcoming_appointment1)
       expect(reminder1).to be_truthy
-      reminder2 = AppointmentReminder.find_by(patient: patient, appointment: upcoming_appointment2)
+      reminder2 = Notification.find_by(patient: patient, subject: upcoming_appointment2)
       expect(reminder2).to be_truthy
-      unexpected_reminder1 = AppointmentReminder.find_by(patient: patient, appointment: old_appointment)
+      unexpected_reminder1 = Notification.find_by(patient: patient, subject: old_appointment)
       expect(unexpected_reminder1).to be_falsey
-      unexpected_reminder2 = AppointmentReminder.find_by(patient: patient, appointment: far_future_appointment)
+      unexpected_reminder2 = Notification.find_by(patient: patient, subject: far_future_appointment)
       expect(unexpected_reminder2).to be_falsey
     end
 
@@ -152,7 +152,7 @@ describe ExperimentControlService, type: :model do
 
       ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
 
-      reminder1, reminder2, reminder3 = patient1.appointment_reminders.sort_by { |ar| ar.remind_on }
+      reminder1, reminder2, reminder3 = patient1.notifications.sort_by { |ar| ar.remind_on }
       expect(reminder1.remind_on).to eq(appointment_date - 3.days)
       expect(reminder2.remind_on).to eq(appointment_date)
       expect(reminder3.remind_on).to eq(appointment_date + 3.days)
@@ -174,11 +174,9 @@ describe ExperimentControlService, type: :model do
       experiment = create(:experiment)
       create(:experiment, state: "selecting")
       expect {
-        begin
-          ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
-        rescue ActiveRecord::RecordInvalid
-        end
-      }.to_not change { AppointmentReminder.count }
+        ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
+      }.to raise_error(ActiveRecord::RecordInvalid)
+      expect(Notification.count).to eq(0)
       expect(experiment.reload.state).to eq("new")
     end
 
@@ -189,22 +187,29 @@ describe ExperimentControlService, type: :model do
         ExperimentControlService.start_current_patient_experiment(experiment.name, 35, 5)
       }.to raise_error(ActiveRecord::RecordInvalid)
     end
+
+    it "raises not found if the experiment's state is not 'new'" do
+      experiment = create(:experiment, state: "running")
+
+      expect {
+        ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
+      }.to raise_error(ActiveRecord::RecordNotFound)
+    end
   end
 
-  describe "self.start_stale_patient_experiment" do
+  describe "self.schedule_daily_stale_patient_notifications" do
     it "excludes patients who have recently been in an experiment" do
-      old_experiment = create(:experiment, :with_treatment_group, name: "old", start_date: 2.days.ago, end_date: 1.day.ago)
-      old_group = old_experiment.treatment_groups.first
+      recent_experiment = create(:experiment, :with_treatment_group, name: "old", start_date: 2.days.ago, end_date: 1.day.ago)
 
-      older_experiment = create(:experiment, :with_treatment_group, name: "older", start_date: 16.days.ago, end_date: 15.day.ago)
-      older_group = older_experiment.treatment_groups.first
+      old_experiment = create(:experiment, :with_treatment_group, name: "older", start_date: 16.days.ago, end_date: 15.day.ago)
+      old_experiment.treatment_groups.first
 
       patient1 = create(:patient, age: 80)
-      old_group.treatment_group_memberships.create!(patient: patient1)
+      recent_experiment.treatment_groups.first.patients << patient1
       create(:blood_sugar, patient: patient1, device_created_at: 100.days.ago)
 
       patient2 = create(:patient, age: 80)
-      older_group.treatment_group_memberships.create!(patient: patient2)
+      old_experiment.treatment_groups.first.patients << patient2
       create(:blood_pressure, patient: patient2, device_created_at: 100.days.ago)
 
       patient3 = create(:patient, age: 80)
@@ -212,7 +217,7 @@ describe ExperimentControlService, type: :model do
 
       experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients")
 
-      ExperimentControlService.start_stale_patient_experiment(experiment.name, 1, 31)
+      ExperimentControlService.schedule_daily_stale_patient_notifications(experiment.name)
 
       expect(experiment.patients.include?(patient1)).to be_falsey
       expect(experiment.patients.include?(patient2)).to be_truthy
@@ -224,9 +229,20 @@ describe ExperimentControlService, type: :model do
       create(:blood_pressure, patient: patient, device_created_at: 100.days.ago)
       experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients")
 
-      ExperimentControlService.start_stale_patient_experiment(experiment.name, 1, 31)
+      ExperimentControlService.schedule_daily_stale_patient_notifications(experiment.name)
 
       expect(experiment.treatment_groups.first.patients.include?(patient)).to be_truthy
+    end
+
+    it "creates notifications for selected patients" do
+      patient1 = create(:patient, age: 80)
+      create(:blood_pressure, patient: patient1, device_created_at: 100.days.ago)
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients")
+      create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
+
+      expect {
+        ExperimentControlService.schedule_daily_stale_patient_notifications(experiment.name)
+      }.to change { patient1.notifications.count }.by(1)
     end
 
     it "schedules cascading reminders based on reminder templates" do
@@ -238,56 +254,44 @@ describe ExperimentControlService, type: :model do
       create(:reminder_template, treatment_group: group, message: "come today", remind_on_in_days: 0)
       create(:reminder_template, treatment_group: group, message: "you're late", remind_on_in_days: 3)
 
-      ExperimentControlService.start_stale_patient_experiment(experiment.name, 0, 30)
+      ExperimentControlService.schedule_daily_stale_patient_notifications(experiment.name)
 
       today = Date.current
-      reminder1, reminder2 = patient1.appointment_reminders.sort_by { |ar| ar.remind_on }
+      reminder1, reminder2 = patient1.notifications.sort_by { |ar| ar.remind_on }
       expect(reminder1.remind_on).to eq(today)
       expect(reminder2.remind_on).to eq(today + 3.days)
     end
 
-    it "schedules configured number of patients for each day of the experiment" do
-      Timecop.freeze(120.days.ago) do
-        patients = create_list(:patient, 3, age: 45)
-        patients.each { |patient| create(:appointment, patient: patient) }
-      end
-
-      experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients")
-      group = experiment.treatment_groups.first
-      create(:reminder_template, treatment_group: group, message: "come today", remind_on_in_days: 0)
-
-      expect {
-        ExperimentControlService.start_stale_patient_experiment(experiment.name, 0, 30, patients_per_day: 1)
-      }.to change { AppointmentReminder.count }.by(3)
-      reminder_dates = AppointmentReminder.group(:remind_on).count
-      expect(reminder_dates[Date.current]).to eq(1)
-      expect(reminder_dates[Date.current.advance(days: 1)]).to eq(1)
-      expect(reminder_dates[Date.current.advance(days: 2)]).to eq(1)
-    end
-
-    it "updates the experiment state, start date, and end date" do
+    it "updates the experiment state" do
       experiment = create(:experiment, experiment_type: "stale_patients")
-      ExperimentControlService.start_stale_patient_experiment(experiment.name, 0, 30)
+      ExperimentControlService.schedule_daily_stale_patient_notifications(experiment.name)
       experiment.reload
 
       expect(experiment).to be_running_state
-      expect(experiment.start_date).to eq(Date.current)
-      expect(experiment.end_date).to eq(30.days.from_now.to_date)
     end
 
     it "does not create appointment reminders or update the experiment if there's another experiment of the same type in progress" do
       experiment = create(:experiment, experiment_type: "stale_patients")
       create(:experiment, experiment_type: "stale_patients", state: "selecting")
       expect {
-        begin
-          ExperimentControlService.start_stale_patient_experiment(experiment.name, 1, 31)
-        rescue ActiveRecord::RecordInvalid
-        end
-      }.to_not change { AppointmentReminder.count }
+        ExperimentControlService.schedule_daily_stale_patient_notifications(experiment.name)
+      }.to raise_error(ActiveRecord::RecordInvalid)
+      expect(Notification.count).to eq(0)
       expect(experiment.reload.state).to eq("new")
     end
 
-    it "only schedules reminders for PATIENTS_PER_DAY * number of days" do
+    it "raises not found if the experiment state is not new or running" do
+      experiment = create(:experiment, experiment_type: "stale_patients", state: "selecting")
+      expect {
+        ExperimentControlService.schedule_daily_stale_patient_notifications(experiment.name)
+      }.to raise_error(ActiveRecord::RecordNotFound)
+      experiment.update!(state: "complete")
+      expect {
+        ExperimentControlService.schedule_daily_stale_patient_notifications(experiment.name)
+      }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "only schedules reminders for PATIENTS_PER_DAY by default" do
       stub_const("ExperimentControlService::PATIENTS_PER_DAY", 1)
       patient1 = create(:patient, age: 80)
       create(:blood_pressure, patient: patient1, device_created_at: 100.days.ago)
@@ -296,8 +300,66 @@ describe ExperimentControlService, type: :model do
       experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients")
 
       expect {
-        ExperimentControlService.start_stale_patient_experiment(experiment.name, 1, 1)
+        ExperimentControlService.schedule_daily_stale_patient_notifications(experiment.name)
       }.to change { Experimentation::TreatmentGroupMembership.count }.by(1)
+    end
+
+    it "limits participants to patients_per_day if provided" do
+      patient1 = create(:patient, age: 80)
+      create(:blood_pressure, patient: patient1, device_created_at: 100.days.ago)
+      patient2 = create(:patient, age: 80)
+      create(:blood_pressure, patient: patient2, device_created_at: 100.days.ago)
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients")
+
+      expect {
+        ExperimentControlService.schedule_daily_stale_patient_notifications(experiment.name, patients_per_day: 1)
+      }.to change { Experimentation::TreatmentGroupMembership.count }.by(1)
+    end
+
+    it "does not create notifications or update experiment status if today is before the experiment before date" do
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients", start_date: 1.day.from_now, end_date: 1.week.from_now)
+      patient1 = create(:patient, age: 80)
+      create(:blood_pressure, patient: patient1, device_created_at: 100.days.ago)
+
+      expect {
+        ExperimentControlService.schedule_daily_stale_patient_notifications(experiment.name)
+      }.not_to change { Experimentation::TreatmentGroupMembership.count }
+      expect(experiment.reload.state).to eq("new")
+    end
+
+    it "changes the experiment state to 'complete' and does not create notifications if today is after the experiment end date" do
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients", start_date: 1.week.ago, end_date: 1.day.ago)
+      patient1 = create(:patient, age: 80)
+      create(:blood_pressure, patient: patient1, device_created_at: 100.days.ago)
+
+      expect {
+        ExperimentControlService.schedule_daily_stale_patient_notifications(experiment.name)
+      }.to change { experiment.reload.state }.from("new").to("complete")
+      expect(Experimentation::TreatmentGroupMembership.count).to eq(0)
+    end
+  end
+
+  describe "self.abort_experiment" do
+    it "raises error if experiment is not found" do
+      expect {
+        ExperimentControlService.abort_experiment("fake")
+      }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "changes experiment state to 'cancelled' and changes pending and scheduled notification statuses to 'cancelled'" do
+      experiment = create(:experiment, state: "new")
+      patient = create(:patient)
+
+      pending_notification = create(:notification, experiment: experiment, patient: patient, status: "pending")
+      scheduled_notification = create(:notification, experiment: experiment, patient: patient, status: "scheduled")
+      sent_notification = create(:notification, experiment: experiment, patient: patient, status: "sent")
+
+      expect {
+        ExperimentControlService.abort_experiment(experiment.name)
+      }.to change { experiment.reload.state }.to("cancelled")
+      expect(pending_notification.reload.status).to eq("cancelled")
+      expect(scheduled_notification.reload.status).to eq("cancelled")
+      expect(sent_notification.reload.status).to eq("sent")
     end
   end
 end

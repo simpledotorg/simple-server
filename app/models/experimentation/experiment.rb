@@ -2,10 +2,12 @@ module Experimentation
   class Experiment < ActiveRecord::Base
     has_many :treatment_groups, dependent: :delete_all
     has_many :patients, through: :treatment_groups
+    has_many :notifications
 
     validates :name, presence: true, uniqueness: true
     validates :state, presence: true
     validates :experiment_type, presence: true
+    validates :experiment_type, uniqueness: true, if: proc { |experiment| experiment.experiment_type == "medication_reminder" }
     validate :date_range, if: proc { |experiment| experiment.start_date_changed? || experiment.end_date_changed? }
     validate :one_active_experiment_per_type
 
@@ -13,12 +15,14 @@ module Experimentation
       new: "new",
       selecting: "selecting",
       running: "running",
+      cancelled: "cancelled",
       complete: "complete"
     }, _suffix: true
 
     enum experiment_type: {
       current_patients: "current_patients",
-      stale_patients: "stale_patients"
+      stale_patients: "stale_patients",
+      medication_reminder: "medication_reminder"
     }, _prefix: true
 
     def self.candidate_patients

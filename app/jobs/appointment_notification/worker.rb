@@ -3,84 +3,90 @@ class AppointmentNotification::Worker
   include Sidekiq::Worker
 
   sidekiq_options queue: :high
-
-  DEFAULT_LOCALE = :en
+  delegate :logger, to: Rails
 
   def metrics
     @metrics ||= Metrics.with_object(self)
   end
 
-  def perform(appointment_reminder_id, communication_type)
+  def perform(notification_id)
     metrics.increment("attempts")
-    unless Flipper.enabled?(:appointment_reminders)
+    unless Flipper.enabled?(:notifications) || Flipper.enabled?(:experiment)
+      logger.info class: self.class.name, msg: "notifications feature is disabled"
       metrics.increment("skipped.feature_disabled")
       return
     end
-    reminder = AppointmentReminder.includes(:appointment, :patient).find(appointment_reminder_id)
-    if reminder.appointment.previously_communicated_via?(communication_type)
-      metrics.increment("skipped.previously_communicated")
+
+    notification = Notification.includes(:subject, :patient).find(notification_id)
+    communication_type = notification.next_communication_type
+    unless communication_type
+      metrics.increment("skipped.no_next_communication_type")
       return
     end
-    if reminder.status != "scheduled"
-      report_error("scheduled appointment reminder has invalid status")
+
+    unless notification.status_scheduled?
+      metrics.increment("skipped.not_scheduled")
       return
     end
-    send_message(reminder, communication_type)
+
+    send_message(notification, communication_type)
   end
 
   private
 
-  def send_message(reminder, communication_type)
-    notification_service = NotificationService.new
+  def send_message(notification, communication_type)
+    notification_service = if notification.experiment&.experiment_type == "medication_reminder" && medication_reminder_sms_sender
+      NotificationService.new(sms_sender: medication_reminder_sms_sender)
+    else
+      NotificationService.new
+    end
 
-    begin
-      response = if communication_type == "missed_visit_whatsapp_reminder"
-        notification_service.send_whatsapp(
-          reminder.patient.latest_mobile_number,
-          appointment_message(reminder),
-          callback_url
-        ).tap do |response|
-          metrics.increment("sent.whatsapp")
-        end
-      else
-        notification_service.send_sms(
-          reminder.patient.latest_mobile_number,
-          appointment_message(reminder),
-          callback_url
-        ).tap do |response|
-          metrics.increment("sent.sms")
-        end
+    if communication_type == "missed_visit_whatsapp_reminder"
+      notification_service.send_whatsapp(
+        notification.patient.latest_mobile_number,
+        notification.localized_message,
+        callback_url
+      ).tap do |response|
+        metrics.increment("sent.whatsapp")
       end
-      ActiveRecord::Base.transaction do
-        create_communication(reminder, communication_type, response)
-        reminder.status_sent!
+    else
+      notification_service.send_sms(
+        notification.patient.latest_mobile_number,
+        notification.localized_message,
+        callback_url
+      ).tap do |response|
+        metrics.increment("sent.sms")
       end
-    rescue Twilio::REST::TwilioError => e
-      metrics.increment(:error)
-      report_error(e)
+    end
+
+    log_info = {
+      class: self.class.name,
+      msg: "send_message",
+      failed: !!notification_service.failed?,
+      error: notification_service.error,
+      sender: medication_reminder_sms_sender || "default",
+      communication_type: communication_type,
+      notification_id: notification.id
+    }
+
+    logger.info log_info
+
+    return if notification_service.failed?
+
+    ActiveRecord::Base.transaction do
+      create_communication(notification, communication_type, notification_service.response)
+      notification.status_sent!
     end
   end
 
-  def create_communication(reminder, communication_type, response)
+  def create_communication(notification, communication_type, response)
     Communication.create_with_twilio_details!(
-      appointment: reminder.appointment,
-      appointment_reminder: reminder,
+      appointment: notification.subject,
+      notification: notification,
       twilio_sid: response.sid,
       twilio_msg_status: response.status,
       communication_type: communication_type
     )
-  end
-
-  def appointment_message(reminder)
-    I18n.t(
-      reminder.message,
-      facility_name: reminder.appointment.facility.name,
-      locale: patient_locale(reminder.patient)
-    )
-  end
-
-  def patient_locale(patient)
-    patient.address&.locale || DEFAULT_LOCALE
   end
 
   def callback_url
@@ -90,13 +96,11 @@ class AppointmentNotification::Worker
     )
   end
 
-  def report_error(e)
-    Sentry.capture_message("Error while processing appointment notifications",
-      extra: {
-        exception: e.to_s
-      },
-      tags: {
-        type: "appointment-notification-job"
-      })
+  def medication_reminder_sms_sender
+    @medication_reminder_sms_sender ||= medication_reminder_sms_senders.sample
+  end
+
+  def medication_reminder_sms_senders
+    ENV.fetch("TWILIO_COVID_REMINDER_NUMBERS", "").split(",").map(&:strip)
   end
 end

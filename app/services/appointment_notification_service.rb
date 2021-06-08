@@ -19,27 +19,20 @@ class AppointmentNotificationService
     next_messaging_time = Communication.next_messaging_time
 
     eligible_appointments.each do |appointment|
-      # i don't believe this is the best way to control this. combined with the fact that
-      # we grab all appointments with remind_on before today, I suspect this means we're
-      # resending the same reminders because they failed the first time.
-      # leaving it in place for now in an effort to change as little of the current process as possible.
-      next if appointment.previously_communicated_via?(communication_type)
-
-      appointment_reminder = create_appointment_reminder(appointment)
-
-      AppointmentNotification::Worker.perform_at(next_messaging_time, appointment_reminder.id, communication_type)
+      notification = create_appointment_reminder(appointment, remind_on: next_messaging_time)
+      AppointmentNotification::Worker.perform_at(next_messaging_time, notification.id)
     end
   end
 
   private
 
-  def create_appointment_reminder(appointment)
-    AppointmentReminder.create!(
-      appointment: appointment,
+  def create_appointment_reminder(appointment, remind_on:)
+    Notification.create!(
+      subject: appointment,
       patient: appointment.patient,
-      remind_on: appointment.remind_on,
-      status: "pending",
-      message: "sms.appointment_reminders.#{communication_type}"
+      remind_on: remind_on,
+      status: "scheduled",
+      message: "#{Notification::APPOINTMENT_REMINDER_MSG_PREFIX}.#{communication_type}"
     )
   end
 

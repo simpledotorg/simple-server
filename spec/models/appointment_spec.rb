@@ -6,8 +6,7 @@ describe Appointment, type: :model do
   describe "Associations" do
     it { should belong_to(:patient).optional }
     it { should belong_to(:facility) }
-    it { should have_many(:communications) }
-    it { should have_many(:appointment_reminders) }
+    it { should have_many(:notifications) }
   end
 
   context "Validations" do
@@ -67,12 +66,27 @@ describe Appointment, type: :model do
     end
 
     describe ".eligible_for_reminders" do
-      it "includes only appointments overdue by days_overdue" do
-        overdue_appointment = create(:appointment, :overdue, scheduled_date: 3.days.ago)
-        recently_overdue_appointment = create(:appointment, scheduled_date: 2.days.ago, status: :scheduled)
+      it "includes only appointments overdue by at least days_overdue" do
+        _not_overdue = create(:appointment, scheduled_date: 2.days.ago, status: :scheduled)
+        overdue = create(:appointment, scheduled_date: 3.days.ago, status: :scheduled)
+        more_overdue = create(:appointment, scheduled_date: 4.days.ago, status: :scheduled)
 
-        expect(described_class.eligible_for_reminders(days_overdue: 3)).to include overdue_appointment
-        expect(described_class.eligible_for_reminders(days_overdue: 3)).not_to include recently_overdue_appointment
+        expect(described_class.eligible_for_reminders(days_overdue: 3)).to match_array([overdue, more_overdue])
+      end
+
+      it "excludes appointments that have appointment reminders" do
+        overdue_appointment = create(:appointment, scheduled_date: 3.days.ago, status: :scheduled)
+        create(:notification, subject: overdue_appointment)
+
+        expect(described_class.eligible_for_reminders(days_overdue: 3)).to be_empty
+      end
+
+      it "excludes appointments that have communications" do
+        overdue_appointment = create(:appointment, scheduled_date: 3.days.ago, status: :scheduled)
+        notification = create(:notification, subject: overdue_appointment)
+        create(:communication, notification: notification)
+
+        expect(described_class.eligible_for_reminders(days_overdue: 3)).to be_empty
       end
 
       context "for patients marked as dead" do
@@ -249,15 +263,18 @@ describe Appointment, type: :model do
     end
 
     it "returns falsey if there are non missed_visit_sms_reminder communications for the appointment" do
+      notification = create(:notification, subject: overdue_appointment)
       create(:communication,
         communication_type: :voip_call,
-        appointment: overdue_appointment)
+        appointment: overdue_appointment,
+        notification: notification)
 
       expect(overdue_appointment.previously_communicated_via?(:missed_visit_sms_reminder)).to be_falsey
     end
 
     it "returns true if followup reminder SMS for the appointment was unsuccessful" do
-      create(:communication,
+      notification = create(:notification, subject: overdue_appointment)
+      notification.communications << create(:communication,
         :missed_visit_sms_reminder,
         appointment: overdue_appointment,
         detailable: create(:twilio_sms_delivery_detail, :undelivered))
@@ -266,12 +283,14 @@ describe Appointment, type: :model do
     end
 
     it "returns false if followup reminder SMS for the appointment were successful" do
-      create(:communication,
+      notification = create(:notification, subject: overdue_appointment)
+      notification.communications << create(:communication,
         :missed_visit_sms_reminder,
-        appointment: overdue_appointment,
+        appointment_id: overdue_appointment.id,
+        notification: notification,
         detailable: create(:twilio_sms_delivery_detail, :delivered))
 
-      expect(overdue_appointment.previously_communicated_via?(:missed_visit_sms_reminder)).to eq(true)
+      expect(overdue_appointment.reload.previously_communicated_via?(:missed_visit_sms_reminder)).to eq(true)
     end
   end
 
@@ -294,6 +313,41 @@ describe Appointment, type: :model do
 
         expect(appointment.anonymized_data).to eq anonymised_data
       end
+    end
+  end
+
+  describe "appointment reminder cancellation" do
+    it "does not cancel reminders when appointment status is changed to 'scheduled'" do
+      appointment.update!(status: nil)
+      reminder = create(:notification, subject: appointment, status: "pending")
+
+      expect {
+        appointment.update!(status: "scheduled")
+      }.not_to change { reminder.reload.status }
+    end
+
+    it "cancels reminders when an appointment status is changed to 'visited'" do
+      reminder = create(:notification, subject: appointment, status: "pending")
+
+      expect {
+        appointment.update!(status: "visited")
+      }.to change { reminder.reload.status }.from("pending").to("cancelled")
+    end
+
+    it "cancels reminders when an appointment status is changed to 'cancelled'" do
+      reminder = create(:notification, subject: appointment, status: "pending")
+
+      expect {
+        appointment.update!(status: "cancelled")
+      }.to change { reminder.reload.status }.from("pending").to("cancelled")
+    end
+
+    it "does not cancel sent reminders" do
+      reminder = create(:notification, subject: appointment, status: "sent")
+
+      expect {
+        appointment.update!(status: "visited")
+      }.not_to change { reminder.reload.status }
     end
   end
 end

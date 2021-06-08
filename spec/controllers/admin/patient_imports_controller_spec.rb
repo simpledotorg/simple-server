@@ -56,7 +56,7 @@ RSpec.describe Admin::PatientImportsController, type: :controller do
         params = {patient_import_file: patient_import_file, facility_id: facility.id}
 
         post :create, params: params
-        expect(flash[:notice]).to match(/imported 4 patients.*#{facility.name}/)
+        expect(flash[:notice]).to match(/imported 11 patients.*#{facility.name}/)
       end
     end
 
