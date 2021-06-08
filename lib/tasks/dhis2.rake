@@ -18,28 +18,30 @@ namespace :dhis2 do
 
     FacilityBusinessIdentifier.where(identifier_type: "dhis2_org_unit_id").each do |facility_identifier|
       facility = facility_identifier.facility
+      slug = facility.region.slug
       org_unit_id = facility_identifier.identifier
 
-      report = Reports::RegionService.new(region: facility.region, period: current_period, months: 27).call
+      range = (current_period.advance(months: -24)..current_period)
+      # report = Reports::RegionService.new(region: facility.region, period: current_period, months: 27).call
+      repository = Reports::Repository(facility.region, periods: range)
 
       first_period = current_period.advance(months: -21)
 
       (first_period..current_period).each do |period|
         dhis2_period = period.to_date.strftime("%Y%m")
 
-        controlled_patients = report.controlled_patients[period]
-        cumulative_registrations = report.cumulative_registrations[period]
-        ltfu_patients = report.ltfu_patients[period]
-        missed_visits = report.missed_visits[period]
-        registrations = report.registrations[period]
-        uncontrolled_patients = report.uncontrolled_patients[period]
+        controlled_patients = repository.controlled_patients_count[slug][period]
+        uncontrolled_patients = repository.uncontrolled_patients_count[slug][period]
+        cumulative_registrations = repository.cumulative_registrations[slug][period]
+        ltfu_patients = repository.ltfu_counts[slug][period]
+        missed_visits = repository.missed_visits[slug][period]
+        registrations = repository.registrations[slug][period]
 
         # Get assigned patients from 3 months ago (for control rate indicator)
-        reg_3_months_ago = report.cumulative_registrations[period.advance(months: -3)]
+        reg_3_months_ago = repository.adjusted_patient_counts_with_ltfu[slug][period]
 
         # Calculate dead patients (since we don't store it historically)
-        adj_patients = report.adjusted_patient_counts[period]
-        dead_patients = reg_3_months_ago - ltfu_patients - adj_patients
+        dead_patients = facility.with_hypertension.assigend_patients.status_dead.count
 
         data = {
           controlled_patients: controlled_patients,
