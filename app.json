@@ -21,7 +21,7 @@
     "ANALYTICS_DASHBOARD_CACHE_TTL": {
       "value": "172800"
     },
-    "ANALYTICS_TIME_ZONE": {
+    "REPORTING_TIME_ZONE": {
       "value": "Asia/Kolkata"
     },
     "APPOINTMENT_NOTIFICATION_FAN_OUT_BATCH_SIZE": {

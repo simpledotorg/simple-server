@@ -3,8 +3,8 @@ FactoryBot.define do
     name { Faker::Lorem.unique.word }
     state { "new" }
     experiment_type { "current_patients" }
-    start_date {}
-    end_date {}
+    start_date { Date.current }
+    end_date { 1.week.from_now }
   end
 
   trait :with_treatment_group do

@@ -65,4 +65,15 @@ RSpec.describe Experimentation::StalePatientSelection, type: :model do
 
     expect(result).to contain_exactly(patient_with_past_appt.id)
   end
+
+  it "does not include the same patient more than once" do
+    patient = create(:patient, age: 80)
+    create(:blood_pressure, patient: patient, device_created_at: 40.days.ago)
+    create(:blood_pressure, patient: patient, device_created_at: 90.days.ago)
+    patient.appointments << create(:appointment, scheduled_date: 90.days.ago, status: "scheduled")
+
+    result = described_class.call(start_date: Date.tomorrow)
+
+    expect(result).to contain_exactly(patient.id)
+  end
 end
