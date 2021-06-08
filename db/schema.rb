@@ -300,6 +300,7 @@ ActiveRecord::Schema.define(version: 2021_06_07_235412) do
     t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["facility_id", "identifier_type"], name: "index_facility_business_identifiers_on_facility_and_id_type", unique: true
     t.index ["facility_id"], name: "index_facility_business_identifiers_on_facility_id"
   end
 
