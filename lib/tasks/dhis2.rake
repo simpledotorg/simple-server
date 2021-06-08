@@ -1,11 +1,6 @@
 namespace :dhis2 do
   desc "Export aggregate indicators for each facility to DHIS2"
   task export: :environment do
-    facility_map = {
-      "CHC Chicory Cove" => "SGeL573UZ41",
-      "CHC Juniper Overlook" => "d7Yo8u586tS"
-    }
-
     data_elements_map = {
       controlled_patients: "elWGoiZbYCa",
       cumulative_registrations: "oR5QO3WZ7CV",
@@ -21,8 +16,9 @@ namespace :dhis2 do
 
     bulk_data = []
 
-    facility_map.each do |name, org_unit_id|
-      facility = Facility.find_by!(name: name)
+    FacilityBusinessIdentifier.where(identifier_type: "dhis2_org_unit_id").each do |facility_identifier|
+      facility = facility_identifier.facility
+      org_unit_id = facility_identifier.identifier
 
       report = Reports::RegionService.new(region: facility.region, period: current_period, months: 27).call
 
@@ -70,6 +66,8 @@ namespace :dhis2 do
       end
     end
 
-    Dhis2.client.data_value_sets.bulk_create(data_values: bulk_data)
+    puts bulk_data
+
+    #Dhis2.client.data_value_sets.bulk_create(data_values: bulk_data)
   end
 end
