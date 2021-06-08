@@ -43,14 +43,10 @@ RSpec.describe DrugConsumptionReportExporter do
     timestamp = ["Report last updated at:", query.drug_stocks_report.fetch(:last_updated_at)]
     headers_row_1 = [
       nil,
-      "ARB Tablets",
-      nil, nil,
-      "CCB Tablets",
-      nil,
-      "Diuretic Tablets",
-      nil,
-      "Overall in base doses",
-      nil, nil
+      "ARB Tablets", nil, nil,
+      "CCB Tablets", nil,
+      "Diuretic Tablets", nil,
+      "Overall in base doses", nil, nil
     ]
 
     headers_row_2 = [
@@ -69,18 +65,18 @@ RSpec.describe DrugConsumptionReportExporter do
 
     totals_row = [
       "All",
-      1000, 0, -1000, 0,
-      -3000, "?",
-      "?", -1000,
-      -6000, "?"
+      1000, 0, -1000,
+      0, -3000,
+      "?", "?",
+      -1000, -6000, "?"
     ]
 
     facility_1_row =
       [facilities.first.name,
-        1000, 0, -1000, 0,
-        -3000, "?",
-        "?", -1000,
-        -6000, "?"]
+        1000, 0, -1000,
+        0, -3000,
+        "?", "?",
+       -1000, -6000, "?"]
 
     facility_2_row =
       [facilities.second.name,
