@@ -39,6 +39,8 @@ RSpec.configure do |config|
 
   config.before(:each) do
     RequestStore.clear!
+    # temp to see what falls out in CI
+    RequestStore[:reporting_pipeline] = true
   end
 
   Shoulda::Matchers.configure do |config|
