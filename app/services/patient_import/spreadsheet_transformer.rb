@@ -13,8 +13,10 @@ module PatientImport
 
     def call
       rows.map do |row|
+        next if row[:registration_date].blank?
+
         params_for(row)
-      end
+      end.compact
     end
 
     def rows
@@ -38,7 +40,7 @@ module PatientImport
           full_name: row[:full_name],
           age: row[:age].to_i,
           age_updated_at: timestamp(row[:registration_date]),
-          gender: row[:gender].downcase,
+          gender: gender(row[:gender]),
           status: patient_status(row),
           created_at: timestamp(row[:registration_date]),
           updated_at: timestamp(row[:registration_date]),
@@ -62,12 +64,12 @@ module PatientImport
         medical_history: {
           id: medical_history_id,
           patient_id: patient_id,
-          hypertension: row[:medical_history_hypertension].downcase,
-          diabetes: row[:medical_history_diabetes].downcase,
-          prior_heart_attack: row[:medical_history_heart_attack].downcase,
-          prior_stroke: row[:medical_history_stroke].downcase,
-          chronic_kidney_disease: row[:medical_history_kidney_disease].downcase,
-          diagnosed_with_hypertension: row[:medical_history_hypertension].downcase,
+          hypertension: history(row[:medical_history_hypertension]),
+          diabetes: history(row[:medical_history_diabetes]),
+          prior_heart_attack: history(row[:medical_history_heart_attack]),
+          prior_stroke: history(row[:medical_history_stroke]),
+          chronic_kidney_disease: history(row[:medical_history_kidney_disease]),
+          diagnosed_with_hypertension: history(row[:medical_history_hypertension]),
           receiving_treatment_for_hypertension: "yes",
           created_at: timestamp(row[:registration_date]),
           updated_at: timestamp(row[:registration_date])
@@ -219,7 +221,7 @@ module PatientImport
     end
 
     def patient_status(row)
-      row[:died] == "yes" ? Patient.statuses["dead"] : Patient.statuses["active"]
+      row[:died]&.downcase&.in?(["yes", "y"]) ? Patient.statuses["dead"] : Patient.statuses["active"]
     end
 
     def medication(name:, patient_id:, created_at:)
@@ -264,6 +266,23 @@ module PatientImport
       Medication.all.to_a.find do |medication|
         name.gsub(/\s+/, "") == "#{medication.name}#{medication.dosage}#{localized_frequency(medication)}".gsub(/\s+/, "")
       end
+    end
+
+    def gender(value)
+      case value.presence&.downcase
+      when "m", "male"
+        "male"
+      when "f", "female"
+        "female"
+      when "t", "transgender"
+        "transgender"
+      else
+        value
+      end
+    end
+
+    def history(value)
+      value.presence&.downcase || "unknown"
     end
 
     def timestamp(time)
