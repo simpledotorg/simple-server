@@ -41,10 +41,6 @@ module Reports
       result.calculate_missed_visits_percentages(calc_range, with_ltfu: true)
       result.calculate_period_info(calc_range)
 
-      # This is a temporary hack to refresh repository's missed visits from the RegionCacheWarmer.
-      # We should deprecate result.rb and move all calculations to Repository.
-      repository.missed_visits
-
       result
     end
 

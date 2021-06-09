@@ -126,29 +126,6 @@ module Reports
       end
     end
 
-    # "Missed visits" is the remaining patients when we subtract out the other three groups.
-    def calculate_missed_visits(range, with_ltfu: false)
-      if with_ltfu
-        self.missed_visits_with_ltfu = range.each_with_object(Hash.new(0)) { |(period, visit_count), hsh|
-          patient_count = adjusted_patient_counts_with_ltfu_for(period)
-          controlled = controlled_patients_for(period)
-          uncontrolled = uncontrolled_patients_for(period)
-          visited_without_bp_taken = visited_without_bp_taken_for(period)
-          missed_visits = patient_count - visited_without_bp_taken - controlled - uncontrolled
-          hsh[period] = missed_visits.try(:floor) || 0
-        }
-      else
-        self.missed_visits = range.each_with_object(Hash.new(0)) { |(period, visit_count), hsh|
-          patient_count = adjusted_patient_counts_for(period)
-          controlled = controlled_patients_for(period)
-          uncontrolled = uncontrolled_patients_for(period)
-          visited_without_bp_taken = visited_without_bp_taken_for(period)
-          missed_visits = patient_count - visited_without_bp_taken - controlled - uncontrolled
-          hsh[period] = missed_visits.try(:floor) || 0
-        }
-      end
-    end
-
     # To determine the missed visits percentage, we sum the remaining percentages and subtract that from 100.
     # If we determined the percentage directly, we would have cases where the percentages do not add up to 100
     # due to rounding and losing precision.
