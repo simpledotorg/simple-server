@@ -1,4 +1,6 @@
 class Region < ApplicationRecord
+  include Flipperable
+
   MAX_LABEL_LENGTH = 255
 
   delegate :cache, to: Rails

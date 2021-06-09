@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  include Flipperable
   include PgSearch::Model
 
   AUTHENTICATION_TYPES = {
@@ -248,13 +249,5 @@ class User < ApplicationRecord
 
   def district_level_sync?
     can_teleconsult?
-  end
-
-  def flipper_id
-    "User;#{id}"
-  end
-
-  def feature_enabled?(name)
-    Flipper.enabled?(name, self)
   end
 end
