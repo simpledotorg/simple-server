@@ -85,7 +85,7 @@ module Reports
 
     # Adjusted patient counts are the patient counts from three months ago (the adjusted period) that
     # are the basis for control rates. These counts DO NOT include lost to follow up.
-    memoize def adjusted_patient_counts
+    memoize def adjusted_patient_counts_without_ltfu
       cumulative_assigned_patients_count.each_with_object({}) do |(entry, result), results|
         values = periods.each_with_object(Hash.new(0)) { |period, region_result|
           next unless result.key?(period.adjusted_period)
@@ -95,7 +95,7 @@ module Reports
       end
     end
 
-    alias_method :adjusted_patient_counts_without_ltfu, :adjusted_patient_counts
+    alias_method :adjusted_patient_counts, :adjusted_patient_counts_without_ltfu
 
     # Returns the full range of assigned patient counts for a Region. We do this via one SQL query for each Region, because its
     # fast and easy via the underlying query.
