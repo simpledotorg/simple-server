@@ -463,6 +463,7 @@ RSpec.describe Reports::Repository, type: :model do
       expect(legacy_results[:missed_visits].size).to eq(service.range.entries.size)
       expect(repo.missed_visits[slug].size).to eq(service.range.entries.size)
       expect(repo.missed_visits[slug]).to eq(legacy_results[:missed_visits])
+      expect(repo.missed_visits_without_ltfu[slug]).to eq(legacy_results[:missed_visits])
       expect(repo.missed_visits_with_ltfu[slug]).to eq(legacy_results[:missed_visits_with_ltfu])
     end
   end

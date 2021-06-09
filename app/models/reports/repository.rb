@@ -168,7 +168,7 @@ module Reports
       end
     end
 
-    memoize def missed_visits
+    memoize def missed_visits_without_ltfu
       region_period_cached_query(__method__) do |entry|
         slug = entry.slug
         patient_count = denominator(entry.region, entry.period)
@@ -178,6 +178,8 @@ module Reports
         patient_count - visits - controlled - uncontrolled
       end
     end
+
+    alias_method :missed_visits, :missed_visits_without_ltfu
 
     def missed_visits_with_ltfu
       region_period_cached_query(__method__) do |entry|
