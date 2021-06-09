@@ -179,6 +179,17 @@ module Reports
       end
     end
 
+    def missed_visits_with_ltfu
+      region_period_cached_query(__method__) do |entry|
+        slug = entry.slug
+        patient_count = denominator(entry.region, entry.period, with_ltfu: true)
+        controlled = controlled_patients_count[slug][entry.period]
+        uncontrolled = uncontrolled_patients_count[slug][entry.period]
+        visits = visited_without_bp_taken[slug][entry.period]
+        patient_count - visits - controlled - uncontrolled
+      end
+    end
+
     # We determine this rate via subtraction from 100 instead of via division to avoid confusing rounding errors.
     memoize def missed_visits_rate
       region_period_cached_query(__method__) do |entry|
@@ -209,12 +220,14 @@ module Reports
       }
     end
 
-    # This method currently always returns the "excluding LTFU denominator".
-    # Repository only returns "excluding LTFU" rates.
     # This only powers queries for children regions which do not require both variants of control rates, unlike Result.
     # As we deprecate Result and shift to Repository, a Repository object should be able to return both rates.
-    def denominator(region, period)
-      cumulative_assigned_patients_count[region.slug][period.adjusted_period] - ltfu_counts[region.slug][period]
+    def denominator(region, period, with_ltfu: false)
+      if with_ltfu
+        cumulative_assigned_patients_count[region.slug][period.adjusted_period]
+      else
+        cumulative_assigned_patients_count[region.slug][period.adjusted_period] - ltfu_counts[region.slug][period]
+      end
     end
 
     memoize def controlled_patients_rate
