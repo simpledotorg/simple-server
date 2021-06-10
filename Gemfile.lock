@@ -686,7 +686,7 @@ DEPENDENCIES
   request_store
   request_store-sidekiq
   roo (~> 2.8.0)
-  rspec-rails
+  rspec-rails (~> 4.0.1)
   rspec-sidekiq
   rswag (~> 1.6.0)
   ruby-progressbar

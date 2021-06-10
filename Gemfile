@@ -60,6 +60,7 @@ gem "redis"
 gem "request_store"
 gem "request_store-sidekiq"
 gem "roo", "~> 2.8.0"
+gem "rspec-rails", "~> 4.0.1"
 gem "rswag", "~> 1.6.0"
 gem "ruby-progressbar", require: false
 gem "rubyzip"
@@ -100,7 +101,6 @@ group :development, :test do
   gem "parallel_tests", group: %i[development test]
   gem "rails-controller-testing"
   gem "rb-readline"
-  gem "rspec-rails"
   gem "shoulda-matchers", "~> 4.1.2"
   gem "standard", require: false
 end
