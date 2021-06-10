@@ -21,13 +21,13 @@ blocks:
           commands:
             - sem-version ruby 2.6.6
             - checkout
-            - cache restore
+            # - cache restore
             - bundle install --deployment --path vendor/bundle
             - "wget -O /tmp/libpng12.deb http://mirrors.kernel.org/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1_amd64.deb"
             - sudo dpkg -i /tmp/libpng12.deb
             - gem install semaphore_test_boosters
             - yarn install
-            - cache store
+            # - cache store
   - name: Tests
     dependencies:
       - Setup
@@ -49,7 +49,7 @@ blocks:
           - sem-version ruby 2.6.6
           - sem-service start postgres 10
           - checkout
-          - cache restore
+          # - cache restore
           - bundle install --deployment --path vendor/bundle
       jobs:
         - name: RSpec

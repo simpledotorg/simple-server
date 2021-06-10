@@ -634,6 +634,7 @@ DEPENDENCIES
   rails (= 5.2.6)
   rails-controller-testing
   rails-erd
+  rake
   rb-readline
   redis
   render_async
