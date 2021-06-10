@@ -6,7 +6,7 @@ SELECT
     p.status,
     p.gender,
     p.age,
-    p.age_updated_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')) AS age_updated_at,
+    p.age_updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS age_updated_at,
     p.date_of_birth,
     mh.hypertension as hypertension,
 
@@ -51,11 +51,11 @@ SELECT
     bps.systolic,
     bps.diastolic,
     visits.visited_at AS visited_at,
-    p.recorded_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')) as recorded_at,
+    p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' as recorded_at,
 
 
-    (cal.year - DATE_PART('year', p.recorded_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 12 +
-    (cal.month - DATE_PART('month', p.recorded_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE'))))
+    (cal.year - DATE_PART('year', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 12 +
+    (cal.month - DATE_PART('month', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE'))))
     AS months_since_registration,
 
     visits.months_since_visit AS months_since_visit,
@@ -71,11 +71,11 @@ SELECT
         AS last_bp_state,
 
     CASE
-        WHEN p.status = 'dead' THEN 'died'
+        WHEN p.status = 'dead' THEN 'dead'
         WHEN (
           -- months_since_registration
-          (cal.year - DATE_PART('year', p.recorded_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 12 +
-          (cal.month - DATE_PART('month', p.recorded_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) < 12
+          (cal.year - DATE_PART('year', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 12 +
+          (cal.month - DATE_PART('month', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) < 12
 
           OR
 
@@ -83,7 +83,7 @@ SELECT
         ) THEN 'under_care'
         ELSE 'lost_to_follow_up'
         END
-        AS care_state,
+        AS htn_care_state,
 
     CASE
         WHEN (visits.months_since_visit >= 3 OR visits.months_since_visit is NULL) THEN 'missed_visit'
@@ -91,11 +91,11 @@ SELECT
         WHEN (bps.systolic < 140 AND bps.diastolic < 90) THEN 'controlled'
         ELSE 'uncontrolled'
         END
-        AS treatment_outcome_in_last_3_months
+        AS htn_treatment_outcome_in_last_3_months
 
 FROM patients p
 LEFT OUTER JOIN reporting_months cal
-    ON to_char(p.recorded_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')), 'YYYY-MM') <= to_char(cal.month_date, 'YYYY-MM')
+    ON to_char(p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')), 'YYYY-MM') <= to_char(cal.month_date, 'YYYY-MM')
 
 -- Only fetch BPs and visits that happened on or before the selected calendar month
 -- We use year and month comparisons to avoid timezone errors
