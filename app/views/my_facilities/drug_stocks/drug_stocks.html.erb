@@ -37,7 +37,9 @@
           </div>
         </div>
         <div class="mb-8px mr-8px d-flex flex-grow-1 justify-content-sm-end">
-          <button href="#" class="btn btn-sm btn-outline-primary" onclick="downloadCSV()">Download Report</button>
+          <%= link_to "Download Report",
+                      my_facilities_drug_stocks_path(format: :csv, **request.query_parameters.symbolize_keys),
+                      class: "btn btn-sm btn-outline-primary" %>
         </div>
       </div>
       <% if @facilities.present? %>
@@ -48,10 +50,3 @@
     </div>
   </div>
 </div>
-
-<script>
-  function downloadCSV() {
-    let queryParams = window.location.search;
-    window.location = `${window.location.pathname}/download.csv${queryParams}`;
-  }
-</script>
