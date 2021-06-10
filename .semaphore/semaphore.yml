@@ -20,7 +20,6 @@ blocks:
         - name: bundle
           commands:
             - sem-version ruby 2.6.6
-            - sem-service start postgres 10
             - checkout
             - cache restore
             - bundle install --deployment --path vendor/bundle
@@ -45,12 +44,17 @@ blocks:
       secrets:
         - name: sentry-release-auth-token
         - name: semaphore-deploy-key
+      prologue:
+        commands:
+          - sem-version ruby 2.6.6
+          - sem-service start postgres 10
+          - checkout
+          - cache restore
+          - bundle install --deployment --path vendor/bundle
       jobs:
         - name: RSpec
           parallelism: 8
           commands:
-            - checkout
-            - cache restore
             - "bundle exec rake db:setup"
             - "bundle exec rake db:test:prepare"
             - rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT
