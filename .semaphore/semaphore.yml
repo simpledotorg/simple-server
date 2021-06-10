@@ -29,6 +29,9 @@ blocks:
             - yarn install
             - cache store
             - bundle check
+            - gem list bundler
+            - gem list rake
+            - bundle exec rake --version
   - name: Tests
     dependencies:
       - Setup
