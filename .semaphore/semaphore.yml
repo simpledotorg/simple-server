@@ -30,6 +30,7 @@ blocks:
             - yarn install
             - cache store
             - bundle check
+            - gem --version
             - gem list bundler
             - gem list rake
             - bundle exec rake --version
