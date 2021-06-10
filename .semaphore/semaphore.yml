@@ -8,7 +8,30 @@ auto_cancel:
   running:
     when: "true"
 blocks:
+  - name: Setup
+    dependencies: []
+    task:
+      env_vars:
+        - name: DATABASE_URL
+          value: "postgresql://postgres:@0.0.0.0:5432/myapp_test"
+        - name: RAILS_ENV
+          value: test
+      jobs:
+        name: bundle
+        commands:
+          - sem-version ruby 2.6.6
+          - sem-service start postgres 10
+          - checkout
+          - cache restore
+          - bundle install --deployment --path vendor/bundle
+          - "wget -O /tmp/libpng12.deb http://mirrors.kernel.org/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1_amd64.deb"
+          - sudo dpkg -i /tmp/libpng12.deb
+          - gem install semaphore_test_boosters
+          - yarn install
+          - cache store
   - name: Tests
+    dependencies:
+      - Setup
     task:
       env_vars:
         - name: DATABASE_URL
@@ -26,19 +49,8 @@ blocks:
         - name: RSpec
           parallelism: 8
           commands:
-            - checkout
-            - sem-service start postgres 10
-            - sem-version ruby 2.6.6
-            - 'wget -O /tmp/libpng12.deb http://mirrors.kernel.org/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1_amd64.deb'
-            - sudo dpkg -i /tmp/libpng12.deb
-            - gem install semaphore_test_boosters
-            - cache clean
-            - cache restore
-            - yarn install
-            - bundle install --deployment --binstubs --path vendor/bundle
-            - cache store
-            - bin/rake db:setup
-            - bin/rake db:test:prepare
+            - "bundle exec rake db:setup"
+            - "bundle exec rake db:test:prepare"
             - rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT
 promotions:
   - name: Deploy
