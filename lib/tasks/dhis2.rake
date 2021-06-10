@@ -1,6 +1,8 @@
 namespace :dhis2 do
   desc "Export aggregate indicators for each facility to DHIS2"
   task export: :environment do
+    require "dhis2"
+
     data_elements_map = {
       cumulative_assigned: "cc2oSjEbiqv",
       cumulative_assigned_adjusted: "jQBsCW7wjqx",
