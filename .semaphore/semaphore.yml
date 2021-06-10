@@ -35,10 +35,10 @@ blocks:
             - cache clean
             - cache restore
             - yarn install
-            - bundle install --deployment --path vendor/bundle
+            - bundle install --deployment --binstubs --path vendor/bundle
             - cache store
-            - 'bundle exec rake db:setup'
-            - 'bundle exec rake db:test:prepare'
+            - bin/rake db:setup
+            - bin/rake db:test:prepare
             - rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT
 promotions:
   - name: Deploy
