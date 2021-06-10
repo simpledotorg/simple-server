@@ -3,6 +3,8 @@ namespace :dhis2 do
   task export: :environment do
     require "dhis2"
 
+    # These are hardcoded for dhis2.bd.simple.org for now;
+    # future iterations will move this to a config
     data_elements_map = {
       cumulative_assigned: "cc2oSjEbiqv",
       cumulative_assigned_adjusted: "jQBsCW7wjqx",
