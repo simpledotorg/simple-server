@@ -19,7 +19,7 @@ namespace :dhis2 do
 
     current_period = Period.current.previous
 
-    FacilityBusinessIdentifier.where(identifier_type: "dhis2_org_unit_id").each do |facility_identifier|
+    FacilityBusinessIdentifier.dhis2_org_unit_id.each do |facility_identifier|
       facility_bulk_data = []
 
       facility = facility_identifier.facility
