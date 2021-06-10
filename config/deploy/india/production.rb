@@ -1,3 +1,4 @@
+server "ec2-15-206-165-4.ap-south-1.compute.amazonaws.com", user: "deploy", roles: %w[web app db]
 server "ec2-65-2-153-170.ap-south-1.compute.amazonaws.com", user: "deploy", roles: %w[web app db cron whitelist_phone_numbers]
 server "ec2-52-66-238-198.ap-south-1.compute.amazonaws.com", user: "deploy", roles: %w[web app db]
 server "ec2-65-0-99-61.ap-south-1.compute.amazonaws.com", user: "deploy", roles: %w[web app db]
