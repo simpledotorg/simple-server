@@ -59,7 +59,7 @@ namespace :dhis2 do
         end
       end
 
-      Dhis2.client.data_value_sets.bulk_create(data_values: facility_bulk_data)
+      puts Dhis2.client.data_value_sets.bulk_create(data_values: facility_bulk_data)
     end
   end
 end
