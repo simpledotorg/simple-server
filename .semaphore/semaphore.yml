@@ -33,6 +33,7 @@ blocks:
             - gem --version
             - gem list bundler
             - gem list rake
+            - rake --version
             - bundle exec rake --version
   - name: Tests
     dependencies:
