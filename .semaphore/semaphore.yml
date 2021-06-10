@@ -20,6 +20,7 @@ blocks:
         - name: bundle
           commands:
             - sem-version ruby 2.6.6
+            - rbenv rehash
             - checkout
             - cache restore
             - bundle install --jobs=4 --deployment --path vendor/bundle
