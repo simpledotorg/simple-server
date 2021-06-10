@@ -34,7 +34,6 @@ blocks:
             - gem list bundler
             - gem list rake
             - rake --version
-            - bundle exec rake --version
   - name: Tests
     dependencies:
       - Setup
@@ -66,8 +65,8 @@ blocks:
         - name: RSpec
           parallelism: 8
           commands:
-            - "bundle exec rake db:setup"
-            - "bundle exec rake db:test:prepare"
+            - rake db:setup
+            - rake db:test:prepare
             - rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT
 promotions:
   - name: Deploy
