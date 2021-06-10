@@ -415,10 +415,6 @@ GEM
       rspec-core (~> 3.0, >= 3.0.0)
       sidekiq (>= 2.4.0)
     rspec-support (3.9.4)
-    rswag (1.6.0)
-      rswag-api (= 1.6.0)
-      rswag-specs (= 1.6.0)
-      rswag-ui (= 1.6.0)
     rswag-api (1.6.0)
       railties (>= 3.1, < 6.0)
     rswag-specs (1.6.0)
@@ -646,7 +642,9 @@ DEPENDENCIES
   roo (~> 2.8.0)
   rspec-rails (~> 4.0.1)
   rspec-sidekiq
-  rswag (~> 1.6.0)
+  rswag-api
+  rswag-specs
+  rswag-ui
   ruby-progressbar
   rubyzip
   sassc-rails
