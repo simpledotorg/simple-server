@@ -1,7 +1,8 @@
+require "dhis2"
+
 namespace :dhis2 do
   desc "Export aggregate indicators for each facility to DHIS2"
   task export: :environment do
-    require "dhis2"
 
     # These are hardcoded for dhis2.bd.simple.org for now;
     # future iterations will move this to a config
