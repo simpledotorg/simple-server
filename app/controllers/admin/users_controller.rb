@@ -103,7 +103,7 @@ class Admin::UsersController < AdminController
   end
 
   def set_time_zone
-    Time.use_zone(Period::ANALYTICS_TIME_ZONE) { yield }
+    Time.use_zone(Period::REPORTING_TIME_ZONE) { yield }
   end
 
   def user_params

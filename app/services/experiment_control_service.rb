@@ -37,8 +37,13 @@ class ExperimentControlService
 
     def schedule_daily_stale_patient_notifications(name, patients_per_day: PATIENTS_PER_DAY)
       experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "stale_patients", state: [:new, :running])
-      experiment.selecting_state!
       today = Date.current
+      return if experiment.start_date > today
+      if experiment.end_date < today
+        experiment.complete_state!
+        return
+      end
+      experiment.selecting_state!
 
       eligible_ids = Experimentation::StalePatientSelection.call(start_date: today)
       if eligible_ids.any?
@@ -53,6 +58,16 @@ class ExperimentControlService
       end
 
       experiment.running_state!
+    end
+
+    def abort_experiment(name)
+      experiment = Experimentation::Experiment.find_by!(name: name)
+      experiment.cancelled_state!
+
+      notifications = experiment.notifications.where(status: ["pending", "scheduled"])
+      notifications.find_each do |notification|
+        notification.status_cancelled!
+      end
     end
 
     protected

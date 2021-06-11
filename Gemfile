@@ -59,7 +59,7 @@ gem "redis"
 gem "request_store"
 gem "request_store-sidekiq"
 gem "roo", "~> 2.8.0"
-gem "rspec-rails", "~> 3.7"
+gem "rspec-rails", "~> 4.0.1"
 gem "rswag", "~> 1.6.0"
 gem "ruby-progressbar", require: false
 gem "rubyzip"

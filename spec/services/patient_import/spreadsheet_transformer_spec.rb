@@ -215,4 +215,78 @@ RSpec.describe PatientImport::SpreadsheetTransformer do
       expect(patient[:prescription_drugs].first).not_to have_key(:rxnorm_code)
     end
   end
+
+  context "for abbreviated genders" do
+    it "recognizes 'm'" do
+      params = PatientImport::SpreadsheetTransformer.call(data, facility: facility)
+
+      patient = params.find { |p| p[:patient][:full_name] == "Gender Abbrev M" }.deep_symbolize_keys
+
+      expect(patient[:patient][:gender]).to eq("male")
+    end
+
+    it "recognizes 'f'" do
+      params = PatientImport::SpreadsheetTransformer.call(data, facility: facility)
+
+      patient = params.find { |p| p[:patient][:full_name] == "Gender Abbrev F" }.deep_symbolize_keys
+
+      expect(patient[:patient][:gender]).to eq("female")
+    end
+
+    it "recognizes 't'" do
+      params = PatientImport::SpreadsheetTransformer.call(data, facility: facility)
+
+      patient = params.find { |p| p[:patient][:full_name] == "Gender Abbrev T" }.deep_symbolize_keys
+
+      expect(patient[:patient][:gender]).to eq("transgender")
+    end
+  end
+
+  context "for unrecognized genders" do
+    let(:fixture_path) { File.join(Rails.root, "spec", "fixtures", "files", "patient_import_invalid_data_test.xlsx") }
+
+    it "passes unrecognized values through untouched" do
+      params = PatientImport::SpreadsheetTransformer.call(data, facility: facility)
+
+      patient = params.find { |p| p[:patient][:full_name] == "Random Gender" }.deep_symbolize_keys
+
+      expect(patient[:patient][:gender]).to eq("Potato")
+    end
+  end
+
+  context "for abbreviated died? status" do
+    it "recognizes 'Y'" do
+      params = PatientImport::SpreadsheetTransformer.call(data, facility: facility)
+
+      patient = params.find { |p| p[:patient][:full_name] == "Died Abbrev Y" }.deep_symbolize_keys
+
+      expect(patient[:patient][:status]).to eq("dead")
+    end
+
+    it "recognizes 'N'" do
+      params = PatientImport::SpreadsheetTransformer.call(data, facility: facility)
+
+      patient = params.find { |p| p[:patient][:full_name] == "Died Abbrev N" }.deep_symbolize_keys
+
+      expect(patient[:patient][:status]).to eq("active")
+    end
+
+    it "considers unrecognized values as 'no'" do
+      params = PatientImport::SpreadsheetTransformer.call(data, facility: facility)
+
+      patient = params.find { |p| p[:patient][:full_name] == "Died Abbrev Random" }.deep_symbolize_keys
+
+      expect(patient[:patient][:status]).to eq("active")
+    end
+  end
+
+  context "with no registration date" do
+    it "ignores the row" do
+      params = PatientImport::SpreadsheetTransformer.call(data, facility: facility)
+
+      patient_names = params.map { |p| p[:patient][:full_name] }
+
+      expect(patient_names).not_to include("No Registration Date")
+    end
+  end
 end

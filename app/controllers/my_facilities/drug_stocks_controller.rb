@@ -15,19 +15,23 @@ class MyFacilities::DrugStocksController < AdminController
   def drug_stocks
     create_drug_report
     @report = @query.drug_stocks_report
+
+    respond_to do |format|
+      format.html { render :drug_stocks }
+      format.csv do
+        send_data DrugStocksReportExporter.csv(@query), filename: "drug-stocks-report-#{@for_end_of_month_display}.csv"
+      end
+    end
   end
 
   def drug_consumption
     create_drug_report
     @report = @query.drug_consumption_report
-  end
-
-  def download_drug_stock
-    create_drug_report
 
     respond_to do |format|
+      format.html { render :drug_consumption }
       format.csv do
-        send_data DrugStocksReportExporter.csv(@query), filename: "drug-stocks-report-#{@for_end_of_month_display}.csv"
+        send_data DrugConsumptionReportExporter.csv(@query), filename: "drug-consumption-report-#{@for_end_of_month_display}.csv"
       end
     end
   end

@@ -15,6 +15,7 @@ module Reports
       raise ArgumentError, "Quarter periods not supported" if @period_type != :month
 
       @assigned_patients_query = AssignedPatientsQuery.new
+      @bp_measures_query = BPMeasuresQuery.new
       @control_rate_query = ControlRateQuery.new
       @earliest_patient_data_query = EarliestPatientDataQuery.new
       @follow_ups_query = FollowUpsQuery.new
@@ -23,6 +24,7 @@ module Reports
     end
 
     attr_reader :assigned_patients_query
+    attr_reader :bp_measures_query
     attr_reader :control_rate_query
     attr_reader :earliest_patient_data_query
     attr_reader :follow_ups_query
@@ -77,7 +79,7 @@ module Reports
 
     # Adjusted patient counts are the patient counts from three months ago (the adjusted period) that
     # are the basis for control rates. These counts DO NOT include lost to follow up.
-    memoize def adjusted_patient_counts
+    memoize def adjusted_patient_counts_without_ltfu
       cumulative_assigned_patients_count.each_with_object({}) do |(entry, result), results|
         values = periods.each_with_object(Hash.new(0)) { |period, region_result|
           next unless result.key?(period.adjusted_period)
@@ -87,7 +89,7 @@ module Reports
       end
     end
 
-    alias_method :adjusted_patient_counts_without_ltfu, :adjusted_patient_counts
+    alias_method :adjusted_patient_counts, :adjusted_patient_counts_without_ltfu
 
     # Returns the full range of assigned patient counts for a Region. We do this via one SQL query for each Region, because its
     # fast and easy via the underlying query.
@@ -191,6 +193,16 @@ module Reports
       items = regions.map { |region| RegionEntry.new(region, __method__, group_by: group_by, period_type: period_type) }
       result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
         follow_ups_query.hypertension(entry.region, period_type, group_by: group_by)
+      end
+      result.each_with_object({}) { |(region_entry, counts), hsh|
+        hsh[region_entry.region.slug] = counts
+      }
+    end
+
+    memoize def bp_measures_by_user
+      items = regions.map { |region| RegionEntry.new(region, __method__, group_by: :user_id, period_type: period_type) }
+      result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
+        bp_measures_query.count(entry.region, period_type, group_by: :user_id)
       end
       result.each_with_object({}) { |(region_entry, counts), hsh|
         hsh[region_entry.region.slug] = counts
