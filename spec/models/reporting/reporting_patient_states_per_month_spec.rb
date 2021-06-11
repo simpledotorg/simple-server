@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe Reporting::ReportingPatientStatesPerMonth, type: :model do
   describe "Associations" do
@@ -36,7 +36,7 @@ RSpec.describe Reporting::ReportingPatientStatesPerMonth, type: :model do
       under_a_year_ago: timezone.local(2020, 7, 1, 0, 0, 1), # Beginning of July 1 2020 in local timezone
       over_a_year_ago: timezone.local(2020, 6, 30, 23, 59, 59), # End of June 30 2020 in local timezone
       beginning_of_month: now, # Beginning of June 1 2021 in local timezone
-      end_of_month: timezone.local(2021, 6, 30, 23, 59, 59), # End of June 30 2021 in local timezone
+      end_of_month: timezone.local(2021, 6, 30, 23, 59, 59) # End of June 30 2021 in local timezone
     }
   end
 
