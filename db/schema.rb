@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_03_193527) do
+ActiveRecord::Schema.define(version: 2021_06_07_235412) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -291,6 +291,17 @@ ActiveRecord::Schema.define(version: 2021_06_03_193527) do
     t.uuid "facility_id", null: false
     t.uuid "user_id", null: false
     t.index ["facility_id", "user_id"], name: "index_facilities_teleconsult_mos_on_facility_id_and_user_id"
+  end
+
+  create_table "facility_business_identifiers", force: :cascade do |t|
+    t.string "identifier", null: false
+    t.string "identifier_type", null: false
+    t.uuid "facility_id", null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["facility_id", "identifier_type"], name: "index_facility_business_identifiers_on_facility_and_id_type", unique: true
+    t.index ["facility_id"], name: "index_facility_business_identifiers_on_facility_id"
   end
 
   create_table "facility_groups", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

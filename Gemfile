@@ -26,6 +26,7 @@ gem "data_migrate"
 gem "ddtrace"
 gem "devise", ">= 4.7.1"
 gem "devise_invitable", "~> 1.7.0"
+gem "dhis2", require: false
 gem "diffy" # This gem is only needed for Admin::FixZoneDataController, it should be removed with the controller
 gem "discard", "~> 1.0"
 gem "dogstatsd-ruby"
