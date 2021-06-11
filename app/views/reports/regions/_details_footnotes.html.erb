@@ -57,7 +57,11 @@
   </div>
   <div class="mb-24px">
     <p class="mb-8px fs-16px fw-bold c-grey-dark">
-      Follow-up patients
+      <% if @region.facility_region? %>
+        Follow-up patients per user
+      <% else %>
+        Follow-up patients
+      <% end %>
     </p>
     <div class="pl-16px">
       <p class="mb-8px fs-14px c-grey-dark">
