@@ -39,6 +39,11 @@
             <% end %>
           </div>
         </div>
+        <div class="mb-8px mr-8px d-flex flex-grow-1 justify-content-sm-end">
+          <%= link_to "Download Report",
+                      my_facilities_drug_consumption_path(format: :csv, **request.query_parameters.symbolize_keys),
+                      class: "btn btn-sm btn-outline-primary" %>
+        </div>
       </div>
       <% if @facilities.present? %>
         <%= render "drug_consumption_table" %>
