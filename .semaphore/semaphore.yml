@@ -20,7 +20,6 @@ blocks:
         - name: bundle
           commands:
             - sem-version ruby 2.6.6
-            - gem install rake --version 13.0.3
             - checkout
             - cache restore
             - gem install bundler --version 1.17.3
