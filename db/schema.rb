@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_03_193527) do
+ActiveRecord::Schema.define(version: 2021_06_14_090147) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -1059,7 +1059,7 @@ ActiveRecord::Schema.define(version: 2021_06_03_193527) do
       date_part('year'::text, month_dates.month_date) AS year
      FROM month_dates;
   SQL
-  create_view "reporting_facilities", materialized: true, sql_definition: <<-SQL
+  create_view "reporting_facilities", sql_definition: <<-SQL
       SELECT facility_regions.source_id AS facility_id,
       facility_regions.id AS facility_region_id,
       facility_regions.name AS facility_name,
