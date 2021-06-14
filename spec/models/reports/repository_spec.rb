@@ -468,9 +468,9 @@ RSpec.describe Reports::Repository, type: :model do
       expect(repo.missed_visits_without_ltfu[slug]).to eq(legacy_results[:missed_visits])
       expect(repo.missed_visits_with_ltfu[slug]).to eq(legacy_results[:missed_visits_with_ltfu])
 
-      expect(repo.missed_visits_rate_without_ltfu[slug]).to eq(repo.missed_visits_rate[slug])
-      expect(repo.missed_visits_rate_without_ltfu[slug]).to eq(legacy_results[:missed_visits_rate])
-      expect(repo.missed_visits_rate_with_ltfu[slug]).to eq(legacy_results[:missed_visits_with_ltfu_rate])
+      expect(repo.missed_visits_without_ltfu_rates[slug]).to eq(repo.missed_visits_rate[slug])
+      expect(repo.missed_visits_without_ltfu_rates[slug]).to eq(legacy_results[:missed_visits_rate])
+      expect(repo.missed_visits_with_ltfu_rates[slug]).to eq(legacy_results[:missed_visits_with_ltfu_rate])
     end
   end
 end

@@ -179,7 +179,10 @@ module Reports
       end
     end
 
-    memoize def missed_visits_rate_without_ltfu
+    # To determine the missed visits percentage, we sum the remaining percentages and subtract that from 100.
+    # If we determined the percentage directly, we would have cases where the percentages do not add up to 100
+    # due to rounding and losing precision.
+    memoize def missed_visits_without_ltfu_rates
       region_period_cached_query(__method__) do |entry|
         slug, period = entry.slug, entry.period
         visit_rates = controlled_patients_rate[slug][period] + uncontrolled_patients_rate[slug][period] + visited_without_bp_taken_rate[slug][period]
@@ -198,7 +201,10 @@ module Reports
       end
     end
 
-    memoize def missed_visits_rate_with_ltfu
+    # To determine the missed visits percentage, we sum the remaining percentages and subtract that from 100.
+    # If we determined the percentage directly, we would have cases where the percentages do not add up to 100
+    # due to rounding and losing precision.
+    memoize def missed_visits_with_ltfu_rates
       region_period_cached_query(__method__, with_ltfu: true) do |entry|
         slug, period = entry.slug, entry.period
         visit_rates = controlled_patients_rate(with_ltfu: true)[slug][period] +
@@ -209,7 +215,7 @@ module Reports
     end
 
     alias_method :missed_visits, :missed_visits_without_ltfu
-    alias_method :missed_visits_rate, :missed_visits_rate_without_ltfu
+    alias_method :missed_visits_rate, :missed_visits_without_ltfu_rates
 
     # Returns Follow ups per Region / Period. Takes an optional group_by clause (commonly used to group by `blood_pressures.user_id`)
     memoize def hypertension_follow_ups(group_by: nil)
