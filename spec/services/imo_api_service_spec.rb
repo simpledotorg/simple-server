@@ -14,13 +14,17 @@ describe ImoApiService, type: :model do
     end
 
     it "handles error" do
+      stub_request(:post, request_url).to_timeout
 
+      expect {
+        service.invite
+      }.to raise_error(ImoApiService::HTTPError)
     end
 
     it "logs non-200 responses"
 
     it "does not raise an error on 200 response" do
-      stub_request(:get, request_url).with(headers: request_headers).to_return(status: 200)
+      stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200)
       service.invite
     end
   end

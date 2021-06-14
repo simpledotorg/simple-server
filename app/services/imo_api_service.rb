@@ -34,7 +34,7 @@ class ImoApiService
                 .post(url, data)
     puts response
   rescue HTTP::Error => e
-    report_error(url, e)
+    # report_error(url, e)
     raise ImoApiService::HTTPError
   end
 end
