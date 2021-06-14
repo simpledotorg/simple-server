@@ -43,7 +43,7 @@ namespace :dhis2 do
           # Note: dead patients are always the current count due to lack of status timestamps
           dead: facility.assigned_patients.with_hypertension.status_dead.count,
           cumulative_registrations: repository.cumulative_registrations[slug][period],
-          monthly_registrations: repository.registration_counts[slug][period]
+          monthly_registrations: repository.monthly_registrations[slug][period]
         }
 
         data.each do |data_element, value|

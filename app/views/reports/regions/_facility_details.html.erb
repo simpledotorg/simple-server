@@ -67,7 +67,7 @@
           </td>
           <% @period_range.each do |period| %>
             <td class="row-total ta-center">
-              <%= number_or_dash_with_delimiter(@repository.registration_counts[@region.region.slug][period]) %>
+              <%= number_or_dash_with_delimiter(@repository.monthly_registrations[@region.region.slug][period]) %>
             </td>
           <% end %>
           <% @period_range.each do |period| %>

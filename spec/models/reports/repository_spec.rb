@@ -57,7 +57,7 @@ RSpec.describe Reports::Repository, type: :model do
         }
       }
       expect(repo.assigned_patients).to eq(expected)
-      expect(repo.registration_counts).to eq(expected)
+      expect(repo.monthly_registrations).to eq(expected)
     end
 
     it "gets assigned and registration counts for a range of periods" do
@@ -77,15 +77,15 @@ RSpec.describe Reports::Repository, type: :model do
       result = service.call
 
       # ensure we match the ControlRateService results, otherwise things could change in the reports
-      expect(repo.registration_counts[slug]).to eq(result[:registrations])
+      expect(repo.monthly_registrations[slug]).to eq(result[:registrations])
       expect(repo.assigned_patients[slug]).to eq(result[:assigned_patients])
 
       expect(repo.assigned_patients[slug][Period.month("August 2018")]).to eq(2)
       expect(repo.assigned_patients[slug][Period.month("Jan 2019")]).to eq(2)
       expect(repo.assigned_patients[slug][july_2020]).to eq(0)
-      expect(repo.registration_counts[slug][Period.month("August 2018")]).to eq(2)
-      expect(repo.registration_counts[slug][Period.month("Jan 2019")]).to eq(2)
-      expect(repo.registration_counts[slug][july_2020.to_period]).to eq(0)
+      expect(repo.monthly_registrations[slug][Period.month("August 2018")]).to eq(2)
+      expect(repo.monthly_registrations[slug][Period.month("Jan 2019")]).to eq(2)
+      expect(repo.monthly_registrations[slug][july_2020.to_period]).to eq(0)
     end
 
     it "can count registrations and cumulative registrations by user" do
@@ -111,7 +111,7 @@ RSpec.describe Reports::Repository, type: :model do
     it "gets registration and assigned patient counts for brand new regions with no data" do
       facility_1 = FactoryBot.create(:facility, facility_group: facility_group_1)
       repo = Reports::Repository.new(facility_1.region, periods: july_2020_range)
-      expect(repo.registration_counts).to eq({facility_1.slug => {}})
+      expect(repo.monthly_registrations).to eq({ facility_1.slug => {}})
       expect(repo.controlled_patients_count).to eq({facility_1.slug => {}})
       expect(repo.controlled_patients_rate).to eq({facility_1.slug => {}})
     end

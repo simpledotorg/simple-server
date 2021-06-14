@@ -113,7 +113,7 @@ module Reports
     end
 
     # Returns registration counts per region / period
-    memoize def registration_counts
+    memoize def monthly_registrations
       complete_registration_counts.each_with_object({}) do |(entry, result), results|
         result.default = 0
         results[entry.region.slug] = result
