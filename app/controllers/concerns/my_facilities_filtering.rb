@@ -25,11 +25,9 @@ module MyFacilitiesFiltering
     end
 
     def populate_facility_groups
-      accessible_facility_groups = FacilityGroup.where(id: @accessible_facilities.map(&:facility_group_id).uniq).order(:name)
-
       @facility_groups =
         if action_name == "drug_stocks" || action_name == "drug_consumption"
-          accessible_facility_groups.select { |facility_group| facility_group.region.feature_enabled?(:drug_stocks) }
+          accessible_facility_groups.where(id: drug_stock_facility_group_ids)
         else
           accessible_facility_groups
         end
@@ -75,6 +73,14 @@ module MyFacilitiesFiltering
     def sort_facility_sizes_by_size(facility_sizes)
       sorted_facility_sizes = %w[large medium small community]
       sorted_facility_sizes.select { |size| facility_sizes.include? size }
+    end
+
+    def accessible_facility_groups
+      FacilityGroup.where(id: @accessible_facilities.map(&:facility_group_id).uniq).order(:name)
+    end
+
+    def drug_stock_facility_group_ids
+      Region.district_regions.select { |district| district.feature_enabled?(:drug_stocks) }.pluck(:source_id)
     end
   end
 end
