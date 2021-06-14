@@ -63,17 +63,13 @@ blocks:
           - "wget -O /tmp/libpng12.deb http://mirrors.kernel.org/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1_amd64.deb"
           - sudo dpkg -i /tmp/libpng12.deb
           - gem install semaphore_test_boosters
-          - rbenv rehash
-          - gem install rake --version 13.0.3
-          - rbenv rehash
           - yarn install
           - cache store
       jobs:
         - name: RSpec
           parallelism: 8
           commands:
-            - bin/rake db:setup
-            - bin/rake db:test:prepare
+            - bundle exec rake db:setup db:test:prepare
             - rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT
 promotions:
   - name: Deploy
