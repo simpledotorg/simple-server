@@ -33,10 +33,10 @@ module Reports
 
       start_period = [repository.earliest_patient_recorded_at_period[region.slug], range.begin].compact.max
       calc_range = (start_period..range.end)
-      # result.calculate_missed_visits(calc_range)
-      result.missed_visits = repository.missed_visits[region.slug]
-      # result.calculate_missed_visits(calc_range, with_ltfu: true)
-      result.missed_visits_with_ltfu = repository.missed_visits_with_ltfu[region.slug]
+      result.calculate_missed_visits(calc_range)
+      result.calculate_missed_visits(calc_range, with_ltfu: true)
+      # result.missed_visits = repository.missed_visits[region.slug]
+      # result.missed_visits_with_ltfu = repository.missed_visits_with_ltfu[region.slug]
       result.calculate_missed_visits_percentages(calc_range)
       result.calculate_missed_visits_percentages(calc_range, with_ltfu: true)
       result.calculate_period_info(calc_range)
