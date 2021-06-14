@@ -35,8 +35,8 @@ blocks:
             - gem --version
             - gem list bundler
             - gem list rake
+            - gem install rake --version 13.0.3
             - rake --version
-            - "bundle exec rake --version"
   - name: Tests
     dependencies:
       - Setup
@@ -62,14 +62,15 @@ blocks:
           - "wget -O /tmp/libpng12.deb http://mirrors.kernel.org/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1_amd64.deb"
           - sudo dpkg -i /tmp/libpng12.deb
           - gem install semaphore_test_boosters
+          - gem install rake --version 13.0.3
           - yarn install
           - cache store
       jobs:
         - name: RSpec
           parallelism: 8
           commands:
-            - "bundle exec rake db:setup"
-            - "bundle exec rake db:test:prepare"
+            - rake db:setup
+            - rake db:test:prepare
             - rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT
 promotions:
   - name: Deploy
