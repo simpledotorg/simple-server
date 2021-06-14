@@ -59,7 +59,7 @@ module Reports
     #    region_slug: { period: value, period: value },
     #    region_slug: { period: value, period: value }
     # }
-    memoize def assigned_patients_count
+    memoize def assigned_patients
       complete_assigned_patients_counts.each_with_object({}) do |(entry, result), results|
         values = periods.each_with_object(Hash.new(0)) { |period, region_result| region_result[period] = result[period] if result[period] }
         results[entry.region.slug] = values

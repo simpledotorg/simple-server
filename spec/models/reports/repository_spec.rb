@@ -56,7 +56,7 @@ RSpec.describe Reports::Repository, type: :model do
           jan_2019.to_period => 2
         }
       }
-      expect(repo.assigned_patients_count).to eq(expected)
+      expect(repo.assigned_patients).to eq(expected)
       expect(repo.registration_counts).to eq(expected)
     end
 
@@ -78,11 +78,11 @@ RSpec.describe Reports::Repository, type: :model do
 
       # ensure we match the ControlRateService results, otherwise things could change in the reports
       expect(repo.registration_counts[slug]).to eq(result[:registrations])
-      expect(repo.assigned_patients_count[slug]).to eq(result[:assigned_patients])
+      expect(repo.assigned_patients[slug]).to eq(result[:assigned_patients])
 
-      expect(repo.assigned_patients_count[slug][Period.month("August 2018")]).to eq(2)
-      expect(repo.assigned_patients_count[slug][Period.month("Jan 2019")]).to eq(2)
-      expect(repo.assigned_patients_count[slug][july_2020]).to eq(0)
+      expect(repo.assigned_patients[slug][Period.month("August 2018")]).to eq(2)
+      expect(repo.assigned_patients[slug][Period.month("Jan 2019")]).to eq(2)
+      expect(repo.assigned_patients[slug][july_2020]).to eq(0)
       expect(repo.registration_counts[slug][Period.month("August 2018")]).to eq(2)
       expect(repo.registration_counts[slug][Period.month("Jan 2019")]).to eq(2)
       expect(repo.registration_counts[slug][july_2020.to_period]).to eq(0)
