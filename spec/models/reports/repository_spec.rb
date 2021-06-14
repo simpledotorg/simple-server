@@ -113,7 +113,7 @@ RSpec.describe Reports::Repository, type: :model do
       repo = Reports::Repository.new(facility_1.region, periods: july_2020_range)
       expect(repo.monthly_registrations).to eq({ facility_1.slug => {}})
       expect(repo.controlled).to eq({ facility_1.slug => {}})
-      expect(repo.controlled_patients_rate).to eq({facility_1.slug => {}})
+      expect(repo.controlled_rates).to eq({ facility_1.slug => {}})
     end
 
     it "gets controlled counts and rates for single region" do
@@ -148,7 +148,7 @@ RSpec.describe Reports::Repository, type: :model do
         expect(count).to eq(4), "expected 4 assigned patients for #{period} but got #{count}"
       end
       expect(repo.controlled).to eq(expected_counts)
-      expect(repo.controlled_patients_rate).to eq(expected_rates)
+      expect(repo.controlled_rates).to eq(expected_rates)
     end
 
     it "gets controlled counts and rates for one month" do
@@ -342,7 +342,7 @@ RSpec.describe Reports::Repository, type: :model do
       expect(repo).to receive(:region_period_cached_query).with(:controlled).exactly(1).times.and_call_original
 
       3.times { _result = repo.controlled }
-      3.times { _result = repo.controlled_patients_rate }
+      3.times { _result = repo.controlled_rates }
     end
 
     it "caches region_period entries only as far back as there is data" do
@@ -436,8 +436,8 @@ RSpec.describe Reports::Repository, type: :model do
         expect(repo.adjusted_patients_with_ltfu[slug][period]).to eq(service_result[:adjusted_patient_counts_with_ltfu][period])
 
         expect(repo.cumulative_assigned_patients_count[slug][period]).to eq(service_result[:cumulative_assigned_patients][period])
-        expect(repo.controlled_patients_rate[slug][period]).to eq(service_result[:controlled_patients_rate][period])
-        expect(repo.uncontrolled_patients_rate[slug][period]).to eq(service_result[:uncontrolled_patients_rate][period])
+        expect(repo.controlled_rates[slug][period]).to eq(service_result[:controlled_patients_rate][period])
+        expect(repo.uncontrolled_rates[slug][period]).to eq(service_result[:uncontrolled_patients_rate][period])
       end
     end
 

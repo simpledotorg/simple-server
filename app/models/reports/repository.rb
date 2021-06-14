@@ -185,7 +185,7 @@ module Reports
     memoize def missed_visits_without_ltfu_rates
       region_period_cached_query(__method__) do |entry|
         slug, period = entry.slug, entry.period
-        visit_rates = controlled_patients_rate[slug][period] + uncontrolled_patients_rate[slug][period] + visited_without_bp_taken_rate[slug][period]
+        visit_rates = controlled_rates[slug][period] + uncontrolled_rates[slug][period] + visited_without_bp_taken_rate[slug][period]
         100 - visit_rates
       end
     end
@@ -207,8 +207,8 @@ module Reports
     memoize def missed_visits_with_ltfu_rates
       region_period_cached_query(__method__, with_ltfu: true) do |entry|
         slug, period = entry.slug, entry.period
-        visit_rates = controlled_patients_rate(with_ltfu: true)[slug][period] +
-          uncontrolled_patients_rate(with_ltfu: true)[slug][period] +
+        visit_rates = controlled_rates(with_ltfu: true)[slug][period] +
+          uncontrolled_rates(with_ltfu: true)[slug][period] +
           visited_without_bp_taken_rate(with_ltfu: true)[slug][period]
         100 - visit_rates
       end
@@ -248,19 +248,19 @@ module Reports
       end
     end
 
-    memoize def controlled_patients_rate(with_ltfu: false)
+    memoize def controlled_rates(with_ltfu: false)
       region_period_cached_query(__method__, with_ltfu: false) do |entry|
-        controlled = controlled[entry.slug][entry.period]
+        numerator = controlled[entry.slug][entry.period]
         total = denominator(entry.region, entry.period, with_ltfu: with_ltfu)
-        percentage(controlled, total)
+        percentage(numerator, total)
       end
     end
 
-    memoize def uncontrolled_patients_rate(with_ltfu: false)
+    memoize def uncontrolled_rates(with_ltfu: false)
       region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
-        controlled = uncontrolled[entry.region.slug][entry.period]
+        numerator = uncontrolled[entry.region.slug][entry.period]
         total = denominator(entry.region, entry.period, with_ltfu: with_ltfu)
-        percentage(controlled, total)
+        percentage(numerator, total)
       end
     end
 
