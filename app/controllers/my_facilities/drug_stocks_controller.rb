@@ -85,9 +85,8 @@ class MyFacilities::DrugStocksController < AdminController
   end
 
   def drug_stocks_enabled?
-    unless current_admin.feature_enabled?(:drug_stocks)
-      redirect_to :root
-    end
+    # Depends on before_action :populate_facility_groups to avoid extra queries
+    redirect_to :root if @facility_groups.empty?
   end
 
   def populate_facility_sizes

@@ -25,7 +25,14 @@ module MyFacilitiesFiltering
     end
 
     def populate_facility_groups
-      @facility_groups = FacilityGroup.where(id: @accessible_facilities.map(&:facility_group_id).uniq).order(:name)
+      accessible_facility_groups = FacilityGroup.where(id: @accessible_facilities.map(&:facility_group_id).uniq).order(:name)
+
+      @facility_groups =
+        if action_name == "drug_stocks" || action_name == "drug_consumption"
+          accessible_facility_groups.select { |facility_group| facility_group.region.feature_enabled?(:drug_stocks) }
+        else
+          accessible_facility_groups
+        end
     end
 
     def populate_zones
