@@ -65,8 +65,8 @@ blocks:
           parallelism: 8
           commands:
             - bundle check
-            - bundle exec rake db:setup
-            - bundle exec rake db:test:prepare
+            - bundle exec rails db:setup
+            - bundle exec rails db:test:prepare
             - rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT
 promotions:
   - name: Deploy
