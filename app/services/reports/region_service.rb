@@ -47,10 +47,6 @@ module Reports
 
     private
 
-    def legacy_missed_visits?
-      false
-    end
-
     def repository
       @repository ||= Reports::Repository.new(region, periods: range)
     end
