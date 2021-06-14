@@ -57,6 +57,7 @@ blocks:
         commands:
           - sem-version ruby 2.6.6
           - checkout
+          - gem install bundler --version 1.17.3
           # - cache restore
           - bundle install --jobs=4 --deployment --path vendor/bundle
           - "wget -O /tmp/libpng12.deb http://mirrors.kernel.org/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1_amd64.deb"
