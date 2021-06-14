@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_14_090147) do
+ActiveRecord::Schema.define(version: 2021_06_14_120300) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -1115,13 +1115,13 @@ ActiveRecord::Schema.define(version: 2021_06_14_090147) do
       p.month,
       p.quarter,
       p.year,
-      timezone('UTC'::text, timezone('UTC'::text, GREATEST((e.encountered_on)::timestamp without time zone, pd.device_created_at, app.device_created_at))) AS visited_at,
+      timezone('UTC'::text, timezone('UTC'::text, GREATEST(e.encountered_on, pd.device_created_at, app.device_created_at))) AS visited_at,
       timezone('UTC'::text, timezone('UTC'::text, p.recorded_at)) AS patient_registered_at,
       p.assigned_facility_id AS patient_assigned_facility_id,
       p.registration_facility_id AS patient_registration_facility_id,
       e.facility_id AS encounter_facility_id,
       (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at)))) * (12)::double precision) + (p.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at))))) AS months_since_registration,
-      (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, GREATEST((e.encountered_on)::timestamp without time zone, pd.device_created_at, app.device_created_at))))) * (12)::double precision) + (p.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, GREATEST((e.encountered_on)::timestamp without time zone, pd.device_created_at, app.device_created_at)))))) AS months_since_visit
+      (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, GREATEST(e.encountered_on, pd.device_created_at, app.device_created_at))))) * (12)::double precision) + (p.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, GREATEST(e.encountered_on, pd.device_created_at, app.device_created_at)))))) AS months_since_visit
      FROM (((( SELECT p_1.id,
               p_1.full_name,
               p_1.age,
@@ -1152,11 +1152,11 @@ ActiveRecord::Schema.define(version: 2021_06_14_090147) do
               cal.year
              FROM (patients p_1
                LEFT JOIN reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p_1.recorded_at)), 'YYYY-MM'::text) <= cal.month_string)))) p
-       LEFT JOIN LATERAL ( SELECT encounters.encountered_on,
+       LEFT JOIN LATERAL ( SELECT timezone('UTC'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), (encounters.encountered_on)::timestamp without time zone)) AS encountered_on,
               encounters.facility_id
              FROM encounters
             WHERE ((encounters.patient_id = p.id) AND (to_char((encounters.encountered_on)::timestamp with time zone, 'YYYY-MM'::text) <= p.month_string) AND (encounters.deleted_at IS NULL))
-            ORDER BY encounters.encountered_on DESC
+            ORDER BY (timezone('UTC'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), (encounters.encountered_on)::timestamp without time zone))) DESC
            LIMIT 1) e ON (true))
        LEFT JOIN LATERAL ( SELECT prescription_drugs.device_created_at
              FROM prescription_drugs
@@ -1169,7 +1169,7 @@ ActiveRecord::Schema.define(version: 2021_06_14_090147) do
             ORDER BY appointments.device_created_at DESC
            LIMIT 1) app ON (true))
     WHERE (p.deleted_at IS NULL)
-    ORDER BY p.id, p.month_date, (timezone('UTC'::text, timezone('UTC'::text, GREATEST((e.encountered_on)::timestamp without time zone, pd.device_created_at, app.device_created_at)))) DESC;
+    ORDER BY p.id, p.month_date, (timezone('UTC'::text, timezone('UTC'::text, GREATEST(e.encountered_on, pd.device_created_at, app.device_created_at)))) DESC;
   SQL
   create_view "reporting_patient_states_per_month", materialized: true, sql_definition: <<-SQL
       SELECT DISTINCT ON (p.id, cal.month_date) p.id,
