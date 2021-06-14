@@ -35,10 +35,10 @@ module Reports
       calc_range = (start_period..range.end)
       # missed visits without ltfu
       result.missed_visits = repository.missed_visits[region.slug]
-      result.missed_visits_rate = repository.missed_visits_rate_without_ltfu[region.slug]
+      result.missed_visits_rate = repository.missed_visits_without_ltfu_rates[region.slug]
       # missed visits with ltfu
       result.missed_visits_with_ltfu = repository.missed_visits_with_ltfu[region.slug]
-      result.missed_visits_with_ltfu_rate = repository.missed_visits_rate_with_ltfu[region.slug]
+      result.missed_visits_with_ltfu_rate = repository.missed_visits_with_ltfu_rates[region.slug]
 
       result.calculate_period_info(calc_range)
 
