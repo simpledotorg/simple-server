@@ -432,8 +432,8 @@ RSpec.describe Reports::Repository, type: :model do
 
       range.each do |period|
         expect(repo.adjusted_patient_counts[slug][period]).to eq(service_result[:adjusted_patient_counts][period])
-        expect(repo.adjusted_patient_counts_with_ltfu[slug][period]).to eq(service_result[:adjusted_patient_counts_with_ltfu][period])
-        expect(repo.adjusted_patient_counts_with_ltfu[slug][period]).to eq(service_result[:adjusted_patient_counts_with_ltfu][period])
+        expect(repo.adjusted_patients_with_ltfu[slug][period]).to eq(service_result[:adjusted_patient_counts_with_ltfu][period])
+        expect(repo.adjusted_patients_with_ltfu[slug][period]).to eq(service_result[:adjusted_patient_counts_with_ltfu][period])
 
         expect(repo.cumulative_assigned_patients_count[slug][period]).to eq(service_result[:cumulative_assigned_patients][period])
         expect(repo.controlled_patients_rate[slug][period]).to eq(service_result[:controlled_patients_rate][period])

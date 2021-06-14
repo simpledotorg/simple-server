@@ -52,7 +52,7 @@ class ControlRateService
     results.assigned_patients = repository.assigned_patients[slug]
     results.cumulative_registrations = repository.cumulative_registrations[slug]
     results.cumulative_assigned_patients = repository.cumulative_assigned_patients_count[slug]
-    results.adjusted_patient_counts_with_ltfu = repository.adjusted_patient_counts_with_ltfu[slug]
+    results.adjusted_patient_counts_with_ltfu = repository.adjusted_patients_with_ltfu[slug]
     results.adjusted_patient_counts = repository.adjusted_patient_counts_without_ltfu[slug]
 
     results.full_data_range.each do |(period, count)|

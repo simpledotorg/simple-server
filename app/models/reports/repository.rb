@@ -68,7 +68,7 @@ module Reports
 
     # Adjusted patient counts are the patient counts from three months ago (the adjusted period) that
     # are the basis for control rates. These counts DO include lost to follow up.
-    memoize def adjusted_patient_counts_with_ltfu
+    memoize def adjusted_patients_with_ltfu
       cumulative_assigned_patients_count.each_with_object({}) do |(entry, result), results|
         values = periods.each_with_object(Hash.new(0)) { |period, region_result|
           region_result[period] = result[period.adjusted_period]
