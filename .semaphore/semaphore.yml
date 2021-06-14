@@ -57,19 +57,20 @@ blocks:
         commands:
           - sem-version ruby 2.6.6
           - checkout
-          - cache restore
+          # - cache restore
           - bundle install --jobs=4 --deployment --path vendor/bundle
-          - bundle binstubs rake
           - "wget -O /tmp/libpng12.deb http://mirrors.kernel.org/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1_amd64.deb"
           - sudo dpkg -i /tmp/libpng12.deb
           - gem install semaphore_test_boosters
           - yarn install
-          - cache store
+          # - cache store
       jobs:
         - name: RSpec
           parallelism: 8
           commands:
-            - bundle exec rake db:setup db:test:prepare
+            - bundle check
+            - bundle exec rake db:setup
+            - bundle exec rake db:test:prepare
             - rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT
 promotions:
   - name: Deploy
