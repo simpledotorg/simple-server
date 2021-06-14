@@ -52,16 +52,16 @@ blocks:
           - sem-service start postgres 10
           - sem-version ruby 2.6.6
           - checkout
-          - cache restore
+          # - cache restore
+          - rm -rf .bundle
+          - rm -rf tmp/*
           - gem install bundler --version 1.17.3
           - bundle install --jobs=4 --deployment --path vendor/bundle
           - "wget -O /tmp/libpng12.deb http://mirrors.kernel.org/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1_amd64.deb"
           - sudo dpkg -i /tmp/libpng12.deb
           - gem install semaphore_test_boosters
           - yarn install
-          - rm -rf .bundle
-          - rm -rf tmp/*
-          - cache store
+          # - cache store
       jobs:
         - name: RSpec
           parallelism: 8
