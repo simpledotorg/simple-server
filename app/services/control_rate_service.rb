@@ -59,8 +59,8 @@ class ControlRateService
       results.ltfu_patients[period] = ltfu_patients(period)
     end
 
-    results.controlled_patients = repository.controlled_patients_count[region.slug]
-    results.uncontrolled_patients = repository.uncontrolled_patients_count[region.slug]
+    results.controlled_patients = repository.controlled[region.slug]
+    results.uncontrolled_patients = repository.uncontrolled[region.slug]
 
     results.controlled_patients_rate = repository.controlled_patients_rate[slug]
     results.uncontrolled_patients_rate = repository.uncontrolled_patients_rate[slug]

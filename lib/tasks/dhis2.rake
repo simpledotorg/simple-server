@@ -36,8 +36,8 @@ namespace :dhis2 do
         data = {
           cumulative_assigned: repository.cumulative_assigned_patients_count[slug][period],
           cumulative_assigned_adjusted: repository.adjusted_patients_with_ltfu[slug][period],
-          controlled: repository.controlled_patients_count[slug][period],
-          uncontrolled: repository.uncontrolled_patients_count[slug][period],
+          controlled: repository.controlled[slug][period],
+          uncontrolled: repository.uncontrolled[slug][period],
           missed_visits: repository.missed_visits[slug][period],
           ltfu: repository.ltfu_counts[slug][period],
           # Note: dead patients are always the current count due to lack of status timestamps

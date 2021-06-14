@@ -156,13 +156,13 @@ module Reports
       end
     end
 
-    memoize def controlled_patients_count
+    memoize def controlled
       region_period_cached_query(__method__) do |entry|
         control_rate_query.controlled(entry.region, entry.period).count
       end
     end
 
-    memoize def uncontrolled_patients_count
+    memoize def uncontrolled
       region_period_cached_query(__method__) do |entry|
         control_rate_query.uncontrolled(entry.region, entry.period).count
       end
@@ -172,8 +172,8 @@ module Reports
       region_period_cached_query(__method__) do |entry|
         slug = entry.slug
         patient_count = denominator(entry.region, entry.period)
-        controlled = controlled_patients_count[slug][entry.period]
-        uncontrolled = uncontrolled_patients_count[slug][entry.period]
+        controlled = controlled[slug][entry.period]
+        uncontrolled = uncontrolled[slug][entry.period]
         visits = visited_without_bp_taken[slug][entry.period]
         patient_count - visits - controlled - uncontrolled
       end
@@ -194,8 +194,8 @@ module Reports
       region_period_cached_query(__method__, with_ltfu: true) do |entry|
         slug = entry.slug
         patient_count = denominator(entry.region, entry.period, with_ltfu: true)
-        controlled = controlled_patients_count[slug][entry.period]
-        uncontrolled = uncontrolled_patients_count[slug][entry.period]
+        controlled = controlled[slug][entry.period]
+        uncontrolled = uncontrolled[slug][entry.period]
         visits = visited_without_bp_taken[slug][entry.period]
         patient_count - visits - controlled - uncontrolled
       end
@@ -250,7 +250,7 @@ module Reports
 
     memoize def controlled_patients_rate(with_ltfu: false)
       region_period_cached_query(__method__, with_ltfu: false) do |entry|
-        controlled = controlled_patients_count[entry.slug][entry.period]
+        controlled = controlled[entry.slug][entry.period]
         total = denominator(entry.region, entry.period, with_ltfu: with_ltfu)
         percentage(controlled, total)
       end
@@ -258,7 +258,7 @@ module Reports
 
     memoize def uncontrolled_patients_rate(with_ltfu: false)
       region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
-        controlled = uncontrolled_patients_count[entry.region.slug][entry.period]
+        controlled = uncontrolled[entry.region.slug][entry.period]
         total = denominator(entry.region, entry.period, with_ltfu: with_ltfu)
         percentage(controlled, total)
       end

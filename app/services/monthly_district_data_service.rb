@@ -110,8 +110,8 @@ class MonthlyDistrictDataService
     assigned_patients_count = repo.cumulative_assigned_patients_count.dig(region.slug, period) || 0
     ltfu_count = repo.ltfu_counts.dig(region.slug, period) || 0
     patients_under_care = assigned_patients_count - ltfu_count
-    controlled_count = repo.controlled_patients_count.dig(region.slug, period) || 0
-    uncontrolled_count = repo.uncontrolled_patients_count.dig(region.slug, period) || 0
+    controlled_count = repo.controlled.dig(region.slug, period) || 0
+    uncontrolled_count = repo.uncontrolled.dig(region.slug, period) || 0
     missed_visits = repo.missed_visits.dig(region.slug, period) || 0
     no_bp_taken = repo.visited_without_bp_taken.dig(region.slug, period) || 0
     adjusted_patients_under_care = repo.adjusted_patient_counts.dig(region.slug, period) || 0

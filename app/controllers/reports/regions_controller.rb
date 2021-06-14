@@ -40,9 +40,9 @@ class Reports::RegionsController < AdminController
       {
         region: region,
         adjusted_patient_counts: repo.adjusted_patient_counts[slug],
-        controlled_patients: repo.controlled_patients_count[slug],
+        controlled_patients: repo.controlled[slug],
         controlled_patients_rate: repo.controlled_patients_rate[slug],
-        uncontrolled_patients: repo.uncontrolled_patients_count[slug],
+        uncontrolled_patients: repo.uncontrolled[slug],
         uncontrolled_patients_rate: repo.uncontrolled_patients_rate[slug],
         missed_visits: repo.missed_visits[slug],
         missed_visits_rate: repo.missed_visits_rate[slug],
