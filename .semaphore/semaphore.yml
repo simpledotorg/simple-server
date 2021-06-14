@@ -59,6 +59,8 @@ blocks:
           - sudo dpkg -i /tmp/libpng12.deb
           - gem install semaphore_test_boosters
           - yarn install
+          - rm -rf .bundle
+          - rm -rf tmp/*
           - cache store
       jobs:
         - name: RSpec
