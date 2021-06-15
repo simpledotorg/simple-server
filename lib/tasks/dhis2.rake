@@ -34,7 +34,7 @@ namespace :dhis2 do
         dhis2_period = period.to_date.strftime("%Y%m")
 
         data = {
-          cumulative_assigned: repository.cumulative_assigned_patients_count[slug][period],
+          cumulative_assigned: repository.cumulative_assigned_patients[slug][period],
           cumulative_assigned_adjusted: repository.adjusted_patients_with_ltfu[slug][period],
           controlled: repository.controlled[slug][period],
           uncontrolled: repository.uncontrolled[slug][period],

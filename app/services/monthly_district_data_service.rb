@@ -107,7 +107,7 @@ class MonthlyDistrictDataService
     }
 
     dead_count = region.assigned_patients.with_hypertension.status_dead.count
-    assigned_patients_count = repo.cumulative_assigned_patients_count.dig(region.slug, period) || 0
+    assigned_patients_count = repo.cumulative_assigned_patients.dig(region.slug, period) || 0
     ltfu_count = repo.ltfu_counts.dig(region.slug, period) || 0
     patients_under_care = assigned_patients_count - ltfu_count
     controlled_count = repo.controlled.dig(region.slug, period) || 0

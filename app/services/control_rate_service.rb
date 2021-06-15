@@ -51,7 +51,7 @@ class ControlRateService
     results.registrations = repository.monthly_registrations[slug]
     results.assigned_patients = repository.assigned_patients[slug]
     results.cumulative_registrations = repository.cumulative_registrations[slug]
-    results.cumulative_assigned_patients = repository.cumulative_assigned_patients_count[slug]
+    results.cumulative_assigned_patients = repository.cumulative_assigned_patients[slug]
     results.adjusted_patient_counts_with_ltfu = repository.adjusted_patients_with_ltfu[slug]
     results.adjusted_patient_counts = repository.adjusted_patients_without_ltfu[slug]
     results.ltfu_patients = repository.ltfu_counts[slug]

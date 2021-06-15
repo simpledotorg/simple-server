@@ -144,7 +144,7 @@ RSpec.describe Reports::Repository, type: :model do
       }
       repo = Reports::Repository.new(facility_1.region, periods: jan_2020.to_period)
       (jan_2019.to_period..jan_2020.to_period).each do |period|
-        count = repo.cumulative_assigned_patients_count[facility_1.slug][period]
+        count = repo.cumulative_assigned_patients[facility_1.slug][period]
         expect(count).to eq(4), "expected 4 assigned patients for #{period} but got #{count}"
       end
       expect(repo.controlled).to eq(expected_counts)
@@ -435,7 +435,7 @@ RSpec.describe Reports::Repository, type: :model do
         expect(repo.adjusted_patients_with_ltfu[slug][period]).to eq(service_result[:adjusted_patient_counts_with_ltfu][period])
         expect(repo.adjusted_patients_with_ltfu[slug][period]).to eq(service_result[:adjusted_patient_counts_with_ltfu][period])
 
-        expect(repo.cumulative_assigned_patients_count[slug][period]).to eq(service_result[:cumulative_assigned_patients][period])
+        expect(repo.cumulative_assigned_patients[slug][period]).to eq(service_result[:cumulative_assigned_patients][period])
         expect(repo.controlled_rates[slug][period]).to eq(service_result[:controlled_patients_rate][period])
         expect(repo.uncontrolled_rates[slug][period]).to eq(service_result[:uncontrolled_patients_rate][period])
       end

@@ -69,7 +69,7 @@ module Reports
     # Adjusted patient counts are the patient counts from three months ago (the adjusted period) that
     # are the basis for control rates. These counts DO include lost to follow up.
     memoize def adjusted_patients_with_ltfu
-      cumulative_assigned_patients_count.each_with_object({}) do |(entry, result), results|
+      cumulative_assigned_patients.each_with_object({}) do |(entry, result), results|
         values = periods.each_with_object(Hash.new(0)) { |period, region_result|
           region_result[period] = result[period.adjusted_period]
         }
@@ -80,7 +80,7 @@ module Reports
     # Adjusted patient counts are the patient counts from three months ago (the adjusted period) that
     # are the basis for control rates. These counts DO NOT include lost to follow up.
     memoize def adjusted_patients_without_ltfu
-      cumulative_assigned_patients_count.each_with_object({}) do |(entry, result), results|
+      cumulative_assigned_patients.each_with_object({}) do |(entry, result), results|
         values = periods.each_with_object(Hash.new(0)) { |period, region_result|
           next unless result.key?(period.adjusted_period)
           region_result[period] = result[period.adjusted_period] - ltfu_counts[entry][period]
@@ -92,7 +92,7 @@ module Reports
     alias_method :adjusted_patient_counts, :adjusted_patients_without_ltfu
 
     # Return the running total of cumulative assigned patient counts.
-    memoize def cumulative_assigned_patients_count
+    memoize def cumulative_assigned_patients
       complete_assigned_patients_counts.each_with_object({}) do |(region_entry, patient_counts), totals|
         slug = region_entry.slug
         next totals[slug] = Hash.new(0) if earliest_patient_recorded_at[slug].nil?
@@ -270,9 +270,9 @@ module Reports
     # As we deprecate Result and shift to Repository, a Repository object should be able to return both rates.
     def denominator(region, period, with_ltfu: false)
       if with_ltfu
-        cumulative_assigned_patients_count[region.slug][period.adjusted_period]
+        cumulative_assigned_patients[region.slug][period.adjusted_period]
       else
-        cumulative_assigned_patients_count[region.slug][period.adjusted_period] - ltfu_counts[region.slug][period]
+        cumulative_assigned_patients[region.slug][period.adjusted_period] - ltfu_counts[region.slug][period]
       end
     end
 

@@ -47,7 +47,7 @@ class Reports::RegionsController < AdminController
         missed_visits: repo.missed_visits[slug],
         missed_visits_rate: repo.missed_visits_rate[slug],
         registrations: repo.monthly_registrations[slug],
-        cumulative_patients: repo.cumulative_assigned_patients_count[slug],
+        cumulative_patients: repo.cumulative_assigned_patients[slug],
         cumulative_registrations: repo.cumulative_registrations[slug]
       }
     }
