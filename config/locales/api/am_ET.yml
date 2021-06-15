@@ -1,4 +1,4 @@
-am-ET:
+am_ET:
   date:
     month_names: [~, "ጥር", "የካቲት", "መጋቢት", "ሚያዚያ", "ግንቦት", "ሰኔ", "ሃምሌ", "ነሃሴ", "መስከረም", "ጥቅምት", "ህዳር", "ታህሳስ"]
     abbr_month_names: [~, "ጥር", "የካቲ", "መጋ", "ሚያ", "ግን", "ሰኔ", "ሃም", "ነሃ", "መስከ", "ጥቅም", "ህዳር", "ታህ"]
@@ -15,8 +15,8 @@ am-ET:
   sms:
     request_otp: "<#>%{otp}የእርስዎ ሲምፕል መተግበሪያ የማረጋገጫ የሚስጥር ቁጥር ነው\n%{app_signature}"
     appointment_reminders:
-      missed_visit_sms_reminder: "በ %{facility_name} ያሉት ሰራተኞቻችን ስለ እርስዎ እና የልብዎ ጤንነት እያሰቡ ይገኛሉ። እባክዎ የደም ግፊት መድሃኒቶችዎን ይቀጥሉ። መድሃኒትዎን ከቅርቡ ጤና ተቋም ይውሰዱ። ANM ወይም ASHA ያግኙ።"
-      missed_visit_whatsapp_reminder: "በ %{facility_name} ያሉት ሰራተኞቻችን ስለ እርስዎ እና የልብዎ ጤንነት እያሰቡ ይገኛሉ። እባክዎ የደም ግፊት መድሃኒቶችዎን ይቀጥሉ። መድሃኒትዎን ከቅርቡ ጤና ተቋም ይውሰዱ። ANM ወይም ASHA ያግኙ።"
+      missed_visit_sms_reminder: "በ %{facility_name} ያሉት ሰራተኞቻችን ስለ እርስዎ እና የልብዎ ጤንነት እያሰቡ ይገኛሉ። እባክዎ የደም ግፊት መድሃኒቶችዎን ይቀጥሉ። መድሃኒትዎን ከቅርቡ ጤና ተቋም ይውሰዱ።"
+      missed_visit_whatsapp_reminder: "በ %{facility_name} ያሉት ሰራተኞቻችን ስለ እርስዎ እና የልብዎ ጤንነት እያሰቡ ይገኛሉ። እባክዎ የደም ግፊት መድሃኒቶችዎን ይቀጥሉ። መድሃኒትዎን ከቅርቡ ጤና ተቋም ይውሰዱ።"
     patient_request_otp: "<#>%{otp} የእርስዎ ያደም ግፊት ፓስፖርት የማረጋገጫ የሚስጥር ቁጥር ነው\n%{app_signature}"
   dashboard:
     graphics:
@@ -61,7 +61,7 @@ am-ET:
     result_from_last_visit_in: "በ ውስጥ ካለፈው ጉብኝት ውጤት"
     no_patients: "ህመምተኞች የሉም"
     cohort_report_footnote_1: "ከምዝገባ በኋላ በሩብ ውስጥ በማንኛውም ተቋም ውስጥ የቅርብ ጊዜ ክትትል ጉብኝት።"
-    cohort_report_footnote_2: "ለዚህ ተቋም የተመደቡ ሁሉም የHTN ህመምተኞች በሩብ ዓመቱ ተመዝግበዋል።"
+    cohort_report_footnote_2: "ሁሉም የደም ግፊት ሕመምተኞች በዚህ ሩብ ውስጥ የተመዘገቡት ለዚህ ተቋም ተመድበዋል. የሞቱ ሕመምተኞች አይካተቱም።"
     cohort_report_footnote_3: "አንድ ታካሚ ብዙ ጉብኝቶች ካሉት የመጨረሻው BPአቸው የBP ቁጥጥርን ለማስላት ጥቅም ላይ ይውላል።"
     all_hypertension_and_diabetes: "ሁሉም የደም ግፊት እና የስኳር በሽታ"
     hypertension_controlled_numerator: "ባለፉት 3 ወሮች ውስጥ በማንኛውም ተቋም ውስጥ ቢያንስ አንድ የBP መለኪያ ያላቸው ታካሚዎች ተመዝግበዋል ፡፡ በጣም በቅርብ ጉብኝቱ ታካሚው BP&nbsp;&lt;140 and &lt;90 ነበረው።"
