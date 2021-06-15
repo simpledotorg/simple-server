@@ -105,7 +105,7 @@ module Reports
 
     # Returns registration counts per region / period
     memoize def monthly_registrations
-      complete_registration_counts.each_with_object({}) do |(entry, result), results|
+      complete_monthly_registrations.each_with_object({}) do |(entry, result), results|
         result.default = 0
         results[entry.region.slug] = result
       end
@@ -113,7 +113,7 @@ module Reports
 
     # Returns the full range of registered patient counts for a Region. We do this via one SQL query for each Region, because its
     # fast and easy via the underlying query.
-    memoize def complete_registration_counts
+    memoize def complete_monthly_registrations
       items = regions.map { |region| RegionEntry.new(region, __method__, period_type: period_type) }
       cache.fetch_multi(*items, force: bust_cache?) { |entry|
         registered_patients_query.count(entry.region, period_type)
@@ -121,7 +121,7 @@ module Reports
     end
 
     memoize def cumulative_registrations
-      complete_registration_counts.each_with_object({}) do |(region_entry, patient_counts), totals|
+      complete_monthly_registrations.each_with_object({}) do |(region_entry, patient_counts), totals|
         range = Range.new(patient_counts.keys.first || periods.first, periods.end)
         totals[region_entry.slug] = range.each_with_object(Hash.new(0)) { |period, sum|
           sum[period] = sum[period.previous] + patient_counts.fetch(period, 0)

@@ -101,9 +101,9 @@ class MonthlyDistrictDataService
   end
 
   def common_attributes(region, follow_ups_by_month)
-    complete_registration_counts = repo.complete_registration_counts.find { |k, _| k.slug == region.slug }.last
+    complete_monthly_registrations = repo.complete_monthly_registrations.find { |k, _| k.slug == region.slug }.last
     registered_by_month = months.each_with_object({}) { |month, hsh|
-      hsh["registrations_#{month.value}".to_sym] = (complete_registration_counts[month] || 0)
+      hsh["registrations_#{month.value}".to_sym] = (complete_monthly_registrations[month] || 0)
     }
 
     dead_count = region.assigned_patients.with_hypertension.status_dead.count
