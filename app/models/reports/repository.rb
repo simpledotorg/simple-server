@@ -190,12 +190,9 @@ module Reports
 
     def missed_visits_with_ltfu
       region_period_cached_query(__method__, with_ltfu: true) do |entry|
-        slug = entry.slug
-        patient_count = denominator(entry.region, entry.period, with_ltfu: true)
-        controlled = controlled[slug][entry.period]
-        uncontrolled = uncontrolled[slug][entry.period]
-        visits = visited_without_bp_taken[slug][entry.period]
-        patient_count - visits - controlled - uncontrolled
+        slug, period = entry.slug, entry.period
+        patient_count = denominator(entry.region, period, with_ltfu: true)
+        patient_count - controlled[slug][period] - uncontrolled[slug][period] - visited_without_bp_taken[slug][period]
       end
     end
 
@@ -270,9 +267,9 @@ module Reports
 
     memoize def visited_without_bp_taken_rate(with_ltfu: false)
       region_period_cached_query(__method__, with_tlfu: with_ltfu) do |entry|
-        controlled = visited_without_bp_taken[entry.slug][entry.period]
+        numerator = visited_without_bp_taken[entry.slug][entry.period]
         total = denominator(entry.region, entry.period, with_ltfu: with_ltfu)
-        percentage(controlled, total)
+        percentage(numerator, total)
       end
     end
 
