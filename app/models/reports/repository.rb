@@ -91,15 +91,6 @@ module Reports
 
     alias_method :adjusted_patient_counts, :adjusted_patients_without_ltfu
 
-    # Returns the full range of assigned patient counts for a Region. We do this via one SQL query for each Region, because its
-    # fast and easy via the underlying query.
-    memoize def complete_assigned_patients_counts
-      items = regions.map { |region| RegionEntry.new(region, __method__, period_type: period_type) }
-      cache.fetch_multi(*items, force: bust_cache?) { |region_entry|
-        assigned_patients_query.count(region_entry.region, period_type)
-      }
-    end
-
     # Return the running total of cumulative assigned patient counts.
     memoize def cumulative_assigned_patients_count
       complete_assigned_patients_counts.each_with_object({}) do |(region_entry, patient_counts), totals|
@@ -234,16 +225,6 @@ module Reports
       }
     end
 
-    # This only powers queries for children regions which do not require both variants of control rates, unlike Result.
-    # As we deprecate Result and shift to Repository, a Repository object should be able to return both rates.
-    def denominator(region, period, with_ltfu: false)
-      if with_ltfu
-        cumulative_assigned_patients_count[region.slug][period.adjusted_period]
-      else
-        cumulative_assigned_patients_count[region.slug][period.adjusted_period] - ltfu_counts[region.slug][period]
-      end
-    end
-
     memoize def controlled_rates(with_ltfu: false)
       region_period_cached_query(__method__, with_ltfu: false) do |entry|
         numerator = controlled[entry.slug][entry.period]
@@ -275,6 +256,25 @@ module Reports
     end
 
     private
+
+    # Returns the full range of assigned patient counts for a Region. We do this via one SQL query for each Region, because its
+    # fast and easy via the underlying query.
+    memoize def complete_assigned_patients_counts
+      items = regions.map { |region| RegionEntry.new(region, __method__, period_type: period_type) }
+      cache.fetch_multi(*items, force: bust_cache?) { |region_entry|
+        assigned_patients_query.count(region_entry.region, period_type)
+      }
+    end
+
+    # This only powers queries for children regions which do not require both variants of control rates, unlike Result.
+    # As we deprecate Result and shift to Repository, a Repository object should be able to return both rates.
+    def denominator(region, period, with_ltfu: false)
+      if with_ltfu
+        cumulative_assigned_patients_count[region.slug][period.adjusted_period]
+      else
+        cumulative_assigned_patients_count[region.slug][period.adjusted_period] - ltfu_counts[region.slug][period]
+      end
+    end
 
     # Generate all necessary cache keys for a calculation, then yield to the block for every entry.
     # Once all results are returned via fetch_multi, return the data in a standard format of:
