@@ -25,7 +25,10 @@ class ImoApiService
     }.to_json
     response = execute_post(url, body: request_body)
     status = process_response(response)
-    # log
+    if status == "failure"
+      report_error(description: "Failed Imo invitation", api_path: url, response: response)
+    end
+    status
     # create records
   end
 
@@ -36,7 +39,7 @@ class ImoApiService
       .basic_auth(user: IMO_USERNAME, pass: IMO_PASSWORD)
       .post(url, data)
   rescue HTTP::Error => e
-    report_error(url, e)
+    report_error(description: "Error while calling the Imo API", api_path: url, exception: e)
     raise ImoApiService::HTTPError
   end
 
@@ -52,12 +55,14 @@ class ImoApiService
     end
   end
 
-  def report_error(api_path, exception)
+  def report_error(description:, api_path:, exception: nil, response: nil)
     Sentry.capture_message(
-      "Error while calling the Imo API",
+      description,
       extra: {
         api_path: api_path,
-        exception: exception.to_s
+        exception: exception.to_s,
+        response_status: response&.status,
+        body: response&.body&.to_s
       },
       tags: {type: "imo-api"}
     )
