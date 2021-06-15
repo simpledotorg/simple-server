@@ -382,7 +382,7 @@ RSpec.describe Reports::Repository, type: :model do
       ten_years_ago = patient.recorded_at.advance(years: -10).to_period
       range = ten_years_ago..(ten_years_ago.advance(months: 12))
       repo = Reports::Repository.new(facility_1, periods: range)
-      expect(repo.adjusted_patient_counts[facility_1.slug]).to eq({})
+      expect(repo.adjusted_patients[facility_1.slug]).to eq({})
       expect(repo.cumulative_registrations[facility_1.slug]).to eq({})
     end
 
@@ -431,7 +431,7 @@ RSpec.describe Reports::Repository, type: :model do
       slug = facility_1.slug
 
       range.each do |period|
-        expect(repo.adjusted_patient_counts[slug][period]).to eq(service_result[:adjusted_patient_counts][period])
+        expect(repo.adjusted_patients[slug][period]).to eq(service_result[:adjusted_patient_counts][period])
         expect(repo.adjusted_patients_with_ltfu[slug][period]).to eq(service_result[:adjusted_patient_counts_with_ltfu][period])
         expect(repo.adjusted_patients_with_ltfu[slug][period]).to eq(service_result[:adjusted_patient_counts_with_ltfu][period])
 

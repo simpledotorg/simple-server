@@ -39,7 +39,7 @@ class Reports::RegionsController < AdminController
       slug = region.slug
       {
         region: region,
-        adjusted_patient_counts: repo.adjusted_patient_counts[slug],
+        adjusted_patient_counts: repo.adjusted_patients[slug],
         controlled_patients: repo.controlled[slug],
         controlled_patients_rate: repo.controlled_rates[slug],
         uncontrolled_patients: repo.uncontrolled[slug],

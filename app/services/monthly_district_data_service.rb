@@ -114,7 +114,7 @@ class MonthlyDistrictDataService
     uncontrolled_count = repo.uncontrolled.dig(region.slug, period) || 0
     missed_visits = repo.missed_visits.dig(region.slug, period) || 0
     no_bp_taken = repo.visited_without_bp_taken.dig(region.slug, period) || 0
-    adjusted_patients_under_care = repo.adjusted_patient_counts.dig(region.slug, period) || 0
+    adjusted_patients_under_care = repo.adjusted_patients.dig(region.slug, period) || 0
 
     {
       estimated_hypertension_population: nil,
