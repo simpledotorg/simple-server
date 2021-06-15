@@ -83,7 +83,7 @@ module Reports
       cumulative_assigned_patients.each_with_object({}) do |(entry, result), results|
         values = periods.each_with_object(Hash.new(0)) { |period, region_result|
           next unless result.key?(period.adjusted_period)
-          region_result[period] = result[period.adjusted_period] - ltfu_counts[entry][period]
+          region_result[period] = result[period.adjusted_period] - ltfu[entry][period]
         }
         results[entry] = values
       end
@@ -140,7 +140,7 @@ module Reports
       }
     end
 
-    memoize def ltfu_counts
+    memoize def ltfu
       region_period_cached_query(__method__) do |entry|
         facility_ids = entry.region.facility_ids
         Patient.for_reports.where(assigned_facility: facility_ids).ltfu_as_of(entry.period.end).count
@@ -272,7 +272,7 @@ module Reports
       if with_ltfu
         cumulative_assigned_patients[region.slug][period.adjusted_period]
       else
-        cumulative_assigned_patients[region.slug][period.adjusted_period] - ltfu_counts[region.slug][period]
+        cumulative_assigned_patients[region.slug][period.adjusted_period] - ltfu[region.slug][period]
       end
     end
 

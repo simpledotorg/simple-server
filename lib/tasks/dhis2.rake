@@ -39,7 +39,7 @@ namespace :dhis2 do
           controlled: repository.controlled[slug][period],
           uncontrolled: repository.uncontrolled[slug][period],
           missed_visits: repository.missed_visits[slug][period],
-          ltfu: repository.ltfu_counts[slug][period],
+          ltfu: repository.ltfu[slug][period],
           # Note: dead patients are always the current count due to lack of status timestamps
           dead: facility.assigned_patients.with_hypertension.status_dead.count,
           cumulative_registrations: repository.cumulative_registrations[slug][period],
