@@ -130,7 +130,7 @@ module Reports
     end
 
     # Returns registration counts per region / period counted by registration_user
-    memoize def registration_counts_by_user
+    memoize def monthly_registrations_by_user
       items = regions.map { |region| RegionEntry.new(region, __method__, group_by: :registration_user_id, period_type: period_type) }
       result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
         registered_patients_query.count(entry.region, period_type, group_by: :registration_user_id)
