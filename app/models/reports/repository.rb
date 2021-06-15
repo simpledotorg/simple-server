@@ -60,7 +60,7 @@ module Reports
     #    region_slug: { period: value, period: value }
     # }
     memoize def assigned_patients
-      complete_assigned_patients_counts.each_with_object({}) do |(entry, result), results|
+      complete_monthly_assigned_patients.each_with_object({}) do |(entry, result), results|
         values = periods.each_with_object(Hash.new(0)) { |period, region_result| region_result[period] = result[period] if result[period] }
         results[entry.region.slug] = values
       end
@@ -93,7 +93,7 @@ module Reports
 
     # Return the running total of cumulative assigned patient counts.
     memoize def cumulative_assigned_patients
-      complete_assigned_patients_counts.each_with_object({}) do |(region_entry, patient_counts), totals|
+      complete_monthly_assigned_patients.each_with_object({}) do |(region_entry, patient_counts), totals|
         slug = region_entry.slug
         next totals[slug] = Hash.new(0) if earliest_patient_recorded_at[slug].nil?
         range = Range.new(earliest_patient_recorded_at_period[slug], periods.end)
@@ -259,7 +259,7 @@ module Reports
 
     # Returns the full range of assigned patient counts for a Region. We do this via one SQL query for each Region, because its
     # fast and easy via the underlying query.
-    memoize def complete_assigned_patients_counts
+    memoize def complete_monthly_assigned_patients
       items = regions.map { |region| RegionEntry.new(region, __method__, period_type: period_type) }
       cache.fetch_multi(*items, force: bust_cache?) { |region_entry|
         assigned_patients_query.count(region_entry.region, period_type)
