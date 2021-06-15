@@ -15,26 +15,47 @@ class ImoApiService
   end
 
   def invite
-    url = BASE_URL + "invite"
+    url = BASE_URL + "send_invite"
     request_body = {
       phone: phone_number,
       msg: message,
       contents:  [{"key": "Name", "value": recipient_name}, {"key": "Notes", "value": message}],
       title: "Invitation",
       action: "Click here"
-    }
-    execute_post(url, form: request_body)
+    }.to_json
+    response = execute_post(url, body: request_body)
+    status = if response.status == 200
+      "success"
+    elsif response.status == 400
+      parsed = JSON.parse(response.body)
+      error_type = parsed.dig("response", "type")
+      error_type == "nonexistent_user" ? "nonexistent_user" : "failure"
+    else
+      "failure"
+    end
+    # log
+    # create records
   end
 
   private
 
   def execute_post(url, data)
-    response = HTTP
-                .basic_auth(user: IMO_USERNAME, pass: IMO_PASSWORD)
-                .post(url, data)
-    puts response
+    HTTP
+      .basic_auth(user: IMO_USERNAME, pass: IMO_PASSWORD)
+      .post(url, data)
   rescue HTTP::Error => e
-    # report_error(url, e)
+    report_error(url, e)
     raise ImoApiService::HTTPError
+  end
+
+  def report_error(api_path, exception)
+    Sentry.capture_message(
+      "Error while calling the Imo API",
+      extra: {
+        api_path: api_path,
+        exception: exception.to_s
+      },
+      tags: {type: "imo-api"}
+    )
   end
 end
