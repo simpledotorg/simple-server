@@ -168,7 +168,7 @@ module Reports
       end
     end
 
-    memoize def missed_visits
+    memoize def missed_visits_without_ltfu
       region_period_cached_query(__method__) do |entry|
         slug = entry.slug
         patient_count = denominator(entry.region, entry.period)
@@ -179,14 +179,43 @@ module Reports
       end
     end
 
-    # We determine this rate via subtraction from 100 instead of via division to avoid confusing rounding errors.
-    memoize def missed_visits_rate
+    # To determine the missed visits percentage, we sum the remaining percentages and subtract that from 100.
+    # If we determined the percentage directly, we would have cases where the percentages do not add up to 100
+    # due to rounding and losing precision.
+    memoize def missed_visits_without_ltfu_rates
       region_period_cached_query(__method__) do |entry|
         slug, period = entry.slug, entry.period
-        remaining_percentages = controlled_patients_rate[slug][period] + uncontrolled_patients_rate[slug][period] + visited_without_bp_taken_rate[slug][period]
-        100 - remaining_percentages
+        visit_rates = controlled_patients_rate[slug][period] + uncontrolled_patients_rate[slug][period] + visited_without_bp_taken_rate[slug][period]
+        100 - visit_rates
       end
     end
+
+    def missed_visits_with_ltfu
+      region_period_cached_query(__method__, with_ltfu: true) do |entry|
+        slug = entry.slug
+        patient_count = denominator(entry.region, entry.period, with_ltfu: true)
+        controlled = controlled_patients_count[slug][entry.period]
+        uncontrolled = uncontrolled_patients_count[slug][entry.period]
+        visits = visited_without_bp_taken[slug][entry.period]
+        patient_count - visits - controlled - uncontrolled
+      end
+    end
+
+    # To determine the missed visits percentage, we sum the remaining percentages and subtract that from 100.
+    # If we determined the percentage directly, we would have cases where the percentages do not add up to 100
+    # due to rounding and losing precision.
+    memoize def missed_visits_with_ltfu_rates
+      region_period_cached_query(__method__, with_ltfu: true) do |entry|
+        slug, period = entry.slug, entry.period
+        visit_rates = controlled_patients_rate(with_ltfu: true)[slug][period] +
+          uncontrolled_patients_rate(with_ltfu: true)[slug][period] +
+          visited_without_bp_taken_rate(with_ltfu: true)[slug][period]
+        100 - visit_rates
+      end
+    end
+
+    alias_method :missed_visits, :missed_visits_without_ltfu
+    alias_method :missed_visits_rate, :missed_visits_without_ltfu_rates
 
     # Returns Follow ups per Region / Period. Takes an optional group_by clause (commonly used to group by `blood_pressures.user_id`)
     memoize def hypertension_follow_ups(group_by: nil)
@@ -209,26 +238,28 @@ module Reports
       }
     end
 
-    # This method currently always returns the "excluding LTFU denominator".
-    # Repository only returns "excluding LTFU" rates.
     # This only powers queries for children regions which do not require both variants of control rates, unlike Result.
     # As we deprecate Result and shift to Repository, a Repository object should be able to return both rates.
-    def denominator(region, period)
-      cumulative_assigned_patients_count[region.slug][period.adjusted_period] - ltfu_counts[region.slug][period]
+    def denominator(region, period, with_ltfu: false)
+      if with_ltfu
+        cumulative_assigned_patients_count[region.slug][period.adjusted_period]
+      else
+        cumulative_assigned_patients_count[region.slug][period.adjusted_period] - ltfu_counts[region.slug][period]
+      end
     end
 
-    memoize def controlled_patients_rate
-      region_period_cached_query(__method__) do |entry|
+    memoize def controlled_patients_rate(with_ltfu: false)
+      region_period_cached_query(__method__, with_ltfu: false) do |entry|
         controlled = controlled_patients_count[entry.slug][entry.period]
-        total = denominator(entry.region, entry.period)
+        total = denominator(entry.region, entry.period, with_ltfu: with_ltfu)
         percentage(controlled, total)
       end
     end
 
-    memoize def uncontrolled_patients_rate
-      region_period_cached_query(__method__) do |entry|
+    memoize def uncontrolled_patients_rate(with_ltfu: false)
+      region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
         controlled = uncontrolled_patients_count[entry.region.slug][entry.period]
-        total = denominator(entry.region, entry.period)
+        total = denominator(entry.region, entry.period, with_ltfu: with_ltfu)
         percentage(controlled, total)
       end
     end
@@ -239,10 +270,10 @@ module Reports
       end
     end
 
-    memoize def visited_without_bp_taken_rate
-      region_period_cached_query(__method__) do |entry|
+    memoize def visited_without_bp_taken_rate(with_ltfu: false)
+      region_period_cached_query(__method__, with_tlfu: with_ltfu) do |entry|
         controlled = visited_without_bp_taken[entry.slug][entry.period]
-        total = denominator(entry.region, entry.period)
+        total = denominator(entry.region, entry.period, with_ltfu: with_ltfu)
         percentage(controlled, total)
       end
     end
@@ -256,9 +287,9 @@ module Reports
     #     region_2_slug: { period_1: value, period_2: value }
     #   }
     #
-    def region_period_cached_query(calculation, &block)
+    def region_period_cached_query(calculation, **options, &block)
       results = regions.each_with_object({}) { |region, hsh| hsh[region.slug] = Hash.new(0) }
-      items = cache_entries(calculation)
+      items = cache_entries(calculation, **options)
       cached_results = cache.fetch_multi(*items, force: bust_cache?) { |entry| block.call(entry) }
       cached_results.each { |(entry, count)| results[entry.region.slug][entry.period] = count }
       results
@@ -267,14 +298,14 @@ module Reports
     # Generate all necessary region period cache entries, only going back to the earliest
     # patient registration date for Periods. This ensures that we don't create many cache entries
     # with 0 data for newer Regions.
-    def cache_entries(calculation)
+    def cache_entries(calculation, **options)
       combinations = regions.each_with_object([]) do |region, results|
         earliest_period = earliest_patient_recorded_at_period[region.slug]
         next if earliest_period.nil?
         periods_with_data = periods.select { |period| period >= earliest_period }
         results.concat(periods_with_data.to_a.map { |period| [region, period] })
       end
-      combinations.map { |region, period| Reports::RegionPeriodEntry.new(region, period, calculation) }
+      combinations.map { |region, period| Reports::RegionPeriodEntry.new(region, period, calculation, options) }
     end
 
     def percentage(numerator, denominator)
