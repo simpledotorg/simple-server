@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_07_235412) do
+ActiveRecord::Schema.define(version: 2021_06_15_191355) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -333,6 +333,16 @@ ActiveRecord::Schema.define(version: 2021_06_07_235412) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["feature_key", "key", "value"], name: "index_flipper_gates_on_feature_key_and_key_and_value", unique: true
+  end
+
+  create_table "imo_authorizations", force: :cascade do |t|
+    t.uuid "patient_id", null: false
+    t.date "last_invitation_date", null: false
+    t.string "status", null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["patient_id"], name: "index_imo_authorizations_on_patient_id"
   end
 
   create_table "medical_histories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
