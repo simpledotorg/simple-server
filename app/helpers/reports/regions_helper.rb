@@ -21,6 +21,13 @@ module Reports::RegionsHelper
       .flatten.compact.sum
   end
 
+  def sum_bp_measures(repository, *keys)
+    slug, user_id = keys
+    repository.bp_measures_by_user.dig(slug)
+      .map { |period, user_counts| user_counts.dig(user_id) }
+      .flatten.compact.sum
+  end
+
   def percentage_or_na(value, options)
     return "N/A" if value.blank?
     number_to_percentage(value, options)
