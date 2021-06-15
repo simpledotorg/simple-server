@@ -172,7 +172,7 @@ module Reports
       region_period_cached_query(__method__) do |entry|
         slug, period = entry.slug, entry.period
         patient_count = denominator(entry.region, entry.period)
-        visits = controlled[slug][period] - uncontrolled[slug][period] - visited_without_bp_taken[slug][period]
+        visits = controlled[slug][period] + uncontrolled[slug][period] + visited_without_bp_taken[slug][period]
         patient_count - visits
       end
     end
