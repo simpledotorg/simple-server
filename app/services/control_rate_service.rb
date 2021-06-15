@@ -54,13 +54,10 @@ class ControlRateService
     results.cumulative_assigned_patients = repository.cumulative_assigned_patients_count[slug]
     results.adjusted_patient_counts_with_ltfu = repository.adjusted_patients_with_ltfu[slug]
     results.adjusted_patient_counts = repository.adjusted_patients_without_ltfu[slug]
+    results.ltfu_patients = repository.ltfu_counts[slug]
 
-    results.full_data_range.each do |(period, count)|
-      results.ltfu_patients[period] = ltfu_patients(period)
-    end
-
-    results.controlled_patients = repository.controlled[region.slug]
-    results.uncontrolled_patients = repository.uncontrolled[region.slug]
+    results.controlled_patients = repository.controlled[slug]
+    results.uncontrolled_patients = repository.uncontrolled[slug]
 
     results.controlled_patients_rate = repository.controlled_rates[slug]
     results.uncontrolled_patients_rate = repository.uncontrolled_rates[slug]
@@ -69,10 +66,6 @@ class ControlRateService
     results.calculate_percentages(:uncontrolled_patients, with_ltfu: true)
     results.calculate_percentages(:ltfu_patients)
     results
-  end
-
-  def ltfu_patients(period)
-    Patient.for_reports.where(assigned_facility: facilities.pluck(:id)).ltfu_as_of(period.end).count
   end
 
   def quarterly_report?
