@@ -14,12 +14,10 @@ describe ImoApiService, type: :model do
       }
     end
 
-    it "handles error" do
-      stub_request(:post, request_url).to_timeout
-
-      expect {
-        service.invite
-      }.to raise_error(ImoApiService::HTTPError)
+    # this needs to be changed to test object creation
+    it "returns success on 200" do
+      stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200)
+      expect(service.invite).to eq("success")
     end
 
     it "returns nonxistent_user when status if 400 and type is nonexistent_user" do
@@ -34,10 +32,18 @@ describe ImoApiService, type: :model do
       expect(service.invite).to eq("nonexistent_user")
     end
 
-    # this needs to be changed to test object creation
-    it "returns success" do
-      stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200)
-      expect(service.invite).to eq("success")
+    it "returns failure with any other response" do
+      stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: {}.to_json)
+      expect(service.invite).to eq("failure")
+    end
+
+    it "handles error" do
+      stub_request(:post, request_url).to_timeout
+
+      expect(Sentry).to receive(:capture_message).and_return(true)
+      expect {
+        service.invite
+      }.to raise_error(ImoApiService::HTTPError)
     end
   end
 end

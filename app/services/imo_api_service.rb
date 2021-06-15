@@ -24,15 +24,7 @@ class ImoApiService
       action: "Click here"
     }.to_json
     response = execute_post(url, body: request_body)
-    status = if response.status == 200
-      "success"
-    elsif response.status == 400
-      parsed = JSON.parse(response.body)
-      error_type = parsed.dig("response", "type")
-      error_type == "nonexistent_user" ? "nonexistent_user" : "failure"
-    else
-      "failure"
-    end
+    status = process_response(response)
     # log
     # create records
   end
@@ -46,6 +38,18 @@ class ImoApiService
   rescue HTTP::Error => e
     report_error(url, e)
     raise ImoApiService::HTTPError
+  end
+
+  def process_response(response)
+    if response.status == 200
+      "success"
+    elsif response.status == 400
+      parsed = JSON.parse(response.body)
+      error_type = parsed.dig("response", "type")
+      error_type == "nonexistent_user" ? "nonexistent_user" : "failure"
+    else
+      "failure"
+    end
   end
 
   def report_error(api_path, exception)
