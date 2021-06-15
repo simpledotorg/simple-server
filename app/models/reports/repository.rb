@@ -190,9 +190,10 @@ module Reports
 
     def missed_visits_with_ltfu
       region_period_cached_query(__method__, with_ltfu: true) do |entry|
-        slug, period = entry.slug, entry.period
-        patient_count = denominator(entry.region, period, with_ltfu: true)
-        patient_count - controlled[slug][period] - uncontrolled[slug][period] - visited_without_bp_taken[slug][period]
+        slug = entry.slug
+        patient_count = denominator(entry.region, entry.period, with_ltfu: true)
+        visits = controlled[slug][entry.period] + uncontrolled[slug][entry.period] + visited_without_bp_taken[slug][entry.period]
+        patient_count - visits
       end
     end
 
