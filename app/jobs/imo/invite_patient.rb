@@ -1,4 +1,5 @@
 class Imo::InvitePatient < ApplicationJob
+  queue_as :default
 
   attr_reader :patient
 
