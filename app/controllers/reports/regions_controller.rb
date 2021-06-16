@@ -56,6 +56,7 @@ class Reports::RegionsController < AdminController
   def details
     @period = Period.month(Time.current)
     @period_range = Range.new(@period.advance(months: -5), @period)
+    @chart_range = (@period.advance(months: -24)..@period)
 
     regions = if @region.facility_region?
       [@region]
@@ -63,16 +64,17 @@ class Reports::RegionsController < AdminController
       [@region, @region.facility_regions].flatten
     end
     @repository = Reports::Repository.new(regions, periods: @period_range)
-    @chart_repo = Reports::Repository.new(@region, periods: (@period.advance(months: -24)..@period))
+    @chart_repo = Reports::Repository.new(@region, periods: @chart_range)
 
-    ltfu = {
+    ltfu_data = {
       cumulative_assigned_patients: @chart_repo.cumulative_assigned_patients[@region.slug],
       ltfu_patients: @chart_repo.ltfu[@region.slug],
-      ltfu_patients_rate: @chart_repo.ltfu_rates[@region.slug]
+      ltfu_patients_rate: @chart_repo.ltfu_rates[@region.slug],
+      period_info: @chart_range.each_with_object({}) { |period, hsh| hsh[period] = period.to_hash }
     }
     @chart_data = {
       patient_breakdown: PatientBreakdownService.call(region: @region, period: @period),
-      ltfu_trend: ltfu
+      ltfu_trend: ltfu_data
     }
 
     region_source = @region.source

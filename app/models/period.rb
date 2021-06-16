@@ -92,6 +92,10 @@ class Period
     bp_control_range.end.to_s(:day_mon_year)
   end
 
+  def ltfu_since_date
+    public_send(:begin).advance(months: -12).end_of_month.to_s(:day_mon_year)
+  end
+
   def month?
     type == :month
   end
@@ -179,6 +183,17 @@ class Period
     else
       value.to_s(format)
     end
+  end
+
+  # Returns a Hash with various Period related dates for eash consumption by the view
+  def to_hash
+    {
+      name: to_s,
+      ltfu_since_date: ltfu_since_date,
+      bp_control_start_date: bp_control_range_start_date,
+      bp_control_end_date: bp_control_range_end_date,
+      bp_control_registration_date: bp_control_registrations_until_date
+    }
   end
 
   def adjective

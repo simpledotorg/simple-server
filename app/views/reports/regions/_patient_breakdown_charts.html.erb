@@ -35,8 +35,9 @@
                   <%= number_with_delimiter(current_ltfu_patients) %>
                 </span>
                 <%= "patient".pluralize(current_ltfu_patients) %> with no BP taken since
-                <span data-period-start="<%= @chart_data[:ltfu_trend].last_value(:period_info)["ltfu_since_date"] %>">
-                  <%= @chart_data[:ltfu_trend].last_value(:period_info)["ltfu_since_date"] %>
+
+                <span data-period-start="<%= @period.ltfu_since_date %>">
+                  <%= @period.ltfu_since_date %>
                 </span>
               </p>
               <p class="m-0px c-grey-dark c-print-black">
@@ -46,8 +47,9 @@
                   <%= number_with_delimiter(current_assigned) %>
                 </span>
                 <%= "patient".pluralize(current_assigned) %> registered till
-                <span data-registrations-period-end="<%= @chart_data[:ltfu_trend].last_value(:period_info)["bp_control_end_date"] %>">
-                  <%= @chart_data[:ltfu_trend].last_value(:period_info)["bp_control_end_date"] %>
+
+                <span data-registrations-period-end="<%= @period.bp_control_range_end_date %>">
+                  <%= @period.bp_control_range_end_date %>
                 </span>
               </p>
             <% else %>
