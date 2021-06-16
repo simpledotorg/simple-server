@@ -337,7 +337,7 @@ ActiveRecord::Schema.define(version: 2021_06_15_191355) do
 
   create_table "imo_authorizations", force: :cascade do |t|
     t.uuid "patient_id", null: false
-    t.date "last_invitation_date", null: false
+    t.datetime "last_invited_at", null: false
     t.string "status", null: false
     t.datetime "deleted_at"
     t.datetime "created_at", null: false
