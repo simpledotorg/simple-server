@@ -442,25 +442,35 @@ RSpec.describe Reports::Repository, type: :model do
     end
 
     it "gets same results as RegionService for missed_visits" do
-      may_1 = Time.parse("May 1st, 2020")
-      may_15 = Time.parse("May 15th, 2020")
+      very_old = Time.zone.parse("December 1st 2010")
+      may_1_2020 = Time.zone.parse("May 1st, 2020")
+      may_15_2020 = Time.zone.parse("May 15th, 2020")
       facility = create(:facility, facility_group: facility_group_1)
-      _patient_missed_visit_1 = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: Time.parse("December 1st 2010"))
-      _patient_missed_visit_2 = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: jan_2020)
-      patient_without_bp = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: jan_2020)
-      patient_with_bp = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: jan_2020)
-      _appointment_1 = create(:appointment, creation_facility: facility, scheduled_date: may_1, device_created_at: may_1, patient: patient_without_bp)
-      _appointment_2 = create(:appointment, creation_facility: facility, scheduled_date: may_15, device_created_at: may_15, patient: patient_with_bp)
-      create(:blood_pressure, :under_control, facility: facility, patient: patient_with_bp, recorded_at: may_15)
+      slug = facility.region.slug
+      # patients without any visits
+      _patient_missed_visit_1_always_ltfu = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: very_old, registration_user: user)
+      _patient_missed_visit_2 = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: jan_2020, registration_user: user)
+      # patients with visits
+      patient_with_appt_visit = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: jan_2020, registration_user: user)
+      patient_with_bp_visit = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: jan_2020, registration_user: user)
+      create(:appointment, creation_facility: facility, scheduled_date: may_1_2020, device_created_at: may_1_2020, patient: patient_with_appt_visit)
+      create(:blood_pressure, :under_control, facility: facility, patient: patient_with_bp_visit, recorded_at: may_15_2020)
 
       service = Reports::RegionService.new(region: facility, period: july_2020.to_period)
       repo = Reports::Repository.new(facility.region, periods: service.range)
       legacy_results = service.call
-      facility_results = repo.missed_visits[facility.slug]
 
       expect(legacy_results[:missed_visits].size).to eq(service.range.entries.size)
-      expect(facility_results.size).to eq(service.range.entries.size)
-      expect(facility_results).to eq(legacy_results[:missed_visits])
+      expect(repo.missed_visits[slug].size).to eq(service.range.entries.size)
+      expect(repo.missed_visits[slug]).to eq(legacy_results[:missed_visits])
+
+      expect(repo.missed_visits_without_ltfu[slug]).to eq(repo.missed_visits[slug])
+      expect(repo.missed_visits_without_ltfu[slug]).to eq(legacy_results[:missed_visits])
+      expect(repo.missed_visits_with_ltfu[slug]).to eq(legacy_results[:missed_visits_with_ltfu])
+
+      expect(repo.missed_visits_without_ltfu_rates[slug]).to eq(repo.missed_visits_rate[slug])
+      expect(repo.missed_visits_without_ltfu_rates[slug]).to eq(legacy_results[:missed_visits_rate])
+      expect(repo.missed_visits_with_ltfu_rates[slug]).to eq(legacy_results[:missed_visits_with_ltfu_rate])
     end
   end
 end
