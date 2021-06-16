@@ -184,6 +184,7 @@ RSpec.describe Reporting::ReportingPatientStatesPerMonth, {type: :model, reporti
         end
       end
     end
+
     describe "months_since_registration" do
       it "computes it correctly" do
         patient_1 = create(:patient, recorded_at: test_times[:under_a_year_ago])
@@ -203,19 +204,69 @@ RSpec.describe Reporting::ReportingPatientStatesPerMonth, {type: :model, reporti
 
     describe "assigned and registered facility regions" do
       it "computes the assigned facility and parent regions correctly" do
-        facility = create(:facility, :without_parent_region)
+        registration_facility = create(:facility)
+        assigned_facility = create(:facility)
 
-        facility_region = create(:region, name: "f-facility", region_type: "facility", source: facility)
-        block_region = create(:region, name: "f-block", region_type: "block")
-        district_region = create(:region, name: "f-district", region_type: "district")
-        state_region = create(:region, name: "f-state", region_type: "state")
+        facility_region = assigned_facility.region
+        block_region = facility_region.block_region
+        district_region = facility_region.district_region
+        state_region = facility_region.state_region
+        organization_region = facility_region.organization_region
 
-        create(:patient, )
+        patient = create(:patient, registration_facility: registration_facility, assigned_facility: assigned_facility)
+
+        described_class.refresh
+
+        with_reporting_time_zones do
+          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).patient_assigned_facility_id).to eq(assigned_facility.id)
+          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).assigned_facility_region_id).to eq(facility_region.id)
+          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).assigned_block_region_id).to eq(block_region.id)
+          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).assigned_district_region_id).to eq(district_region.id)
+          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).assigned_state_region_id).to eq(state_region.id)
+          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).assigned_organization_region_id).to eq(organization_region.id)
+
+          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).assigned_facility_slug).to eq(assigned_facility.slug)
+          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).assigned_block_slug).to eq(block_region.slug)
+          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).assigned_district_slug).to eq(district_region.slug)
+          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).assigned_state_slug).to eq(state_region.slug)
+          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).assigned_organization_slug).to eq(organization_region.slug)
+        end
+      end
+
+      it "computes the registration facility and parent regions correctly" do
+        registration_facility = create(:facility)
+        assigned_facility = create(:facility)
+
+        facility_region = registration_facility.region
+        block_region = facility_region.block_region
+        district_region = facility_region.district_region
+        state_region = facility_region.state_region
+        organization_region = facility_region.organization_region
+
+        patient = create(:patient, registration_facility: registration_facility, assigned_facility: assigned_facility)
+
+        described_class.refresh
+
+        with_reporting_time_zones do
+          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).patient_registration_facility_id).to eq(registration_facility.id)
+          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).registration_facility_region_id).to eq(facility_region.id)
+          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).registration_block_region_id).to eq(block_region.id)
+          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).registration_district_region_id).to eq(district_region.id)
+          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).registration_state_region_id).to eq(state_region.id)
+          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).registration_organization_region_id).to eq(organization_region.id)
+
+          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).registration_facility_slug).to eq(registration_facility.slug)
+          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).registration_block_slug).to eq(block_region.slug)
+          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).registration_district_slug).to eq(district_region.slug)
+          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).registration_state_slug).to eq(state_region.slug)
+          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).registration_organization_slug).to eq(organization_region.slug)
+        end
       end
     end
 
     describe "last_bp_state" do
     end
+
     describe "patient timeline" do
       it "should have a record for every month between registration and now" do
         # assert on months_since_registration, months_since_bp, months_since_visit
