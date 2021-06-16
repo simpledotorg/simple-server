@@ -218,18 +218,20 @@ RSpec.describe Reporting::ReportingPatientStatesPerMonth, {type: :model, reporti
         described_class.refresh
 
         with_reporting_time_zones do
-          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).patient_assigned_facility_id).to eq(assigned_facility.id)
-          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).assigned_facility_region_id).to eq(facility_region.id)
-          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).assigned_block_region_id).to eq(block_region.id)
-          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).assigned_district_region_id).to eq(district_region.id)
-          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).assigned_state_region_id).to eq(state_region.id)
-          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).assigned_organization_region_id).to eq(organization_region.id)
+          patient_state = described_class.find_by(id: patient.id, month_string: test_times[:month_string])
 
-          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).assigned_facility_slug).to eq(assigned_facility.slug)
-          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).assigned_block_slug).to eq(block_region.slug)
-          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).assigned_district_slug).to eq(district_region.slug)
-          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).assigned_state_slug).to eq(state_region.slug)
-          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).assigned_organization_slug).to eq(organization_region.slug)
+          expect(patient_state.patient_assigned_facility_id).to eq(assigned_facility.id)
+          expect(patient_state.assigned_facility_region_id).to eq(facility_region.id)
+          expect(patient_state.assigned_block_region_id).to eq(block_region.id)
+          expect(patient_state.assigned_district_region_id).to eq(district_region.id)
+          expect(patient_state.assigned_state_region_id).to eq(state_region.id)
+          expect(patient_state.assigned_organization_region_id).to eq(organization_region.id)
+
+          expect(patient_state.assigned_facility_slug).to eq(assigned_facility.slug)
+          expect(patient_state.assigned_block_slug).to eq(block_region.slug)
+          expect(patient_state.assigned_district_slug).to eq(district_region.slug)
+          expect(patient_state.assigned_state_slug).to eq(state_region.slug)
+          expect(patient_state.assigned_organization_slug).to eq(organization_region.slug)
         end
       end
 
@@ -248,18 +250,20 @@ RSpec.describe Reporting::ReportingPatientStatesPerMonth, {type: :model, reporti
         described_class.refresh
 
         with_reporting_time_zones do
-          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).patient_registration_facility_id).to eq(registration_facility.id)
-          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).registration_facility_region_id).to eq(facility_region.id)
-          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).registration_block_region_id).to eq(block_region.id)
-          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).registration_district_region_id).to eq(district_region.id)
-          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).registration_state_region_id).to eq(state_region.id)
-          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).registration_organization_region_id).to eq(organization_region.id)
+          patient_state = described_class.find_by(id: patient.id, month_string: test_times[:month_string])
 
-          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).registration_facility_slug).to eq(registration_facility.slug)
-          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).registration_block_slug).to eq(block_region.slug)
-          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).registration_district_slug).to eq(district_region.slug)
-          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).registration_state_slug).to eq(state_region.slug)
-          expect(described_class.find_by(id: patient.id, month_string: test_times[:month_string]).registration_organization_slug).to eq(organization_region.slug)
+          expect(patient_state.patient_registration_facility_id).to eq(registration_facility.id)
+          expect(patient_state.registration_facility_region_id).to eq(facility_region.id)
+          expect(patient_state.registration_block_region_id).to eq(block_region.id)
+          expect(patient_state.registration_district_region_id).to eq(district_region.id)
+          expect(patient_state.registration_state_region_id).to eq(state_region.id)
+          expect(patient_state.registration_organization_region_id).to eq(organization_region.id)
+
+          expect(patient_state.registration_facility_slug).to eq(registration_facility.slug)
+          expect(patient_state.registration_block_slug).to eq(block_region.slug)
+          expect(patient_state.registration_district_slug).to eq(district_region.slug)
+          expect(patient_state.registration_state_slug).to eq(state_region.slug)
+          expect(patient_state.registration_organization_slug).to eq(organization_region.slug)
         end
       end
     end
@@ -269,7 +273,39 @@ RSpec.describe Reporting::ReportingPatientStatesPerMonth, {type: :model, reporti
 
     describe "patient timeline" do
       it "should have a record for every month between registration and now" do
-        # assert on months_since_registration, months_since_bp, months_since_visit
+        # Registered 3 months ago
+        # BP 2 months ago
+        # Visit 1 month ago
+        three_months_ago = test_times[:now] - 3.months
+        two_months_ago = test_times[:now] - 2.months
+        one_month_ago = test_times[:now] - 1.month
+        now = test_times[:now]
+
+        patient = create(:patient, recorded_at: test_times[:over_three_months_ago])
+        create(:blood_pressure, :with_encounter, patient: patient, recorded_at: test_times[:now] - 2.months)
+        create(:prescription_drug, patient: patient, device_created_at: test_times[:now] - 1.month)
+
+        described_class.refresh
+
+        state_1 = described_class.find_by(id: patient.id, month_string: three_months_ago.strftime("%Y-%m"))
+        expect(state_1.months_since_registration).to eq(0)
+        expect(state_1.months_since_visit).to be_nil
+        expect(state_1.months_since_bp).to be_nil
+
+        state_2 = described_class.find_by(id: patient.id, month_string: two_months_ago.strftime("%Y-%m"))
+        expect(state_2.months_since_registration).to eq(1)
+        expect(state_2.months_since_visit).to eq(0)
+        expect(state_2.months_since_bp).to eq(0)
+
+        state_3 = described_class.find_by(id: patient.id, month_string: one_month_ago.strftime("%Y-%m"))
+        expect(state_3.months_since_registration).to eq(2)
+        expect(state_3.months_since_visit).to eq(0)
+        expect(state_3.months_since_bp).to eq(1)
+
+        state_4 = described_class.find_by(id: patient.id, month_string: now.strftime("%Y-%m"))
+        expect(state_4.months_since_registration).to eq(3)
+        expect(state_4.months_since_visit).to eq(1)
+        expect(state_4.months_since_bp).to eq(2)
       end
     end
   end
