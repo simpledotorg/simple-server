@@ -63,10 +63,16 @@ class Reports::RegionsController < AdminController
       [@region, @region.facility_regions].flatten
     end
     @repository = Reports::Repository.new(regions, periods: @period_range)
+    @chart_repo = Reports::Repository.new(@region, periods: (@period.advance(months: -24)..@period))
 
+    ltfu = {
+      cumulative_assigned_patients: @chart_repo.cumulative_assigned_patients[@region.slug],
+      ltfu_patients: @chart_repo.ltfu[@region.slug],
+      ltfu_patients_rate: @chart_repo.ltfu_rates[@region.slug]
+    }
     @chart_data = {
       patient_breakdown: PatientBreakdownService.call(region: @region, period: @period),
-      ltfu_trend: Reports::RegionService.new(region: @region, period: @period).call
+      ltfu_trend: ltfu
     }
 
     region_source = @region.source
