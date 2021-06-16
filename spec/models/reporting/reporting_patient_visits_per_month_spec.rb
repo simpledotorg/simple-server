@@ -39,7 +39,8 @@ RSpec.describe Reporting::ReportingPatientVisitsPerMonth, {type: :model, reporti
       appointment = create(:appointment, device_created_at: test_times[:now])
       described_class.refresh
       with_reporting_time_zones do
-        expect(described_class.where(month_date: test_times[:now]).pluck(:patient_id)).to include(appointment.patient.id)
+        visit = described_class.find_by(patient_id: appointment.patient_id, month_date: test_times[:now])
+        expect(visit.visited_at).to eq appointment.device_created_at
       end
     end
 
@@ -49,6 +50,9 @@ RSpec.describe Reporting::ReportingPatientVisitsPerMonth, {type: :model, reporti
       with_reporting_time_zones do
         expect(described_class.find_by(month_date: test_times[:now]).visited_at).to be_nil
       end
+    end
+
+    it "uses the latest of the visit information" do
     end
   end
 

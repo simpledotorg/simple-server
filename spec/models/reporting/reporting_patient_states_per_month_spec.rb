@@ -115,24 +115,36 @@ RSpec.describe Reporting::ReportingPatientStatesPerMonth, {type: :model, reporti
     describe "htn_treatment_outcome_in_last_3_months is set to" do
       it "missed_visit if the patient hasn't visited in the last 3 months" do
         patient_1 = create(:patient, recorded_at: test_times[:long_ago])
-        create(:encounter, patient: patient_1, encountered_on: test_times[:three_months_ago])
+        create(:encounter, patient: patient_1, encountered_on: test_times[:over_three_months_ago])
         patient_2 = create(:patient, recorded_at: test_times[:long_ago])
+        create(:encounter, patient: patient_2, encountered_on: test_times[:under_three_months_ago])
+        patient_3 = create(:patient, recorded_at: test_times[:long_ago])
         described_class.refresh
 
         with_reporting_time_zones do
           expect(described_class.where(htn_treatment_outcome_in_last_3_months: "missed_visit", month_date: test_times[:now]).pluck(:id))
-            .to include(patient_1.id, patient_2.id)
+            .to include(patient_1.id, patient_3.id)
+          expect(described_class.where(htn_treatment_outcome_in_last_3_months: "missed_visit", month_date: test_times[:now]).pluck(:id))
+            .not_to include(patient_2.id)
         end
       end
 
       it "visited_no_bp if the patient visited, but didn't get a BP taken in the last 3 months" do
-        patient_bp_older_than_3_months = create(:patient, recorded_at: test_times[:long_ago])
+        patient_bp_over_3_months = create(:patient, recorded_at: test_times[:long_ago])
         create(:prescription_drug,
           device_created_at: test_times[:now] - 1.month,
-          facility: patient_bp_older_than_3_months.registration_facility,
-          patient: patient_bp_older_than_3_months,
-          user: patient_bp_older_than_3_months.registration_user)
-        create(:blood_pressure, patient: patient_bp_older_than_3_months, recorded_at: test_times[:three_months_ago])
+          facility: patient_bp_over_3_months.registration_facility,
+          patient: patient_bp_over_3_months,
+          user: patient_bp_over_3_months.registration_user)
+        create(:blood_pressure, patient: patient_bp_over_3_months, recorded_at: test_times[:over_three_months_ago])
+
+        patient_bp_under_3_months = create(:patient, recorded_at: test_times[:long_ago])
+        create(:prescription_drug,
+          device_created_at: test_times[:now] - 1.month,
+          facility: patient_bp_under_3_months.registration_facility,
+          patient: patient_bp_under_3_months,
+          user: patient_bp_under_3_months.registration_user)
+        create(:blood_pressure, patient: patient_bp_under_3_months, recorded_at: test_times[:under_three_months_ago])
 
         patient_with_no_bp = create(:patient, recorded_at: test_times[:long_ago])
         create(:prescription_drug,
@@ -144,7 +156,9 @@ RSpec.describe Reporting::ReportingPatientStatesPerMonth, {type: :model, reporti
 
         with_reporting_time_zones do
           expect(described_class.where(htn_treatment_outcome_in_last_3_months: "visited_no_bp", month_date: test_times[:now]).pluck(:id))
-            .to include(patient_bp_older_than_3_months.id, patient_with_no_bp.id)
+            .to include(patient_bp_over_3_months.id, patient_with_no_bp.id)
+          expect(described_class.where(htn_treatment_outcome_in_last_3_months: "visited_no_bp", month_date: test_times[:now]).pluck(:id))
+            .not_to include(patient_bp_under_3_months.id)
         end
       end
 
@@ -155,6 +169,9 @@ RSpec.describe Reporting::ReportingPatientStatesPerMonth, {type: :model, reporti
         patient_uncontrolled = create(:patient, recorded_at: test_times[:long_ago])
         create(:blood_pressure, :with_encounter, patient: patient_uncontrolled, recorded_at: test_times[:now] - 1.months, systolic: 140, diastolic: 90)
 
+        patient_bp_over_3_months = create(:patient, recorded_at: test_times[:long_ago])
+        create(:blood_pressure, :with_encounter, patient: patient_bp_over_3_months, recorded_at: test_times[:over_three_months_ago])
+
         described_class.refresh
 
         with_reporting_time_zones do
@@ -162,7 +179,46 @@ RSpec.describe Reporting::ReportingPatientStatesPerMonth, {type: :model, reporti
             .to include(patient_controlled.id)
           expect(described_class.where(htn_treatment_outcome_in_last_3_months: "uncontrolled", month_date: test_times[:now]).pluck(:id))
             .to include(patient_uncontrolled.id)
+          expect(described_class.where(htn_treatment_outcome_in_last_3_months: %w[uncontrolled controlled], month_date: test_times[:now]).pluck(:id))
+            .not_to include(patient_bp_over_3_months.id)
         end
+      end
+    end
+    describe "months_since_registration" do
+      it "computes it correctly" do
+        patient_1 = create(:patient, recorded_at: test_times[:under_a_year_ago])
+        patient_2 = create(:patient, recorded_at: test_times[:over_a_year_ago])
+        patient_3 = create(:patient, recorded_at: test_times[:now])
+        patient_4 = create(:patient, recorded_at: test_times[:over_three_months_ago])
+
+        described_class.refresh
+        with_reporting_time_zones do
+          expect(described_class.find_by(id: patient_1.id, month_string: test_times[:month_string]).months_since_registration).to eq 11
+          expect(described_class.find_by(id: patient_2.id, month_string: test_times[:month_string]).months_since_registration).to eq 12
+          expect(described_class.find_by(id: patient_3.id, month_string: test_times[:month_string]).months_since_registration).to eq 0
+          expect(described_class.find_by(id: patient_4.id, month_string: test_times[:month_string]).months_since_registration).to eq 3
+        end
+      end
+    end
+
+    describe "assigned and registered facility regions" do
+      it "computes the assigned facility and parent regions correctly" do
+        facility = create(:facility, :without_parent_region)
+
+        facility_region = create(:region, name: "f-facility", region_type: "facility", source: facility)
+        block_region = create(:region, name: "f-block", region_type: "block")
+        district_region = create(:region, name: "f-district", region_type: "district")
+        state_region = create(:region, name: "f-state", region_type: "state")
+
+        create(:patient, )
+      end
+    end
+
+    describe "last_bp_state" do
+    end
+    describe "patient timeline" do
+      it "should have a record for every month between registration and now" do
+        # assert on months_since_registration, months_since_bp, months_since_visit
       end
     end
   end
