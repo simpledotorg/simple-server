@@ -18,6 +18,10 @@ module SimpleServerExtensions
   def git_ref(short: false)
     short ? GIT_REF[0..6] : GIT_REF
   end
+
+  def github_url
+    "https://github.com/simpledotorg/simple-server/commit/#{git_ref}"
+  end
 end
 
 # Add on to the top level application constant to make things easy
