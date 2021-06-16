@@ -64,9 +64,6 @@ class Reports::RegionsController < AdminController
     end
     @repository = Reports::Repository.new(regions, periods: @period_range)
 
-    @dashboard_analytics = @region.dashboard_analytics(period: @period.type,
-                                                       prev_periods: 6,
-                                                       include_current_period: true)
     @chart_data = {
       patient_breakdown: PatientBreakdownService.call(region: @region, period: @period),
       ltfu_trend: Reports::RegionService.new(region: @region, period: @period).call
