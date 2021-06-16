@@ -39,15 +39,15 @@ class Reports::RegionsController < AdminController
       slug = region.slug
       {
         region: region,
-        adjusted_patient_counts: repo.adjusted_patient_counts[slug],
-        controlled_patients: repo.controlled_patients_count[slug],
-        controlled_patients_rate: repo.controlled_patients_rate[slug],
-        uncontrolled_patients: repo.uncontrolled_patients_count[slug],
-        uncontrolled_patients_rate: repo.uncontrolled_patients_rate[slug],
+        adjusted_patient_counts: repo.adjusted_patients[slug],
+        controlled_patients: repo.controlled[slug],
+        controlled_patients_rate: repo.controlled_rates[slug],
+        uncontrolled_patients: repo.uncontrolled[slug],
+        uncontrolled_patients_rate: repo.uncontrolled_rates[slug],
         missed_visits: repo.missed_visits[slug],
         missed_visits_rate: repo.missed_visits_rate[slug],
-        registrations: repo.registration_counts[slug],
-        cumulative_patients: repo.cumulative_assigned_patients_count[slug],
+        registrations: repo.monthly_registrations[slug],
+        cumulative_patients: repo.cumulative_assigned_patients[slug],
         cumulative_registrations: repo.cumulative_registrations[slug]
       }
     }

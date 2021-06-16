@@ -56,8 +56,8 @@ RSpec.describe Reports::Repository, type: :model do
           jan_2019.to_period => 2
         }
       }
-      expect(repo.assigned_patients_count).to eq(expected)
-      expect(repo.registration_counts).to eq(expected)
+      expect(repo.assigned_patients).to eq(expected)
+      expect(repo.monthly_registrations).to eq(expected)
     end
 
     it "gets assigned and registration counts for a range of periods" do
@@ -77,15 +77,15 @@ RSpec.describe Reports::Repository, type: :model do
       result = service.call
 
       # ensure we match the ControlRateService results, otherwise things could change in the reports
-      expect(repo.registration_counts[slug]).to eq(result[:registrations])
-      expect(repo.assigned_patients_count[slug]).to eq(result[:assigned_patients])
+      expect(repo.monthly_registrations[slug]).to eq(result[:registrations])
+      expect(repo.assigned_patients[slug]).to eq(result[:assigned_patients])
 
-      expect(repo.assigned_patients_count[slug][Period.month("August 2018")]).to eq(2)
-      expect(repo.assigned_patients_count[slug][Period.month("Jan 2019")]).to eq(2)
-      expect(repo.assigned_patients_count[slug][july_2020]).to eq(0)
-      expect(repo.registration_counts[slug][Period.month("August 2018")]).to eq(2)
-      expect(repo.registration_counts[slug][Period.month("Jan 2019")]).to eq(2)
-      expect(repo.registration_counts[slug][july_2020.to_period]).to eq(0)
+      expect(repo.assigned_patients[slug][Period.month("August 2018")]).to eq(2)
+      expect(repo.assigned_patients[slug][Period.month("Jan 2019")]).to eq(2)
+      expect(repo.assigned_patients[slug][july_2020]).to eq(0)
+      expect(repo.monthly_registrations[slug][Period.month("August 2018")]).to eq(2)
+      expect(repo.monthly_registrations[slug][Period.month("Jan 2019")]).to eq(2)
+      expect(repo.monthly_registrations[slug][july_2020.to_period]).to eq(0)
     end
 
     it "can count registrations and cumulative registrations by user" do
@@ -103,17 +103,17 @@ RSpec.describe Reports::Repository, type: :model do
       refresh_views
 
       repo = Reports::Repository.new(facility_1.region, periods: (july_2018.to_period..july_2020.to_period))
-      expect(repo.registration_counts_by_user[facility_1.slug][jan_2019.to_period][user.id]).to eq(2)
-      expect(repo.registration_counts_by_user[facility_1.slug][jan_2019.to_period][user_2.id]).to eq(1)
-      expect(repo.registration_counts_by_user[facility_1.slug][july_2020.to_period]).to be_nil
+      expect(repo.monthly_registrations_by_user[facility_1.slug][jan_2019.to_period][user.id]).to eq(2)
+      expect(repo.monthly_registrations_by_user[facility_1.slug][jan_2019.to_period][user_2.id]).to eq(1)
+      expect(repo.monthly_registrations_by_user[facility_1.slug][july_2020.to_period]).to be_nil
     end
 
     it "gets registration and assigned patient counts for brand new regions with no data" do
       facility_1 = FactoryBot.create(:facility, facility_group: facility_group_1)
       repo = Reports::Repository.new(facility_1.region, periods: july_2020_range)
-      expect(repo.registration_counts).to eq({facility_1.slug => {}})
-      expect(repo.controlled_patients_count).to eq({facility_1.slug => {}})
-      expect(repo.controlled_patients_rate).to eq({facility_1.slug => {}})
+      expect(repo.monthly_registrations).to eq({facility_1.slug => {}})
+      expect(repo.controlled).to eq({facility_1.slug => {}})
+      expect(repo.controlled_rates).to eq({facility_1.slug => {}})
     end
 
     it "gets controlled counts and rates for single region" do
@@ -144,11 +144,11 @@ RSpec.describe Reports::Repository, type: :model do
       }
       repo = Reports::Repository.new(facility_1.region, periods: jan_2020.to_period)
       (jan_2019.to_period..jan_2020.to_period).each do |period|
-        count = repo.cumulative_assigned_patients_count[facility_1.slug][period]
+        count = repo.cumulative_assigned_patients[facility_1.slug][period]
         expect(count).to eq(4), "expected 4 assigned patients for #{period} but got #{count}"
       end
-      expect(repo.controlled_patients_count).to eq(expected_counts)
-      expect(repo.controlled_patients_rate).to eq(expected_rates)
+      expect(repo.controlled).to eq(expected_counts)
+      expect(repo.controlled_rates).to eq(expected_rates)
     end
 
     it "gets controlled counts and rates for one month" do
@@ -173,8 +173,8 @@ RSpec.describe Reports::Repository, type: :model do
 
       jan = Period.month(jan_2020)
       repo = Reports::Repository.new(regions, periods: Period.month(jan))
-      controlled = repo.controlled_patients_count
-      uncontrolled = repo.uncontrolled_patients_count
+      controlled = repo.controlled
+      uncontrolled = repo.uncontrolled
       expect(controlled[facility_1.slug][jan]).to eq(2)
       expect(controlled[facility_2.slug][jan]).to eq(1)
       expect(controlled[facility_3.slug][jan]).to eq(0)
@@ -223,7 +223,7 @@ RSpec.describe Reports::Repository, type: :model do
       start_range = july_2020.advance(months: -24)
       range = (Period.month(start_range)..Period.month(july_2020))
       repo = Reports::Repository.new(regions, periods: range)
-      result = repo.controlled_patients_count
+      result = repo.controlled
 
       facility_1_results = result[facility_1.slug]
       range.each do |period|
@@ -247,8 +247,8 @@ RSpec.describe Reports::Repository, type: :model do
       refresh_views
       jan = Period.month(jan_2020)
       repo = Reports::Repository.new(facility_1, periods: Period.month(jan))
-      controlled = repo.controlled_patients_count
-      uncontrolled = repo.uncontrolled_patients_count
+      controlled = repo.controlled
+      uncontrolled = repo.uncontrolled
 
       region = facility_1.region
       expect(controlled[region.slug].fetch(jan)).to eq(1)
@@ -339,10 +339,10 @@ RSpec.describe Reports::Repository, type: :model do
       repo = Reports::Repository.new(facility_1.region, periods: july_2020_range)
 
       allow(repo).to receive(:region_period_cached_query).and_call_original
-      expect(repo).to receive(:region_period_cached_query).with(:controlled_patients_count).exactly(1).times.and_call_original
+      expect(repo).to receive(:region_period_cached_query).with(:controlled).exactly(1).times.and_call_original
 
-      3.times { _result = repo.controlled_patients_count }
-      3.times { _result = repo.controlled_patients_rate }
+      3.times { _result = repo.controlled }
+      3.times { _result = repo.controlled_rates }
     end
 
     it "caches region_period entries only as far back as there is data" do
@@ -366,9 +366,9 @@ RSpec.describe Reports::Repository, type: :model do
 
       RequestStore[:bust_cache] = true
       repo = Reports::Repository.new(facility_1.region, periods: july_2020_range)
-      expect(repo).to receive(:region_period_cached_query).with(:controlled_patients_count).exactly(1).times
+      expect(repo).to receive(:region_period_cached_query).with(:controlled).exactly(1).times
 
-      3.times { _result = repo.controlled_patients_count }
+      3.times { _result = repo.controlled }
     end
   end
 
@@ -382,7 +382,7 @@ RSpec.describe Reports::Repository, type: :model do
       ten_years_ago = patient.recorded_at.advance(years: -10).to_period
       range = ten_years_ago..(ten_years_ago.advance(months: 12))
       repo = Reports::Repository.new(facility_1, periods: range)
-      expect(repo.adjusted_patient_counts[facility_1.slug]).to eq({})
+      expect(repo.adjusted_patients[facility_1.slug]).to eq({})
       expect(repo.cumulative_registrations[facility_1.slug]).to eq({})
     end
 
@@ -431,13 +431,13 @@ RSpec.describe Reports::Repository, type: :model do
       slug = facility_1.slug
 
       range.each do |period|
-        expect(repo.adjusted_patient_counts[slug][period]).to eq(service_result[:adjusted_patient_counts][period])
-        expect(repo.adjusted_patient_counts_with_ltfu[slug][period]).to eq(service_result[:adjusted_patient_counts_with_ltfu][period])
-        expect(repo.adjusted_patient_counts_with_ltfu[slug][period]).to eq(service_result[:adjusted_patient_counts_with_ltfu][period])
+        expect(repo.adjusted_patients[slug][period]).to eq(service_result[:adjusted_patient_counts][period])
+        expect(repo.adjusted_patients_with_ltfu[slug][period]).to eq(service_result[:adjusted_patient_counts_with_ltfu][period])
+        expect(repo.adjusted_patients_with_ltfu[slug][period]).to eq(service_result[:adjusted_patient_counts_with_ltfu][period])
 
-        expect(repo.cumulative_assigned_patients_count[slug][period]).to eq(service_result[:cumulative_assigned_patients][period])
-        expect(repo.controlled_patients_rate[slug][period]).to eq(service_result[:controlled_patients_rate][period])
-        expect(repo.uncontrolled_patients_rate[slug][period]).to eq(service_result[:uncontrolled_patients_rate][period])
+        expect(repo.cumulative_assigned_patients[slug][period]).to eq(service_result[:cumulative_assigned_patients][period])
+        expect(repo.controlled_rates[slug][period]).to eq(service_result[:controlled_patients_rate][period])
+        expect(repo.uncontrolled_rates[slug][period]).to eq(service_result[:uncontrolled_patients_rate][period])
       end
     end
 
