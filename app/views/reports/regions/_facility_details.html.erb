@@ -70,7 +70,7 @@
             </td>
             <% @period_range.each do |period| %>
               <td class="ta-center">
-                <%= number_or_dash_with_delimiter(@repository.registration_counts_by_user.dig(@region.slug, period, resource.id)) %>
+                <%= number_or_dash_with_delimiter(@repository.monthly_registrations_by_user.dig(@region.slug, period, resource.id)) %>
               </td>
             <% end %>
             <% @period_range.each do |period| %>
@@ -158,7 +158,7 @@
             </td>
             <% @period_range.each do |period| %>
               <td class="ta-center">
-                <%= number_or_dash_with_delimiter(@repository.registration_counts_by_user.dig(@region.slug, period, resource.id)) %>
+                <%= number_or_dash_with_delimiter(@repository.monthly_registrations_by_user.dig(@region.slug, period, resource.id)) %>
               </td>
             <% end %>
             <% @period_range.each do |period| %>
