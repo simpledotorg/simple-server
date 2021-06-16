@@ -40,7 +40,7 @@ module Reports
       result.missed_visits_with_ltfu = repository.missed_visits_with_ltfu[region.slug]
       result.missed_visits_with_ltfu_rate = repository.missed_visits_with_ltfu_rates[region.slug]
 
-      result.calculate_period_info(calc_range)
+      result.period_info = calc_range.each_with_object({}) { |period, hsh| hsh[period] = period.to_hash }
 
       result
     end
