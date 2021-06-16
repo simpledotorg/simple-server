@@ -6,30 +6,29 @@ class ImoApiService
   class ImoApiService::HTTPError < HTTP::Error
   end
 
-  attr_reader :phone_number, :message, :recipient_name
+  attr_reader :phone_number, :recipient_name, :locale
 
-  def initialize(phone_number:, message:, recipient_name:)
+  def initialize(phone_number:, recipient_name:, locale:)
     @phone_number = phone_number
-    @message = message
     @recipient_name = recipient_name
+    @locale = locale
   end
 
   def invite
     url = BASE_URL + "send_invite"
     request_body = {
       phone: phone_number,
-      msg: message,
-      contents:  [{"key": "Name", "value": recipient_name}, {"key": "Notes", "value": message}],
+      msg: invitation_message,
+      contents:  [{"key": "Name", "value": recipient_name}, {"key": "Notes", "value": invitation_message}],
       title: "Invitation",
       action: "Click here"
     }.to_json
     response = execute_post(url, body: request_body)
-    status = process_response(response)
-    if status == "failure"
+    result = process_response(response)
+    if result == "failure"
       report_error(description: "Failed Imo invitation", api_path: url, response: response)
     end
-    status
-    # create records
+    result
   end
 
   private
@@ -44,15 +43,17 @@ class ImoApiService
   end
 
   def process_response(response)
-    if response.status == 200
-      "success"
-    elsif response.status == 400
+    return "invited" if response.status == 200
+    if response.status == 400
       parsed = JSON.parse(response.body)
       error_type = parsed.dig("response", "type")
-      error_type == "nonexistent_user" ? "nonexistent_user" : "failure"
-    else
-      "failure"
+      return "no_imo_account" if error_type == "nonexistent_user"
     end
+    "failure"
+  end
+
+  def invitation_message
+    "This will need to be a localized string"
   end
 
   def report_error(description:, api_path:, exception: nil, response: nil)

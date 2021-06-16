@@ -1,11 +1,12 @@
 class ImoAuthorization < ApplicationRecord
   belongs_to :patient
-  validates :last_invitation_date, presence: true
+  validates :last_invited_at, presence: true
   validates :status, presence: true
 
   enum status: {
-    not_registered: "not_registered",
-    registered: "registered",
-    subscribed: "subscribed"
+    invited: "invited",
+    no_imo_account: "no_imo_account",
+    subscribed: "subscribed",
+    unsubscribed: "unsubscribed"
   }, _prefix: true
 end

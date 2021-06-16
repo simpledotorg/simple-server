@@ -106,6 +106,8 @@ class Patient < ApplicationRecord
   validates_associated :address, if: :address
   validates_associated :phone_numbers, if: :phone_numbers
 
+  delegate :locale, to: :assigned_facility
+
   def past_date_of_birth
     if date_of_birth.present? && date_of_birth > Date.current
       errors.add(:date_of_birth, "can't be in the future")
