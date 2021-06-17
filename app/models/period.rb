@@ -93,7 +93,7 @@ class Period
   end
 
   def ltfu_since_date
-    public_send(:begin).advance(months: -12).end_of_month.to_s(:day_mon_year)
+    self.begin.advance(months: -12).end_of_month.to_s(:day_mon_year)
   end
 
   def month?
