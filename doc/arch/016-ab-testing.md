@@ -16,19 +16,18 @@ Patients who last visited the clinic 35-365 days ago will be referred to here as
 
 Those two types of experiments will require process differences. When the patient has an upcoming appointment, the reminders must be sent relative to the appointment date. Messages can be sent before, on, or after the appointment date.
 
-That doesn't make sense for patients who do not have upcoming appointments. Messages for stale patients will start on the same day the patient is added to the experiment. There are many patients who fall into this category, and we don't want to risk driving too many patients back to care at once and overwhelming clinics. To mitigate that possibility, we will add 10,000 patients per day to the experiment and schedule their reminders to be sent starting on the day they were added to the experiment. Because patients can receive no reminders, a single reminder, or a series of reminders, the actual number of reminders sent on any given day may exceed 10,000.
+Messaging for stale patients will run on a continual daily basis during the experiment. This is to stagger the messages over the experiment time so as to not overwhelm clinics with many patients coming to a clinic on the same day.  We will add a random batch of stale patients per day (currently 10,000) to the experiment and schedule them based on the messaging templates configured in the experiment.
 
-In both types of experiments, patients will be randomly placed into treatment groups. Treatment groups will define the message texts, number of messages, and when to send the messages. Test patients will not receive the pre-existing text message sent three days after they miss an appointment. Control group patients will receive no messages at all.
+In both types of experiments, patients will be randomly placed into treatment groups. Treatment groups will define the message texts, number of messages, and when to send the messages. Patients in an experiment will not receive the standard missed visit reminder that is sent three days after a scheduled appointment. Control group patients will receive no messages at all.
 
 ## Patient Selection Criteria
 
-Simple servers are hosted by country and the selection pool will incude all patients on the server, so all patients in the experiment country will be potentially eligible.
+All patients are potentially eligible filtered by the following criteria:
 
-All patients must meet the following criteria for inclusion:
 - at least 18 years old
 - hypertensive
-- has a phone capable of receiving text messages. We verify this via Exotel.
-- is not in an ongoing experiment or one that ended within the past 14 days.
+- has a valid phone number
+- is not in an ongoing experiment or one that ended recently
 
 Subjects for active patient experiments will be selected for having an appointment scheduled during the experiment date range.
 
@@ -93,25 +92,7 @@ The A/B framework introduces five new models.
 
 Messages will be localized for the patient based on the state of their assigned facility. We will use the facility address instead of the patient's address because it's more likely to be valid. The language mapping logic can be found in `app/models/facility.rb`.
 
-Experiment messages have been translated into the following languages:
-
-Bangladesh:
-Bangla
-
-Ethiopia:
-Amharic
-Oromo
-Somali
-Tigrinya
-
-India:
-Bengali
-Hindi
-Kannada
-Marathi
-Punjabi
-Tamil
-Telugu
+Experiment messages have been translated into many regional languages in the countries Simple operates in.
 
 ## Notification window
 
