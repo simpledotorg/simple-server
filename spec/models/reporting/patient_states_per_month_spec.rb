@@ -303,7 +303,6 @@ RSpec.describe Reporting::PatientStatesPerMonth, {type: :model, reporting_spec: 
       end
 
       it "should have a record for every month between registration and now" do
-
         two_years_ago = test_times[:now] - 2.years
         twelve_months_ago = test_times[:now] - 12.months
         ten_months_ago = test_times[:now] - 10.months
