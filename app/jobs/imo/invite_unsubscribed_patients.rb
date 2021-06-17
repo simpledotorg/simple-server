@@ -12,6 +12,6 @@ class Imo::InviteUnsubscribedPatients < ApplicationJob
     Patient
       .contactable
       .left_joins(:imo_authorization)
-      .where(imo_authorizations: {id: nil})
+      .where("imo_authorizations.last_invited_at < ? AND imo_authorizations.status != ? OR imo_authorizations.id IS NULL", 6.months.ago, "subscribed")
   end
 end

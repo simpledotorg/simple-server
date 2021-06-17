@@ -19,7 +19,7 @@ class ImoApiService
     request_body = {
       phone: phone_number,
       msg: invitation_message,
-      contents:  [{"key": "Name", "value": recipient_name}, {"key": "Notes", "value": invitation_message}],
+      contents: [{key: "Name", value: recipient_name}, {key: "Notes", value: invitation_message}],
       title: "Invitation",
       action: "Click here"
     }.to_json

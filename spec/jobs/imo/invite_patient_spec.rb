@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe Imo::InvitePatient, type: :job do
   describe "#perform" do
     it "raises an error when the patient id is not found" do
-      expect{
+      expect {
         described_class.perform_now("fake")
       }.to raise_error(ActiveRecord::RecordNotFound)
     end

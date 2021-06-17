@@ -1,7 +1,6 @@
 require "rails_helper"
 
 RSpec.describe ImoAuthorization, type: :model do
-
   describe "associations" do
     it { should belong_to(:patient) }
   end

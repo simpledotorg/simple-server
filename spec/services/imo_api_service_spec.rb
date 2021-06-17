@@ -23,8 +23,8 @@ describe ImoApiService, type: :model do
       body = JSON(
         "status" => "error",
         "response" => {
-            "message" => "No user with specified phone number",
-            "type" => "nonexistent_user"
+          "message" => "No user with specified phone number",
+          "type" => "nonexistent_user"
         }
       )
       stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: body)
