@@ -150,7 +150,7 @@ module Reports
     memoize def ltfu_rates
       region_period_cached_query(__method__) do |entry|
         slug, period = entry.slug, entry.period
-        percentage(ltfu[slug][period], denominator(entry.region, period, with_ltfu: true))
+        percentage(ltfu[slug][period], cumulative_assigned_patients[slug][period])
       end
     end
 
