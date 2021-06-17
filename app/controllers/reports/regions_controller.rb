@@ -56,7 +56,8 @@ class Reports::RegionsController < AdminController
   def details
     @period = Period.month(Time.current)
     @period_range = Range.new(@period.advance(months: -5), @period)
-    @chart_range = (@period.advance(months: -24)..@period)
+    months = -(Reports::MAX_MONTHS_OF_DATA - 1)
+    @chart_range = (@period.advance(months: months)..@period)
 
     regions = if @region.facility_region?
       [@region]

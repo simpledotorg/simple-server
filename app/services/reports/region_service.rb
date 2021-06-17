@@ -1,7 +1,5 @@
 module Reports
   class RegionService
-    MAX_MONTHS_OF_DATA = 24
-
     # The default period we report on is the current month.
     def self.default_period
       Period.month(Time.current.in_time_zone(Period::REPORTING_TIME_ZONE))
