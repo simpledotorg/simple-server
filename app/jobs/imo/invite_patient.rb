@@ -6,6 +6,8 @@ class Imo::InvitePatient
   attr_reader :patient
 
   def perform(patient_id)
+    return unless Flipper.enabled?(:imo_messaging)
+
     @patient = Patient.find(patient_id)
     result = client.invite
     return if result == "failure"
