@@ -1,5 +1,7 @@
-class Imo::InvitePatient < ApplicationJob
-  queue_as :default
+class Imo::InvitePatient
+  include Sidekiq::Worker
+
+  sidekiq_options queue: :default
 
   attr_reader :patient
 

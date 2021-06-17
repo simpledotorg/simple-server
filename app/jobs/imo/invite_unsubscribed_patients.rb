@@ -1,10 +1,14 @@
-class Imo::InviteUnsubscribedPatients < ApplicationJob
-  queue_as :default
+class Imo::InviteUnsubscribedPatients
+  include Sidekiq::Worker
+
+  sidekiq_options queue: :default
 
   def perform
     return unless Flipper.enabled?(:imo_messaging)
+
+    next_messaging_time = Communication.next_messaging_time
     patients.each do |patient|
-      Imo::InvitePatient.perform_now(patient.id)
+      Imo::InvitePatient.perform_at(next_messaging_time, patient.id)
     end
   end
 
