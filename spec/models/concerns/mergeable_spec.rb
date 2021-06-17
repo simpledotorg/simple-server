@@ -40,9 +40,27 @@ describe Mergeable do
     existing_patient = FactoryBot.create(:patient, address: FactoryBot.create(:address))
     updated_patient = Patient.find(existing_patient.id)
     updated_patient.updated_at = 10.minutes.ago
+    updated_patient.device_updated_at = 10.minutes.ago
     Patient.merge(updated_patient.attributes)
     expect(Patient.find(existing_patient.id).updated_at.to_i).to_not eq updated_patient.updated_at.to_i
     expect(Patient.count).to eq 1
+  end
+
+  it "counts metrics for old merges" do
+    expect(Statsd.instance).to receive(:increment).with("merge.Patient.old")
+    existing_patient = FactoryBot.create(:patient, address: FactoryBot.create(:address))
+    updated_patient = Patient.find(existing_patient.id)
+    updated_patient.device_updated_at = 10.minutes.ago
+    Patient.merge(updated_patient.attributes)
+  end
+
+  it "counts additional metric if the existing record deviced_updated_at is the same as the new one" do
+    expect(Statsd.instance).to receive(:increment).with("merge.Patient.old")
+    expect(Statsd.instance).to receive(:increment).with("merge.Patient.same_device_updated_at")
+    existing_patient = FactoryBot.create(:patient, address: FactoryBot.create(:address))
+    updated_patient = Patient.find(existing_patient.id)
+    updated_patient.device_updated_at = existing_patient.device_updated_at
+    Patient.merge(updated_patient.attributes)
   end
 
   it "works for all models" do

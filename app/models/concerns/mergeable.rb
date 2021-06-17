@@ -16,8 +16,6 @@ module Mergeable
         :new
       elsif existing_record.discarded?
         :discarded
-      elsif new_record.device_update_at == existing_record.device_updated_at
-        :same
       elsif new_record.device_updated_at > existing_record.device_updated_at
         :updated
       else
@@ -39,7 +37,7 @@ module Mergeable
       when :updated
         update_existing_record(existing_record, attributes)
       when :old
-        return_old_record(existing_record)
+        return_old_record(existing_record, new_record)
       end
     end
 
@@ -84,9 +82,12 @@ module Mergeable
       existing_record
     end
 
-    def return_old_record(existing_record)
+    def return_old_record(existing_record, new_record)
       logger.debug "#{self} with id #{existing_record.id} is old, keeping existing."
       increment_metric(:old)
+      if existing_record.device_updated_at == new_record.device_updated_at
+        increment_metric(:same_device_updated_at)
+      end
       existing_record.touch
       existing_record.merge_status = :old
       existing_record
