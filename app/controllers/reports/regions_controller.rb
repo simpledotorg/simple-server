@@ -53,6 +53,15 @@ class Reports::RegionsController < AdminController
     }
   end
 
+  def ltfu_chart_data(repo, range)
+    {
+      cumulative_assigned_patients: repo.cumulative_assigned_patients[@region.slug],
+      ltfu_patients: repo.ltfu[@region.slug],
+      ltfu_patients_rate: repo.ltfu_rates[@region.slug],
+      period_info: range.each_with_object({}) { |period, hsh| hsh[period] = period.to_hash }
+    }
+  end
+
   # We display two ranges of data on this page - the chart range is for the LTFU chart,
   # and the period_range is the data we display in the detail tables.
   def details
@@ -69,15 +78,9 @@ class Reports::RegionsController < AdminController
     @repository = Reports::Repository.new(regions, periods: @period_range)
     chart_repo = Reports::Repository.new(@region, periods: chart_range)
 
-    ltfu_data = {
-      cumulative_assigned_patients: chart_repo.cumulative_assigned_patients[@region.slug],
-      ltfu_patients: chart_repo.ltfu[@region.slug],
-      ltfu_patients_rate: chart_repo.ltfu_rates[@region.slug],
-      period_info: chart_range.each_with_object({}) { |period, hsh| hsh[period] = period.to_hash }
-    }
     @chart_data = {
       patient_breakdown: PatientBreakdownService.call(region: @region, period: @period),
-      ltfu_trend: ltfu_data
+      ltfu_trend: ltfu_chart_data(chart_repo, chart_range)
     }
 
     region_source = @region.source
