@@ -147,6 +147,13 @@ module Reports
       end
     end
 
+    memoize def ltfu_rates
+      region_period_cached_query(__method__) do |entry|
+        slug, period = entry.slug, entry.period
+        percentage(ltfu[slug][period], cumulative_assigned_patients[slug][period])
+      end
+    end
+
     memoize def controlled
       region_period_cached_query(__method__) do |entry|
         control_rate_query.controlled(entry.region, entry.period).count

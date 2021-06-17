@@ -28,4 +28,4 @@ promotions:
   - name: Bangladesh Production Deployment
     pipeline_file: bangladesh_production_deployment.yml
     auto_promote:
-      when: tag =~ '^release-.*' AND result = 'passed'
+      when: (branch = 'master' AND result = 'passed') OR (tag =~ '^release-.*' AND result = 'passed')
