@@ -19,6 +19,7 @@ RSpec.describe Imo::InvitePatient, type: :job do
       }.to change { ImoAuthorization.count }.from(0).to(1)
       imo_auth = ImoAuthorization.last
       expect(imo_auth.status).to eq("invited")
+      expect(imo_auth.patient_id).to eq(patient.id)
     end
 
     it "creates an ImoAuthorization with 'no_imo_account' status when invited user has no Imo account" do
@@ -31,6 +32,7 @@ RSpec.describe Imo::InvitePatient, type: :job do
       }.to change { ImoAuthorization.count }.from(0).to(1)
       imo_auth = ImoAuthorization.last
       expect(imo_auth.status).to eq("no_imo_account")
+      expect(imo_auth.patient_id).to eq(patient.id)
     end
 
     it "does not create an ImoAuthorization when invitation fails" do
