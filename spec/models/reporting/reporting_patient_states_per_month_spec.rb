@@ -293,40 +293,62 @@ RSpec.describe Reporting::ReportingPatientStatesPerMonth, {type: :model, reporti
     end
 
     describe "patient timeline" do
-      it "should have a record for every month between registration and now" do
-        # Registered 3 months ago
-        # BP 2 months ago
-        # Visit 1 month ago
-        three_months_ago = test_times[:now] - 3.months
-        two_months_ago = test_times[:now] - 2.months
-        one_month_ago = test_times[:now] - 1.month
-        now = test_times[:now]
+      def patient_states(patient, from: nil, to: nil)
+        relation = described_class.where(id: patient.id)
 
-        patient = create(:patient, recorded_at: test_times[:over_three_months_ago])
-        create(:blood_pressure, :with_encounter, patient: patient, recorded_at: test_times[:now] - 2.months)
-        create(:prescription_drug, patient: patient, device_created_at: test_times[:now] - 1.month)
+        relation = relation.where("month_date >= ? ", from) if from.present?
+        relation = relation.where("month_date < ?", to) if to.present?
+
+        relation.order(month_date: :asc)
+      end
+
+      it "should have a record for every month between registration and now" do
+
+        two_years_ago = test_times[:now] - 2.years
+        twelve_months_ago = test_times[:now] - 12.months
+        ten_months_ago = test_times[:now] - 10.months
+        seven_months_ago = test_times[:now] - 7.months
+        eight_months_ago = test_times[:now] - 8.months
+        five_months_ago = test_times[:now] - 5.months
+        two_months_ago = test_times[:now] - 2.months
+
+        # 24 months ago    patient registered
+        # 10 months ago    controlled bp taken
+        # 8  months ago    visit but no bp (drugs)
+        # 5  months ago    uncontrolled bp taken
+        patient = create(:patient, recorded_at: two_years_ago)
+        create(:blood_pressure, :with_encounter, patient: patient, recorded_at: ten_months_ago, systolic: 139, diastolic: 89)
+        create(:prescription_drug, patient: patient, device_created_at: eight_months_ago)
+        create(:blood_pressure, :with_encounter, patient: patient, recorded_at: five_months_ago, systolic: 140, diastolic: 90)
 
         described_class.refresh
 
-        state_1 = described_class.find_by(id: patient.id, month_string: three_months_ago.strftime("%Y-%m"))
-        expect(state_1.months_since_registration).to eq(0)
-        expect(state_1.months_since_visit).to be_nil
-        expect(state_1.months_since_bp).to be_nil
+        with_reporting_time_zones do
+          expect(patient_states(patient).pluck(:months_since_registration)).to eq((0..24).to_a)
 
-        state_2 = described_class.find_by(id: patient.id, month_string: two_months_ago.strftime("%Y-%m"))
-        expect(state_2.months_since_registration).to eq(1)
-        expect(state_2.months_since_visit).to eq(0)
-        expect(state_2.months_since_bp).to eq(0)
+          expect(patient_states(patient, to: ten_months_ago).pluck(:months_since_visit)).to all(be_nil)
+          expect(patient_states(patient, from: ten_months_ago, to: eight_months_ago).pluck(:months_since_visit)).to eq((0..1).to_a)
+          expect(patient_states(patient, from: eight_months_ago, to: five_months_ago).pluck(:months_since_visit)).to eq((0..2).to_a)
+          expect(patient_states(patient, from: five_months_ago).pluck(:months_since_visit)).to eq((0..5).to_a)
 
-        state_3 = described_class.find_by(id: patient.id, month_string: one_month_ago.strftime("%Y-%m"))
-        expect(state_3.months_since_registration).to eq(2)
-        expect(state_3.months_since_visit).to eq(0)
-        expect(state_3.months_since_bp).to eq(1)
+          expect(patient_states(patient, to: ten_months_ago).pluck(:months_since_bp)).to all(be_nil)
+          expect(patient_states(patient, from: ten_months_ago, to: five_months_ago).pluck(:months_since_bp)).to eq((0..4).to_a)
+          expect(patient_states(patient, from: five_months_ago).pluck(:months_since_bp)).to eq((0..5).to_a)
 
-        state_4 = described_class.find_by(id: patient.id, month_string: now.strftime("%Y-%m"))
-        expect(state_4.months_since_registration).to eq(3)
-        expect(state_4.months_since_visit).to eq(1)
-        expect(state_4.months_since_bp).to eq(2)
+          expect(patient_states(patient, to: ten_months_ago).pluck(:last_bp_state)).to all(eq("unknown"))
+          expect(patient_states(patient, from: ten_months_ago, to: five_months_ago).pluck(:last_bp_state)).to all(eq("controlled"))
+          expect(patient_states(patient, from: five_months_ago).pluck(:last_bp_state)).to all(eq("uncontrolled"))
+
+          expect(patient_states(patient, to: twelve_months_ago).pluck(:htn_care_state)).to all(eq("under_care"))
+          expect(patient_states(patient, from: twelve_months_ago, to: ten_months_ago).pluck(:htn_care_state)).to all(eq("lost_to_follow_up"))
+          expect(patient_states(patient, from: ten_months_ago).pluck(:htn_care_state)).to all(eq("under_care"))
+
+          expect(patient_states(patient, to: ten_months_ago).pluck(:htn_treatment_outcome_in_last_3_months)).to all(eq("missed_visit"))
+          expect(patient_states(patient, from: ten_months_ago, to: seven_months_ago).pluck(:htn_treatment_outcome_in_last_3_months)).to all(eq("controlled"))
+          expect(patient_states(patient, from: seven_months_ago, to: five_months_ago).pluck(:htn_treatment_outcome_in_last_3_months)).to all(eq("visited_no_bp"))
+          expect(patient_states(patient, from: five_months_ago, to: two_months_ago).pluck(:htn_treatment_outcome_in_last_3_months)).to all(eq("uncontrolled"))
+          expect(patient_states(patient, from: two_months_ago).pluck(:htn_treatment_outcome_in_last_3_months)).to all(eq("missed_visit"))
+        end
       end
     end
   end
