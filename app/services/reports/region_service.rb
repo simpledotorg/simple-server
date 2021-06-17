@@ -1,7 +1,5 @@
 module Reports
   class RegionService
-    MAX_MONTHS_OF_DATA = 24
-
     # The default period we report on is the current month.
     def self.default_period
       Period.month(Time.current.in_time_zone(Period::REPORTING_TIME_ZONE))
@@ -40,7 +38,7 @@ module Reports
       result.missed_visits_with_ltfu = repository.missed_visits_with_ltfu[region.slug]
       result.missed_visits_with_ltfu_rate = repository.missed_visits_with_ltfu_rates[region.slug]
 
-      result.calculate_period_info(calc_range)
+      result.period_info = calc_range.each_with_object({}) { |period, hsh| hsh[period] = period.to_hash }
 
       result
     end
