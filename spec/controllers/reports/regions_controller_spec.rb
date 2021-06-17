@@ -45,7 +45,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
   end
 
-  fcontext "details" do
+  context "details" do
     render_views
 
     before do
