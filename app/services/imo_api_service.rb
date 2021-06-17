@@ -1,6 +1,6 @@
 class ImoApiService
-  IMO_USERNAME = "add_username_to_env"
-  IMO_PASSWORD = "add_password_to_env"
+  IMO_USERNAME = ENV["IMO_USERNAME"]
+  IMO_PASSWORD = ENV["IMO_PASSWORD"]
   BASE_URL = "https://sgp.imo.im/api/simple/"
 
   class ImoApiService::HTTPError < HTTP::Error
@@ -16,13 +16,13 @@ class ImoApiService
 
   def invite
     url = BASE_URL + "send_invite"
-    request_body = {
+    request_body = JSON(
       phone: phone_number,
       msg: invitation_message,
       contents: [{key: "Name", value: recipient_name}, {key: "Notes", value: invitation_message}],
       title: "Invitation",
       action: "Click here"
-    }.to_json
+    )
     response = execute_post(url, body: request_body)
     result = process_response(response)
     if result == "failure"

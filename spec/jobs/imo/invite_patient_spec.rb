@@ -33,7 +33,7 @@ RSpec.describe Imo::InvitePatient, type: :job do
       expect(imo_auth.status).to eq("no_imo_account")
     end
 
-    it "creates an ImoAuthorization with 'no_imo_account' status when invited user has no Imo account" do
+    it "does not create an ImoAuthorization when invitation fails" do
       patient = create(:patient)
       allow_any_instance_of(ImoApiService).to receive(:invite).and_return("failure")
 

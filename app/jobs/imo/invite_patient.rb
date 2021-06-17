@@ -9,6 +9,7 @@ class Imo::InvitePatient
     @patient = Patient.find(patient_id)
     result = client.invite
     return if result == "failure"
+
     ImoAuthorization.create!(
       patient: patient,
       status: result,

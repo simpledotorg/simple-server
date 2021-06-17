@@ -4,13 +4,11 @@ describe ImoApiService, type: :model do
   describe "#invite" do
     let(:service) { ImoApiService.new(phone_number: "555-555-5555", recipient_name: "Theodore Logan", locale: "bn-BD") }
     let(:request_url) { "https://sgp.imo.im/api/simple/send_invite" }
-    let(:auth_token) { Base64.strict_encode64(["add_username_to_env", "add_password_to_env"].join(":")) }
+    let(:auth_token) { Base64.strict_encode64([nil, nil].join(":")) }
     let(:request_headers) do
       {
         "Authorization" => "Basic #{auth_token}",
-        "Connection" => "close",
-        "Host" => "sgp.imo.im",
-        "User-Agent" => "http.rb/4.4.1"
+        "Host" => "sgp.imo.im"
       }
     end
 
