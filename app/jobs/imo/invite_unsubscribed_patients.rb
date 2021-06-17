@@ -3,6 +3,8 @@ class Imo::InviteUnsubscribedPatients
 
   sidekiq_options queue: :default
 
+  REINVITATION_BUFFER = 6.months.freeze
+
   def perform
     return unless Flipper.enabled?(:imo_messaging)
 
@@ -16,6 +18,9 @@ class Imo::InviteUnsubscribedPatients
     Patient
       .contactable
       .left_joins(:imo_authorization)
-      .where("imo_authorizations.last_invited_at < ? AND imo_authorizations.status != ? OR imo_authorizations.id IS NULL", 6.months.ago, "subscribed")
+      .where(
+        "imo_authorizations.last_invited_at < ? AND imo_authorizations.status != ? OR imo_authorizations.id IS NULL",
+        REINVITATION_BUFFER.ago, "subscribed"
+      )
   end
 end
