@@ -53,15 +53,6 @@ class Reports::RegionsController < AdminController
     }
   end
 
-  def ltfu_chart_data(repo, range)
-    {
-      cumulative_assigned_patients: repo.cumulative_assigned_patients[@region.slug],
-      ltfu_patients: repo.ltfu[@region.slug],
-      ltfu_patients_rate: repo.ltfu_rates[@region.slug],
-      period_info: range.each_with_object({}) { |period, hsh| hsh[period] = period.to_hash }
-    }
-  end
-
   # We display two ranges of data on this page - the chart range is for the LTFU chart,
   # and the period_range is the data we display in the detail tables.
   def details
@@ -163,6 +154,15 @@ class Reports::RegionsController < AdminController
   end
 
   private
+
+  def ltfu_chart_data(repo, range)
+    {
+      cumulative_assigned_patients: repo.cumulative_assigned_patients[@region.slug],
+      ltfu_patients: repo.ltfu[@region.slug],
+      ltfu_patients_rate: repo.ltfu_rates[@region.slug],
+      period_info: range.each_with_object({}) { |period, hsh| hsh[period] = period.to_hash }
+    }
+  end
 
   def accessible_region?(region, action)
     return false unless region.reportable_region?
