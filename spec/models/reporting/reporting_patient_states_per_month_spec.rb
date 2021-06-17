@@ -269,6 +269,27 @@ RSpec.describe Reporting::ReportingPatientStatesPerMonth, {type: :model, reporti
     end
 
     describe "last_bp_state" do
+      it "computes last bp state correctly" do
+        patient_controlled = create(:patient, recorded_at: test_times[:long_ago])
+        create(:blood_pressure, :with_encounter, patient: patient_controlled, recorded_at: test_times[:over_three_months_ago], systolic: 139, diastolic: 89)
+
+        patient_uncontrolled = create(:patient, recorded_at: test_times[:long_ago])
+        create(:blood_pressure, :with_encounter, patient: patient_uncontrolled, recorded_at: test_times[:over_three_months_ago], systolic: 140, diastolic: 90)
+
+        patient_no_bp = create(:patient, recorded_at: test_times[:long_ago])
+
+        described_class.refresh
+
+        with_reporting_time_zones do
+          controlled_state = described_class.find_by(id: patient_controlled.id, month_string: test_times[:month_string])
+          uncontrolled_state = described_class.find_by(id: patient_uncontrolled.id, month_string: test_times[:month_string])
+          no_bp_state = described_class.find_by(id: patient_no_bp.id, month_string: test_times[:month_string])
+
+          expect(controlled_state.last_bp_state).to eq("controlled")
+          expect(uncontrolled_state.last_bp_state).to eq("uncontrolled")
+          expect(no_bp_state.last_bp_state).to eq("unknown")
+        end
+      end
     end
 
     describe "patient timeline" do
