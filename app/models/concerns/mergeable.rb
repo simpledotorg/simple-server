@@ -16,6 +16,8 @@ module Mergeable
         :new
       elsif existing_record.discarded?
         :discarded
+      elsif new_record.device_update_at == existing_record.device_updated_at
+        :same
       elsif new_record.device_updated_at > existing_record.device_updated_at
         :updated
       else
