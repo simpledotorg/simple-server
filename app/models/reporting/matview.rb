@@ -1,5 +1,5 @@
 module Reporting
-  class ReportingMatview < ActiveRecord::Base
+  class Matview < ActiveRecord::Base
     def self.refresh
       ActiveRecord::Base.transaction do
         ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{Period::REPORTING_TIME_ZONE}'")
