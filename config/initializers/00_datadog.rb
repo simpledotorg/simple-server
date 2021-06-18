@@ -16,3 +16,18 @@ end
 
 require "statsd"
 require "metrics"
+
+# This is a workaround for https://youtrack.jetbrains.com/issue/RUBY-27489
+if defined?(:Debase)
+  if Datadog::VERSION::STRING != "0.50.0"
+    raise "Since you updated ddtrace, please check if this workaround is still needed"
+  end
+
+  module FixThreadLocalContext
+    def local(thread = Thread.current)
+      thread[@key] ||= Datadog::Context.new
+    end
+  end
+
+  Datadog::ThreadLocalContext.prepend FixThreadLocalContext
+end
