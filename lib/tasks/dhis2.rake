@@ -1,8 +1,14 @@
-require "dhis2"
-
 namespace :dhis2 do
   desc "Export aggregate indicators for each facility to DHIS2"
   task export: :environment do
+    require "dhis2"
+    Dhis2.configure do |config|
+      config.url = ENV.fetch("DHIS2_URL")
+      config.user = ENV.fetch("DHIS2_USERNAME")
+      config.password = ENV.fetch("DHIS2_PASSWORD")
+      config.version = ENV.fetch("DHIS2_VERSION")
+    end
+
     # These are hardcoded for dhis2.bd.simple.org for now;
     # future iterations will move this to a config
     data_elements_map = {
@@ -34,16 +40,16 @@ namespace :dhis2 do
         dhis2_period = period.to_date.strftime("%Y%m")
 
         data = {
-          cumulative_assigned: repository.cumulative_assigned_patients_count[slug][period],
-          cumulative_assigned_adjusted: repository.adjusted_patient_counts_with_ltfu[slug][period],
-          controlled: repository.controlled_patients_count[slug][period],
-          uncontrolled: repository.uncontrolled_patients_count[slug][period],
+          cumulative_assigned: repository.cumulative_assigned_patients[slug][period],
+          cumulative_assigned_adjusted: repository.adjusted_patients_with_ltfu[slug][period],
+          controlled: repository.controlled[slug][period],
+          uncontrolled: repository.uncontrolled[slug][period],
           missed_visits: repository.missed_visits[slug][period],
-          ltfu: repository.ltfu_counts[slug][period],
+          ltfu: repository.ltfu[slug][period],
           # Note: dead patients are always the current count due to lack of status timestamps
           dead: facility.assigned_patients.with_hypertension.status_dead.count,
           cumulative_registrations: repository.cumulative_registrations[slug][period],
-          monthly_registrations: repository.registration_counts[slug][period]
+          monthly_registrations: repository.monthly_registrations[slug][period]
         }
 
         data.each do |data_element, value|
@@ -59,7 +65,7 @@ namespace :dhis2 do
         end
       end
 
-      puts Dhis2.client.data_value_sets.bulk_create(data_values: facility_bulk_data)
+      # puts Dhis2.client.data_value_sets.bulk_create(data_values: facility_bulk_data)
     end
   end
 end

@@ -39,22 +39,26 @@ class Reports::RegionsController < AdminController
       slug = region.slug
       {
         region: region,
-        adjusted_patient_counts: repo.adjusted_patient_counts[slug],
-        controlled_patients: repo.controlled_patients_count[slug],
-        controlled_patients_rate: repo.controlled_patients_rate[slug],
-        uncontrolled_patients: repo.uncontrolled_patients_count[slug],
-        uncontrolled_patients_rate: repo.uncontrolled_patients_rate[slug],
+        adjusted_patient_counts: repo.adjusted_patients[slug],
+        controlled_patients: repo.controlled[slug],
+        controlled_patients_rate: repo.controlled_rates[slug],
+        uncontrolled_patients: repo.uncontrolled[slug],
+        uncontrolled_patients_rate: repo.uncontrolled_rates[slug],
         missed_visits: repo.missed_visits[slug],
         missed_visits_rate: repo.missed_visits_rate[slug],
-        registrations: repo.registration_counts[slug],
-        cumulative_patients: repo.cumulative_assigned_patients_count[slug],
+        registrations: repo.monthly_registrations[slug],
+        cumulative_patients: repo.cumulative_assigned_patients[slug],
         cumulative_registrations: repo.cumulative_registrations[slug]
       }
     }
   end
 
+  # We display two ranges of data on this page - the chart range is for the LTFU chart,
+  # and the period_range is the data we display in the detail tables.
   def details
     @period = Period.month(Time.current)
+    months = -(Reports::MAX_MONTHS_OF_DATA - 1)
+    chart_range = (@period.advance(months: months)..@period)
     @period_range = Range.new(@period.advance(months: -5), @period)
 
     regions = if @region.facility_region?
@@ -63,13 +67,11 @@ class Reports::RegionsController < AdminController
       [@region, @region.facility_regions].flatten
     end
     @repository = Reports::Repository.new(regions, periods: @period_range)
+    chart_repo = Reports::Repository.new(@region, periods: chart_range)
 
-    @dashboard_analytics = @region.dashboard_analytics(period: @period.type,
-                                                       prev_periods: 6,
-                                                       include_current_period: true)
     @chart_data = {
       patient_breakdown: PatientBreakdownService.call(region: @region, period: @period),
-      ltfu_trend: Reports::RegionService.new(region: @region, period: @period).call
+      ltfu_trend: ltfu_chart_data(chart_repo, chart_range)
     }
 
     region_source = @region.source
@@ -152,6 +154,15 @@ class Reports::RegionsController < AdminController
   end
 
   private
+
+  def ltfu_chart_data(repo, range)
+    {
+      cumulative_assigned_patients: repo.cumulative_assigned_patients[@region.slug],
+      ltfu_patients: repo.ltfu[@region.slug],
+      ltfu_patients_rate: repo.ltfu_rates[@region.slug],
+      period_info: range.each_with_object({}) { |period, hsh| hsh[period] = period.to_hash }
+    }
+  end
 
   def accessible_region?(region, action)
     return false unless region.reportable_region?

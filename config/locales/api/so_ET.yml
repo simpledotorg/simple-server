@@ -15,8 +15,8 @@ so-ET:
   sms:
     request_otp: "<#> %{otp} weeye koodhkaaga xaqiijinta ee Fudud\n%{app_signature}"
     appointment_reminders:
-      missed_visit_sms_reminder: "Shaqaalaheena %{facility_name} waxay ka fikirayaan caafimaadkaaga iyo adigaba. Fadlan waxa aad sii wadaa dawooyinka dhiikarga. Waxa aad ka qaataa dawooyinkaaga xarun hoodaaska kuugu dhaw. La xidhiidh ANM ama ASHA kaaga."
-      missed_visit_whatsapp_reminder: "Shaqaalaheena %{facility_name} waxay ka fikirayaan caafimaadkaaga iyo adigaba. Fadlan waxa aad sii wadaa dawooyinka dhiikarga. Waxa aad ka qaataa dawooyinkaaga xarun hoodaaska kuugu dhaw. La xidhiidh ANM ama ASHA kaaga."
+      missed_visit_sms_reminder: "Shaqalaheene %{facility_name} waxay ka fikirayaan adiga iyo caafimaadkaaga. Fadlan sii wad dawooyinka dhiikarka. Waxa aad ka qaadataa dawadaada xarunta kuugu dhaw."
+      missed_visit_whatsapp_reminder: "Shaqaalaha %{facility_name} waxay ka fikirayaan adiga iyo caafimaadkaaga. Fadlan sii wad dawooyinka dhiikarka. Waxa aad ka qaadataa dawadaada xarunta kuugu dhaw."
     patient_request_otp: "<#> %{otp} weeye koodhkaaga xaqiijinta BP Passport\n%{app_signature}"
   dashboard:
     graphics:
@@ -61,7 +61,7 @@ so-ET:
     result_from_last_visit_in: "Natiijada booqashada ugu danbaysa"
     no_patients: "Tirada bukaanka"
     cohort_report_footnote_1: "Booqashooyinka la socodka ee ugu danbeeyay ee <em>xarun kasta</em> sadex bilood kadib is duwaan galinta."
-    cohort_report_footnote_2: "Dhamaan bukaanka qaba dhiikarka ee lagu qoray xaruntan, is qoray sadex bilood. Dhintay oo laga waayay bukaanka la socodka waa laga saaray."
+    cohort_report_footnote_2: "Dhamaan bukaanka kacsan waxaa lagu qoraa xarun, waxaa la qoraa sadexdii biloodba mar. Bukaanka dhintay waa laga reebaa."
     cohort_report_footnote_3: "Hadii bukaanku uu leeyahay booqashooyin badan, waxaa loo isticmaalayaa BP ga ugu danbeeya si loo xisaabiyo BP ga xamayntiisa."
     all_hypertension_and_diabetes: "Dhamaan dhiigarka iyo macaanka"
     hypertension_controlled_numerator: "Bukaanka qabay BP <140/90 booqashadoodii ugu danbeeya ee<em>xarun kasta</em> 3 bilood ee lasoo dhaafay"

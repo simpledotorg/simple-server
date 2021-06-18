@@ -65,14 +65,14 @@
             <%= @region.name %>
           </td>
           <td class="row-total ta-center">
-            <%= number_or_dash_with_delimiter(@repository.cumulative_assigned_patients_count[@region.slug][@period]) %>
+            <%= number_or_dash_with_delimiter(@repository.cumulative_assigned_patients[@region.slug][@period]) %>
           </td>
           <td class="row-total ta-center">
             <%= number_or_dash_with_delimiter(@repository.cumulative_registrations[@region.slug][@period]) %>
           </td>
           <% @period_range.each do |period| %>
             <td class="row-total ta-center">
-              <%= number_or_dash_with_delimiter(@repository.registration_counts[@region.slug][period]) %>
+              <%= number_or_dash_with_delimiter(@repository.monthly_registrations[@region.slug][period]) %>
             </td>
           <% end %>
           <% @period_range.each do |period| %>
@@ -89,14 +89,14 @@
               <%= link_to resource.name, reports_region_facility_details_path(resource.region) %>
             </td>
             <td class="ta-center">
-              <%= number_or_dash_with_delimiter(@repository.cumulative_assigned_patients_count[slug][@period]) %>
+              <%= number_or_dash_with_delimiter(@repository.cumulative_assigned_patients[slug][@period]) %>
             </td>
             <td class="ta-center">
               <%= number_or_dash_with_delimiter(@repository.cumulative_registrations[slug][@period]) %>
             </td>
             <% @period_range.each do |period| %>
               <td class="ta-center">
-                <%= number_or_dash_with_delimiter @repository.registration_counts[slug][period] %>
+                <%= number_or_dash_with_delimiter @repository.monthly_registrations[slug][period] %>
               </td>
             <% end %>
             <% @period_range.each do |period| %>
