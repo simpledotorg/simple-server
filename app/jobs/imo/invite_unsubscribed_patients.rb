@@ -17,6 +17,7 @@ class Imo::InviteUnsubscribedPatients
   def patients
     Patient
       .contactable
+      .not_ltfu_as_of(Time.current)
       .left_joins(:imo_authorization)
       .where(
         "imo_authorizations.last_invited_at < ? AND imo_authorizations.status != ? OR imo_authorizations.id IS NULL",

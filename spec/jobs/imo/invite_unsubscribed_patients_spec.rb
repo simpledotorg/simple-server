@@ -35,7 +35,7 @@ RSpec.describe Imo::InviteUnsubscribedPatients, type: :job do
         end
       end
 
-      it "does not queue an Imo::InvitePatient job for patients who were invited less than six months ago" do
+      it "excludes patients who were invited less than six months ago" do
         patient = create(:patient)
         create(:imo_authorization, patient: patient, status: "invited", last_invited_at: 1.day.ago)
         expect(Imo::InvitePatient).not_to receive(:perform_at)
@@ -43,9 +43,25 @@ RSpec.describe Imo::InviteUnsubscribedPatients, type: :job do
         described_class.drain
       end
 
-      it "does not queue an Imo::InvitePatient job for patients who have been successfully subscribed" do
+      it "excludes patients who have been successfully subscribed" do
         patient = create(:patient)
         create(:imo_authorization, patient: patient, status: "subscribed", last_invited_at: 1.year.ago)
+        expect(Imo::InvitePatient).not_to receive(:perform_at)
+        described_class.perform_async
+        described_class.drain
+      end
+
+      it "excludes non-contactable patients" do
+        patient = create(:patient)
+        phone = patient.phone_numbers.last
+        phone.update!(phone_type: nil)
+        expect(Imo::InvitePatient).not_to receive(:perform_at)
+        described_class.perform_async
+        described_class.drain
+      end
+
+      it "excludes LTFU patients" do
+        patient = create(:patient, recorded_at: 2.years.ago)
         expect(Imo::InvitePatient).not_to receive(:perform_at)
         described_class.perform_async
         described_class.drain
