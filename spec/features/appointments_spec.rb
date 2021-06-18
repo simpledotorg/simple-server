@@ -34,10 +34,18 @@ RSpec.feature "Overdue appointments", type: :feature do
 
       let!(:non_overdue_patient_in_facility_1) { create(:patient, full_name: "patient_2", registration_facility: facility_1) }
 
+      let!(:dead_overdue_patient_in_facility_1) do
+        patient = create(:patient, full_name: "patient_3", registration_facility: facility_1, status: :dead)
+        create(:appointment, :overdue, facility: facility_1, patient: patient, scheduled_date: 10.days.ago)
+        create(:blood_pressure, :critical, facility: facility_1, patient: patient)
+        patient
+      end
+
+
       let!(:facility_2) { create(:facility, facility_group: authorized_facility_group) }
 
       let!(:overdue_patient_in_facility_2) do
-        patient = create(:patient, full_name: "patient_3", registration_facility: facility_2)
+        patient = create(:patient, full_name: "patient_4", registration_facility: facility_2)
         create(:appointment, :overdue, facility: facility_2, patient: patient, scheduled_date: 5.days.ago)
         create(:blood_pressure, :hypertensive, facility: facility_2, patient: patient)
         patient
@@ -48,7 +56,7 @@ RSpec.feature "Overdue appointments", type: :feature do
       let!(:unauthorized_facility) { create(:facility, facility_group: unauthorized_facility_group) }
 
       let!(:overdue_patient_in_unauthorized_facility) do
-        patient = create(:patient, full_name: "patient_4", registration_facility: unauthorized_facility)
+        patient = create(:patient, full_name: "patient_5", registration_facility: unauthorized_facility)
         create(:appointment, :overdue, facility: unauthorized_facility, patient: patient)
         patient
       end
@@ -62,6 +70,7 @@ RSpec.feature "Overdue appointments", type: :feature do
         expect(page).to have_content(overdue_patient_in_facility_2.full_name)
         expect(page).to have_content("Registered on")
         expect(page).not_to have_content(non_overdue_patient_in_facility_1.full_name)
+        expect(page).not_to have_content(dead_overdue_patient_in_facility_1.full_name)
         expect(page).not_to have_content(overdue_patient_in_unauthorized_facility.full_name)
         expect(page).to have_content(/select a facility/i)
         expect(page).not_to have_selector("a", text: "Download Overdue List")
