@@ -41,7 +41,6 @@ RSpec.feature "Overdue appointments", type: :feature do
         patient
       end
 
-
       let!(:facility_2) { create(:facility, facility_group: authorized_facility_group) }
 
       let!(:overdue_patient_in_facility_2) do
