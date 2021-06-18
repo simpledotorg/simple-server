@@ -59,27 +59,27 @@
       </thead>
       <tbody>
         <% current_admin.accessible_users(:view_reports).order(:full_name).each do |resource| %>
-          <% if @dashboard_analytics[resource.id].present? %>
-            <tr>
-              <td class="row-title">
-                <%= link_to resource.full_name, admin_user_path(resource, period: @period) %>
-              </td>
+          <% next unless sum_registration_counts(@repository, @region.slug, resource.id)&.nonzero? ||
+                         sum_bp_measures(@repository, @region.slug, resource.id)&.nonzero? %>
+          <tr>
+            <td class="row-title">
+              <%= link_to resource.full_name, admin_user_path(resource, period: @period) %>
+            </td>
+            <td class="ta-center">
+              <%= number_or_dash_with_delimiter(sum_registration_counts(@repository, @region.slug, resource.id)) %>
+            </td>
+            <% @period_range.each do |period| %>
               <td class="ta-center">
-                <%= number_or_dash_with_delimiter(sum_registration_counts(@repository, @region.slug, resource.id)) %>
+                <%= number_or_dash_with_delimiter(@repository.monthly_registrations_by_user.dig(@region.slug, period, resource.id)) %>
               </td>
-              <% @period_range.each do |period| %>
-                <td class="ta-center">
-                  <%= number_or_dash_with_delimiter(@repository.registration_counts_by_user.dig(@region.slug, period, resource.id)) %>
-                </td>
-              <% end %>
-              <% @period_range.each do |period| %>
-                <td class="ta-center">
-                  <%= val = @repository.hypertension_follow_ups(group_by: "blood_pressures.user_id").dig(@region.slug, period, resource.id)
-                    number_or_dash_with_delimiter(val) %>
-                </td>
-              <% end %>
-            </tr>
-          <% end %>
+            <% end %>
+            <% @period_range.each do |period| %>
+              <td class="ta-center">
+                <%= val = @repository.hypertension_follow_ups(group_by: "blood_pressures.user_id").dig(@region.slug, period, resource.id)
+                  number_or_dash_with_delimiter(val) %>
+              </td>
+            <% end %>
+          </tr>
         <% end %>
       </tbody>
     </table>
@@ -147,26 +147,26 @@
       </thead>
       <tbody>
         <% current_admin.accessible_users(:view_reports).order(:full_name).each do |resource| %>
-          <% if @dashboard_analytics[resource.id].present? %>
-            <tr>
-              <td class="row-title">
-                <%= link_to resource.full_name, admin_user_path(resource, period: @period) %>
-              </td>
+          <% next unless sum_registration_counts(@repository, @region.slug, resource.id)&.nonzero? ||
+                         sum_bp_measures(@repository, @region.slug, resource.id)&.nonzero? %>
+          <tr>
+            <td class="row-title">
+              <%= link_to resource.full_name, admin_user_path(resource, period: @period) %>
+            </td>
+            <td class="ta-center">
+              <%= number_or_dash_with_delimiter(sum_registration_counts(@repository, @region.slug, resource.id)) %>
+            </td>
+            <% @period_range.each do |period| %>
               <td class="ta-center">
-                <%= number_or_dash_with_delimiter(sum_registration_counts(@repository, @region.slug, resource.id)) %>
+                <%= number_or_dash_with_delimiter(@repository.monthly_registrations_by_user.dig(@region.slug, period, resource.id)) %>
               </td>
-              <% @period_range.each do |period| %>
-                <td class="ta-center">
-                  <%= number_or_dash_with_delimiter(@repository.registration_counts_by_user.dig(@region.slug, period, resource.id)) %>
-                </td>
-              <% end %>
-              <% @period_range.each do |period| %>
-                <td class="ta-center">
-                  <%= number_or_dash_with_delimiter(@repository.bp_measures_by_user.dig(@region.slug, period, resource.id)) %>
-                </td>
-              <% end %>
-            </tr>
-          <% end %>
+            <% end %>
+            <% @period_range.each do |period| %>
+              <td class="ta-center">
+                <%= number_or_dash_with_delimiter(@repository.bp_measures_by_user.dig(@region.slug, period, resource.id)) %>
+              </td>
+            <% end %>
+          </tr>
         <% end %>
       </tbody>
     </table>
