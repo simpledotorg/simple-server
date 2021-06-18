@@ -1,9 +1,9 @@
 class Reports::PatientListsController < AdminController
   def show
     scope = if region_class == "facility_group"
-      authorize { current_admin.accessible_facility_groups(:view_pii) }
+      authorize { current_admin.accessible_district_regions(:view_pii) }
     else
-      authorize { current_admin.accessible_facilities(:view_pii) }
+      authorize { current_admin.accessible_facility_regions(:view_pii) }
     end
 
     @region = if region_class == "facility_district"
@@ -15,11 +15,11 @@ class Reports::PatientListsController < AdminController
     recipient_email = current_admin.email
     download_params = case region_class
     when "facility_group"
-      {id: @region.id}
+      {id: @region.source_id}
     when "facility_district"
       {name: @region.name, user_id: current_admin.id}
     else
-      {facility_id: @region.id}
+      {facility_id: @region.source_id}
     end
 
     PatientListDownloadJob.perform_later(
