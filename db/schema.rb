@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_07_235412) do
+ActiveRecord::Schema.define(version: 2021_06_20_144826) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -374,6 +374,7 @@ ActiveRecord::Schema.define(version: 2021_06_07_235412) do
     t.datetime "updated_at", null: false
     t.string "subject_type"
     t.uuid "subject_id"
+    t.string "purpose", null: false
     t.index ["experiment_id"], name: "index_notifications_on_experiment_id"
     t.index ["patient_id"], name: "index_notifications_on_patient_id"
     t.index ["reminder_template_id"], name: "index_notifications_on_reminder_template_id"
