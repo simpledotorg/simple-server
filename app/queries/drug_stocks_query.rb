@@ -18,16 +18,16 @@ class DrugStocksQuery
     @protocol.protocol_drugs.where(stock_tracked: true)
   end
 
-  memoize def drug_categories
-    drugs.pluck(:drug_category).uniq
-  end
-
   memoize def protocol_drugs_by_category
     drugs
       .sort_by(&:sort_key)
       .group_by(&:drug_category)
       .sort_by { |(drug_category, _)| drug_category }
       .to_h
+  end
+
+  memoize def drug_categories
+    drugs.pluck(:drug_category).uniq
   end
 
   def drug_stocks_report
@@ -122,7 +122,7 @@ class DrugStocksQuery
   end
 
   def drug_consumption_for_facility(facility, facility_drug_stocks, facility_previous_month_drug_stocks)
-    patient_count = patient_counts_by_facility[facility] || 0
+    patient_count = patient_counts_by_facility_id[facility.id] || 0
     facility_report = {facility: facility, patient_count: patient_count}
 
     drug_stocks = facility_drug_stocks&.group_by { |drug_stock| drug_stock.protocol_drug.drug_category }
@@ -134,12 +134,8 @@ class DrugStocksQuery
     facility_report
   end
 
-  def drug_attribute_sum_by_rxnorm_code(for_end_of_month, attribute)
-    drug_stocks = DrugStock.latest_for_facilities(@facilities, for_end_of_month)
-
-    # remove the pluck here
-    DrugStock
-      .where({drug_stocks: {id: drug_stocks.pluck(:id)}})
+  def drug_attribute_sum_by_rxnorm_code(attribute)
+    drug_stocks
       .group(:protocol_drug)
       .sum(attribute)
       .map { |(protocol_drug, attribute_sum)| [protocol_drug.rxnorm_code, {attribute => attribute_sum}] }
@@ -152,7 +148,7 @@ class DrugStocksQuery
         state: @state,
         protocol: @protocol,
         drug_category: drug_category,
-        stocks_by_rxnorm_code: drug_attribute_sum_by_rxnorm_code(@for_end_of_month, :in_stock),
+        stocks_by_rxnorm_code: drug_attribute_sum_by_rxnorm_code(:in_stock),
         patient_count: total_patients
       ).patient_days
     end
@@ -161,9 +157,9 @@ class DrugStocksQuery
   def drug_consumption_totals
     total_patient_count = total_patients
     report_all = {patient_count: total_patient_count}
-    total_previous_month_drug_stocks_by_rxnorm_code = drug_attribute_sum_by_rxnorm_code(end_of_previous_month, :in_stock)
-    total_drug_stocks_by_rxnorm_code = drug_attribute_sum_by_rxnorm_code(@for_end_of_month, :in_stock)
-    total_drug_received_by_rxnorm_code = drug_attribute_sum_by_rxnorm_code(@for_end_of_month, :received)
+    total_previous_month_drug_stocks_by_rxnorm_code = drug_attribute_sum_by_rxnorm_code(:in_stock)
+    total_drug_stocks_by_rxnorm_code = drug_attribute_sum_by_rxnorm_code(:in_stock)
+    total_drug_received_by_rxnorm_code = drug_attribute_sum_by_rxnorm_code(:received)
 
     total_drug_stocks_by_rxnorm_code = total_drug_stocks_by_rxnorm_code.deep_merge(total_drug_received_by_rxnorm_code)
 
