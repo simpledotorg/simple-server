@@ -15,8 +15,8 @@ am-ET:
   sms:
     request_otp: "<#>%{otp}የእርስዎ ሲምፕል መተግበሪያ የማረጋገጫ የሚስጥር ቁጥር ነው\n%{app_signature}"
     appointment_reminders:
-      missed_visit_sms_reminder: "በ %{facility_name} ያሉት ሰራተኞቻችን ስለ እርስዎ እና የልብዎ ጤንነት እያሰቡ ይገኛሉ። እባክዎ የደም ግፊት መድሃኒቶችዎን ይቀጥሉ። መድሃኒትዎን ከቅርቡ ጤና ተቋም ይውሰዱ።"
-      missed_visit_whatsapp_reminder: "በ %{facility_name} ያሉት ሰራተኞቻችን ስለ እርስዎ እና የልብዎ ጤንነት እያሰቡ ይገኛሉ። እባክዎ የደም ግፊት መድሃኒቶችዎን ይቀጥሉ። መድሃኒትዎን ከቅርቡ ጤና ተቋም ይውሰዱ።"
+      sms: "በ %{facility_name} ያሉት ሰራተኞቻችን ስለ እርስዎ እና የልብዎ ጤንነት እያሰቡ ይገኛሉ። እባክዎ የደም ግፊት መድሃኒቶችዎን ይቀጥሉ። መድሃኒትዎን ከቅርቡ ጤና ተቋም ይውሰዱ።"
+      whatsapp: "በ %{facility_name} ያሉት ሰራተኞቻችን ስለ እርስዎ እና የልብዎ ጤንነት እያሰቡ ይገኛሉ። እባክዎ የደም ግፊት መድሃኒቶችዎን ይቀጥሉ። መድሃኒትዎን ከቅርቡ ጤና ተቋም ይውሰዱ።"
     patient_request_otp: "<#>%{otp} የእርስዎ ያደም ግፊት ፓስፖርት የማረጋገጫ የሚስጥር ቁጥር ነው\n%{app_signature}"
   dashboard:
     graphics:

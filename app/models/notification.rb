@@ -67,10 +67,10 @@ class Notification < ApplicationRecord
   end
 
   def preferred_communication_method
-    Flipper.enabled?(:whatsapp_appointment_reminders) ? "missed_visit_whatsapp_reminder" : nil
+    Flipper.enabled?(:whatsapp_appointment_reminders) ? "whatsapp" : nil
   end
 
   def backup_communication_method
-    "missed_visit_sms_reminder"
+    "sms"
   end
 end

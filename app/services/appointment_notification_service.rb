@@ -8,9 +8,9 @@ class AppointmentNotificationService
     @days_overdue = days_overdue
 
     @communication_type = if Flipper.enabled?(:whatsapp_appointment_reminders)
-      Communication.communication_types[:missed_visit_whatsapp_reminder]
+      Communication.communication_types[:whatsapp]
     else
-      Communication.communication_types[:missed_visit_sms_reminder]
+      Communication.communication_types[:sms]
     end
   end
 

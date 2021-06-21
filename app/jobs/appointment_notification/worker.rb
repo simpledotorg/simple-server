@@ -41,7 +41,7 @@ class AppointmentNotification::Worker
       NotificationService.new
     end
 
-    if communication_type == "missed_visit_whatsapp_reminder"
+    if communication_type == "whatsapp"
       notification_service.send_whatsapp(
         notification.patient.latest_mobile_number,
         notification.localized_message,
