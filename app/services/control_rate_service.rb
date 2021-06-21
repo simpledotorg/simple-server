@@ -46,6 +46,10 @@ class ControlRateService
     @repository ||= Reports::Repository.new(region, periods: report_range)
   end
 
+  def v2_rates
+    true
+  end
+
   def fetch_all_data
     results.earliest_registration_period = repository.earliest_patient_recorded_at_period[slug]
     results.registrations = repository.monthly_registrations[slug]
@@ -61,9 +65,13 @@ class ControlRateService
 
     results.controlled_patients_rate = repository.controlled_rates[slug]
     results.uncontrolled_patients_rate = repository.uncontrolled_rates[slug]
-
-    results.calculate_percentages(:controlled_patients, with_ltfu: true)
-    results.calculate_percentages(:uncontrolled_patients, with_ltfu: true)
+    if v2_rates
+      results.controlled_patients_with_ltfu_rate = repository.controlled_rates(with_ltfu: true)[slug]
+      results.uncontrolled_patients_with_ltfu_rate = repository.uncontrolled_rates(with_ltfu: true)[slug]
+    else
+      results.calculate_percentages(:controlled_patients, with_ltfu: true)
+      results.calculate_percentages(:uncontrolled_patients, with_ltfu: true)
+    end
     results.calculate_percentages(:ltfu_patients)
     results
   end
