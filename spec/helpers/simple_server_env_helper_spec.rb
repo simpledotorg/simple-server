@@ -66,7 +66,7 @@ RSpec.describe SimpleServerEnvHelper do
       it "should return the QA alt for the logo" do
         ENV[simple_server_env] = "qa"
 
-        expect(get_title_for_environment).to eq "[Qa] Simple Dashboard"
+        expect(get_title_for_environment).to eq "[QA] Simple Dashboard"
       end
     end
 
@@ -74,7 +74,7 @@ RSpec.describe SimpleServerEnvHelper do
       it "should return the demo alt for the logo" do
         ENV[simple_server_env] = "demo"
 
-        expect(get_title_for_environment).to eq "[Demo] Simple Dashboard"
+        expect(get_title_for_environment).to eq "[DEMO] Simple Dashboard"
       end
     end
 
@@ -82,7 +82,7 @@ RSpec.describe SimpleServerEnvHelper do
       it "should return the sandbox alt for the logo" do
         ENV[simple_server_env] = "sandbox"
 
-        expect(get_title_for_environment).to eq "[Sandbox] Simple Dashboard"
+        expect(get_title_for_environment).to eq "[SBX] Simple Dashboard"
       end
     end
 
