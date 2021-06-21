@@ -45,9 +45,9 @@ RSpec.describe AppointmentNotificationService do
       }.to change { overdue_appointment.notifications.count }.by(1)
       notification = overdue_appointment.notifications.last
       expect(notification.status).to eq("scheduled")
-      expect(notification.remind_on).to eq(Date.current)
+      expect(notification.remind_on).to eq(Communication.next_messaging_time.to_date)
       expect(notification.purpose).to eq("missed_visit_appointment_reminder")
-      expect(notification.message).to eq("sms.appointment_reminders.missed_visit_sms_reminder")
+      expect(notification.message).to eq("sms.appointment_reminders.sms")
       expect(notification.status).to eq("scheduled")
     end
 

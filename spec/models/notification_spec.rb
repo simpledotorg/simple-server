@@ -47,29 +47,29 @@ describe Notification, type: :model do
     context "when WhatsApp flag is on" do
       before { Flipper.enable(:whatsapp_appointment_reminders) }
 
-      it "returns missed_visit_whatsapp_reminder if it has no whatsapp communications" do
-        expect(notification.next_communication_type).to eq("missed_visit_whatsapp_reminder")
+      it "returns whatsapp if it has no whatsapp communications" do
+        expect(notification.next_communication_type).to eq("whatsapp")
       end
 
-      it "returns missed_visit_sms_reminder if it has a whatsapp communication but no sms communication" do
-        create(:communication, communication_type: "missed_visit_whatsapp_reminder", notification: notification)
-        expect(notification.next_communication_type).to eq("missed_visit_sms_reminder")
+      it "returns sms if it has a whatsapp communication but no sms communication" do
+        create(:communication, communication_type: "whatsapp", notification: notification)
+        expect(notification.next_communication_type).to eq("sms")
       end
 
       it "returns nil if it has both a whatsapp and sms communication" do
-        create(:communication, communication_type: "missed_visit_whatsapp_reminder", notification: notification)
-        create(:communication, communication_type: "missed_visit_sms_reminder", notification: notification)
+        create(:communication, communication_type: "whatsapp", notification: notification)
+        create(:communication, communication_type: "sms", notification: notification)
         expect(notification.next_communication_type).to eq(nil)
       end
     end
 
     context "when WhatsApp flag is off" do
-      it "returns missed_visit_sms_reminder if it has no sms communication" do
-        expect(notification.next_communication_type).to eq("missed_visit_sms_reminder")
+      it "returns sms if it has no sms communication" do
+        expect(notification.next_communication_type).to eq("sms")
       end
 
       it "returns nil if it has an sms communication" do
-        create(:communication, communication_type: "missed_visit_sms_reminder", notification: notification)
+        create(:communication, communication_type: "sms", notification: notification)
         expect(notification.next_communication_type).to eq(nil)
       end
     end
