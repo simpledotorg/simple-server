@@ -36,7 +36,7 @@ describe Mergeable do
     expect(Patient.count).to eq 1
   end
 
-  it "returns the existing record touchced if input record is older" do
+  it "returns the existing record touched if input record is older" do
     existing_patient = FactoryBot.create(:patient, updated_at: 10.minutes.ago, address: FactoryBot.create(:address))
     updated_patient = Patient.find(existing_patient.id)
     now = Time.current
