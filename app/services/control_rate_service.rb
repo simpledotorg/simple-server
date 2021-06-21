@@ -14,7 +14,7 @@ class ControlRateService
     @report_range = periods
     @period_type = @report_range.begin.type
     @quarterly_report = @report_range.begin.quarter?
-    @results = Reports::Result.new(region: @region, period_type: @report_range.begin.type)
+    @result = Reports::Result.new(region: @region, period_type: @report_range.begin.type)
     logger.info class: self.class.name, msg: "created", region: region.id, region_name: region.name,
                 report_range: report_range.inspect, facilities: facilities.map(&:id), cache_key: cache_key
   end
@@ -26,7 +26,7 @@ class ControlRateService
   attr_reader :region
   attr_reader :period_type
   attr_reader :report_range
-  attr_reader :results
+  attr_reader :result
 
   # We cache all the data for a region to improve performance and cache hits, but then return
   # just the data the client requested
@@ -47,24 +47,22 @@ class ControlRateService
   end
 
   def fetch_all_data
-    results.earliest_registration_period = repository.earliest_patient_recorded_at_period[slug]
-    results.registrations = repository.monthly_registrations[slug]
-    results.assigned_patients = repository.assigned_patients[slug]
-    results.cumulative_registrations = repository.cumulative_registrations[slug]
-    results.cumulative_assigned_patients = repository.cumulative_assigned_patients[slug]
-    results.adjusted_patient_counts_with_ltfu = repository.adjusted_patients_with_ltfu[slug]
-    results.adjusted_patient_counts = repository.adjusted_patients_without_ltfu[slug]
-    results.ltfu_patients = repository.ltfu[slug]
-
-    results.controlled_patients = repository.controlled[slug]
-    results.uncontrolled_patients = repository.uncontrolled[slug]
-
-    results.controlled_patients_rate = repository.controlled_rates[slug]
-    results.uncontrolled_patients_rate = repository.uncontrolled_rates[slug]
-    results.controlled_patients_with_ltfu_rate = repository.controlled_rates(with_ltfu: true)[slug]
-    results.uncontrolled_patients_with_ltfu_rate = repository.uncontrolled_rates(with_ltfu: true)[slug]
-    results.ltfu_patients_rate = repository.ltfu_rates[slug]
-    results
+    result.adjusted_patient_counts = repository.adjusted_patients_without_ltfu[slug]
+    result.adjusted_patient_counts_with_ltfu = repository.adjusted_patients_with_ltfu[slug]
+    result.assigned_patients = repository.assigned_patients[slug]
+    result.controlled_patients = repository.controlled[slug]
+    result.controlled_patients_rate = repository.controlled_rates[slug]
+    result.controlled_patients_with_ltfu_rate = repository.controlled_rates(with_ltfu: true)[slug]
+    result.cumulative_assigned_patients = repository.cumulative_assigned_patients[slug]
+    result.cumulative_registrations = repository.cumulative_registrations[slug]
+    result.earliest_registration_period = repository.earliest_patient_recorded_at_period[slug]
+    result.ltfu_patients = repository.ltfu[slug]
+    result.ltfu_patients_rate = repository.ltfu_rates[slug]
+    result.registrations = repository.monthly_registrations[slug]
+    result.uncontrolled_patients = repository.uncontrolled[slug]
+    result.uncontrolled_patients_rate = repository.uncontrolled_rates[slug]
+    result.uncontrolled_patients_with_ltfu_rate = repository.uncontrolled_rates(with_ltfu: true)[slug]
+    result
   end
 
   def quarterly_report?
