@@ -1,3 +1,7 @@
+<% content_for :title do %>
+ <%= @region.name %> | Overview
+<% end %>
+
 <%= render "header" %>
 
 <% control_graph_denominator_copy = @with_ltfu ? "denominator_with_ltfu_copy" : "denominator_copy" %>

@@ -13,12 +13,12 @@ module SimpleServerEnvHelper
   end
 
   def get_title_for_environment
-    title = I18n.t("admin.dashboard_title")
+    dashboard_title = I18n.t("admin.dashboard_title")
     env = ENV.fetch("SIMPLE_SERVER_ENV")
 
     return title if env.downcase == "production"
 
-    "#{env_prefix}#{title}"
+    "#{env_prefix}#{dashboard_title}"
   end
 
   def env_prefix
