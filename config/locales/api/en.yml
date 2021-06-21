@@ -12,7 +12,7 @@ en:
       expired_otp: "Your OTP is expired. Request a new one."
       invalid_password: "Your password does not match. Try again?"
       account_locked: "Your account has been locked for the next %{minutes} minutes. Please wait and try again."
-  sms:
+  communications:
     request_otp: "<#> %{otp} is your Simple verification code\n%{app_signature}"
     appointment_reminders:
       sms: "Our staff at %{facility_name} are thinking of you and your heart health. Please continue your blood pressure medicines. Collect your medicine from the nearest sub centre."

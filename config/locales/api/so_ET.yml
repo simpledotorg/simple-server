@@ -12,7 +12,7 @@ so-ET:
       expired_otp: "OTP-gaagu wuu dhacay. Mid cusub dalbo."
       invalid_password: "Baaswoodhkaaga isma laha. Mar kale isku day?"
       account_locked: "Xisaabtaada waa la xidhay %{minutes} daqiiqo ee soo socda. Fadlan sug oo isku day mar kale."
-  sms:
+  communications:
     request_otp: "<#> %{otp} weeye koodhkaaga xaqiijinta ee Fudud\n%{app_signature}"
     appointment_reminders:
       sms: "Shaqalaheene %{facility_name} waxay ka fikirayaan adiga iyo caafimaadkaaga. Fadlan sii wad dawooyinka dhiikarka. Waxa aad ka qaadataa dawadaada xarunta kuugu dhaw."

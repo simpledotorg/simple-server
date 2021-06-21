@@ -12,7 +12,7 @@ ti-ET:
       expired_otp: "ናትካ OTP ናይ ኣልግሎት ግዜኡ ወዲኡ እዩ። ሓድሽ ጠይቕ"
       invalid_password: "ዘቕረብካዮ ቃል-ይሕለፍ ኣይሳነይን እዩ። መሊስካ/ኪ ፈትን/ኒ?"
       account_locked: "መለለዪ መንነትካ ነዞ ምዝቕጽሉ %{minutes} ደቓይቕ ተዘዊሩ ኣሎ። ኣረጋጊጽካ ዳግማይ ፈትን።"
-  sms:
+  communications:
     request_otp: "<#> %{otp} ቀሊል ናይ መፍለዪ ኮድኩም እዩ\n%{app_signature}"
     appointment_reminders:
       sms: "ኣብ %{facility_name} ዘለዉ ኣባላትና ብዛዕባኻን/ኺን ጥዕናኻን/ኺን ይሓስቡ ኣለዉ። ብኽብረትካ ናይ ጸቕጢ ደም ኣፋውስካ ምውሳድ ቀጽል። መድሓኒትካ ካብ ዝቐርበካ ማእከል ላብራቶሪ ውሰድ።"

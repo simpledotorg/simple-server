@@ -47,7 +47,7 @@ RSpec.describe AppointmentNotificationService do
       expect(notification.status).to eq("scheduled")
       expect(notification.remind_on).to eq(Communication.next_messaging_time.to_date)
       expect(notification.purpose).to eq("missed_visit_appointment_reminder")
-      expect(notification.message).to eq("sms.appointment_reminders.sms")
+      expect(notification.message).to eq("communications.appointment_reminders.sms")
       expect(notification.status).to eq("scheduled")
     end
 
