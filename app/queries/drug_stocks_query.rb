@@ -1,4 +1,6 @@
 class DrugStocksQuery
+  include Memery
+
   CACHE_VERSION = 1
 
   def initialize(facilities:, for_end_of_month:)
@@ -12,8 +14,8 @@ class DrugStocksQuery
 
   attr_reader :for_end_of_month
 
-  def protocol_drugs_by_category
-    @protocol_drugs_by_category ||= @protocol.protocol_drugs
+  memoize def protocol_drugs_by_category
+    @protocol.protocol_drugs
       .where(stock_tracked: true)
       .sort_by(&:sort_key)
       .group_by(&:drug_category)
@@ -43,19 +45,18 @@ class DrugStocksQuery
     end
   end
 
-  def patient_counts
-    @patient_counts ||= Patient.where(assigned_facility_id: @facilities).group(:assigned_facility).count
+  memoize def patient_counts
+    Patient.where(assigned_facility_id: @facilities).group(:assigned_facility).count
   end
 
-  def drug_stocks
-    @drug_stocks ||=
-      DrugStock
-        .from(DrugStock.latest_for_facilities(@facilities, @for_end_of_month), DrugStock.table_name)
-        .with_category_data
+  memoize def drug_stocks
+    DrugStock
+      .from(DrugStock.latest_for_facilities(@facilities, @for_end_of_month), DrugStock.table_name)
+      .with_category_data
   end
 
-  def previous_month_drug_stocks
-    @previous_month_drug_stocks ||= DrugStock.latest_for_facilities(@facilities, end_of_previous_month).group_by(&:facility_id)
+  memoize def previous_month_drug_stocks
+    DrugStock.latest_for_facilities(@facilities, end_of_previous_month).group_by(&:facility_id)
   end
 
   def all_drug_stocks
@@ -67,7 +68,7 @@ class DrugStocksQuery
   end
 
   def patient_days_for_facilities
-    @stock_report_for_facilities ||= @facilities.each_with_object({}) { |facility, report|
+    @facilities.each_with_object({}) { |facility, report|
       report[facility.id] = facility_patient_days(facility, drug_stocks.where(facility_id: facility.id))
     }
   end
@@ -104,8 +105,8 @@ class DrugStocksQuery
     ).consumption
   end
 
-  def drug_consumption_report_for_facilities
-    @consumption_report_for_facilities ||= @facilities.each_with_object({}) { |facility, report|
+  memoize def drug_consumption_report_for_facilities
+    @facilities.each_with_object({}) { |facility, report|
       report[facility.id] = drug_consumption_for_facility(facility, drug_stocks[facility.id], previous_month_drug_stocks[facility.id])
     }
   end
@@ -180,8 +181,8 @@ class DrugStocksQuery
     }
   end
 
-  def end_of_previous_month
-    @end_of_previous_month ||= (@for_end_of_month - 1.month).end_of_month
+  memoize def end_of_previous_month
+    (@for_end_of_month - 1.month).end_of_month
   end
 
   def drug_stocks_cache_key
