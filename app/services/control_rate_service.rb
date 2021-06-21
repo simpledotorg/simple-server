@@ -68,11 +68,12 @@ class ControlRateService
     if v2_rates
       results.controlled_patients_with_ltfu_rate = repository.controlled_rates(with_ltfu: true)[slug]
       results.uncontrolled_patients_with_ltfu_rate = repository.uncontrolled_rates(with_ltfu: true)[slug]
+      results.ltfu_patients_rate = repository.ltfu_rates[slug]
     else
       results.calculate_percentages(:controlled_patients, with_ltfu: true)
       results.calculate_percentages(:uncontrolled_patients, with_ltfu: true)
+      results.calculate_percentages(:ltfu_patients)
     end
-    results.calculate_percentages(:ltfu_patients)
     results
   end
 
