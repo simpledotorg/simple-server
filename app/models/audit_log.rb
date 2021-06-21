@@ -6,7 +6,8 @@ class AuditLog
     invalid: "invalid",
     new: "create",
     updated: "update",
-    old: "touch"
+    old: "touch",
+    identical: "no-op"
   }.freeze
 
   validates :action, presence: true
