@@ -15,7 +15,7 @@ class DrugStock < ApplicationRecord
   end
 
   def self.latest_for_facilities(facilities, for_end_of_month)
-    select("DISTINCT ON (facility_id, protocol_drug_id) *")
+    select("DISTINCT ON (drug_stocks.facility_id, drug_stocks.protocol_drug_id) *")
       .includes(:protocol_drug)
       .where(facility_id: facilities, for_end_of_month: for_end_of_month)
       .order(:facility_id, :protocol_drug_id, created_at: :desc)
@@ -23,5 +23,11 @@ class DrugStock < ApplicationRecord
 
   def self.latest_for_facility(facility, for_end_of_month)
     latest_for_facilities([facility], for_end_of_month)
+  end
+
+  def self.with_category_data
+    joins("INNER JOIN reporting_facilities f ON drug_stocks.facility_id = f.facility_id")
+      .joins(facility: {facility_group: :protocol})
+      .joins(:protocol_drug)
   end
 end
