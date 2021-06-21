@@ -158,6 +158,25 @@ describe ExperimentControlService, type: :model do
       expect(reminder3.remind_on).to eq(appointment_date + 3.days)
     end
 
+    it "creates experimental reminder notifications with correct attributes" do
+      patient1 = create(:patient, age: 80)
+      appointment = create(:appointment, patient: patient1, scheduled_date: 10.days.from_now)
+      experiment = create(:experiment, :with_treatment_group)
+      template = create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
+
+      expect {
+        ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
+      }.to change { patient1.notifications.count }.by(1)
+      notification = patient1.notifications.last
+      expect(notification.remind_on).to eq(appointment.scheduled_date)
+      expect(notification.purpose).to eq("experimental_appointment_reminder")
+      expect(notification.message).to eq(template.message)
+      expect(notification.status).to eq("pending")
+      expect(notification.reminder_template).to eq(template)
+      expect(notification.subject).to eq(appointment)
+      expect(notification.experiment).to eq(experiment)
+    end
+
     it "updates the experiment state, start date, and end date" do
       days_til_start = 5
       days_til_end = 35
@@ -234,15 +253,24 @@ describe ExperimentControlService, type: :model do
       expect(experiment.treatment_groups.first.patients.include?(patient)).to be_truthy
     end
 
-    it "creates notifications for selected patients" do
+    it "creates experimental reminder notifications with correct attributes for selected patients" do
       patient1 = create(:patient, age: 80)
       create(:blood_pressure, patient: patient1, device_created_at: 100.days.ago)
+      appointment = create(:appointment, patient: patient1, scheduled_date: 70.days.ago)
       experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients")
-      create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
+      template = create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
 
       expect {
         ExperimentControlService.schedule_daily_stale_patient_notifications(experiment.name)
       }.to change { patient1.notifications.count }.by(1)
+      notification = patient1.notifications.last
+      expect(notification.remind_on).to eq(Date.current)
+      expect(notification.purpose).to eq("experimental_appointment_reminder")
+      expect(notification.message).to eq(template.message)
+      expect(notification.status).to eq("pending")
+      expect(notification.reminder_template).to eq(template)
+      expect(notification.subject).to eq(appointment)
+      expect(notification.experiment).to eq(experiment)
     end
 
     it "schedules cascading reminders based on reminder templates" do

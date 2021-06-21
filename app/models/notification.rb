@@ -12,6 +12,7 @@ class Notification < ApplicationRecord
   validates :status, presence: true
   validates :remind_on, presence: true
   validates :message, presence: true
+  validates :purpose, presence: true
 
   enum status: {
     pending: "pending",
@@ -19,12 +20,17 @@ class Notification < ApplicationRecord
     sent: "sent",
     cancelled: "cancelled"
   }, _prefix: true
+  enum purpose: {
+    covid_medication_reminder: "covid_medication_reminder",
+    experimental_appointment_reminder: "experimental_appointment_reminder",
+    missed_visit_appointment_reminder: "missed_visit_appointment_reminder"
+  }, _suffix: true
 
   scope :due_today, -> { where(remind_on: Date.current, status: [:pending]) }
 
   def localized_message
-    case subject
-    when Appointment
+    case purpose
+    when "missed_visit_appointment_reminder", "experimental_appointment_reminder"
       I18n.t(
         message,
         facility_name: subject.facility.name,
@@ -32,8 +38,7 @@ class Notification < ApplicationRecord
         appointment_date: subject.scheduled_date,
         locale: subject.facility.locale
       )
-    when nil
-      # this is a temporary fix. we need to figure out a better way of making the message more flexible
+    when "covid_medication_reminder"
       I18n.t(
         message,
         facility_name: patient.assigned_facility.name,
@@ -41,7 +46,7 @@ class Notification < ApplicationRecord
         locale: patient.assigned_facility.locale
       )
     else
-      raise ArgumentError, "Must provide a subject or a default behavior for a notification"
+      raise ArgumentError, "no localized_message defined for notification of type #{purpose}"
     end
   end
 

@@ -14,6 +14,7 @@ describe Notification, type: :model do
     it { should validate_presence_of(:status) }
     it { should validate_presence_of(:remind_on) }
     it { should validate_presence_of(:message) }
+    it { should validate_presence_of(:purpose) }
   end
 
   describe "#localized_message" do
@@ -31,6 +32,14 @@ describe Notification, type: :model do
         locale: "mr-IN"
       )
       expect(notification.localized_message).to eq(expected_message)
+    end
+
+    it "provides translation values based on purpose" do
+      covid_medication_reminder = create(:notification, message: "notifications.covid.medication_reminder", purpose: "covid_medication_reminder")
+      expect { covid_medication_reminder.localized_message }.not_to raise_error
+      covid_medication_reminder.update!(purpose: "missed_visit_appointment_reminder")
+      expect { covid_medication_reminder.localized_message }
+        .to raise_error(NoMethodError).with_message("undefined method `facility' for nil:NilClass")
     end
   end
 

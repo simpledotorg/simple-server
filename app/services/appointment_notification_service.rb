@@ -32,7 +32,8 @@ class AppointmentNotificationService
       patient: appointment.patient,
       remind_on: remind_on,
       status: "scheduled",
-      message: "#{Notification::APPOINTMENT_REMINDER_MSG_PREFIX}.#{communication_type}"
+      message: "#{Notification::APPOINTMENT_REMINDER_MSG_PREFIX}.#{communication_type}",
+      purpose: "missed_visit_appointment_reminder"
     )
   end
 
