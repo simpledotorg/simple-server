@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe UserAnalyticsPresenter, type: :model do
   let(:current_user) { create(:user) }
-  let(:request_date) { Date.new(2018, 1, 1) }
+  let(:request_date) { Time.zone.parse("January 1st 2018 12:00").to_date }
 
   before do
     # we need to refer to this constant before we try to stub_const on it below,
@@ -455,7 +455,37 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
             }
           }
 
+          pp data.dig(:monthly, :grouped_by_date, :hypertension, :controlled_visits)
           expect(data.dig(:monthly, :grouped_by_date_and_gender)).to eq(expected_output)
+
+          pp request_date
+          range = (request_date.advance(months: -13).to_period..request_date.to_period)
+          expected = travel_to(request_date) { 
+            ControlRateService.new(current_facility, periods: range).call.to_hash
+          }
+          
+          controlled = data.dig(:monthly, :grouped_by_date, :hypertension, :controlled_visits)
+          expect(controlled.keys).to eq(expected.keys)
+          expect(controlled).to eq(expected)
+        end
+
+        def refresh_views
+          ActiveRecord::Base.transaction do
+            LatestBloodPressuresPerPatientPerMonth.refresh
+            LatestBloodPressuresPerPatientPerQuarter.refresh
+            PatientRegistrationsPerDayPerFacility.refresh
+          end
+        end
+
+        it "has the monthly_htn_control_last_period_patient_counts" do
+          Timecop.freeze(request_date + 2.month) do
+            refresh_views
+            presenter = described_class.new(current_facility)
+            control_summary = presenter.monthly_htn_control_last_period_patient_counts
+            control_rate = presenter.monthly_htn_control_rate(request_date)
+            expect(presenter.monthly_htn_control_rate(Date.current.last_month)).to eq(100)
+            expect(control_summary).to eq("2 of 2 patients")
+          end
         end
 
         it "has data grouped by date" do
