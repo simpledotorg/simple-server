@@ -12,6 +12,7 @@ module Reports
     def initialize(region:, period:, months: MAX_MONTHS_OF_DATA)
       @current_user = current_user
       @region = region
+      @slug = @region.slug
       @period = period
       start_period = period.advance(months: -(months - 1))
       @range = Range.new(start_period, @period)
@@ -22,6 +23,7 @@ module Reports
     attr_reader :period
     attr_reader :range
     attr_reader :region
+    attr_reader :slug
 
     def call
       result = Reports::Result.new(region: @region, period_type: @range.begin.type)
