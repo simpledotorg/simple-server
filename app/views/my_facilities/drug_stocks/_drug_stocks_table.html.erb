@@ -37,7 +37,7 @@
     </thead>
     <tbody>
     <tr class="row-total" data-sort-method="none">
-      <td class="type-title" colspan="2" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="" data-original-title="All facilities: <%= "#{@report[:all_patient_days][:patient_count]} patients" %>">
+      <td class="type-title" colspan="2" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="" data-original-title="All facilities: <%= "#{@report[:total_patients]} patients" %>">
         All
       </td>
       <% @drugs_by_category.map do |drug_category, drugs| %>
@@ -72,7 +72,7 @@
       <tr>
         <% facility_report = @report[:patient_days_for_facilities][facility.id] %>
         <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
-            data-original-title='<%= "#{facility.name}: #{facility_report[:patient_count]} patients" %>'>
+            data-original-title='<%= "#{facility.name}: #{@report[:patient_counts_by_facility][facility.id]} patients" %>'>
           <%= link_to(reports_region_path(facility, report_scope: "facility")) do %>
             <%= facility.name %>
           <% end %>
