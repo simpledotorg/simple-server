@@ -14,9 +14,16 @@ class DrugStocksQuery
 
   attr_reader :for_end_of_month
 
+  memoize def drugs
+    @protocol.protocol_drugs.where(stock_tracked: true)
+  end
+
+  memoize def drug_categories
+    drugs.pluck(:drug_category).uniq
+  end
+
   memoize def protocol_drugs_by_category
-    @protocol.protocol_drugs
-      .where(stock_tracked: true)
+    drugs
       .sort_by(&:sort_key)
       .group_by(&:drug_category)
       .sort_by { |(drug_category, _)| drug_category }
@@ -27,12 +34,12 @@ class DrugStocksQuery
     Rails.cache.fetch(drug_stocks_cache_key,
       expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL"),
       force: RequestStore.store[:bust_cache]) do
-      {all_patient_days: all_patient_days,
-       all_drug_stocks: all_drug_stocks,
-       patient_days_for_facilities: patient_days_for_facilities,
-       facility_drug_stocks: facility_drug_stocks,
-       total_patients: total_patients,
-       patient_counts_by_facility: patient_counts_by_facility,
+      {total_patients: total_patients,
+       all_patient_days: all_patient_days,
+       all_drugs_in_stock: all_drugs_in_stock,
+       patient_counts_by_facility_id: patient_counts_by_facility_id,
+       patient_days_by_facility_id: patient_days_by_facility_id,
+       drugs_in_stock_by_facility_id: drugs_in_stock_by_facility_id,
        last_updated_at: Time.now}
     end
   end
@@ -47,7 +54,7 @@ class DrugStocksQuery
     end
   end
 
-  memoize def patient_counts_by_facility
+  memoize def patient_counts_by_facility_id
     Patient.where(assigned_facility_id: @facilities).group(:assigned_facility_id).count
   end
 
@@ -56,34 +63,34 @@ class DrugStocksQuery
   end
 
   memoize def drug_stocks
-    DrugStock
-      .from(DrugStock.latest_for_facilities(@facilities, @for_end_of_month), DrugStock.table_name)
-      .with_category_data
+    DrugStock.latest_for_facilities_cte(@facilities, @for_end_of_month).with_protocol_drug_data
   end
 
   memoize def previous_month_drug_stocks
     DrugStock.latest_for_facilities(@facilities, end_of_previous_month).group_by(&:facility_id)
   end
 
-  def all_drug_stocks
+  def all_drugs_in_stock
     drug_stocks.group("protocol_drugs.rxnorm_code").sum(:in_stock)
   end
 
-  def facility_drug_stocks
+  def drugs_in_stock_by_facility_id
     drug_stocks.group(:facility_id, "protocol_drugs.rxnorm_code").sum(:in_stock)
   end
 
-  def patient_days_for_facilities
+  def patient_days_by_facility_id
     @facilities.each_with_object({}) { |facility, report|
-      report[facility.id] = facility_patient_days(facility, drug_stocks.where(facility_id: facility.id))
+      facility_drug_stocks = drug_stocks.select { |drug_stock| drug_stock.facility_id == facility.id }
+      patient_count = patient_counts_by_facility_id[facility.id] || 0
+
+      report[facility.id] = facility_patient_days(facility_drug_stocks, patient_count)
     }
   end
 
-  def facility_patient_days(facility, facility_drug_stocks)
-    patient_count = patient_counts_by_facility[facility.id] || 0
+  def facility_patient_days(facility_drug_stocks, patient_count)
+    drug_categories.each_with_object({}) do |drug_category, report|
+      category_drug_stocks = facility_drug_stocks.select { |drug_stock| drug_stock.protocol_drug.drug_category == drug_category }
 
-    protocol_drugs_by_category.keys.each_with_object(Hash.new(0)) do |drug_category, report|
-      category_drug_stocks = facility_drug_stocks.where(protocol_drugs: {drug_category: drug_category})
       report[drug_category] = category_patient_days(drug_category, category_drug_stocks, patient_count)
     end
   end
@@ -140,7 +147,7 @@ class DrugStocksQuery
   end
 
   def all_patient_days
-    protocol_drugs_by_category.keys.each_with_object(Hash.new(0)) do |drug_category, report|
+    drug_categories.each_with_object(Hash.new(0)) do |drug_category, report|
       report[drug_category] = Reports::DrugStockCalculation.new(
         state: @state,
         protocol: @protocol,

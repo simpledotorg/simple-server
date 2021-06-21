@@ -21,11 +21,15 @@ class DrugStock < ApplicationRecord
       .order(:facility_id, :protocol_drug_id, created_at: :desc)
   end
 
+  def self.latest_for_facilities_cte(facilities, for_end_of_month)
+    from(latest_for_facilities(facilities, for_end_of_month), table_name)
+  end
+
   def self.latest_for_facility(facility, for_end_of_month)
     latest_for_facilities([facility], for_end_of_month)
   end
 
-  def self.with_category_data
+  def self.with_protocol_drug_data
     joins("INNER JOIN reporting_facilities f ON drug_stocks.facility_id = f.facility_id")
       .joins(facility: {facility_group: :protocol})
       .joins(:protocol_drug)

@@ -43,7 +43,7 @@
       <% @drugs_by_category.map do |drug_category, drugs| %>
         <% patient_days = @report.dig(:all_patient_days, drug_category, :patient_days) %>
         <% drugs.map do |drug| %>
-          <% drug_stock = @report[:all_drug_stocks].dig(drug.rxnorm_code) %>
+          <% drug_stock = @report[:all_drugs_in_stock].dig(drug.rxnorm_code) %>
           <% if drug_stock.present? %>
             <td class="type-number text-center" data-sort-column-key=<%= drug.id %>>
               <%= drug_stock %>
@@ -70,9 +70,9 @@
 
     <% @facilities.each do |facility| %>
       <tr>
-        <% facility_report = @report[:patient_days_for_facilities][facility.id] %>
+        <% facility_report = @report[:patient_days_by_facility_id][facility.id] %>
         <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
-            data-original-title='<%= "#{facility.name}: #{@report[:patient_counts_by_facility][facility.id]} patients" %>'>
+            data-original-title='<%= "#{facility.name}: #{@report[:patient_counts_by_facility_id][facility.id]} patients" %>'>
           <%= link_to(reports_region_path(facility, report_scope: "facility")) do %>
             <%= facility.name %>
           <% end %>
@@ -85,7 +85,7 @@
         <% @drugs_by_category.map do |drug_category, drugs| %>
           <% patient_days = facility_report.dig(drug_category, :patient_days) %>
           <% drugs.map do |drug| %>
-            <% drug_stock = @report[:facility_drug_stocks].dig([facility.id, drug.rxnorm_code]) %>
+            <% drug_stock = @report[:drugs_in_stock_by_facility_id].dig([facility.id, drug.rxnorm_code]) %>
             <% if drug_stock&.present? %>
               <td class="type-number text-center" data-sort-column-key=<%= drug.id %>>
                 <%= drug_stock %>
