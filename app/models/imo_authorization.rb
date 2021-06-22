@@ -6,7 +6,6 @@ class ImoAuthorization < ApplicationRecord
   enum status: {
     invited: "invited",
     no_imo_account: "no_imo_account",
-    subscribed: "subscribed",
-    unsubscribed: "unsubscribed"
+    subscribed: "subscribed"
   }, _prefix: true
 end

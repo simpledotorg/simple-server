@@ -9,19 +9,20 @@ class Imo::InviteUnsubscribedPatients
     return unless Flipper.enabled?(:imo_messaging)
 
     next_messaging_time = Communication.next_messaging_time
-    patients.each do |patient|
-      Imo::InvitePatient.perform_at(next_messaging_time, patient.id)
+    patient_ids.each do |patient_id|
+      Imo::InvitePatient.perform_at(next_messaging_time, patient_id)
     end
   end
 
-  def patients
+  def patient_ids
     Patient
       .contactable
       .not_ltfu_as_of(Time.current)
       .left_joins(:imo_authorization)
       .where(
-        "imo_authorizations.last_invited_at < ? AND imo_authorizations.status != ? OR imo_authorizations.id IS NULL",
+        "(imo_authorizations.last_invited_at < ? AND imo_authorizations.status != ?) OR imo_authorizations.id IS NULL",
         REINVITATION_BUFFER.ago, "subscribed"
       )
+      .pluck(:id)
   end
 end

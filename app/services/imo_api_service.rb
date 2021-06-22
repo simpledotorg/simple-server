@@ -1,34 +1,35 @@
 class ImoApiService
   IMO_USERNAME = ENV["IMO_USERNAME"]
   IMO_PASSWORD = ENV["IMO_PASSWORD"]
-  BASE_URL = "https://sgp.imo.im/api/simple/"
+  BASE_URL = "https://sgp.imo.im/api/simple/".freeze
 
-  class ImoApiService::HTTPError < HTTP::Error
+  class Error < StandardError
+    attr_reader :path, :response, :exception_message
+    def initialize(message, path: nil, response: nil, exception_message: nil)
+      super(message)
+      path = path
+      response = response
+    end
   end
 
-  attr_reader :phone_number, :recipient_name, :locale
+  attr_reader :patient
 
-  def initialize(phone_number:, recipient_name:, locale:)
-    @phone_number = phone_number
-    @recipient_name = recipient_name
-    @locale = locale
+  def initialize(patient)
+    @patient = patient
   end
 
   def invite
+    Statsd.instance.increment("imo.invites.attempt")
     url = BASE_URL + "send_invite"
     request_body = JSON(
-      phone: phone_number,
+      phone: patient.latest_mobile_number,
       msg: invitation_message,
-      contents: [{key: "Name", value: recipient_name}, {key: "Notes", value: invitation_message}],
+      contents: [{key: "Name", value: patient.full_name}, {key: "Notes", value: invitation_message}],
       title: "Invitation",
       action: "Click here"
     )
     response = execute_post(url, body: request_body)
-    result = process_response(response)
-    if result == "failure"
-      report_error(description: "Failed Imo invitation", api_path: url, response: response)
-    end
-    result
+    process_response(response, url)
   end
 
   private
@@ -38,34 +39,27 @@ class ImoApiService
       .basic_auth(user: IMO_USERNAME, pass: IMO_PASSWORD)
       .post(url, data)
   rescue HTTP::Error => e
-    report_error(description: "Error while calling the Imo API", api_path: url, exception: e)
-    raise ImoApiService::HTTPError
+    raise Error.new("Error while calling the IMO API", path: url, exception_message: e)
   end
 
-  def process_response(response)
-    return "invited" if response.status == 200
-    if response.status == 400
-      parsed = JSON.parse(response.body)
-      error_type = parsed.dig("response", "type")
-      return "no_imo_account" if error_type == "nonexistent_user"
+  def process_response(response, url)
+    case response.status
+    when 200 then :invited
+    when 400
+      if JSON.parse(response.body).dig("response", "type") == "nonexistent_user"
+        Statds.increment("imo.invites.no_imo_account")
+        :no_imo_account
+      else
+        Statds.increment("imo.invites.error")
+        raise Error.new("Unknown 400 error from IMO", path: url, response: response)
+      end
+    else
+      Statds.increment("imo.invites.error")
+      raise Error.new("Unknown response error from IMO", path: url, response: response)
     end
-    "failure"
   end
 
   def invitation_message
     "This will need to be a localized string"
-  end
-
-  def report_error(description:, api_path:, exception: nil, response: nil)
-    Sentry.capture_message(
-      description,
-      extra: {
-        api_path: api_path,
-        exception: exception.to_s,
-        response_status: response&.status,
-        body: response&.body&.to_s
-      },
-      tags: {type: "imo-api"}
-    )
   end
 end

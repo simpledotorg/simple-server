@@ -24,9 +24,9 @@ RSpec.describe Imo::InvitePatient, type: :job do
         }.to raise_error(ActiveRecord::RecordNotFound)
       end
 
-      it "creates an ImoAuthorization with 'invited' status when invitation is successful" do
+      it "creates an ImoAuthorization with 'invited' status when invitation is sent" do
         patient = create(:patient)
-        allow_any_instance_of(ImoApiService).to receive(:invite).and_return("invited")
+        allow_any_instance_of(ImoApiService).to receive(:invite).and_return(:invited)
 
         expect {
           described_class.perform_async(patient.id)
@@ -39,7 +39,7 @@ RSpec.describe Imo::InvitePatient, type: :job do
 
       it "creates an ImoAuthorization with 'no_imo_account' status when invited user has no Imo account" do
         patient = create(:patient)
-        allow_any_instance_of(ImoApiService).to receive(:invite).and_return("no_imo_account")
+        allow_any_instance_of(ImoApiService).to receive(:invite).and_return(:no_imo_account)
 
         expect {
           described_class.perform_async(patient.id)
@@ -52,11 +52,11 @@ RSpec.describe Imo::InvitePatient, type: :job do
 
       it "does not create an ImoAuthorization when invitation fails" do
         patient = create(:patient)
-        allow_any_instance_of(ImoApiService).to receive(:invite).and_return("failure")
+        allow_any_instance_of(ImoApiService).to receive(:invite).and_raise("error")
 
         expect {
           described_class.perform_async(patient.id)
-          described_class.drain
+          described_class.drain rescue RuntimeError
         }.not_to change { ImoAuthorization.count }
       end
     end
