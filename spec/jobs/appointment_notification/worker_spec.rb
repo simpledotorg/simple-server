@@ -87,6 +87,16 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       }.not_to change { Communication.count }
     end
 
+    it "raises an error when next_communication_type is not supported" do
+      allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("aol_instant_messenger")
+
+      expect {
+        described_class.perform_async(notification.id)
+        described_class.drain
+      }.to raise_error(StandardError)
+        .with_message("AppointmentNotification::Worker is not configured to handle communication type aol_instant_messenger")
+    end
+
     it "creates a Communication with twilio response status and sid" do
       mock_successful_delivery
 

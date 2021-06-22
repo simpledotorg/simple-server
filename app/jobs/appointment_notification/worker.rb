@@ -41,7 +41,8 @@ class AppointmentNotification::Worker
       NotificationService.new
     end
 
-    if communication_type == "whatsapp"
+    case communication_type
+    when "whatsapp"
       notification_service.send_whatsapp(
         notification.patient.latest_mobile_number,
         notification.localized_message,
@@ -49,7 +50,7 @@ class AppointmentNotification::Worker
       ).tap do |response|
         metrics.increment("sent.whatsapp")
       end
-    else
+    when "sms"
       notification_service.send_sms(
         notification.patient.latest_mobile_number,
         notification.localized_message,
@@ -57,6 +58,8 @@ class AppointmentNotification::Worker
       ).tap do |response|
         metrics.increment("sent.sms")
       end
+    else
+      raise StandardError, "#{self.class.name} is not configured to handle communication type #{communication_type}"
     end
 
     log_info = {
