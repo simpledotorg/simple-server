@@ -460,10 +460,10 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
 
           pp request_date
           range = (request_date.advance(months: -13).to_period..request_date.to_period)
-          expected = travel_to(request_date) { 
+          expected = travel_to(request_date) {
             ControlRateService.new(current_facility, periods: range).call.to_hash
           }
-          
+
           controlled = data.dig(:monthly, :grouped_by_date, :hypertension, :controlled_visits)
           expect(controlled.keys).to eq(expected.keys)
           expect(controlled).to eq(expected)
