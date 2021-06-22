@@ -4,7 +4,7 @@ module Reports
     include Memery
     PERCENTAGE_PRECISION = 0
 
-    def initialize(regions, periods:)
+    def initialize(regions, periods:, reporting_schema_v2: false)
       @regions = Array(regions)
       @periods = if periods.is_a?(Period)
         Range.new(periods, periods)
@@ -12,11 +12,13 @@ module Reports
         periods
       end
       @period_type = @periods.first.type
+      @reporting_schema_v2 = reporting_schema_v2
       raise ArgumentError, "Quarter periods not supported" if @period_type != :month
 
       @assigned_patients_query = AssignedPatientsQuery.new
       @bp_measures_query = BPMeasuresQuery.new
       @control_rate_query = ControlRateQuery.new
+      @control_rate_query_v2 = ControlRateQueryV2.new
       @earliest_patient_data_query = EarliestPatientDataQuery.new
       @follow_ups_query = FollowUpsQuery.new
       @no_bp_measure_query = NoBPMeasureQuery.new
@@ -26,6 +28,7 @@ module Reports
     attr_reader :assigned_patients_query
     attr_reader :bp_measures_query
     attr_reader :control_rate_query
+    attr_reader :control_rate_query_v2
     attr_reader :earliest_patient_data_query
     attr_reader :follow_ups_query
     attr_reader :no_bp_measure_query
@@ -33,6 +36,10 @@ module Reports
     attr_reader :periods
     attr_reader :regions
     attr_reader :registered_patients_query
+
+    def reporting_schema_v2?
+      @reporting_schema_v2
+    end
 
     delegate :cache, :logger, to: Rails
 
@@ -155,8 +162,14 @@ module Reports
     end
 
     memoize def controlled
-      region_period_cached_query(__method__) do |entry|
-        control_rate_query.controlled(entry.region, entry.period).count
+      if reporting_schema_v2?
+        regions.each do |region|
+          control_rate_query_v2.controlled(region).count
+        end
+      else
+        region_period_cached_query(__method__) do |entry|
+          control_rate_query.controlled(entry.region, entry.period).count
+        end
       end
     end
 

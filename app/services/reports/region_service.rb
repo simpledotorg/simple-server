@@ -9,10 +9,11 @@ module Reports
       new(*args).call
     end
 
-    def initialize(region:, period:, months: MAX_MONTHS_OF_DATA)
+    def initialize(region:, period:, months: MAX_MONTHS_OF_DATA, reporting_schema_v2: false)
       @current_user = current_user
       @region = region
       @period = period
+      @reporting_schema_v2 = reporting_schema_v2
       start_period = period.advance(months: -(months - 1))
       @range = Range.new(start_period, @period)
     end
@@ -24,7 +25,7 @@ module Reports
     attr_reader :region
 
     def call
-      result = ControlRateService.new(region, periods: range).call
+      result = ControlRateService.new(region, periods: range, reporting_schema_v2: @reporting_schema_v2).call
       result.visited_without_bp_taken = repository.visited_without_bp_taken[region.slug]
       result.calculate_percentages(:visited_without_bp_taken)
       result.calculate_percentages(:visited_without_bp_taken, with_ltfu: true)

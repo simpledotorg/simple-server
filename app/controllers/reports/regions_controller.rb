@@ -6,6 +6,7 @@ class Reports::RegionsController < AdminController
   before_action :set_page, only: [:details]
   before_action :set_per_page, only: [:details]
   before_action :find_region, except: [:index, :monthly_district_data_report]
+  before_action :check_reporting_schema_toggle, only: [:show]
   around_action :set_time_zone
   after_action :log_cache_metrics
   delegate :cache, to: Rails
@@ -29,7 +30,7 @@ class Reports::RegionsController < AdminController
   end
 
   def show
-    @data = Reports::RegionService.new(region: @region, period: @period).call
+    @data = Reports::RegionService.new(region: @region, period: @period, reporting_schema_v2: true).call
     @with_ltfu = with_ltfu?
 
     @child_regions = @region.reportable_children
@@ -164,6 +165,16 @@ class Reports::RegionsController < AdminController
     }
   end
 
+  def check_reporting_schema_toggle
+    RequestStore[:reporting_schema_v2] = true if report_params[:v2]
+  end
+
+  def reporting_schema_v2_enabled?
+    RequestStore[:reporting_schema_v2]
+  end
+
+  helper_method :reporting_schema_v2_enabled?
+
   def accessible_region?(region, action)
     return false unless region.reportable_region?
     current_admin.region_access(memoized: true).accessible_region?(region, action)
@@ -224,7 +235,7 @@ class Reports::RegionsController < AdminController
   end
 
   def report_params
-    params.permit(:id, :bust_cache, :report_scope, {period: [:type, :value]})
+    params.permit(:id, :bust_cache, :v2, :report_scope, {period: [:type, :value]})
   end
 
   def set_time_zone

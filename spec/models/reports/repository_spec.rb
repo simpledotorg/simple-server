@@ -21,6 +21,7 @@ RSpec.describe Reports::Repository, type: :model do
       LatestBloodPressuresPerPatientPerMonth.refresh
       LatestBloodPressuresPerPatientPerQuarter.refresh
       PatientRegistrationsPerDayPerFacility.refresh
+      Reports::PatientStatesPerMonth.refresh
     end
   end
 
@@ -471,6 +472,59 @@ RSpec.describe Reports::Repository, type: :model do
       expect(repo.missed_visits_without_ltfu_rates[slug]).to eq(repo.missed_visits_rate[slug])
       expect(repo.missed_visits_without_ltfu_rates[slug]).to eq(legacy_results[:missed_visits_rate])
       expect(repo.missed_visits_with_ltfu_rates[slug]).to eq(legacy_results[:missed_visits_with_ltfu_rate])
+    end
+  end
+
+  fcontext "v2" do
+    it "gets correct controlled counts" do
+      facilities = FactoryBot.create_list(:facility, 3, facility_group: facility_group_1)
+      facility_1, facility_2, facility_3 = *facilities.take(3)
+      regions = facilities.map(&:region)
+
+      controlled_in_jan_and_june = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
+      uncontrolled_in_jan = create_list(:patient, 2, full_name: "uncontrolled", recorded_at: jan_2019, assigned_facility: facility_2, registration_user: user)
+      controlled_just_for_june = create(:patient, full_name: "just for june", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
+      patient_from_other_facility = create(:patient, full_name: "other facility", recorded_at: jan_2019, assigned_facility: create(:facility), registration_user: user)
+
+      Timecop.freeze(jan_2020) do
+        controlled_in_jan_and_june.map do |patient|
+          create(:blood_pressure, :hypertensive, facility: facility_1, patient: patient, recorded_at: 3.days.from_now, user: user)
+          create(:blood_pressure, :under_control, facility: facility_1, patient: patient, recorded_at: 4.days.from_now, user: user)
+        end
+        uncontrolled_in_jan.map { |patient| create(:blood_pressure, :hypertensive, facility: facility_2, patient: patient, recorded_at: 4.days.from_now) }
+        create(:blood_pressure, :under_control, facility: patient_from_other_facility.assigned_facility, patient: patient_from_other_facility, recorded_at: 4.days.from_now)
+      end
+
+      Timecop.freeze(june_1_2020) do
+        controlled_in_jan_and_june.map do |patient|
+          create(:blood_pressure, :under_control, facility: facility_1, patient: patient, recorded_at: 2.days.ago, user: user)
+          create(:blood_pressure, :hypertensive, facility: facility_1, patient: patient, recorded_at: 4.days.ago, user: user)
+          create(:blood_pressure, :hypertensive, facility: facility_1, patient: patient, recorded_at: 35.days.ago, user: user)
+        end
+
+        create(:blood_pressure, :under_control, facility: facility_3, patient: controlled_just_for_june, recorded_at: 4.days.ago, user: user)
+
+        uncontrolled_in_june = create_list(:patient, 5, recorded_at: 4.months.ago, assigned_facility: facility_1, registration_user: user)
+        uncontrolled_in_june.map do |patient|
+          create(:blood_pressure, :hypertensive, facility: facility_1, patient: patient, recorded_at: 1.days.ago, user: user)
+          create(:blood_pressure, :under_control, facility: facility_1, patient: patient, recorded_at: 2.days.ago, user: user)
+        end
+      end
+
+      refresh_views
+
+      pp Reports::PatientStatesPerMonth.where(id: controlled_just_for_june.id)
+      start_range = july_2020.advance(months: -24)
+      range = (Period.month(start_range)..Period.month(july_2020))
+      repo = Reports::Repository.new(regions, periods: range, reporting_schema_v2: true)
+      result = repo.controlled
+
+      facility_1_results = result[facility_1.slug]
+      range.each do |period|
+        expect(facility_1_results[period]).to_not be_nil
+      end
+      expect(facility_1_results[Period.month(jan_2020)]).to eq(controlled_in_jan_and_june.size)
+      expect(facility_1_results[Period.month(june_1_2020)]).to eq(3)
     end
   end
 end

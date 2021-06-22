@@ -7,13 +7,14 @@ class ControlRateService
   #
   # Note that for the range the returned values will be for each Period going back
   # to the beginning of registrations for the region.
-  def initialize(region, periods:)
+  def initialize(region, periods:, reporting_schema_v2: false)
     @region = region
     @facilities = region.facilities
     @periods = periods
     @report_range = periods
     @period_type = @report_range.begin.type
     @quarterly_report = @report_range.begin.quarter?
+    @reporting_schema_v2 = reporting_schema_v2
     @results = Reports::Result.new(region: @region, period_type: @report_range.begin.type)
     logger.info class: self.class.name, msg: "created", region: region.id, region_name: region.name,
                 report_range: report_range.inspect, facilities: facilities.map(&:id), cache_key: cache_key
@@ -43,7 +44,7 @@ class ControlRateService
   end
 
   def repository
-    @repository ||= Reports::Repository.new(region, periods: report_range)
+    @repository ||= Reports::Repository.new(region, periods: report_range, reporting_schema_v2: @reporting_schema_v2)
   end
 
   def fetch_all_data
