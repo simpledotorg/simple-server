@@ -27,25 +27,25 @@ RSpec.describe Reporting::PatientVisitsPerMonth, {type: :model, reporting_spec: 
     end
 
     it "considers a Prescription Drug creation as a visit" do
-      prescription_drug = create(:prescription_drug, device_created_at: test_times[:now])
+      prescription_drug = create(:prescription_drug, recorded_at: test_times[:now])
       described_class.refresh
       with_reporting_time_zones do
         visit = described_class.find_by(patient_id: prescription_drug.patient_id, month_date: test_times[:now])
-        expect(visit.visited_at).to eq prescription_drug.device_created_at
+        expect(visit.visited_at).to eq prescription_drug.recorded_at
       end
     end
 
     it "considers an Appointment creation as a visit" do
-      appointment = create(:appointment, device_created_at: test_times[:now])
+      appointment = create(:appointment, recorded_at: test_times[:now])
       described_class.refresh
       with_reporting_time_zones do
         visit = described_class.find_by(patient_id: appointment.patient_id, month_date: test_times[:now])
-        expect(visit.visited_at).to eq appointment.device_created_at
+        expect(visit.visited_at).to eq appointment.recorded_at
       end
     end
 
     it "does not consider Teleconsultation as a visit" do
-      create(:teleconsultation, device_created_at: test_times[:now])
+      create(:teleconsultation, recorded_at: test_times[:now])
       described_class.refresh
       with_reporting_time_zones do
         expect(described_class.find_by(month_date: test_times[:now]).visited_at).to be_nil
@@ -70,11 +70,11 @@ RSpec.describe Reporting::PatientVisitsPerMonth, {type: :model, reporting_spec: 
         expect(visit.visited_at).to eq blood_sugar.recorded_at
       end
 
-      prescription_drug = create(:prescription_drug, patient: patient, device_created_at: test_times[:now])
+      prescription_drug = create(:prescription_drug, patient: patient, recorded_at: test_times[:now])
       described_class.refresh
       with_reporting_time_zones do
         visit = described_class.find_by(patient_id: prescription_drug.patient_id, month_date: test_times[:now])
-        expect(visit.visited_at).to eq prescription_drug.device_created_at
+        expect(visit.visited_at).to eq prescription_drug.recorded_at
       end
     end
   end
