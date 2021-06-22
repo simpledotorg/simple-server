@@ -44,6 +44,9 @@ module Reports
       result
     end
 
+    def reporting_schema_v2?
+      @reporting_schema_v2
+    end
     private
 
     def repository

@@ -513,16 +513,13 @@ RSpec.describe Reports::Repository, type: :model do
 
       refresh_views
 
-      pp Reports::PatientStatesPerMonth.where(id: controlled_just_for_june.id)
       start_range = july_2020.advance(months: -24)
       range = (Period.month(start_range)..Period.month(july_2020))
       repo = Reports::Repository.new(regions, periods: range, reporting_schema_v2: true)
       result = repo.controlled
 
       facility_1_results = result[facility_1.slug]
-      range.each do |period|
-        expect(facility_1_results[period]).to_not be_nil
-      end
+
       expect(facility_1_results[Period.month(jan_2020)]).to eq(controlled_in_jan_and_june.size)
       expect(facility_1_results[Period.month(june_1_2020)]).to eq(3)
     end
