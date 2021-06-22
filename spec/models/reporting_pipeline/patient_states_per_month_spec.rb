@@ -379,4 +379,25 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
       end
     end
   end
+
+  describe "#where_regions" do
+    it "returns where clauses that filter by given regions" do
+      registration_facility = create(:facility)
+      assigned_facility = create(:facility)
+      different_facility = create(:facility)
+      patient_1 = create(:patient, registration_facility: different_facility, assigned_facility: assigned_facility)
+      patient_2 = create(:patient, registration_facility: registration_facility, assigned_facility: different_facility)
+
+      described_class.refresh
+
+      expect(described_class.where_regions(:assigned, [assigned_facility.region]).pluck(:id))
+        .to match_array(patient_1.id)
+      expect(described_class.where_regions(:registration, [registration_facility.region]).pluck(:id))
+        .to match_array(patient_2.id)
+      expect(described_class.where_regions(:assigned, [assigned_facility.facility_group.region]).pluck(:id))
+        .to match_array(patient_1.id)
+      expect(described_class.where_regions(:registration, [registration_facility.facility_group.region]).pluck(:id))
+        .to match_array(patient_2.id)
+    end
+  end
 end
