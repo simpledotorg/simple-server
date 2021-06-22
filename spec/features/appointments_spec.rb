@@ -21,50 +21,36 @@ RSpec.feature "Overdue appointments", type: :feature do
     end
 
     describe "Overdue patients tab" do
-      let!(:authorized_facility_group) { ihmi_group }
-
-      let!(:facility_1) { create(:facility, facility_group: authorized_facility_group) }
-
-      let!(:overdue_patient_in_facility_1) do
-        patient = create(:patient, full_name: "patient_1", registration_facility: facility_1)
-        create(:appointment, :overdue, facility: facility_1, patient: patient, scheduled_date: 10.days.ago)
-        create(:blood_pressure, :critical, facility: facility_1, patient: patient)
-        patient
-      end
-
-      let!(:non_overdue_patient_in_facility_1) { create(:patient, full_name: "patient_2", registration_facility: facility_1) }
-
-      let!(:dead_overdue_patient_in_facility_1) do
-        patient = create(:patient, full_name: "patient_3", registration_facility: facility_1, status: :dead)
-        create(:appointment, :overdue, facility: facility_1, patient: patient, scheduled_date: 10.days.ago)
-        create(:blood_pressure, :critical, facility: facility_1, patient: patient)
-        patient
-      end
-
-      let!(:facility_2) { create(:facility, facility_group: authorized_facility_group) }
-
-      let!(:overdue_patient_in_facility_2) do
-        patient = create(:patient, full_name: "patient_4", registration_facility: facility_2)
-        create(:appointment, :overdue, facility: facility_2, patient: patient, scheduled_date: 5.days.ago)
-        create(:blood_pressure, :hypertensive, facility: facility_2, patient: patient)
-        patient
-      end
-
-      let!(:unauthorized_facility_group) { create(:facility_group) }
-
-      let!(:unauthorized_facility) { create(:facility, facility_group: unauthorized_facility_group) }
-
-      let!(:overdue_patient_in_unauthorized_facility) do
-        patient = create(:patient, full_name: "patient_5", registration_facility: unauthorized_facility)
-        create(:appointment, :overdue, facility: unauthorized_facility, patient: patient)
-        patient
-      end
-
-      before do
-        visit appointments_path
-      end
-
       it "shows all overdue patients" do
+        authorized_facility_group = ihmi_group
+
+        facility_1 = create(:facility, facility_group: authorized_facility_group)
+        facility_2 = create(:facility, facility_group: authorized_facility_group)
+
+        overdue_patient_in_facility_1 = create(:patient, full_name: "patient_1", registration_facility: facility_1)
+        create(:appointment, :overdue, facility: facility_1, patient: overdue_patient_in_facility_1, scheduled_date: 10.days.ago)
+        create(:blood_pressure, :critical, facility: facility_1, patient: overdue_patient_in_facility_1)
+
+        non_overdue_patient_in_facility_1 = create(:patient, full_name: "patient_2", registration_facility: facility_1)
+
+        dead_overdue_patient_in_facility_1 = create(:patient, full_name: "patient_3", registration_facility: facility_1, status: :dead)
+        create(:appointment, :overdue, facility: facility_1, patient: dead_overdue_patient_in_facility_1, scheduled_date: 10.days.ago)
+        create(:blood_pressure, :critical, facility: facility_1, patient: dead_overdue_patient_in_facility_1)
+
+
+        overdue_patient_in_facility_2 = create(:patient, full_name: "patient_4", registration_facility: facility_2)
+        create(:appointment, :overdue, facility: facility_2, patient: overdue_patient_in_facility_2, scheduled_date: 5.days.ago)
+        create(:blood_pressure, :hypertensive, facility: facility_2, patient: overdue_patient_in_facility_2)
+
+        unauthorized_facility_group = create(:facility_group)
+
+        unauthorized_facility = create(:facility, facility_group: unauthorized_facility_group)
+
+        overdue_patient_in_unauthorized_facility = create(:patient, full_name: "patient_5", registration_facility: unauthorized_facility)
+        create(:appointment, :overdue, facility: unauthorized_facility, patient: overdue_patient_in_unauthorized_facility)
+
+        visit appointments_path
+
         expect(page).to have_content(overdue_patient_in_facility_1.full_name)
         expect(page).to have_content(overdue_patient_in_facility_2.full_name)
         expect(page).to have_content("Registered on")
