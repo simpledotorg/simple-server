@@ -16,7 +16,7 @@ module SimpleServerEnvHelper
     dashboard_title = I18n.t("admin.dashboard_title")
     env = ENV.fetch("SIMPLE_SERVER_ENV")
 
-    return title if env.downcase == "production"
+    return dashboard_title if env.downcase == "production"
 
     "#{env_prefix}#{dashboard_title}"
   end
