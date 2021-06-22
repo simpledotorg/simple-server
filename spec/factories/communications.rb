@@ -8,8 +8,6 @@ FactoryBot.define do
     device_created_at { Time.current }
     device_updated_at { Time.current }
 
-    trait(:sms) { communication_type { :sms } }
-    trait(:whatsapp) { communication_type { :whatsapp } }
     trait(:with_appointment) { appointment { create(:appointment) } }
   end
 end
