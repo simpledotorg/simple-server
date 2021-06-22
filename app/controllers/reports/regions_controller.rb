@@ -6,7 +6,7 @@ class Reports::RegionsController < AdminController
   before_action :set_page, only: [:details]
   before_action :set_per_page, only: [:details]
   before_action :find_region, except: [:index, :monthly_district_data_report]
-  before_action :check_reporting_schema_toggle, only: [:show]
+  around_action :check_reporting_schema_toggle, only: [:show]
   around_action :set_time_zone
   after_action :log_cache_metrics
   delegate :cache, to: Rails
@@ -166,7 +166,11 @@ class Reports::RegionsController < AdminController
   end
 
   def check_reporting_schema_toggle
+    original = RequestStore[:reporting_schema_v2]
     RequestStore[:reporting_schema_v2] = true if report_params[:v2]
+    yield
+  ensure
+    RequestStore[:reporting_schema_v2] = original
   end
 
   def reporting_schema_v2_enabled?
