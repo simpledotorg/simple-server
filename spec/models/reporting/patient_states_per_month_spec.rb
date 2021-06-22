@@ -64,7 +64,7 @@ RSpec.describe Reporting::PatientStatesPerMonth, {type: :model, reporting_spec: 
       end
 
       context "ltfu tests ported from patient_spec.rb" do
-        it "bp cutoffs for a year ago" do
+        it "picks up the beginning interval of ltfu for 12 months ago correctly" do
           under_care_patient = create(:patient, recorded_at: test_times[:long_ago])
           ltfu_patient = create(:patient, recorded_at: test_times[:long_ago])
 
@@ -81,7 +81,7 @@ RSpec.describe Reporting::PatientStatesPerMonth, {type: :model, reporting_spec: 
           end
         end
 
-        it "bp cutoffs for now" do
+        it "picks up the ending interval of ltfu for now correctly" do
           under_care_patient = create(:patient, recorded_at: test_times[:long_ago])
           ltfu_patient = create(:patient, recorded_at: test_times[:long_ago])
 
