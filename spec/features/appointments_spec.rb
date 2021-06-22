@@ -27,6 +27,9 @@ RSpec.feature "Overdue appointments", type: :feature do
         facility_1 = create(:facility, facility_group: authorized_facility_group)
         facility_2 = create(:facility, facility_group: authorized_facility_group)
 
+        unauthorized_facility_group = create(:facility_group)
+        unauthorized_facility = create(:facility, facility_group: unauthorized_facility_group)
+
         overdue_patient_in_facility_1 = create(:patient, full_name: "patient_1", registration_facility: facility_1)
         create(:appointment, :overdue, facility: facility_1, patient: overdue_patient_in_facility_1, scheduled_date: 10.days.ago)
         create(:blood_pressure, :critical, facility: facility_1, patient: overdue_patient_in_facility_1)
@@ -37,14 +40,9 @@ RSpec.feature "Overdue appointments", type: :feature do
         create(:appointment, :overdue, facility: facility_1, patient: dead_overdue_patient_in_facility_1, scheduled_date: 10.days.ago)
         create(:blood_pressure, :critical, facility: facility_1, patient: dead_overdue_patient_in_facility_1)
 
-
         overdue_patient_in_facility_2 = create(:patient, full_name: "patient_4", registration_facility: facility_2)
         create(:appointment, :overdue, facility: facility_2, patient: overdue_patient_in_facility_2, scheduled_date: 5.days.ago)
         create(:blood_pressure, :hypertensive, facility: facility_2, patient: overdue_patient_in_facility_2)
-
-        unauthorized_facility_group = create(:facility_group)
-
-        unauthorized_facility = create(:facility, facility_group: unauthorized_facility_group)
 
         overdue_patient_in_unauthorized_facility = create(:patient, full_name: "patient_5", registration_facility: unauthorized_facility)
         create(:appointment, :overdue, facility: unauthorized_facility, patient: overdue_patient_in_unauthorized_facility)
