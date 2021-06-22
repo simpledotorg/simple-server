@@ -87,9 +87,8 @@ module Api::V3::SyncToUser
     end
 
     def sync_region_modified?
-      return if requested_sync_region_id.blank?
       return if process_token[:sync_region_id].blank?
-      process_token[:sync_region_id] != requested_sync_region_id
+      process_token[:sync_region_id] != current_sync_region.id
     end
 
     def time(method_name, &block)
