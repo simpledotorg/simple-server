@@ -457,17 +457,17 @@ RSpec.shared_examples "a working sync controller that supports region level sync
         it "sync facility group records when user is a teleconsult MO" do
           allow_any_instance_of(User).to receive(:can_teleconsult?).and_return true
           block_records = Timecop.travel(15.minutes.ago) {
-            create_record_list(5, patient: patient_in_same_block, facility: facility_in_same_block)
+            create_record_list(2, patient: patient_in_same_block, facility: facility_in_same_block)
           }
-          non_block_records = Timecop.travel(15.minutes.ago) { create_record_list(5, facility: facility_in_other_block) }
+          non_block_records = Timecop.travel(15.minutes.ago) { create_record_list(2, facility: facility_in_other_block) }
 
-          # 5 current facility records
-          get :sync_to_user, params: {limit: 5}
+          # 2 current facility records
+          get :sync_to_user, params: {limit: 2}
           response_record_ids = JSON(response.body)[response_key].map { |r| r["id"] }
           reset_controller
 
-          # 1 current facility record, 5 other facility records
-          get :sync_to_user, params: {process_token: JSON(response.body)["process_token"], limit: 6}
+          # 1 current facility record, 2 other facility records
+          get :sync_to_user, params: {process_token: JSON(response.body)["process_token"], limit: 3}
           response_record_ids += JSON(response.body)[response_key].map { |r| r["id"] }
 
           expect(response_record_ids.uniq).to match_array (block_records + non_block_records).map(&:id).uniq
