@@ -233,7 +233,7 @@ module Reports
     end
 
     memoize def controlled_rates(with_ltfu: false)
-      region_period_cached_query(__method__, with_ltfu: false) do |entry|
+      region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
         numerator = controlled[entry.slug][entry.period]
         total = denominator(entry.region, entry.period, with_ltfu: with_ltfu)
         percentage(numerator, total)
