@@ -1,5 +1,5 @@
 module ReportingPipeline
-  class Repository2
+  class Repository
     REGISTRATION_BUFFER_MONTHS = 3
 
     def initialize(regions, periods:)
