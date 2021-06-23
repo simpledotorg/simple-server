@@ -160,7 +160,6 @@ ActiveRecord::Schema.define(version: 2021_06_22_191111) do
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
     t.index ["deduped_record_id", "deleted_at"], name: "index_deduplication_records_lookup"
-    t.index ["deleted_at", "deleted_record_id"], name: "idx_deduplication_logs_lookup_tmp"
     t.index ["record_type", "deleted_record_id"], name: "idx_deduplication_logs_lookup_deleted_record", unique: true
     t.index ["user_id"], name: "index_deduplication_logs_on_user_id"
   end
