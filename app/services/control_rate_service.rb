@@ -61,10 +61,9 @@ class ControlRateService
 
     results.controlled_patients_rate = repository.controlled_rates[slug]
     results.uncontrolled_patients_rate = repository.uncontrolled_rates[slug]
-
-    results.calculate_percentages(:controlled_patients, with_ltfu: true)
-    results.calculate_percentages(:uncontrolled_patients, with_ltfu: true)
-    results.calculate_percentages(:ltfu_patients)
+    results.controlled_patients_with_ltfu_rate = repository.controlled_rates(with_ltfu: true)[slug]
+    results.uncontrolled_patients_with_ltfu_rate = repository.uncontrolled_rates(with_ltfu: true)[slug]
+    results.ltfu_patients_rate = repository.ltfu_rates[slug]
     results
   end
 
