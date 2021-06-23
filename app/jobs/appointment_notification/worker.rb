@@ -41,8 +41,10 @@ class AppointmentNotification::Worker
       NotificationService.new
     end
 
+    # remove missed_visit_whatsapp_reminder and missed_visit_sms_reminder
+    # https://app.clubhouse.io/simpledotorg/story/3585/backfill-notifications-from-communications
     case communication_type
-    when "whatsapp"
+    when "whatsapp", "missed_visit_whatsapp_reminder"
       notification_service.send_whatsapp(
         notification.patient.latest_mobile_number,
         notification.localized_message,
@@ -50,7 +52,7 @@ class AppointmentNotification::Worker
       ).tap do |response|
         metrics.increment("sent.whatsapp")
       end
-    when "sms"
+    when "sms", "missed_visit_sms_reminder"
       notification_service.send_sms(
         notification.patient.latest_mobile_number,
         notification.localized_message,
