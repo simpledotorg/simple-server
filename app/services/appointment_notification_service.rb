@@ -33,7 +33,7 @@ class AppointmentNotificationService
       remind_on: remind_on,
       status: "scheduled",
       message: "#{Notification::APPOINTMENT_REMINDER_MSG_PREFIX}.#{communication_type}",
-      purpose: "missed_visit_appointment_reminder"
+      purpose: "missed_visit_reminder"
     )
   end
 

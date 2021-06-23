@@ -37,7 +37,7 @@ describe Notification, type: :model do
     it "provides translation values based on purpose" do
       covid_medication_reminder = create(:notification, message: "notifications.covid.medication_reminder", purpose: "covid_medication_reminder")
       expect { covid_medication_reminder.localized_message }.not_to raise_error
-      covid_medication_reminder.update!(purpose: "missed_visit_appointment_reminder")
+      covid_medication_reminder.update!(purpose: "missed_visit_reminder")
       expect { covid_medication_reminder.localized_message }
         .to raise_error(NoMethodError).with_message("undefined method `facility' for nil:NilClass")
     end

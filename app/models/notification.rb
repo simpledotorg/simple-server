@@ -21,14 +21,14 @@ class Notification < ApplicationRecord
   enum purpose: {
     covid_medication_reminder: "covid_medication_reminder",
     experimental_appointment_reminder: "experimental_appointment_reminder",
-    missed_visit_appointment_reminder: "missed_visit_appointment_reminder"
+    missed_visit_reminder: "missed_visit_reminder"
   }, _suffix: true
 
   scope :due_today, -> { where(remind_on: Date.current, status: [:pending]) }
 
   def localized_message
     case purpose
-    when "missed_visit_appointment_reminder", "experimental_appointment_reminder"
+    when "missed_visit_reminder", "experimental_appointment_reminder"
       I18n.t(
         message,
         facility_name: subject.facility.name,
