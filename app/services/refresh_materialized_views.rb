@@ -73,8 +73,9 @@ class RefreshMaterializedViews
 
   def review_v2_views
     V2_MAT_VIEWS.each do |name|
-      benchmark("refresh_materialized_views #{name}")
-      ActiveRecord::Base.connection.execute("REFRESH MATERIALIZED VIEW #{name} WITH DATA")
+      benchmark("refresh_materialized_views #{name}") do
+        ActiveRecord::Base.connection.execute("REFRESH MATERIALIZED VIEW #{name} WITH DATA")
+      end
     end
   end
 end
