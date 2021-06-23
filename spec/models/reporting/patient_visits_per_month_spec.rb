@@ -54,7 +54,7 @@ RSpec.describe Reporting::PatientVisitsPerMonth, {type: :model, reporting_spec: 
 
     it "uses the latest visit information for a given month" do
       patient = create(:patient, recorded_at: june_2021[:long_ago])
-      bp = create(:blood_pressure, :with_encounter, patient: patient, recorded_at: june_2021[:over_three_months_ago])
+      bp = create(:blood_pressure, :with_encounter, patient: patient, recorded_at: june_2021[:over_3_months_ago])
       described_class.refresh
       with_reporting_time_zones do
         visit = described_class.find_by(patient_id: bp.patient_id, month_date: june_2021[:now])
@@ -62,7 +62,7 @@ RSpec.describe Reporting::PatientVisitsPerMonth, {type: :model, reporting_spec: 
         expect(visit.visited_at).to eq bp.recorded_at
       end
 
-      blood_sugar = create(:blood_sugar, :with_encounter, patient: patient, recorded_at: june_2021[:under_three_months_ago])
+      blood_sugar = create(:blood_sugar, :with_encounter, patient: patient, recorded_at: june_2021[:under_3_months_ago])
       described_class.refresh
       with_reporting_time_zones do
         visit = described_class.find_by(patient_id: blood_sugar.patient_id, month_date: june_2021[:now])

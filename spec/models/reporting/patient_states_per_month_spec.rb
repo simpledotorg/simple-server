@@ -143,9 +143,9 @@ RSpec.describe Reporting::PatientStatesPerMonth, {type: :model, reporting_spec: 
     describe "htn_treatment_outcome_in_last_3_months is set to" do
       it "missed_visit if the patient hasn't visited in the last 3 months" do
         patient_1 = create(:patient, recorded_at: june_2021[:long_ago])
-        create(:encounter, patient: patient_1, encountered_on: june_2021[:over_three_months_ago])
+        create(:encounter, patient: patient_1, encountered_on: june_2021[:over_3_months_ago])
         patient_2 = create(:patient, recorded_at: june_2021[:long_ago])
-        create(:encounter, patient: patient_2, encountered_on: june_2021[:under_three_months_ago])
+        create(:encounter, patient: patient_2, encountered_on: june_2021[:under_3_months_ago])
         patient_3 = create(:patient, recorded_at: june_2021[:long_ago])
         described_class.refresh
 
@@ -164,7 +164,7 @@ RSpec.describe Reporting::PatientStatesPerMonth, {type: :model, reporting_spec: 
           facility: patient_bp_over_3_months.registration_facility,
           patient: patient_bp_over_3_months,
           user: patient_bp_over_3_months.registration_user)
-        create(:blood_pressure, patient: patient_bp_over_3_months, recorded_at: june_2021[:over_three_months_ago])
+        create(:blood_pressure, patient: patient_bp_over_3_months, recorded_at: june_2021[:over_3_months_ago])
 
         patient_bp_under_3_months = create(:patient, recorded_at: june_2021[:long_ago])
         create(:prescription_drug,
@@ -172,7 +172,7 @@ RSpec.describe Reporting::PatientStatesPerMonth, {type: :model, reporting_spec: 
           facility: patient_bp_under_3_months.registration_facility,
           patient: patient_bp_under_3_months,
           user: patient_bp_under_3_months.registration_user)
-        create(:blood_pressure, patient: patient_bp_under_3_months, recorded_at: june_2021[:under_three_months_ago])
+        create(:blood_pressure, patient: patient_bp_under_3_months, recorded_at: june_2021[:under_3_months_ago])
 
         patient_with_no_bp = create(:patient, recorded_at: june_2021[:long_ago])
         create(:prescription_drug,
@@ -198,7 +198,7 @@ RSpec.describe Reporting::PatientStatesPerMonth, {type: :model, reporting_spec: 
         create(:blood_pressure, :with_encounter, patient: patient_uncontrolled, recorded_at: june_2021[:now] - 1.months, systolic: 140, diastolic: 90)
 
         patient_bp_over_3_months = create(:patient, recorded_at: june_2021[:long_ago])
-        create(:blood_pressure, :with_encounter, patient: patient_bp_over_3_months, recorded_at: june_2021[:over_three_months_ago])
+        create(:blood_pressure, :with_encounter, patient: patient_bp_over_3_months, recorded_at: june_2021[:over_3_months_ago])
 
         described_class.refresh
 
@@ -218,7 +218,7 @@ RSpec.describe Reporting::PatientStatesPerMonth, {type: :model, reporting_spec: 
         patient_1 = create(:patient, recorded_at: june_2021[:under_12_months_ago])
         patient_2 = create(:patient, recorded_at: june_2021[:over_12_months_ago])
         patient_3 = create(:patient, recorded_at: june_2021[:now])
-        patient_4 = create(:patient, recorded_at: june_2021[:over_three_months_ago])
+        patient_4 = create(:patient, recorded_at: june_2021[:over_3_months_ago])
 
         described_class.refresh
         with_reporting_time_zones do
@@ -299,10 +299,10 @@ RSpec.describe Reporting::PatientStatesPerMonth, {type: :model, reporting_spec: 
     describe "last_bp_state" do
       it "computes last bp state correctly" do
         patient_controlled = create(:patient, recorded_at: june_2021[:long_ago])
-        create(:blood_pressure, :with_encounter, patient: patient_controlled, recorded_at: june_2021[:over_three_months_ago], systolic: 139, diastolic: 89)
+        create(:blood_pressure, :with_encounter, patient: patient_controlled, recorded_at: june_2021[:over_3_months_ago], systolic: 139, diastolic: 89)
 
         patient_uncontrolled = create(:patient, recorded_at: june_2021[:long_ago])
-        create(:blood_pressure, :with_encounter, patient: patient_uncontrolled, recorded_at: june_2021[:over_three_months_ago], systolic: 140, diastolic: 90)
+        create(:blood_pressure, :with_encounter, patient: patient_uncontrolled, recorded_at: june_2021[:over_3_months_ago], systolic: 140, diastolic: 90)
 
         patient_no_bp = create(:patient, recorded_at: june_2021[:long_ago])
 
