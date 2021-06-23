@@ -1,5 +1,6 @@
 class Api::V3::FacilitiesController < Api::V3::SyncController
   include Api::V3::PublicApi
+  include Memery
 
   def sync_to_user
     __sync_to_user__("facilities")
