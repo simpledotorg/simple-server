@@ -174,8 +174,14 @@ module Reports
     end
 
     memoize def uncontrolled
-      region_period_cached_query(__method__) do |entry|
-        control_rate_query.uncontrolled(entry.region, entry.period).count
+      if reporting_schema_v2?
+        regions.each_with_object({}).each do |region, hsh|
+          hsh[region.slug] = control_rate_query_v2.uncontrolled_counts(region).tap { |hsh| hsh.default = 0 }
+        end
+      else
+        region_period_cached_query(__method__) do |entry|
+          control_rate_query.uncontrolled(entry.region, entry.period).count
+        end
       end
     end
 

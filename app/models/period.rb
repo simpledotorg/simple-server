@@ -60,7 +60,7 @@ class Period
   # Returns a new Period adjusted by the registration buffer. This is used in our denominators to determine
   # control rates, so that new patients aren't included in the calculations.
   def adjusted_period
-    advance(months: -REGISTRATION_BUFFER_MONTHS)
+    advance(months: -Reports::REGISTRATION_BUFFER_IN_MONTHS)
   end
 
   # Convert this Period to a quarter period - so:

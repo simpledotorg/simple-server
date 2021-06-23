@@ -53,6 +53,11 @@ class Reports::RegionsController < AdminController
         cumulative_registrations: repo.cumulative_registrations[slug]
       }
     }
+    respond_to do |format|
+      format.html
+      format.js
+      format.json { render json: @data }
+    end
   end
 
   # We display two ranges of data on this page - the chart range is for the LTFU chart,

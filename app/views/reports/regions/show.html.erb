@@ -66,6 +66,9 @@
             <div class="d-flex flex-1">
               <h3 class="mb-0px mr-8px">
                 BP not controlled
+                <span class="fs-14px bg-yellow-light">
+                  <%= "(v2 schema)" if reporting_schema_v2_enabled? %>
+                </span>
               </h3>
               <%= render "definition_tooltip",
                          definitions: { "Numerator" => t("bp_not_controlled_copy.numerator"),

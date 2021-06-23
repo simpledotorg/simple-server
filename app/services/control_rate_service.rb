@@ -38,9 +38,7 @@ class ControlRateService
   private
 
   def all_cached_data
-    # Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: bust_cache?) {
     fetch_all_data
-    # }
   end
 
   def repository
@@ -59,7 +57,6 @@ class ControlRateService
 
     results.controlled_patients = repository.controlled[slug]
     results.uncontrolled_patients = repository.uncontrolled[slug]
-
     results.controlled_patients_rate = repository.controlled_rates[slug]
     results.uncontrolled_patients_rate = repository.uncontrolled_rates[slug]
     results.controlled_patients_with_ltfu_rate = repository.controlled_rates(with_ltfu: true)[slug]
