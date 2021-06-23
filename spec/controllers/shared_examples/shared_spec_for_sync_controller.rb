@@ -424,6 +424,8 @@ RSpec.shared_examples "a working sync controller that supports region level sync
         reset_controller
 
         # 1 current facility record, 2 other facility records
+        # The last record in the first request is repeated as the first record in the second request.
+        # This happens because of the >= comparison in the updated_on_server_since method.
         get :sync_to_user, params: {process_token: JSON(response.body)["process_token"], limit: 3}
         response_record_ids += JSON(response.body)[response_key].map { |r| r["id"] }
 
@@ -486,6 +488,8 @@ RSpec.shared_examples "a working sync controller that supports region level sync
           reset_controller
 
           # 1 current facility record, 2 other facility records
+          # The last record in the first request is repeated as the first record in the second request.
+          # This happens because of the >= comparison in the updated_on_server_since method.
           get :sync_to_user, params: {process_token: JSON(response.body)["process_token"], limit: 3}
           response_record_ids += JSON(response.body)[response_key].map { |r| r["id"] }
 
