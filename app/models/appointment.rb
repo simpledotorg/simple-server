@@ -55,6 +55,8 @@ class Appointment < ApplicationRecord
     where(status: "scheduled")
       .where(arel_table[:scheduled_date].lt(Date.current))
       .where(arel_table[:remind_on].eq(nil).or(arel_table[:remind_on].lteq(Date.current)))
+      .joins(:patient)
+      .where.not(patients: {status: :dead})
   end
 
   def self.overdue
