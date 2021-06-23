@@ -2,6 +2,7 @@ module Reports
   class Repository
     include BustCache
     include Memery
+    include Scientist
     PERCENTAGE_PRECISION = 0
 
     def initialize(regions, periods:, reporting_schema_v2: false)
@@ -162,15 +163,23 @@ module Reports
     end
 
     memoize def controlled
-      if reporting_schema_v2?
-        regions.each_with_object({}).each do |region, hsh|
-          hsh[region.slug] = control_rate_query_v2.controlled_counts(region).tap { |hsh| hsh.default = 0 }
+      science("controlled") do |experiment|
+        experiment.use do
+          region_period_cached_query(__method__) do |entry|
+            control_rate_query.controlled(entry.region, entry.period).count
+          end
         end
-      else
-        region_period_cached_query(__method__) do |entry|
-          control_rate_query.controlled(entry.region, entry.period).count
+        experiment.try do
+          regions.each_with_object({}).each do |region, hsh|
+            hsh[region.slug] = control_rate_query_v2.controlled_counts(region).tap { |hsh| hsh.default = 0 }
+          end
         end
+        experiment.run control_or_candidate
       end
+    end
+
+    def control_or_candidate
+      reporting_schema_v2? ? "candidate" : "control"
     end
 
     memoize def uncontrolled

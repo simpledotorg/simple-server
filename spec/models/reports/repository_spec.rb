@@ -475,7 +475,7 @@ RSpec.describe Reports::Repository, type: :model do
     end
   end
 
-  fcontext "v2" do
+  context "v2" do
     it "gets correct controlled counts" do
       facilities = FactoryBot.create_list(:facility, 3, facility_group: facility_group_1)
       facility_1, facility_2, facility_3 = *facilities.take(3)
