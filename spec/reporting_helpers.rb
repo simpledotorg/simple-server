@@ -23,18 +23,5 @@ module ReportingHelpers
       under_three_months_ago: timezone.local(2021, 4, 1, 0, 0, 0), # Beginning of April 2021
       end_of_month: timezone.local(2021, 6, 30, 23, 59, 59) # End of June 30 2021
     }
-    # Reference chart:
-    # 11 july
-    # 10 august
-    # 9 september
-    # 8 october
-    # 7 november
-    # 6 december
-    # 5 january
-    # 4 february
-    # 3 march
-    # 2 april
-    # 1 may
-    # 0 june
   end
 end
