@@ -1,6 +1,6 @@
 module SimpleServerEnvHelper
   CUSTOMIZED_ENVS = %w[development demo qa sandbox production].freeze
-  ENV_ABBREVIATIONS = {development: "DEV", demo: "DEMO", qa: "QA", sandbox: "SBX"}.freeze
+  ENV_ABBREVIATIONS = {development: "DEV", demo: "DEMO", test: "TEST", qa: "QA", sandbox: "SBX"}.freeze
 
   def style_class_for_environment
     env = ENV.fetch("SIMPLE_SERVER_ENV")
@@ -12,18 +12,9 @@ module SimpleServerEnvHelper
     styles.join(" ")
   end
 
-  def get_title_for_environment
-    dashboard_title = I18n.t("admin.dashboard_title")
-    env = ENV.fetch("SIMPLE_SERVER_ENV")
-
-    return dashboard_title if env.downcase == "production"
-
-    "#{env_prefix}#{dashboard_title}"
-  end
-
   def env_prefix
     env = ENV.fetch("SIMPLE_SERVER_ENV").to_sym
-    ENV_ABBREVIATIONS[env] ? "[#{ENV_ABBREVIATIONS[env]}] " : ""
+    ENV_ABBREVIATIONS[env] ? "[#{ENV_ABBREVIATIONS[env]}]" : nil
   end
 
   def logo_for_environment

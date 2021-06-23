@@ -51,47 +51,21 @@ RSpec.describe SimpleServerEnvHelper do
     end
   end
 
-  describe "get_title_for_environment" do
-    before { allow(I18n).to receive(:t).with("admin.dashboard_title").and_return "Simple Dashboard" }
-
-    context "when in the default environment" do
-      it "should return the default alt for the logo" do
-        ENV[simple_server_env] = "default"
-
-        expect(get_title_for_environment).to eq "Simple Dashboard"
-      end
+  describe "env_prefix" do
+    it "returns abbreviated name for our environments" do
+      expect(env_prefix).to eq("[TEST]")
+      ENV[simple_server_env] = "sandbox"
+      expect(env_prefix).to eq("[SBX]")
     end
 
-    context "when in the qa environment" do
-      it "should return the QA alt for the logo" do
-        ENV[simple_server_env] = "qa"
-
-        expect(get_title_for_environment).to eq "[QA] Simple Dashboard"
-      end
+    it "defaults to nil" do
+      ENV[simple_server_env] = "default"
+      expect(env_prefix).to be_nil
     end
 
-    context "when in the demo environment" do
-      it "should return the demo alt for the logo" do
-        ENV[simple_server_env] = "demo"
-
-        expect(get_title_for_environment).to eq "[DEMO] Simple Dashboard"
-      end
-    end
-
-    context "when in the sandbox environment" do
-      it "should return the sandbox alt for the logo" do
-        ENV[simple_server_env] = "sandbox"
-
-        expect(get_title_for_environment).to eq "[SBX] Simple Dashboard"
-      end
-    end
-
-    context "when in the production environment" do
-      it "should return the production alt for the logo" do
-        ENV[simple_server_env] = "production"
-
-        expect(get_title_for_environment).to eq "Simple Dashboard"
-      end
+    it "returns nil for production" do
+      ENV[simple_server_env] = "production"
+      expect(env_prefix).to be_nil
     end
   end
 

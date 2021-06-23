@@ -3,9 +3,8 @@ module ApplicationHelper
   STANDARD_DATE_DISPLAY_FORMAT = "%d-%^b-%Y"
 
   def page_title
-    str = get_title_for_environment
-    str << " |" << content_for(:title) if content_for?(:title)
-    str
+    title = content_for?(:title) ? content_for(:title) : I18n.t("admin.dashboard_title")
+    [env_prefix, title].compact.join(" ")
   end
 
   def bootstrap_class_for_flash(flash_type)
