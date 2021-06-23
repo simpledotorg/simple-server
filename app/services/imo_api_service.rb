@@ -7,8 +7,9 @@ class ImoApiService
     attr_reader :path, :response, :exception_message
     def initialize(message, path: nil, response: nil, exception_message: nil)
       super(message)
-      path = path
-      response = response
+      @path = path
+      @response = response
+      @exception_message = exception_message
     end
   end
 
@@ -19,6 +20,8 @@ class ImoApiService
   end
 
   def invite
+    return unless Flipper.enabled?(:imo_messaging)
+
     Statsd.instance.increment("imo.invites.attempt")
     url = BASE_URL + "send_invite"
     request_body = JSON(
@@ -47,14 +50,14 @@ class ImoApiService
     when 200 then :invited
     when 400
       if JSON.parse(response.body).dig("response", "type") == "nonexistent_user"
-        Statds.increment("imo.invites.no_imo_account")
+        Statsd.instance.increment("imo.invites.no_imo_account")
         :no_imo_account
       else
-        Statds.increment("imo.invites.error")
+        Statsd.instance.increment("imo.invites.error")
         raise Error.new("Unknown 400 error from IMO", path: url, response: response)
       end
     else
-      Statds.increment("imo.invites.error")
+      Statsd.instance.increment("imo.invites.error")
       raise Error.new("Unknown response error from IMO", path: url, response: response)
     end
   end

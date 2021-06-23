@@ -56,7 +56,10 @@ RSpec.describe Imo::InvitePatient, type: :job do
 
         expect {
           described_class.perform_async(patient.id)
-          described_class.drain rescue RuntimeError
+          begin
+            described_class.drain
+          rescue RuntimeError
+          end
         }.not_to change { ImoAuthorization.count }
       end
     end

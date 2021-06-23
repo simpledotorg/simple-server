@@ -61,7 +61,7 @@ RSpec.describe Imo::InviteUnsubscribedPatients, type: :job do
       end
 
       it "excludes LTFU patients" do
-        patient = create(:patient, recorded_at: 2.years.ago)
+        create(:patient, recorded_at: 2.years.ago)
         expect(Imo::InvitePatient).not_to receive(:perform_at)
         described_class.perform_async
         described_class.drain

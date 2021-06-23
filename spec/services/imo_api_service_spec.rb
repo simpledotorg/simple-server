@@ -13,37 +13,47 @@ describe ImoApiService, type: :model do
       }
     end
 
-    it "returns 'invited' on 200" do
-      stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200)
-      expect(service.invite).to eq(:invited)
+    context "with feature flag off" do
+      it "returns nil" do
+        expect(service.invite).to eq(nil)
+      end
     end
 
-    it "returns 'no_imo_account' when status if 400 and type is nonexistent_user" do
-      body = JSON(
-        "status" => "error",
-        "response" => {
-          "message" => "No user with specified phone number",
-          "type" => "nonexistent_user"
-        }
-      )
-      stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: body)
-      expect(service.invite).to eq(:no_imo_account)
-    end
+    context "with feature flag on" do
+      before { Flipper.enable(:imo_messaging) }
 
-    it "returns 'failure' and logs with any other response" do
-      stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: {}.to_json)
+      it "returns :invited on 200" do
+        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200)
+        expect(service.invite).to eq(:invited)
+      end
 
-      expect {
-        service.invite
-      }.to raise_error(ImoApiService::Error)
-    end
+      it "returns :no_imo_account when status if 400 and type is nonexistent_user" do
+        body = JSON(
+          "status" => "error",
+          "response" => {
+            "message" => "No user with specified phone number",
+            "type" => "nonexistent_user"
+          }
+        )
+        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: body)
+        expect(service.invite).to eq(:no_imo_account)
+      end
 
-    it "raises custom error and logs on network error" do
-      stub_request(:post, request_url).to_timeout
+      it "raises error on any other response" do
+        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: {}.to_json)
 
-      expect {
-        service.invite
-      }.to raise_error(ImoApiService::Error)
+        expect {
+          service.invite
+        }.to raise_error(ImoApiService::Error)
+      end
+
+      it "raises a custom error on network error" do
+        stub_request(:post, request_url).to_timeout
+
+        expect {
+          service.invite
+        }.to raise_error(ImoApiService::Error)
+      end
     end
   end
 end
