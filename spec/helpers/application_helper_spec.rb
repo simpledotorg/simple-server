@@ -13,13 +13,13 @@ describe ApplicationHelper, type: :helper do
 
     it "uses page_title content when set" do
       helper.content_for(:title) { "My Custom Title" }
-      expect(helper.page_title).to eq("[TEST] My Custom Title" )
+      expect(helper.page_title).to eq("[TEST] My Custom Title")
     end
 
     it "has no prefix in production" do
       ENV["SIMPLE_SERVER_ENV"] = "production"
       helper.content_for(:title) { "My Custom Title" }
-      expect(helper.page_title).to eq("My Custom Title" )
+      expect(helper.page_title).to eq("My Custom Title")
     end
   end
 
