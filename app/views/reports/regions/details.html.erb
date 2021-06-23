@@ -1,3 +1,7 @@
+<% content_for :title do %>
+ <%= @region.name %> | Details
+<% end %>
+
 <%= render "header", period_selector: false %>
 
 <%= render "reports/regions/patient_breakdown_charts" %>
