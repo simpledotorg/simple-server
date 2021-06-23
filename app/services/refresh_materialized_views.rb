@@ -67,14 +67,14 @@ class RefreshMaterializedViews
     end
   end
 
-    V2_MAT_VIEWS = %i[reporting_patient_blood_pressures_per_month 
-        reporting_patient_visits_per_month
-        reporting_patient_states_per_month].freeze
+  V2_MAT_VIEWS = %i[reporting_patient_blood_pressures_per_month
+    reporting_patient_visits_per_month
+    reporting_patient_states_per_month].freeze
 
-    def review_v2_views
-       V2_MAT_VIEWS.each do |name|
-         ActiveRecord::Base.connection.execute("REFRESH MATERIALIZED VIEW #{name} WITH DATA")
-       end
+  def review_v2_views
+    V2_MAT_VIEWS.each do |name|
+      benchmark("refresh_materialized_views #{name}")
+      ActiveRecord::Base.connection.execute("REFRESH MATERIALIZED VIEW #{name} WITH DATA")
     end
-
+  end
 end

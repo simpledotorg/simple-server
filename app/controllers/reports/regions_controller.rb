@@ -30,7 +30,7 @@ class Reports::RegionsController < AdminController
   end
 
   def show
-    @service = Reports::RegionService.new(region: @region, period: @period, reporting_schema_v2: RequestStore[:reporting_schema_v2] )
+    @service = Reports::RegionService.new(region: @region, period: @period, reporting_schema_v2: RequestStore[:reporting_schema_v2])
     @data = @service.call
     @with_ltfu = with_ltfu?
 
