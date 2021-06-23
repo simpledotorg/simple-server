@@ -5,18 +5,6 @@ RSpec.describe Reporting::PatientStatesPerMonth, {type: :model, reporting_spec: 
     it { should belong_to(:patient) }
   end
 
-  def ltfu_patient_ids(month_date: Date.current.beginning_of_month)
-    described_class
-      .where(htn_care_state: "lost_to_follow_up", month_date: month_date)
-      .pluck(:id)
-  end
-
-  def under_care_patient_ids(month_date: Date.current.beginning_of_month)
-    described_class
-      .where(htn_care_state: "under_care", month_date: month_date)
-      .pluck(:id)
-  end
-
   context "indicators" do
     describe "htn_care_state" do
       it "marks a dead patient dead" do
@@ -33,8 +21,12 @@ RSpec.describe Reporting::PatientStatesPerMonth, {type: :model, reporting_spec: 
 
         described_class.refresh
         with_reporting_time_zones do
-          expect(ltfu_patient_ids).to include(patient_registered_13m_ago.id)
-          expect(under_care_patient_ids).not_to include(patient_registered_13m_ago.id)
+          expect(described_class
+            .where(htn_care_state: "lost_to_follow_up", month_date: Date.current.beginning_of_month)
+            .pluck(:id)).to include(patient_registered_13m_ago.id)
+          expect(described_class
+            .where(htn_care_state: "under_care", month_date: Date.current.beginning_of_month)
+            .pluck(:id)).not_to include(patient_registered_13m_ago.id)
         end
       end
 
@@ -44,11 +36,19 @@ RSpec.describe Reporting::PatientStatesPerMonth, {type: :model, reporting_spec: 
 
         described_class.refresh
         with_reporting_time_zones do
-          expect(ltfu_patient_ids).to include(patient_registered_12m_ago.id)
-          expect(under_care_patient_ids).not_to include(patient_registered_12m_ago.id)
+          expect(described_class
+            .where(htn_care_state: "lost_to_follow_up", month_date: Date.current.beginning_of_month)
+            .pluck(:id)).to include(patient_registered_12m_ago.id)
+          expect(described_class
+            .where(htn_care_state: "under_care", month_date: Date.current.beginning_of_month)
+            .pluck(:id)).not_to include(patient_registered_12m_ago.id)
 
-          expect(ltfu_patient_ids).not_to include(patient_registered_11m_ago.id)
-          expect(under_care_patient_ids).to include(patient_registered_11m_ago.id)
+          expect(described_class
+            .where(htn_care_state: "lost_to_follow_up", month_date: Date.current.beginning_of_month)
+            .pluck(:id)).not_to include(patient_registered_11m_ago.id)
+          expect(described_class
+            .where(htn_care_state: "under_care", month_date: Date.current.beginning_of_month)
+            .pluck(:id)).to include(patient_registered_11m_ago.id)
         end
       end
 
@@ -58,8 +58,12 @@ RSpec.describe Reporting::PatientStatesPerMonth, {type: :model, reporting_spec: 
 
         described_class.refresh
         with_reporting_time_zones do
-          expect(ltfu_patient_ids).not_to include(patient_with_recent_bp.id)
-          expect(under_care_patient_ids).to include(patient_with_recent_bp.id)
+          expect(described_class
+            .where(htn_care_state: "lost_to_follow_up", month_date: Date.current.beginning_of_month)
+            .pluck(:id)).not_to include(patient_with_recent_bp.id)
+          expect(described_class
+            .where(htn_care_state: "under_care", month_date: Date.current.beginning_of_month)
+            .pluck(:id)).to include(patient_with_recent_bp.id)
         end
       end
 
@@ -74,10 +78,18 @@ RSpec.describe Reporting::PatientStatesPerMonth, {type: :model, reporting_spec: 
           described_class.refresh
 
           with_reporting_time_zones do
-            expect(ltfu_patient_ids(month_date: test_times[:beginning_of_month])).to include(ltfu_patient.id)
-            expect(ltfu_patient_ids(month_date: test_times[:beginning_of_month])).not_to include(under_care_patient.id)
-            expect(under_care_patient_ids(month_date: test_times[:beginning_of_month])).to include(under_care_patient.id)
-            expect(under_care_patient_ids(month_date: test_times[:beginning_of_month])).not_to include(ltfu_patient.id)
+            expect(described_class
+              .where(htn_care_state: "lost_to_follow_up", month_date: test_times[:beginning_of_month])
+              .pluck(:id)).to include(ltfu_patient.id)
+            expect(described_class
+              .where(htn_care_state: "lost_to_follow_up", month_date: test_times[:beginning_of_month])
+              .pluck(:id)).not_to include(under_care_patient.id)
+            expect(described_class
+              .where(htn_care_state: "under_care", month_date: test_times[:beginning_of_month])
+              .pluck(:id)).to include(under_care_patient.id)
+            expect(described_class
+              .where(htn_care_state: "under_care", month_date: test_times[:beginning_of_month])
+              .pluck(:id)).not_to include(ltfu_patient.id)
           end
         end
 
@@ -90,10 +102,18 @@ RSpec.describe Reporting::PatientStatesPerMonth, {type: :model, reporting_spec: 
 
           described_class.refresh
           with_reporting_time_zones do
-            expect(ltfu_patient_ids(month_date: test_times[:beginning_of_month])).not_to include(under_care_patient.id)
-            expect(ltfu_patient_ids(month_date: test_times[:beginning_of_month])).to include(ltfu_patient.id)
-            expect(under_care_patient_ids(month_date: test_times[:beginning_of_month])).not_to include(ltfu_patient.id)
-            expect(under_care_patient_ids(month_date: test_times[:beginning_of_month])).to include(under_care_patient.id)
+            expect(described_class
+              .where(htn_care_state: "lost_to_follow_up", month_date: test_times[:beginning_of_month])
+              .pluck(:id)).not_to include(under_care_patient.id)
+            expect(described_class
+              .where(htn_care_state: "lost_to_follow_up", month_date: test_times[:beginning_of_month])
+              .pluck(:id)).to include(ltfu_patient.id)
+            expect(described_class
+              .where(htn_care_state: "under_care", month_date: test_times[:beginning_of_month])
+              .pluck(:id)).not_to include(ltfu_patient.id)
+            expect(described_class
+              .where(htn_care_state: "under_care", month_date: test_times[:beginning_of_month])
+              .pluck(:id)).to include(under_care_patient.id)
           end
         end
 
@@ -103,10 +123,18 @@ RSpec.describe Reporting::PatientStatesPerMonth, {type: :model, reporting_spec: 
 
           described_class.refresh
           with_reporting_time_zones do
-            expect(ltfu_patient_ids(month_date: test_times[:beginning_of_month])).not_to include(under_care_patient.id)
-            expect(ltfu_patient_ids(month_date: test_times[:beginning_of_month])).to include(ltfu_patient.id)
-            expect(under_care_patient_ids(month_date: test_times[:beginning_of_month])).not_to include(ltfu_patient.id)
-            expect(under_care_patient_ids(month_date: test_times[:beginning_of_month])).to include(under_care_patient.id)
+            expect(described_class
+              .where(htn_care_state: "lost_to_follow_up", month_date: test_times[:beginning_of_month])
+              .pluck(:id)).not_to include(under_care_patient.id)
+            expect(described_class
+              .where(htn_care_state: "lost_to_follow_up", month_date: test_times[:beginning_of_month])
+              .pluck(:id)).to include(ltfu_patient.id)
+            expect(described_class
+              .where(htn_care_state: "under_care", month_date: test_times[:beginning_of_month])
+              .pluck(:id)).not_to include(ltfu_patient.id)
+            expect(described_class
+              .where(htn_care_state: "under_care", month_date: test_times[:beginning_of_month])
+              .pluck(:id)).to include(under_care_patient.id)
           end
         end
       end
