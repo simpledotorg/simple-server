@@ -22,6 +22,7 @@ class DrugStock < ApplicationRecord
   end
 
   def self.latest_for_facilities_cte(facilities, for_end_of_month)
+    # This is needed to do GROUP queries which do not compose with DISTINCT ON
     from(latest_for_facilities(facilities, for_end_of_month), table_name)
   end
 

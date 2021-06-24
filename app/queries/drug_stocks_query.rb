@@ -67,7 +67,7 @@ class DrugStocksQuery
   end
 
   memoize def previous_month_drug_stocks
-    DrugStock.latest_for_facilities(@facilities, end_of_previous_month).group_by(&:facility_id)
+    DrugStock.latest_for_facilities_cte(@facilities, end_of_previous_month).with_protocol_drug_data
   end
 
   def all_drugs_in_stock
@@ -117,24 +117,18 @@ class DrugStocksQuery
     end
   end
 
-  def drug_consumption_for_category(drug_category, selected_month_drug_stocks, previous_month_drug_stocks)
-    Reports::DrugStockCalculation.new(
-      state: @state,
-      protocol: @protocol,
-      drug_category: drug_category,
-      stocks_by_rxnorm_code: stocks_by_rxnorm_code(selected_month_drug_stocks),
-      previous_month_stocks_by_rxnorm_code: stocks_by_rxnorm_code(previous_month_drug_stocks)
-    ).consumption
-  end
-
   memoize def drug_consumption_report_for_facilities
     @facilities.each_with_object({}) { |facility, report|
-      report[facility.id] = drug_consumption_for_facility(facility, drug_stocks[facility.id], previous_month_drug_stocks[facility.id])
+      facility_drug_stocks = drug_stocks.select { |drug_stock| drug_stock.facility_id == facility.id }
+      previous_month_facility_drug_stocks = previous_month_drug_stocks.select { |drug_stock| drug_stock.facility_id == facility.id }
+      patient_count = patient_counts_by_facility_id[facility.id] || 0
+
+      report[facility.id] =
+        drug_consumption_for_facility(facility, facility_drug_stocks, previous_month_facility_drug_stocks, patient_count)
     }
   end
 
-  def drug_consumption_for_facility(facility, facility_drug_stocks, facility_previous_month_drug_stocks)
-    patient_count = patient_counts_by_facility_id[facility.id] || 0
+  def drug_consumption_for_facility(facility, facility_drug_stocks, facility_previous_month_drug_stocks, patient_count)
     facility_report = {facility: facility, patient_count: patient_count}
 
     drug_stocks = facility_drug_stocks&.group_by { |drug_stock| drug_stock.protocol_drug.drug_category }
@@ -144,6 +138,16 @@ class DrugStocksQuery
       facility_report[drug_category] = drug_consumption_for_category(drug_category, drug_stocks&.dig(drug_category), previous_month_drug_stocks&.dig(drug_category))
     end
     facility_report
+  end
+
+  def drug_consumption_for_category(drug_category, selected_month_drug_stocks, previous_month_drug_stocks)
+    Reports::DrugStockCalculation.new(
+      state: @state,
+      protocol: @protocol,
+      drug_category: drug_category,
+      stocks_by_rxnorm_code: stocks_by_rxnorm_code(selected_month_drug_stocks),
+      previous_month_stocks_by_rxnorm_code: stocks_by_rxnorm_code(previous_month_drug_stocks)
+    ).consumption
   end
 
   def drug_consumption_totals
