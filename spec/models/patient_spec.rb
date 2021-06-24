@@ -207,14 +207,6 @@ describe Patient, type: :model do
       end
 
       describe "timezone-specific boundaries" do
-        def with_reporting_time_zones(&blk)
-          Time.use_zone(reporting_timezone) do
-            Groupdate.time_zone = reporting_timezone
-            blk.call
-            Groupdate.time_zone = nil
-          end
-        end
-
         it "bp cutoffs for a year ago" do
           # For any provided date in June in the local timezone, the LTFU BP cutoff is the end of June 30 of the
           # previous year in the local timezone.
@@ -329,14 +321,6 @@ describe Patient, type: :model do
       end
 
       describe "timezone-specific boundaries" do
-        def with_reporting_time_zones(&blk)
-          Time.use_zone(reporting_timezone) do
-            Groupdate.time_zone = reporting_timezone
-            blk.call
-            Groupdate.time_zone = nil
-          end
-        end
-
         it "bp cutoffs for a year ago" do
           # For any provided date in June in the local timezone, the LTFU BP cutoff is the end of June 30 of the
           # previous year in the local timezone.

@@ -42,6 +42,10 @@ RSpec.describe Reports::Repository, type: :model do
   end
 
   context "counts and rates" do
+    around do |example|
+      with_reporting_time_zone { example.run }
+    end
+
     it "gets assigned and registration counts for single region" do
       facilities = FactoryBot.create_list(:facility, 2, facility_group: facility_group_1).sort_by(&:slug)
       facility_1, facility_2 = facilities.take(2)
