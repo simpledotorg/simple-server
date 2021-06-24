@@ -199,6 +199,16 @@ class UserAnalyticsPresenter
       monthly_dm_stats].inject(:deep_merge)
   end
 
+  def controlled_stats(range)
+    repo = Reports::Repository.new(current_facility.region, periods: range)
+    slug = current_facility.region.slug
+    {
+      adjusted_patient_counts: repo.adjusted_patients_without_ltfu[slug],
+      controlled_patients: repo.controlled[slug],
+      controlled_patients_rate: repo.controlled_rates[slug]
+    }
+  end
+
   def all_time_stats
     return all_time_htn_stats unless diabetes_enabled?
 
@@ -268,24 +278,6 @@ class UserAnalyticsPresenter
     }
   end
 
-  def legacy_service?
-    false
-  end
-
-  def controlled_visits(facility, range)
-    if legacy_service?
-      ControlRateService.new(current_facility, periods: range).call.to_hash
-    else
-      repo = Reports::Repository.new(current_facility.region, periods: range)
-      slug = current_facility.region.slug
-      {
-        adjusted_patient_counts: repo.adjusted_patients_without_ltfu[slug],
-        controlled_patients: repo.controlled[slug],
-        controlled_patients_rate: repo.controlled_rates[slug]
-      }
-    end
-  end
-
   def monthly_htn_stats
     activity_by_gender = ActivityService.new(current_facility, group: :gender, last: MONTHS_AGO)
     activity = ActivityService.new(current_facility, last: MONTHS_AGO)
@@ -306,7 +298,7 @@ class UserAnalyticsPresenter
         hypertension: {
           registrations: activity.registrations,
           follow_ups: activity.follow_ups,
-          controlled_visits: controlled_visits(current_facility, range)
+          controlled_visits: controlled_stats(range)
         }
       }
     }

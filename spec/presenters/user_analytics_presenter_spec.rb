@@ -123,7 +123,7 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
           data =
             travel_to(request_date) {
               presenter = described_class.new(current_facility)
-              expect(presenter).to receive(:controlled_visits).and_return({control_rate: :statistics})
+              expect(presenter).to receive(:controlled_stats).and_return({control_rate: :statistics})
               presenter.statistics
             }
 
@@ -453,18 +453,7 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
             }
           }
 
-          pp data.dig(:monthly, :grouped_by_date, :hypertension, :controlled_visits)
           expect(data.dig(:monthly, :grouped_by_date_and_gender)).to eq(expected_output)
-
-          pp request_date
-          range = (request_date.advance(months: -13).to_period..request_date.to_period)
-          expected = travel_to(request_date) {
-            ControlRateService.new(current_facility, periods: range).call.to_hash
-          }
-
-          controlled = data.dig(:monthly, :grouped_by_date, :hypertension, :controlled_visits)
-          expect(controlled.keys).to eq(expected.keys)
-          expect(controlled).to eq(expected)
         end
 
         def refresh_views
@@ -480,7 +469,6 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
             refresh_views
             presenter = described_class.new(current_facility)
             control_summary = presenter.monthly_htn_control_last_period_patient_counts
-            control_rate = presenter.monthly_htn_control_rate(request_date)
             expect(presenter.monthly_htn_control_rate(Date.current.last_month)).to eq(100)
             expect(control_summary).to eq("2 of 2 patients")
           end
@@ -490,7 +478,7 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
           data =
             travel_to(request_date) {
               presenter = described_class.new(current_facility)
-              expect(presenter).to receive(:controlled_visits).and_return({control_rate: :statistics})
+              expect(presenter).to receive(:controlled_stats).and_return({control_rate: :statistics})
               presenter.statistics
             }
 
