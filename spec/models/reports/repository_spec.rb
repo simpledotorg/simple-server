@@ -73,12 +73,6 @@ RSpec.describe Reports::Repository, type: :model do
 
       slug = facility_1.slug
       repo = Reports::Repository.new(facility_1.region, periods: (july_2018.to_period..july_2020.to_period))
-      service = ControlRateService.new(facility_1.region, periods: (july_2018.to_period..july_2020.to_period))
-      result = service.call
-
-      # ensure we match the ControlRateService results, otherwise things could change in the reports
-      expect(repo.monthly_registrations[slug]).to eq(result[:registrations])
-      expect(repo.assigned_patients[slug]).to eq(result[:assigned_patients])
 
       expect(repo.assigned_patients[slug][Period.month("August 2018")]).to eq(2)
       expect(repo.assigned_patients[slug][Period.month("Jan 2019")]).to eq(2)
