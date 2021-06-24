@@ -95,6 +95,7 @@ module Reports
       :registrations, :cumulative_registrations,
       :assigned_patients, :cumulative_assigned_patients,
       :ltfu_patients,
+      :ltfu_patients_rate,
       :adjusted_patient_counts_with_ltfu, :adjusted_patient_counts,
       :controlled_patients,
       :controlled_patients_rate,

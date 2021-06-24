@@ -1,6 +1,28 @@
 require "rails_helper"
 
 describe ApplicationHelper, type: :helper do
+  context "page_title" do
+    after { ENV["SIMPLE_SERVER_ENV"] = "test" }
+
+    it "defaults to prefix and default title if no explicit title is set" do
+      expect(helper.page_title).to eq("[TEST] Simple Dashboard")
+      stub_const("SIMPLE_SERVER_ENV", "sandbox")
+      ENV["SIMPLE_SERVER_ENV"] = "sandbox"
+      expect(helper.page_title).to eq("[SBX] Simple Dashboard")
+    end
+
+    it "uses page_title content when set" do
+      helper.content_for(:title) { "My Custom Title" }
+      expect(helper.page_title).to eq("[TEST] My Custom Title")
+    end
+
+    it "has no prefix in production" do
+      ENV["SIMPLE_SERVER_ENV"] = "production"
+      helper.content_for(:title) { "My Custom Title" }
+      expect(helper.page_title).to eq("My Custom Title")
+    end
+  end
+
   describe "#bootstrap_class_for_flash" do
     specify { expect(helper.bootstrap_class_for_flash("success")).to eq("alert-success") }
     specify { expect(helper.bootstrap_class_for_flash("error")).to eq("alert-danger") }
