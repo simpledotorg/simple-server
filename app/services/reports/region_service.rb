@@ -10,7 +10,6 @@ module Reports
     end
 
     def initialize(region:, period:, months: MAX_MONTHS_OF_DATA)
-      @current_user = current_user
       @region = region
       @slug = @region.slug
       @period = period
@@ -18,7 +17,6 @@ module Reports
       @range = Range.new(start_period, @period)
     end
 
-    attr_reader :current_user
     attr_reader :result
     attr_reader :period
     attr_reader :range
@@ -63,11 +61,6 @@ module Reports
 
     def repository
       @repository ||= Reports::Repository.new(region, periods: range)
-    end
-
-    # We want the current quarter and then the previous four
-    def last_five_quarters
-      period.to_quarter_period.value.downto(4)
     end
   end
 end

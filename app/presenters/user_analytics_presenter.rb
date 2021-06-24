@@ -268,17 +268,31 @@ class UserAnalyticsPresenter
     }
   end
 
+  def legacy_service?
+    false
+  end
+
+  def controlled_visits(facility, range)
+    if legacy_service?
+      ControlRateService.new(current_facility, periods: range).call.to_hash
+    else
+      repo = Reports::Repository.new(current_facility.region, periods: range)
+      slug = current_facility.region.slug
+      {
+        adjusted_patient_counts: repo.adjusted_patients_without_ltfu[slug],
+        controlled_patients: repo.controlled[slug],
+        controlled_patients_rate: repo.controlled_rates[slug]
+      }
+    end
+  end
+
   def monthly_htn_stats
     activity_by_gender = ActivityService.new(current_facility, group: :gender, last: MONTHS_AGO)
     activity = ActivityService.new(current_facility, last: MONTHS_AGO)
 
     control_rate_end = Period.month(Date.current.advance(months: -1).beginning_of_month)
     control_rate_start = control_rate_end.advance(months: -HTN_CONTROL_MONTHS_AGO)
-    controlled_visits =
-      ControlRateService.new(
-        current_facility,
-        periods: control_rate_start..control_rate_end
-      ).call.to_hash
+    range = (control_rate_start..control_rate_end)
 
     {
       grouped_by_date_and_gender: {
@@ -292,7 +306,7 @@ class UserAnalyticsPresenter
         hypertension: {
           registrations: activity.registrations,
           follow_ups: activity.follow_ups,
-          controlled_visits: controlled_visits
+          controlled_visits: controlled_visits(current_facility, range)
         }
       }
     }

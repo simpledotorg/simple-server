@@ -120,13 +120,11 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
         end
 
         it "has data grouped by date" do
-          control_rate_service = double("ControlRateService")
-          allow(ControlRateService).to receive(:new).and_return(control_rate_service)
-          allow(control_rate_service).to receive(:call).and_return({control_rate: :statistics})
-
           data =
             travel_to(request_date) {
-              described_class.new(current_facility).statistics
+              presenter = described_class.new(current_facility)
+              expect(presenter).to receive(:controlled_visits).and_return({control_rate: :statistics})
+              presenter.statistics
             }
 
           expected_output = {
@@ -489,13 +487,11 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
         end
 
         it "has data grouped by date" do
-          control_rate_service = double("ControlRateService")
-          allow(ControlRateService).to receive(:new).and_return(control_rate_service)
-          allow(control_rate_service).to receive(:call).and_return({control_rate: :statistics})
-
           data =
             travel_to(request_date) {
-              described_class.new(current_facility).statistics
+              presenter = described_class.new(current_facility)
+              expect(presenter).to receive(:controlled_visits).and_return({control_rate: :statistics})
+              presenter.statistics
             }
 
           expected_output = {
