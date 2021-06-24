@@ -28,7 +28,7 @@ class Notification < ApplicationRecord
 
   def localized_message
     case purpose
-    when :missed_visit_reminder, :experimental_appointment_reminder
+    when "missed_visit_reminder", "experimental_appointment_reminder"
       I18n.t(
         message,
         facility_name: subject.facility.name,
@@ -36,7 +36,7 @@ class Notification < ApplicationRecord
         appointment_date: subject.scheduled_date,
         locale: subject.facility.locale
       )
-    when :covid_medication_reminder
+    when "covid_medication_reminder"
       I18n.t(
         message,
         facility_name: patient.assigned_facility.name,
