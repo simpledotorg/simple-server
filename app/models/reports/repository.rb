@@ -16,7 +16,7 @@ module Reports
       @reporting_schema_v2 = reporting_schema_v2
       raise ArgumentError, "Quarter periods not supported" if @period_type != :month
 
-      @assigned_patients_query = AssignedPatientsQuery.new(reporting_schema_v2: reporting_schema_v2?)
+      @assigned_patients_query = AssignedPatientsQuery.new
       @bp_measures_query = BPMeasuresQuery.new
       @control_rate_query = ControlRateQuery.new
       @control_rate_query_v2 = ControlRateQueryV2.new
@@ -300,7 +300,7 @@ module Reports
     # fast and easy via the underlying query.
     memoize def complete_monthly_assigned_patients
       items = regions.map { |region| RegionEntry.new(region, __method__, period_type: period_type) }
-      cache.fetch_multi(*items, force: bust_cache?, reporting_schema_v2: reporting_schema_v2?) { |region_entry|
+      cache.fetch_multi(*items, force: bust_cache?) { |region_entry|
         assigned_patients_query.count(region_entry.region, period_type)
       }
     end
