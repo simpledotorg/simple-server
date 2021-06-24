@@ -45,7 +45,7 @@ module Experimentation
             reminder_template: template,
             subject: nil,
             patient: patient,
-            purpose: "covid_medication_reminder"
+            purpose: :covid_medication_reminder
           )
         end
       end

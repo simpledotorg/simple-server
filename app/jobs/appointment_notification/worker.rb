@@ -5,6 +5,9 @@ class AppointmentNotification::Worker
   sidekiq_options queue: :high
   delegate :logger, to: Rails
 
+  class UnknownCommunicationType < StandardError
+  end
+
   def metrics
     @metrics ||= Metrics.with_object(self)
   end
@@ -44,7 +47,7 @@ class AppointmentNotification::Worker
     # remove missed_visit_whatsapp_reminder and missed_visit_sms_reminder
     # https://app.clubhouse.io/simpledotorg/story/3585/backfill-notifications-from-communications
     case communication_type
-    when "whatsapp", "missed_visit_whatsapp_reminder"
+    when :whatsapp, :missed_visit_whatsapp_reminder
       notification_service.send_whatsapp(
         notification.patient.latest_mobile_number,
         notification.localized_message,
@@ -52,7 +55,7 @@ class AppointmentNotification::Worker
       ).tap do |response|
         metrics.increment("sent.whatsapp")
       end
-    when "sms", "missed_visit_sms_reminder"
+    when :sms, :missed_visit_sms_reminder
       notification_service.send_sms(
         notification.patient.latest_mobile_number,
         notification.localized_message,
@@ -61,7 +64,7 @@ class AppointmentNotification::Worker
         metrics.increment("sent.sms")
       end
     else
-      raise StandardError, "#{self.class.name} is not configured to handle communication type #{communication_type}"
+      raise UnknownCommunicationType, "#{self.class.name} is not configured to handle communication type #{communication_type}"
     end
 
     log_info = {
