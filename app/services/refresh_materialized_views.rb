@@ -71,7 +71,8 @@ class RefreshMaterializedViews
     reporting_facilities
     reporting_patient_blood_pressures_per_month
     reporting_patient_visits_per_month
-    reporting_patient_states_per_month].freeze
+    reporting_patient_states_per_month
+  ].freeze
 
   def refresh_v2_views
     ActiveRecord::Base.transaction do

@@ -24,9 +24,9 @@ class AssignedPatientsQuery
 
   def count_v2(region, period_type)
     Reports::PatientStatesPerMonth
-        .where(hypertension: "yes")
-        .where(patient_assigned_facility_id: region.facilities)
-        .group_by_period(:month, :recorded_at, format: Period.formatter(:month))
-        .count
+      .where(hypertension: "yes")
+      .where(patient_assigned_facility_id: region.facilities)
+      .group_by_period(:month, :recorded_at, format: Period.formatter(:month))
+      .count
   end
 end
