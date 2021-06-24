@@ -78,9 +78,9 @@
     <% end %>
     <td class="mobile"></td>
   </tr>
-  <% @report[:facilities].each do |(_facility_id, facility_report)| %>
+  <% @facilities.each do |facility| %>
     <tr>
-      <% facility = facility_report[:facility] %>
+      <% facility_report = @report[:facilities][facility.id] %>
       <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title=""
           data-original-title='<%= "#{facility.name}: #{facility_report[:patient_count]} patients" %>'>
         <%= link_to(reports_region_path(facility, report_scope: "facility")) do %>

@@ -70,7 +70,7 @@
 
     <% @facilities.each do |facility| %>
       <tr>
-        <% facility_report = @report[:patient_days_by_facility_id][facility.id] %>
+        <% facility_patient_days_report = @report[:patient_days_by_facility_id][facility.id] %>
         <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
             data-original-title='<%= "#{facility.name}: #{@report[:patient_counts_by_facility_id][facility.id]} patients" %>'>
           <%= link_to(reports_region_path(facility, report_scope: "facility")) do %>
@@ -83,7 +83,7 @@
           </a>
         </td>
         <% @drugs_by_category.map do |drug_category, drugs| %>
-          <% patient_days = facility_report.dig(drug_category, :patient_days) %>
+          <% patient_days = facility_patient_days_report.dig(drug_category, :patient_days) %>
           <% drugs.map do |drug| %>
             <% drug_stock = @report[:drugs_in_stock_by_facility_id].dig([facility.id, drug.rxnorm_code]) %>
             <% if drug_stock&.present? %>
@@ -97,7 +97,7 @@
           <% if patient_days.present? %>
             <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
                 data-template="<%= render "wide_tooltip_template" %>"
-                data-original-title="<%= render "drug_stocks_tooltip", report: facility_report[drug_category] %>"
+                data-original-title="<%= render "drug_stocks_tooltip", report: facility_patient_days_report[drug_category] %>"
                 data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
               <em class="<%= patient_days_css_class(patient_days) %>">
                 <%= patient_days %>
