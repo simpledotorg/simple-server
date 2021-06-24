@@ -163,18 +163,22 @@ module Reports
     end
 
     memoize def controlled
+      return controlled_v2 if reporting_schema_v2?
       science("controlled") do |experiment|
-        experiment.use do
-          region_period_cached_query(__method__) do |entry|
-            control_rate_query.controlled(entry.region, entry.period).count
-          end
-        end
-        experiment.try do
-          regions.each_with_object({}).each do |region, hsh|
-            hsh[region.slug] = control_rate_query_v2.controlled_counts(region).tap { |hsh| hsh.default = 0 }
-          end
-        end
-        experiment.run control_or_candidate
+        experiment.use { controlled_v1 }
+        experiment.try { controlled_v2 }
+      end
+    end
+
+    def controlled_v1
+      region_period_cached_query(__method__) do |entry|
+        control_rate_query.controlled(entry.region, entry.period).count
+      end
+    end
+
+    def controlled_v2
+      regions.each_with_object({}).each do |region, hsh|
+        hsh[region.slug] = control_rate_query_v2.controlled_counts(region).tap { |hsh| hsh.default = 0 }
       end
     end
 

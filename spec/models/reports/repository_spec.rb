@@ -288,10 +288,10 @@ RSpec.describe Reports::Repository, type: :model do
         user_1 = create(:user)
         user_2 = create(:user)
 
-        create(:blood_pressure, :with_encounter, recorded_at: 3.months.ago, facility: facility_1, patient: patient_1, user: user_1)
-        create(:blood_pressure, :with_encounter, recorded_at: 3.months.ago, facility: facility_1, patient: patient_2, user: user_2)
-        create(:blood_pressure, :with_encounter, recorded_at: 2.months.ago, facility: facility_1, patient: patient_2, user: user_2)
-        create(:blood_pressure, :with_encounter, recorded_at: 1.month.ago, facility: facility_2, patient: patient_1)
+        create(:blood_pressure, recorded_at: 3.months.ago, facility: facility_1, patient: patient_1, user: user_1)
+        create(:blood_pressure, recorded_at: 3.months.ago, facility: facility_1, patient: patient_2, user: user_2)
+        create(:blood_pressure, recorded_at: 2.months.ago, facility: facility_1, patient: patient_2, user: user_2)
+        create(:blood_pressure, recorded_at: 1.month.ago, facility: facility_2, patient: patient_1)
 
         repo = Reports::Repository.new(regions, periods: periods)
         repo_2 = Reports::Repository.new(regions, periods: periods)
@@ -340,7 +340,7 @@ RSpec.describe Reports::Repository, type: :model do
       repo = Reports::Repository.new(facility_1.region, periods: july_2020_range)
 
       allow(repo).to receive(:region_period_cached_query).and_call_original
-      expect(repo).to receive(:region_period_cached_query).with(:controlled).exactly(1).times.and_call_original
+      expect(repo).to receive(:region_period_cached_query).with(:controlled_v1).exactly(1).times.and_call_original
 
       3.times { _result = repo.controlled }
       3.times { _result = repo.controlled_rates }
@@ -367,7 +367,7 @@ RSpec.describe Reports::Repository, type: :model do
 
       RequestStore[:bust_cache] = true
       repo = Reports::Repository.new(facility_1.region, periods: july_2020_range)
-      expect(repo).to receive(:region_period_cached_query).with(:controlled).exactly(1).times
+      expect(repo).to receive(:region_period_cached_query).with(:controlled_v1).exactly(1).times
 
       3.times { _result = repo.controlled }
     end
