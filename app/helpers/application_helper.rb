@@ -2,6 +2,11 @@ module ApplicationHelper
   DEFAULT_PROGRAM_INCEPTION_DATE = Time.new(2018, 0o1, 0o1)
   STANDARD_DATE_DISPLAY_FORMAT = "%d-%^b-%Y"
 
+  def page_title
+    title = content_for?(:title) ? content_for(:title) : I18n.t("admin.dashboard_title")
+    [env_prefix, title].compact.join(" ")
+  end
+
   def bootstrap_class_for_flash(flash_type)
     case flash_type
     when "success"
