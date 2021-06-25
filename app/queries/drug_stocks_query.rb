@@ -33,7 +33,7 @@ class DrugStocksQuery
       expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL"),
       force: RequestStore.store[:bust_cache]) do
       {total_patients: total_patients,
-       all_drug_consumption: drug_consumption_totals,
+       all_drug_consumption: all_drug_consumption,
        drug_consumption_by_facility_id: drug_consumption_by_facility_id,
        patient_counts_by_facility_id: patient_counts_by_facility_id,
        last_updated_at: Time.now}
@@ -97,6 +97,16 @@ class DrugStocksQuery
     end
   end
 
+  def all_patient_days
+    drug_categories.each_with_object(Hash.new(0)) do |drug_category, result|
+      result[drug_category] = category_patient_days(
+        drug_category,
+        selected_month_drug_stocks,
+        total_patients
+      )
+    end
+  end
+
   def category_patient_days(drug_category, category_drug_stocks, patient_count)
     Reports::DrugStockCalculation.new(
       state: @state,
@@ -107,23 +117,11 @@ class DrugStocksQuery
     ).patient_days
   end
 
-  def all_patient_days
-    drug_categories.each_with_object(Hash.new(0)) do |drug_category, result|
-      result[drug_category] = Reports::DrugStockCalculation.new(
-        state: @state,
-        protocol: @protocol,
-        drug_category: drug_category,
-        in_stock_by_rxnorm_code: drug_attribute_sum_by_rxnorm_code(selected_month_drug_stocks, :in_stock),
-        patient_count: total_patients
-      ).patient_days
-    end
-  end
-
   memoize def drug_consumption_by_facility_id
     @facilities.pluck(:id).product(drug_categories).each_with_object({}) do |(facility_id, drug_category), result|
       result[facility_id] ||= {}
       result[facility_id][drug_category] =
-        drug_consumption_for_category(
+        category_drug_consumption(
           drug_category,
           select_drug_stocks(selected_month_drug_stocks, facility_id, drug_category),
           select_drug_stocks(previous_month_drug_stocks, facility_id, drug_category)
@@ -131,7 +129,17 @@ class DrugStocksQuery
     end
   end
 
-  def drug_consumption_for_category(drug_category, current_drug_stocks, previous_drug_stocks)
+  def all_drug_consumption
+    drug_categories.each_with_object(Hash.new(0)) do |drug_category, result|
+      result[drug_category] = category_drug_consumption(
+        drug_category,
+        selected_month_drug_stocks,
+        previous_month_drug_stocks
+      )
+    end
+  end
+
+  def category_drug_consumption(drug_category, current_drug_stocks, previous_drug_stocks)
     Reports::DrugStockCalculation.new(
       state: @state,
       protocol: @protocol,
@@ -140,19 +148,6 @@ class DrugStocksQuery
       received_by_rxnorm_code: drug_attribute_sum_by_rxnorm_code(current_drug_stocks, :received),
       previous_month_in_stock_by_rxnorm_code: drug_attribute_sum_by_rxnorm_code(previous_drug_stocks, :in_stock)
     ).consumption
-  end
-
-  def drug_consumption_totals
-    drug_categories.each_with_object(Hash.new(0)) do |drug_category, result|
-      result[drug_category] = Reports::DrugStockCalculation.new(
-        state: @state,
-        protocol: @protocol,
-        drug_category: drug_category,
-        in_stock_by_rxnorm_code: drug_attribute_sum_by_rxnorm_code(selected_month_drug_stocks, :in_stock),
-        previous_month_in_stock_by_rxnorm_code: drug_attribute_sum_by_rxnorm_code(previous_month_drug_stocks, :in_stock),
-        received_by_rxnorm_code: drug_attribute_sum_by_rxnorm_code(selected_month_drug_stocks, :received)
-      ).consumption
-    end
   end
 
   def drug_attribute_sum_by_rxnorm_code(drug_stocks, attribute)
