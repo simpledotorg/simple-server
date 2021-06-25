@@ -152,24 +152,26 @@ RSpec.describe DrugStocksQuery do
   end
 
   context "drug consumption report" do
-    describe "#drug_consumption_for_facility" do
-      let!(:facility) { create(:facility, facility_group: facility_group, state: state) }
-      let!(:patients) { create_list(:patient, 3, registration_facility: facility, registration_user: user) }
+    let!(:facilities) { create_list(:facility, 3, facility_group: facility_group, state: state) }
 
-      let!(:drug_stocks) {
+    let!(:patients) {
+      facilities.map { |facility|
+        create_list(:patient, 3, registration_facility: facility, registration_user: user)
+      }.flatten
+    }
+
+    let!(:drug_stocks) {
+      facilities.map { |facility|
         stocks_by_rxnorm.map do |(rxnorm_code, drug_stock)|
           protocol_drug = protocol.protocol_drugs.find_by(rxnorm_code: rxnorm_code)
-          create(:drug_stock,
-            user: user,
-            facility: facility,
-            protocol_drug: protocol_drug,
-            in_stock: drug_stock[:in_stock],
-            received: drug_stock[:received])
+          create(:drug_stock, user: user, facility: facility, protocol_drug: protocol_drug, in_stock: drug_stock[:in_stock])
         end
-      }
+      }.flatten
+    }
 
-      let!(:previous_month_drug_stocks) {
-        previous_month_stocks_by_rxnorm.map do |(rxnorm_code, drug_stock)|
+    let!(:previous_month_drug_stocks) {
+      facilities.map { |facility|
+        stocks_by_rxnorm.map do |(rxnorm_code, drug_stock)|
           protocol_drug = protocol.protocol_drugs.find_by(rxnorm_code: rxnorm_code)
           create(:drug_stock,
             user: user,
@@ -178,68 +180,44 @@ RSpec.describe DrugStocksQuery do
             in_stock: drug_stock[:in_stock],
             for_end_of_month: (Date.today - 1.month).end_of_month)
         end
-      }
+      }.flatten
+    }
 
-      before do
-        allow_any_instance_of(Reports::DrugStockCalculation).to receive(:patient_days_coefficients).and_return(punjab_drug_stock_config)
-      end
+    before do
+      allow_any_instance_of(Reports::DrugStockCalculation).to receive(:patient_days_coefficients).and_return(punjab_drug_stock_config)
+    end
 
-      it "computes the drug consumption report for a given facility" do
-        instance = described_class.new(facilities: [facility], for_end_of_month: for_end_of_month)
-        result = instance.drug_consumption_for_facility(facility, drug_stocks, previous_month_drug_stocks)
-        {"hypertension_ccb" => %w[329528 329526],
-         "hypertension_arb" => %w[316764 316765 979467]}.each do |(drug_category, rxnorm_codes)|
-          drug_stocks.select { |drug_stock| rxnorm_codes.include? drug_stock.protocol_drug.rxnorm_code }
-          expect(result[drug_category][:base_doses][:total]).not_to be_nil
-          expect(result[drug_category][:base_doses][:drugs].count).to eq rxnorm_codes.count
-          expect(result[drug_category][:base_doses][:drugs].first[:name]).not_to be_nil
-          expect(result[drug_category][:base_doses][:drugs].first[:consumed]).not_to be_nil
-          expect(result[drug_category][:base_doses][:drugs].first[:coefficient]).not_to be_nil
-        end
+    it "computes the drug consumption report totals" do
+      result = described_class.new(facilities: facilities, for_end_of_month: for_end_of_month).drug_consumption_report
+      expect(result[:total_patients]).to eq(patients.count)
+      expect(result[:all_drug_consumption]["hypertension_ccb"][:base_doses][:total]).to eq(-6000)
+      expect(result[:all_drug_consumption]["hypertension_arb"][:base_doses][:total]).to eq(-1000)
 
-        expect(result["hypertension_ccb"][:base_doses][:total]).to eq(-6000)
-        expect(result["hypertension_arb"][:base_doses][:total]).to eq(-1000)
-      end
-
-      it "returns nil base doses when drug stocks are not present" do
-        instance = described_class.new(facilities: [facility], for_end_of_month: for_end_of_month)
-        result = instance.drug_consumption_for_facility(facility, drug_stocks, previous_month_drug_stocks)
-
-        expect(result["hypertension_diuretic"][:base_doses][:total]).to eq(nil)
-      end
-
-      it "computes drug consumption report when there are no drug stocks or patients for a facility" do
-        facility_without_drug_stocks = create(:facility, facility_group: facility.facility_group)
-
-        instance = described_class.new(facilities: [facility_without_drug_stocks], for_end_of_month: for_end_of_month)
-        result = instance.drug_consumption_for_facility(facility_without_drug_stocks, drug_stocks, previous_month_drug_stocks)
-
-        expect(result[:facility]).to eq(facility_without_drug_stocks)
-        expect(result[:patient_count]).to eq(0)
+      {"hypertension_ccb" => %w[329528 329526],
+        "hypertension_arb" => %w[316764 316765 979467]}.each do |(drug_category, rxnorm_codes)|
+        expect(result[:all_drug_consumption][drug_category][:base_doses][:total]).not_to be_nil
+        expect(result[:all_drug_consumption][drug_category][:base_doses][:drugs]).not_to be_nil
+        expect(result[:all_drug_consumption][drug_category][:base_doses][:drugs].first[:name]).not_to be_nil
+        expect(result[:all_drug_consumption][drug_category][:base_doses][:drugs].first[:consumed]).not_to be_nil
+        expect(result[:all_drug_consumption][drug_category][:base_doses][:drugs].first[:coefficient]).not_to be_nil
       end
     end
 
-    describe "#drug_consumption_totals" do
-      let!(:facilities) { create_list(:facility, 3, facility_group: facility_group, state: state) }
+    it "returns nil base doses when drug stocks are not present" do
+      instance = described_class.new(facilities: [facility], for_end_of_month: for_end_of_month)
+      result = instance.drug_consumption_for_facility(facility, drug_stocks, previous_month_drug_stocks)
 
-      let!(:patients) {
-        facilities.map { |facility|
-          create_list(:patient, 3, registration_facility: facility, registration_user: user)
-        }.flatten
-      }
+      expect(result["hypertension_diuretic"][:base_doses][:total]).to eq(nil)
+    end
 
-      let!(:drug_stocks) {
-        facilities.map { |facility|
-          stocks_by_rxnorm.map do |(rxnorm_code, drug_stock)|
-            protocol_drug = protocol.protocol_drugs.find_by(rxnorm_code: rxnorm_code)
-            create(:drug_stock, user: user, facility: facility, protocol_drug: protocol_drug, in_stock: drug_stock[:in_stock])
-          end
-        }.flatten
-      }
+    it "computes drug consumption report when there are no drug stocks or patients for a facility" do
+      facility_without_drug_stocks = create(:facility, facility_group: facility.facility_group)
 
-      before do
-        allow_any_instance_of(Reports::DrugStockCalculation).to receive(:patient_days_coefficients).and_return(punjab_drug_stock_config)
-      end
+      instance = described_class.new(facilities: [facility_without_drug_stocks], for_end_of_month: for_end_of_month)
+      result = instance.drug_consumption_for_facility(facility_without_drug_stocks, drug_stocks, previous_month_drug_stocks)
+
+      expect(result[:facility]).to eq(facility_without_drug_stocks)
+      expect(result[:patient_count]).to eq(0)
     end
 
     describe "#drug_consumption_cache_key" do
