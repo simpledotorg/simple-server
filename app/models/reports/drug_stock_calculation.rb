@@ -1,7 +1,7 @@
 module Reports
   class DrugStockCalculation
-    def initialize(state:, protocol:, drug_category:, in_stock_by_rxnorm_code:, patient_count: nil, previous_month_in_stock_by_rxnorm_code: nil, received_by_rxnorm_code: nil)
-      @protocol = protocol
+    def initialize(state:, protocol_drugs:, drug_category:, in_stock_by_rxnorm_code:, patient_count: nil, previous_month_in_stock_by_rxnorm_code: nil, received_by_rxnorm_code: nil)
+      @protocol_drugs = protocol_drugs
       @drug_category = drug_category
       @in_stock_by_rxnorm_code = in_stock_by_rxnorm_code
       @received_by_rxnorm_code = received_by_rxnorm_code
@@ -11,7 +11,7 @@ module Reports
     end
 
     def protocol_drugs_by_category
-      @protocol_drugs_by_category ||= @protocol.protocol_drugs.where(stock_tracked: true).group_by(&:drug_category)
+      @protocol_drugs_by_category ||= @protocol_drugs.group_by(&:drug_category)
     end
 
     def patient_days

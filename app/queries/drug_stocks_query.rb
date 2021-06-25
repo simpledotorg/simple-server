@@ -110,7 +110,7 @@ class DrugStocksQuery
   def category_patient_days(drug_category, category_drug_stocks, patient_count)
     Reports::DrugStockCalculation.new(
       state: @state,
-      protocol: @protocol,
+      protocol_drugs: drugs,
       drug_category: drug_category,
       in_stock_by_rxnorm_code: drug_attribute_sum_by_rxnorm_code(category_drug_stocks, :in_stock),
       patient_count: patient_count
@@ -142,7 +142,7 @@ class DrugStocksQuery
   def category_drug_consumption(drug_category, current_drug_stocks, previous_drug_stocks)
     Reports::DrugStockCalculation.new(
       state: @state,
-      protocol: @protocol,
+      protocol_drugs: drugs,
       drug_category: drug_category,
       in_stock_by_rxnorm_code: drug_attribute_sum_by_rxnorm_code(current_drug_stocks, :in_stock),
       received_by_rxnorm_code: drug_attribute_sum_by_rxnorm_code(current_drug_stocks, :received),
