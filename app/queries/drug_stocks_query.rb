@@ -152,7 +152,7 @@ class DrugStocksQuery
 
   def drug_attribute_sum_by_rxnorm_code(drug_stocks, attribute)
     drug_stocks
-      .select { |drug_stock| drug_stock.public_send(attribute).present? }
+      .select { |drug_stock| drug_stock[attribute].present? }
       .group_by { |drug_stock| drug_stock.protocol_drug.rxnorm_code }
       .map { |rxnorm_code, drug_stocks| [rxnorm_code, drug_stocks.pluck(attribute).sum] }
       .to_h
