@@ -1,11 +1,11 @@
 module Reports
   class DrugStockCalculation
-    def initialize(state:, protocol_drugs:, drug_category:, in_stock_by_rxnorm_code:, patient_count: nil, previous_month_in_stock_by_rxnorm_code: nil, received_by_rxnorm_code: nil)
+    def initialize(state:, protocol_drugs:, drug_category:, current_drug_stocks:, previous_drug_stocks: DrugStock.none, patient_count: nil)
       @protocol_drugs = protocol_drugs
       @drug_category = drug_category
-      @in_stock_by_rxnorm_code = in_stock_by_rxnorm_code
-      @received_by_rxnorm_code = received_by_rxnorm_code
-      @previous_month_in_stock_by_rxnorm_code = previous_month_in_stock_by_rxnorm_code
+      @in_stock_by_rxnorm_code = drug_attribute_sum_by_rxnorm_code(current_drug_stocks, :in_stock)
+      @received_by_rxnorm_code = drug_attribute_sum_by_rxnorm_code(current_drug_stocks, :received)
+      @previous_month_in_stock_by_rxnorm_code = drug_attribute_sum_by_rxnorm_code(previous_drug_stocks, :in_stock)
       @patient_count = patient_count
       @coefficients = patient_days_coefficients(state)
     end
@@ -147,6 +147,14 @@ module Reports
       else
         drug_stock_config[state]
       end
+    end
+
+    def drug_attribute_sum_by_rxnorm_code(drug_stocks, attribute)
+      drug_stocks
+        .select { |drug_stock| drug_stock[attribute].present? }
+        .group_by { |drug_stock| drug_stock.protocol_drug.rxnorm_code }
+        .map { |rxnorm_code, drug_stocks| [rxnorm_code, drug_stocks.pluck(attribute).sum] }
+        .to_h
     end
   end
 end

@@ -112,7 +112,7 @@ class DrugStocksQuery
       state: @state,
       protocol_drugs: drugs,
       drug_category: drug_category,
-      in_stock_by_rxnorm_code: drug_attribute_sum_by_rxnorm_code(category_drug_stocks, :in_stock),
+      current_drug_stocks: category_drug_stocks,
       patient_count: patient_count
     ).patient_days
   end
@@ -144,18 +144,9 @@ class DrugStocksQuery
       state: @state,
       protocol_drugs: drugs,
       drug_category: drug_category,
-      in_stock_by_rxnorm_code: drug_attribute_sum_by_rxnorm_code(current_drug_stocks, :in_stock),
-      received_by_rxnorm_code: drug_attribute_sum_by_rxnorm_code(current_drug_stocks, :received),
-      previous_month_in_stock_by_rxnorm_code: drug_attribute_sum_by_rxnorm_code(previous_drug_stocks, :in_stock)
+      current_drug_stocks: current_drug_stocks,
+      previous_drug_stocks: previous_drug_stocks
     ).consumption
-  end
-
-  def drug_attribute_sum_by_rxnorm_code(drug_stocks, attribute)
-    drug_stocks
-      .select { |drug_stock| drug_stock[attribute].present? }
-      .group_by { |drug_stock| drug_stock.protocol_drug.rxnorm_code }
-      .map { |rxnorm_code, drug_stocks| [rxnorm_code, drug_stocks.pluck(attribute).sum] }
-      .to_h
   end
 
   memoize def end_of_previous_month
