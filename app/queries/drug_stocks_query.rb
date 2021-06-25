@@ -41,7 +41,7 @@ class DrugStocksQuery
   end
 
   memoize def drugs
-    @protocol.protocol_drugs.where(stock_tracked: true)
+    @protocol.protocol_drugs.where(stock_tracked: true).load
   end
 
   memoize def protocol_drugs_by_category
@@ -65,11 +65,11 @@ class DrugStocksQuery
   end
 
   memoize def selected_month_drug_stocks
-    DrugStock.latest_for_facilities_cte(@facilities, @for_end_of_month).with_protocol_drug_data
+    DrugStock.latest_for_facilities_cte(@facilities, @for_end_of_month).with_protocol_drug_data.load
   end
 
   memoize def previous_month_drug_stocks
-    DrugStock.latest_for_facilities_cte(@facilities, end_of_previous_month).with_protocol_drug_data
+    DrugStock.latest_for_facilities_cte(@facilities, end_of_previous_month).with_protocol_drug_data.load
   end
 
   def all_drugs_in_stock
