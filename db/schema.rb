@@ -337,6 +337,16 @@ ActiveRecord::Schema.define(version: 2021_06_22_191111) do
     t.index ["feature_key", "key", "value"], name: "index_flipper_gates_on_feature_key_and_key_and_value", unique: true
   end
 
+  create_table "imo_authorizations", force: :cascade do |t|
+    t.uuid "patient_id", null: false
+    t.datetime "last_invited_at", null: false
+    t.string "status", null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["patient_id"], name: "index_imo_authorizations_on_patient_id"
+  end
+
   create_table "medical_histories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "patient_id", null: false
     t.boolean "prior_heart_attack_boolean"
