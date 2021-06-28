@@ -25,14 +25,14 @@ blocks:
       jobs:
         - name: StandardRB
           commands:
-            - cache clean
+            - cache clear
             - checkout
             - script/semaphore_setup
             - "bundle exec standardrb"
         - name: RSpec
           parallelism: 8
           commands:
-            - cache clean
+            - cache clear
             - checkout
             - script/semaphore_setup
             - 'bundle exec rake db:setup'
