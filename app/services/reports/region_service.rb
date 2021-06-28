@@ -1,7 +1,5 @@
 module Reports
   class RegionService
-    MAX_MONTHS_OF_DATA = 24
-
     # The default period we report on is the current month.
     def self.default_period
       Period.month(Time.current.in_time_zone(Period::REPORTING_TIME_ZONE))
@@ -33,15 +31,14 @@ module Reports
 
       start_period = [repository.earliest_patient_recorded_at_period[region.slug], range.begin].compact.max
       calc_range = (start_period..range.end)
-      result.calculate_missed_visits(calc_range)
-      result.calculate_missed_visits(calc_range, with_ltfu: true)
-      result.calculate_missed_visits_percentages(calc_range)
-      result.calculate_missed_visits_percentages(calc_range, with_ltfu: true)
-      result.calculate_period_info(calc_range)
+      # missed visits without ltfu
+      result.missed_visits = repository.missed_visits[region.slug]
+      result.missed_visits_rate = repository.missed_visits_without_ltfu_rates[region.slug]
+      # missed visits with ltfu
+      result.missed_visits_with_ltfu = repository.missed_visits_with_ltfu[region.slug]
+      result.missed_visits_with_ltfu_rate = repository.missed_visits_with_ltfu_rates[region.slug]
 
-      # This is a temporary hack to refresh repository's missed visits from the RegionCacheWarmer.
-      # We should deprecate result.rb and move all calculations to Repository.
-      repository.missed_visits
+      result.period_info = calc_range.each_with_object({}) { |period, hsh| hsh[period] = period.to_hash }
 
       result
     end

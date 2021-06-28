@@ -1,8 +1,12 @@
+<% content_for :title do %>
+ Overview
+<% end %>
+
 <div class="d-flex row">
   <div class="col-lg-6">
     <%= render "shared/user_approvals" %>
-    <%= render "recent_updates" %> 
-    <%= render "upcoming_improvements" %> 
+    <%= render "recent_updates" %>
+    <%= render "upcoming_improvements" %>
   </div>
   <div class="col-lg-6">
     <%= render 'shared/my_facilities/facilities_by_size' %>

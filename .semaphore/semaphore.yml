@@ -23,6 +23,14 @@ blocks:
         - name: sentry-release-auth-token
         - name: semaphore-deploy-key
       jobs:
+        - name: StandardRB
+          commands:
+            - checkout
+            - sem-version ruby 2.6.6
+            - cache restore
+            - bundle install --deployment --path vendor/bundle
+            - cache store
+            - "bundle exec standardrb"
         - name: RSpec
           parallelism: 8
           commands:
