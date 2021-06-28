@@ -6,7 +6,6 @@
 
 This is the backend for the Simple app to help track hypertensive patients across a population.
 
-
 ## Table of Contents
 
 * [Development](#development)
