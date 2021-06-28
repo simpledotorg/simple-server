@@ -91,8 +91,7 @@ class ExperimentControlService
           experiment: group.experiment,
           reminder_template: template,
           subject: appointment,
-          patient: patient,
-          purpose: :experimental_appointment_reminder
+          patient: patient
         )
       end
     end
