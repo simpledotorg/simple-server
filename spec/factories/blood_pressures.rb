@@ -17,6 +17,8 @@ FactoryBot.define do
       end
     end
 
+    with_encounter
+
     trait :critical do
       systolic { rand(181..200) }
       diastolic { rand(110..130) }
