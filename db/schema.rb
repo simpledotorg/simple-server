@@ -692,6 +692,22 @@ ActiveRecord::Schema.define(version: 2021_06_22_191111) do
   add_foreign_key "treatment_group_memberships", "treatment_groups"
   add_foreign_key "treatment_groups", "experiments"
 
+  create_view "patient_registrations_per_day_per_facilities", materialized: true, sql_definition: <<-SQL
+      SELECT count(patients.id) AS registration_count,
+      patients.registration_facility_id AS facility_id,
+      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, facilities.deleted_at)) AS deleted_at,
+      (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text AS day,
+      (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text AS month,
+      (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text AS quarter,
+      (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text AS year
+     FROM ((patients
+       JOIN facilities ON ((patients.registration_facility_id = facilities.id)))
+       JOIN medical_histories ON (((patients.id = medical_histories.patient_id) AND (medical_histories.hypertension = 'yes'::text))))
+    WHERE (patients.deleted_at IS NULL)
+    GROUP BY (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text, (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text, patients.registration_facility_id, facilities.deleted_at;
+  SQL
+  add_index "patient_registrations_per_day_per_facilities", ["facility_id", "day", "year"], name: "index_patient_registrations_per_day_per_facilities", unique: true
+
   create_view "blood_pressures_per_facility_per_days", materialized: true, sql_definition: <<-SQL
       WITH latest_bp_per_patient_per_day AS (
            SELECT DISTINCT ON (blood_pressures.facility_id, blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text) blood_pressures.id AS bp_id,
@@ -894,22 +910,6 @@ ActiveRecord::Schema.define(version: 2021_06_22_191111) do
   SQL
   add_index "materialized_patient_summaries", ["id"], name: "index_materialized_patient_summaries_on_id", unique: true
 
-  create_view "patient_registrations_per_day_per_facilities", materialized: true, sql_definition: <<-SQL
-      SELECT count(patients.id) AS registration_count,
-      patients.registration_facility_id AS facility_id,
-      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, facilities.deleted_at)) AS deleted_at,
-      (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text AS day,
-      (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text AS month,
-      (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text AS quarter,
-      (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text AS year
-     FROM ((patients
-       JOIN facilities ON ((patients.registration_facility_id = facilities.id)))
-       JOIN medical_histories ON (((patients.id = medical_histories.patient_id) AND (medical_histories.hypertension = 'yes'::text))))
-    WHERE (patients.deleted_at IS NULL)
-    GROUP BY (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text, (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text, patients.registration_facility_id, facilities.deleted_at;
-  SQL
-  add_index "patient_registrations_per_day_per_facilities", ["facility_id", "day", "year"], name: "index_patient_registrations_per_day_per_facilities", unique: true
-
   create_view "patient_summaries", sql_definition: <<-SQL
       SELECT p.recorded_at,
       concat(date_part('year'::text, p.recorded_at), ' Q', date_part('quarter'::text, p.recorded_at)) AS registration_quarter,
@@ -1048,18 +1048,6 @@ ActiveRecord::Schema.define(version: 2021_06_22_191111) do
        LEFT JOIN facilities next_appointment_facility ON ((next_appointment_facility.id = next_appointment.facility_id)))
     WHERE (p.deleted_at IS NULL);
   SQL
-  create_view "reporting_calendar_months", sql_definition: <<-SQL
-      WITH month_dates AS (
-           SELECT date(generate_series.generate_series) AS month_date
-             FROM generate_series('2018-01-01 00:00:00+00'::timestamp with time zone, now(), '1 mon'::interval) generate_series(generate_series)
-          )
-   SELECT month_dates.month_date,
-      to_char((month_dates.month_date)::timestamp with time zone, 'YYYY-MM'::text) AS month_string,
-      date_part('month'::text, month_dates.month_date) AS month,
-      date_part('quarter'::text, month_dates.month_date) AS quarter,
-      date_part('year'::text, month_dates.month_date) AS year
-     FROM month_dates;
-  SQL
   create_view "reporting_months", sql_definition: <<-SQL
       WITH month_dates AS (
            SELECT date(generate_series.generate_series) AS month_date
@@ -1071,118 +1059,6 @@ ActiveRecord::Schema.define(version: 2021_06_22_191111) do
       date_part('quarter'::text, month_dates.month_date) AS quarter,
       date_part('year'::text, month_dates.month_date) AS year
      FROM month_dates;
-  SQL
-  create_view "reporting_facilities", materialized: true, sql_definition: <<-SQL
-      SELECT facility_regions.source_id AS facility_id,
-      facility_regions.id AS facility_region_id,
-      facility_regions.name AS facility_name,
-      facility_regions.slug AS facility_slug,
-      block_regions.id AS block_region_id,
-      block_regions.name AS block_name,
-      block_regions.slug AS block_slug,
-      district_regions.source_id AS district_id,
-      district_regions.id AS district_region_id,
-      district_regions.name AS district_name,
-      district_regions.slug AS district_slug,
-      state_regions.id AS state_region_id,
-      state_regions.name AS state_name,
-      state_regions.slug AS state_slug,
-      org_regions.source_id AS organization_id,
-      org_regions.id AS organization_region_id,
-      org_regions.name AS organization_name,
-      org_regions.slug AS organization_slug
-     FROM ((((regions facility_regions
-       JOIN regions block_regions ON ((block_regions.path = subpath(facility_regions.path, 0, '-1'::integer))))
-       JOIN regions district_regions ON ((district_regions.path = subpath(block_regions.path, 0, '-1'::integer))))
-       JOIN regions state_regions ON ((state_regions.path = subpath(district_regions.path, 0, '-1'::integer))))
-       JOIN regions org_regions ON ((org_regions.path = subpath(state_regions.path, 0, '-1'::integer))))
-    WHERE ((facility_regions.region_type)::text = 'facility'::text);
-  SQL
-  create_view "reporting_patient_blood_pressures_per_month", materialized: true, sql_definition: <<-SQL
-      SELECT DISTINCT ON (bp.patient_id, cal.month_date) cal.month_date,
-      cal.month_string,
-      cal.month,
-      cal.quarter,
-      cal.year,
-      timezone('UTC'::text, timezone('UTC'::text, bp.recorded_at)) AS blood_pressure_recorded_at,
-      timezone('UTC'::text, timezone('UTC'::text, p.recorded_at)) AS patient_registered_at,
-      bp.id AS blood_pressure_id,
-      bp.patient_id,
-      bp.systolic,
-      bp.diastolic,
-      p.assigned_facility_id AS patient_assigned_facility_id,
-      p.registration_facility_id AS patient_registration_facility_id,
-      bp.facility_id AS blood_pressure_facility_id,
-      (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))))) AS months_since_registration,
-      (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))))) AS months_since_bp_observation
-     FROM ((blood_pressures bp
-       LEFT JOIN reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at)), 'YYYY-MM'::text) <= to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))))
-       JOIN patients p ON (((bp.patient_id = p.id) AND (p.deleted_at IS NULL))))
-    WHERE (bp.deleted_at IS NULL)
-    ORDER BY bp.patient_id, cal.month_date, bp.recorded_at DESC;
-  SQL
-  create_view "reporting_patient_visits_per_month", materialized: true, sql_definition: <<-SQL
-      SELECT DISTINCT ON (p.id, p.month_date) p.id AS patient_id,
-      p.month_date,
-      p.month_string,
-      p.month,
-      p.quarter,
-      p.year,
-      timezone('UTC'::text, timezone('UTC'::text, GREATEST((e.encountered_on)::timestamp without time zone, pd.device_created_at, app.device_created_at))) AS visited_at,
-      timezone('UTC'::text, timezone('UTC'::text, p.recorded_at)) AS patient_registered_at,
-      p.assigned_facility_id AS patient_assigned_facility_id,
-      p.registration_facility_id AS patient_registration_facility_id,
-      e.facility_id AS encounter_facility_id,
-      (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at)))) * (12)::double precision) + (p.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at))))) AS months_since_registration,
-      (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, GREATEST((e.encountered_on)::timestamp without time zone, pd.device_created_at, app.device_created_at))))) * (12)::double precision) + (p.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, GREATEST((e.encountered_on)::timestamp without time zone, pd.device_created_at, app.device_created_at)))))) AS months_since_visit
-     FROM (((( SELECT p_1.id,
-              p_1.full_name,
-              p_1.age,
-              p_1.gender,
-              p_1.date_of_birth,
-              p_1.status,
-              p_1.created_at,
-              p_1.updated_at,
-              p_1.address_id,
-              p_1.age_updated_at,
-              p_1.device_created_at,
-              p_1.device_updated_at,
-              p_1.test_data,
-              p_1.registration_facility_id,
-              p_1.registration_user_id,
-              p_1.deleted_at,
-              p_1.contacted_by_counsellor,
-              p_1.could_not_contact_reason,
-              p_1.recorded_at,
-              p_1.reminder_consent,
-              p_1.deleted_by_user_id,
-              p_1.deleted_reason,
-              p_1.assigned_facility_id,
-              cal.month_date,
-              cal.month_string,
-              cal.month,
-              cal.quarter,
-              cal.year
-             FROM (patients p_1
-               LEFT JOIN reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p_1.recorded_at)), 'YYYY-MM'::text) <= cal.month_string)))) p
-       LEFT JOIN LATERAL ( SELECT encounters.encountered_on,
-              encounters.facility_id
-             FROM encounters
-            WHERE ((encounters.patient_id = p.id) AND (to_char((encounters.encountered_on)::timestamp with time zone, 'YYYY-MM'::text) <= p.month_string) AND (encounters.deleted_at IS NULL))
-            ORDER BY encounters.encountered_on DESC
-           LIMIT 1) e ON (true))
-       LEFT JOIN LATERAL ( SELECT prescription_drugs.device_created_at
-             FROM prescription_drugs
-            WHERE ((prescription_drugs.patient_id = p.id) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, prescription_drugs.device_created_at)), 'YYYY-MM'::text) <= p.month_string) AND (prescription_drugs.deleted_at IS NULL))
-            ORDER BY prescription_drugs.device_created_at DESC
-           LIMIT 1) pd ON (true))
-       LEFT JOIN LATERAL ( SELECT appointments.device_created_at
-             FROM appointments
-            WHERE ((appointments.patient_id = p.id) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, appointments.device_created_at)), 'YYYY-MM'::text) <= p.month_string) AND (appointments.deleted_at IS NULL))
-            ORDER BY appointments.device_created_at DESC
-           LIMIT 1) app ON (true))
-    WHERE (p.deleted_at IS NULL)
-    ORDER BY p.id, p.month_date, (timezone('UTC'::text, timezone('UTC'::text, GREATEST((e.encountered_on)::timestamp without time zone, pd.device_created_at, app.device_created_at)))) DESC;
   SQL
   create_view "latest_blood_pressures_per_patient_per_months", materialized: true, sql_definition: <<-SQL
       SELECT DISTINCT ON (blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at))))::text) blood_pressures.id AS bp_id,
@@ -1258,6 +1134,118 @@ ActiveRecord::Schema.define(version: 2021_06_22_191111) do
   add_index "latest_blood_pressures_per_patients", ["bp_id"], name: "index_latest_blood_pressures_per_patients", unique: true
   add_index "latest_blood_pressures_per_patients", ["patient_id"], name: "index_latest_bp_per_patient_patient_id"
 
+  create_view "reporting_facilities", sql_definition: <<-SQL
+      SELECT facility_regions.source_id AS facility_id,
+      facility_regions.id AS facility_region_id,
+      facility_regions.name AS facility_name,
+      facility_regions.slug AS facility_slug,
+      block_regions.id AS block_region_id,
+      block_regions.name AS block_name,
+      block_regions.slug AS block_slug,
+      district_regions.source_id AS district_id,
+      district_regions.id AS district_region_id,
+      district_regions.name AS district_name,
+      district_regions.slug AS district_slug,
+      state_regions.id AS state_region_id,
+      state_regions.name AS state_name,
+      state_regions.slug AS state_slug,
+      org_regions.source_id AS organization_id,
+      org_regions.id AS organization_region_id,
+      org_regions.name AS organization_name,
+      org_regions.slug AS organization_slug
+     FROM ((((regions facility_regions
+       JOIN regions block_regions ON ((block_regions.path = subpath(facility_regions.path, 0, '-1'::integer))))
+       JOIN regions district_regions ON ((district_regions.path = subpath(block_regions.path, 0, '-1'::integer))))
+       JOIN regions state_regions ON ((state_regions.path = subpath(district_regions.path, 0, '-1'::integer))))
+       JOIN regions org_regions ON ((org_regions.path = subpath(state_regions.path, 0, '-1'::integer))))
+    WHERE ((facility_regions.region_type)::text = 'facility'::text);
+  SQL
+  create_view "reporting_patient_blood_pressures_per_month", materialized: true, sql_definition: <<-SQL
+      SELECT DISTINCT ON (bp.patient_id, cal.month_date) cal.month_date,
+      cal.month_string,
+      cal.month,
+      cal.quarter,
+      cal.year,
+      timezone('UTC'::text, timezone('UTC'::text, bp.recorded_at)) AS blood_pressure_recorded_at,
+      timezone('UTC'::text, timezone('UTC'::text, p.recorded_at)) AS patient_registered_at,
+      bp.id AS blood_pressure_id,
+      bp.patient_id,
+      bp.systolic,
+      bp.diastolic,
+      p.assigned_facility_id AS patient_assigned_facility_id,
+      p.registration_facility_id AS patient_registration_facility_id,
+      bp.facility_id AS blood_pressure_facility_id,
+      (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))))) AS months_since_registration,
+      (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))))) AS months_since_bp_observation
+     FROM ((blood_pressures bp
+       LEFT JOIN reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at)), 'YYYY-MM'::text) <= to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))))
+       JOIN patients p ON (((bp.patient_id = p.id) AND (p.deleted_at IS NULL))))
+    WHERE (bp.deleted_at IS NULL)
+    ORDER BY bp.patient_id, cal.month_date, bp.recorded_at DESC;
+  SQL
+  create_view "reporting_patient_visits_per_month", materialized: true, sql_definition: <<-SQL
+      SELECT DISTINCT ON (p.id, p.month_date) p.id AS patient_id,
+      p.month_date,
+      p.month_string,
+      p.month,
+      p.quarter,
+      p.year,
+      timezone('UTC'::text, timezone('UTC'::text, GREATEST(e.encountered_on, pd.device_created_at, app.device_created_at))) AS visited_at,
+      timezone('UTC'::text, timezone('UTC'::text, p.recorded_at)) AS patient_registered_at,
+      p.assigned_facility_id AS patient_assigned_facility_id,
+      p.registration_facility_id AS patient_registration_facility_id,
+      e.facility_id AS encounter_facility_id,
+      (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at)))) * (12)::double precision) + (p.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at))))) AS months_since_registration,
+      (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, GREATEST(e.encountered_on, pd.device_created_at, app.device_created_at))))) * (12)::double precision) + (p.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, GREATEST(e.encountered_on, pd.device_created_at, app.device_created_at)))))) AS months_since_visit
+     FROM (((( SELECT p_1.id,
+              p_1.full_name,
+              p_1.age,
+              p_1.gender,
+              p_1.date_of_birth,
+              p_1.status,
+              p_1.created_at,
+              p_1.updated_at,
+              p_1.address_id,
+              p_1.age_updated_at,
+              p_1.device_created_at,
+              p_1.device_updated_at,
+              p_1.test_data,
+              p_1.registration_facility_id,
+              p_1.registration_user_id,
+              p_1.deleted_at,
+              p_1.contacted_by_counsellor,
+              p_1.could_not_contact_reason,
+              p_1.recorded_at,
+              p_1.reminder_consent,
+              p_1.deleted_by_user_id,
+              p_1.deleted_reason,
+              p_1.assigned_facility_id,
+              cal.month_date,
+              cal.month_string,
+              cal.month,
+              cal.quarter,
+              cal.year
+             FROM (patients p_1
+               LEFT JOIN reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p_1.recorded_at)), 'YYYY-MM'::text) <= cal.month_string)))) p
+       LEFT JOIN LATERAL ( SELECT timezone('UTC'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), (encounters.encountered_on)::timestamp without time zone)) AS encountered_on,
+              encounters.facility_id
+             FROM encounters
+            WHERE ((encounters.patient_id = p.id) AND (to_char((encounters.encountered_on)::timestamp with time zone, 'YYYY-MM'::text) <= p.month_string) AND (encounters.deleted_at IS NULL))
+            ORDER BY (timezone('UTC'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), (encounters.encountered_on)::timestamp without time zone))) DESC
+           LIMIT 1) e ON (true))
+       LEFT JOIN LATERAL ( SELECT prescription_drugs.device_created_at
+             FROM prescription_drugs
+            WHERE ((prescription_drugs.patient_id = p.id) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, prescription_drugs.device_created_at)), 'YYYY-MM'::text) <= p.month_string) AND (prescription_drugs.deleted_at IS NULL))
+            ORDER BY prescription_drugs.device_created_at DESC
+           LIMIT 1) pd ON (true))
+       LEFT JOIN LATERAL ( SELECT appointments.device_created_at
+             FROM appointments
+            WHERE ((appointments.patient_id = p.id) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, appointments.device_created_at)), 'YYYY-MM'::text) <= p.month_string) AND (appointments.deleted_at IS NULL))
+            ORDER BY appointments.device_created_at DESC
+           LIMIT 1) app ON (true))
+    WHERE (p.deleted_at IS NULL)
+    ORDER BY p.id, p.month_date, (timezone('UTC'::text, timezone('UTC'::text, GREATEST(e.encountered_on, pd.device_created_at, app.device_created_at)))) DESC;
+  SQL
   create_view "reporting_patient_states_per_month", materialized: true, sql_definition: <<-SQL
       SELECT DISTINCT ON (p.id, cal.month_date) p.id AS patient_id,
       p.status,
