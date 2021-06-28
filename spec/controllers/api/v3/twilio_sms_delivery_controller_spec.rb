@@ -100,8 +100,8 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
         it "logs failure and does not queue a retry when there is no next communication type" do
           session_id = SecureRandom.uuid
           notification = create(:notification)
-          create(:communication, :missed_visit_whatsapp_reminder, notification: notification)
-          communication = create(:communication, :missed_visit_sms_reminder, notification: notification)
+          create(:communication, :whatsapp, notification: notification)
+          communication = create(:communication, :sms, notification: notification)
           create(:twilio_sms_delivery_detail, session_id: session_id, result: "queued", communication: communication)
 
           params = base_callback_params.merge(
@@ -111,7 +111,7 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
           set_twilio_signature_header(callback_url, params)
 
           expect(AppointmentNotification::Worker).not_to receive(:perform_at)
-          expect(Statsd.instance).to receive(:increment).with("twilio_callback.missed_visit_sms_reminder.failed")
+          expect(Statsd.instance).to receive(:increment).with("twilio_callback.sms.failed")
 
           post :create, params: params
         end
@@ -120,7 +120,7 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
           session_id = SecureRandom.uuid
           fallback_time = 5.minutes.from_now
           notification = create(:notification)
-          communication = create(:communication, :missed_visit_whatsapp_reminder, notification: notification)
+          communication = create(:communication, :whatsapp, notification: notification)
           create(:twilio_sms_delivery_detail, session_id: session_id, result: "queued", communication: communication)
 
           params = base_callback_params.merge(
@@ -134,7 +134,7 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
             fallback_time,
             communication.notification.id
           )
-          expect(Statsd.instance).to receive(:increment).with("twilio_callback.missed_visit_whatsapp_reminder.failed")
+          expect(Statsd.instance).to receive(:increment).with("twilio_callback.whatsapp.failed")
 
           post :create, params: params
 
@@ -152,8 +152,8 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
 
             session_id = SecureRandom.uuid
             fallback_time = 5.minutes.from_now
-            notification = create(:notification, message: "notifications.covid.medication_reminder")
-            communication = create(:communication, :missed_visit_whatsapp_reminder, notification: notification)
+            notification = create(:notification, message: "notifications.covid.medication_reminder", purpose: "covid_medication_reminder")
+            communication = create(:communication, :whatsapp, notification: notification)
             create(:twilio_sms_delivery_detail, session_id: session_id, result: "queued", communication: communication)
             enable_flag(:experiment)
 
