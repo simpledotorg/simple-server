@@ -31,8 +31,7 @@ class DrugStock < ApplicationRecord
   end
 
   def self.with_protocol_drug_data
-    joins("INNER JOIN reporting_facilities f ON drug_stocks.facility_id = f.facility_id")
-      .includes(facility: {facility_group: :protocol})
-      .includes(:protocol_drug)
+      includes(facility: {facility_group: :protocol})
+        .includes(:protocol_drug)
   end
 end

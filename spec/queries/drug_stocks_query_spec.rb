@@ -49,7 +49,6 @@ RSpec.describe DrugStocksQuery do
     }
 
     before do
-      ActiveRecord::Base.connection.execute("REFRESH MATERIALIZED VIEW reporting_facilities")
       allow_any_instance_of(Reports::DrugStockCalculation).to receive(:patient_days_coefficients).and_return(punjab_drug_stock_config)
     end
 
@@ -165,7 +164,6 @@ RSpec.describe DrugStocksQuery do
     }
 
     before do
-      ActiveRecord::Base.connection.execute("REFRESH MATERIALIZED VIEW reporting_facilities")
       allow_any_instance_of(Reports::DrugStockCalculation).to receive(:patient_days_coefficients).and_return(punjab_drug_stock_config)
     end
 
