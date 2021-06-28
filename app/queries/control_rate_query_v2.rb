@@ -1,6 +1,6 @@
 class ControlRateQueryV2
   def controlled(region)
-    Reports::PatientStatesPerMonth
+    ReportingPipeline::PatientStatesPerMonth
       .where(hypertension: "yes", htn_care_state: "under_care")
       .where(patient_assigned_facility_id: region.facilities)
       .where("months_since_registration >= ?", Reports::REGISTRATION_BUFFER_IN_MONTHS)
@@ -12,7 +12,7 @@ class ControlRateQueryV2
   end
 
   def uncontrolled(region)
-    Reports::PatientStatesPerMonth
+    ReportingPipeline::PatientStatesPerMonth
       .where(patient_assigned_facility_id: region.facilities)
       .where(hypertension: "yes", htn_care_state: "under_care")
       .where("months_since_registration >= ?", Reports::REGISTRATION_BUFFER_IN_MONTHS)

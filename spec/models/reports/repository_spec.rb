@@ -21,7 +21,7 @@ RSpec.describe Reports::Repository, type: :model do
       LatestBloodPressuresPerPatientPerMonth.refresh
       LatestBloodPressuresPerPatientPerQuarter.refresh
       PatientRegistrationsPerDayPerFacility.refresh
-      Reports::PatientStatesPerMonth.refresh
+      ReportingPipeline::PatientStatesPerMonth.refresh
     end
   end
 
