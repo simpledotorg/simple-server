@@ -32,7 +32,7 @@ blocks:
             - cache store
             - "bundle exec standardrb"
         - name: RSpec
-          parallelism: 8
+          parallelism: 7
           commands:
             - checkout
             - sem-service start postgres 10

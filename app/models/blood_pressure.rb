@@ -36,7 +36,6 @@ class BloodPressure < ApplicationRecord
 
   def critical?
     systolic >= THRESHOLDS[:critical][:systolic] || diastolic >= THRESHOLDS[:critical][:diastolic]
-
   end
 
   def hypertensive?
