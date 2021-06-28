@@ -10,7 +10,6 @@ module Reports
     end
 
     def initialize(region:, period:, months: MAX_MONTHS_OF_DATA, reporting_schema_v2: false)
-      @current_user = current_user
       @region = region
       @slug = @region.slug
       @period = period
