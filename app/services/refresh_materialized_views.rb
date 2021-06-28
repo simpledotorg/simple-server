@@ -68,7 +68,6 @@ class RefreshMaterializedViews
   end
 
   V2_MAT_VIEWS = %i[
-    reporting_facilities
     reporting_patient_blood_pressures_per_month
     reporting_patient_visits_per_month
     reporting_patient_states_per_month
