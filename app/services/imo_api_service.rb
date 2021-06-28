@@ -2,6 +2,7 @@ class ImoApiService
   IMO_USERNAME = ENV["IMO_USERNAME"]
   IMO_PASSWORD = ENV["IMO_PASSWORD"]
   BASE_URL = "https://sgp.imo.im/api/simple/".freeze
+  USER_FACING_URL = "https://www.nhf.org.bd/".freeze
 
   class Error < StandardError
     attr_reader :path, :response, :exception_message
@@ -33,6 +34,24 @@ class ImoApiService
     )
     response = execute_post(url, body: request_body)
     process_response(response, url)
+  end
+
+  def send_notification
+    return unless Flipper.enabled?(:imo_messaging)
+
+    Statsd.instance.increment("imo.notifications.attempt")
+    url = BASE_URL + "send_notification"
+    request_body = JSON(
+      phone: patient.latest_mobile_number,
+      msg: "Oh hi mark",
+      contents: [{key: "Name", value: patient.full_name}, {key: "Notes", value: "Oh hi mark"}],
+      title: "Notification",
+      action: "Click here",
+      url: USER_FACING_URL,
+      read_receipt: "will be filled in later"
+    )
+    response = execute_post(url, body: request_body)
+    response.status == 200 ? :success : :failure
   end
 
   private

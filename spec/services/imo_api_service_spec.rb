@@ -1,9 +1,10 @@
 require "rails_helper"
 
 describe ImoApiService, type: :model do
+  let(:patient) { create(:patient) }
+  let(:service) { ImoApiService.new(patient) }
+
   describe "#invite" do
-    let(:patient) { create(:patient) }
-    let(:service) { ImoApiService.new(patient) }
     let(:request_url) { "https://sgp.imo.im/api/simple/send_invite" }
     let(:auth_token) { Base64.strict_encode64([nil, nil].join(":")) }
     let(:request_headers) do
@@ -53,6 +54,37 @@ describe ImoApiService, type: :model do
         expect {
           service.invite
         }.to raise_error(ImoApiService::Error)
+      end
+    end
+  end
+
+  describe "#send_notification" do
+    let(:request_url) { "https://sgp.imo.im/api/simple/send_notification" }
+    let(:auth_token) { Base64.strict_encode64([nil, nil].join(":")) }
+    let(:request_headers) do
+      {
+        "Authorization" => "Basic #{auth_token}",
+        "Host" => "sgp.imo.im"
+      }
+    end
+
+    context "with feature flag off" do
+      it "returns nil" do
+        expect(service.send_notification).to eq(nil)
+      end
+    end
+
+    context "with feature flag on" do
+      before { Flipper.enable(:imo_messaging) }
+
+      it "returns :success on 200" do
+        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200)
+        expect(service.send_notification)
+      end
+
+      it "returns :failure when status is non-200" do
+        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400)
+        expect(service.send_notification).to eq(:failure)
       end
     end
   end
