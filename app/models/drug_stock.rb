@@ -31,7 +31,7 @@ class DrugStock < ApplicationRecord
   end
 
   def self.with_protocol_drug_data
-      includes(facility: {facility_group: :protocol})
-        .includes(:protocol_drug)
+    includes(facility: {facility_group: :protocol})
+      .includes(:protocol_drug)
   end
 end
