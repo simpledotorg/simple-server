@@ -103,7 +103,7 @@ group :development, :test do
   gem "rails-controller-testing"
   gem "rb-readline"
   gem "shoulda-matchers", "~> 4.1.2"
-  gem "standard", require: false
+  gem "standard", "1.1.0", require: false
 end
 
 group :development do
