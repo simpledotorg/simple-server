@@ -5,12 +5,13 @@ class Notification < ApplicationRecord
   belongs_to :reminder_template, class_name: "Experimentation::ReminderTemplate", optional: true
   has_many :communications
 
-  APPOINTMENT_REMINDER_MSG_PREFIX = "communications.appointment_reminders"
+  # We have 'sms' in our appointment reminder message keys due to legacy reasons, even though
+  # they also sometimes point to whatsapp messages
+  APPOINTMENT_REMINDER_MSG_PREFIX = "sms.appointment_reminders"
 
   validates :status, presence: true
   validates :remind_on, presence: true
   validates :message, presence: true
-  validates :purpose, presence: true
 
   enum status: {
     pending: "pending",
@@ -18,17 +19,12 @@ class Notification < ApplicationRecord
     sent: "sent",
     cancelled: "cancelled"
   }, _prefix: true
-  enum purpose: {
-    covid_medication_reminder: "covid_medication_reminder",
-    experimental_appointment_reminder: "experimental_appointment_reminder",
-    missed_visit_reminder: "missed_visit_reminder"
-  }
 
   scope :due_today, -> { where(remind_on: Date.current, status: [:pending]) }
 
   def localized_message
-    case purpose
-    when "missed_visit_reminder", "experimental_appointment_reminder"
+    case subject
+    when Appointment
       I18n.t(
         message,
         facility_name: subject.facility.name,
@@ -36,7 +32,8 @@ class Notification < ApplicationRecord
         appointment_date: subject.scheduled_date,
         locale: subject.facility.locale
       )
-    when "covid_medication_reminder"
+    when nil
+      # this is a temporary fix. we need to figure out a better way of making the message more flexible
       I18n.t(
         message,
         facility_name: patient.assigned_facility.name,
@@ -44,7 +41,7 @@ class Notification < ApplicationRecord
         locale: patient.assigned_facility.locale
       )
     else
-      raise ArgumentError, "No localized_message defined for notification of type #{purpose}"
+      raise ArgumentError, "Must provide a subject or a default behavior for a notification"
     end
   end
 
@@ -65,10 +62,10 @@ class Notification < ApplicationRecord
   end
 
   def preferred_communication_method
-    Flipper.enabled?(:whatsapp_appointment_reminders) ? "whatsapp" : nil
+    Flipper.enabled?(:whatsapp_appointment_reminders) ? "missed_visit_whatsapp_reminder" : nil
   end
 
   def backup_communication_method
-    "sms"
+    "missed_visit_sms_reminder"
   end
 end

@@ -386,7 +386,6 @@ ActiveRecord::Schema.define(version: 2021_06_22_191111) do
     t.datetime "updated_at", null: false
     t.string "subject_type"
     t.uuid "subject_id"
-    t.string "purpose", null: false
     t.index ["experiment_id"], name: "index_notifications_on_experiment_id"
     t.index ["patient_id"], name: "index_notifications_on_patient_id"
     t.index ["reminder_template_id"], name: "index_notifications_on_reminder_template_id"

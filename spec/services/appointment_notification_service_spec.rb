@@ -38,7 +38,7 @@ RSpec.describe AppointmentNotificationService do
       }.to change(AppointmentNotification::Worker.jobs, :size).by(0)
     end
 
-    it "creates notifications for provided appointments with correct attributes" do
+    it "creates appointment reminders for provided appointments with a remind_on derived from Communication.next_messaging_time" do
       overdue_appointment
       expect {
         AppointmentNotificationService.send_after_missed_visit(appointments: common_org.appointments)
@@ -46,9 +46,6 @@ RSpec.describe AppointmentNotificationService do
       notification = overdue_appointment.notifications.last
       expect(notification.status).to eq("scheduled")
       expect(notification.remind_on).to eq(Communication.next_messaging_time.to_date)
-      expect(notification.purpose).to eq("missed_visit_reminder")
-      expect(notification.message).to eq("communications.appointment_reminders.sms")
-      expect(notification.status).to eq("scheduled")
     end
 
     it "should only send reminders to patients who are eligible" do

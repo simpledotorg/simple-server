@@ -44,8 +44,7 @@ module Experimentation
             experiment: group.experiment,
             reminder_template: template,
             subject: nil,
-            patient: patient,
-            purpose: :covid_medication_reminder
+            patient: patient
           )
         end
       end

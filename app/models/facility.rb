@@ -246,7 +246,6 @@ class Facility < ApplicationRecord
       "default" => "am-ET",
       "dire dawa" => "am-ET",
       "oromia" => "om-ET",
-      "sidama" => "sid-ET",
       "somali" => "so-ET",
       "tigray" => "ti-ET"
     },

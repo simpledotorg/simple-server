@@ -12,11 +12,11 @@ om-ET:
       expired_otp: "OTP kee yeroon itti darbeera. Haaraa gaafadhu."
       invalid_password: "Jechi darbaan kee wal hin fakkaatu Deebisii yaali?"
       account_locked: "Heddi kee yeroowwan %{minutes} daqiiqaawwan dhufaniif cufamee jira. Maaloo xiqqoo turii akkasumas deebisii yaali"
-  communications:
+  sms:
     request_otp: "<#> %{otp}koodii mirkaneeffannaa kee isa salphaadha\n%{app_signature}"
     appointment_reminders:
-      sms: "Hojjattoonni keenya kan %{facility_name} waa’ee kee fii waa’e fayyummaa onnee keetii yaaddaa jiru. Maaloo dawaa dhiibbaa dhiigaa kee itti fufi. Dawaa kee jiddu gala dhiyeenyaa jiru irraa walitti qabadhu."
-      whatsapp: "Hojjattoonni keenya kan %{facility_name} waa’ee kee fii waa’e fayyummaa onnee keetii yaaddaa jiru. Maaloo dawaa dhiibbaa dhiigaa kee itti fufi. Dawaa kee jiddu gala dhiyeenyaa jiru irraa walitti qabadhu."
+      missed_visit_sms_reminder: "Hojjattoonni keenya kan %{facility_name} waa’ee kee fii waa’e fayyummaa onnee keetii yaaddaa jiru. Maaloo dawaa dhiibbaa dhiigaa kee itti fufi. Dawaa kee jiddu gala dhiyeenyaa jiru irraa walitti qabadhu."
+      missed_visit_whatsapp_reminder: "Hojjattoonni keenya kan %{facility_name} waa’ee kee fii waa’e fayyummaa onnee keetii yaaddaa jiru. Maaloo dawaa dhiibbaa dhiigaa kee itti fufi. Dawaa kee jiddu gala dhiyeenyaa jiru irraa walitti qabadhu."
     patient_request_otp: "<#>%{otp}koodii Paaspoortii mirkaneeffannaa PB keetiti\n%{app_signature}"
   dashboard:
     graphics:
