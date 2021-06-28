@@ -45,6 +45,8 @@ class Appointment < ApplicationRecord
 
   scope :for_sync, -> { with_discarded }
 
+  alias_attribute :recorded_at, :device_created_at
+
   def self.between(start_date, end_date)
     where("scheduled_date BETWEEN ? and ?", start_date, end_date)
   end
