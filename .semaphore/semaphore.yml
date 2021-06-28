@@ -27,7 +27,6 @@ blocks:
           commands:
             - cache clean
             - checkout
-            - sem-version ruby 2.6.6
             - script/semaphore_setup
             - "bundle exec standardrb"
         - name: RSpec
@@ -35,7 +34,6 @@ blocks:
           commands:
             - cache clean
             - checkout
-            - sem-version ruby 2.6.6
             - script/semaphore_setup
             - 'bundle exec rake db:setup'
             - 'bundle exec rake db:test:prepare'
