@@ -27,9 +27,9 @@ blocks:
           commands:
             - checkout
             - sem-version ruby 2.6.6
+            - cache clean
             - cache restore
             - bundle install --deployment --path vendor/bundle
-            - cache store
             - "bundle exec standardrb"
         - name: RSpec
           parallelism: 8
@@ -40,6 +40,7 @@ blocks:
             - 'wget -O /tmp/libpng12.deb http://mirrors.kernel.org/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1_amd64.deb'
             - sudo dpkg -i /tmp/libpng12.deb
             - gem install semaphore_test_boosters
+            - cache clean
             - cache restore
             - yarn install
             - bundle install --deployment --path vendor/bundle
