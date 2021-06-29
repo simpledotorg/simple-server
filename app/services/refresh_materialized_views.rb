@@ -49,12 +49,12 @@ class RefreshMaterializedViews
     BloodPressuresPerFacilityPerDay
     PatientRegistrationsPerDayPerFacility
     MaterializedPatientSummary
-  ]
+  ].freeze
   V2_MATVIEWS = %w[
     ReportingPipeline::PatientBloodPressuresPerMonth
     ReportingPipeline::PatientStatesPerMonth
     ReportingPipeline::PatientVisitsPerMonth
-  ]
+  ].freeze
 
   # LatestBloodPressuresPerPatientPerMonth should be refreshed before
   # LatestBloodPressuresPerPatientPerQuarter and LatestBloodPressuresPerPatient
