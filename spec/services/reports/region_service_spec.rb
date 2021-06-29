@@ -8,7 +8,6 @@ RSpec.describe Reports::RegionService, type: :model do
   let(:jan_2019) { Time.parse("January 1st, 2019") }
   let(:jan_2020) { Time.parse("January 1st, 2020") }
 
-  let(:june_1) { Time.parse("June 1st, 2020") }
   let(:june_1_2018) { Time.parse("June 1, 2018 00:00:00+00:00") }
   let(:june_1_2020) { Time.parse("June 1, 2020 00:00:00+00:00") }
   let(:june_30_2020) { Time.parse("June 30, 2020 00:00:00+00:00") }
@@ -34,10 +33,10 @@ RSpec.describe Reports::RegionService, type: :model do
   end
 
   it "sets the period" do
-    period = Period.month(june_1)
+    period = Period.month(june_1_2020)
     service = Reports::RegionService.new(region: facility_group_1, period: period)
     Timecop.freeze("June 30 2020 5:00 PM EST") do
-      expect(service.period.value).to eq(june_1.to_date)
+      expect(service.period.value).to eq(june_1_2020.to_date)
     end
   end
 
@@ -321,7 +320,7 @@ RSpec.describe Reports::RegionService, type: :model do
         create(:blood_pressure, :under_control, facility: facility, patient: patient_from_other_facility, recorded_at: 2.days.ago, user: user)
       end
 
-      Timecop.freeze(june_1) do
+      Timecop.freeze(june_1_2020) do
         controlled_in_jan_and_june.map do |patient|
           create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
           create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago, user: user)
@@ -343,7 +342,7 @@ RSpec.describe Reports::RegionService, type: :model do
 
       expect(result[:controlled_patients][Period.month(jan_2020)]).to eq(controlled_in_jan_and_june.size)
       june_controlled = controlled_in_jan_and_june << controlled_just_for_june
-      expect(result[:controlled_patients][Period.month(june_1)]).to eq(june_controlled.size)
+      expect(result[:controlled_patients][Period.month(june_1_2020)]).to eq(june_controlled.size)
     end
 
     it "counts adjusted registrations" do
@@ -352,7 +351,7 @@ RSpec.describe Reports::RegionService, type: :model do
 
       _registered_in_jan = create_list(:patient, 2, recorded_at: jan_2019 + 1.day, registration_facility: facility, registration_user: user)
 
-      service = Reports::RegionService.new(region: facility_group_1, period: Period.month(june_1))
+      service = Reports::RegionService.new(region: facility_group_1, period: Period.month(june_1_2020))
       result = service.call
       expect(result.adjusted_patient_counts_for(Period.month("Jan 2019"))).to eq(0)
       expect(result.adjusted_patient_counts_for(Period.month("Feb 2019"))).to eq(0)
@@ -388,7 +387,7 @@ RSpec.describe Reports::RegionService, type: :model do
 
       refresh_views
 
-      service = Reports::RegionService.new(region: facility_group_1, period: Period.month(june_1))
+      service = Reports::RegionService.new(region: facility_group_1, period: Period.month(june_1_2020))
       result = service.call
 
       expected_controlled_patients = {
@@ -440,7 +439,7 @@ RSpec.describe Reports::RegionService, type: :model do
                                                 recorded_at: 2.days.ago, user: user)
       end
 
-      Timecop.freeze(june_1) do
+      Timecop.freeze(june_1_2020) do
         controlled_in_jan_and_june.map do |patient|
           create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago)
           create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago)
@@ -472,28 +471,39 @@ RSpec.describe Reports::RegionService, type: :model do
       expect(result[:adjusted_patient_counts][jan_2020.to_period]).to eq(4)
       expect(result[:adjusted_patient_counts_with_ltfu][jan_2020.to_period]).to eq(5)
 
-      expect(result[:controlled_patients][june_1.to_period]).to eq(3)
-      expect(result[:controlled_patients_rate][june_1.to_period]).to eq(60.0)
-      expect(result[:registrations][june_1.to_period]).to eq(2)
-      expect(result[:cumulative_registrations][june_1.to_period]).to eq(7)
-      expect(result[:adjusted_patient_counts][june_1.to_period]).to eq(5)
+      expect(result[:controlled_patients][june_1_2020.to_period]).to eq(3)
+      expect(result[:controlled_patients_rate][june_1_2020.to_period]).to eq(60.0)
+      expect(result[:registrations][june_1_2020.to_period]).to eq(2)
+      expect(result[:cumulative_registrations][june_1_2020.to_period]).to eq(7)
+      expect(result[:adjusted_patient_counts][june_1_2020.to_period]).to eq(5)
     end
   end
 
   context "without months_request" do
     it "returns data for the default limit of 24 months " do
-      service = Reports::RegionService.new(region: facility_group_1, period: Period.month(june_1))
+      facility = create(:facility, facility_group: facility_group_1)
+      ("January 1st 2018".to_date.to_period..june_1_2020.to_period).each do |period|
+        create(:patient, full_name: "registered in #{period}", recorded_at: period.value, registration_facility: facility, registration_user: user)
+      end
+
+      service = Reports::RegionService.new(region: facility_group_1, period: Period.month(june_1_2020))
       result = service.call
       expect(result[:period_info].count).to eq 24
+      expect(result[:registrations].count).to eq 24
     end
   end
 
   context "with months_request" do
     it "returns data for the requested number of months" do
       month_limit = 6
-      service = Reports::RegionService.new(region: facility_group_1, period: Period.month(june_1), months: month_limit)
+      facility = create(:facility, facility_group: facility_group_1)
+      ("October 1st 2019".to_date.to_period..june_1_2020.to_period).each do |period|
+        create(:patient, full_name: "registered in #{period}", recorded_at: period.value, registration_facility: facility, registration_user: user)
+      end
+      service = Reports::RegionService.new(region: facility_group_1, period: Period.month(june_1_2020), months: month_limit)
       result = service.call
       expect(result[:period_info].count).to eq month_limit
+      expect(result[:registrations].count).to eq month_limit
     end
   end
 end
