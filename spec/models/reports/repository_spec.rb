@@ -470,7 +470,6 @@ RSpec.describe Reports::Repository, type: :model do
         result = repo_v2.controlled
 
         facility_1_results = result[facility_1.slug]
-        controlled_1 = controlled_in_jan_and_june.first
 
         expect(facility_1_results[Period.month(jan_2020)]).to eq(controlled_in_jan_and_june.size)
         expect(facility_1_results[Period.month(june_1_2020)]).to eq(3)
