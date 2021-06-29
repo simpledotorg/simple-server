@@ -33,18 +33,18 @@ class ImoApiService
       action: "Click here"
     )
     response = execute_post(url, body: request_body)
-    process_response(response, url)
+    process_invitation_response(response, url)
   end
 
-  def send_notification
+  def send_notification(message)
     return unless Flipper.enabled?(:imo_messaging)
 
     Statsd.instance.increment("imo.notifications.attempt")
     url = BASE_URL + "send_notification"
     request_body = JSON(
       phone: patient.latest_mobile_number,
-      msg: "Oh hi mark",
-      contents: [{key: "Name", value: patient.full_name}, {key: "Notes", value: "Oh hi mark"}],
+      msg: message,
+      contents: [{key: "Name", value: patient.full_name}, {key: "Notes", value: message}],
       title: "Notification",
       action: "Click here",
       url: USER_FACING_URL,
@@ -64,7 +64,7 @@ class ImoApiService
     raise Error.new("Error while calling the IMO API", path: url, exception_message: e)
   end
 
-  def process_response(response, url)
+  def process_invitation_response(response, url)
     case response.status
     when 200 then :invited
     when 400

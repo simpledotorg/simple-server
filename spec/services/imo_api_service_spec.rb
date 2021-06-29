@@ -70,7 +70,7 @@ describe ImoApiService, type: :model do
 
     context "with feature flag off" do
       it "returns nil" do
-        expect(service.send_notification).to eq(nil)
+        expect(service.send_notification("Come back in to the clinic")).to eq(nil)
       end
     end
 
@@ -79,12 +79,12 @@ describe ImoApiService, type: :model do
 
       it "returns :success on 200" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200)
-        expect(service.send_notification)
+        expect(service.send_notification("Come back in to the clinic"))
       end
 
       it "returns :failure when status is non-200" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400)
-        expect(service.send_notification).to eq(:failure)
+        expect(service.send_notification("Come back in to the clinic")).to eq(:failure)
       end
     end
   end
