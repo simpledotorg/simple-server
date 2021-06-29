@@ -26,6 +26,7 @@ module Reports
 
     def call
       result = Reports::Result.new(region: @region, period_type: @range.begin.type)
+      result.earliest_registration_period = repository.earliest_patient_recorded_at_period[slug]
       result.adjusted_patient_counts = repository.adjusted_patients_without_ltfu[slug]
       result.adjusted_patient_counts_with_ltfu = repository.adjusted_patients_with_ltfu[slug]
       result.assigned_patients = repository.assigned_patients[slug]
@@ -34,7 +35,6 @@ module Reports
       result.controlled_patients_with_ltfu_rate = repository.controlled_rates(with_ltfu: true)[slug]
       result.cumulative_assigned_patients = repository.cumulative_assigned_patients[slug]
       result.cumulative_registrations = repository.cumulative_registrations[slug]
-      result.earliest_registration_period = repository.earliest_patient_recorded_at_period[slug]
       result.ltfu_patients = repository.ltfu[slug]
       result.ltfu_patients_rate = repository.ltfu_rates[slug]
       result.registrations = repository.monthly_registrations[slug]
@@ -55,7 +55,7 @@ module Reports
       calc_range = (start_period..range.end)
       result.period_info = calc_range.each_with_object({}) { |period, hsh| hsh[period] = period.to_hash }
 
-      result
+      result.report_data_for(range)
     end
 
     def reporting_schema_v2?
