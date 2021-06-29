@@ -18,8 +18,17 @@ class RefreshMaterializedViews
     @logger ||= Rails.logger.child(class: self.class.name)
   end
 
+  def benchmark_and_statsd(operation)
+    name = "refresh_matviews.#{operation}"
+    benchmark(name) do
+      Statsd.instance.time(name) do
+        yield
+      end
+    end
+  end
+
   def call
-    benchmark("refresh_materialized_views") do
+    benchmark_and_statsd("all") do
       refresh
     end
   end
@@ -36,27 +45,27 @@ class RefreshMaterializedViews
     ActiveRecord::Base.transaction do
       ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{tz}'")
 
-      benchmark("refresh_materialized_views LatestBloodPressuresPerPatientPerMonth") do
+      benchmark_and_statsd("LatestBloodPressuresPerPatientPerMonth") do
         LatestBloodPressuresPerPatientPerMonth.refresh
       end
 
-      benchmark("refresh_materialized_views LatestBloodPressuresPerPatient") do
+      benchmark_and_statsd("LatestBloodPressuresPerPatient") do
         LatestBloodPressuresPerPatient.refresh
       end
 
-      benchmark("refresh_materialized_views LatestBloodPressuresPerPatientPerQuarter") do
+      benchmark_and_statsd("LatestBloodPressuresPerPatientPerQuarter") do
         LatestBloodPressuresPerPatientPerQuarter.refresh
       end
 
-      benchmark("refresh_materialized_views BloodPressuresPerFacilityPerDay") do
+      benchmark_and_statsd("BloodPressuresPerFacilityPerDay") do
         BloodPressuresPerFacilityPerDay.refresh
       end
 
-      benchmark("refresh_materialized_views PatientRegistrationsPerDayPerFacility") do
+      benchmark_and_statsd("PatientRegistrationsPerDayPerFacility") do
         PatientRegistrationsPerDayPerFacility.refresh
       end
 
-      benchmark("refresh_materialized_views MaterializedPatientSummary") do
+      benchmark_and_statsd("MaterializedPatientSummary") do
         MaterializedPatientSummary.refresh
       end
 
