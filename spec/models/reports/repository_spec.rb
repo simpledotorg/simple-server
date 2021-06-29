@@ -18,7 +18,6 @@ RSpec.describe Reports::Repository, type: :model do
 
   def refresh_views
     ActiveRecord::Base.transaction do
-      puts Time.current
       LatestBloodPressuresPerPatientPerMonth.refresh
       LatestBloodPressuresPerPatientPerQuarter.refresh
       PatientRegistrationsPerDayPerFacility.refresh
@@ -467,6 +466,7 @@ RSpec.describe Reports::Repository, type: :model do
         repo_v1 = Reports::Repository.new(regions, periods: range, reporting_schema_v2: false)
         repo_v2 = Reports::Repository.new(regions, periods: range, reporting_schema_v2: true)
         expect(repo_v2.controlled[facility_1.slug]).to eq(repo_v1.controlled[facility_1.slug])
+        expect(repo_v2.uncontrolled[facility_1.slug]).to eq(repo_v1.uncontrolled[facility_1.slug])
         result = repo_v2.controlled
 
         facility_1_results = result[facility_1.slug]

@@ -164,9 +164,10 @@ module Reports
 
     memoize def controlled
       return controlled_v2 if reporting_schema_v2?
-      science("controlled") do |experiment|
-        experiment.use { controlled_v1 }
-        experiment.try { controlled_v2 }
+      science("controlled") do |e|
+        e.use { controlled_v1 }
+        e.try { controlled_v2 }
+        e.raise_on_mismatches = true
       end
     end
 
@@ -178,28 +179,27 @@ module Reports
 
     def controlled_v2
       regions.each_with_object({}).each do |region, hsh|
-        query_range = active_range(region)
-        hsh[region.slug] = control_rate_query_v2.controlled_counts(region, query_range).tap { |hsh| hsh.default = 0 }
+        hsh[region.slug] = control_rate_query_v2.controlled_counts(region, range: active_range(region)).tap { |hsh| hsh.default = 0 }
       end
     end
 
-    # Return the actual 'active range' for a Region - this will be the from the first recorded at in a region until
-    # the end of the period range requested.
-    def active_range(region)
-      start = [earliest_patient_recorded_at_period[region.slug], periods.begin].compact.max
-      (start..periods.end)
-    end
-    private :active_range
-
     memoize def uncontrolled
-      if reporting_schema_v2?
-        regions.each_with_object({}).each do |region, hsh|
-          hsh[region.slug] = control_rate_query_v2.uncontrolled_counts(region).tap { |hsh| hsh.default = 0 }
-        end
-      else
-        region_period_cached_query(__method__) do |entry|
-          control_rate_query.uncontrolled(entry.region, entry.period).count
-        end
+      return uncontrolled_v2 if reporting_schema_v2?
+      science("uncontrolled") do |e|
+        e.use { uncontrolled_v1 }
+        e.try { uncontrolled_v2 }
+      end
+    end
+
+    def uncontrolled_v1
+      region_period_cached_query(__method__) do |entry|
+        control_rate_query.uncontrolled(entry.region, entry.period).count
+      end
+    end
+
+    def uncontrolled_v2
+      regions.each_with_object({}).each do |region, hsh|
+        hsh[region.slug] = control_rate_query_v2.uncontrolled_counts(region, range: active_range(region))
       end
     end
 
@@ -300,6 +300,13 @@ module Reports
     end
 
     private
+
+    # Return the actual 'active range' for a Region - this will be the from the first recorded at in a region until
+    # the end of the period range requested.
+    def active_range(region)
+      start = [earliest_patient_recorded_at_period[region.slug], periods.begin].compact.max
+      (start..periods.end)
+    end
 
     # Returns the full range of assigned patient counts for a Region. We do this via one SQL query for each Region, because its
     # fast and easy via the underlying query.
