@@ -28,8 +28,11 @@ class RefreshMaterializedViews
   end
 
   def call
-    benchmark_and_statsd("all") do
-      refresh
+    benchmark_and_statsd("all_v1") do
+      refresh_v1
+    end
+    benchmark_and_statsd("all_v2") do
+      refresh_v2
     end
   end
 
@@ -39,9 +42,9 @@ class RefreshMaterializedViews
 
   delegate :tz, :set_last_updated_at, to: self
 
-  def refresh
-    # LatestBloodPressuresPerPatientPerMonth should be refreshed before
-    # LatestBloodPressuresPerPatientPerQuarter and LatestBloodPressuresPerPatient
+  # LatestBloodPressuresPerPatientPerMonth should be refreshed before
+  # LatestBloodPressuresPerPatientPerQuarter and LatestBloodPressuresPerPatient
+  def refresh_v1
     ActiveRecord::Base.transaction do
       ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{tz}'")
 
@@ -70,6 +73,15 @@ class RefreshMaterializedViews
       end
 
       set_last_updated_at
+    end
+  end
+
+  def refresh_v2
+    %w[reporting_patient_blood_pressures_per_month
+      reporting_patient_visits_per_month
+      reporting_patient_states_per_month].each do |matview|
+        
+
     end
   end
 end
