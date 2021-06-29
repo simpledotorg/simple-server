@@ -199,16 +199,6 @@ class UserAnalyticsPresenter
       monthly_dm_stats].inject(:deep_merge)
   end
 
-  def controlled_stats(range)
-    repo = Reports::Repository.new(current_facility.region, periods: range)
-    slug = current_facility.region.slug
-    {
-      adjusted_patient_counts: repo.adjusted_patients_without_ltfu[slug],
-      controlled_patients: repo.controlled[slug],
-      controlled_patients_rate: repo.controlled_rates[slug]
-    }
-  end
-
   def all_time_stats
     return all_time_htn_stats unless diabetes_enabled?
 
@@ -284,7 +274,11 @@ class UserAnalyticsPresenter
 
     control_rate_end = Period.month(Date.current.advance(months: -1).beginning_of_month)
     control_rate_start = control_rate_end.advance(months: -HTN_CONTROL_MONTHS_AGO)
-    range = (control_rate_start..control_rate_end)
+    controlled_visits =
+      ControlRateService.new(
+        current_facility,
+        periods: control_rate_start..control_rate_end
+      ).call.to_hash
 
     {
       grouped_by_date_and_gender: {
@@ -298,7 +292,7 @@ class UserAnalyticsPresenter
         hypertension: {
           registrations: activity.registrations,
           follow_ups: activity.follow_ups,
-          controlled_visits: controlled_stats(range)
+          controlled_visits: controlled_visits
         }
       }
     }
