@@ -46,7 +46,7 @@ RSpec.describe RefreshMaterializedViews do
         RefreshMaterializedViews.call
       end
     }.to change { ReportingPipeline::PatientBloodPressuresPerMonth.count }.from(0).to(2)
-    .and change { ReportingPipeline::PatientStatesPerMonth.count }.from(0).to(2)
-    .and change { ReportingPipeline::PatientVisitsPerMonth.count }.from(0).to(2)
+      .and change { ReportingPipeline::PatientStatesPerMonth.count }.from(0).to(2)
+      .and change { ReportingPipeline::PatientVisitsPerMonth.count }.from(0).to(2)
   end
 end
