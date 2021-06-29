@@ -8,6 +8,12 @@ RSpec.describe Api::V3::FacilitiesController, type: :controller do
     create_list(:facility, n, facility_group: request_user.facility.facility_group)
   end
 
+  def set_authentication_headers
+    request.env["HTTP_X_USER_ID"] = request_user.id
+    request.env["HTTP_X_FACILITY_ID"] = request_facility.id if defined? request_facility
+    request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
+  end
+
   describe "a working Current sync controller sending records" do
     before :each do
       Timecop.travel(15.minutes.ago) do
@@ -87,16 +93,24 @@ RSpec.describe Api::V3::FacilitiesController, type: :controller do
 
       context "region-level sync" do
         context "sync_region_id" do
-          it "sets the sync_region_id to the block id when user is available" do
-            request.env["HTTP_X_USER_ID"] = request_user.id
-            request.env["HTTP_X_FACILITY_ID"] = request_user.facility.id
-            request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
-
+          it "sets the sync_region_id to the block id when user is available and not an MO" do
+            set_authentication_headers
             get :sync_to_user
 
             response_records = JSON(response.body)["facilities"]
             response_records.each do |record|
               expect(record["sync_region_id"]).to eq Facility.find(record["id"]).region.block_region.id
+            end
+          end
+
+          it "sets the sync_region_id to the facility group id when user is available and MO" do
+            set_authentication_headers
+            allow_any_instance_of(User).to receive(:can_teleconsult?).and_return true
+            get :sync_to_user
+
+            response_records = JSON(response.body)["facilities"]
+            response_records.each do |record|
+              expect(record["sync_region_id"]).to eq Facility.find(record["id"]).facility_group_id
             end
           end
 
@@ -111,12 +125,7 @@ RSpec.describe Api::V3::FacilitiesController, type: :controller do
         end
 
         context "for authenticated requests" do
-          def set_authentication_headers
-            request.env["HTTP_X_USER_ID"] = request_user.id
-            request.env["HTTP_X_FACILITY_ID"] = request_facility.id if defined? request_facility
-            request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
-            request.env["HTTP_X_SYNC_REGION_ID"] = request_facility.region.block_region.id
-          end
+          before { request.env["HTTP_X_SYNC_REGION_ID"] = request_facility.region.block_region.id }
 
           let(:request_user) { create(:user) }
           let(:request_facility_group) { request_user.facility.facility_group }
@@ -127,6 +136,8 @@ RSpec.describe Api::V3::FacilitiesController, type: :controller do
           end
 
           it "avoids resyncing when X_SYNC_REGION_ID doesn't match process token's sync_region_id" do
+            # When the app switches from unauthenticated to authenticated requests, the
+            # X_SYNC_REGION_ID changes. We don't want to resync facilities in that case.
             process_token = make_process_token(sync_region_id: "a-sync-region-uuid",
                                                other_facilities_processed_since: Time.current)
             facility_records = Timecop.travel(15.minutes.ago) { create_list(:facility, 5) }

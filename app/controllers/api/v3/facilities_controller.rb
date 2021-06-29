@@ -1,5 +1,6 @@
 class Api::V3::FacilitiesController < Api::V3::SyncController
   include Api::V3::PublicApi
+  include Memery
 
   def sync_to_user
     __sync_to_user__("facilities")
@@ -26,7 +27,7 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
   def transform_to_response(facility)
     Api::V3::FacilityTransformer
       .to_response(facility)
-      .merge(sync_region_id: facility.block_region_id)
+      .merge(sync_region_id: sync_region_id(facility))
   end
 
   def response_process_token
@@ -46,6 +47,18 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
         .with_block_region_id
         .includes(:facility_group)
         .where.not(facility_group: nil)
+    end
+  end
+
+  memoize def district_level_sync?
+    current_user&.district_level_sync?
+  end
+
+  def sync_region_id(facility)
+    if district_level_sync?
+      facility.facility_group_id
+    else
+      facility.block_region_id
     end
   end
 end

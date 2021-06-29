@@ -45,6 +45,8 @@ class Appointment < ApplicationRecord
 
   scope :for_sync, -> { with_discarded }
 
+  alias_attribute :recorded_at, :device_created_at
+
   def self.between(start_date, end_date)
     where("scheduled_date BETWEEN ? and ?", start_date, end_date)
   end
@@ -53,6 +55,8 @@ class Appointment < ApplicationRecord
     where(status: "scheduled")
       .where(arel_table[:scheduled_date].lt(Date.current))
       .where(arel_table[:remind_on].eq(nil).or(arel_table[:remind_on].lteq(Date.current)))
+      .joins(:patient)
+      .where.not(patients: {status: :dead})
   end
 
   def self.overdue
