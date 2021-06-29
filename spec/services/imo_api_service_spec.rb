@@ -25,7 +25,8 @@ describe ImoApiService, type: :model do
 
       it "returns :invited on 200" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200)
-        expect(service.invite).to eq(:invited)
+        expect{ service.invite }.to change { patient.imo_authorization }.from(nil)
+        expect(patient.imo_authorization.status).to eq("invited")
       end
 
       it "returns :no_imo_account when status if 400 and type is nonexistent_user" do
@@ -37,7 +38,8 @@ describe ImoApiService, type: :model do
           }
         )
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: body)
-        expect(service.invite).to eq(:no_imo_account)
+        expect{ service.invite }.to change { patient.imo_authorization }.from(nil)
+        expect(patient.imo_authorization.status).to eq("no_imo_account")
       end
 
       it "raises error on any other response" do
@@ -78,12 +80,12 @@ describe ImoApiService, type: :model do
       before { Flipper.enable(:imo_messaging) }
 
       it "returns :success on 200" do
-        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200)
+        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: {}.to_json)
         expect(service.send_notification("Come back in to the clinic"))
       end
 
       it "returns :failure when status is non-200" do
-        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400)
+        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: {}.to_json)
         expect(service.send_notification("Come back in to the clinic")).to eq(:failure)
       end
     end
