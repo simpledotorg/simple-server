@@ -18,9 +18,12 @@ RSpec.describe Reports::Repository, type: :model do
 
   def refresh_views
     ActiveRecord::Base.transaction do
+      puts Time.current
       LatestBloodPressuresPerPatientPerMonth.refresh
       LatestBloodPressuresPerPatientPerQuarter.refresh
       PatientRegistrationsPerDayPerFacility.refresh
+      ReportingPipeline::PatientBloodPressuresPerMonth.refresh
+      ReportingPipeline::PatientVisitsPerMonth.refresh
       ReportingPipeline::PatientStatesPerMonth.refresh
     end
   end
@@ -431,40 +434,47 @@ RSpec.describe Reports::Repository, type: :model do
 
       Timecop.freeze(jan_2020) do
         controlled_in_jan_and_june.map do |patient|
-          create(:blood_pressure, :hypertensive, facility: facility_1, patient: patient, recorded_at: 3.days.from_now, user: user)
-          create(:blood_pressure, :under_control, facility: facility_1, patient: patient, recorded_at: 4.days.from_now, user: user)
+          create(:bp_with_encounter, :hypertensive, facility: facility_1, patient: patient, recorded_at: 3.days.from_now, user: user)
+          create(:bp_with_encounter, :under_control, facility: facility_1, patient: patient, recorded_at: 4.days.from_now, user: user)
         end
-        uncontrolled_in_jan.map { |patient| create(:blood_pressure, :hypertensive, facility: facility_2, patient: patient, recorded_at: 4.days.from_now) }
-        create(:blood_pressure, :under_control, facility: patient_from_other_facility.assigned_facility, patient: patient_from_other_facility, recorded_at: 4.days.from_now)
+        uncontrolled_in_jan.map { |patient| create(:bp_with_encounter, :hypertensive, facility: facility_2, patient: patient, recorded_at: 4.days.from_now) }
+        create(:bp_with_encounter, :under_control, facility: patient_from_other_facility.assigned_facility, patient: patient_from_other_facility, recorded_at: 4.days.from_now)
       end
 
       Timecop.freeze(june_1_2020) do
         controlled_in_jan_and_june.map do |patient|
-          create(:blood_pressure, :under_control, facility: facility_1, patient: patient, recorded_at: 2.days.ago, user: user)
-          create(:blood_pressure, :hypertensive, facility: facility_1, patient: patient, recorded_at: 4.days.ago, user: user)
-          create(:blood_pressure, :hypertensive, facility: facility_1, patient: patient, recorded_at: 35.days.ago, user: user)
+          create(:bp_with_encounter, :under_control, facility: facility_1, patient: patient, recorded_at: 2.days.ago, user: user)
+          create(:bp_with_encounter, :hypertensive, facility: facility_1, patient: patient, recorded_at: 4.days.ago, user: user)
+          create(:bp_with_encounter, :hypertensive, facility: facility_1, patient: patient, recorded_at: 35.days.ago, user: user)
         end
 
-        create(:blood_pressure, :under_control, facility: facility_3, patient: controlled_just_for_june, recorded_at: 4.days.ago, user: user)
+        create(:bp_with_encounter, :under_control, facility: facility_3, patient: controlled_just_for_june, recorded_at: 4.days.ago, user: user)
 
         uncontrolled_in_june = create_list(:patient, 5, recorded_at: 4.months.ago, assigned_facility: facility_1, registration_user: user)
         uncontrolled_in_june.map do |patient|
-          create(:blood_pressure, :hypertensive, facility: facility_1, patient: patient, recorded_at: 1.days.ago, user: user)
-          create(:blood_pressure, :under_control, facility: facility_1, patient: patient, recorded_at: 2.days.ago, user: user)
+          create(:bp_with_encounter, :hypertensive, facility: facility_1, patient: patient, recorded_at: 1.days.ago, user: user)
+          create(:bp_with_encounter, :under_control, facility: facility_1, patient: patient, recorded_at: 2.days.ago, user: user)
         end
       end
 
-      refresh_views
+      Timecop.freeze(july_2020) do
+        refresh_views
+      end
 
-      start_range = july_2020.advance(months: -24)
-      range = (Period.month(start_range)..Period.month(july_2020))
-      repo = Reports::Repository.new(regions, periods: range, reporting_schema_v2: true)
-      result = repo.controlled
+      with_reporting_time_zone do
+        start_range = july_2020.advance(months: -24)
+        range = (Period.month(start_range)..Period.month(july_2020))
+        repo_v1 = Reports::Repository.new(regions, periods: range, reporting_schema_v2: false)
+        repo_v2 = Reports::Repository.new(regions, periods: range, reporting_schema_v2: true)
+        expect(repo_v2.controlled[facility_1.slug]).to eq(repo_v1.controlled[facility_1.slug])
+        result = repo_v2.controlled
 
-      facility_1_results = result[facility_1.slug]
+        facility_1_results = result[facility_1.slug]
+        controlled_1 = controlled_in_jan_and_june.first
 
-      expect(facility_1_results[Period.month(jan_2020)]).to eq(controlled_in_jan_and_june.size)
-      expect(facility_1_results[Period.month(june_1_2020)]).to eq(3)
+        expect(facility_1_results[Period.month(jan_2020)]).to eq(controlled_in_jan_and_june.size)
+        expect(facility_1_results[Period.month(june_1_2020)]).to eq(3)
+      end
     end
   end
 end

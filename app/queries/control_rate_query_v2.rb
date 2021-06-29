@@ -7,8 +7,9 @@ class ControlRateQueryV2
       .where(htn_treatment_outcome_in_last_3_months: :controlled)
   end
 
-  def controlled_counts(region)
-    controlled(region).group_by_period(:month, :month_date, format: Period.formatter(:month)).count
+  def controlled_counts(region, range)
+    time_range = (range.begin.start_time..range.end.end_time)
+    controlled(region).group_by_period(:month, :month_date, range: time_range, format: Period.formatter(:month)).count
   end
 
   def uncontrolled(region)

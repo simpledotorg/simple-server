@@ -178,13 +178,18 @@ module Reports
 
     def controlled_v2
       regions.each_with_object({}).each do |region, hsh|
-        hsh[region.slug] = control_rate_query_v2.controlled_counts(region).tap { |hsh| hsh.default = 0 }
+        query_range = active_range(region)
+        hsh[region.slug] = control_rate_query_v2.controlled_counts(region, query_range).tap { |hsh| hsh.default = 0 }
       end
     end
 
-    def control_or_candidate
-      reporting_schema_v2? ? "candidate" : "control"
+    # Return the actual 'active range' for a Region - this will be the from the first recorded at in a region until
+    # the end of the period range requested.
+    def active_range(region)
+      start = [earliest_patient_recorded_at_period[region.slug], periods.begin].compact.max
+      (start..periods.end)
     end
+    private :active_range
 
     memoize def uncontrolled
       if reporting_schema_v2?

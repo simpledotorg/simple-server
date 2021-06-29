@@ -32,6 +32,13 @@ FactoryBot.define do
       diastolic { rand(60..89) }
     end
   end
+
+  # We are making this as a new default BP factory to move to, because many of our tests
+  # will depend on the existance of an associated observation / encounter. We don't want to
+  # change the main factory as there would be too much test suite fallout.
+  factory :bp_with_encounter, parent: :blood_pressure do
+    with_encounter
+  end
 end
 
 def build_blood_pressure_payload(blood_pressure = FactoryBot.build(:blood_pressure))
