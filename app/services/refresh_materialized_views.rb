@@ -42,46 +42,44 @@ class RefreshMaterializedViews
 
   delegate :tz, :set_last_updated_at, to: self
 
+  V1_MATVIEWS = %w[
+    LatestBloodPressuresPerPatientPerMonth
+    LatestBloodPressuresPerPatient
+    LatestBloodPressuresPerPatientPerQuarter
+    BloodPressuresPerFacilityPerDay
+    PatientRegistrationsPerDayPerFacility
+    MaterializedPatientSummary
+  ]
+  V2_MATVIEWS = %w[
+    ReportingPipeline::PatientBloodPressuresPerMonth
+    ReportingPipeline::PatientStatesPerMonth
+    ReportingPipeline::PatientVisitsPerMonth
+  ]
+
   # LatestBloodPressuresPerPatientPerMonth should be refreshed before
   # LatestBloodPressuresPerPatientPerQuarter and LatestBloodPressuresPerPatient
   def refresh_v1
     ActiveRecord::Base.transaction do
       ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{tz}'")
-
-      benchmark_and_statsd("LatestBloodPressuresPerPatientPerMonth") do
-        LatestBloodPressuresPerPatientPerMonth.refresh
+      V1_MATVIEWS.each do |name|
+        benchmark_and_statsd(name) do
+          klass = name.constantize
+          klass.refresh
+        end
       end
-
-      benchmark_and_statsd("LatestBloodPressuresPerPatient") do
-        LatestBloodPressuresPerPatient.refresh
-      end
-
-      benchmark_and_statsd("LatestBloodPressuresPerPatientPerQuarter") do
-        LatestBloodPressuresPerPatientPerQuarter.refresh
-      end
-
-      benchmark_and_statsd("BloodPressuresPerFacilityPerDay") do
-        BloodPressuresPerFacilityPerDay.refresh
-      end
-
-      benchmark_and_statsd("PatientRegistrationsPerDayPerFacility") do
-        PatientRegistrationsPerDayPerFacility.refresh
-      end
-
-      benchmark_and_statsd("MaterializedPatientSummary") do
-        MaterializedPatientSummary.refresh
-      end
-
       set_last_updated_at
     end
   end
 
   def refresh_v2
-    %w[reporting_patient_blood_pressures_per_month
-      reporting_patient_visits_per_month
-      reporting_patient_states_per_month].each do |matview|
-        
-
+    ActiveRecord::Base.transaction do
+      ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{tz}'")
+      V2_MATVIEWS.each do |name|
+        benchmark_and_statsd(name) do
+          klass = name.constantize
+          klass.refresh
+        end
+      end
     end
   end
 end
