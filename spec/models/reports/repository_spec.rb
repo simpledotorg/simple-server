@@ -17,14 +17,7 @@ RSpec.describe Reports::Repository, type: :model do
   let(:july_2020) { Time.parse("July 1st, 2020 00:00:00+00:00") }
 
   def refresh_views
-    ActiveRecord::Base.transaction do
-      LatestBloodPressuresPerPatientPerMonth.refresh
-      LatestBloodPressuresPerPatientPerQuarter.refresh
-      PatientRegistrationsPerDayPerFacility.refresh
-      ReportingPipeline::PatientBloodPressuresPerMonth.refresh
-      ReportingPipeline::PatientVisitsPerMonth.refresh
-      ReportingPipeline::PatientStatesPerMonth.refresh
-    end
+    RefreshMaterializedViews.call
   end
 
   context "earliest patient record" do
