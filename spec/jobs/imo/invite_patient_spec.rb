@@ -2,15 +2,15 @@ require "rails_helper"
 
 RSpec.describe Imo::InvitePatient, type: :job do
   describe "#perform" do
-      it "does nothing with feature flag turned off" do
-        patient = create(:patient)
-        allow_any_instance_of(ImoApiService).to receive(:invite)
+    it "does nothing with feature flag turned off" do
+      patient = create(:patient)
+      allow_any_instance_of(ImoApiService).to receive(:invite)
 
-        expect {
-          described_class.perform_async(patient.id)
-          described_class.drain
-        }.not_to change { ImoAuthorization.count }
-      end
+      expect {
+        described_class.perform_async(patient.id)
+        described_class.drain
+      }.not_to change { ImoAuthorization.count }
+    end
 
     context "with feature flag turned on" do
       before { Flipper.enable(:imo_messaging) }

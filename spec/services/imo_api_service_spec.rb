@@ -3,6 +3,22 @@ require "rails_helper"
 describe ImoApiService, type: :model do
   let(:patient) { create(:patient) }
   let(:service) { ImoApiService.new(patient) }
+  let(:success_body) {
+    JSON(
+      response: {
+        status: "success"
+      }
+    )
+  }
+  let(:nonexistent_user_body) {
+    JSON(
+      status: "error",
+      response: {
+        message: "No user with specified phone number",
+        type: "nonexistent_user"
+      }
+    )
+  }
 
   describe "#invite" do
     let(:request_url) { "https://sgp.imo.im/api/simple/send_invite" }
@@ -24,21 +40,14 @@ describe ImoApiService, type: :model do
       before { Flipper.enable(:imo_messaging) }
 
       it "returns :invited on 200" do
-        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200)
-        expect{ service.invite }.to change { patient.imo_authorization }.from(nil)
+        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: success_body)
+        expect { service.invite }.to change { patient.imo_authorization }.from(nil)
         expect(patient.imo_authorization.status).to eq("invited")
       end
 
       it "returns :no_imo_account when status if 400 and type is nonexistent_user" do
-        body = JSON(
-          "status" => "error",
-          "response" => {
-            "message" => "No user with specified phone number",
-            "type" => "nonexistent_user"
-          }
-        )
-        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: body)
-        expect{ service.invite }.to change { patient.imo_authorization }.from(nil)
+        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: nonexistent_user_body)
+        expect { service.invite }.to change { patient.imo_authorization }.from(nil)
         expect(patient.imo_authorization.status).to eq("no_imo_account")
       end
 
@@ -77,16 +86,23 @@ describe ImoApiService, type: :model do
     end
 
     context "with feature flag on" do
-      before { Flipper.enable(:imo_messaging) }
-
-      it "returns :success on 200" do
-        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: {}.to_json)
-        expect(service.send_notification("Come back in to the clinic"))
+      let(:imo_auth) { create(:imo_authorization, patient: patient, status: "invited") }
+      before do
+        Flipper.enable(:imo_messaging)
+        imo_auth
       end
 
-      it "returns :failure when status is non-200" do
-        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: {}.to_json)
-        expect(service.send_notification("Come back in to the clinic")).to eq(:failure)
+      it "does not have errors when response is successful" do
+        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: success_body)
+        service.send_notification("Come back in to the clinic")
+        expect(service.error).to eq(nil)
+      end
+
+      it "updates patient's ImoAuthorization when imo user does not exist" do
+        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: nonexistent_user_body)
+        expect {
+          service.send_notification("Come back in to the clinic")
+        }.to change { patient.imo_authorization.reload.status }.from("invited").to("no_imo_account")
       end
     end
   end
