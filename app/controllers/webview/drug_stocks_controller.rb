@@ -2,9 +2,13 @@
 # hence we handle authentication ourselves from params passed from the client.
 class Webview::DrugStocksController < ApplicationController
   include BustCache
+  include SetForEndOfMonth
+
   skip_before_action :verify_authenticity_token
+  around_action :set_time_zone
   before_action :authenticate
   before_action :find_current_facility
+  before_action :set_show_current_month
   before_action :set_for_end_of_month
   before_action :set_bust_cache
   layout false
@@ -76,20 +80,11 @@ class Webview::DrugStocksController < ApplicationController
           :protocol_drug_id])
   end
 
-  def set_for_end_of_month
-    @for_end_of_month ||= if params[:for_end_of_month]
-      logger.info "parsing for_end_of_month from #{params[:for_end_of_month]}"
-      Date.parse(params[:for_end_of_month]).end_of_month
-    elsif (Date.current.end_of_month - Date.current).to_i < 8
-      logger.info "using current date for_end_of_month"
-      Date.current.end_of_month
-    else
-      logger.info "using previous month for_end_of_month"
-      Date.current.prev_month.end_of_month
-    end
-  end
-
   def set_bust_cache
     RequestStore.store[:bust_cache] = true if params[:bust_cache].present?
+  end
+
+  def set_time_zone
+    Time.use_zone(Period::REPORTING_TIME_ZONE) { yield }
   end
 end

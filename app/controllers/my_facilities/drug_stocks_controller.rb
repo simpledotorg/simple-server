@@ -9,6 +9,7 @@ class MyFacilities::DrugStocksController < AdminController
   before_action :authorize_my_facilities
   after_action :verify_authorization_attempted
   before_action :set_facility, only: [:new, :create]
+  before_action :set_show_current_month
   before_action :set_for_end_of_month
   before_action :drug_stocks_enabled?
 
