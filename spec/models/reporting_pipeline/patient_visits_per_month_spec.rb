@@ -5,6 +5,12 @@ RSpec.describe ReportingPipeline::PatientVisitsPerMonth, {type: :model, reportin
     it { should belong_to(:patient) }
   end
 
+  around do |example|
+    Timecop.freeze("June 30 2021 5:30 UTC") do # June 30th 23:00 IST time
+      example.run
+    end
+  end
+
   describe "the visit definition" do
     it "considers a BP measurement as a visit" do
       bp = create(:blood_pressure, :with_encounter, recorded_at: june_2021[:now])

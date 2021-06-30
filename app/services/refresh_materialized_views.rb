@@ -51,6 +51,7 @@ class RefreshMaterializedViews
     MaterializedPatientSummary
   ].freeze
 
+  # The order for these must remain BPs -> Visits -> States
   V2_MATVIEWS = %w[
     ReportingPipeline::PatientBloodPressuresPerMonth
     ReportingPipeline::PatientVisitsPerMonth
