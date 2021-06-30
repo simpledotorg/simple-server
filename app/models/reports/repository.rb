@@ -167,7 +167,6 @@ module Reports
       science("controlled") do |e|
         e.use { controlled_v1 }
         e.try { controlled_v2 }
-        e.raise_on_mismatches = true
       end
     end
 
