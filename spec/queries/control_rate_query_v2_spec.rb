@@ -13,11 +13,11 @@ RSpec.describe ControlRateQueryV2 do
   let(:jan_2019) { Time.parse("January 1st, 2019 00:00:00+00:00") }
   let(:jan_2020) { Time.parse("January 1st, 2020 00:00:00+00:00") }
   let(:july_2018) { Time.parse("July 1st, 2018 00:00:00+00:00") }
-  let(:july_2020) { Time.parse("July 1st, 2020 00:00:00+00:00") }
+  let(:july_1_2020) { Time.parse("July 1st, 2020 00:00:00+00:00") }
 
   def refresh_views
     logger.info "about to refresh mat views..."
-    ReportingPipeline::PatientStatesPerMonth.refresh
+    RefreshMaterializedViews.new.refresh_v2
   end
 
   it "works" do
@@ -26,16 +26,24 @@ RSpec.describe ControlRateQueryV2 do
       create(:patient, recorded_at: jan_2019, assigned_facility: facility, registration_user: user),
       create(:patient, status: :dead, recorded_at: jan_2019, assigned_facility: facility, registration_user: user)
     ]
+    controlled = patients.first
 
     Timecop.freeze(june_1_2020) do
       patients.each do |patient|
-        create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
+        create(:bp_with_encounter, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
       end
     end
 
-    refresh_views
-
-    expect(query.controlled(facility.region)).to eq([])
-    expect(query.controlled_counts(facility.region)).to eq(0)
+    Timecop.freeze(july_1_2020) do
+      refresh_views
+      with_reporting_time_zone do
+        expect(query.controlled(facility.region).to_a.first.patient_id).to eq(controlled.id)
+        expect(query.controlled_counts(facility.region)).to eq({
+          Period.month("May 2020") => 1,
+          Period.month("June 2020") => 1,
+          Period.month("July 2020") => 1
+        })
+      end
+    end
   end
 end

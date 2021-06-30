@@ -8,7 +8,7 @@ class ControlRateQueryV2
   end
 
   def controlled_counts(region, range: nil)
-    options = { format: Period.formatter(:month) }
+    options = {format: Period.formatter(:month)}
     if range
       time_range = (range.begin.start_time..range.end.end_time)
       options[:range] = time_range
