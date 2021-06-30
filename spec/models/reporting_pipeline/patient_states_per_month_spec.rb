@@ -5,6 +5,17 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
     it { should belong_to(:patient) }
   end
 
+  around do |example|
+    # We need to enforce a known time for this test, otherwise we will have intermittent failures. For example,
+    # if we use live system time, many of these specs will fail after 18:30 UTC (ie 14:30 ET) when on the last day of a month,
+    # because that falls into the next day in IST (our reporting time zone). So to prevent confusing failures for
+    # developers or CI during North American afternoons, we freeze to a time that will be the end of the month for
+    # UTC, ET, and IST. Timezones! 🤯
+    Timecop.freeze("June 30 2021 5:30 UTC") do # June 30th 23:00 IST time
+      example.run
+    end
+  end
+
   context "indicators" do
     describe "htn_care_state" do
       it "marks a dead patient dead" do
@@ -19,7 +30,7 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
         patient_registered_13m_ago = Timecop.freeze(13.months.ago) { create(:patient) }
         Timecop.freeze(13.months.ago) { create(:blood_pressure, patient: patient_registered_13m_ago) }
 
-        described_class.refresh
+        RefreshMaterializedViews.new.refresh_v2
         with_reporting_time_zones do
           expect(described_class
             .where(htn_care_state: "lost_to_follow_up", month_date: Date.current.beginning_of_month)
@@ -34,7 +45,7 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
         patient_registered_12m_ago = Timecop.freeze(12.months.ago) { create(:patient) }
         patient_registered_11m_ago = Timecop.freeze(11.months.ago) { create(:patient) }
 
-        described_class.refresh
+        RefreshMaterializedViews.new.refresh_v2
         with_reporting_time_zones do
           expect(described_class
             .where(htn_care_state: "lost_to_follow_up", month_date: Date.current.beginning_of_month)
@@ -56,7 +67,7 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
         patient_with_recent_bp = Timecop.freeze(13.months.ago) { create(:patient) }
         Timecop.freeze(11.months.ago) { create(:blood_pressure, patient: patient_with_recent_bp) }
 
-        described_class.refresh
+        RefreshMaterializedViews.new.refresh_v2
         with_reporting_time_zones do
           expect(described_class
             .where(htn_care_state: "lost_to_follow_up", month_date: Date.current.beginning_of_month)
@@ -75,7 +86,7 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
           create(:blood_pressure, patient: under_care_patient, recorded_at: june_2021[:under_12_months_ago])
           create(:blood_pressure, patient: ltfu_patient, recorded_at: june_2021[:over_12_months_ago])
 
-          described_class.refresh
+          RefreshMaterializedViews.new.refresh_v2
 
           with_reporting_time_zones do
             expect(described_class
@@ -100,7 +111,8 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
           create(:blood_pressure, patient: under_care_patient, recorded_at: june_2021[:end_of_month] - 1.minute)
           create(:blood_pressure, patient: ltfu_patient, recorded_at: june_2021[:end_of_month] + 1.minute)
 
-          described_class.refresh
+          RefreshMaterializedViews.new.refresh_v2
+
           with_reporting_time_zones do
             expect(described_class
               .where(htn_care_state: "lost_to_follow_up", month_date: june_2021[:beginning_of_month])
@@ -121,7 +133,7 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
           under_care_patient = create(:patient, recorded_at: june_2021[:under_12_months_ago])
           ltfu_patient = create(:patient, recorded_at: june_2021[:over_12_months_ago])
 
-          described_class.refresh
+          RefreshMaterializedViews.new.refresh_v2
           with_reporting_time_zones do
             expect(described_class
               .where(htn_care_state: "lost_to_follow_up", month_date: june_2021[:beginning_of_month])
@@ -147,7 +159,7 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
         patient_2 = create(:patient, recorded_at: june_2021[:long_ago])
         create(:encounter, patient: patient_2, encountered_on: june_2021[:under_3_months_ago])
         patient_3 = create(:patient, recorded_at: june_2021[:long_ago])
-        described_class.refresh
+        RefreshMaterializedViews.new.refresh_v2
 
         with_reporting_time_zones do
           expect(described_class.where(htn_treatment_outcome_in_last_3_months: "missed_visit", month_date: june_2021[:now]).pluck(:patient_id))
@@ -180,7 +192,7 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
           facility: patient_with_no_bp.registration_facility,
           patient: patient_with_no_bp,
           user: patient_with_no_bp.registration_user)
-        described_class.refresh
+        RefreshMaterializedViews.new.refresh_v2
 
         with_reporting_time_zones do
           expect(described_class.where(htn_treatment_outcome_in_last_3_months: "visited_no_bp", month_date: june_2021[:now]).pluck(:patient_id))
@@ -200,7 +212,7 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
         patient_bp_over_3_months = create(:patient, recorded_at: june_2021[:long_ago])
         create(:blood_pressure, :with_encounter, patient: patient_bp_over_3_months, recorded_at: june_2021[:over_3_months_ago])
 
-        described_class.refresh
+        RefreshMaterializedViews.new.refresh_v2
 
         with_reporting_time_zones do
           expect(described_class.where(htn_treatment_outcome_in_last_3_months: "controlled", month_date: june_2021[:now]).pluck(:patient_id))
@@ -220,7 +232,7 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
         patient_3 = create(:patient, recorded_at: june_2021[:now])
         patient_4 = create(:patient, recorded_at: june_2021[:over_3_months_ago])
 
-        described_class.refresh
+        RefreshMaterializedViews.new.refresh_v2
         with_reporting_time_zones do
           expect(described_class.find_by(patient_id: patient_1.id, month_string: june_2021[:month_string]).months_since_registration).to eq 11
           expect(described_class.find_by(patient_id: patient_2.id, month_string: june_2021[:month_string]).months_since_registration).to eq 12
@@ -243,7 +255,7 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
 
         patient = create(:patient, registration_facility: registration_facility, assigned_facility: assigned_facility)
 
-        described_class.refresh
+        RefreshMaterializedViews.new.refresh_v2
 
         with_reporting_time_zones do
           patient_state = described_class.find_by(patient_id: patient.id, month_string: june_2021[:month_string])
@@ -275,7 +287,7 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
 
         patient = create(:patient, registration_facility: registration_facility, assigned_facility: assigned_facility)
 
-        described_class.refresh
+        RefreshMaterializedViews.new.refresh_v2
 
         with_reporting_time_zones do
           patient_state = described_class.find_by(patient_id: patient.id, month_string: june_2021[:month_string])
@@ -306,7 +318,7 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
 
         patient_no_bp = create(:patient, recorded_at: june_2021[:long_ago])
 
-        described_class.refresh
+        RefreshMaterializedViews.new.refresh_v2
 
         with_reporting_time_zones do
           controlled_state = described_class.find_by(patient_id: patient_controlled.id, month_string: june_2021[:month_string])
@@ -348,7 +360,7 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
         create(:prescription_drug, patient: patient, device_created_at: eight_months_ago)
         create(:blood_pressure, :with_encounter, patient: patient, recorded_at: five_months_ago, systolic: 140, diastolic: 90)
 
-        described_class.refresh
+        RefreshMaterializedViews.new.refresh_v2
 
         with_reporting_time_zones do
           expect(patient_states(patient).pluck(:months_since_registration)).to eq((0..24).to_a)
