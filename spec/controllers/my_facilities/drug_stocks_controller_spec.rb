@@ -93,6 +93,13 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
         expect(assigns(:facilities)).not_to include(community_facility_with_stock_tracked)
       end
     end
+
+    it "uses the period reporting time zone to set the end of month" do
+      sign_in(report_viewer.email_authentication)
+      get :drug_stocks, params: {}
+
+      expect(assigns(:for_end_of_month)).to eq(Time.use_zone("Asia/Kolkata") { Time.current.end_of_month })
+    end
   end
 
   describe "GET #new" do
