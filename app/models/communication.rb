@@ -9,9 +9,14 @@ class Communication < ApplicationRecord
 
   delegate :unsuccessful?, :successful?, :in_progress?, to: :detailable
 
+  # the missed_visit types are being deprecated
+  # keeping here to avoid invalidating records until we change existing records as part of:
+  # https://app.clubhouse.io/simpledotorg/story/3585/backfill-notifications-from-communications
   enum communication_type: {
     voip_call: "voip_call",
     manual_call: "manual_call",
+    sms: "sms",
+    whatsapp: "whatsapp",
     missed_visit_sms_reminder: "missed_visit_sms_reminder",
     missed_visit_whatsapp_reminder: "missed_visit_whatsapp_reminder"
   }
