@@ -52,8 +52,8 @@ class RefreshMaterializedViews
   ].freeze
   V2_MATVIEWS = %w[
     ReportingPipeline::PatientBloodPressuresPerMonth
-    ReportingPipeline::PatientStatesPerMonth
     ReportingPipeline::PatientVisitsPerMonth
+    ReportingPipeline::PatientStatesPerMonth
   ].freeze
 
   # LatestBloodPressuresPerPatientPerMonth should be refreshed before
