@@ -177,7 +177,7 @@ module Reports
       end
     end
 
-    def controlled_v2
+    memoize def controlled_v2
       regions.each_with_object({}).each do |region, hsh|
         hsh[region.slug] = control_rate_query_v2.controlled_counts(region, range: active_range(region)).tap { |hsh| hsh.default = 0 }
       end
@@ -197,7 +197,7 @@ module Reports
       end
     end
 
-    def uncontrolled_v2
+    memoize def uncontrolled_v2
       regions.each_with_object({}).each do |region, hsh|
         hsh[region.slug] = control_rate_query_v2.uncontrolled_counts(region, range: active_range(region))
       end
