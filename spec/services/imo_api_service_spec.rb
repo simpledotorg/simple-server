@@ -3,6 +3,13 @@ require "rails_helper"
 describe ImoApiService, type: :model do
   let(:patient) { create(:patient) }
   let(:service) { ImoApiService.new(patient) }
+  let(:auth_token) { Base64.strict_encode64([nil, nil].join(":")) }
+  let(:request_headers) do
+    {
+      "Authorization" => "Basic #{auth_token}",
+      "Host" => "sgp.imo.im"
+    }
+  end
   let(:success_body) {
     JSON(
       response: {
@@ -14,7 +21,6 @@ describe ImoApiService, type: :model do
     JSON(
       status: "error",
       response: {
-        message: "No user with specified phone number",
         type: "nonexistent_user"
       }
     )
@@ -22,13 +28,6 @@ describe ImoApiService, type: :model do
 
   describe "#invite" do
     let(:request_url) { "https://sgp.imo.im/api/simple/send_invite" }
-    let(:auth_token) { Base64.strict_encode64([nil, nil].join(":")) }
-    let(:request_headers) do
-      {
-        "Authorization" => "Basic #{auth_token}",
-        "Host" => "sgp.imo.im"
-      }
-    end
 
     context "with feature flag off" do
       it "returns nil" do
@@ -71,13 +70,6 @@ describe ImoApiService, type: :model do
 
   describe "#send_notification" do
     let(:request_url) { "https://sgp.imo.im/api/simple/send_notification" }
-    let(:auth_token) { Base64.strict_encode64([nil, nil].join(":")) }
-    let(:request_headers) do
-      {
-        "Authorization" => "Basic #{auth_token}",
-        "Host" => "sgp.imo.im"
-      }
-    end
 
     context "with feature flag off" do
       it "returns nil" do
@@ -95,7 +87,6 @@ describe ImoApiService, type: :model do
       it "does not have errors when response is successful" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: success_body)
         service.send_notification("Come back in to the clinic")
-        expect(service.error).to eq(nil)
       end
 
       it "updates patient's ImoAuthorization when imo user does not exist" do
@@ -103,6 +94,33 @@ describe ImoApiService, type: :model do
         expect {
           service.send_notification("Come back in to the clinic")
         }.to change { patient.imo_authorization.reload.status }.from("invited").to("no_imo_account")
+      end
+
+      it "updates patient's ImoAuthorization when imo user is not subscribed" do
+        not_subscribed_body = JSON(
+          status: "success",
+          response: {
+            status: "failed",
+            error_code: "not_subscribed"
+          }
+        )
+
+        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: not_subscribed_body)
+        expect {
+          service.send_notification("Come back in to the clinic")
+        }.to change { patient.imo_authorization.reload.status }.from("invited").to("not_subscribed")
+      end
+
+      it "raises an error on other 400 responses" do
+        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: {}.to_json)
+        expect{ service.send_notification("Come back in to the clinic") }
+          .to raise_error(ImoApiService::Error).with_message("Unknown 400 error from IMO")
+      end
+
+      it "raises an error on other statuses" do
+        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 401, body: {}.to_json)
+        expect{ service.send_notification("Come back in to the clinic") }
+          .to raise_error(ImoApiService::Error).with_message("Unknown response error from IMO")
       end
     end
   end

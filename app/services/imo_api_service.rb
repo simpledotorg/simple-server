@@ -14,8 +14,7 @@ class ImoApiService
     end
   end
 
-  attr_reader :patient, :response, :error
-
+  attr_reader :patient, :response
   def initialize(patient)
     @patient = patient
   end
@@ -79,7 +78,7 @@ class ImoApiService
 
       case body.dig("response", "error_code")
       when "not_subscribed"
-        Statsd.instance.increment("imo.#{action}.no_imo_account")
+        Statsd.instance.increment("imo.#{action}.not_subscribed")
         :not_subscribed
       when "invalid_url"
         raise Error.new("Invalid Imo action url", path: url, response: res)
