@@ -80,10 +80,8 @@ class DrugStocksQuery
     selected_month_drug_stocks.group(:facility_id, "protocol_drugs.rxnorm_code").sum(:in_stock)
   end
 
-  def select_drug_stocks(drug_stocks, facility_id, drug_category)
-    drug_stocks
-      .select { |drug_stock| drug_stock.facility_id == facility_id }
-      .select { |drug_stock| drug_stock.protocol_drug.drug_category == drug_category }
+  def select_drug_stocks(drug_stocks, facility_id)
+    drug_stocks.select { |drug_stock| drug_stock.facility_id == facility_id }
   end
 
   def patient_days_by_facility_id
@@ -91,7 +89,7 @@ class DrugStocksQuery
       result[facility_id] ||= {}
       result[facility_id][drug_category] = category_patient_days(
         drug_category,
-        select_drug_stocks(selected_month_drug_stocks, facility_id, drug_category),
+        select_drug_stocks(selected_month_drug_stocks, facility_id),
         patient_counts_by_facility_id[facility_id] || 0
       )
     end
@@ -123,8 +121,8 @@ class DrugStocksQuery
       result[facility_id][drug_category] =
         category_drug_consumption(
           drug_category,
-          select_drug_stocks(selected_month_drug_stocks, facility_id, drug_category),
-          select_drug_stocks(previous_month_drug_stocks, facility_id, drug_category)
+          select_drug_stocks(selected_month_drug_stocks, facility_id),
+          select_drug_stocks(previous_month_drug_stocks, facility_id)
         )
     end
   end
