@@ -8,8 +8,12 @@ class ControlRateQueryV2
   end
 
   def controlled_counts(region, range: nil)
-    time_range = (range.begin.start_time..range.end.end_time)
-    controlled(region).group_by_period(:month, :month_date, range: time_range, format: Period.formatter(:month)).count
+    options = { format: Period.formatter(:month) }
+    if range
+      time_range = (range.begin.start_time..range.end.end_time)
+      options[:range] = time_range
+    end
+    controlled(region).group_by_period(:month, :month_date, options).count
   end
 
   def uncontrolled(region)
@@ -21,7 +25,7 @@ class ControlRateQueryV2
   end
 
   def uncontrolled_counts(region, range: nil)
-    time_range = (range.begin.start_time..range.end.end_time)
+    time_range = (range.begin.start_time..range.end.end_time) if range
     uncontrolled(region).group_by_period(:month, :month_date, range: time_range, format: Period.formatter(:month)).count
   end
 end

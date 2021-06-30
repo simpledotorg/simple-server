@@ -171,13 +171,13 @@ module Reports
       end
     end
 
-    def controlled_v1
+    private def controlled_v1
       region_period_cached_query(__method__) do |entry|
         control_rate_query.controlled(entry.region, entry.period).count
       end
     end
 
-    memoize def controlled_v2
+    private def controlled_v2
       regions.each_with_object({}).each do |region, hsh|
         hsh[region.slug] = control_rate_query_v2.controlled_counts(region, range: active_range(region)).tap { |hsh| hsh.default = 0 }
       end
@@ -191,13 +191,13 @@ module Reports
       end
     end
 
-    def uncontrolled_v1
+    private def uncontrolled_v1
       region_period_cached_query(__method__) do |entry|
         control_rate_query.uncontrolled(entry.region, entry.period).count
       end
     end
 
-    memoize def uncontrolled_v2
+    private def uncontrolled_v2
       regions.each_with_object({}).each do |region, hsh|
         hsh[region.slug] = control_rate_query_v2.uncontrolled_counts(region, range: active_range(region))
       end
