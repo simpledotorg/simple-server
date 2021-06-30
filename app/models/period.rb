@@ -1,5 +1,4 @@
 class Period
-  REGISTRATION_BUFFER_MONTHS = 3
   REPORTING_TIME_ZONE = CountryConfig.current[:time_zone] || "Asia/Kolkata"
 
   include Comparable
