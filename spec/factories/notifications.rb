@@ -5,6 +5,7 @@ FactoryBot.define do
     status { "pending" }
     message { "notifications.set01.basic" }
     association :patient, factory: :patient
+    purpose { "missed_visit_reminder" }
 
     trait :with_experiment do
       association :experiment, factory: :experiment

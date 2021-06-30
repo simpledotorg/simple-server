@@ -259,38 +259,38 @@ describe Appointment, type: :model do
     end
 
     it "returns falsey if there are no communications for the appointment" do
-      expect(overdue_appointment.previously_communicated_via?(:missed_visit_sms_reminder)).to be_falsey
+      expect(overdue_appointment.previously_communicated_via?(:sms)).to be_falsey
     end
 
-    it "returns falsey if there are non missed_visit_sms_reminder communications for the appointment" do
+    it "returns falsey if there are non sms communications for the appointment" do
       notification = create(:notification, subject: overdue_appointment)
       create(:communication,
         communication_type: :voip_call,
         appointment: overdue_appointment,
         notification: notification)
 
-      expect(overdue_appointment.previously_communicated_via?(:missed_visit_sms_reminder)).to be_falsey
+      expect(overdue_appointment.previously_communicated_via?(:sms)).to be_falsey
     end
 
     it "returns true if followup reminder SMS for the appointment was unsuccessful" do
       notification = create(:notification, subject: overdue_appointment)
       notification.communications << create(:communication,
-        :missed_visit_sms_reminder,
+        :sms,
         appointment: overdue_appointment,
         detailable: create(:twilio_sms_delivery_detail, :undelivered))
 
-      expect(overdue_appointment.previously_communicated_via?(:missed_visit_sms_reminder)).to eq(false)
+      expect(overdue_appointment.previously_communicated_via?(:sms)).to eq(false)
     end
 
     it "returns false if followup reminder SMS for the appointment were successful" do
       notification = create(:notification, subject: overdue_appointment)
       notification.communications << create(:communication,
-        :missed_visit_sms_reminder,
+        :sms,
         appointment_id: overdue_appointment.id,
         notification: notification,
         detailable: create(:twilio_sms_delivery_detail, :delivered))
 
-      expect(overdue_appointment.reload.previously_communicated_via?(:missed_visit_sms_reminder)).to eq(true)
+      expect(overdue_appointment.reload.previously_communicated_via?(:sms)).to eq(true)
     end
   end
 
