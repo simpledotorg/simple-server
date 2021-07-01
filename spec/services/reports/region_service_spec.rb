@@ -5,8 +5,8 @@ RSpec.describe Reports::RegionService, type: :model do
   let(:user) { create(:admin, :manager, :with_access, resource: organization) }
   let(:facility_group_1) { FactoryBot.create(:facility_group, name: "facility_group_1", organization: organization) }
 
-  let(:jan_2019) { Time.parse("January 1st, 2019") }
-  let(:jan_2020) { Time.parse("January 1st, 2020") }
+  let(:jan_2019) { Time.parse("January 1st, 2019 12:00 IST") }
+  let(:jan_2020) { Time.parse("January 1st, 2020 12:00 IST") }
 
   let(:june_1_2018) { Time.parse("June 1, 2018 00:00:00+00:00") }
   let(:june_1_2020) { Time.parse("June 1, 2020 00:00:00+00:00") }
