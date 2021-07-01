@@ -18,11 +18,11 @@ class AppointmentsController < AdminController
 
     respond_to do |format|
       format.html do
-        @patient_summaries = paginate(patient_summaries(include_excluded: false)).includes(:next_appointment, patient: :appointments)
+        @patient_summaries = paginate(patient_summaries(only_overdue: true)).includes(:next_appointment, patient: :appointments)
         render layout: "overdue"
       end
       format.csv do
-        @patient_summaries = patient_summaries(include_excluded: true)
+        @patient_summaries = patient_summaries(only_overdue: false)
         send_data render_to_string("index.csv.erb"), filename: download_filename
       end
     end
@@ -84,12 +84,12 @@ class AppointmentsController < AdminController
     "overdue-patients_#{facility_name}_#{Time.current.to_s(:number)}.csv"
   end
 
-  def patient_summaries(include_excluded: false)
+  def patient_summaries(only_overdue: true)
     PatientSummaryQuery.call(
       assigned_facility: current_facility,
       next_appointment_facilities: current_admin.accessible_facilities(:manage_overdue_list),
       filters: @search_filters,
-      include_excluded: include_excluded
+      only_overdue: only_overdue
     ).order(risk_level: :desc, next_appointment_scheduled_date: :desc, id: :asc)
   end
 end

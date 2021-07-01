@@ -51,27 +51,26 @@ class Appointment < ApplicationRecord
     where("scheduled_date BETWEEN ? and ?", start_date, end_date)
   end
 
-  def self.missed_appointments
-    where("appointments.status != 'visited' AND scheduled_date < ?", Date.current)
+  def self.passed_unvisited
+    # Scheduled or cancelled appointments whose scheduled date has passed.
+    where.not(appointments: {status: :visited})
+      .where("scheduled_date < ?", Date.current)
       .joins(:patient)
       .where.not(patients: {status: :dead})
   end
 
-  def self.missed_appointments_in_last_year
-    missed_appointments
-      .where("scheduled_date >= ?", 365.days.ago)
+  def self.last_year_unvisited
+    passed_unvisited.where("scheduled_date >= ?", 365.days.ago)
   end
 
   def self.all_overdue
-    where(status: "scheduled")
-      .where(arel_table[:scheduled_date].lt(Date.current))
+    passed_unvisited
+      .where(status: :scheduled)
       .where(arel_table[:remind_on].eq(nil).or(arel_table[:remind_on].lteq(Date.current)))
-      .joins(:patient)
-      .where.not(patients: {status: :dead})
   end
 
   def self.overdue
-    all_overdue.where(arel_table[:scheduled_date].gteq(365.days.ago))
+    all_overdue.where("scheduled_date >= ?", 365.days.ago)
   end
 
   def self.overdue_by(number_of_days)
