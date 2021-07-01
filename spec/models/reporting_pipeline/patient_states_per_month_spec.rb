@@ -342,7 +342,7 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
         relation.order(month_date: :asc)
       end
 
-      it "should have a record for every month between registration and now" do
+      xit "should have a record for every month between registration and now" do
         two_years_ago = june_2021[:now] - 2.years
         twelve_months_ago = june_2021[:now] - 12.months
         ten_months_ago = june_2021[:now] - 10.months
