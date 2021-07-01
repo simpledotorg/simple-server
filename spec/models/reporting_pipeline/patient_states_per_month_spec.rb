@@ -342,7 +342,7 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
         relation.order(month_date: :asc)
       end
 
-      fit "should have a record for every month between registration and now" do
+      it "should have a record for every month between registration and now" do
         Timecop.freeze(june_2021[:now]) do
           two_years_ago = june_2021[:now] - 2.years
           twelve_months_ago = june_2021[:now] - 12.months
