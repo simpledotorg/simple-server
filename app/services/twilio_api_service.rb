@@ -81,7 +81,7 @@ class TwilioApiService
       status_callback: callback_url,
       body: message
     )
-  rescue Twilio::REST::TwilioError => exception
+  rescue Twilio::REST::TwilioError
     raise Error, "Error while calling Twilio API"
   end
 end
