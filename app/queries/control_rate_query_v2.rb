@@ -1,8 +1,9 @@
 class ControlRateQueryV2
-  def controlled(region)
+  def controlled(maybe_region)
+    region = maybe_region.region
     ReportingPipeline::PatientStatesPerMonth
       .where(hypertension: "yes", htn_care_state: "under_care")
-      .where("assigned_#{region.region.region_type}_region_id" => region.id)
+      .where("assigned_#{region.region_type}_region_id" => region.id)
       .where("months_since_registration >= ?", Reports::REGISTRATION_BUFFER_IN_MONTHS)
       .where(htn_treatment_outcome_in_last_3_months: :controlled)
   end
@@ -12,7 +13,8 @@ class ControlRateQueryV2
     controlled(region).group_by_period(:month, :month_date, options).count
   end
 
-  def uncontrolled(region)
+  def uncontrolled(maybe_region)
+    region = maybe_region.region
     ReportingPipeline::PatientStatesPerMonth
       .where("assigned_#{region.region.region_type}_region_id" => region.id)
       .where(hypertension: "yes", htn_care_state: "under_care")
