@@ -102,10 +102,10 @@ RSpec.describe Reports::RegionService, type: :model do
       end
       uncontrolled.map do |patient|
         create(:bp_with_encounter, :hypertensive, facility: facility,
-                                               patient: patient, recorded_at: 4.days.ago, user: user)
+                                                  patient: patient, recorded_at: 4.days.ago, user: user)
       end
       create(:bp_with_encounter, :under_control, facility: facility, patient: patient_from_other_facility,
-                                              recorded_at: 2.days.ago, user: user)
+                                                 recorded_at: 2.days.ago, user: user)
     end
 
     refresh_views
@@ -435,7 +435,7 @@ RSpec.describe Reports::RegionService, type: :model do
         uncontrolled_in_jan.map { |patient| create(:bp_with_encounter, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago) }
         create(:bp_with_encounter, :under_control, facility: facility, patient: patient_from_other_facility, recorded_at: 2.days.ago)
         create(:bp_with_encounter, :under_control, facility: facility, patient: patient_from_other_facility,
-                                                recorded_at: 2.days.ago, user: user)
+                                                   recorded_at: 2.days.ago, user: user)
       end
 
       Timecop.freeze(june_1_2020) do
