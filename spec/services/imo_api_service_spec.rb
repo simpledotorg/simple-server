@@ -113,13 +113,13 @@ describe ImoApiService, type: :model do
 
       it "raises an error on other 400 responses" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: {}.to_json)
-        expect{ service.send_notification("Come back in to the clinic") }
+        expect { service.send_notification("Come back in to the clinic") }
           .to raise_error(ImoApiService::Error).with_message("Unknown 400 error from IMO")
       end
 
       it "raises an error on other statuses" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 401, body: {}.to_json)
-        expect{ service.send_notification("Come back in to the clinic") }
+        expect { service.send_notification("Come back in to the clinic") }
           .to raise_error(ImoApiService::Error).with_message("Unknown response error from IMO")
       end
     end
