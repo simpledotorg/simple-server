@@ -10,13 +10,7 @@ class TwilioApiService
   TWILIO_TEST_WHATSAPP_NUMBER = "+14155238886"
 
   class Error < StandardError
-    attr_reader :exception_message
-    def initialize(message, exception_message: nil)
-      super(message)
-      @exception_message = exception_message
-    end
   end
-
   def initialize(sms_sender: nil)
     @test_mode = !SimpleServer.env.production?
 
@@ -87,6 +81,6 @@ class TwilioApiService
       body: message
     )
   rescue Twilio::REST::TwilioError => exception
-    raise Error.new("Error while calling the Twilio API", exception_message: exception)
+    raise Error, "Error while calling Twilio API"
   end
 end
