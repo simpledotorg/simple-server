@@ -20,6 +20,12 @@ RSpec.describe Reports::Repository, type: :model do
     RefreshMaterializedViews.call
   end
 
+  around do |ex|
+    with_reporting_time_zone do
+      ex.run
+    end
+  end
+
   context "earliest patient record" do
     it "returns the earliest between both assigned and registered if both exist" do
       facility_1, facility_2 = FactoryBot.create_list(:facility, 2, facility_group: facility_group_1)
@@ -118,10 +124,10 @@ RSpec.describe Reports::Repository, type: :model do
       facility_2_controlled = create(:patient, full_name: "other facility", recorded_at: jan_2019, assigned_facility: facility_2, registration_user: user)
       Timecop.freeze(jan_2020) do
         (facility_1_controlled << facility_2_controlled).map do |patient|
-          create(:blood_pressure, :under_control, facility: facility_1, patient: patient, recorded_at: 15.days.ago, user: user)
+          create(:bp_with_encounter, :under_control, facility: facility_1, patient: patient, recorded_at: 15.days.ago, user: user)
         end
         facility_1_uncontrolled.map do |patient|
-          create(:blood_pressure, :hypertensive, facility: facility_1, patient: patient, recorded_at: 15.days.ago)
+          create(:bp_with_encounter, :hypertensive, facility: facility_1, patient: patient, recorded_at: 15.days.ago)
         end
       end
       refresh_views
@@ -136,13 +142,15 @@ RSpec.describe Reports::Repository, type: :model do
           jan_2020.to_period => 50
         }
       }
-      repo = Reports::Repository.new(facility_1.region, periods: jan_2020.to_period)
-      (jan_2019.to_period..jan_2020.to_period).each do |period|
-        count = repo.cumulative_assigned_patients[facility_1.slug][period]
-        expect(count).to eq(4), "expected 4 assigned patients for #{period} but got #{count}"
+      with_reporting_time_zone do
+        repo = Reports::Repository.new(facility_1.region, periods: jan_2020.to_period)
+        (jan_2019.to_period..jan_2020.to_period).each do |period|
+          count = repo.cumulative_assigned_patients[facility_1.slug][period]
+          expect(count).to eq(4), "expected 4 assigned patients for #{period} but got #{count}"
+        end
+        expect(repo.controlled).to eq(expected_counts)
+        expect(repo.controlled_rates).to eq(expected_rates)
       end
-      expect(repo.controlled).to eq(expected_counts)
-      expect(repo.controlled_rates).to eq(expected_rates)
     end
 
     it "gets controlled counts and rates for one month" do

@@ -1,3 +1,4 @@
+require_relative "experiment"
 module Reports
   class Repository
     include BustCache
@@ -178,7 +179,11 @@ module Reports
 
     private def controlled_v2
       regions.each_with_object({}).each do |region, hsh|
-        hsh[region.slug] = control_rate_query_v2.controlled_counts(region, range: active_range(region)).tap { |hsh| hsh.default = 0 }
+        if earliest_patient_recorded_at[region.slug].nil?
+          hsh[region.slug] = {}
+          next
+        end
+        hsh[region.slug] = control_rate_query_v2.controlled_counts(region, range: active_range(region))
       end
     end
 
@@ -198,6 +203,10 @@ module Reports
 
     private def uncontrolled_v2
       regions.each_with_object({}).each do |region, hsh|
+        if earliest_patient_recorded_at[region.slug].nil?
+          hsh[region.slug] = {}
+          next
+        end
         hsh[region.slug] = control_rate_query_v2.uncontrolled_counts(region, range: active_range(region))
       end
     end

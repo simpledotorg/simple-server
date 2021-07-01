@@ -1,6 +1,6 @@
 module Reports
   class Experiment
-    include Scientist
+    include Scientist::Experiment
     attr_accessor :name
 
     def initialize(name)
@@ -8,22 +8,18 @@ module Reports
     end
 
     def enabled?
-      # see "Ramping up experiments" below
-      true
+      false
     end
 
     def raised(operation, error)
-      # see "In a Scientist callback" below
       p "Operation '#{operation}' failed with error '#{error.inspect}'"
       super # will re-raise
     end
 
     def publish(result)
-      # see "Publishing results" below
-      p result
     end
   end
-  Experiment.raise_on_mismatches = true
+  Experiment.raise_on_mismatches = ENV["RAISE_ON_MISMATCH"]
 end
 
 

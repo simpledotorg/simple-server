@@ -13,6 +13,7 @@ class ControlRateQueryV2
       time_range = (range.begin.start_time..range.end.end_time)
       options[:range] = time_range
     end
+    pp options[:range]
     controlled(region).group_by_period(:month, :month_date, options).count
   end
 
