@@ -61,7 +61,9 @@ RSpec.describe Reports::RegionService, type: :model do
 
     refresh_views
 
-    result = Reports::RegionService.call(region: facility_group_1, period: june_1_2020.to_period, months: 25)
+    result = with_reporting_time_zone do
+      Reports::RegionService.call(region: facility_group_1, period: june_1_2020.to_period, months: 26)
+    end
 
     april_period = Date.parse("April 1 2020").to_period
     may_period = Date.parse("May 1 2020").to_period
@@ -227,7 +229,9 @@ RSpec.describe Reports::RegionService, type: :model do
 
     refresh_views
 
-    result = Reports::RegionService.call(region: facility_group_1, period: july_2020.to_period)
+    result = with_reporting_time_zone do
+      Reports::RegionService.call(region: facility_group_1, period: july_2020.to_period)
+    end
 
     expect(result[:registrations][Period.month(jan_2019)]).to eq(5)
     expect(result[:assigned_patients][Period.month(jan_2019)]).to eq(5)
