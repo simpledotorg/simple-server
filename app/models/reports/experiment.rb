@@ -8,7 +8,7 @@ module Reports
     end
 
     def enabled?
-      false
+      SimpleServer.env.development? || SimpleServer.env.sandbox? || SimpleServer.env.test?
     end
 
     def raised(operation, error)
