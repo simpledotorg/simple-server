@@ -3,7 +3,7 @@ class SendPatientOtpSmsJob < ApplicationJob
     phone_number = passport_authentication.patient&.latest_mobile_number
     return unless phone_number.present?
 
-    NotificationService.new.send_sms(phone_number, otp_message(passport_authentication))
+    TwilioApiService.new.send_sms(phone_number, otp_message(passport_authentication))
   end
 
   private

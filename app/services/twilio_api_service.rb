@@ -1,8 +1,5 @@
-class NotificationService
-  DEFAULT_LOCALE = :en
-
+class TwilioApiService
   attr_reader :client
-  attr_reader :error
   attr_reader :response
   attr_reader :twilio_sender_sms_number
   attr_reader :twilio_sender_whatsapp_number
@@ -11,6 +8,14 @@ class NotificationService
   # https://www.twilio.com/docs/whatsapp/sandbox#what-is-the-twilio-sandbox-for-whatsapp
   TWILIO_TEST_SMS_NUMBER = "+15005550006"
   TWILIO_TEST_WHATSAPP_NUMBER = "+14155238886"
+
+  class Error < StandardError
+    attr_reader :exception_message
+    def initialize(message, exception_message: nil)
+      super(message)
+      @exception_message = exception_message
+    end
+  end
 
   def initialize(sms_sender: nil)
     @test_mode = !SimpleServer.env.production?
@@ -68,10 +73,6 @@ class NotificationService
     default_country_code + parsed_number
   end
 
-  def failed?
-    error.present?
-  end
-
   private
 
   def default_country_code
@@ -86,19 +87,6 @@ class NotificationService
       body: message
     )
   rescue Twilio::REST::TwilioError => exception
-    @error = exception
-    report_error(exception)
-  end
-
-  def report_error(e)
-    Sentry.capture_message(
-      "Error while processing notification",
-      extra: {
-        exception: e.to_s
-      },
-      tags: {
-        type: "notification-service"
-      }
-    )
+    raise Error.new("Error while calling the Twilio API", exception_message: exception)
   end
 end

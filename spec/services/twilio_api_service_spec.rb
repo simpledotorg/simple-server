@@ -1,12 +1,12 @@
 require "rails_helper"
 
-RSpec.describe NotificationService do
+RSpec.describe TwilioApiService do
   let(:twilio_client) { double("TwilioClientDouble") }
   let(:fake_callback_url) { "http://localhost/callback" }
   let(:sender_sms_phone_number) { described_class::TWILIO_TEST_SMS_NUMBER }
   let(:sender_whatsapp_phone_number) { described_class::TWILIO_TEST_WHATSAPP_NUMBER }
 
-  subject(:notification_service) { NotificationService.new }
+  subject(:notification_service) { TwilioApiService.new }
   let(:recipient_phone_number) { "8585858585" }
   let(:expected_sms_recipient_phone_number) { "+918585858585" }
 
@@ -36,13 +36,13 @@ RSpec.describe NotificationService do
   describe "specifying an SMS sender" do
     it "uses the provided SMS sender number in production" do
       stub_const("SIMPLE_SERVER_ENV", "production")
-      notification_service = NotificationService.new(sms_sender: "1234567890")
+      notification_service = TwilioApiService.new(sms_sender: "1234567890")
       expect(notification_service.twilio_sender_sms_number).to eq("1234567890")
     end
 
     it "uses the test number in test environments" do
-      notification_service = NotificationService.new(sms_sender: "1234567890")
-      expect(notification_service.twilio_sender_sms_number).to eq(NotificationService::TWILIO_TEST_SMS_NUMBER)
+      notification_service = TwilioApiService.new(sms_sender: "1234567890")
+      expect(notification_service.twilio_sender_sms_number).to eq(TwilioApiService::TWILIO_TEST_SMS_NUMBER)
     end
 
     it "uses the primary number when no explicit sender is specified" do
@@ -64,11 +64,13 @@ RSpec.describe NotificationService do
       notification_service.send_sms(recipient_phone_number, "test sms message", fake_callback_url)
     end
 
-    it "captures exceptions in Sentry and sets 'error' to the exception" do
-      expect(Sentry).to receive(:capture_message)
-      notification_service.send_sms(recipient_phone_number, "test sms message", fake_callback_url)
-      expect(notification_service.error.class).to eq(Twilio::REST::RestError)
-      expect(notification_service.response).to eq(nil)
+    it "raises a custom error on twilio error" do
+      stub_client
+      allow(twilio_client).to receive_message_chain("messages.create").and_raise(Twilio::REST::TwilioError)
+
+      expect {
+        notification_service.send_sms(recipient_phone_number, "test sms message", fake_callback_url)
+      }.to raise_error(TwilioApiService::Error)
     end
   end
 
@@ -86,26 +88,13 @@ RSpec.describe NotificationService do
       notification_service.send_whatsapp(recipient_phone_number, "test whatsapp message", fake_callback_url)
     end
 
-    it "captures errors in Sentry and sets 'error' to the exception" do
-      expect(Sentry).to receive(:capture_message)
-      notification_service.send_whatsapp(recipient_phone_number, "test whatsapp message", fake_callback_url)
-      expect(notification_service.error.class).to eq(Twilio::REST::RestError)
-      expect(notification_service.response).to eq(nil)
-    end
-  end
-
-  describe "#failed?" do
-    it "is false when no error has been raised" do
-      expect(notification_service.failed?).to be_falsey
+    it "raises a custom error on twilio error" do
       stub_client
-      allow(twilio_client).to receive_message_chain("messages.create")
-      notification_service.send_whatsapp(recipient_phone_number, "test whatsapp message", fake_callback_url)
-      expect(notification_service.failed?).to be_falsey
-    end
+      allow(twilio_client).to receive_message_chain("messages.create").and_raise(Twilio::REST::TwilioError)
 
-    it "is true when twilio raises an error" do
-      notification_service.send_whatsapp(recipient_phone_number, "test whatsapp message", fake_callback_url)
-      expect(notification_service.failed?).to be_truthy
+      expect {
+        notification_service.send_whatsapp(recipient_phone_number, "test whatsapp message", fake_callback_url)
+      }.to raise_error(TwilioApiService::Error)
     end
   end
 

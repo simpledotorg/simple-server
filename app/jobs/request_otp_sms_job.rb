@@ -1,6 +1,6 @@
 class RequestOtpSmsJob < ApplicationJob
   def perform(user)
-    NotificationService.new.send_sms(user.phone_number, otp_message(user))
+    TwilioApiService.new.send_sms(user.phone_number, otp_message(user))
   end
 
   private

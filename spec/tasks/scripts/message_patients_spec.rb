@@ -101,11 +101,11 @@ RSpec.describe MessagePatients do
     response_double = double("NotificationServiceResponse")
     twilio_client = double
 
-    allow_any_instance_of(NotificationService)
+    allow_any_instance_of(TwilioApiService)
       .to(receive(:response))
       .and_return(response_double)
     allow(response_double).to receive(:status).and_return("queued")
-    allow_any_instance_of(NotificationService).to receive(:client).and_return(twilio_client)
+    allow_any_instance_of(TwilioApiService).to receive(:client).and_return(twilio_client)
     allow(twilio_client).to receive_message_chain("messages.create")
   end
 end

@@ -39,9 +39,9 @@ class AppointmentNotification::Worker
 
   def send_message(notification, communication_type)
     notification_service = if notification.experiment&.experiment_type == "medication_reminder" && medication_reminder_sms_sender
-      NotificationService.new(sms_sender: medication_reminder_sms_sender)
+      TwilioApiService.new(sms_sender: medication_reminder_sms_sender)
     else
-      NotificationService.new
+      TwilioApiService.new
     end
 
     # remove missed_visit_whatsapp_reminder and missed_visit_sms_reminder
@@ -66,20 +66,6 @@ class AppointmentNotification::Worker
     else
       raise UnknownCommunicationType, "#{self.class.name} is not configured to handle communication type #{communication_type}"
     end
-
-    log_info = {
-      class: self.class.name,
-      msg: "send_message",
-      failed: !!notification_service.failed?,
-      error: notification_service.error,
-      sender: medication_reminder_sms_sender || "default",
-      communication_type: communication_type,
-      notification_id: notification.id
-    }
-
-    logger.info log_info
-
-    return if notification_service.failed?
 
     ActiveRecord::Base.transaction do
       create_communication(notification, communication_type, notification_service.response)

@@ -16,11 +16,11 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
 
     def mock_successful_delivery
       response_double = double
-      allow_any_instance_of(NotificationService).to receive(:response).and_return(response_double)
+      allow_any_instance_of(TwilioApiService).to receive(:response).and_return(response_double)
       allow(response_double).to receive(:status).and_return("sent")
       allow(response_double).to receive(:sid).and_return("12345")
       twilio_client = double
-      allow_any_instance_of(NotificationService).to receive(:client).and_return(twilio_client)
+      allow_any_instance_of(TwilioApiService).to receive(:client).and_return(twilio_client)
       allow(twilio_client).to receive_message_chain("messages.create")
     end
 
@@ -61,7 +61,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("whatsapp")
 
       expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.sent.whatsapp")
-      expect_any_instance_of(NotificationService).to receive(:send_whatsapp)
+      expect_any_instance_of(TwilioApiService).to receive(:send_whatsapp)
       described_class.perform_async(notification.id)
       described_class.drain
     end
@@ -71,7 +71,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("sms")
 
       expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.sent.sms")
-      expect_any_instance_of(NotificationService).to receive(:send_sms)
+      expect_any_instance_of(TwilioApiService).to receive(:send_sms)
       described_class.perform_async(notification.id)
       described_class.drain
     end
@@ -113,12 +113,12 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       }.to change { Communication.count }.by(1)
     end
 
-    it "does not create a NotificationService or Communication if notification has been previously attempted by all available methods" do
+    it "does not create a TwilioApiService or Communication if notification has been previously attempted by all available methods" do
       create(:communication, :whatsapp, notification: notification)
       create(:communication, :sms, notification: notification)
 
       expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.skipped.no_next_communication_type")
-      expect_any_instance_of(NotificationService).not_to receive(:send_whatsapp)
+      expect_any_instance_of(TwilioApiService).not_to receive(:send_whatsapp)
       expect {
         described_class.perform_async(notification.id)
         described_class.drain
@@ -131,7 +131,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       previous_whatsapp = create(:communication, :whatsapp, notification: notification)
       create(:twilio_sms_delivery_detail, :failed, communication: previous_whatsapp)
 
-      expect_any_instance_of(NotificationService).to receive(:send_sms)
+      expect_any_instance_of(TwilioApiService).to receive(:send_sms)
       described_class.perform_async(notification.id)
       described_class.drain
     end
@@ -157,7 +157,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
         }
       )
 
-      expect_any_instance_of(NotificationService).to receive(:send_sms).with(
+      expect_any_instance_of(TwilioApiService).to receive(:send_sms).with(
         notification.patient.latest_mobile_number,
         localized_message,
         "https://localhost/api/v3/twilio_sms_delivery"
@@ -180,7 +180,10 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
     it "does not create a communication or update notification status if an error is received from twilio" do
       expect {
         described_class.perform_async(notification.id)
-        described_class.drain
+        begin
+          described_class.drain
+        rescue TwilioApiService::Error
+        end
       }.not_to change { Communication.count }
       expect(notification.reload.status).to eq("scheduled")
     end
@@ -221,8 +224,8 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
         allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("sms")
         allow_any_instance_of(Notification).to receive(:experiment).and_return(experiment)
 
-        expect(NotificationService).to receive(:new).with(sms_sender: /testnumber/).and_call_original
-        expect_any_instance_of(NotificationService).to receive(:send_sms)
+        expect(TwilioApiService).to receive(:new).with(sms_sender: /testnumber/).and_call_original
+        expect_any_instance_of(TwilioApiService).to receive(:send_sms)
         described_class.perform_async(notification.id)
         described_class.drain
       end
@@ -235,8 +238,8 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
         allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("sms")
         allow_any_instance_of(Notification).to receive(:experiment).and_return(experiment)
 
-        expect(NotificationService).to receive(:new).with(no_args).and_call_original
-        expect_any_instance_of(NotificationService).to receive(:send_sms)
+        expect(TwilioApiService).to receive(:new).with(no_args).and_call_original
+        expect_any_instance_of(TwilioApiService).to receive(:send_sms)
         described_class.perform_async(notification.id)
         described_class.drain
       end
@@ -247,8 +250,8 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
         allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("sms")
         allow_any_instance_of(Notification).to receive(:experiment).and_return(experiment)
 
-        expect(NotificationService).to receive(:new).with(no_args).and_call_original
-        expect_any_instance_of(NotificationService).to receive(:send_sms)
+        expect(TwilioApiService).to receive(:new).with(no_args).and_call_original
+        expect_any_instance_of(TwilioApiService).to receive(:send_sms)
         described_class.perform_async(notification.id)
         described_class.drain
       end
@@ -258,8 +261,8 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
         allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("sms")
         allow_any_instance_of(Notification).to receive(:experiment).and_return(nil)
 
-        expect(NotificationService).to receive(:new).with(no_args).and_call_original
-        expect_any_instance_of(NotificationService).to receive(:send_sms)
+        expect(TwilioApiService).to receive(:new).with(no_args).and_call_original
+        expect_any_instance_of(TwilioApiService).to receive(:send_sms)
         described_class.perform_async(notification.id)
         described_class.drain
       end
