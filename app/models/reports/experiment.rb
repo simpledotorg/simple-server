@@ -13,7 +13,6 @@ module Reports
 
     def raised(operation, error)
       p "Operation '#{operation}' failed with error '#{error.inspect}'"
-      super # will re-raise
     end
 
     def publish(result)
@@ -21,5 +20,3 @@ module Reports
   end
   Experiment.raise_on_mismatches = ENV["RAISE_ON_MISMATCH"]
 end
-
-

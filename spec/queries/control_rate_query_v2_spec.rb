@@ -16,7 +16,6 @@ RSpec.describe ControlRateQueryV2 do
   let(:july_1_2020) { Time.parse("July 1st, 2020 00:00:00+00:00") }
 
   def refresh_views
-    logger.info "about to refresh mat views..."
     RefreshMaterializedViews.new.refresh_v2
   end
 
