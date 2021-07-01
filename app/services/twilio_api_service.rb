@@ -11,6 +11,7 @@ class TwilioApiService
 
   class Error < StandardError
   end
+
   def initialize(sms_sender: nil)
     @test_mode = !SimpleServer.env.production?
 
