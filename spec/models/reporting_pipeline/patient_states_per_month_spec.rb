@@ -362,7 +362,6 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
           create(:blood_pressure, :with_encounter, patient: patient, recorded_at: five_months_ago, systolic: 140, diastolic: 90)
 
           with_reporting_time_zone do
-
             RefreshMaterializedViews.new.refresh_v2
 
             expect(patient_states(patient).pluck(:months_since_registration)).to eq((0..24).to_a)
