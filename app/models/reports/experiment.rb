@@ -18,5 +18,6 @@ module Reports
     def publish(result)
     end
   end
-  Experiment.raise_on_mismatches = ENV["RAISE_ON_MISMATCH"]
+  # Experiment.raise_on_mismatches = ENV["RAISE_ON_MISMATCH"]
+  Experiment.raise_on_mismatches = true
 end
