@@ -6,6 +6,8 @@ class PatientSummary < ActiveRecord::Base
 
   scope :overdue, -> { joins(:next_appointment).merge(Appointment.overdue) }
   scope :all_overdue, -> { joins(:next_appointment).merge(Appointment.all_overdue) }
+  scope :missed_appointments, -> { joins(:next_appointment).merge(Appointment.missed_appointments) }
+  scope :missed_appointments_in_last_year, -> { joins(:next_appointment).merge(Appointment.missed_appointments_in_last_year) }
 
   def readonly?
     true
