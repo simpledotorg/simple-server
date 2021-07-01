@@ -54,7 +54,7 @@ class Appointment < ApplicationRecord
   def self.passed_unvisited
     # Scheduled or cancelled appointments whose scheduled date has passed.
     where.not(appointments: {status: :visited})
-      .where("scheduled_date < ?", Date.current)
+      .where("appointments.scheduled_date < ?", Date.current)
       .joins(:patient)
       .where.not(patients: {status: :dead})
   end
