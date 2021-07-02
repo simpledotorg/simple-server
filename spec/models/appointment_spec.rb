@@ -83,8 +83,8 @@ describe Appointment, type: :model do
         cancelled_future = create(:appointment, status: :cancelled, scheduled_date: future, **params)
         appointment_to_remind = create(:appointment, status: :scheduled, scheduled_date: past, remind_on: future, **params)
 
-        expect(described_class.passed_unvisited).to include(scheduled_past)
-        expect(described_class.passed_unvisited).not_to include(scheduled_future, cancelled_future, visited, cancelled_past, appointment_to_remind)
+        expect(described_class.all_overdue).to include(scheduled_past)
+        expect(described_class.all_overdue.map(&:id)).not_to include([scheduled_future, cancelled_future, visited, cancelled_past, appointment_to_remind].map(&:id))
       end
     end
 
