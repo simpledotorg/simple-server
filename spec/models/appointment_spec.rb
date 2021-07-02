@@ -31,6 +31,63 @@ describe Appointment, type: :model do
       end
     end
 
+    describe ".passed_unvisited" do
+      it "includes all unvisited passed appointments" do
+        past = 1.month.ago
+        future = 1.month.from_now
+        facility = create(:facility)
+        user = create(:user, registration_facility: facility)
+        patient = create(:patient, registration_facility: facility, registration_user: user)
+        params = {facility_id: facility.id, creation_facility_id: facility.id, user: user, patient: patient}
+
+        scheduled_past = create(:appointment, status: :scheduled, scheduled_date: past, **params)
+        scheduled_future = create(:appointment, status: :scheduled, scheduled_date: future, **params)
+        visited = create(:appointment, status: :visited, scheduled_date: past, **params)
+        cancelled_past = create(:appointment, status: :cancelled, scheduled_date: past, **params)
+        cancelled_future = create(:appointment, status: :cancelled, scheduled_date: future, **params)
+        appointment_to_remind = create(:appointment, status: :scheduled, scheduled_date: past, remind_on: future, **params)
+
+        expect(described_class.passed_unvisited).to include(scheduled_past, cancelled_past, appointment_to_remind)
+        expect(described_class.passed_unvisited).not_to include(scheduled_future, cancelled_future, visited)
+      end
+    end
+
+    describe ".last_year_unvisited" do
+      it "only includes unvisited appointments from the last year" do
+        facility = create(:facility)
+        user = create(:user, registration_facility: facility)
+        patient = create(:patient, registration_facility: facility, registration_user: user)
+        params = {facility_id: facility.id, creation_facility_id: facility.id, user: user, patient: patient}
+
+        scheduled_in_last_year = create(:appointment, status: :scheduled, scheduled_date: 1.month.ago, **params)
+        scheduled_before_last_year = create(:appointment, status: :scheduled, scheduled_date: 2.year.ago, **params)
+
+        expect(described_class.last_year_unvisited).to include(scheduled_in_last_year)
+        expect(described_class.last_year_unvisited).not_to include(scheduled_before_last_year)
+      end
+    end
+
+    describe ".all_overdue" do
+      it "includes only scheduled passed appointments" do
+        past = 1.month.ago
+        future = 1.month.from_now
+        facility = create(:facility)
+        user = create(:user, registration_facility: facility)
+        patient = create(:patient, registration_facility: facility, registration_user: user)
+        params = {facility_id: facility.id, creation_facility_id: facility.id, user: user, patient: patient}
+
+        scheduled_past = create(:appointment, status: :scheduled, scheduled_date: past, **params)
+        scheduled_future = create(:appointment, status: :scheduled, scheduled_date: future, **params)
+        visited = create(:appointment, status: :visited, scheduled_date: past, **params)
+        cancelled_past = create(:appointment, status: :cancelled, scheduled_date: past, **params)
+        cancelled_future = create(:appointment, status: :cancelled, scheduled_date: future, **params)
+        appointment_to_remind = create(:appointment, status: :scheduled, scheduled_date: past, remind_on: future, **params)
+
+        expect(described_class.all_overdue).to include(scheduled_past)
+        expect(described_class.all_overdue.map(&:id)).not_to include([scheduled_future, cancelled_future, visited, cancelled_past, appointment_to_remind].map(&:id))
+      end
+    end
+
     describe ".overdue" do
       let(:overdue_appointment) { create(:appointment, :overdue) }
       let(:upcoming_appointment) { create(:appointment) }
