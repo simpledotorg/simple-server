@@ -19,7 +19,7 @@ class ControlRateQueryV2
 
   private
 
-  def base_query
+  def base_query(maybe_region)
     # We need to do a little bit of hackery here to handle FacilityDistrict, which is a
     # weird special case of Region
     region = maybe_region.region
