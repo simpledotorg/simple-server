@@ -343,7 +343,7 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
       end
 
       it "should have a record for every month between registration and now" do
-        with_reporting_time_zone do
+        with_reporting_time_zones do
           now = june_2021[:now]
           Timecop.freeze(now) do
             two_years_ago = june_2021[:now] - 2.years
