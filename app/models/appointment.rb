@@ -60,7 +60,7 @@ class Appointment < ApplicationRecord
   end
 
   def self.last_year_unvisited
-    passed_unvisited.where("scheduled_date >= ?", 365.days.ago)
+    passed_unvisited.where("appointments.scheduled_date >= ?", 365.days.ago)
   end
 
   def self.all_overdue
@@ -70,7 +70,7 @@ class Appointment < ApplicationRecord
   end
 
   def self.overdue
-    all_overdue.where("scheduled_date >= ?", 365.days.ago)
+    all_overdue.where("appointments.scheduled_date >= ?", 365.days.ago)
   end
 
   def self.overdue_by(number_of_days)
