@@ -48,7 +48,11 @@ class MessagePatients
         elsif sms?
           notification_service.send_sms(recipient_number: phone_number, message: message)
         end
+        if response
           update_report(:responses, response: response, patient: patient)
+        else
+          update_report(:exception, patient: patient)
+        end
       rescue TwilioApiService::Error
         update_report(:exception, patient: patient)
       end
@@ -85,7 +89,7 @@ class MessagePatients
         when :exception
           response_type
         when :responses
-          params[:response].status
+          params[:response]&.status
         else
           raise ArgumentError, "Invalid response_type for updating report: #{response_type}"
       end.to_sym
