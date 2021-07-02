@@ -48,7 +48,7 @@ class MessagePatients
         elsif sms?
           notification_service.send_sms(recipient_number: phone_number, message: message)
         end
-        update_report(:responses, response: response, patient: patient)
+          update_report(:responses, response: response, patient: patient)
       rescue TwilioApiService::Error
         update_report(:exception, patient: patient)
       end
