@@ -43,12 +43,12 @@ class MessagePatients
       next unless phone_number
       notification_service = TwilioApiService.new
       begin
-        if whatsapp?
-          notification_service.send_whatsapp(phone_number, message)
+        response = if whatsapp?
+          notification_service.send_whatsapp(recipient_number: phone_number, message: message)
         elsif sms?
-          notification_service.send_sms(phone_number, message)
+          notification_service.send_sms(recipient_number: phone_number, message: message)
         end
-        update_report(:responses, response: notification_service.response, patient: patient)
+        update_report(:responses, response: response, patient: patient)
       rescue TwilioApiService::Error
         update_report(:exception, patient: patient)
       end

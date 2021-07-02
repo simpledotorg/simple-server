@@ -10,6 +10,12 @@ class TwilioApiService
   TWILIO_TEST_WHATSAPP_NUMBER = "+14155238886"
 
   class Error < StandardError
+    attr_reader :exception_message, :context
+    def initialize(message, exception_message:, context:)
+      super(message)
+      @exception_message = exception_message
+      @context = context
+    end
   end
 
   def initialize(sms_sender: nil)
@@ -49,18 +55,18 @@ class TwilioApiService
     @test_client ||= Twilio::REST::Client.new(@twilio_test_account_sid, @twilio_test_auth_token)
   end
 
-  def send_sms(recipient_number, message, callback_url = nil)
+  def send_sms(recipient_number:, message:, callback_url:  nil, context: {})
     sender_number = twilio_sender_sms_number
     recipient_number = parse_phone_number(recipient_number)
 
-    send_twilio_message(sender_number, recipient_number, message, callback_url)
+    send_twilio_message(sender_number, recipient_number, message, callback_url, context)
   end
 
-  def send_whatsapp(recipient_number, message, callback_url = nil)
+  def send_whatsapp(recipient_number:, message:, callback_url:  nil, context: {})
     sender_number = "whatsapp:" + twilio_sender_whatsapp_number
     recipient_number = "whatsapp:" + parse_phone_number(recipient_number)
 
-    send_twilio_message(sender_number, recipient_number, message, callback_url)
+    send_twilio_message(sender_number, recipient_number, message, callback_url, context)
   end
 
   def parse_phone_number(number)
@@ -74,14 +80,33 @@ class TwilioApiService
     Rails.application.config.country[:sms_country_code]
   end
 
-  def send_twilio_message(sender_number, recipient_number, message, callback_url = nil)
-    @response = client.messages.create(
+  def send_twilio_message(sender_number, recipient_number, message, callback_url, context)
+    client.messages.create(
       from: sender_number,
       to: recipient_number,
       status_callback: callback_url,
       body: message
     )
-  rescue Twilio::REST::TwilioError
-    raise Error, "Error while calling Twilio API"
+  rescue Twilio::REST::TwilioError => exception
+    # see the link above for a list of codes; the else case happens on network failures
+    if exception.respond_to?(:code)
+      report_error(exception, context)
+      nil
+    else
+      raise Error.new("Error while calling Twilio API", exception_message: exception.to_s, context: context)
+    end
+  end
+
+  def report_error(e, context)
+    Sentry.capture_message(
+      "Error while processing notification",
+      extra: {
+        exception: e.to_s,
+        context: context.to_json
+      },
+      tags: {
+        type: "twilio-api-service"
+      }
+    )
   end
 end

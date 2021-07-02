@@ -16,12 +16,11 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
 
     def mock_successful_delivery
       response_double = double
-      allow_any_instance_of(TwilioApiService).to receive(:response).and_return(response_double)
       allow(response_double).to receive(:status).and_return("sent")
       allow(response_double).to receive(:sid).and_return("12345")
       twilio_client = double
       allow_any_instance_of(TwilioApiService).to receive(:client).and_return(twilio_client)
-      allow(twilio_client).to receive_message_chain("messages.create")
+      allow(twilio_client).to receive_message_chain("messages.create").and_return(response_double)
     end
 
     it "logs but creates nothing when notifications and experiment flags are disabled" do
@@ -158,9 +157,9 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       )
 
       expect_any_instance_of(TwilioApiService).to receive(:send_sms).with(
-        notification.patient.latest_mobile_number,
-        localized_message,
-        "https://localhost/api/v3/twilio_sms_delivery"
+        recipient_number: notification.patient.latest_mobile_number,
+        message: localized_message,
+        callback_url: "https://localhost/api/v3/twilio_sms_delivery"
       )
       described_class.perform_async(notification.id)
       described_class.drain

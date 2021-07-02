@@ -8,6 +8,7 @@ RSpec.describe TwilioApiService do
 
   subject(:notification_service) { TwilioApiService.new }
   let(:recipient_phone_number) { "8585858585" }
+  let(:invalid_phone_number) { "+15005550001" } # this is twilio's hard-coded "invalid phone number"
   let(:expected_sms_recipient_phone_number) { "+918585858585" }
 
   def stub_client
@@ -61,16 +62,32 @@ RSpec.describe TwilioApiService do
         body: "test sms message"
       )
 
-      notification_service.send_sms(recipient_phone_number, "test sms message", fake_callback_url)
+      notification_service.send_sms(
+        recipient_number: recipient_phone_number,
+        message: "test sms message",
+        callback_url: fake_callback_url
+      )
     end
 
-    it "raises a custom error on twilio error" do
+    it "raises a custom error on twilio error that does not specify an error code" do
       stub_client
       allow(twilio_client).to receive_message_chain("messages.create").and_raise(Twilio::REST::TwilioError)
-
-      expect {
-        notification_service.send_sms(recipient_phone_number, "test sms message", fake_callback_url)
+      expect{
+        notification_service.send_sms(
+          recipient_number: recipient_phone_number,
+          message: "test sms message",
+          callback_url: fake_callback_url
+        )
       }.to raise_error(TwilioApiService::Error)
+    end
+
+    it "sends a sentry message on twilio error that specifies an error code" do
+      expect(Sentry).to receive(:capture_message)
+      notification_service.send_sms(
+        recipient_number: "+15005550001",
+        message: "test sms message",
+        callback_url: fake_callback_url
+      )
     end
   end
 
@@ -85,16 +102,33 @@ RSpec.describe TwilioApiService do
         body: "test whatsapp message"
       )
 
-      notification_service.send_whatsapp(recipient_phone_number, "test whatsapp message", fake_callback_url)
+      notification_service.send_whatsapp(
+        recipient_number: recipient_phone_number,
+        message: "test whatsapp message",
+        callback_url: fake_callback_url
+      )
     end
 
-    it "raises a custom error on twilio error" do
+    it "raises a custom error on twilio error that does not specify an error code" do
       stub_client
       allow(twilio_client).to receive_message_chain("messages.create").and_raise(Twilio::REST::TwilioError)
 
       expect {
-        notification_service.send_whatsapp(recipient_phone_number, "test whatsapp message", fake_callback_url)
+        notification_service.send_whatsapp(
+          recipient_number: recipient_phone_number,
+          message: "test sms message",
+          callback_url: fake_callback_url
+        )
       }.to raise_error(TwilioApiService::Error)
+    end
+
+    it "sends a sentry message on twilio error that specifies an error code" do
+      expect(Sentry).to receive(:capture_message)
+      notification_service.send_whatsapp(
+        recipient_number: "+15005550001",
+        message: "test whatsapp message",
+        callback_url: fake_callback_url
+      )
     end
   end
 

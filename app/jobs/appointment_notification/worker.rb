@@ -44,22 +44,24 @@ class AppointmentNotification::Worker
       TwilioApiService.new
     end
 
+    response = nil
+
     # remove missed_visit_whatsapp_reminder and missed_visit_sms_reminder
     # https://app.clubhouse.io/simpledotorg/story/3585/backfill-notifications-from-communications
     case communication_type
     when "whatsapp", "missed_visit_whatsapp_reminder"
-      notification_service.send_whatsapp(
-        notification.patient.latest_mobile_number,
-        notification.localized_message,
-        callback_url
+      response = notification_service.send_whatsapp(
+        recipient_number: notification.patient.latest_mobile_number,
+        message: notification.localized_message,
+        callback_url: callback_url
       ).tap do |response|
         metrics.increment("sent.whatsapp")
       end
     when "sms", "missed_visit_sms_reminder"
-      notification_service.send_sms(
-        notification.patient.latest_mobile_number,
-        notification.localized_message,
-        callback_url
+      response = notification_service.send_sms(
+        recipient_number: notification.patient.latest_mobile_number,
+        message: notification.localized_message,
+        callback_url: callback_url
       ).tap do |response|
         metrics.increment("sent.sms")
       end
@@ -67,8 +69,9 @@ class AppointmentNotification::Worker
       raise UnknownCommunicationType, "#{self.class.name} is not configured to handle communication type #{communication_type}"
     end
 
+    return unless response
     ActiveRecord::Base.transaction do
-      create_communication(notification, communication_type, notification_service.response)
+      create_communication(notification, communication_type, response)
       notification.status_sent!
     end
   end
