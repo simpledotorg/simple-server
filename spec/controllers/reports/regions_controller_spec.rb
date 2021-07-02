@@ -8,11 +8,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
   let(:call_center_user) { create(:admin, :call_center, full_name: "call_center") }
 
   def refresh_views
-    ActiveRecord::Base.transaction do
-      LatestBloodPressuresPerPatientPerMonth.refresh
-      LatestBloodPressuresPerPatientPerQuarter.refresh
-      PatientRegistrationsPerDayPerFacility.refresh
-    end
+    RefreshMaterializedViews.call
   end
 
   context "index" do
@@ -330,7 +326,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect(data[:controlled_patients][Date.parse("Dec 2019").to_period]).to eq(1)
     end
 
-    it "retrieves facility district data" do
+    fit "retrieves facility district data" do
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)

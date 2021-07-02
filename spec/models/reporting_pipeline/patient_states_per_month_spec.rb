@@ -365,9 +365,9 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
 
             RefreshMaterializedViews.new.refresh_v2
 
-            # NOTE: we have to run this test for a range of up until the current timestamp, because we build this matview
-            # off a join with a calendar months table, which will always have records up until the actual current time.
-            # Timecop only impacts Ruby, and not the actual system time.
+            # NOTE: we have to run some of these assertions for a range of up until the "current" frozen timestamp, because we build this matview
+            # off a join with the reporting_months view, which uses now() and so will always have records up until
+            # the actual current time.  Timecop only impacts Ruby, and not the actual system time.
             expect(patient_states(patient, from: two_years_ago, to: now).pluck(:months_since_registration)).to eq((0...24).to_a)
 
             expect(patient_states(patient, to: ten_months_ago).pluck(:months_since_visit)).to all(be_nil)
