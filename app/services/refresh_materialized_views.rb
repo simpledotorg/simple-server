@@ -74,14 +74,14 @@ class RefreshMaterializedViews
   end
 
   def refresh_v2
-    # ActiveRecord::Base.transaction do
-    ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{tz}'")
-    V2_MATVIEWS.each do |name|
-      benchmark_and_statsd(name) do
-        klass = name.constantize
-        klass.refresh
+    ActiveRecord::Base.transaction do
+      ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{tz}'")
+      V2_MATVIEWS.each do |name|
+        benchmark_and_statsd(name) do
+          klass = name.constantize
+          klass.refresh
+        end
       end
     end
-    # end
   end
 end
