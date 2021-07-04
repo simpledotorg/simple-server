@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_02_063413) do
+ActiveRecord::Schema.define(version: 2021_07_02_192822) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -1186,6 +1186,14 @@ ActiveRecord::Schema.define(version: 2021_07_02_063413) do
     WHERE (p.deleted_at IS NULL)
     ORDER BY p.id, cal.month_date;
   SQL
+  add_index "reporting_patient_states_per_month", ["assigned_block_region_id"], name: "patient_states_assigned_block"
+  add_index "reporting_patient_states_per_month", ["assigned_district_region_id"], name: "patient_states_assigned_district"
+  add_index "reporting_patient_states_per_month", ["assigned_facility_region_id"], name: "patient_states_assigned_facility"
+  add_index "reporting_patient_states_per_month", ["assigned_organization_region_id"], name: "patient_organization_assigned_state"
+  add_index "reporting_patient_states_per_month", ["assigned_state_region_id"], name: "patient_states_assigned_state"
+  add_index "reporting_patient_states_per_month", ["hypertension", "htn_care_state", "htn_treatment_outcome_in_last_3_months"], name: "patient_states_care_state"
+  add_index "reporting_patient_states_per_month", ["month_date"], name: "patient_states_month_date"
+
   create_view "patient_summaries", sql_definition: <<-SQL
       SELECT p.recorded_at,
       concat(date_part('year'::text, p.recorded_at), ' Q', date_part('quarter'::text, p.recorded_at)) AS registration_quarter,
