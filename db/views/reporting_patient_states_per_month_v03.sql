@@ -76,8 +76,8 @@ SELECT
 
     visits.months_since_visit AS months_since_visit,
     visits.quarters_since_visit AS quarters_since_visit,
-    bps.months_since_bp_observation AS months_since_bp,
-    bps.quarters_since_bp_observation AS quarters_since_bp,
+    bps.months_since_bp AS months_since_bp,
+    bps.quarters_since_bp AS quarters_since_bp,
 
     ------------------------------------------------------------
     -- categorization
@@ -97,7 +97,7 @@ SELECT
 
           OR
 
-          bps.months_since_bp_observation < 12
+          bps.months_since_bp < 12
         ) THEN 'under_care'
         ELSE 'lost_to_follow_up'
         END
@@ -105,11 +105,27 @@ SELECT
 
     CASE
         WHEN (visits.months_since_visit >= 3 OR visits.months_since_visit is NULL) THEN 'missed_visit'
-        WHEN (bps.months_since_bp_observation >= 3 OR bps.months_since_bp_observation is NULL) THEN 'visited_no_bp'
+        WHEN (bps.months_since_bp >= 3 OR bps.months_since_bp is NULL) THEN 'visited_no_bp'
         WHEN (bps.systolic < 140 AND bps.diastolic < 90) THEN 'controlled'
         ELSE 'uncontrolled'
         END
-        AS htn_treatment_outcome_in_last_3_months
+        AS htn_treatment_outcome_in_last_3_months,
+
+    CASE
+        WHEN (visits.months_since_visit >= 2 OR visits.months_since_visit is NULL) THEN 'missed_visit'
+        WHEN (bps.months_since_bp >= 2 OR bps.months_since_bp is NULL) THEN 'visited_no_bp'
+        WHEN (bps.systolic < 140 AND bps.diastolic < 90) THEN 'controlled'
+        ELSE 'uncontrolled'
+        END
+        AS htn_treatment_outcome_in_last_2_months,
+
+    CASE
+        WHEN (visits.quarters_since_visit >= 1 OR visits.quarters_since_visit is NULL) THEN 'missed_visit'
+        WHEN (bps.quarters_since_bp >= 1 OR bps.quarters_since_bp is NULL) THEN 'visited_no_bp'
+        WHEN (bps.systolic < 140 AND bps.diastolic < 90) THEN 'controlled'
+        ELSE 'uncontrolled'
+        END
+        AS htn_treatment_outcome_in_last_quarter
 
 FROM patients p
 LEFT OUTER JOIN reporting_months cal

@@ -32,11 +32,11 @@ SELECT DISTINCT ON (bp.patient_id, cal.month_date)
 
     (cal.year - DATE_PART('year', bp.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 12 +
     (cal.month - DATE_PART('month', bp.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE'))))
-    AS months_since_bp_observation,
+    AS months_since_bp,
 
     (cal.year - DATE_PART('year', bp.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 4 +
     (cal.quarter - DATE_PART('quarter', bp.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE'))))
-    AS quarters_since_bp_observation
+    AS quarters_since_bp
 
 FROM blood_pressures bp
          -- Only fetch BPs that happened on or before the selected calendar month
