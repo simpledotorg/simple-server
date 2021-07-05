@@ -1259,7 +1259,7 @@
           "$ref": "#/definitions/blood_sugars"
         },
         "medical_history": {
-          "$ref": "#/definitions/medical_history"
+          "$ref": "#/definitions/nullable_medical_history"
         },
         "prescription_drugs": {
           "$ref": "#/definitions/prescription_drugs"
@@ -1303,6 +1303,97 @@
     },
     "medical_history": {
       "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "patient_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "prior_heart_attack": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
+        "prior_stroke": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
+        "chronic_kidney_disease": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
+        "receiving_treatment_for_hypertension": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
+        "diabetes": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
+        "hypertension": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
+        "diagnosed_with_hypertension": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "patient_id",
+        "prior_heart_attack",
+        "prior_stroke",
+        "chronic_kidney_disease",
+        "receiving_treatment_for_hypertension",
+        "diabetes",
+        "diagnosed_with_hypertension",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "nullable_medical_history": {
+      "type": [
+        "object",
+        "null"
+      ],
       "properties": {
         "id": {
           "$ref": "#/definitions/uuid"

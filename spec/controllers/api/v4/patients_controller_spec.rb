@@ -49,6 +49,17 @@ RSpec.describe Api::V4::PatientsController, type: :controller do
       expect(response_patient[:appointments].count).to eq 2
     end
 
+    it "works on patients without a medical history" do
+      patient = create(:patient, :without_medical_history)
+      set_headers(patient.registration_user, patient.registration_facility)
+
+      post :lookup, params: {identifier: patient.business_identifiers.first.identifier}, as: :json
+      expect(response.status).to eq 200
+
+      response_patient = JSON.parse(response.body).with_indifferent_access[:patients][0]
+      expect(response_patient[:medical_history]).to eq nil
+    end
+
     it "returns multiple patients with the same identifier, irrespective of identifier type" do
       patient_1 = create(:patient)
       patient_2 = create(:patient, registration_facility: patient_1.registration_facility)
