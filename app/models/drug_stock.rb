@@ -21,7 +21,9 @@ class DrugStock < ApplicationRecord
       .order(:facility_id, :protocol_drug_id, created_at: :desc)
   end
 
-  def self.latest_for_facility(facility, for_end_of_month)
-    latest_for_facilities([facility], for_end_of_month)
+  def self.latest_for_facilities_cte(facilities, for_end_of_month)
+    # This is needed to do GROUP queries which do not compose with DISTINCT ON
+    from(latest_for_facilities(facilities, for_end_of_month), table_name)
+      .includes(:protocol_drug)
   end
 end

@@ -57,14 +57,14 @@ class DrugConsumptionReportExporter
     drug_consumption_cells =
       @drugs_by_category.flat_map do |drug_category, drugs|
         drugs.map do |drug|
-          consumed = @report[:all].dig(drug_category, drug, :consumed)
+          consumed = @report[:all_drug_consumption].dig(drug_category, drug, :consumed)
           formatted_consumption_value(consumed)
         end
       end
 
     overall_consumption_cells =
       @drugs_by_category.flat_map do |drug_category, _drugs|
-        total = @report.dig(:all, drug_category, :base_doses, :total)
+        total = @report.dig(:all_drug_consumption, drug_category, :base_doses, :total)
         formatted_consumption_value(total)
       end
 
@@ -72,25 +72,25 @@ class DrugConsumptionReportExporter
   end
 
   def facility_rows
-    @report[:facilities].map do |(_facility_id, facility_report)|
-      facility_row(facility_report)
+    @query.facilities.map do |facility|
+      facility_row(facility)
     end
   end
 
-  def facility_row(facility_report)
-    facility_name = facility_report[:facility].name
+  def facility_row(facility)
+    facility_name = facility.name
 
     drug_consumption_cells =
       @drugs_by_category.flat_map do |drug_category, drugs|
         drugs.map do |drug|
-          consumed = facility_report.dig(drug_category, drug, :consumed)
+          consumed = @report[:drug_consumption_by_facility_id].dig(facility.id, drug_category, drug, :consumed)
           formatted_consumption_value(consumed)
         end
       end
 
     overall_consumption_cells =
       @drugs_by_category.flat_map do |drug_category, _drugs|
-        total = facility_report.dig(drug_category, :base_doses, :total)
+        total = @report[:drug_consumption_by_facility_id].dig(facility.id, drug_category, :base_doses, :total)
         formatted_consumption_value(total)
       end
 
