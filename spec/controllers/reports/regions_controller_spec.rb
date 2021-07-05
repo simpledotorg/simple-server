@@ -8,11 +8,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
   let(:call_center_user) { create(:admin, :call_center, full_name: "call_center") }
 
   def refresh_views
-    ActiveRecord::Base.transaction do
-      LatestBloodPressuresPerPatientPerMonth.refresh
-      LatestBloodPressuresPerPatientPerQuarter.refresh
-      PatientRegistrationsPerDayPerFacility.refresh
-    end
+    RefreshMaterializedViews.call
   end
 
   context "index" do
@@ -272,6 +268,30 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect(data[:period_info][Period.month(today.beginning_of_month)]).to_not be_nil
     end
 
+    it "reporting_schema_v2 is enabled if v2 param is set" do
+      sign_in(create(:admin, :power_user).email_authentication)
+      # sign_in(cvho.email_authentication)
+      get :show, params: {id: @facility.facility_group.slug, report_scope: "district", v2: "1"}
+      expect(assigns(:service).reporting_schema_v2?).to be_truthy
+      expect(response).to be_successful
+      expect(RequestStore[:reporting_schema_v2]).to be_falsey
+    end
+
+    it "reporting_schema_v2 is disabled if v2 param is not set" do
+      sign_in(create(:admin, :power_user).email_authentication)
+      # sign_in(cvho.email_authentication)
+      get :show, params: {id: @facility.facility_group.slug, report_scope: "district"}
+      expect(assigns(:service).reporting_schema_v2?).to be_falsey
+      expect(response).to be_successful
+    end
+
+    it "reporting_schema_v2 can only be enabled by power users" do
+      sign_in(cvho.email_authentication)
+      get :show, params: {id: @facility.facility_group.slug, report_scope: "district", v2: "1"}
+      expect(assigns(:service).reporting_schema_v2?).to be_falsey
+      expect(response).to be_successful
+    end
+
     it "retrieves district data" do
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
@@ -300,6 +320,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
         get :show, params: {id: @facility_region.slug, report_scope: "facility"}
       end
       expect(response).to be_successful
+      expect(assigns(:service).reporting_schema_v2?).to be_falsey
       data = assigns(:data)
       expect(data[:controlled_patients].size).to eq(10) # sanity check
       expect(data[:controlled_patients][Date.parse("Dec 2019").to_period]).to eq(1)
@@ -514,16 +535,18 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
 
     it "calls csv service and returns 200 with csv data" do
-      facility
-      sign_in(cvho.email_authentication)
+      Timecop.freeze("June 15th 2020") do
+        facility
+        sign_in(cvho.email_authentication)
 
-      expect_any_instance_of(MonthlyDistrictDataService).to receive(:report).and_call_original
-      get :monthly_district_data_report, params: {id: region.slug, report_scope: "district", format: "csv"}
-      expect(response.status).to eq(200)
-      expect(response.body).to include("Monthly District Data: #{region.name} #{Date.current.strftime("%B %Y")}")
-      report_date = Date.current.strftime("%b-%Y").downcase
-      expected_filename = "monthly-district-data-#{region.slug}-#{report_date}.csv"
-      expect(response.headers["Content-Disposition"]).to include(%(filename="#{expected_filename}"))
+        expect_any_instance_of(MonthlyDistrictDataService).to receive(:report).and_call_original
+        get :monthly_district_data_report, params: {id: region.slug, report_scope: "district", format: "csv"}
+        expect(response.status).to eq(200)
+        expect(response.body).to include("Monthly District Data: #{region.name} #{Date.current.strftime("%B %Y")}")
+        report_date = Date.current.strftime("%b-%Y").downcase
+        expected_filename = "monthly-district-data-#{region.slug}-#{report_date}.csv"
+        expect(response.headers["Content-Disposition"]).to include(%(filename="#{expected_filename}"))
+      end
     end
 
     it "works for facility districts" do
