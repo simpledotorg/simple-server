@@ -46,6 +46,12 @@ class AppointmentNotification::Worker
 
     response = nil
 
+    context = {
+      calling_class: self.class.name,
+      notification_id: notification.id,
+      communication_type: communication_type
+    }
+
     # remove missed_visit_whatsapp_reminder and missed_visit_sms_reminder
     # https://app.clubhouse.io/simpledotorg/story/3585/backfill-notifications-from-communications
     case communication_type
@@ -53,7 +59,8 @@ class AppointmentNotification::Worker
       response = notification_service.send_whatsapp(
         recipient_number: notification.patient.latest_mobile_number,
         message: notification.localized_message,
-        callback_url: callback_url
+        callback_url: callback_url,
+        context: context
       ).tap do |response|
         metrics.increment("sent.whatsapp")
       end
@@ -61,7 +68,8 @@ class AppointmentNotification::Worker
       response = notification_service.send_sms(
         recipient_number: notification.patient.latest_mobile_number,
         message: notification.localized_message,
-        callback_url: callback_url
+        callback_url: callback_url,
+        context: context
       ).tap do |response|
         metrics.increment("sent.sms")
       end

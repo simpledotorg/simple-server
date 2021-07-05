@@ -42,18 +42,24 @@ class MessagePatients
 
       next unless phone_number
       notification_service = TwilioApiService.new
+      context = {
+        calling_class: self.class.name,
+        patient_id: patient.id,
+        communication_type: channel
+      }
+
       begin
         response = if whatsapp?
-          notification_service.send_whatsapp(recipient_number: phone_number, message: message)
+          notification_service.send_whatsapp(recipient_number: phone_number, message: message, context: context)
         elsif sms?
-          notification_service.send_sms(recipient_number: phone_number, message: message)
-        end
-        if response
-          update_report(:responses, response: response, patient: patient)
-        else
-          update_report(:exception, patient: patient)
+          notification_service.send_sms(recipient_number: phone_number, message: message, context: context)
         end
       rescue TwilioApiService::Error
+        update_report(:exception, patient: patient)
+      end
+      if response
+        update_report(:responses, response: response, patient: patient)
+      else
         update_report(:exception, patient: patient)
       end
     end
@@ -89,7 +95,7 @@ class MessagePatients
         when :exception
           response_type
         when :responses
-          params[:response]&.status
+          params[:response].status
         else
           raise ArgumentError, "Invalid response_type for updating report: #{response_type}"
       end.to_sym

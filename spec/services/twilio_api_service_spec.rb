@@ -81,10 +81,10 @@ RSpec.describe TwilioApiService do
       }.to raise_error(TwilioApiService::Error)
     end
 
-    it "sends a sentry message on twilio error that specifies an error code" do
-      expect(Sentry).to receive(:capture_message)
+    it "logs when twilio specifies an error code" do
+      expect(Rails).to receive_message_chain(:logger, :info)
       notification_service.send_sms(
-        recipient_number: "+15005550001",
+        recipient_number: invalid_phone_number,
         message: "test sms message",
         callback_url: fake_callback_url
       )
@@ -122,10 +122,11 @@ RSpec.describe TwilioApiService do
       }.to raise_error(TwilioApiService::Error)
     end
 
-    it "sends a sentry message on twilio error that specifies an error code" do
-      expect(Sentry).to receive(:capture_message)
+    it "logs when twilio specifies an error code" do
+      expect(Rails).to receive_message_chain(:logger, :info)
+
       notification_service.send_whatsapp(
-        recipient_number: "+15005550001",
+        recipient_number: invalid_phone_number,
         message: "test whatsapp message",
         callback_url: fake_callback_url
       )

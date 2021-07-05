@@ -159,7 +159,12 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       expect_any_instance_of(TwilioApiService).to receive(:send_sms).with(
         recipient_number: notification.patient.latest_mobile_number,
         message: localized_message,
-        callback_url: "https://localhost/api/v3/twilio_sms_delivery"
+        callback_url: "https://localhost/api/v3/twilio_sms_delivery",
+        context: {
+          calling_class: "AppointmentNotification::Worker",
+          notification_id: notification.id,
+          communication_type: "sms"
+        }
       )
       described_class.perform_async(notification.id)
       described_class.drain

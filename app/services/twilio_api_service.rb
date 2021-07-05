@@ -9,6 +9,8 @@ class TwilioApiService
   TWILIO_TEST_SMS_NUMBER = "+15005550006"
   TWILIO_TEST_WHATSAPP_NUMBER = "+14155238886"
 
+  delegate :logger, to: Rails
+
   class Error < StandardError
     attr_reader :exception_message, :context
     def initialize(message, exception_message:, context:)
@@ -90,23 +92,20 @@ class TwilioApiService
   rescue Twilio::REST::TwilioError => exception
     # see the link above for a list of codes; the else case happens on network failures
     if exception.respond_to?(:code)
-      report_error(exception, context)
+      log_error(exception, sender_number, recipient_number, context)
       nil
     else
       raise Error.new("Error while calling Twilio API", exception_message: exception.to_s, context: context)
     end
   end
 
-  def report_error(e, context)
-    Sentry.capture_message(
-      "Error while processing notification",
-      extra: {
-        exception: e.to_s,
-        context: context.to_json
-      },
-      tags: {
-        type: "twilio-api-service"
-      }
-    )
+  def log_error(e, sender_number, recipient_number, context)
+    logger.info({
+      class: self.class.name,
+      error: e,
+      sender: sender_number,
+      recipient: recipient_number,
+      context: context
+    })
   end
 end
