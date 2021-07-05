@@ -2,20 +2,24 @@
 SELECT
     DISTINCT ON (p.id, p.month_date)
     p.id as patient_id,
+
     p.month_date,
-    p.month_string,
     p.month,
     p.quarter,
     p.year,
+    p.month_string,
+    p.quarter_string,
 
-    -- where
-    p.assigned_facility_id AS patient_assigned_facility_id,
-    p.registration_facility_id AS patient_registration_facility_id,
+    ------------------------------------------------------------
+    -- where the visit happened
+    p.assigned_facility_id AS assigned_facility_id,
+    p.registration_facility_id AS registration_facility_id,
     e.facility_id AS encounter_facility_id,
     pd.facility_id AS prescription_drug_facility_id,
     app.creation_facility_id AS appointment_creation_facility_id,
 
-    -- when
+    ------------------------------------------------------------
+    -- when the visit happened
     p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS patient_recorded_at,
     e.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS encounter_recorded_at,
     pd.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS prescription_drug_recorded_at,
@@ -47,6 +51,7 @@ FROM
 -- Only fetch Encounters that happened on or before the selected calendar month
 -- We use year and month comparisons to avoid timezone errors
 LEFT JOIN LATERAL (
+    -- encountered_on is a date stored in local time, casting that back to UTC for consistency and comparisons
     SELECT encountered_on::timestamp AT TIME ZONE (SELECT current_setting('TIMEZONE')) AT TIME ZONE 'UTC' AS recorded_at, facility_id
     FROM encounters
     WHERE patient_id = p.id

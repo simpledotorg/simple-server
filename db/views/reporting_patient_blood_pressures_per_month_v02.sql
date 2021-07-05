@@ -1,19 +1,26 @@
 -- Only most recent BP per patient per month. BPs are ordered appropriately below.
 SELECT DISTINCT ON (bp.patient_id, cal.month_date)
     cal.month_date,
-    cal.month_string,
     cal.month,
     cal.quarter,
     cal.year,
+    cal.month_string,
+    cal.quarter_string,
+
+    ------------------------------------------------------------
+    -- Information about the latest BP as of a given month
     bp.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS blood_pressure_recorded_at,
-    p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS patient_registered_at,
-    bp.id                      AS blood_pressure_id,
+    bp.id AS blood_pressure_id,
     bp.patient_id,
     bp.systolic,
     bp.diastolic,
-    p.assigned_facility_id     AS patient_assigned_facility_id,
+    bp.facility_id AS blood_pressure_facility_id,
+
+    ------------------------------------------------------------
+    -- patient information
+    p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS patient_registered_at,
+    p.assigned_facility_id AS patient_assigned_facility_id,
     p.registration_facility_id AS patient_registration_facility_id,
-    bp.facility_id             AS blood_pressure_facility_id,
 
     (cal.year - DATE_PART('year', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 12 +
     (cal.month - DATE_PART('month', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE'))))

@@ -12,10 +12,12 @@ SELECT
 
     ------------------------------------------------------------
     -- data for the month of
-    cal.month,
-    cal.year,
     cal.month_date,
+    cal.month,
+    cal.quarter,
+    cal.year,
     cal.month_string,
+    cal.quarter_string,
 
     ------------------------------------------------------------
     -- information on assigned facility and parent regions
@@ -49,13 +51,20 @@ SELECT
     -- latest visit info for the month
     bps.systolic,
     bps.diastolic,
+
     -- when
+    p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' as recorded_at,
     bps.blood_pressure_recorded_at AS bp_recorded_at,
     visits.visited_at AS visited_at,
-    p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' as recorded_at,
+    visits.encounter_recorded_at AS encounter_recorded_at,
+    visits.prescription_drug_recorded_at AS prescription_drug_recorded_at,
+    visits.appointment_recorded_at AS appointment_recorded_at,
+
     -- where
     bps.blood_pressure_facility_id AS bp_facility_id,
-
+    visits.encounter_facility_id AS encounter_facility_id,
+    visits.prescription_drug_facility_id AS prescription_drug_facility_id,
+    visits.appointment_creation_facility_id AS appointment_creation_facility_id,
 
     (cal.year - DATE_PART('year', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 12 +
     (cal.month - DATE_PART('month', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE'))))
