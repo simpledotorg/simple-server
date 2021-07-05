@@ -49,7 +49,7 @@ RSpec.describe Api::V4::PatientsController, type: :controller do
       expect(response_patient[:appointments].count).to eq 2
     end
 
-    it "works on patients without a medical history" do
+    it "sends a nil medical history for patients without a medical history" do
       patient = create(:patient, :without_medical_history)
       set_headers(patient.registration_user, patient.registration_facility)
 
