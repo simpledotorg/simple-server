@@ -21,6 +21,7 @@ class ImoApiService
 
   def invite
     return unless Flipper.enabled?(:imo_messaging)
+    return if patient.imo_authorization
 
     Statsd.instance.increment("imo.invites.attempt")
     url = BASE_URL + "send_invite"
@@ -65,7 +66,7 @@ class ImoApiService
       .basic_auth(user: IMO_USERNAME, pass: IMO_PASSWORD)
       .post(url, data)
   rescue HTTP::Error => e
-    raise Error.new("Error while calling the IMO API", path: url, exception_message: e)
+    raise Error.new("Error while calling the Imo API", path: url, exception_message: e)
   end
 
   def process_response(res, url, action)
@@ -80,8 +81,6 @@ class ImoApiService
       when "not_subscribed"
         Statsd.instance.increment("imo.#{action}.not_subscribed")
         :not_subscribed
-      when "invalid_url"
-        raise Error.new("Invalid Imo action url", path: url, response: res)
       else
         Statsd.instance.increment("imo.#{action}.error")
         raise Error.new("Unknown 200 error from Imo", path: url, response: res)
@@ -92,11 +91,11 @@ class ImoApiService
         :no_imo_account
       else
         Statsd.instance.increment("imo.#{action}.error")
-        raise Error.new("Unknown 400 error from IMO", path: url, response: res)
+        raise Error.new("Unknown 400 error from Imo", path: url, response: res)
       end
     else
       Statsd.instance.increment("imo.#{action}.error")
-      raise Error.new("Unknown response error from IMO", path: url, response: res)
+      raise Error.new("Unknown response error from Imo", path: url, response: res)
     end
   end
 

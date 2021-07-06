@@ -38,24 +38,32 @@ describe ImoApiService, type: :model do
     context "with feature flag on" do
       before { Flipper.enable(:imo_messaging) }
 
-      it "returns :invited on 200" do
+      it "creates an ImoAuthorization on 200 success" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: success_body)
         expect { service.invite }.to change { patient.imo_authorization }.from(nil)
         expect(patient.imo_authorization.status).to eq("invited")
       end
 
-      it "returns :no_imo_account when status if 400 and type is nonexistent_user" do
+      it "raises error on any other 200 response" do
+        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: {}.to_json)
+
+        expect {
+          service.invite
+        }.to raise_error(ImoApiService::Error).with_message("Unknown 200 error from Imo")
+      end
+
+      it "updates patient's ImoAuthorization when status is 400 and type is nonexistent_user" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: nonexistent_user_body)
         expect { service.invite }.to change { patient.imo_authorization }.from(nil)
         expect(patient.imo_authorization.status).to eq("no_imo_account")
       end
 
-      it "raises error on any other response" do
+      it "raises error on any other 400 response" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: {}.to_json)
 
         expect {
           service.invite
-        }.to raise_error(ImoApiService::Error)
+        }.to raise_error(ImoApiService::Error).with_message("Unknown 400 error from Imo")
       end
 
       it "raises a custom error on network error" do
@@ -89,6 +97,12 @@ describe ImoApiService, type: :model do
         service.send_notification("Come back in to the clinic")
       end
 
+      it "raises an error on other 200 responses" do
+        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: {}.to_json)
+        expect { service.send_notification("Come back in to the clinic") }
+          .to raise_error(ImoApiService::Error).with_message("Unknown 200 error from Imo")
+      end
+
       it "updates patient's ImoAuthorization when imo user does not exist" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: nonexistent_user_body)
         expect {
@@ -114,13 +128,21 @@ describe ImoApiService, type: :model do
       it "raises an error on other 400 responses" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: {}.to_json)
         expect { service.send_notification("Come back in to the clinic") }
-          .to raise_error(ImoApiService::Error).with_message("Unknown 400 error from IMO")
+          .to raise_error(ImoApiService::Error).with_message("Unknown 400 error from Imo")
       end
 
       it "raises an error on other statuses" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 401, body: {}.to_json)
         expect { service.send_notification("Come back in to the clinic") }
-          .to raise_error(ImoApiService::Error).with_message("Unknown response error from IMO")
+          .to raise_error(ImoApiService::Error).with_message("Unknown response error from Imo")
+      end
+
+      it "raises a custom error on network error" do
+        stub_request(:post, request_url).to_timeout
+
+        expect {
+          service.send_notification("hi")
+        }.to raise_error(ImoApiService::Error)
       end
     end
   end
