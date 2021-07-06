@@ -44,12 +44,11 @@ describe ImoApiService, type: :model do
         expect(patient.imo_authorization.status).to eq("invited")
       end
 
-      it "raises error on any other 200 response" do
+      it "reports to sentry on any other 200 response" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: {}.to_json)
 
-        expect {
-          service.invite(patient)
-        }.to raise_error(ImoApiService::Error).with_message("Unknown 200 error from Imo")
+        expect(Sentry).to receive(:capture_message)
+        service.invite(patient)
       end
 
       it "updates patient's ImoAuthorization when status is 400 and type is nonexistent_user" do
@@ -58,12 +57,11 @@ describe ImoApiService, type: :model do
         expect(patient.imo_authorization.status).to eq("no_imo_account")
       end
 
-      it "raises error on any other 400 response" do
+      it "reports to sentry on any other 400 response" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: {}.to_json)
 
-        expect {
-          service.invite(patient)
-        }.to raise_error(ImoApiService::Error).with_message("Unknown 400 error from Imo")
+        expect(Sentry).to receive(:capture_message)
+        service.invite(patient)
       end
 
       it "raises a custom error on network error" do
@@ -97,10 +95,10 @@ describe ImoApiService, type: :model do
         service.send_notification(patient, "Come back in to the clinic")
       end
 
-      it "raises an error on other 200 responses" do
+      it "reports to sentry on other 200 responses" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: {}.to_json)
-        expect { service.send_notification(patient, "Come back in to the clinic") }
-          .to raise_error(ImoApiService::Error).with_message("Unknown 200 error from Imo")
+        expect(Sentry).to receive(:capture_message)
+        service.send_notification(patient, "Come back in to the clinic")
       end
 
       it "updates patient's ImoAuthorization when imo user does not exist" do
@@ -125,16 +123,18 @@ describe ImoApiService, type: :model do
         }.to change { patient.imo_authorization.reload.status }.from("invited").to("not_subscribed")
       end
 
-      it "raises an error on other 400 responses" do
+      it "reports to sentry on other 400 responses" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: {}.to_json)
-        expect { service.send_notification(patient, "Come back in to the clinic") }
-          .to raise_error(ImoApiService::Error).with_message("Unknown 400 error from Imo")
+
+        expect(Sentry).to receive(:capture_message)
+        service.send_notification(patient, "Come back in to the clinic")
       end
 
-      it "raises an error on other statuses" do
+      it "reports to sentry on other statuses" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 401, body: {}.to_json)
-        expect { service.send_notification(patient, "Come back in to the clinic") }
-          .to raise_error(ImoApiService::Error).with_message("Unknown response error from Imo")
+
+        expect(Sentry).to receive(:capture_message)
+        service.send_notification(patient, "Come back in to the clinic")
       end
 
       it "raises a custom error on network error" do
