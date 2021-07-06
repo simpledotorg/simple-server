@@ -66,6 +66,7 @@ gem "ruby-progressbar", require: false
 gem "rubyzip"
 gem "sassc-rails"
 gem "scenic"
+gem "scientist"
 gem "sentry-rails"
 gem "sentry-ruby"
 gem "sentry-sidekiq"

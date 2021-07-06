@@ -85,7 +85,6 @@ RSpec.describe Region, type: :model do
     it "returns the source facilities" do
       facility_group = create(:facility_group)
       facilities = create_list(:facility, 3, block: "Block ABC", facility_group: facility_group)
-      RegionBackfill.call(dry_run: false)
 
       facility = facilities.first
       block_region = facility.region.parent
@@ -103,7 +102,6 @@ RSpec.describe Region, type: :model do
         ary << create(:patient, registration_facility: facility)
       }
       patients_in_block_2 = create_list(:patient, 2, registration_facility: block_2_facility)
-      RegionBackfill.call(dry_run: false)
       block_1 = Region.block_regions.find_by!(name: "Block 1")
       block_2 = Region.block_regions.find_by!(name: "Block 2")
       expect(block_2_facility.region.assigned_patients).to match_array(patients_in_block_2)
