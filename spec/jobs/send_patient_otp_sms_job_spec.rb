@@ -18,7 +18,8 @@ RSpec.describe SendPatientOtpSmsJob, type: :job do
       communication_type: :sms
     }
     expect_any_instance_of(TwilioApiService).to receive(:send_sms).with(
-      recipient_number: phone_number, message: otp_message, context: context)
+      recipient_number: phone_number, message: otp_message, context: context
+    )
 
     described_class.perform_now(passport_authentication)
   end

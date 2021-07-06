@@ -57,14 +57,14 @@ class TwilioApiService
     @test_client ||= Twilio::REST::Client.new(@twilio_test_account_sid, @twilio_test_auth_token)
   end
 
-  def send_sms(recipient_number:, message:, callback_url:  nil, context: {})
+  def send_sms(recipient_number:, message:, callback_url: nil, context: {})
     sender_number = twilio_sender_sms_number
     recipient_number = parse_phone_number(recipient_number)
 
     send_twilio_message(sender_number, recipient_number, message, callback_url, context)
   end
 
-  def send_whatsapp(recipient_number:, message:, callback_url:  nil, context: {})
+  def send_whatsapp(recipient_number:, message:, callback_url: nil, context: {})
     sender_number = "whatsapp:" + twilio_sender_whatsapp_number
     recipient_number = "whatsapp:" + parse_phone_number(recipient_number)
 

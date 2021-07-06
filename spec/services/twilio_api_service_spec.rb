@@ -72,7 +72,7 @@ RSpec.describe TwilioApiService do
     it "raises a custom error on twilio error that does not specify an error code" do
       stub_client
       allow(twilio_client).to receive_message_chain("messages.create").and_raise(Twilio::REST::TwilioError)
-      expect{
+      expect {
         notification_service.send_sms(
           recipient_number: recipient_phone_number,
           message: "test sms message",
