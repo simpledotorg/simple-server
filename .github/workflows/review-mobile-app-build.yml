@@ -20,7 +20,7 @@ jobs:
           java-version: 1.8
 
       - name: Build APK
-        run: simple-android/gradlew -p simple-android -PqaManifestEndpoint="https://simple-review-pr-$PR_NUMBER.herokuapp.com/api/" app:assembleQaDebug
+        run: simple-android/gradlew -p simple-android -PmanifestEndpoint="https://simple-review-pr-$PR_NUMBER.herokuapp.com/api/" app:assembleQaDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v1

@@ -19,7 +19,7 @@ RSpec.describe Api::V4::PatientsController, type: :controller do
       patient = create(:patient)
       set_headers(patient.registration_user, patient.registration_facility)
 
-      get :lookup, params: {identifier: patient.business_identifiers.first.identifier}, as: :json
+      post :lookup, params: {identifier: patient.business_identifiers.first.identifier}, as: :json
       expect(response.status).to eq 200
       response_data = JSON.parse(response.body)
       expected_schema = Api::V4::Schema.lookup_response.merge(definitions: Api::V4::Schema.all_definitions)
@@ -30,7 +30,7 @@ RSpec.describe Api::V4::PatientsController, type: :controller do
       patient = create(:patient)
       set_headers(patient.registration_user, patient.registration_facility)
 
-      get :lookup, params: {identifier: ""}, as: :json
+      post :lookup, params: {identifier: ""}, as: :json
       expect(response.status).to eq 400
     end
 
@@ -39,7 +39,7 @@ RSpec.describe Api::V4::PatientsController, type: :controller do
       add_visits(2, patient: patient, facility: patient.registration_facility, user: patient.registration_user)
       set_headers(patient.registration_user, patient.registration_facility)
 
-      get :lookup, params: {identifier: patient.business_identifiers.first.identifier}, as: :json
+      post :lookup, params: {identifier: patient.business_identifiers.first.identifier}, as: :json
       response_patient = JSON.parse(response.body).with_indifferent_access[:patients][0]
       expected_attrs = [:address, :appointments, :blood_pressures, :blood_sugars, :business_identifiers,
         :medical_history, :phone_numbers, :prescription_drugs]
@@ -47,6 +47,17 @@ RSpec.describe Api::V4::PatientsController, type: :controller do
       expect(response_patient[:blood_pressures].count).to eq 2
       expect(response_patient[:blood_sugars].count).to eq 2
       expect(response_patient[:appointments].count).to eq 2
+    end
+
+    it "sends a nil medical history for patients without a medical history" do
+      patient = create(:patient, :without_medical_history)
+      set_headers(patient.registration_user, patient.registration_facility)
+
+      post :lookup, params: {identifier: patient.business_identifiers.first.identifier}, as: :json
+      expect(response.status).to eq 200
+
+      response_patient = JSON.parse(response.body).with_indifferent_access[:patients][0]
+      expect(response_patient[:medical_history]).to eq nil
     end
 
     it "returns multiple patients with the same identifier, irrespective of identifier type" do
@@ -63,7 +74,7 @@ RSpec.describe Api::V4::PatientsController, type: :controller do
 
       set_headers(patient_1.registration_user, patient_1.registration_facility)
 
-      get :lookup, params: {identifier: patient_1.business_identifiers.first.identifier}, as: :json
+      post :lookup, params: {identifier: patient_1.business_identifiers.first.identifier}, as: :json
       response_data = JSON.parse(response.body).with_indifferent_access
       expect(response_data[:patients].count).to eq 2
     end
@@ -84,7 +95,7 @@ RSpec.describe Api::V4::PatientsController, type: :controller do
       set_headers(user, facility_1)
       request.env["HTTP_X_SYNC_REGION_ID"] = facility_1.region.block_region.id
 
-      get :lookup, params: {identifier: identifier}, as: :json
+      post :lookup, params: {identifier: identifier}, as: :json
       response_patients = JSON.parse(response.body).with_indifferent_access[:patients]
       response_patient_1 = response_patients.find { |patients| patients[:id] == patient_1.id }
       response_patient_2 = response_patients.find { |patients| patients[:id] == patient_2.id }
@@ -114,7 +125,7 @@ RSpec.describe Api::V4::PatientsController, type: :controller do
       )
       set_headers(patient.registration_user, patient.registration_facility)
 
-      get :lookup, params: {identifier: patient.business_identifiers.first.identifier}, as: :json
+      post :lookup, params: {identifier: patient.business_identifiers.first.identifier}, as: :json
       response_data = JSON.parse(response.body).with_indifferent_access
       expect(response_data[:patients].count).to eq 2
       expect(response_data[:patients].pluck(:id)).to match_array([patient.id, patient_from_same_state.id])
@@ -130,7 +141,7 @@ RSpec.describe Api::V4::PatientsController, type: :controller do
         patient_ids: [patient.id],
         identifier: patient.business_identifiers.first.identifier
       ))
-      get :lookup, params: {identifier: patient.business_identifiers.first.identifier}, as: :json
+      post :lookup, params: {identifier: patient.business_identifiers.first.identifier}, as: :json
     end
   end
 end

@@ -100,6 +100,19 @@ class Api::V4::Schema
       }
     end
 
+    def lookup_request
+      {
+        type: :object,
+        properties: {
+          identifier: {
+            type: :string,
+            description: "Full identifier string of the BP Passport, or other supported identifier type"
+          }
+        },
+        required: [:identifier]
+      }
+    end
+
     def lookup_response
       {
         type: :object,
