@@ -27,7 +27,7 @@ module MyFacilitiesFiltering
     def populate_facility_groups
       @facility_groups =
         if action_name == "drug_stocks" || action_name == "drug_consumption"
-          accessible_facility_groups.where(id: drug_stock_facility_group_ids)
+          drug_stock_facility_groups
         else
           accessible_facility_groups
         end
@@ -79,8 +79,13 @@ module MyFacilitiesFiltering
       FacilityGroup.where(id: @accessible_facilities.map(&:facility_group_id).uniq).order(:name)
     end
 
-    def drug_stock_facility_group_ids
-      Region.district_regions.select { |district| district.feature_enabled?(:drug_stocks) }.pluck(:source_id)
+    def drug_stock_facility_groups
+      facility_group_ids = Region
+        .where(source_id: accessible_facility_groups)
+        .select { |district| district.feature_enabled?(:drug_stocks) }
+        .pluck(:source_id)
+
+      FacilityGroup.where(id: facility_group_ids)
     end
   end
 end
