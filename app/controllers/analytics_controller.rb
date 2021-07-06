@@ -5,19 +5,6 @@ class AnalyticsController < AdminController
 
   CACHE_VERSION = 1
 
-  def set_time_zone
-    time_zone = Period::REPORTING_TIME_ZONE
-
-    Groupdate.time_zone = time_zone
-
-    Time.use_zone(time_zone) do
-      yield
-    end
-
-    # Make sure we reset the timezone
-    Groupdate.time_zone = "UTC"
-  end
-
   def set_period
     # Store the period in the session for consistency across views.
     # Explicit 'period=X' param overrides the session variable.

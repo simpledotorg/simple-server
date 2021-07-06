@@ -102,10 +102,6 @@ class Admin::UsersController < AdminController
     @user = authorize { current_admin.accessible_users(:manage).find(params[:id] || params[:user_id]) }
   end
 
-  def set_time_zone
-    Time.use_zone(Period::REPORTING_TIME_ZONE) { yield }
-  end
-
   def user_params
     params.require(:user).permit(
       :full_name,

@@ -9,6 +9,15 @@ class ApplicationController < ActionController::Base
     I18n.with_locale(locale, &action)
   end
 
+  def set_time_zone
+    reporting_time_zone = Period::REPORTING_TIME_ZONE
+
+    Groupdate.time_zone = reporting_time_zone
+    Time.use_zone(reporting_time_zone) { yield }
+  ensure
+    Groupdate.time_zone = "UTC"
+  end
+
   private
 
   # Send a user to the admins index after sending invitations

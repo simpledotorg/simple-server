@@ -249,15 +249,6 @@ class Reports::RegionsController < AdminController
     params.permit(:id, :bust_cache, :v2, :report_scope, {period: [:type, :value]})
   end
 
-  def set_time_zone
-    time_zone = Period::REPORTING_TIME_ZONE
-
-    Groupdate.time_zone = time_zone
-
-    Time.use_zone(time_zone) { yield }
-    Groupdate.time_zone = "UTC"
-  end
-
   def with_ltfu?
     params[:with_ltfu].present?
   end

@@ -58,10 +58,6 @@ class MyFacilitiesController < AdminController
       end
   end
 
-  def set_time_zone
-    Time.use_zone(Period::REPORTING_TIME_ZONE) { yield }
-  end
-
   def authorize_my_facilities
     authorize { current_admin.accessible_facilities(:view_reports).any? }
   end
