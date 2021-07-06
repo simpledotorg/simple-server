@@ -14,14 +14,11 @@ class ImoApiService
     end
   end
 
-  attr_reader :patient, :response
-  def initialize(patient)
-    @patient = patient
-  end
-
-  def invite
+  def invite(patient)
     return unless Flipper.enabled?(:imo_messaging)
-    return if patient.imo_authorization
+    if patient.imo_authorization
+
+    end
 
     Statsd.instance.increment("imo.invites.attempt")
     url = BASE_URL + "send_invite"
@@ -32,12 +29,12 @@ class ImoApiService
       title: "Invitation",
       action: "Click here"
     )
-    @response = execute_post(url, body: request_body)
-    result = process_response(@response, url, "invitation")
+    response = execute_post(url, body: request_body)
+    result = process_response(response, url, "invitation")
     ImoAuthorization.create!(patient: patient, status: result, last_invited_at: Time.current)
   end
 
-  def send_notification(message)
+  def send_notification(patient, message)
     # guard against no imo auth
     return unless Flipper.enabled?(:imo_messaging)
 
@@ -52,8 +49,8 @@ class ImoApiService
       url: USER_FACING_URL,
       read_receipt: "will be filled in later"
     )
-    @response = execute_post(url, body: request_body)
-    result = process_response(@response, url, "notification")
+    response = execute_post(url, body: request_body)
+    result = process_response(response, url, "notification")
     unless result == :success
       patient.imo_authorization.update!(status: result)
     end
@@ -69,10 +66,10 @@ class ImoApiService
     raise Error.new("Error while calling the Imo API", path: url, exception_message: e)
   end
 
-  def process_response(res, url, action)
-    case res.status
+  def process_response(response, url, action)
+    case response.status
     when 200
-      body = JSON.parse(res.body)
+      body = JSON.parse(response.body)
       body_status = body.dig("response", "status")
       return :invited if body_status == "success" && action == "invitation"
       return :success if body_status == "success" && action == "notification"
@@ -83,19 +80,19 @@ class ImoApiService
         :not_subscribed
       else
         Statsd.instance.increment("imo.#{action}.error")
-        raise Error.new("Unknown 200 error from Imo", path: url, response: res)
+        raise Error.new("Unknown 200 error from Imo", path: url, response: response)
       end
     when 400
-      if JSON.parse(res.body).dig("response", "type") == "nonexistent_user"
+      if JSON.parse(response.body).dig("response", "type") == "nonexistent_user"
         Statsd.instance.increment("imo.#{action}.no_imo_account")
         :no_imo_account
       else
         Statsd.instance.increment("imo.#{action}.error")
-        raise Error.new("Unknown 400 error from Imo", path: url, response: res)
+        raise Error.new("Unknown 400 error from Imo", path: url, response: response)
       end
     else
       Statsd.instance.increment("imo.#{action}.error")
-      raise Error.new("Unknown response error from Imo", path: url, response: res)
+      raise Error.new("Unknown response error from Imo", path: url, response: response)
     end
   end
 
