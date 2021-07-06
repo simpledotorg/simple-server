@@ -18,10 +18,10 @@ class DrugStocksQuery
     Rails.cache.fetch(drug_stocks_cache_key,
       expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL"),
       force: RequestStore.store[:bust_cache]) do
-      {total_patients: total_patients,
-       all_patient_days: all_patient_days,
-       all_drugs_in_stock: all_drugs_in_stock,
-       patient_counts_by_facility_id: patient_counts_by_facility_id,
+      {patient_count: total_patients,
+       patient_days: all_patient_days,
+       drugs_in_stock: all_drugs_in_stock,
+       patient_count_by_facility_id: patient_count_by_facility_id,
        patient_days_by_facility_id: patient_days_by_facility_id,
        drugs_in_stock_by_facility_id: drugs_in_stock_by_facility_id,
        last_updated_at: Time.now}
@@ -32,10 +32,10 @@ class DrugStocksQuery
     Rails.cache.fetch(drug_consumption_cache_key,
       expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL"),
       force: RequestStore.store[:bust_cache]) do
-      {total_patients: total_patients,
+      {patient_count: total_patients,
        all_drug_consumption: all_drug_consumption,
        drug_consumption_by_facility_id: drug_consumption_by_facility_id,
-       patient_counts_by_facility_id: patient_counts_by_facility_id,
+       patient_count_by_facility_id: patient_count_by_facility_id,
        last_updated_at: Time.now}
     end
   end
@@ -89,10 +89,8 @@ class DrugStocksQuery
     selected_month_drug_stocks.group(:facility_id, "protocol_drugs.rxnorm_code").sum(:in_stock)
   end
 
-  def select_drug_stocks(drug_stocks, facility_id, drug_category)
-    drug_stocks
-      .select { |drug_stock| drug_stock.facility_id == facility_id }
-      .select { |drug_stock| drug_stock.protocol_drug.drug_category == drug_category }
+  def select_drug_stocks(drug_stocks, facility_id)
+    drug_stocks.select { |drug_stock| drug_stock.facility_id == facility_id }
   end
 
   def patient_days_by_facility_id
@@ -100,8 +98,8 @@ class DrugStocksQuery
       result[facility_id] ||= {}
       result[facility_id][drug_category] = category_patient_days(
         drug_category,
-        select_drug_stocks(selected_month_drug_stocks, facility_id, drug_category),
-        patient_counts_by_facility_id[facility_id] || 0
+        select_drug_stocks(selected_month_drug_stocks, facility_id),
+        patient_count_by_facility_id[facility_id] || 0
       )
     end
   end
@@ -132,8 +130,8 @@ class DrugStocksQuery
       result[facility_id][drug_category] =
         category_drug_consumption(
           drug_category,
-          select_drug_stocks(selected_month_drug_stocks, facility_id, drug_category),
-          select_drug_stocks(previous_month_drug_stocks, facility_id, drug_category)
+          select_drug_stocks(selected_month_drug_stocks, facility_id),
+          select_drug_stocks(previous_month_drug_stocks, facility_id)
         )
     end
   end

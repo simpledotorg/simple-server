@@ -55,21 +55,22 @@ RSpec.describe DrugStocksQuery do
 
     it "computes the drug stock report totals" do
       result = described_class.new(facilities: facilities, for_end_of_month: for_end_of_month).drug_stocks_report
-      expect(result[:total_patients]).to eq(9)
-      expect(result[:all_patient_days]["hypertension_ccb"][:patient_days]).to eq(12380)
-      expect(result[:all_patient_days]["hypertension_arb"][:patient_days]).to eq(54054)
+
+      expect(result[:patient_count]).to eq(patients.count)
+      expect(result[:patient_days]["hypertension_ccb"][:patient_days]).to eq(12380)
+      expect(result[:patient_days]["hypertension_arb"][:patient_days]).to eq(54054)
 
       {"hypertension_ccb" => %w[329528 329526],
        "hypertension_arb" => %w[316764 316765 979467]}.each do |(drug_category, rxnorm_codes)|
-        expect(result[:all_patient_days][drug_category][:stocks_on_hand]).not_to be_nil
-        expect(result[:all_patient_days][drug_category][:load_coefficient]).not_to be_nil
-        expect(result[:all_patient_days][drug_category][:new_patient_coefficient]).not_to be_nil
-        expect(result[:all_patient_days][drug_category][:estimated_patients]).not_to be_nil
-        expect(result[:all_patient_days][drug_category][:patient_days]).not_to be_nil
+        expect(result[:patient_days][drug_category][:stocks_on_hand]).not_to be_nil
+        expect(result[:patient_days][drug_category][:load_coefficient]).not_to be_nil
+        expect(result[:patient_days][drug_category][:new_patient_coefficient]).not_to be_nil
+        expect(result[:patient_days][drug_category][:estimated_patients]).not_to be_nil
+        expect(result[:patient_days][drug_category][:patient_days]).not_to be_nil
 
         rxnorm_codes.each do |rxnorm_code|
           expected_total_stock = stocks_by_rxnorm[rxnorm_code][:in_stock] * facilities.count
-          expect(result[:all_drugs_in_stock][rxnorm_code]).to eq(expected_total_stock)
+          expect(result[:drugs_in_stock][rxnorm_code]).to eq(expected_total_stock)
         end
       end
     end
@@ -78,7 +79,7 @@ RSpec.describe DrugStocksQuery do
       result = described_class.new(facilities: facilities, for_end_of_month: for_end_of_month).drug_stocks_report
       facility = facilities.first
 
-      expect(result[:patient_counts_by_facility_id][facility.id]).to eq(3)
+      expect(result[:patient_count_by_facility_id][facility.id]).to eq(3)
       expect(result[:patient_days_by_facility_id][facility.id]["hypertension_ccb"][:patient_days]).to eq(12380)
       expect(result[:patient_days_by_facility_id][facility.id]["hypertension_arb"][:patient_days]).to eq(54054)
 
@@ -101,8 +102,8 @@ RSpec.describe DrugStocksQuery do
       instance = described_class.new(facilities: facilities, for_end_of_month: for_end_of_month)
       result = instance.drug_stocks_report
 
-      expect(result[:all_patient_days]["hypertension_diuretic"]).to eq(nil)
-      expect(result[:all_drugs_in_stock]["331132"]).to eq(nil)
+      expect(result[:patient_days]["hypertension_diuretic"]).to eq(nil)
+      expect(result[:drugs_in_stock]["331132"]).to eq(nil)
     end
 
     it "skips computing drug stock report when there are no drug stocks or patients for a facility" do
@@ -111,7 +112,7 @@ RSpec.describe DrugStocksQuery do
       instance = described_class.new(facilities: [facility_without_drug_stocks], for_end_of_month: for_end_of_month)
       result = instance.drug_stocks_report
 
-      expect(result[:patient_counts_by_facility_id][facility_without_drug_stocks.id]).to eq(nil)
+      expect(result[:patient_count_by_facility_id][facility_without_drug_stocks.id]).to eq(nil)
       expect(result[:patient_days_by_facility_id][facility_without_drug_stocks.id]).to eq({"hypertension_arb" => nil,
                                                                                            "hypertension_ccb" => nil,
                                                                                            "hypertension_diuretic" => nil})
@@ -170,7 +171,8 @@ RSpec.describe DrugStocksQuery do
 
     it "computes the drug consumption report totals" do
       result = described_class.new(facilities: facilities, for_end_of_month: for_end_of_month).drug_consumption_report
-      expect(result[:total_patients]).to eq(patients.count)
+
+      expect(result[:patient_count]).to eq(patients.count)
       expect(result[:all_drug_consumption]["hypertension_ccb"][:base_doses][:total]).to eq(19200)
       expect(result[:all_drug_consumption]["hypertension_arb"][:base_doses][:total]).to eq(24000)
 
@@ -187,7 +189,7 @@ RSpec.describe DrugStocksQuery do
     it "computes the drug consumption report for facilities" do
       result = described_class.new(facilities: facilities, for_end_of_month: for_end_of_month).drug_consumption_report
       facility = facilities.first
-      expect(result[:patient_counts_by_facility_id][facility.id]).to eq(3)
+      expect(result[:patient_count_by_facility_id][facility.id]).to eq(3)
       expect(result[:drug_consumption_by_facility_id][facility.id]["hypertension_ccb"][:base_doses][:total]).to eq(6400)
       expect(result[:drug_consumption_by_facility_id][facility.id]["hypertension_arb"][:base_doses][:total]).to eq(8000)
 

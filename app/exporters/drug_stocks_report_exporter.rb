@@ -50,10 +50,10 @@ class DrugStocksReportExporter
   def total_stock_row
     ["All"] +
       @drugs_by_category.flat_map do |drug_category, drugs|
-        patient_days = @report.dig(:all_patient_days, drug_category, :patient_days)
+        patient_days = @report.dig(:patient_days, drug_category, :patient_days)
 
         drugs.map do |drug|
-          @report.dig(:all_drugs_in_stock, drug.rxnorm_code)
+          @report.dig(:drugs_in_stock, drug.rxnorm_code)
         end << patient_days
       end
   end

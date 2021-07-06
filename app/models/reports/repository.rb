@@ -1,10 +1,12 @@
+require_relative "experiment"
 module Reports
   class Repository
     include BustCache
     include Memery
+    include Scientist
     PERCENTAGE_PRECISION = 0
 
-    def initialize(regions, periods:)
+    def initialize(regions, periods:, reporting_schema_v2: false)
       @regions = Array(regions)
       @periods = if periods.is_a?(Period)
         Range.new(periods, periods)
@@ -12,11 +14,13 @@ module Reports
         periods
       end
       @period_type = @periods.first.type
+      @reporting_schema_v2 = reporting_schema_v2
       raise ArgumentError, "Quarter periods not supported" if @period_type != :month
 
       @assigned_patients_query = AssignedPatientsQuery.new
       @bp_measures_query = BPMeasuresQuery.new
       @control_rate_query = ControlRateQuery.new
+      @control_rate_query_v2 = ControlRateQueryV2.new
       @earliest_patient_data_query = EarliestPatientDataQuery.new
       @follow_ups_query = FollowUpsQuery.new
       @no_bp_measure_query = NoBPMeasureQuery.new
@@ -26,6 +30,7 @@ module Reports
     attr_reader :assigned_patients_query
     attr_reader :bp_measures_query
     attr_reader :control_rate_query
+    attr_reader :control_rate_query_v2
     attr_reader :earliest_patient_data_query
     attr_reader :follow_ups_query
     attr_reader :no_bp_measure_query
@@ -33,6 +38,10 @@ module Reports
     attr_reader :periods
     attr_reader :regions
     attr_reader :registered_patients_query
+
+    def reporting_schema_v2?
+      @reporting_schema_v2
+    end
 
     delegate :cache, :logger, to: Rails
 
@@ -155,14 +164,50 @@ module Reports
     end
 
     memoize def controlled
+      return controlled_v2 if reporting_schema_v2?
+      science("controlled") do |e|
+        e.use { controlled_v1 }
+        e.try { controlled_v2 }
+      end
+    end
+
+    private def controlled_v1
       region_period_cached_query(__method__) do |entry|
         control_rate_query.controlled(entry.region, entry.period).count
       end
     end
 
+    private def controlled_v2
+      regions.each_with_object({}).each do |region, hsh|
+        if earliest_patient_recorded_at[region.slug].nil?
+          hsh[region.slug] = {}
+          next
+        end
+        hsh[region.slug] = control_rate_query_v2.controlled_counts(region, range: active_range(region))
+      end
+    end
+
     memoize def uncontrolled
+      return uncontrolled_v2 if reporting_schema_v2?
+      science("uncontrolled") do |e|
+        e.use { uncontrolled_v1 }
+        e.try { uncontrolled_v2 }
+      end
+    end
+
+    private def uncontrolled_v1
       region_period_cached_query(__method__) do |entry|
         control_rate_query.uncontrolled(entry.region, entry.period).count
+      end
+    end
+
+    private def uncontrolled_v2
+      regions.each_with_object({}).each do |region, hsh|
+        if earliest_patient_recorded_at[region.slug].nil?
+          hsh[region.slug] = {}
+          next
+        end
+        hsh[region.slug] = control_rate_query_v2.uncontrolled_counts(region, range: active_range(region))
       end
     end
 
@@ -263,6 +308,13 @@ module Reports
     end
 
     private
+
+    # Return the actual 'active range' for a Region - this will be the from the first recorded at in a region until
+    # the end of the period range requested.
+    def active_range(region)
+      start = [earliest_patient_recorded_at_period[region.slug], periods.begin].compact.max
+      (start..periods.end)
+    end
 
     # Returns the full range of assigned patient counts for a Region. We do this via one SQL query for each Region, because its
     # fast and easy via the underlying query.

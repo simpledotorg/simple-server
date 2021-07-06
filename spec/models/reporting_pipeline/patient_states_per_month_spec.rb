@@ -5,12 +5,23 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
     it { should belong_to(:patient) }
   end
 
+  around do |example|
+    # We need to enforce a known time for this test, otherwise we will have intermittent failures. For example,
+    # if we use live system time, many of these specs will fail after 18:30 UTC (ie 14:30 ET) when on the last day of a month,
+    # because that falls into the next day in IST (our reporting time zone). So to prevent confusing failures for
+    # developers or CI during North American afternoons, we freeze to a time that will be the end of the month for
+    # UTC, ET, and IST. Timezones! 🤯
+    Timecop.freeze("June 30 2021 5:30 UTC") do # June 30th 23:00 IST time
+      example.run
+    end
+  end
+
   context "indicators" do
     describe "htn_care_state" do
       it "marks a dead patient dead" do
         dead_patient = create(:patient, status: :dead)
         described_class.refresh
-        with_reporting_time_zones do
+        with_reporting_time_zone do
           expect(described_class.where(htn_care_state: "dead").pluck(:patient_id)).to include(dead_patient.id)
         end
       end
@@ -19,8 +30,8 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
         patient_registered_13m_ago = Timecop.freeze(13.months.ago) { create(:patient) }
         Timecop.freeze(13.months.ago) { create(:blood_pressure, patient: patient_registered_13m_ago) }
 
-        described_class.refresh
-        with_reporting_time_zones do
+        RefreshMaterializedViews.new.refresh_v2
+        with_reporting_time_zone do
           expect(described_class
             .where(htn_care_state: "lost_to_follow_up", month_date: Date.current.beginning_of_month)
             .pluck(:patient_id)).to include(patient_registered_13m_ago.id)
@@ -34,8 +45,8 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
         patient_registered_12m_ago = Timecop.freeze(12.months.ago) { create(:patient) }
         patient_registered_11m_ago = Timecop.freeze(11.months.ago) { create(:patient) }
 
-        described_class.refresh
-        with_reporting_time_zones do
+        RefreshMaterializedViews.new.refresh_v2
+        with_reporting_time_zone do
           expect(described_class
             .where(htn_care_state: "lost_to_follow_up", month_date: Date.current.beginning_of_month)
             .pluck(:patient_id)).to include(patient_registered_12m_ago.id)
@@ -56,8 +67,8 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
         patient_with_recent_bp = Timecop.freeze(13.months.ago) { create(:patient) }
         Timecop.freeze(11.months.ago) { create(:blood_pressure, patient: patient_with_recent_bp) }
 
-        described_class.refresh
-        with_reporting_time_zones do
+        RefreshMaterializedViews.new.refresh_v2
+        with_reporting_time_zone do
           expect(described_class
             .where(htn_care_state: "lost_to_follow_up", month_date: Date.current.beginning_of_month)
             .pluck(:patient_id)).not_to include(patient_with_recent_bp.id)
@@ -75,9 +86,9 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
           create(:blood_pressure, patient: under_care_patient, recorded_at: june_2021[:under_12_months_ago])
           create(:blood_pressure, patient: ltfu_patient, recorded_at: june_2021[:over_12_months_ago])
 
-          described_class.refresh
+          RefreshMaterializedViews.new.refresh_v2
 
-          with_reporting_time_zones do
+          with_reporting_time_zone do
             expect(described_class
               .where(htn_care_state: "lost_to_follow_up", month_date: june_2021[:beginning_of_month])
               .pluck(:patient_id)).to include(ltfu_patient.id)
@@ -100,8 +111,9 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
           create(:blood_pressure, patient: under_care_patient, recorded_at: june_2021[:end_of_month] - 1.minute)
           create(:blood_pressure, patient: ltfu_patient, recorded_at: june_2021[:end_of_month] + 1.minute)
 
-          described_class.refresh
-          with_reporting_time_zones do
+          RefreshMaterializedViews.new.refresh_v2
+
+          with_reporting_time_zone do
             expect(described_class
               .where(htn_care_state: "lost_to_follow_up", month_date: june_2021[:beginning_of_month])
               .pluck(:patient_id)).not_to include(under_care_patient.id)
@@ -121,8 +133,8 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
           under_care_patient = create(:patient, recorded_at: june_2021[:under_12_months_ago])
           ltfu_patient = create(:patient, recorded_at: june_2021[:over_12_months_ago])
 
-          described_class.refresh
-          with_reporting_time_zones do
+          RefreshMaterializedViews.new.refresh_v2
+          with_reporting_time_zone do
             expect(described_class
               .where(htn_care_state: "lost_to_follow_up", month_date: june_2021[:beginning_of_month])
               .pluck(:patient_id)).not_to include(under_care_patient.id)
@@ -147,9 +159,9 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
         patient_2 = create(:patient, recorded_at: june_2021[:long_ago])
         create(:encounter, patient: patient_2, encountered_on: june_2021[:under_3_months_ago])
         patient_3 = create(:patient, recorded_at: june_2021[:long_ago])
-        described_class.refresh
+        RefreshMaterializedViews.new.refresh_v2
 
-        with_reporting_time_zones do
+        with_reporting_time_zone do
           expect(described_class.where(htn_treatment_outcome_in_last_3_months: "missed_visit", month_date: june_2021[:now]).pluck(:patient_id))
             .to include(patient_1.id, patient_3.id)
           expect(described_class.where(htn_treatment_outcome_in_last_3_months: "missed_visit", month_date: june_2021[:now]).pluck(:patient_id))
@@ -180,9 +192,9 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
           facility: patient_with_no_bp.registration_facility,
           patient: patient_with_no_bp,
           user: patient_with_no_bp.registration_user)
-        described_class.refresh
+        RefreshMaterializedViews.new.refresh_v2
 
-        with_reporting_time_zones do
+        with_reporting_time_zone do
           expect(described_class.where(htn_treatment_outcome_in_last_3_months: "visited_no_bp", month_date: june_2021[:now]).pluck(:patient_id))
             .to include(patient_bp_over_3_months.id, patient_with_no_bp.id)
           expect(described_class.where(htn_treatment_outcome_in_last_3_months: "visited_no_bp", month_date: june_2021[:now]).pluck(:patient_id))
@@ -200,9 +212,9 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
         patient_bp_over_3_months = create(:patient, recorded_at: june_2021[:long_ago])
         create(:blood_pressure, :with_encounter, patient: patient_bp_over_3_months, recorded_at: june_2021[:over_3_months_ago])
 
-        described_class.refresh
+        RefreshMaterializedViews.new.refresh_v2
 
-        with_reporting_time_zones do
+        with_reporting_time_zone do
           expect(described_class.where(htn_treatment_outcome_in_last_3_months: "controlled", month_date: june_2021[:now]).pluck(:patient_id))
             .to include(patient_controlled.id)
           expect(described_class.where(htn_treatment_outcome_in_last_3_months: "uncontrolled", month_date: june_2021[:now]).pluck(:patient_id))
@@ -220,8 +232,8 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
         patient_3 = create(:patient, recorded_at: june_2021[:now])
         patient_4 = create(:patient, recorded_at: june_2021[:over_3_months_ago])
 
-        described_class.refresh
-        with_reporting_time_zones do
+        RefreshMaterializedViews.new.refresh_v2
+        with_reporting_time_zone do
           expect(described_class.find_by(patient_id: patient_1.id, month_string: june_2021[:month_string]).months_since_registration).to eq 11
           expect(described_class.find_by(patient_id: patient_2.id, month_string: june_2021[:month_string]).months_since_registration).to eq 12
           expect(described_class.find_by(patient_id: patient_3.id, month_string: june_2021[:month_string]).months_since_registration).to eq 0
@@ -243,9 +255,9 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
 
         patient = create(:patient, registration_facility: registration_facility, assigned_facility: assigned_facility)
 
-        described_class.refresh
+        RefreshMaterializedViews.new.refresh_v2
 
-        with_reporting_time_zones do
+        with_reporting_time_zone do
           patient_state = described_class.find_by(patient_id: patient.id, month_string: june_2021[:month_string])
 
           expect(patient_state.patient_assigned_facility_id).to eq(assigned_facility.id)
@@ -275,9 +287,9 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
 
         patient = create(:patient, registration_facility: registration_facility, assigned_facility: assigned_facility)
 
-        described_class.refresh
+        RefreshMaterializedViews.new.refresh_v2
 
-        with_reporting_time_zones do
+        with_reporting_time_zone do
           patient_state = described_class.find_by(patient_id: patient.id, month_string: june_2021[:month_string])
 
           expect(patient_state.patient_registration_facility_id).to eq(registration_facility.id)
@@ -306,9 +318,9 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
 
         patient_no_bp = create(:patient, recorded_at: june_2021[:long_ago])
 
-        described_class.refresh
+        RefreshMaterializedViews.new.refresh_v2
 
-        with_reporting_time_zones do
+        with_reporting_time_zone do
           controlled_state = described_class.find_by(patient_id: patient_controlled.id, month_string: june_2021[:month_string])
           uncontrolled_state = described_class.find_by(patient_id: patient_uncontrolled.id, month_string: june_2021[:month_string])
           no_bp_state = described_class.find_by(patient_id: patient_no_bp.id, month_string: june_2021[:month_string])
@@ -331,50 +343,56 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
       end
 
       it "should have a record for every month between registration and now" do
-        two_years_ago = june_2021[:now] - 2.years
-        twelve_months_ago = june_2021[:now] - 12.months
-        ten_months_ago = june_2021[:now] - 10.months
-        seven_months_ago = june_2021[:now] - 7.months
-        eight_months_ago = june_2021[:now] - 8.months
-        five_months_ago = june_2021[:now] - 5.months
-        two_months_ago = june_2021[:now] - 2.months
+        with_reporting_time_zone do
+          now = june_2021[:now]
+          Timecop.freeze(now) do
+            two_years_ago = june_2021[:now] - 2.years
+            twelve_months_ago = june_2021[:now] - 12.months
+            ten_months_ago = june_2021[:now] - 10.months
+            seven_months_ago = june_2021[:now] - 7.months
+            eight_months_ago = june_2021[:now] - 8.months
+            five_months_ago = june_2021[:now] - 5.months
+            two_months_ago = june_2021[:now] - 2.months
 
-        # 24 months ago    patient registered
-        # 10 months ago    controlled bp taken
-        # 8  months ago    visit but no bp (drugs)
-        # 5  months ago    uncontrolled bp taken
-        patient = create(:patient, recorded_at: two_years_ago)
-        create(:blood_pressure, :with_encounter, patient: patient, recorded_at: ten_months_ago, systolic: 139, diastolic: 89)
-        create(:prescription_drug, patient: patient, device_created_at: eight_months_ago)
-        create(:blood_pressure, :with_encounter, patient: patient, recorded_at: five_months_ago, systolic: 140, diastolic: 90)
+            # 24 months ago    patient registered
+            # 10 months ago    controlled bp taken
+            # 8  months ago    visit but no bp (drugs)
+            # 5  months ago    uncontrolled bp taken
+            patient = create(:patient, recorded_at: two_years_ago)
+            create(:blood_pressure, :with_encounter, patient: patient, recorded_at: ten_months_ago, systolic: 139, diastolic: 89)
+            create(:prescription_drug, patient: patient, device_created_at: eight_months_ago)
+            create(:blood_pressure, :with_encounter, patient: patient, recorded_at: five_months_ago, systolic: 140, diastolic: 90)
 
-        described_class.refresh
+            RefreshMaterializedViews.new.refresh_v2
 
-        with_reporting_time_zones do
-          expect(patient_states(patient).pluck(:months_since_registration)).to eq((0..24).to_a)
+            # NOTE: we have to run some of these assertions for a range of up until the "current" frozen timestamp, because we build this matview
+            # off a join with the reporting_months view, which uses now() and so will always have records up until
+            # the actual current time.  Timecop only impacts Ruby, and not the actual system time.
+            expect(patient_states(patient, from: two_years_ago, to: now).pluck(:months_since_registration)).to eq((0...24).to_a)
 
-          expect(patient_states(patient, to: ten_months_ago).pluck(:months_since_visit)).to all(be_nil)
-          expect(patient_states(patient, from: ten_months_ago, to: eight_months_ago).pluck(:months_since_visit)).to eq((0..1).to_a)
-          expect(patient_states(patient, from: eight_months_ago, to: five_months_ago).pluck(:months_since_visit)).to eq((0..2).to_a)
-          expect(patient_states(patient, from: five_months_ago).pluck(:months_since_visit)).to eq((0..5).to_a)
+            expect(patient_states(patient, to: ten_months_ago).pluck(:months_since_visit)).to all(be_nil)
+            expect(patient_states(patient, from: ten_months_ago, to: eight_months_ago).pluck(:months_since_visit)).to eq((0..1).to_a)
+            expect(patient_states(patient, from: eight_months_ago, to: five_months_ago).pluck(:months_since_visit)).to eq((0..2).to_a)
+            expect(patient_states(patient, from: five_months_ago, to: now).pluck(:months_since_visit)).to eq((0...5).to_a)
 
-          expect(patient_states(patient, to: ten_months_ago).pluck(:months_since_bp)).to all(be_nil)
-          expect(patient_states(patient, from: ten_months_ago, to: five_months_ago).pluck(:months_since_bp)).to eq((0..4).to_a)
-          expect(patient_states(patient, from: five_months_ago).pluck(:months_since_bp)).to eq((0..5).to_a)
+            expect(patient_states(patient, to: ten_months_ago).pluck(:months_since_bp)).to all(be_nil)
+            expect(patient_states(patient, from: ten_months_ago, to: five_months_ago).pluck(:months_since_bp)).to eq((0..4).to_a)
+            expect(patient_states(patient, from: five_months_ago, to: now).pluck(:months_since_bp)).to eq((0...5).to_a)
 
-          expect(patient_states(patient, to: ten_months_ago).pluck(:last_bp_state)).to all(eq("unknown"))
-          expect(patient_states(patient, from: ten_months_ago, to: five_months_ago).pluck(:last_bp_state)).to all(eq("controlled"))
-          expect(patient_states(patient, from: five_months_ago).pluck(:last_bp_state)).to all(eq("uncontrolled"))
+            expect(patient_states(patient, to: ten_months_ago).pluck(:last_bp_state)).to all(eq("unknown"))
+            expect(patient_states(patient, from: ten_months_ago, to: five_months_ago).pluck(:last_bp_state)).to all(eq("controlled"))
+            expect(patient_states(patient, from: five_months_ago).pluck(:last_bp_state)).to all(eq("uncontrolled"))
 
-          expect(patient_states(patient, to: twelve_months_ago).pluck(:htn_care_state)).to all(eq("under_care"))
-          expect(patient_states(patient, from: twelve_months_ago, to: ten_months_ago).pluck(:htn_care_state)).to all(eq("lost_to_follow_up"))
-          expect(patient_states(patient, from: ten_months_ago).pluck(:htn_care_state)).to all(eq("under_care"))
+            expect(patient_states(patient, to: twelve_months_ago).pluck(:htn_care_state)).to all(eq("under_care"))
+            expect(patient_states(patient, from: twelve_months_ago, to: ten_months_ago).pluck(:htn_care_state)).to all(eq("lost_to_follow_up"))
+            expect(patient_states(patient, from: ten_months_ago).pluck(:htn_care_state)).to all(eq("under_care"))
 
-          expect(patient_states(patient, to: ten_months_ago).pluck(:htn_treatment_outcome_in_last_3_months)).to all(eq("missed_visit"))
-          expect(patient_states(patient, from: ten_months_ago, to: seven_months_ago).pluck(:htn_treatment_outcome_in_last_3_months)).to all(eq("controlled"))
-          expect(patient_states(patient, from: seven_months_ago, to: five_months_ago).pluck(:htn_treatment_outcome_in_last_3_months)).to all(eq("visited_no_bp"))
-          expect(patient_states(patient, from: five_months_ago, to: two_months_ago).pluck(:htn_treatment_outcome_in_last_3_months)).to all(eq("uncontrolled"))
-          expect(patient_states(patient, from: two_months_ago).pluck(:htn_treatment_outcome_in_last_3_months)).to all(eq("missed_visit"))
+            expect(patient_states(patient, to: ten_months_ago).pluck(:htn_treatment_outcome_in_last_3_months)).to all(eq("missed_visit"))
+            expect(patient_states(patient, from: ten_months_ago, to: seven_months_ago).pluck(:htn_treatment_outcome_in_last_3_months)).to all(eq("controlled"))
+            expect(patient_states(patient, from: seven_months_ago, to: five_months_ago).pluck(:htn_treatment_outcome_in_last_3_months)).to all(eq("visited_no_bp"))
+            expect(patient_states(patient, from: five_months_ago, to: two_months_ago).pluck(:htn_treatment_outcome_in_last_3_months)).to all(eq("uncontrolled"))
+            expect(patient_states(patient, from: two_months_ago).pluck(:htn_treatment_outcome_in_last_3_months)).to all(eq("missed_visit"))
+          end
         end
       end
     end
