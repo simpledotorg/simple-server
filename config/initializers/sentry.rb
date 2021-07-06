@@ -1,5 +1,5 @@
 Sentry.init do |config|
-  config.async = ->(event, hint) do
+  config.async = lambda do |event, hint|
     Sentry::SendEventJob.perform_later(event, hint)
   end
 
@@ -11,7 +11,7 @@ Sentry.init do |config|
     when /request/ # web requests
       0.20
     when /sidekiq/i # background jobs
-      0.001
+      0.01
     else
       0.0
     end
