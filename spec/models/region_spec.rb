@@ -432,4 +432,19 @@ RSpec.describe Region, type: :model do
         .to be_empty
     end
   end
+
+  describe "flipperable" do
+    it "has a flipper_id" do
+      region = create(:region, reparent_to: Region.root)
+
+      expect(region.flipper_id).to eq("Region;#{region.id}")
+    end
+
+    it "has feature_enabled?" do
+      region = create(:region, reparent_to: Region.root)
+      Flipper.enable(:a_flag, region)
+
+      expect(region.feature_enabled?(:a_flag)).to be true
+    end
+  end
 end

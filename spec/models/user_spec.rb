@@ -349,4 +349,19 @@ RSpec.describe User, type: :model do
       expect(nurse.district_level_sync?).to eq false
     end
   end
+
+  describe "flipperable" do
+    it "has a flipper_id" do
+      user = create(:user)
+
+      expect(user.flipper_id).to eq("User;#{user.id}")
+    end
+
+    it "has feature_enabled?" do
+      user = create(:user)
+      Flipper.enable(:a_flag, user)
+
+      expect(user.feature_enabled?(:a_flag)).to be true
+    end
+  end
 end
