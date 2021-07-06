@@ -60,3 +60,9 @@ end
 every 30.minutes, roles: [:cron] do
   runner "RegionsIntegrityCheck.sweep"
 end
+
+every 1.month, at: local("4:00 am"), roles: [:cron]  do
+  if Flipper.enabled?(:dhis2_export)
+    rake "dhis2:export"
+  end
+end
