@@ -325,8 +325,6 @@ module Reports
       }
     end
 
-    # This only powers queries for children regions which do not require both variants of control rates, unlike Result.
-    # As we deprecate Result and shift to Repository, a Repository object should be able to return both rates.
     def denominator(region, period, with_ltfu: false)
       if with_ltfu
         cumulative_assigned_patients[region.slug][period.adjusted_period]
