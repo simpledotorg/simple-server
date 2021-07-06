@@ -56,7 +56,7 @@ RSpec.describe DrugStocksQuery do
     it "computes the drug stock report totals" do
       result = described_class.new(facilities: facilities, for_end_of_month: for_end_of_month).drug_stocks_report
 
-      expect(result[:patient_count]).to eq(patients.count)
+      expect(result[:patient_count]).to eq(9)
       expect(result[:patient_days]["hypertension_ccb"][:patient_days]).to eq(12380)
       expect(result[:patient_days]["hypertension_arb"][:patient_days]).to eq(54054)
 

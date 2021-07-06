@@ -8,7 +8,6 @@ class Webview::DrugStocksController < ApplicationController
   around_action :set_time_zone
   before_action :authenticate
   before_action :find_current_facility
-  before_action :set_show_current_month
   before_action :set_for_end_of_month
   before_action :set_bust_cache
   layout false
