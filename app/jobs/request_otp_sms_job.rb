@@ -1,6 +1,11 @@
 class RequestOtpSmsJob < ApplicationJob
   def perform(user)
-    NotificationService.new.send_sms(user.phone_number, otp_message(user))
+    context = {
+      calling_class: self.class.name,
+      user_id: user.id,
+      communication_type: :sms
+    }
+    TwilioApiService.new.send_sms(recipient_number: user.phone_number, message: otp_message(user), context: context)
   end
 
   private
