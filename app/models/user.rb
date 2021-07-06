@@ -253,6 +253,8 @@ class User < ApplicationRecord
   end
 
   memoize def drug_stocks_enabled?
-    accessible_district_regions(:view_reports).any? { |district| district.feature_enabled?(:drug_stocks) }
+    facility_group_ids = accessible_facilities(:view_reports).select(:facility_group_id).distinct
+
+    Region.where(source_id: facility_group_ids).any? { |district| district.feature_enabled?(:drug_stocks) }
   end
 end
