@@ -367,7 +367,7 @@ RSpec.describe User, type: :model do
 
   describe "drug_stocks_enabled?" do
     it "is true if any district accessible by the user is enabled" do
-      admin = create(:admin,:viewer_all)
+      admin = create(:admin, :viewer_all)
       facility_group = create(:facility_group)
       create(:access, user: admin, resource: facility_group)
       Flipper.enable(:drug_stocks, facility_group.region)
