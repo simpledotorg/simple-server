@@ -140,7 +140,7 @@ Rails.application.routes.draw do
       end
 
       scope :patients do
-        get "/:identifier", to: "patients#lookup"
+        post "/lookup", to: "patients#lookup"
       end
     end
   end
