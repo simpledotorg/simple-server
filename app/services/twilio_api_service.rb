@@ -1,10 +1,20 @@
+# See https://www.twilio.com/docs/iam/test-credentials#test-sms-messages-parameters-From
+# https://www.twilio.com/docs/whatsapp/sandbox#what-is-the-twilio-sandbox-for-whatsapp
+# Twilio does not offer a true sandbox environment that separates logs from production.
+# Instead, they build mocked TO/FROM numbers into the gem. So by using different TO/FROM
+# numbers you can force different response types. To have a fully functional sandbox environment
+# with its own logging, you would need to set up a different Twilio account and use those credentials.
+# ERROR HANDLING: this class is primarily used by background jobs. We raise an error on
+# twilio errors without error codes because network errors do not have error codes
+# and we want to force a retry on network errors. If a twilio error has a code,
+# we log the error but do not want to retry because the errors listed in their docs
+# are idempotent and retries would yield the same errors.
+
 class TwilioApiService
   attr_reader :client
   attr_reader :twilio_sender_sms_number
   attr_reader :twilio_sender_whatsapp_number
 
-  # See https://www.twilio.com/docs/iam/test-credentials#test-sms-messages-parameters-From
-  # https://www.twilio.com/docs/whatsapp/sandbox#what-is-the-twilio-sandbox-for-whatsapp
   TWILIO_TEST_SMS_NUMBER = "+15005550006"
   TWILIO_TEST_WHATSAPP_NUMBER = "+14155238886"
 
@@ -89,7 +99,6 @@ class TwilioApiService
       body: message
     )
   rescue Twilio::REST::TwilioError => exception
-    # see the link above for a list of codes; the else case happens on network failures
     if exception.respond_to?(:code)
       log_error(exception, sender_number, recipient_number, context)
       nil
@@ -104,7 +113,7 @@ class TwilioApiService
       error: e,
       sender: sender_number,
       recipient: recipient_number,
-      context: context
+      **context
     })
   end
 end
