@@ -18,9 +18,21 @@ class RefreshMaterializedViews
     @logger ||= Rails.logger.child(class: self.class.name)
   end
 
+  def benchmark_and_statsd(operation)
+    name = "refresh_matviews.#{operation}"
+    benchmark(name) do
+      Statsd.instance.time(name) do
+        yield
+      end
+    end
+  end
+
   def call
-    benchmark("refresh_materialized_views") do
-      refresh
+    benchmark_and_statsd("all_v1") do
+      refresh_v1
+    end
+    benchmark_and_statsd("all_v2") do
+      refresh_v2
     end
   end
 
@@ -30,37 +42,43 @@ class RefreshMaterializedViews
 
   delegate :tz, :set_last_updated_at, to: self
 
-  def refresh
-    # LatestBloodPressuresPerPatientPerMonth should be refreshed before
-    # LatestBloodPressuresPerPatientPerQuarter and LatestBloodPressuresPerPatient
+  V1_MATVIEWS = %w[
+    LatestBloodPressuresPerPatientPerMonth
+    LatestBloodPressuresPerPatient
+    LatestBloodPressuresPerPatientPerQuarter
+    BloodPressuresPerFacilityPerDay
+    PatientRegistrationsPerDayPerFacility
+    MaterializedPatientSummary
+  ].freeze
+
+  # The order for these must remain BPs -> Visits -> States
+  V2_MATVIEWS = %w[
+    ReportingPipeline::PatientBloodPressuresPerMonth
+    ReportingPipeline::PatientVisitsPerMonth
+    ReportingPipeline::PatientStatesPerMonth
+  ].freeze
+
+  # LatestBloodPressuresPerPatientPerMonth should be refreshed before
+  # LatestBloodPressuresPerPatientPerQuarter and LatestBloodPressuresPerPatient
+  def refresh_v1
     ActiveRecord::Base.transaction do
       ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{tz}'")
-
-      benchmark("refresh_materialized_views LatestBloodPressuresPerPatientPerMonth") do
-        LatestBloodPressuresPerPatientPerMonth.refresh
+      V1_MATVIEWS.each do |name|
+        benchmark_and_statsd(name) do
+          klass = name.constantize
+          klass.refresh
+        end
       end
-
-      benchmark("refresh_materialized_views LatestBloodPressuresPerPatient") do
-        LatestBloodPressuresPerPatient.refresh
-      end
-
-      benchmark("refresh_materialized_views LatestBloodPressuresPerPatientPerQuarter") do
-        LatestBloodPressuresPerPatientPerQuarter.refresh
-      end
-
-      benchmark("refresh_materialized_views BloodPressuresPerFacilityPerDay") do
-        BloodPressuresPerFacilityPerDay.refresh
-      end
-
-      benchmark("refresh_materialized_views PatientRegistrationsPerDayPerFacility") do
-        PatientRegistrationsPerDayPerFacility.refresh
-      end
-
-      benchmark("refresh_materialized_views MaterializedPatientSummary") do
-        MaterializedPatientSummary.refresh
-      end
-
       set_last_updated_at
+    end
+  end
+
+  def refresh_v2
+    V2_MATVIEWS.each do |name|
+      benchmark_and_statsd(name) do
+        klass = name.constantize
+        klass.refresh
+      end
     end
   end
 end

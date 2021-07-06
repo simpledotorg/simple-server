@@ -1,5 +1,4 @@
 class Period
-  REGISTRATION_BUFFER_MONTHS = 3
   REPORTING_TIME_ZONE = CountryConfig.current[:time_zone] || "Asia/Kolkata"
 
   include Comparable
@@ -60,7 +59,7 @@ class Period
   # Returns a new Period adjusted by the registration buffer. This is used in our denominators to determine
   # control rates, so that new patients aren't included in the calculations.
   def adjusted_period
-    advance(months: -REGISTRATION_BUFFER_MONTHS)
+    advance(months: -Reports::REGISTRATION_BUFFER_IN_MONTHS)
   end
 
   # Convert this Period to a quarter period - so:
@@ -90,6 +89,10 @@ class Period
 
   def bp_control_range_end_date
     bp_control_range.end.to_s(:day_mon_year)
+  end
+
+  def ltfu_since_date
+    self.begin.advance(months: -12).end_of_month.to_s(:day_mon_year)
   end
 
   def month?
@@ -179,6 +182,17 @@ class Period
     else
       value.to_s(format)
     end
+  end
+
+  # Returns a Hash with various Period related dates for eash consumption by the view
+  def to_hash
+    {
+      name: to_s,
+      ltfu_since_date: ltfu_since_date,
+      bp_control_start_date: bp_control_range_start_date,
+      bp_control_end_date: bp_control_range_end_date,
+      bp_control_registration_date: bp_control_registrations_until_date
+    }
   end
 
   def adjective

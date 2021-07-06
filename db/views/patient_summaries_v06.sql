@@ -40,6 +40,7 @@ greatest(0, date_part('day', NOW() - next_appointment.scheduled_date)) AS days_o
 next_appointment.id AS next_appointment_id,
 next_appointment.scheduled_date AS next_appointment_scheduled_date,
 next_appointment.status AS next_appointment_status,
+next_appointment.cancel_reason AS next_appointment_cancel_reason,
 next_appointment.remind_on AS next_appointment_remind_on,
 next_appointment_facility.id AS next_appointment_facility_id,
 next_appointment_facility.name AS next_appointment_facility_name,

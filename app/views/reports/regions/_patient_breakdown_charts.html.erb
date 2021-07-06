@@ -15,34 +15,41 @@
         </p>
         <div class="mb-12px d-lg-flex align-lg-center">
           <p class="mb-0px fs-32px fw-bold
-            <% if @chart_data[:ltfu_trend].last_value(:ltfu_patients_rate) %>c-blue-dark
-            <% else %>c-grey-medium
-            <% end %> mr-lg-12px" data-rate="<%= number_to_percentage(@chart_data[:ltfu_trend].last_value(:ltfu_patients_rate), precision: 0) %>">
-            <% if @chart_data[:ltfu_trend].last_value(:ltfu_patients_rate) %>
-              <%= number_to_percentage(@chart_data[:ltfu_trend].last_value(:ltfu_patients_rate), precision: 0) %>
+            <% current_ltfu_rate = @chart_data[:ltfu_trend][:ltfu_patients_rate][@period] %>
+            <% if current_ltfu_rate %>
+              c-blue-dark
+            <% else %>
+              c-grey-medium
+            <% end %> mr-lg-12px" data-rate="<%= number_to_percentage(current_ltfu_rate, precision: 0) %>">
+            <% if current_ltfu_rate %>
+              <%= number_to_percentage(current_ltfu_rate, precision: 0) %>
             <% else %>
               No data
             <% end %>
           </p>
           <div>
-            <% if @chart_data[:ltfu_trend].last_value(:uncontrolled_patients_rate) %>
+            <% current_ltfu_patients = @chart_data[:ltfu_trend][:ltfu_patients][@period] %>
+            <% if current_ltfu_patients %>
               <p class="m-0px c-black">
-                <span data-total-patients="<%= number_with_delimiter(@chart_data[:ltfu_trend].last_value(:ltfu_patients)) %>">
-                  <%= number_with_delimiter(@chart_data[:ltfu_trend].last_value(:ltfu_patients)) %>
+                <span data-total-patients="<%= number_with_delimiter(current_ltfu_patients) %>">
+                  <%= number_with_delimiter(current_ltfu_patients) %>
                 </span>
-                <%= "patient".pluralize(@chart_data[:ltfu_trend].last_value(:ltfu_patients)) %> with no BP taken since
-                <span data-period-start="<%= @chart_data[:ltfu_trend].last_value(:period_info)["ltfu_since_date"] %>">
-                  <%= @chart_data[:ltfu_trend].last_value(:period_info)["ltfu_since_date"] %>
+                <%= "patient".pluralize(current_ltfu_patients) %> with no BP taken since
+
+                <span data-period-start="<%= @period.ltfu_since_date %>">
+                  <%= @period.ltfu_since_date %>
                 </span>
               </p>
               <p class="m-0px c-grey-dark c-print-black">
                 of
-                <span data-registrations="<%= number_with_delimiter(@chart_data[:ltfu_trend].last_value(:cumulative_assigned_patients)) %>">
-                  <%= number_with_delimiter(@chart_data[:ltfu_trend].last_value(:cumulative_assigned_patients)) %>
+              <% current_assigned = @chart_data[:ltfu_trend][:cumulative_assigned_patients][@period] %>
+                <span data-registrations="<%= number_with_delimiter(current_assigned) %>">
+                  <%= number_with_delimiter(current_assigned) %>
                 </span>
-                <%= "patient".pluralize(@chart_data[:ltfu_trend].last_value(:cumulative_assigned_patients)) %> registered till
-                <span data-registrations-period-end="<%= @chart_data[:ltfu_trend].last_value(:period_info)["bp_control_end_date"] %>">
-                  <%= @chart_data[:ltfu_trend].last_value(:period_info)["bp_control_end_date"] %>
+                <%= "patient".pluralize(current_assigned) %> registered till
+
+                <span data-registrations-period-end="<%= @period.bp_control_range_end_date %>">
+                  <%= @period.bp_control_range_end_date %>
                 </span>
               </p>
             <% else %>
@@ -59,7 +66,7 @@
             <canvas id="ltfuPatients"></canvas>
           </div>
           <div class="p-absolute t-0 l-0 pe-none d-flex align-center justify-center w-100pt h-100pt">
-            <% unless @chart_data[:ltfu_trend].last_value(:ltfu_patients_rate) %>
+            <% unless current_ltfu_rate %>
               <p class="c-grey-medium">
                 No data available
               </p>
