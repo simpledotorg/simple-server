@@ -38,8 +38,4 @@ module MyFacilitiesHelper
      diabetes: {full: "Diabetes Tablets", short: "Diabetes"},
      other: {full: "Other Tablets", short: "Other"}}.with_indifferent_access
   end
-
-  def drug_stocks_enabled?
-    current_admin.accessible_district_regions(:view_reports).any? { |facility| facility.feature_enabled?(:drug_stocks) }
-  end
 end

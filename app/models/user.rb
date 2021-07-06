@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  include Memery
   include Flipperable
   include PgSearch::Model
 
@@ -249,5 +250,9 @@ class User < ApplicationRecord
 
   def district_level_sync?
     can_teleconsult?
+  end
+
+  memoize def drug_stocks_enabled?
+    accessible_district_regions(:view_reports).any? { |district| district.feature_enabled?(:drug_stocks) }
   end
 end

@@ -9,7 +9,7 @@ class MyFacilities::DrugStocksController < AdminController
   after_action :verify_authorization_attempted
   before_action :set_facility, only: [:new, :create]
   before_action :set_for_end_of_month
-  before_action :drug_stocks_enabled?
+  before_action :redirect_unless_drug_stocks_enabled
 
   def drug_stocks
     create_drug_report
@@ -88,9 +88,8 @@ class MyFacilities::DrugStocksController < AdminController
     )
   end
 
-  def drug_stocks_enabled?
-    # Depends on before_action :populate_facility_groups to avoid extra queries
-    redirect_to :root if @facility_groups.empty?
+  def redirect_unless_drug_stocks_enabled
+    redirect_to :root unless current_admin.drug_stocks_enabled?
   end
 
   def populate_facility_sizes
