@@ -171,6 +171,9 @@
           <div class="d-flex flex-1">
             <h3 class="mb-0px mr-8px">
               Registrations
+              <span class="fs-14px bg-yellow-light">
+                <%= "(v2 schema)" if reporting_schema_v2_enabled? %>
+              </span>
             </h3>
             <%= render "definition_tooltip",
                        definitions: { "Total registered patients" => t("registered_patients_copy.total_registered_patients", region_name: @region.name),

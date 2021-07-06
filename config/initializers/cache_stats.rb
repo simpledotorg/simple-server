@@ -1,6 +1,8 @@
-ActiveSupport::Notifications.subscribe(/cache_.*\.active_support/) do |name, start, finish, arg1, arg2|
-  Rails.logger.debug name: name, start: start, finish: finish, arg1: arg1, arg2: arg2
-end
+# NOTE: this is very verbose but can be useful for development purposes to see what is getting cached
+#
+# ActiveSupport::Notifications.subscribe(/cache_.*\.active_support/) do |name, start, finish, arg1, arg2|
+#   Rails.logger.debug name: name, start: start, finish: finish, arg1: arg1, arg2: arg2
+# end
 
 ActiveSupport::Notifications.subscribe(/cache_read\.active_support/) do |name, start, finish, _id, payload|
   RequestStore[:cache_stats] ||= {reads: 0, hits: 0, misses: 0, missed_keys: []}
