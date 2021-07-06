@@ -56,7 +56,7 @@ class DrugStocksQuery
     drugs.pluck(:drug_category).uniq
   end
 
-  memoize def patient_counts_by_facility_id
+  memoize def patient_count_by_facility_id
     Patient
       .for_reports(exclude_ltfu_as_of: @for_end_of_month)
       .where("recorded_at <= ?", @for_end_of_month)
