@@ -100,7 +100,7 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
         Timecop.freeze("5 July 2021") do
           get :drug_stocks, params: {}
 
-          expect(assigns(:for_end_of_month)).to eq(Time.use_zone("Asia/Kolkata") { Time.parse("1 June 2021").end_of_month })
+          expect(assigns(:for_end_of_month)).to eq(Time.use_zone("Asia/Kolkata") { Time.parse("1 June 2021 +0530").end_of_month })
         end
       end
 
@@ -108,7 +108,7 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
         Timecop.freeze("27 July 2021") do
           get :drug_stocks, params: {}
 
-          expect(assigns(:for_end_of_month)).to eq(Time.use_zone("Asia/Kolkata") { Time.parse("1 Jul 2021").end_of_month })
+          expect(assigns(:for_end_of_month)).to eq(Time.use_zone("Asia/Kolkata") { Time.parse("1 Jul 2021 +0530").end_of_month })
         end
       end
 
@@ -116,7 +116,7 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
         Timecop.freeze("27 July 2021") do
           get :drug_stocks, params: {for_end_of_month: "Jan-2021"}
 
-          expect(assigns(:for_end_of_month)).to eq(Time.use_zone("Asia/Kolkata") { Time.parse("1 Jan 2021").end_of_month })
+          expect(assigns(:for_end_of_month)).to eq(Time.use_zone("Asia/Kolkata") { Time.parse("1 Jan 2021 +0530").end_of_month })
         end
       end
     end
