@@ -371,7 +371,6 @@ class Api::V4::Models
         login_patient: login_patient,
         lookup_patient: lookup_patient,
         lookup_patients: array_of("lookup_patient"),
-        medical_history: Api::V3::Models.medical_history,
         nullable_medical_history: Api::V3::Models.medical_history.merge(type: [:object, "null"]),
         medical_officer: medical_officer,
         medication: medication,
