@@ -416,6 +416,33 @@ RSpec.describe Reports::Repository, type: :model do
   end
 
   context "v2" do
+    it "gets registrations" do
+      facilities = FactoryBot.create_list(:facility, 2, facility_group: facility_group_1).sort_by(&:slug)
+      facility_1, facility_2 = facilities.take(2)
+
+      default_attrs = {registration_facility: facility_1, assigned_facility: facility_1, registration_user: user}
+      _facility_1_registered_in_jan_2019 = create_list(:patient, 2, default_attrs.merge(recorded_at: jan_2019))
+      _facility_1_registered_in_august_2018 = create_list(:patient, 2, default_attrs.merge(recorded_at: Time.parse("August 10th 2018")))
+      _facility_2_registered = create(:patient, full_name: "other facility", recorded_at: jan_2019, assigned_facility: facility_2, registration_user: user)
+
+      refresh_views
+
+      slug = facility_1.slug
+      regions = [facility_group_1.region].concat(facility_group_1.region.facility_regions)
+      repo = Reports::Repository.new(regions, periods: (july_2018.to_period..july_2020.to_period), reporting_schema_v2: true)
+
+      expect(repo.assigned_patients[slug][Period.month("August 2018")]).to eq(2)
+      expect(repo.assigned_patients[slug][Period.month("Jan 2019")]).to eq(2)
+      expect(repo.assigned_patients[slug][july_2020]).to eq(0)
+      pp facility_1.assigned_patients.count
+      pp Patient.count
+
+      pp repo.monthly_registrations[slug]
+      expect(repo.monthly_registrations[slug][Period.month("August 2018")]).to eq(2)
+      expect(repo.monthly_registrations[slug][Period.month("Jan 2019")]).to eq(2)
+      expect(repo.monthly_registrations[slug][july_2020.to_period]).to eq(0)
+    end
+
     it "gets correct controlled counts" do
       facilities = FactoryBot.create_list(:facility, 3, facility_group: facility_group_1)
       facility_1, facility_2, facility_3 = *facilities.take(3)

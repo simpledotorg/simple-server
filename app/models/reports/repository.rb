@@ -114,9 +114,32 @@ module Reports
 
     # Returns registration counts per region / period
     memoize def monthly_registrations
-      complete_monthly_registrations.each_with_object({}) do |(entry, result), results|
-        result.default = 0
-        results[entry.region.slug] = result
+      if reporting_schema_v2?
+        logger.info "RJS"
+        regions_by_type = regions.group_by { |region| region.region_type }
+        results = {}
+        pp regions_by_type
+        regions_by_type.each do |region_type, regions|
+          pp region_type, regions
+          counts = ReportingPipeline::PatientStatesPerMonth
+            .where(hypertension: "yes", htn_care_state: "under_care")
+            .where("registration_#{region_type}_region_id" => regions.pluck(:id))
+            .where(months_since_registration: 0)
+            .group("registration_#{region_type}_region_id").group("month_date")
+            .count("patient_id")
+            pp counts
+          counts.each do |(region_id, month_date), count|
+            region = regions.find { |r| r.id == region_id }
+            results[region.slug] ||= Hash.new(0)
+            results[region.slug][Period.month(month_date)] = count
+          end
+        end
+        results
+      else
+        complete_monthly_registrations.each_with_object({}) do |(entry, result), results|
+          result.default = 0
+          results[entry.region.slug] = result
+        end
       end
     end
 
