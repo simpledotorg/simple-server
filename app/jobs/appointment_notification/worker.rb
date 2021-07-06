@@ -39,27 +39,37 @@ class AppointmentNotification::Worker
 
   def send_message(notification, communication_type)
     notification_service = if notification.experiment&.experiment_type == "medication_reminder" && medication_reminder_sms_sender
-      NotificationService.new(sms_sender: medication_reminder_sms_sender)
+      TwilioApiService.new(sms_sender: medication_reminder_sms_sender)
     else
-      NotificationService.new
+      TwilioApiService.new
     end
+
+    response = nil
+
+    context = {
+      calling_class: self.class.name,
+      notification_id: notification.id,
+      communication_type: communication_type
+    }
 
     # remove missed_visit_whatsapp_reminder and missed_visit_sms_reminder
     # https://app.clubhouse.io/simpledotorg/story/3585/backfill-notifications-from-communications
     case communication_type
     when "whatsapp", "missed_visit_whatsapp_reminder"
-      notification_service.send_whatsapp(
-        notification.patient.latest_mobile_number,
-        notification.localized_message,
-        callback_url
+      response = notification_service.send_whatsapp(
+        recipient_number: notification.patient.latest_mobile_number,
+        message: notification.localized_message,
+        callback_url: callback_url,
+        context: context
       ).tap do |response|
         metrics.increment("sent.whatsapp")
       end
     when "sms", "missed_visit_sms_reminder"
-      notification_service.send_sms(
-        notification.patient.latest_mobile_number,
-        notification.localized_message,
-        callback_url
+      response = notification_service.send_sms(
+        recipient_number: notification.patient.latest_mobile_number,
+        message: notification.localized_message,
+        callback_url: callback_url,
+        context: context
       ).tap do |response|
         metrics.increment("sent.sms")
       end
@@ -67,22 +77,10 @@ class AppointmentNotification::Worker
       raise UnknownCommunicationType, "#{self.class.name} is not configured to handle communication type #{communication_type}"
     end
 
-    log_info = {
-      class: self.class.name,
-      msg: "send_message",
-      failed: !!notification_service.failed?,
-      error: notification_service.error,
-      sender: medication_reminder_sms_sender || "default",
-      communication_type: communication_type,
-      notification_id: notification.id
-    }
-
-    logger.info log_info
-
-    return if notification_service.failed?
+    return unless response
 
     ActiveRecord::Base.transaction do
-      create_communication(notification, communication_type, notification_service.response)
+      create_communication(notification, communication_type, response)
       notification.status_sent!
     end
   end
