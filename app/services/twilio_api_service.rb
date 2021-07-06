@@ -1,6 +1,5 @@
 class TwilioApiService
   attr_reader :client
-  attr_reader :response
   attr_reader :twilio_sender_sms_number
   attr_reader :twilio_sender_whatsapp_number
 

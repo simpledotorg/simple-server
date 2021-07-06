@@ -78,6 +78,7 @@ class AppointmentNotification::Worker
     end
 
     return unless response
+
     ActiveRecord::Base.transaction do
       create_communication(notification, communication_type, response)
       notification.status_sent!
