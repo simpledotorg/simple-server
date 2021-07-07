@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_02_192822) do
+ActiveRecord::Schema.define(version: 2021_07_02_192823) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -1194,6 +1194,8 @@ ActiveRecord::Schema.define(version: 2021_07_02_192822) do
       cal.month_string,
       cal.quarter_string,
       p.assigned_facility_id,
+      assigned_facility.facility_size AS assigned_facility_size,
+      assigned_facility.facility_type AS assigned_facility_type,
       assigned_facility.facility_region_slug AS assigned_facility_slug,
       assigned_facility.facility_region_id AS assigned_facility_region_id,
       assigned_facility.block_slug AS assigned_block_slug,
@@ -1205,6 +1207,8 @@ ActiveRecord::Schema.define(version: 2021_07_02_192822) do
       assigned_facility.organization_slug AS assigned_organization_slug,
       assigned_facility.organization_region_id AS assigned_organization_region_id,
       p.registration_facility_id,
+      registration_facility.facility_size AS registration_facility_size,
+      registration_facility.facility_type AS registration_facility_type,
       registration_facility.facility_region_slug AS registration_facility_slug,
       registration_facility.facility_region_id AS registration_facility_region_id,
       registration_facility.block_slug AS registration_block_slug,
