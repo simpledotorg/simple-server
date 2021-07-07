@@ -208,14 +208,6 @@ describe Patient, type: :model do
       end
 
       describe "timezone-specific boundaries" do
-        def with_reporting_time_zones(&blk)
-          Time.use_zone(reporting_timezone) do
-            Groupdate.time_zone = reporting_timezone
-            blk.call
-            Groupdate.time_zone = nil
-          end
-        end
-
         it "bp cutoffs for a year ago" do
           # For any provided date in June in the local timezone, the LTFU BP cutoff is the end of June 30 of the
           # previous year in the local timezone.
@@ -237,7 +229,7 @@ describe Patient, type: :model do
 
           create(:blood_pressure, patient: not_ltfu_patient, recorded_at: under_a_year_ago)
           create(:blood_pressure, patient: ltfu_patient, recorded_at: over_a_year_ago)
-          with_reporting_time_zones do # We don't actually need this, but its a nice sanity check
+          with_reporting_time_zone do # We don't actually need this, but its a nice sanity check
             refresh_views
 
             expect(described_class.ltfu_as_of(beginning_of_month)).not_to include(not_ltfu_patient)
@@ -265,7 +257,7 @@ describe Patient, type: :model do
           create(:blood_pressure, patient: not_ltfu_patient, recorded_at: a_moment_ago)
           create(:blood_pressure, patient: ltfu_patient, recorded_at: a_moment_from_now)
 
-          with_reporting_time_zones do
+          with_reporting_time_zone do
             refresh_views
 
             expect(described_class.ltfu_as_of(beginning_of_month)).not_to include(not_ltfu_patient)
@@ -293,7 +285,7 @@ describe Patient, type: :model do
           not_ltfu_patient = create(:patient, recorded_at: under_a_year_ago)
           ltfu_patient = create(:patient, recorded_at: over_a_year_ago)
 
-          with_reporting_time_zones do
+          with_reporting_time_zone do
             refresh_views
 
             expect(described_class.ltfu_as_of(beginning_of_month)).not_to include(not_ltfu_patient)
@@ -330,14 +322,6 @@ describe Patient, type: :model do
       end
 
       describe "timezone-specific boundaries" do
-        def with_reporting_time_zones(&blk)
-          Time.use_zone(reporting_timezone) do
-            Groupdate.time_zone = reporting_timezone
-            blk.call
-            Groupdate.time_zone = nil
-          end
-        end
-
         it "bp cutoffs for a year ago" do
           # For any provided date in June in the local timezone, the LTFU BP cutoff is the end of June 30 of the
           # previous year in the local timezone.
@@ -385,7 +369,7 @@ describe Patient, type: :model do
           create(:blood_pressure, patient: not_ltfu_patient, recorded_at: a_moment_ago)
           create(:blood_pressure, patient: ltfu_patient, recorded_at: a_moment_from_now)
 
-          with_reporting_time_zones do
+          with_reporting_time_zone do
             refresh_views
 
             expect(described_class.not_ltfu_as_of(beginning_of_month)).to include(not_ltfu_patient)
@@ -411,7 +395,7 @@ describe Patient, type: :model do
           not_ltfu_patient = create(:patient, recorded_at: under_a_year_ago)
           ltfu_patient = create(:patient, recorded_at: over_a_year_ago)
 
-          with_reporting_time_zones do
+          with_reporting_time_zone do
             refresh_views
 
             expect(described_class.not_ltfu_as_of(beginning_of_month)).to include(not_ltfu_patient)

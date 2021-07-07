@@ -9,10 +9,11 @@ module Reports
       new(*args).call
     end
 
-    def initialize(region:, period:, months: MAX_MONTHS_OF_DATA)
+    def initialize(region:, period:, months: MAX_MONTHS_OF_DATA, reporting_schema_v2: false)
       @region = region
       @slug = @region.slug
       @period = period
+      @reporting_schema_v2 = reporting_schema_v2
       start_period = period.advance(months: -(months - 1))
       @range = Range.new(start_period, @period)
     end
@@ -57,10 +58,14 @@ module Reports
       result.report_data_for(range)
     end
 
+    def reporting_schema_v2?
+      @reporting_schema_v2
+    end
+
     private
 
     def repository
-      @repository ||= Reports::Repository.new(region, periods: range)
+      @repository ||= Reports::Repository.new(region, periods: range, reporting_schema_v2: reporting_schema_v2?)
     end
   end
 end

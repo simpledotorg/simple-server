@@ -49,6 +49,15 @@ RSpec.describe AppointmentsController, type: :controller do
       expect(assigns(:patient_summaries).map(&:id)).to match_array(patient_ids)
     end
 
+    it "populates a list of unvisited appointments for CSV download" do
+      unvisited_patient = create(:patient, registration_facility: facility_1)
+      create(:appointment, patient: unvisited_patient, status: :cancelled, scheduled_date: 1.month.ago, facility: facility_1)
+      patient_ids = (overdue_appointments_in_facility_1 + overdue_appointments_in_facility_2).map(&:patient_id) << unvisited_patient.id
+      get :index, params: {format: :csv}
+
+      expect(assigns(:patient_summaries).map(&:id)).to match_array(patient_ids)
+    end
+
     describe "filtering by facility" do
       before :each do
         overdue_appointments_in_facility_1
