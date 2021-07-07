@@ -92,6 +92,7 @@ describe ImoApiService, type: :model do
 
       it "does not have errors when response is successful" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: success_body)
+        expect(Sentry).not_to receive(:capture_message)
         service.send_notification(patient, "Come back in to the clinic")
       end
 
@@ -141,8 +142,14 @@ describe ImoApiService, type: :model do
         stub_request(:post, request_url).to_timeout
 
         expect {
-          service.send_notification(patient, "hi")
+          service.send_notification(patient, "Come back in to the clinic")
         }.to raise_error(ImoApiService::Error)
+      end
+
+      it "updates the patient's ImoAuthorization if the Imo response indicates a change of status" do
+        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: success_body)
+        service.send_notification(patient, "Come back in to the clinic")
+        expect(patient.imo_authorization.status).to eq("subscribed")
       end
     end
   end
