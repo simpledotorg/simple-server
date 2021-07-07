@@ -10,20 +10,27 @@ SELECT
     p.month_string,
     p.quarter_string,
 
-    ------------------------------------------------------------
-    -- where the visit happened
     p.assigned_facility_id AS assigned_facility_id,
     p.registration_facility_id AS registration_facility_id,
+    p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS patient_recorded_at,
+
+    ------------------------------------------------------------
+    -- details of the visit: latest encounter, prescription drug and appointment
+
+    e.id AS encounter_id,
     e.facility_id AS encounter_facility_id,
+    e.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS encounter_recorded_at,
+
+    pd.id AS prescription_drug_id,
     pd.facility_id AS prescription_drug_facility_id,
+    pd.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS prescription_drug_recorded_at,
+
+    app.id AS appointment_id,
     app.creation_facility_id AS appointment_creation_facility_id,
+    app.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS appointment_recorded_at,
 
     ------------------------------------------------------------
     -- when the visit happened
-    p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS patient_recorded_at,
-    e.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS encounter_recorded_at,
-    pd.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS prescription_drug_recorded_at,
-    app.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS appointment_recorded_at,
     greatest(e.recorded_at, pd.recorded_at, app.recorded_at) AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS visited_at,
 
     (p.year - DATE_PART('year', p.recorded_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 12 +

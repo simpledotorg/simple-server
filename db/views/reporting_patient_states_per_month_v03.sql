@@ -8,7 +8,7 @@ SELECT
     p.age,
     p.age_updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS age_updated_at,
     p.date_of_birth,
-    mh.hypertension as hypertension,
+    p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' as recorded_at,
 
     ------------------------------------------------------------
     -- data for the month of
@@ -18,6 +18,15 @@ SELECT
     cal.year,
     cal.month_string,
     cal.quarter_string,
+
+    ------------------------------------------------------------
+    -- medical history
+    mh.hypertension as hypertension,
+    mh.prior_heart_attack as prior_heart_attack,
+    mh.prior_stroke as prior_stroke,
+    mh.chronic_kidney_disease as chronic_kidney_disease,
+    mh.receiving_treatment_for_hypertension as receiving_treatment_for_hypertension,
+    mh.diabetes as diabetes,
 
     ------------------------------------------------------------
     -- information on assigned facility and parent regions
@@ -52,23 +61,27 @@ SELECT
     registration_facility.organization_region_id as registration_organization_region_id,
 
     ------------------------------------------------------------
-    -- latest visit info for the month
+    -- details of the visit: latest BP, encounter, prescription drug and appointment
+    bps.blood_pressure_id as blood_pressure_id,
+    bps.blood_pressure_facility_id AS bp_facility_id,
+    bps.blood_pressure_recorded_at AS bp_recorded_at,
     bps.systolic,
     bps.diastolic,
 
-    -- when
-    p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' as recorded_at,
-    bps.blood_pressure_recorded_at AS bp_recorded_at,
-    visits.visited_at AS visited_at,
+    visits.encounter_id AS encounter_id,
+    visits.encounter_facility_id AS encounter_facility_id,
     visits.encounter_recorded_at AS encounter_recorded_at,
+
+    visits.prescription_drug_id AS prescription_drug_id,
+    visits.prescription_drug_facility_id AS prescription_drug_facility_id,
     visits.prescription_drug_recorded_at AS prescription_drug_recorded_at,
+
+    visits.appointment_id AS appointment_id,
+    visits.appointment_creation_facility_id AS appointment_creation_facility_id,
     visits.appointment_recorded_at AS appointment_recorded_at,
 
-    -- where
-    bps.blood_pressure_facility_id AS bp_facility_id,
-    visits.encounter_facility_id AS encounter_facility_id,
-    visits.prescription_drug_facility_id AS prescription_drug_facility_id,
-    visits.appointment_creation_facility_id AS appointment_creation_facility_id,
+    ------------------------------------------------------------
+    -- relative time calculations
 
     (cal.year - DATE_PART('year', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 12 +
     (cal.month - DATE_PART('month', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE'))))
@@ -84,7 +97,7 @@ SELECT
     bps.quarters_since_bp AS quarters_since_bp,
 
     ------------------------------------------------------------
-    -- categorization
+    -- indicators
     CASE
         WHEN (bps.systolic IS NULL OR bps.diastolic IS NULL) THEN 'unknown'
         WHEN (bps.systolic < 140 AND bps.diastolic < 90) THEN 'controlled'
