@@ -22,7 +22,7 @@ SELECT
     ------------------------------------------------------------
     -- information on assigned facility and parent regions
     p.assigned_facility_id AS assigned_facility_id,
-    assigned_facility.facility_slug as assigned_facility_slug,
+    assigned_facility.facility_region_slug as assigned_facility_slug,
     assigned_facility.facility_region_id as assigned_facility_region_id,
     assigned_facility.block_slug as assigned_block_slug,
     assigned_facility.block_region_id as assigned_block_region_id,
@@ -36,7 +36,7 @@ SELECT
     ------------------------------------------------------------
     -- information on registration facility and parent regions
     p.registration_facility_id AS registration_facility_id,
-    registration_facility.facility_slug as registration_facility_slug,
+    registration_facility.facility_region_slug as registration_facility_slug,
     registration_facility.facility_region_id as registration_facility_region_id,
     registration_facility.block_slug as registration_block_slug,
     registration_facility.block_region_id as registration_block_region_id,

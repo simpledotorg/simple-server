@@ -52,7 +52,7 @@ FROM
 -- We use year and month comparisons to avoid timezone errors
 LEFT JOIN LATERAL (
     -- encountered_on is a date stored in local time, casting that back to UTC for consistency and comparisons
-    SELECT encountered_on::timestamp AT TIME ZONE (SELECT current_setting('TIMEZONE')) AT TIME ZONE 'UTC' AS recorded_at, facility_id
+    SELECT encountered_on::timestamp AT TIME ZONE (SELECT current_setting('TIMEZONE')) AT TIME ZONE 'UTC' AS recorded_at, *
     FROM encounters
     WHERE patient_id = p.id
       AND to_char(encountered_on, 'YYYY-MM') <= p.month_string
@@ -61,7 +61,7 @@ LEFT JOIN LATERAL (
     LIMIT 1
 ) e ON true
 LEFT JOIN LATERAL (
-    SELECT device_created_at AS recorded_at
+    SELECT device_created_at AS recorded_at, *
     FROM prescription_drugs
     WHERE patient_id = p.id
       AND to_char(device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')), 'YYYY-MM') <= p.month_string
@@ -70,7 +70,7 @@ LEFT JOIN LATERAL (
     LIMIT 1
 ) pd ON true
 LEFT JOIN LATERAL (
-    SELECT device_created_at AS recorded_at
+    SELECT device_created_at AS recorded_at, *
     FROM appointments
     WHERE patient_id = p.id
       AND to_char(device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')), 'YYYY-MM') <= p.month_string
