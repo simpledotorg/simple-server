@@ -105,8 +105,4 @@ class MyFacilities::DrugStocksController < AdminController
       .reject { |size| size == "community" }
     @facility_sizes = sort_facility_sizes_by_size(@facility_sizes)
   end
-
-  def set_time_zone
-    Time.use_zone(Period::REPORTING_TIME_ZONE) { yield }
-  end
 end

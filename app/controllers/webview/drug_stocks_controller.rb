@@ -82,8 +82,4 @@ class Webview::DrugStocksController < ApplicationController
   def set_bust_cache
     RequestStore.store[:bust_cache] = true if params[:bust_cache].present?
   end
-
-  def set_time_zone
-    Time.use_zone(Period::REPORTING_TIME_ZONE) { yield }
-  end
 end
