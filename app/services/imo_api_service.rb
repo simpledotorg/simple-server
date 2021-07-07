@@ -2,7 +2,8 @@ class ImoApiService
   IMO_USERNAME = ENV["IMO_USERNAME"]
   IMO_PASSWORD = ENV["IMO_PASSWORD"]
   BASE_URL = "https://sgp.imo.im/api/simple/".freeze
-  USER_FACING_URL = "https://www.nhf.org.bd".freeze
+  # this is where the patient is redirected to when they click on the invitation card details section
+  PATIENT_REDIRECT_URL = "https://www.nhf.org.bd".freeze
 
   class Error < StandardError
     attr_reader :path, :response, :exception_message
@@ -14,7 +15,7 @@ class ImoApiService
     end
   end
 
-  def invite(patient)
+  def send_invitation(patient)
     return unless Flipper.enabled?(:imo_messaging)
 
     Statsd.instance.increment("imo.invites.attempt")
@@ -45,7 +46,7 @@ class ImoApiService
       contents: [{key: "Name", value: patient.full_name}, {key: "Notes", value: message}],
       title: "Notification",
       action: "Click here",
-      url: USER_FACING_URL,
+      url: PATIENT_REDIRECT_URL,
       read_receipt: "will be filled in later"
     )
     response = execute_post(url, body: request_body)
@@ -74,6 +75,8 @@ class ImoApiService
       body = JSON.parse(response.body)
       body_status = body.dig("response", "status")
       return :invited if body_status == "success" && action == "invitation"
+      # until we implement the invitation callback, the only way for us to know if the user
+      # has accepted our invitation is to send a notication to see if it succeeds
       return :subscribed if body_status == "success" && action == "notification"
 
       case body.dig("response", "error_code")

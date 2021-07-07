@@ -26,12 +26,12 @@ describe ImoApiService, type: :model do
     )
   }
 
-  describe "#invite" do
+  describe "#send_invitation" do
     let(:request_url) { "https://sgp.imo.im/api/simple/send_invite" }
 
     context "with feature flag off" do
       it "returns nil" do
-        expect(service.invite(patient)).to eq(nil)
+        expect(service.send_invitation(patient)).to eq(nil)
       end
     end
 
@@ -40,7 +40,7 @@ describe ImoApiService, type: :model do
 
       it "creates an ImoAuthorization on 200 success" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: success_body)
-        expect { service.invite(patient) }.to change { patient.imo_authorization }.from(nil)
+        expect { service.send_invitation(patient) }.to change { patient.imo_authorization }.from(nil)
         expect(patient.imo_authorization.status).to eq("invited")
       end
 
@@ -48,12 +48,12 @@ describe ImoApiService, type: :model do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: {}.to_json)
 
         expect(Sentry).to receive(:capture_message)
-        service.invite(patient)
+        service.send_invitation(patient)
       end
 
       it "updates patient's ImoAuthorization when status is 400 and type is nonexistent_user" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: nonexistent_user_body)
-        expect { service.invite(patient) }.to change { patient.imo_authorization }.from(nil)
+        expect { service.send_invitation(patient) }.to change { patient.imo_authorization }.from(nil)
         expect(patient.imo_authorization.status).to eq("no_imo_account")
       end
 
@@ -61,14 +61,14 @@ describe ImoApiService, type: :model do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: {}.to_json)
 
         expect(Sentry).to receive(:capture_message)
-        service.invite(patient)
+        service.send_invitation(patient)
       end
 
       it "raises a custom error on network error" do
         stub_request(:post, request_url).to_timeout
 
         expect {
-          service.invite(patient)
+          service.send_invitation(patient)
         }.to raise_error(ImoApiService::Error)
       end
     end

@@ -4,7 +4,7 @@ RSpec.describe Imo::InvitePatient, type: :job do
   describe "#perform" do
     it "does nothing with feature flag turned off" do
       patient = create(:patient)
-      allow_any_instance_of(ImoApiService).to receive(:invite)
+      allow_any_instance_of(ImoApiService).to receive(:send_invitation)
 
       expect {
         described_class.perform_async(patient.id)
@@ -26,7 +26,7 @@ RSpec.describe Imo::InvitePatient, type: :job do
         patient = create(:patient)
         imo_service = double
         allow(ImoApiService).to receive(:new).and_return(imo_service)
-        expect(imo_service).to receive(:invite).with(patient)
+        expect(imo_service).to receive(:send_invitation).with(patient)
 
         described_class.perform_async(patient.id)
         described_class.drain
