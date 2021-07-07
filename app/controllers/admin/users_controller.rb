@@ -3,7 +3,7 @@ class Admin::UsersController < AdminController
   include SearchHelper
 
   before_action :set_user, except: [:index, :teleconsult_search]
-  around_action :set_time_zone, only: [:show]
+  around_action :set_reporting_time_zone, only: [:show]
   before_action :set_district, only: [:index]
 
   def index

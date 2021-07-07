@@ -8,7 +8,7 @@ class MyFacilitiesController < AdminController
 
   PERIODS_TO_DISPLAY = {quarter: 3, month: 3, day: 14}.freeze
 
-  around_action :set_time_zone
+  around_action :set_reporting_time_zone
   before_action :set_period, except: [:index]
   before_action :authorize_my_facilities
   before_action :set_selected_cohort_period, only: [:blood_pressure_control]

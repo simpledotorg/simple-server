@@ -1,5 +1,5 @@
 class AnalyticsController < AdminController
-  around_action :set_time_zone
+  around_action :set_reporting_time_zone
   before_action :set_quarter, only: [:whatsapp_graphics]
   before_action :set_period
 

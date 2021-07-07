@@ -5,7 +5,7 @@ class Webview::DrugStocksController < ApplicationController
   include SetForEndOfMonth
 
   skip_before_action :verify_authenticity_token
-  around_action :set_time_zone
+  around_action :set_reporting_time_zone
   before_action :authenticate
   before_action :find_current_facility
   before_action :set_for_end_of_month

@@ -9,7 +9,7 @@ class ApplicationController < ActionController::Base
     I18n.with_locale(locale, &action)
   end
 
-  def set_time_zone
+  def set_reporting_time_zone
     reporting_time_zone = Period::REPORTING_TIME_ZONE
 
     Groupdate.time_zone = reporting_time_zone

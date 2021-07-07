@@ -10,7 +10,7 @@ class MyFacilities::FacilityPerformanceController < AdminController
 
   after_action :verify_authorization_attempted
 
-  around_action :set_time_zone
+  around_action :set_reporting_time_zone
   before_action :authorize_my_facilities
   before_action :set_last_updated_at
 
