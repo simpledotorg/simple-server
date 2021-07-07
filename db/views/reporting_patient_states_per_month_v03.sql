@@ -3,12 +3,18 @@ SELECT
     ------------------------------------------------------------
     -- basic patient identifiers
     p.id as patient_id,
+    p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' as recorded_at,
     p.status,
     p.gender,
     p.age,
     p.age_updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS age_updated_at,
     p.date_of_birth,
-    p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' as recorded_at,
+    EXTRACT(YEAR
+        FROM COALESCE(
+            age(p.date_of_birth),
+            make_interval(years => p.age) + age(p.age_updated_at)
+        )
+    ) AS current_age,
 
     ------------------------------------------------------------
     -- data for the month of

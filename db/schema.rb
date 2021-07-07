@@ -1184,12 +1184,13 @@ ActiveRecord::Schema.define(version: 2021_07_02_192823) do
   SQL
   create_view "reporting_patient_states_per_month", materialized: true, sql_definition: <<-SQL
       SELECT DISTINCT ON (p.id, cal.month_date) p.id AS patient_id,
+      timezone('UTC'::text, timezone('UTC'::text, p.recorded_at)) AS recorded_at,
       p.status,
       p.gender,
       p.age,
       timezone('UTC'::text, timezone('UTC'::text, p.age_updated_at)) AS age_updated_at,
       p.date_of_birth,
-      timezone('UTC'::text, timezone('UTC'::text, p.recorded_at)) AS recorded_at,
+      date_part('year'::text, COALESCE(age((p.date_of_birth)::timestamp with time zone), (make_interval(years => p.age) + age(p.age_updated_at)))) AS current_age,
       cal.month_date,
       cal.month,
       cal.quarter,
