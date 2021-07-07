@@ -99,9 +99,9 @@ LEFT OUTER JOIN reporting_months cal
 
 -- Only fetch BPs and visits that happened on or before the selected calendar month
 -- We use year and month comparisons to avoid timezone errors
-LEFT OUTER JOIN reporting_monthly_patient_blood_pressures bps
+LEFT OUTER JOIN reporting_patient_blood_pressures bps
     ON p.id = bps.patient_id AND cal.month = bps.month AND cal.year = bps.year
-LEFT OUTER JOIN reporting_monthly_patient_visits visits
+LEFT OUTER JOIN reporting_patient_visits visits
     ON p.id = visits.patient_id AND cal.month = visits.month AND cal.year = visits.year
 
 LEFT OUTER JOIN medical_histories mh
