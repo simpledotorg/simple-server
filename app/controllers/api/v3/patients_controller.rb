@@ -57,6 +57,12 @@ class Api::V3::PatientsController < Api::V3::SyncController
     else
       transformed_params = Api::V3::PatientTransformer.from_nested_request(single_patient_params)
       patient = MergePatientService.new(transformed_params, request_metadata: request_metadata).merge
+      if patient.merge_status == :identical
+        logger.info(event: "identical patient record synced",
+                    user_id: current_user.id,
+                    patient_id: patient.id,
+                    sync_region_id: current_sync_region.id)
+      end
       {record: patient}
     end
   end
