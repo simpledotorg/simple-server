@@ -2,7 +2,7 @@ class ImoApiService
   IMO_USERNAME = ENV["IMO_USERNAME"]
   IMO_PASSWORD = ENV["IMO_PASSWORD"]
   BASE_URL = "https://sgp.imo.im/api/simple/".freeze
-  USER_FACING_URL = "https://www.nhf.org.bd/".freeze
+  USER_FACING_URL = "https://www.nhf.org.bd".freeze
 
   class Error < StandardError
     attr_reader :path, :response, :exception_message
