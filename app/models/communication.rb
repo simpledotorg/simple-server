@@ -18,7 +18,8 @@ class Communication < ApplicationRecord
     sms: "sms",
     whatsapp: "whatsapp",
     missed_visit_sms_reminder: "missed_visit_sms_reminder",
-    missed_visit_whatsapp_reminder: "missed_visit_whatsapp_reminder"
+    missed_visit_whatsapp_reminder: "missed_visit_whatsapp_reminder",
+    imo: "imo"
   }
 
   COMMUNICATION_RESULTS = {
