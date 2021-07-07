@@ -397,8 +397,8 @@
         }
       }
     },
-    "/patients/{identifier}": {
-      "get": {
+    "/patients/lookup": {
+      "post": {
         "summary": "Lookup a patient all their records synchronously given their full business identifier",
         "tags": [
           "Patient"
@@ -428,10 +428,20 @@
             "type": "uuid"
           },
           {
-            "name": "identifier",
-            "in": "path",
-            "type": "string",
-            "required": true
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "identifier": {
+                  "type": "string",
+                  "description": "Full identifier string of the BP Passport, or other supported identifier type"
+                }
+              },
+              "required": [
+                "identifier"
+              ]
+            }
           }
         ],
         "responses": {
@@ -1249,7 +1259,7 @@
           "$ref": "#/definitions/blood_sugars"
         },
         "medical_history": {
-          "$ref": "#/definitions/medical_history"
+          "$ref": "#/definitions/nullable_medical_history"
         },
         "prescription_drugs": {
           "$ref": "#/definitions/prescription_drugs"
@@ -1262,10 +1272,12 @@
               "enum": [
                 "temporary",
                 "permanent"
-              ]
+              ],
+              "description": "This enum might have more values in the future."
             },
             "duration_seconds": {
-              "type": "integer"
+              "type": "integer",
+              "description": "This key is only present in the response when the retention type is temporary."
             }
           }
         }
@@ -1289,8 +1301,11 @@
         "$ref": "#/definitions/lookup_patient"
       }
     },
-    "medical_history": {
-      "type": "object",
+    "nullable_medical_history": {
+      "type": [
+        "object",
+        "null"
+      ],
       "properties": {
         "id": {
           "$ref": "#/definitions/uuid"
@@ -1968,7 +1983,8 @@
           "enum": [
             "simple_bp_passport",
             "bangladesh_national_id",
-            "ethiopia_medical_record"
+            "ethiopia_medical_record",
+            "india_national_health_id"
           ]
         },
         "metadata_version": {

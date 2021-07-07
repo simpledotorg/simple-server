@@ -50,6 +50,8 @@ class RefreshMaterializedViews
     PatientRegistrationsPerDayPerFacility
     MaterializedPatientSummary
   ].freeze
+
+  # The order for these must remain BPs -> Visits -> States
   V2_MATVIEWS = %w[
     ReportingPipeline::PatientBloodPressuresPerMonth
     ReportingPipeline::PatientVisitsPerMonth
@@ -72,13 +74,10 @@ class RefreshMaterializedViews
   end
 
   def refresh_v2
-    ActiveRecord::Base.transaction do
-      ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{tz}'")
-      V2_MATVIEWS.each do |name|
-        benchmark_and_statsd(name) do
-          klass = name.constantize
-          klass.refresh
-        end
+    V2_MATVIEWS.each do |name|
+      benchmark_and_statsd(name) do
+        klass = name.constantize
+        klass.refresh
       end
     end
   end

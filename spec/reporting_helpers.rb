@@ -1,12 +1,4 @@
 module ReportingHelpers
-  def with_reporting_time_zones(&blk)
-    Time.use_zone(Period::REPORTING_TIME_ZONE) do
-      Groupdate.time_zone = Period::REPORTING_TIME_ZONE
-      blk.call
-      Groupdate.time_zone = nil
-    end
-  end
-
   def june_2021
     # We explicitly set the times in the reporting TZ here, but don't use the block helper because its a hassle w/
     # all the local vars we need

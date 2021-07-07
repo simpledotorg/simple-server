@@ -5,8 +5,8 @@ RSpec.describe Reports::RegionService, type: :model do
   let(:user) { create(:admin, :manager, :with_access, resource: organization) }
   let(:facility_group_1) { FactoryBot.create(:facility_group, name: "facility_group_1", organization: organization) }
 
-  let(:jan_2019) { Time.parse("January 1st, 2019") }
-  let(:jan_2020) { Time.parse("January 1st, 2020") }
+  let(:jan_2019) { Time.parse("January 1st, 2019 12:00 IST") }
+  let(:jan_2020) { Time.parse("January 1st, 2020 12:00 IST") }
 
   let(:june_1_2018) { Time.parse("June 1, 2018 00:00:00+00:00") }
   let(:june_1_2020) { Time.parse("June 1, 2020 00:00:00+00:00") }
@@ -17,11 +17,7 @@ RSpec.describe Reports::RegionService, type: :model do
   let(:july_2020) { Time.parse("July 1st, 2020") }
 
   def refresh_views
-    ActiveRecord::Base.transaction do
-      LatestBloodPressuresPerPatientPerMonth.refresh
-      LatestBloodPressuresPerPatientPerQuarter.refresh
-      PatientRegistrationsPerDayPerFacility.refresh
-    end
+    RefreshMaterializedViews.call
   end
 
   context ".default_period" do
@@ -65,7 +61,9 @@ RSpec.describe Reports::RegionService, type: :model do
 
     refresh_views
 
-    result = Reports::RegionService.call(region: facility_group_1, period: june_1_2020.to_period, months: 25)
+    result = with_reporting_time_zone do
+      Reports::RegionService.call(region: facility_group_1, period: june_1_2020.to_period, months: 26)
+    end
 
     april_period = Date.parse("April 1 2020").to_period
     may_period = Date.parse("May 1 2020").to_period
@@ -101,15 +99,15 @@ RSpec.describe Reports::RegionService, type: :model do
 
     Timecop.freeze(jan_2020) do
       controlled.map do |patient|
-        create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
-        create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago, user: user)
+        create(:bp_with_encounter, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
+        create(:bp_with_encounter, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago, user: user)
       end
       uncontrolled.map do |patient|
-        create(:blood_pressure, :hypertensive, facility: facility,
-                                               patient: patient, recorded_at: 4.days.ago, user: user)
+        create(:bp_with_encounter, :hypertensive, facility: facility,
+                                                  patient: patient, recorded_at: 4.days.ago, user: user)
       end
-      create(:blood_pressure, :under_control, facility: facility, patient: patient_from_other_facility,
-                                              recorded_at: 2.days.ago, user: user)
+      create(:bp_with_encounter, :under_control, facility: facility, patient: patient_from_other_facility,
+                                                 recorded_at: 2.days.ago, user: user)
     end
 
     refresh_views
@@ -127,8 +125,8 @@ RSpec.describe Reports::RegionService, type: :model do
     Timecop.freeze("April 15th 2020") do
       patients_with_controlled_bp = create_list(:patient, 2, recorded_at: 1.month.ago, registration_facility: facility, registration_user: user)
       patients_with_controlled_bp.map do |patient|
-        create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: Time.current, user: user)
-        create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: Time.current, user: user)
+        create(:bp_with_encounter, :under_control, facility: facility, patient: patient, recorded_at: Time.current, user: user)
+        create(:bp_with_encounter, :under_control, facility: facility, patient: patient, recorded_at: Time.current, user: user)
       end
     end
 
@@ -148,7 +146,7 @@ RSpec.describe Reports::RegionService, type: :model do
     controlled_jan2020_registration = create(:patient, full_name: "controlled jan2020 registration", recorded_at: jan_2020, registration_facility: facility, registration_user: user)
 
     Timecop.freeze(jan_2020) do
-      create(:blood_pressure, :under_control, facility: facility, patient: controlled_jan2020_registration, recorded_at: 2.days.ago)
+      create(:bp_with_encounter, :under_control, facility: facility, patient: controlled_jan2020_registration, recorded_at: 2.days.ago)
     end
 
     refresh_views
@@ -172,7 +170,7 @@ RSpec.describe Reports::RegionService, type: :model do
 
     Timecop.freeze(june_1_2020) do
       patients.each do |patient|
-        create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
+        create(:bp_with_encounter, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
       end
     end
 
@@ -205,33 +203,35 @@ RSpec.describe Reports::RegionService, type: :model do
 
     Timecop.freeze(jan_2020) do
       controlled_in_jan_and_june.map do |patient|
-        create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
-        create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago, user: user)
+        create(:bp_with_encounter, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
+        create(:bp_with_encounter, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago, user: user)
       end
-      uncontrolled_in_jan.map { |patient| create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago) }
-      create(:blood_pressure, :under_control, facility: facility, patient: patient_from_other_facility, recorded_at: 2.days.ago)
+      uncontrolled_in_jan.map { |patient| create(:bp_with_encounter, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago) }
+      create(:bp_with_encounter, :under_control, facility: facility, patient: patient_from_other_facility, recorded_at: 2.days.ago)
     end
 
     Timecop.freeze(june_1_2020) do
       controlled_in_jan_and_june.map do |patient|
-        create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
-        create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago, user: user)
-        create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 35.days.ago, user: user)
+        create(:bp_with_encounter, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
+        create(:bp_with_encounter, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago, user: user)
+        create(:bp_with_encounter, :hypertensive, facility: facility, patient: patient, recorded_at: 35.days.ago, user: user)
       end
 
-      create(:blood_pressure, :under_control, facility: facility, patient: controlled_just_for_june, recorded_at: 4.days.ago, user: user)
+      create(:bp_with_encounter, :under_control, facility: facility, patient: controlled_just_for_june, recorded_at: 4.days.ago, user: user)
 
       # register 5 more patients in feb 2020
       uncontrolled_in_june = create_list(:patient, 5, recorded_at: 4.months.ago, registration_facility: facility, registration_user: user)
       uncontrolled_in_june.map do |patient|
-        create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 1.days.ago, user: user)
-        create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
+        create(:bp_with_encounter, :hypertensive, facility: facility, patient: patient, recorded_at: 1.days.ago, user: user)
+        create(:bp_with_encounter, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
       end
     end
 
     refresh_views
 
-    result = Reports::RegionService.call(region: facility_group_1, period: july_2020.to_period)
+    result = with_reporting_time_zone do
+      Reports::RegionService.call(region: facility_group_1, period: july_2020.to_period)
+    end
 
     expect(result[:registrations][Period.month(jan_2019)]).to eq(5)
     expect(result[:assigned_patients][Period.month(jan_2019)]).to eq(5)
@@ -267,7 +267,7 @@ RSpec.describe Reports::RegionService, type: :model do
       patient_with_bp = FactoryBot.create(:patient, registration_facility: facility, recorded_at: jan_2020)
       _appointment_1 = create(:appointment, creation_facility: facility, scheduled_date: may_1, device_created_at: may_1, patient: patient_without_bp)
       _appointment_2 = create(:appointment, creation_facility: facility, scheduled_date: may_15, device_created_at: may_15, patient: patient_with_bp)
-      create(:blood_pressure, :under_control, facility: facility, patient: patient_with_bp, recorded_at: may_15)
+      create(:bp_with_encounter, :under_control, facility: facility, patient: patient_with_bp, recorded_at: may_15)
 
       service = Reports::RegionService.new(region: facility, period: july_2020.to_period)
       result = service.call
@@ -285,7 +285,7 @@ RSpec.describe Reports::RegionService, type: :model do
       patient_with_bp = FactoryBot.create(:patient, registration_facility: facility, recorded_at: jan_2020)
       _appointment_1 = create(:appointment, creation_facility: facility, scheduled_date: may_1, device_created_at: may_1, patient: patient_without_bp)
       _appointment_2 = create(:appointment, creation_facility: facility, scheduled_date: may_15, device_created_at: may_15, patient: patient_with_bp)
-      create(:blood_pressure, :under_control, facility: facility, patient: patient_with_bp, recorded_at: may_15)
+      create(:bp_with_encounter, :under_control, facility: facility, patient: patient_with_bp, recorded_at: may_15)
 
       service = Reports::RegionService.new(region: facility, period: july_2020.to_period)
       result = service.call
@@ -314,35 +314,38 @@ RSpec.describe Reports::RegionService, type: :model do
 
       Timecop.freeze(jan_2020) do
         controlled_in_jan_and_june.map do |patient|
-          create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
-          create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago, user: user)
+          create(:bp_with_encounter, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
+          create(:bp_with_encounter, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago, user: user)
         end
-        create(:blood_pressure, :under_control, facility: facility, patient: patient_from_other_facility, recorded_at: 2.days.ago, user: user)
+        create(:bp_with_encounter, :under_control, facility: facility, patient: patient_from_other_facility, recorded_at: 2.days.ago, user: user)
       end
 
       Timecop.freeze(june_1_2020) do
         controlled_in_jan_and_june.map do |patient|
-          create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
-          create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago, user: user)
+          create(:bp_with_encounter, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
+          create(:bp_with_encounter, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago, user: user)
         end
 
-        create(:blood_pressure, :under_control, facility: facility, patient: controlled_just_for_june, recorded_at: 4.days.ago, user: user)
+        create(:bp_with_encounter, :under_control, facility: facility, patient: controlled_just_for_june, recorded_at: 4.days.ago, user: user)
 
         uncontrolled = create_list(:patient, 2, recorded_at: Time.current, registration_facility: facility, registration_user: user)
         uncontrolled.map do |patient|
-          create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 1.days.ago, user: user)
-          create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
+          create(:bp_with_encounter, :hypertensive, facility: facility, patient: patient, recorded_at: 1.days.ago, user: user)
+          create(:bp_with_encounter, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
         end
       end
 
-      refresh_views
+      Timecop.freeze(july_2020) do
+        refresh_views
 
-      service = Reports::RegionService.new(region: facility_group_1, period: Period.month(july_2020))
-      result = service.call
+        service = Reports::RegionService.new(region: facility_group_1, period: Period.month(july_2020))
 
-      expect(result[:controlled_patients][Period.month(jan_2020)]).to eq(controlled_in_jan_and_june.size)
-      june_controlled = controlled_in_jan_and_june << controlled_just_for_june
-      expect(result[:controlled_patients][Period.month(june_1_2020)]).to eq(june_controlled.size)
+        result = service.call
+
+        expect(result[:controlled_patients][Period.month(jan_2020)]).to eq(controlled_in_jan_and_june.size)
+        june_controlled = controlled_in_jan_and_june << controlled_just_for_june
+        expect(result[:controlled_patients][Period.month(june_1_2020)]).to eq(june_controlled.size)
+      end
     end
 
     it "counts adjusted registrations" do
@@ -367,21 +370,21 @@ RSpec.describe Reports::RegionService, type: :model do
       Timecop.freeze(Time.parse("July 15th 2018")) do
         old_patients = create_list(:patient, 2, recorded_at: 4.months.ago, registration_facility: facility, registration_user: user)
         old_patients.each do |patient|
-          create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: Time.current)
+          create(:bp_with_encounter, :under_control, facility: facility, patient: patient, recorded_at: Time.current)
         end
       end
 
       Timecop.freeze(Time.parse("February 15th 2020")) do
         other_patients = create_list(:patient, 2, recorded_at: 4.months.ago, registration_facility: facility, registration_user: user)
         other_patients.map do |patient|
-          create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: Time.current)
+          create(:bp_with_encounter, :under_control, facility: facility, patient: patient, recorded_at: Time.current)
         end
       end
 
       Timecop.freeze("April 15th 2020") do
         patients_with_controlled_bp = create_list(:patient, 2, recorded_at: 4.months.ago, registration_facility: facility, registration_user: user)
         patients_with_controlled_bp.map do |patient|
-          create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: Time.current)
+          create(:bp_with_encounter, :under_control, facility: facility, patient: patient, recorded_at: Time.current)
         end
       end
 
@@ -430,27 +433,27 @@ RSpec.describe Reports::RegionService, type: :model do
 
       Timecop.freeze(jan_2020) do
         controlled_in_jan_and_june.map do |patient|
-          create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago)
-          create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago)
+          create(:bp_with_encounter, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago)
+          create(:bp_with_encounter, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago)
         end
-        uncontrolled_in_jan.map { |patient| create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago) }
-        create(:blood_pressure, :under_control, facility: facility, patient: patient_from_other_facility, recorded_at: 2.days.ago)
-        create(:blood_pressure, :under_control, facility: facility, patient: patient_from_other_facility,
-                                                recorded_at: 2.days.ago, user: user)
+        uncontrolled_in_jan.map { |patient| create(:bp_with_encounter, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago) }
+        create(:bp_with_encounter, :under_control, facility: facility, patient: patient_from_other_facility, recorded_at: 2.days.ago)
+        create(:bp_with_encounter, :under_control, facility: facility, patient: patient_from_other_facility,
+                                                   recorded_at: 2.days.ago, user: user)
       end
 
       Timecop.freeze(june_1_2020) do
         controlled_in_jan_and_june.map do |patient|
-          create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago)
-          create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago)
+          create(:bp_with_encounter, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago)
+          create(:bp_with_encounter, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago)
         end
 
-        create(:blood_pressure, :under_control, facility: facility, patient: controlled_just_for_june, recorded_at: 4.days.ago)
+        create(:bp_with_encounter, :under_control, facility: facility, patient: controlled_just_for_june, recorded_at: 4.days.ago)
 
         uncontrolled = create_list(:patient, 2, recorded_at: Time.current + 1.day, registration_facility: facility, registration_user: user)
         uncontrolled.map do |patient|
-          create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 1.days.ago)
-          create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago)
+          create(:bp_with_encounter, :hypertensive, facility: facility, patient: patient, recorded_at: 1.days.ago)
+          create(:bp_with_encounter, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago)
         end
       end
 

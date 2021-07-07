@@ -1,16 +1,17 @@
 module Reports
   class DrugStockCalculation
-    def initialize(state:, protocol:, drug_category:, stocks_by_rxnorm_code:, patient_count: nil, previous_month_stocks_by_rxnorm_code: nil)
-      @protocol = protocol
+    def initialize(state:, protocol_drugs:, drug_category:, current_drug_stocks:, previous_drug_stocks: DrugStock.none, patient_count: nil)
+      @protocol_drugs = protocol_drugs
       @drug_category = drug_category
-      @stocks_by_rxnorm_code = stocks_by_rxnorm_code
-      @previous_month_stocks_by_rxnorm_code = previous_month_stocks_by_rxnorm_code
+      @in_stock_by_rxnorm_code = drug_attribute_sum_by_rxnorm_code(current_drug_stocks, :in_stock)
+      @received_by_rxnorm_code = drug_attribute_sum_by_rxnorm_code(current_drug_stocks, :received)
+      @previous_month_in_stock_by_rxnorm_code = drug_attribute_sum_by_rxnorm_code(previous_drug_stocks, :in_stock)
       @patient_count = patient_count
       @coefficients = patient_days_coefficients(state)
     end
 
     def protocol_drugs_by_category
-      @protocol_drugs_by_category ||= @protocol.protocol_drugs.where(stock_tracked: true).group_by(&:drug_category)
+      @protocol_drugs_by_category ||= @protocol_drugs.group_by(&:drug_category)
     end
 
     def patient_days
@@ -27,7 +28,7 @@ module Reports
         extra: {
           coefficients: @coefficients,
           drug_category: @drug_category,
-          stocks_by_rxnorm_code: @stocks_by_rxnorm_code,
+          in_stock_by_rxnorm_code: @in_stock_by_rxnorm_code,
           patient_count: @patient_count,
           protocol: @protocol,
           exception: e
@@ -39,9 +40,9 @@ module Reports
     def consumption
       protocol_drugs = protocol_drugs_by_category[@drug_category]
       drug_consumption = protocol_drugs.each_with_object({}) { |protocol_drug, consumption|
-        opening_balance = @previous_month_stocks_by_rxnorm_code&.dig(protocol_drug.rxnorm_code, :in_stock)
-        received = @stocks_by_rxnorm_code&.dig(protocol_drug.rxnorm_code, :received)
-        closing_balance = @stocks_by_rxnorm_code&.dig(protocol_drug.rxnorm_code, :in_stock)
+        opening_balance = @previous_month_in_stock_by_rxnorm_code&.dig(protocol_drug.rxnorm_code)
+        received = @received_by_rxnorm_code&.dig(protocol_drug.rxnorm_code)
+        closing_balance = @in_stock_by_rxnorm_code&.dig(protocol_drug.rxnorm_code)
         consumption[protocol_drug] = consumption_calculation(opening_balance, received, closing_balance)
       }
       drug_consumption[:base_doses] = base_doses(drug_consumption)
@@ -52,8 +53,8 @@ module Reports
         extra: {
           coefficients: @coefficients,
           drug_category: @drug_category,
-          stocks_by_rxnorm_code: @stocks_by_rxnorm_code,
-          previous_month_stocks_by_rxnorm_code: @previous_month_stocks_by_rxnorm_code,
+          in_stock_by_rxnorm_code: @in_stock_by_rxnorm_code,
+          previous_month_in_stock_by_rxnorm_code: @previous_month_in_stock_by_rxnorm_code,
           patient_count: @patient_count,
           protocol: @protocol,
           exception: e
@@ -65,8 +66,7 @@ module Reports
     def stocks_on_hand
       @stocks_on_hand ||= protocol_drugs_by_category[@drug_category].map do |protocol_drug|
         rxnorm_code = protocol_drug.rxnorm_code
-        drug_stock = @stocks_by_rxnorm_code&.dig(rxnorm_code)
-        in_stock = drug_stock[:in_stock] if drug_stock
+        in_stock = @in_stock_by_rxnorm_code&.dig(rxnorm_code)
         next if in_stock.nil?
         coefficient = drug_coefficient(rxnorm_code)
         {protocol_drug: protocol_drug,
@@ -147,6 +147,14 @@ module Reports
       else
         drug_stock_config[state]
       end
+    end
+
+    def drug_attribute_sum_by_rxnorm_code(drug_stocks, attribute)
+      drug_stocks
+        .select { |drug_stock| drug_stock[attribute].present? }
+        .group_by { |drug_stock| drug_stock.protocol_drug.rxnorm_code }
+        .map { |rxnorm_code, drug_stocks| [rxnorm_code, drug_stocks.pluck(attribute).sum] }
+        .to_h
     end
   end
 end
