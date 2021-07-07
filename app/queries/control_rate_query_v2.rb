@@ -30,7 +30,7 @@ class ControlRateQueryV2
       region_type = region.region_type
       region_id = region.id
     end
-    ReportingPipeline::PatientStatesPerMonth
+    Reports::PatientState
       .where(hypertension: "yes", htn_care_state: "under_care")
       .where("assigned_#{region_type}_region_id" => region_id)
       .where("months_since_registration >= ?", Reports::REGISTRATION_BUFFER_IN_MONTHS)
