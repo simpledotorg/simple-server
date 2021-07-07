@@ -45,8 +45,8 @@ RSpec.describe RefreshMaterializedViews do
         create_list(:blood_pressure, 2)
         RefreshMaterializedViews.call
       end
-    }.to change { ReportingPipeline::MonthlyPatientBloodPressure.count }.from(0).to(2)
-      .and change { ReportingPipeline::MonthlyPatientState.count }.from(0).to(2)
-      .and change { ReportingPipeline::MonthlyPatientVisit.count }.from(0).to(2)
+    }.to change { Reports::MonthlyPatientBloodPressure.count }.from(0).to(2)
+      .and change { Reports::MonthlyPatientState.count }.from(0).to(2)
+      .and change { Reports::MonthlyPatientVisit.count }.from(0).to(2)
   end
 end
