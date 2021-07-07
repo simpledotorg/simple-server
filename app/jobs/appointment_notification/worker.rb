@@ -40,6 +40,8 @@ class AppointmentNotification::Worker
   def send_message(notification, communication_type)
     notification_service = if notification.experiment&.experiment_type == "medication_reminder" && medication_reminder_sms_sender
       TwilioApiService.new(sms_sender: medication_reminder_sms_sender)
+    elsif communication_type == "imo"
+      ImoApiService.new
     else
       TwilioApiService.new
     end
@@ -73,6 +75,9 @@ class AppointmentNotification::Worker
       ).tap do |response|
         metrics.increment("sent.sms")
       end
+    when "imo"
+      response = notification_service.send_notification(notification.patient, notification.localized_message)
+      # need to think about what to do here. presumably we want to capture a communication even on failure
     else
       raise UnknownCommunicationType, "#{self.class.name} is not configured to handle communication type #{communication_type}"
     end
@@ -86,13 +91,20 @@ class AppointmentNotification::Worker
   end
 
   def create_communication(notification, communication_type, response)
-    Communication.create_with_twilio_details!(
-      appointment: notification.subject,
-      notification: notification,
-      twilio_sid: response.sid,
-      twilio_msg_status: response.status,
-      communication_type: communication_type
-    )
+    if communication_type == "imo"
+      Communication.create_with_imo_details!(
+        appointment: notification.subject,
+        notification: notification
+      )
+    else
+      Communication.create_with_twilio_details!(
+        appointment: notification.subject,
+        notification: notification,
+        twilio_sid: response.sid,
+        twilio_msg_status: response.status,
+        communication_type: communication_type
+      )
+    end
   end
 
   def callback_url

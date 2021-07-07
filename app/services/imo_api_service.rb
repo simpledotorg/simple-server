@@ -57,6 +57,7 @@ class ImoApiService
     unless patient.imo_authorization.status == result.to_s
       patient.imo_authorization.update!(status: result)
     end
+    result
   end
 
   private

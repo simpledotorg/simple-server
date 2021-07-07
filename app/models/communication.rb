@@ -61,6 +61,18 @@ class Communication < ApplicationRecord
     end
   end
 
+  def self.create_with_imo_details!(appointment:, notification:)
+    # create detailable here
+    communication = Communication.create!(communication_type: communication_type,
+                                          detailable: nil,
+                                          appointment: appointment,
+                                          notification: notification,
+                                          device_created_at: DateTime.current,
+                                          device_updated_at: DateTime.current)
+    logger.info class: self.class.name, msg: "create_with_imo_details", communication: communication.id,
+                communication_type: "imo", appointment_id: appointment.id
+  end
+
   def self.messaging_start_hour
     @messaging_start_hour ||= ENV.fetch("APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_START", DEFAULT_MESSAGING_START_HOUR).to_i
   end
