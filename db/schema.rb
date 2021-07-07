@@ -1171,7 +1171,7 @@ ActiveRecord::Schema.define(version: 2021_07_07_014011) do
        LEFT JOIN facilities next_appointment_facility ON ((next_appointment_facility.id = next_appointment.facility_id)))
     WHERE (p.deleted_at IS NULL);
   SQL
-  create_view "reporting_monthly_patient_blood_pressures", materialized: true, sql_definition: <<-SQL
+  create_view "reporting_patient_blood_pressures", materialized: true, sql_definition: <<-SQL
       SELECT DISTINCT ON (bp.patient_id, cal.month_date) cal.month_date,
       cal.month_string,
       cal.month,
@@ -1194,7 +1194,7 @@ ActiveRecord::Schema.define(version: 2021_07_07_014011) do
     WHERE (bp.deleted_at IS NULL)
     ORDER BY bp.patient_id, cal.month_date, bp.recorded_at DESC;
   SQL
-  create_view "reporting_monthly_patient_visits", materialized: true, sql_definition: <<-SQL
+  create_view "reporting_patient_visits", materialized: true, sql_definition: <<-SQL
       SELECT DISTINCT ON (p.id, p.month_date) p.id AS patient_id,
       p.month_date,
       p.month_string,
@@ -1257,7 +1257,7 @@ ActiveRecord::Schema.define(version: 2021_07_07_014011) do
     WHERE (p.deleted_at IS NULL)
     ORDER BY p.id, p.month_date, (timezone('UTC'::text, timezone('UTC'::text, GREATEST(e.encountered_on, pd.device_created_at, app.device_created_at)))) DESC;
   SQL
-  create_view "reporting_monthly_patient_states", materialized: true, sql_definition: <<-SQL
+  create_view "reporting_patient_states", materialized: true, sql_definition: <<-SQL
       SELECT DISTINCT ON (p.id, cal.month_date) p.id AS patient_id,
       p.status,
       p.gender,
@@ -1317,19 +1317,19 @@ ActiveRecord::Schema.define(version: 2021_07_07_014011) do
           END AS htn_treatment_outcome_in_last_3_months
      FROM ((((((patients p
        LEFT JOIN reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)), 'YYYY-MM'::text) <= to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))))
-       LEFT JOIN reporting_monthly_patient_blood_pressures bps ON (((p.id = bps.patient_id) AND (cal.month = bps.month) AND (cal.year = bps.year))))
-       LEFT JOIN reporting_monthly_patient_visits visits ON (((p.id = visits.patient_id) AND (cal.month = visits.month) AND (cal.year = visits.year))))
+       LEFT JOIN reporting_patient_blood_pressures bps ON (((p.id = bps.patient_id) AND (cal.month = bps.month) AND (cal.year = bps.year))))
+       LEFT JOIN reporting_patient_visits visits ON (((p.id = visits.patient_id) AND (cal.month = visits.month) AND (cal.year = visits.year))))
        LEFT JOIN medical_histories mh ON (((p.id = mh.patient_id) AND (mh.deleted_at IS NULL))))
        JOIN reporting_facilities registration_facility ON ((registration_facility.facility_id = p.registration_facility_id)))
        JOIN reporting_facilities assigned_facility ON ((assigned_facility.facility_id = p.assigned_facility_id)))
     WHERE (p.deleted_at IS NULL)
     ORDER BY p.id, cal.month_date;
   SQL
-  add_index "reporting_monthly_patient_states", ["assigned_block_region_id"], name: "patient_states_assigned_block"
-  add_index "reporting_monthly_patient_states", ["assigned_district_region_id"], name: "patient_states_assigned_district"
-  add_index "reporting_monthly_patient_states", ["assigned_facility_region_id"], name: "patient_states_assigned_facility"
-  add_index "reporting_monthly_patient_states", ["assigned_state_region_id"], name: "patient_states_assigned_state"
-  add_index "reporting_monthly_patient_states", ["hypertension", "htn_care_state", "htn_treatment_outcome_in_last_3_months"], name: "patient_states_care_state"
-  add_index "reporting_monthly_patient_states", ["patient_id", "month_date"], name: "patient_states_patient_id_month_date", unique: true
+  add_index "reporting_patient_states", ["assigned_block_region_id"], name: "patient_states_assigned_block"
+  add_index "reporting_patient_states", ["assigned_district_region_id"], name: "patient_states_assigned_district"
+  add_index "reporting_patient_states", ["assigned_facility_region_id"], name: "patient_states_assigned_facility"
+  add_index "reporting_patient_states", ["assigned_state_region_id"], name: "patient_states_assigned_state"
+  add_index "reporting_patient_states", ["hypertension", "htn_care_state", "htn_treatment_outcome_in_last_3_months"], name: "patient_states_care_state"
+  add_index "reporting_patient_states", ["patient_id", "month_date"], name: "patient_states_patient_id_month_date", unique: true
 
 end
