@@ -41,6 +41,7 @@ RSpec.describe BPMeasuresQuery do
     pp ["bp1.recorded_at", bp1.recorded_at]
     bp2 = create(:blood_pressure, facility: facility, recorded_at: beg_of_feb, user: user_2)
     pp ["bp2.recorded_at", bp2.recorded_at]
+    pp ["Groupdate.time_zone", Groupdate.time_zone]
 
     Time.use_zone(ist_zone) do
       pp ["bp1.recorded_at in IST", bp1.recorded_at.in_time_zone]
