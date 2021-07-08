@@ -62,15 +62,17 @@ class Communication < ApplicationRecord
   end
 
   def self.create_with_imo_details!(appointment:, notification:)
-    # create detailable here
-    communication = Communication.create!(communication_type: "imo",
-                                          detailable: nil,
-                                          appointment: appointment,
-                                          notification: notification,
-                                          device_created_at: DateTime.current,
-                                          device_updated_at: DateTime.current)
-    logger.info class: self.class.name, msg: "create_with_imo_details", communication: communication.id,
-                communication_type: "imo", appointment_id: appointment.id
+    transaction do
+      # create detailable here once detailable model exists
+      communication = Communication.create!(communication_type: "imo",
+                                            detailable: nil,
+                                            appointment: appointment,
+                                            notification: notification,
+                                            device_created_at: DateTime.current,
+                                            device_updated_at: DateTime.current)
+      logger.info class: self.class.name, msg: "create_with_imo_details", communication: communication.id,
+                  communication_type: "imo", appointment_id: appointment.id
+    end
   end
 
   def self.messaging_start_hour

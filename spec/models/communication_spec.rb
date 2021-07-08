@@ -85,6 +85,18 @@ describe Communication, type: :model do
     end
   end
 
+  describe ".create_with_imo_details" do
+    it "creates a communication" do
+      patient = create(:patient)
+      appt = create(:appointment, patient: patient)
+      notification = create(:notification, subject: appt, patient: patient)
+      expect {
+        Communication.create_with_imo_details!(appointment: notification.subject,
+                                               notification: notification)
+      }.to change { Communication.count }.by(1)
+    end
+  end
+
   describe "#communication_result" do
     it "is successful is detailable is successful" do
       communication = create(:communication,
