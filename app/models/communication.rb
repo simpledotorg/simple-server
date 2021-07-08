@@ -61,7 +61,7 @@ class Communication < ApplicationRecord
     end
   end
 
-  def self.create_with_imo_details!(appointment:, notification:)
+  def self.create_with_imo_details!(appointment:, notification:, result:)
     transaction do
       # create detailable here once detailable model exists
       communication = Communication.create!(communication_type: "imo",

@@ -92,7 +92,8 @@ describe Communication, type: :model do
       notification = create(:notification, subject: appt, patient: patient)
       expect {
         Communication.create_with_imo_details!(appointment: notification.subject,
-                                               notification: notification)
+                                               notification: notification,
+                                               result: nil)
       }.to change { Communication.count }.by(1)
     end
   end
