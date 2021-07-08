@@ -43,6 +43,8 @@ RSpec.describe BPMeasuresQuery do
     pp ["bp2.recorded_at", bp2.recorded_at]
 
     Time.use_zone(ist_zone) do
+      pp ["bp1.recorded_at in IST", bp1.recorded_at.in_time_zone]
+      pp ["bp2.recorded_at in IST", bp2.recorded_at.in_time_zone]
       expected = {
         Period.month("January 2021") => 1,
         Period.month("February 2021") => 1
