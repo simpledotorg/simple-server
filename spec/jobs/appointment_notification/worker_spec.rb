@@ -129,7 +129,8 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
 
       expect(Communication).to receive(:create_with_imo_details!).with(
         appointment: notification.subject,
-        notification: notification
+        notification: notification,
+        result: :success
       ).and_call_original
       expect {
         described_class.perform_async(notification.id)
