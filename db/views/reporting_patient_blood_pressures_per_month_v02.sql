@@ -39,7 +39,7 @@ SELECT DISTINCT ON (bp.patient_id, cal.month_date)
     AS quarters_since_bp
 
 FROM blood_pressures bp
-         -- Only fetch BPs that happened on or before the selected calendar month
+-- Only fetch BPs that happened on or before the selected calendar month
 -- We use year and month comparisons to avoid timezone errors
 LEFT OUTER JOIN reporting_months cal
 ON to_char(bp.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')), 'YYYY-MM') <= to_char(cal.month_date, 'YYYY-MM')

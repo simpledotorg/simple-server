@@ -148,7 +148,7 @@ SELECT
         WHEN (bps.systolic < 140 AND bps.diastolic < 90) THEN 'controlled'
         ELSE 'uncontrolled'
         END
-        AS htn_treatment_outcome_in_last_quarter
+        AS htn_treatment_outcome_in_quarter
 
 FROM patients p
 LEFT OUTER JOIN reporting_months cal
