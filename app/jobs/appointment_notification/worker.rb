@@ -38,15 +38,14 @@ class AppointmentNotification::Worker
   private
 
   def send_message(notification, communication_type)
-    notification_service = if notification.experiment&.experiment_type == "medication_reminder" && medication_reminder_sms_sender
-      TwilioApiService.new(sms_sender: medication_reminder_sms_sender)
-    elsif communication_type == "imo"
+    notification_service = if communication_type == "imo"
       ImoApiService.new
+    # given that we expect higher volume in the future, should this be defautlt behavior?
+    elsif notification.experiment&.experiment_type == "medication_reminder" && medication_reminder_sms_sender
+      TwilioApiService.new(sms_sender: medication_reminder_sms_sender)
     else
       TwilioApiService.new
     end
-
-    response = nil
 
     context = {
       calling_class: self.class.name,
@@ -56,32 +55,28 @@ class AppointmentNotification::Worker
 
     # remove missed_visit_whatsapp_reminder and missed_visit_sms_reminder
     # https://app.clubhouse.io/simpledotorg/story/3585/backfill-notifications-from-communications
-    case communication_type
+    response = case communication_type
     when "whatsapp", "missed_visit_whatsapp_reminder"
-      response = notification_service.send_whatsapp(
+      notification_service.send_whatsapp(
         recipient_number: notification.patient.latest_mobile_number,
         message: notification.localized_message,
         callback_url: callback_url,
         context: context
-      ).tap do |response|
-        metrics.increment("sent.whatsapp")
-      end
+      )
     when "sms", "missed_visit_sms_reminder"
-      response = notification_service.send_sms(
+      notification_service.send_sms(
         recipient_number: notification.patient.latest_mobile_number,
         message: notification.localized_message,
         callback_url: callback_url,
         context: context
-      ).tap do |response|
-        metrics.increment("sent.sms")
-      end
+      )
     when "imo"
-      response = notification_service.send_notification(notification.patient, notification.localized_message)
-      # need to think about what to do here. presumably we want to capture a communication even on failure
+      notification_service.send_notification(notification.patient, notification.localized_message)
     else
       raise UnknownCommunicationType, "#{self.class.name} is not configured to handle communication type #{communication_type}"
     end
 
+    metrics.increment("sent.#{communication_type}")
     return unless response
 
     ActiveRecord::Base.transaction do

@@ -80,29 +80,19 @@ class ImoApiService
       # has accepted our invitation is to send a notication to see if it succeeds
       return :subscribed if body_status == "success" && action == "notification"
 
-      case body.dig("response", "error_code")
-      when "not_subscribed"
+      if body.dig("response", "error_code") == "not_subscribed"
         Statsd.instance.increment("imo.#{action}.not_subscribed")
-        :not_subscribed
-      else
-        Statsd.instance.increment("imo.#{action}.error")
-        report_error("Unknown 200 error from Imo", url, response)
-        nil
+        return :not_subscribed
       end
     when 400
       if JSON.parse(response.body).dig("response", "type") == "nonexistent_user"
         Statsd.instance.increment("imo.#{action}.no_imo_account")
-        :no_imo_account
-      else
-        Statsd.instance.increment("imo.#{action}.error")
-        report_error("Unknown 400 error from Imo", url, response)
-        nil
+        return :no_imo_account
       end
-    else
-      Statsd.instance.increment("imo.#{action}.error")
-      report_error("Unknown 400 error from Imo", url, response)
-      nil
     end
+    Statsd.instance.increment("imo.#{action}.error")
+    report_error("Unknown #{response.status} error from Imo", url, response)
+    nil
   end
 
   def invitation_message

@@ -63,7 +63,7 @@ class Communication < ApplicationRecord
 
   def self.create_with_imo_details!(appointment:, notification:)
     # create detailable here
-    communication = Communication.create!(communication_type: communication_type,
+    communication = Communication.create!(communication_type: "imo",
                                           detailable: nil,
                                           appointment: appointment,
                                           notification: notification,
