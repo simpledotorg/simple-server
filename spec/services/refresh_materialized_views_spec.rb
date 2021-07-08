@@ -30,11 +30,11 @@ RSpec.describe RefreshMaterializedViews do
         create_list(:blood_pressure, 2)
         RefreshMaterializedViews.call
       end
-    }.to change { LatestBloodPressuresPerPatientPerMonth.count }.from(0).to(2)
-      .and change { LatestBloodPressuresPerPatient.count }.from(0).to(2)
-      .and change { LatestBloodPressuresPerPatientPerQuarter.count }.from(0).to(2)
-      .and change { BloodPressuresPerFacilityPerDay.count }.from(0).to(2)
-      .and change { PatientRegistrationsPerDayPerFacility.count }.from(0).to(2)
+    }.to change { LatestBloodPressuresPerPatientPerMonth.count }.by(2)
+      .and change { LatestBloodPressuresPerPatient.count }.by(2)
+      .and change { LatestBloodPressuresPerPatientPerQuarter.count }.by(2)
+      .and change { BloodPressuresPerFacilityPerDay.count }.by(2)
+      .and change { PatientRegistrationsPerDayPerFacility.count }.by(2)
       .and change { RefreshMaterializedViews.last_updated_at }.from(nil).to(time)
   end
 
@@ -45,8 +45,8 @@ RSpec.describe RefreshMaterializedViews do
         create_list(:blood_pressure, 2)
         RefreshMaterializedViews.call
       end
-    }.to change { ReportingPipeline::PatientBloodPressuresPerMonth.count }.from(0).to(2)
-      .and change { ReportingPipeline::PatientStatesPerMonth.count }.from(0).to(2)
-      .and change { ReportingPipeline::PatientVisitsPerMonth.count }.from(0).to(2)
+    }.to change { Reports::PatientBloodPressure.count }.by(2)
+      .and change { Reports::PatientState.count }.by(2)
+      .and change { Reports::PatientVisit.count }.by(2)
   end
 end
