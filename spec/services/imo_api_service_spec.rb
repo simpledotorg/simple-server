@@ -151,6 +151,11 @@ describe ImoApiService, type: :model do
         service.send_notification(patient, "Come back in to the clinic")
         expect(patient.imo_authorization.status).to eq("subscribed")
       end
+
+      it "returns the status" do
+        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: success_body)
+        expect(service.send_notification(patient, "Come back in to the clinic")).to eq(:subscribed)
+      end
     end
   end
 end

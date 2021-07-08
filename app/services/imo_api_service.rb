@@ -32,7 +32,7 @@ class ImoApiService
 
     return if result == :error
 
-    status = result == :success ? "invited" : result
+    status = result == :success ? :invited : result
     ImoAuthorization.create!(patient: patient, status: status, last_invited_at: Time.current)
   end
 
@@ -55,7 +55,7 @@ class ImoApiService
 
     # until we implement the invitation callback, the only way for us to know if the user
     # has accepted our invitation is to send a notication to see if it succeeds
-    status = result == :success ? "subscribed" : result
+    status = result == :success ? :subscribed : result
     unless patient.imo_authorization.status == status.to_s || status == :error
       patient.imo_authorization.update!(status: status)
     end

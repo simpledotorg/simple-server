@@ -71,18 +71,18 @@ describe Notification, type: :model do
       end
 
       it "returns imo if it has no imo communications" do
-        imo_auth = create(:imo_authorization, status: "subscribed", patient: notification.patient)
+        create(:imo_authorization, status: "subscribed", patient: notification.patient)
         expect(notification.next_communication_type).to eq("imo")
       end
 
       it "returns sms if it has a imo communication but no sms communication" do
-        imo_auth = create(:imo_authorization, status: "subscribed", patient: notification.patient)
+        create(:imo_authorization, status: "subscribed", patient: notification.patient)
         create(:communication, communication_type: "imo", notification: notification)
         expect(notification.next_communication_type).to eq("sms")
       end
 
       it "returns nil if it has both a imo and sms communication" do
-        imo_auth = create(:imo_authorization, status: "subscribed", patient: notification.patient)
+        create(:imo_authorization, status: "subscribed", patient: notification.patient)
         create(:communication, communication_type: "imo", notification: notification)
         create(:communication, communication_type: "sms", notification: notification)
         expect(notification.next_communication_type).to eq(nil)

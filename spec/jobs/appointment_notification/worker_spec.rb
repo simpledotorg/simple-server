@@ -148,7 +148,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       described_class.drain
     end
 
-    it "updates the notification status to 'sent'" do
+    it "updates the appointment notification status to 'sent'" do
       mock_successful_delivery
 
       expect {
