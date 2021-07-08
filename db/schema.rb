@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_07_014011) do
+ActiveRecord::Schema.define(version: 2021_07_08_133404) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -174,6 +174,7 @@ ActiveRecord::Schema.define(version: 2021_07_07_014011) do
     t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "region_id"
     t.index ["facility_id"], name: "index_drug_stocks_on_facility_id"
     t.index ["protocol_drug_id"], name: "index_drug_stocks_on_protocol_drug_id"
     t.index ["user_id"], name: "index_drug_stocks_on_user_id"
