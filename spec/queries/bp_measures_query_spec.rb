@@ -28,24 +28,10 @@ RSpec.describe BPMeasuresQuery do
     end_of_jan = ist_zone.parse("January 31st 23:59:59 IST")
     beg_of_feb = ist_zone.parse("February 1st 00:00:00 IST")
 
-    pp ["TZ", ENV["TZ"]]
-    pp ["Time.zone", Time.zone]
-    pp ["Time.current", Time.current]
-    pp ["end_of_jan", end_of_jan]
-    pp ["beg_of_feb", beg_of_feb]
-
-    pg_session_timezone = ActiveRecord::Base.connection.execute("SELECT current_setting('TIMEZONE')").first["current_setting"]
-    pp ["pg_session_timezone", pg_session_timezone]
-
     bp1 = create(:blood_pressure, facility: facility, recorded_at: end_of_jan, user: user_1)
-    pp ["bp1.recorded_at", bp1.recorded_at]
     bp2 = create(:blood_pressure, facility: facility, recorded_at: beg_of_feb, user: user_2)
-    pp ["bp2.recorded_at", bp2.recorded_at]
 
     with_reporting_time_zone do
-      pp ["Groupdate.time_zone", Groupdate.time_zone]
-      pp ["bp1.recorded_at in IST", bp1.recorded_at.in_time_zone]
-      pp ["bp2.recorded_at in IST", bp2.recorded_at.in_time_zone]
       expected = {
         Period.month("January 2021") => 1,
         Period.month("February 2021") => 1
