@@ -28,8 +28,8 @@ RSpec.describe BPMeasuresQuery do
     end_of_jan = ist_zone.parse("January 31st 23:59:59 IST")
     beg_of_feb = ist_zone.parse("February 1st 00:00:00 IST")
 
-    bp1 = create(:blood_pressure, facility: facility, recorded_at: end_of_jan, user: user_1)
-    bp2 = create(:blood_pressure, facility: facility, recorded_at: beg_of_feb, user: user_2)
+    create(:blood_pressure, facility: facility, recorded_at: end_of_jan, user: user_1)
+    create(:blood_pressure, facility: facility, recorded_at: beg_of_feb, user: user_2)
 
     with_reporting_time_zone do
       expected = {
