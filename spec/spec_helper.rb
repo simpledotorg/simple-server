@@ -21,11 +21,11 @@ RSpec.configure do |config|
     render_views if ENV["CI"]
   end
 
-  if ENV["CI"]
-    config.before(:example, :focus) do
-      fail "This example was committed to CI with `:focus` turned on. Please remove any focus specs to make sure all tests run on CI"
-    end
-  end
+  # if ENV["CI"]
+  #   config.before(:example, :focus) do
+  #     fail "This example was committed to CI with `:focus` turned on. Please remove any focus specs to make sure all tests run on CI"
+  #   end
+  # end
 
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
