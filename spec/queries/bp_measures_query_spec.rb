@@ -23,7 +23,7 @@ RSpec.describe BPMeasuresQuery do
     @ist_zone ||= Time.find_zone(Period::REPORTING_TIME_ZONE)
   end
 
-  fit "handles period boundaries correctly, taking into account time zones" do
+  it "handles period boundaries correctly, taking into account time zones" do
     facility = create(:facility)
     end_of_jan = ist_zone.parse("January 31st 23:59:59 IST")
     beg_of_feb = ist_zone.parse("February 1st 00:00:00 IST")
