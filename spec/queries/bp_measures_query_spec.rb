@@ -34,6 +34,9 @@ RSpec.describe BPMeasuresQuery do
     pp ["end_of_jan", end_of_jan]
     pp ["beg_of_feb", beg_of_feb]
 
+    pg_session_timezone = ActiveRecord::Base.connection.execute("SELECT current_setting('TIMEZONE')").first["current_setting"]
+    pp ["pg_session_timezone", pg_session_timezone]
+
     bp1 = create(:blood_pressure, facility: facility, recorded_at: end_of_jan, user: user_1)
     pp ["bp1.recorded_at", bp1.recorded_at]
     bp2 = create(:blood_pressure, facility: facility, recorded_at: beg_of_feb, user: user_2)
