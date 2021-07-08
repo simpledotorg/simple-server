@@ -5,7 +5,7 @@ class MyFacilities::DrugStocksController < AdminController
 
   layout "my_facilities"
 
-  around_action :set_time_zone
+  around_action :set_reporting_time_zone
   before_action :authorize_my_facilities
   after_action :verify_authorization_attempted
   before_action :set_facility, only: [:new, :create]
@@ -104,9 +104,5 @@ class MyFacilities::DrugStocksController < AdminController
       .sort
       .reject { |size| size == "community" }
     @facility_sizes = sort_facility_sizes_by_size(@facility_sizes)
-  end
-
-  def set_time_zone
-    Time.use_zone(Period::REPORTING_TIME_ZONE) { yield }
   end
 end

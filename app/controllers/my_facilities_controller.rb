@@ -8,7 +8,7 @@ class MyFacilitiesController < AdminController
 
   PERIODS_TO_DISPLAY = {quarter: 3, month: 3, day: 14}.freeze
 
-  around_action :set_time_zone
+  around_action :set_reporting_time_zone
   before_action :set_period, except: [:index]
   before_action :authorize_my_facilities
   before_action :set_selected_cohort_period, only: [:blood_pressure_control]
@@ -56,10 +56,6 @@ class MyFacilitiesController < AdminController
       else
         last_updated_at.in_time_zone(Rails.application.config.country[:time_zone]).strftime("%d-%^b-%Y %I:%M%p")
       end
-  end
-
-  def set_time_zone
-    Time.use_zone(Period::REPORTING_TIME_ZONE) { yield }
   end
 
   def authorize_my_facilities
