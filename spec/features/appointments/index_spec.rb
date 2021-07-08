@@ -16,14 +16,14 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
       login.do_login(owner.email, owner.password)
     end
 
-    # it "landing page -with no overdue patient" do
-    #   expect(page).to have_content("Overdue")
-    #   nav_page.click_main_menu_tab("Overdue")
-    #   appoint_page.verify_overdue_landing_page
-    #   expect(page).to have_content("All facilities")
-    #   expect(page).to have_content("20 per page")
-    #   expect(page).to have_content("No overdue patients found")
-    # end
+    it "landing page -with no overdue patient" do
+      expect(page).to have_content("Overdue")
+      nav_page.click_main_menu_tab("Overdue")
+      appoint_page.verify_overdue_landing_page
+      expect(page).to have_content("All facilities")
+      expect(page).to have_content("20 per page")
+      expect(page).to have_content("No overdue patients found")
+    end
 
     it "landing page -Facility and page dropdown " do
       create_list(:facility, 2, facility_group: ihmi_facility_group)
