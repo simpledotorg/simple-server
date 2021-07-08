@@ -32,10 +32,13 @@ RSpec.describe BPMeasuresQuery do
     pp ["Time.zone", Time.zone]
     pp ["Time.current", Time.current]
     pp ["end_of_jan", end_of_jan]
+    pp ["beg_of_feb", beg_of_feb]
 
     bp1 = create(:blood_pressure, facility: facility, recorded_at: end_of_jan, user: user_1)
     pp ["bp1.recorded_at", bp1.recorded_at]
-    create(:blood_pressure, facility: facility, recorded_at: beg_of_feb, user: user_2)
+    bp2 = create(:blood_pressure, facility: facility, recorded_at: beg_of_feb, user: user_2)
+    pp ["bp2.recorded_at", bp2.recorded_at]
+
     Time.use_zone(ist_zone) do
       expected = {
         Period.month("January 2021") => 1,
