@@ -64,7 +64,7 @@ class DrugStocksQuery
   end
 
   def repository
-    Reports::Repository.new(@blocks + @facilities, periods: @period)
+    Reports::Repository.new(@facilities, periods: @period)
   end
 
   memoize def patient_count_by_facility_id
@@ -77,9 +77,7 @@ class DrugStocksQuery
 
   memoize def patient_count_by_block_id
     @facilities.each_with_object(Hash.new(0)) do |facility, result|
-      result[facility.region.block_region.id] +=
-        repository.cumulative_assigned_patients[facility.slug][@period] -
-        repository.ltfu[facility.slug][@period]
+      result[facility.region.block_region.id] += patient_count_by_facility_id[facility.id]
     end
   end
 

@@ -112,7 +112,7 @@ RSpec.describe DrugStocksQuery do
       instance = described_class.new(facilities: [facility_without_drug_stocks], for_end_of_month: for_end_of_month)
       result = instance.drug_stocks_report
 
-      expect(result[:patient_count_by_facility_id][facility_without_drug_stocks.id]).to eq(nil)
+      expect(result[:patient_count_by_facility_id][facility_without_drug_stocks.id]).to eq(0)
       expect(result[:patient_days_by_facility_id][facility_without_drug_stocks.id]).to eq({"hypertension_arb" => nil,
                                                                                            "hypertension_ccb" => nil,
                                                                                            "hypertension_diuretic" => nil})
