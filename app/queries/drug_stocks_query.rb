@@ -6,6 +6,7 @@ class DrugStocksQuery
   def initialize(facilities:, for_end_of_month:, blocks: Region.none)
     @facilities = facilities
     @for_end_of_month = for_end_of_month
+    @period = Period.month(@for_end_of_month)
     # assuming that all facilities on the page have the same protocol
     @protocol = @facilities.first.protocol
     @state = @facilities.first.state
@@ -62,28 +63,28 @@ class DrugStocksQuery
     drugs.pluck(:drug_category).uniq
   end
 
-  memoize def patients
-    Patient
-      .for_reports(exclude_ltfu_as_of: @for_end_of_month)
-      .where("recorded_at <= ?", @for_end_of_month)
-      .where(assigned_facility_id: @facilities)
+  def repository
+    Reports::Repository.new(@blocks + @facilities, periods: @period)
   end
 
   memoize def patient_count_by_facility_id
-    patients
-      .group(:assigned_facility_id)
-      .count
+    @facilities.each_with_object(Hash.new(0)) do |facility, result|
+      result[facility.id] =
+        repository.cumulative_assigned_patients[facility.slug][@period] -
+        repository.ltfu[facility.slug][@period]
+    end
   end
 
   memoize def patient_count_by_block_id
-    patients
-      .joins("INNER JOIN reporting_facilities on patients.assigned_facility_id = reporting_facilities.facility_id")
-      .group("reporting_facilities.block_region_id")
-      .count
+    @facilities.each_with_object(Hash.new(0)) do |facility, result|
+      result[facility.region.block_region.id] +=
+        repository.cumulative_assigned_patients[facility.slug][@period] -
+        repository.ltfu[facility.slug][@period]
+    end
   end
 
   memoize def total_patients
-    patients.count
+    patient_count_by_facility_id.values.sum
   end
 
   memoize def selected_month_drug_stocks
