@@ -124,7 +124,7 @@ class DrugStocksQuery
       result[block_id][drug_category] = category_patient_days(
         drug_category,
         selected_month_drug_stocks.select { |drug_stock| drug_stock.region.block_region.id = block_id },
-      patient_count_by_block_id[block_id] || 0
+        patient_count_by_block_id[block_id] || 0
       )
     end
   end
@@ -156,7 +156,7 @@ class DrugStocksQuery
         category_drug_consumption(
           drug_category,
           selected_month_drug_stocks.select { |drug_stock| drug_stock.facility_id == facility_id },
-          previous_month_drug_stocks.select { |drug_stock| drug_stock.facility_id == facility_id },
+          previous_month_drug_stocks.select { |drug_stock| drug_stock.facility_id == facility_id }
         )
     end
   end
