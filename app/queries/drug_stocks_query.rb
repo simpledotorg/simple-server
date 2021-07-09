@@ -40,6 +40,8 @@ class DrugStocksQuery
        all_drug_consumption: all_drug_consumption,
        drug_consumption_by_facility_id: drug_consumption_by_facility_id,
        patient_count_by_facility_id: patient_count_by_facility_id,
+       drug_consumption_by_block_id: drug_consumption_by_block_id,
+       patient_count_by_block_id: patient_count_by_block_id,
        last_updated_at: Time.now}
     end
   end
@@ -157,6 +159,18 @@ class DrugStocksQuery
           drug_category,
           selected_month_drug_stocks.select { |drug_stock| drug_stock.facility_id == facility_id },
           previous_month_drug_stocks.select { |drug_stock| drug_stock.facility_id == facility_id }
+        )
+    end
+  end
+
+  memoize def drug_consumption_by_block_id
+    @blocks.pluck(:id).product(drug_categories).each_with_object({}) do |(block_id, drug_category), result|
+      result[block_id] ||= {}
+      result[block_id][drug_category] =
+        category_drug_consumption(
+          drug_category,
+          selected_month_drug_stocks.select { |drug_stock| drug_stock.region.block_region.id == block_id },
+          previous_month_drug_stocks.select { |drug_stock| drug_stock.region.block_region.id == block_id }
         )
     end
   end
