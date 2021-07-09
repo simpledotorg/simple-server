@@ -155,8 +155,8 @@ class DrugStocksQuery
       result[facility_id][drug_category] =
         category_drug_consumption(
           drug_category,
-          select_drug_stocks(selected_month_drug_stocks, facility_id),
-          select_drug_stocks(previous_month_drug_stocks, facility_id)
+          selected_month_drug_stocks.select { |drug_stock| drug_stock.facility_id == facility_id },
+          previous_month_drug_stocks.select { |drug_stock| drug_stock.facility_id == facility_id },
         )
     end
   end
