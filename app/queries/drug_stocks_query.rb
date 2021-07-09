@@ -63,7 +63,7 @@ class DrugStocksQuery
     drugs.pluck(:drug_category).uniq
   end
 
-  def repository
+  memoize def repository
     Reports::Repository.new(@facilities, periods: @period)
   end
 
@@ -76,8 +76,8 @@ class DrugStocksQuery
   end
 
   memoize def patient_count_by_block_id
-    @facilities.each_with_object(Hash.new(0)) do |facility, result|
-      result[facility.region.block_region.id] += patient_count_by_facility_id[facility.id]
+    @facilities.with_block_region_id.pluck("facilities.id", "block_region.id").each_with_object(Hash.new(0)) do |(facility_id, block_region_id), result|
+      result[block_region_id] += patient_count_by_facility_id[facility_id]
     end
   end
 
@@ -86,7 +86,11 @@ class DrugStocksQuery
   end
 
   memoize def selected_month_drug_stocks
-    DrugStock.latest_for_facilities_cte(@facilities, @for_end_of_month).includes(:region).load
+    DrugStock
+      .latest_for_facilities_cte(@facilities, @for_end_of_month)
+      .joins("INNER JOIN reporting_facilities on drug_stocks.facility_id = reporting_facilities.facility_id")
+      .select("reporting_facilities.block_region_id as block_region_id, drug_stocks.*")
+      .load
   end
 
   memoize def previous_month_drug_stocks
@@ -124,7 +128,7 @@ class DrugStocksQuery
       result[block_id] ||= {}
       result[block_id][drug_category] = category_patient_days(
         drug_category,
-        selected_month_drug_stocks.select { |drug_stock| drug_stock.region.block_region.id = block_id },
+        selected_month_drug_stocks.select { |drug_stock| drug_stock.block_region_id == block_id },
         patient_count_by_block_id[block_id] || 0
       )
     end
@@ -168,8 +172,8 @@ class DrugStocksQuery
       result[block_id][drug_category] =
         category_drug_consumption(
           drug_category,
-          selected_month_drug_stocks.select { |drug_stock| drug_stock.region.block_region.id == block_id },
-          previous_month_drug_stocks.select { |drug_stock| drug_stock.region.block_region.id == block_id }
+          selected_month_drug_stocks.select { |drug_stock| drug_stock.block_region_id == block_id },
+          previous_month_drug_stocks.select { |drug_stock| drug_stock.block_region_id == block_id }
         )
     end
   end
