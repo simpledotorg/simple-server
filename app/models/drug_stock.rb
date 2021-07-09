@@ -3,6 +3,7 @@ class DrugStock < ApplicationRecord
   belongs_to :region, optional: true
   belongs_to :user
   belongs_to :protocol_drug
+  belongs_to :region
 
   validates :in_stock, numericality: true, allow_nil: true
   validates :received, numericality: true, allow_nil: true

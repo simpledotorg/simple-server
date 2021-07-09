@@ -59,9 +59,13 @@ class MyFacilities::DrugStocksController < AdminController
       .includes(facility_group: :protocol_drugs)
       .where(protocol_drugs: {stock_tracked: true})
 
+    @blocks = Region.where(id: @facilities.with_block_region_id.pluck("block_region.id")).order(:name)
+
     @for_end_of_month_display = @for_end_of_month.strftime("%b-%Y")
     render && return if @facilities.empty?
-    @query = DrugStocksQuery.new(facilities: @facilities, for_end_of_month: @for_end_of_month)
+    @query = DrugStocksQuery.new(facilities: @facilities,
+                                 blocks: @blocks,
+                                 for_end_of_month: @for_end_of_month)
     @drugs_by_category = @query.protocol_drugs_by_category
   end
 

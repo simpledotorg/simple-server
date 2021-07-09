@@ -3,16 +3,17 @@ class DrugStocksQuery
 
   CACHE_VERSION = 1
 
-  def initialize(facilities:, for_end_of_month:)
+  def initialize(facilities:, for_end_of_month:, blocks: Region.none)
     @facilities = facilities
     @for_end_of_month = for_end_of_month
     # assuming that all facilities on the page have the same protocol
     @protocol = @facilities.first.protocol
     @state = @facilities.first.state
     @latest_drug_stocks = DrugStock.latest_for_facilities(@facilities, @for_end_of_month)
+    @blocks = blocks
   end
 
-  attr_reader :for_end_of_month, :facilities
+  attr_reader :for_end_of_month, :facilities, :blocks
 
   def drug_stocks_report
     Rails.cache.fetch(drug_stocks_cache_key,
@@ -24,6 +25,9 @@ class DrugStocksQuery
        patient_count_by_facility_id: patient_count_by_facility_id,
        patient_days_by_facility_id: patient_days_by_facility_id,
        drugs_in_stock_by_facility_id: drugs_in_stock_by_facility_id,
+       patient_count_by_block_id: patient_count_by_block_id,
+       patient_days_by_block_id: patient_days_by_block_id,
+       drugs_in_stock_by_block_id: drugs_in_stock_by_block_id,
        last_updated_at: Time.now}
     end
   end
@@ -56,29 +60,36 @@ class DrugStocksQuery
     drugs.pluck(:drug_category).uniq
   end
 
-  memoize def patient_count_by_facility_id
+  memoize def patients
     Patient
       .for_reports(exclude_ltfu_as_of: @for_end_of_month)
       .where("recorded_at <= ?", @for_end_of_month)
       .where(assigned_facility_id: @facilities)
+  end
+
+  memoize def patient_count_by_facility_id
+    patients
       .group(:assigned_facility_id)
       .count
   end
 
-  memoize def total_patients
-    Patient
-      .for_reports(exclude_ltfu_as_of: @for_end_of_month)
-      .where("recorded_at <= ?", @for_end_of_month)
-      .where(assigned_facility_id: @facilities)
+  memoize def patient_count_by_block_id
+    patients
+      .joins("INNER JOIN reporting_facilities on patients.assigned_facility_id = reporting_facilities.facility_id")
+      .group("reporting_facilities.block_region_id")
       .count
   end
 
+  memoize def total_patients
+    patients.count
+  end
+
   memoize def selected_month_drug_stocks
-    DrugStock.latest_for_facilities_cte(@facilities, @for_end_of_month).load
+    DrugStock.latest_for_facilities_cte(@facilities, @for_end_of_month).includes(:region).load
   end
 
   memoize def previous_month_drug_stocks
-    DrugStock.latest_for_facilities_cte(@facilities, end_of_previous_month).load
+    DrugStock.latest_for_facilities_cte(@facilities, end_of_previous_month).includes(:region).load
   end
 
   def all_drugs_in_stock
@@ -89,8 +100,11 @@ class DrugStocksQuery
     selected_month_drug_stocks.group(:facility_id, "protocol_drugs.rxnorm_code").sum(:in_stock)
   end
 
-  def select_drug_stocks(drug_stocks, facility_id)
-    drug_stocks.select { |drug_stock| drug_stock.facility_id == facility_id }
+  def drugs_in_stock_by_block_id
+    selected_month_drug_stocks
+      .joins("INNER JOIN reporting_facilities on drug_stocks.facility_id = reporting_facilities.facility_id")
+      .group("reporting_facilities.block_region_id", "protocol_drugs.rxnorm_code")
+      .sum(:in_stock)
   end
 
   def patient_days_by_facility_id
@@ -98,8 +112,19 @@ class DrugStocksQuery
       result[facility_id] ||= {}
       result[facility_id][drug_category] = category_patient_days(
         drug_category,
-        select_drug_stocks(selected_month_drug_stocks, facility_id),
+        selected_month_drug_stocks.select { |drug_stock| drug_stock.facility_id == facility_id },
         patient_count_by_facility_id[facility_id] || 0
+      )
+    end
+  end
+
+  def patient_days_by_block_id
+    @blocks.pluck(:id).product(drug_categories).each_with_object({}) do |(block_id, drug_category), result|
+      result[block_id] ||= {}
+      result[block_id][drug_category] = category_patient_days(
+        drug_category,
+        selected_month_drug_stocks.select { |drug_stock| drug_stock.region.block_region.id = block_id },
+      patient_count_by_block_id[block_id] || 0
       )
     end
   end
