@@ -9,6 +9,12 @@ class Statsd
     @statsd ||= create_connection
   end
 
+  def close
+    @statsd&.flush
+    @statsd&.close
+    @statsd = nil
+  end
+
   delegate :count, :increment, :time, :timing, :gauge, to: :statsd
 
   private
