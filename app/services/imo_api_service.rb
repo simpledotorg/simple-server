@@ -6,27 +6,36 @@ class ImoApiService
   PATIENT_REDIRECT_URL = "https://www.nhf.org.bd".freeze
 
   class Error < StandardError
-    attr_reader :path, :response, :exception_message
-    def initialize(message, path: nil, response: nil, exception_message: nil)
+    attr_reader :path, :response, :exception_message, :patient_id
+    def initialize(message, path: nil, response: nil, exception_message: nil, patient_id: nil)
       super(message)
       @path = path
       @response = response
       @exception_message = exception_message
+      @patient_id = patient_id
     end
   end
 
   def send_invitation(patient)
     return unless Flipper.enabled?(:imo_messaging)
 
+    locale = patient.locale
     Statsd.instance.increment("imo.invites.attempt")
     url = BASE_URL + "send_invite"
     request_body = JSON(
       phone: patient.latest_mobile_number,
-      msg: invitation_message,
-      contents: [{key: "Name", value: patient.full_name}, {key: "Notes", value: invitation_message}],
-      title: "Invitation",
-      action: "Click here"
+      msg: I18n.t("notifications.imo.invitations.message", locale: locale),
+      contents: [
+        {key: "Message", value: I18n.t("notifications.imo.invitations.message", locale: locale)}
+      ],
+      title: I18n.t("notifications.imo.invitations.title", locale: locale),
+      action: I18n.t("notifications.imo.invitations.action", locale: locale)
     )
+
+    if request_body.include?("translation missing")
+      raise Error.new("Translation missing for language #{locale}", path: url, patient_id: patient.id)
+    end
+
     response = execute_post(url, body: request_body)
     result = process_response(response, url, "invitation")
 
@@ -102,10 +111,6 @@ class ImoApiService
       report_error("Unknown 400 error from Imo", url, response)
       nil
     end
-  end
-
-  def invitation_message
-    "This will need to be a localized string"
   end
 
   def report_error(message, url, response)
