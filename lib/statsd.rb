@@ -12,7 +12,7 @@ class Statsd
   delegate :count, :increment, :time, :timing, :gauge, to: :statsd
 
   private
-  
+
   def create_connection
     Datadog::Statsd.new("localhost", 8125)
   end
