@@ -62,6 +62,7 @@ class MyFacilities::DrugStocksController < AdminController
     @blocks = Region.where(id: @facilities.with_block_region_id.pluck("block_region.id")).order(:name)
 
     @for_end_of_month_display = @for_end_of_month.strftime("%b-%Y")
+    # TODO: Fix this early return
     render && return if @facilities.empty?
     @query = DrugStocksQuery.new(facilities: @facilities,
                                  blocks: @blocks,
