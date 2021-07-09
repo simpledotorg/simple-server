@@ -43,7 +43,7 @@ class MyFacilities::DrugStocksController < AdminController
 
   def create
     DrugStocksCreator.call(user: current_admin,
-                           month: @for_end_of_month,
+                           for_end_of_month: @for_end_of_month,
                            drug_stocks_params: drug_stocks_params[:drug_stocks],
                            facility: @facility)
     redirect_to redirect_url, notice: "Saved drug stocks"

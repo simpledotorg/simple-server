@@ -20,7 +20,7 @@ class Webview::DrugStocksController < ApplicationController
   def create
     DrugStocksCreator.call(user: current_user,
                            facility: @current_facility,
-                           month: @for_end_of_month,
+                           for_end_of_month: @for_end_of_month,
                            drug_stocks_params: safe_params[:drug_stocks])
     redirect_to webview_drug_stocks_url(for_end_of_month: @for_end_of_month,
                                         facility_id: current_facility.id,
