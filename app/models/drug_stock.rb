@@ -27,4 +27,9 @@ class DrugStock < ApplicationRecord
     from(latest_for_facilities(facilities, for_end_of_month), table_name)
       .includes(:protocol_drug)
   end
+
+  def self.with_block_region_id
+    joins("INNER JOIN reporting_facilities on drug_stocks.facility_id = reporting_facilities.facility_id")
+      .select("reporting_facilities.block_region_id as block_region_id, drug_stocks.*")
+  end
 end

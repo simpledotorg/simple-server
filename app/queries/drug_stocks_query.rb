@@ -87,13 +87,15 @@ class DrugStocksQuery
   memoize def selected_month_drug_stocks
     DrugStock
       .latest_for_facilities_cte(@facilities, @for_end_of_month)
-      .joins("INNER JOIN reporting_facilities on drug_stocks.facility_id = reporting_facilities.facility_id")
-      .select("reporting_facilities.block_region_id as block_region_id, drug_stocks.*")
+      .with_block_region_id
       .load
   end
 
   memoize def previous_month_drug_stocks
-    DrugStock.latest_for_facilities_cte(@facilities, end_of_previous_month).includes(:region).load
+    DrugStock
+      .latest_for_facilities_cte(@facilities, end_of_previous_month)
+      .with_block_region_id
+      .load
   end
 
   def all_drugs_in_stock
@@ -106,8 +108,7 @@ class DrugStocksQuery
 
   def drugs_in_stock_by_block_id
     selected_month_drug_stocks
-      .joins("INNER JOIN reporting_facilities on drug_stocks.facility_id = reporting_facilities.facility_id")
-      .group("reporting_facilities.block_region_id", "protocol_drugs.rxnorm_code")
+      .group("block_region_id", "protocol_drugs.rxnorm_code")
       .sum(:in_stock)
   end
 
