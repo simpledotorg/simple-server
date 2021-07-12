@@ -7,7 +7,6 @@ class DrugStocksQuery
     @facilities = facilities
     @for_end_of_month = for_end_of_month
     @period = Period.month(@for_end_of_month)
-    # assuming that all facilities on the page have the same protocol
     @protocol = facility_group.protocol
     @state = facility_group.state
     @latest_drug_stocks = DrugStock.latest_for_facilities(@facilities, @for_end_of_month)
