@@ -16,6 +16,7 @@ class Region < ApplicationRecord
   belongs_to :source, polymorphic: true, optional: true
   auto_strip_attributes :name, squish: true, upcase_first: true
 
+  has_many :drug_stocks
   # To set a new path for a Region, assign the parent region via `reparent_to`, and the before_validation
   # callback will assign the new path.
   attr_accessor :reparent_to

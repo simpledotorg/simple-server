@@ -1,5 +1,6 @@
 class DrugStock < ApplicationRecord
   belongs_to :facility
+  belongs_to :region, optional: true
   belongs_to :user
   belongs_to :protocol_drug
 

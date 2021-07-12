@@ -94,8 +94,15 @@ class Api::V4::Models
       {
         type: :object,
         properties: {
-          type: {type: :string, enum: Api::V4::PatientsController::RETENTION_TYPES.values},
-          duration_seconds: {type: :integer}
+          type: {
+            type: :string,
+            enum: Api::V4::PatientsController::RETENTION_TYPES.values,
+            description: "This enum might have more values in the future."
+          },
+          duration_seconds: {
+            type: :integer,
+            description: "This key is only present in the response when the retention type is temporary."
+          }
         }
       }
     end
@@ -106,7 +113,7 @@ class Api::V4::Models
           appointments: {"$ref" => "#/definitions/appointments"},
           blood_pressures: {"$ref" => "#/definitions/blood_pressures"},
           blood_sugars: {"$ref" => "#/definitions/blood_sugars"},
-          medical_history: {"$ref" => "#/definitions/medical_history"},
+          medical_history: {"$ref" => "#/definitions/nullable_medical_history"},
           prescription_drugs: {"$ref" => "#/definitions/prescription_drugs"},
           retention: retention
         },
@@ -364,7 +371,7 @@ class Api::V4::Models
         login_patient: login_patient,
         lookup_patient: lookup_patient,
         lookup_patients: array_of("lookup_patient"),
-        medical_history: Api::V3::Models.medical_history,
+        nullable_medical_history: Api::V3::Models.medical_history.merge(type: [:object, "null"]),
         medical_officer: medical_officer,
         medication: medication,
         medications: array_of("medication"),

@@ -1,6 +1,8 @@
 namespace :dhis2 do
   desc "Export aggregate indicators for each facility to DHIS2"
   task export: :environment do
+    return unless Flipper.enabled?(:dhis2_export)
+
     require "dhis2"
     Dhis2.configure do |config|
       config.url = ENV.fetch("DHIS2_URL")
@@ -65,7 +67,7 @@ namespace :dhis2 do
         end
       end
 
-      # puts Dhis2.client.data_value_sets.bulk_create(data_values: facility_bulk_data)
+      pp Dhis2.client.data_value_sets.bulk_create(data_values: facility_bulk_data)
     end
   end
 end
