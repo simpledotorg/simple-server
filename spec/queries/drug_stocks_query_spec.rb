@@ -114,7 +114,7 @@ RSpec.describe DrugStocksQuery do
       facility_without_drug_stocks = create(:facility, facility_group: facilities.first.facility_group)
 
       instance = described_class.new(facility_group: facility_group,
-                                     facilities: [facility_without_drug_stocks],
+                                     facilities: Facility.where(id: facility_without_drug_stocks),
                                      for_end_of_month: for_end_of_month)
       result = instance.drug_stocks_report
 
