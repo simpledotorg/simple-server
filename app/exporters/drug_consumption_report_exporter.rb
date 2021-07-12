@@ -72,7 +72,7 @@ class DrugConsumptionReportExporter
   end
 
   def facility_rows
-    @query.facilities.map do |facility|
+    @query.facilities.order(:name).map do |facility|
       facility_row(facility)
     end
   end
