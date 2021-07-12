@@ -4,7 +4,7 @@ class DrugStocksQuery
   CACHE_VERSION = 1
 
   def initialize(facility_group:, facilities:, for_end_of_month:, blocks: Region.none)
-    @facilities = facilities
+    @facilities = Facility.where(id: facilities)
     @for_end_of_month = for_end_of_month
     @period = Period.month(@for_end_of_month)
     @protocol = facility_group.protocol
