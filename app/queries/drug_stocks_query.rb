@@ -75,8 +75,8 @@ class DrugStocksQuery
   end
 
   memoize def patient_count_by_block_id
-    @facilities.with_block_region_id.pluck("facilities.id", "block_region.id").each_with_object(Hash.new(0)) do |(facility_id, block_region_id), result|
-      result[block_region_id] += patient_count_by_facility_id[facility_id]
+    @facilities.with_block_region_id.each_with_object(Hash.new(0)) do |facility, result|
+      result[facility.block_region_id] += patient_count_by_facility_id[facility.id]
     end
   end
 
