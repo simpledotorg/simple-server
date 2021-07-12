@@ -7,7 +7,7 @@ class Webview::DrugStocksController < ApplicationController
   skip_before_action :verify_authenticity_token
   around_action :set_reporting_time_zone
   before_action :authenticate
-  before_action :find_current_facility
+  before_action :set_current_facility
   before_action :set_for_end_of_month
   before_action :set_bust_cache
   layout false
@@ -18,7 +18,10 @@ class Webview::DrugStocksController < ApplicationController
   end
 
   def create
-    DrugStocksCreator.call(current_user, current_facility, @for_end_of_month, safe_params[:drug_stocks])
+    DrugStocksCreator.call(user: current_user,
+                           facility: @current_facility,
+                           for_end_of_month: @for_end_of_month,
+                           drug_stocks_params: safe_params[:drug_stocks])
     redirect_to webview_drug_stocks_url(for_end_of_month: @for_end_of_month,
                                         facility_id: current_facility.id,
                                         user_id: current_user.id,
@@ -63,7 +66,7 @@ class Webview::DrugStocksController < ApplicationController
     @current_user = user
   end
 
-  def find_current_facility
+  def set_current_facility
     @current_facility = Facility.find(safe_params[:facility_id])
     if @current_facility.community?
       logger.error "Cannot create DrugStocks for community facility #{@current_facility.slug}"

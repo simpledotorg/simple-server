@@ -42,7 +42,10 @@ class MyFacilities::DrugStocksController < AdminController
   end
 
   def create
-    DrugStocksCreator.call(current_admin, @facility, @for_end_of_month, drug_stocks_params[:drug_stocks])
+    DrugStocksCreator.call(user: current_admin,
+                           for_end_of_month: @for_end_of_month,
+                           drug_stocks_params: drug_stocks_params[:drug_stocks],
+                           facility: @facility)
     redirect_to redirect_url, notice: "Saved drug stocks"
   rescue ActiveRecord::RecordInvalid
     redirect_to redirect_url, alert: "Something went wrong, Drug Stocks were not saved."
