@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_08_133404) do
+ActiveRecord::Schema.define(version: 2021_07_12_223435) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -1195,6 +1195,8 @@ ActiveRecord::Schema.define(version: 2021_07_08_133404) do
     WHERE (bp.deleted_at IS NULL)
     ORDER BY bp.patient_id, cal.month_date, bp.recorded_at DESC;
   SQL
+  add_index "reporting_patient_blood_pressures", ["patient_id", "month_date"], name: "patient_blood_pressures_patient_id_month_date", unique: true
+
   create_view "reporting_patient_visits", materialized: true, sql_definition: <<-SQL
       SELECT DISTINCT ON (p.id, p.month_date) p.id AS patient_id,
       p.month_date,
@@ -1258,6 +1260,8 @@ ActiveRecord::Schema.define(version: 2021_07_08_133404) do
     WHERE (p.deleted_at IS NULL)
     ORDER BY p.id, p.month_date, (timezone('UTC'::text, timezone('UTC'::text, GREATEST(e.encountered_on, pd.device_created_at, app.device_created_at)))) DESC;
   SQL
+  add_index "reporting_patient_visits", ["patient_id", "month_date"], name: "patient_visits_patient_id_month_date", unique: true
+
   create_view "reporting_patient_states", materialized: true, sql_definition: <<-SQL
       SELECT DISTINCT ON (p.id, cal.month_date) p.id AS patient_id,
       p.status,
