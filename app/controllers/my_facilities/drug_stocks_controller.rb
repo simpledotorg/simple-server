@@ -58,12 +58,11 @@ class MyFacilities::DrugStocksController < AdminController
       .where.not(facility_size: :community)
       .includes(facility_group: :protocol_drugs)
       .where(protocol_drugs: {stock_tracked: true})
-      .load
 
     @blocks = Region
       .block_regions
       .joins("INNER JOIN regions facility_region ON regions.path @> facility_region.path")
-      .where(facility_region: {source_id: @facilities.pluck(:id)})
+      .where(facility_region: {source_id: @facilities})
       .distinct("regions.id")
 
     @for_end_of_month_display = @for_end_of_month.strftime("%b-%Y")
