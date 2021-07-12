@@ -3,13 +3,13 @@ class DrugStocksQuery
 
   CACHE_VERSION = 1
 
-  def initialize(facilities:, for_end_of_month:, blocks: Region.none)
+  def initialize(facility_group:, facilities:, for_end_of_month:, blocks: Region.none)
     @facilities = facilities
     @for_end_of_month = for_end_of_month
     @period = Period.month(@for_end_of_month)
     # assuming that all facilities on the page have the same protocol
-    @protocol = @facilities.first.protocol
-    @state = @facilities.first.state
+    @protocol = facility_group.protocol
+    @state = facility_group.state
     @latest_drug_stocks = DrugStock.latest_for_facilities(@facilities, @for_end_of_month)
     @blocks = blocks
   end

@@ -5,7 +5,9 @@ RSpec.describe DrugConsumptionReportExporter do
     protocol = create(:protocol, :with_tracked_drugs)
     facility_group = create(:facility_group, protocol: protocol, state: "Punjab")
     facilities = create_list(:facility, 2, facility_group: facility_group)
-    query = DrugStocksQuery.new(facilities: facilities, for_end_of_month: Date.current.end_of_month)
+    query = DrugStocksQuery.new(facility_group: facility_group,
+                                facilities: facilities,
+                                for_end_of_month: Date.current.end_of_month)
 
     stocks_by_rxnorm = {
       "329528" => {in_stock: 10000, received: 2000},
