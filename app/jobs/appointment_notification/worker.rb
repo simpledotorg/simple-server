@@ -88,8 +88,7 @@ class AppointmentNotification::Worker
     if communication_type == "imo"
       Communication.create_with_imo_details!(
         appointment: notification.subject,
-        notification: notification,
-        result: response
+        notification: notification
       )
     else
       Communication.create_with_twilio_details!(

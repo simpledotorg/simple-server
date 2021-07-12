@@ -30,8 +30,6 @@ class ImoApiService
     response = execute_post(url, body: request_body)
     result = process_response(response, url, "invitation")
 
-    return if result == :error
-
     status = result == :success ? :invited : result
     ImoAuthorization.create!(patient: patient, status: status, last_invited_at: Time.current)
   end
@@ -53,13 +51,10 @@ class ImoApiService
     response = execute_post(url, body: request_body)
     result = process_response(response, url, "notification")
 
-    # until we implement the invitation callback, the only way for us to know if the user
-    # has accepted our invitation is to send a notication to see if it succeeds
-    status = result == :success ? :subscribed : result
-    unless patient.imo_authorization.status == status.to_s || status == :error
-      patient.imo_authorization.update!(status: status)
+    if patient.imo_authorization.status != result.to_s && result.in?([:not_subscribed, :no_imo_account])
+      patient.imo_authorization.update!(status: result)
     end
-    status
+    result
   end
 
   private

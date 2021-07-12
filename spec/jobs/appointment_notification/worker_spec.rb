@@ -18,9 +18,8 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       response_double = double
       allow(response_double).to receive(:status).and_return("sent")
       allow(response_double).to receive(:sid).and_return("12345")
-      twilio_client = double
-      allow_any_instance_of(TwilioApiService).to receive(:client).and_return(twilio_client)
-      allow(twilio_client).to receive_message_chain("messages.create").and_return(response_double)
+      allow_any_instance_of(TwilioApiService).to receive(:send_whatsapp).and_return(response_double)
+      allow_any_instance_of(TwilioApiService).to receive(:send_sms).and_return(response_double)
     end
 
     it "logs but creates nothing when notifications and experiment flags are disabled" do
@@ -129,8 +128,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
 
       expect(Communication).to receive(:create_with_imo_details!).with(
         appointment: notification.subject,
-        notification: notification,
-        result: :success
+        notification: notification
       ).and_call_original
       expect {
         described_class.perform_async(notification.id)
