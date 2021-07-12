@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe DrugStocksQuery do
   let!(:state) { "Punjab" }
-  let!(:zone) { "Block A" }
+  let(:zone) { "Block A" }
   let!(:protocol) { create(:protocol, :with_tracked_drugs) }
   let!(:facility_group) { create(:facility_group, protocol: protocol) }
   let!(:user) { create(:admin, :manager, :with_access, resource: facility_group) }
