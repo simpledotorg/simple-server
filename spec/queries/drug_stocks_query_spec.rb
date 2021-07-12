@@ -136,7 +136,6 @@ RSpec.describe DrugStocksQuery do
       end
     end
 
-
     it "skips drug categories when drug stocks are not present" do
       instance = described_class.new(facility_group: facility_group, facilities: facilities, for_end_of_month: for_end_of_month)
       result = instance.drug_stocks_report
