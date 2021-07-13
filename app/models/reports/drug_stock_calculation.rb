@@ -1,11 +1,11 @@
 module Reports
   class DrugStockCalculation
+    include Memery
     def initialize(state:, protocol_drugs:, drug_category:, current_drug_stocks:, previous_drug_stocks: DrugStock.none, patient_count: nil)
       @protocol_drugs = protocol_drugs
       @drug_category = drug_category
-      @in_stock_by_rxnorm_code = drug_attribute_sum_by_rxnorm_code(current_drug_stocks, :in_stock)
-      @received_by_rxnorm_code = drug_attribute_sum_by_rxnorm_code(current_drug_stocks, :received)
-      @previous_month_in_stock_by_rxnorm_code = drug_attribute_sum_by_rxnorm_code(previous_drug_stocks, :in_stock)
+      @current_drug_stocks = current_drug_stocks
+      @previous_drug_stocks = previous_drug_stocks
       @patient_count = patient_count
       @coefficients = patient_days_coefficients(state)
     end
@@ -28,7 +28,7 @@ module Reports
         extra: {
           coefficients: @coefficients,
           drug_category: @drug_category,
-          in_stock_by_rxnorm_code: @in_stock_by_rxnorm_code,
+          in_stock_by_rxnorm_code: in_stock_by_rxnorm_code,
           patient_count: @patient_count,
           protocol: @protocol,
           exception: e
@@ -40,10 +40,11 @@ module Reports
     def consumption
       protocol_drugs = protocol_drugs_by_category[@drug_category]
       drug_consumption = protocol_drugs.each_with_object({}) { |protocol_drug, consumption|
-        opening_balance = @previous_month_in_stock_by_rxnorm_code&.dig(protocol_drug.rxnorm_code)
-        received = @received_by_rxnorm_code&.dig(protocol_drug.rxnorm_code)
-        closing_balance = @in_stock_by_rxnorm_code&.dig(protocol_drug.rxnorm_code)
-        consumption[protocol_drug] = consumption_calculation(opening_balance, received, closing_balance)
+        opening_balance = previous_month_in_stock_by_rxnorm_code&.dig(protocol_drug.rxnorm_code)
+        received = received_by_rxnorm_code&.dig(protocol_drug.rxnorm_code)
+        redistributed = redistributed_by_rxnorm_code&.dig(protocol_drug.rxnorm_code)
+        closing_balance = in_stock_by_rxnorm_code&.dig(protocol_drug.rxnorm_code)
+        consumption[protocol_drug] = consumption_calculation(opening_balance, received, redistributed, closing_balance)
       }
       drug_consumption[:base_doses] = base_doses(drug_consumption)
       drug_consumption
@@ -53,8 +54,8 @@ module Reports
         extra: {
           coefficients: @coefficients,
           drug_category: @drug_category,
-          in_stock_by_rxnorm_code: @in_stock_by_rxnorm_code,
-          previous_month_in_stock_by_rxnorm_code: @previous_month_in_stock_by_rxnorm_code,
+          in_stock_by_rxnorm_code: in_stock_by_rxnorm_code,
+          previous_month_in_stock_by_rxnorm_code: previous_month_in_stock_by_rxnorm_code,
           patient_count: @patient_count,
           protocol: @protocol,
           exception: e
@@ -66,7 +67,7 @@ module Reports
     def stocks_on_hand
       @stocks_on_hand ||= protocol_drugs_by_category[@drug_category].map do |protocol_drug|
         rxnorm_code = protocol_drug.rxnorm_code
-        in_stock = @in_stock_by_rxnorm_code&.dig(rxnorm_code)
+        in_stock = in_stock_by_rxnorm_code&.dig(rxnorm_code)
         next if in_stock.nil?
         coefficient = drug_coefficient(rxnorm_code)
         {protocol_drug: protocol_drug,
@@ -88,14 +89,15 @@ module Reports
       (stocks_on_hand.map { |stock| stock[:stock_on_hand] }.reduce(:+) / estimated_patients).floor
     end
 
-    def consumption_calculation(opening_balance, received, closing_balance)
+    def consumption_calculation(opening_balance, received, redistributed, closing_balance)
       return {consumed: nil} if [opening_balance, received, closing_balance].all?(&:nil?)
 
       {
         opening_balance: opening_balance,
         received: received,
+        redistributed: redistributed,
         closing_balance: closing_balance,
-        consumed: opening_balance + received - closing_balance
+        consumed: opening_balance + received - (redistributed || 0) - closing_balance
       }
     rescue => e
       Sentry.capture_message("Consumption Calculation Error",
@@ -103,6 +105,7 @@ module Reports
           protocol: @protocol,
           opening_balance: opening_balance,
           received: received,
+          redistributed: redistributed,
           closing_balance: closing_balance,
           exception: e
         },
@@ -155,6 +158,22 @@ module Reports
         .group_by { |drug_stock| drug_stock.protocol_drug.rxnorm_code }
         .map { |rxnorm_code, drug_stocks| [rxnorm_code, drug_stocks.pluck(attribute).sum] }
         .to_h
+    end
+
+    memoize def in_stock_by_rxnorm_code
+      drug_attribute_sum_by_rxnorm_code(@current_drug_stocks, :in_stock)
+    end
+
+    memoize def received_by_rxnorm_code
+      drug_attribute_sum_by_rxnorm_code(@current_drug_stocks, :received)
+    end
+
+    memoize def redistributed_by_rxnorm_code
+      drug_attribute_sum_by_rxnorm_code(@current_drug_stocks, :redistributed)
+    end
+
+    memoize def previous_month_in_stock_by_rxnorm_code
+      drug_attribute_sum_by_rxnorm_code(@previous_drug_stocks, :in_stock)
     end
   end
 end
