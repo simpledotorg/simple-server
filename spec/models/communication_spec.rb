@@ -85,6 +85,21 @@ describe Communication, type: :model do
     end
   end
 
+  describe ".create_with_imo_details" do
+    it "creates a communication with correct details" do
+      patient = create(:patient)
+      appt = create(:appointment, patient: patient)
+      notification = create(:notification, subject: appt, patient: patient)
+      expect {
+        Communication.create_with_imo_details!(appointment: notification.subject,
+                                               notification: notification)
+      }.to change { notification.communications.count }.by(1)
+      communication = notification.communications.last
+      expect(communication.communication_type).to eq("imo")
+      expect(communication.appointment_id).to eq(appt.id)
+    end
+  end
+
   describe "#communication_result" do
     it "is successful is detailable is successful" do
       communication = create(:communication,

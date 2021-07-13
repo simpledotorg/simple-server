@@ -1,3 +1,5 @@
+# API Documentation: https://docs.google.com/document/d/1zaTouxdfGg4IqrkCk59KAP905vwynON5Up2ckUax8Mg/edit
+
 class ImoApiService
   IMO_USERNAME = ENV["IMO_USERNAME"]
   IMO_PASSWORD = ENV["IMO_PASSWORD"]
@@ -6,33 +8,42 @@ class ImoApiService
   PATIENT_REDIRECT_URL = "https://www.nhf.org.bd".freeze
 
   class Error < StandardError
-    attr_reader :path, :response, :exception_message
-    def initialize(message, path: nil, response: nil, exception_message: nil)
+    attr_reader :path, :response, :exception_message, :patient_id
+    def initialize(message, path: nil, response: nil, exception_message: nil, patient_id: nil)
       super(message)
       @path = path
       @response = response
       @exception_message = exception_message
+      @patient_id = patient_id
     end
   end
 
   def send_invitation(patient)
     return unless Flipper.enabled?(:imo_messaging)
 
+    locale = patient.locale
     Statsd.instance.increment("imo.invites.attempt")
     url = BASE_URL + "send_invite"
     request_body = JSON(
       phone: patient.latest_mobile_number,
-      msg: invitation_message,
-      contents: [{key: "Name", value: patient.full_name}, {key: "Notes", value: invitation_message}],
-      title: "Invitation",
-      action: "Click here"
+      msg: I18n.t("notifications.imo.invitations.message", locale: locale),
+      contents: [{
+        key: I18n.t("notifications.imo.invitations.message_key", locale: locale),
+        value: I18n.t("notifications.imo.invitations.message", locale: locale)
+      }],
+      title: I18n.t("notifications.imo.invitations.title", locale: locale),
+      action: I18n.t("notifications.imo.invitations.action", locale: locale)
     )
+
+    if request_body.include?("translation missing")
+      raise Error.new("Translation missing for language #{locale}", path: url, patient_id: patient.id)
+    end
+
     response = execute_post(url, body: request_body)
     result = process_response(response, url, "invitation")
 
-    return if result.nil?
-
-    ImoAuthorization.create!(patient: patient, status: result, last_invited_at: Time.current)
+    status = result == :success ? :invited : result
+    ImoAuthorization.create!(patient: patient, status: status, last_invited_at: Time.current)
   end
 
   def send_notification(patient, message)
@@ -52,11 +63,10 @@ class ImoApiService
     response = execute_post(url, body: request_body)
     result = process_response(response, url, "notification")
 
-    return if result.nil?
-
-    unless patient.imo_authorization.status == result.to_s
+    if patient.imo_authorization.status != result.to_s && result.in?([:not_subscribed, :no_imo_account])
       patient.imo_authorization.update!(status: result)
     end
+    result
   end
 
   private
@@ -73,39 +83,21 @@ class ImoApiService
     case response.status
     when 200
       body = JSON.parse(response.body)
-      body_status = body.dig("response", "status")
-      return :invited if body_status == "success" && action == "invitation"
-      # until we implement the invitation callback, the only way for us to know if the user
-      # has accepted our invitation is to send a notication to see if it succeeds
-      return :subscribed if body_status == "success" && action == "notification"
+      return :success if body.dig("response", "status") == "success"
 
-      case body.dig("response", "error_code")
-      when "not_subscribed"
+      if body.dig("response", "error_code") == "not_subscribed"
         Statsd.instance.increment("imo.#{action}.not_subscribed")
-        :not_subscribed
-      else
-        Statsd.instance.increment("imo.#{action}.error")
-        report_error("Unknown 200 error from Imo", url, response)
-        nil
+        return :not_subscribed
       end
     when 400
       if JSON.parse(response.body).dig("response", "type") == "nonexistent_user"
         Statsd.instance.increment("imo.#{action}.no_imo_account")
-        :no_imo_account
-      else
-        Statsd.instance.increment("imo.#{action}.error")
-        report_error("Unknown 400 error from Imo", url, response)
-        nil
+        return :no_imo_account
       end
-    else
-      Statsd.instance.increment("imo.#{action}.error")
-      report_error("Unknown 400 error from Imo", url, response)
-      nil
     end
-  end
-
-  def invitation_message
-    "This will need to be a localized string"
+    Statsd.instance.increment("imo.#{action}.error")
+    report_error("Unknown #{response.status} error from Imo", url, response)
+    :error
   end
 
   def report_error(message, url, response)
