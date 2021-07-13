@@ -1,7 +1,8 @@
 require "rails_helper"
 
 describe ImoApiService, type: :model do
-  let(:patient) { create(:patient) }
+  let(:facility) { create(:facility, country: "Bangladesh") }
+  let(:patient) { create(:patient, assigned_facility: facility) }
   let(:service) { ImoApiService.new }
   let(:auth_token) { Base64.strict_encode64([nil, nil].join(":")) }
   let(:request_headers) do
@@ -40,6 +41,7 @@ describe ImoApiService, type: :model do
 
       it "creates an ImoAuthorization on 200 success" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: success_body)
+
         expect { service.send_invitation(patient) }.to change { patient.imo_authorization }.from(nil)
         expect(patient.imo_authorization.status).to eq("invited")
       end
@@ -53,6 +55,7 @@ describe ImoApiService, type: :model do
 
       it "updates patient's ImoAuthorization when status is 400 and type is nonexistent_user" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: nonexistent_user_body)
+
         expect { service.send_invitation(patient) }.to change { patient.imo_authorization }.from(nil)
         expect(patient.imo_authorization.status).to eq("no_imo_account")
       end
@@ -66,6 +69,15 @@ describe ImoApiService, type: :model do
 
       it "raises a custom error on network error" do
         stub_request(:post, request_url).to_timeout
+
+        expect {
+          service.send_invitation(patient)
+        }.to raise_error(ImoApiService::Error)
+      end
+
+      it "raises an error when the patient's locale is not supported" do
+        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: success_body)
+        allow(patient).to receive(:locale).and_return("en")
 
         expect {
           service.send_invitation(patient)
