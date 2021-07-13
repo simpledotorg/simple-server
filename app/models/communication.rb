@@ -72,7 +72,7 @@ class Communication < ApplicationRecord
                             device_created_at: now,
                             device_updated_at: now)
     logger.info class: self.class.name, msg: "create_with_imo_details", communication_id: communication.id,
-                communication_type: "imo", appointment_id: appointment.id, notification_id: notification&.id
+                communication_type: "imo", appointment_id: appointment&.id, notification_id: notification&.id
   end
 
   def self.messaging_start_hour
