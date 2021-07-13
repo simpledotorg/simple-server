@@ -2,6 +2,8 @@ class ImoApiService
   IMO_USERNAME = ENV["IMO_USERNAME"]
   IMO_PASSWORD = ENV["IMO_PASSWORD"]
   BASE_URL = "https://sgp.imo.im/api/simple/".freeze
+  # this is where the patient is redirected to when they click on the invitation card details section
+  PATIENT_REDIRECT_URL = "https://www.nhf.org.bd".freeze
 
   class Error < StandardError
     attr_reader :path, :response, :exception_message
@@ -13,13 +15,7 @@ class ImoApiService
     end
   end
 
-  attr_reader :patient
-
-  def initialize(patient)
-    @patient = patient
-  end
-
-  def invite
+  def send_invitation(patient)
     return unless Flipper.enabled?(:imo_messaging)
 
     Statsd.instance.increment("imo.invites.attempt")
@@ -32,7 +28,35 @@ class ImoApiService
       action: "Click here"
     )
     response = execute_post(url, body: request_body)
-    process_response(response, url)
+    result = process_response(response, url, "invitation")
+
+    return if result.nil?
+
+    ImoAuthorization.create!(patient: patient, status: result, last_invited_at: Time.current)
+  end
+
+  def send_notification(patient, message)
+    return unless Flipper.enabled?(:imo_messaging)
+
+    Statsd.instance.increment("imo.notifications.attempt")
+    url = BASE_URL + "send_notification"
+    request_body = JSON(
+      phone: patient.latest_mobile_number,
+      msg: message,
+      contents: [{key: "Name", value: patient.full_name}, {key: "Notes", value: message}],
+      title: "Notification",
+      action: "Click here",
+      url: PATIENT_REDIRECT_URL,
+      read_receipt: "will be filled in later"
+    )
+    response = execute_post(url, body: request_body)
+    result = process_response(response, url, "notification")
+
+    return if result.nil?
+
+    unless patient.imo_authorization.status == result.to_s
+      patient.imo_authorization.update!(status: result)
+    end
   end
 
   private
@@ -42,27 +66,57 @@ class ImoApiService
       .basic_auth(user: IMO_USERNAME, pass: IMO_PASSWORD)
       .post(url, data)
   rescue HTTP::Error => e
-    raise Error.new("Error while calling the IMO API", path: url, exception_message: e)
+    raise Error.new("Error while calling the Imo API", path: url, exception_message: e)
   end
 
-  def process_response(response, url)
+  def process_response(response, url, action)
     case response.status
-    when 200 then :invited
+    when 200
+      body = JSON.parse(response.body)
+      body_status = body.dig("response", "status")
+      return :invited if body_status == "success" && action == "invitation"
+      # until we implement the invitation callback, the only way for us to know if the user
+      # has accepted our invitation is to send a notication to see if it succeeds
+      return :subscribed if body_status == "success" && action == "notification"
+
+      case body.dig("response", "error_code")
+      when "not_subscribed"
+        Statsd.instance.increment("imo.#{action}.not_subscribed")
+        :not_subscribed
+      else
+        Statsd.instance.increment("imo.#{action}.error")
+        report_error("Unknown 200 error from Imo", url, response)
+        nil
+      end
     when 400
       if JSON.parse(response.body).dig("response", "type") == "nonexistent_user"
-        Statsd.instance.increment("imo.invites.no_imo_account")
+        Statsd.instance.increment("imo.#{action}.no_imo_account")
         :no_imo_account
       else
-        Statsd.instance.increment("imo.invites.error")
-        raise Error.new("Unknown 400 error from IMO", path: url, response: response)
+        Statsd.instance.increment("imo.#{action}.error")
+        report_error("Unknown 400 error from Imo", url, response)
+        nil
       end
     else
-      Statsd.instance.increment("imo.invites.error")
-      raise Error.new("Unknown response error from IMO", path: url, response: response)
+      Statsd.instance.increment("imo.#{action}.error")
+      report_error("Unknown 400 error from Imo", url, response)
+      nil
     end
   end
 
   def invitation_message
     "This will need to be a localized string"
+  end
+
+  def report_error(message, url, response)
+    Sentry.capture_message(
+      "Error while calling the Imo API",
+      extra: {
+        message: message,
+        path: url,
+        response: response
+      },
+      tags: {type: "imo-api"}
+    )
   end
 end

@@ -53,9 +53,9 @@ class RefreshMaterializedViews
 
   # The order for these must remain BPs -> Visits -> States
   V2_MATVIEWS = %w[
-    ReportingPipeline::PatientBloodPressuresPerMonth
-    ReportingPipeline::PatientVisitsPerMonth
-    ReportingPipeline::PatientStatesPerMonth
+    Reports::PatientBloodPressure
+    Reports::PatientVisit
+    Reports::PatientState
   ].freeze
 
   # LatestBloodPressuresPerPatientPerMonth should be refreshed before

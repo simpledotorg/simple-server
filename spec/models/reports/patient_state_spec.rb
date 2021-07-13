@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reporting_spec: true} do
+RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
   describe "Associations" do
     it { should belong_to(:patient) }
   end

@@ -1,4 +1,4 @@
-module ReportingPipeline
+module Reports
   class Matview < ActiveRecord::Base
     def self.refresh
       ActiveRecord::Base.transaction do
