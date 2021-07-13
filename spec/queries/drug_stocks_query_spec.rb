@@ -135,6 +135,16 @@ RSpec.describe DrugStocksQuery do
       end
     end
 
+    it "does not compute block wise numbers when include_block_report is false" do
+      result = described_class.new(facilities: facilities,
+                                   for_end_of_month: for_end_of_month,
+                                   include_block_report: false).drug_stocks_report
+
+      expect(result[:patient_count_by_block_id]).to eq({})
+      expect(result[:patient_days_by_block_id]).to eq({})
+      expect(result[:drugs_in_stock_by_block_id]).to eq({})
+    end
+
     it "skips drug categories when drug stocks are not present" do
       instance = described_class.new(facilities: facilities,
                                      for_end_of_month: for_end_of_month,
@@ -290,6 +300,15 @@ RSpec.describe DrugStocksQuery do
                                                                                             received: 6000,
                                                                                             closing_balance: 30000,
                                                                                             consumed: 6000})
+    end
+
+    it "does not compute block wise numbers when include_block_report is false" do
+      result = described_class.new(facilities: facilities,
+                                   for_end_of_month: for_end_of_month,
+                                   include_block_report: false).drug_consumption_report
+
+      expect(result[:patient_count_by_block_id]).to eq({})
+      expect(result[:drug_consumption_by_block_id]).to eq({})
     end
 
     describe "#drug_consumption_cache_key" do
