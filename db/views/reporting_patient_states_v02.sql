@@ -75,17 +75,15 @@ SELECT
     bps.diastolic,
 
     visits.encounter_id AS encounter_id,
-    visits.encounter_facility_id AS encounter_facility_id,
     visits.encounter_recorded_at AS encounter_recorded_at,
 
     visits.prescription_drug_id AS prescription_drug_id,
-    visits.prescription_drug_facility_id AS prescription_drug_facility_id,
     visits.prescription_drug_recorded_at AS prescription_drug_recorded_at,
 
     visits.appointment_id AS appointment_id,
-    visits.appointment_creation_facility_id AS appointment_creation_facility_id,
     visits.appointment_recorded_at AS appointment_recorded_at,
 
+    visits.visited_facility_ids as visited_facility_ids,
     ------------------------------------------------------------
     -- relative time calculations
 

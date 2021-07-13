@@ -1223,6 +1223,19 @@ ActiveRecord::Schema.define(version: 2021_07_08_133405) do
       app.id AS appointment_id,
       app.creation_facility_id AS appointment_creation_facility_id,
       timezone('UTC'::text, timezone('UTC'::text, app.recorded_at)) AS appointment_recorded_at,
+      array_remove(ARRAY[
+          CASE
+              WHEN (to_char(e.recorded_at, 'YYYY-MM'::text) = p.month_string) THEN e.facility_id
+              ELSE NULL::uuid
+          END,
+          CASE
+              WHEN (to_char(pd.recorded_at, 'YYYY-MM'::text) = p.month_string) THEN pd.facility_id
+              ELSE NULL::uuid
+          END,
+          CASE
+              WHEN (to_char(app.recorded_at, 'YYYY-MM'::text) = p.month_string) THEN app.creation_facility_id
+              ELSE NULL::uuid
+          END], NULL::uuid) AS visited_facility_ids,
       timezone('UTC'::text, timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at))) AS visited_at,
       (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at)))) * (12)::double precision) + (p.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at))))) AS months_since_registration,
       (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at)))) * (4)::double precision) + (p.month - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at))))) AS quarters_since_registration,
@@ -1375,14 +1388,12 @@ ActiveRecord::Schema.define(version: 2021_07_08_133405) do
       bps.systolic,
       bps.diastolic,
       visits.encounter_id,
-      visits.encounter_facility_id,
       visits.encounter_recorded_at,
       visits.prescription_drug_id,
-      visits.prescription_drug_facility_id,
       visits.prescription_drug_recorded_at,
       visits.appointment_id,
-      visits.appointment_creation_facility_id,
       visits.appointment_recorded_at,
+      visits.visited_facility_ids,
       (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))))) AS months_since_registration,
       (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) * (4)::double precision) + (cal.month - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))))) AS quarters_since_registration,
       visits.months_since_visit,

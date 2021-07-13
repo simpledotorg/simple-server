@@ -29,6 +29,15 @@ SELECT
     app.creation_facility_id AS appointment_creation_facility_id,
     app.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS appointment_recorded_at,
 
+    array_remove(
+        ARRAY[
+            (CASE WHEN to_char(e.recorded_at, 'YYYY-MM') = month_string THEN e.facility_id END),
+            (CASE WHEN to_char(pd.recorded_at, 'YYYY-MM') = month_string THEN pd.facility_id END),
+            (CASE WHEN to_char(app.recorded_at, 'YYYY-MM') = month_string THEN app.creation_facility_id END)
+        ],
+        null
+    ) AS visited_facility_ids,
+
     ------------------------------------------------------------
     -- when the visit happened
     greatest(e.recorded_at, pd.recorded_at, app.recorded_at) AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS visited_at,
