@@ -82,7 +82,6 @@ describe ImoApiService, type: :model do
         expect {
           service.send_invitation(patient)
         }.to raise_error(ImoApiService::Error)
-
       end
     end
   end
