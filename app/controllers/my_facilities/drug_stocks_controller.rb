@@ -88,6 +88,7 @@ class MyFacilities::DrugStocksController < AdminController
       drug_stocks:
         [:received,
           :in_stock,
+          :redistributed,
           :protocol_drug_id]
     )
   end
