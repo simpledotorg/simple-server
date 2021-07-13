@@ -1137,7 +1137,7 @@ ActiveRecord::Schema.define(version: 2021_07_12_223435) do
   create_view "reporting_months", sql_definition: <<-SQL
       WITH month_dates AS (
            SELECT date(generate_series.generate_series) AS month_date
-             FROM generate_series('2017-12-31 18:30:00+00'::timestamp with time zone, now(), '1 mon'::interval) generate_series(generate_series)
+             FROM generate_series('2017-12-31 18:00:00+00'::timestamp with time zone, now(), '1 mon'::interval) generate_series(generate_series)
           )
    SELECT month_dates.month_date,
       date_part('month'::text, month_dates.month_date) AS month,
@@ -1203,7 +1203,7 @@ ActiveRecord::Schema.define(version: 2021_07_12_223435) do
     WHERE (bp.deleted_at IS NULL)
     ORDER BY bp.patient_id, cal.month_date, bp.recorded_at DESC;
   SQL
-  add_index "reporting_patient_blood_pressures", ["patient_id", "month_date"], name: "patient_blood_pressures_patient_id_month_date", unique: true
+  add_index "reporting_patient_blood_pressures", ["month_date", "patient_id"], name: "patient_blood_pressures_patient_id_month_date", unique: true
 
   create_view "reporting_patient_visits", materialized: true, sql_definition: <<-SQL
       SELECT DISTINCT ON (p.id, p.month_date) p.id AS patient_id,
@@ -1337,7 +1337,7 @@ ActiveRecord::Schema.define(version: 2021_07_12_223435) do
     WHERE (p.deleted_at IS NULL)
     ORDER BY p.id, p.month_date, (timezone('UTC'::text, timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at)))) DESC;
   SQL
-  add_index "reporting_patient_visits", ["patient_id", "month_date"], name: "patient_visits_patient_id_month_date", unique: true
+  add_index "reporting_patient_visits", ["month_date", "patient_id"], name: "patient_visits_patient_id_month_date", unique: true
 
   create_view "reporting_patient_states", materialized: true, sql_definition: <<-SQL
       SELECT DISTINCT ON (p.id, cal.month_date) p.id AS patient_id,
