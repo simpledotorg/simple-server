@@ -1,4 +1,4 @@
-<div class="card col-7" style="text-align: left">
+<div class="card col-md-7" style="text-align: left">
   <div class="modal-header">
     <h2 class="modal-title">Drug stock report</h2>
   </div>
@@ -31,10 +31,13 @@
             <%= drug_stock_form.hidden_field :protocol_drug_id, value: protocol_drug.id %>
             <div class="form-row">
               <div class="col">
-                <%= drug_stock_form.number_field :received, class: :received, value: @drug_stocks[protocol_drug.id].try(&:received), hide_label: true, help: "Received during the month" %>
+                <%= drug_stock_form.number_field :received, value: @drug_stocks[protocol_drug.id].try(&:received), hide_label: true, help: "Received during the month" %>
               </div>
               <div class="col">
-                <%= drug_stock_form.number_field :in_stock, class: :in_stock, value: @drug_stocks[protocol_drug.id].try(&:in_stock), hide_label: true, help: "Stock at end of the month" %>
+                <%= drug_stock_form.number_field :redistributed, value: @drug_stocks[protocol_drug.id].try(&:redistributed), hide_label: true, help: "Issued to other facilities during the month" %>
+              </div>
+              <div class="col">
+                <%= drug_stock_form.number_field :in_stock, value: @drug_stocks[protocol_drug.id].try(&:in_stock), hide_label: true, help: "Stock at end of the month" %>
               </div>
             </div>
           </div>
