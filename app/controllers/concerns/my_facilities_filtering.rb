@@ -38,7 +38,12 @@ module MyFacilitiesFiltering
     end
 
     def populate_facility_sizes
-      @facility_sizes = @accessible_facilities.where(facility_group: @selected_facility_group, zone: @selected_zones).pluck(:facility_size).uniq.compact.sort
+      @facility_sizes = @accessible_facilities
+                          .where(facility_group: @selected_facility_group, zone: @selected_zones)
+                          .pluck(:facility_size)
+                          .uniq
+                          .compact
+                          .sort
       @facility_sizes = sort_facility_sizes_by_size(@facility_sizes)
     end
 
