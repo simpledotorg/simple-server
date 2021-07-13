@@ -22,7 +22,7 @@ class Webview::DrugStocksController < ApplicationController
                            facility: @current_facility,
                            for_end_of_month: @for_end_of_month,
                            drug_stocks_params: safe_params[:drug_stocks])
-    redirect_to webview_drug_stocks_url(for_end_of_month: @for_end_of_month,
+    redirect_to webview_drug_stocks_url(for_end_of_month: @for_end_of_month.to_s(:mon_year),
                                         facility_id: current_facility.id,
                                         user_id: current_user.id,
                                         access_token: current_user.access_token)

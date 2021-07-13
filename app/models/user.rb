@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  include Memery
+  include Flipperable
   include PgSearch::Model
 
   AUTHENTICATION_TYPES = {
@@ -250,11 +252,9 @@ class User < ApplicationRecord
     can_teleconsult?
   end
 
-  def flipper_id
-    "User;#{id}"
-  end
+  memoize def drug_stocks_enabled?
+    facility_group_ids = accessible_facilities(:view_reports).select(:facility_group_id).distinct
 
-  def feature_enabled?(name)
-    Flipper.enabled?(name, self)
+    Region.where(source_id: facility_group_ids).any? { |district| district.feature_enabled?(:drug_stocks) }
   end
 end
