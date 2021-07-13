@@ -58,18 +58,11 @@ class MyFacilities::DrugStocksController < AdminController
       .where.not(facility_size: :community)
       .includes(facility_group: :protocol_drugs)
       .where(protocol_drugs: {stock_tracked: true})
-
-    @blocks = Region
-      .block_regions
-      .joins("INNER JOIN regions facility_region ON regions.path @> facility_region.path")
-      .where(facility_region: {source_id: @facilities})
-      .distinct("regions.id")
-
     @for_end_of_month_display = @for_end_of_month.strftime("%b-%Y")
-    @query = DrugStocksQuery.new(facility_group: @selected_facility_group,
-                                 facilities: @facilities,
-                                 blocks: @blocks,
-                                 for_end_of_month: @for_end_of_month)
+    @query = DrugStocksQuery.new(facilities: @facilities,
+                                 for_end_of_month: @for_end_of_month,
+                                 include_block_report: true)
+    @blocks = @query.blocks
     @drugs_by_category = @query.protocol_drugs_by_category
   end
 

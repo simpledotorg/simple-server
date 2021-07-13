@@ -3,14 +3,15 @@ class DrugStocksQuery
 
   CACHE_VERSION = 1
 
-  def initialize(facility_group:, facilities:, for_end_of_month:, blocks: Region.none)
+  def initialize(facilities:, for_end_of_month:, include_block_report: true)
+    @include_block_report = include_block_report
     @facilities = Facility.where(id: facilities)
+    set_facility_group
+    set_blocks
     @for_end_of_month = for_end_of_month
-    @period = Period.month(@for_end_of_month)
-    @protocol = facility_group.protocol
-    @state = facility_group.state
+    @protocol = @facility_group.protocol
+    @state = @facility_group.state
     @latest_drug_stocks = DrugStock.latest_for_facilities(@facilities, @for_end_of_month)
-    @blocks = blocks
   end
 
   attr_reader :for_end_of_month, :facilities, :blocks
@@ -25,9 +26,9 @@ class DrugStocksQuery
        patient_count_by_facility_id: patient_count_by_facility_id,
        patient_days_by_facility_id: patient_days_by_facility_id,
        drugs_in_stock_by_facility_id: drugs_in_stock_by_facility_id,
-       patient_count_by_block_id: patient_count_by_block_id,
-       patient_days_by_block_id: patient_days_by_block_id,
-       drugs_in_stock_by_block_id: drugs_in_stock_by_block_id,
+       patient_count_by_block_id: @include_block_report ? patient_count_by_block_id : {},
+       patient_days_by_block_id: @include_block_report ? patient_days_by_block_id : {},
+       drugs_in_stock_by_block_id: @include_block_report ? drugs_in_stock_by_block_id : {},
        last_updated_at: Time.now}
     end
   end
@@ -40,8 +41,8 @@ class DrugStocksQuery
        all_drug_consumption: all_drug_consumption,
        drug_consumption_by_facility_id: drug_consumption_by_facility_id,
        patient_count_by_facility_id: patient_count_by_facility_id,
-       drug_consumption_by_block_id: drug_consumption_by_block_id,
-       patient_count_by_block_id: patient_count_by_block_id,
+       drug_consumption_by_block_id: @include_block_report ? drug_consumption_by_block_id : {},
+       patient_count_by_block_id: @include_block_report ? patient_count_by_block_id : {},
        last_updated_at: Time.now}
     end
   end
@@ -63,14 +64,16 @@ class DrugStocksQuery
   end
 
   memoize def repository
-    Reports::Repository.new(@facilities, periods: @period)
+    Reports::Repository.new(@facilities, periods: Period.month(@for_end_of_month))
   end
 
   memoize def patient_count_by_facility_id
+    period = Period.month(@for_end_of_month)
+
     @facilities.each_with_object(Hash.new(0)) do |facility, result|
       result[facility.id] =
-        repository.cumulative_assigned_patients[facility.slug][@period] -
-        repository.ltfu[facility.slug][@period]
+        repository.cumulative_assigned_patients[facility.slug][period] -
+        repository.ltfu[facility.slug][period]
     end
   end
 
@@ -206,6 +209,7 @@ class DrugStocksQuery
     [
       "#{self.class.name}#drug_stocks",
       @facilities.map(&:id).sort,
+      @include_block_report,
       @latest_drug_stocks.cache_key,
       @for_end_of_month,
       @protocol.id,
@@ -218,10 +222,28 @@ class DrugStocksQuery
     [
       "#{self.class.name}#drug_consumption",
       @facilities.map(&:id).sort,
+      @include_block_report,
       @for_end_of_month,
       @protocol.id,
       @state,
       CACHE_VERSION
     ].join("/")
+  end
+
+  private
+
+  def set_facility_group
+    facility_group_ids = @facilities.pluck(:facility_group_id).uniq
+    throw "All facilities should belong to the same facility group." if facility_group_ids.count > 1
+    @facility_group = FacilityGroup.find(facility_group_ids.first)
+  end
+
+  def set_blocks
+    @blocks =
+      Region
+        .block_regions
+        .joins("INNER JOIN regions facility_region ON regions.path @> facility_region.path")
+        .where(facility_region: {source_id: @facilities})
+        .distinct("regions.id")
   end
 end
