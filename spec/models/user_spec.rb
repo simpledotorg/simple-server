@@ -349,4 +349,42 @@ RSpec.describe User, type: :model do
       expect(nurse.district_level_sync?).to eq false
     end
   end
+
+  describe "flipperable" do
+    it "has a flipper_id" do
+      user = create(:user)
+
+      expect(user.flipper_id).to eq("User;#{user.id}")
+    end
+
+    it "has feature_enabled?" do
+      user = create(:user)
+      Flipper.enable(:a_flag, user)
+
+      expect(user.feature_enabled?(:a_flag)).to be true
+    end
+  end
+
+  describe "drug_stocks_enabled?" do
+    it "is true if any district accessible by the user is enabled" do
+      admin = create(:admin, :viewer_all)
+      facility_group = create(:facility_group)
+      create(:facility, facility_group: facility_group)
+      create(:access, user: admin, resource: facility_group)
+      Flipper.enable(:drug_stocks, facility_group.region)
+
+      expect(admin.drug_stocks_enabled?).to be true
+    end
+
+    it "is false if no district accessible by the user is enabled" do
+      admin = create(:admin, :viewer_all)
+      facility_group = create(:facility_group)
+      other_facility_group = create(:facility_group)
+      create(:facility, facility_group: facility_group)
+      create(:access, user: admin, resource: facility_group)
+      Flipper.enable(:drug_stocks, other_facility_group.region)
+
+      expect(admin.drug_stocks_enabled?).to be false
+    end
+  end
 end
