@@ -57,6 +57,11 @@ class Facility < ApplicationRecord
       .select("block_region.id AS block_region_id, facilities.*")
   }
 
+  scope :with_region_information, -> {
+    joins("INNER JOIN reporting_facilities r on r.facility_id = facilities.id")
+      .select("facilities.*, r.*")
+  }
+
   enum facility_size: {
     community: "community",
     small: "small",

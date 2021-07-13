@@ -1,6 +1,12 @@
 require "rails_helper"
 
 RSpec.describe DrugStocksReportExporter do
+  around do |example|
+    I18n.with_locale(:en_IN) do
+      example.run
+    end
+  end
+
   it "renders the csv" do
     protocol = create(:protocol, :with_tracked_drugs)
     facility_group = create(:facility_group, protocol: protocol, state: "Punjab")
@@ -31,7 +37,7 @@ RSpec.describe DrugStocksReportExporter do
 
     timestamp = ["Report last updated at:", query.drug_stocks_report.fetch(:last_updated_at)]
     headers_row_1 = [
-      nil,
+      nil, nil,
       "ARB Tablets",
       nil, nil, nil,
       "CCB Tablets",
@@ -42,6 +48,7 @@ RSpec.describe DrugStocksReportExporter do
 
     headers_row_2 = [
       "Facilities",
+      "Block",
       "Losartan 50 mg",
       "Telmisartan 40 mg",
       "Telmisartan 80 mg",
@@ -55,7 +62,7 @@ RSpec.describe DrugStocksReportExporter do
     ]
 
     totals_row = [
-      "All",
+      "All", "",
       20000, 20000, 40000, 81081,
       20000, 40000, 17857,
       nil, nil, nil
@@ -63,12 +70,14 @@ RSpec.describe DrugStocksReportExporter do
 
     facility_1_row =
       [facilities.first.name,
+        facilities.first.zone,
         10000, 10000, 20000, 81081,
         10000, 20000, 17857,
         nil, nil, nil]
 
     facility_2_row =
       [facilities.second.name,
+        facilities.second.zone,
         10000, 10000, 20000, 81081,
         10000, 20000, 17857,
         nil, nil, nil]
