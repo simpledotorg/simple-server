@@ -110,7 +110,7 @@
   </div>
 
   <!-- drug stock -->
-  <% if current_user.feature_enabled?(:drug_stocks_mobile) %>
+  <% if current_facility_group.region.feature_enabled?(:drug_stocks) %>
     <% unless current_facility.community? %>
       <div class="card">
           <h3>Drug stock report</h3>
