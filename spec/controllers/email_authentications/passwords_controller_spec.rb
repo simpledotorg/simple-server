@@ -21,5 +21,13 @@ RSpec.describe EmailAuthentications::PasswordsController, type: :controller do
       put :edit, params: {reset_password_token: token}
       expect(response).to render_template "expired_reset_token"
     end
+
+    it "renders the expired reset token page when devise does not find the user by token" do
+      auth = build(:email_authentication)
+      auth.send_reset_password_instructions
+
+      put :edit, params: {reset_password_token: "heyheyhey"}
+      expect(response).to render_template "expired_reset_token"
+    end
   end
 end
