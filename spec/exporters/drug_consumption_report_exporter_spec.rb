@@ -50,7 +50,7 @@ RSpec.describe DrugConsumptionReportExporter do
 
     timestamp = ["Report last updated at:", query.drug_stocks_report.fetch(:last_updated_at)]
     headers_row_1 = [
-      nil,nil,
+      nil, nil,
       "ARB Tablets", nil, nil,
       "CCB Tablets", nil,
       "Diuretic Tablets", nil,
