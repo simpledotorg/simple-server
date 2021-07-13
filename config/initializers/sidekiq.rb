@@ -28,6 +28,7 @@ SIDEKIQ_STATS_KEY = "worker"
 SIDEKIQ_STATS_PREFIX = "#{SimpleServer.env}.#{CountryConfig.current[:abbreviation]}"
 
 Sidekiq.configure_server do |config|
+  config.on(:shutdown) { Statsd.instance.close }
   config.server_middleware do |chain|
     chain.add SetLocalTimezone
     # The env and prefix are used to create keys in the format of env.prefix.worker_name.[stat_name]
