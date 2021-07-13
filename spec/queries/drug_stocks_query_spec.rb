@@ -266,7 +266,7 @@ RSpec.describe DrugStocksQuery do
       block_a = facilities.first.block_region
       block_b = facility_in_another_block.block_region
 
-      result = described_class.new(facilities: facilities,
+      result = described_class.new(facilities: facilities << facility_in_another_block,
                                    for_end_of_month: for_end_of_month,
                                    include_block_report: true).drug_consumption_report
 
