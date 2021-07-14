@@ -140,9 +140,9 @@ RSpec.describe DrugStocksQuery do
                                    for_end_of_month: for_end_of_month,
                                    include_block_report: false).drug_stocks_report
 
-      expect(result[:patient_count_by_block_id]).to eq({})
-      expect(result[:patient_days_by_block_id]).to eq({})
-      expect(result[:drugs_in_stock_by_block_id]).to eq({})
+      expect(result[:patient_count_by_block_id]).to eq(nil)
+      expect(result[:patient_days_by_block_id]).to eq(nil)
+      expect(result[:drugs_in_stock_by_block_id]).to eq(nil)
     end
 
     it "skips drug categories when drug stocks are not present" do
@@ -307,8 +307,8 @@ RSpec.describe DrugStocksQuery do
                                    for_end_of_month: for_end_of_month,
                                    include_block_report: false).drug_consumption_report
 
-      expect(result[:patient_count_by_block_id]).to eq({})
-      expect(result[:drug_consumption_by_block_id]).to eq({})
+      expect(result[:patient_count_by_block_id]).to eq(nil)
+      expect(result[:drug_consumption_by_block_id]).to eq(nil)
     end
 
     describe "#drug_consumption_cache_key" do

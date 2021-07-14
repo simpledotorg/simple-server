@@ -26,10 +26,10 @@ class DrugStocksQuery
        patient_count_by_facility_id: patient_count_by_facility_id,
        patient_days_by_facility_id: patient_days_by_facility_id,
        drugs_in_stock_by_facility_id: drugs_in_stock_by_facility_id,
-       patient_count_by_block_id: @include_block_report ? patient_count_by_block_id : {},
-       patient_days_by_block_id: @include_block_report ? patient_days_by_block_id : {},
-       drugs_in_stock_by_block_id: @include_block_report ? drugs_in_stock_by_block_id : {},
-       last_updated_at: Time.now}
+       patient_count_by_block_id: @include_block_report ? patient_count_by_block_id : nil,
+       patient_days_by_block_id: @include_block_report ? patient_days_by_block_id : nil,
+       drugs_in_stock_by_block_id: @include_block_report ? drugs_in_stock_by_block_id : nil,
+       last_updated_at: Time.now}.compact
     end
   end
 
@@ -41,9 +41,9 @@ class DrugStocksQuery
        all_drug_consumption: all_drug_consumption,
        drug_consumption_by_facility_id: drug_consumption_by_facility_id,
        patient_count_by_facility_id: patient_count_by_facility_id,
-       drug_consumption_by_block_id: @include_block_report ? drug_consumption_by_block_id : {},
-       patient_count_by_block_id: @include_block_report ? patient_count_by_block_id : {},
-       last_updated_at: Time.now}
+       drug_consumption_by_block_id: @include_block_report ? drug_consumption_by_block_id : nil,
+       patient_count_by_block_id: @include_block_report ? patient_count_by_block_id : nil,
+       last_updated_at: Time.now}.compact
     end
   end
 
