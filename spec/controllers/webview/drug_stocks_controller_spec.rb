@@ -56,7 +56,11 @@ RSpec.describe Webview::DrugStocksController, type: :controller do
         drug_stocks: [{
           protocol_drug_id: protocol_drug.id,
           received: 10,
-          in_stock: 20
+          in_stock: 30
+        }],
+        redistributed_drugs: [{
+          protocol_drug_id: protocol_drug.id,
+          redistributed: 10
         }]
       }
       expect {
@@ -76,7 +80,11 @@ RSpec.describe Webview::DrugStocksController, type: :controller do
         drug_stocks: [{
           protocol_drug_id: protocol_drug.id,
           received: 10,
-          in_stock: 20
+          in_stock: 30
+        }],
+        redistributed_drugs: [{
+          protocol_drug_id: protocol_drug.id,
+          redistributed: 10
         }]
       }
 
@@ -112,7 +120,11 @@ RSpec.describe Webview::DrugStocksController, type: :controller do
         drug_stocks: [{
           protocol_drug_id: protocol_drug.id,
           received: 10,
-          in_stock: 20
+          in_stock: 30
+        }],
+        redistributed_drugs: [{
+          protocol_drug_id: protocol_drug.id,
+          redistributed: 10
         }]
       }
 
@@ -136,6 +148,10 @@ RSpec.describe Webview::DrugStocksController, type: :controller do
           protocol_drug_id: protocol_drug.id,
           received: "invalid",
           in_stock: "invalid"
+        }],
+        redistributed_drugs: [{
+          protocol_drug_id: protocol_drug.id,
+          redistributed: "invalid"
         }]
       }
 

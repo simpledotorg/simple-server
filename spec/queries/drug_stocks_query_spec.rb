@@ -206,7 +206,8 @@ RSpec.describe DrugStocksQuery do
       expect(result[:drug_consumption_by_facility_id][facility.id][drug_category][drug]).to eq({opening_balance: 10000,
                                                                                                 received: 2000,
                                                                                                 closing_balance: 10000,
-                                                                                                consumed: 2000})
+                                                                                                consumed: 2000,
+                                                                                                redistributed: nil})
     end
 
     describe "#drug_consumption_cache_key" do

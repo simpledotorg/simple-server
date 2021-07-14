@@ -75,15 +75,17 @@ class Webview::DrugStocksController < ApplicationController
   end
 
   def drug_stock_params
-    (safe_params["redistributed_drugs"] + safe_params["drug_stocks"])
-      .group_by {|param| param["protocol_drug_id"]}
-      .map {|_, drug_values| drug_values.reduce(:merge)}
+    return [] unless safe_params["drug_stocks"]
+
+    (safe_params["drug_stocks"] + safe_params["redistributed_drugs"] || [])
+      .group_by { |param| param["protocol_drug_id"] }
+      .map { |_, drug_values| drug_values.reduce(:merge) }
   end
 
   def safe_params
     params.permit(:access_token, :facility_id, :user_id, :for_end_of_month,
-                  drug_stocks: [:received, :in_stock, :protocol_drug_id],
-                  redistributed_drugs: [:redistributed, :protocol_drug_id])
+      drug_stocks: [:received, :in_stock, :protocol_drug_id],
+      redistributed_drugs: [:redistributed, :protocol_drug_id])
   end
 
   def set_bust_cache
