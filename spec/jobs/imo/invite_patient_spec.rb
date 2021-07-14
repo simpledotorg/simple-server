@@ -24,7 +24,7 @@ RSpec.describe Imo::InvitePatient, type: :job do
 
       it "invites the patient to Imo" do
         patient = create(:patient)
-        imo_service = double
+        imo_service = instance_double(ImoApiService)
         allow(ImoApiService).to receive(:new).and_return(imo_service)
         expect(imo_service).to receive(:send_invitation).with(patient)
 
