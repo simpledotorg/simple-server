@@ -234,7 +234,7 @@ class DrugStocksQuery
 
   def set_facility_group
     facility_group_ids = @facilities.pluck(:facility_group_id).uniq
-    throw "All facilities should belong to the same facility group." if facility_group_ids.count > 1
+    raise "All facilities should belong to the same facility group." if facility_group_ids.count > 1
     @facility_group = FacilityGroup.find(facility_group_ids.first)
   end
 
