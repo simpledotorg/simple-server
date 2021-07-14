@@ -18,9 +18,8 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       response_double = double
       allow(response_double).to receive(:status).and_return("sent")
       allow(response_double).to receive(:sid).and_return("12345")
-      twilio_client = double
-      allow_any_instance_of(TwilioApiService).to receive(:client).and_return(twilio_client)
-      allow(twilio_client).to receive_message_chain("messages.create").and_return(response_double)
+      allow_any_instance_of(TwilioApiService).to receive(:send_whatsapp).and_return(response_double)
+      allow_any_instance_of(TwilioApiService).to receive(:send_sms).and_return(response_double)
     end
 
     it "logs but creates nothing when notifications and experiment flags are disabled" do
@@ -75,6 +74,16 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       described_class.drain
     end
 
+    it "sends sms when notification's next_communication_type is imo" do
+      mock_successful_delivery
+      allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("imo")
+
+      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.sent.imo")
+      expect_any_instance_of(ImoApiService).to receive(:send_notification)
+      described_class.perform_async(notification.id)
+      described_class.drain
+    end
+
     it "does not send a communication when notification's next_communication_type is nil" do
       mock_successful_delivery
       allow_any_instance_of(Notification).to receive(:next_communication_type).and_return(nil)
@@ -112,16 +121,19 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       }.to change { Communication.count }.by(1)
     end
 
-    it "does not create a TwilioApiService or Communication if notification has been previously attempted by all available methods" do
-      create(:communication, :whatsapp, notification: notification)
-      create(:communication, :sms, notification: notification)
+    it "creates a Communication with imo details when communication type is Imo" do
+      allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("imo")
+      imo_service = instance_double(ImoApiService, send_notification: :success)
+      allow(ImoApiService).to receive(:new).and_return(imo_service)
 
-      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.skipped.no_next_communication_type")
-      expect_any_instance_of(TwilioApiService).not_to receive(:send_whatsapp)
+      expect(Communication).to receive(:create_with_imo_details!).with(
+        appointment: notification.subject,
+        notification: notification
+      ).and_call_original
       expect {
         described_class.perform_async(notification.id)
         described_class.drain
-      }.not_to change { Communication.count }
+      }.to change { Communication.count }.by(1)
     end
 
     it "does not attempt to resend the same communication type even if previous attempt failed" do
