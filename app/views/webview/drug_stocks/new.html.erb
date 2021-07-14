@@ -69,7 +69,7 @@
 
           <div id="redistribution-fields">
             <% @protocol_drugs.each do |protocol_drug| %>
-              <%= form.fields_for "drug_stocks[]", DrugStock.new do |drug_stock_form| %>
+              <%= form.fields_for "redistributed_drugs[]", DrugStock.new do |drug_stock_form| %>
                 <%= drug_stock_form.hidden_field :protocol_drug_id, value: protocol_drug.id %>
 
                 <div class="form-group">

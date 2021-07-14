@@ -21,7 +21,7 @@ class Webview::DrugStocksController < ApplicationController
     DrugStocksCreator.call(user: current_user,
                            facility: @current_facility,
                            for_end_of_month: @for_end_of_month,
-                           drug_stocks_params: safe_params[:drug_stocks])
+                           drug_stocks_params: drug_stock_params)
     redirect_to webview_drug_stocks_url(for_end_of_month: @for_end_of_month.to_s(:mon_year),
                                         facility_id: current_facility.id,
                                         user_id: current_user.id,
@@ -74,13 +74,16 @@ class Webview::DrugStocksController < ApplicationController
     end
   end
 
+  def drug_stock_params
+    (safe_params["redistributed_drugs"] + safe_params["drug_stocks"])
+      .group_by {|param| param["protocol_drug_id"]}
+      .map {|_, drug_values| drug_values.reduce(:merge)}
+  end
+
   def safe_params
     params.permit(:access_token, :facility_id, :user_id, :for_end_of_month,
-      drug_stocks:
-        [:received,
-          :in_stock,
-          :redistributed,
-          :protocol_drug_id])
+                  drug_stocks: [:received, :in_stock, :protocol_drug_id],
+                  redistributed_drugs: [:redistributed, :protocol_drug_id])
   end
 
   def set_bust_cache
