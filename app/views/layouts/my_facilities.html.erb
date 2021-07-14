@@ -19,7 +19,7 @@
         <%= link_to(my_facilities_missed_visits_path(preserve_query_params(request.query_parameters, ["zone", "size", "period", "facility_group"])), class: "sub-nav-link #{active_action?("missed_visits")}") do %>
           Missed visits
         <% end %>
-        <% if current_admin.feature_enabled?(:drug_stocks) %>
+        <% if current_admin.drug_stocks_enabled? %>
           <%= link_to(my_facilities_drug_stocks_path(preserve_query_params(request.query_parameters, ["facility_group", "zone", "size", "for_end_of_month"])), class: "sub-nav-link #{active_action?("drug_stocks")}") do %>
             Drug stock
           <% end %>

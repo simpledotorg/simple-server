@@ -7,7 +7,7 @@ class Reports::RegionsController < AdminController
   before_action :set_per_page, only: [:details]
   before_action :find_region, except: [:index, :monthly_district_data_report]
   around_action :check_reporting_schema_toggle, only: [:show]
-  around_action :set_time_zone
+  around_action :set_reporting_time_zone
   after_action :log_cache_metrics
   delegate :cache, to: Rails
 
@@ -247,15 +247,6 @@ class Reports::RegionsController < AdminController
 
   def report_params
     params.permit(:id, :bust_cache, :v2, :report_scope, {period: [:type, :value]})
-  end
-
-  def set_time_zone
-    time_zone = Period::REPORTING_TIME_ZONE
-
-    Groupdate.time_zone = time_zone
-
-    Time.use_zone(time_zone) { yield }
-    Groupdate.time_zone = "UTC"
   end
 
   def with_ltfu?

@@ -1,6 +1,8 @@
 namespace :dhis2 do
   desc "Export aggregate indicators for each facility to DHIS2"
   task export: :environment do
+    return unless Flipper.enabled?(:dhis2_export)
+
     require "dhis2"
     Dhis2.configure do |config|
       config.url = ENV.fetch("DHIS2_URL")

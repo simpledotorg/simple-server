@@ -5,11 +5,12 @@ class MyFacilities::DrugStocksController < AdminController
 
   layout "my_facilities"
 
+  around_action :set_reporting_time_zone
   before_action :authorize_my_facilities
   after_action :verify_authorization_attempted
   before_action :set_facility, only: [:new, :create]
   before_action :set_for_end_of_month
-  before_action :drug_stocks_enabled?
+  before_action :redirect_unless_drug_stocks_enabled
 
   def drug_stocks
     create_drug_report
@@ -41,7 +42,10 @@ class MyFacilities::DrugStocksController < AdminController
   end
 
   def create
-    DrugStocksCreator.call(current_admin, @facility, @for_end_of_month, drug_stocks_params[:drug_stocks])
+    DrugStocksCreator.call(user: current_admin,
+                           for_end_of_month: @for_end_of_month,
+                           drug_stocks_params: drug_stocks_params[:drug_stocks],
+                           facility: @facility)
     redirect_to redirect_url, notice: "Saved drug stocks"
   rescue ActiveRecord::RecordInvalid
     redirect_to redirect_url, alert: "Something went wrong, Drug Stocks were not saved."
@@ -88,10 +92,8 @@ class MyFacilities::DrugStocksController < AdminController
     )
   end
 
-  def drug_stocks_enabled?
-    unless current_admin.feature_enabled?(:drug_stocks)
-      redirect_to :root
-    end
+  def redirect_unless_drug_stocks_enabled
+    redirect_to :root unless current_admin.drug_stocks_enabled?
   end
 
   def populate_facility_sizes

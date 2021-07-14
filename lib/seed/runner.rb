@@ -8,7 +8,7 @@ module Seed
     include ActiveSupport::Benchmarkable
     include ConsoleLogger
     SIZES = Facility.facility_sizes
-    FEATURE_FLAGS_ENABLED_BY_DEFAULT = %i[drug_stocks drug_stocks_mobile notifications]
+    FEATURE_FLAGS_ENABLED_BY_DEFAULT = %i[drug_stocks notifications]
 
     attr_reader :config
     attr_reader :logger

@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reporting_spec: true} do
+RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
   describe "Associations" do
     it { should belong_to(:patient) }
   end
@@ -260,7 +260,7 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
         with_reporting_time_zone do
           patient_state = described_class.find_by(patient_id: patient.id, month_string: june_2021[:month_string])
 
-          expect(patient_state.patient_assigned_facility_id).to eq(assigned_facility.id)
+          expect(patient_state.assigned_facility_id).to eq(assigned_facility.id)
           expect(patient_state.assigned_facility_region_id).to eq(facility_region.id)
           expect(patient_state.assigned_block_region_id).to eq(block_region.id)
           expect(patient_state.assigned_district_region_id).to eq(district_region.id)
@@ -292,7 +292,7 @@ RSpec.describe ReportingPipeline::PatientStatesPerMonth, {type: :model, reportin
         with_reporting_time_zone do
           patient_state = described_class.find_by(patient_id: patient.id, month_string: june_2021[:month_string])
 
-          expect(patient_state.patient_registration_facility_id).to eq(registration_facility.id)
+          expect(patient_state.registration_facility_id).to eq(registration_facility.id)
           expect(patient_state.registration_facility_region_id).to eq(facility_region.id)
           expect(patient_state.registration_block_region_id).to eq(block_region.id)
           expect(patient_state.registration_district_region_id).to eq(district_region.id)

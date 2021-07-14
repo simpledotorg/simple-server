@@ -5,7 +5,7 @@ RSpec.describe DrugStocksQuery do
   let!(:protocol) { create(:protocol, :with_tracked_drugs) }
   let!(:facility_group) { create(:facility_group, protocol: protocol) }
   let!(:user) { create(:admin, :manager, :with_access, resource: facility_group) }
-  let!(:for_end_of_month) { Date.today.end_of_month }
+  let!(:for_end_of_month) { Time.current.end_of_month }
   let!(:drug_category) { "hypertension_ccb" }
   let!(:stocks_by_rxnorm) {
     {"329528" => {in_stock: 10000, received: 2000},
@@ -35,7 +35,8 @@ RSpec.describe DrugStocksQuery do
     let!(:facilities) { create_list(:facility, 3, facility_group: facility_group, state: state) }
     let!(:patients) {
       facilities.map { |facility|
-        create_list(:patient, 3, registration_facility: facility, registration_user: user)
+        create_list(:patient, 3, registration_facility: facility, registration_user: user) <<
+          create(:patient, recorded_at: 2.years.ago, registration_facility: facility, registration_user: user) # ltfu patient
       }.flatten
     }
 
@@ -54,7 +55,8 @@ RSpec.describe DrugStocksQuery do
 
     it "computes the drug stock report totals" do
       result = described_class.new(facilities: facilities, for_end_of_month: for_end_of_month).drug_stocks_report
-      expect(result[:patient_count]).to eq(patients.count)
+
+      expect(result[:patient_count]).to eq(9)
       expect(result[:patient_days]["hypertension_ccb"][:patient_days]).to eq(12380)
       expect(result[:patient_days]["hypertension_arb"][:patient_days]).to eq(54054)
 
@@ -169,6 +171,7 @@ RSpec.describe DrugStocksQuery do
 
     it "computes the drug consumption report totals" do
       result = described_class.new(facilities: facilities, for_end_of_month: for_end_of_month).drug_consumption_report
+
       expect(result[:patient_count]).to eq(patients.count)
       expect(result[:all_drug_consumption]["hypertension_ccb"][:base_doses][:total]).to eq(19200)
       expect(result[:all_drug_consumption]["hypertension_arb"][:base_doses][:total]).to eq(24000)

@@ -93,6 +93,33 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
         expect(assigns(:facilities)).not_to include(community_facility_with_stock_tracked)
       end
     end
+
+    context "uses the period reporting time zone to set display month" do
+      before { sign_in(report_viewer.email_authentication) }
+      it "sets previous month if not in last week of month" do
+        Timecop.freeze("5 July 2021") do
+          get :drug_stocks, params: {}
+
+          expect(assigns(:for_end_of_month)).to eq(Time.use_zone("Asia/Kolkata") { Time.zone.parse("1 June 2021").end_of_month })
+        end
+      end
+
+      it "sets current month if in last week of month" do
+        Timecop.freeze("27 July 2021") do
+          get :drug_stocks, params: {}
+
+          expect(assigns(:for_end_of_month)).to eq(Time.use_zone("Asia/Kolkata") { Time.zone.parse("1 Jul 2021").end_of_month })
+        end
+      end
+
+      it "sets selected month if a param is passed " do
+        Timecop.freeze("27 July 2021") do
+          get :drug_stocks, params: {for_end_of_month: "Jan-2021"}
+
+          expect(assigns(:for_end_of_month)).to eq(Time.use_zone("Asia/Kolkata") { Time.zone.parse("1 Jan 2021").end_of_month })
+        end
+      end
+    end
   end
 
   describe "GET #new" do

@@ -57,11 +57,20 @@ class DrugStocksQuery
   end
 
   memoize def patient_count_by_facility_id
-    Patient.where(assigned_facility_id: @facilities).group(:assigned_facility_id).count
+    Patient
+      .for_reports(exclude_ltfu_as_of: @for_end_of_month)
+      .where("recorded_at <= ?", @for_end_of_month)
+      .where(assigned_facility_id: @facilities)
+      .group(:assigned_facility_id)
+      .count
   end
 
   memoize def total_patients
-    Patient.where(assigned_facility_id: @facilities).count
+    Patient
+      .for_reports(exclude_ltfu_as_of: @for_end_of_month)
+      .where("recorded_at <= ?", @for_end_of_month)
+      .where(assigned_facility_id: @facilities)
+      .count
   end
 
   memoize def selected_month_drug_stocks
