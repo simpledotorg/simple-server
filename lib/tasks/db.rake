@@ -5,6 +5,8 @@ namespace :db do
     puts "Materialized views have been refreshed"
   end
 
+  task refresh_matviews: :refresh_materialized_views
+
   desc "Generate fake Patient data"
   task seed_patients: :environment do
     abort "Can't run this task in env:#{ENV["SIMPLE_SERVER_ENV"]}!" if ENV["SIMPLE_SERVER_ENV"] == "production"
