@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_12_223435) do
+ActiveRecord::Schema.define(version: 2021_07_14_165255) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -1447,6 +1447,6 @@ ActiveRecord::Schema.define(version: 2021_07_12_223435) do
   add_index "reporting_patient_states", ["assigned_facility_region_id"], name: "patient_states_assigned_facility"
   add_index "reporting_patient_states", ["assigned_state_region_id"], name: "patient_states_assigned_state"
   add_index "reporting_patient_states", ["hypertension", "htn_care_state", "htn_treatment_outcome_in_last_3_months"], name: "patient_states_care_state"
-  add_index "reporting_patient_states", ["patient_id", "month_date"], name: "patient_states_patient_id_month_date", unique: true
+  add_index "reporting_patient_states", ["month_date", "patient_id"], name: "patient_states_month_date_patient_id", unique: true
 
 end
