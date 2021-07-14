@@ -8,4 +8,8 @@ class ChangeImoAuthorizationIdTypeToUuid < ActiveRecord::Migration[5.2]
     end
     execute "ALTER TABLE imo_authorizations ADD PRIMARY KEY (id);"
   end
+
+  def down
+    raise ActiveRecord::IrreversibleMigration
+  end
 end
