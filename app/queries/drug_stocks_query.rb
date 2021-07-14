@@ -72,13 +72,13 @@ class DrugStocksQuery
 
     @facilities.with_region_information.each_with_object(Hash.new(0)) do |facility, result|
       result[facility.id] =
-        repository.cumulative_assigned_patients[facility.facility_slug][period] -
-        repository.ltfu[facility.facility_slug][period]
+        repository.cumulative_assigned_patients[facility.facility_region_slug][period] -
+        repository.ltfu[facility.facility_region_slug][period]
     end
   end
 
   memoize def patient_count_by_block_id
-    @facilities.with_block_region_id.each_with_object(Hash.new(0)) do |facility, result|
+    @facilities.with_region_information.each_with_object(Hash.new(0)) do |facility, result|
       result[facility.block_region_id] += patient_count_by_facility_id[facility.id]
     end
   end
