@@ -17,6 +17,7 @@ module Reports
       @reporting_schema_v2 = reporting_schema_v2
       raise ArgumentError, "Quarter periods not supported" if @period_type != :month
 
+      @regions_by_type = @regions.group_by { |region| region.region_type }
       @assigned_patients_query = AssignedPatientsQuery.new
       @bp_measures_query = BPMeasuresQuery.new
       @control_rate_query = ControlRateQuery.new
@@ -37,6 +38,7 @@ module Reports
     attr_reader :period_type
     attr_reader :periods
     attr_reader :regions
+    attr_reader :regions_by_type
     attr_reader :registered_patients_query
 
     def reporting_schema_v2?
@@ -115,19 +117,14 @@ module Reports
     # Returns registration counts per region / period
     memoize def monthly_registrations
       if reporting_schema_v2?
-        logger.info "RJS"
-        regions_by_type = regions.group_by { |region| region.region_type }
         results = {}
-        pp regions_by_type
         regions_by_type.each do |region_type, regions|
-          pp region_type, regions
-          counts = ReportingPipeline::PatientStatesPerMonth
+          counts = Reports::PatientState
             .where(hypertension: "yes", htn_care_state: "under_care")
             .where("registration_#{region_type}_region_id" => regions.pluck(:id))
             .where(months_since_registration: 0)
             .group("registration_#{region_type}_region_id").group("month_date")
             .count("patient_id")
-            pp counts
           counts.each do |(region_id, month_date), count|
             region = regions.find { |r| r.id == region_id }
             results[region.slug] ||= Hash.new(0)
@@ -342,10 +339,31 @@ module Reports
     # Returns the full range of assigned patient counts for a Region. We do this via one SQL query for each Region, because its
     # fast and easy via the underlying query.
     memoize def complete_monthly_assigned_patients
-      items = regions.map { |region| RegionEntry.new(region, __method__, period_type: period_type) }
-      cache.fetch_multi(*items, force: bust_cache?) { |region_entry|
-        assigned_patients_query.count(region_entry.region, period_type)
-      }
+      if reporting_schema_v2?
+        results = {}
+        regions_by_type.each do |region_type, regions|
+          counts = Reports::PatientState
+            .where(hypertension: "yes", htn_care_state: "under_care")
+            .where("assigned_#{region_type}_region_id" => regions.pluck(:id))
+            .where(months_since_registration: 0)
+            .group("assigned_#{region_type}_region_id").group("month_date")
+            .count("patient_id")
+          counts.each do |(region_id, month_date), count|
+            region = regions.find { |r| r.id == region_id }
+            results[region.slug] ||= Hash.new(0)
+            results[region.slug][Period.month(month_date)] = count
+          end
+        end
+        items = regions.map { |region| RegionEntry.new(region, __method__, period_type: period_type, v2: true) }
+        cache.fetch_multi(*items, force: bust_cache?) { |region_entry|
+          results[region_entry.region.slug]
+        }
+      else
+        items = regions.map { |region| RegionEntry.new(region, __method__, period_type: period_type) }
+        cache.fetch_multi(*items, force: bust_cache?) { |region_entry|
+          assigned_patients_query.count(region_entry.region, period_type)
+        }
+      end
     end
 
     def denominator(region, period, with_ltfu: false)
