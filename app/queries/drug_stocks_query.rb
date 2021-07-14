@@ -90,14 +90,14 @@ class DrugStocksQuery
   memoize def selected_month_drug_stocks
     DrugStock
       .latest_for_facilities_cte(@facilities, @for_end_of_month)
-      .with_block_region_id
+      .with_region_information
       .load
   end
 
   memoize def previous_month_drug_stocks
     DrugStock
       .latest_for_facilities_cte(@facilities, end_of_previous_month)
-      .with_block_region_id
+      .with_region_information
       .load
   end
 

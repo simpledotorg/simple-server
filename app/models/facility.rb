@@ -58,8 +58,8 @@ class Facility < ApplicationRecord
   }
 
   scope :with_region_information, -> {
-    joins("INNER JOIN reporting_facilities r on r.facility_id = facilities.id")
-      .select("facilities.*, r.*")
+    joins("INNER JOIN reporting_facilities on reporting_facilities.facility_id = facilities.id")
+      .select("facilities.*, reporting_facilities.*")
   }
 
   enum facility_size: {
