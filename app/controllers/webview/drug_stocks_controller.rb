@@ -79,6 +79,7 @@ class Webview::DrugStocksController < ApplicationController
       drug_stocks:
         [:received,
           :in_stock,
+          :redistributed,
           :protocol_drug_id])
   end
 

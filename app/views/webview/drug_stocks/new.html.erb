@@ -64,6 +64,29 @@
               </div>
             <% end %>
           <% end %>
+          <input id="redistribution-fields-toggle" type="checkbox">
+          <label for="redistribution-fields-toggle">Did your facility issue drugs to other facilities this month?</label>
+
+          <div id="redistribution-fields">
+            <% @protocol_drugs.each do |protocol_drug| %>
+              <%= form.fields_for "drug_stocks[]", DrugStock.new do |drug_stock_form| %>
+                <%= drug_stock_form.hidden_field :protocol_drug_id, value: protocol_drug.id %>
+
+                <div class="form-group">
+                  <label for=""><%= "#{protocol_drug.name} #{protocol_drug.dosage}"%> tablets</label>
+                  <div class="form-row">
+                    <div class="col">
+                      <%= drug_stock_form.number_field :redistributed,
+                          class: :redistributed,
+                          value: @drug_stocks[protocol_drug.id].try(&:redistributed),
+                          hide_label: true,
+                          help: "Stock issued to other facilities" %>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
 
           <div class="button-fixed-bottom">
             <%= form.button "SAVE", class: "button" %>
@@ -77,13 +100,25 @@
 
   </body>
 
-  <script type="text/javascript" charset="utf-8">
+<script type="text/javascript" charset="utf-8">
   window.addEventListener("load", function() {
     monthSelect = document.getElementById("for_end_of_month");
     monthSelect.addEventListener("change", function(e) {
       window.location.href = location.origin + location.pathname + location.search + "&for_end_of_month=" + encodeURIComponent(monthSelect.value);
     });
-  })
-  </script>
 
+    let redistributionFieldsToggle = document.getElementById("redistribution-fields-toggle")
+    let redistributionFields = document.getElementById("redistribution-fields")
+
+    function showRedistributionFields(show) {
+      redistributionFields.style.display = show ? "block" : "none";
+    }
+
+    redistributionFieldsToggle.onchange = function(e) {
+      showRedistributionFields(e.target.checked);
+    }
+
+    showRedistributionFields(redistributionFieldsToggle.checked);
+  })
+</script>
 </html>
