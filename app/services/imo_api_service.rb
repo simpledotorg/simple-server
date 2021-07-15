@@ -62,7 +62,7 @@ class ImoApiService
       title: "Notification",
       action: "Click here",
       url: PATIENT_REDIRECT_URL,
-      callback_url: "https://89f62c932865.ngrok.io/api/v3/imo_authorizations_callback"
+      read_receipt: "will be filled in later"
     )
     response = execute_post(url, body: request_body)
     result = process_response(response, url, "notification")
