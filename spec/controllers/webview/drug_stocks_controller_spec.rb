@@ -120,9 +120,9 @@ RSpec.describe Webview::DrugStocksController, type: :controller do
         drug_stocks: {
           "0" => {
             protocol_drug_id: protocol_drug.id,
-              received: 10,
-              in_stock: 30,
-              redistributed: 10
+            received: 10,
+            in_stock: 30,
+            redistributed: 10
           }
         }
       }
