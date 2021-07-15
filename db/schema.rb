@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_08_133405) do
+ActiveRecord::Schema.define(version: 2021_07_14_183848) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -337,7 +337,7 @@ ActiveRecord::Schema.define(version: 2021_07_08_133405) do
     t.index ["feature_key", "key", "value"], name: "index_flipper_gates_on_feature_key_and_key_and_value", unique: true
   end
 
-  create_table "imo_authorizations", force: :cascade do |t|
+  create_table "imo_authorizations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "patient_id", null: false
     t.datetime "last_invited_at", null: false
     t.string "status", null: false
@@ -1203,6 +1203,8 @@ ActiveRecord::Schema.define(version: 2021_07_08_133405) do
     WHERE (bp.deleted_at IS NULL)
     ORDER BY bp.patient_id, cal.month_date, bp.recorded_at DESC;
   SQL
+  add_index "reporting_patient_blood_pressures", ["month_date", "patient_id"], name: "patient_blood_pressures_patient_id_month_date", unique: true
+
   create_view "reporting_patient_visits", materialized: true, sql_definition: <<-SQL
       SELECT DISTINCT ON (p.id, p.month_date) p.id AS patient_id,
       p.month_date,
@@ -1335,6 +1337,8 @@ ActiveRecord::Schema.define(version: 2021_07_08_133405) do
     WHERE (p.deleted_at IS NULL)
     ORDER BY p.id, p.month_date, (timezone('UTC'::text, timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at)))) DESC;
   SQL
+  add_index "reporting_patient_visits", ["month_date", "patient_id"], name: "patient_visits_patient_id_month_date", unique: true
+
   create_view "reporting_patient_states", materialized: true, sql_definition: <<-SQL
       SELECT DISTINCT ON (p.id, cal.month_date) p.id AS patient_id,
       timezone('UTC'::text, timezone('UTC'::text, p.recorded_at)) AS recorded_at,
@@ -1443,6 +1447,6 @@ ActiveRecord::Schema.define(version: 2021_07_08_133405) do
   add_index "reporting_patient_states", ["assigned_facility_region_id"], name: "patient_states_assigned_facility"
   add_index "reporting_patient_states", ["assigned_state_region_id"], name: "patient_states_assigned_state"
   add_index "reporting_patient_states", ["hypertension", "htn_care_state", "htn_treatment_outcome_in_last_3_months"], name: "patient_states_care_state"
-  add_index "reporting_patient_states", ["patient_id", "month_date"], name: "patient_states_patient_id_month_date", unique: true
+  add_index "reporting_patient_states", ["month_date", "patient_id"], name: "patient_states_month_date_patient_id", unique: true
 
 end
