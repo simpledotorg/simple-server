@@ -31,9 +31,9 @@ SELECT
 
     array_remove(
         ARRAY[
-            (CASE WHEN to_char(e.recorded_at, 'YYYY-MM') = month_string THEN e.facility_id END),
-            (CASE WHEN to_char(pd.recorded_at, 'YYYY-MM') = month_string THEN pd.facility_id END),
-            (CASE WHEN to_char(app.recorded_at, 'YYYY-MM') = month_string THEN app.creation_facility_id END)
+            (CASE WHEN to_char(e.recorded_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')), 'YYYY-MM') = month_string THEN e.facility_id END),
+            (CASE WHEN to_char(pd.recorded_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')), 'YYYY-MM') = month_string THEN pd.facility_id END),
+            (CASE WHEN to_char(app.recorded_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')), 'YYYY-MM') = month_string THEN app.creation_facility_id END)
         ],
         null
     ) AS visited_facility_ids,

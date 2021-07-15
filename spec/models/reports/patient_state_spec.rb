@@ -315,38 +315,41 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
       end
     end
 
-    pending describe "htn_treatment_outcome_in_quarter is set to" do
-      it "missed_visit if the patient hasn't visited in the last quarter" do
+    describe "htn_treatment_outcome_in_quarter is set to" do
+      it "missed_visit if the patient hasn't visited in the quarter" do
+        this_quarter = june_2021[:now]
+        one_quarter_ago = june_2021[:now] - 3.months
+
         patient_1 = create(:patient, recorded_at: june_2021[:long_ago])
-        create(:encounter, patient: patient_1, encountered_on: june_2021[:now] - 3.months)
+        create(:encounter, patient: patient_1, encountered_on: this_quarter)
         patient_2 = create(:patient, recorded_at: june_2021[:long_ago])
-        create(:encounter, patient: patient_2, encountered_on: june_2021[:now] - 1.month)
+        create(:encounter, patient: patient_2, encountered_on: one_quarter_ago)
         patient_3 = create(:patient, recorded_at: june_2021[:long_ago])
         RefreshMaterializedViews.new.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.where(htn_treatment_outcome_in_last_2_months: "missed_visit", month_date: june_2021[:now]).pluck(:patient_id))
-            .to include(patient_1.id, patient_3.id)
-          expect(described_class.where(htn_treatment_outcome_in_last_2_months: "missed_visit", month_date: june_2021[:now]).pluck(:patient_id))
-            .not_to include(patient_2.id)
+          expect(described_class.where(htn_treatment_outcome_in_quarter: "missed_visit", month_date: this_quarter).pluck(:patient_id))
+            .to include(patient_2.id, patient_3.id)
+          expect(described_class.where(htn_treatment_outcome_in_quarter: "missed_visit", month_date: this_quarter).pluck(:patient_id))
+            .not_to include(patient_1.id)
         end
       end
-      it "visited_no_bp if the patient visited, but didn't get a BP taken in the last 2 months" do
-        patient_bp_over_2_months = create(:patient, recorded_at: june_2021[:long_ago])
+      it "visited_no_bp if the patient visited, but didn't get a BP taken in this quarter" do
+        patient_bp_in_last_quarter = create(:patient, recorded_at: june_2021[:long_ago])
         create(:prescription_drug,
           device_created_at: june_2021[:now] - 1.month,
-          facility: patient_bp_over_2_months.registration_facility,
-          patient: patient_bp_over_2_months,
-          user: patient_bp_over_2_months.registration_user)
-        create(:blood_pressure, patient: patient_bp_over_2_months, recorded_at: june_2021[:now] - 2.months)
+          facility: patient_bp_in_last_quarter.registration_facility,
+          patient: patient_bp_in_last_quarter,
+          user: patient_bp_in_last_quarter.registration_user)
+        create(:blood_pressure, patient: patient_bp_in_last_quarter, recorded_at: june_2021[:now] - 3.months)
 
-        patient_bp_under_2_months = create(:patient, recorded_at: june_2021[:long_ago])
+        patient_bp_in_this_quarter = create(:patient, recorded_at: june_2021[:long_ago])
         create(:prescription_drug,
           device_created_at: june_2021[:now] - 1.month,
-          facility: patient_bp_under_2_months.registration_facility,
-          patient: patient_bp_under_2_months,
-          user: patient_bp_under_2_months.registration_user)
-        create(:blood_pressure, patient: patient_bp_under_2_months, recorded_at: june_2021[:now] - 1.month)
+          facility: patient_bp_in_this_quarter.registration_facility,
+          patient: patient_bp_in_this_quarter,
+          user: patient_bp_in_this_quarter.registration_user)
+        create(:blood_pressure, patient: patient_bp_in_this_quarter, recorded_at: june_2021[:now])
 
         patient_with_no_bp = create(:patient, recorded_at: june_2021[:long_ago])
         create(:prescription_drug,
@@ -357,31 +360,31 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
         RefreshMaterializedViews.new.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.where(htn_treatment_outcome_in_last_2_months: "visited_no_bp", month_date: june_2021[:now]).pluck(:patient_id))
-            .to include(patient_bp_over_2_months.id, patient_with_no_bp.id)
-          expect(described_class.where(htn_treatment_outcome_in_last_2_months: "visited_no_bp", month_date: june_2021[:now]).pluck(:patient_id))
-            .not_to include(patient_bp_under_2_months.id)
+          expect(described_class.where(htn_treatment_outcome_in_quarter: "visited_no_bp", month_date: june_2021[:now]).pluck(:patient_id))
+            .to include(patient_bp_in_last_quarter.id, patient_with_no_bp.id)
+          expect(described_class.where(htn_treatment_outcome_in_quarter: "visited_no_bp", month_date: june_2021[:now]).pluck(:patient_id))
+            .not_to include(patient_bp_in_this_quarter.id)
         end
       end
-      it "controlled/uncontrolled if there is a BP measured in the last 2 months that is under/not under control" do
+      it "controlled/uncontrolled if there is a BP measured in this quarter that is under/not under control" do
         patient_controlled = create(:patient, recorded_at: june_2021[:long_ago])
-        create(:blood_pressure, :with_encounter, patient: patient_controlled, recorded_at: june_2021[:now] - 1.month, systolic: 139, diastolic: 89)
+        create(:blood_pressure, :with_encounter, patient: patient_controlled, recorded_at: june_2021[:now], systolic: 139, diastolic: 89)
 
         patient_uncontrolled = create(:patient, recorded_at: june_2021[:long_ago])
-        create(:blood_pressure, :with_encounter, patient: patient_uncontrolled, recorded_at: june_2021[:now] - 1.months, systolic: 140, diastolic: 90)
+        create(:blood_pressure, :with_encounter, patient: patient_uncontrolled, recorded_at: june_2021[:now], systolic: 140, diastolic: 90)
 
-        patient_bp_over_2_months = create(:patient, recorded_at: june_2021[:long_ago])
-        create(:blood_pressure, :with_encounter, patient: patient_bp_over_2_months, recorded_at: june_2021[:now] - 2.months)
+        patient_bp_in_last_quarter = create(:patient, recorded_at: june_2021[:long_ago])
+        create(:blood_pressure, :with_encounter, patient: patient_bp_in_last_quarter, recorded_at: june_2021[:now] - 3.months)
 
         RefreshMaterializedViews.new.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.where(htn_treatment_outcome_in_last_2_months: "controlled", month_date: june_2021[:now]).pluck(:patient_id))
+          expect(described_class.where(htn_treatment_outcome_in_quarter: "controlled", month_date: june_2021[:now]).pluck(:patient_id))
             .to include(patient_controlled.id)
-          expect(described_class.where(htn_treatment_outcome_in_last_2_months: "uncontrolled", month_date: june_2021[:now]).pluck(:patient_id))
+          expect(described_class.where(htn_treatment_outcome_in_quarter: "uncontrolled", month_date: june_2021[:now]).pluck(:patient_id))
             .to include(patient_uncontrolled.id)
-          expect(described_class.where(htn_treatment_outcome_in_last_2_months: %w[uncontrolled controlled], month_date: june_2021[:now]).pluck(:patient_id))
-            .not_to include(patient_bp_over_2_months.id)
+          expect(described_class.where(htn_treatment_outcome_in_quarter: %w[uncontrolled controlled], month_date: june_2021[:now]).pluck(:patient_id))
+            .not_to include(patient_bp_in_last_quarter.id)
         end
       end
     end
@@ -562,6 +565,12 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
             expect(patient_states(patient, to: ten_months_ago).pluck(:months_since_bp)).to all(be_nil)
             expect(patient_states(patient, from: ten_months_ago, to: five_months_ago).pluck(:months_since_bp)).to eq((0..4).to_a)
             expect(patient_states(patient, from: five_months_ago, to: now).pluck(:months_since_bp)).to eq((0...5).to_a)
+
+            expect(patient_states(patient, to: ten_months_ago).pluck(:quarters_since_bp)).to all(be_nil)
+            expect(patient_states(patient, from: ten_months_ago, to: eight_months_ago).pluck(:quarters_since_bp)).to all eq 0
+            expect(patient_states(patient, from: eight_months_ago, to: five_months_ago).pluck(:quarters_since_bp)).to all eq 1
+            expect(patient_states(patient, from: five_months_ago, to: two_months_ago).pluck(:quarters_since_bp)).to all eq 0
+            expect(patient_states(patient, from: two_months_ago, to: now).pluck(:quarters_since_bp)).to all eq 1
 
             expect(patient_states(patient, to: ten_months_ago).pluck(:last_bp_state)).to all(eq("unknown"))
             expect(patient_states(patient, from: ten_months_ago, to: five_months_ago).pluck(:last_bp_state)).to all(eq("controlled"))
