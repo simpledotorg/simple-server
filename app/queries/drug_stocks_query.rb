@@ -3,13 +3,13 @@ class DrugStocksQuery
 
   CACHE_VERSION = 1
 
-  def initialize(facilities:, for_end_of_month:, include_block_report: true)
-    @include_block_report = include_block_report
+  def initialize(facilities:, for_end_of_month:)
     @facilities = Facility.where(id: facilities)
     set_facility_group
     set_blocks
     @for_end_of_month = for_end_of_month
     @protocol = @facility_group.protocol
+    @district = @facility_group.region
     @state = @facility_group.state
     @latest_drug_stocks = DrugStock.latest_for_facilities(@facilities, @for_end_of_month)
   end
@@ -20,16 +20,26 @@ class DrugStocksQuery
     Rails.cache.fetch(drug_stocks_cache_key,
       expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL"),
       force: RequestStore.store[:bust_cache]) do
-      {patient_count: total_patients,
-       patient_days: all_patient_days,
-       drugs_in_stock: all_drugs_in_stock,
+      {total_patient_count: district_patient_count,
+       total_drugs_in_stock: total_drugs_in_stock,
+       total_patient_days: total_patient_days,
+
+       district_patient_count: district_patient_count,
+       district_patient_days: district_patient_days,
+       district_drugs_in_stock: district_drugs_in_stock,
+
+       facilities_total_patient_count: facilities_total_patient_count,
+       facilities_total_patient_days: facilities_total_patient_days,
+       facilities_total_drugs_in_stock: facilities_total_drugs_in_stock,
+
        patient_count_by_facility_id: patient_count_by_facility_id,
        patient_days_by_facility_id: patient_days_by_facility_id,
        drugs_in_stock_by_facility_id: drugs_in_stock_by_facility_id,
-       patient_count_by_block_id: @include_block_report ? patient_count_by_block_id : nil,
-       patient_days_by_block_id: @include_block_report ? patient_days_by_block_id : nil,
-       drugs_in_stock_by_block_id: @include_block_report ? drugs_in_stock_by_block_id : nil,
-       last_updated_at: Time.now}.compact
+
+       patient_count_by_block_id: patient_count_by_block_id,
+       patient_days_by_block_id: patient_days_by_block_id,
+       drugs_in_stock_by_block_id: drugs_in_stock_by_block_id,
+       last_updated_at: Time.now}
     end
   end
 
@@ -37,12 +47,12 @@ class DrugStocksQuery
     Rails.cache.fetch(drug_consumption_cache_key,
       expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL"),
       force: RequestStore.store[:bust_cache]) do
-      {patient_count: total_patients,
+      {patient_count: facilities_total_patient_count,
        all_drug_consumption: all_drug_consumption,
        drug_consumption_by_facility_id: drug_consumption_by_facility_id,
        patient_count_by_facility_id: patient_count_by_facility_id,
-       drug_consumption_by_block_id: @include_block_report ? drug_consumption_by_block_id : nil,
-       patient_count_by_block_id: @include_block_report ? patient_count_by_block_id : nil,
+       drug_consumption_by_block_id: drug_consumption_by_block_id,
+       patient_count_by_block_id: patient_count_by_block_id,
        last_updated_at: Time.now}.compact
     end
   end
@@ -64,7 +74,7 @@ class DrugStocksQuery
   end
 
   memoize def repository
-    Reports::Repository.new(@facilities, periods: Period.month(@for_end_of_month))
+    Reports::Repository.new(@facilities + [@district], periods: Period.month(@for_end_of_month))
   end
 
   memoize def patient_count_by_facility_id
@@ -72,8 +82,8 @@ class DrugStocksQuery
 
     @facilities.with_region_information.each_with_object(Hash.new(0)) do |facility, result|
       result[facility.id] =
-        repository.cumulative_assigned_patients[facility.facility_region_slug][period] -
-        repository.ltfu[facility.facility_region_slug][period]
+        repository.cumulative_assigned_patients.dig(facility.facility_region_slug, period).to_i -
+        repository.ltfu.dig(facility.facility_region_slug, period).to_i
     end
   end
 
@@ -83,7 +93,14 @@ class DrugStocksQuery
     end
   end
 
-  memoize def total_patients
+  memoize def district_patient_count
+    period = Period.month(@for_end_of_month)
+
+    repository.cumulative_assigned_patients.dig(@district.slug, period).to_i -
+    repository.ltfu.dig(@district.slug, period).to_i
+  end
+
+  memoize def facilities_total_patient_count
     patient_count_by_facility_id.values.sum
   end
 
@@ -101,8 +118,30 @@ class DrugStocksQuery
       .load
   end
 
-  def all_drugs_in_stock
+  def district_selected_month_drug_stocks
+    DrugStock
+      .latest_for_regions_cte(@district, @for_end_of_month)
+      .load
+  end
+
+  def district_previous_month_drug_stocks
+    DrugStock
+      .latest_for_regions_cte(@district, end_of_previous_month)
+      .load
+  end
+
+  def facilities_total_drugs_in_stock
     selected_month_drug_stocks.group("protocol_drugs.rxnorm_code").sum(:in_stock)
+  end
+
+  def district_drugs_in_stock
+    district_selected_month_drug_stocks.group("protocol_drugs.rxnorm_code").sum(:in_stock)
+  end
+
+  def total_drugs_in_stock
+    district_drugs_in_stock.merge(facilities_total_drugs_in_stock) do |_, district_stock, facilities_stock|
+      district_stock + facilities_stock
+    end
   end
 
   def drugs_in_stock_by_facility_id
@@ -113,6 +152,28 @@ class DrugStocksQuery
     selected_month_drug_stocks
       .group("block_region_id", "protocol_drugs.rxnorm_code")
       .sum(:in_stock)
+  end
+
+  def total_patient_days
+    drug_categories.each_with_object({}) do |drug_category, result|
+      result[drug_category] = category_patient_days(
+        drug_category,
+        (selected_month_drug_stocks + district_selected_month_drug_stocks)
+          .group_by { |param| param.protocol_drug.rxnorm_code }
+          .map { |_, values| values.reduce(:+) },
+        district_patient_count || 0
+      )
+    end
+  end
+
+  def district_patient_days
+    drug_categories.each_with_object({}) do |drug_category, result|
+      result[drug_category] = category_patient_days(
+        drug_category,
+        district_selected_month_drug_stocks,
+        district_patient_count || 0
+      )
+    end
   end
 
   def patient_days_by_facility_id
@@ -137,12 +198,12 @@ class DrugStocksQuery
     end
   end
 
-  def all_patient_days
+  def facilities_total_patient_days
     drug_categories.each_with_object(Hash.new(0)) do |drug_category, result|
       result[drug_category] = category_patient_days(
         drug_category,
         selected_month_drug_stocks,
-        total_patients
+        facilities_total_patient_count
       )
     end
   end
@@ -209,7 +270,6 @@ class DrugStocksQuery
     [
       "#{self.class.name}#drug_stocks",
       @facilities.map(&:id).sort,
-      @include_block_report,
       @latest_drug_stocks.cache_key,
       @for_end_of_month,
       @protocol.id,
@@ -222,7 +282,6 @@ class DrugStocksQuery
     [
       "#{self.class.name}#drug_consumption",
       @facilities.map(&:id).sort,
-      @include_block_report,
       @for_end_of_month,
       @protocol.id,
       @state,

@@ -46,4 +46,22 @@ class DrugStock < ApplicationRecord
     from(latest_for_facilities(facilities, for_end_of_month), table_name)
       .includes(:protocol_drug)
   end
+
+  def self.latest_for_regions_cte(regions, for_end_of_month)
+    # This is needed to do GROUP queries which do not compose with DISTINCT ON
+    from(latest_for_regions(regions, for_end_of_month), table_name)
+      .includes(:protocol_drug)
+  end
+
+  def +(other)
+    raise "what you cant do this" if for_end_of_month != other.for_end_of_month || protocol_drug_id != other.protocol_drug_id
+
+    DrugStock.new(
+      for_end_of_month: for_end_of_month,
+      protocol_drug_id: protocol_drug_id,
+      in_stock: in_stock.to_i + other.in_stock.to_i,
+      received: received.to_i + other.received.to_i,
+      redistributed: redistributed.to_i + other.redistributed.to_i
+    )
+  end
 end
