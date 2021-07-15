@@ -75,7 +75,7 @@
                 <div class="form-group">
                   <label><%= "#{protocol_drug.name} #{protocol_drug.dosage}"%> tablets</label>
                   <div class="form-row">
-                    <div class="col">
+                    <div class="col-12">
                       <%= drug_stock_form.number_field :redistributed,
                           class: :redistributed,
                           value: @drug_stocks[protocol_drug.id].try(&:redistributed),
