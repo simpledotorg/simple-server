@@ -34,7 +34,9 @@ class Webview::DrugStocksController < ApplicationController
   def index
     @protocol_drugs = current_facility.protocol.protocol_drugs.where(stock_tracked: true).sort_by(&:sort_key)
     @drug_stocks = DrugStock.latest_for_facilities_grouped_by_protocol_drug(current_facility, @for_end_of_month)
-    @query = DrugStocksQuery.new(facilities: [current_facility], for_end_of_month: @for_end_of_month)
+    @query = DrugStocksQuery.new(facilities: [current_facility],
+                                 for_end_of_month: @for_end_of_month,
+                                 include_block_report: false)
     @drugs_by_category = @query.protocol_drugs_by_category
     @report = @query.drug_stocks_report
   end
@@ -68,10 +70,6 @@ class Webview::DrugStocksController < ApplicationController
 
   def set_current_facility
     @current_facility = Facility.find(safe_params[:facility_id])
-    if @current_facility.community?
-      logger.error "Cannot create DrugStocks for community facility #{@current_facility.slug}"
-      render json: {status: "invalid", errors: "community facility"}, status: 422
-    end
   end
 
   def safe_params
