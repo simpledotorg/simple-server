@@ -118,7 +118,7 @@ class UserAnalyticsPresenter
   end
 
   def diabetes_enabled?
-    FeatureToggle.enabled?("DIABETES_SUPPORT_IN_PROGRESS_TAB") && current_facility.diabetes_enabled?
+    current_facility.diabetes_enabled?
   end
 
   def daily_period_list
