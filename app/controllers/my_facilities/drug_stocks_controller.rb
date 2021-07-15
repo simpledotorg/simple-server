@@ -8,7 +8,9 @@ class MyFacilities::DrugStocksController < AdminController
   around_action :set_reporting_time_zone
   before_action :authorize_my_facilities
   after_action :verify_authorization_attempted
-  before_action :set_facility, only: [:new, :create]
+  before_action :set_region_type, only: [:new, :create]
+  before_action :set_region, only: [:new, :create]
+  before_action :set_facility, only: [:new, :create], if: -> { @region_type == "facility" }
   before_action :set_for_end_of_month
   before_action :redirect_unless_drug_stocks_enabled
 
@@ -79,13 +81,28 @@ class MyFacilities::DrugStocksController < AdminController
     authorize { current_admin.accessible_facilities(:view_reports).any? }
   end
 
+  def set_region_type
+    @region_type = params[:region_type]
+  end
+
+  def set_region
+    @region =
+      case params[:region_type]
+      when "facility"
+        authorize { current_admin.accessible_facility_regions(:manage).find_by_id(params[:region_id]) }
+      when "district"
+        authorize { current_admin.accessible_district_regions(:manage).find_by_id(params[:region_id]) }
+      end
+  end
+
   def set_facility
-    @facility = authorize { current_admin.accessible_facilities(:manage).find_by_id(params[:facility_id]) }
+    @facility = @region.source
   end
 
   def drug_stocks_params
     params.permit(
       :for_end_of_month,
+      :region_type,
       drug_stocks:
         [:received,
           :in_stock,
