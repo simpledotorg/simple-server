@@ -200,6 +200,9 @@
     },
     "USER_OTP_VALID_UNTIL_DELTA_IN_MINUTES": {
       "value": "360"
+    },
+    "TEMPORARY_RETENTION_DURATION_SECONDS": {
+      "value": "86400"
     }
   },
   "formation": {
