@@ -47,12 +47,12 @@
             </div>
           </div>
 
-          <% @protocol_drugs.each do |protocol_drug| %>
-            <%= form.fields_for "drug_stocks[]", DrugStock.new do |drug_stock_form| %>
+          <% @protocol_drugs.each_with_index do |protocol_drug, index| %>
+            <%= form.fields_for "drug_stocks[#{index}]", DrugStock.new do |drug_stock_form| %>
               <%= drug_stock_form.hidden_field :protocol_drug_id, value: protocol_drug.id %>
 
               <div class="form-group">
-                  <label for=""><%= "#{protocol_drug.name} #{protocol_drug.dosage}"%> tablets</label>
+                  <label><%= "#{protocol_drug.name} #{protocol_drug.dosage}"%> tablets</label>
                   <div class="form-row">
                     <div class="col">
                       <%= drug_stock_form.number_field :received, class: :received, value: @drug_stocks[protocol_drug.id].try(&:received), hide_label: true, help: "Received this month" %>
@@ -64,16 +64,16 @@
               </div>
             <% end %>
           <% end %>
-          <input id="redistribution-fields-toggle" type="checkbox">
+          <input id="redistribution-fields-toggle" type="checkbox" <%= "checked" if @drug_stocks.values.map(&:redistributed).any? %>>
           <label for="redistribution-fields-toggle">Did your facility issue drugs to other facilities this month?</label>
 
           <div id="redistribution-fields">
-            <% @protocol_drugs.each do |protocol_drug| %>
-              <%= form.fields_for "redistributed_drugs[]", DrugStock.new do |drug_stock_form| %>
+            <% @protocol_drugs.each_with_index do |protocol_drug, index| %>
+              <%= form.fields_for "drug_stocks[#{index}]", DrugStock.new do |drug_stock_form| %>
                 <%= drug_stock_form.hidden_field :protocol_drug_id, value: protocol_drug.id %>
 
                 <div class="form-group">
-                  <label for=""><%= "#{protocol_drug.name} #{protocol_drug.dosage}"%> tablets</label>
+                  <label><%= "#{protocol_drug.name} #{protocol_drug.dosage}"%> tablets</label>
                   <div class="form-row">
                     <div class="col">
                       <%= drug_stock_form.number_field :redistributed,
@@ -102,7 +102,7 @@
 
 <script type="text/javascript" charset="utf-8">
   window.addEventListener("load", function() {
-    monthSelect = document.getElementById("for_end_of_month");
+    let monthSelect = document.getElementById("for_end_of_month");
     monthSelect.addEventListener("change", function(e) {
       window.location.href = location.origin + location.pathname + location.search + "&for_end_of_month=" + encodeURIComponent(monthSelect.value);
     });
