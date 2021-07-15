@@ -40,14 +40,14 @@ class MyFacilities::DrugStocksController < AdminController
 
   def new
     session[:report_url_with_filters] ||= request.referer
-    @drug_stocks = DrugStock.latest_for_facilities_grouped_by_protocol_drug(@facility, @for_end_of_month)
+    @drug_stocks = DrugStock.latest_for_region_grouped_by_protocol_drug(@region, @for_end_of_month)
   end
 
   def create
     DrugStocksCreator.call(user: current_admin,
                            for_end_of_month: @for_end_of_month,
                            drug_stocks_params: drug_stocks_params[:drug_stocks],
-                           facility: @facility)
+                           region: @region)
     redirect_to redirect_url, notice: "Saved drug stocks"
   rescue ActiveRecord::RecordInvalid
     redirect_to redirect_url, alert: "Something went wrong, Drug Stocks were not saved."
@@ -87,7 +87,7 @@ class MyFacilities::DrugStocksController < AdminController
 
   def set_region
     @region =
-      case params[:region_type]
+      case @region_type
       when "facility"
         authorize { current_admin.accessible_facility_regions(:manage).find_by_id(params[:region_id]) }
       when "district"
