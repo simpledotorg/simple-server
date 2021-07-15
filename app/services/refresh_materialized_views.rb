@@ -14,8 +14,14 @@ class RefreshMaterializedViews
     new.call
   end
 
-  def logger
-    @logger ||= Rails.logger.child(class: self.class.name)
+  attr_reader :logger
+
+  def initialize
+    @logger = Rails.logger.child(class: self.class.name)
+    if Rails.env.development?
+      stdout_logger = Ougai::Logger.new($stdout)
+      @logger.extend(Ougai::Logger.broadcast(stdout_logger))
+    end
   end
 
   def benchmark_and_statsd(operation)
@@ -28,12 +34,14 @@ class RefreshMaterializedViews
   end
 
   def call
+    logger.info "Beginning full materialized view refresh"
     benchmark_and_statsd("all_v1") do
       refresh_v1
     end
     benchmark_and_statsd("all_v2") do
       refresh_v2
     end
+    logger.info "Completed full materialized view refresh"
   end
 
   def self.tz

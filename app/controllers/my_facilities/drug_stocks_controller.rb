@@ -56,8 +56,10 @@ class MyFacilities::DrugStocksController < AdminController
   def create_drug_report
     @facilities = drug_stock_enabled_facilities
     @for_end_of_month_display = @for_end_of_month.strftime("%b-%Y")
-    render && return if @facilities.empty?
-    @query = DrugStocksQuery.new(facilities: @facilities, for_end_of_month: @for_end_of_month)
+    @query = DrugStocksQuery.new(facilities: @facilities,
+                                 for_end_of_month: @for_end_of_month,
+                                 include_block_report: true)
+    @blocks = @query.blocks
     @drugs_by_category = @query.protocol_drugs_by_category
   end
 

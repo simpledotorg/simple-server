@@ -33,12 +33,6 @@
     "APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_START": {
       "value": "14"
     },
-    "BACKFILL_ENCOUNTERS_FOR_BPS_TIMEZONE_OFFSET": {
-      "value": "19800"
-    },
-    "BACKFILL_USER_ID_FROM_AUDIT_LOGS_BATCH_SIZE": {
-      "value": "1000"
-    },
     "CALL_SESSION_REDIS_POOL_SIZE": {
       "value": "12"
     },
@@ -66,9 +60,6 @@
     "ENABLE_CACHED_QUERIES_FOR_DASHBOARD": {
       "value": "true"
     },
-    "ENABLE_DASHBOARD_SNAPSHOT": {
-      "value": "true"
-    },
     "ENABLE_DASHBOARD_VIEW_BY_DISTRICT": {
       "value": "true"
     },
@@ -82,9 +73,6 @@
       "value": "true"
     },
     "ENABLE_INVITE_ADMINS": {
-      "value": "true"
-    },
-    "ENABLE_PATIENT_FOLLOWUPS": {
       "value": "true"
     },
     "ENABLE_PHONE_NUMBER_MASKING": {
