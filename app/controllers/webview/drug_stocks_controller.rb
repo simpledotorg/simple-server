@@ -75,7 +75,7 @@ class Webview::DrugStocksController < ApplicationController
   end
 
   def drug_stocks_params
-    safe_params[:drug_stocks].values
+    safe_params[:drug_stocks]&.values
   end
 
   def safe_params

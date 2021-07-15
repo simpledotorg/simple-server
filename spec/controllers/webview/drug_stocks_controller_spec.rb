@@ -117,15 +117,14 @@ RSpec.describe Webview::DrugStocksController, type: :controller do
         facility_id: facility.id,
         user_id: power_user.id,
         for_end_of_month: Date.today.strftime("%b-%Y"),
-        drug_stocks: [{
-          protocol_drug_id: protocol_drug.id,
-          received: 10,
-          in_stock: 30
-        }],
-        redistributed_drugs: [{
-          protocol_drug_id: protocol_drug.id,
-          redistributed: 10
-        }]
+        drug_stocks: {
+          "0" => {
+            protocol_drug_id: protocol_drug.id,
+              received: 10,
+              in_stock: 30,
+              redistributed: 10
+          }
+        }
       }
 
       expect {
@@ -144,15 +143,14 @@ RSpec.describe Webview::DrugStocksController, type: :controller do
         facility_id: facility.id,
         user_id: power_user.id,
         for_end_of_month: Date.today.strftime("%b-%Y"),
-        drug_stocks: [{
-          protocol_drug_id: protocol_drug.id,
-          received: "invalid",
-          in_stock: "invalid"
-        }],
-        redistributed_drugs: [{
-          protocol_drug_id: protocol_drug.id,
-          redistributed: "invalid"
-        }]
+        drug_stocks: {
+          "0" => {
+            protocol_drug_id: protocol_drug.id,
+            received: "invalid",
+            in_stock: "invalid",
+            redistributed: "invalid"
+          }
+        }
       }
 
       expect {
