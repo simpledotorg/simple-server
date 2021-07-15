@@ -29,10 +29,10 @@ class ImoApiService
     url = IMO_BASE_URL + "send_invite"
     request_body = JSON(
       phone: patient.latest_mobile_number,
-      msg: I18n.t("notifications.imo.invitations.message", locale: locale),
+      msg: I18n.t("notifications.imo.invitations.message", patient_name: patient.full_name, locale: locale),
       contents: [{
         key: I18n.t("notifications.imo.invitations.message_key", locale: locale),
-        value: I18n.t("notifications.imo.invitations.message", locale: locale)
+        value: I18n.t("notifications.imo.invitations.message", patient_name: patient.full_name, locale: locale)
       }],
       title: I18n.t("notifications.imo.invitations.title", locale: locale),
       action: I18n.t("notifications.imo.invitations.action", locale: locale),
