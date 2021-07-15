@@ -40,7 +40,7 @@ class MyFacilities::DrugStocksController < AdminController
 
   def new
     session[:report_url_with_filters] ||= request.referer
-    @drug_stocks = DrugStock.latest_for_region_grouped_by_protocol_drug(@region, @for_end_of_month)
+    @drug_stocks = DrugStock.latest_for_regions_grouped_by_protocol_drug(@region, @for_end_of_month)
   end
 
   def create
