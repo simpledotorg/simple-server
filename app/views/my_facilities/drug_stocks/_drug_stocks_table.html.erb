@@ -65,6 +65,48 @@
         <% end %>
       <% end %>
     </tr>
+
+    <tr>
+      <% district_patient_days_report = {} %>
+      <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
+          data-original-title='<%= "TODO: ADD PATIENT COUNTS" %>'>
+        <%= link_to(reports_region_path(@district_region, report_scope: "district")) do %>
+          District Warehouse
+        <% end %>
+      </td>
+      <td class="text-center">
+        <a id=<%= "form_button_#{@district_region.id}" %> href=<%= my_facilities_drug_stock_form_path(@district_region.id, for_end_of_month: @for_end_of_month_display, region_type: :district) %>>
+          <i class="fas fa-plus"></i>
+        </a>
+      </td>
+      <% @drugs_by_category.map do |drug_category, drugs| %>
+        <% patient_days = district_patient_days_report.dig(drug_category, :patient_days) %>
+        <% drugs.map do |drug| %>
+          <%# drug_stock = @report[:drugs_in_stock_by_facility_id].dig([facility.id, drug.rxnorm_code]) %>
+          <% drug_stock = nil %>
+          <% if drug_stock&.present? %>
+            <td class="type-number text-center" data-sort-column-key=<%= drug.id %>>
+              <%= drug_stock %>
+            </td>
+          <% else %>
+            <td class="type-blank"><span>&#8212;</span></td>
+          <% end %>
+        <% end %>
+        <% if patient_days.present? %>
+          <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
+              data-template="<%= render "wide_tooltip_template" %>"
+              data-original-title="<%= render "drug_stocks_tooltip", report: district_patient_days_report[drug_category] %>"
+              data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
+            <em class="<%= patient_days_css_class(patient_days) %>">
+              <%= patient_days %>
+            </em>
+          </td>
+        <% else %>
+          <td class="type-blank"><span>&#8212;</span></td>
+        <% end %>
+      <% end %>
+    </tr>
+
     <% @blocks.each do |block| %>
       <tr data-sort-method="none">
         <% block_patient_days_report = @report[:patient_days_by_block_id][block.id] %>

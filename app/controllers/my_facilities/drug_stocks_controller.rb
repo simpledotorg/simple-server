@@ -65,6 +65,7 @@ class MyFacilities::DrugStocksController < AdminController
                                  for_end_of_month: @for_end_of_month,
                                  include_block_report: true)
     @blocks = @query.blocks
+    @district_region = @query.facility_group.region
     @drugs_by_category = @query.protocol_drugs_by_category
   end
 

@@ -14,7 +14,7 @@ class DrugStocksQuery
     @latest_drug_stocks = DrugStock.latest_for_facilities(@facilities, @for_end_of_month)
   end
 
-  attr_reader :for_end_of_month, :facilities, :blocks
+  attr_reader :for_end_of_month, :facilities, :blocks, :facility_group
 
   def drug_stocks_report
     Rails.cache.fetch(drug_stocks_cache_key,
