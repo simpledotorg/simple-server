@@ -194,7 +194,7 @@ Rails.application.routes.draw do
     get "drug_stocks", to: "drug_stocks#drug_stocks"
     get "drug_consumption", to: "drug_stocks#drug_consumption"
     post "drug_stocks", to: "drug_stocks#create"
-    get "drug_stocks/:region_id/new", to: "drug_stocks#new", as: :drug_stock_form
+    get "drug_stocks/:region_type/:region_id/new", to: "drug_stocks#new", as: :drug_stock_form
   end
 
   scope :resources do

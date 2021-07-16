@@ -74,7 +74,7 @@
         <% end %>
       </td>
       <td class="text-center">
-        <a id=<%= "form_button_#{@district_region.id}" %> href=<%= my_facilities_drug_stock_form_path(@district_region.id, for_end_of_month: @for_end_of_month_display, region_type: :district) %>>
+        <a id=<%= "form_button_#{@district_region.id}" %> href=<%= my_facilities_drug_stock_form_path(:district, @district_region.id, for_end_of_month: @for_end_of_month_display) %>>
           <i class="fas fa-plus"></i>
         </a>
       </td>
@@ -184,7 +184,7 @@
           <% end %>
         </td>
         <td class="text-center">
-          <a id=<%= "form_button_#{facility.id}" %> href=<%= my_facilities_drug_stock_form_path(facility.region.id, for_end_of_month: @for_end_of_month_display, region_type: :facility) %>>
+          <a id=<%= "form_button_#{facility.id}" %> href=<%= my_facilities_drug_stock_form_path(:facility, facility.region.id, for_end_of_month: @for_end_of_month_display) %>>
             <i class="fas fa-plus"></i>
           </a>
         </td>
