@@ -37,11 +37,11 @@
           <span class="<%= patient_days_css_class(patient_days, prefix: "text") %>"><%= patient_days %> days of drug stock</span>
 
           <% drugs.each do |drug| %>
-            <% drug_stock = @query.drugs_in_stock_by_facility_id.dig(@current_facility.id, category, :drug_stocks, drug.id) %>
+            <% drug_stock = @query.drugs_in_stock_by_facility_id.dig([@current_facility.id, drug.rxnorm_code]) %>
 
             <div class="card-row">
               <% if drug_stock.present? %>
-                <span class="dark float-right"><%= drug_stock.in_stock %> tablets</span>
+                <span class="dark float-right"><%= drug_stock %> tablets</span>
               <% else %>
                 <span class="dark float-right">&#8212;</span>
               <% end %>
