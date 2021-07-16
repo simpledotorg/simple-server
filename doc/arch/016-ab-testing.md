@@ -38,46 +38,6 @@ Patients who have been in an experiment that ended within the past two weeks wil
 ## Treatment Group Assignment
 
 Patients will be assigned to treatment groups completely at random during the patient selection process. The patient's treatment group assignment will be captured via the TreatmentGroupMembership model.
-
-## Experiment workflow
-
-### Experiment setup:
-- experiments can be set up by adding a data migration to `db/data`
-- an example of how to set up an experiment can be found in `lib/seed/experiment_seeder.rb`
-
-### Active patient experiment:
-- experiment will be started by running a script either manually or by scheduling it
-- the job can be run like so: `ExperimentControlServerice.start_current_patient_experiment(name, days_til_start, days_til_end, percentage_of_patients = 100)`
-- the `percentage_of_patients` argument is optional and defaults to 100
-- be sure that `days_til_start` leaves enough time to send any reminders that need to be sent before the appointment. For example, if the experiment has a treatment that involves sending reminders three days before the experiment begins, set `days_til_start` to at least four.
-- the job will select patients according to the [selection criteria](#patient-selection-criteria)
-- it will then assign all eligible patients to treatment groups at random
-- it will create all notifications for experiment patients, based on the date of their next appointment and the information in their treatment group's reminder templates. These will be marked as "pending" and will not be sent at this time.
-- Then the messages will need to be [scheduled for delivery](#notification-scheduling)
-
-### Stale patient experiment:
-- stale patient selection is run via the command: `ExperimentControlService.schedule_daily_stale_patient_notifications(name, patients_per_day: PATIENTS_PER_DAY)`
-- the `patients_per_day` argument is optional and defaults to 10,000
-- this job should be scheduled because patient selection must occur every day of the experiment to ensure that patients do not become ineligible (by returning to care) between selection and the time their reminder is sent
-- this job selects the specified number of patients per day to send reminders to according to the [selection criteria](#patient-selection-criteria), assigns them to treatment groups, and creates notifications appropriate for their group. These notifications will be marked as "pending" and will not be sent at this time.
-- patients in the control group will receive no reminders while other groups may receive multiple reminders over a period of days
-- Then the messages will need to be [scheduled for delivery](#notification-scheduling).
-
-### Notification scheduling
-- notifications are scheduled to be sent daily via a job that will need to be run every day during the experiment before the [notification window](#notification-window)
-  - the job can be run via the command: `AppointmentNotification::ScheduleExperimentReminders.perform`
-  - because this job must be run daily, it should be scheduled via `config/schedule.rb`
-- it will search for any pending notifications with a `remind_on` of today, mark the notification as "scheduled", and schedule a sidekiq worker to send the notification during the [notification window](#notification-window)
-- in India, text messages will first be sent as WhatsApp messages. If the WhatsApp message fails, we will resend the message as SMS.
-- in Bangladesh, text messages will first be sent as Imo messages. If the Imo message fails, we will resend the message as SMS.
-
-### Experiment cleanup:
-- after an experiment is over, its state should be changed to "complete"
-  - stale patient experimeents are automatically changed to "complete" when the experiment end date has passed.
-  - active patient experiments must be manually changed to "complete". Failure to change the experiment to complete will prevent us from starting another active patient experiment but has no other negative side effects.
-- it's important to note that notifications can be scheduled beyond the experiment end date due to the cascading nature of notifications. The end date is used by the selection process and not to prevent notifications from being sent.
-- to prevent notifications from being sent, the experiment must be marked "cancelled", not "complete". Experiments can be ended early via a [script](#ending-an-experiment-early).
-
 ## Data modelling
 
 The A/B framework introduces five new models.
@@ -98,12 +58,19 @@ Experiment messages have been translated into many regional languages in the cou
 
 We want to ensure that we only send notifications during appropriate hours, so all notifications are scheduled to be sent during the next messaging window (see `Communication.next_messaging_time`). We initially send messages through WhatsApp or Imo, then fall back to SMS. If the callback from WhatsApp/Imo tells us the message failed, we schedule the message to resend either immediately or during the messaging window tomorrow.
 
-Because these experiments will dramatically increase the number of notifications being sent daily, we are expanding the notifications window. Currently, the window is from 10am-4pm IST. Later experiments will likely test sending messages at different times of day.
-
 ## Consequences
 
-Some issues with existing code were discovered and corrected in the development process, but this feature should have no impact on existing functionality. We will be using the notification model to provide a historical record of sent appointment notifications moving forward, but that will not impact the user experience.
+We found a bug in which failed missed visit reminders were being resent every day. The bug was fixed, but we did not change the historical data, so there are some appointments that have thousands of failed notifications.
 
-## Ending an experiment early
+We partially tested the A/B framework by sending medication reminders to patients in India during a Covid lockdown. In that process, we learned of the below Twilio rate limits. These limits are per sending phone number. We temporarily purchased additional phone numbers to speed up the sending process. These rate limits will need to be considered during any notification-based experiment and additional sending numbers may have to be purchased, depending on anticipated volume.
 
-If we need to end an experiment early, we can do it by running `ExperimentControlService.abort_experiment(experiment_name)`. This will change the experiment state to "cancelled" and marking all "pending" and "scheduled" notifications as "cancelled", which will prevent all unsent notifications from being sent.
+- Twilio: We cannot queue more than ~25,000 messages at a time
+- Twilio: We cannot send more than 2 SMSs per second from one phone number. This is 7200 SMSs per hour.
+- Whatsapp: We cannot send more than 10,000 messages per day because we are in their Tier 2. We can graduate to the next tier by ensuring our quality rating is adequate and that the cumulative number of users we send notifications to adds up to twice the current messaging limit within a 7-day period (i.e. 20k users). The quality rating is largely an unknown, but it's clear that we must increase our number of notifications over time if we want to increase the number of whatsapp messages we can send per day without buying more numbers.
+- Whatsapp: We can send 25 messages a second
+
+While debugging the covid notifications, we found that our daily notifications window on production was was only one hour per day. As a result, when whatsapp messages failed, the sms retry was not always sent the same day. We expanded the delivery window to 10am-4pm IST.
+
+Areas of concern include the additional strain on our background queue and the difficulty of debugging background jobs. We have limited visibility into the health of our notifications system.
+
+Developers will be responsible for scheduling experiments and for cleaning up experiments after they're over. See `doc/wiki/running-ab-experiments.md`
