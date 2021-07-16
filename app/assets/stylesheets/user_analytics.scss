@@ -696,6 +696,11 @@ footer p {
   margin-left: 8%;
 }
 
+.col-12 {
+  flex-wrap: nowrap;
+  width: 95%;
+}
+
 .col:first-child {
   margin-left: 0;
 }
