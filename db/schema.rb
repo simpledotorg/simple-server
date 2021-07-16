@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_15_165453) do
+ActiveRecord::Schema.define(version: 2021_07_16_174156) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -1534,4 +1534,6 @@ ActiveRecord::Schema.define(version: 2021_07_15_165453) do
        JOIN reporting_facilities rf ON ((rp.region_id = rf.facility_region_id)))
        JOIN reporting_months cal ON ((rp.month_date = cal.month_date)));
   SQL
+  add_index "reporting_facility_states", ["month_date", "facility_region_id"], name: "facility_states_month_date_region_id", unique: true
+
 end
