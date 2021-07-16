@@ -3,13 +3,12 @@ class DrugStocksCreator
     new(*args).call
   end
 
-  def initialize(user:, for_end_of_month:, drug_stocks_params:, region: nil, facility: nil)
-    validate_region_and_facility(region, facility)
+  def initialize(user:, for_end_of_month:, drug_stocks_params:, region:)
     @user = user
-    @facility = facility
+    @region = region
+    @facility = @region.source if region.facility_region?
     @for_end_of_month = for_end_of_month
     @drug_stocks_params = drug_stocks_params || []
-    @region = region || facility.region
   end
 
   def call
@@ -25,9 +24,5 @@ class DrugStocksCreator
                           region: @region)
       end
     end
-  end
-
-  def validate_region_and_facility(region, facility)
-    raise "At least one of region or facility must be present" if region.nil? && facility.nil?
   end
 end
