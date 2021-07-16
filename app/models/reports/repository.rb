@@ -320,9 +320,21 @@ module Reports
     # fast and easy via the underlying query.
     memoize def complete_monthly_assigned_patients
       items = regions.map { |region| RegionEntry.new(region, __method__, period_type: period_type) }
-      cache.fetch_multi(*items, force: bust_cache?) { |region_entry|
-        assigned_patients_query.count(region_entry.region, period_type)
-      }
+      if reporting_schema_v2?
+        items.each_with_object({}) do |key, result|
+          region = key.region
+          region_field = "#{region.region_type}_region_id"
+          result[key] = Reports::FacilityState.where(region_field => region.id).pluck(:month_date, :assigned_patients)
+          pp result[key]
+          result
+        end
+      else
+        result = cache.fetch_multi(*items, force: bust_cache?) { |region_entry|
+          assigned_patients_query.count(region_entry.region, period_type)
+        }
+        pp result
+        result
+      end
     end
 
     def denominator(region, period, with_ltfu: false)
