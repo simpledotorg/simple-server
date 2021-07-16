@@ -97,7 +97,7 @@ class DrugStocksQuery
     period = Period.month(@for_end_of_month)
 
     repository.cumulative_assigned_patients.dig(@district.slug, period).to_i -
-    repository.ltfu.dig(@district.slug, period).to_i
+      repository.ltfu.dig(@district.slug, period).to_i
   end
 
   memoize def facilities_total_patient_count

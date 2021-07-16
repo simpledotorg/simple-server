@@ -12,8 +12,7 @@ RSpec.describe DrugStocksReportExporter do
     facility_group = create(:facility_group, protocol: protocol, state: "Punjab")
     facilities = create_list(:facility, 2, facility_group: facility_group)
     query = DrugStocksQuery.new(facilities: facilities,
-                                for_end_of_month: Time.current.end_of_month,
-                                include_block_report: true)
+                                for_end_of_month: Time.current.end_of_month)
 
     stocks_by_rxnorm = {
       "329528" => {in_stock: 10000, received: 2000},
