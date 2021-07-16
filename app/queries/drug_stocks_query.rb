@@ -17,9 +17,6 @@ class DrugStocksQuery
   attr_reader :for_end_of_month, :facilities, :blocks, :facility_group
 
   def drug_stocks_report
-    Rails.cache.fetch(drug_stocks_cache_key,
-      expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL"),
-      force: RequestStore.store[:bust_cache]) do
       {total_patient_count: district_patient_count,
        total_drugs_in_stock: total_drugs_in_stock,
        total_patient_days: total_patient_days,
@@ -40,7 +37,6 @@ class DrugStocksQuery
        patient_days_by_block_id: patient_days_by_block_id,
        drugs_in_stock_by_block_id: drugs_in_stock_by_block_id,
        last_updated_at: Time.now}
-    end
   end
 
   def drug_consumption_report

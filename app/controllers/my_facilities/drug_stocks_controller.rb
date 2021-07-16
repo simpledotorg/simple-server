@@ -10,7 +10,6 @@ class MyFacilities::DrugStocksController < AdminController
   after_action :verify_authorization_attempted
   before_action :set_region_type, only: [:new, :create]
   before_action :set_region, only: [:new, :create]
-  before_action :set_facility, only: [:new, :create], if: -> { @region_type == "facility" }
   before_action :set_for_end_of_month
   before_action :redirect_unless_drug_stocks_enabled
 
@@ -91,10 +90,6 @@ class MyFacilities::DrugStocksController < AdminController
       when "district"
         authorize { current_admin.accessible_district_regions(:manage).find_by_id(params[:region_id]) }
       end
-  end
-
-  def set_facility
-    @facility = @region.source
   end
 
   def drug_stocks_params
