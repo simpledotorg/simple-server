@@ -52,12 +52,15 @@ RSpec.describe Reports::Repository, type: :model do
 
       refresh_views
 
-      repo = Reports::Repository.new(facility_1.region, periods: jan_2019.to_period, reporting_schema_v2: true)
+      v2 = false
+      repo = Reports::Repository.new(facility_1.region, periods: jan_2019.to_period, reporting_schema_v2: v2)
       expected = {
         facility_1.slug => {
           jan_2019.to_period => 2
         }
       }
+      p "wat"
+      pp repo.cumulative_assigned_patients
       expect(repo.assigned_patients).to eq(expected)
       expect(repo.monthly_registrations).to eq(expected)
     end

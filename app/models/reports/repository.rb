@@ -70,6 +70,8 @@ module Reports
     # }
     memoize def assigned_patients
       complete_monthly_assigned_patients.each_with_object({}) do |(entry, result), results|
+        pp "in assigned"
+        pp entry, result
         values = periods.each_with_object(Hash.new(0)) { |period, region_result| region_result[period] = result[period] if result[period] }
         results[entry.region.slug] = values
       end
@@ -316,17 +318,24 @@ module Reports
       (start..periods.end)
     end
 
+    def assigned_patients_query_v2(region)
+      region_field = "#{region.region_type}_region_id"
+      pp Reports::PatientState.where("assigned_#{region_field}" => region.id).where(month_string: "2019-01").pluck(:patient_id)
+      Reports::FacilityState.where(region_field => region.id).order(:month_date).pluck(:month_date, :under_care)
+    end
+
     # Returns the full range of assigned patient counts for a Region. We do this via one SQL query for each Region, because its
     # fast and easy via the underlying query.
     memoize def complete_monthly_assigned_patients
       items = regions.map { |region| RegionEntry.new(region, __method__, period_type: period_type) }
       if reporting_schema_v2?
         items.each_with_object({}) do |key, result|
-          region = key.region
-          region_field = "#{region.region_type}_region_id"
-          result[key] = Reports::FacilityState.where(region_field => region.id).pluck(:month_date, :assigned_patients)
-          pp result[key]
-          result
+          counts = assigned_patients_query_v2(key.region).each_with_object({}) { |(month_date, count), hsh|
+            hsh[Period.month(month_date)] = count
+          }
+
+          pp counts
+          result[key] = counts
         end
       else
         result = cache.fetch_multi(*items, force: bust_cache?) { |region_entry|
