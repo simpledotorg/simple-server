@@ -1,6 +1,6 @@
 class Api::V3::ImoCallbacksController < ApplicationController
+  http_basic_authenticate_with name: ENV["IMO_CALLBACK_USERNAME"], password: ENV["IMO_CALLBACK_PASSWORD"]
   skip_before_action :verify_authenticity_token
-  before_action :authenticate_request
 
   class ImoCallbackError < StandardError; end
 
@@ -25,11 +25,5 @@ class Api::V3::ImoCallbacksController < ApplicationController
 
   def permitted_params
     params.permit(:patient_id, :event)
-  end
-
-  def authenticate_request
-    authenticate_or_request_with_http_basic do |username, password|
-      username == ENV["IMO_CALLBACK_USERNAME"] && password == ENV["IMO_CALLBACK_PASSWORD"]
-    end
   end
 end
