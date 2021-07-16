@@ -132,7 +132,7 @@ GEM
       thor (~> 0.20.3)
     data_migrate (6.3.0)
       rails (>= 5.0)
-    ddtrace (0.50.0)
+    ddtrace (0.51.1)
       ffi (~> 1.0)
       msgpack
     devise (4.7.1)
@@ -646,7 +646,7 @@ DEPENDENCIES
   connection_pool
   data-anonymization
   data_migrate
-  ddtrace
+  ddtrace (~> 0.51)
   devise (>= 4.7.1)
   devise_invitable (~> 1.7.0)
   dhis2

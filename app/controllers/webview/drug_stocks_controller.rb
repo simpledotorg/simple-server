@@ -68,10 +68,6 @@ class Webview::DrugStocksController < ApplicationController
 
   def set_current_facility
     @current_facility = Facility.find(safe_params[:facility_id])
-    if @current_facility.community?
-      logger.error "Cannot create DrugStocks for community facility #{@current_facility.slug}"
-      render json: {status: "invalid", errors: "community facility"}, status: 422
-    end
   end
 
   def drug_stocks_params
