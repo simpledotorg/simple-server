@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_16_174156) do
+ActiveRecord::Schema.define(version: 2021_07_19_194527) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -1529,8 +1529,8 @@ ActiveRecord::Schema.define(version: 2021_07_16_174156) do
       tout.patients_under_care,
       tout.patients_lost_to_follow_up
      FROM ((((registered_patients rp
-       JOIN assigned_patients ap ON (((rp.region_id = ap.region_id) AND (rp.month_date = ap.month_date))))
-       JOIN treatment_outcomes_in_last_3_months tout ON (((ap.region_id = tout.region_id) AND (ap.month_date = tout.month_date))))
+       LEFT JOIN assigned_patients ap ON (((rp.region_id = ap.region_id) AND (rp.month_date = ap.month_date))))
+       LEFT JOIN treatment_outcomes_in_last_3_months tout ON (((rp.region_id = tout.region_id) AND (rp.month_date = tout.month_date))))
        JOIN reporting_facilities rf ON ((rp.region_id = rf.facility_region_id)))
        JOIN reporting_months cal ON ((rp.month_date = cal.month_date)));
   SQL
