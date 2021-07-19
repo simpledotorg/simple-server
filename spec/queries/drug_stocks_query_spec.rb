@@ -32,7 +32,6 @@ RSpec.describe DrugStocksQuery do
          "hypertension_diuretic" => {"new_patient_coefficient" => 0.06, "316049" => 1, "331132" => 1}}}.with_indifferent_access
   }
 
-
   context "drug stock report" do
     let!(:facilities) { create_list(:facility, 3, facility_group: facility_group, state: state, zone: zone) }
     let!(:patients) {

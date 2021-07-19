@@ -333,10 +333,9 @@ module Reports
     # fast and easy via the underlying query.
     memoize def complete_monthly_assigned_patients
       items = regions.map { |region| RegionEntry.new(region, __method__, period_type: period_type) }
-      result = cache.fetch_multi(*items, force: bust_cache?) { |region_entry|
+      cache.fetch_multi(*items, force: bust_cache?) { |region_entry|
         assigned_patients_query.count(region_entry.region, period_type)
       }
-      result
     end
 
     def denominator(region, period, with_ltfu: false)
