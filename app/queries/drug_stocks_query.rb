@@ -122,37 +122,37 @@ class DrugStocksQuery
       .load
   end
 
-  def district_selected_month_drug_stocks
+  memoize def district_selected_month_drug_stocks
     DrugStock
       .latest_for_regions_cte(@district, @for_end_of_month)
       .load
   end
 
-  def district_previous_month_drug_stocks
+  memoize def district_previous_month_drug_stocks
     DrugStock
       .latest_for_regions_cte(@district, end_of_previous_month)
       .load
   end
 
-  def facilities_total_drugs_in_stock
+  memoize def facilities_total_drugs_in_stock
     selected_month_drug_stocks.group("protocol_drugs.rxnorm_code").sum(:in_stock)
   end
 
-  def district_drugs_in_stock
+  memoize def district_drugs_in_stock
     district_selected_month_drug_stocks.group("protocol_drugs.rxnorm_code").sum(:in_stock)
   end
 
-  def total_drugs_in_stock
+  memoize def total_drugs_in_stock
     district_drugs_in_stock.merge(facilities_total_drugs_in_stock) do |_, district_stock, facilities_stock|
       district_stock + facilities_stock
     end
   end
 
-  def drugs_in_stock_by_facility_id
+  memoize def drugs_in_stock_by_facility_id
     selected_month_drug_stocks.group(:facility_id, "protocol_drugs.rxnorm_code").sum(:in_stock)
   end
 
-  def drugs_in_stock_by_block_id
+  memoize def drugs_in_stock_by_block_id
     selected_month_drug_stocks
       .group("block_region_id", "protocol_drugs.rxnorm_code")
       .sum(:in_stock)
@@ -220,7 +220,7 @@ class DrugStocksQuery
     ).patient_days
   end
 
-  memoize def drug_consumption_by_facility_id
+  def drug_consumption_by_facility_id
     @facilities.pluck(:id).product(drug_categories).each_with_object({}) do |(facility_id, drug_category), result|
       result[facility_id] ||= {}
       result[facility_id][drug_category] =
@@ -232,7 +232,7 @@ class DrugStocksQuery
     end
   end
 
-  memoize def drug_consumption_by_block_id
+  def drug_consumption_by_block_id
     @blocks.pluck(:id).product(drug_categories).each_with_object({}) do |(block_id, drug_category), result|
       result[block_id] ||= {}
       result[block_id][drug_category] =
@@ -244,7 +244,7 @@ class DrugStocksQuery
     end
   end
 
-  memoize def facilities_total_drug_consumption
+  def facilities_total_drug_consumption
     drug_categories.each_with_object(Hash.new(0)) do |drug_category, result|
       result[drug_category] = category_drug_consumption(
         drug_category,
