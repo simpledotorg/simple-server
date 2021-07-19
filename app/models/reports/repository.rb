@@ -104,7 +104,7 @@ module Reports
     memoize def cumulative_assigned_patients
       if reporting_schema_v2?
         regions.each_with_object({}) { |region, result|
-          result[region.slug] = assigned_patients_query_v2(region).each_with_object({}) { |(month_date, count), hsh|
+          result[region.slug] = assigned_patients_query_v2(region).each_with_object(Hash.new(0)) { |(month_date, count), hsh|
             hsh[Period.month(month_date)] = count
           }
         }
