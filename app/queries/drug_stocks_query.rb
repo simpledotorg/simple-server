@@ -43,12 +43,20 @@ class DrugStocksQuery
     Rails.cache.fetch(drug_consumption_cache_key,
       expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL"),
       force: RequestStore.store[:bust_cache]) do
-      {patient_count: facilities_total_patient_count,
-       all_drug_consumption: all_drug_consumption,
-       drug_consumption_by_facility_id: drug_consumption_by_facility_id,
+      {total_patient_count: district_patient_count,
+       total_drug_consumption: total_drug_consumption,
+
+       district_patient_count: district_patient_count,
+       district_drug_consumption: district_drug_consumption,
+
+       facilities_total_patient_count: facilities_total_patient_count,
+       facilities_total_drug_consumption: facilities_total_drug_consumption,
+
        patient_count_by_facility_id: patient_count_by_facility_id,
-       drug_consumption_by_block_id: drug_consumption_by_block_id,
+       drug_consumption_by_facility_id: drug_consumption_by_facility_id,
+
        patient_count_by_block_id: patient_count_by_block_id,
+       drug_consumption_by_block_id: drug_consumption_by_block_id,
        last_updated_at: Time.now}.compact
     end
   end
@@ -238,12 +246,32 @@ class DrugStocksQuery
     end
   end
 
-  def all_drug_consumption
+  memoize def facilities_total_drug_consumption
     drug_categories.each_with_object(Hash.new(0)) do |drug_category, result|
       result[drug_category] = category_drug_consumption(
         drug_category,
         selected_month_drug_stocks,
         previous_month_drug_stocks
+      )
+    end
+  end
+
+  def district_drug_consumption
+    drug_categories.each_with_object(Hash.new(0)) do |drug_category, result|
+      result[drug_category] = category_drug_consumption(
+        drug_category,
+        district_selected_month_drug_stocks,
+        district_previous_month_drug_stocks
+      )
+    end
+  end
+
+  def total_drug_consumption
+    drug_categories.each_with_object(Hash.new(0)) do |drug_category, result|
+      result[drug_category] = category_drug_consumption(
+        drug_category,
+        (district_selected_month_drug_stocks + selected_month_drug_stocks),
+        (district_previous_month_drug_stocks + previous_month_drug_stocks)
       )
     end
   end
