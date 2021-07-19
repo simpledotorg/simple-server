@@ -259,6 +259,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
             .not_to include(patient_2.id)
         end
       end
+
       it "visited_no_bp if the patient visited, but didn't get a BP taken in the last 2 months" do
         patient_bp_over_2_months = create(:patient, recorded_at: june_2021[:long_ago])
         create(:prescription_drug,
@@ -291,6 +292,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
             .not_to include(patient_bp_under_2_months.id)
         end
       end
+
       it "controlled/uncontrolled if there is a BP measured in the last 2 months that is under/not under control" do
         patient_controlled = create(:patient, recorded_at: june_2021[:long_ago])
         create(:blood_pressure, :with_encounter, patient: patient_controlled, recorded_at: june_2021[:now] - 1.month, systolic: 139, diastolic: 89)
@@ -333,6 +335,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
             .not_to include(patient_1.id)
         end
       end
+
       it "visited_no_bp if the patient visited, but didn't get a BP taken in this quarter" do
         patient_bp_in_last_quarter = create(:patient, recorded_at: june_2021[:long_ago])
         create(:prescription_drug,
@@ -365,6 +368,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
             .not_to include(patient_bp_in_this_quarter.id)
         end
       end
+
       it "controlled/uncontrolled if there is a BP measured in this quarter that is under/not under control" do
         patient_controlled = create(:patient, recorded_at: june_2021[:long_ago])
         create(:blood_pressure, :with_encounter, patient: patient_controlled, recorded_at: june_2021[:now], systolic: 139, diastolic: 89)
