@@ -220,12 +220,9 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
         end
       end
 
-      it "controlled/uncontrolled if there is a BP measured in the last 3 months that is under/not under control" do
+      it "controlled if there is a BP measured in the last 3 months that is under control" do
         patient_controlled = create(:patient, recorded_at: june_2021[:long_ago])
         create(:blood_pressure, :with_encounter, patient: patient_controlled, recorded_at: june_2021[:now] - 1.month, systolic: 139, diastolic: 89)
-
-        patient_uncontrolled = create(:patient, recorded_at: june_2021[:long_ago])
-        create(:blood_pressure, :with_encounter, patient: patient_uncontrolled, recorded_at: june_2021[:now] - 1.months, systolic: 140, diastolic: 90)
 
         patient_bp_over_3_months = create(:patient, recorded_at: june_2021[:long_ago])
         create(:blood_pressure, :with_encounter, patient: patient_bp_over_3_months, recorded_at: june_2021[:over_3_months_ago])
@@ -235,6 +232,21 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
         with_reporting_time_zone do
           expect(described_class.where(htn_treatment_outcome_in_last_3_months: "controlled", month_date: june_2021[:now]).pluck(:patient_id))
             .to include(patient_controlled.id)
+          expect(described_class.where(htn_treatment_outcome_in_last_3_months: %w[uncontrolled controlled], month_date: june_2021[:now]).pluck(:patient_id))
+            .not_to include(patient_bp_over_3_months.id)
+        end
+      end
+
+      it "uncontrolled if there is a BP measured in the last 3 months that is under/not under control" do
+        patient_uncontrolled = create(:patient, recorded_at: june_2021[:long_ago])
+        create(:blood_pressure, :with_encounter, patient: patient_uncontrolled, recorded_at: june_2021[:now] - 1.months, systolic: 140, diastolic: 90)
+
+        patient_bp_over_3_months = create(:patient, recorded_at: june_2021[:long_ago])
+        create(:blood_pressure, :with_encounter, patient: patient_bp_over_3_months, recorded_at: june_2021[:over_3_months_ago])
+
+        RefreshMaterializedViews.new.refresh_v2
+
+        with_reporting_time_zone do
           expect(described_class.where(htn_treatment_outcome_in_last_3_months: "uncontrolled", month_date: june_2021[:now]).pluck(:patient_id))
             .to include(patient_uncontrolled.id)
           expect(described_class.where(htn_treatment_outcome_in_last_3_months: %w[uncontrolled controlled], month_date: june_2021[:now]).pluck(:patient_id))
@@ -293,12 +305,9 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
         end
       end
 
-      it "controlled/uncontrolled if there is a BP measured in the last 2 months that is under/not under control" do
+      it "controlled if there is a BP measured in the last 2 months that is under control" do
         patient_controlled = create(:patient, recorded_at: june_2021[:long_ago])
         create(:blood_pressure, :with_encounter, patient: patient_controlled, recorded_at: june_2021[:now] - 1.month, systolic: 139, diastolic: 89)
-
-        patient_uncontrolled = create(:patient, recorded_at: june_2021[:long_ago])
-        create(:blood_pressure, :with_encounter, patient: patient_uncontrolled, recorded_at: june_2021[:now] - 1.months, systolic: 140, diastolic: 90)
 
         patient_bp_over_2_months = create(:patient, recorded_at: june_2021[:long_ago])
         create(:blood_pressure, :with_encounter, patient: patient_bp_over_2_months, recorded_at: june_2021[:now] - 2.months)
@@ -308,6 +317,21 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
         with_reporting_time_zone do
           expect(described_class.where(htn_treatment_outcome_in_last_2_months: "controlled", month_date: june_2021[:now]).pluck(:patient_id))
             .to include(patient_controlled.id)
+          expect(described_class.where(htn_treatment_outcome_in_last_2_months: %w[uncontrolled controlled], month_date: june_2021[:now]).pluck(:patient_id))
+            .not_to include(patient_bp_over_2_months.id)
+        end
+      end
+
+      it "uncontrolled if there is a BP measured in the last 2 months that is not under control" do
+        patient_uncontrolled = create(:patient, recorded_at: june_2021[:long_ago])
+        create(:blood_pressure, :with_encounter, patient: patient_uncontrolled, recorded_at: june_2021[:now] - 1.months, systolic: 140, diastolic: 90)
+
+        patient_bp_over_2_months = create(:patient, recorded_at: june_2021[:long_ago])
+        create(:blood_pressure, :with_encounter, patient: patient_bp_over_2_months, recorded_at: june_2021[:now] - 2.months)
+
+        RefreshMaterializedViews.new.refresh_v2
+
+        with_reporting_time_zone do
           expect(described_class.where(htn_treatment_outcome_in_last_2_months: "uncontrolled", month_date: june_2021[:now]).pluck(:patient_id))
             .to include(patient_uncontrolled.id)
           expect(described_class.where(htn_treatment_outcome_in_last_2_months: %w[uncontrolled controlled], month_date: june_2021[:now]).pluck(:patient_id))
@@ -369,12 +393,9 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
         end
       end
 
-      it "controlled/uncontrolled if there is a BP measured in this quarter that is under/not under control" do
+      it "controlled if there is a BP measured in this quarter that is under control" do
         patient_controlled = create(:patient, recorded_at: june_2021[:long_ago])
         create(:blood_pressure, :with_encounter, patient: patient_controlled, recorded_at: june_2021[:now], systolic: 139, diastolic: 89)
-
-        patient_uncontrolled = create(:patient, recorded_at: june_2021[:long_ago])
-        create(:blood_pressure, :with_encounter, patient: patient_uncontrolled, recorded_at: june_2021[:now], systolic: 140, diastolic: 90)
 
         patient_bp_in_last_quarter = create(:patient, recorded_at: june_2021[:long_ago])
         create(:blood_pressure, :with_encounter, patient: patient_bp_in_last_quarter, recorded_at: june_2021[:now] - 3.months)
@@ -384,6 +405,21 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
         with_reporting_time_zone do
           expect(described_class.where(htn_treatment_outcome_in_quarter: "controlled", month_date: june_2021[:now]).pluck(:patient_id))
             .to include(patient_controlled.id)
+          expect(described_class.where(htn_treatment_outcome_in_quarter: %w[uncontrolled controlled], month_date: june_2021[:now]).pluck(:patient_id))
+            .not_to include(patient_bp_in_last_quarter.id)
+        end
+      end
+
+      it "uncontrolled if there is a BP measured in this quarter that is not under control" do
+        patient_uncontrolled = create(:patient, recorded_at: june_2021[:long_ago])
+        create(:blood_pressure, :with_encounter, patient: patient_uncontrolled, recorded_at: june_2021[:now], systolic: 140, diastolic: 90)
+
+        patient_bp_in_last_quarter = create(:patient, recorded_at: june_2021[:long_ago])
+        create(:blood_pressure, :with_encounter, patient: patient_bp_in_last_quarter, recorded_at: june_2021[:now] - 3.months)
+
+        RefreshMaterializedViews.new.refresh_v2
+
+        with_reporting_time_zone do
           expect(described_class.where(htn_treatment_outcome_in_quarter: "uncontrolled", month_date: june_2021[:now]).pluck(:patient_id))
             .to include(patient_uncontrolled.id)
           expect(described_class.where(htn_treatment_outcome_in_quarter: %w[uncontrolled controlled], month_date: june_2021[:now]).pluck(:patient_id))
