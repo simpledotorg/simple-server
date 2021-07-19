@@ -162,9 +162,7 @@ class DrugStocksQuery
     drug_categories.each_with_object({}) do |drug_category, result|
       result[drug_category] = category_patient_days(
         drug_category,
-        (selected_month_drug_stocks + district_selected_month_drug_stocks)
-          .group_by { |param| param.protocol_drug.rxnorm_code }
-          .map { |_, values| values.reduce(:+) },
+        (selected_month_drug_stocks + district_selected_month_drug_stocks),
         district_patient_count || 0
       )
     end
