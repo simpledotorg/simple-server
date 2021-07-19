@@ -103,4 +103,21 @@ RSpec.describe PatientPhoneNumber, type: :model do
         .from(0).to(1)
     end
   end
+
+  describe "#number_with_country_code" do
+    it "adds the country code when one is not present" do
+      phone_number = create(:patient_phone_number, number: "1234567890")
+      expect(phone_number.number_with_country_code).to eq("+911234567890")
+    end
+
+    it "does not change the number if it's already localized correctly" do
+      phone_number = create(:patient_phone_number, number: "+911234567890")
+      expect(phone_number.number_with_country_code).to eq("+911234567890")
+    end
+
+    it "changes the number to the current country code if it is localized to another country" do
+      phone_number = create(:patient_phone_number, number: "+11234567890")
+      expect(phone_number.number_with_country_code).to eq("+911234567890")
+    end
+  end
 end
