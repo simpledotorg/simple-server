@@ -222,10 +222,10 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
 
       it "controlled if there is a BP measured in the last 3 months that is under control" do
         patient_controlled = create(:patient, recorded_at: june_2021[:long_ago])
-        create(:blood_pressure, :with_encounter, patient: patient_controlled, recorded_at: june_2021[:now] - 1.month, systolic: 139, diastolic: 89)
+        create(:bp_with_encounter, :under_control, patient: patient_controlled, recorded_at: june_2021[:now] - 1.month)
 
         patient_bp_over_3_months = create(:patient, recorded_at: june_2021[:long_ago])
-        create(:blood_pressure, :with_encounter, patient: patient_bp_over_3_months, recorded_at: june_2021[:over_3_months_ago])
+        create(:bp_with_encounter, patient: patient_bp_over_3_months, recorded_at: june_2021[:over_3_months_ago])
 
         RefreshMaterializedViews.new.refresh_v2
 
@@ -239,10 +239,10 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
 
       it "uncontrolled if there is a BP measured in the last 3 months that is under/not under control" do
         patient_uncontrolled = create(:patient, recorded_at: june_2021[:long_ago])
-        create(:blood_pressure, :with_encounter, patient: patient_uncontrolled, recorded_at: june_2021[:now] - 1.months, systolic: 140, diastolic: 90)
+        create(:bp_with_encounter, :hypertensive, patient: patient_uncontrolled, recorded_at: june_2021[:now] - 1.months)
 
         patient_bp_over_3_months = create(:patient, recorded_at: june_2021[:long_ago])
-        create(:blood_pressure, :with_encounter, patient: patient_bp_over_3_months, recorded_at: june_2021[:over_3_months_ago])
+        create(:bp_with_encounter, patient: patient_bp_over_3_months, recorded_at: june_2021[:over_3_months_ago])
 
         RefreshMaterializedViews.new.refresh_v2
 
@@ -307,10 +307,10 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
 
       it "controlled if there is a BP measured in the last 2 months that is under control" do
         patient_controlled = create(:patient, recorded_at: june_2021[:long_ago])
-        create(:blood_pressure, :with_encounter, patient: patient_controlled, recorded_at: june_2021[:now] - 1.month, systolic: 139, diastolic: 89)
+        create(:bp_with_encounter, :under_control, patient: patient_controlled, recorded_at: june_2021[:now] - 1.month)
 
         patient_bp_over_2_months = create(:patient, recorded_at: june_2021[:long_ago])
-        create(:blood_pressure, :with_encounter, patient: patient_bp_over_2_months, recorded_at: june_2021[:now] - 2.months)
+        create(:bp_with_encounter, patient: patient_bp_over_2_months, recorded_at: june_2021[:now] - 2.months)
 
         RefreshMaterializedViews.new.refresh_v2
 
@@ -324,10 +324,10 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
 
       it "uncontrolled if there is a BP measured in the last 2 months that is not under control" do
         patient_uncontrolled = create(:patient, recorded_at: june_2021[:long_ago])
-        create(:blood_pressure, :with_encounter, patient: patient_uncontrolled, recorded_at: june_2021[:now] - 1.months, systolic: 140, diastolic: 90)
+        create(:bp_with_encounter, :hypertensive, patient: patient_uncontrolled, recorded_at: june_2021[:now] - 1.months)
 
         patient_bp_over_2_months = create(:patient, recorded_at: june_2021[:long_ago])
-        create(:blood_pressure, :with_encounter, patient: patient_bp_over_2_months, recorded_at: june_2021[:now] - 2.months)
+        create(:bp_with_encounter, patient: patient_bp_over_2_months, recorded_at: june_2021[:now] - 2.months)
 
         RefreshMaterializedViews.new.refresh_v2
 
@@ -395,10 +395,10 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
 
       it "controlled if there is a BP measured in this quarter that is under control" do
         patient_controlled = create(:patient, recorded_at: june_2021[:long_ago])
-        create(:blood_pressure, :with_encounter, patient: patient_controlled, recorded_at: june_2021[:now], systolic: 139, diastolic: 89)
+        create(:bp_with_encounter, :under_control, patient: patient_controlled, recorded_at: june_2021[:now])
 
         patient_bp_in_last_quarter = create(:patient, recorded_at: june_2021[:long_ago])
-        create(:blood_pressure, :with_encounter, patient: patient_bp_in_last_quarter, recorded_at: june_2021[:now] - 3.months)
+        create(:bp_with_encounter, patient: patient_bp_in_last_quarter, recorded_at: june_2021[:now] - 3.months)
 
         RefreshMaterializedViews.new.refresh_v2
 
@@ -412,10 +412,10 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
 
       it "uncontrolled if there is a BP measured in this quarter that is not under control" do
         patient_uncontrolled = create(:patient, recorded_at: june_2021[:long_ago])
-        create(:blood_pressure, :with_encounter, patient: patient_uncontrolled, recorded_at: june_2021[:now], systolic: 140, diastolic: 90)
+        create(:bp_with_encounter, :hypertensive, patient: patient_uncontrolled, recorded_at: june_2021[:now])
 
         patient_bp_in_last_quarter = create(:patient, recorded_at: june_2021[:long_ago])
-        create(:blood_pressure, :with_encounter, patient: patient_bp_in_last_quarter, recorded_at: june_2021[:now] - 3.months)
+        create(:bp_with_encounter, patient: patient_bp_in_last_quarter, recorded_at: june_2021[:now] - 3.months)
 
         RefreshMaterializedViews.new.refresh_v2
 
@@ -531,10 +531,10 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
     describe "last_bp_state" do
       it "computes last bp state correctly" do
         patient_controlled = create(:patient, recorded_at: june_2021[:long_ago])
-        create(:blood_pressure, :with_encounter, patient: patient_controlled, recorded_at: june_2021[:over_3_months_ago], systolic: 139, diastolic: 89)
+        create(:bp_with_encounter, :under_control, patient: patient_controlled, recorded_at: june_2021[:over_3_months_ago])
 
         patient_uncontrolled = create(:patient, recorded_at: june_2021[:long_ago])
-        create(:blood_pressure, :with_encounter, patient: patient_uncontrolled, recorded_at: june_2021[:over_3_months_ago], systolic: 140, diastolic: 90)
+        create(:bp_with_encounter, :hypertensive, patient: patient_uncontrolled, recorded_at: june_2021[:over_3_months_ago])
 
         patient_no_bp = create(:patient, recorded_at: june_2021[:long_ago])
 
@@ -579,9 +579,9 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
             # 8  months ago    visit but no bp (drugs)
             # 5  months ago    uncontrolled bp taken
             patient = create(:patient, recorded_at: two_years_ago)
-            create(:blood_pressure, :with_encounter, patient: patient, recorded_at: ten_months_ago, systolic: 139, diastolic: 89)
+            create(:bp_with_encounter, :under_control, patient: patient, recorded_at: ten_months_ago)
             create(:prescription_drug, patient: patient, device_created_at: eight_months_ago)
-            create(:blood_pressure, :with_encounter, patient: patient, recorded_at: five_months_ago, systolic: 140, diastolic: 90)
+            create(:bp_with_encounter, :hypertensive, patient: patient, recorded_at: five_months_ago)
 
             RefreshMaterializedViews.new.refresh_v2
 
