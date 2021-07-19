@@ -188,7 +188,7 @@ module Reports
     private def controlled_v2
       regions.each_with_object({}).each do |region, hsh|
         if earliest_patient_recorded_at[region.slug].nil?
-          hsh[region.slug] = {}
+          hsh[region.slug] = Hash.new(0)
           next
         end
         hsh[region.slug] = control_rate_query_v2.controlled_counts(region, range: active_range(region))
@@ -212,7 +212,7 @@ module Reports
     private def uncontrolled_v2
       regions.each_with_object({}).each do |region, hsh|
         if earliest_patient_recorded_at[region.slug].nil?
-          hsh[region.slug] = {}
+          hsh[region.slug] = Hash.new(0)
           next
         end
         hsh[region.slug] = control_rate_query_v2.uncontrolled_counts(region, range: active_range(region))
