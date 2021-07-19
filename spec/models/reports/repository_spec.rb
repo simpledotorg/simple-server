@@ -216,7 +216,7 @@ RSpec.describe Reports::Repository, type: :model do
           create(:bp_with_encounter, :hypertensive, facility: facility_1, patient: patient, recorded_at: 35.days.ago, user: user)
         end
 
-        create(:bp_with_encounter, :under_control, facility: facility_3, patient: controlled_just_for_june, recorded_at: 4.days.ago, user: userf)
+        create(:bp_with_encounter, :under_control, facility: facility_3, patient: controlled_just_for_june, recorded_at: 4.days.ago, user: user)
 
         uncontrolled_in_june = create_list(:patient, 5, recorded_at: 4.months.ago, assigned_facility: facility_1, registration_user: user)
         uncontrolled_in_june.map do |patient|
@@ -234,7 +234,7 @@ RSpec.describe Reports::Repository, type: :model do
 
       facility_1_results = result[facility_1.slug]
       range.each do |period|
-        # expect(facility_1_results[period]).to_not be_nil
+        expect(facility_1_results[period]).to_not be_nil
       end
       expect(facility_1_results[Period.month(jan_2020)]).to eq(controlled_in_jan_and_june.size)
       expect(facility_1_results[Period.month(june_1_2020)]).to eq(3)
