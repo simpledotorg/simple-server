@@ -34,6 +34,15 @@ RSpec.describe DrugStocksReportExporter do
       create_list(:patient, 2, assigned_facility: facility)
     end
 
+    stocks_by_rxnorm.map do |(rxnorm_code, drug_stock)|
+      protocol_drug = protocol.protocol_drugs.find_by(rxnorm_code: rxnorm_code)
+      create(:drug_stock,
+        region: facility_group.region,
+        protocol_drug: protocol_drug,
+        in_stock: drug_stock[:in_stock],
+        received: drug_stock[:received])
+    end
+
     timestamp = ["Report last updated at:", query.drug_stocks_report.fetch(:last_updated_at)]
     headers_row_1 = [
       nil, nil,
@@ -62,8 +71,15 @@ RSpec.describe DrugStocksReportExporter do
 
     totals_row = [
       "All", "",
-      20000, 20000, 40000, 81081,
-      20000, 40000, 17857,
+      30000, 30000, 60000, 121621,
+      30000, 60000, 26785,
+      nil, nil, nil
+    ]
+
+    district_warehouse_row = [
+      "District Warehouse", "",
+      10000, 10000, 20000, 40540,
+      10000, 20000, 8928,
       nil, nil, nil
     ]
 
@@ -87,6 +103,7 @@ RSpec.describe DrugStocksReportExporter do
       headers_row_1.to_csv +
       headers_row_2.to_csv +
       totals_row.to_csv +
+      district_warehouse_row.to_csv +
       facility_1_row.to_csv +
       facility_2_row.to_csv
 
