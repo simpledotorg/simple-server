@@ -100,11 +100,16 @@ module Reports
 
     alias_method :adjusted_patients, :adjusted_patients_without_ltfu
 
+    # Returns cumulative assigned patients from facility_states - this includes LTFU
+    private def cumulative_assigned_patients_query_v2(region)
+      Reports::FacilityState.for_facility(region).order(:month_date).pluck(:month_date, :assigned_patients)
+    end
+
     # Return the running total of cumulative assigned patient counts. Note that this *includes* LTFU.
     memoize def cumulative_assigned_patients
       if reporting_schema_v2?
         regions.each_with_object({}) { |region, result|
-          result[region.slug] = assigned_patients_query_v2(region).each_with_object(Hash.new(0)) { |(month_date, count), hsh|
+          result[region.slug] = cumulative_assigned_patients_query_v2(region).each_with_object(Hash.new(0)) { |(month_date, count), hsh|
             hsh[Period.month(month_date)] = count
           }
         }
@@ -322,11 +327,6 @@ module Reports
     def active_range(region)
       start = [earliest_patient_recorded_at_period[region.slug], periods.begin].compact.max
       (start..periods.end)
-    end
-
-    def assigned_patients_query_v2(region)
-      region_field = "#{region.region_type}_region_id"
-      Reports::FacilityState.where(region_field => region.id).order(:month_date).pluck(:month_date, :assigned_patients)
     end
 
     # Returns the full range of assigned patient counts for a Region. We do this via one SQL query for each Region, because its
