@@ -15,11 +15,11 @@ RSpec.describe DrugConsumptionReportExporter do
                                 for_end_of_month: Date.current.end_of_month)
 
     stocks_by_rxnorm = {
-      "329528" => {in_stock: 10000, received: 2000},
-      "329526" => {in_stock: 20000, received: 2000},
-      "316764" => {in_stock: 10000, received: 2000},
-      "316765" => {in_stock: 20000, received: 2000},
-      "979467" => {in_stock: 10000, received: 2000}
+      "329528" => {in_stock: 10000, received: 2000, redistributed: 0},
+      "329526" => {in_stock: 20000, received: 2000, redistributed: 0},
+      "316764" => {in_stock: 10000, received: 2000, redistributed: 0},
+      "316765" => {in_stock: 20000, received: 2000, redistributed: 0},
+      "979467" => {in_stock: 10000, received: 2000, redistributed: 0}
     }
 
     previous_month_stocks_by_rxnorm =
@@ -35,7 +35,8 @@ RSpec.describe DrugConsumptionReportExporter do
         facility: facilities.first,
         protocol_drug: protocol_drug,
         in_stock: drug_stock[:in_stock],
-        received: drug_stock[:received])
+        received: drug_stock[:received],
+        redistributed: drug_stock[:redistributed])
     end
 
     previous_month_stocks_by_rxnorm.map do |(rxnorm_code, drug_stock)|

@@ -1,9 +1,11 @@
 # API Documentation: https://docs.google.com/document/d/1zaTouxdfGg4IqrkCk59KAP905vwynON5Up2ckUax8Mg/edit
 
 class ImoApiService
+  include Rails.application.routes.url_helpers
+
   IMO_USERNAME = ENV["IMO_USERNAME"]
   IMO_PASSWORD = ENV["IMO_PASSWORD"]
-  BASE_URL = "https://sgp.imo.im/api/simple/".freeze
+  IMO_BASE_URL = "https://sgp.imo.im/api/simple/".freeze
   # this is where the patient is redirected to when they click on the invitation card details section
   PATIENT_REDIRECT_URL = "https://www.nhf.org.bd".freeze
 
@@ -21,18 +23,20 @@ class ImoApiService
   def send_invitation(patient)
     return unless Flipper.enabled?(:imo_messaging)
 
-    locale = patient.locale
     Statsd.instance.increment("imo.invites.attempt")
-    url = BASE_URL + "send_invite"
+
+    locale = patient.locale
+    url = IMO_BASE_URL + "send_invite"
     request_body = JSON(
       phone: patient.latest_mobile_number,
-      msg: I18n.t("notifications.imo.invitations.message", locale: locale),
+      msg: I18n.t("notifications.imo.invitations.message", patient_name: patient.full_name, locale: locale),
       contents: [{
         key: I18n.t("notifications.imo.invitations.message_key", locale: locale),
-        value: I18n.t("notifications.imo.invitations.message", locale: locale)
+        value: I18n.t("notifications.imo.invitations.message", patient_name: patient.full_name, locale: locale)
       }],
       title: I18n.t("notifications.imo.invitations.title", locale: locale),
-      action: I18n.t("notifications.imo.invitations.action", locale: locale)
+      action: I18n.t("notifications.imo.invitations.action", locale: locale),
+      callback_url: invitation_callback_url(patient.id)
     )
 
     if request_body.include?("translation missing")
@@ -50,7 +54,7 @@ class ImoApiService
     return unless Flipper.enabled?(:imo_messaging)
 
     Statsd.instance.increment("imo.notifications.attempt")
-    url = BASE_URL + "send_notification"
+    url = IMO_BASE_URL + "send_notification"
     request_body = JSON(
       phone: patient.latest_mobile_number,
       msg: message,
@@ -98,6 +102,14 @@ class ImoApiService
     Statsd.instance.increment("imo.#{action}.error")
     report_error("Unknown #{response.status} error from Imo", url, response)
     :error
+  end
+
+  def invitation_callback_url(patient_id)
+    api_v3_imo_authorization_callback_url(
+      host: ENV.fetch("SIMPLE_SERVER_HOST"),
+      protocol: ENV.fetch("SIMPLE_SERVER_HOST_PROTOCOL"),
+      patient_id: patient_id
+    )
   end
 
   def report_error(message, url, response)

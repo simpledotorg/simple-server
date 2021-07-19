@@ -64,10 +64,17 @@
               </div>
             <% end %>
           <% end %>
-          <input id="redistribution-fields-toggle" type="checkbox" <%= "checked" if @drug_stocks.values.map(&:redistributed).any? %>>
-          <label for="redistribution-fields-toggle">Did your facility issue drugs to other facilities this month?</label>
+            <div class="redistribution-question">
+              <div class="redistribution-switch-label">
+                <label for="redistribution-fields-toggle">Did your facility issue drugs to other facilities this
+                  month?</label>
+              </div>
+              <div class="redistribution-switch-wrapper">
+                <input type="checkbox" id="redistribution-fields-toggle" class="switch" <%= "checked" if @drug_stocks.values.map(&:redistributed).any? %> />
+              </div>
+            </div>
 
-          <div id="redistribution-fields">
+            <div id="redistribution-fields">
             <% @protocol_drugs.each_with_index do |protocol_drug, index| %>
               <%= form.fields_for "drug_stocks[#{index}]", DrugStock.new do |drug_stock_form| %>
                 <%= drug_stock_form.hidden_field :protocol_drug_id, value: protocol_drug.id %>
@@ -75,7 +82,7 @@
                 <div class="form-group">
                   <label><%= "#{protocol_drug.name} #{protocol_drug.dosage}"%> tablets</label>
                   <div class="form-row">
-                    <div class="col-12">
+                    <div style="width: 95%">
                       <%= drug_stock_form.number_field :redistributed,
                           class: :redistributed,
                           value: @drug_stocks[protocol_drug.id].try(&:redistributed),
