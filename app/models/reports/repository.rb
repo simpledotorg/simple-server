@@ -7,7 +7,7 @@ module Reports
     PERCENTAGE_PRECISION = 0
 
     def initialize(regions, periods:, reporting_schema_v2: true)
-      @regions = Array(regions)
+      @regions = Array(regions).map(&:region)
       @periods = if periods.is_a?(Period)
         Range.new(periods, periods)
       else
