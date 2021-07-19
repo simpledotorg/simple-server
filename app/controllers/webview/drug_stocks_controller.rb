@@ -2,9 +2,12 @@
 # hence we handle authentication ourselves from params passed from the client.
 class Webview::DrugStocksController < ApplicationController
   include BustCache
+  include SetForEndOfMonth
+
   skip_before_action :verify_authenticity_token
+  around_action :set_reporting_time_zone
   before_action :authenticate
-  before_action :find_current_facility
+  before_action :set_current_facility
   before_action :set_for_end_of_month
   before_action :set_bust_cache
   layout false
@@ -15,8 +18,11 @@ class Webview::DrugStocksController < ApplicationController
   end
 
   def create
-    DrugStocksCreator.call(current_user, current_facility, @for_end_of_month, safe_params[:drug_stocks])
-    redirect_to webview_drug_stocks_url(for_end_of_month: @for_end_of_month,
+    DrugStocksCreator.call(user: current_user,
+                           facility: @current_facility,
+                           for_end_of_month: @for_end_of_month,
+                           drug_stocks_params: safe_params[:drug_stocks])
+    redirect_to webview_drug_stocks_url(for_end_of_month: @for_end_of_month.to_s(:mon_year),
                                         facility_id: current_facility.id,
                                         user_id: current_user.id,
                                         access_token: current_user.access_token)
@@ -28,7 +34,9 @@ class Webview::DrugStocksController < ApplicationController
   def index
     @protocol_drugs = current_facility.protocol.protocol_drugs.where(stock_tracked: true).sort_by(&:sort_key)
     @drug_stocks = DrugStock.latest_for_facilities_grouped_by_protocol_drug(current_facility, @for_end_of_month)
-    @query = DrugStocksQuery.new(facilities: [current_facility], for_end_of_month: @for_end_of_month)
+    @query = DrugStocksQuery.new(facilities: [current_facility],
+                                 for_end_of_month: @for_end_of_month,
+                                 include_block_report: false)
     @drugs_by_category = @query.protocol_drugs_by_category
     @report = @query.drug_stocks_report
   end
@@ -60,12 +68,8 @@ class Webview::DrugStocksController < ApplicationController
     @current_user = user
   end
 
-  def find_current_facility
+  def set_current_facility
     @current_facility = Facility.find(safe_params[:facility_id])
-    if @current_facility.community?
-      logger.error "Cannot create DrugStocks for community facility #{@current_facility.slug}"
-      render json: {status: "invalid", errors: "community facility"}, status: 422
-    end
   end
 
   def safe_params
@@ -74,19 +78,6 @@ class Webview::DrugStocksController < ApplicationController
         [:received,
           :in_stock,
           :protocol_drug_id])
-  end
-
-  def set_for_end_of_month
-    @for_end_of_month ||= if params[:for_end_of_month]
-      logger.info "parsing for_end_of_month from #{params[:for_end_of_month]}"
-      Date.parse(params[:for_end_of_month]).end_of_month
-    elsif (Date.current.end_of_month - Date.current).to_i < 8
-      logger.info "using current date for_end_of_month"
-      Date.current.end_of_month
-    else
-      logger.info "using previous month for_end_of_month"
-      Date.current.prev_month.end_of_month
-    end
   end
 
   def set_bust_cache

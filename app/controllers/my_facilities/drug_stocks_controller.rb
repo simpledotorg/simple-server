@@ -5,28 +5,33 @@ class MyFacilities::DrugStocksController < AdminController
 
   layout "my_facilities"
 
+  around_action :set_reporting_time_zone
   before_action :authorize_my_facilities
   after_action :verify_authorization_attempted
   before_action :set_facility, only: [:new, :create]
   before_action :set_for_end_of_month
-  before_action :drug_stocks_enabled?
+  before_action :redirect_unless_drug_stocks_enabled
 
   def drug_stocks
     create_drug_report
     @report = @query.drug_stocks_report
+
+    respond_to do |format|
+      format.html { render :drug_stocks }
+      format.csv do
+        send_data DrugStocksReportExporter.csv(@query), filename: "drug-stocks-report-#{@for_end_of_month_display}.csv"
+      end
+    end
   end
 
   def drug_consumption
     create_drug_report
     @report = @query.drug_consumption_report
-  end
-
-  def download_drug_stock
-    create_drug_report
 
     respond_to do |format|
+      format.html { render :drug_consumption }
       format.csv do
-        send_data DrugStocksReportExporter.csv(@query), filename: "drug-stocks-report-#{@for_end_of_month_display}.csv"
+        send_data DrugConsumptionReportExporter.csv(@query), filename: "drug-consumption-report-#{@for_end_of_month_display}.csv"
       end
     end
   end
@@ -37,7 +42,10 @@ class MyFacilities::DrugStocksController < AdminController
   end
 
   def create
-    DrugStocksCreator.call(current_admin, @facility, @for_end_of_month, drug_stocks_params[:drug_stocks])
+    DrugStocksCreator.call(user: current_admin,
+                           for_end_of_month: @for_end_of_month,
+                           drug_stocks_params: drug_stocks_params[:drug_stocks],
+                           facility: @facility)
     redirect_to redirect_url, notice: "Saved drug stocks"
   rescue ActiveRecord::RecordInvalid
     redirect_to redirect_url, alert: "Something went wrong, Drug Stocks were not saved."
@@ -46,14 +54,12 @@ class MyFacilities::DrugStocksController < AdminController
   private
 
   def create_drug_report
-    @facilities = filter_facilities
-      .where.not(facility_size: :community)
-      .includes(facility_group: :protocol_drugs)
-      .where(protocol_drugs: {stock_tracked: true})
-
+    @facilities = drug_stock_enabled_facilities
     @for_end_of_month_display = @for_end_of_month.strftime("%b-%Y")
-    render && return if @facilities.empty?
-    @query = DrugStocksQuery.new(facilities: @facilities, for_end_of_month: @for_end_of_month)
+    @query = DrugStocksQuery.new(facilities: @facilities,
+                                 for_end_of_month: @for_end_of_month,
+                                 include_block_report: true)
+    @blocks = @query.blocks.order(:name)
     @drugs_by_category = @query.protocol_drugs_by_category
   end
 
@@ -84,20 +90,13 @@ class MyFacilities::DrugStocksController < AdminController
     )
   end
 
-  def drug_stocks_enabled?
-    unless current_admin.feature_enabled?(:drug_stocks)
-      redirect_to :root
-    end
+  def redirect_unless_drug_stocks_enabled
+    redirect_to :root unless current_admin.drug_stocks_enabled?
   end
 
-  def populate_facility_sizes
-    @facility_sizes = @accessible_facilities
-      .where(facility_group: @selected_facility_group, zone: @selected_zones)
-      .pluck(:facility_size)
-      .uniq
-      .compact
-      .sort
-      .reject { |size| size == "community" }
-    @facility_sizes = sort_facility_sizes_by_size(@facility_sizes)
+  def drug_stock_enabled_facilities
+    filter_facilities
+      .includes(facility_group: :protocol_drugs)
+      .where(protocol_drugs: {stock_tracked: true})
   end
 end

@@ -24,17 +24,29 @@ RSpec.describe RefreshMaterializedViews do
     time = Time.current
     # Just adding enough data to smoke test this; we test these views
     # more thoroughly via various reporting specs
-    create_list(:blood_pressure, 2)
 
     expect {
       Timecop.freeze(time) do
+        create_list(:blood_pressure, 2)
         RefreshMaterializedViews.call
       end
-    }.to change { LatestBloodPressuresPerPatientPerMonth.count }.from(0).to(2)
-      .and change { LatestBloodPressuresPerPatient.count }.from(0).to(2)
-      .and change { LatestBloodPressuresPerPatientPerQuarter.count }.from(0).to(2)
-      .and change { BloodPressuresPerFacilityPerDay.count }.from(0).to(2)
-      .and change { PatientRegistrationsPerDayPerFacility.count }.from(0).to(2)
+    }.to change { LatestBloodPressuresPerPatientPerMonth.count }.by(2)
+      .and change { LatestBloodPressuresPerPatient.count }.by(2)
+      .and change { LatestBloodPressuresPerPatientPerQuarter.count }.by(2)
+      .and change { BloodPressuresPerFacilityPerDay.count }.by(2)
+      .and change { PatientRegistrationsPerDayPerFacility.count }.by(2)
       .and change { RefreshMaterializedViews.last_updated_at }.from(nil).to(time)
+  end
+
+  it "updates v2 matviews" do
+    time = Time.current
+    expect {
+      Timecop.freeze(time) do
+        create_list(:blood_pressure, 2)
+        RefreshMaterializedViews.call
+      end
+    }.to change { Reports::PatientBloodPressure.count }.by(2)
+      .and change { Reports::PatientState.count }.by(2)
+      .and change { Reports::PatientVisit.count }.by(2)
   end
 end

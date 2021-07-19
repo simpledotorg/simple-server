@@ -51,10 +51,12 @@ RSpec.describe Region, type: :model do
     it "is everything for India" do
       expect(CountryConfig).to receive(:current).and_return(CountryConfig.for(:IN)).at_least(:once)
 
+      org = Seed.seed_org.region
       state = FactoryBot.create(:region, :state, reparent_to: Seed.seed_org.region)
       district = FactoryBot.create(:region, :district, reparent_to: state)
       fg = FactoryBot.create(:facility_group, region: district)
       facility = FactoryBot.create(:facility, facility_group: fg)
+      expect(org.reportable_children).to match_array([state])
       expect(district.reportable_children).to match_array(district.block_regions)
       expect(district.block_regions.first.reportable_children).to match_array([facility.region])
     end
@@ -69,6 +71,14 @@ RSpec.describe Region, type: :model do
       facility = FactoryBot.create(:facility, facility_group: fg)
       facility_region = facility.region
       expect(district.reportable_children).to contain_exactly(facility_region)
+    end
+
+    it "works for Bangladesh organizations" do
+      allow(CountryConfig).to receive(:current).and_return(CountryConfig.for(:BD)).at_least(:once)
+      org = Seed.seed_org.region
+      state = FactoryBot.create(:region, :state, reparent_to: org)
+      district = FactoryBot.create(:region, :district, reparent_to: state)
+      expect(org.reportable_children).to match_array([district])
     end
   end
 
@@ -85,7 +95,6 @@ RSpec.describe Region, type: :model do
     it "returns the source facilities" do
       facility_group = create(:facility_group)
       facilities = create_list(:facility, 3, block: "Block ABC", facility_group: facility_group)
-      RegionBackfill.call(dry_run: false)
 
       facility = facilities.first
       block_region = facility.region.parent
@@ -103,7 +112,6 @@ RSpec.describe Region, type: :model do
         ary << create(:patient, registration_facility: facility)
       }
       patients_in_block_2 = create_list(:patient, 2, registration_facility: block_2_facility)
-      RegionBackfill.call(dry_run: false)
       block_1 = Region.block_regions.find_by!(name: "Block 1")
       block_2 = Region.block_regions.find_by!(name: "Block 2")
       expect(block_2_facility.region.assigned_patients).to match_array(patients_in_block_2)
@@ -432,6 +440,28 @@ RSpec.describe Region, type: :model do
         .to be_empty
       expect(organization.region.facility_regions.find_by(source: facility_4).syncable_patients)
         .to be_empty
+    end
+  end
+
+  context "flipperable" do
+    it "has a flipper_id" do
+      region = create(:region, reparent_to: Region.root)
+
+      expect(region.flipper_id).to eq("Region;#{region.id}")
+    end
+
+    describe "#feature_enabled?" do
+      it "returns true when feature is enabled" do
+        region = create(:region, reparent_to: Region.root)
+        Flipper.enable(:a_flag, region)
+
+        expect(region.feature_enabled?(:a_flag)).to be true
+      end
+
+      it "returns false when feature is disabled" do
+        region = create(:region, reparent_to: Region.root)
+        expect(region.feature_enabled?(:a_flag)).to be false
+      end
     end
   end
 end

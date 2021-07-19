@@ -3,7 +3,7 @@ class Admin::UsersController < AdminController
   include SearchHelper
 
   before_action :set_user, except: [:index, :teleconsult_search]
-  around_action :set_time_zone, only: [:show]
+  around_action :set_reporting_time_zone, only: [:show]
   before_action :set_district, only: [:index]
 
   def index
@@ -100,10 +100,6 @@ class Admin::UsersController < AdminController
 
   def set_user
     @user = authorize { current_admin.accessible_users(:manage).find(params[:id] || params[:user_id]) }
-  end
-
-  def set_time_zone
-    Time.use_zone(Period::REPORTING_TIME_ZONE) { yield }
   end
 
   def user_params

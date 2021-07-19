@@ -13,6 +13,16 @@ RSpec.describe PatientSummaryQuery do
     expect(PatientSummaryQuery.call).to eq([])
   end
 
+  context "when only_overdue is false" do
+    it "returns all patients with unvisited appointments" do
+      patient = create(:patient)
+      create(:appointment, status: :cancelled, scheduled_date: 1.month.ago, patient: patient)
+
+      expect(PatientSummaryQuery.call.map(&:patient)).not_to include(patient)
+      expect(PatientSummaryQuery.call(only_overdue: false).map(&:patient)).to include(patient)
+    end
+  end
+
   it "ignores phone number filters if both filters are set" do
     create(:patient, :with_overdue_appointments)
     create(:patient, :with_overdue_appointments, phone_numbers: [])

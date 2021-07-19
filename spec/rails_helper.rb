@@ -37,6 +37,16 @@ RSpec.configure do |config|
     @common_org ||= Organization.find_or_create_by!(name: "Common Test Organization")
   end
 
+  def with_reporting_time_zone(&blk)
+    Time.use_zone(Period::REPORTING_TIME_ZONE) do
+      original_group_date_time_zone = Groupdate.time_zone
+      Groupdate.time_zone = Period::REPORTING_TIME_ZONE
+      blk.call
+    ensure
+      Groupdate.time_zone = original_group_date_time_zone
+    end
+  end
+
   config.before(:each) do
     RequestStore.clear!
   end
