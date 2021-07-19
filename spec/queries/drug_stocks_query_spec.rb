@@ -223,17 +223,17 @@ RSpec.describe DrugStocksQuery do
       result = described_class.new(facilities: facilities,
                                    for_end_of_month: for_end_of_month).drug_consumption_report
 
-      expect(result[:patient_count]).to eq(patients.count)
-      expect(result[:all_drug_consumption]["hypertension_ccb"][:base_doses][:total]).to eq(15600)
-      expect(result[:all_drug_consumption]["hypertension_arb"][:base_doses][:total]).to eq(24000)
+      expect(result[:total_patient_count]).to eq(patients.count)
+      expect(result[:total_drug_consumption]["hypertension_ccb"][:base_doses][:total]).to eq(15600)
+      expect(result[:total_drug_consumption]["hypertension_arb"][:base_doses][:total]).to eq(24000)
 
       {"hypertension_ccb" => %w[329528 329526],
        "hypertension_arb" => %w[316764 316765 979467]}.each do |(drug_category, rxnorm_codes)|
-        expect(result[:all_drug_consumption][drug_category][:base_doses][:total]).not_to be_nil
-        expect(result[:all_drug_consumption][drug_category][:base_doses][:drugs]).not_to be_nil
-        expect(result[:all_drug_consumption][drug_category][:base_doses][:drugs].first[:name]).not_to be_nil
-        expect(result[:all_drug_consumption][drug_category][:base_doses][:drugs].first[:consumed]).not_to be_nil
-        expect(result[:all_drug_consumption][drug_category][:base_doses][:drugs].first[:coefficient]).not_to be_nil
+        expect(result[:total_drug_consumption][drug_category][:base_doses][:total]).not_to be_nil
+        expect(result[:total_drug_consumption][drug_category][:base_doses][:drugs]).not_to be_nil
+        expect(result[:total_drug_consumption][drug_category][:base_doses][:drugs].first[:name]).not_to be_nil
+        expect(result[:total_drug_consumption][drug_category][:base_doses][:drugs].first[:consumed]).not_to be_nil
+        expect(result[:total_drug_consumption][drug_category][:base_doses][:drugs].first[:coefficient]).not_to be_nil
       end
     end
 

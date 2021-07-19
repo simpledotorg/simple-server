@@ -123,15 +123,11 @@ class DrugStocksQuery
   end
 
   memoize def district_selected_month_drug_stocks
-    DrugStock
-      .latest_for_regions_cte(@district, @for_end_of_month)
-      .load
+    DrugStock.latest_for_regions_cte(@district, @for_end_of_month).load
   end
 
   memoize def district_previous_month_drug_stocks
-    DrugStock
-      .latest_for_regions_cte(@district, end_of_previous_month)
-      .load
+    DrugStock.latest_for_regions_cte(@district, end_of_previous_month).load
   end
 
   memoize def facilities_total_drugs_in_stock
