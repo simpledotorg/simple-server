@@ -32,26 +32,26 @@ RSpec.describe DrugConsumptionReportExporter do
     stocks_by_rxnorm.map do |(rxnorm_code, drug_stock)|
       protocol_drug = protocol.protocol_drugs.find_by(rxnorm_code: rxnorm_code)
       create(:drug_stock,
-             region: facility_group.region,
-             protocol_drug: protocol_drug,
-             in_stock: drug_stock[:in_stock],
-             received: drug_stock[:received],
-             redistributed: drug_stock[:redistributed])
+        region: facility_group.region,
+        protocol_drug: protocol_drug,
+        in_stock: drug_stock[:in_stock],
+        received: drug_stock[:received],
+        redistributed: drug_stock[:redistributed])
       create(:drug_stock,
-             facility: facilities.first,
-             protocol_drug: protocol_drug,
-             in_stock: drug_stock[:in_stock],
-             received: drug_stock[:received],
-             redistributed: drug_stock[:redistributed])
+        facility: facilities.first,
+        protocol_drug: protocol_drug,
+        in_stock: drug_stock[:in_stock],
+        received: drug_stock[:received],
+        redistributed: drug_stock[:redistributed])
     end
 
     previous_month_stocks_by_rxnorm.map do |(rxnorm_code, drug_stock)|
       protocol_drug = protocol.protocol_drugs.find_by(rxnorm_code: rxnorm_code)
       create(:drug_stock,
-             region: facility_group.region,
-             protocol_drug: protocol_drug,
-             in_stock: drug_stock[:in_stock],
-             for_end_of_month: (Date.today - 1.month).end_of_month)
+        region: facility_group.region,
+        protocol_drug: protocol_drug,
+        in_stock: drug_stock[:in_stock],
+        for_end_of_month: (Date.today - 1.month).end_of_month)
       create(:drug_stock,
         facility: facilities.first,
         protocol_drug: protocol_drug,
