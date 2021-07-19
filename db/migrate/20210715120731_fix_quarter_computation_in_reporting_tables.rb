@@ -10,8 +10,8 @@ class FixQuarterComputationInReportingTables < ActiveRecord::Migration[5.2]
     create_view :reporting_patient_visits, version: 3, materialized: true
     create_view :reporting_patient_states, version: 3, materialized: true
 
-    add_index :reporting_patient_blood_pressures, [:month_date, :patient_id], unique: true, name: "patient_blood_pressures_patient_id_month_date"
-    add_index :reporting_patient_visits, [:month_date, :patient_id], unique: true, name: "patient_visits_patient_id_month_date"
+    add_index :reporting_patient_blood_pressures, [:month_date, :patient_id], unique: true, name: :patient_blood_pressures_patient_id_month_date
+    add_index :reporting_patient_visits, [:month_date, :patient_id], unique: true, name: :patient_visits_patient_id_month_date
     add_index :reporting_patient_states, [:assigned_block_region_id], name: :patient_states_assigned_block
     add_index :reporting_patient_states, [:assigned_district_region_id], name: :patient_states_assigned_district
     add_index :reporting_patient_states, [:assigned_facility_region_id], name: :patient_states_assigned_facility
@@ -31,6 +31,8 @@ class FixQuarterComputationInReportingTables < ActiveRecord::Migration[5.2]
     create_view :reporting_patient_visits, version: 2, materialized: true
     create_view :reporting_patient_states, version: 2, materialized: true
 
+    add_index :reporting_patient_blood_pressures, [:month_date, :patient_id], unique: true, name: :patient_blood_pressures_patient_id_month_date
+    add_index :reporting_patient_visits, [:month_date, :patient_id], unique: true, name: :patient_visits_patient_id_month_date
     add_index :reporting_patient_states, [:assigned_block_region_id], name: :patient_states_assigned_block
     add_index :reporting_patient_states, [:assigned_district_region_id], name: :patient_states_assigned_district
     add_index :reporting_patient_states, [:assigned_facility_region_id], name: :patient_states_assigned_facility
