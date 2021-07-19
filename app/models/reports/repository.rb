@@ -70,8 +70,6 @@ module Reports
     # }
     memoize def assigned_patients
       complete_monthly_assigned_patients.each_with_object({}) do |(entry, result), results|
-        pp "in assigned"
-        pp entry, result
         values = periods.each_with_object(Hash.new(0)) { |period, region_result| region_result[period] = result[period] if result[period] }
         results[entry.region.slug] = values
       end
