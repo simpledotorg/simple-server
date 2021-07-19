@@ -54,15 +54,12 @@ class MyFacilities::DrugStocksController < AdminController
   private
 
   def create_drug_report
-    @facilities = filter_facilities
-      .where.not(facility_size: :community)
-      .includes(facility_group: :protocol_drugs)
-      .where(protocol_drugs: {stock_tracked: true})
+    @facilities = drug_stock_enabled_facilities
     @for_end_of_month_display = @for_end_of_month.strftime("%b-%Y")
     @query = DrugStocksQuery.new(facilities: @facilities,
                                  for_end_of_month: @for_end_of_month,
                                  include_block_report: true)
-    @blocks = @query.blocks
+    @blocks = @query.blocks.order(:name)
     @drugs_by_category = @query.protocol_drugs_by_category
   end
 
@@ -97,14 +94,9 @@ class MyFacilities::DrugStocksController < AdminController
     redirect_to :root unless current_admin.drug_stocks_enabled?
   end
 
-  def populate_facility_sizes
-    @facility_sizes = @accessible_facilities
-      .where(facility_group: @selected_facility_group, zone: @selected_zones)
-      .pluck(:facility_size)
-      .uniq
-      .compact
-      .sort
-      .reject { |size| size == "community" }
-    @facility_sizes = sort_facility_sizes_by_size(@facility_sizes)
+  def drug_stock_enabled_facilities
+    filter_facilities
+      .includes(facility_group: :protocol_drugs)
+      .where(protocol_drugs: {stock_tracked: true})
   end
 end

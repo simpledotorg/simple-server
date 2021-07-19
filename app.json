@@ -57,12 +57,6 @@
     "ENABLE_AUTO_APPROVE_USER_FOR_QA" : {
       "value": "true"
     },
-    "ENABLE_CACHED_QUERIES_FOR_DASHBOARD": {
-      "value": "true"
-    },
-    "ENABLE_DASHBOARD_VIEW_BY_DISTRICT": {
-      "value": "true"
-    },
     "ENABLE_EXOTEL_WHITELIST_API": {
       "value": "false"
     },
@@ -72,23 +66,11 @@
     "ENABLE_GENERATE_ENCOUNTER_ID_ENDPOINT": {
       "value": "true"
     },
-    "ENABLE_INVITE_ADMINS": {
-      "value": "true"
-    },
-    "ENABLE_PHONE_NUMBER_MASKING": {
-      "value": "true"
-    },
     "ENABLE_PURGE_ENDPOINT_FOR_QA": {
       "value": "false"
     },
-    "ENABLE_SMS_NOTIFICATION_FOR_OTP": {
-      "value": "true"
-    },
     "ENABLE_SYNC_ENCOUNTERS": {
       "value": "false"
-    },
-    "ENABLE_UPDATED_ANALYTICS_VIEWS": {
-      "value": "true"
     },
     "EXOTEL_API_RATE_LIMIT_PER_MINUTE": {
       "value": "250"
