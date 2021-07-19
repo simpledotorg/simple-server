@@ -46,11 +46,11 @@ RSpec.describe DrugStocksQuery do
         stocks_by_rxnorm.map do |(rxnorm_code, drug_stock)|
           protocol_drug = protocol.protocol_drugs.find_by(rxnorm_code: rxnorm_code)
           create(:drug_stock,
-                 user: user,
-                 facility: facility,
-                 protocol_drug: protocol_drug,
-                 in_stock: drug_stock[:in_stock],
-                 redistributed: drug_stock[:redistributed])
+            user: user,
+            facility: facility,
+            protocol_drug: protocol_drug,
+            in_stock: drug_stock[:in_stock],
+            redistributed: drug_stock[:redistributed])
         end
       }.flatten
     }
@@ -209,12 +209,12 @@ RSpec.describe DrugStocksQuery do
         stocks_by_rxnorm.map do |(rxnorm_code, drug_stock)|
           protocol_drug = protocol.protocol_drugs.find_by(rxnorm_code: rxnorm_code)
           create(:drug_stock,
-                 user: user,
-                 facility: facility,
-                 protocol_drug: protocol_drug,
-                 in_stock: drug_stock[:in_stock],
-                 received: drug_stock[:received],
-                 redistributed: drug_stock[:redistributed])
+            user: user,
+            facility: facility,
+            protocol_drug: protocol_drug,
+            in_stock: drug_stock[:in_stock],
+            received: drug_stock[:received],
+            redistributed: drug_stock[:redistributed])
         end
       }.flatten
     }
