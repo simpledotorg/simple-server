@@ -752,3 +752,59 @@ select.form-control, input.form-control {
     box-sizing: border-box;
   }
 }
+
+.switch {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  line-height: 0;
+  outline: none;
+  cursor: pointer;
+  position: relative;
+}
+.switch:before,  .switch:after {
+  content: "";
+  position: absolute;
+}
+.switch:before {
+  border-radius: 1.25em;
+  background: #bdc3c7;
+  height: 1.875em;
+  left: -0.25em;
+  top: -0.1875em;
+  transition: background-color 0.25s ease-out 0.1s;
+  width: 4.5em;
+}
+.switch:after {
+  border-radius: 50%;
+  background: #fefefe;
+  height: 1.5em;
+  transform: translate(0, 0);
+  transition: transform 0.25s ease-out 0.1s;
+  width: 1.5em;
+}
+.switch:checked:after {
+  transform: translate(2.5em, 0);
+}
+.switch:checked:before {
+  background: #3498db;
+}
+.switch:active {
+  background-color: unset;
+}
+
+.redistribution-question {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.redistribution-switch-label {
+  display: flex;
+  align-items: center;
+}
+
+.redistribution-switch-wrapper {
+  width: 100px;
+  margin-bottom: 20px;
+}
