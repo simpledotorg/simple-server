@@ -9,14 +9,18 @@ RSpec.describe Reports::DrugStockCalculation, type: :model do
   let(:user) { create(:admin) }
   let(:drug_category) { "hypertension_ccb" }
   let(:drug_stocks) {
-    [build(:drug_stock, in_stock: 10000, facility_id: facility.id, user: user, protocol_drug: ProtocolDrug.find_by(rxnorm_code: "329528")),
-      build(:drug_stock, in_stock: 20000, facility_id: facility.id, user: user, protocol_drug: ProtocolDrug.find_by(rxnorm_code: "329526")),
-      build(:drug_stock, in_stock: 10000, facility_id: facility.id, user: user, protocol_drug: ProtocolDrug.find_by(rxnorm_code: "316764")),
-      build(:drug_stock, in_stock: 20000, facility_id: facility.id, user: user, protocol_drug: ProtocolDrug.find_by(rxnorm_code: "316765")),
-      build(:drug_stock, in_stock: 10000, facility_id: facility.id, user: user, protocol_drug: ProtocolDrug.find_by(rxnorm_code: "979467")),
-      build(:drug_stock, in_stock: 10000, facility_id: facility.id, user: user, protocol_drug: ProtocolDrug.find_by(rxnorm_code: "316049")),
-      build(:drug_stock, in_stock: 10000, facility_id: facility.id, user: user, protocol_drug: ProtocolDrug.find_by(rxnorm_code: "331132"))]
+    [build(:drug_stock, in_stock: 10000, received: 5000, redistributed: 1000, facility_id: facility.id, user: user, protocol_drug: ProtocolDrug.find_by(rxnorm_code: "329528")),
+      build(:drug_stock, in_stock: 20000, redistributed: 0, facility_id: facility.id, user: user, protocol_drug: ProtocolDrug.find_by(rxnorm_code: "329526")),
+      build(:drug_stock, in_stock: 10000, redistributed: 0, facility_id: facility.id, user: user, protocol_drug: ProtocolDrug.find_by(rxnorm_code: "316764")),
+      build(:drug_stock, in_stock: 20000, redistributed: 0, facility_id: facility.id, user: user, protocol_drug: ProtocolDrug.find_by(rxnorm_code: "316765")),
+      build(:drug_stock, in_stock: 10000, redistributed: 0, facility_id: facility.id, user: user, protocol_drug: ProtocolDrug.find_by(rxnorm_code: "979467")),
+      build(:drug_stock, in_stock: 10000, redistributed: 0, facility_id: facility.id, user: user, protocol_drug: ProtocolDrug.find_by(rxnorm_code: "316049")),
+      build(:drug_stock, in_stock: 10000, redistributed: 0, facility_id: facility.id, user: user, protocol_drug: ProtocolDrug.find_by(rxnorm_code: "331132"))]
   }
+  let(:previous_month_drug_stocks) {
+    [build(:drug_stock, in_stock: 10000, facility_id: facility.id, user: user, protocol_drug: ProtocolDrug.find_by(rxnorm_code: "329528"))]
+  }
+
   let(:punjab_drug_stock_config) {
     {"load_coefficient" => 1,
      "drug_categories" =>
@@ -129,7 +133,7 @@ RSpec.describe Reports::DrugStockCalculation, type: :model do
     end
   end
 
-  describe "#calculate" do
+  describe "#patient_days" do
     before do
       allow_any_instance_of(described_class).to receive(:patient_days_coefficients).and_return(punjab_drug_stock_config)
     end
@@ -221,6 +225,23 @@ RSpec.describe Reports::DrugStockCalculation, type: :model do
         patient_count: 0
       )
       expect(instance.patient_days_coefficients("state_that_does_not_exist")).to eq nil
+    end
+  end
+
+  describe "#consumption" do
+    it "uses the redistribution numbers for consumption calculation" do
+      result = described_class.new(
+        state: state,
+        protocol_drugs: protocol_drugs,
+        drug_category: drug_category,
+        current_drug_stocks: drug_stocks,
+        previous_drug_stocks: previous_month_drug_stocks,
+        patient_count: patient_count
+      ).consumption
+
+      expect(result[ProtocolDrug.find_by(rxnorm_code: "329528")][:consumed]).to eq(4000)
+      expect(result[ProtocolDrug.find_by(rxnorm_code: "329528")][:received]).to eq(5000)
+      expect(result[ProtocolDrug.find_by(rxnorm_code: "329528")][:redistributed]).to eq(1000)
     end
   end
 end
