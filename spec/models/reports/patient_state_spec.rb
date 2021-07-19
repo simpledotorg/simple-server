@@ -11,8 +11,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
     # because that falls into the next day in IST (our reporting time zone). So to prevent confusing failures for
     # developers or CI during North American afternoons, we freeze to a time that will be the end of the month for
     # UTC, ET, and IST. Timezones! 🤯
-    Timecop.freeze("June 30 2021 5:30 UTC") do
-      # June 30th 23:00 IST time
+    Timecop.freeze("June 30 2021 23:00 IST") do
       example.run
     end
   end
