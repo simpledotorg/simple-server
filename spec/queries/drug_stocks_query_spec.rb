@@ -32,6 +32,7 @@ RSpec.describe DrugStocksQuery do
          "hypertension_diuretic" => {"new_patient_coefficient" => 0.06, "316049" => 1, "331132" => 1}}}.with_indifferent_access
   }
 
+
   context "drug stock report" do
     let!(:facilities) { create_list(:facility, 3, facility_group: facility_group, state: state, zone: zone) }
     let!(:patients) {
@@ -52,6 +53,7 @@ RSpec.describe DrugStocksQuery do
 
     before do
       allow_any_instance_of(Reports::DrugStockCalculation).to receive(:patient_days_coefficients).and_return(punjab_drug_stock_config)
+      RefreshMaterializedViews.call
     end
 
     it "computes the drug stock report totals" do
