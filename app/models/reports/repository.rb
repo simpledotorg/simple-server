@@ -6,7 +6,7 @@ module Reports
     include Scientist
     PERCENTAGE_PRECISION = 0
 
-    def initialize(regions, periods:, reporting_schema_v2: false)
+    def initialize(regions, periods:, reporting_schema_v2: true)
       @regions = Array(regions)
       @periods = if periods.is_a?(Period)
         Range.new(periods, periods)
@@ -100,15 +100,23 @@ module Reports
 
     alias_method :adjusted_patients, :adjusted_patients_without_ltfu
 
-    # Return the running total of cumulative assigned patient counts.
+    # Return the running total of cumulative assigned patient counts. Note that this *includes* LTFU.
     memoize def cumulative_assigned_patients
-      complete_monthly_assigned_patients.each_with_object({}) do |(region_entry, patient_counts), totals|
-        slug = region_entry.slug
-        next totals[slug] = Hash.new(0) if earliest_patient_recorded_at[slug].nil?
-        range = Range.new(earliest_patient_recorded_at_period[slug], periods.end)
-        totals[slug] = range.each_with_object(Hash.new(0)) { |period, sum|
-          sum[period] = sum[period.previous] + patient_counts.fetch(period, 0)
+      if reporting_schema_v2?
+        regions.each_with_object({}) { |region, result|
+          result[region.slug] = assigned_patients_query_v2(region).each_with_object({}) { |(month_date, count), hsh|
+            hsh[Period.month(month_date)] = count
+          }
         }
+      else
+        complete_monthly_assigned_patients.each_with_object({}) do |(region_entry, patient_counts), totals|
+          slug = region_entry.slug
+          next totals[slug] = Hash.new(0) if earliest_patient_recorded_at[slug].nil?
+          range = Range.new(earliest_patient_recorded_at_period[slug], periods.end)
+          totals[slug] = range.each_with_object(Hash.new(0)) { |period, sum|
+            sum[period] = sum[period.previous] + patient_counts.fetch(period, 0)
+          }
+        end
       end
     end
 
@@ -318,30 +326,17 @@ module Reports
 
     def assigned_patients_query_v2(region)
       region_field = "#{region.region_type}_region_id"
-      pp Reports::PatientState.where("assigned_#{region_field}" => region.id).where(month_string: "2019-01").pluck(:patient_id)
-      Reports::FacilityState.where(region_field => region.id).order(:month_date).pluck(:month_date, :under_care)
+      Reports::FacilityState.where(region_field => region.id).order(:month_date).pluck(:month_date, :assigned_patients)
     end
 
     # Returns the full range of assigned patient counts for a Region. We do this via one SQL query for each Region, because its
     # fast and easy via the underlying query.
     memoize def complete_monthly_assigned_patients
       items = regions.map { |region| RegionEntry.new(region, __method__, period_type: period_type) }
-      if reporting_schema_v2?
-        items.each_with_object({}) do |key, result|
-          counts = assigned_patients_query_v2(key.region).each_with_object({}) { |(month_date, count), hsh|
-            hsh[Period.month(month_date)] = count
-          }
-
-          pp counts
-          result[key] = counts
-        end
-      else
-        result = cache.fetch_multi(*items, force: bust_cache?) { |region_entry|
-          assigned_patients_query.count(region_entry.region, period_type)
-        }
-        pp result
-        result
-      end
+      result = cache.fetch_multi(*items, force: bust_cache?) { |region_entry|
+        assigned_patients_query.count(region_entry.region, period_type)
+      }
+      result
     end
 
     def denominator(region, period, with_ltfu: false)
