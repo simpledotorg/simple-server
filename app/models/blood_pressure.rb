@@ -64,4 +64,8 @@ class BloodPressure < ApplicationRecord
      bp_systolic: systolic,
      bp_diastolic: diastolic}
   end
+
+  def self.for_recent_bp_log
+    order(Arel.sql("DATE(recorded_at at time zone 'utc' at time zone '#{CountryConfig.current[:time_zone]}') DESC, recorded_at ASC"))
+  end
 end

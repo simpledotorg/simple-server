@@ -81,9 +81,10 @@ class Reports::RegionsController < AdminController
       ltfu_trend: ltfu_chart_data(chart_repo, chart_range)
     }
 
-    region_source = @region.source
-    if region_source.respond_to?(:recent_blood_pressures)
-      @recent_blood_pressures = paginate(region_source.recent_blood_pressures)
+    if @region.facility_region?
+      @recent_blood_pressures = paginate(
+        @region.source.blood_pressures.for_recent_bp_log.includes(:patient, :facility)
+      )
     end
   end
 
