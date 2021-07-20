@@ -144,5 +144,12 @@ RSpec.describe Api::V4::PatientsController, type: :controller do
       ))
       post :lookup, params: {identifier: patient.business_identifiers.first.identifier}, as: :json
     end
+
+    it "increments a statsd metric" do
+      patient = create(:patient)
+      set_headers(patient.registration_user, patient.registration_facility)
+      expect(Statsd.instance).to receive(:increment).with("OnlineLookup.temporary", {tags: [patient.registration_facility.state, patient.registration_user.id]})
+      post :lookup, params: {identifier: patient.business_identifiers.first.identifier}, as: :json
+    end
   end
 end
