@@ -13,7 +13,7 @@ WITH
                COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care') as under_care,
                count(distinct(patient_id)) FILTER (WHERE htn_care_state = 'lost_to_follow_up') as lost_to_follow_up,
                count(distinct(patient_id)) FILTER (WHERE htn_care_state = 'dead') as dead,
-               COUNT(*) as assigned_patients
+               COUNT(*) as cumulative_assigned_patients
         FROM reporting_patient_states
         WHERE hypertension = 'yes'
         GROUP BY 1, 2
@@ -51,7 +51,7 @@ rp.monthly_registrations,
 ap.under_care,
 ap.lost_to_follow_up,
 ap.dead,
-ap.assigned_patients,
+ap.cumulative_assigned_patients,
 
 tout.controlled_under_care,
 tout.controlled_lost_to_follow_up,
@@ -64,14 +64,16 @@ tout.visited_no_bp_lost_to_follow_up,
 tout.patients_under_care,
 tout.patients_lost_to_follow_up
 
-FROM registered_patients rp
-INNER JOIN assigned_patients ap
-    ON rp.region_id = ap.region_id
-    AND rp.month_date = ap.month_date
-INNER JOIN treatment_outcomes_in_last_3_months tout
-    ON ap.region_id = tout.region_id
-    AND ap.month_date = tout.month_date
-INNER JOIN reporting_facilities rf
-    ON rp.region_id = rf.facility_region_id
+-- ensure a row for every facility and month combination
+FROM reporting_facilities rf
 INNER JOIN reporting_months cal
+    ON true
+LEFT OUTER JOIN registered_patients rp
     ON rp.month_date = cal.month_date
+    AND rp.region_id = rf.facility_region_id
+LEFT OUTER JOIN assigned_patients ap
+    ON ap.month_date = cal.month_date
+    AND ap.region_id = rf.facility_region_id
+LEFT OUTER JOIN treatment_outcomes_in_last_3_months tout
+    ON tout.month_date = cal.month_date
+    AND tout.region_id = rf.facility_region_id

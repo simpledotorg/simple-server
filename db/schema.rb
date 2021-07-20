@@ -1194,7 +1194,7 @@ ActiveRecord::Schema.define(version: 2021_07_15_165453) do
       p.assigned_facility_id AS patient_assigned_facility_id,
       p.registration_facility_id AS patient_registration_facility_id,
       (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))))) AS months_since_registration,
-      (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) * (4)::double precision) + (cal.month - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))))) AS quarters_since_registration,
+      (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) * (4)::double precision) + (cal.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))))) AS quarters_since_registration,
       (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))))) AS months_since_bp,
       (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at)))) * (4)::double precision) + (cal.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))))) AS quarters_since_bp
      FROM ((blood_pressures bp
@@ -1227,22 +1227,22 @@ ActiveRecord::Schema.define(version: 2021_07_15_165453) do
       timezone('UTC'::text, timezone('UTC'::text, app.recorded_at)) AS appointment_recorded_at,
       array_remove(ARRAY[
           CASE
-              WHEN (to_char(e.recorded_at, 'YYYY-MM'::text) = p.month_string) THEN e.facility_id
+              WHEN (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, e.recorded_at)), 'YYYY-MM'::text) = p.month_string) THEN e.facility_id
               ELSE NULL::uuid
           END,
           CASE
-              WHEN (to_char(pd.recorded_at, 'YYYY-MM'::text) = p.month_string) THEN pd.facility_id
+              WHEN (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, pd.recorded_at)), 'YYYY-MM'::text) = p.month_string) THEN pd.facility_id
               ELSE NULL::uuid
           END,
           CASE
-              WHEN (to_char(app.recorded_at, 'YYYY-MM'::text) = p.month_string) THEN app.creation_facility_id
+              WHEN (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, app.recorded_at)), 'YYYY-MM'::text) = p.month_string) THEN app.creation_facility_id
               ELSE NULL::uuid
           END], NULL::uuid) AS visited_facility_ids,
       timezone('UTC'::text, timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at))) AS visited_at,
       (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at)))) * (12)::double precision) + (p.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at))))) AS months_since_registration,
-      (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at)))) * (4)::double precision) + (p.month - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at))))) AS quarters_since_registration,
+      (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at)))) * (4)::double precision) + (p.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at))))) AS quarters_since_registration,
       (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at))))) * (12)::double precision) + (p.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at)))))) AS months_since_visit,
-      (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at))))) * (4)::double precision) + (p.month - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at)))))) AS quarters_since_visit
+      (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at))))) * (4)::double precision) + (p.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at)))))) AS quarters_since_visit
      FROM (((( SELECT p_1.id,
               p_1.full_name,
               p_1.age,
@@ -1399,7 +1399,7 @@ ActiveRecord::Schema.define(version: 2021_07_15_165453) do
       visits.appointment_recorded_at,
       visits.visited_facility_ids,
       (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))))) AS months_since_registration,
-      (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) * (4)::double precision) + (cal.month - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))))) AS quarters_since_registration,
+      (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) * (4)::double precision) + (cal.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))))) AS quarters_since_registration,
       visits.months_since_visit,
       visits.quarters_since_visit,
       bps.months_since_bp,
@@ -1464,7 +1464,7 @@ ActiveRecord::Schema.define(version: 2021_07_15_165453) do
               count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'under_care'::text)) AS under_care,
               count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text)) AS lost_to_follow_up,
               count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'dead'::text)) AS dead,
-              count(*) AS assigned_patients
+              count(*) AS cumulative_assigned_patients
              FROM reporting_patient_states
             WHERE (reporting_patient_states.hypertension = 'yes'::text)
             GROUP BY reporting_patient_states.assigned_facility_region_id, reporting_patient_states.month_date
@@ -1517,7 +1517,7 @@ ActiveRecord::Schema.define(version: 2021_07_15_165453) do
       ap.under_care,
       ap.lost_to_follow_up,
       ap.dead,
-      ap.assigned_patients,
+      ap.cumulative_assigned_patients,
       tout.controlled_under_care,
       tout.controlled_lost_to_follow_up,
       tout.uncontrolled_under_care,
@@ -1528,10 +1528,10 @@ ActiveRecord::Schema.define(version: 2021_07_15_165453) do
       tout.visited_no_bp_lost_to_follow_up,
       tout.patients_under_care,
       tout.patients_lost_to_follow_up
-     FROM ((((registered_patients rp
-       JOIN assigned_patients ap ON (((rp.region_id = ap.region_id) AND (rp.month_date = ap.month_date))))
-       JOIN treatment_outcomes_in_last_3_months tout ON (((ap.region_id = tout.region_id) AND (ap.month_date = tout.month_date))))
-       JOIN reporting_facilities rf ON ((rp.region_id = rf.facility_region_id)))
-       JOIN reporting_months cal ON ((rp.month_date = cal.month_date)));
+     FROM ((((reporting_facilities rf
+       JOIN reporting_months cal ON (true))
+       LEFT JOIN registered_patients rp ON (((rp.month_date = cal.month_date) AND (rp.region_id = rf.facility_region_id))))
+       LEFT JOIN assigned_patients ap ON (((ap.month_date = cal.month_date) AND (ap.region_id = rf.facility_region_id))))
+       LEFT JOIN treatment_outcomes_in_last_3_months tout ON (((tout.month_date = cal.month_date) AND (tout.region_id = rf.facility_region_id))));
   SQL
 end
