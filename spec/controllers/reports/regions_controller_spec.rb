@@ -258,8 +258,8 @@ RSpec.describe Reports::RegionsController, type: :controller do
     it "returns period info for current month" do
       today = Date.current
       Timecop.freeze(today) do
-        patient = create(:patient, registration_facility: @facility, recorded_at: today)
-        create(:blood_pressure, :under_control, recorded_at: today, patient: patient, facility: @facility)
+        patient = create(:patient, registration_facility: @facility, recorded_at: 2.months.ago)
+        create(:bp_with_encounter, :under_control, recorded_at: Time.current.yesterday, patient: patient, facility: @facility)
         refresh_views
         sign_in(cvho.email_authentication)
         get :show, params: {id: @facility.facility_group.slug, report_scope: "district"}
