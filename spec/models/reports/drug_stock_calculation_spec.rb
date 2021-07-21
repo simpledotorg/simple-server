@@ -229,7 +229,7 @@ RSpec.describe Reports::DrugStockCalculation, type: :model do
   end
 
   describe "#consumption" do
-    it "uses the redistribution numbers for consumption calculation" do
+    it "calculates consumption using in_stock, previous month's in_stock, received and redistributed" do
       result = described_class.new(
         state: state,
         protocol_drugs: protocol_drugs,
