@@ -162,10 +162,22 @@ module Reports
       }
     end
 
+    private def ltfu_query_v2(region)
+      Reports::FacilityState.for_facility(region).order(:month_date).pluck(:month_date, :lost_to_follow_up)
+    end
+
     memoize def ltfu
-      region_period_cached_query(__method__) do |entry|
-        facility_ids = entry.region.facility_ids
-        Patient.for_reports.where(assigned_facility: facility_ids).ltfu_as_of(entry.period.end).count
+      if reporting_schema_v2?
+        regions.each_with_object({}) { |region, hsh|
+          hsh[region.slug] = ltfu_query_v2(region).each_with_object(Hash.new(0)) { |(month_date, count), hsh|
+            hsh[Period.month(month_date)] = count
+          }
+        }
+      else
+        region_period_cached_query(__method__) do |entry|
+          facility_ids = entry.region.facility_ids
+          Patient.for_reports.where(assigned_facility: facility_ids).ltfu_as_of(entry.period.end).count
+        end
       end
     end
 
