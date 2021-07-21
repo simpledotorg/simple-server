@@ -544,11 +544,12 @@ describe Patient, type: :model do
     describe "#latest_mobile_number" do
       it "returns the last mobile number for the patient" do
         patient = create(:patient)
-        number_1 = create(:patient_phone_number, patient: patient)
-        _number_2 = create(:patient_phone_number, phone_type: :landline, patient: patient)
-        _number_3 = create(:patient_phone_number, phone_type: :invalid, patient: patient)
+        _mobile_number_1 = create(:patient_phone_number, patient: patient, phone_type: "mobile", number: "9999999999")
+        mobile_number_2 = create(:patient_phone_number, patient: patient, phone_type: "mobile", number: "1234567890")
+        _landline_number = create(:patient_phone_number, phone_type: :landline, patient: patient)
+        _invalid_number = create(:patient_phone_number, phone_type: :invalid, patient: patient)
 
-        expect(patient.reload.latest_mobile_number).to eq(number_1.number)
+        expect(patient.reload.latest_mobile_number).to eq("+91" + mobile_number_2.number)
       end
     end
 
