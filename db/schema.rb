@@ -175,6 +175,7 @@ ActiveRecord::Schema.define(version: 2021_07_15_165453) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.uuid "region_id"
+    t.integer "redistributed"
     t.index ["facility_id"], name: "index_drug_stocks_on_facility_id"
     t.index ["protocol_drug_id"], name: "index_drug_stocks_on_protocol_drug_id"
     t.index ["user_id"], name: "index_drug_stocks_on_user_id"

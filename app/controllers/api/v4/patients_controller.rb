@@ -1,5 +1,4 @@
 class Api::V4::PatientsController < APIController
-  DEFAULT_RETENTION_DURATION_SECONDS = 3600
   RETENTION_TYPES = {temporary: "temporary", permanent: "permanent"}
 
   skip_before_action :validate_current_facility_belongs_to_users_facility_group, only: [:lookup]
@@ -16,7 +15,11 @@ class Api::V4::PatientsController < APIController
     trigger_audit_log(patients)
     render(
       json: Oj.dump({
-        patients: patients.map { |patient| Api::V4::PatientLookupTransformer.to_response(patient, retention(patient)) }
+        patients: patients.map do |patient|
+          retention = retention(patient)
+          Statsd.instance.increment("OnlineLookup.#{retention[:type]}", tags: [current_state.name, current_user.id])
+          Api::V4::PatientLookupTransformer.to_response(patient, retention)
+        end
       }, mode: :compat),
       status: :ok
     )
@@ -32,7 +35,7 @@ class Api::V4::PatientsController < APIController
     else
       {
         type: RETENTION_TYPES[:temporary],
-        duration_seconds: DEFAULT_RETENTION_DURATION_SECONDS
+        duration_seconds: Integer(ENV["TEMPORARY_RETENTION_DURATION_SECONDS"])
       }
     end
   end
