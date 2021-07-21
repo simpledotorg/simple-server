@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_15_085219) do
+ActiveRecord::Schema.define(version: 2021_07_21_120744) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -176,6 +176,7 @@ ActiveRecord::Schema.define(version: 2021_07_15_085219) do
     t.uuid "region_id", null: false
     t.uuid "facility_id"
     t.integer "redistributed"
+    t.index ["facility_id"], name: "index_drug_stocks_on_facility_id"
     t.index ["protocol_drug_id"], name: "index_drug_stocks_on_protocol_drug_id"
     t.index ["user_id"], name: "index_drug_stocks_on_user_id"
   end
