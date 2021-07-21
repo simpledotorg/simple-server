@@ -78,7 +78,7 @@ class DrugStocksQuery
   end
 
   memoize def repository
-    Reports::Repository.new(Region.where(source: @facilities) + [@district], periods: Period.month(@for_end_of_month))
+    Reports::Repository.new(Region.where(source: [*@facilities, @facility_group]), periods: Period.month(@for_end_of_month))
   end
 
   memoize def patient_count_by_facility_id
