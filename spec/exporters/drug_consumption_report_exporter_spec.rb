@@ -18,8 +18,8 @@ RSpec.describe DrugConsumptionReportExporter do
       "329528" => {in_stock: 10000, received: 2000, redistributed: 0},
       "329526" => {in_stock: 20000, received: 2000, redistributed: 0},
       "316764" => {in_stock: 10000, received: 2000, redistributed: 0},
-      "316765" => {in_stock: 20000, received: 2000, redistributed: 0},
-      "979467" => {in_stock: 10000, received: 2000, redistributed: 0}
+      "316765" => {in_stock: 20000, received: 2000, redistributed: nil},
+      "979467" => {in_stock: 10000, received: 2000, redistributed: nil}
     }
 
     previous_month_stocks_by_rxnorm =
