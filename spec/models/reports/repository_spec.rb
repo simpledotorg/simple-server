@@ -77,9 +77,6 @@ RSpec.describe Reports::Repository, type: :model do
       slug = facility_1.slug
       repo = Reports::Repository.new(facility_1.region, periods: (july_2018.to_period..july_2020.to_period))
 
-      region = facility_1.region
-      region_field = "#{region.region_type}_region_id"
-
       expect(repo.assigned_patients[slug][Period.month("August 2018")]).to eq(2)
       expect(repo.assigned_patients[slug][Period.month("Jan 2019")]).to eq(2)
       expect(repo.cumulative_assigned_patients[slug][Period.month("August 2018")]).to eq(2)
