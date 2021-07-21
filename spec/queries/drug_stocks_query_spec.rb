@@ -9,19 +9,19 @@ RSpec.describe DrugStocksQuery do
   let!(:for_end_of_month) { Time.current.end_of_month }
   let!(:drug_category) { "hypertension_ccb" }
   let!(:stocks_by_rxnorm) {
-    {"329528" => {in_stock: 10000, received: 2000},
-     "329526" => {in_stock: 20000, received: 2000},
-     "316764" => {in_stock: 10000, received: 2000},
-     "316765" => {in_stock: 20000, received: 2000},
-     "979467" => {in_stock: 10000, received: 2000}}
+    {"329528" => {in_stock: 10000, received: 2000, redistributed: 1000},
+     "329526" => {in_stock: 20000, received: 2000, redistributed: 0},
+     "316764" => {in_stock: 10000, received: 2000, redistributed: 0},
+     "316765" => {in_stock: 20000, received: 2000, redistributed: 0},
+     "979467" => {in_stock: 10000, received: 2000, redistributed: 0}}
   }
   let!(:previous_month_stocks_by_rxnorm) {
     {
-      "329528" => {in_stock: 8000},
-      "329526" => {in_stock: 15000},
-      "316764" => {in_stock: 8000},
-      "316765" => {in_stock: 17000},
-      "979467" => {in_stock: 9000}
+      "329528" => {in_stock: 8000, redistributed: 0},
+      "329526" => {in_stock: 15000, redistributed: 0},
+      "316764" => {in_stock: 8000, redistributed: 0},
+      "316765" => {in_stock: 17000, redistributed: 0},
+      "979467" => {in_stock: 9000, redistributed: 0}
     }
   }
   let!(:punjab_drug_stock_config) {
@@ -45,7 +45,12 @@ RSpec.describe DrugStocksQuery do
       facilities.map { |facility|
         stocks_by_rxnorm.map do |(rxnorm_code, drug_stock)|
           protocol_drug = protocol.protocol_drugs.find_by(rxnorm_code: rxnorm_code)
-          create(:drug_stock, user: user, facility: facility, protocol_drug: protocol_drug, in_stock: drug_stock[:in_stock])
+          create(:drug_stock,
+            user: user,
+            facility: facility,
+            protocol_drug: protocol_drug,
+            in_stock: drug_stock[:in_stock],
+            redistributed: drug_stock[:redistributed])
         end
       }.flatten
     }
@@ -203,7 +208,13 @@ RSpec.describe DrugStocksQuery do
       facilities.map { |facility|
         stocks_by_rxnorm.map do |(rxnorm_code, drug_stock)|
           protocol_drug = protocol.protocol_drugs.find_by(rxnorm_code: rxnorm_code)
-          create(:drug_stock, user: user, facility: facility, protocol_drug: protocol_drug, in_stock: drug_stock[:in_stock], received: drug_stock[:received])
+          create(:drug_stock,
+            user: user,
+            facility: facility,
+            protocol_drug: protocol_drug,
+            in_stock: drug_stock[:in_stock],
+            received: drug_stock[:received],
+            redistributed: drug_stock[:redistributed])
         end
       }.flatten
     }
@@ -232,7 +243,7 @@ RSpec.describe DrugStocksQuery do
                                    include_block_report: true).drug_consumption_report
 
       expect(result[:patient_count]).to eq(patients.count)
-      expect(result[:all_drug_consumption]["hypertension_ccb"][:base_doses][:total]).to eq(19200)
+      expect(result[:all_drug_consumption]["hypertension_ccb"][:base_doses][:total]).to eq(15600)
       expect(result[:all_drug_consumption]["hypertension_arb"][:base_doses][:total]).to eq(24000)
 
       {"hypertension_ccb" => %w[329528 329526],
@@ -251,7 +262,7 @@ RSpec.describe DrugStocksQuery do
                                    include_block_report: true).drug_consumption_report
       facility = facilities.first
       expect(result[:patient_count_by_facility_id][facility.id]).to eq(3)
-      expect(result[:drug_consumption_by_facility_id][facility.id]["hypertension_ccb"][:base_doses][:total]).to eq(6400)
+      expect(result[:drug_consumption_by_facility_id][facility.id]["hypertension_ccb"][:base_doses][:total]).to eq(5200)
       expect(result[:drug_consumption_by_facility_id][facility.id]["hypertension_arb"][:base_doses][:total]).to eq(8000)
 
       {"hypertension_ccb" => %w[329528 329526],
@@ -267,7 +278,8 @@ RSpec.describe DrugStocksQuery do
       expect(result[:drug_consumption_by_facility_id][facility.id][drug_category][drug]).to eq({opening_balance: 10000,
                                                                                                 received: 2000,
                                                                                                 closing_balance: 10000,
-                                                                                                consumed: 2000})
+                                                                                                consumed: 1000,
+                                                                                                redistributed: 1000})
     end
 
     it "computes the drug consumption report for blocks" do
@@ -281,7 +293,7 @@ RSpec.describe DrugStocksQuery do
                                    include_block_report: true).drug_consumption_report
 
       expect(result[:patient_count_by_block_id][block_a.id]).to eq(9)
-      expect(result[:drug_consumption_by_block_id][block_a.id]["hypertension_ccb"][:base_doses][:total]).to eq(19200)
+      expect(result[:drug_consumption_by_block_id][block_a.id]["hypertension_ccb"][:base_doses][:total]).to eq(15600)
       expect(result[:drug_consumption_by_block_id][block_b.id]["hypertension_ccb"][:base_doses][:total]).to be_nil
       expect(result[:drug_consumption_by_block_id][block_a.id]["hypertension_arb"][:base_doses][:total]).to eq(24000)
       expect(result[:drug_consumption_by_block_id][block_b.id]["hypertension_arb"][:base_doses][:total]).to be_nil
@@ -299,7 +311,8 @@ RSpec.describe DrugStocksQuery do
       expect(result[:drug_consumption_by_block_id][block_a.id][drug_category][drug]).to eq({opening_balance: 30000,
                                                                                             received: 6000,
                                                                                             closing_balance: 30000,
-                                                                                            consumed: 6000})
+                                                                                            consumed: 3000,
+                                                                                            redistributed: 3000})
     end
 
     it "does not compute block wise numbers when include_block_report is false" do
