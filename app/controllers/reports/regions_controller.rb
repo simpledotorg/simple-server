@@ -83,7 +83,7 @@ class Reports::RegionsController < AdminController
 
     if @region.facility_region?
       @recent_blood_pressures = paginate(
-        @region.source.blood_pressures.for_recent_bp_log.includes(:patient, :facility)
+        recent_bp_log(@region.source.blood_pressures).includes(:patient, :facility)
       )
     end
   end

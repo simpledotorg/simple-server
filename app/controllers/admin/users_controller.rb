@@ -46,7 +46,7 @@ class Admin::UsersController < AdminController
 
   def show
     @recent_blood_pressures = paginate(
-      @user.blood_pressures.for_recent_bp_log.includes(:patient, :facility)
+      recent_bp_log(@user.blood_pressures).includes(:patient, :facility)
     )
   end
 
