@@ -50,7 +50,7 @@ every :monday, at: local("6:00 am"), roles: [:cron] do
 end
 
 every :day, at: local("07:00 am"), roles: [:cron] do
-  runner "AppointmentNotification::ScheduleExperimentReminders.perfom_now"
+  runner "AppointmentNotification::ScheduleExperimentReminders.perform_now"
 end
 
 every 2.minutes, roles: [:cron] do
