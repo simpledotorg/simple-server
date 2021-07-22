@@ -11,13 +11,13 @@ module Seed
       facility = user.registration_facility
 
       ["Hari AB Tester", "Vikram AB Tester", "Srihari AB Tester", "Pragati AB Tester", "Prabhanshu AB Tester"].each do |name|
-          patient = Patient.create!(id: SecureRandom.uuid, full_name: name, status: "active", device_created_at: now,
-                                    device_updated_at: now, registration_user: user, registration_facility: facility,
-                                    assigned_facility: facility)
-          patient.phone_numbers.create!(id: SecureRandom.uuid, number: TEMPORARY_PHONE_NUMBER, phone_type: "mobile",
-                                        active: true, device_created_at: now, device_updated_at: now)
-          Appointment.create!(scheduled_date: today + days_till_appointment, patient: patient, facility: facility,
-                              device_created_at: now, device_updated_at: now, appointment_type: "manual")
+        patient = Patient.create!(id: SecureRandom.uuid, full_name: name, status: "active", device_created_at: now,
+                                  device_updated_at: now, registration_user: user, registration_facility: facility,
+                                  assigned_facility: facility)
+        patient.phone_numbers.create!(id: SecureRandom.uuid, number: TEMPORARY_PHONE_NUMBER, phone_type: "mobile",
+                                      active: true, device_created_at: now, device_updated_at: now)
+        Appointment.create!(scheduled_date: today + days_till_appointment, patient: patient, facility: facility,
+                            device_created_at: now, device_updated_at: now, appointment_type: "manual")
       end
     end
   end
