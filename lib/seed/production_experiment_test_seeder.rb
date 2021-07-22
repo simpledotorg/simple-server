@@ -1,6 +1,6 @@
 module Seed
   class ProductionExperimentTestSeeder
-    TEMPORARY_PHONE_NUMBER = "8675309"
+    TEMPORARY_PHONE_NUMBER = "0001234"
 
     def self.call(user_id:, days_till_appointment: 1)
       ExperimentSeeder.call(experiment_name: "production test", experiment_type: "current_patients")

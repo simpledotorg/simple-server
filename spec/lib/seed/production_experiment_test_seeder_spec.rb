@@ -15,7 +15,7 @@ RSpec.describe Seed::ProductionExperimentTestSeeder do
     expect(Experimentation::ReminderTemplate.count).to eq(4)
     expect(Patient.count).to eq(5)
     Patient.all.each do |patient|
-      expect(patient.latest_mobile_number).to eq("+918675309")
+      expect(patient.latest_mobile_number).to eq("+910001234")
     end
   end
 end
