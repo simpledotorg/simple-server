@@ -9,7 +9,8 @@
 # you'll amass, the slower it'll run and the greater likelihood for issues).
 #
 # It's strongly recommended that you check this file into your version control system.
-ActiveRecord::Schema.define(version: 2021_07_15_120731) do
+
+ActiveRecord::Schema.define(version: 2021_07_15_165453) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -164,6 +165,7 @@ ActiveRecord::Schema.define(version: 2021_07_15_120731) do
   end
 
   create_table "drug_stocks", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "facility_id"
     t.uuid "user_id", null: false
     t.uuid "protocol_drug_id", null: false
     t.integer "in_stock"
@@ -173,7 +175,6 @@ ActiveRecord::Schema.define(version: 2021_07_15_120731) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.uuid "region_id", null: false
-    t.uuid "facility_id"
     t.integer "redistributed"
     t.index ["facility_id"], name: "index_drug_stocks_on_facility_id"
     t.index ["protocol_drug_id"], name: "index_drug_stocks_on_protocol_drug_id"
@@ -677,6 +678,7 @@ ActiveRecord::Schema.define(version: 2021_07_15_120731) do
   add_foreign_key "blood_sugars", "facilities"
   add_foreign_key "blood_sugars", "users"
   add_foreign_key "communications", "notifications"
+  add_foreign_key "drug_stocks", "facilities"
   add_foreign_key "drug_stocks", "protocol_drugs"
   add_foreign_key "drug_stocks", "users"
   add_foreign_key "encounters", "facilities"
