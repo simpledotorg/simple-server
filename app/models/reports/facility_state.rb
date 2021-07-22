@@ -4,8 +4,9 @@ module Reports
 
     belongs_to :facility
 
-    def self.for_facility(region_or_facility)
-      where(facility_region_id: region_or_facility.region.id)
+    def self.for_region(region_or_source)
+      region = region_or_source.region
+      where("#{region.region_type}_region_id" => region.id)
     end
   end
 end

@@ -102,7 +102,7 @@ module Reports
 
     # Returns cumulative assigned patients from facility_states - this includes LTFU
     private def cumulative_assigned_patients_query_v2(region)
-      Reports::FacilityState.for_facility(region).order(:month_date).pluck(:month_date, :cumulative_assigned_patients)
+      Reports::FacilityState.for_region(region).order(:month_date).pluck(:month_date, :cumulative_assigned_patients)
     end
 
     # Return the running total of cumulative assigned patient counts. Note that this *includes* LTFU.
@@ -129,9 +129,7 @@ module Reports
     memoize def monthly_registrations
       if reporting_schema_v2?
         regions.each_with_object({}) { |region, result|
-          result[region.slug] = registered_patients_query_v2(region).each_with_object(Hash.new(0)) { |(month_date, count), hsh|
-            hsh[Period.month(month_date)] = count
-          }
+          result[region.slug] = registered_patients_query_v2(region).slice(*periods.entries)
         }
       else
         complete_monthly_registrations.each_with_object({}) do |(entry, result), results|
@@ -142,11 +140,11 @@ module Reports
     end
 
     private def registered_patients_query_v2(region)
-      Reports::FacilityState.for_facility(region).order(:month_date).pluck(:month_date, :monthly_registrations)
-    end
-
-    private def cumulative_registered_patients_query_v2(region)
-      Reports::FacilityState.for_facility(region).order(:month_date).pluck(:month_date, :cumulative_registrations)
+      Reports::FacilityState.for_region(region)
+        .where("month_date >= ?", earliest_patient_recorded_at[region.slug].to_date)
+        .group(:month_date)
+        .sum("monthly_registrations")
+        .to_h { |month_date, count| [Period.month(month_date), Integer(count)] }
     end
 
     # Returns the full range of registered patient counts for a Region. We do this via one SQL query for each Region, because its
@@ -164,6 +162,10 @@ module Reports
           registered_patients_query.count(entry.region, period_type)
         }
       end
+    end
+
+    private def cumulative_registered_patients_query_v2(region)
+      Reports::FacilityState.for_region(region).order(:month_date).pluck(:month_date, :cumulative_registrations)
     end
 
     memoize def cumulative_registrations
@@ -195,7 +197,7 @@ module Reports
     end
 
     private def ltfu_query_v2(region)
-      Reports::FacilityState.for_facility(region).order(:month_date).pluck(:month_date, :lost_to_follow_up)
+      Reports::FacilityState.for_region(region).order(:month_date).pluck(:month_date, :lost_to_follow_up)
     end
 
     memoize def ltfu
