@@ -30,7 +30,7 @@ class TwilioApiService
   end
 
   def initialize(sms_sender: nil)
-    @test_mode = !SimpleServer.env.production?
+    @test_mode = ENV["TWILIO_TEST_MODE"] || !SimpleServer.env.production?
 
     @twilio_account_sid = ENV.fetch("TWILIO_ACCOUNT_SID")
     @twilio_auth_token = ENV.fetch("TWILIO_AUTH_TOKEN")
