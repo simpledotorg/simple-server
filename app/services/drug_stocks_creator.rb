@@ -19,6 +19,7 @@ class DrugStocksCreator
                           protocol_drug_id: drug_stock[:protocol_drug_id],
                           received: drug_stock[:received].presence,
                           in_stock: drug_stock[:in_stock].presence,
+                          redistributed: drug_stock[:redistributed].presence,
                           for_end_of_month: @for_end_of_month,
                           region: @region)
       end

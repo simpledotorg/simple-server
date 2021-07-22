@@ -57,7 +57,7 @@ services:
       - SIMPLE_SERVER_DATABASE_PASSWORD=root
       - SIMPLE_SERVER_HOST_PROTOCOL=https
       - CALL_SESSION_REDIS_HOST=redis
-      - RAILS_CACHE_REDIS_URL=redis
+      - RAILS_CACHE_REDIS_URL=redis://
       - SIDEKIQ_REDIS_HOST=redis
 
 volumes:
