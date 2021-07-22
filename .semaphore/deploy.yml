@@ -41,6 +41,9 @@ blocks:
             - bundle install --deployment --path vendor/bundle
             - cache store
             - BRANCH=$SEMAPHORE_GIT_SHA bundle exec cap qa deploy
+queue:
+  name: Deployment queue
+  scope: project
 agent:
   machine:
     type: e1-standard-2
