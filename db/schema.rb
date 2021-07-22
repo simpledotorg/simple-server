@@ -1472,14 +1472,12 @@ ActiveRecord::Schema.define(version: 2021_07_15_165453) do
           ), treatment_outcomes_in_last_3_months AS (
            SELECT reporting_patient_states.assigned_facility_region_id AS region_id,
               reporting_patient_states.month_date,
-              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'controlled'::text) AND (reporting_patient_states.htn_care_state = 'under_care'::text))) AS controlled_under_care,
-              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'controlled'::text) AND (reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text))) AS controlled_lost_to_follow_up,
-              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'uncontrolled'::text) AND (reporting_patient_states.htn_care_state = 'under_care'::text))) AS uncontrolled_under_care,
-              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'uncontrolled'::text) AND (reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text))) AS uncontrolled_lost_to_follow_up,
-              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'missed_visit'::text) AND (reporting_patient_states.htn_care_state = 'under_care'::text))) AS missed_visit_under_care,
-              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'missed_visit'::text) AND (reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text))) AS missed_visit_lost_to_follow_up,
-              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'visited_no_bp'::text) AND (reporting_patient_states.htn_care_state = 'under_care'::text))) AS visited_no_bp_under_care,
-              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'visited_no_bp'::text) AND (reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text))) AS visited_no_bp_lost_to_follow_up,
+              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'controlled'::text))) AS controlled_under_care,
+              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'uncontrolled'::text))) AS uncontrolled_under_care,
+              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'missed_visit'::text))) AS missed_visit_under_care,
+              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'visited_no_bp'::text))) AS visited_no_bp_under_care,
+              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text) AND (reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'missed_visit'::text))) AS missed_visit_lost_to_follow_up,
+              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text) AND (reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'visited_no_bp'::text))) AS visited_no_bp_lost_to_follow_up,
               count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'under_care'::text)) AS patients_under_care,
               count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text)) AS patients_lost_to_follow_up
              FROM reporting_patient_states
@@ -1513,27 +1511,25 @@ ActiveRecord::Schema.define(version: 2021_07_15_165453) do
       rf.organization_region_id,
       rf.organization_name,
       rf.organization_slug,
-      rp.cumulative_registrations,
-      rp.monthly_registrations,
-      ap.under_care,
-      ap.lost_to_follow_up,
-      ap.dead,
-      ap.cumulative_assigned_patients,
-      tout.controlled_under_care,
-      tout.controlled_lost_to_follow_up,
-      tout.uncontrolled_under_care,
-      tout.uncontrolled_lost_to_follow_up,
-      tout.missed_visit_under_care,
-      tout.missed_visit_lost_to_follow_up,
-      tout.visited_no_bp_under_care,
-      tout.visited_no_bp_lost_to_follow_up,
-      tout.patients_under_care,
-      tout.patients_lost_to_follow_up
+      registered_patients.cumulative_registrations,
+      registered_patients.monthly_registrations,
+      assigned_patients.under_care,
+      assigned_patients.lost_to_follow_up,
+      assigned_patients.dead,
+      assigned_patients.cumulative_assigned_patients,
+      outcomes.controlled_under_care,
+      outcomes.uncontrolled_under_care,
+      outcomes.missed_visit_under_care,
+      outcomes.visited_no_bp_under_care,
+      outcomes.missed_visit_lost_to_follow_up,
+      outcomes.visited_no_bp_lost_to_follow_up,
+      outcomes.patients_under_care,
+      outcomes.patients_lost_to_follow_up
      FROM ((((reporting_facilities rf
        JOIN reporting_months cal ON (true))
-       LEFT JOIN registered_patients rp ON (((rp.month_date = cal.month_date) AND (rp.region_id = rf.facility_region_id))))
-       LEFT JOIN assigned_patients ap ON (((ap.month_date = cal.month_date) AND (ap.region_id = rf.facility_region_id))))
-       LEFT JOIN treatment_outcomes_in_last_3_months tout ON (((tout.month_date = cal.month_date) AND (tout.region_id = rf.facility_region_id))));
+       LEFT JOIN registered_patients ON (((registered_patients.month_date = cal.month_date) AND (registered_patients.region_id = rf.facility_region_id))))
+       LEFT JOIN assigned_patients ON (((assigned_patients.month_date = cal.month_date) AND (assigned_patients.region_id = rf.facility_region_id))))
+       LEFT JOIN treatment_outcomes_in_last_3_months outcomes ON (((outcomes.month_date = cal.month_date) AND (outcomes.region_id = rf.facility_region_id))));
   SQL
   add_index "reporting_facility_states", ["month_date", "facility_region_id"], name: "facility_states_month_date_region_id", unique: true
 
