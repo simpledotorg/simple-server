@@ -9,7 +9,7 @@ RSpec.describe Seed::ProductionExperimentTestSeeder do
     expect(Experimentation::TreatmentGroup.count).to eq(0)
     expect(Experimentation::ReminderTemplate.count).to eq(0)
     expect(Patient.count).to eq(0)
-    described_class.call(days_till_start: 1, user_id: user.id)
+    described_class.call(days_till_appointment: 1, user_id: user.id)
     expect(Experimentation::Experiment.count).to eq(1)
     expect(Experimentation::TreatmentGroup.count).to eq(3)
     expect(Experimentation::ReminderTemplate.count).to eq(4)
