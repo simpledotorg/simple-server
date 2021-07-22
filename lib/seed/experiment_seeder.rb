@@ -5,7 +5,7 @@ module Seed
     def self.call(experiment_name: "test-experiment", experiment_type: "current_patients")
       experiment = Experimentation::Experiment.create!(name: experiment_name, experiment_type: "current_patients", state: "new")
 
-      control_group = experiment.treatment_groups.create!(description: "control")
+      _control_group = experiment.treatment_groups.create!(description: "control")
 
       single_group = experiment.treatment_groups.create!(description: "emotional_guilt")
       single_group.reminder_templates.create!(message: "notifications.set01.emotional_guilt", remind_on_in_days: -1)
