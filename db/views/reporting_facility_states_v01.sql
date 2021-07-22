@@ -1,41 +1,41 @@
 WITH
     registered_patients AS (
-        SELECT registration_facility_region_id as region_id, month_date,
-               COUNT(*) as cumulative_registrations,
-               COUNT(*) FILTER (WHERE months_since_registration = 0) as monthly_registrations
+        SELECT registration_facility_region_id AS region_id, month_date,
+               COUNT(*) AS cumulative_registrations,
+               COUNT(*) FILTER (WHERE months_since_registration = 0) AS monthly_registrations
         FROM reporting_patient_states
         WHERE hypertension = 'yes'
         GROUP BY 1, 2
     ),
 
     assigned_patients AS (
-        SELECT assigned_facility_region_id as region_id, month_date,
-               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care') as under_care,
-               count(distinct(patient_id)) FILTER (WHERE htn_care_state = 'lost_to_follow_up') as lost_to_follow_up,
-               count(distinct(patient_id)) FILTER (WHERE htn_care_state = 'dead') as dead,
-               COUNT(*) as cumulative_assigned_patients
+        SELECT assigned_facility_region_id AS region_id, month_date,
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care') AS under_care,
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'lost_to_follow_up') AS lost_to_follow_up,
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'dead') AS dead,
+               COUNT(*) AS cumulative_assigned_patients
         FROM reporting_patient_states
         WHERE hypertension = 'yes'
         GROUP BY 1, 2
     ),
 
     treatment_outcomes_in_last_3_months AS (
-        SELECT assigned_facility_region_id as region_id, month_date,
+        SELECT assigned_facility_region_id AS region_id, month_date,
 
-               count(distinct(patient_id)) FILTER (WHERE htn_treatment_outcome_in_last_3_months = 'controlled' AND htn_care_state = 'under_care') as controlled_under_care,
-               count(distinct(patient_id)) FILTER (WHERE htn_treatment_outcome_in_last_3_months = 'controlled' AND htn_care_state = 'lost_to_follow_up') as controlled_lost_to_follow_up,
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_treatment_outcome_in_last_3_months = 'controlled' AND htn_care_state = 'under_care') AS controlled_under_care,
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_treatment_outcome_in_last_3_months = 'controlled' AND htn_care_state = 'lost_to_follow_up') AS controlled_lost_to_follow_up,
 
-               count(distinct(patient_id)) FILTER (WHERE htn_treatment_outcome_in_last_3_months = 'uncontrolled' AND htn_care_state = 'under_care') as uncontrolled_under_care,
-               count(distinct(patient_id)) FILTER (WHERE htn_treatment_outcome_in_last_3_months = 'uncontrolled' AND htn_care_state = 'lost_to_follow_up') as uncontrolled_lost_to_follow_up,
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_treatment_outcome_in_last_3_months = 'uncontrolled' AND htn_care_state = 'under_care') AS uncontrolled_under_care,
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_treatment_outcome_in_last_3_months = 'uncontrolled' AND htn_care_state = 'lost_to_follow_up') AS uncontrolled_lost_to_follow_up,
 
-               count(distinct(patient_id)) FILTER (WHERE htn_treatment_outcome_in_last_3_months = 'missed_visit' AND htn_care_state = 'under_care') as missed_visit_under_care,
-               count(distinct(patient_id)) FILTER (WHERE htn_treatment_outcome_in_last_3_months = 'missed_visit' AND htn_care_state = 'lost_to_follow_up') as missed_visit_lost_to_follow_up,
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_treatment_outcome_in_last_3_months = 'missed_visit' AND htn_care_state = 'under_care') AS missed_visit_under_care,
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_treatment_outcome_in_last_3_months = 'missed_visit' AND htn_care_state = 'lost_to_follow_up') AS missed_visit_lost_to_follow_up,
 
-               count(distinct(patient_id)) FILTER (WHERE htn_treatment_outcome_in_last_3_months = 'visited_no_bp' AND htn_care_state = 'under_care') as visited_no_bp_under_care,
-               count(distinct(patient_id)) FILTER (WHERE htn_treatment_outcome_in_last_3_months = 'visited_no_bp' AND htn_care_state = 'lost_to_follow_up') as visited_no_bp_lost_to_follow_up,
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_treatment_outcome_in_last_3_months = 'visited_no_bp' AND htn_care_state = 'under_care') AS visited_no_bp_under_care,
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_treatment_outcome_in_last_3_months = 'visited_no_bp' AND htn_care_state = 'lost_to_follow_up') AS visited_no_bp_lost_to_follow_up,
 
-               count(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care') as patients_under_care,
-               count(distinct(patient_id)) FILTER (WHERE htn_care_state = 'lost_to_follow_up') as patients_lost_to_follow_up
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care') AS patients_under_care,
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'lost_to_follow_up') AS patients_lost_to_follow_up
          FROM reporting_patient_states
         WHERE hypertension = 'yes'
           AND months_since_registration >= 3
