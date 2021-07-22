@@ -3,7 +3,7 @@ require "rails_helper"
 describe DrugStock, type: :model do
   describe "Associations" do
     it { should belong_to(:user) }
-    it { should belong_to(:facility) }
+    it { should belong_to(:facility).optional }
     it { should belong_to(:protocol_drug) }
   end
 

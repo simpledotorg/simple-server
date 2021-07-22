@@ -19,7 +19,7 @@ class Webview::DrugStocksController < ApplicationController
 
   def create
     DrugStocksCreator.call(user: current_user,
-                           facility: @current_facility,
+                           region: @current_facility.region,
                            for_end_of_month: @for_end_of_month,
                            drug_stocks_params: drug_stocks_params)
     redirect_to webview_drug_stocks_url(for_end_of_month: @for_end_of_month.to_s(:mon_year),
@@ -35,10 +35,8 @@ class Webview::DrugStocksController < ApplicationController
     @protocol_drugs = current_facility.protocol.protocol_drugs.where(stock_tracked: true).sort_by(&:sort_key)
     @drug_stocks = DrugStock.latest_for_facilities_grouped_by_protocol_drug(current_facility, @for_end_of_month)
     @query = DrugStocksQuery.new(facilities: [current_facility],
-                                 for_end_of_month: @for_end_of_month,
-                                 include_block_report: false)
+                                 for_end_of_month: @for_end_of_month)
     @drugs_by_category = @query.protocol_drugs_by_category
-    @report = @query.drug_stocks_report
   end
 
   private
