@@ -102,7 +102,7 @@ module Reports
 
     # Returns cumulative assigned patients from facility_states - this includes LTFU
     private def cumulative_assigned_patients_query_v2(region)
-      Reports::FacilityState.for_facility(region).order(:month_date).pluck(:month_date, :assigned_patients)
+      Reports::FacilityState.for_facility(region).order(:month_date).pluck(:month_date, :cumulative_assigned_patients)
     end
 
     # Return the running total of cumulative assigned patient counts. Note that this *includes* LTFU.
@@ -127,9 +127,17 @@ module Reports
 
     # Returns registration counts per region / period
     memoize def monthly_registrations
-      complete_monthly_registrations.each_with_object({}) do |(entry, result), results|
-        result.default = 0
-        results[entry.region.slug] = result
+      if reporting_schema_v2?
+        regions.each_with_object({}) { |region, result|
+          result[region.slug] = registered_patients_query_v2(region).each_with_object(Hash.new(0)) { |(month_date, count), hsh|
+            hsh[Period.month(month_date)] = count
+          }
+        }
+      else
+        complete_monthly_registrations.each_with_object({}) do |(entry, result), results|
+          result.default = 0
+          results[entry.region.slug] = result
+        end
       end
     end
 
