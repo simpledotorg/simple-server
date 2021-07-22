@@ -238,10 +238,11 @@ RSpec.describe Reports::DrugStockCalculation, type: :model do
         previous_drug_stocks: previous_month_drug_stocks,
         patient_count: patient_count
       ).consumption
+      drug = ProtocolDrug.find_by(rxnorm_code: "329528")
 
-      expect(result[ProtocolDrug.find_by(rxnorm_code: "329528")][:consumed]).to eq(4000)
-      expect(result[ProtocolDrug.find_by(rxnorm_code: "329528")][:received]).to eq(5000)
-      expect(result[ProtocolDrug.find_by(rxnorm_code: "329528")][:redistributed]).to eq(1000)
+      expect(result[drug][:consumed]).to eq(4000)
+      expect(result[drug][:received]).to eq(5000)
+      expect(result[drug][:redistributed]).to eq(1000)
     end
   end
 end
