@@ -62,32 +62,30 @@ RSpec.describe DrugStocksQuery do
 
     it "computes the drug stock report totals" do
       result = described_class.new(facilities: facilities,
-                                   for_end_of_month: for_end_of_month,
-                                   include_block_report: true).drug_stocks_report
+                                   for_end_of_month: for_end_of_month).drug_stocks_report
 
-      expect(result[:patient_count]).to eq(9)
-      expect(result[:patient_days]["hypertension_ccb"][:patient_days]).to eq(12380)
-      expect(result[:patient_days]["hypertension_arb"][:patient_days]).to eq(54054)
+      expect(result[:facilities_total_patient_count]).to eq(9)
+      expect(result[:facilities_total_patient_days]["hypertension_ccb"][:patient_days]).to eq(12380)
+      expect(result[:facilities_total_patient_days]["hypertension_arb"][:patient_days]).to eq(54054)
 
       {"hypertension_ccb" => %w[329528 329526],
        "hypertension_arb" => %w[316764 316765 979467]}.each do |(drug_category, rxnorm_codes)|
-        expect(result[:patient_days][drug_category][:stocks_on_hand]).not_to be_nil
-        expect(result[:patient_days][drug_category][:load_coefficient]).not_to be_nil
-        expect(result[:patient_days][drug_category][:new_patient_coefficient]).not_to be_nil
-        expect(result[:patient_days][drug_category][:estimated_patients]).not_to be_nil
-        expect(result[:patient_days][drug_category][:patient_days]).not_to be_nil
+        expect(result[:facilities_total_patient_days][drug_category][:stocks_on_hand]).not_to be_nil
+        expect(result[:facilities_total_patient_days][drug_category][:load_coefficient]).not_to be_nil
+        expect(result[:facilities_total_patient_days][drug_category][:new_patient_coefficient]).not_to be_nil
+        expect(result[:facilities_total_patient_days][drug_category][:estimated_patients]).not_to be_nil
+        expect(result[:facilities_total_patient_days][drug_category][:patient_days]).not_to be_nil
 
         rxnorm_codes.each do |rxnorm_code|
           expected_total_stock = stocks_by_rxnorm[rxnorm_code][:in_stock] * facilities.count
-          expect(result[:drugs_in_stock][rxnorm_code]).to eq(expected_total_stock)
+          expect(result[:facilities_total_drugs_in_stock][rxnorm_code]).to eq(expected_total_stock)
         end
       end
     end
 
     it "computes the drug stock report facility wise numbers" do
       result = described_class.new(facilities: facilities,
-                                   for_end_of_month: for_end_of_month,
-                                   include_block_report: true).drug_stocks_report
+                                   for_end_of_month: for_end_of_month).drug_stocks_report
       facility = facilities.first
 
       expect(result[:patient_count_by_facility_id][facility.id]).to eq(3)
@@ -116,8 +114,7 @@ RSpec.describe DrugStocksQuery do
       block_b = facility_in_another_block.block_region
 
       result = described_class.new(facilities: facilities + [facility_in_another_block],
-                                   for_end_of_month: for_end_of_month,
-                                   include_block_report: true).drug_stocks_report
+                                   for_end_of_month: for_end_of_month).drug_stocks_report
 
       expect(result[:patient_count_by_block_id][block_a.id]).to eq(9)
       expect(result[:patient_count_by_block_id][block_b.id]).to eq(0)
@@ -141,32 +138,20 @@ RSpec.describe DrugStocksQuery do
       end
     end
 
-    it "does not compute block wise numbers when include_block_report is false" do
-      result = described_class.new(facilities: facilities,
-                                   for_end_of_month: for_end_of_month,
-                                   include_block_report: false).drug_stocks_report
-
-      expect(result[:patient_count_by_block_id]).to eq(nil)
-      expect(result[:patient_days_by_block_id]).to eq(nil)
-      expect(result[:drugs_in_stock_by_block_id]).to eq(nil)
-    end
-
     it "skips drug categories when drug stocks are not present" do
       instance = described_class.new(facilities: facilities,
-                                     for_end_of_month: for_end_of_month,
-                                     include_block_report: true)
+                                     for_end_of_month: for_end_of_month)
       result = instance.drug_stocks_report
 
-      expect(result[:patient_days]["hypertension_diuretic"]).to eq(nil)
-      expect(result[:drugs_in_stock]["331132"]).to eq(nil)
+      expect(result[:facilities_total_patient_days]["hypertension_diuretic"]).to eq(nil)
+      expect(result[:facilities_total_drugs_in_stock]["331132"]).to eq(nil)
     end
 
     it "skips computing drug stock report when there are no drug stocks or patients for a facility" do
       facility_without_drug_stocks = create(:facility, facility_group: facilities.first.facility_group)
 
       instance = described_class.new(facilities: Facility.where(id: facility_without_drug_stocks),
-                                     for_end_of_month: for_end_of_month,
-                                     include_block_report: true)
+                                     for_end_of_month: for_end_of_month)
       result = instance.drug_stocks_report
 
       expect(result[:patient_count_by_facility_id][facility_without_drug_stocks.id]).to eq(0)
@@ -180,17 +165,14 @@ RSpec.describe DrugStocksQuery do
         facilities = create_list(:facility, 3, facility_group: facility_group)
 
         ck_this_month = described_class.new(facilities: facilities,
-                                            for_end_of_month: Date.today.end_of_month,
-                                            include_block_report: true).drug_stocks_cache_key
+                                            for_end_of_month: Date.today.end_of_month).drug_stocks_cache_key
         ck_next_month = described_class.new(facilities: facilities,
-                                            for_end_of_month: 1.month.from_now.end_of_month,
-                                            include_block_report: true).drug_stocks_cache_key
+                                            for_end_of_month: 1.month.from_now.end_of_month).drug_stocks_cache_key
         expect(ck_this_month).not_to eq(ck_next_month)
 
         facility = create(:facility, facility_group: facility_group)
         ck_this_month_with_facility = described_class.new(facilities: facilities << facility,
-                                                          for_end_of_month: Date.today.end_of_month,
-                                                          include_block_report: true).drug_stocks_cache_key
+                                                          for_end_of_month: Date.today.end_of_month).drug_stocks_cache_key
         expect(ck_this_month).not_to eq(ck_this_month_with_facility)
       end
     end
@@ -240,27 +222,25 @@ RSpec.describe DrugStocksQuery do
 
     it "computes the drug consumption report totals" do
       result = described_class.new(facilities: facilities,
-                                   for_end_of_month: for_end_of_month,
-                                   include_block_report: true).drug_consumption_report
+                                   for_end_of_month: for_end_of_month).drug_consumption_report
 
-      expect(result[:patient_count]).to eq(patients.count)
-      expect(result[:all_drug_consumption]["hypertension_ccb"][:base_doses][:total]).to eq(15600)
-      expect(result[:all_drug_consumption]["hypertension_arb"][:base_doses][:total]).to eq(24000)
+      expect(result[:total_patient_count]).to eq(patients.count)
+      expect(result[:total_drug_consumption]["hypertension_ccb"][:base_doses][:total]).to eq(15600)
+      expect(result[:total_drug_consumption]["hypertension_arb"][:base_doses][:total]).to eq(24000)
 
       {"hypertension_ccb" => %w[329528 329526],
        "hypertension_arb" => %w[316764 316765 979467]}.each do |(drug_category, rxnorm_codes)|
-        expect(result[:all_drug_consumption][drug_category][:base_doses][:total]).not_to be_nil
-        expect(result[:all_drug_consumption][drug_category][:base_doses][:drugs]).not_to be_nil
-        expect(result[:all_drug_consumption][drug_category][:base_doses][:drugs].first[:name]).not_to be_nil
-        expect(result[:all_drug_consumption][drug_category][:base_doses][:drugs].first[:consumed]).not_to be_nil
-        expect(result[:all_drug_consumption][drug_category][:base_doses][:drugs].first[:coefficient]).not_to be_nil
+        expect(result[:total_drug_consumption][drug_category][:base_doses][:total]).not_to be_nil
+        expect(result[:total_drug_consumption][drug_category][:base_doses][:drugs]).not_to be_nil
+        expect(result[:total_drug_consumption][drug_category][:base_doses][:drugs].first[:name]).not_to be_nil
+        expect(result[:total_drug_consumption][drug_category][:base_doses][:drugs].first[:consumed]).not_to be_nil
+        expect(result[:total_drug_consumption][drug_category][:base_doses][:drugs].first[:coefficient]).not_to be_nil
       end
     end
 
     it "computes the drug consumption report for facilities" do
       result = described_class.new(facilities: facilities,
-                                   for_end_of_month: for_end_of_month,
-                                   include_block_report: true).drug_consumption_report
+                                   for_end_of_month: for_end_of_month).drug_consumption_report
       facility = facilities.first
       expect(result[:patient_count_by_facility_id][facility.id]).to eq(3)
       expect(result[:drug_consumption_by_facility_id][facility.id]["hypertension_ccb"][:base_doses][:total]).to eq(5200)
@@ -290,8 +270,7 @@ RSpec.describe DrugStocksQuery do
       block_b = facility_in_another_block.block_region
 
       result = described_class.new(facilities: facilities << facility_in_another_block,
-                                   for_end_of_month: for_end_of_month,
-                                   include_block_report: true).drug_consumption_report
+                                   for_end_of_month: for_end_of_month).drug_consumption_report
 
       expect(result[:patient_count_by_block_id][block_a.id]).to eq(9)
       expect(result[:drug_consumption_by_block_id][block_a.id]["hypertension_ccb"][:base_doses][:total]).to eq(15600)
@@ -316,31 +295,19 @@ RSpec.describe DrugStocksQuery do
                                                                                             redistributed: 3000})
     end
 
-    it "does not compute block wise numbers when include_block_report is false" do
-      result = described_class.new(facilities: facilities,
-                                   for_end_of_month: for_end_of_month,
-                                   include_block_report: false).drug_consumption_report
-
-      expect(result[:patient_count_by_block_id]).to eq(nil)
-      expect(result[:drug_consumption_by_block_id]).to eq(nil)
-    end
-
     describe "#drug_consumption_cache_key" do
       it "caches for a given set of facilities and month" do
         facilities = create_list(:facility, 3, facility_group: facility_group)
 
         ck_this_month = described_class.new(facilities: facilities,
-                                            for_end_of_month: Date.today.end_of_month,
-                                            include_block_report: true).drug_consumption_cache_key
+                                            for_end_of_month: Date.today.end_of_month).drug_consumption_cache_key
         ck_next_month = described_class.new(facilities: facilities,
-                                            for_end_of_month: 1.month.from_now.end_of_month,
-                                            include_block_report: true).drug_consumption_cache_key
+                                            for_end_of_month: 1.month.from_now.end_of_month).drug_consumption_cache_key
         expect(ck_this_month).not_to eq(ck_next_month)
 
         facility = create(:facility, facility_group: facility_group)
         ck_this_month_with_facility = described_class.new(facilities: facilities << facility,
-                                                          for_end_of_month: Date.today.end_of_month,
-                                                          include_block_report: true).drug_consumption_cache_key
+                                                          for_end_of_month: Date.today.end_of_month).drug_consumption_cache_key
         expect(ck_this_month).not_to eq(ck_this_month_with_facility)
       end
     end
