@@ -8,9 +8,14 @@ RSpec.describe Seed::ProductionExperimentTestSeeder do
     expect(Experimentation::Experiment.count).to eq(0)
     expect(Experimentation::TreatmentGroup.count).to eq(0)
     expect(Experimentation::ReminderTemplate.count).to eq(0)
+    expect(Patient.count).to eq(0)
     described_class.call(days_till_start: 1, user_id: user.id)
     expect(Experimentation::Experiment.count).to eq(1)
     expect(Experimentation::TreatmentGroup.count).to eq(3)
-    expect(Experimentation::ReminderTemplate.count).to eq(3)
+    expect(Experimentation::ReminderTemplate.count).to eq(4)
+    expect(Patient.count).to eq(4)
+    Patient.all.each do |patient|
+      expect(patient.latest_mobile_number).to eq("+918675309")
+    end
   end
 end

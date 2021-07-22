@@ -8,6 +8,6 @@ RSpec.describe Seed::ExperimentSeeder do
     described_class.call
     expect(Experimentation::Experiment.count).to eq(1)
     expect(Experimentation::TreatmentGroup.count).to eq(3)
-    expect(Experimentation::ReminderTemplate.count).to eq(3)
+    expect(Experimentation::ReminderTemplate.count).to eq(4)
   end
 end
