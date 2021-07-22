@@ -29,7 +29,8 @@ Config.ensure_required_keys_are_present(required_keys: [
   "HELP_SCREEN_YOUTUBE_TRAINING_URL",
   "RAILS_CACHE_REDIS_PASSWORD",
   "SIDEKIQ_CONCURRENCY",
-  "ANALYTICS_DASHBOARD_CACHE_TTL"
+  "ANALYTICS_DASHBOARD_CACHE_TTL",
+  "TEMPORARY_RETENTION_DURATION_SECONDS"
 ])
 
 Config.ensure_required_keys_have_fallbacks(required_keys: {
