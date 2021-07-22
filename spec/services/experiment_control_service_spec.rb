@@ -214,6 +214,20 @@ describe ExperimentControlService, type: :model do
         ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
       }.to raise_error(ActiveRecord::RecordNotFound)
     end
+
+    it "only adds whitelisted patients when experiment name is 'production test'" do
+      hari_patient = create(:patient, age: 18, full_name: "Hari AB Tester")
+      not_hari_patient = create(:patient, age: 18, full_name: "Not Hari")
+      create(:appointment, patient: hari_patient, scheduled_date: 10.days.from_now)
+      create(:appointment, patient: not_hari_patient, scheduled_date: 10.days.from_now)
+
+      experiment = create(:experiment, :with_treatment_group, name: "production test")
+
+      ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
+
+      expect(experiment.patients.include?(not_hari_patient)).to be_falsey
+      expect(experiment.patients.include?(hari_patient)).to be_truthy
+    end
   end
 
   describe "self.schedule_daily_stale_patient_notifications" do

@@ -2,6 +2,7 @@ class ExperimentControlService
   LAST_EXPERIMENT_BUFFER = 14.days.freeze
   PATIENTS_PER_DAY = 10_000
   BATCH_SIZE = 100
+  WHITELISTED_PATIENT_EXPERIMENT_NAME = "production test"
 
   class << self
     def start_current_patient_experiment(name, days_til_start, days_til_end, percentage_of_patients = 100)
@@ -11,8 +12,8 @@ class ExperimentControlService
 
       experiment.update!(state: "selecting", start_date: experiment_start.to_date, end_date: experiment_end.to_date)
 
-      eligible_ids = if name == "production test"
-        names = ["Hari AB Tester", "Vikram AB Tester", "Srihari AB Tester", "Pragati AB Tester"]
+      eligible_ids = if name == WHITELISTED_PATIENT_EXPERIMENT_NAME
+        names = ["Hari AB Tester", "Vikram AB Tester", "Srihari AB Tester", "Pragati AB Tester", "Prabhanshu AB Tester"]
         Patient.where(full_name: names).pluck(:id)
       else
         current_patient_candidates(experiment_start, experiment_end).shuffle!
