@@ -67,44 +67,4 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       end
     end
   end
-
-  context "assigned patients by care states" do
-    pending describe "under_care" do
-    end
-
-    pending describe "lost_to_follow_up" do
-    end
-
-    pending describe "dead" do
-    end
-    pending describe "cumulative_assigned_patients" do
-    end
-  end
-
-  context "treatment outcomes in the last 3 months" do
-    pending describe "controlled_under_care" do
-    end
-
-    pending describe "uncontrolled_under_care" do
-    end
-
-    pending describe "missed_visit_under_care" do
-    end
-
-    pending describe "visited_no_bp_under_care" do
-    end
-
-    pending describe "missed_visit_lost_to_follow_up" do
-    end
-
-    pending describe "visited_no_bp_lost_to_follow_up" do
-    end
-
-    pending describe "patients_under_care" do
-    end
-
-    pending describe "patients_lost_to_follow_up" do
-    end
-  end
-
 end
