@@ -6,7 +6,15 @@ module Reports
     include Scientist
     PERCENTAGE_PRECISION = 0
 
-    def initialize(regions, periods:, reporting_schema_v2: true)
+    def self.use_schema_v2?
+      @use_schema_v2 ||= false
+    end
+
+    def self.use_schema_v2=(val)
+      @use_schema_v2 = val
+    end
+
+    def initialize(regions, periods:, reporting_schema_v2: self.class.use_schema_v2?)
       @regions = Array(regions).map(&:region)
       @periods = if periods.is_a?(Period)
         Range.new(periods, periods)

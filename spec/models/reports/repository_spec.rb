@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Reports::Repository, type: :model, v2_flag: true do
-  [true].each do |v2_flag|
+  [true, false].each do |v2_flag|
     context "with reporting_schema_v2 #{v2_flag}" do
       let(:v2_flag) { v2_flag }
       let(:organization) { create(:organization, name: "org-1") }
@@ -24,7 +24,10 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
       end
 
       around do |example|
+        original = Reports::Repository.use_schema_v2?
+        Reports::Repository.use_schema_v2 = v2_flag
         with_reporting_time_zone { example.run }
+        Reports::Repository.use_schema_v2 = original
       end
 
       context "earliest patient record" do
@@ -55,7 +58,7 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
 
           refresh_views
 
-          repo = described_class.new(facility_1.region, periods: jan_2019.to_period, reporting_schema_v2: v2_flag)
+          repo = described_class.new(facility_1.region, periods: jan_2019.to_period)
           expected = {
             facility_1.slug => {
               jan_2019.to_period => 2
@@ -79,7 +82,7 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
 
           refresh_views
 
-          repo = described_class.new(facility_group_1.region, periods: jan_2019.to_period, reporting_schema_v2: v2_flag)
+          repo = described_class.new(facility_group_1.region, periods: jan_2019.to_period)
           expected_assigned = {
             facility_group_1.slug => {
               jan_2019.to_period => 2
