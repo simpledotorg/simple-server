@@ -2,7 +2,19 @@ module Seed
   class Config
     # By default the fast seed config will be used for dev. You can override this via the ENV var SEED_TYPE
     def initialize
-      @type = ENV["SEED_TYPE"] || "empty"
+      @type = ENV["SEED_TYPE"] ||
+        case SimpleServer.env
+        when "android_review"
+          "empty"
+        when "development", "review"
+          "small"
+        when "test"
+          "test"
+        when "sandbox", "demo"
+          "large"
+        else
+          raise ArgumentError, "Invalid SimpleServer.env #{SimpleServer.env} for Seed configuration"
+        end
       Dotenv.load!(".env.seed.#{type}")
     end
 
