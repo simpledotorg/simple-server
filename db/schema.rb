@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_15_120731) do
+ActiveRecord::Schema.define(version: 2021_07_15_165453) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -1535,4 +1535,6 @@ ActiveRecord::Schema.define(version: 2021_07_15_120731) do
        LEFT JOIN assigned_patients ap ON (((ap.month_date = cal.month_date) AND (ap.region_id = rf.facility_region_id))))
        LEFT JOIN treatment_outcomes_in_last_3_months tout ON (((tout.month_date = cal.month_date) AND (tout.region_id = rf.facility_region_id))));
   SQL
+  add_index "reporting_facility_states", ["month_date", "facility_region_id"], name: "facility_states_month_date_region_id", unique: true
+
 end
