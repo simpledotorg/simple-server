@@ -29,7 +29,9 @@ module ParameterFiltering
   SANITIZED_VALUE = "[FILTERED]".freeze
 
   # Returns the lambda for attributes that are okay to leave in the logs
-  self.filter = lambda { |key, value| value.replace(SANITIZED_VALUE) unless key.match(ALLOWED_REGEX) }
+  def self.filter
+    lambda { |key, value| value.replace(SANITIZED_VALUE) if !key.match(ALLOWED_REGEX) && value.is_a?(String) }
+  end
 end
 
 Rails.application.config.filter_parameters += [*ParameterFiltering::DISALLOWED_INTEGER_PARAMS, ParameterFiltering.filter]
