@@ -62,6 +62,35 @@ RSpec.describe BloodPressure, type: :model do
         expect(described_class.for_sync).to include(discarded_bp)
       end
     end
+
+    describe ".for_recent_bp_log" do
+      it "orders bps by date descending" do
+        Timecop.freeze("1 Jul 2021 1PM UTC") do
+          bp_1 = create(:blood_pressure, recorded_at: 2.day.ago)
+          bp_2 = create(:blood_pressure, recorded_at: 1.day.ago)
+
+          expect(described_class.for_recent_bp_log).to eq([bp_2, bp_1])
+        end
+      end
+
+      it "orders bps by time of day ascending for BPs on the same date" do
+        Timecop.freeze("1 Jul 2021 1PM UTC") do
+          bp_1 = create(:blood_pressure, recorded_at: 20.minutes.ago)
+          bp_2 = create(:blood_pressure, recorded_at: 10.minutes.ago)
+
+          expect(described_class.for_recent_bp_log).to eq([bp_1, bp_2])
+        end
+      end
+
+      context "respects the reporting timezone for ordering" do
+        it "BPs in different days in reporting time zone but same day in UTC are ordered descending" do
+          bp_1 = create(:blood_pressure, recorded_at: Time.zone.parse("1 July 2021 11:30PM IST"))
+          bp_2 = create(:blood_pressure, recorded_at: Time.zone.parse("2 July 2021 12:30AM IST"))
+
+          expect(described_class.for_recent_bp_log).to eq([bp_2, bp_1])
+        end
+      end
+    end
   end
 
   context "utility methods" do
