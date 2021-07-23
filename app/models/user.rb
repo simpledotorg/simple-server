@@ -100,6 +100,7 @@ class User < ApplicationRecord
     :has_never_logged_in?,
     :mark_as_logged_in,
     :phone_number,
+    :localized_phone_number,
     :otp,
     :otp_valid?,
     :facility_group,

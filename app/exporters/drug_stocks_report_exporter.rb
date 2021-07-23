@@ -18,6 +18,7 @@ class DrugStocksReportExporter
       csv << drug_categories_header
       csv << drug_names_header
       csv << total_stock_row
+      csv << district_warehouse_stock_row
       facility_rows.each { |row| csv << row }
 
       csv
@@ -50,10 +51,21 @@ class DrugStocksReportExporter
   def total_stock_row
     ["All", ""] +
       @drugs_by_category.flat_map do |drug_category, drugs|
-        patient_days = @report.dig(:patient_days, drug_category, :patient_days)
+        patient_days = @report.dig(:total_patient_days, drug_category, :patient_days)
 
         drugs.map do |drug|
-          @report.dig(:drugs_in_stock, drug.rxnorm_code)
+          @report.dig(:total_drugs_in_stock, drug.rxnorm_code)
+        end << patient_days
+      end
+  end
+
+  def district_warehouse_stock_row
+    ["District Warehouse", ""] +
+      @drugs_by_category.flat_map do |drug_category, drugs|
+        patient_days = @report.dig(:district_patient_days, drug_category, :patient_days)
+
+        drugs.map do |drug|
+          @report.dig(:district_drugs_in_stock, drug.rxnorm_code)
         end << patient_days
       end
   end

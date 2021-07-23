@@ -19,9 +19,9 @@ class Webview::DrugStocksController < ApplicationController
 
   def create
     DrugStocksCreator.call(user: current_user,
-                           facility: @current_facility,
+                           region: @current_facility.region,
                            for_end_of_month: @for_end_of_month,
-                           drug_stocks_params: safe_params[:drug_stocks])
+                           drug_stocks_params: drug_stocks_params)
     redirect_to webview_drug_stocks_url(for_end_of_month: @for_end_of_month.to_s(:mon_year),
                                         facility_id: current_facility.id,
                                         user_id: current_user.id,
@@ -35,10 +35,8 @@ class Webview::DrugStocksController < ApplicationController
     @protocol_drugs = current_facility.protocol.protocol_drugs.where(stock_tracked: true).sort_by(&:sort_key)
     @drug_stocks = DrugStock.latest_for_facilities_grouped_by_protocol_drug(current_facility, @for_end_of_month)
     @query = DrugStocksQuery.new(facilities: [current_facility],
-                                 for_end_of_month: @for_end_of_month,
-                                 include_block_report: false)
+                                 for_end_of_month: @for_end_of_month)
     @drugs_by_category = @query.protocol_drugs_by_category
-    @report = @query.drug_stocks_report
   end
 
   private
@@ -72,12 +70,17 @@ class Webview::DrugStocksController < ApplicationController
     @current_facility = Facility.find(safe_params[:facility_id])
   end
 
+  def drug_stocks_params
+    safe_params[:drug_stocks]&.values
+  end
+
   def safe_params
     params.permit(:access_token, :facility_id, :user_id, :for_end_of_month,
       drug_stocks:
-        [:received,
+        [:protocol_drug_id,
+          :received,
           :in_stock,
-          :protocol_drug_id])
+          :redistributed])
   end
 
   def set_bust_cache

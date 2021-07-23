@@ -31,6 +31,18 @@ RSpec.describe TwilioApiService do
       expect(notification_service.client).to be_instance_of(Twilio::REST::Client)
       expect(notification_service.test_mode?).to be_falsey
     end
+
+    it "uses the production twilio creds when TWILIO_PRODUCTION_OVERRIDE is set" do
+      stub_const("SIMPLE_SERVER_ENV", "sandbox")
+      ENV["TWILIO_PRODUCTION_OVERRIDE"] = "true"
+      twilio_account_sid = ENV.fetch("TWILIO_ACCOUNT_SID")
+      twilio_auth_token = ENV.fetch("TWILIO_AUTH_TOKEN")
+      expect(Twilio::REST::Client).to receive(:new).with(twilio_account_sid, twilio_auth_token).and_call_original
+      expect(notification_service.client).to be_instance_of(Twilio::REST::Client)
+      expect(notification_service.test_mode?).to be_falsey
+    ensure
+      ENV.delete("TWILIO_PRODUCTION_OVERRIDE")
+    end
   end
 
   describe "specifying an SMS sender" do

@@ -3,12 +3,12 @@ class DrugStocksCreator
     new(*args).call
   end
 
-  def initialize(user:, facility:, for_end_of_month:, drug_stocks_params:, region: nil)
+  def initialize(user:, for_end_of_month:, drug_stocks_params:, region:)
     @user = user
-    @facility = facility
+    @region = region
+    @facility = @region.source if region.facility_region?
     @for_end_of_month = for_end_of_month
     @drug_stocks_params = drug_stocks_params || []
-    @region = region || facility.region
   end
 
   def call
@@ -19,6 +19,7 @@ class DrugStocksCreator
                           protocol_drug_id: drug_stock[:protocol_drug_id],
                           received: drug_stock[:received].presence,
                           in_stock: drug_stock[:in_stock].presence,
+                          redistributed: drug_stock[:redistributed].presence,
                           for_end_of_month: @for_end_of_month,
                           region: @region)
       end

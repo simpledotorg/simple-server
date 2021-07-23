@@ -15,6 +15,21 @@ RSpec.describe BloodPressure, type: :model do
     it_behaves_like "a record that is deletable"
   end
 
+  it "has a valid encounter / observation for bp_with_encounter factory" do
+    user = create(:user)
+    patient = create(:patient)
+    bp = create(:bp_with_encounter, user: user, patient: patient)
+    bp.reload
+    expect(bp.observation).to_not be nil
+    expect(bp.encounter).to_not be nil
+    expect(bp.observation.user).to eq(bp.user)
+    expect(bp.observation.observable).to eq(bp)
+    expect(bp.encounter.patient).to eq(bp.patient)
+    expect(bp.encounter.observations).to contain_exactly(bp.observation)
+    # This behavior is a bit confusing, but this matches what we do in Encounter#generated_encountered_on
+    expect(bp.encounter.encountered_on).to eq(bp.recorded_at.in_time_zone(Period::REPORTING_TIME_ZONE).to_date)
+  end
+
   describe "Scopes" do
     describe ".hypertensive" do
       it "only includes hypertensive BPs" do
