@@ -1,17 +1,3 @@
 class Api::V3::AnalyticsController < APIController
-  around_action :set_time_zone
-
-  private
-
-  def set_time_zone
-    time_zone = Period::ANALYTICS_TIME_ZONE
-
-    Groupdate.time_zone = time_zone
-
-    Time.use_zone(time_zone) do
-      yield
-    end
-  ensure
-    Groupdate.time_zone = "UTC"
-  end
+  around_action :set_reporting_time_zone
 end

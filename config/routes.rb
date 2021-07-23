@@ -81,6 +81,8 @@ Rails.application.routes.draw do
 
       resource :twilio_sms_delivery, only: [:create], controller: :twilio_sms_delivery
 
+      post "patient/:patient_id/imo_authorization", to: "imo_callbacks#subscribe", as: :imo_authorization_callback
+
       scope :users do
         get "find", to: "users#find"
         post "register", to: "users#register"
@@ -140,7 +142,7 @@ Rails.application.routes.draw do
       end
 
       scope :patients do
-        get "/:identifier", to: "patients#lookup"
+        post "/lookup", to: "patients#lookup"
       end
     end
   end
@@ -192,10 +194,9 @@ Rails.application.routes.draw do
     get "facility_performance", to: "facility_performance#show"
     get "ranked_facilities", to: redirect("/my_facilities/facility_performance")
     get "drug_stocks", to: "drug_stocks#drug_stocks"
-    get "drug_stocks/download", to: "drug_stocks#download_drug_stock"
     get "drug_consumption", to: "drug_stocks#drug_consumption"
     post "drug_stocks", to: "drug_stocks#create"
-    get "drug_stocks/:facility_id/new", to: "drug_stocks#new", as: :drug_stock_form
+    get "drug_stocks/:region_id/new", to: "drug_stocks#new", as: :drug_stock_form
   end
 
   scope :resources do

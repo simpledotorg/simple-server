@@ -13,6 +13,7 @@ class Facility < ApplicationRecord
 
   belongs_to :facility_group, optional: true
 
+  has_many :business_identifiers, class_name: "FacilityBusinessIdentifier"
   has_many :phone_number_authentications, foreign_key: "registration_facility_id"
   has_many :users, through: :phone_number_authentications
   has_and_belongs_to_many :teleconsultation_medical_officers,
@@ -54,6 +55,11 @@ class Facility < ApplicationRecord
     joins("INNER JOIN regions facility_regions ON facility_regions.source_id = facilities.id")
       .joins("INNER JOIN regions block_region ON block_region.path @> facility_regions.path AND block_region.region_type = 'block'")
       .select("block_region.id AS block_region_id, facilities.*")
+  }
+
+  scope :with_region_information, -> {
+    joins("INNER JOIN reporting_facilities on reporting_facilities.facility_id = facilities.id")
+      .select("facilities.*, reporting_facilities.*")
   }
 
   enum facility_size: {
@@ -162,10 +168,6 @@ class Facility < ApplicationRecord
     nil
   end
 
-  def recent_blood_pressures
-    blood_pressures.includes(:patient, :user).order(Arel.sql("DATE(recorded_at) DESC, recorded_at ASC"))
-  end
-
   def cohort_analytics(period:, prev_periods:)
     CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods).call
   end
@@ -245,6 +247,7 @@ class Facility < ApplicationRecord
       "default" => "am-ET",
       "dire dawa" => "am-ET",
       "oromia" => "om-ET",
+      "sidama" => "sid-ET",
       "somali" => "so-ET",
       "tigray" => "ti-ET"
     },

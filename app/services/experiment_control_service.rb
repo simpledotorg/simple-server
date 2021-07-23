@@ -2,6 +2,7 @@ class ExperimentControlService
   LAST_EXPERIMENT_BUFFER = 14.days.freeze
   PATIENTS_PER_DAY = 10_000
   BATCH_SIZE = 100
+  WHITELISTED_PATIENT_EXPERIMENT_NAME = "production test"
 
   class << self
     def start_current_patient_experiment(name, days_til_start, days_til_end, percentage_of_patients = 100)
@@ -11,7 +12,12 @@ class ExperimentControlService
 
       experiment.update!(state: "selecting", start_date: experiment_start.to_date, end_date: experiment_end.to_date)
 
-      eligible_ids = current_patient_candidates(experiment_start, experiment_end).shuffle!
+      eligible_ids = if name == WHITELISTED_PATIENT_EXPERIMENT_NAME
+        names = ["Hari AB Tester", "Vikram AB Tester", "Srihari AB Tester", "Pragati AB Tester", "Prabhanshu AB Tester"]
+        Patient.where(full_name: names).pluck(:id)
+      else
+        current_patient_candidates(experiment_start, experiment_end).shuffle!
+      end
 
       experiment_patient_count = (0.01 * percentage_of_patients * eligible_ids.length).round
       eligible_ids = eligible_ids.pop(experiment_patient_count)
@@ -37,8 +43,13 @@ class ExperimentControlService
 
     def schedule_daily_stale_patient_notifications(name, patients_per_day: PATIENTS_PER_DAY)
       experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "stale_patients", state: [:new, :running])
-      experiment.selecting_state!
       today = Date.current
+      return if experiment.start_date > today
+      if experiment.end_date < today
+        experiment.complete_state!
+        return
+      end
+      experiment.selecting_state!
 
       eligible_ids = Experimentation::StalePatientSelection.call(start_date: today)
       if eligible_ids.any?
@@ -53,6 +64,16 @@ class ExperimentControlService
       end
 
       experiment.running_state!
+    end
+
+    def abort_experiment(name)
+      experiment = Experimentation::Experiment.find_by!(name: name)
+      experiment.cancelled_state!
+
+      notifications = experiment.notifications.where(status: ["pending", "scheduled"])
+      notifications.find_each do |notification|
+        notification.status_cancelled!
+      end
     end
 
     protected
@@ -76,7 +97,8 @@ class ExperimentControlService
           experiment: group.experiment,
           reminder_template: template,
           subject: appointment,
-          patient: patient
+          patient: patient,
+          purpose: :experimental_appointment_reminder
         )
       end
     end

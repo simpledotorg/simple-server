@@ -49,10 +49,20 @@ every :monday, at: local("6:00 am"), roles: [:cron] do
   end
 end
 
+every :day, at: local("07:00 am"), roles: [:cron] do
+  runner "AppointmentNotification::ScheduleExperimentReminders.perform_now"
+end
+
 every 2.minutes, roles: [:cron] do
   runner "TracerJob.perform_async(Time.current.iso8601, false)"
 end
 
 every 30.minutes, roles: [:cron] do
   runner "RegionsIntegrityCheck.sweep"
+end
+
+every 1.month, at: local("4:00 am"), roles: [:cron] do
+  if Flipper.enabled?(:dhis2_export)
+    rake "dhis2:export"
+  end
 end

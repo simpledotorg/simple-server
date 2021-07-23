@@ -44,8 +44,11 @@ class Patient < ApplicationRecord
   has_many :appointments
   has_many :notifications
   has_many :treatment_group_memberships, class_name: "Experimentation::TreatmentGroupMembership"
+  has_many :treatment_groups, through: :treatment_group_memberships, class_name: "Experimentation::TreatmentGroup"
+  has_many :experiments, through: :treatment_groups, class_name: "Experimentation::Experiment"
   has_one :medical_history
   has_many :teleconsultations
+  has_one :imo_authorization, required: false
 
   has_many :encounters
   has_many :observations, through: :encounters
@@ -104,6 +107,8 @@ class Patient < ApplicationRecord
   validates_associated :address, if: :address
   validates_associated :phone_numbers, if: :phone_numbers
 
+  delegate :locale, to: :assigned_facility
+
   def past_date_of_birth
     if date_of_birth.present? && date_of_birth > Date.current
       errors.add(:date_of_birth, "can't be in the future")
@@ -127,7 +132,7 @@ class Patient < ApplicationRecord
   end
 
   def latest_mobile_number
-    phone_numbers.phone_type_mobile.last&.number
+    phone_numbers.phone_type_mobile.last&.number_with_country_code
   end
 
   def latest_bp_passport

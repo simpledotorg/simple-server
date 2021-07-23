@@ -16,7 +16,14 @@ module Reports::RegionsHelper
 
   def sum_registration_counts(repository, *keys)
     slug, user_id = keys
-    repository.registration_counts_by_user.dig(slug)
+    repository.monthly_registrations_by_user.dig(slug)
+      .map { |period, user_counts| user_counts.dig(user_id) }
+      .flatten.compact.sum
+  end
+
+  def sum_bp_measures(repository, *keys)
+    slug, user_id = keys
+    repository.bp_measures_by_user.dig(slug)
       .map { |period, user_counts| user_counts.dig(user_id) }
       .flatten.compact.sum
   end

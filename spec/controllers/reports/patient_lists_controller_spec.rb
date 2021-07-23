@@ -62,5 +62,16 @@ RSpec.describe Reports::PatientListsController, type: :controller do
       sign_in(admin_with_pii.email_authentication)
       get :show, params: {id: facility_group.slug, report_scope: "district", medication_history: true}
     end
+
+    it "works for facilities where the region slug does not match the facility slug" do
+      facility = create(:facility)
+      facility.update(slug: "a-facility-slug")
+      facility.region.update(slug: "a-facility-region-slug")
+      expect(PatientListDownloadJob).to receive(:perform_later)
+      admin_with_pii.accesses.create!(resource: facility)
+      sign_in(admin_with_pii.email_authentication)
+      get :show, params: {id: facility.region.slug, report_scope: "facility", medication_history: true}
+      expect(response).to redirect_to(reports_region_path(facility.region.slug, report_scope: "facility"))
+    end
   end
 end

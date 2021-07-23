@@ -29,7 +29,7 @@ module Experimentation
         start_date: start_date
       }
       sql = GitHub::SQL.new(<<~SQL, parameters)
-        SELECT patients.id
+        SELECT DISTINCT patients.id
         FROM patients
         INNER JOIN medical_histories mh
          ON patients.id = mh.patient_id

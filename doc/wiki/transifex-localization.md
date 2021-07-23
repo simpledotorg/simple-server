@@ -41,6 +41,13 @@ Whatsapp messages sent to patients require prior approval by Whatsapp before we 
 or update any Whatsapp messages, you must upload the new templates to Twilio and get Whatsapp approval for them prior
 to shipping the translations.
 
+#### How to apply for Whatsapp approval on Twilio
+- Create a new message template from https://www.twilio.com/console/sms/whatsapp/templates.
+- Give the template a recognisable name. Do add a date to the template name (ex. 2021_06_22_missed_visit_reminder).
+- If you're adding Missed visit reminders, pick `Appointment Update` as the template's category.
+- Add the English message as the first message. You will need to replace dynamic content in the message strings. For ex. `%{facility_name}` becomes `{{1}}`.
+- Add the rest of the languages as translations in the same template.
+
 ### 5. Test the changes
 
 Take the translations for a spin in app to check for content length, character escaping, etc.
