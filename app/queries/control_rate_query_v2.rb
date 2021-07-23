@@ -1,10 +1,10 @@
 class ControlRateQueryV2
-  def controlled(maybe_region)
-    base_query(maybe_region).where(htn_treatment_outcome_in_last_3_months: :controlled)
+  def controlled(region)
+    base_query(region).where(htn_treatment_outcome_in_last_3_months: :controlled)
   end
 
-  def uncontrolled(maybe_region)
-    base_query(maybe_region).where(htn_treatment_outcome_in_last_3_months: :uncontrolled)
+  def uncontrolled(region)
+    base_query(region).where(htn_treatment_outcome_in_last_3_months: :uncontrolled)
   end
 
   def controlled_counts(region, range: nil)
@@ -19,20 +19,10 @@ class ControlRateQueryV2
 
   private
 
-  def base_query(maybe_region)
-    # We need to do a little bit of hackery here to handle FacilityDistrict, which is a
-    # weird special case of Region
-    region = maybe_region.region
-    if region.region_type == "facility_district"
-      region_type = "facility"
-      region_id = region.facility_ids
-    else
-      region_type = region.region_type
-      region_id = region.id
-    end
+  def base_query(region)
     Reports::PatientState
       .where(hypertension: "yes", htn_care_state: "under_care")
-      .where("assigned_#{region_type}_region_id" => region_id)
+      .where("assigned_#{region.region_type}_region_id" => region.id)
       .where("months_since_registration >= ?", Reports::REGISTRATION_BUFFER_IN_MONTHS)
   end
 
