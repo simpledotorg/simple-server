@@ -16,21 +16,21 @@ RSpec.describe DrugStocksReportExporter do
                                   for_end_of_month: Time.current.end_of_month)
 
       stocks_by_rxnorm = {
-        "329528" => { in_stock: 10000, received: 2000 },
-        "329526" => { in_stock: 20000, received: 2000 },
-        "316764" => { in_stock: 10000, received: 2000 },
-        "316765" => { in_stock: 20000, received: 2000 },
-        "979467" => { in_stock: 10000, received: 2000 }
+        "329528" => {in_stock: 10000, received: 2000},
+        "329526" => {in_stock: 20000, received: 2000},
+        "316764" => {in_stock: 10000, received: 2000},
+        "316765" => {in_stock: 20000, received: 2000},
+        "979467" => {in_stock: 10000, received: 2000}
       }
 
       facilities.each do |facility|
         stocks_by_rxnorm.map do |(rxnorm_code, drug_stock)|
           protocol_drug = protocol.protocol_drugs.find_by(rxnorm_code: rxnorm_code)
           create(:drug_stock,
-                 facility: facility,
-                 protocol_drug: protocol_drug,
-                 in_stock: drug_stock[:in_stock],
-                 received: drug_stock[:received])
+            facility: facility,
+            protocol_drug: protocol_drug,
+            in_stock: drug_stock[:in_stock],
+            received: drug_stock[:received])
         end
         create_list(:patient, 2, assigned_facility: facility)
       end
@@ -38,10 +38,10 @@ RSpec.describe DrugStocksReportExporter do
       stocks_by_rxnorm.map do |(rxnorm_code, drug_stock)|
         protocol_drug = protocol.protocol_drugs.find_by(rxnorm_code: rxnorm_code)
         create(:drug_stock,
-               region: facility_group.region,
-               protocol_drug: protocol_drug,
-               in_stock: drug_stock[:in_stock],
-               received: drug_stock[:received])
+          region: facility_group.region,
+          protocol_drug: protocol_drug,
+          in_stock: drug_stock[:in_stock],
+          received: drug_stock[:received])
       end
 
       timestamp = ["Report last updated at:", Time.now]
@@ -86,27 +86,27 @@ RSpec.describe DrugStocksReportExporter do
 
       facility_1_row =
         [facilities.first.name,
-         facilities.first.zone,
-         10000, 10000, 20000, 81081,
-         10000, 20000, 17857,
-         nil, nil, nil]
+          facilities.first.zone,
+          10000, 10000, 20000, 81081,
+          10000, 20000, 17857,
+          nil, nil, nil]
 
       facility_2_row =
         [facilities.second.name,
-         facilities.second.zone,
-         10000, 10000, 20000, 81081,
-         10000, 20000, 17857,
-         nil, nil, nil]
+          facilities.second.zone,
+          10000, 10000, 20000, 81081,
+          10000, 20000, 17857,
+          nil, nil, nil]
 
       csv = described_class.csv(query)
       expected_csv =
         timestamp.to_csv +
-          headers_row_1.to_csv +
-          headers_row_2.to_csv +
-          totals_row.to_csv +
-          district_warehouse_row.to_csv +
-          facility_1_row.to_csv +
-          facility_2_row.to_csv
+        headers_row_1.to_csv +
+        headers_row_2.to_csv +
+        totals_row.to_csv +
+        district_warehouse_row.to_csv +
+        facility_1_row.to_csv +
+        facility_2_row.to_csv
 
       expect(csv).to eq(expected_csv)
     end
