@@ -1,7 +1,7 @@
 namespace :dhis2 do
   desc "Export aggregate indicators for each facility to DHIS2"
   task export: :environment do
-    return unless Flipper.enabled?(:dhis2_export)
+    abort("DHIS2 export not enabled in Flipper") unless Flipper.enabled?(:dhis2_export)
 
     require "dhis2"
     Dhis2.configure do |config|
