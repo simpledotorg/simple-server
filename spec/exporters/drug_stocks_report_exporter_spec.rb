@@ -44,7 +44,7 @@ RSpec.describe DrugStocksReportExporter do
                received: drug_stock[:received])
       end
 
-      timestamp = ["Report last updated at:", query.drug_stocks_report.fetch(:last_updated_at)]
+      timestamp = ["Report last updated at:", Time.now]
       headers_row_1 = [
         nil, nil,
         "ARB Tablets",
