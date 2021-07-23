@@ -326,22 +326,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect(data[:controlled_patients][Date.parse("Dec 2019").to_period]).to eq(1)
     end
 
-    it "retrieves facility district data" do
-      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
-      create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
-      create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
-      refresh_views
-
-      Timecop.freeze("June 1 2020") do
-        sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility.district, report_scope: "facility_district"}
-      end
-      expect(response).to be_successful
-      data = assigns(:data)
-      expect(data[:controlled_patients].size).to eq(10) # sanity check
-      expect(data[:controlled_patients][dec_2019_period]).to eq(1)
-    end
-
     it "retrieves block data" do
       patient_2 = create(:patient, registration_facility: @facility, recorded_at: "June 01 2019 00:00:00 UTC", registration_user: cvho)
       create(:bp_with_encounter, :hypertensive, recorded_at: "Feb 2020", facility: @facility, patient: patient_2, user: cvho)
@@ -458,24 +442,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect(response.headers["Content-Disposition"]).to include('filename="district-quarterly-cohort-report_')
       expect(result).to render_template("facility_group_cohort.csv.erb")
     end
-
-    it "retrieves cohort data for a facility district" do
-      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
-      create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
-      create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
-      refresh_views
-
-      result = nil
-      Timecop.freeze("June 1 2020") do
-        sign_in(cvho.email_authentication)
-        result = get :download, params: {id: @facility.district, report_scope: "facility_district", period: "quarter", format: "csv"}
-      end
-
-      expect(response).to be_successful
-      expect(response.body).to include("#{@facility.district} Quarterly Cohort Report")
-      expect(response.headers["Content-Disposition"]).to include('filename="facility_district-quarterly-cohort-report_')
-      expect(result).to render_template("facility_group_cohort.csv.erb")
-    end
   end
 
   describe "#whatsapp_graphics" do
@@ -547,16 +513,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
         expected_filename = "monthly-district-data-#{region.slug}-#{report_date}.csv"
         expect(response.headers["Content-Disposition"]).to include(%(filename="#{expected_filename}"))
       end
-    end
-
-    it "works for facility districts" do
-      facility
-      sign_in(cvho.email_authentication)
-
-      get :monthly_district_data_report, params: {id: region.name, report_scope: "facility_district", format: "csv"}
-
-      expect(response.status).to eq(200)
-      expect(response.body).to include(facility.name)
     end
 
     it "passes the provided period to the csv service" do
