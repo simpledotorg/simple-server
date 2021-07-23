@@ -10,7 +10,7 @@ class MyFacilities::FacilityPerformanceController < AdminController
 
   after_action :verify_authorization_attempted
 
-  around_action :set_time_zone
+  around_action :set_reporting_time_zone
   before_action :authorize_my_facilities
   before_action :set_last_updated_at
 
@@ -49,10 +49,6 @@ class MyFacilities::FacilityPerformanceController < AdminController
       else
         last_updated_at.in_time_zone(Rails.application.config.country[:time_zone]).strftime("%d-%^b-%Y %I:%M%p")
       end
-  end
-
-  def set_time_zone
-    Time.use_zone(Period::REPORTING_TIME_ZONE) { yield }
   end
 
   def authorize_my_facilities

@@ -43,15 +43,6 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
         expect(assigns(:facilities)).to contain_exactly(*facilities_with_stock_tracked)
         expect(assigns(:facilities)).not_to include(*facility_group.facilities)
       end
-
-      it "excludes community facilities" do
-        community_facility_with_stock_tracked = create(:facility, facility_group: facility_group_with_stock_tracked, facility_size: :community)
-
-        sign_in(power_user.email_authentication)
-        get :drug_stocks, params: {facility_group: facility_group_with_stock_tracked.slug}
-
-        expect(assigns(:facilities)).not_to include(community_facility_with_stock_tracked)
-      end
     end
 
     context "as manager" do
@@ -61,17 +52,6 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
 
         expect(assigns(:facilities)).to contain_exactly(allowed_facility_for_manager)
       end
-
-      it "excludes community facilities" do
-        community_facility_with_stock_tracked = create(:facility, facility_group: facility_group_with_stock_tracked, facility_size: :community)
-        _access = create(:access, user: manager, resource: community_facility_with_stock_tracked)
-
-        sign_in(manager.email_authentication)
-        get :drug_stocks, params: {}
-
-        expect(assigns(:facilities)).to contain_exactly(allowed_facility_for_manager)
-        expect(assigns(:facilities)).not_to include(community_facility_with_stock_tracked)
-      end
     end
 
     context "as viewer_reports_only" do
@@ -80,17 +60,6 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
         get :drug_stocks, params: {}
 
         expect(assigns(:facilities)).to contain_exactly(*facilities_with_stock_tracked)
-      end
-
-      it "excludes community facilities" do
-        community_facility_with_stock_tracked = create(:facility, facility_group: facility_group_with_stock_tracked, facility_size: :community)
-        _access = create(:access, user: report_viewer, resource: community_facility_with_stock_tracked)
-
-        sign_in(report_viewer.email_authentication)
-        get :drug_stocks, params: {}
-
-        expect(assigns(:facilities)).to contain_exactly(*facilities_with_stock_tracked)
-        expect(assigns(:facilities)).not_to include(community_facility_with_stock_tracked)
       end
     end
 
@@ -125,9 +94,11 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
   describe "GET #new" do
     context "as power_user" do
       let(:facility) { facility_group_with_stock_tracked.facilities.first }
+      let(:facility_region) { facility.region }
       let(:params) {
         {
-          facility_id: facility.id,
+          region_id: facility_region.id,
+          region_type: :facility,
           for_end_of_month: Date.today.strftime("%b-%Y")
         }
       }
@@ -146,7 +117,7 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
 
         expect(response).to be_successful
         expect(assigns(:drug_stocks)).to be_empty
-        expect(assigns(:facility)).to eq facility
+        expect(assigns(:region)).to eq facility_region
       end
 
       it "returns the latest drug stocks in a facility for a given month" do
@@ -170,7 +141,8 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
       let(:facility) { allowed_facility_for_manager }
       let(:params) {
         {
-          facility_id: facility.id,
+          region_id: facility.region.id,
+          region_type: :facility,
           for_end_of_month: Date.today.strftime("%b-%Y")
         }
       }
@@ -185,7 +157,9 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
       it "redirects for a disallowed facility" do
         sign_in(manager.email_authentication)
 
-        get :new, params: params.merge(facility_id: disallowed_facility_for_manager.id)
+        params[:region_id] = disallowed_facility_for_manager.region.id
+
+        get :new, params: params
         expect(response).to be_redirect
       end
     end
@@ -194,7 +168,8 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
       let(:facility) { facilities_with_stock_tracked.first }
       let(:params) {
         {
-          facility_id: facility.id,
+          region_id: facility.region.id,
+          region_type: :facility,
           for_end_of_month: Date.today.strftime("%b-%Y")
         }
       }
@@ -211,9 +186,11 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
   describe "POST #create" do
     let(:redirect_url) { "report_url_with_filters" }
     let(:session) { {report_url_with_filters: redirect_url} }
+    let(:facility) { facility_group_with_stock_tracked.facilities.first }
     let(:params) {
       {
-        facility_id: facility_group_with_stock_tracked.facilities.first.id,
+        region_id: facility.region.id,
+        region_type: :facility,
         for_end_of_month: Date.today.strftime("%b-%Y"),
         drug_stocks: [{
           protocol_drug_id: protocol_drug.id,

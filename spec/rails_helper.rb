@@ -39,10 +39,11 @@ RSpec.configure do |config|
 
   def with_reporting_time_zone(&blk)
     Time.use_zone(Period::REPORTING_TIME_ZONE) do
+      original_group_date_time_zone = Groupdate.time_zone
       Groupdate.time_zone = Period::REPORTING_TIME_ZONE
-      result = blk.call
-      Groupdate.time_zone = nil
-      result
+      blk.call
+    ensure
+      Groupdate.time_zone = original_group_date_time_zone
     end
   end
 

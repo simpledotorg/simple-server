@@ -94,6 +94,7 @@ RSpec.describe Api::V4::PatientsController, type: :controller do
       user = create(:user, registration_facility: facility_1)
       set_headers(user, facility_1)
       request.env["HTTP_X_SYNC_REGION_ID"] = facility_1.region.block_region.id
+      ENV["TEMPORARY_RETENTION_DURATION_SECONDS"] = "99"
 
       post :lookup, params: {identifier: identifier}, as: :json
       response_patients = JSON.parse(response.body).with_indifferent_access[:patients]
@@ -101,7 +102,7 @@ RSpec.describe Api::V4::PatientsController, type: :controller do
       response_patient_2 = response_patients.find { |patients| patients[:id] == patient_2.id }
 
       expect(response_patient_1[:retention]).to eq({type: "permanent"}.with_indifferent_access)
-      expect(response_patient_2[:retention]).to eq({type: "temporary", duration_seconds: described_class::DEFAULT_RETENTION_DURATION_SECONDS}.with_indifferent_access)
+      expect(response_patient_2[:retention]).to eq({type: "temporary", duration_seconds: 99}.with_indifferent_access)
     end
 
     it "validates state level access" do
@@ -141,6 +142,13 @@ RSpec.describe Api::V4::PatientsController, type: :controller do
         patient_ids: [patient.id],
         identifier: patient.business_identifiers.first.identifier
       ))
+      post :lookup, params: {identifier: patient.business_identifiers.first.identifier}, as: :json
+    end
+
+    it "increments a statsd metric" do
+      patient = create(:patient)
+      set_headers(patient.registration_user, patient.registration_facility)
+      expect(Statsd.instance).to receive(:increment).with("OnlineLookup.temporary", {tags: [patient.registration_facility.state, patient.registration_user.id]})
       post :lookup, params: {identifier: patient.business_identifiers.first.identifier}, as: :json
     end
   end

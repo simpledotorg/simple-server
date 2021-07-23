@@ -57,6 +57,11 @@ class Facility < ApplicationRecord
       .select("block_region.id AS block_region_id, facilities.*")
   }
 
+  scope :with_region_information, -> {
+    joins("INNER JOIN reporting_facilities on reporting_facilities.facility_id = facilities.id")
+      .select("facilities.*, reporting_facilities.*")
+  }
+
   enum facility_size: {
     community: "community",
     small: "small",
@@ -161,10 +166,6 @@ class Facility < ApplicationRecord
 
   def child_region_type
     nil
-  end
-
-  def recent_blood_pressures
-    blood_pressures.includes(:patient, :user).order(Arel.sql("DATE(recorded_at) DESC, recorded_at ASC"))
   end
 
   def cohort_analytics(period:, prev_periods:)

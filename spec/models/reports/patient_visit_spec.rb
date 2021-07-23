@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe ReportingPipeline::PatientVisitsPerMonth, {type: :model, reporting_spec: true} do
+RSpec.describe Reports::PatientVisit, {type: :model, reporting_spec: true} do
   describe "Associations" do
     it { should belong_to(:patient) }
   end
@@ -8,6 +8,23 @@ RSpec.describe ReportingPipeline::PatientVisitsPerMonth, {type: :model, reportin
   around do |example|
     Timecop.freeze("June 30 2021 5:30 UTC") do # June 30th 23:00 IST time
       example.run
+    end
+  end
+
+  describe "visited_facility_ids" do
+    it "aggregates all the facilities visited in a given month, but uses only latest encounter" do
+      patient = create(:patient, recorded_at: june_2021[:now])
+      bp = create(:bp_with_encounter, patient: patient, recorded_at: june_2021[:now] + 1.minute)
+      blood_sugar = create(:blood_sugar_with_encounter, patient: patient, recorded_at: june_2021[:now])
+      prescription_drug = create(:prescription_drug, patient: patient, recorded_at: june_2021[:now])
+      appointment = create(:appointment, patient: patient, recorded_at: june_2021[:now])
+
+      described_class.refresh
+      with_reporting_time_zone do
+        visit = described_class.find_by(patient_id: patient.id, month_date: june_2021[:now])
+        expect(visit.visited_facility_ids).to match_array [bp.facility_id, prescription_drug.facility_id, appointment.creation_facility_id]
+        expect(visit.visited_facility_ids).not_to include(blood_sugar.facility_id)
+      end
     end
   end
 

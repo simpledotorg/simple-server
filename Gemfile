@@ -23,13 +23,13 @@ gem "bootstrap-datepicker-rails", "~> 1.9"
 gem "connection_pool"
 gem "data-anonymization", require: false
 gem "data_migrate"
-gem "ddtrace"
+gem "ddtrace", "~> 0.51"
 gem "devise", ">= 4.7.1"
 gem "devise_invitable", "~> 1.7.0"
 gem "dhis2", require: false
 gem "diffy" # This gem is only needed for Admin::FixZoneDataController, it should be removed with the controller
 gem "discard", "~> 1.0"
-gem "dogstatsd-ruby"
+gem "dogstatsd-ruby", "~> 5.2"
 gem "factory_bot_rails", "~> 6.1", require: false
 gem "faker", require: false
 gem "flipper"

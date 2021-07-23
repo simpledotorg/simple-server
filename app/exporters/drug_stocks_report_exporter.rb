@@ -18,6 +18,7 @@ class DrugStocksReportExporter
       csv << drug_categories_header
       csv << drug_names_header
       csv << total_stock_row
+      csv << district_warehouse_stock_row
       facility_rows.each { |row| csv << row }
 
       csv
@@ -29,7 +30,7 @@ class DrugStocksReportExporter
   end
 
   def drug_categories_header
-    left_pad_size = 1
+    left_pad_size = 2
     left_padding_columns = [nil] * left_pad_size
 
     left_padding_columns + @drugs_by_category.flat_map do |category, drugs|
@@ -38,7 +39,7 @@ class DrugStocksReportExporter
   end
 
   def drug_names_header
-    ["Facilities"] +
+    ["Facilities", I18n.t("facility_group_zone").capitalize] +
       @drugs_by_category.flat_map do |_drug_category, drugs|
         drug_columns = drugs.map do |drug|
           "#{drug.name} #{drug.dosage}"
@@ -48,26 +49,35 @@ class DrugStocksReportExporter
   end
 
   def total_stock_row
-    ["All"] +
+    ["All", ""] +
       @drugs_by_category.flat_map do |drug_category, drugs|
-        patient_days = @report.dig(:patient_days, drug_category, :patient_days)
+        patient_days = @report.dig(:total_patient_days, drug_category, :patient_days)
 
         drugs.map do |drug|
-          @report.dig(:drugs_in_stock, drug.rxnorm_code)
+          @report.dig(:total_drugs_in_stock, drug.rxnorm_code)
+        end << patient_days
+      end
+  end
+
+  def district_warehouse_stock_row
+    ["District Warehouse", ""] +
+      @drugs_by_category.flat_map do |drug_category, drugs|
+        patient_days = @report.dig(:district_patient_days, drug_category, :patient_days)
+
+        drugs.map do |drug|
+          @report.dig(:district_drugs_in_stock, drug.rxnorm_code)
         end << patient_days
       end
   end
 
   def facility_rows
-    @query.facilities.map do |facility|
+    @query.facilities.with_region_information.order(:name).map do |facility|
       facility_row(facility)
     end
   end
 
   def facility_row(facility)
-    facility_name = facility.name
-
-    [facility_name] +
+    [facility.name, facility.block_name] +
       @drugs_by_category.flat_map do |drug_category, drugs|
         patient_days = @report[:patient_days_by_facility_id].dig(facility.id, drug_category, :patient_days)
 

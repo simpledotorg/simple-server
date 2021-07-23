@@ -65,7 +65,9 @@ class Notification < ApplicationRecord
   end
 
   def preferred_communication_method
-    Flipper.enabled?(:whatsapp_appointment_reminders) ? "whatsapp" : nil
+    return "whatsapp" if Flipper.enabled?(:whatsapp_appointment_reminders)
+    return "imo" if Flipper.enabled?(:imo_messaging) && patient.imo_authorization&.status_subscribed?
+    nil
   end
 
   def backup_communication_method

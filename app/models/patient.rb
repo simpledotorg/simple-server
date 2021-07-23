@@ -132,7 +132,7 @@ class Patient < ApplicationRecord
   end
 
   def latest_mobile_number
-    phone_numbers.phone_type_mobile.last&.number
+    phone_numbers.phone_type_mobile.last&.number_with_country_code
   end
 
   def latest_bp_passport
