@@ -47,7 +47,19 @@ class CountryConfig
       time_zone: ENV["DEFAULT_TIME_ZONE"] || "Africa/Addis_Ababa",
       sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+251",
       supported_genders: %w[male female],
-      patient_line_list_show_zone: false
+      patient_line_list_show_zone: false,
+      dhis2_data_elements: {
+        cumulative_assigned: "nrK3Yj6ELl0",
+        # Still need to get this from Ethiopia MoH
+        # cumulative_assigned_adjusted: "",
+        controlled: "ZCkeHFQETzb",
+        uncontrolled: "z4mVPviB8OH",
+        missed_visits: "tNRBsYt0ZOK",
+        ltfu: "qI3kE1DizFL",
+        dead: "ZNYhcG2efAB",
+        cumulative_registrations: "PX8qBGsdF5G",
+        monthly_registrations: "Tx3CKEUFqNN"
+      }
     },
     US: {
       abbreviation: "US",
