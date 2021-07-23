@@ -12,8 +12,7 @@ RSpec.describe DrugConsumptionReportExporter do
     facility_group = create(:facility_group, protocol: protocol, state: "Punjab")
     facilities = create_list(:facility, 2, facility_group: facility_group)
     query = DrugStocksQuery.new(facilities: facilities,
-                                for_end_of_month: Date.current.end_of_month,
-                                include_block_report: true)
+                                for_end_of_month: Date.current.end_of_month)
 
     stocks_by_rxnorm = {
       "329528" => {in_stock: 10000, received: 2000, redistributed: 0},
@@ -33,6 +32,12 @@ RSpec.describe DrugConsumptionReportExporter do
     stocks_by_rxnorm.map do |(rxnorm_code, drug_stock)|
       protocol_drug = protocol.protocol_drugs.find_by(rxnorm_code: rxnorm_code)
       create(:drug_stock,
+        region: facility_group.region,
+        protocol_drug: protocol_drug,
+        in_stock: drug_stock[:in_stock],
+        received: drug_stock[:received],
+        redistributed: drug_stock[:redistributed])
+      create(:drug_stock,
         facility: facilities.first,
         protocol_drug: protocol_drug,
         in_stock: drug_stock[:in_stock],
@@ -42,6 +47,11 @@ RSpec.describe DrugConsumptionReportExporter do
 
     previous_month_stocks_by_rxnorm.map do |(rxnorm_code, drug_stock)|
       protocol_drug = protocol.protocol_drugs.find_by(rxnorm_code: rxnorm_code)
+      create(:drug_stock,
+        region: facility_group.region,
+        protocol_drug: protocol_drug,
+        in_stock: drug_stock[:in_stock],
+        for_end_of_month: (Date.today - 1.month).end_of_month)
       create(:drug_stock,
         facility: facilities.first,
         protocol_drug: protocol_drug,
@@ -75,6 +85,14 @@ RSpec.describe DrugConsumptionReportExporter do
 
     totals_row = [
       "All", "",
+      2000, 0, -2000,
+      0, -6000,
+      "?", "?",
+      -2000, -12000, "?"
+    ]
+
+    district_warehouse_row = [
+      "District Warehouse", "",
       1000, 0, -1000,
       0, -3000,
       "?", "?",
@@ -103,6 +121,7 @@ RSpec.describe DrugConsumptionReportExporter do
       headers_row_1.to_csv +
       headers_row_2.to_csv +
       totals_row.to_csv +
+      district_warehouse_row.to_csv +
       facility_1_row.to_csv +
       facility_2_row.to_csv
 
