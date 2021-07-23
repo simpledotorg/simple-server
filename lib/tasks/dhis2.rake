@@ -11,19 +11,7 @@ namespace :dhis2 do
       config.version = ENV.fetch("DHIS2_VERSION")
     end
 
-    # These are hardcoded for dhis2.bd.simple.org for now;
-    # future iterations will move this to a config
-    data_elements_map = {
-      cumulative_assigned: "cc2oSjEbiqv",
-      cumulative_assigned_adjusted: "jQBsCW7wjqx",
-      controlled: "ItViYyHGgZf",
-      uncontrolled: "IH0SueuKSWe",
-      missed_visits: "N7rI9y9Kywp",
-      ltfu: "nso1TSN7ukq",
-      dead: "Qf8Wq8u6AkK",
-      cumulative_registrations: "BK2KRHKcTtU",
-      monthly_registrations: "GxLDDKPxjxx"
-    }
+    data_elements_map = CountryConfig.current.fetch(:dhis2_data_elements)
 
     current_period = Period.current.previous
 
