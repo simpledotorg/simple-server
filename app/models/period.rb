@@ -50,6 +50,7 @@ class Period
     else
       value.to_date.beginning_of_month
     end
+    validate!
   end
 
   def attributes
@@ -166,6 +167,7 @@ class Period
 
   def <=>(other)
     raise ArgumentError, "you are trying to compare a #{other.class} with a Period" unless other.respond_to?(:type)
+    raise ArgumentError, "you are trying to compare a #{other.class} #{other.type} with a Period #{type}" if other.type != self.type
     return nil if type != other.type
     value <=> other.value
   end
