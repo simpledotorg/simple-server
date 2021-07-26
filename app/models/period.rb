@@ -166,8 +166,7 @@ class Period
   end
 
   def <=>(other)
-    raise ArgumentError, "you are trying to compare a #{other.class} with a Period" unless other.respond_to?(:type)
-    raise ArgumentError, "you are trying to compare a #{other.class} #{other.type} with a Period #{type}" if other.type != self.type
+    raise ArgumentError, "you are trying to compare a #{other.class} with a Period" unless (other.respond_to?(:type) && other.respond_to?(:value))
     return nil if type != other.type
     value <=> other.value
   end
