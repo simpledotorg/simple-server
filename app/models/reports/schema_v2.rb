@@ -103,16 +103,6 @@ module Reports
         .to_h { |month_date, count| [Period.month(month_date), Integer(count)] }
     end
 
-    # Returns the full range of registered patient counts for a Region. We do this via one SQL query for each Region, because its
-    # fast and easy via the underlying query.
-    memoize def complete_monthly_registrations
-      regions.each_with_object({}) { |region, result|
-        result[region.slug] = registered_patients_query_v2(region).each_with_object(Hash.new(0)) { |(month_date, count), hsh|
-          hsh[Period.month(month_date)] = count
-        }
-      }
-    end
-
     private def cumulative_registered_patients_query_v2(region)
       Reports::FacilityState.for_region(region).order(:month_date).pluck(:month_date, :cumulative_registrations)
     end
@@ -208,27 +198,6 @@ module Reports
 
     alias_method :missed_visits, :missed_visits_without_ltfu
     alias_method :missed_visits_rate, :missed_visits_without_ltfu_rates
-
-    # Returns Follow ups per Region / Period. Takes an optional group_by clause (commonly used to group by `blood_pressures.user_id`)
-    memoize def hypertension_follow_ups(group_by: nil)
-      items = regions.map { |region| RegionEntry.new(region, __method__, group_by: group_by, period_type: period_type) }
-      result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
-        follow_ups_query.hypertension(entry.region, period_type, group_by: group_by)
-      end
-      result.each_with_object({}) { |(region_entry, counts), hsh|
-        hsh[region_entry.region.slug] = counts
-      }
-    end
-
-    memoize def bp_measures_by_user
-      items = regions.map { |region| RegionEntry.new(region, __method__, group_by: :user_id, period_type: period_type) }
-      result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
-        bp_measures_query.count(entry.region, period_type, group_by: :user_id)
-      end
-      result.each_with_object({}) { |(region_entry, counts), hsh|
-        hsh[region_entry.region.slug] = counts
-      }
-    end
 
     memoize def controlled_rates(with_ltfu: false)
       region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|

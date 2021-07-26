@@ -30,8 +30,6 @@ module Reports
       end
 
       @bp_measures_query = BPMeasuresQuery.new
-      @control_rate_query = ControlRateQuery.new
-      @control_rate_query_v2 = ControlRateQueryV2.new
       @earliest_patient_data_query = EarliestPatientDataQuery.new
       @follow_ups_query = FollowUpsQuery.new
       @no_bp_measure_query = NoBPMeasureQuery.new
@@ -39,8 +37,6 @@ module Reports
     end
 
     attr_reader :bp_measures_query
-    attr_reader :control_rate_query
-    attr_reader :control_rate_query_v2
     attr_reader :earliest_patient_data_query
     attr_reader :follow_ups_query
     attr_reader :no_bp_measure_query

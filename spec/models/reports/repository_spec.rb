@@ -82,11 +82,6 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
           refresh_views
 
           repo = described_class.new(facility_group_1.region, periods: jan_2019.to_period)
-          expected_assigned = {
-            facility_group_1.slug => {
-              jan_2019.to_period => 2
-            }
-          }
           expected_registered = {
             facility_group_1.slug => {
               jan_2019.to_period => 2
