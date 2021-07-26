@@ -24,13 +24,17 @@ module Reports
     memoize def earliest_patient_recorded_at
       region_entries = regions.map { |region| RegionEntry.new(region, __method__) }
       cached_results = cache.fetch_multi(*region_entries, force: bust_cache?) { |region_entry|
-        earliest_patient_data_query.call(region_entry.region)
+        earliest_patient_data_query_v2(region_entry.region)
       }
       cached_results.each_with_object({}) { |(region_entry, time), results| results[region_entry.slug] = time }
     end
 
     memoize def earliest_patient_recorded_at_period
       earliest_patient_recorded_at.each_with_object({}) { |(slug, time), hsh| hsh[slug] = Period.new(value: time, type: @period_type) if time }
+    end
+
+    def earliest_patient_data_query_v2(region)
+      Reports::FacilityState.for_region(region).having("SUM(cumulative_registrations) > 0").minimum(:month_date)
     end
 
     # Returns assigned patients for a Region. NOTE: We grab and cache ALL the counts for a particular region with one SQL query
@@ -95,7 +99,8 @@ module Reports
       }
     end
 
-    private def registered_patients_query_v2(region)
+    def registered_patients_query_v2(region)
+      return {} if earliest_patient_recorded_at_period[region.slug].nil?
       Reports::FacilityState.for_region(region)
         .where("month_date >= ?", earliest_patient_recorded_at_period[region.slug].to_date)
         .group(:month_date)
@@ -104,14 +109,17 @@ module Reports
     end
 
     private def cumulative_registered_patients_query_v2(region)
-      Reports::FacilityState.for_region(region).order(:month_date).pluck(:month_date, :cumulative_registrations)
+      return {} if earliest_patient_recorded_at_period[region.slug].nil?
+      FacilityState.for_region(region)
+        .where("month_date >= ?", earliest_patient_recorded_at_period[region.slug].to_date)
+        .order(:month_date)
+        .pluck(:month_date, :cumulative_registrations)
+        .to_h { |month_date, count| [Period.month(month_date), count] }
     end
 
     memoize def cumulative_registrations
       regions.each_with_object({}) { |region, result|
-        result[region.slug] = cumulative_registered_patients_query_v2(region).each_with_object(Hash.new(0)) { |(month_date, count), hsh|
-          hsh[Period.month(month_date)] = count
-        }
+        result[region.slug] = cumulative_registered_patients_query_v2(region)
       }
     end
 

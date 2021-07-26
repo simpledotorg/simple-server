@@ -411,7 +411,10 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
           ten_years_ago = patient.recorded_at.advance(years: -10).to_period
           range = ten_years_ago..(ten_years_ago.advance(months: 12))
           repo = Reports::Repository.new(facility_1, periods: range)
+          pp repo.earliest_patient_recorded_at_period[facility_1.region.slug]
           expect(repo.adjusted_patients[facility_1.slug]).to eq({})
+          # cumulative registrations returns all summed registrations for all months we have in reporting_months...
+          # not sure who should be responsible for trimming the result set
           expect(repo.cumulative_registrations[facility_1.slug]).to eq({})
         end
 

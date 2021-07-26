@@ -30,14 +30,12 @@ module Reports
       end
 
       @bp_measures_query = BPMeasuresQuery.new
-      @earliest_patient_data_query = EarliestPatientDataQuery.new
       @follow_ups_query = FollowUpsQuery.new
       @no_bp_measure_query = NoBPMeasureQuery.new
       @registered_patients_query = RegisteredPatientsQuery.new
     end
 
     attr_reader :bp_measures_query
-    attr_reader :earliest_patient_data_query
     attr_reader :follow_ups_query
     attr_reader :no_bp_measure_query
     attr_reader :period_type
@@ -52,34 +50,22 @@ module Reports
 
     delegate :cache, :logger, to: Rails
 
-    # Returns the earliest patient record for a Region from either assigned or registered patients. Note that this *ignores*
-    # the periods that are passed in for the Repository - this is the true 'earliest report date' for a Region.
-    memoize def earliest_patient_recorded_at
-      region_entries = regions.map { |region| RegionEntry.new(region, __method__) }
-      cached_results = cache.fetch_multi(*region_entries, force: bust_cache?) { |region_entry|
-        earliest_patient_data_query.call(region_entry.region)
-      }
-      cached_results.each_with_object({}) { |(region_entry, time), results| results[region_entry.slug] = time }
-    end
-
-    memoize def earliest_patient_recorded_at_period
-      earliest_patient_recorded_at.each_with_object({}) { |(slug, time), hsh| hsh[slug] = Period.new(value: time, type: @period_type) if time }
-    end
-
     DELEGATED_METHODS = [
       :adjusted_patients_with_ltfu,
       :adjusted_patients_without_ltfu,
       :assigned_patients,
-      :controlled,
+      :complete_monthly_registrations,
       :controlled_rates,
-      :uncontrolled,
-      :uncontrolled_rates,
+      :controlled,
       :cumulative_assigned_patients,
       :cumulative_registrations,
-      :monthly_registrations,
-      :complete_monthly_registrations,
+      :earliest_patient_recorded_at,
+      :earliest_patient_recorded_at_period,
+      :ltfu_rates,
       :ltfu,
-      :ltfu_rates
+      :monthly_registrations,
+      :uncontrolled_rates,
+      :uncontrolled
     ]
 
     delegate *DELEGATED_METHODS, to: :schema
