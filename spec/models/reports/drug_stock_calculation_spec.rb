@@ -10,7 +10,7 @@ RSpec.describe Reports::DrugStockCalculation, type: :model do
   let(:drug_category) { "hypertension_ccb" }
   let(:drug_stocks) {
     [build(:drug_stock, in_stock: 10000, received: 5000, redistributed: 1000, facility_id: facility.id, user: user, protocol_drug: ProtocolDrug.find_by(rxnorm_code: "329528")),
-      build(:drug_stock, in_stock: 20000, redistributed: 0, facility_id: facility.id, user: user, protocol_drug: ProtocolDrug.find_by(rxnorm_code: "329526")),
+      build(:drug_stock, in_stock: 10000, received: nil, redistributed: nil, facility_id: facility.id, user: user, protocol_drug: ProtocolDrug.find_by(rxnorm_code: "329526")),
       build(:drug_stock, in_stock: 10000, redistributed: 0, facility_id: facility.id, user: user, protocol_drug: ProtocolDrug.find_by(rxnorm_code: "316764")),
       build(:drug_stock, in_stock: 20000, redistributed: 0, facility_id: facility.id, user: user, protocol_drug: ProtocolDrug.find_by(rxnorm_code: "316765")),
       build(:drug_stock, in_stock: 10000, redistributed: 0, facility_id: facility.id, user: user, protocol_drug: ProtocolDrug.find_by(rxnorm_code: "979467")),
@@ -18,7 +18,8 @@ RSpec.describe Reports::DrugStockCalculation, type: :model do
       build(:drug_stock, in_stock: 10000, redistributed: 0, facility_id: facility.id, user: user, protocol_drug: ProtocolDrug.find_by(rxnorm_code: "331132"))]
   }
   let(:previous_month_drug_stocks) {
-    [build(:drug_stock, in_stock: 10000, facility_id: facility.id, user: user, protocol_drug: ProtocolDrug.find_by(rxnorm_code: "329528"))]
+    [build(:drug_stock, in_stock: 10000, facility_id: facility.id, user: user, protocol_drug: ProtocolDrug.find_by(rxnorm_code: "329528")),
+      build(:drug_stock, in_stock: 20000, facility_id: facility.id, user: user, protocol_drug: ProtocolDrug.find_by(rxnorm_code: "329526"))]
   }
 
   let(:punjab_drug_stock_config) {
@@ -243,6 +244,22 @@ RSpec.describe Reports::DrugStockCalculation, type: :model do
       expect(result[drug][:consumed]).to eq(4000)
       expect(result[drug][:received]).to eq(5000)
       expect(result[drug][:redistributed]).to eq(1000)
+    end
+
+    it "calculates consumption using in_stock, previous month's in_stock, received and redistributed" do
+      result = described_class.new(
+        state: state,
+        protocol_drugs: protocol_drugs,
+        drug_category: drug_category,
+        current_drug_stocks: drug_stocks,
+        previous_drug_stocks: previous_month_drug_stocks,
+        patient_count: patient_count
+      ).consumption
+      drug = ProtocolDrug.find_by(rxnorm_code: "329526")
+
+      expect(result[drug][:consumed]).to eq(10000)
+      expect(result[drug][:received]).to eq(nil)
+      expect(result[drug][:redistributed]).to eq(nil)
     end
   end
 end
