@@ -2,18 +2,37 @@ module Seed
   class ExperimentSeeder
     include ActiveSupport::Benchmarkable
 
-    def self.call(experiment_name: "test-experiment", experiment_type: "current_patients")
+    BUCKETS = %w[basic gratitude free alarm emotional_relatives emotional_guilt professional_request response]
+
+    def self.create_current_experiment(experiment_name: "active-test-experiment")
       experiment = Experimentation::Experiment.create!(name: experiment_name, experiment_type: "current_patients", state: "new")
 
       _control_group = experiment.treatment_groups.create!(description: "control")
 
-      single_group = experiment.treatment_groups.create!(description: "emotional_guilt")
-      single_group.reminder_templates.create!(message: "notifications.set01.emotional_guilt", remind_on_in_days: -1)
+      BUCKETS.each do |bucket_name|
+        single_group = experiment.treatment_groups.create!(description: "single_notification_#{bucket_name}")
+        single_group.reminder_templates.create!(message: "notifications.set01.#{bucket_name}", remind_on_in_days: -1)
 
-      cascade = experiment.treatment_groups.create!(description: "professional_request")
-      cascade.reminder_templates.create!(message: "notifications.set01.professional_request", remind_on_in_days: -1)
-      cascade.reminder_templates.create!(message: "notifications.set02.professional_request", remind_on_in_days: 0)
-      cascade.reminder_templates.create!(message: "notifications.set03.professional_request", remind_on_in_days: 1)
+        cascade = experiment.treatment_groups.create!(description: "cascade_#{bucket_name}")
+        cascade.reminder_templates.create!(message: "notifications.set01.#{bucket_name}", remind_on_in_days: -1)
+        cascade.reminder_templates.create!(message: "notifications.set02.#{bucket_name}", remind_on_in_days: 0)
+        cascade.reminder_templates.create!(message: "notifications.set03.#{bucket_name}", remind_on_in_days: 3)
+      end
+    end
+
+    def self.create_stale_experiment(experiment_name: "stale-test-experiment")
+      experiment = Experimentation::Experiment.create!(name: experiment_name, experiment_type: "stale_patients", state: "new")
+
+      _control_group = experiment.treatment_groups.create!(description: "control")
+
+      BUCKETS.each do |bucket_name|
+        single_group = experiment.treatment_groups.create!(description: "single_notification_#{bucket_name}")
+        single_group.reminder_templates.create!(message: "notifications.set01.#{bucket_name}", remind_on_in_days: -1)
+
+        cascade = experiment.treatment_groups.create!(description: "cascade_#{bucket_name}")
+        cascade.reminder_templates.create!(message: "notifications.set02.#{bucket_name}", remind_on_in_days: 0)
+        cascade.reminder_templates.create!(message: "notifications.set03.#{bucket_name}", remind_on_in_days: 3)
+      end
     end
   end
 end
