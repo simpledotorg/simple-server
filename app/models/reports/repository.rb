@@ -230,5 +230,21 @@ module Reports
       return 0 if denominator == 0 || numerator == 0
       ((numerator.to_f / denominator) * 100).round(PERCENTAGE_PRECISION)
     end
+
+    # Returns monthly assigned patients for a Region. NOTE: We grab and cache ALL the counts for a particular region with one SQL query
+    # because it is easier and fast enough to do so. We still return _just_ the periods the Repository was created with
+    # to conform to the same interface as all the other queries here.
+
+    # Returns a Hash in the shape of:
+    # {
+    #    region_slug: { period: value, period: value },
+    #    region_slug: { period: value, period: value }
+    # }
+    memoize def assigned_patients
+      complete_monthly_assigned_patients.each_with_object({}) do |(entry, result), results|
+        values = periods.each_with_object(Hash.new(0)) { |period, region_result| region_result[period] = result[period] if result[period] }
+        results[entry.region.slug] = values
+      end
+    end
   end
 end

@@ -29,7 +29,6 @@ module Reports
       result.earliest_registration_period = repository.earliest_patient_recorded_at_period[slug]
       result.adjusted_patient_counts = repository.adjusted_patients_without_ltfu[slug]
       result.adjusted_patient_counts_with_ltfu = repository.adjusted_patients_with_ltfu[slug]
-      result.assigned_patients = repository.assigned_patients[slug]
       result.controlled_patients = repository.controlled[slug]
       result.controlled_patients_rate = repository.controlled_rates[slug]
       result.controlled_patients_with_ltfu_rate = repository.controlled_rates(with_ltfu: true)[slug]
