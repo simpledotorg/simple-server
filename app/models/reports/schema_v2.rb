@@ -97,7 +97,7 @@ module Reports
 
     private def registered_patients_query_v2(region)
       Reports::FacilityState.for_region(region)
-        .where("month_date >= ?", earliest_patient_recorded_at[region.slug].to_date)
+        .where("month_date >= ?", earliest_patient_recorded_at_period[region.slug].to_date)
         .group(:month_date)
         .sum("monthly_registrations")
         .to_h { |month_date, count| [Period.month(month_date), Integer(count)] }
