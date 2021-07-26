@@ -350,7 +350,7 @@ module Reports
       ((numerator.to_f / denominator) * 100).round(PERCENTAGE_PRECISION)
     end
 
-    # Returns assigned patients for a Region. NOTE: We grab and cache ALL the counts for a particular region with one SQL query
+    # Returns monthly assigned patients for a Region. NOTE: We grab and cache ALL the counts for a particular region with one SQL query
     # because it is easier and fast enough to do so. We still return _just_ the periods the Repository was created with
     # to conform to the same interface as all the other queries here.
 

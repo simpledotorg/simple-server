@@ -41,7 +41,7 @@ RSpec.describe Reports::Repository, type: :model do
   end
 
   context "counts and rates" do
-    it "gets assigned and registration counts for single region" do
+    it "gets registration counts for single region" do
       facilities = FactoryBot.create_list(:facility, 2, facility_group: facility_group_1).sort_by(&:slug)
       facility_1, facility_2 = facilities.take(2)
 
@@ -59,7 +59,6 @@ RSpec.describe Reports::Repository, type: :model do
           jan_2019.to_period => 2
         }
       }
-      expect(repo.assigned_patients).to eq(expected)
       expect(repo.monthly_registrations).to eq(expected)
     end
 
@@ -77,11 +76,8 @@ RSpec.describe Reports::Repository, type: :model do
       slug = facility_1.slug
       repo = Reports::Repository.new(facility_1.region, periods: (july_2018.to_period..july_2020.to_period))
 
-      expect(repo.assigned_patients[slug][Period.month("August 2018")]).to eq(2)
-      expect(repo.assigned_patients[slug][Period.month("Jan 2019")]).to eq(2)
       expect(repo.cumulative_assigned_patients[slug][Period.month("August 2018")]).to eq(2)
       expect(repo.cumulative_assigned_patients[slug][Period.month("Jan 2019")]).to eq(4)
-      expect(repo.assigned_patients[slug][july_2020]).to eq(0)
       expect(repo.monthly_registrations[slug][Period.month("August 2018")]).to eq(2)
       expect(repo.monthly_registrations[slug][Period.month("Jan 2019")]).to eq(2)
       expect(repo.monthly_registrations[slug][july_2020.to_period]).to eq(0)
