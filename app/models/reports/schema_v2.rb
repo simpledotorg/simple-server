@@ -52,13 +52,17 @@ module Reports
     # Adjusted patient counts are the patient counts from three months ago (the adjusted period) that
     # are the basis for control rates. These counts DO NOT include lost to follow up.
     memoize def adjusted_patients_without_ltfu
-      cumulative_assigned_patients.each_with_object({}) do |(entry, result), results|
-        values = periods.each_with_object(Hash.new(0)) { |period, region_result|
-          next unless result.key?(period.adjusted_period)
-          region_result[period] = result[period.adjusted_period] - ltfu[entry][period]
-        }
-        results[entry] = values
-      end
+      regions.each_with_object({}) { |region, result|
+        result[region.slug] = adjusted_patients_without_ltfu_query(region).slice(*periods.entries)
+      }
+    end
+
+    private def adjusted_patients_without_ltfu_query(region)
+      FacilityState.for_region(region)
+        .order(:month_date)
+        .group(:month_date)
+        .sum("patients_under_care::int")
+        .to_h(&period_hash)
     end
 
     alias_method :adjusted_patients, :adjusted_patients_without_ltfu
@@ -66,16 +70,18 @@ module Reports
     # Return the running total of cumulative assigned patient counts. Note that this *includes* LTFU.
     memoize def cumulative_assigned_patients
       regions.each_with_object({}) { |region, result|
-        result[region.slug] = cumulative_assigned_patients_query_v2(region).each_with_object(Hash.new(0)) { |(month_date, count), hsh|
-          hsh[Period.month(month_date)] = count
-        }
+        result[region.slug] = cumulative_assigned_patients_query_v2(region)
       }
     end
 
     # Returns cumulative assigned patients from facility_states - this includes LTFU
     private def cumulative_assigned_patients_query_v2(region)
-      FacilityState.for_region(region).order(:month_date).pluck(:month_date, :cumulative_assigned_patients)
+      FacilityState.for_region(region)
+        .order(:month_date)
+        .group(:month_date)
+        .sum("cumulative_assigned_patients::int")
         .to_h(&period_hash)
+        .tap { |hsh| hsh.default = 0 }
     end
 
     # Returns registration counts per region / period
@@ -89,14 +95,15 @@ module Reports
       return {} if earliest_patient_recorded_at_period[region.slug].nil?
       FacilityState.for_region(region)
         .where("month_date >= ?", earliest_patient_recorded_at_period[region.slug].to_date)
+        .order(:month_date)
         .group(:month_date)
-        .sum("monthly_registrations")
+        .sum("monthly_registrations::int")
         .to_h(&period_hash)
     end
 
     memoize def cumulative_registrations
       regions.each_with_object({}) { |region, result|
-        result[region.slug] = cumulative_registered_patients_query_v2(region).slice(periods.entries)
+        result[region.slug] = cumulative_registered_patients_query_v2(region).slice(*periods.entries)
       }
     end
 
@@ -105,7 +112,8 @@ module Reports
       FacilityState.for_region(region)
         .where("month_date >= ?", earliest_patient_recorded_at_period[region.slug].to_date)
         .order(:month_date)
-        .pluck(:month_date, :cumulative_registrations)
+        .group(:month_date)
+        .sum("cumulative_registrations::int")
         .to_h(&period_hash)
     end
 
@@ -114,9 +122,12 @@ module Reports
     end
 
     private def ltfu_query_v2(region)
-      FacilityState.for_region(region).order(:month_date)
-        .pluck(:month_date, :lost_to_follow_up)
+      FacilityState.for_region(region)
+        .order(:month_date)
+        .group(:month_date)
+        .sum("lost_to_follow_up::int")
         .to_h(&period_hash)
+        .tap { |hsh| hsh.default = 0 }
     end
 
     memoize def ltfu_rates
@@ -232,9 +243,9 @@ module Reports
 
     def denominator(region, period, with_ltfu: false)
       if with_ltfu
-        cumulative_assigned_patients[region.slug][period.adjusted_period]
+        adjusted_patients_without_ltfu[region.slug][period] + ltfu[region.slug][period]
       else
-        cumulative_assigned_patients[region.slug][period.adjusted_period] - ltfu[region.slug][period]
+        adjusted_patients_without_ltfu[region.slug][period]
       end
     end
 
@@ -263,11 +274,12 @@ module Reports
         periods_with_data = periods.select { |period| period >= earliest_period }
         results.concat(periods_with_data.to_a.map { |period| [region, period] })
       end
+      options[:class] = self.class
       combinations.map { |region, period| Reports::RegionPeriodEntry.new(region, period, calculation, options) }
     end
 
     def percentage(numerator, denominator)
-      return 0 if denominator == 0 || numerator == 0
+      return 0 if numerator.nil? || denominator.nil? || denominator == 0 || numerator == 0
       ((numerator.to_f / denominator) * 100).round(PERCENTAGE_PRECISION)
     end
   end

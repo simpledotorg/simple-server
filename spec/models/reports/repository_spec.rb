@@ -83,16 +83,24 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
             _patient_registered_and_assigned_to_facility_2 = create(:patient, assigned_facility: facility_2, registration_facility: facility_2)
             _patient_outside_facility_group = create(:patient, registration_facility: facility_in_other_district)
           end
+          region = facility_group_1.region
 
           refresh_views
 
-          repo = described_class.new(facility_group_1.region, periods: jan_2019.to_period)
+          range = jan_2019.to_period..("June 2019".to_date.to_period)
+          repo = described_class.new(region, periods: range)
           expected_registered = {
             facility_group_1.slug => {
-              jan_2019.to_period => 2
+              jan_2019.to_period => 2,
+              "Feb 2019".to_date.to_period => 0,
+              "March 2019".to_date.to_period => 0,
+              "April 2019".to_date.to_period => 0,
+              "May 2019".to_date.to_period => 0,
+              "June 2019".to_date.to_period => 0
             }
           }
           expect(repo.monthly_registrations).to eq(expected_registered)
+          expect(repo.adjusted_patients_without_ltfu[region.slug][Period.month("April 1st 2019")]).to eq(2)
         end
 
         it "gets assigned and registration counts for a range of periods" do
