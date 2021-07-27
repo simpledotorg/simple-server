@@ -6,7 +6,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
   end
 
   around do |example|
-    freeze_time_for_spec(example)
+    freeze_time_for_reporting_specs(example)
   end
 
   context "indicators" do
