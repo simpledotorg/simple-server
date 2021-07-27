@@ -4,7 +4,6 @@ module Reports
     include Memery
 
     attr_reader :control_rate_query_v2
-    attr_reader :earliest_patient_data_query
     attr_reader :periods
     attr_reader :period_type
     attr_reader :regions
@@ -16,7 +15,6 @@ module Reports
       @periods = periods
       @period_type = @periods.first.type
       @control_rate_query_v2 = ControlRateQueryV2.new
-      @earliest_patient_data_query = EarliestPatientDataQuery.new
     end
 
     # Returns the earliest patient record for a Region from either assigned or registered patients. Note that this *ignores*
