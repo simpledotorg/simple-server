@@ -76,11 +76,6 @@ module Reports
 
     alias_method :adjusted_patients, :adjusted_patients_without_ltfu
 
-    # Returns cumulative assigned patients from facility_states - this includes LTFU
-    private def cumulative_assigned_patients_query_v2(region)
-      Reports::FacilityState.for_region(region).order(:month_date).pluck(:month_date, :cumulative_assigned_patients)
-    end
-
     # Return the running total of cumulative assigned patient counts. Note that this *includes* LTFU.
     memoize def cumulative_assigned_patients
       regions.each_with_object({}) { |region, result|
@@ -88,6 +83,11 @@ module Reports
           hsh[Period.month(month_date)] = count
         }
       }
+    end
+
+    # Returns cumulative assigned patients from facility_states - this includes LTFU
+    private def cumulative_assigned_patients_query_v2(region)
+      Reports::FacilityState.for_region(region).order(:month_date).pluck(:month_date, :cumulative_assigned_patients)
     end
 
     # Returns registration counts per region / period
@@ -106,6 +106,12 @@ module Reports
         .to_h { |month_date, count| [Period.month(month_date), Integer(count)] }
     end
 
+    memoize def cumulative_registrations
+      regions.each_with_object({}) { |region, result|
+        result[region.slug] = cumulative_registered_patients_query_v2(region).slice(periods.entries)
+      }
+    end
+
     private def cumulative_registered_patients_query_v2(region)
       return {} if earliest_patient_recorded_at_period[region.slug].nil?
       FacilityState.for_region(region)
@@ -115,22 +121,14 @@ module Reports
         .to_h { |month_date, count| [Period.month(month_date), count] }
     end
 
-    memoize def cumulative_registrations
-      regions.each_with_object({}) { |region, result|
-        result[region.slug] = cumulative_registered_patients_query_v2(region)
-      }
+    memoize def ltfu
+      regions.each_with_object({}) { |region, hsh| hsh[region.slug] = ltfu_query_v2(region) }
     end
 
     private def ltfu_query_v2(region)
-      Reports::FacilityState.for_region(region).order(:month_date).pluck(:month_date, :lost_to_follow_up)
-    end
-
-    memoize def ltfu
-      regions.each_with_object({}) { |region, hsh|
-        hsh[region.slug] = ltfu_query_v2(region).each_with_object(Hash.new(0)) { |(month_date, count), hsh|
-          hsh[Period.month(month_date)] = count
-        }
-      }
+      Reports::FacilityState.for_region(region).order(:month_date)
+        .pluck(:month_date, :lost_to_follow_up)
+        .to_h { |month_date, count| [Period.month(month_date), count] }
     end
 
     memoize def ltfu_rates
