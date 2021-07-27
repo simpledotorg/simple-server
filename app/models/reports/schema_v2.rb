@@ -5,6 +5,7 @@ module Reports
 
     attr_reader :control_rate_query_v2
     attr_reader :periods
+    attr_reader :period_hash
     attr_reader :period_type
     attr_reader :regions
 
@@ -15,6 +16,7 @@ module Reports
       @periods = periods
       @period_type = @periods.first.type
       @control_rate_query_v2 = ControlRateQueryV2.new
+      @period_hash = lambda { |month_date, count| [Period.month(month_date), count] }
     end
 
     # Returns the earliest patient record for a Region from either assigned or registered patients. Note that this *ignores*
@@ -32,23 +34,8 @@ module Reports
     end
 
     def earliest_patient_data_query_v2(region)
-      Reports::FacilityState.for_region(region).where("cumulative_registrations > 0 OR cumulative_assigned_patients > 0").minimum(:month_date)
-    end
-
-    # Returns assigned patients for a Region. NOTE: We grab and cache ALL the counts for a particular region with one SQL query
-    # because it is easier and fast enough to do so. We still return _just_ the periods the Repository was created with
-    # to conform to the same interface as all the other queries here.
-
-    # Returns a Hash in the shape of:
-    # {
-    #    region_slug: { period: value, period: value },
-    #    region_slug: { period: value, period: value }
-    # }
-    memoize def assigned_patients
-      complete_monthly_assigned_patients.each_with_object({}) do |(entry, result), results|
-        values = periods.each_with_object(Hash.new(0)) { |period, region_result| region_result[period] = result[period] if result[period] }
-        results[entry.region.slug] = values
-      end
+      FacilityState.for_region(region).where("cumulative_registrations > 0 OR cumulative_assigned_patients > 0")
+        .minimum(:month_date)
     end
 
     # Adjusted patient counts are the patient counts from three months ago (the adjusted period) that
@@ -85,9 +72,11 @@ module Reports
       }
     end
 
+
     # Returns cumulative assigned patients from facility_states - this includes LTFU
     private def cumulative_assigned_patients_query_v2(region)
-      Reports::FacilityState.for_region(region).order(:month_date).pluck(:month_date, :cumulative_assigned_patients)
+      FacilityState.for_region(region).order(:month_date).pluck(:month_date, :cumulative_assigned_patients)
+        .to_h(&period_hash)
     end
 
     # Returns registration counts per region / period
@@ -99,11 +88,11 @@ module Reports
 
     def registered_patients_query_v2(region)
       return {} if earliest_patient_recorded_at_period[region.slug].nil?
-      Reports::FacilityState.for_region(region)
+      FacilityState.for_region(region)
         .where("month_date >= ?", earliest_patient_recorded_at_period[region.slug].to_date)
         .group(:month_date)
         .sum("monthly_registrations")
-        .to_h { |month_date, count| [Period.month(month_date), Integer(count)] }
+        .to_h(&period_hash)
     end
 
     memoize def cumulative_registrations
@@ -118,7 +107,7 @@ module Reports
         .where("month_date >= ?", earliest_patient_recorded_at_period[region.slug].to_date)
         .order(:month_date)
         .pluck(:month_date, :cumulative_registrations)
-        .to_h { |month_date, count| [Period.month(month_date), count] }
+        .to_h(&period_hash)
     end
 
     memoize def ltfu
@@ -126,9 +115,9 @@ module Reports
     end
 
     private def ltfu_query_v2(region)
-      Reports::FacilityState.for_region(region).order(:month_date)
+      FacilityState.for_region(region).order(:month_date)
         .pluck(:month_date, :lost_to_follow_up)
-        .to_h { |month_date, count| [Period.month(month_date), count] }
+        .to_h(&period_hash)
     end
 
     memoize def ltfu_rates
@@ -240,15 +229,6 @@ module Reports
     def active_range(region)
       start = [earliest_patient_recorded_at_period[region.slug], periods.begin].compact.max
       (start..periods.end)
-    end
-
-    # Returns the full range of assigned patient counts for a Region. We do this via one SQL query for each Region, because its
-    # fast and easy via the underlying query.
-    memoize def complete_monthly_assigned_patients
-      items = regions.map { |region| RegionEntry.new(region, __method__, period_type: period_type) }
-      cache.fetch_multi(*items, force: bust_cache?) { |region_entry|
-        assigned_patients_query.count(region_entry.region, period_type)
-      }
     end
 
     def denominator(region, period, with_ltfu: false)
