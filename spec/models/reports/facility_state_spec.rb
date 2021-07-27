@@ -104,4 +104,64 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       end
     end
   end
+
+  context "treatment outcomes in the last 3 months" do
+    it "computes totals for under care patients" do
+      facility = create(:facility)
+
+      patient_controlled = create(:patient, assigned_facility: facility, recorded_at: june_2021[:long_ago])
+      create(:bp_with_encounter, :under_control, patient: patient_controlled, recorded_at: june_2021[:now] - 1.month)
+
+      patient_uncontrolled = create(:patient, assigned_facility: facility, recorded_at: june_2021[:long_ago])
+      create(:bp_with_encounter, :hypertensive, patient: patient_uncontrolled, recorded_at: june_2021[:now] - 1.months)
+
+      patient_missed_visit = create(:patient, assigned_facility: facility, recorded_at: june_2021[:long_ago])
+      create(:bp_with_encounter, patient: patient_missed_visit, recorded_at: june_2021[:over_3_months_ago])
+
+      patient_visited_no_bp = create(:patient, assigned_facility: facility, recorded_at: june_2021[:long_ago])
+      create(:prescription_drug,
+        device_created_at: june_2021[:now] - 1.month,
+        facility: facility,
+        patient: patient_visited_no_bp,
+        user: patient_visited_no_bp.registration_user)
+      create(:blood_pressure, patient: patient_visited_no_bp, recorded_at: june_2021[:over_3_months_ago])
+
+      RefreshMaterializedViews.new.refresh_v2
+      with_reporting_time_zone do
+        facility_state_june_2021 = described_class.find_by(facility: facility, month_date: june_2021[:now])
+
+        expect(facility_state_june_2021.controlled_under_care).to eq 1
+        expect(facility_state_june_2021.uncontrolled_under_care).to eq 1
+        expect(facility_state_june_2021.missed_visit_under_care).to eq 1
+        expect(facility_state_june_2021.visited_no_bp_under_care).to eq 1
+        expect(facility_state_june_2021.patients_under_care).to eq 4
+        expect(facility_state_june_2021.patients_lost_to_follow_up).to eq 0
+      end
+    end
+
+    it "computes totals for patients lost to follow up" do
+      facility = create(:facility)
+
+      patient_missed_visit = create(:patient, assigned_facility: facility, recorded_at: june_2021[:long_ago])
+      create(:bp_with_encounter, patient: patient_missed_visit, recorded_at: june_2021[:over_12_months_ago])
+
+      patient_visited_no_bp = create(:patient, assigned_facility: facility, recorded_at: june_2021[:long_ago])
+      create(:prescription_drug,
+        device_created_at: june_2021[:now] - 1.month,
+        facility: facility,
+        patient: patient_visited_no_bp,
+        user: patient_visited_no_bp.registration_user)
+      create(:blood_pressure, patient: patient_visited_no_bp, recorded_at: june_2021[:over_12_months_ago])
+
+      RefreshMaterializedViews.new.refresh_v2
+      with_reporting_time_zone do
+        facility_state_june_2021 = described_class.find_by(facility: facility, month_date: june_2021[:now])
+
+        expect(facility_state_june_2021.missed_visit_lost_to_follow_up).to eq 1
+        expect(facility_state_june_2021.visited_no_bp_lost_to_follow_up).to eq 1
+        expect(facility_state_june_2021.patients_under_care).to eq 0
+        expect(facility_state_june_2021.patients_lost_to_follow_up).to eq 2
+      end
+    end
+  end
 end
