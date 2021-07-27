@@ -2,22 +2,16 @@ class ExperimentControlService
   LAST_EXPERIMENT_BUFFER = 14.days.freeze
   PATIENTS_PER_DAY = 10_000
   BATCH_SIZE = 100
-  WHITELISTED_PATIENT_EXPERIMENT_NAME = "production test"
 
   class << self
-    def start_current_patient_experiment(name, days_til_start, days_til_end, percentage_of_patients = 100)
+    def start_current_patient_experiment(name:, days_til_start:, days_til_end:, percentage_of_patients: 100)
       experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "current_patients", state: :new)
       experiment_start = days_til_start.days.from_now.beginning_of_day
       experiment_end = days_til_end.days.from_now.end_of_day
 
       experiment.update!(state: "selecting", start_date: experiment_start.to_date, end_date: experiment_end.to_date)
 
-      eligible_ids = if name == WHITELISTED_PATIENT_EXPERIMENT_NAME
-        names = ["Hari AB Tester", "Vikram AB Tester", "Srihari AB Tester", "Pragati AB Tester", "Prabhanshu AB Tester"]
-        Patient.where(full_name: names).pluck(:id)
-      else
-        current_patient_candidates(experiment_start, experiment_end).shuffle!
-      end
+      eligible_ids = current_patient_candidates(experiment_start, experiment_end).shuffle!
 
       experiment_patient_count = (0.01 * percentage_of_patients * eligible_ids.length).round
       eligible_ids = eligible_ids.pop(experiment_patient_count)
@@ -41,7 +35,7 @@ class ExperimentControlService
       experiment.running_state!
     end
 
-    def schedule_daily_stale_patient_notifications(name, patients_per_day: PATIENTS_PER_DAY)
+    def schedule_daily_stale_patient_notifications(name:, patients_per_day: PATIENTS_PER_DAY)
       experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "stale_patients", state: [:new, :running])
       today = Date.current
       return if experiment.start_date > today
