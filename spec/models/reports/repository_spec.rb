@@ -350,7 +350,7 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
         end
       end
 
-      context "caching", skip: "not worrying about caching specs for now" do
+      context "caching", skip: v2_flag do
         let(:facility_1) { create(:facility, name: "facility-1") }
 
         it "creates cache keys" do
@@ -372,8 +372,8 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
 
           repo = Reports::Repository.new(facility_1.region, periods: july_2020_range)
 
-          allow(repo).to receive(:region_period_cached_query).and_call_original
-          expect(repo).to receive(:region_period_cached_query).with(:controlled_v1).exactly(1).times.and_call_original
+          allow(repo.schema).to receive(:region_period_cached_query).and_call_original
+          expect(repo.schema).to receive(:region_period_cached_query).with(:controlled).exactly(1).times.and_call_original
 
           3.times { _result = repo.controlled }
           3.times { _result = repo.controlled_rates }
@@ -400,7 +400,7 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
 
           RequestStore[:bust_cache] = true
           repo = Reports::Repository.new(facility_1.region, periods: july_2020_range)
-          expect(repo).to receive(:region_period_cached_query).with(:controlled_v1).exactly(1).times
+          expect(repo.schema).to receive(:region_period_cached_query).with(:controlled).exactly(1).times
 
           3.times { _result = repo.controlled }
         end
