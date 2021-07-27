@@ -11,9 +11,7 @@ namespace :dhis2 do
       config.version = ENV.fetch("DHIS2_VERSION")
     end
 
-    data_elements_map = CountryConfig.current[:dhis2_data_elements]
-
-    abort("DHIS2 data elements map not configured for this environment") unless data_elements_map
+    data_elements_map = CountryConfig.current.fetch(:dhis2_data_elements)
 
     current_period = Period.current.previous
 
