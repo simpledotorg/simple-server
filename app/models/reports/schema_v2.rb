@@ -32,7 +32,7 @@ module Reports
     end
 
     def earliest_patient_data_query_v2(region)
-      Reports::FacilityState.for_region(region).having("SUM(cumulative_registrations) > 0").minimum(:month_date)
+      Reports::FacilityState.for_region(region).where("cumulative_registrations > 0 OR cumulative_assigned_patients > 0").minimum(:month_date)
     end
 
     # Returns assigned patients for a Region. NOTE: We grab and cache ALL the counts for a particular region with one SQL query
