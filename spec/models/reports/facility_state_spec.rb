@@ -6,7 +6,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
   end
 
   around do |example|
-    freeze_time(example)
+    freeze_time_for_spec(example)
   end
 
   context "registrations" do
@@ -75,6 +75,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
           expect(described_class.find_by(month_date: june_2021[:now], facility: facility).under_care).to eq 1
           expect(described_class.find_by(month_date: june_2021[:now], facility: facility).lost_to_follow_up).to eq 1
           expect(described_class.find_by(month_date: june_2021[:now], facility: facility).dead).to eq 1
+          expect(described_class.find_by(month_date: june_2021[:now], facility: facility).cumulative_assigned_patients).to eq 3
         end
       end
     end
@@ -86,6 +87,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         create(:patient, assigned_facility: facility, recorded_at: june_2021[:under_12_months_ago])
         create(:patient, assigned_facility: facility, recorded_at: june_2021[:under_3_months_ago])
         create(:patient, assigned_facility: facility, recorded_at: june_2021[:end_of_month])
+
         RefreshMaterializedViews.new.refresh_v2
         with_reporting_time_zone do
           expect(described_class.find_by(facility: facility, month_date: june_2021[:now] - 2.years).cumulative_assigned_patients).to eq 1

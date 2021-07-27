@@ -1,5 +1,5 @@
 module ReportingHelpers
-  def freeze_time(example)
+  def freeze_time_for_spec(example)
     # We need to enforce a known time for these tests, otherwise we will have intermittent failures. For example,
     # if we use live system time, many of these specs will fail after 18:30 UTC (ie 14:30 ET) when on the last day of a month,
     # because that falls into the next day in IST (our reporting time zone). So to prevent confusing failures for
