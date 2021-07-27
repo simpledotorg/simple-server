@@ -23,21 +23,15 @@ module ParameterFiltering
   ].freeze
 
   ALLOWED_REGEX = /(^|_)ids?|#{Regexp.union(ALLOWED_ATTRIBUTES)}/.freeze
+  # We have to explicitly exclude integer params because
+  # the lambda can only filter string params.
+  DISALLOWED_INTEGER_PARAMS = [:age, :systolic, :diastolic, :duration_in_days]
   SANITIZED_VALUE = "[FILTERED]".freeze
 
-  # Returns the lamba for attributes that are okay to leave in the logs
+  # Returns the lambda for attributes that are okay to leave in the logs
   def self.filter
-    lambda do |key, value|
-      unless key.match(ALLOWED_REGEX)
-        case value
-        when String
-          value.replace(SANITIZED_VALUE)
-        else
-          value.to_s.replace(SANITIZED_VALUE)
-        end
-      end
-    end
+    lambda { |key, value| value.replace(SANITIZED_VALUE) if !key.match(ALLOWED_REGEX) && value.is_a?(String) }
   end
 end
 
-Rails.application.config.filter_parameters += [:password, :age, ParameterFiltering.filter]
+Rails.application.config.filter_parameters += [*ParameterFiltering::DISALLOWED_INTEGER_PARAMS, ParameterFiltering.filter]
