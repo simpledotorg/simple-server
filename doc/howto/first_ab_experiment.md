@@ -22,23 +22,22 @@ experiments.map { |e| e.treatment_groups.count } # should return 3
 3. Create the current patient experiment, based on how many patients are eligible. We want to use approximately 300 patients and this particular job uses percentages. So if 10,000 patients are eligible, we would want to use 3% (300/10,000). 
 **NOTE:** change the percentage below so that the experiment enrolls ~300 patients
 
-  ```ruby
-  Time.zone = Period::REPORTING_TIME_ZONE
+```ruby
+Time.zone = Period::REPORTING_TIME_ZONE
 
-  candidates = ExperimentControlService.send(:current_patient_candidates, "July 28, 2021".to_date, "July 30, 2021".to_date).count
-  # => 10000 ...assume there are 10,000 eligible patients returned...
-  percentage = 300 / candidates # results in 0.03
-  ExperimentControlService.start_current_patient_experiment("Small Current Patient July 2021", 1, 3, percentage) # the final argument is the percentage of patients to enroll
+candidates = ExperimentControlService.send(:current_patient_candidates, "July 28, 2021".to_date, "July 30, 2021".to_date).count
+# => 10000 ...assume there are 10,000 eligible patients returned...
+percentage = 300 / candidates # results in 0.03
+ExperimentControlService.start_current_patient_experiment("Small Current Patient July 2021", 1, 3, percentage) # the final argument is the percentage of patients to enroll
 
-  # Verification
-  experiment = Experiment.find_by!(name: "Small Current Patient July 2021")
-  experiment.notifications.count
-  # => should return around 400 notifications
-  ```
+# Verification
+experiment = Experiment.find_by!(name: "Small Current Patient July 2021")
+experiment.notifications.count
+# => should return around 400 notifications
+```
 
 4. Launch the job to schedule the first wave of notifications from a rails console.
 The changes may not be immediate due to the nature of background jobs, but this should result in the notifications that are due today being changed to status "sent". It should also create communications for those notifications.
-
 
 ```ruby
 AppointmentNotification::ScheduleExperimentReminders.perform_now
