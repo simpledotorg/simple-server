@@ -41,11 +41,10 @@ The changes may not be immediate due to the nature of background jobs, but this 
 
 ```ruby
 AppointmentNotification::ScheduleExperimentReminders.perform_now
-# Run the following after the job has finished running (check Sidekiq) to verify:
+# Run the following after the job has finished running (check Sidekiq web UI)
 ns = Notification.where(remind_on: Date.current)
 ns.pluck(:status).uniq  # (should all equal "sent")
 ns.map {|n| n.communications.count}.uniq # (expect 1 and maybe 2; may still include 0 due to twilio errors)
-
 ```
 
 ### Troubleshooting
