@@ -1,4 +1,6 @@
-# Call from within script directory: bundle exec ruby notification_translations_aggregator.rb
+# This script aggregates notification translations and formats the wildcards for upload to
+# to Twilio for Whatsapp Message Template approval.
+# Call from within script directory: bundle exec ruby twilio_translations_formatter.rb
 
 require "yaml"
 
