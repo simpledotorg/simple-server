@@ -72,7 +72,6 @@ module Reports
       }
     end
 
-
     # Returns cumulative assigned patients from facility_states - this includes LTFU
     private def cumulative_assigned_patients_query_v2(region)
       FacilityState.for_region(region).order(:month_date).pluck(:month_date, :cumulative_assigned_patients)

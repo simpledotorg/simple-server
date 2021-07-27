@@ -9,8 +9,8 @@ module Reports
       @use_schema_v2 ||= false
     end
 
-    def self.use_schema_v2=(val)
-      @use_schema_v2 = val
+    class << self
+      attr_writer :use_schema_v2
     end
 
     def initialize(regions, periods:, reporting_schema_v2: self.class.use_schema_v2?)
@@ -68,7 +68,7 @@ module Reports
       :uncontrolled
     ]
 
-    delegate *DELEGATED_METHODS, to: :schema
+    delegate(*DELEGATED_METHODS, to: :schema)
 
     alias_method :adjusted_patients, :adjusted_patients_without_ltfu
 

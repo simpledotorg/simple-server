@@ -89,40 +89,40 @@ module Reports
 
     # Return the running total of cumulative assigned patient counts. Note that this *includes* LTFU.
     memoize def cumulative_assigned_patients
-        complete_monthly_assigned_patients.each_with_object({}) do |(region_entry, patient_counts), totals|
-          slug = region_entry.slug
-          next totals[slug] = Hash.new(0) if earliest_patient_recorded_at[slug].nil?
-          range = Range.new(earliest_patient_recorded_at_period[slug], periods.end)
-          totals[slug] = range.each_with_object(Hash.new(0)) { |period, sum|
-            sum[period] = sum[period.previous] + patient_counts.fetch(period, 0)
-          }
-        end
+      complete_monthly_assigned_patients.each_with_object({}) do |(region_entry, patient_counts), totals|
+        slug = region_entry.slug
+        next totals[slug] = Hash.new(0) if earliest_patient_recorded_at[slug].nil?
+        range = Range.new(earliest_patient_recorded_at_period[slug], periods.end)
+        totals[slug] = range.each_with_object(Hash.new(0)) { |period, sum|
+          sum[period] = sum[period.previous] + patient_counts.fetch(period, 0)
+        }
+      end
     end
 
     # Returns registration counts per region / period
     memoize def monthly_registrations
-        complete_monthly_registrations.each_with_object({}) do |(entry, result), results|
-          result.default = 0
-          results[entry.region.slug] = result
-        end
+      complete_monthly_registrations.each_with_object({}) do |(entry, result), results|
+        result.default = 0
+        results[entry.region.slug] = result
+      end
     end
 
     # Returns the full range of registered patient counts for a Region. We do this via one SQL query for each Region, because its
     # fast and easy via the underlying query.
     memoize def complete_monthly_registrations
-        items = regions.map { |region| RegionEntry.new(region, __method__, period_type: period_type) }
-        cache.fetch_multi(*items, force: bust_cache?) { |entry|
-          registered_patients_query.count(entry.region, period_type)
-        }
+      items = regions.map { |region| RegionEntry.new(region, __method__, period_type: period_type) }
+      cache.fetch_multi(*items, force: bust_cache?) { |entry|
+        registered_patients_query.count(entry.region, period_type)
+      }
     end
 
     memoize def cumulative_registrations
-        complete_monthly_registrations.each_with_object({}) do |(region_entry, patient_counts), totals|
-          range = Range.new(patient_counts.keys.first || periods.first, periods.end)
-          totals[region_entry.slug] = range.each_with_object(Hash.new(0)) { |period, sum|
-            sum[period] = sum[period.previous] + patient_counts.fetch(period, 0)
-          }
-        end
+      complete_monthly_registrations.each_with_object({}) do |(region_entry, patient_counts), totals|
+        range = Range.new(patient_counts.keys.first || periods.first, periods.end)
+        totals[region_entry.slug] = range.each_with_object(Hash.new(0)) { |period, sum|
+          sum[period] = sum[period.previous] + patient_counts.fetch(period, 0)
+        }
+      end
     end
 
     # Returns registration counts per region / period counted by registration_user
@@ -137,10 +137,10 @@ module Reports
     end
 
     memoize def ltfu
-        region_period_cached_query(__method__) do |entry|
-          facility_ids = entry.region.facility_ids
-          Patient.for_reports.where(assigned_facility: facility_ids).ltfu_as_of(entry.period.end).count
-        end
+      region_period_cached_query(__method__) do |entry|
+        facility_ids = entry.region.facility_ids
+        Patient.for_reports.where(assigned_facility: facility_ids).ltfu_as_of(entry.period.end).count
+      end
     end
 
     memoize def ltfu_rates
