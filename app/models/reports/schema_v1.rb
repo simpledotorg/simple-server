@@ -8,7 +8,6 @@ module Reports
       @periods = periods
       @period_type = @periods.first.type
       @assigned_patients_query = AssignedPatientsQuery.new
-      @bp_measures_query = BPMeasuresQuery.new
       @control_rate_query = ControlRateQuery.new
       @control_rate_query_v2 = ControlRateQueryV2.new
       @earliest_patient_data_query = EarliestPatientDataQuery.new
@@ -17,7 +16,6 @@ module Reports
     end
 
     attr_reader :assigned_patients_query
-    attr_reader :bp_measures_query
     attr_reader :control_rate_query
     attr_reader :earliest_patient_data_query
     attr_reader :no_bp_measure_query
@@ -191,16 +189,6 @@ module Reports
 
     alias_method :missed_visits, :missed_visits_without_ltfu
     alias_method :missed_visits_rate, :missed_visits_without_ltfu_rates
-
-    memoize def bp_measures_by_user
-      items = regions.map { |region| RegionEntry.new(region, __method__, group_by: :user_id, period_type: period_type) }
-      result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
-        bp_measures_query.count(entry.region, period_type, group_by: :user_id)
-      end
-      result.each_with_object({}) { |(region_entry, counts), hsh|
-        hsh[region_entry.region.slug] = counts
-      }
-    end
 
     memoize def controlled_rates(with_ltfu: false)
       region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
