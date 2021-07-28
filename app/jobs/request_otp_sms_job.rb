@@ -5,7 +5,7 @@ class RequestOtpSmsJob < ApplicationJob
       user_id: user.id,
       communication_type: :sms
     }
-    TwilioApiService.new.send_sms(recipient_number: user.localized_phone_number, message: otp_message(user), context: context)
+    TwilioApiService.new(communication_type: "sms").send_sms(recipient_number: user.localized_phone_number, message: otp_message(user), context: context)
   end
 
   private
