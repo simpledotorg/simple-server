@@ -7,9 +7,8 @@ RSpec.describe TwilioApiService do
   let(:sender_whatsapp_phone_number) { described_class::TWILIO_TEST_WHATSAPP_NUMBER }
 
   subject(:notification_service) { TwilioApiService.new }
-  let(:recipient_phone_number) { "8585858585" }
+  let(:recipient_phone_number) { "+918585858585" }
   let(:invalid_phone_number) { "+15005550001" } # this is twilio's hard-coded "invalid phone number"
-  let(:expected_sms_recipient_phone_number) { "+918585858585" }
 
   def stub_client
     allow(notification_service).to receive(:client).and_return(twilio_client)
@@ -31,6 +30,18 @@ RSpec.describe TwilioApiService do
       expect(Twilio::REST::Client).to receive(:new).with(twilio_account_sid, twilio_auth_token).and_call_original
       expect(notification_service.client).to be_instance_of(Twilio::REST::Client)
       expect(notification_service.test_mode?).to be_falsey
+    end
+
+    it "uses the production twilio creds when TWILIO_PRODUCTION_OVERRIDE is set" do
+      stub_const("SIMPLE_SERVER_ENV", "sandbox")
+      ENV["TWILIO_PRODUCTION_OVERRIDE"] = "true"
+      twilio_account_sid = ENV.fetch("TWILIO_ACCOUNT_SID")
+      twilio_auth_token = ENV.fetch("TWILIO_AUTH_TOKEN")
+      expect(Twilio::REST::Client).to receive(:new).with(twilio_account_sid, twilio_auth_token).and_call_original
+      expect(notification_service.client).to be_instance_of(Twilio::REST::Client)
+      expect(notification_service.test_mode?).to be_falsey
+    ensure
+      ENV.delete("TWILIO_PRODUCTION_OVERRIDE")
     end
   end
 
@@ -57,7 +68,7 @@ RSpec.describe TwilioApiService do
 
       expect(twilio_client).to receive_message_chain("messages.create").with(
         from: sender_sms_phone_number,
-        to: expected_sms_recipient_phone_number,
+        to: recipient_phone_number,
         status_callback: fake_callback_url,
         body: "test sms message"
       )
@@ -97,7 +108,7 @@ RSpec.describe TwilioApiService do
 
       expect(twilio_client).to receive_message_chain("messages.create").with(
         from: "whatsapp:#{sender_whatsapp_phone_number}",
-        to: "whatsapp:#{expected_sms_recipient_phone_number}",
+        to: "whatsapp:#{recipient_phone_number}",
         status_callback: fake_callback_url,
         body: "test whatsapp message"
       )
@@ -130,23 +141,6 @@ RSpec.describe TwilioApiService do
         message: "test whatsapp message",
         callback_url: fake_callback_url
       )
-    end
-  end
-
-  describe "#parse_phone_number" do
-    before do
-      @original_country = Rails.application.config.country
-      Rails.application.config.country = {sms_country_code: "+880"}
-    end
-
-    after do
-      Rails.application.config.country = @original_country
-    end
-
-    it "adds the correct country code" do
-      stub_client
-
-      expect(notification_service.parse_phone_number("98765 43210")).to eq("+8809876543210")
     end
   end
 end

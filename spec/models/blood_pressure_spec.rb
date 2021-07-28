@@ -15,6 +15,21 @@ RSpec.describe BloodPressure, type: :model do
     it_behaves_like "a record that is deletable"
   end
 
+  it "has a valid encounter / observation for bp_with_encounter factory" do
+    user = create(:user)
+    patient = create(:patient)
+    bp = create(:bp_with_encounter, user: user, patient: patient)
+    bp.reload
+    expect(bp.observation).to_not be nil
+    expect(bp.encounter).to_not be nil
+    expect(bp.observation.user).to eq(bp.user)
+    expect(bp.observation.observable).to eq(bp)
+    expect(bp.encounter.patient).to eq(bp.patient)
+    expect(bp.encounter.observations).to contain_exactly(bp.observation)
+    # This behavior is a bit confusing, but this matches what we do in Encounter#generated_encountered_on
+    expect(bp.encounter.encountered_on).to eq(bp.recorded_at.in_time_zone(Period::REPORTING_TIME_ZONE).to_date)
+  end
+
   describe "Scopes" do
     describe ".hypertensive" do
       it "only includes hypertensive BPs" do
@@ -45,6 +60,35 @@ RSpec.describe BloodPressure, type: :model do
         discarded_bp = create(:blood_pressure, deleted_at: Time.now)
 
         expect(described_class.for_sync).to include(discarded_bp)
+      end
+    end
+
+    describe ".for_recent_bp_log" do
+      it "orders bps by date descending" do
+        Timecop.freeze("1 Jul 2021 1PM UTC") do
+          bp_1 = create(:blood_pressure, recorded_at: 2.day.ago)
+          bp_2 = create(:blood_pressure, recorded_at: 1.day.ago)
+
+          expect(described_class.for_recent_bp_log).to eq([bp_2, bp_1])
+        end
+      end
+
+      it "orders bps by time of day ascending for BPs on the same date" do
+        Timecop.freeze("1 Jul 2021 1PM UTC") do
+          bp_1 = create(:blood_pressure, recorded_at: 20.minutes.ago)
+          bp_2 = create(:blood_pressure, recorded_at: 10.minutes.ago)
+
+          expect(described_class.for_recent_bp_log).to eq([bp_1, bp_2])
+        end
+      end
+
+      context "respects the reporting timezone for ordering" do
+        it "BPs in different days in reporting time zone but same day in UTC are ordered descending" do
+          bp_1 = create(:blood_pressure, recorded_at: Time.zone.parse("1 July 2021 11:30PM IST"))
+          bp_2 = create(:blood_pressure, recorded_at: Time.zone.parse("2 July 2021 12:30AM IST"))
+
+          expect(described_class.for_recent_bp_log).to eq([bp_2, bp_1])
+        end
       end
     end
   end

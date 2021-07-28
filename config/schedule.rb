@@ -43,6 +43,12 @@ every :day, at: local("05:00 am"), roles: [:cron] do
   runner "DuplicatePassportAnalytics.report"
 end
 
+every :day, at: local("05:30 am"), roles: [:cron] do
+  if CountryConfig.current_country?("India") && SimpleServer.env.production?
+    runner "ExperimentControlService.schedule_daily_stale_patient_notifications(name: 'Small Stale Patient July 2021', patients_per_day: 100)"
+  end
+end
+
 every :monday, at: local("6:00 am"), roles: [:cron] do
   if Flipper.enabled?(:weekly_telemed_report)
     rake "reports:telemedicine"
@@ -50,7 +56,7 @@ every :monday, at: local("6:00 am"), roles: [:cron] do
 end
 
 every :day, at: local("07:00 am"), roles: [:cron] do
-  rake "appointment_notification:covid_medication_reminders[20000]"
+  runner "AppointmentNotification::ScheduleExperimentReminders.perform_now"
 end
 
 every 2.minutes, roles: [:cron] do

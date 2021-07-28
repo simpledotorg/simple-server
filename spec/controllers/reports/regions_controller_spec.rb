@@ -51,8 +51,8 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
     it "is successful for an organization" do
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
-      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
-      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
+      create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+      create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
       refresh_views
 
       org = @facility_group.organization
@@ -66,8 +66,8 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
     it "is successful for a district" do
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
-      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
-      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
+      create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+      create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
       refresh_views
 
       Timecop.freeze("June 1 2020") do
@@ -79,11 +79,11 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
     it "is successful for a block" do
       patient_2 = create(:patient, registration_facility: @facility, recorded_at: "June 01 2019 00:00:00 UTC", registration_user: cvho)
-      create(:blood_pressure, :hypertensive, recorded_at: "Feb 2020", facility: @facility, patient: patient_2, user: cvho)
+      create(:bp_with_encounter, :hypertensive, recorded_at: "Feb 2020", facility: @facility, patient: patient_2, user: cvho)
 
       patient_1 = create(:patient, registration_facility: @facility, recorded_at: "September 01 2019 00:00:00 UTC", registration_user: cvho)
-      create(:blood_pressure, :under_control, recorded_at: "December 10th 2019", patient: patient_1, facility: @facility, user: cvho)
-      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility, user: cvho)
+      create(:bp_with_encounter, :under_control, recorded_at: "December 10th 2019", patient: patient_1, facility: @facility, user: cvho)
+      create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility, user: cvho)
 
       refresh_views
 
@@ -98,8 +98,8 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
     it "is successful for a facility" do
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
-      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
-      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
+      create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+      create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
       refresh_views
 
       Timecop.freeze("June 1 2020") do
@@ -111,8 +111,8 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
     it "renders period hash info" do
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
-      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
-      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
+      create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+      create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
       refresh_views
 
       Timecop.freeze("June 1 2020") do
@@ -137,8 +137,8 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
     it "retrieves monthly cohort data by default" do
       patient = create(:patient, registration_facility: @facility, registration_user: cvho, recorded_at: jan_2020.advance(months: -1))
-      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
-      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
+      create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+      create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
       refresh_views
 
       Timecop.freeze("June 1 2020") do
@@ -153,7 +153,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
     it "can retrieve quarterly cohort data" do
       patient = create(:patient, registration_facility: @facility, registration_user: cvho, recorded_at: jan_2020.advance(months: -2))
-      create(:blood_pressure, :under_control, recorded_at: jan_2020 + 1.day, patient: patient, facility: @facility)
+      create(:bp_with_encounter, :under_control, recorded_at: jan_2020 + 1.day, patient: patient, facility: @facility)
       refresh_views
 
       Timecop.freeze("June 1 2020") do
@@ -258,8 +258,8 @@ RSpec.describe Reports::RegionsController, type: :controller do
     it "returns period info for current month" do
       today = Date.current
       Timecop.freeze(today) do
-        patient = create(:patient, registration_facility: @facility, recorded_at: today)
-        create(:blood_pressure, :under_control, recorded_at: today, patient: patient, facility: @facility)
+        patient = create(:patient, registration_facility: @facility, recorded_at: 2.months.ago)
+        create(:bp_with_encounter, :under_control, recorded_at: Time.current.yesterday, patient: patient, facility: @facility)
         refresh_views
         sign_in(cvho.email_authentication)
         get :show, params: {id: @facility.facility_group.slug, report_scope: "district"}
@@ -294,8 +294,8 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
     it "retrieves district data" do
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
-      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
-      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
+      create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+      create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
       refresh_views
 
       Timecop.freeze("June 1 2020") do
@@ -311,8 +311,8 @@ RSpec.describe Reports::RegionsController, type: :controller do
     it "retrieves facility data" do
       Time.parse("January 1 2020")
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
-      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
-      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
+      create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+      create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
       refresh_views
 
       Timecop.freeze("June 1 2020") do
@@ -328,8 +328,8 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
     it "retrieves facility district data" do
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
-      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
-      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
+      create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+      create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
       refresh_views
 
       Timecop.freeze("June 1 2020") do
@@ -344,11 +344,11 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
     it "retrieves block data" do
       patient_2 = create(:patient, registration_facility: @facility, recorded_at: "June 01 2019 00:00:00 UTC", registration_user: cvho)
-      create(:blood_pressure, :hypertensive, recorded_at: "Feb 2020", facility: @facility, patient: patient_2, user: cvho)
+      create(:bp_with_encounter, :hypertensive, recorded_at: "Feb 2020", facility: @facility, patient: patient_2, user: cvho)
 
       patient_1 = create(:patient, registration_facility: @facility, recorded_at: "September 01 2019 00:00:00 UTC", registration_user: cvho)
-      create(:blood_pressure, :under_control, recorded_at: "December 10th 2019", patient: patient_1, facility: @facility, user: cvho)
-      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility, user: cvho)
+      create(:bp_with_encounter, :under_control, recorded_at: "December 10th 2019", patient: patient_1, facility: @facility, user: cvho)
+      create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility, user: cvho)
 
       refresh_views
 
@@ -371,8 +371,8 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
     it "works when a user requests data just before the earliest registration date" do
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
-      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
-      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
+      create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+      create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
       refresh_views
       one_month_before = patient.recorded_at.advance(months: -1)
 
@@ -387,7 +387,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
     it "works for very old dates" do
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
-      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+      create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       refresh_views
       ten_years_ago = patient.recorded_at.advance(years: -10)
 
@@ -402,7 +402,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
     it "works for far future dates" do
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
-      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+      create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       refresh_views
       ten_years_from_now = patient.recorded_at.advance(years: -10)
 
@@ -426,8 +426,8 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
     it "retrieves cohort data for a facility" do
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
-      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
-      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
+      create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+      create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
       refresh_views
 
       result = nil
@@ -444,8 +444,8 @@ RSpec.describe Reports::RegionsController, type: :controller do
     it "retrieves cohort data for a facility group" do
       facility_group = @facility.facility_group
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
-      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
-      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
+      create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+      create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
       refresh_views
 
       result = nil
@@ -461,8 +461,8 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
     it "retrieves cohort data for a facility district" do
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
-      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
-      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
+      create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+      create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
       refresh_views
 
       result = nil

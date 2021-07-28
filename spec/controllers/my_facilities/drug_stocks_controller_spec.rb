@@ -94,9 +94,11 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
   describe "GET #new" do
     context "as power_user" do
       let(:facility) { facility_group_with_stock_tracked.facilities.first }
+      let(:facility_region) { facility.region }
       let(:params) {
         {
-          facility_id: facility.id,
+          region_id: facility_region.id,
+          region_type: :facility,
           for_end_of_month: Date.today.strftime("%b-%Y")
         }
       }
@@ -115,7 +117,7 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
 
         expect(response).to be_successful
         expect(assigns(:drug_stocks)).to be_empty
-        expect(assigns(:facility)).to eq facility
+        expect(assigns(:region)).to eq facility_region
       end
 
       it "returns the latest drug stocks in a facility for a given month" do
@@ -139,7 +141,8 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
       let(:facility) { allowed_facility_for_manager }
       let(:params) {
         {
-          facility_id: facility.id,
+          region_id: facility.region.id,
+          region_type: :facility,
           for_end_of_month: Date.today.strftime("%b-%Y")
         }
       }
@@ -154,7 +157,9 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
       it "redirects for a disallowed facility" do
         sign_in(manager.email_authentication)
 
-        get :new, params: params.merge(facility_id: disallowed_facility_for_manager.id)
+        params[:region_id] = disallowed_facility_for_manager.region.id
+
+        get :new, params: params
         expect(response).to be_redirect
       end
     end
@@ -163,7 +168,8 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
       let(:facility) { facilities_with_stock_tracked.first }
       let(:params) {
         {
-          facility_id: facility.id,
+          region_id: facility.region.id,
+          region_type: :facility,
           for_end_of_month: Date.today.strftime("%b-%Y")
         }
       }
@@ -180,9 +186,11 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
   describe "POST #create" do
     let(:redirect_url) { "report_url_with_filters" }
     let(:session) { {report_url_with_filters: redirect_url} }
+    let(:facility) { facility_group_with_stock_tracked.facilities.first }
     let(:params) {
       {
-        facility_id: facility_group_with_stock_tracked.facilities.first.id,
+        region_id: facility.region.id,
+        region_type: :facility,
         for_end_of_month: Date.today.strftime("%b-%Y"),
         drug_stocks: [{
           protocol_drug_id: protocol_drug.id,
