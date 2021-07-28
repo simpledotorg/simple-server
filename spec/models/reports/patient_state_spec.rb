@@ -9,6 +9,16 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
     freeze_time_for_reporting_specs(example)
   end
 
+  it "does not include deleted patients" do
+    create(:patient)
+    deleted_patient = create(:patient, deleted_at: june_2021[:over_3_months_ago])
+    described_class.refresh
+    with_reporting_time_zone do
+      expect(described_class.count).not_to eq 0
+      expect(described_class.where(patient_id: deleted_patient.id)).to be_empty
+    end
+  end
+
   context "indicators" do
     describe "current_age" do
       it "determines the current age of the patient given their age, age_updated_at" do
