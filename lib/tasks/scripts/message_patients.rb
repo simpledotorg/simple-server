@@ -41,7 +41,7 @@ class MessagePatients
       phone_number = phone_number_for(patient)
 
       next unless phone_number
-      notification_service = TwilioApiService.new
+      notification_service = TwilioApiService.new(communication_type: channel)
       context = {
         calling_class: self.class.name,
         patient_id: patient.id,
