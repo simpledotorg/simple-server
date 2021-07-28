@@ -68,15 +68,14 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         ltfu_patient = create(:patient, recorded_at: june_2021[:over_12_months_ago], assigned_facility: facility)
         create(:blood_pressure, patient: ltfu_patient, recorded_at: june_2021[:over_12_months_ago])
         _under_care_patients = create_list(:patient, 2, recorded_at: june_2021[:under_12_months_ago], assigned_facility: facility)
-        _dead_patients = create_list(:patient, 3, recorded_at: june_2021[:long_ago], assigned_facility: facility, status: "dead")
         _different_facility_patient = create(:patient, recorded_at: june_2021[:long_ago])
+        create_list(:patient, 3, recorded_at: june_2021[:long_ago], assigned_facility: facility, status: "dead")
 
         RefreshMaterializedViews.new.refresh_v2
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: june_2021[:now], facility: facility).lost_to_follow_up).to eq 1
           expect(described_class.find_by(month_date: june_2021[:now], facility: facility).under_care).to eq 2
           expect(described_class.find_by(month_date: june_2021[:now], facility: facility).dead).to eq 3
-          expect(described_class.find_by(month_date: june_2021[:now], facility: facility).cumulative_assigned_patients).to eq 6
         end
       end
     end
@@ -88,6 +87,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         create(:patient, assigned_facility: facility, recorded_at: june_2021[:under_12_months_ago])
         create(:patient, assigned_facility: facility, recorded_at: june_2021[:under_3_months_ago])
         create(:patient, assigned_facility: facility, recorded_at: june_2021[:end_of_month])
+        create_list(:patient, 3, recorded_at: june_2021[:long_ago], assigned_facility: facility, status: "dead")
 
         RefreshMaterializedViews.new.refresh_v2
         with_reporting_time_zone do
