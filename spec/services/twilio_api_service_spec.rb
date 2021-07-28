@@ -6,7 +6,7 @@ RSpec.describe TwilioApiService do
   let(:sender_sms_phone_number) { described_class::TWILIO_TEST_SMS_NUMBER }
   let(:sender_whatsapp_phone_number) { described_class::TWILIO_TEST_WHATSAPP_NUMBER }
 
-  subject(:notification_service) { TwilioApiService.new }
+  subject(:notification_service) { TwilioApiService.new(communication_type: :whatsapp) }
   let(:recipient_phone_number) { "+918585858585" }
   let(:invalid_phone_number) { "+15005550001" } # this is twilio's hard-coded "invalid phone number"
 
@@ -48,12 +48,12 @@ RSpec.describe TwilioApiService do
   describe "specifying an SMS sender" do
     it "uses the provided SMS sender number in production" do
       stub_const("SIMPLE_SERVER_ENV", "production")
-      notification_service = TwilioApiService.new(sms_sender: "1234567890")
+      notification_service = described_class.new(sms_sender: "1234567890", communication_type: :sms)
       expect(notification_service.twilio_sender_sms_number).to eq("1234567890")
     end
 
     it "uses the test number in test environments" do
-      notification_service = TwilioApiService.new(sms_sender: "1234567890")
+      notification_service = described_class.new(sms_sender: "1234567890", communication_type: :sms)
       expect(notification_service.twilio_sender_sms_number).to eq(TwilioApiService::TWILIO_TEST_SMS_NUMBER)
     end
 

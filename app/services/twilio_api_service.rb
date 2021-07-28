@@ -12,6 +12,8 @@
 
 class TwilioApiService
   attr_reader :client
+  attr_reader :communication_type
+  attr_reader :metrics
   attr_reader :twilio_sender_sms_number
   attr_reader :twilio_sender_whatsapp_number
 
@@ -29,12 +31,13 @@ class TwilioApiService
     end
   end
 
-  def initialize(sms_sender: nil)
+  def initialize(sms_sender: nil, communication_type:)
     @test_mode = if ENV["TWILIO_PRODUCTION_OVERRIDE"]
       false
     else
       !SimpleServer.env.production?
     end
+    @communication_type = communication_type
 
     @twilio_account_sid = ENV.fetch("TWILIO_ACCOUNT_SID")
     @twilio_auth_token = ENV.fetch("TWILIO_AUTH_TOKEN")
@@ -56,6 +59,7 @@ class TwilioApiService
     else
       prod_client
     end
+    @metrics = Metrics.with_object(self)
   end
 
   def test_mode?
@@ -93,6 +97,7 @@ class TwilioApiService
       body: message
     )
   rescue Twilio::REST::TwilioError => exception
+    metrics.increment("errors.#{communication_type}")
     if exception.respond_to?(:code)
       log_error(exception, sender_number, recipient_number, context)
       nil
