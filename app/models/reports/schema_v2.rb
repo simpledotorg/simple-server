@@ -63,6 +63,7 @@ module Reports
         .group(:month_date)
         .sum("patients_under_care::int")
         .to_h(&period_hash)
+        .tap { |hsh| hsh.default = 0 }
     end
 
     alias_method :adjusted_patients, :adjusted_patients_without_ltfu
@@ -99,6 +100,7 @@ module Reports
         .group(:month_date)
         .sum("monthly_registrations::int")
         .to_h(&period_hash)
+        .tap { |hsh| hsh.default = 0 }
     end
 
     memoize def cumulative_registrations
