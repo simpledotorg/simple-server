@@ -31,7 +31,7 @@ class TwilioApiService
     end
   end
 
-  def initialize(sms_sender: nil, communication_type:)
+  def initialize(communication_type:, sms_sender: nil)
     @test_mode = if ENV["TWILIO_PRODUCTION_OVERRIDE"]
       false
     else
