@@ -158,6 +158,19 @@ describe ExperimentControlService, type: :model do
       expect(reminder3.remind_on).to eq(appointment_date + 3.days)
     end
 
+    it "only creates a notification for scheduled appointments during the window" do
+      patient1 = create(:patient, age: 80)
+      scheduled_appointment = create(:appointment, patient: patient1, scheduled_date: 10.days.from_now, status: "scheduled")
+      visited_appointment = create(:appointment, patient: patient1, scheduled_date: 10.days.from_now, status: "visited")
+      experiment = create(:experiment, :with_treatment_group)
+      template = create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
+
+      ExperimentControlService.start_current_patient_experiment(name: experiment.name, days_til_start: 5, days_til_end: 35)
+
+      expect(scheduled_appointment.notifications.count).to eq 1
+      expect(visited_appointment.notifications.count).to eq 0
+    end
+
     it "creates experimental reminder notifications with correct attributes" do
       patient1 = create(:patient, age: 80)
       appointment = create(:appointment, patient: patient1, scheduled_date: 10.days.from_now)
