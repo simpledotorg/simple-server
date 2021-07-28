@@ -33,7 +33,7 @@ module Reports
       earliest_patient_recorded_at.each_with_object({}) { |(slug, time), hsh| hsh[slug] = Period.new(value: time, type: @period_type) if time }
     end
 
-    def earliest_patient_data_query_v2(region)
+    private def earliest_patient_data_query_v2(region)
       FacilityState.for_region(region).where("cumulative_registrations > 0 OR cumulative_assigned_patients > 0")
         .minimum(:month_date)
     end
@@ -115,6 +115,7 @@ module Reports
         .group(:month_date)
         .sum("cumulative_registrations::int")
         .to_h(&period_hash)
+        .tap { |hsh| hsh.default = 0 }
     end
 
     memoize def ltfu
@@ -157,51 +158,6 @@ module Reports
       end
     end
 
-    memoize def missed_visits_without_ltfu
-      region_period_cached_query(__method__) do |entry|
-        slug, period = entry.slug, entry.period
-        patients = denominator(entry.region, entry.period)
-        patients_with_visits = controlled[slug][period] + uncontrolled[slug][period] + visited_without_bp_taken[slug][period]
-        patients - patients_with_visits
-      end
-    end
-
-    # To determine the missed visits percentage, we sum the remaining percentages and subtract that from 100.
-    # If we determined the percentage directly, we would have cases where the percentages do not add up to 100
-    # due to rounding and losing precision.
-    memoize def missed_visits_without_ltfu_rates
-      region_period_cached_query(__method__) do |entry|
-        slug, period = entry.slug, entry.period
-        visit_rates = controlled_rates[slug][period] + uncontrolled_rates[slug][period] + visited_without_bp_taken_rate[slug][period]
-        100 - visit_rates
-      end
-    end
-
-    memoize def missed_visits_with_ltfu
-      region_period_cached_query(__method__, with_ltfu: true) do |entry|
-        slug = entry.slug
-        patients = denominator(entry.region, entry.period, with_ltfu: true)
-        patients_with_visits = controlled[slug][entry.period] + uncontrolled[slug][entry.period] + visited_without_bp_taken[slug][entry.period]
-        patients - patients_with_visits
-      end
-    end
-
-    # To determine the missed visits percentage, we sum the remaining percentages and subtract that from 100.
-    # If we determined the percentage directly, we would have cases where the percentages do not add up to 100
-    # due to rounding and losing precision.
-    memoize def missed_visits_with_ltfu_rates
-      region_period_cached_query(__method__, with_ltfu: true) do |entry|
-        slug, period = entry.slug, entry.period
-        visit_rates = controlled_rates(with_ltfu: true)[slug][period] +
-          uncontrolled_rates(with_ltfu: true)[slug][period] +
-          visited_without_bp_taken_rate(with_ltfu: true)[slug][period]
-        100 - visit_rates
-      end
-    end
-
-    alias_method :missed_visits, :missed_visits_without_ltfu
-    alias_method :missed_visits_rate, :missed_visits_without_ltfu_rates
-
     memoize def controlled_rates(with_ltfu: false)
       region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
         numerator = controlled[entry.slug][entry.period]
@@ -213,20 +169,6 @@ module Reports
     memoize def uncontrolled_rates(with_ltfu: false)
       region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
         numerator = uncontrolled[entry.region.slug][entry.period]
-        total = denominator(entry.region, entry.period, with_ltfu: with_ltfu)
-        percentage(numerator, total)
-      end
-    end
-
-    memoize def visited_without_bp_taken
-      region_period_cached_query(__method__) do |entry|
-        no_bp_measure_query.call(entry.region, entry.period)
-      end
-    end
-
-    memoize def visited_without_bp_taken_rate(with_ltfu: false)
-      region_period_cached_query(__method__, with_tlfu: with_ltfu) do |entry|
-        numerator = visited_without_bp_taken[entry.slug][entry.period]
         total = denominator(entry.region, entry.period, with_ltfu: with_ltfu)
         percentage(numerator, total)
       end
