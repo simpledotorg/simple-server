@@ -113,6 +113,8 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       patient_missed_visit = create(:patient, assigned_facility: facility, recorded_at: june_2021[:long_ago])
       create(:bp_with_encounter, patient: patient_missed_visit, recorded_at: june_2021[:over_3_months_ago])
 
+      _patient_no_visit = create(:patient, assigned_facility: facility, recorded_at: june_2021[:long_ago])
+
       patient_visited_no_bp = create(:patient, assigned_facility: facility, recorded_at: june_2021[:long_ago])
       create(:prescription_drug,
         device_created_at: june_2021[:now] - 1.month,
@@ -127,9 +129,9 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
 
         expect(facility_state_june_2021.controlled_under_care).to eq 1
         expect(facility_state_june_2021.uncontrolled_under_care).to eq 1
-        expect(facility_state_june_2021.missed_visit_under_care).to eq 1
+        expect(facility_state_june_2021.missed_visit_under_care).to eq 2
         expect(facility_state_june_2021.visited_no_bp_under_care).to eq 1
-        expect(facility_state_june_2021.patients_under_care).to eq 4
+        expect(facility_state_june_2021.patients_under_care).to eq 5
         expect(facility_state_june_2021.patients_lost_to_follow_up).to eq 0
       end
     end
