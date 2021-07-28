@@ -21,7 +21,7 @@ class ExperimentControlService
         patients = Patient
           .where(id: batch)
           .includes(:appointments)
-          .where(appointments: {scheduled_date: experiment_start..experiment_end})
+          .where(appointments: {scheduled_date: experiment_start..experiment_end, status: "scheduled"})
 
         patients.each do |patient|
           group = experiment.random_treatment_group
