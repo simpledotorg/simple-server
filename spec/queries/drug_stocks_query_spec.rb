@@ -311,4 +311,44 @@ RSpec.describe DrugStocksQuery do
       end
     end
   end
+
+  context "custom drug category ordering" do
+    let(:facilities) { create_list(:facility, 3, facility_group: facility_group, state: state, zone: zone) }
+
+    before do
+      allow_any_instance_of(Reports::DrugStockCalculation).to receive(:patient_days_coefficients).and_return(punjab_drug_stock_config)
+    end
+
+    describe "#protocol_drugs_by_category" do
+      it "returns drugs ordered by category alphabetically if no custom order is defined" do
+        allow(ENV).to receive(:fetch).with("CUSTOM_DRUG_CATEGORY_ORDER").and_return("[]")
+
+        protocol_drugs_by_category = described_class
+          .new(facilities: facilities, for_end_of_month: for_end_of_month)
+          .protocol_drugs_by_category
+
+        expect(protocol_drugs_by_category.keys).to eq(%w[hypertension_arb hypertension_ccb hypertension_diuretic])
+      end
+
+      it "returns drugs ordered by the custom category order if custom order is defined" do
+        stub_const("ENV", ENV.to_hash.merge("CUSTOM_DRUG_CATEGORY_ORDER" => "['hypertension_ccb', 'hypertension_arb', 'hypertension_diuretic']"))
+
+        protocol_drugs_by_category = described_class
+          .new(facilities: facilities, for_end_of_month: for_end_of_month)
+          .protocol_drugs_by_category
+
+        expect(protocol_drugs_by_category.keys).to eq(%w[hypertension_ccb hypertension_arb hypertension_diuretic])
+      end
+
+      it "returns drugs ordered by category alphabetically if the custom order defined doesn't match the list of categories being reported" do
+        stub_const("ENV", ENV.to_hash.merge("CUSTOM_DRUG_CATEGORY_ORDER" => "['hypertension_ccb', 'hypertension_arb']"))
+
+        protocol_drugs_by_category = described_class
+          .new(facilities: facilities, for_end_of_month: for_end_of_month)
+          .protocol_drugs_by_category
+
+        expect(protocol_drugs_by_category.keys).to eq(%w[hypertension_arb hypertension_ccb hypertension_diuretic])
+      end
+    end
+  end
 end
