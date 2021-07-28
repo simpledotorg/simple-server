@@ -6,7 +6,7 @@
 
 ## Active patient experiment:
 - experiment will be started by running a script either manually or by scheduling it
-- the job can be run like so: `ExperimentControlServerice.start_current_patient_experiment(name, days_til_start, days_til_end, percentage_of_patients = 100)`
+- the job can be run like so: `ExperimentControlServerice.start_current_patient_experiment(name: "experiment name", days_til_start: 3, days_til_end: 33, percentage_of_patients: 100)`
 - the `percentage_of_patients` argument is optional and defaults to 100
 - be sure that `days_til_start` leaves enough time to send any reminders that need to be sent before the appointment. For example, if the experiment has a treatment that involves sending reminders three days before the experiment begins, set `days_til_start` to at least four.
 - the job will select patients and assign all eligible patients to treatment groups at random
@@ -14,7 +14,7 @@
 - Then the messages will then be scheduled for delivery
 
 ## Stale patient experiment:
-- stale patient selection is run via the command: `ExperimentControlService.schedule_daily_stale_patient_notifications(name, patients_per_day: PATIENTS_PER_DAY)`
+- stale patient selection is run via the command: `ExperimentControlService.schedule_daily_stale_patient_notifications(name: "experiment name", patients_per_day: 100)`
 - the `patients_per_day` argument is optional and defaults to 10,000
 - this job should be scheduled because patient selection must occur every day of the experiment to ensure that patients do not become ineligible (by returning to care) between selection and the time their reminder is sent
 - this job selects the specified number of patients per day to add to the experiment, assigns them to treatment groups, and creates notifications appropriate for their group. These notifications will be marked as "pending" and will not be sent at this time.
@@ -38,4 +38,4 @@
 
 ## Ending an experiment early
 
-If we need to end an experiment early, we can do it by running `ExperimentControlService.abort_experiment(experiment_name)`. This will change the experiment state to "cancelled" and marking all "pending" and "scheduled" notifications as "cancelled", which will prevent all unsent notifications from being sent.
+If we need to end an experiment early, we can do it by running `ExperimentControlService.abort_experiment("experiment name")`. This will change the experiment state to "cancelled" and marking all "pending" and "scheduled" notifications as "cancelled", which will prevent all unsent notifications from being sent.
