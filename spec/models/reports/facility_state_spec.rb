@@ -64,6 +64,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
     describe "under_care, lost_to_follow_up, dead" do
       it "computes the number of assigned patients correctly with each care state" do
         facility = create(:facility)
+        _without_htn_patient = create(:patient, :without_hypertension, recorded_at: june_2021[:long_ago], assigned_facility: facility)
         _dead_patient = create(:patient, recorded_at: june_2021[:long_ago], assigned_facility: facility, status: "dead")
         _under_care_patient = create(:patient, recorded_at: june_2021[:under_12_months_ago], assigned_facility: facility)
         ltfu_patient = create(:patient, recorded_at: june_2021[:over_12_months_ago], assigned_facility: facility)
