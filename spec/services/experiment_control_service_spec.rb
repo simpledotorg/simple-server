@@ -163,7 +163,7 @@ describe ExperimentControlService, type: :model do
       scheduled_appointment = create(:appointment, patient: patient1, scheduled_date: 10.days.from_now, status: "scheduled")
       visited_appointment = create(:appointment, patient: patient1, scheduled_date: 10.days.from_now, status: "visited")
       experiment = create(:experiment, :with_treatment_group)
-      template = create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
+      create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
 
       ExperimentControlService.start_current_patient_experiment(name: experiment.name, days_til_start: 5, days_til_end: 35)
 
