@@ -83,9 +83,6 @@ module Reports
       }
     end
 
-    alias_method :missed_visits, :missed_visits_without_ltfu
-    alias_method :missed_visits_rate, :missed_visits_without_ltfu_rates
-
     # Returns Follow ups per Region / Period. Takes an optional group_by clause (commonly used to group by `blood_pressures.user_id`)
     memoize def hypertension_follow_ups(group_by: nil)
       items = regions.map { |region| RegionEntry.new(region, __method__, group_by: group_by, period_type: period_type) }

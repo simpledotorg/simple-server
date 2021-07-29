@@ -176,6 +176,16 @@ module Reports
       end
     end
 
+    memoize def missed_visits(with_ltfu: false)
+      FacilityState.for_region(region)
+        .where("month_date >= ?", earliest_patient_recorded_at_period[region.slug].to_date)
+        .order(:month_date)
+        .group(:month_date)
+        .sum("missed_visits_under_care::int")
+        .to_h(&period_hash)
+        .tap { |hsh| hsh.default = 0 }
+    end
+
     private
 
     # Return the actual 'active range' for a Region - this will be the from the first recorded at in a region until
