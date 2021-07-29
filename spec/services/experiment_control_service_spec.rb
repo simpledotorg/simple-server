@@ -333,7 +333,7 @@ describe ExperimentControlService, type: :model do
     end
 
     it "does nothing if it the experiment is not in 'new' or 'running' state" do
-      experiment = create(:experiment, :with_treatment_group ,experiment_type: "stale_patients", state: "complete")
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients", state: "complete")
       group = experiment.treatment_groups.first
       create(:reminder_template, treatment_group: group, message: "come today", remind_on_in_days: 0)
       patient1 = create(:patient, age: 80)
