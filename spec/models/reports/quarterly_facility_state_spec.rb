@@ -46,12 +46,12 @@ RSpec.describe Reports::QuarterlyFacilityState, {type: :model, reporting_spec: t
 
       RefreshMaterializedViews.new.refresh_v2
       with_reporting_time_zone do
-        quarterly_facility_state_2021_Q2 = described_class.find_by(facility: facility, quarter_string: '2021-2')
+        quarterly_facility_state_2021_Q2 = described_class.find_by(facility: facility, quarter_string: "2021-2")
 
-        pp Reports::PatientState.where(assigned_facility_id: facility.id, month_string: '2021-06', quarters_since_registration: 1).pluck(:quarters_since_bp)
-        pp Reports::PatientState.where(assigned_facility_id: facility.id, month_string: '2021-06', quarters_since_registration: 1).pluck(:quarters_since_visit)
-        pp Reports::PatientState.where(assigned_facility_id: facility.id, month_string: '2021-06', quarters_since_registration: 1).pluck(:htn_treatment_outcome_in_quarter)
-        pp Reports::PatientState.where(assigned_facility_id: facility.id, month_string: '2021-06', quarters_since_registration: 1, htn_treatment_outcome_in_quarter: "missed_visit").count
+        pp Reports::PatientState.where(assigned_facility_id: facility.id, month_string: "2021-06", quarters_since_registration: 1).pluck(:quarters_since_bp)
+        pp Reports::PatientState.where(assigned_facility_id: facility.id, month_string: "2021-06", quarters_since_registration: 1).pluck(:quarters_since_visit)
+        pp Reports::PatientState.where(assigned_facility_id: facility.id, month_string: "2021-06", quarters_since_registration: 1).pluck(:htn_treatment_outcome_in_quarter)
+        pp Reports::PatientState.where(assigned_facility_id: facility.id, month_string: "2021-06", quarters_since_registration: 1, htn_treatment_outcome_in_quarter: "missed_visit").count
         pp quarterly_facility_state_2021_Q2
         expect(quarterly_facility_state_2021_Q2.quarterly_cohort_controlled).to eq 2
         expect(quarterly_facility_state_2021_Q2.quarterly_cohort_patients).to eq 12
