@@ -69,15 +69,13 @@ class DrugStocksQuery
     drugs_by_category = drugs
       .sort_by(&:sort_key)
       .group_by(&:drug_category)
-      .sort_by { |(drug_category, _)| drug_category }
-      .to_h
 
-    custom_drug_category_order = YAML.safe_load(ENV.fetch("CUSTOM_DRUG_CATEGORY_ORDER") { "[]" })
+    custom_drug_category_order = CountryConfig.current.fetch(:custom_drug_category_order, [])
 
-    if custom_drug_category_order.present? && custom_drug_category_order.sort == drugs_by_category.keys
+    if custom_drug_category_order.to_set == drugs_by_category.keys.to_set
       drugs_by_category.sort_by { |drug_category, _| custom_drug_category_order.find_index(drug_category) }.to_h
     else
-      drugs_by_category
+      drugs_by_category.sort_by { |drug_category, _| drug_category }.to_h
     end
   end
 
