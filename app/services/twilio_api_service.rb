@@ -93,21 +93,6 @@ class TwilioApiService
       body: message
     )
   rescue Twilio::REST::TwilioError => exception
-    if exception.respond_to?(:code)
-      log_error(exception, sender_number, recipient_number, context)
-      nil
-    else
-      raise Error.new("Error while calling Twilio API", exception_message: exception.to_s, context: context)
-    end
-  end
-
-  def log_error(e, sender_number, recipient_number, context)
-    logger.info({
-      class: self.class.name,
-      error: e,
-      sender: sender_number,
-      recipient: recipient_number,
-      **context
-    })
+    raise Error.new("Error while calling Twilio API", exception_message: exception.to_s, context: context)
   end
 end
