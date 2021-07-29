@@ -331,7 +331,7 @@ RSpec.describe DrugStocksQuery do
       end
 
       it "returns drugs ordered by the custom category order if custom order is defined" do
-        allow(CountryConfig.current).to receive(:fetch).with(:custom_drug_category_order, []).and_return(['hypertension_ccb', 'hypertension_arb', 'hypertension_diuretic'])
+        allow(CountryConfig.current).to receive(:fetch).with(:custom_drug_category_order, []).and_return(%w[hypertension_ccb hypertension_arb hypertension_diuretic])
 
         protocol_drugs_by_category = described_class
           .new(facilities: facilities, for_end_of_month: for_end_of_month)
@@ -341,7 +341,7 @@ RSpec.describe DrugStocksQuery do
       end
 
       it "returns drugs ordered by category alphabetically if the custom order defined doesn't match the list of categories being reported" do
-        stub_const("ENV", ENV.to_hash.merge("CUSTOM_DRUG_CATEGORY_ORDER" => "['hypertension_ccb', 'hypertension_arb']"))
+        allow(CountryConfig.current).to receive(:fetch).with(:custom_drug_category_order, []).and_return(%w[hypertension_ccb hypertension_arb])
 
         protocol_drugs_by_category = described_class
           .new(facilities: facilities, for_end_of_month: for_end_of_month)
