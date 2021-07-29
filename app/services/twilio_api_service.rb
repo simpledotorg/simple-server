@@ -21,12 +21,6 @@ class TwilioApiService
   delegate :logger, to: Rails
 
   class Error < StandardError
-    attr_reader :exception_message, :context
-    def initialize(message, exception_message:, context:)
-      super(message)
-      @exception_message = exception_message
-      @context = context
-    end
   end
 
   def initialize(sms_sender: nil)
@@ -86,6 +80,7 @@ class TwilioApiService
   private
 
   def send_twilio_message(sender_number, recipient_number, message, callback_url, context)
+    Sentry.set_tags(context)
     client.messages.create(
       from: sender_number,
       to: recipient_number,
@@ -93,6 +88,6 @@ class TwilioApiService
       body: message
     )
   rescue Twilio::REST::TwilioError => exception
-    raise Error.new("Error while calling Twilio API", exception_message: exception.to_s, context: context)
+    raise Error.new("Error while calling Twilio API: #{exception.message}")
   end
 end
