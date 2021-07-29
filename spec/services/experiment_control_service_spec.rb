@@ -220,12 +220,23 @@ describe ExperimentControlService, type: :model do
       }.to raise_error(ActiveRecord::RecordInvalid)
     end
 
-    it "raises not found if the experiment's state is not 'new'" do
-      experiment = create(:experiment, state: "running")
+    it "does nothing if the experiment is not in 'new' state" do
+      patient1 = create(:patient, age: 80)
+      create(:appointment, patient: patient1, scheduled_date: 10.days.from_now)
+      experiment = create(:experiment, :with_treatment_group, state: "running")
+      create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
 
       expect {
         ExperimentControlService.start_current_patient_experiment(name: experiment.name, days_til_start: 5, days_til_end: 35)
-      }.to raise_error(ActiveRecord::RecordNotFound)
+      }.not_to change { experiment.reload.state }
+      expect(Notification.count).to eq(0)
+    end
+
+    it "does nothing if the experiment is not found" do
+      expect {
+        ExperimentControlService.start_current_patient_experiment(name: "doesn't exist", days_til_start: 5, days_til_end: 35)
+      }.not_to raise_error
+      expect(Notification.count).to eq(0)
     end
   end
 
