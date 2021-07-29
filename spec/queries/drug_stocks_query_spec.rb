@@ -61,6 +61,9 @@ RSpec.describe DrugStocksQuery do
     end
 
     it "computes the drug stock report totals" do
+    end
+
+    it "computes the drug stock report facility totals" do
       result = described_class.new(facilities: facilities,
                                    for_end_of_month: for_end_of_month).drug_stocks_report
 
@@ -251,6 +254,9 @@ RSpec.describe DrugStocksQuery do
         expect(result[:total_drug_consumption][drug_category][:base_doses][:drugs].first[:consumed]).not_to be_nil
         expect(result[:total_drug_consumption][drug_category][:base_doses][:drugs].first[:coefficient]).not_to be_nil
       end
+    end
+
+    it "computes the drug consumption report facility totals" do
     end
 
     it "computes the drug consumption report for facilities" do
