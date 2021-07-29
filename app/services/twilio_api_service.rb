@@ -88,13 +88,14 @@ class TwilioApiService
 
   def send_twilio_message(sender_number, recipient_number, message, callback_url, context)
     Sentry.set_tags(context)
-    client.messages.create(
+    response = client.messages.create(
       from: sender_number,
       to: recipient_number,
       status_callback: callback_url,
       body: message
     )
     metrics.increment("#{communication_type}.sent")
+    response
   rescue Twilio::REST::TwilioError => exception
     metrics.increment("#{communication_type}.errors")
     raise Error.new("Error while calling Twilio API: #{exception.message}")
