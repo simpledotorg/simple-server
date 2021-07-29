@@ -50,7 +50,8 @@ RSpec.describe DrugStocksQuery do
             facility: facility,
             protocol_drug: protocol_drug,
             in_stock: drug_stock[:in_stock],
-            redistributed: drug_stock[:redistributed])
+            redistributed: drug_stock[:redistributed],
+            for_end_of_month: for_end_of_month)
         end
       }.flatten
     }
@@ -131,7 +132,7 @@ RSpec.describe DrugStocksQuery do
         expect(result[:patient_days_by_block_id][block_a.id][drug_category][:patient_days]).not_to be_nil
 
         rxnorm_codes.each do |rxnorm_code|
-          expected_total_stock = stocks_by_rxnorm[rxnorm_code][:in_stock] * block_a.facilities.count
+          expected_total_stock = stocks_by_rxnorm[rxnorm_code][:in_stock] * facilities.count
           expect(result[:drugs_in_stock_by_block_id][[block_a.id, rxnorm_code]]).to eq(expected_total_stock)
         end
       end
@@ -220,11 +221,26 @@ RSpec.describe DrugStocksQuery do
     end
 
     it "computes the drug consumption report totals" do
+      # This facility belongs in the district but is not one of the facilities passed to the query.
+      # It's numbers should be included in the totals
+      other_facility = create(:facility, facility_group: facility_group, state: state, zone: zone)
+
+      create(:drug_stock,
+        user: user,
+        facility: other_facility,
+        protocol_drug: protocol.protocol_drugs.find_by(rxnorm_code: "329528"),
+        in_stock: stocks_by_rxnorm["329528"][:in_stock],
+        received: stocks_by_rxnorm["329528"][:received],
+        redistributed: stocks_by_rxnorm["329528"][:redistributed],
+        for_end_of_month: for_end_of_month)
+
+      other_facility_patients = create_list(:patient, 1, registration_facility: other_facility, registration_user: user)
+
       result = described_class.new(facilities: facilities,
                                    for_end_of_month: for_end_of_month).drug_consumption_report
 
-      expect(result[:total_patient_count]).to eq(patients.count)
-      expect(result[:total_drug_consumption]["hypertension_ccb"][:base_doses][:total]).to eq(15600)
+      expect(result[:total_patient_count]).to eq(patients.count + other_facility_patients.count)
+      expect(result[:total_drug_consumption]["hypertension_ccb"][:base_doses][:total]).to eq(4800)
       expect(result[:total_drug_consumption]["hypertension_arb"][:base_doses][:total]).to eq(24000)
 
       {"hypertension_ccb" => %w[329528 329526],
