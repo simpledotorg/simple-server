@@ -1464,7 +1464,7 @@ ActiveRecord::Schema.define(version: 2021_07_28_100307) do
               count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'under_care'::text)) AS under_care,
               count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text)) AS lost_to_follow_up,
               count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'dead'::text)) AS dead,
-              count(*) AS cumulative_assigned_patients
+              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state <> 'dead'::text)) AS cumulative_assigned_patients
              FROM reporting_patient_states
             WHERE (reporting_patient_states.hypertension = 'yes'::text)
             GROUP BY reporting_patient_states.assigned_facility_region_id, reporting_patient_states.month_date
