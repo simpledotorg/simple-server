@@ -81,10 +81,8 @@ RSpec.describe Period, type: :model do
   end
 
   it "has validations" do
-    period = Period.new(type: "invalid", value: jan_1_2020)
-    expect(period).to be_invalid
-    expect(period.errors[:type]).to eq(["must be month or quarter"])
-    period.type = :month
+    expect { Period.new(type: "invalid", value: jan_1_2020) }.to raise_error(ActiveModel::ValidationError)
+    period = Period.new(value: jan_1_2019, type: :month)
     expect(period).to be_valid
   end
 
