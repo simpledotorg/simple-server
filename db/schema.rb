@@ -1536,14 +1536,11 @@ ActiveRecord::Schema.define(version: 2021_07_28_100308) do
       WITH quarterly_cohort_outcomes AS (
            SELECT reporting_patient_states.assigned_facility_region_id AS region_id,
               reporting_patient_states.quarter_string,
-              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.htn_treatment_outcome_in_quarter = 'controlled'::text))) AS controlled_under_care,
-              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.htn_treatment_outcome_in_quarter = 'uncontrolled'::text))) AS uncontrolled_under_care,
-              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.htn_treatment_outcome_in_quarter = 'missed_visit'::text))) AS missed_visit_under_care,
-              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.htn_treatment_outcome_in_quarter = 'visited_no_bp'::text))) AS visited_no_bp_under_care,
-              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text) AND (reporting_patient_states.htn_treatment_outcome_in_quarter = 'missed_visit'::text))) AS missed_visit_lost_to_follow_up,
-              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text) AND (reporting_patient_states.htn_treatment_outcome_in_quarter = 'visited_no_bp'::text))) AS visited_no_bp_lost_to_follow_up,
-              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'under_care'::text)) AS patients_under_care,
-              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text)) AS patients_lost_to_follow_up
+              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_treatment_outcome_in_quarter = 'visited_no_bp'::text)) AS visited_no_bp,
+              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_treatment_outcome_in_quarter = 'controlled'::text)) AS controlled,
+              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_treatment_outcome_in_quarter = 'uncontrolled'::text)) AS uncontrolled,
+              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_treatment_outcome_in_quarter = 'missed_visit'::text)) AS missed_visit,
+              count(DISTINCT reporting_patient_states.patient_id) AS patients
              FROM reporting_patient_states
             WHERE ((reporting_patient_states.hypertension = 'yes'::text) AND (reporting_patient_states.quarters_since_registration = (1)::double precision))
             GROUP BY reporting_patient_states.assigned_facility_region_id, reporting_patient_states.quarter_string
@@ -1575,17 +1572,14 @@ ActiveRecord::Schema.define(version: 2021_07_28_100308) do
       rf.organization_region_id,
       rf.organization_name,
       rf.organization_slug,
-      quarterly_outcomes.controlled_under_care,
-      quarterly_outcomes.uncontrolled_under_care,
-      quarterly_outcomes.missed_visit_under_care,
-      quarterly_outcomes.visited_no_bp_under_care,
-      quarterly_outcomes.missed_visit_lost_to_follow_up,
-      quarterly_outcomes.visited_no_bp_lost_to_follow_up,
-      quarterly_outcomes.patients_under_care,
-      quarterly_outcomes.patients_lost_to_follow_up
+      quarterly_cohort_outcomes.controlled AS quarterly_cohort_controlled,
+      quarterly_cohort_outcomes.uncontrolled AS quarterly_cohort_uncontrolled,
+      quarterly_cohort_outcomes.missed_visit AS quarterly_cohort_missed_visit,
+      quarterly_cohort_outcomes.visited_no_bp AS quarterly_cohort_visited_no_bp,
+      quarterly_cohort_outcomes.patients AS quarterly_cohort_patients
      FROM ((reporting_facilities rf
        JOIN reporting_months cal ON (((((cal.month)::integer % 3) = 0) OR (cal.month_string = to_char(now(), 'YYYY-MM'::text)))))
-       LEFT JOIN quarterly_cohort_outcomes quarterly_outcomes ON (((quarterly_outcomes.quarter_string = cal.quarter_string) AND (quarterly_outcomes.region_id = rf.facility_region_id))));
+       LEFT JOIN quarterly_cohort_outcomes ON (((quarterly_cohort_outcomes.quarter_string = cal.quarter_string) AND (quarterly_cohort_outcomes.region_id = rf.facility_region_id))));
   SQL
   add_index "reporting_quarterly_facility_states", ["quarter_string", "facility_region_id"], name: "quarterly_facility_states_quarter_string_region_id", unique: true
 
