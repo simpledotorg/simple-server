@@ -11,7 +11,9 @@
 # are idempotent and retries would yield the same errors.
 
 class TwilioApiService
+  attr_accessor :communication_type
   attr_reader :client
+  attr_reader :metrics
   attr_reader :twilio_sender_sms_number
   attr_reader :twilio_sender_whatsapp_number
 
@@ -50,6 +52,7 @@ class TwilioApiService
     else
       prod_client
     end
+    @metrics = Metrics.with_object(self)
   end
 
   def test_mode?
@@ -65,12 +68,16 @@ class TwilioApiService
   end
 
   def send_sms(recipient_number:, message:, callback_url: nil, context: {})
+    self.communication_type = "sms"
+    metrics.increment("#{communication_type}.attempts")
     sender_number = twilio_sender_sms_number
 
     send_twilio_message(sender_number, recipient_number, message, callback_url, context)
   end
 
   def send_whatsapp(recipient_number:, message:, callback_url: nil, context: {})
+    self.communication_type = "whatsapp"
+    metrics.increment("#{communication_type}.attempts")
     sender_number = "whatsapp:" + twilio_sender_whatsapp_number
     recipient_number = "whatsapp:" + recipient_number
 
@@ -87,7 +94,9 @@ class TwilioApiService
       status_callback: callback_url,
       body: message
     )
+    metrics.increment("#{communication_type}.sent")
   rescue Twilio::REST::TwilioError => exception
+    metrics.increment("#{communication_type}.errors")
     raise Error.new("Error while calling Twilio API: #{exception.message}")
   end
 end
