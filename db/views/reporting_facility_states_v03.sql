@@ -42,16 +42,11 @@ WITH
     monthly_cohort_outcomes AS (
         SELECT assigned_facility_region_id AS region_id, month_date,
 
-               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care' AND htn_treatment_outcome_in_last_2_months = 'controlled') AS controlled_under_care,
-               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care' AND htn_treatment_outcome_in_last_2_months = 'uncontrolled') AS uncontrolled_under_care,
-               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care' AND htn_treatment_outcome_in_last_2_months = 'missed_visit') AS missed_visit_under_care,
-               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care' AND htn_treatment_outcome_in_last_2_months = 'visited_no_bp') AS visited_no_bp_under_care,
-
-               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'lost_to_follow_up' AND htn_treatment_outcome_in_last_2_months = 'missed_visit') AS missed_visit_lost_to_follow_up,
-               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'lost_to_follow_up' AND htn_treatment_outcome_in_last_2_months = 'visited_no_bp') AS visited_no_bp_lost_to_follow_up,
-
-               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care') AS patients_under_care,
-               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'lost_to_follow_up') AS patients_lost_to_follow_up
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_treatment_outcome_in_last_2_months = 'controlled') AS controlled,
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_treatment_outcome_in_last_2_months = 'uncontrolled') AS uncontrolled,
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_treatment_outcome_in_last_2_months = 'missed_visit') AS missed_visit,
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_treatment_outcome_in_last_2_months = 'visited_no_bp') AS visited_no_bp,
+               COUNT(distinct(patient_id)) AS patients
 
         FROM reporting_patient_states
         WHERE hypertension = 'yes'
@@ -87,16 +82,11 @@ adjusted_outcomes.patients_under_care AS adjusted_patients_under_care,
 adjusted_outcomes.patients_lost_to_follow_up AS adjusted_patients_lost_to_follow_up,
 
 -- monthly cohort outcomes
-monthly_cohort_outcomes.controlled_under_care AS monthly_cohort_controlled_under_care,
-monthly_cohort_outcomes.uncontrolled_under_care AS monthly_cohort_uncontrolled_under_care,
-monthly_cohort_outcomes.missed_visit_under_care AS monthly_cohort_missed_visit_under_care,
-monthly_cohort_outcomes.visited_no_bp_under_care AS monthly_cohort_visited_no_bp_under_care,
-
-monthly_cohort_outcomes.missed_visit_lost_to_follow_up AS monthly_cohort_missed_visit_lost_to_follow_up,
-monthly_cohort_outcomes.visited_no_bp_lost_to_follow_up AS monthly_cohort_visited_no_bp_lost_to_follow_up,
-
-monthly_cohort_outcomes.patients_under_care AS monthly_cohort_patients_under_care,
-monthly_cohort_outcomes.patients_lost_to_follow_up AS monthly_cohort_patients_lost_to_follow_up
+monthly_cohort_outcomes.controlled AS monthly_cohort_controlled,
+monthly_cohort_outcomes.uncontrolled AS monthly_cohort_uncontrolled,
+monthly_cohort_outcomes.missed_visit AS monthly_cohort_missed_visit,
+monthly_cohort_outcomes.visited_no_bp AS monthly_cohort_visited_no_bp,
+monthly_cohort_outcomes.patients AS monthly_cohort_patients
 
 
 FROM reporting_facilities rf
