@@ -61,7 +61,7 @@ module Reports
       FacilityState.for_region(region)
         .order(:month_date)
         .group(:month_date)
-        .sum("patients_under_care::int")
+        .sum("adjusted_patients_under_care::int")
         .to_h(&period_hash)
         .tap { |hsh| hsh.default = 0 }
     end
