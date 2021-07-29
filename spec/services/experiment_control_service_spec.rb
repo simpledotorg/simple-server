@@ -332,15 +332,24 @@ describe ExperimentControlService, type: :model do
       expect(experiment.reload.state).to eq("new")
     end
 
-    it "raises not found if the experiment state is not new or running" do
-      experiment = create(:experiment, experiment_type: "stale_patients", state: "selecting")
+    it "does nothing if it the experiment is not in 'new' or 'running' state" do
+      experiment = create(:experiment, :with_treatment_group ,experiment_type: "stale_patients", state: "complete")
+      group = experiment.treatment_groups.first
+      create(:reminder_template, treatment_group: group, message: "come today", remind_on_in_days: 0)
+      patient1 = create(:patient, age: 80)
+      create(:appointment, patient: patient1, device_created_at: 100.days.ago, scheduled_date: 100.days.ago)
+
       expect {
         ExperimentControlService.schedule_daily_stale_patient_notifications(name: experiment.name)
-      }.to raise_error(ActiveRecord::RecordNotFound)
-      experiment.update!(state: "complete")
+      }.not_to change { experiment.reload }
+      expect(Notification.count).to eq(0)
+    end
+
+    it "does nothing if the experiment is not found" do
       expect {
-        ExperimentControlService.schedule_daily_stale_patient_notifications(name: experiment.name)
-      }.to raise_error(ActiveRecord::RecordNotFound)
+        ExperimentControlService.schedule_daily_stale_patient_notifications(name: "doesn't exist")
+      }.not_to raise_error
+      expect(Notification.count).to eq(0)
     end
 
     it "only schedules reminders for PATIENTS_PER_DAY by default" do

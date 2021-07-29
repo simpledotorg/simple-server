@@ -38,7 +38,9 @@ class ExperimentControlService
     end
 
     def schedule_daily_stale_patient_notifications(name:, patients_per_day: PATIENTS_PER_DAY)
-      experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "stale_patients", state: [:new, :running])
+      experiment = Experimentation::Experiment.find_by(name: name, experiment_type: "stale_patients", state: [:new, :running])
+      return unless experiment
+
       today = Date.current
       return if experiment.start_date > today
       if experiment.end_date < today
