@@ -11,6 +11,21 @@ RSpec.describe Reports::PatientVisit, {type: :model, reporting_spec: true} do
     end
   end
 
+  it "does not include deleted visit data" do
+    patient = create(:patient, recorded_at: june_2021[:long_ago])
+    bp = create(:bp_with_encounter, patient: patient, recorded_at: june_2021[:over_3_months_ago], deleted_at: june_2021[:now])
+    bp.encounter.update(deleted_at: june_2021[:now])
+    blood_sugar = create(:blood_sugar_with_encounter, patient: patient, recorded_at: june_2021[:over_3_months_ago], deleted_at: june_2021[:now])
+    blood_sugar.encounter.update(deleted_at: june_2021[:now])
+    _prescription_drug = create(:prescription_drug, patient: patient, recorded_at: june_2021[:over_3_months_ago], deleted_at: june_2021[:now])
+    _appointment = create(:appointment, patient: patient, recorded_at: june_2021[:over_3_months_ago], deleted_at: june_2021[:now])
+
+    described_class.refresh
+    with_reporting_time_zone do
+      expect(described_class.find_by(patient_id: patient.id, month_date: june_2021[:now]).visited_at).to be_nil
+    end
+  end
+
   describe "visited_facility_ids" do
     it "aggregates all the facilities visited in a given month, but uses only latest encounter" do
       patient = create(:patient, recorded_at: june_2021[:now])
