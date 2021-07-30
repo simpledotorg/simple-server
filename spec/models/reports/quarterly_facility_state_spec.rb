@@ -9,6 +9,32 @@ RSpec.describe Reports::QuarterlyFacilityState, {type: :model, reporting_spec: t
     freeze_time_for_reporting_specs(example)
   end
 
+  it "has a row for every facility, every quarter" do
+    facility = create(:facility)
+    q3_2020 = june_2021[:now] - 9.months
+    q4_2020 = june_2021[:now] - 6.months
+    q1_2021 = june_2021[:now] - 3.months
+
+    create(:patient, assigned_facility: facility, recorded_at: q3_2020)
+    create(:patient, assigned_facility: facility, recorded_at: q4_2020)
+    create(:patient, assigned_facility: facility, recorded_at: q1_2021)
+
+    RefreshMaterializedViews.new.refresh_v2
+    with_reporting_time_zone do
+      expect(
+        described_class.where(facility: facility)
+        .where("quarter_string >= ?", '2020-1')
+        .where("quarter_string <= ?", '2021-2')
+        .count
+      ).to eq 6
+
+      expect(described_class.where(quarter_string: '2021-1').count).to eq(Facility.count)
+      expect(described_class.find_by(facility: facility, quarter_string: '2021-2').quarterly_cohort_patients).to eq 1
+      expect(described_class.find_by(facility: facility, quarter_string: '2021-1').quarterly_cohort_patients).to eq 1
+      expect(described_class.find_by(facility: facility, quarter_string: '2020-4').quarterly_cohort_patients).to eq 1
+    end
+  end
+
   context "quarterly cohort outcomes" do
     it "computes totals correctly" do
       facility = create(:facility)

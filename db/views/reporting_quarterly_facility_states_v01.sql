@@ -9,6 +9,7 @@ WITH
 
         FROM reporting_patient_states
         WHERE hypertension = 'yes'
+          AND (month::integer % 3 = 0 OR month_string = to_char(now(), 'YYYY-MM'))
           AND quarters_since_registration = 1
         GROUP BY 1, 2
     )
@@ -27,7 +28,7 @@ quarterly_cohort_outcomes.patients quarterly_cohort_patients
 FROM reporting_facilities rf
 INNER JOIN reporting_months cal
 -- only pick end of quarters, and current quarter in progress
-    ON month::integer % 3 = 0 OR month_string = to_char(now(), 'YYYY-MM')
+    ON (month::integer % 3 = 0 OR month_string = to_char(now(), 'YYYY-MM'))
 LEFT OUTER JOIN quarterly_cohort_outcomes
     ON quarterly_cohort_outcomes.quarter_string = cal.quarter_string
     AND quarterly_cohort_outcomes.region_id = rf.facility_region_id

@@ -1542,7 +1542,7 @@ ActiveRecord::Schema.define(version: 2021_07_28_100308) do
               count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_treatment_outcome_in_quarter = 'missed_visit'::text)) AS missed_visit,
               count(DISTINCT reporting_patient_states.patient_id) AS patients
              FROM reporting_patient_states
-            WHERE ((reporting_patient_states.hypertension = 'yes'::text) AND (reporting_patient_states.quarters_since_registration = (1)::double precision))
+            WHERE ((reporting_patient_states.hypertension = 'yes'::text) AND ((((reporting_patient_states.month)::integer % 3) = 0) OR (reporting_patient_states.month_string = to_char(now(), 'YYYY-MM'::text))) AND (reporting_patient_states.quarters_since_registration = (1)::double precision))
             GROUP BY reporting_patient_states.assigned_facility_region_id, reporting_patient_states.quarter_string
           )
    SELECT cal.month_date,
