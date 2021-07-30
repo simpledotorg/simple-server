@@ -56,12 +56,9 @@ class MessagePatients
         end
       rescue TwilioApiService::Error
         update_report(:exception, patient: patient)
+        next
       end
-      if response
-        update_report(:responses, response: response, patient: patient)
-      else
-        update_report(:exception, patient: patient)
-      end
+      update_report(:responses, response: response, patient: patient)
     end
   end
 
