@@ -66,13 +66,13 @@ RSpec.describe DrugStocksQuery do
       other_facility = create(:facility, facility_group: facility_group, state: state, zone: zone)
 
       create(:drug_stock,
-             user: user,
-             facility: other_facility,
-             protocol_drug: protocol.protocol_drugs.find_by(rxnorm_code: "329528"),
-             in_stock: stocks_by_rxnorm["329528"][:in_stock],
-             received: stocks_by_rxnorm["329528"][:received],
-             redistributed: stocks_by_rxnorm["329528"][:redistributed],
-             for_end_of_month: for_end_of_month)
+        user: user,
+        facility: other_facility,
+        protocol_drug: protocol.protocol_drugs.find_by(rxnorm_code: "329528"),
+        in_stock: stocks_by_rxnorm["329528"][:in_stock],
+        received: stocks_by_rxnorm["329528"][:received],
+        redistributed: stocks_by_rxnorm["329528"][:redistributed],
+        for_end_of_month: for_end_of_month)
 
       other_facility_patients = create_list(:patient, 1, registration_facility: other_facility, registration_user: user)
 
@@ -104,13 +104,13 @@ RSpec.describe DrugStocksQuery do
       other_facility = create(:facility, facility_group: facility_group, state: state, zone: zone)
 
       create(:drug_stock,
-             user: user,
-             facility: other_facility,
-             protocol_drug: protocol.protocol_drugs.find_by(rxnorm_code: "329528"),
-             in_stock: stocks_by_rxnorm["329528"][:in_stock],
-             received: stocks_by_rxnorm["329528"][:received],
-             redistributed: stocks_by_rxnorm["329528"][:redistributed],
-             for_end_of_month: for_end_of_month)
+        user: user,
+        facility: other_facility,
+        protocol_drug: protocol.protocol_drugs.find_by(rxnorm_code: "329528"),
+        in_stock: stocks_by_rxnorm["329528"][:in_stock],
+        received: stocks_by_rxnorm["329528"][:received],
+        redistributed: stocks_by_rxnorm["329528"][:redistributed],
+        for_end_of_month: for_end_of_month)
 
       other_facility_patients = create_list(:patient, 1, registration_facility: other_facility, registration_user: user)
 
@@ -312,13 +312,13 @@ RSpec.describe DrugStocksQuery do
       other_facility = create(:facility, facility_group: facility_group, state: state, zone: zone)
 
       create(:drug_stock,
-             user: user,
-             facility: other_facility,
-             protocol_drug: protocol.protocol_drugs.find_by(rxnorm_code: "329528"),
-             in_stock: stocks_by_rxnorm["329528"][:in_stock],
-             received: stocks_by_rxnorm["329528"][:received],
-             redistributed: stocks_by_rxnorm["329528"][:redistributed],
-             for_end_of_month: for_end_of_month)
+        user: user,
+        facility: other_facility,
+        protocol_drug: protocol.protocol_drugs.find_by(rxnorm_code: "329528"),
+        in_stock: stocks_by_rxnorm["329528"][:in_stock],
+        received: stocks_by_rxnorm["329528"][:received],
+        redistributed: stocks_by_rxnorm["329528"][:redistributed],
+        for_end_of_month: for_end_of_month)
 
       other_facility_patients = create_list(:patient, 1, registration_facility: other_facility, registration_user: user)
 
