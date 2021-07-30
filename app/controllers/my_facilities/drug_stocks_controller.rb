@@ -59,8 +59,7 @@ class MyFacilities::DrugStocksController < AdminController
     @for_end_of_month_display = @for_end_of_month.strftime("%b-%Y")
     @query = DrugStocksQuery.new(facilities: @facilities,
                                  for_end_of_month: @for_end_of_month)
-
-    @blocks = @query.blocks.order(:name)
+    @blocks = blocks_to_display
     @district_region = @query.facility_group.region
     @drugs_by_category = @query.protocol_drugs_by_category
   end
@@ -90,6 +89,14 @@ class MyFacilities::DrugStocksController < AdminController
       when "district"
         authorize { current_admin.accessible_district_regions(:manage).find_by_id(params[:region_id]) }
       end
+  end
+
+  def blocks_to_display
+    if @selected_facility_sizes != @facility_sizes || @selected_zones != @zones
+      Region.none
+    else
+      @query.blocks.order(:name)
+    end
   end
 
   def drug_stocks_params
