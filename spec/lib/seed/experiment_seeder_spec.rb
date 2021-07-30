@@ -6,7 +6,7 @@ RSpec.describe Seed::ExperimentSeeder do
       expect(Experimentation::Experiment.count).to eq(0)
       expect(Experimentation::TreatmentGroup.count).to eq(0)
       expect(Experimentation::ReminderTemplate.count).to eq(0)
-      described_class.create_current_experiment
+      described_class.create_current_experiment(start_date: 1.day.from_now, end_date: 2.days.from_now)
       expect(Experimentation::Experiment.count).to eq(1)
       expect(Experimentation::TreatmentGroup.count).to eq(3)
       expect(Experimentation::ReminderTemplate.count).to eq(4)

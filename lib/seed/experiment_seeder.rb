@@ -2,8 +2,14 @@ module Seed
   class ExperimentSeeder
     include ActiveSupport::Benchmarkable
 
-    def self.create_current_experiment(experiment_name: "current patient test experiment")
-      experiment = Experimentation::Experiment.create!(name: experiment_name, experiment_type: "current_patients", state: "new")
+    def self.create_current_experiment(start_date:, end_date:, experiment_name: "current patient test experiment")
+      experiment = Experimentation::Experiment.create!(
+        name: experiment_name,
+        experiment_type: "current_patients",
+        state: "new",
+        start_date: start_date,
+        end_date: end_date
+      )
 
       _control_group = experiment.treatment_groups.create!(description: "control")
 
