@@ -141,7 +141,7 @@ class DrugStocksQuery
       .latest_for_facilities_cte(@district.facilities, @for_end_of_month)
       .with_region_information
       .load
-    end
+  end
 
   memoize def district_facilities_previous_month_drug_stocks
     DrugStock
@@ -157,7 +157,6 @@ class DrugStocksQuery
   memoize def district_drugs_in_stock
     district_selected_month_drug_stocks.group("protocol_drugs.rxnorm_code").sum(:in_stock)
   end
-
 
   memoize def district_facilities_total_drugs_in_stock
     district_facilities_selected_month_drug_stocks.group("protocol_drugs.rxnorm_code").sum(:in_stock)

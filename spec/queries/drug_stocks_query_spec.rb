@@ -61,9 +61,59 @@ RSpec.describe DrugStocksQuery do
     end
 
     it "computes the drug stock report totals" do
+      # This facility belongs in the district but is not one of the facilities passed to the query.
+      # It's numbers should be included in the totals
+      other_facility = create(:facility, facility_group: facility_group, state: state, zone: zone)
+
+      create(:drug_stock,
+             user: user,
+             facility: other_facility,
+             protocol_drug: protocol.protocol_drugs.find_by(rxnorm_code: "329528"),
+             in_stock: stocks_by_rxnorm["329528"][:in_stock],
+             received: stocks_by_rxnorm["329528"][:received],
+             redistributed: stocks_by_rxnorm["329528"][:redistributed],
+             for_end_of_month: for_end_of_month)
+
+      other_facility_patients = create_list(:patient, 1, registration_facility: other_facility, registration_user: user)
+
+      result = described_class.new(facilities: facilities,
+                                   for_end_of_month: for_end_of_month).drug_stocks_report
+
+      expect(result[:total_patient_count]).to eq(9 + other_facility_patients.count)
+      expect(result[:total_patient_days]["hypertension_ccb"][:patient_days]).to eq(12000)
+      expect(result[:total_patient_days]["hypertension_arb"][:patient_days]).to eq(48648)
+
+      {"hypertension_ccb" => %w[329528 329526],
+       "hypertension_arb" => %w[316764 316765 979467]}.each do |(drug_category, rxnorm_codes)|
+        expect(result[:total_patient_days][drug_category][:stocks_on_hand]).not_to be_nil
+        expect(result[:total_patient_days][drug_category][:load_coefficient]).not_to be_nil
+        expect(result[:total_patient_days][drug_category][:new_patient_coefficient]).not_to be_nil
+        expect(result[:total_patient_days][drug_category][:estimated_patients]).not_to be_nil
+        expect(result[:total_patient_days][drug_category][:patient_days]).not_to be_nil
+
+        rxnorm_codes.each do |rxnorm_code|
+          expected_total_stock = stocks_by_rxnorm[rxnorm_code][:in_stock] * (rxnorm_code == "329528" ? facilities.count + 1 : facilities.count)
+          expect(result[:total_drugs_in_stock][rxnorm_code]).to eq(expected_total_stock)
+        end
+      end
     end
 
     it "computes the drug stock report facility totals" do
+      # This facility belongs in the district but is not one of the facilities passed to the query.
+      # It's numbers should NOT be included in the facilities totals
+      other_facility = create(:facility, facility_group: facility_group, state: state, zone: zone)
+
+      create(:drug_stock,
+             user: user,
+             facility: other_facility,
+             protocol_drug: protocol.protocol_drugs.find_by(rxnorm_code: "329528"),
+             in_stock: stocks_by_rxnorm["329528"][:in_stock],
+             received: stocks_by_rxnorm["329528"][:received],
+             redistributed: stocks_by_rxnorm["329528"][:redistributed],
+             for_end_of_month: for_end_of_month)
+
+      other_facility_patients = create_list(:patient, 1, registration_facility: other_facility, registration_user: user)
+
       result = described_class.new(facilities: facilities,
                                    for_end_of_month: for_end_of_month).drug_stocks_report
 
@@ -247,7 +297,7 @@ RSpec.describe DrugStocksQuery do
       expect(result[:total_drug_consumption]["hypertension_arb"][:base_doses][:total]).to eq(24000)
 
       {"hypertension_ccb" => %w[329528 329526],
-       "hypertension_arb" => %w[316764 316765 979467]}.each do |(drug_category, rxnorm_codes)|
+       "hypertension_arb" => %w[316764 316765 979467]}.each do |(drug_category, _rxnorm_codes)|
         expect(result[:total_drug_consumption][drug_category][:base_doses][:total]).not_to be_nil
         expect(result[:total_drug_consumption][drug_category][:base_doses][:drugs]).not_to be_nil
         expect(result[:total_drug_consumption][drug_category][:base_doses][:drugs].first[:name]).not_to be_nil
@@ -257,6 +307,36 @@ RSpec.describe DrugStocksQuery do
     end
 
     it "computes the drug consumption report facility totals" do
+      # This facility belongs in the district but is not one of the facilities passed to the query.
+      # It's numbers should NOT be included in the facility totals
+      other_facility = create(:facility, facility_group: facility_group, state: state, zone: zone)
+
+      create(:drug_stock,
+             user: user,
+             facility: other_facility,
+             protocol_drug: protocol.protocol_drugs.find_by(rxnorm_code: "329528"),
+             in_stock: stocks_by_rxnorm["329528"][:in_stock],
+             received: stocks_by_rxnorm["329528"][:received],
+             redistributed: stocks_by_rxnorm["329528"][:redistributed],
+             for_end_of_month: for_end_of_month)
+
+      other_facility_patients = create_list(:patient, 1, registration_facility: other_facility, registration_user: user)
+
+      result = described_class.new(facilities: facilities,
+                                   for_end_of_month: for_end_of_month).drug_consumption_report
+
+      expect(result[:facilities_total_patient_count]).to eq(patients.count)
+      expect(result[:facilities_total_drug_consumption]["hypertension_ccb"][:base_doses][:total]).to eq(15600)
+      expect(result[:facilities_total_drug_consumption]["hypertension_arb"][:base_doses][:total]).to eq(24000)
+
+      {"hypertension_ccb" => %w[329528 329526],
+       "hypertension_arb" => %w[316764 316765 979467]}.each do |(drug_category, _rxnorm_codes)|
+        expect(result[:facilities_total_drug_consumption][drug_category][:base_doses][:total]).not_to be_nil
+        expect(result[:facilities_total_drug_consumption][drug_category][:base_doses][:drugs]).not_to be_nil
+        expect(result[:facilities_total_drug_consumption][drug_category][:base_doses][:drugs].first[:name]).not_to be_nil
+        expect(result[:facilities_total_drug_consumption][drug_category][:base_doses][:drugs].first[:consumed]).not_to be_nil
+        expect(result[:facilities_total_drug_consumption][drug_category][:base_doses][:drugs].first[:coefficient]).not_to be_nil
+      end
     end
 
     it "computes the drug consumption report for facilities" do
