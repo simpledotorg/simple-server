@@ -18,6 +18,8 @@
           <span class="badge badge-light text-muted">STOCK RECEIVED THIS MONTH</span>
           <small><i class="fas fa-minus"></i></small>
           <span class="badge badge-light text-muted">CLOSING BALANCE OF THIS MONTH</span>
+          <small><i class="fas fa-minus"></i></small>
+          <span class="badge badge-light text-muted">STOCK ISSUED TO OTHER FACILITIES THIS MONTH</span>
         </p>
         <p>
 
@@ -30,7 +32,7 @@
             <%= @for_end_of_month_display %>
           </a>
           <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-            <% last_n_months(n: 6, inclusive: (Date.current.end_of_month - Date.current).to_i < 8).each do |month| %>
+            <% last_n_months(n: 6, inclusive: @show_current_month).each do |month| %>
               <% button_class = "dropdown-item query-filter-size filter-by-size" %>
               <% button_class = "dropdown-item active " if month.end_of_month == @for_end_of_month %>
               <button class="<%= button_class %>" value="<%= month.strftime("%b-%Y") %>" name="for_end_of_month" type="submit" form="query-filters">

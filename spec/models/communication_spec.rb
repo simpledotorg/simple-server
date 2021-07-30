@@ -65,7 +65,7 @@ describe Communication, type: :model do
           Communication.create_with_twilio_details!(appointment: notification.subject,
                                                     twilio_sid: SecureRandom.uuid,
                                                     twilio_msg_status: "sent",
-                                                    communication_type: :missed_visit_sms_reminder,
+                                                    communication_type: :sms,
                                                     notification: notification)
         }.to change { Communication.count }.by(1)
           .and change { TwilioSmsDeliveryDetail.count }.by(1)
@@ -77,7 +77,7 @@ describe Communication, type: :model do
           Communication.create_with_twilio_details!(appointment: nil,
                                                     twilio_sid: SecureRandom.uuid,
                                                     twilio_msg_status: "sent",
-                                                    communication_type: :missed_visit_sms_reminder,
+                                                    communication_type: :sms,
                                                     notification: notification)
         }.to change { Communication.count }.by(1)
           .and change { TwilioSmsDeliveryDetail.count }.by(1)
@@ -85,10 +85,25 @@ describe Communication, type: :model do
     end
   end
 
+  describe ".create_with_imo_details" do
+    it "creates a communication with correct details" do
+      patient = create(:patient)
+      appt = create(:appointment, patient: patient)
+      notification = create(:notification, subject: appt, patient: patient)
+      expect {
+        Communication.create_with_imo_details!(appointment: notification.subject,
+                                               notification: notification)
+      }.to change { notification.communications.count }.by(1)
+      communication = notification.communications.last
+      expect(communication.communication_type).to eq("imo")
+      expect(communication.appointment_id).to eq(appt.id)
+    end
+  end
+
   describe "#communication_result" do
     it "is successful is detailable is successful" do
       communication = create(:communication,
-        :missed_visit_sms_reminder,
+        :sms,
         detailable: create(:twilio_sms_delivery_detail, :delivered))
 
       expect(communication.communication_result).to eq("successful")
@@ -96,7 +111,7 @@ describe Communication, type: :model do
 
     it "is successful if detailable is unsuccessful" do
       communication = create(:communication,
-        :missed_visit_sms_reminder,
+        :sms,
         detailable: create(:twilio_sms_delivery_detail, :failed))
 
       expect(communication.communication_result).to eq("unsuccessful")
@@ -104,10 +119,10 @@ describe Communication, type: :model do
 
     it "is in_progress if detailable is in_progress" do
       communication_1 = create(:communication,
-        :missed_visit_sms_reminder,
+        :sms,
         detailable: create(:twilio_sms_delivery_detail, :queued))
       communication_2 = create(:communication,
-        :missed_visit_sms_reminder,
+        :sms,
         detailable: create(:twilio_sms_delivery_detail, :sent))
 
       expect(communication_1.communication_result).to eq("in_progress")
@@ -120,7 +135,7 @@ describe Communication, type: :model do
       it "correctly retrieves the anonymised data for the communication" do
         create(:patient)
         communication = create(:communication,
-          :missed_visit_sms_reminder,
+          :sms,
           detailable: create(:twilio_sms_delivery_detail, :sent))
 
         anonymised_data =

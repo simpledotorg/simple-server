@@ -1,9 +1,12 @@
 module ReportingHelpers
-  def with_reporting_time_zones(&blk)
-    Time.use_zone(Period::REPORTING_TIME_ZONE) do
-      Groupdate.time_zone = Period::REPORTING_TIME_ZONE
-      blk.call
-      Groupdate.time_zone = nil
+  def freeze_time_for_reporting_specs(example)
+    # We need to enforce a known time for these tests, otherwise we will have intermittent failures. For example,
+    # if we use live system time, many of these specs will fail after 18:30 UTC (ie 14:30 ET) when on the last day of a month,
+    # because that falls into the next day in IST (our reporting time zone). So to prevent confusing failures for
+    # developers or CI during North American afternoons, we freeze to a time that will be the end of the month for
+    # UTC, ET, and IST. Timezones! 🤯
+    Timecop.freeze("June 30 2021 23:00 IST") do
+      example.run
     end
   end
 

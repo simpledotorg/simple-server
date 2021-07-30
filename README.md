@@ -55,13 +55,18 @@ If you encounter issues with this script, please open [a new issue with details]
 For quick development and testing, the server can be run locally using Docker Compose and the command:
 
 ```
-docker-compose up
+docker compose up
 ```
 
 The Dockerfile and docker-compose.yml files replicate the steps detailed below for manual installation, including the running of ngrok for local android development.
 
 Once the Docker Compose server is running, the logs should provide the ngrok URL. For example: `SIMPLE_SERVER_HOST=91a705dde8c1.ngrok.io`. This is the value that should be used when setting up the Android app as described in the section below.
 
+To remove the server and clear the volumes of database data, run the command:
+
+```
+docker compose down --volumes
+```
 
 #### Manual Setup
 
@@ -97,14 +102,15 @@ ngrok http 3000
 The output of the ngrok command is HTTP and HTTPS URLs that can be used to access your local server. The HTTP URL cannot
 be used since HTTP traffic will not be supported by the emulator. Configure the following places with the HTTPS URL.
 
-In the `gradle.properties` file in the `simple-android` repository,
+In the `gradle.properties` file in the `simple-android` repository, set:
 ```
-qaManifestEndpoint=<HTTPS URL>
+manifestEndpoint=<HTTPS URL>/api/
+fallbackApiEndpoint=<HTTPS URL>/api/
 ```
 
 In the `.env.development.local` (you can create this file if it doesn't exist),
 ```
-SIMPLE_SERVER_HOST=<HTTPS URL>
+SIMPLE_SERVER_HOST=<URL>  # i.e. without https://
 SIMPLE_SERVER_HOST_PROTOCOL=https
 ```
 

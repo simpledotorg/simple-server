@@ -9,10 +9,11 @@ module Reports
       new(*args).call
     end
 
-    def initialize(region:, period:, months: MAX_MONTHS_OF_DATA)
+    def initialize(region:, period:, months: MAX_MONTHS_OF_DATA, reporting_schema_v2: false)
       @region = region
       @slug = @region.slug
       @period = period
+      @reporting_schema_v2 = reporting_schema_v2
       start_period = period.advance(months: -(months - 1))
       @range = Range.new(start_period, @period)
     end
@@ -28,7 +29,6 @@ module Reports
       result.earliest_registration_period = repository.earliest_patient_recorded_at_period[slug]
       result.adjusted_patient_counts = repository.adjusted_patients_without_ltfu[slug]
       result.adjusted_patient_counts_with_ltfu = repository.adjusted_patients_with_ltfu[slug]
-      result.assigned_patients = repository.assigned_patients[slug]
       result.controlled_patients = repository.controlled[slug]
       result.controlled_patients_rate = repository.controlled_rates[slug]
       result.controlled_patients_with_ltfu_rate = repository.controlled_rates(with_ltfu: true)[slug]
@@ -57,10 +57,14 @@ module Reports
       result.report_data_for(range)
     end
 
+    def reporting_schema_v2?
+      @reporting_schema_v2
+    end
+
     private
 
     def repository
-      @repository ||= Reports::Repository.new(region, periods: range)
+      @repository ||= Reports::Repository.new(region, periods: range, reporting_schema_v2: reporting_schema_v2?)
     end
   end
 end

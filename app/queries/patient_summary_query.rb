@@ -18,17 +18,27 @@ class PatientSummaryQuery
     FILTERS.fetch(filter)
   end
 
-  def initialize(relation: PatientSummary.all, filters: [])
-    @relation = relation
+  def initialize(only_overdue: true, assigned_facility: nil, next_appointment_facilities: Facility.none, filters: [])
+    @only_overdue = only_overdue
+    @relation = PatientSummary
+    @relation = @relation.where(next_appointment_facility_id: next_appointment_facilities) if next_appointment_facilities.present?
+    @relation = @relation.where(assigned_facility_id: assigned_facility.id) if assigned_facility
     @filters = filters
   end
 
   def call
-    result = if filters.include?("only_less_than_year_overdue")
-      relation.overdue
+    result = if @only_overdue
+      if filters.include?("only_less_than_year_overdue")
+        relation.overdue
+      else
+        relation.all_overdue
+      end
+    elsif filters.include?("only_less_than_year_overdue")
+      relation.last_year_unvisited
     else
-      relation.all_overdue
+      relation.passed_unvisited
     end
+
     if filters.include?("high_risk")
       result = result.where("risk_level = 1")
     end

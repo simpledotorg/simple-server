@@ -6,7 +6,8 @@ class Reports::RegionsController < AdminController
   before_action :set_page, only: [:details]
   before_action :set_per_page, only: [:details]
   before_action :find_region, except: [:index, :monthly_district_data_report]
-  around_action :set_time_zone
+  around_action :check_reporting_schema_toggle, only: [:show]
+  around_action :set_reporting_time_zone
   after_action :log_cache_metrics
   delegate :cache, to: Rails
 
@@ -29,7 +30,8 @@ class Reports::RegionsController < AdminController
   end
 
   def show
-    @data = Reports::RegionService.new(region: @region, period: @period).call
+    @service = Reports::RegionService.new(region: @region, period: @period, reporting_schema_v2: RequestStore[:reporting_schema_v2])
+    @data = @service.call
     @with_ltfu = with_ltfu?
 
     @child_regions = @region.reportable_children
@@ -51,6 +53,11 @@ class Reports::RegionsController < AdminController
         cumulative_registrations: repo.cumulative_registrations[slug]
       }
     }
+    respond_to do |format|
+      format.html
+      format.js
+      format.json { render json: @data }
+    end
   end
 
   # We display two ranges of data on this page - the chart range is for the LTFU chart,
@@ -74,9 +81,10 @@ class Reports::RegionsController < AdminController
       ltfu_trend: ltfu_chart_data(chart_repo, chart_range)
     }
 
-    region_source = @region.source
-    if region_source.respond_to?(:recent_blood_pressures)
-      @recent_blood_pressures = paginate(region_source.recent_blood_pressures)
+    if @region.facility_region?
+      @recent_blood_pressures = paginate(
+        @region.source.blood_pressures.for_recent_bp_log.includes(:patient, :facility)
+      )
     end
   end
 
@@ -164,6 +172,21 @@ class Reports::RegionsController < AdminController
     }
   end
 
+  def check_reporting_schema_toggle
+    return yield unless current_admin.power_user?
+    original = RequestStore[:reporting_schema_v2]
+    RequestStore[:reporting_schema_v2] = true if report_params[:v2]
+    yield
+  ensure
+    RequestStore[:reporting_schema_v2] = original
+  end
+
+  def reporting_schema_v2_enabled?
+    RequestStore[:reporting_schema_v2]
+  end
+
+  helper_method :reporting_schema_v2_enabled?
+
   def accessible_region?(region, action)
     return false unless region.reportable_region?
     current_admin.region_access(memoized: true).accessible_region?(region, action)
@@ -224,16 +247,7 @@ class Reports::RegionsController < AdminController
   end
 
   def report_params
-    params.permit(:id, :bust_cache, :report_scope, {period: [:type, :value]})
-  end
-
-  def set_time_zone
-    time_zone = Period::REPORTING_TIME_ZONE
-
-    Groupdate.time_zone = time_zone
-
-    Time.use_zone(time_zone) { yield }
-    Groupdate.time_zone = "UTC"
+    params.permit(:id, :bust_cache, :v2, :report_scope, {period: [:type, :value]})
   end
 
   def with_ltfu?

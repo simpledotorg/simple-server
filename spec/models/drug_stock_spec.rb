@@ -3,7 +3,7 @@ require "rails_helper"
 describe DrugStock, type: :model do
   describe "Associations" do
     it { should belong_to(:user) }
-    it { should belong_to(:facility) }
+    it { should belong_to(:facility).optional }
     it { should belong_to(:protocol_drug) }
   end
 
@@ -46,7 +46,7 @@ describe DrugStock, type: :model do
         for_end_of_month: end_of_january,
         created_at: 5.minute.ago)
 
-      latest_drug_stocks = DrugStock.latest_for_facility(facility, end_of_january).to_a
+      latest_drug_stocks = DrugStock.latest_for_facilities([facility], end_of_january).to_a
       expect(latest_drug_stocks).to include(jan_drug_1_stock_2, jan_drug_2_stock_2)
     end
   end

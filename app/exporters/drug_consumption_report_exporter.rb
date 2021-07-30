@@ -18,6 +18,7 @@ class DrugConsumptionReportExporter
       csv << drug_categories_header
       csv << drug_names_header
       csv << total_consumption_row
+      csv << district_warehouse_consumption_row
       facility_rows.each { |row| csv << row }
     end
   end
@@ -27,7 +28,7 @@ class DrugConsumptionReportExporter
   end
 
   def drug_categories_header
-    left_pad_size = 1
+    left_pad_size = 2
     left_padding_columns = [nil] * left_pad_size
 
     drug_category_cells = left_padding_columns + @drugs_by_category.flat_map do |category, drugs|
@@ -50,51 +51,67 @@ class DrugConsumptionReportExporter
         "#{protocol_drug_labels[category][:short]} base doses"
       end
 
-    ["Facilities"] + drug_name_cells + drug_category_name_cells
+    ["Facilities", I18n.t("facility_group_zone").capitalize] + drug_name_cells + drug_category_name_cells
   end
 
   def total_consumption_row
     drug_consumption_cells =
       @drugs_by_category.flat_map do |drug_category, drugs|
         drugs.map do |drug|
-          consumed = @report[:all].dig(drug_category, drug, :consumed)
+          consumed = @report[:total_drug_consumption].dig(drug_category, drug, :consumed)
           formatted_consumption_value(consumed)
         end
       end
 
     overall_consumption_cells =
       @drugs_by_category.flat_map do |drug_category, _drugs|
-        total = @report.dig(:all, drug_category, :base_doses, :total)
+        total = @report.dig(:total_drug_consumption, drug_category, :base_doses, :total)
         formatted_consumption_value(total)
       end
 
-    ["All"] + drug_consumption_cells + overall_consumption_cells
+    ["All", ""] + drug_consumption_cells + overall_consumption_cells
   end
 
-  def facility_rows
-    @report[:facilities].map do |(_facility_id, facility_report)|
-      facility_row(facility_report)
-    end
-  end
-
-  def facility_row(facility_report)
-    facility_name = facility_report[:facility].name
-
+  def district_warehouse_consumption_row
     drug_consumption_cells =
       @drugs_by_category.flat_map do |drug_category, drugs|
         drugs.map do |drug|
-          consumed = facility_report.dig(drug_category, drug, :consumed)
+          consumed = @report[:district_drug_consumption].dig(drug_category, drug, :consumed)
           formatted_consumption_value(consumed)
         end
       end
 
     overall_consumption_cells =
       @drugs_by_category.flat_map do |drug_category, _drugs|
-        total = facility_report.dig(drug_category, :base_doses, :total)
+        total = @report.dig(:district_drug_consumption, drug_category, :base_doses, :total)
         formatted_consumption_value(total)
       end
 
-    [facility_name] + drug_consumption_cells + overall_consumption_cells
+    ["District Warehouse", ""] + drug_consumption_cells + overall_consumption_cells
+  end
+
+  def facility_rows
+    @query.facilities.with_region_information.order(:name).map do |facility|
+      facility_row(facility)
+    end
+  end
+
+  def facility_row(facility)
+    drug_consumption_cells =
+      @drugs_by_category.flat_map do |drug_category, drugs|
+        drugs.map do |drug|
+          consumed = @report[:drug_consumption_by_facility_id].dig(facility.id, drug_category, drug, :consumed)
+          formatted_consumption_value(consumed)
+        end
+      end
+
+    overall_consumption_cells =
+      @drugs_by_category.flat_map do |drug_category, _drugs|
+        total = @report[:drug_consumption_by_facility_id].dig(facility.id, drug_category, :base_doses, :total)
+        formatted_consumption_value(total)
+      end
+
+    [facility.name, facility.block_name] + drug_consumption_cells + overall_consumption_cells
   end
 
   def formatted_consumption_value(consumption_value)

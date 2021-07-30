@@ -40,6 +40,7 @@ class Appointment < ApplicationRecord
   validate :cancel_reason_is_present_if_cancelled
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
+  validates :appointment_type, presence: true
 
   after_update :cancel_reminders, if: proc { |appt| appt.saved_changes["status"] && !appt.status_scheduled? }
 
@@ -51,16 +52,26 @@ class Appointment < ApplicationRecord
     where("scheduled_date BETWEEN ? and ?", start_date, end_date)
   end
 
-  def self.all_overdue
-    where(status: "scheduled")
-      .where(arel_table[:scheduled_date].lt(Date.current))
-      .where(arel_table[:remind_on].eq(nil).or(arel_table[:remind_on].lteq(Date.current)))
+  def self.passed_unvisited
+    # Scheduled or cancelled appointments whose scheduled date has passed.
+    where.not(appointments: {status: :visited})
+      .where("appointments.scheduled_date < ?", Date.current)
       .joins(:patient)
       .where.not(patients: {status: :dead})
   end
 
+  def self.last_year_unvisited
+    passed_unvisited.where("appointments.scheduled_date >= ?", 365.days.ago)
+  end
+
+  def self.all_overdue
+    passed_unvisited
+      .where(status: :scheduled)
+      .where(arel_table[:remind_on].eq(nil).or(arel_table[:remind_on].lteq(Date.current)))
+  end
+
   def self.overdue
-    all_overdue.where(arel_table[:scheduled_date].gteq(365.days.ago))
+    all_overdue.where("appointments.scheduled_date >= ?", 365.days.ago)
   end
 
   def self.overdue_by(number_of_days)

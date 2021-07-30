@@ -56,33 +56,17 @@ RSpec.describe Webview::DrugStocksController, type: :controller do
         drug_stocks: [{
           protocol_drug_id: protocol_drug.id,
           received: 10,
-          in_stock: 20
+          in_stock: 30
+        }],
+        redistributed_drugs: [{
+          protocol_drug_id: protocol_drug.id,
+          redistributed: 10
         }]
       }
       expect {
         post :create, params: params
       }.to change { DrugStock.count }.by(0)
       expect(response).to be_unauthorized
-    end
-
-    it "returns error for community facilities" do
-      facility = create(:facility, facility_size: "community", facility_group: power_user.facility.facility_group)
-      protocol_drug = create(:protocol_drug, stock_tracked: true, protocol: facility.facility_group.protocol)
-      params = {
-        access_token: power_user.access_token,
-        facility_id: facility.id,
-        user_id: power_user.id,
-        for_end_of_month: Date.today.strftime("%b-%Y"),
-        drug_stocks: [{
-          protocol_drug_id: protocol_drug.id,
-          received: 10,
-          in_stock: 20
-        }]
-      }
-
-      expect {
-        post :create, params: params
-      }.to change { DrugStock.count }.by(0)
     end
 
     it "works with empty drug stock params" do
@@ -109,11 +93,14 @@ RSpec.describe Webview::DrugStocksController, type: :controller do
         facility_id: facility.id,
         user_id: power_user.id,
         for_end_of_month: Date.today.strftime("%b-%Y"),
-        drug_stocks: [{
-          protocol_drug_id: protocol_drug.id,
-          received: 10,
-          in_stock: 20
-        }]
+        drug_stocks: {
+          "0" => {
+            protocol_drug_id: protocol_drug.id,
+            received: 10,
+            in_stock: 30,
+            redistributed: 10
+          }
+        }
       }
 
       expect {
@@ -132,11 +119,14 @@ RSpec.describe Webview::DrugStocksController, type: :controller do
         facility_id: facility.id,
         user_id: power_user.id,
         for_end_of_month: Date.today.strftime("%b-%Y"),
-        drug_stocks: [{
-          protocol_drug_id: protocol_drug.id,
-          received: "invalid",
-          in_stock: "invalid"
-        }]
+        drug_stocks: {
+          "0" => {
+            protocol_drug_id: protocol_drug.id,
+            received: "invalid",
+            in_stock: "invalid",
+            redistributed: "invalid"
+          }
+        }
       }
 
       expect {
