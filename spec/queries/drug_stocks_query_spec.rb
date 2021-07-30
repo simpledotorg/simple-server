@@ -112,7 +112,7 @@ RSpec.describe DrugStocksQuery do
         redistributed: stocks_by_rxnorm["329528"][:redistributed],
         for_end_of_month: for_end_of_month)
 
-      other_facility_patients = create_list(:patient, 1, registration_facility: other_facility, registration_user: user)
+      _other_facility_patients = create_list(:patient, 1, registration_facility: other_facility, registration_user: user)
 
       result = described_class.new(facilities: facilities,
                                    for_end_of_month: for_end_of_month).drug_stocks_report
@@ -320,7 +320,7 @@ RSpec.describe DrugStocksQuery do
         redistributed: stocks_by_rxnorm["329528"][:redistributed],
         for_end_of_month: for_end_of_month)
 
-      other_facility_patients = create_list(:patient, 1, registration_facility: other_facility, registration_user: user)
+      _other_facility_patients = create_list(:patient, 1, registration_facility: other_facility, registration_user: user)
 
       result = described_class.new(facilities: facilities,
                                    for_end_of_month: for_end_of_month).drug_consumption_report
