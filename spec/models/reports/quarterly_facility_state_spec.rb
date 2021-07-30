@@ -23,15 +23,15 @@ RSpec.describe Reports::QuarterlyFacilityState, {type: :model, reporting_spec: t
     with_reporting_time_zone do
       expect(
         described_class.where(facility: facility)
-        .where("quarter_string >= ?", '2020-1')
-        .where("quarter_string <= ?", '2021-2')
+        .where("quarter_string >= ?", "2020-1")
+        .where("quarter_string <= ?", "2021-2")
         .count
       ).to eq 6
 
-      expect(described_class.where(quarter_string: '2021-1').count).to eq(Facility.count)
-      expect(described_class.find_by(facility: facility, quarter_string: '2021-2').quarterly_cohort_patients).to eq 1
-      expect(described_class.find_by(facility: facility, quarter_string: '2021-1').quarterly_cohort_patients).to eq 1
-      expect(described_class.find_by(facility: facility, quarter_string: '2020-4').quarterly_cohort_patients).to eq 1
+      expect(described_class.where(quarter_string: "2021-1").count).to eq(Facility.count)
+      expect(described_class.find_by(facility: facility, quarter_string: "2021-2").quarterly_cohort_patients).to eq 1
+      expect(described_class.find_by(facility: facility, quarter_string: "2021-1").quarterly_cohort_patients).to eq 1
+      expect(described_class.find_by(facility: facility, quarter_string: "2020-4").quarterly_cohort_patients).to eq 1
     end
   end
 
