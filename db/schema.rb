@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_15_165453) do
+ActiveRecord::Schema.define(version: 2021_07_28_100307) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -1137,7 +1137,7 @@ ActiveRecord::Schema.define(version: 2021_07_15_165453) do
   create_view "reporting_months", sql_definition: <<-SQL
       WITH month_dates AS (
            SELECT date(generate_series.generate_series) AS month_date
-             FROM generate_series('2017-12-31 18:30:00+00'::timestamp with time zone, now(), '1 mon'::interval) generate_series(generate_series)
+             FROM generate_series(('2018-01-01'::date)::timestamp with time zone, (CURRENT_DATE)::timestamp with time zone, '1 mon'::interval) generate_series(generate_series)
           )
    SELECT month_dates.month_date,
       date_part('month'::text, month_dates.month_date) AS month,
@@ -1464,7 +1464,7 @@ ActiveRecord::Schema.define(version: 2021_07_15_165453) do
               count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'under_care'::text)) AS under_care,
               count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text)) AS lost_to_follow_up,
               count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'dead'::text)) AS dead,
-              count(*) AS cumulative_assigned_patients
+              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state <> 'dead'::text)) AS cumulative_assigned_patients
              FROM reporting_patient_states
             WHERE (reporting_patient_states.hypertension = 'yes'::text)
             GROUP BY reporting_patient_states.assigned_facility_region_id, reporting_patient_states.month_date

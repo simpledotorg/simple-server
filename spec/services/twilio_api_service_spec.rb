@@ -80,7 +80,7 @@ RSpec.describe TwilioApiService do
       )
     end
 
-    it "raises a custom error on twilio error that does not specify an error code" do
+    it "raises a custom error on twilio error" do
       stub_client
       allow(twilio_client).to receive_message_chain("messages.create").and_raise(Twilio::REST::TwilioError)
       expect {
@@ -90,15 +90,6 @@ RSpec.describe TwilioApiService do
           callback_url: fake_callback_url
         )
       }.to raise_error(TwilioApiService::Error)
-    end
-
-    it "logs when twilio specifies an error code" do
-      expect(Rails).to receive_message_chain(:logger, :info)
-      notification_service.send_sms(
-        recipient_number: invalid_phone_number,
-        message: "test sms message",
-        callback_url: fake_callback_url
-      )
     end
   end
 
@@ -120,7 +111,7 @@ RSpec.describe TwilioApiService do
       )
     end
 
-    it "raises a custom error on twilio error that does not specify an error code" do
+    it "raises a custom error on twilio error" do
       stub_client
       allow(twilio_client).to receive_message_chain("messages.create").and_raise(Twilio::REST::TwilioError)
 
@@ -131,16 +122,6 @@ RSpec.describe TwilioApiService do
           callback_url: fake_callback_url
         )
       }.to raise_error(TwilioApiService::Error)
-    end
-
-    it "logs when twilio specifies an error code" do
-      expect(Rails).to receive_message_chain(:logger, :info)
-
-      notification_service.send_whatsapp(
-        recipient_number: invalid_phone_number,
-        message: "test whatsapp message",
-        callback_url: fake_callback_url
-      )
     end
   end
 end

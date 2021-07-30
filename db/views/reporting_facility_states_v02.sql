@@ -13,7 +13,7 @@ WITH
                COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care') AS under_care,
                COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'lost_to_follow_up') AS lost_to_follow_up,
                COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'dead') AS dead,
-               COUNT(*) AS cumulative_assigned_patients
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state != 'dead') AS cumulative_assigned_patients
         FROM reporting_patient_states
         WHERE hypertension = 'yes'
         GROUP BY 1, 2
