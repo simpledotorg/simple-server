@@ -72,13 +72,13 @@ RSpec.describe Reports::QuarterlyFacilityState, {type: :model, reporting_spec: t
 
       RefreshMaterializedViews.new.refresh_v2
       with_reporting_time_zone do
-        quarterly_facility_state_2021_Q2 = described_class.find_by(facility: facility, quarter_string: "2021-2")
+        quarterly_facility_state_2021_q2 = described_class.find_by(facility: facility, quarter_string: "2021-2")
 
-        expect(quarterly_facility_state_2021_Q2.quarterly_cohort_controlled).to eq 2
-        expect(quarterly_facility_state_2021_Q2.quarterly_cohort_patients).to eq 12
-        expect(quarterly_facility_state_2021_Q2.quarterly_cohort_visited_no_bp).to eq 2
-        expect(quarterly_facility_state_2021_Q2.quarterly_cohort_uncontrolled).to eq 3
-        expect(quarterly_facility_state_2021_Q2.quarterly_cohort_missed_visit).to eq 5
+        expect(quarterly_facility_state_2021_q2.quarterly_cohort_controlled).to eq 2
+        expect(quarterly_facility_state_2021_q2.quarterly_cohort_patients).to eq 12
+        expect(quarterly_facility_state_2021_q2.quarterly_cohort_visited_no_bp).to eq 2
+        expect(quarterly_facility_state_2021_q2.quarterly_cohort_uncontrolled).to eq 3
+        expect(quarterly_facility_state_2021_q2.quarterly_cohort_missed_visit).to eq 5
       end
     end
   end
