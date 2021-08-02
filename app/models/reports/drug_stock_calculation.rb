@@ -97,7 +97,7 @@ module Reports
         received: received,
         redistributed: redistributed,
         closing_balance: closing_balance,
-        consumed: opening_balance + received - (redistributed || 0) - closing_balance
+        consumed: opening_balance + (received || 0) - (redistributed || 0) - closing_balance
       }
     rescue => e
       Sentry.capture_message("Consumption Calculation Error",

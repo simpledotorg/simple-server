@@ -40,10 +40,8 @@ class AppointmentNotification::Worker
   def send_message(notification, communication_type)
     notification_service = if communication_type == "imo"
       ImoApiService.new
-    elsif notification.experiment&.experiment_type == "medication_reminder" && medication_reminder_sms_sender
-      TwilioApiService.new(sms_sender: medication_reminder_sms_sender)
     else
-      TwilioApiService.new
+      TwilioApiService.new(sms_sender: medication_reminder_sms_sender)
     end
 
     context = {

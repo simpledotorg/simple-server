@@ -5,7 +5,9 @@ class ExperimentControlService
 
   class << self
     def start_current_patient_experiment(name:, days_til_start:, days_til_end:, percentage_of_patients: 100)
-      experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "current_patients", state: :new)
+      experiment = Experimentation::Experiment.find_by(name: name, experiment_type: "current_patients", state: :new)
+      return unless experiment
+
       experiment_start = days_til_start.days.from_now.beginning_of_day
       experiment_end = days_til_end.days.from_now.end_of_day
 
@@ -21,7 +23,7 @@ class ExperimentControlService
         patients = Patient
           .where(id: batch)
           .includes(:appointments)
-          .where(appointments: {scheduled_date: experiment_start..experiment_end})
+          .where(appointments: {scheduled_date: experiment_start..experiment_end, status: "scheduled"})
 
         patients.each do |patient|
           group = experiment.random_treatment_group
@@ -36,7 +38,9 @@ class ExperimentControlService
     end
 
     def schedule_daily_stale_patient_notifications(name:, patients_per_day: PATIENTS_PER_DAY)
-      experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "stale_patients", state: [:new, :running])
+      experiment = Experimentation::Experiment.find_by(name: name, experiment_type: "stale_patients", state: [:new, :running])
+      return unless experiment
+
       today = Date.current
       return if experiment.start_date > today
       if experiment.end_date < today

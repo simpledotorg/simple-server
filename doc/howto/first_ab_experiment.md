@@ -1,4 +1,4 @@
-# How to run the initial AB Experiment in India Production 
+# How to run the initial AB Experiment in India Production
 
 ### Date: July 2021
 ### References
@@ -14,12 +14,12 @@
 2. Merge https://github.com/simpledotorg/simple-server/pull/2752 - it includes a migration that will create two new experiments with three treatment groups each. To verify:
 
 ```ruby
-experiments = Experiment.where(name: "Small Current Patient July 2021")
-experiments.count # should return 2
+experiments = Experimentation::Experiment.where(name: "Small Current Patient July 2021")
+experiments.count # should return 1
 experiments.map { |e| e.treatment_groups.count } # should return 3
 ```
 
-3. Create the current patient experiment, based on how many patients are eligible. We want to use approximately 300 patients and this particular job uses percentages. So if 10,000 patients are eligible, we would want to use 3% (300/10,000). 
+3. Create the current patient experiment, based on how many patients are eligible. We want to use approximately 300 patients and this particular job uses percentages. So if 10,000 patients are eligible, we would want to use 3% (300/10,000).
 **NOTE:** change the percentage below so that the experiment enrolls ~300 patients
 
 ```ruby
@@ -27,7 +27,7 @@ Time.zone = Period::REPORTING_TIME_ZONE
 
 candidates = ExperimentControlService.send(:current_patient_candidates, "July 28, 2021".to_date, "July 30, 2021".to_date).count
 # => 10000 ...assume there are 10,000 eligible patients returned...
-percentage = 300 / candidates # results in 0.03
+percentage = 300 / candidates.to_f * 100 # results in 3
 ExperimentControlService.start_current_patient_experiment(name: "Small Current Patient July 2021", days_til_start: 1, days_til_end: 3, percentage_of_patients: percentage)
 
 # Verification
