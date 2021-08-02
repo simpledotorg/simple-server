@@ -15,6 +15,17 @@ describe Notification, type: :model do
     it { should validate_presence_of(:remind_on) }
     it { should validate_presence_of(:message) }
     it { should validate_presence_of(:purpose) }
+
+    it "requires a subject for missed visit reminders" do
+      notification = build(:notification, purpose: :missed_visit_reminder, subject: nil)
+      expect(notification.valid?).to be_falsey
+      expect(notification.errors[:subject]).to eq(["can't be blank"])
+    end
+
+    it "does not require a subject for experiment reminders" do
+      notification = build(:notification, purpose: :experimental_appointment_reminder, subject: nil)
+      expect(notification.valid?).to be_truthy
+    end
   end
 
   describe "#localized_message" do
@@ -22,7 +33,7 @@ describe Notification, type: :model do
       notification.patient.address.update!(state: "punjab")
       notification.subject = create(:appointment, patient: notification.patient)
       facility = notification.subject.facility
-      facility.update(state: "Maharashtra")
+      facility.update!(state: "Maharashtra")
 
       expected_message = I18n.t(
         notification.message,
@@ -35,11 +46,16 @@ describe Notification, type: :model do
     end
 
     it "provides translation values based on purpose" do
-      covid_medication_reminder = create(:notification, message: "notifications.covid.medication_reminder", purpose: "covid_medication_reminder")
+      covid_medication_reminder = create(:notification, message: "notifications.covid.medication_reminder",
+        subject: nil,
+        purpose: "covid_medication_reminder")
       expect { covid_medication_reminder.localized_message }.not_to raise_error
-      covid_medication_reminder.update!(purpose: "missed_visit_reminder")
-      expect { covid_medication_reminder.localized_message }
-        .to raise_error(NoMethodError).with_message("undefined method `facility' for nil:NilClass")
+
+      appointment = create(:appointment)
+      missed_visit_reminder = create(:notification, message: "#{Notification::APPOINTMENT_REMINDER_MSG_PREFIX}.whatsapp",
+        purpose: :missed_visit_reminder,
+        subject: appointment)
+      expect(missed_visit_reminder.localized_message).to include(appointment.facility.name)
     end
   end
 

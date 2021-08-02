@@ -11,6 +11,7 @@ class Notification < ApplicationRecord
   validates :remind_on, presence: true
   validates :message, presence: true
   validates :purpose, presence: true
+  validates :subject, presence: true, if: proc { |n| n.missed_visit_reminder? }, on: :create
 
   enum status: {
     pending: "pending",
@@ -28,21 +29,29 @@ class Notification < ApplicationRecord
 
   def localized_message
     case purpose
-    when "missed_visit_reminder", "experimental_appointment_reminder"
-      facility = subject.try(:facility) || patient.assigned_facility
-      I18n.t(
-        message,
-        facility_name: facility.name,
-        patient_name: patient.full_name,
-        appointment_date: subject.try(:scheduled_date),
-        locale: facility.locale
-      )
     when "covid_medication_reminder"
       I18n.t(
         message,
         facility_name: patient.assigned_facility.name,
         patient_name: patient.full_name,
         locale: patient.assigned_facility.locale
+      )
+    when "experimental_appointment_reminder"
+      facility = subject&.facility || patient.assigned_facility
+      I18n.t(
+        message,
+        facility_name: facility.name,
+        patient_name: patient.full_name,
+        appointment_date: subject&.scheduled_date,
+        locale: facility.locale
+      )
+    when "missed_visit_reminder"
+      I18n.t(
+        message,
+        facility_name: subject.facility.name,
+        patient_name: patient.full_name,
+        appointment_date: subject.scheduled_date,
+        locale: subject.facility.locale
       )
     else
       raise ArgumentError, "No localized_message defined for notification of type #{purpose}"
