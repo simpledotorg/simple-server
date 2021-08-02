@@ -9,3 +9,13 @@ layout file, like app/views/layouts/application.html.erb
 */
 
 @import 'bootstrap/scss/bootstrap';
+
+h1 {
+  text-decoration: underline;
+}
+
+body {
+  padding: 2em
+
+
+}
