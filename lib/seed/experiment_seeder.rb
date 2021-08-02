@@ -28,11 +28,7 @@ module Seed
       _control_group = experiment.treatment_groups.create!(description: "control")
 
       single_group = experiment.treatment_groups.create!(description: "single_notification")
-      single_group.reminder_templates.create!(message: "notifications.set01.basic", remind_on_in_days: 0)
-
-      cascade = experiment.treatment_groups.create!(description: "cascade")
-      cascade.reminder_templates.create!(message: "notifications.set02.basic", remind_on_in_days: 0)
-      cascade.reminder_templates.create!(message: "notifications.set03.basic", remind_on_in_days: 3)
+      single_group.reminder_templates.create!(message: "notifications.set03.basic", remind_on_in_days: 0)
     end
   end
 end
