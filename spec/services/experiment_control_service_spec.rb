@@ -1,6 +1,8 @@
 require "rails_helper"
 
 describe ExperimentControlService, type: :model do
+  include ActiveJob::TestHelper
+
   describe "self.start_current_patient_experiment" do
     it "only selects from patients 18 and older" do
       young_patient = create(:patient, age: 17)
@@ -275,6 +277,27 @@ describe ExperimentControlService, type: :model do
       ExperimentControlService.schedule_daily_stale_patient_notifications(name: experiment.name)
 
       expect(experiment.treatment_groups.first.patients.include?(patient)).to be_truthy
+    end
+
+    fit "does something with stale patients who have not had an appointment" do
+      Sidekiq::Testing.inline!
+      Flipper.enable(:experiment)
+
+      patient = create(:patient, age: 80)
+      create(:blood_pressure, patient: patient, device_created_at: 100.days.ago)
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients")
+      template = create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
+
+      perform_enqueued_jobs do
+        ExperimentControlService.schedule_daily_stale_patient_notifications(name: experiment.name)
+        expect(experiment.treatment_groups.first.patients.include?(patient)).to be_truthy
+        expect(Notification.count).to eq(1)
+        notification = Notification.last
+        notification.status_scheduled!
+        AppointmentNotification::Worker.perform_async(notification.id)
+      end
+
+      # AppointmentNotification::Worker.perform(notification)
     end
 
     it "creates experimental reminder notifications with correct attributes for selected patients" do
