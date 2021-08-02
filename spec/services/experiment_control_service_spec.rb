@@ -428,7 +428,7 @@ describe ExperimentControlService, type: :model do
 
   # NOTE: putting a best attempt at an e2e test here for now, with the intention that we can
   # pull it out to its own dedicated integration test file soon
-  fdescribe "end to end testing" do
+  describe "end to end testing" do
     before do
       Flipper.enable(:experiment)
     end
