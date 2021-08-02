@@ -128,65 +128,6 @@ module Reports
     end
 
     DATE_FORMAT = "%-d-%b-%Y"
-    QUARTELY_DENOMINATORS = {
-      controlled_patients: :assigned_patients,
-      uncontrolled_patients: :assigned_patients,
-      visited_without_bp_taken: :assigned_patients,
-      ltfu_patients: :cumulative_registrations
-    }
-    MONTHLY_DENOMINATORS = {
-      with_ltfu: {
-        controlled_patients: :adjusted_patient_counts_with_ltfu,
-        uncontrolled_patients: :adjusted_patient_counts_with_ltfu,
-        visited_without_bp_taken: :adjusted_patient_counts_with_ltfu,
-        ltfu_patients: :cumulative_registrations
-      },
-      excluding_lftu: {
-        controlled_patients: :adjusted_patient_counts,
-        uncontrolled_patients: :adjusted_patient_counts,
-        visited_without_bp_taken: :adjusted_patient_counts,
-        ltfu_patients: :cumulative_registrations
-      }
-    }
-
-    def quarterly_denominator(numerator)
-      self[QUARTELY_DENOMINATORS[numerator]]
-    end
-
-    def monthly_denominator(numerator, with_ltfu:)
-      ltfu_key = if with_ltfu
-        :with_ltfu
-      else
-        :excluding_lftu
-      end
-
-      self[MONTHLY_DENOMINATORS[ltfu_key][numerator]]
-    end
-
-    def denominator_for_percentage_calculation(period, key, with_ltfu:)
-      if quarterly_report?
-        quarterly_denominator(key)[period.previous] || 0
-      else
-        monthly_denominator(key, with_ltfu: with_ltfu)[period]
-      end
-    end
-
-    def calculate_percentages(key, with_ltfu: false)
-      key_for_percentage_data = if with_ltfu
-        "#{key}_with_ltfu_rate"
-      else
-        "#{key}_rate"
-      end
-
-      self[key_for_percentage_data] = self[key].each_with_object(Hash.new(0)) { |(period, value), hsh|
-        hsh[period] = percentage(value, denominator_for_percentage_calculation(period, key, with_ltfu: with_ltfu))
-      }
-    end
-
-    def percentage(numerator, denominator)
-      return 0 if denominator == 0 || numerator == 0
-      ((numerator.to_f / denominator) * 100).round(PERCENTAGE_PRECISION)
-    end
 
     def quarterly_report?
       @quarterly_report
