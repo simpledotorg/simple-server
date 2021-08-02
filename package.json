@@ -3,6 +3,10 @@
   "private": true,
   "dependencies": {
     "@rails/webpacker": "^6.0.0-beta.7",
+    "bootstrap": "^5.0.2",
+    "css-loader": "^6.2.0",
+    "css-minimizer-webpack-plugin": "^3.0.2",
+    "mini-css-extract-plugin": "^2.1.0",
     "numeral": "^2.0.6",
     "tablesort": "^5.2.0",
     "webpack": "^5.11.0",
@@ -13,7 +17,9 @@
     "webpack-dev-server": "^3.11.2"
   },
   "babel": {
-    "presets": ["./node_modules/@rails/webpacker/package/babel/preset.js"]
+    "presets": [
+      "./node_modules/@rails/webpacker/package/babel/preset.js"
+    ]
   },
   "browserslist": [
     "defaults"
