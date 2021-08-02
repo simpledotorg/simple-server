@@ -1,7 +1,5 @@
 module Reports
   class Result
-    PERCENTAGE_PRECISION = 0
-
     def initialize(region:, period_type:, data: nil)
       @region = region
       @period_type = period_type
@@ -69,26 +67,8 @@ module Reports
       Result.new(region: region, period_type: period_type, data: report_data)
     end
 
-    # Return all periods for the entire set of data for a Region - from the first registrations until
-    # the most recent period
-    def full_data_range
-      if earliest_registration_period.nil?
-        (current_period..current_period)
-      else
-        (earliest_registration_period..current_period)
-      end
-    end
-
     def to_s
       "#{self.class} #{object_id} region=#{@region.name} period_type=#{period_type}"
-    end
-
-    def last_value(key)
-      self[key].values.last
-    end
-
-    def last_key(key)
-      self[key].keys.last
     end
 
     [:period_info, :earliest_registration_period,
@@ -117,17 +97,7 @@ module Reports
       define_method(setter) do |value|
         self[key] = value
       end
-
-      define_method("#{key}_for") do |period|
-        self[key][period]
-      end
-
-      define_method("#{key}_for!") do |period|
-        self[key].fetch(period) { raise ArgumentError, "no data found for #{period} for #{key}" }
-      end
     end
-
-    DATE_FORMAT = "%-d-%b-%Y"
 
     def quarterly_report?
       @quarterly_report
