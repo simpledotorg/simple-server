@@ -12,7 +12,8 @@ class CountryConfig
       faker_locale: "en-IND",
       sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+91",
       supported_genders: %w[male female transgender],
-      patient_line_list_show_zone: false
+      patient_line_list_show_zone: false,
+      custom_drug_category_order: %w[hypertension_ccb,hypertension_arb,hypertension_diuretic]
     },
     BD: {
       abbreviation: "BD",
