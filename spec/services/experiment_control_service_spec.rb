@@ -188,8 +188,6 @@ describe ExperimentControlService, type: :model do
     end
 
     it "updates the experiment state to 'running'" do
-      days_til_start = 5
-      days_til_end = 35
       experiment = create(:experiment, start_date: 5.days.from_now, end_date: 35.days.from_now)
       ExperimentControlService.start_current_patient_experiment(name: experiment.name)
       experiment.reload
