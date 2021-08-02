@@ -279,27 +279,6 @@ describe ExperimentControlService, type: :model do
       expect(experiment.treatment_groups.first.patients.include?(patient)).to be_truthy
     end
 
-    fit "does something with stale patients who have not had an appointment" do
-      Sidekiq::Testing.inline!
-      Flipper.enable(:experiment)
-
-      patient = create(:patient, age: 80)
-      create(:blood_pressure, patient: patient, device_created_at: 100.days.ago)
-      experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients")
-      template = create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
-
-      perform_enqueued_jobs do
-        ExperimentControlService.schedule_daily_stale_patient_notifications(name: experiment.name)
-        expect(experiment.treatment_groups.first.patients.include?(patient)).to be_truthy
-        expect(Notification.count).to eq(1)
-        notification = Notification.last
-        notification.status_scheduled!
-        AppointmentNotification::Worker.perform_async(notification.id)
-      end
-
-      # AppointmentNotification::Worker.perform(notification)
-    end
-
     it "creates experimental reminder notifications with correct attributes for selected patients" do
       patient1 = create(:patient, age: 80)
       create(:blood_pressure, patient: patient1, device_created_at: 100.days.ago)
@@ -444,6 +423,35 @@ describe ExperimentControlService, type: :model do
       expect(pending_notification.reload.status).to eq("cancelled")
       expect(scheduled_notification.reload.status).to eq("cancelled")
       expect(sent_notification.reload.status).to eq("sent")
+    end
+  end
+
+  # NOTE: putting a best attempt at an e2e test here for now, with the intention that we can
+  # pull it out to its own dedicated integration test file soon
+  fdescribe "end to end testing" do
+    before do
+      Flipper.enable(:experiment)
+    end
+
+    it "successfully sends notifications to stale patients who have not had an appointment" do
+      Sidekiq::Testing.inline!
+      twilio_double = double("TwilioApiService", send_sms: true)
+      expect(TwilioApiService).to receive(:new).and_return(twilio_double)
+
+      patient = create(:patient, age: 80)
+      create(:blood_pressure, patient: patient, device_created_at: 100.days.ago)
+      experiment = Seed::ExperimentSeeder.create_stale_experiment(start_date: Date.current, end_date: 45.days.from_now)
+      _template = create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
+
+      ExperimentControlService.schedule_daily_stale_patient_notifications(name: experiment.name)
+
+      perform_enqueued_jobs do
+        expect(experiment.treatment_groups.first.patients.include?(patient)).to be_truthy
+        expect(Notification.count).to eq(1)
+        notification = Notification.last
+        notification.status_scheduled!
+        AppointmentNotification::Worker.perform_async(notification.id)
+      end
     end
   end
 end

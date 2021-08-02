@@ -29,6 +29,7 @@ module Seed
 
       single_group = experiment.treatment_groups.create!(description: "single_notification")
       single_group.reminder_templates.create!(message: "notifications.set03.basic", remind_on_in_days: 0)
+      experiment
     end
   end
 end
