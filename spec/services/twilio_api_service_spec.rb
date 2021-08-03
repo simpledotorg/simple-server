@@ -66,6 +66,8 @@ RSpec.describe TwilioApiService do
     it "correctly calls the Twilio API" do
       stub_client
 
+      expect(notification_service.logger).to receive(:info).with(communication_type: "sms",
+                                                                 msg: "sending sms message")
       expect(twilio_client).to receive_message_chain("messages.create").with(
         from: sender_sms_phone_number,
         to: recipient_phone_number,
@@ -76,7 +78,8 @@ RSpec.describe TwilioApiService do
       notification_service.send_sms(
         recipient_number: recipient_phone_number,
         message: "test sms message",
-        callback_url: fake_callback_url
+        callback_url: fake_callback_url,
+        context: {communication_type: "sms"}
       )
     end
 
@@ -97,6 +100,9 @@ RSpec.describe TwilioApiService do
     it "correctly calls the Twilio API" do
       stub_client
 
+      expect(notification_service.logger).to receive(:info).with(communication_type: "whatsapp",
+                                                                 msg: "sending whatsapp message")
+
       expect(twilio_client).to receive_message_chain("messages.create").with(
         from: "whatsapp:#{sender_whatsapp_phone_number}",
         to: "whatsapp:#{recipient_phone_number}",
@@ -107,7 +113,8 @@ RSpec.describe TwilioApiService do
       notification_service.send_whatsapp(
         recipient_number: recipient_phone_number,
         message: "test whatsapp message",
-        callback_url: fake_callback_url
+        callback_url: fake_callback_url,
+        context: {communication_type: "whatsapp"}
       )
     end
 
