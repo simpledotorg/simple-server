@@ -23,7 +23,7 @@ module Experimentation
       current_patients: "current_patients",
       stale_patients: "stale_patients",
       medication_reminder: "medication_reminder"
-    }, _prefix: true
+    }
 
     def self.candidate_patients
       Patient.with_hypertension
