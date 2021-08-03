@@ -13,7 +13,7 @@ describe Experimentation::Runner, type: :model do
       create(:appointment, patient: patient1, scheduled_date: 10.days.from_now)
 
       experiment = create(:experiment, :with_treatment_group, experiment_type: "current_patients", start_date: 5.days.from_now, end_date: 35.days.from_now)
-      template create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
+      _template = create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
 
       described_class.start_current_patient_experiment(name: experiment.name)
 
