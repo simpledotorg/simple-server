@@ -4,7 +4,6 @@ describe Experimentation::Runner, type: :model do
   include ActiveJob::TestHelper
 
   describe "self.start_current_patient_experiment" do
-
     before { Flipper.enable(:experiment) }
 
     it "does not start the experiment, add patients, or create notifications if the feature flag is off" do
@@ -14,7 +13,7 @@ describe Experimentation::Runner, type: :model do
       create(:appointment, patient: patient1, scheduled_date: 10.days.from_now)
 
       experiment = create(:experiment, :with_treatment_group, experiment_type: "current_patients", start_date: 5.days.from_now, end_date: 35.days.from_now)
-      template = create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
+      template create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
 
       described_class.start_current_patient_experiment(name: experiment.name)
 
@@ -247,7 +246,6 @@ describe Experimentation::Runner, type: :model do
   end
 
   describe "self.schedule_daily_stale_patient_notifications" do
-
     before { Flipper.enable(:experiment) }
 
     it "does not start the experiment, add patients, or create notifications if the feature flag is off" do
@@ -257,7 +255,7 @@ describe Experimentation::Runner, type: :model do
       create(:blood_sugar, patient: patient1, device_created_at: 100.days.ago)
 
       experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients")
-      template = create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
+      create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
 
       described_class.schedule_daily_stale_patient_notifications(name: experiment.name)
 
