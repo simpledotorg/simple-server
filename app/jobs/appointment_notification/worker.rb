@@ -49,6 +49,7 @@ class AppointmentNotification::Worker
       notification_id: notification.id,
       communication_type: communication_type
     }
+    Sentry.set_tags(context)
 
     # remove missed_visit_whatsapp_reminder and missed_visit_sms_reminder
     # https://app.clubhouse.io/simpledotorg/story/3585/backfill-notifications-from-communications
