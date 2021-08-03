@@ -4,15 +4,15 @@ class AppointmentNotification::Worker
 
   sidekiq_options queue: :high
 
-  def logger
-    Experimentation.logger(class: self.class.name)
-  end
-
   class UnknownCommunicationType < StandardError
   end
 
   def metrics
     @metrics ||= Metrics.with_object(self)
+  end
+
+  def logger
+    @logger ||= Experimentation.logger(class: self.class.name)
   end
 
   def perform(notification_id)
