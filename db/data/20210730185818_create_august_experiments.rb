@@ -1,6 +1,6 @@
 class CreateAugustExperiments < ActiveRecord::Migration[5.2]
   def up
-    return unless CountryConfig.current_country?("India") && SimpleServer.env.production?
+    return unless CountryConfig.current_country?("India")
 
     Seed::ExperimentSeeder.create_current_experiment(
       experiment_name: "Current Patient August 2021",
