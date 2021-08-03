@@ -10,7 +10,6 @@ module Seed
       transaction do
         Experimentation::Experiment.current_patients.create!(
           name: experiment_name,
-          experiment_type: "current_patients",
           state: "new",
           start_date: start_date,
           end_date: end_date
@@ -30,9 +29,8 @@ module Seed
 
     def self.create_stale_experiment(start_date:, end_date:, experiment_name: "stale patient test experiment")
       transaction do
-        Experimentation::Experiment.create!(
+        Experimentation::Experiment.stale_patients.create!(
           name: experiment_name,
-          experiment_type: "stale_patients",
           state: "new",
           start_date: start_date,
           end_date: end_date
