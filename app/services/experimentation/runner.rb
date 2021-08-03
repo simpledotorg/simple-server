@@ -1,5 +1,3 @@
-# require_relative "stale_patient_selection"
-
 module Experimentation
   class Runner
     LAST_EXPERIMENT_BUFFER = 14.days.freeze
