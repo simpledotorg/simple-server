@@ -47,14 +47,14 @@ describe Notification, type: :model do
 
     it "provides translation values based on purpose" do
       covid_medication_reminder = create(:notification, message: "notifications.covid.medication_reminder",
-        subject: nil,
-        purpose: "covid_medication_reminder")
+                                                        subject: nil,
+                                                        purpose: "covid_medication_reminder")
       expect { covid_medication_reminder.localized_message }.not_to raise_error
 
       appointment = create(:appointment)
       missed_visit_reminder = create(:notification, message: "#{Notification::APPOINTMENT_REMINDER_MSG_PREFIX}.whatsapp",
-        purpose: :missed_visit_reminder,
-        subject: appointment)
+                                                    purpose: :missed_visit_reminder,
+                                                    subject: appointment)
       expect(missed_visit_reminder.localized_message).to include(appointment.facility.name)
     end
   end

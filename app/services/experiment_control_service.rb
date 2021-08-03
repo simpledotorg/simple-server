@@ -5,7 +5,7 @@ class ExperimentControlService
 
   class << self
     def logger
-      @logger ||= Rails.logger.child(class: self.name)
+      @logger ||= Rails.logger.child(class: name)
     end
 
     def start_current_patient_experiment(name:, days_til_start:, days_til_end:, percentage_of_patients: 100)
