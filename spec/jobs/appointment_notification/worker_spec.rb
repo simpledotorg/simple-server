@@ -174,8 +174,9 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
         callback_url: "https://localhost/api/v3/twilio_sms_delivery",
         context: {
           calling_class: "AppointmentNotification::Worker",
+          communication_type: "sms",
           notification_id: notification.id,
-          communication_type: "sms"
+          notification_purpose: "missed_visit_reminder"
         }
       )
       described_class.perform_async(notification.id)

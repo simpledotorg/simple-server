@@ -47,6 +47,7 @@ class AppointmentNotification::Worker
     context = {
       calling_class: self.class.name,
       notification_id: notification.id,
+      notification_purpose: notification.purpose,
       communication_type: communication_type
     }
     Sentry.set_tags(context)
