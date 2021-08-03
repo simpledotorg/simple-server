@@ -6,9 +6,14 @@ module Seed
       delegate :transaction, to: ActiveRecord::Base
     end
 
-    def self.create_current_experiment(experiment_name: "current patient test experiment")
+    def self.create_current_experiment(start_date:, end_date:, experiment_name: "current patient test experiment")
       transaction do
-        Experimentation::Experiment.current_patients.create!(name: experiment_name, state: "new").tap do |experiment|
+        Experimentation::Experiment.current_patients.create!(
+          name: experiment_name,
+          state: "new",
+          start_date: start_date,
+          end_date: end_date
+        ).tap do |experiment|
           _control_group = experiment.treatment_groups.create!(description: "control")
 
           single_group = experiment.treatment_groups.create!(description: "single_notification")
@@ -24,7 +29,12 @@ module Seed
 
     def self.create_stale_experiment(start_date:, end_date:, experiment_name: "stale patient test experiment")
       transaction do
-        Experimentation::Experiment.stale_patients.create!(name: experiment_name, state: "new", start_date: start_date, end_date: end_date).tap do |experiment|
+        Experimentation::Experiment.stale_patients.create!(
+          name: experiment_name,
+          state: "new",
+          start_date: start_date,
+          end_date: end_date
+        ).tap do |experiment|
           _control_group = experiment.treatment_groups.create!(description: "control")
 
           single_group = experiment.treatment_groups.create!(description: "single_notification")
