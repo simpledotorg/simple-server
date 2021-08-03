@@ -4,6 +4,10 @@ class ExperimentControlService
   BATCH_SIZE = 100
 
   class << self
+    def logger
+      @logger ||= Rails.logger.child(class: self.name)
+    end
+
     def start_current_patient_experiment(name:, days_til_start:, days_til_end:, percentage_of_patients: 100)
       experiment = Experimentation::Experiment.find_by(name: name, experiment_type: "current_patients", state: :new)
       return unless experiment
@@ -42,20 +46,25 @@ class ExperimentControlService
       return unless experiment
 
       today = Date.current
-      return if experiment.start_date > today
+      if experiment.start_date > today
+        logger.info experiment: name, msg: "Experiment start_date #{experiment.start_date} is in the future, skipping"
+        return
+      end
       if experiment.end_date < today
+        logger.info experiment: name, msg: "Experiment end_date #{experiment.end_date} has passed, marking complete"
         experiment.complete_state!
         return
       end
       experiment.selecting_state!
 
       eligible_ids = Experimentation::StalePatientSelection.call(start_date: today)
+      logger.info experiment: name, msg: "Found #{eligible_ids.count} eligible patient ids for stale patient reminders"
       if eligible_ids.any?
         eligible_ids.shuffle!
         daily_ids = eligible_ids.pop(patients_per_day)
         daily_patients = Patient.where(id: daily_ids).includes(:appointments)
         daily_patients.each do |patient|
-          group = experiment.random_treatment_group
+          group = random_treatment_group(experiment)
           schedule_notifications(patient, patient.appointments.last, group, today)
           group.patients << patient
         end
@@ -75,6 +84,12 @@ class ExperimentControlService
     end
 
     protected
+
+    def random_treatment_group(experiment)
+      group = experiment.random_treatment_group
+      logger.info "adding patient to group #{group.inspect}"
+      group
+    end
 
     def current_patient_candidates(start_date, end_date)
       Experimentation::Experiment.candidate_patients

@@ -431,27 +431,27 @@ describe ExperimentControlService, type: :model do
   describe "end to end testing" do
     before do
       Flipper.enable(:experiment)
+      Sidekiq::Testing.inline!
     end
 
-    it "successfully sends notifications to stale patients who have not had an appointment" do
-      Sidekiq::Testing.inline!
-      twilio_double = double("TwilioApiService", send_sms: true)
+    fit "successfully sends notifications to stale patients who have not had an appointment" do
+      twilio_double = double("TwilioApiService", send_sms: double("TwilioResponse", sid: "1234", status: :sent))
       expect(TwilioApiService).to receive(:new).and_return(twilio_double)
 
       patient = create(:patient, age: 80)
       create(:blood_pressure, patient: patient, device_created_at: 100.days.ago)
       experiment = Seed::ExperimentSeeder.create_stale_experiment(start_date: Date.current, end_date: 45.days.from_now)
-      _template = create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
+      active_group = experiment.treatment_groups.find_by!(description: "single_notification")
 
+      expect(ExperimentControlService).to receive(:random_treatment_group).and_return(active_group)
       ExperimentControlService.schedule_daily_stale_patient_notifications(name: experiment.name)
+      expect(active_group.patients.reload.include?(patient)).to be_truthy
 
-      perform_enqueued_jobs do
-        expect(experiment.treatment_groups.first.patients.include?(patient)).to be_truthy
-        expect(Notification.count).to eq(1)
-        notification = Notification.last
-        notification.status_scheduled!
-        AppointmentNotification::Worker.perform_async(notification.id)
-      end
+      pp Notification.all.map(&:attributes)
+      expect(Notification.count).to eq(1)
+      notification = Notification.last
+      notification.status_scheduled!
+      AppointmentNotification::Worker.perform_async(notification.id)
     end
   end
 end
