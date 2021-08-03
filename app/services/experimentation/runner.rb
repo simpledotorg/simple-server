@@ -5,7 +5,7 @@ module Experimentation
     BATCH_SIZE = 100
 
     def self.logger
-      @logger ||= Experimentation.logger(class: name)
+      @logger ||= Notification.logger(class: name)
     end
 
     def self.start_current_patient_experiment(name:, percentage_of_patients: 100)
