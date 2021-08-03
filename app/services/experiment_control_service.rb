@@ -114,14 +114,14 @@ class ExperimentControlService
       group.reminder_templates.each do |template|
         remind_on = schedule_date + template.remind_on_in_days.days
         Notification.create!(
-          remind_on: remind_on,
-          status: "pending",
-          message: template.message,
           experiment: group.experiment,
-          reminder_template: template,
-          subject: appointment,
+          message: template.message,
           patient: patient,
-          purpose: :experimental_appointment_reminder
+          purpose: :experimental_appointment_reminder,
+          remind_on: remind_on,
+          reminder_template: template,
+          status: "pending",
+          subject: appointment
         )
       end
     end
