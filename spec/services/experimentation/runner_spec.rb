@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe ExperimentControlService, type: :model do
+describe Experimentation::Runner, type: :model do
   include ActiveJob::TestHelper
 
   describe "self.start_current_patient_experiment" do
@@ -191,8 +191,9 @@ describe ExperimentControlService, type: :model do
 
     it "updates the experiment state to 'running'" do
       experiment = create(:experiment, start_date: 5.days.from_now, end_date: 35.days.from_now)
-      described_class.start_current_patient_experiment(name: experiment.name)
-      experiment.reload
+      expect {
+        described_class.start_current_patient_experiment(name: experiment.name)
+      }.to change { experiment.reload.state }.to("running")
 
       expect(experiment).to be_running_state
     end
@@ -203,10 +204,9 @@ describe ExperimentControlService, type: :model do
       experiment = create(:experiment, :with_treatment_group, state: "running", start_date: 5.days.from_now, end_date: 35.days.from_now)
       create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
 
-      expect {
-        described_class.start_current_patient_experiment(name: experiment.name)
-      }.not_to change { experiment.reload.state }
-      expect(Notification.count).to eq(0)
+      expect { described_class.start_current_patient_experiment(name: experiment.name) }
+        .to not_change { experiment.reload.state }
+        .and not_change { Notification.count }
     end
 
     it "marks the experiment complete if the end date has passed" do
@@ -218,12 +218,12 @@ describe ExperimentControlService, type: :model do
       expect {
         described_class.start_current_patient_experiment(name: experiment.name)
       }.to change { experiment.reload.state }.from("running").to("complete")
-      expect(Notification.count).to eq(0)
+        .and not_change { Notification.count }
     end
 
     it "raises a sentry error if the experiment is not found" do
-      expect(Sentry).to receive(:capture_message).with("Experiment doesn't exist not found and may need to be removed from scheduler.")
-      described_class.start_current_patient_experiment(name: "doesn't exist")
+      expect(described_class.logger).to receive(:info).with(/Experiment UNKNOWN not found and may need to be removed/)
+      described_class.start_current_patient_experiment(name: "UNKNOWN")
     end
   end
 
@@ -275,10 +275,10 @@ describe ExperimentControlService, type: :model do
         described_class.schedule_daily_stale_patient_notifications(name: experiment.name)
       }.to change { patient1.notifications.count }.by(1)
       notification = patient1.notifications.last
+      expect(notification).to be_status_pending
       expect(notification.remind_on).to eq(Date.current)
       expect(notification.purpose).to eq("experimental_appointment_reminder")
       expect(notification.message).to eq(template.message)
-      expect(notification.status).to eq("pending")
       expect(notification.reminder_template).to eq(template)
       expect(notification.subject).to eq(appointment)
       expect(notification.experiment).to eq(experiment)
@@ -315,8 +315,8 @@ describe ExperimentControlService, type: :model do
       expect {
         described_class.schedule_daily_stale_patient_notifications(name: experiment.name)
       }.to raise_error(ActiveRecord::RecordInvalid)
-      expect(Notification.count).to eq(0)
-      expect(experiment.reload.state).to eq("new")
+        .and not_change { Notification.count }
+        .and not_change { experiment.reload.state }
     end
 
     it "does nothing if it the experiment is not in 'new' or 'running' state" do
@@ -328,12 +328,12 @@ describe ExperimentControlService, type: :model do
 
       expect {
         described_class.schedule_daily_stale_patient_notifications(name: experiment.name)
-      }.not_to change { experiment.reload }
-      expect(Notification.count).to eq(0)
+      }.to not_change { experiment.reload }
+        .and not_change { Notification.count }
     end
 
-    it "raises a sentry error if the experiment is not found" do
-      expect(Sentry).to receive(:capture_message).with("Experiment doesn't exist not found and may need to be removed from scheduler.")
+    it "logs a message if experiment doesn't exist" do
+      expect(described_class.logger).to receive(:info).with("Experiment doesn't exist not found and may need to be removed from scheduler - exiting.")
       described_class.schedule_daily_stale_patient_notifications(name: "doesn't exist")
     end
 
@@ -369,8 +369,8 @@ describe ExperimentControlService, type: :model do
 
       expect {
         described_class.schedule_daily_stale_patient_notifications(name: experiment.name)
-      }.not_to change { Experimentation::TreatmentGroupMembership.count }
-      expect(experiment.reload.state).to eq("new")
+      }.to not_change { Experimentation::TreatmentGroupMembership.count }
+        .and not_change { experiment.reload.state }
     end
 
     it "changes the experiment state to 'complete' and does not create notifications if today is after the experiment end date" do
@@ -381,7 +381,7 @@ describe ExperimentControlService, type: :model do
       expect {
         described_class.schedule_daily_stale_patient_notifications(name: experiment.name)
       }.to change { experiment.reload.state }.from("new").to("complete")
-      expect(Experimentation::TreatmentGroupMembership.count).to eq(0)
+        .and not_change { Experimentation::TreatmentGroupMembership.count }
     end
   end
 
@@ -426,8 +426,12 @@ describe ExperimentControlService, type: :model do
       experiment = Seed::ExperimentSeeder.create_stale_experiment(start_date: Date.current, end_date: 45.days.from_now)
       active_group = experiment.treatment_groups.find_by!(description: "single_notification")
 
-      expect(described_class).to receive(:random_treatment_group).and_return(active_group)
-      described_class.schedule_daily_stale_patient_notifications(name: experiment.name)
+      expect_any_instance_of(Experimentation::Experiment).to receive(:random_treatment_group).and_return(active_group)
+      expect {
+        described_class.schedule_daily_stale_patient_notifications(name: experiment.name)
+      }.to change { experiment.notifications.count }.by(1)
+        .and change { experiment.reload.state }.from("new").to("running")
+
       expect(active_group.patients.reload.include?(patient)).to be_truthy
 
       expect(Notification.count).to eq(1)
