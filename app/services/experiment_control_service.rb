@@ -4,16 +4,23 @@ class ExperimentControlService
   BATCH_SIZE = 100
 
   class << self
-    def start_current_patient_experiment(name:, days_til_start:, days_til_end:, percentage_of_patients: 100)
-      experiment = Experimentation::Experiment.find_by(name: name, experiment_type: "current_patients", state: :new)
-      return unless experiment
+    def start_current_patient_experiment(name:, percentage_of_patients: 100)
+      experiment = Experimentation::Experiment.find_by(name: name, experiment_type: "current_patients", state: [:new, :running])
+      unless experiment
+        Sentry.capture_message("Experiment #{name} not found and may need to be removed from scheduler.")
+        return
+      end
 
-      experiment_start = days_til_start.days.from_now.beginning_of_day
-      experiment_end = days_til_end.days.from_now.end_of_day
+      if experiment.end_date < Date.current
+        experiment.complete_state!
+        return
+      end
 
-      experiment.update!(state: "selecting", start_date: experiment_start.to_date, end_date: experiment_end.to_date)
+      return if experiment.state == "running"
 
-      eligible_ids = current_patient_candidates(experiment_start, experiment_end).shuffle!
+      experiment.update!(state: "selecting")
+
+      eligible_ids = current_patient_candidates(experiment.start_date, experiment.end_date).shuffle!
 
       experiment_patient_count = (0.01 * percentage_of_patients * eligible_ids.length).round
       eligible_ids = eligible_ids.pop(experiment_patient_count)
@@ -23,7 +30,7 @@ class ExperimentControlService
         patients = Patient
           .where(id: batch)
           .includes(:appointments)
-          .where(appointments: {scheduled_date: experiment_start..experiment_end, status: "scheduled"})
+          .where(appointments: {scheduled_date: experiment.start_date..experiment.end_date, status: "scheduled"})
 
         patients.each do |patient|
           group = experiment.random_treatment_group
@@ -39,7 +46,10 @@ class ExperimentControlService
 
     def schedule_daily_stale_patient_notifications(name:, patients_per_day: PATIENTS_PER_DAY)
       experiment = Experimentation::Experiment.find_by(name: name, experiment_type: "stale_patients", state: [:new, :running])
-      return unless experiment
+      unless experiment
+        Sentry.capture_message("Experiment #{name} not found and may need to be removed from scheduler.")
+        return
+      end
 
       today = Date.current
       return if experiment.start_date > today
