@@ -23,14 +23,14 @@ module Experimentation
       current_patients: "current_patients",
       stale_patients: "stale_patients",
       medication_reminder: "medication_reminder"
-    }, _prefix: true
+    }
 
     def self.candidate_patients
       Patient.with_hypertension
         .contactable
         .where("age >= ?", 18)
         .includes(treatment_group_memberships: [treatment_group: [:experiment]])
-        .where(["experiments.end_date < ? OR experiments.id IS NULL", ExperimentControlService::LAST_EXPERIMENT_BUFFER.ago]).references(:experiment)
+        .where(["experiments.end_date < ? OR experiments.id IS NULL", Runner::LAST_EXPERIMENT_BUFFER.ago]).references(:experiment)
     end
 
     def random_treatment_group
