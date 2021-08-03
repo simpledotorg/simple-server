@@ -1,6 +1,8 @@
 require "rails_helper"
 
-describe ExperimentControlService, type: :model do
+describe Experimentation::Runner, type: :model do
+  include ActiveJob::TestHelper
+
   describe "self.start_current_patient_experiment" do
     it "only selects from patients 18 and older" do
       young_patient = create(:patient, age: 17)
@@ -10,7 +12,7 @@ describe ExperimentControlService, type: :model do
 
       experiment = create(:experiment, :with_treatment_group, start_date: 5.days.from_now, end_date: 35.days.from_now)
 
-      ExperimentControlService.start_current_patient_experiment(name: experiment.name)
+      described_class.start_current_patient_experiment(name: experiment.name)
 
       expect(experiment.patients.include?(old_patient)).to be_truthy
       expect(experiment.patients.include?(young_patient)).to be_falsey
@@ -24,7 +26,7 @@ describe ExperimentControlService, type: :model do
 
       experiment = create(:experiment, :with_treatment_group, start_date: 5.days.from_now, end_date: 35.days.from_now)
 
-      ExperimentControlService.start_current_patient_experiment(name: experiment.name)
+      described_class.start_current_patient_experiment(name: experiment.name)
 
       expect(experiment.patients.include?(patient1)).to be_truthy
       expect(experiment.patients.include?(patient2)).to be_falsey
@@ -39,7 +41,7 @@ describe ExperimentControlService, type: :model do
 
       experiment = create(:experiment, :with_treatment_group, start_date: 5.days.from_now, end_date: 35.days.from_now)
 
-      ExperimentControlService.start_current_patient_experiment(name: experiment.name)
+      described_class.start_current_patient_experiment(name: experiment.name)
 
       expect(experiment.patients.include?(patient1)).to be_falsey
       expect(experiment.patients.include?(patient2)).to be_truthy
@@ -55,7 +57,7 @@ describe ExperimentControlService, type: :model do
 
       experiment = create(:experiment, :with_treatment_group, start_date: 5.days.from_now, end_date: 5.days.from_now)
 
-      ExperimentControlService.start_current_patient_experiment(name: experiment.name)
+      described_class.start_current_patient_experiment(name: experiment.name)
 
       expect(experiment.patients.include?(patient1)).to be_falsey
       expect(experiment.patients.include?(patient2)).to be_falsey
@@ -82,7 +84,7 @@ describe ExperimentControlService, type: :model do
 
       experiment = create(:experiment, :with_treatment_group, start_date: 5.days.from_now, end_date: 35.days.from_now)
 
-      ExperimentControlService.start_current_patient_experiment(name: experiment.name)
+      described_class.start_current_patient_experiment(name: experiment.name)
 
       expect(experiment.patients.include?(patient1)).to be_falsey
       expect(experiment.patients.include?(patient2)).to be_truthy
@@ -98,7 +100,7 @@ describe ExperimentControlService, type: :model do
 
       experiment = create(:experiment, :with_treatment_group, start_date: 5.days.from_now, end_date: 35.days.from_now)
 
-      ExperimentControlService.start_current_patient_experiment(name: experiment.name, percentage_of_patients: percentage)
+      described_class.start_current_patient_experiment(name: experiment.name, percentage_of_patients: percentage)
 
       expect(experiment.patients.count).to eq(1)
     end
@@ -108,7 +110,7 @@ describe ExperimentControlService, type: :model do
       create(:appointment, patient: patient, scheduled_date: 10.days.from_now)
       experiment = create(:experiment, :with_treatment_group, start_date: 5.days.from_now, end_date: 35.days.from_now)
 
-      ExperimentControlService.start_current_patient_experiment(name: experiment.name)
+      described_class.start_current_patient_experiment(name: experiment.name)
 
       expect(experiment.treatment_groups.first.patients.include?(patient)).to be_truthy
     end
@@ -123,7 +125,7 @@ describe ExperimentControlService, type: :model do
       experiment = create(:experiment, :with_treatment_group, start_date: 5.days.from_now, end_date: 35.days.from_now)
       create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
 
-      ExperimentControlService.start_current_patient_experiment(name: experiment.name)
+      described_class.start_current_patient_experiment(name: experiment.name)
 
       reminder1 = Notification.find_by(patient: patient, subject: upcoming_appointment1)
       expect(reminder1).to be_truthy
@@ -147,7 +149,7 @@ describe ExperimentControlService, type: :model do
       create(:reminder_template, treatment_group: group, message: "come today", remind_on_in_days: 0)
       create(:reminder_template, treatment_group: group, message: "you're late", remind_on_in_days: 3)
 
-      ExperimentControlService.start_current_patient_experiment(name: experiment.name)
+      described_class.start_current_patient_experiment(name: experiment.name)
 
       reminder1, reminder2, reminder3 = patient1.notifications.sort_by { |ar| ar.remind_on }
       expect(reminder1.remind_on).to eq(appointment_date - 3.days)
@@ -162,7 +164,7 @@ describe ExperimentControlService, type: :model do
       experiment = create(:experiment, :with_treatment_group, start_date: 5.days.from_now, end_date: 35.days.from_now)
       create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
 
-      ExperimentControlService.start_current_patient_experiment(name: experiment.name)
+      described_class.start_current_patient_experiment(name: experiment.name)
 
       expect(scheduled_appointment.notifications.count).to eq 1
       expect(visited_appointment.notifications.count).to eq 0
@@ -175,7 +177,7 @@ describe ExperimentControlService, type: :model do
       template = create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
 
       expect {
-        ExperimentControlService.start_current_patient_experiment(name: experiment.name)
+        described_class.start_current_patient_experiment(name: experiment.name)
       }.to change { patient1.notifications.count }.by(1)
       notification = patient1.notifications.last
       expect(notification.remind_on).to eq(appointment.scheduled_date)
@@ -189,8 +191,9 @@ describe ExperimentControlService, type: :model do
 
     it "updates the experiment state to 'running'" do
       experiment = create(:experiment, start_date: 5.days.from_now, end_date: 35.days.from_now)
-      ExperimentControlService.start_current_patient_experiment(name: experiment.name)
-      experiment.reload
+      expect {
+        described_class.start_current_patient_experiment(name: experiment.name)
+      }.to change { experiment.reload.state }.to("running")
 
       expect(experiment).to be_running_state
     end
@@ -201,10 +204,9 @@ describe ExperimentControlService, type: :model do
       experiment = create(:experiment, :with_treatment_group, state: "running", start_date: 5.days.from_now, end_date: 35.days.from_now)
       create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
 
-      expect {
-        ExperimentControlService.start_current_patient_experiment(name: experiment.name)
-      }.not_to change { experiment.reload.state }
-      expect(Notification.count).to eq(0)
+      expect { described_class.start_current_patient_experiment(name: experiment.name) }
+        .to not_change { experiment.reload.state }
+        .and not_change { Notification.count }
     end
 
     it "marks the experiment complete if the end date has passed" do
@@ -214,14 +216,14 @@ describe ExperimentControlService, type: :model do
       create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
 
       expect {
-        ExperimentControlService.start_current_patient_experiment(name: experiment.name)
+        described_class.start_current_patient_experiment(name: experiment.name)
       }.to change { experiment.reload.state }.from("running").to("complete")
-      expect(Notification.count).to eq(0)
+        .and not_change { Notification.count }
     end
 
     it "raises a sentry error if the experiment is not found" do
-      expect(Sentry).to receive(:capture_message).with("Experiment doesn't exist not found and may need to be removed from scheduler.")
-      ExperimentControlService.start_current_patient_experiment(name: "doesn't exist")
+      expect(described_class.logger).to receive(:info).with(/Experiment UNKNOWN not found and may need to be removed/)
+      described_class.start_current_patient_experiment(name: "UNKNOWN")
     end
   end
 
@@ -245,7 +247,7 @@ describe ExperimentControlService, type: :model do
 
       experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients")
 
-      ExperimentControlService.schedule_daily_stale_patient_notifications(name: experiment.name)
+      described_class.schedule_daily_stale_patient_notifications(name: experiment.name)
 
       expect(experiment.patients.include?(patient1)).to be_falsey
       expect(experiment.patients.include?(patient2)).to be_truthy
@@ -257,7 +259,7 @@ describe ExperimentControlService, type: :model do
       create(:blood_pressure, patient: patient, device_created_at: 100.days.ago)
       experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients")
 
-      ExperimentControlService.schedule_daily_stale_patient_notifications(name: experiment.name)
+      described_class.schedule_daily_stale_patient_notifications(name: experiment.name)
 
       expect(experiment.treatment_groups.first.patients.include?(patient)).to be_truthy
     end
@@ -270,13 +272,13 @@ describe ExperimentControlService, type: :model do
       template = create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
 
       expect {
-        ExperimentControlService.schedule_daily_stale_patient_notifications(name: experiment.name)
+        described_class.schedule_daily_stale_patient_notifications(name: experiment.name)
       }.to change { patient1.notifications.count }.by(1)
       notification = patient1.notifications.last
+      expect(notification).to be_status_pending
       expect(notification.remind_on).to eq(Date.current)
       expect(notification.purpose).to eq("experimental_appointment_reminder")
       expect(notification.message).to eq(template.message)
-      expect(notification.status).to eq("pending")
       expect(notification.reminder_template).to eq(template)
       expect(notification.subject).to eq(appointment)
       expect(notification.experiment).to eq(experiment)
@@ -291,7 +293,7 @@ describe ExperimentControlService, type: :model do
       create(:reminder_template, treatment_group: group, message: "come today", remind_on_in_days: 0)
       create(:reminder_template, treatment_group: group, message: "you're late", remind_on_in_days: 3)
 
-      ExperimentControlService.schedule_daily_stale_patient_notifications(name: experiment.name)
+      described_class.schedule_daily_stale_patient_notifications(name: experiment.name)
 
       today = Date.current
       reminder1, reminder2 = patient1.notifications.sort_by { |ar| ar.remind_on }
@@ -301,7 +303,7 @@ describe ExperimentControlService, type: :model do
 
     it "updates the experiment state" do
       experiment = create(:experiment, experiment_type: "stale_patients")
-      ExperimentControlService.schedule_daily_stale_patient_notifications(name: experiment.name)
+      described_class.schedule_daily_stale_patient_notifications(name: experiment.name)
       experiment.reload
 
       expect(experiment).to be_running_state
@@ -311,10 +313,10 @@ describe ExperimentControlService, type: :model do
       experiment = create(:experiment, experiment_type: "stale_patients")
       create(:experiment, experiment_type: "stale_patients", state: "selecting")
       expect {
-        ExperimentControlService.schedule_daily_stale_patient_notifications(name: experiment.name)
+        described_class.schedule_daily_stale_patient_notifications(name: experiment.name)
       }.to raise_error(ActiveRecord::RecordInvalid)
-      expect(Notification.count).to eq(0)
-      expect(experiment.reload.state).to eq("new")
+        .and not_change { Notification.count }
+        .and not_change { experiment.reload.state }
     end
 
     it "does nothing if it the experiment is not in 'new' or 'running' state" do
@@ -325,18 +327,18 @@ describe ExperimentControlService, type: :model do
       create(:appointment, patient: patient1, device_created_at: 100.days.ago, scheduled_date: 100.days.ago)
 
       expect {
-        ExperimentControlService.schedule_daily_stale_patient_notifications(name: experiment.name)
-      }.not_to change { experiment.reload }
-      expect(Notification.count).to eq(0)
+        described_class.schedule_daily_stale_patient_notifications(name: experiment.name)
+      }.to not_change { experiment.reload }
+        .and not_change { Notification.count }
     end
 
-    it "raises a sentry error if the experiment is not found" do
-      expect(Sentry).to receive(:capture_message).with("Experiment doesn't exist not found and may need to be removed from scheduler.")
-      ExperimentControlService.schedule_daily_stale_patient_notifications(name: "doesn't exist")
+    it "logs a message if experiment doesn't exist" do
+      expect(described_class.logger).to receive(:info).with("Experiment doesn't exist not found and may need to be removed from scheduler - exiting.")
+      described_class.schedule_daily_stale_patient_notifications(name: "doesn't exist")
     end
 
     it "only schedules reminders for PATIENTS_PER_DAY by default" do
-      stub_const("ExperimentControlService::PATIENTS_PER_DAY", 1)
+      stub_const("#{described_class}::PATIENTS_PER_DAY", 1)
       patient1 = create(:patient, age: 80)
       create(:blood_pressure, patient: patient1, device_created_at: 100.days.ago)
       patient2 = create(:patient, age: 80)
@@ -344,7 +346,7 @@ describe ExperimentControlService, type: :model do
       experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients")
 
       expect {
-        ExperimentControlService.schedule_daily_stale_patient_notifications(name: experiment.name)
+        described_class.schedule_daily_stale_patient_notifications(name: experiment.name)
       }.to change { Experimentation::TreatmentGroupMembership.count }.by(1)
     end
 
@@ -356,7 +358,7 @@ describe ExperimentControlService, type: :model do
       experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients")
 
       expect {
-        ExperimentControlService.schedule_daily_stale_patient_notifications(name: experiment.name, patients_per_day: 1)
+        described_class.schedule_daily_stale_patient_notifications(name: experiment.name, patients_per_day: 1)
       }.to change { Experimentation::TreatmentGroupMembership.count }.by(1)
     end
 
@@ -366,9 +368,9 @@ describe ExperimentControlService, type: :model do
       create(:blood_pressure, patient: patient1, device_created_at: 100.days.ago)
 
       expect {
-        ExperimentControlService.schedule_daily_stale_patient_notifications(name: experiment.name)
-      }.not_to change { Experimentation::TreatmentGroupMembership.count }
-      expect(experiment.reload.state).to eq("new")
+        described_class.schedule_daily_stale_patient_notifications(name: experiment.name)
+      }.to not_change { Experimentation::TreatmentGroupMembership.count }
+        .and not_change { experiment.reload.state }
     end
 
     it "changes the experiment state to 'complete' and does not create notifications if today is after the experiment end date" do
@@ -377,16 +379,16 @@ describe ExperimentControlService, type: :model do
       create(:blood_pressure, patient: patient1, device_created_at: 100.days.ago)
 
       expect {
-        ExperimentControlService.schedule_daily_stale_patient_notifications(name: experiment.name)
+        described_class.schedule_daily_stale_patient_notifications(name: experiment.name)
       }.to change { experiment.reload.state }.from("new").to("complete")
-      expect(Experimentation::TreatmentGroupMembership.count).to eq(0)
+        .and not_change { Experimentation::TreatmentGroupMembership.count }
     end
   end
 
   describe "self.abort_experiment" do
     it "raises error if experiment is not found" do
       expect {
-        ExperimentControlService.abort_experiment("fake")
+        described_class.abort_experiment("fake")
       }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
@@ -399,11 +401,44 @@ describe ExperimentControlService, type: :model do
       sent_notification = create(:notification, experiment: experiment, patient: patient, status: "sent")
 
       expect {
-        ExperimentControlService.abort_experiment(experiment.name)
+        described_class.abort_experiment(experiment.name)
       }.to change { experiment.reload.state }.to("cancelled")
       expect(pending_notification.reload.status).to eq("cancelled")
       expect(scheduled_notification.reload.status).to eq("cancelled")
       expect(sent_notification.reload.status).to eq("sent")
+    end
+  end
+
+  # NOTE: putting a best attempt at an e2e test here for now, with the intention that we can
+  # pull it out to its own dedicated integration test file soon
+  describe "end to end testing" do
+    before do
+      Flipper.enable(:experiment)
+    end
+
+    it "successfully sends notifications to stale patients who have not had an appointment" do
+      Sidekiq::Testing.inline! do
+        twilio_double = double("TwilioApiService", send_sms: double("TwilioResponse", sid: "1234", status: :sent))
+        expect(TwilioApiService).to receive(:new).and_return(twilio_double)
+
+        patient = create(:patient, age: 80)
+        create(:blood_pressure, patient: patient, device_created_at: 100.days.ago)
+        experiment = Seed::ExperimentSeeder.create_stale_experiment(start_date: Date.current, end_date: 45.days.from_now)
+        active_group = experiment.treatment_groups.find_by!(description: "single_notification")
+
+        expect_any_instance_of(Experimentation::Experiment).to receive(:random_treatment_group).and_return(active_group)
+        expect {
+          described_class.schedule_daily_stale_patient_notifications(name: experiment.name)
+        }.to change { experiment.notifications.count }.by(1)
+          .and change { experiment.reload.state }.from("new").to("running")
+
+        expect(active_group.patients.reload.include?(patient)).to be_truthy
+
+        expect(Notification.count).to eq(1)
+        notification = Notification.last
+        notification.status_scheduled!
+        AppointmentNotification::Worker.perform_async(notification.id)
+      end
     end
   end
 end
