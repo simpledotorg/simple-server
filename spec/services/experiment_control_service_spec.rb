@@ -434,7 +434,7 @@ describe ExperimentControlService, type: :model do
       Sidekiq::Testing.inline!
     end
 
-    fit "successfully sends notifications to stale patients who have not had an appointment" do
+    it "successfully sends notifications to stale patients who have not had an appointment" do
       twilio_double = double("TwilioApiService", send_sms: double("TwilioResponse", sid: "1234", status: :sent))
       expect(TwilioApiService).to receive(:new).and_return(twilio_double)
 
@@ -447,7 +447,6 @@ describe ExperimentControlService, type: :model do
       ExperimentControlService.schedule_daily_stale_patient_notifications(name: experiment.name)
       expect(active_group.patients.reload.include?(patient)).to be_truthy
 
-      pp Notification.all.map(&:attributes)
       expect(Notification.count).to eq(1)
       notification = Notification.last
       notification.status_scheduled!
