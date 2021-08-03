@@ -414,30 +414,31 @@ describe Experimentation::Runner, type: :model do
   describe "end to end testing" do
     before do
       Flipper.enable(:experiment)
-      Sidekiq::Testing.inline!
     end
 
     it "successfully sends notifications to stale patients who have not had an appointment" do
-      twilio_double = double("TwilioApiService", send_sms: double("TwilioResponse", sid: "1234", status: :sent))
-      expect(TwilioApiService).to receive(:new).and_return(twilio_double)
+      Sidekiq::Testing.inline! do
+        twilio_double = double("TwilioApiService", send_sms: double("TwilioResponse", sid: "1234", status: :sent))
+        expect(TwilioApiService).to receive(:new).and_return(twilio_double)
 
-      patient = create(:patient, age: 80)
-      create(:blood_pressure, patient: patient, device_created_at: 100.days.ago)
-      experiment = Seed::ExperimentSeeder.create_stale_experiment(start_date: Date.current, end_date: 45.days.from_now)
-      active_group = experiment.treatment_groups.find_by!(description: "single_notification")
+        patient = create(:patient, age: 80)
+        create(:blood_pressure, patient: patient, device_created_at: 100.days.ago)
+        experiment = Seed::ExperimentSeeder.create_stale_experiment(start_date: Date.current, end_date: 45.days.from_now)
+        active_group = experiment.treatment_groups.find_by!(description: "single_notification")
 
-      expect_any_instance_of(Experimentation::Experiment).to receive(:random_treatment_group).and_return(active_group)
-      expect {
-        described_class.schedule_daily_stale_patient_notifications(name: experiment.name)
-      }.to change { experiment.notifications.count }.by(1)
-        .and change { experiment.reload.state }.from("new").to("running")
+        expect_any_instance_of(Experimentation::Experiment).to receive(:random_treatment_group).and_return(active_group)
+        expect {
+          described_class.schedule_daily_stale_patient_notifications(name: experiment.name)
+        }.to change { experiment.notifications.count }.by(1)
+          .and change { experiment.reload.state }.from("new").to("running")
 
-      expect(active_group.patients.reload.include?(patient)).to be_truthy
+        expect(active_group.patients.reload.include?(patient)).to be_truthy
 
-      expect(Notification.count).to eq(1)
-      notification = Notification.last
-      notification.status_scheduled!
-      AppointmentNotification::Worker.perform_async(notification.id)
+        expect(Notification.count).to eq(1)
+        notification = Notification.last
+        notification.status_scheduled!
+        AppointmentNotification::Worker.perform_async(notification.id)
+      end
     end
   end
 end
