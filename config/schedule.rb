@@ -49,11 +49,16 @@ every :monday, at: local("6:00 am"), roles: [:cron] do
   end
 end
 
-every :day, at: local("09:30 am"), roles: [:cron] do
+every :day, at: local("07:30 am"), roles: [:cron] do
   if CountryConfig.current_country?("India") && SimpleServer.env.production?
-    runner "ExperimentControlService.schedule_daily_stale_patient_notifications(name: 'Current Patient August 2021')"
+    runner "ExperimentControlService.start_current_patient_experiment(name: 'Current Patient August 2021')"
     runner "ExperimentControlService.schedule_daily_stale_patient_notifications(name: 'Stale Patient August 2021', patients_per_day: 2000)"
-    runner "AppointmentNotification::ScheduleExperimentReminders.perform_now"
+  end
+end
+
+every :day, at: local("08:30 am"), roles: [:cron] do
+  if CountryConfig.current_country?("India") && SimpleServer.env.production?
+    AppointmentNotification::ScheduleExperimentReminders.perform_now
   end
 end
 
