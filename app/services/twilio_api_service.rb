@@ -26,7 +26,7 @@ class TwilioApiService
   end
 
   def logger
-    @logger ||= Experimentation.logger(class: self.class.name)
+    @logger ||= Notification.logger(class: self.class.name)
   end
 
   def initialize(sms_sender: nil)
