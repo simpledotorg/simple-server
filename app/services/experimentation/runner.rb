@@ -53,7 +53,7 @@ module Experimentation
         end
       end
 
-      logger.info("Finished scheduling notifications for #{name} experiment - marking as running and exiting.")
+      logger.info("Finished scheduling notifications for #{name} current experiment - marking as running and exiting.")
       experiment.running_state!
     end
 
@@ -77,7 +77,7 @@ module Experimentation
       experiment.selecting_state!
 
       eligible_ids = StalePatientSelection.call(start_date: today)
-      logger.info experiment: name, msg: "Found #{eligible_ids.count} eligible patient ids for stale patient reminders"
+      logger.info "Experiment #{name} found #{eligible_ids.count} eligible patient ids for stale patient reminders"
       if eligible_ids.any?
         eligible_ids.shuffle!
         daily_ids = eligible_ids.pop(patients_per_day)
@@ -89,6 +89,7 @@ module Experimentation
         end
       end
 
+      logger.info("Finished scheduling notifications for #{name} stale experiment - marking as running and exiting.")
       experiment.running_state!
     end
 
