@@ -34,7 +34,7 @@ class Notification < ApplicationRecord
         message,
         facility_name: patient.assigned_facility.name,
         patient_name: patient.full_name,
-        locale: patient.assigned_facility.locale
+        locale: patient.locale
       )
     when "experimental_appointment_reminder"
       facility = subject&.facility || patient.assigned_facility
