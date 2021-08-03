@@ -25,7 +25,7 @@ experiments.map { |e| e.treatment_groups.count } # should return 3
 ```ruby
 Time.zone = Period::REPORTING_TIME_ZONE
 
-candidates = Experimentation::Runner.send(:current_patient_candidates, "July 28, 2021".to_date, "July 30, 2021".to_date).count
+candidates = Experimentation::Runner.current_patient_candidates("July 28, 2021".to_date, "July 30, 2021".to_date).count
 # => 10000 ...assume there are 10,000 eligible patients returned...
 percentage = 300 / candidates.to_f * 100 # results in 3
 Experimentation::Runner.start_current_patient_experiment(name: "Small Current Patient July 2021", days_til_start: 1, days_til_end: 3, percentage_of_patients: percentage)

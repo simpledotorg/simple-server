@@ -94,20 +94,14 @@ module Experimentation
 
     def self.abort_experiment(name)
       experiment = Experiment.find_by!(name: name)
+      logger.warn "Aborting experiment #{name}! About to cancel all pending or scheduled notifications."
       experiment.cancelled_state!
 
       notifications = experiment.notifications.where(status: ["pending", "scheduled"])
       notifications.find_each do |notification|
         notification.status_cancelled!
       end
-    end
-
-    protected
-
-    def self.random_treatment_group(experiment)
-      group = experiment.random_treatment_group
-      logger.info "adding patient to group #{group.inspect}"
-      group
+      logger.warn "Aborting experiment #{name} finished."
     end
 
     def self.current_patient_candidates(start_date, end_date)
