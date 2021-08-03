@@ -9,6 +9,11 @@ module Experimentation
     end
 
     def self.start_current_patient_experiment(name:, percentage_of_patients: 100)
+      unless Flipper.enabled?(:experiment)
+        logger.info("Experiment feature flag is off. Experiment #{name} will not be started.")
+        return
+      end
+
       experiment = Experiment.current_patients.find_by(name: name, state: [:new, :running])
       if experiment.nil?
         logger.info("Experiment #{name} not found and may need to be removed from scheduler - exiting.")
@@ -56,6 +61,11 @@ module Experimentation
     end
 
     def self.schedule_daily_stale_patient_notifications(name:, patients_per_day: PATIENTS_PER_DAY)
+      unless Flipper.enabled?(:experiment)
+        logger.info("Experiment feature flag is off. No patients will be added to experiment #{name}.")
+        return
+      end
+
       experiment = Experiment.find_by(name: name, experiment_type: "stale_patients", state: [:new, :running])
       if experiment.nil?
         logger.info("Experiment #{name} not found and may need to be removed from scheduler - exiting.")

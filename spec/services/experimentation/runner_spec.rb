@@ -4,6 +4,25 @@ describe Experimentation::Runner, type: :model do
   include ActiveJob::TestHelper
 
   describe "self.start_current_patient_experiment" do
+
+    before { Flipper.enable(:experiment) }
+
+    it "does not start the experiment, add patients, or create notifications if the feature flag is off" do
+      Flipper.disable(:experiment)
+
+      patient1 = create(:patient, age: 80)
+      create(:appointment, patient: patient1, scheduled_date: 10.days.from_now)
+
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "current_patients", start_date: 5.days.from_now, end_date: 35.days.from_now)
+      template = create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
+
+      described_class.start_current_patient_experiment(name: experiment.name)
+
+      expect(experiment.reload.state).to eq("new")
+      expect(experiment.patients.count).to eq(0)
+      expect(experiment.notifications.count).to eq(0)
+    end
+
     it "only selects from patients 18 and older" do
       young_patient = create(:patient, age: 17)
       old_patient = create(:patient, age: 18)
@@ -228,6 +247,25 @@ describe Experimentation::Runner, type: :model do
   end
 
   describe "self.schedule_daily_stale_patient_notifications" do
+
+    before { Flipper.enable(:experiment) }
+
+    it "does not start the experiment, add patients, or create notifications if the feature flag is off" do
+      Flipper.disable(:experiment)
+
+      patient1 = create(:patient, age: 80)
+      create(:blood_sugar, patient: patient1, device_created_at: 100.days.ago)
+
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients")
+      template = create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
+
+      described_class.schedule_daily_stale_patient_notifications(name: experiment.name)
+
+      expect(experiment.reload.state).to eq("new")
+      expect(experiment.patients.count).to eq(0)
+      expect(experiment.notifications.count).to eq(0)
+    end
+
     it "excludes patients who have recently been in an experiment" do
       recent_experiment = create(:experiment, :with_treatment_group, name: "old", start_date: 2.days.ago, end_date: 1.day.ago)
 
