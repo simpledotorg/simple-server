@@ -58,7 +58,7 @@ end
 
 every :day, at: local("08:30 am"), roles: [:cron] do
   if CountryConfig.current_country?("India")
-    AppointmentNotification::ScheduleExperimentReminders.perform_now
+    runner "AppointmentNotification::ScheduleExperimentReminders.perform_now"
   end
 end
 
