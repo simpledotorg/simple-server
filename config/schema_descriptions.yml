@@ -8,7 +8,7 @@ reporting_patient_states:
     age: "Age of the patient as entered by a nurse"
     age_updated_at: "Time (in UTC) at which the field 'age' was last updated"
     date_of_birth: "Date of birth of the patient"
-    current_age: "Patient's age as of today, based on age, age-updated-at and date-of-birth. This will have the same value for a patient across all rows."
+    current_age: "Patient's age as of today, based on 'age', 'age_updated_at' and 'date_of_birth'. This will have the same value for a patient across all rows."
     month_date: "The reporting month for this row, represented as the date at the beginning of the month"
     month: "Month (1-12) of year"
     quarter: "Quarter (1-4) of year"
