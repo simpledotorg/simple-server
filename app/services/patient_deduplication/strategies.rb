@@ -1,6 +1,8 @@
 module PatientDeduplication
   module Strategies
     class << self
+      ALLOWED_IDENTIFIER_TYPES = %w[simple_bp_passport bangladesh_national_id india_national_health_id]
+
       # Exact match based on identifiers, and case insensitive full names
       def identifier_and_full_name_match(limit: nil)
         duplicate_identifiers
@@ -37,6 +39,7 @@ module PatientDeduplication
           .joins(:patient)
           .select("identifier, array_agg(patient_id) as patient_ids")
           .where.not(identifier: "")
+          .where(identifier_type: ALLOWED_IDENTIFIER_TYPES)
           .group("identifier, identifier_type")
           .having("COUNT(distinct patient_id) > 1")
       end
