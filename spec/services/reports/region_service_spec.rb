@@ -350,11 +350,11 @@ RSpec.describe Reports::RegionService, type: :model do
 
       service = Reports::RegionService.new(region: facility_group_1, period: Period.month(june_1_2020))
       result = service.call
-      expect(result.adjusted_patient_counts_for(Period.month("Jan 2019"))).to eq(0)
-      expect(result.adjusted_patient_counts_for(Period.month("Feb 2019"))).to eq(0)
-      expect(result.adjusted_patient_counts_for(Period.month("Mar 2019"))).to eq(0)
-      expect(result.adjusted_patient_counts_for(Period.month("Apr 2019"))).to eq(2)
-      expect(result.adjusted_patient_counts_for(Period.month("May 2019"))).to eq(2)
+      expect(result.adjusted_patient_counts[Period.month("Jan 2019")]).to eq(0)
+      expect(result.adjusted_patient_counts[Period.month("Feb 2019")]).to eq(0)
+      expect(result.adjusted_patient_counts[Period.month("Mar 2019")]).to eq(0)
+      expect(result.adjusted_patient_counts[Period.month("Apr 2019")]).to eq(2)
+      expect(result.adjusted_patient_counts[Period.month("May 2019")]).to eq(2)
     end
 
     it "returns counts for last n months for controlled patients and registrations" do

@@ -152,10 +152,14 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
 
         it "gets registration and assigned patient counts for brand new regions with no data" do
           facility_1 = FactoryBot.create(:facility, facility_group: facility_group_1)
+          slug = facility_1.region.slug
           repo = Reports::Repository.new(facility_1.region, periods: july_2020_range)
           expect(repo.monthly_registrations).to eq({facility_1.slug => {}})
           expect(repo.controlled).to eq({facility_1.slug => {}})
           expect(repo.controlled_rates).to eq({facility_1.slug => {}})
+          expect(repo.visited_without_bp_taken).to eq({slug => {}})
+          expect(repo.visited_without_bp_taken_rate).to eq({slug => {}})
+          expect(repo.visited_without_bp_taken_rate(with_ltfu: true)).to eq({slug => {}})
         end
 
         it "gets controlled counts and rates for single region" do
