@@ -6,18 +6,11 @@ class Reports::PatientListsController < AdminController
       authorize { current_admin.accessible_facility_regions(:view_pii) }
     end
 
-    @region = if region_class == "facility_district"
-      FacilityDistrict.new(name: params[:id], scope: scope)
-    else
-      scope.find_by!(slug: params[:id])
-    end
-
+    @region = scope.find_by!(slug: params[:id])
     recipient_email = current_admin.email
     download_params = case region_class
     when "facility_group"
       {id: @region.source_id}
-    when "facility_district"
-      {name: @region.name, user_id: current_admin.id}
     else
       {facility_id: @region.source_id}
     end
@@ -52,8 +45,6 @@ class Reports::PatientListsController < AdminController
       "facility_group"
     when "facility"
       "facility"
-    when "facility_district"
-      "facility_district"
     else
       raise ActiveRecord::RecordNotFound, "unknown report scope #{filtered_params[:report_scope].inspect}"
     end
