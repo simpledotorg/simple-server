@@ -28,7 +28,7 @@ class MyFacilities::FacilityPerformanceController < AdminController
 
     @facilities.each do |facility|
       slug = facility.region.slug
-      @data_for_facility[slug] = Reports::RegionService.new(region: facility,
+      @data_for_facility[slug] = Reports::RegionService.new(region: facility.region,
                                                             period: @period).call
 
       @scores_for_facility[slug] = Reports::PerformanceScore.new(region: facility,
