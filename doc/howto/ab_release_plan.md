@@ -10,7 +10,7 @@ NOTE: "Launch day" below is the day when the experiments are started and notific
    1. Check metabase
 1. 8:30am IST: a Nilenso developer will monitor the stale experiment progress. Some things to monitor:
     * [Datadog metrics dashboard](https://app.datadoghq.com/dashboard/y9g-qt8-2jp/appointment-notifications-monitoring-ihci)
-    * [Datadog notifications logs](https://app.datadoghq.com/logs?saved_view=466946) - this filters events to show those where `module=notifications`
+    * [Datadog notifications logs](https://app.datadoghq.com/logs?saved_view=466966) - this filters events to show those where `module=notifications`
     * Twilio dashboard - check error rates versus successful sends
     * Sentry.io
     * Sidekiq queues
