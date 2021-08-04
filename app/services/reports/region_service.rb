@@ -42,8 +42,8 @@ module Reports
       result.uncontrolled_patients_with_ltfu_rate = repository.uncontrolled_rates(with_ltfu: true)[slug]
 
       result.visited_without_bp_taken = repository.visited_without_bp_taken[region.slug]
-      result.calculate_percentages(:visited_without_bp_taken)
-      result.calculate_percentages(:visited_without_bp_taken, with_ltfu: true)
+      result.visited_without_bp_taken_rate = repository.visited_without_bp_taken_rate[region.slug]
+      result.visited_without_bp_taken_with_ltfu_rate = repository.visited_without_bp_taken_rate(with_ltfu: true)[region.slug]
 
       result.missed_visits = repository.missed_visits[region.slug]
       result.missed_visits_rate = repository.missed_visits_without_ltfu_rates[region.slug]
