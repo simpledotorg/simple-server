@@ -11,7 +11,9 @@
 # are idempotent and retries would yield the same errors.
 
 class TwilioApiService
+  attr_accessor :communication_type
   attr_reader :client
+  attr_reader :metrics
   attr_reader :twilio_sender_sms_number
   attr_reader :twilio_sender_whatsapp_number
 
@@ -21,12 +23,10 @@ class TwilioApiService
   delegate :logger, to: Rails
 
   class Error < StandardError
-    attr_reader :exception_message, :context
-    def initialize(message, exception_message:, context:)
-      super(message)
-      @exception_message = exception_message
-      @context = context
-    end
+  end
+
+  def logger
+    @logger ||= Notification.logger(class: self.class.name)
   end
 
   def initialize(sms_sender: nil)
@@ -56,6 +56,7 @@ class TwilioApiService
     else
       prod_client
     end
+    @metrics = Metrics.with_object(self)
   end
 
   def test_mode?
@@ -71,12 +72,14 @@ class TwilioApiService
   end
 
   def send_sms(recipient_number:, message:, callback_url: nil, context: {})
+    track(context)
     sender_number = twilio_sender_sms_number
 
     send_twilio_message(sender_number, recipient_number, message, callback_url, context)
   end
 
   def send_whatsapp(recipient_number:, message:, callback_url: nil, context: {})
+    track(context)
     sender_number = "whatsapp:" + twilio_sender_whatsapp_number
     recipient_number = "whatsapp:" + recipient_number
 
@@ -85,29 +88,25 @@ class TwilioApiService
 
   private
 
+  def track(context)
+    communication_type = context[:communication_type]
+    metrics.increment("#{communication_type}.attempts")
+    data = context.merge(msg: "sending #{communication_type} message")
+    logger.info data
+  end
+
   def send_twilio_message(sender_number, recipient_number, message, callback_url, context)
-    client.messages.create(
+    Sentry.set_tags(context)
+    response = client.messages.create(
       from: sender_number,
       to: recipient_number,
       status_callback: callback_url,
       body: message
     )
+    metrics.increment("#{communication_type}.sent")
+    response
   rescue Twilio::REST::TwilioError => exception
-    if exception.respond_to?(:code)
-      log_error(exception, sender_number, recipient_number, context)
-      nil
-    else
-      raise Error.new("Error while calling Twilio API", exception_message: exception.to_s, context: context)
-    end
-  end
-
-  def log_error(e, sender_number, recipient_number, context)
-    logger.info({
-      class: self.class.name,
-      error: e,
-      sender: sender_number,
-      recipient: recipient_number,
-      **context
-    })
+    metrics.increment("#{communication_type}.errors")
+    raise Error.new("Error while calling Twilio API: #{exception.message}")
   end
 end

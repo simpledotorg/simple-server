@@ -81,12 +81,12 @@ describe Reports::PerformanceScore, type: :model do
 
   describe "#control_rate" do
     it "returns the control rate" do
-      allow(reports_result).to receive(:controlled_patients_rate_for).with(period).and_return(20)
+      allow(reports_result).to receive(:controlled_patients_rate).and_return({period => 20})
       expect(perf_score.control_rate).to eq(20)
     end
 
-    it "returns 0 when control rate is nil" do
-      allow(reports_result).to receive(:controlled_patients_rate_for).with(period).and_return(nil)
+    it "returns 0 when control rate is empty hash" do
+      allow(reports_result).to receive(:controlled_patients_rate).and_return({})
       expect(perf_score.control_rate).to eq(0)
     end
   end
@@ -122,17 +122,17 @@ describe Reports::PerformanceScore, type: :model do
 
   describe "#visits_rate" do
     it "returns the inverse of the missed visits rate" do
-      allow(reports_result).to receive(:missed_visits_rate_for).with(period).and_return(60)
+      allow(reports_result).to receive(:missed_visits_rate).and_return({period => 60})
       expect(perf_score.visits_rate).to eq(40)
     end
 
     it "returns 100 when missed visits rate is 0" do
-      allow(reports_result).to receive(:missed_visits_rate_for).with(period).and_return(0)
+      allow(reports_result).to receive(:missed_visits_rate).and_return({period => 0})
       expect(perf_score.visits_rate).to eq(100)
     end
 
-    it "returns 100 when missed visits rate is nil" do
-      allow(reports_result).to receive(:missed_visits_rate_for).with(period).and_return(nil)
+    it "returns 100 when missed visits rate is empty hash" do
+      allow(reports_result).to receive(:missed_visits_rate).and_return({})
       expect(perf_score.visits_rate).to eq(100)
     end
   end
@@ -187,12 +187,12 @@ describe Reports::PerformanceScore, type: :model do
 
   describe "#registrations" do
     it "returns the registrations count" do
-      allow(reports_result).to receive(:registrations_for).with(period).and_return(20)
+      allow(reports_result).to receive(:registrations).and_return(period => 20)
       expect(perf_score.registrations).to eq(20)
     end
 
-    it "returns 0 when registrations count is nil" do
-      allow(reports_result).to receive(:registrations_for).with(period).and_return(nil)
+    it "returns 0 when registrations count is empty hash" do
+      allow(reports_result).to receive(:registrations).and_return({})
       expect(perf_score.registrations).to eq(0)
     end
   end

@@ -1,14 +1,21 @@
 class AppointmentNotification::ScheduleExperimentReminders < ApplicationJob
   queue_as :high
 
+  def logger
+    @logger ||= Notification.logger(class: self.class.name)
+  end
+
   def perform
     return unless Flipper.enabled?(:experiment)
 
-    reminders = Notification.due_today
+    notifications = Notification.due_today
     next_messaging_time = Communication.next_messaging_time
-    reminders.each do |reminder|
-      reminder.status_scheduled!
-      AppointmentNotification::Worker.perform_at(next_messaging_time, reminder.id)
+
+    logger.info "scheduling #{notifications.count} notifications that are due with next_messaging_time=#{next_messaging_time}"
+    notifications.each do |notification|
+      notification.status_scheduled!
+      AppointmentNotification::Worker.perform_at(next_messaging_time, notification.id)
     end
+    logger.info "scheduling experiment notifications complete"
   end
 end

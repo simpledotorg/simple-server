@@ -40,7 +40,7 @@ module Reports
     end
 
     def control_rate
-      @reports_result.controlled_patients_rate_for(@period) || 0
+      @reports_result.controlled_patients_rate[@period] || 0
     end
 
     def visits_score
@@ -52,7 +52,7 @@ module Reports
     end
 
     def visits_rate
-      100 - (@reports_result.missed_visits_rate_for(@period) || 0)
+      100 - (@reports_result.missed_visits_rate[@period] || 0)
     end
 
     def registrations_score
@@ -73,7 +73,7 @@ module Reports
     end
 
     def registrations
-      @reports_result.registrations_for(@period) || 0
+      @reports_result.registrations[@period] || 0
     end
   end
 end

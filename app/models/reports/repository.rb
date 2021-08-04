@@ -4,10 +4,17 @@ module Reports
     include BustCache
     include Memery
     include Scientist
-    PERCENTAGE_PRECISION = 0
 
-    def initialize(regions, periods:, reporting_schema_v2: false)
-      @regions = Array(regions)
+    def self.use_schema_v2?
+      @use_schema_v2 ||= false
+    end
+
+    class << self
+      attr_writer :use_schema_v2
+    end
+
+    def initialize(regions, periods:, reporting_schema_v2: self.class.use_schema_v2?)
+      @regions = Array(regions).map(&:region)
       @periods = if periods.is_a?(Period)
         Range.new(periods, periods)
       else
@@ -16,28 +23,26 @@ module Reports
       @period_type = @periods.first.type
       @reporting_schema_v2 = reporting_schema_v2
       raise ArgumentError, "Quarter periods not supported" if @period_type != :month
+      @schema = if reporting_schema_v2?
+        SchemaV2.new(@regions, periods: @periods)
+      else
+        SchemaV1.new(@regions, periods: @periods)
+      end
 
-      @assigned_patients_query = AssignedPatientsQuery.new
       @bp_measures_query = BPMeasuresQuery.new
-      @control_rate_query = ControlRateQuery.new
-      @control_rate_query_v2 = ControlRateQueryV2.new
-      @earliest_patient_data_query = EarliestPatientDataQuery.new
       @follow_ups_query = FollowUpsQuery.new
       @no_bp_measure_query = NoBPMeasureQuery.new
       @registered_patients_query = RegisteredPatientsQuery.new
     end
 
-    attr_reader :assigned_patients_query
     attr_reader :bp_measures_query
-    attr_reader :control_rate_query
-    attr_reader :control_rate_query_v2
-    attr_reader :earliest_patient_data_query
     attr_reader :follow_ups_query
     attr_reader :no_bp_measure_query
     attr_reader :period_type
     attr_reader :periods
     attr_reader :regions
     attr_reader :registered_patients_query
+    attr_reader :schema
 
     def reporting_schema_v2?
       @reporting_schema_v2
@@ -45,98 +50,27 @@ module Reports
 
     delegate :cache, :logger, to: Rails
 
-    # Returns the earliest patient record for a Region from either assigned or registered patients. Note that this *ignores*
-    # the periods that are passed in for the Repository - this is the true 'earliest report date' for a Region.
-    memoize def earliest_patient_recorded_at
-      region_entries = regions.map { |region| RegionEntry.new(region, __method__) }
-      cached_results = cache.fetch_multi(*region_entries, force: bust_cache?) { |region_entry|
-        earliest_patient_data_query.call(region_entry.region)
-      }
-      cached_results.each_with_object({}) { |(region_entry, time), results| results[region_entry.slug] = time }
-    end
+    DELEGATED_METHODS = [
+      :adjusted_patients_with_ltfu,
+      :adjusted_patients_without_ltfu,
+      :assigned_patients,
+      :complete_monthly_registrations,
+      :controlled_rates,
+      :controlled,
+      :cumulative_assigned_patients,
+      :cumulative_registrations,
+      :earliest_patient_recorded_at,
+      :earliest_patient_recorded_at_period,
+      :ltfu_rates,
+      :ltfu,
+      :monthly_registrations,
+      :uncontrolled_rates,
+      :uncontrolled
+    ]
 
-    memoize def earliest_patient_recorded_at_period
-      earliest_patient_recorded_at.each_with_object({}) { |(slug, time), hsh| hsh[slug] = Period.new(value: time, type: @period_type) if time }
-    end
-
-    # Returns assigned patients for a Region. NOTE: We grab and cache ALL the counts for a particular region with one SQL query
-    # because it is easier and fast enough to do so. We still return _just_ the periods the Repository was created with
-    # to conform to the same interface as all the other queries here.
-
-    # Returns a Hash in the shape of:
-    # {
-    #    region_slug: { period: value, period: value },
-    #    region_slug: { period: value, period: value }
-    # }
-    memoize def assigned_patients
-      complete_monthly_assigned_patients.each_with_object({}) do |(entry, result), results|
-        values = periods.each_with_object(Hash.new(0)) { |period, region_result| region_result[period] = result[period] if result[period] }
-        results[entry.region.slug] = values
-      end
-    end
-
-    # Adjusted patient counts are the patient counts from three months ago (the adjusted period) that
-    # are the basis for control rates. These counts DO include lost to follow up.
-    memoize def adjusted_patients_with_ltfu
-      cumulative_assigned_patients.each_with_object({}) do |(entry, result), results|
-        values = periods.each_with_object(Hash.new(0)) { |period, region_result|
-          region_result[period] = result[period.adjusted_period]
-        }
-        results[entry] = values
-      end
-    end
-
-    # Adjusted patient counts are the patient counts from three months ago (the adjusted period) that
-    # are the basis for control rates. These counts DO NOT include lost to follow up.
-    memoize def adjusted_patients_without_ltfu
-      cumulative_assigned_patients.each_with_object({}) do |(entry, result), results|
-        values = periods.each_with_object(Hash.new(0)) { |period, region_result|
-          next unless result.key?(period.adjusted_period)
-          region_result[period] = result[period.adjusted_period] - ltfu[entry][period]
-        }
-        results[entry] = values
-      end
-    end
+    delegate(*DELEGATED_METHODS, to: :schema)
 
     alias_method :adjusted_patients, :adjusted_patients_without_ltfu
-
-    # Return the running total of cumulative assigned patient counts.
-    memoize def cumulative_assigned_patients
-      complete_monthly_assigned_patients.each_with_object({}) do |(region_entry, patient_counts), totals|
-        slug = region_entry.slug
-        next totals[slug] = Hash.new(0) if earliest_patient_recorded_at[slug].nil?
-        range = Range.new(earliest_patient_recorded_at_period[slug], periods.end)
-        totals[slug] = range.each_with_object(Hash.new(0)) { |period, sum|
-          sum[period] = sum[period.previous] + patient_counts.fetch(period, 0)
-        }
-      end
-    end
-
-    # Returns registration counts per region / period
-    memoize def monthly_registrations
-      complete_monthly_registrations.each_with_object({}) do |(entry, result), results|
-        result.default = 0
-        results[entry.region.slug] = result
-      end
-    end
-
-    # Returns the full range of registered patient counts for a Region. We do this via one SQL query for each Region, because its
-    # fast and easy via the underlying query.
-    memoize def complete_monthly_registrations
-      items = regions.map { |region| RegionEntry.new(region, __method__, period_type: period_type) }
-      cache.fetch_multi(*items, force: bust_cache?) { |entry|
-        registered_patients_query.count(entry.region, period_type)
-      }
-    end
-
-    memoize def cumulative_registrations
-      complete_monthly_registrations.each_with_object({}) do |(region_entry, patient_counts), totals|
-        range = Range.new(patient_counts.keys.first || periods.first, periods.end)
-        totals[region_entry.slug] = range.each_with_object(Hash.new(0)) { |period, sum|
-          sum[period] = sum[period.previous] + patient_counts.fetch(period, 0)
-        }
-      end
-    end
 
     # Returns registration counts per region / period counted by registration_user
     memoize def monthly_registrations_by_user
@@ -147,68 +81,6 @@ module Reports
       result.each_with_object({}) { |(region_entry, counts), hsh|
         hsh[region_entry.region.slug] = counts
       }
-    end
-
-    memoize def ltfu
-      region_period_cached_query(__method__) do |entry|
-        facility_ids = entry.region.facility_ids
-        Patient.for_reports.where(assigned_facility: facility_ids).ltfu_as_of(entry.period.end).count
-      end
-    end
-
-    memoize def ltfu_rates
-      region_period_cached_query(__method__) do |entry|
-        slug, period = entry.slug, entry.period
-        percentage(ltfu[slug][period], cumulative_assigned_patients[slug][period])
-      end
-    end
-
-    memoize def controlled
-      return controlled_v2 if reporting_schema_v2?
-      science("controlled") do |e|
-        e.use { controlled_v1 }
-        e.try { controlled_v2 }
-      end
-    end
-
-    private def controlled_v1
-      region_period_cached_query(__method__) do |entry|
-        control_rate_query.controlled(entry.region, entry.period).count
-      end
-    end
-
-    private def controlled_v2
-      regions.each_with_object({}).each do |region, hsh|
-        if earliest_patient_recorded_at[region.slug].nil?
-          hsh[region.slug] = {}
-          next
-        end
-        hsh[region.slug] = control_rate_query_v2.controlled_counts(region, range: active_range(region))
-      end
-    end
-
-    memoize def uncontrolled
-      return uncontrolled_v2 if reporting_schema_v2?
-      science("uncontrolled") do |e|
-        e.use { uncontrolled_v1 }
-        e.try { uncontrolled_v2 }
-      end
-    end
-
-    private def uncontrolled_v1
-      region_period_cached_query(__method__) do |entry|
-        control_rate_query.uncontrolled(entry.region, entry.period).count
-      end
-    end
-
-    private def uncontrolled_v2
-      regions.each_with_object({}).each do |region, hsh|
-        if earliest_patient_recorded_at[region.slug].nil?
-          hsh[region.slug] = {}
-          next
-        end
-        hsh[region.slug] = control_rate_query_v2.uncontrolled_counts(region, range: active_range(region))
-      end
     end
 
     memoize def missed_visits_without_ltfu
@@ -277,22 +149,6 @@ module Reports
       }
     end
 
-    memoize def controlled_rates(with_ltfu: false)
-      region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
-        numerator = controlled[entry.slug][entry.period]
-        total = denominator(entry.region, entry.period, with_ltfu: with_ltfu)
-        percentage(numerator, total)
-      end
-    end
-
-    memoize def uncontrolled_rates(with_ltfu: false)
-      region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
-        numerator = uncontrolled[entry.region.slug][entry.period]
-        total = denominator(entry.region, entry.period, with_ltfu: with_ltfu)
-        percentage(numerator, total)
-      end
-    end
-
     memoize def visited_without_bp_taken
       region_period_cached_query(__method__) do |entry|
         no_bp_measure_query.call(entry.region, entry.period)
@@ -314,15 +170,6 @@ module Reports
     def active_range(region)
       start = [earliest_patient_recorded_at_period[region.slug], periods.begin].compact.max
       (start..periods.end)
-    end
-
-    # Returns the full range of assigned patient counts for a Region. We do this via one SQL query for each Region, because its
-    # fast and easy via the underlying query.
-    memoize def complete_monthly_assigned_patients
-      items = regions.map { |region| RegionEntry.new(region, __method__, period_type: period_type) }
-      cache.fetch_multi(*items, force: bust_cache?) { |region_entry|
-        assigned_patients_query.count(region_entry.region, period_type)
-      }
     end
 
     def denominator(region, period, with_ltfu: false)

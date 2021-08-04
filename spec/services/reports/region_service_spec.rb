@@ -69,19 +69,15 @@ RSpec.describe Reports::RegionService, type: :model do
     may_period = Date.parse("May 1 2020").to_period
     june_period = Date.parse("June 1 2020").to_period
     expect(result[:registrations][june_1_2018.to_date.to_period]).to eq(2)
-    expect(result[:assigned_patients][june_1_2018.to_date.to_period]).to eq(2)
     expect(result[:cumulative_registrations][june_1_2018.to_date.to_period]).to eq(6)
     expect(result[:cumulative_assigned_patients][june_1_2018.to_date.to_period]).to eq(6)
     expect(result[:registrations][april_period]).to eq(2)
-    expect(result[:assigned_patients][april_period]).to eq(2)
     expect(result[:cumulative_registrations][april_period]).to eq(8)
     expect(result[:cumulative_assigned_patients][april_period]).to eq(8)
     expect(result[:registrations][may_period]).to eq(4)
-    expect(result[:assigned_patients][may_period]).to eq(3)
     expect(result[:cumulative_registrations][may_period]).to eq(12)
     expect(result[:cumulative_assigned_patients][may_period]).to eq(11)
     expect(result[:registrations][june_period]).to eq(4)
-    expect(result[:assigned_patients][june_period]).to eq(4)
     expect(result[:cumulative_registrations][june_period]).to eq(16)
     expect(result[:cumulative_assigned_patients][june_period]).to eq(15)
   end
@@ -234,7 +230,6 @@ RSpec.describe Reports::RegionService, type: :model do
     end
 
     expect(result[:registrations][Period.month(jan_2019)]).to eq(5)
-    expect(result[:assigned_patients][Period.month(jan_2019)]).to eq(5)
     expect(result[:cumulative_registrations][Period.month(jan_2019)]).to eq(5)
     expect(result[:cumulative_assigned_patients][Period.month(jan_2019)]).to eq(5)
     expect(result[:adjusted_patient_counts][Period.month(jan_2019)]).to eq(0)
@@ -251,7 +246,6 @@ RSpec.describe Reports::RegionService, type: :model do
     expect(result[:cumulative_registrations][Period.month(june_1_2020)]).to eq(10)
     expect(result[:cumulative_assigned_patients][Period.month(june_1_2020)]).to eq(10)
     expect(result[:registrations][Period.month(june_1_2020)]).to eq(0)
-    expect(result[:assigned_patients][Period.month(june_1_2020)]).to eq(0)
     expect(result[:controlled_patients][Period.month(june_1_2020)]).to eq(3)
     expect(result[:controlled_patients_rate][Period.month(june_1_2020)]).to eq(30.0)
     expect(result[:uncontrolled_patients][Period.month(june_1_2020)]).to eq(5)
@@ -356,11 +350,11 @@ RSpec.describe Reports::RegionService, type: :model do
 
       service = Reports::RegionService.new(region: facility_group_1, period: Period.month(june_1_2020))
       result = service.call
-      expect(result.adjusted_patient_counts_for(Period.month("Jan 2019"))).to eq(0)
-      expect(result.adjusted_patient_counts_for(Period.month("Feb 2019"))).to eq(0)
-      expect(result.adjusted_patient_counts_for(Period.month("Mar 2019"))).to eq(0)
-      expect(result.adjusted_patient_counts_for(Period.month("Apr 2019"))).to eq(2)
-      expect(result.adjusted_patient_counts_for(Period.month("May 2019"))).to eq(2)
+      expect(result.adjusted_patient_counts[Period.month("Jan 2019")]).to eq(0)
+      expect(result.adjusted_patient_counts[Period.month("Feb 2019")]).to eq(0)
+      expect(result.adjusted_patient_counts[Period.month("Mar 2019")]).to eq(0)
+      expect(result.adjusted_patient_counts[Period.month("Apr 2019")]).to eq(2)
+      expect(result.adjusted_patient_counts[Period.month("May 2019")]).to eq(2)
     end
 
     it "returns counts for last n months for controlled patients and registrations" do

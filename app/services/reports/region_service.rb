@@ -29,7 +29,6 @@ module Reports
       result.earliest_registration_period = repository.earliest_patient_recorded_at_period[slug]
       result.adjusted_patient_counts = repository.adjusted_patients_without_ltfu[slug]
       result.adjusted_patient_counts_with_ltfu = repository.adjusted_patients_with_ltfu[slug]
-      result.assigned_patients = repository.assigned_patients[slug]
       result.controlled_patients = repository.controlled[slug]
       result.controlled_patients_rate = repository.controlled_rates[slug]
       result.controlled_patients_with_ltfu_rate = repository.controlled_rates(with_ltfu: true)[slug]
@@ -43,8 +42,8 @@ module Reports
       result.uncontrolled_patients_with_ltfu_rate = repository.uncontrolled_rates(with_ltfu: true)[slug]
 
       result.visited_without_bp_taken = repository.visited_without_bp_taken[region.slug]
-      result.calculate_percentages(:visited_without_bp_taken)
-      result.calculate_percentages(:visited_without_bp_taken, with_ltfu: true)
+      result.visited_without_bp_taken_rate = repository.visited_without_bp_taken_rate[region.slug]
+      result.visited_without_bp_taken_with_ltfu_rate = repository.visited_without_bp_taken_rate(with_ltfu: true)[region.slug]
 
       result.missed_visits = repository.missed_visits[region.slug]
       result.missed_visits_rate = repository.missed_visits_without_ltfu_rates[region.slug]
