@@ -12,8 +12,8 @@ module Reports
       table_comments = YAML.load_file("config/schema_descriptions.yml")[table_name]
       return unless table_comments.present?
       add_table_description(table_name, table_comments["description"])
-      table_comments["columns"].each do |column_name, column_description|
-        add_column_description(column_description, column_name)
+      table_comments["columns"].each do |column_name, column_info|
+        add_column_description(column_info["description"], column_name)
       end
     end
 
