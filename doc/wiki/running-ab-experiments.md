@@ -3,7 +3,7 @@
 ## Experiment setup:
 - experiments can be set up by adding a data migration to `db/data`
 - an example of how to set up an experiment can be found in `lib/seed/experiment_seeder.rb`
-- the `experiment` feature flag must be on before the patient selection process and while experiment notifications are still sending. Turning it off will prevent experiment notifications from being scheduled to send each day.
+- the `experiment` feature flag must be on before the patient selection process and while experiment notifications are still sending. Turning it off will prevent patient selection and experiment notifications from being scheduled to send each day.
 - in India, the `whatsapp_appointment_reminders` feature flag should also be turned on because WhatsApp notifications are of higher value than SMS.
 
 ## Current patient experiment:
@@ -14,11 +14,11 @@
   - this also accepts an optional `percentage_of_patients` argument that defaults to 100
 - the first time it is run by the scheduler, the job will:
   - select eligible patients
-  - assign those patients randomly to treatment groups
-  - create all notifications for experiment patients, based on the date of their next appointment and the information in their treatment group's reminder templates. These will be marked as "pending" and will not be sent at this time.
+  - assign them randomly to treatment groups
+  - create all notifications for experiment patients, based on the date of their next appointment and the information in their treatment group's reminder templates. These will be marked as "pending" and will not be sent by this job.
   - change the experiment state from "new" to "running"
 - those messages will then be scheduled for delivery each day as described [here](notification-scheduling).
-- despite the fact that selection and notification creation is all done during the first time it runs, the experiment runner can safely be left on the scheduler. On subsequent runs, it will do nothing until the experiment end date has passed, at which point it will change the experiment state to "complete".
+- despite the fact that patient selection and notification creation is all done during the first time it runs, this experiment runner can safely be left on the scheduler. On subsequent runs, it will do nothing until the experiment end date has passed, at which point it will change the experiment state to "complete".
 
 ## Stale patient experiment:
 - stale patient selection occurs daily every day from experiment start date through experiment end date.
@@ -54,7 +54,7 @@
 - to prevent notifications from being sent, see instructions [here](#ending-an-experiment-early).
 
 ## Ending an experiment early
-- the fastest way to stop experiment notifications from sending is to turn off the `experiment` feature flag. This is an option if we want to pause the experiment but not end it.
+- the fastest way to stop experiment notifications from sending is to turn off the `experiment` and `notifications` feature flag. This is an option if we want to pause the experiment but not end it. Turning off `notifications` will turn off all notifications, not just experiment notifications.
 - if we need to end an experiment early, we can do it by running `Experimentation::Runner.abort_experiment("experiment name")`. This will:
   - change the experiment state to "cancelled"
   - mark all "pending" and "scheduled" notifications as "cancelled"
