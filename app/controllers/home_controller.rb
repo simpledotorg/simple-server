@@ -6,7 +6,7 @@ class HomeController < AdminController
   skip_after_action :verify_authorization_attempted, only: [:index]
 
   def index
-    unless current_admin.feature_enabled?(:webpack)
+    unless current_admin.feature_enabled?(:dashboard_ui_refresh)
       redirect_to my_facilities_overview_path(request.query_parameters)
     end
   end
