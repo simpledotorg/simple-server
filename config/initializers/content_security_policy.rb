@@ -15,7 +15,6 @@ unless SimpleServer.env.review? && Rake.application.top_level_tasks.any? { |task
       policy.object_src(:none)
       policy.script_src(:self, :https, :unsafe_inline)
       policy.style_src(:self, :https, :unsafe_inline)
-      policy.connect_src(:self, :https, "http://localhost:3035", "ws://localhost:3035") if Rails.env.development?
 
       report_uri = Addressable::URI.parse(ENV["SENTRY_SECURITY_HEADER_ENDPOINT"])
       report_uri.query_values = report_uri.query_values&.merge(sentry_environment: ENV["SENTRY_CURRENT_ENV"])

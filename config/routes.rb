@@ -1,6 +1,4 @@
 Rails.application.routes.draw do
-  get "home/index"
-
   devise_scope :email_authentication do
     authenticated :email_authentication do
       root to: "admin#root"
