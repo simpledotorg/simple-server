@@ -368,6 +368,70 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
         end
       end
 
+      context "ltfu" do
+        it "counts ltfu for patients who never have a BP taken" do
+          facility = create(:facility, facility_group: facility_group_1)
+          # patient who never has a BP taken so they are LTFU in Jan 1st 2019
+          _missed_visit = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: "Jan 1st 2018 00:00:00 IST", registration_user: user)
+
+          refresh_views
+
+          jan_2020_range = (Period.month(jan_2020.advance(months: -24))..Period.month(jan_2020))
+          repo = Reports::Repository.new(facility.region, periods: jan_2020_range)
+          pp repo.ltfu[facility.region.slug]
+        end
+      end
+
+      context "missed visits" do
+        it "counts missed visits for patients with no BPs taken" do
+          facility = create(:facility, facility_group: facility_group_1)
+          slug = facility.region.slug
+          # patient who never has a BP taken, and is therefore always LTFU
+          _missed_visit_2 = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: "January 1st 2018 00:00:00 UTC", registration_user: user)
+
+          refresh_views
+
+          jan_2020_range = (Period.month(jan_2020.advance(months: -24))..Period.month(jan_2020))
+          repo = Reports::Repository.new(facility.region, periods: jan_2020_range)
+
+          months_with_one_missed_visit = ("April 2018".to_date.to_period...jan_2019.to_period).entries
+          repo.missed_visits_without_ltfu[slug].each do |period, count|
+            expected = period.in?(months_with_one_missed_visit) ? 1 : 0
+            expect(count).to eq(expected), "expected #{period} to have missed visits of #{expected} but got #{count}"
+          end
+        end
+
+        it "counts missed visits with and with ltfu" do
+          facility = create(:facility, facility_group: facility_group_1)
+          slug = facility.region.slug
+          # patient w/ missed visit starting in April 2018 who is LTFU as of Jan 2019
+          missed_visit_1 = FactoryBot.create(:patient, assigned_facility: facility, registration_facility: facility, recorded_at: "Jan 1st 2018 08:00:00 UTC", registration_user: user)
+          create(:bp_with_encounter, :under_control, facility: facility, patient: missed_visit_1, recorded_at: "Jan 1st 2019 08:00:00 UTC")
+
+          # patient who never has a BP taken, and is missed visit from April 2018 to Dec 2018
+          _missed_visit_2 = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: "Jan 1st 2018 00:00:00 UTC", registration_user: user)
+
+          refresh_views
+
+          jan_2020_range = (Period.month(jan_2020.advance(months: -24))..Period.month(jan_2020))
+          repo = Reports::Repository.new(facility.region, periods: jan_2020_range)
+
+          one_missed_visit = ("April 2019".to_date.to_period.."December 2019".to_date.to_period)
+          two_missed_visit = ("April 2018".to_date.to_period.."December 2018".to_date.to_period)
+
+          repo.missed_visits_without_ltfu[slug].each do |period, count|
+            expected = if period.in?(one_missed_visit)
+              1
+            elsif period.in?(two_missed_visit)
+              2
+            else 0
+            end
+            expect(count).to eq(expected), "expected #{period} to have missed visits of #{expected} but got #{count}"
+          end
+        end
+      end
+
+
       context "caching", skip: v2_flag do
         let(:facility_1) { create(:facility, name: "facility-1") }
 
@@ -439,40 +503,6 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
           # cumulative registrations returns all summed registrations for all months we have in reporting_months...
           # not sure who should be responsible for trimming the result set
           expect(repo.cumulative_registrations[facility_1.slug]).to eq({})
-        end
-
-        fit "gets same results as RegionService for missed_visits" do
-          very_old = Time.zone.parse("December 1st 2010")
-          may_1_2020 = Time.zone.parse("May 1st, 2020")
-          may_15_2020 = Time.zone.parse("May 15th, 2020")
-          facility = create(:facility, facility_group: facility_group_1)
-          slug = facility.region.slug
-          # patients without any visits
-          _patient_missed_visit_1_always_ltfu = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: very_old, registration_user: user)
-          _patient_missed_visit_2 = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: jan_2020, registration_user: user)
-          # patients with visits
-          patient_with_appt_visit = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: jan_2020, registration_user: user)
-          patient_with_bp_visit = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: jan_2020, registration_user: user)
-          create(:appointment, creation_facility: facility, scheduled_date: may_1_2020, device_created_at: may_1_2020, patient: patient_with_appt_visit)
-          create(:bp_with_encounter, :under_control, facility: facility, patient: patient_with_bp_visit, recorded_at: may_15_2020)
-
-          refresh_views
-
-          service = Reports::RegionService.new(region: facility, period: july_2020.to_period)
-          repo = Reports::Repository.new(facility.region, periods: service.range)
-          legacy_results = service.call
-
-          expect(legacy_results[:missed_visits].size).to eq(service.range.entries.size)
-          # expect(repo.missed_visits[slug].size).to eq(service.range.entries.size)
-          expect(repo.missed_visits[slug]).to eq(legacy_results[:missed_visits])
-
-          expect(repo.missed_visits_without_ltfu[slug]).to eq(repo.missed_visits[slug])
-          expect(repo.missed_visits_without_ltfu[slug]).to eq(legacy_results[:missed_visits])
-          expect(repo.missed_visits_with_ltfu[slug]).to eq(legacy_results[:missed_visits_with_ltfu])
-
-          expect(repo.missed_visits_without_ltfu_rates[slug]).to eq(repo.missed_visits_rate[slug])
-          expect(repo.missed_visits_without_ltfu_rates[slug]).to eq(legacy_results[:missed_visits_rate])
-          expect(repo.missed_visits_with_ltfu_rates[slug]).to eq(legacy_results[:missed_visits_with_ltfu_rate])
         end
       end
 

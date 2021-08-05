@@ -180,6 +180,8 @@ module Reports
       regions.each_with_object({}) { |region, hsh| hsh[region.slug] = missed_visits_query(region, with_ltfu: with_ltfu) }
     end
 
+    alias_method :missed_visits_without_ltfu, :missed_visits
+
     def missed_visits_query(region, with_ltfu:)
       field = with_ltfu ? :missed_visit_lost_to_follow_up : :missed_visit_under_care
       FacilityState.for_region(region)
