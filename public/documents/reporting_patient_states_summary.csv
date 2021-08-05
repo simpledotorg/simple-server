@@ -1,0 +1,20 @@
+column_name,data_type,description
+patient_id,uuid,ID of the patient
+gender,character varying,Gender of the patient
+current_age,double precision,"Patient's age as of today, based on 'age', 'age_updated_at' and 'date_of_birth'. This will have the same value for a patient across all rows."
+month_string,text,"String that represents a month, in YYYY-MM format"
+hypertension,text,"Has the patient been diagnosed with hypertension? Values can be yes, no, unknown, or null if the data is unavailable."
+assigned_facility_id,uuid,ID of the patient's assigned facility
+assigned_state_slug,character varying,Human readable ID of the patient's assigned facility's state
+registration_facility_id,uuid,ID of the patient's registration facility
+registration_state_slug,character varying,Human readable ID of the patient's registration facility's state
+months_since_registration,double precision,"Number of months since registration. If a patient was registered on 31st Jan, it would be 1 month since registration on 1st Feb."
+quarters_since_registration,double precision,"Number of quarters since registration. If a patient was registered on 31st Dec, it would be 1 quarter since registration on 1st Jan."
+months_since_visit,double precision,"Number of months since the patient's last visit. If a patient visited on 31st Jan, it would be 1 month since the visit on 1st Feb."
+quarters_since_visit,double precision,"Number of quarters since the patient's last visit. If a patient visited on 31st Jan, it would be 1 quarter since the visit on 1st Jan."
+months_since_bp,double precision,"Number of months since the patient's last BP recording. If a patient had a BP reading on 31st Jan, it would be 1 month since BP on 1st Feb."
+quarters_since_bp,double precision,"Number of quarters since the patient's last BP recording. If a patient had a BP reading on 31st Jan, it would be 1 quarter since BP on 1st Jan."
+htn_care_state,text,"Is the patient under_care, lost_to_follow_up, or dead as of this month?"
+htn_treatment_outcome_in_last_3_months,text,"For the visiting period of the last 3 months, is this patient's treatment outcome controlled, uncontrolled, missed_visit, or visited_no_bp?"
+htn_treatment_outcome_in_last_2_months,text,"For the visiting period of the last 2 months, is this patient's treatment outcome controlled, uncontrolled, missed_visit, or visited_no_bp?"
+htn_treatment_outcome_in_quarter,text,"For the visiting period of the current quarter, is this patient's treatment outcome controlled, uncontrolled, missed_visit, or visited_no_bp?"

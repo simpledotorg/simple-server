@@ -1,0 +1,70 @@
+column_name,data_type,description
+patient_id,uuid,ID of the patient
+recorded_at,timestamp without time zone,Time (in UTC) at which the patient was registered
+status,character varying,"active, dead, migrated, etc"
+gender,character varying,Gender of the patient
+age,integer,Age of the patient as entered by a nurse
+age_updated_at,timestamp without time zone,Time (in UTC) at which the field 'age' was last updated
+date_of_birth,date,Date of birth of the patient
+current_age,double precision,"Patient's age as of today, based on 'age', 'age_updated_at' and 'date_of_birth'. This will have the same value for a patient across all rows."
+month_date,date,"The reporting month for this row, represented as the date at the beginning of the month"
+month,double precision,Month (1-12) of year
+quarter,double precision,Quarter (1-4) of year
+year,double precision,Year in YYYY format
+month_string,text,"String that represents a month, in YYYY-MM format"
+quarter_string,text,"String that represents a quarter, in YYYY-Q format"
+hypertension,text,"Has the patient been diagnosed with hypertension? Values can be yes, no, unknown, or null if the data is unavailable."
+prior_heart_attack,text,"Has the patient had a heart attack? Values can be yes, no, unknown, or null if the data is unavailable."
+prior_stroke,text,"Has the patient has had a stroke? Values can be yes, no, unknown, or null if the data is unavailable."
+chronic_kidney_disease,text,"Has the patient had a chronic kidney disease? Values can be yes, no, unknown, or null if the data is unavailable."
+receiving_treatment_for_hypertension,text,"Was the patient already receiving treatment for hypertension during registration? Values can be yes, no, unknown, or null if the data is unavailable."
+diabetes,text,"Has the patient been diagnosed with diabetes? Values can be yes, no, unknown, or null if the data is unavailable."
+assigned_facility_id,uuid,ID of the patient's assigned facility
+assigned_facility_size,character varying,Size of the patient's assigned facility
+assigned_facility_type,character varying,Type of the patient's assigned facility
+assigned_facility_slug,character varying,Human readable ID of the patient's assigned facility
+assigned_facility_region_id,uuid,Region ID of the patient's assigned facility
+assigned_block_slug,character varying,Human readable ID of the patient's assigned facility's block
+assigned_block_region_id,uuid,ID of the patient's assigned facility's block
+assigned_district_slug,character varying,Human readable ID of the patient's assigned facility's district
+assigned_district_region_id,uuid,ID of the patient's assigned facility's district
+assigned_state_slug,character varying,Human readable ID of the patient's assigned facility's state
+assigned_state_region_id,uuid,ID of the patient's assigned facility's state
+assigned_organization_slug,character varying,Human readable ID of the patient's assigned facility's organization
+assigned_organization_region_id,uuid,ID of the patient's assigned facility's organization
+registration_facility_id,uuid,ID of the patient's registration facility
+registration_facility_size,character varying,Size of the patient's registration facility
+registration_facility_type,character varying,Type of the patient's registration facility
+registration_facility_slug,character varying,Human readable ID of the patient's registration facility
+registration_facility_region_id,uuid,Region ID of the patient's registration facility
+registration_block_slug,character varying,Human readable ID of the patient's registration facility's block
+registration_block_region_id,uuid,ID of the patient's registration facility's block
+registration_district_slug,character varying,Human readable ID of the patient's registration facility's district
+registration_district_region_id,uuid,ID of the patient's registration facility's district
+registration_state_slug,character varying,Human readable ID of the patient's registration facility's state
+registration_state_region_id,uuid,ID of the patient's registration facility's state
+registration_organization_slug,character varying,Human readable ID of the patient's registration facility's organization
+registration_organization_region_id,uuid,ID of the patient's registration facility's organization
+blood_pressure_id,uuid,ID of the latest BP as of this month. Use this to join with the blood_pressures table.
+bp_facility_id,uuid,ID of the facility at which the latest BP was recorded as of this month
+bp_recorded_at,timestamp without time zone,Time (in UTC) at which the latest BP as of this month was recorded
+systolic,integer,Systolic of the latest BP as of this month
+diastolic,integer,Diastolic of the latest BP as of this month
+encounter_id,uuid,ID of the latest encounter as of this month. Use this to join with the encounters table.
+encounter_recorded_at,timestamp without time zone,Time (in UTC) at which the latest encounter as of this month was recorded
+prescription_drug_id,uuid,ID of the latest prescription drug as of this month. Use this to join with the prescription drugs table.
+prescription_drug_recorded_at,timestamp without time zone,Time (in UTC) at which the latest prescription drug as of this month was recorded
+appointment_id,uuid,ID of the latest appointment as of this month. Use this to join with the appointments table.
+appointment_recorded_at,timestamp without time zone,Time (in UTC) at which the latest appointment as of this month was recorded
+visited_facility_ids,uuid[],IDs of the facilities visited this month
+months_since_registration,double precision,"Number of months since registration. If a patient was registered on 31st Jan, it would be 1 month since registration on 1st Feb."
+quarters_since_registration,double precision,"Number of quarters since registration. If a patient was registered on 31st Dec, it would be 1 quarter since registration on 1st Jan."
+months_since_visit,double precision,"Number of months since the patient's last visit. If a patient visited on 31st Jan, it would be 1 month since the visit on 1st Feb."
+quarters_since_visit,double precision,"Number of quarters since the patient's last visit. If a patient visited on 31st Jan, it would be 1 quarter since the visit on 1st Jan."
+months_since_bp,double precision,"Number of months since the patient's last BP recording. If a patient had a BP reading on 31st Jan, it would be 1 month since BP on 1st Feb."
+quarters_since_bp,double precision,"Number of quarters since the patient's last BP recording. If a patient had a BP reading on 31st Jan, it would be 1 quarter since BP on 1st Jan."
+last_bp_state,text,"The state of the last BP recorded: controlled, uncontrolled, or unknown"
+htn_care_state,text,"Is the patient under_care, lost_to_follow_up, or dead as of this month?"
+htn_treatment_outcome_in_last_3_months,text,"For the visiting period of the last 3 months, is this patient's treatment outcome controlled, uncontrolled, missed_visit, or visited_no_bp?"
+htn_treatment_outcome_in_last_2_months,text,"For the visiting period of the last 2 months, is this patient's treatment outcome controlled, uncontrolled, missed_visit, or visited_no_bp?"
+htn_treatment_outcome_in_quarter,text,"For the visiting period of the current quarter, is this patient's treatment outcome controlled, uncontrolled, missed_visit, or visited_no_bp?"
