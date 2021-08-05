@@ -441,7 +441,7 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
           expect(repo.cumulative_registrations[facility_1.slug]).to eq({})
         end
 
-        it "gets same results as RegionService for missed_visits" do
+        fit "gets same results as RegionService for missed_visits" do
           very_old = Time.zone.parse("December 1st 2010")
           may_1_2020 = Time.zone.parse("May 1st, 2020")
           may_15_2020 = Time.zone.parse("May 15th, 2020")
@@ -456,12 +456,14 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
           create(:appointment, creation_facility: facility, scheduled_date: may_1_2020, device_created_at: may_1_2020, patient: patient_with_appt_visit)
           create(:bp_with_encounter, :under_control, facility: facility, patient: patient_with_bp_visit, recorded_at: may_15_2020)
 
+          refresh_views
+
           service = Reports::RegionService.new(region: facility, period: july_2020.to_period)
           repo = Reports::Repository.new(facility.region, periods: service.range)
           legacy_results = service.call
 
           expect(legacy_results[:missed_visits].size).to eq(service.range.entries.size)
-          expect(repo.missed_visits[slug].size).to eq(service.range.entries.size)
+          # expect(repo.missed_visits[slug].size).to eq(service.range.entries.size)
           expect(repo.missed_visits[slug]).to eq(legacy_results[:missed_visits])
 
           expect(repo.missed_visits_without_ltfu[slug]).to eq(repo.missed_visits[slug])

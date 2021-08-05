@@ -177,11 +177,16 @@ module Reports
     end
 
     memoize def missed_visits(with_ltfu: false)
+      regions.each_with_object({}) { |region, hsh| hsh[region.slug] = missed_visits_query(region, with_ltfu: with_ltfu) }
+    end
+
+    def missed_visits_query(region, with_ltfu:)
+      field = with_ltfu ? :missed_visit_lost_to_follow_up : :missed_visit_under_care
       FacilityState.for_region(region)
         .where("month_date >= ?", earliest_patient_recorded_at_period[region.slug].to_date)
         .order(:month_date)
         .group(:month_date)
-        .sum("missed_visits_under_care::int")
+        .sum("#{field}::int")
         .to_h(&period_hash)
         .tap { |hsh| hsh.default = 0 }
     end
