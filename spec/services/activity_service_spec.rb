@@ -57,30 +57,6 @@ RSpec.describe ActivityService do
       end
     end
 
-    it "returns registrations for a facility district" do
-      [
-        june_1, june_2, june_3,
-        july_1,
-        aug_1, aug_2
-      ].each do |date|
-        create(:patient, :hypertension, recorded_at: date, registration_facility: facility_1)
-      end
-
-      [
-        june_1,
-        july_1, july_3,
-        aug_1, aug_2
-      ].each do |date|
-        create(:patient, :hypertension, recorded_at: date, registration_facility: facility_2)
-      end
-
-      activity_service = ActivityService.new(FacilityDistrict.new(name: "District 1"))
-
-      Timecop.freeze(aug_3) do
-        expect(activity_service.registrations).to eq(june_1 => 3, july_1 => 1, aug_1 => 2)
-      end
-    end
-
     it "can be grouped further" do
       [
         june_1, june_2, june_3,
@@ -264,32 +240,6 @@ RSpec.describe ActivityService do
 
       Timecop.freeze(aug_3) do
         expect(activity_service.follow_ups).to eq(june_1 => 4, july_1 => 3, aug_1 => 4)
-      end
-    end
-
-    it "returns follow ups for a facility district" do
-      [
-        june_1, june_2, june_3,
-        july_1,
-        aug_1, aug_2
-      ].each do |date|
-        patient = create(:patient, :hypertension, recorded_at: long_ago)
-        create(:blood_pressure, patient: patient, facility: facility_1, recorded_at: date)
-      end
-
-      [
-        june_1,
-        july_1, july_3,
-        aug_1, aug_2
-      ].each do |date|
-        patient = create(:patient, :hypertension, recorded_at: long_ago)
-        create(:blood_pressure, patient: patient, facility: facility_2, recorded_at: date)
-      end
-
-      activity_service = ActivityService.new(FacilityDistrict.new(name: "District 1"))
-
-      Timecop.freeze(aug_3) do
-        expect(activity_service.follow_ups).to eq(june_1 => 3, july_1 => 1, aug_1 => 2)
       end
     end
 
@@ -541,32 +491,6 @@ RSpec.describe ActivityService do
 
       Timecop.freeze(aug_3) do
         expect(activity_service.bp_measures).to eq(june_1 => 4, july_1 => 3, aug_1 => 4)
-      end
-    end
-
-    it "returns bp measures for a facility district" do
-      [
-        june_1, june_2, june_3,
-        july_1,
-        aug_1, aug_2
-      ].each do |date|
-        patient = create(:patient, :hypertension, recorded_at: long_ago)
-        create(:blood_pressure, patient: patient, facility: facility_1, recorded_at: date)
-      end
-
-      [
-        june_1,
-        july_1, july_3,
-        aug_1, aug_2
-      ].each do |date|
-        patient = create(:patient, :hypertension, recorded_at: long_ago)
-        create(:blood_pressure, patient: patient, facility: facility_2, recorded_at: date)
-      end
-
-      activity_service = ActivityService.new(FacilityDistrict.new(name: "District 1"))
-
-      Timecop.freeze(aug_3) do
-        expect(activity_service.bp_measures).to eq(june_1 => 3, july_1 => 1, aug_1 => 2)
       end
     end
 

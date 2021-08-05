@@ -25,6 +25,10 @@ class TwilioApiService
   class Error < StandardError
   end
 
+  def logger
+    @logger ||= Notification.logger(class: self.class.name)
+  end
+
   def initialize(sms_sender: nil)
     @test_mode = if ENV["TWILIO_PRODUCTION_OVERRIDE"]
       false
@@ -68,16 +72,14 @@ class TwilioApiService
   end
 
   def send_sms(recipient_number:, message:, callback_url: nil, context: {})
-    self.communication_type = "sms"
-    metrics.increment("#{communication_type}.attempts")
+    track(context)
     sender_number = twilio_sender_sms_number
 
     send_twilio_message(sender_number, recipient_number, message, callback_url, context)
   end
 
   def send_whatsapp(recipient_number:, message:, callback_url: nil, context: {})
-    self.communication_type = "whatsapp"
-    metrics.increment("#{communication_type}.attempts")
+    track(context)
     sender_number = "whatsapp:" + twilio_sender_whatsapp_number
     recipient_number = "whatsapp:" + recipient_number
 
@@ -85,6 +87,13 @@ class TwilioApiService
   end
 
   private
+
+  def track(context)
+    communication_type = context[:communication_type]
+    metrics.increment("#{communication_type}.attempts")
+    data = context.merge(msg: "sending #{communication_type} message")
+    logger.info data
+  end
 
   def send_twilio_message(sender_number, recipient_number, message, callback_url, context)
     Sentry.set_tags(context)
