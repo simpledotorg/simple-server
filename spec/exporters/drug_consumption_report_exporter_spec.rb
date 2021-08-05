@@ -12,26 +12,28 @@ RSpec.describe DrugConsumptionReportExporter do
       let(:protocol) { create(:protocol, :with_tracked_drugs) }
       let(:facility_group) { create(:facility_group, protocol: protocol, state: "Punjab") }
       let(:facilities) { create_list(:facility, 2, facility_group: facility_group) }
-      let(:query) { DrugStocksQuery.new(facilities: facilities,
-                                        for_end_of_month: Date.current.end_of_month) }
+      let(:query) {
+        DrugStocksQuery.new(facilities: facilities,
+                            for_end_of_month: Date.current.end_of_month)
+      }
 
       let(:stocks_by_rxnorm) {
         {
-          "329528" => { in_stock: 10000, received: 2000, redistributed: 0 },
-          "329526" => { in_stock: 20000, received: 2000, redistributed: 0 },
-          "316764" => { in_stock: 10000, received: 2000, redistributed: 0 },
-          "316765" => { in_stock: 20000, received: 2000, redistributed: nil },
-          "979467" => { in_stock: 10000, received: 2000, redistributed: nil }
+          "329528" => {in_stock: 10000, received: 2000, redistributed: 0},
+          "329526" => {in_stock: 20000, received: 2000, redistributed: 0},
+          "316764" => {in_stock: 10000, received: 2000, redistributed: 0},
+          "316765" => {in_stock: 20000, received: 2000, redistributed: nil},
+          "979467" => {in_stock: 10000, received: 2000, redistributed: nil}
         }
       }
 
       let(:previous_month_stocks_by_rxnorm) {
         {
-          "329528" => { in_stock: 8000 },
-          "329526" => { in_stock: 15000 },
-          "316764" => { in_stock: 8000 },
-          "316765" => { in_stock: 17000 },
-          "979467" => { in_stock: 9000 }
+          "329528" => {in_stock: 8000},
+          "329526" => {in_stock: 15000},
+          "316764" => {in_stock: 8000},
+          "316765" => {in_stock: 17000},
+          "979467" => {in_stock: 9000}
         }
       }
 
@@ -41,31 +43,31 @@ RSpec.describe DrugConsumptionReportExporter do
         stocks_by_rxnorm.map do |(rxnorm_code, drug_stock)|
           protocol_drug = protocol.protocol_drugs.find_by(rxnorm_code: rxnorm_code)
           create(:drug_stock,
-                 region: facility_group.region,
-                 protocol_drug: protocol_drug,
-                 in_stock: drug_stock[:in_stock],
-                 received: drug_stock[:received],
-                 redistributed: drug_stock[:redistributed])
+            region: facility_group.region,
+            protocol_drug: protocol_drug,
+            in_stock: drug_stock[:in_stock],
+            received: drug_stock[:received],
+            redistributed: drug_stock[:redistributed])
           create(:drug_stock,
-                 facility: facilities.first,
-                 protocol_drug: protocol_drug,
-                 in_stock: drug_stock[:in_stock],
-                 received: drug_stock[:received],
-                 redistributed: drug_stock[:redistributed])
+            facility: facilities.first,
+            protocol_drug: protocol_drug,
+            in_stock: drug_stock[:in_stock],
+            received: drug_stock[:received],
+            redistributed: drug_stock[:redistributed])
         end
 
         previous_month_stocks_by_rxnorm.map do |(rxnorm_code, drug_stock)|
           protocol_drug = protocol.protocol_drugs.find_by(rxnorm_code: rxnorm_code)
           create(:drug_stock,
-                 region: facility_group.region,
-                 protocol_drug: protocol_drug,
-                 in_stock: drug_stock[:in_stock],
-                 for_end_of_month: (Date.today - 1.month).end_of_month)
+            region: facility_group.region,
+            protocol_drug: protocol_drug,
+            in_stock: drug_stock[:in_stock],
+            for_end_of_month: (Date.today - 1.month).end_of_month)
           create(:drug_stock,
-                 facility: facilities.first,
-                 protocol_drug: protocol_drug,
-                 in_stock: drug_stock[:in_stock],
-                 for_end_of_month: (Date.today - 1.month).end_of_month)
+            facility: facilities.first,
+            protocol_drug: protocol_drug,
+            in_stock: drug_stock[:in_stock],
+            for_end_of_month: (Date.today - 1.month).end_of_month)
         end
       end
 
@@ -113,37 +115,37 @@ RSpec.describe DrugConsumptionReportExporter do
 
         facility_1_row =
           [facilities.first.name,
-           facilities.first.zone,
-           1000, 0, -1000,
-           0, -3000,
-           "?", "?",
-           -1000, -6000, "?"]
+            facilities.first.zone,
+            1000, 0, -1000,
+            0, -3000,
+            "?", "?",
+            -1000, -6000, "?"]
 
         facility_2_row =
           [facilities.second.name,
-           facilities.second.zone,
-           "?", "?", "?", "?",
-           "?", "?",
-           "?", "?",
-           "?", "?"]
+            facilities.second.zone,
+            "?", "?", "?", "?",
+            "?", "?",
+            "?", "?",
+            "?", "?"]
 
         csv = described_class.csv(query)
         expected_csv =
           timestamp.to_csv +
-            headers_row_1.to_csv +
-            headers_row_2.to_csv +
-            totals_row.to_csv +
-            district_warehouse_row.to_csv +
-            facility_1_row.to_csv +
-            facility_2_row.to_csv
+          headers_row_1.to_csv +
+          headers_row_2.to_csv +
+          totals_row.to_csv +
+          district_warehouse_row.to_csv +
+          facility_1_row.to_csv +
+          facility_2_row.to_csv
 
         expect(csv).to eq(expected_csv)
       end
 
       it "renders the csv in custom category order" do
         allow(CountryConfig.current).to receive(:fetch)
-                                          .with(:custom_drug_category_order, [])
-                                          .and_return(["hypertension_ccb", "hypertension_arb", "hypertension_diuretic"])
+          .with(:custom_drug_category_order, [])
+          .and_return(["hypertension_ccb", "hypertension_arb", "hypertension_diuretic"])
 
         headers_row_1 = [
           nil, nil,
@@ -186,29 +188,29 @@ RSpec.describe DrugConsumptionReportExporter do
 
         facility_1_row =
           [facilities.first.name,
-           facilities.first.zone,
-           0, -3000,
-           1000, 0, -1000,
-           "?", "?",
-           -6000, -1000, "?"]
+            facilities.first.zone,
+            0, -3000,
+            1000, 0, -1000,
+            "?", "?",
+            -6000, -1000, "?"]
 
         facility_2_row =
           [facilities.second.name,
-           facilities.second.zone,
-           "?", "?", "?", "?",
-           "?", "?",
-           "?", "?",
-           "?", "?"]
+            facilities.second.zone,
+            "?", "?", "?", "?",
+            "?", "?",
+            "?", "?",
+            "?", "?"]
 
         csv = described_class.csv(query)
         expected_csv =
           timestamp.to_csv +
-            headers_row_1.to_csv +
-            headers_row_2.to_csv +
-            totals_row.to_csv +
-            district_warehouse_row.to_csv +
-            facility_1_row.to_csv +
-            facility_2_row.to_csv
+          headers_row_1.to_csv +
+          headers_row_2.to_csv +
+          totals_row.to_csv +
+          district_warehouse_row.to_csv +
+          facility_1_row.to_csv +
+          facility_2_row.to_csv
 
         expect(csv).to eq(expected_csv)
       end
