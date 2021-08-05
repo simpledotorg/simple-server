@@ -61,6 +61,19 @@ class CountryConfig
         monthly_registrations: "Tx3CKEUFqNN"
       }
     },
+    LK: {
+      abbreviation: "LK",
+      name: "Sri Lanka",
+      extended_region_reports: true,
+      states: COUNTRYWISE_STATES["Sri Lanka"],
+      # Should add a en_LK before launch, this is placeholder
+      dashboard_locale: ENV["DEFAULT_PREFERRED_DASHBOARD_LOCALE"] || "en_IN",
+      faker_locale: "en-IND",
+      time_zone: ENV["DEFAULT_TIME_ZONE"] || "Asia/Kolkata",
+      sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+94",
+      supported_genders: %w[male female transgender],
+      patient_line_list_show_zone: true
+    },
     US: {
       abbreviation: "US",
       name: "United States",
