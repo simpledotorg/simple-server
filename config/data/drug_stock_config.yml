@@ -1,4 +1,64 @@
-Punjab:
+Andhra Pradesh:
+  load_coefficient: 1
+  drug_categories:
+    hypertension_ccb:
+      new_patient_coefficient: 1.4
+      '329528': 1
+      '329526': 2
+      hypertension_arb:
+        new_patient_coefficient: 0.37
+        '316764': 1
+        '316765': 2
+      hypertension_diuretic:
+        new_patient_coefficient: 0.06
+        '429503': 1
+        '316049': 2
+Bihar:
+  load_coefficient: 1
+  drug_categories:
+    hypertension_ccb:
+      new_patient_coefficient: 1.12
+      '329528': 1
+      '329526': 2
+      hypertension_arb:
+        new_patient_coefficient: 0.65
+        '316764': 1
+        '316765': 2
+      hypertension_diuretic:
+        new_patient_coefficient: 0.06
+        '316049': 1
+        '197770': 2
+Goa:
+  load_coefficient: 1
+  drug_categories:
+    hypertension_ccb:
+      new_patient_coefficient: 1.12
+      '329528': 1
+      '329526': 2
+      hypertension_arb:
+        new_patient_coefficient: 0.65
+        '316764': 1
+        '316765': 2
+      hypertension_diuretic:
+        new_patient_coefficient: 0.06
+        'Chlor6.25': 1
+        '331132': 2
+Jharkhand:
+  load_coefficient: 1
+  drug_categories:
+    hypertension_ccb:
+      new_patient_coefficient: 1.4
+      '329528': 1
+      '329526': 2
+      hypertension_arb:
+        new_patient_coefficient: 0.37
+        '316764': 1
+        '316765': 2
+      hypertension_diuretic:
+        new_patient_coefficient: 0.06
+        '331132': 1
+        '197499': 2
+Karnataka:
   load_coefficient: 1
   drug_categories:
     hypertension_ccb:
@@ -9,26 +69,8 @@ Punjab:
       new_patient_coefficient: 0.37
       '316764': 1
       '316765': 2
-      '979467': 1
     hypertension_diuretic:
       new_patient_coefficient: 0.06
-      '316049': 1
-      '331132': 1
-Madhya Pradesh:
-  load_coefficient: 1
-  drug_categories:
-    hypertension_ccb:
-      new_patient_coefficient: 1.4
-      '329528': 1
-      '329526': 2
-    hypertension_arb:
-      new_patient_coefficient: 0.37
-      '316764': 1
-      '316765': 2
-      '979467': 1
-    hypertension_diuretic:
-      new_patient_coefficient: 0.06
-      '316049': 1
       '331132': 1
 Kerala:
   load_coefficient: 1
@@ -47,7 +89,7 @@ Kerala:
       new_patient_coefficient: 0.05
       '316049': 1
       '331132': 1
-Telangana:
+Madhya Pradesh:
   load_coefficient: 1
   drug_categories:
     hypertension_ccb:
@@ -79,7 +121,37 @@ Maharashtra:
       new_patient_coefficient: 0.06
       'Chlor6.25': 1
       '331132': 2
-Karnataka:
+Nagaland:
+  load_coefficient: 1
+  drug_categories:
+    hypertension_ccb:
+      new_patient_coefficient: 1.12
+      '329528': 1
+      '329526': 2
+      hypertension_arb:
+        new_patient_coefficient: 0.65
+        '316764': 1
+        '316765': 2
+      hypertension_diuretic:
+        new_patient_coefficient: 0.06
+        '331132': 1
+        '197499': 2
+Puducherry:
+  load_coefficient: 1
+  drug_categories:
+    hypertension_ccb:
+      new_patient_coefficient: 1.12
+      '329528': 1
+      '329526': 2
+      hypertension_arb:
+        new_patient_coefficient: 0.65
+        '316764': 1
+        '316765': 2
+      hypertension_diuretic:
+        new_patient_coefficient: 0.06
+        '331132': 1
+        '197499': 2
+Punjab:
   load_coefficient: 1
   drug_categories:
     hypertension_ccb:
@@ -90,6 +162,99 @@ Karnataka:
       new_patient_coefficient: 0.37
       '316764': 1
       '316765': 2
+      '979467': 1
     hypertension_diuretic:
       new_patient_coefficient: 0.06
+      '316049': 1
+      '331132': 1
+Rajasthan:
+  load_coefficient: 1
+  drug_categories:
+    hypertension_ccb:
+      new_patient_coefficient: 1.12
+      '329528': 1
+      '329526': 2
+      hypertension_arb:
+        new_patient_coefficient: 0.65
+        '316764': 1
+        '316765': 2
+      hypertension_diuretic:
+        new_patient_coefficient: 0.06
+        '331132': 1
+        '197499': 2
+Sikkim:
+  load_coefficient: 1
+  drug_categories:
+    hypertension_ccb:
+      new_patient_coefficient: 1.12
+      '329528': 1
+      '329526': 2
+      hypertension_arb:
+        new_patient_coefficient: 0.65
+        '316764': 1
+        '316765': 2
+      hypertension_diuretic:
+        new_patient_coefficient: 0.06
+        '331132': 1
+Tamil Nadu:
+  load_coefficient: 1
+  drug_categories:
+    hypertension_ccb:
+      new_patient_coefficient: 1.4
+      '329528': 1
+      '329526': 2
+      hypertension_arb:
+        new_patient_coefficient: 0.37
+        '316764': 1
+        '316765': 2
+      hypertension_diuretic:
+        new_patient_coefficient: 0.06
+        '331132': 1
+        '197499': 2
+Telangana:
+  load_coefficient: 1
+  drug_categories:
+    hypertension_ccb:
+      new_patient_coefficient: 1.4
+      '329528': 1
+      '329526': 2
+    hypertension_arb:
+      new_patient_coefficient: 0.37
+      '316764': 1
+      '316765': 2
+      '979467': 1
+    hypertension_diuretic:
+      new_patient_coefficient: 0.06
+      '316049': 1
+      '331132': 1
+Uttar Pradesh:
+  load_coefficient: 1
+  drug_categories:
+    hypertension_ccb:
+      new_patient_coefficient: 1.25
+      '329528': 1
+      '329526': 2
+      hypertension_arb:
+        new_patient_coefficient: 0.52
+        '316764': 1
+        '316765': 2
+      hypertension_diuretic:
+        new_patient_coefficient: 0.06
+        '331132': 1
+        '197499': 2
+West Bengal:
+  load_coefficient: 1
+  drug_categories:
+    hypertension_ccb:
+      new_patient_coefficient: 1.4
+      '329528': 1
+      '329526': 2
+    hypertension_arb:
+      new_patient_coefficient: 0.37
+      '316764': 1
+      '316765': 2
+      '979467': 1
+    hypertension_diuretic:
+      new_patient_coefficient: 0.06
+      'Chlor6.25': 1
       '331132': 1
