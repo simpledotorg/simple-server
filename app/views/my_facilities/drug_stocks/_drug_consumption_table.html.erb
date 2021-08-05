@@ -177,7 +177,7 @@
       <% end %>
     <% end %>
     <% @drugs_by_category.map do |drug_category, _drugs| %>
-      <% total = @report.dig(:all_drug_consumption, drug_category, :base_doses, :total) %>
+      <% total = @report.dig(:facilities_total_drug_consumption, drug_category, :base_doses, :total) %>
       <% if total.nil? || total == "error" %>
         <td class="type-blank"><span>?</span></td>
       <% else %>
