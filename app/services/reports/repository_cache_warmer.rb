@@ -17,9 +17,11 @@ class Reports::RepositoryCacheWarmer
   # As we move away from RegionService, we can add more things to be explicitly cached here.
   def call
     repository.hypertension_follow_ups
+    # see regions/etails.html.erb for where these are used
     if region.facility_region?
-      repository.hypertension_follow_ups(group_by: "blood_pressures.user_id")
       repository.bp_measures_by_user
+      repository.hypertension_follow_ups(group_by: "blood_pressures.user_id")
+      repository.monthly_registrations_by_user
     end
   end
 end
