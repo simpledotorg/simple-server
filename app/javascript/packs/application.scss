@@ -10,12 +10,105 @@ layout file, like app/views/layouts/application.html.erb
 
 @import 'bootstrap/scss/bootstrap';
 
-h1 {
+/*
+
+  COLOR STYLES
+  - Brand Colors
+  - Grey Colors
+  - Colors
+
+*/
+// Brand Colors
+$brand-blue: #103047;
+$brand-light-blue: #40596C;
+// Grey Colors
+$grey: #A3A9B8;
+$white: #FFFFFF;
+// Colors
+/*
+
+  TEXT STYLES
+
+*/
+.header-text-large {
+  font-family: Inter, sans-serif;
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 135%;
+}
+
+.header-text {
+  font-family: Inter, sans-serif;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 135%;
+}
+
+.header-text-small {
+  font-family: Inter;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 150%;
+}
+
+.body-text-large {
+  font-family: Inter;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 150%;
+}
+
+.body-text-large-underline {
+  font-family: Inter;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 150%;
   text-decoration: underline;
 }
 
-body {
-  padding: 2em
+.body-text-large-strong {
+  font-family: Inter;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 150%;
+  text-decoration: underline;
+}
 
+.body-text-large-phone {
+  font-family: Inter;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 150%;
+  letter-spacing: 1px;
+}
 
+.body-text {
+  font-family: Inter;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 175%;
+}
+
+.body-text-strong {
+  font-family: Inter;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 150%;
+}
+
+.body-text-small {
+  font-family: Inter;
+  font-weight: 600;
+  font-size: 10px;
+  line-height: 100%;
+}
+/*
+
+  COMPONENTS
+  - Navigation Bar
+
+*/
+// Navigation Bar
+.desktop-navigation-bar {
+  background-color: $brand-blue;
 }
