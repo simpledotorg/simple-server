@@ -11,18 +11,19 @@ module Experimentation
         "Assigned Facility District", "Assigned Facility Block", "Prior visit 1",	"Prior visit 2", "Prior visit 12", "Call made 1",	"Call made 2",
         "Call made 3", "Patient registration date",	"Patient ID"]
 
-    attr_reader :experiment, :max_notifications, :max_appointments
+    attr_reader :experiment, :max_notifications, :max_appointments, :max_encounters
 
     def initialize(name)
       @experiment = Experimentation::Experiment.find_by!(name: name)
       @max_notifications = 0
       @max_appointments = 0
+      @max_encounters = 0
     end
 
     def results
       data = aggregate_data
       # fill in expandable data sets
-      adjust_appointments_length(data)
+      adjust_notifications_length(data)
       adjust_appointments_length(data)
       # make csv
       data
