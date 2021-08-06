@@ -145,7 +145,17 @@ module Reports
       regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, field) }
     end
 
+    def missed_visits_rates(with_ltfu: false)
+      region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
+        slug, period = entry.slug, entry.period
+        numerator = missed_visits(with_ltfu: with_ltfu)[slug][period]
+        total = denominator(entry.region, period, with_ltfu: with_ltfu)
+        percentage(numerator, total)
+      end
+    end
+
     alias_method :missed_visits_without_ltfu, :missed_visits
+    alias_method :missed_visits_without_ltfu_rates, :missed_visits_rates
 
     private
 
@@ -201,7 +211,7 @@ module Reports
     delegate :sql, to: Arel
 
     private def summed_data(region)
-      selects = FIELDS.map { |field| Arel.sql("COALESCE(SUM(#{field}::int), 0) as sum_#{field}")}
+      selects = FIELDS.map { |field| Arel.sql("COALESCE(SUM(#{field}::int), 0) as sum_#{field}") }
       selects.prepend(:month_date)
 
       FacilityState.for_region(region)
