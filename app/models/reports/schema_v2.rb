@@ -161,6 +161,10 @@ module Reports
       missed_visits(with_ltfu: true)
     end
 
+    def missed_visits_with_ltfu_rates
+      missed_visits_rates(with_ltfu: true)
+    end
+
     private
 
     # Return the actual 'active range' for a Region - this will be the from the first recorded at in a region until
