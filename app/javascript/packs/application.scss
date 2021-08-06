@@ -22,15 +22,37 @@ layout file, like app/views/layouts/application.html.erb
 $brand-blue: #103047;
 $brand-light-blue: #40596C;
 // Grey Colors
+$black: #000000;
+$dark-grey: #6C737A;
 $grey: #A3A9B8;
+$light-grey: #DFE3EE;
+$silver: #F1F3F8;
 $white: #FFFFFF;
 // Colors
+$dark-blue: #016E95;
+$blue: #007AA6;
+$light-blue: #D9EBF2;
+$dark-red: #952D2D;
+$red: #BD3838;
+$light-red: #F5E1E1;
+$dark-orange: #CF7024;
+$orange: #E77D27;
+$light-orange: #FCECDF;
+$dark-yellow: #E4B439;
+$yellow: #FFC93F;
+$light-yellow: #FFF7E2;
+$dark-green: #668C23;
+$green: #729C26;
+$light-green: #EAF0DF;
+$dark-purple: #563B8A;
+$purple: #60419A;
+$light-purple: #E7E3F0;
 /*
 
   TEXT STYLES
 
 */
-.header-text-large {
+.large-header-text {
   font-family: Inter, sans-serif;
   font-weight: 500;
   font-size: 24px;
@@ -44,64 +66,45 @@ $white: #FFFFFF;
   line-height: 135%;
 }
 
-.header-text-small {
+.small-header-text {
   font-family: Inter;
   font-weight: 500;
   font-size: 16px;
   line-height: 150%;
 }
 
-.body-text-large {
+.large-body-text {
   font-family: Inter;
   font-weight: 400;
   font-size: 14px;
   line-height: 150%;
 }
 
-.body-text-large-underline {
+.large-body-text {
   font-family: Inter;
   font-weight: 400;
   font-size: 14px;
   line-height: 150%;
-  text-decoration: underline;
-}
-
-.body-text-large-strong {
-  font-family: Inter;
-  font-weight: 500;
-  font-size: 14px;
-  line-height: 150%;
-  text-decoration: underline;
-}
-
-.body-text-large-phone {
-  font-family: Inter;
-  font-weight: 500;
-  font-size: 14px;
-  line-height: 150%;
-  letter-spacing: 1px;
 }
 
 .body-text {
   font-family: Inter;
-  font-weight: normal;
+  font-weight: 400;
   font-size: 12px;
   line-height: 175%;
 }
 
-.body-text-strong {
-  font-family: Inter;
-  font-weight: 500;
-  font-size: 14px;
-  line-height: 150%;
-}
-
-.body-text-small {
+.small-body-text {
   font-family: Inter;
   font-weight: 600;
   font-size: 10px;
   line-height: 100%;
 }
+
+.underline { text-decoration: underline; }
+.strong { font-weight: 500; }
+.phone { letter-spacing: 1px; }
+
 /*
 
   COMPONENTS
