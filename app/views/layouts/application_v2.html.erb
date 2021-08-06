@@ -3,9 +3,13 @@
   <head>
     <%= javascript_pack_tag 'application' %>
     <%= stylesheet_pack_tag 'application' %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   </head>
 
   <body>
+    <%= render partial: "components/navigation_bar/desktop_navigation_bar" %>
     <%= yield %>
   </body>
 </html>
