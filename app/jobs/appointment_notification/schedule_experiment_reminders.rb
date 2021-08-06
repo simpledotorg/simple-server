@@ -10,6 +10,7 @@ class AppointmentNotification::ScheduleExperimentReminders < ApplicationJob
 
     notifications = Notification.due_today
     next_messaging_time = Communication.next_messaging_time
+
     logger.info "scheduling #{notifications.count} notifications that are due with next_messaging_time=#{next_messaging_time}"
     notifications.each do |notification|
       notification.status_scheduled!
@@ -17,7 +18,7 @@ class AppointmentNotification::ScheduleExperimentReminders < ApplicationJob
     rescue => e
       Sentry.capture_message("Scheduling notification failed",
         extra: {
-          reminder: notification,
+          notification: notification.id,
           next_messaging_time: next_messaging_time,
           exception: e
         },
