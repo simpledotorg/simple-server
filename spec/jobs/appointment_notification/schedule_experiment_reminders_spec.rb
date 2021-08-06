@@ -45,5 +45,16 @@ RSpec.describe AppointmentNotification::ScheduleExperimentReminders, type: :job 
         described_class.perform_now
       }.to change { reminder.reload.status }.from("pending").to("scheduled")
     end
+
+    it "skips over reminders if there are failures, and sends other reminders" do
+      reminder_1 = create(:notification, subject: appointment, remind_on: today, status: "pending")
+      reminder_2 = create(:notification, subject: appointment, remind_on: today, status: "pending")
+
+      reminder_1.patient.discard
+
+      described_class.perform_now
+      expect(reminder_2.reload.status).to eq("scheduled")
+      expect(reminder_1.reload.status).to eq("pending")
+    end
   end
 end
