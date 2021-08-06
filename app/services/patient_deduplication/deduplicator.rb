@@ -30,7 +30,6 @@ module PatientDeduplication
         create_phone_numbers(new_patient)
         create_patient_business_identifiers(new_patient)
         create_encounters_and_observables(new_patient)
-        create_notifications(new_patient)
         create_appointments(new_patient)
         create_teleconsultations(new_patient)
         mark_as_merged(new_patient)
@@ -183,10 +182,6 @@ module PatientDeduplication
           track(Observation, observation, new_observation)
         end
       end
-    end
-
-    def create_notifications(patient)
-      create_cloned_records!(patient, Notification, Notification.where(patient_id: latest_patient.id))
     end
 
     def create_appointments(patient)

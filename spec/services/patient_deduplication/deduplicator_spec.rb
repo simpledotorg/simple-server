@@ -230,17 +230,6 @@ describe PatientDeduplication::Deduplicator do
       expect(duplicate_records(new_patient.teleconsultations.map(&:id))).to match_array(teleconsultations)
     end
 
-    it "copies over notifications of the latest patient" do
-      patient_earliest, patient_latest = create_duplicate_patients.values_at(:blue, :red)
-      notifications_to_be_preserved = Notification.where(patient_id: [patient_latest]).load
-      notifications = Notification.where(patient_id: [patient_earliest, patient_latest]).load
-
-      new_patient = described_class.new([patient_earliest, patient_latest]).merge
-      expect(with_comparable_attributes(new_patient.notifications)).to match_array with_comparable_attributes(notifications_to_be_preserved)
-      expect(duplicate_records(new_patient.notifications.map(&:id))).to match_array(notifications_to_be_preserved)
-      expect(notifications.reload).to all be_discarded
-    end
-
     context "marks patients as merged" do
       it "soft deletes the merged patients" do
         patients = create_duplicate_patients.values
