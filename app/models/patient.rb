@@ -227,6 +227,7 @@ class Patient < ApplicationRecord
     phone_numbers.discard_all
     prescription_drugs.discard_all
     teleconsultations.discard_all
+    notifications.discard_all
     discard
   end
 end

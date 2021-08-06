@@ -693,5 +693,11 @@ describe Patient, type: :model do
 
       expect(Teleconsultation.where(patient: patient)).to be_empty
     end
+
+    it "soft deletes the patient's notifications" do
+      notification = create(:notification)
+      notification.patient.discard_data
+      expect(Notification.where(id: notification.id)).to be_empty
+    end
   end
 end
