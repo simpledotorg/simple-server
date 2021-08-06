@@ -16,7 +16,7 @@ class AppointmentNotification::ScheduleExperimentReminders < ApplicationJob
       notification.status_scheduled!
       AppointmentNotification::Worker.perform_at(next_messaging_time, notification.id)
     rescue => e
-      Sentry.capture_message("Scheduling notification failed",
+      Sentry.capture_message("Scheduling notification for experiment failed",
         extra: {
           notification: notification.id,
           next_messaging_time: next_messaging_time,
