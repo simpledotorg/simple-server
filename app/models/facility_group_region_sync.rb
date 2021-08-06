@@ -30,7 +30,7 @@ class FacilityGroupRegionSync < SimpleDelegator
   def create_block_regions
     return if new_block_names.blank?
 
-    new_block_names.map { |name|
+    new_block_names.uniq.map { |name|
       Region.block_regions.create!(name: name, reparent_to: region)
     }
   end

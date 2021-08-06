@@ -87,6 +87,15 @@ RSpec.describe FacilityGroup, type: :model do
   end
 
   describe "keeps block regions in sync" do
+    it "creates blocks from new_block_names" do
+      facility_group = create(:facility_group, name: "FG", state: "Punjab")
+
+      facility_group.new_block_names = ["Block 1", "Block 1", "Block 2"]
+      facility_group.sync_block_regions
+
+      expect(facility_group.region.block_regions.map(&:name)).to contain_exactly("Block 1", "Block 2")
+    end
+
     it "deletes blocks from remove_block_ids" do
       facility_group = create(:facility_group, name: "FG", state: "Punjab")
       district_region = facility_group.region
