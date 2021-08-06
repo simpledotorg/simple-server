@@ -157,6 +157,10 @@ module Reports
     alias_method :missed_visits_without_ltfu, :missed_visits
     alias_method :missed_visits_without_ltfu_rates, :missed_visits_rates
 
+    def missed_visits_with_ltfu
+      missed_visits(with_ltfu: true)
+    end
+
     private
 
     # Return the actual 'active range' for a Region - this will be the from the first recorded at in a region until
