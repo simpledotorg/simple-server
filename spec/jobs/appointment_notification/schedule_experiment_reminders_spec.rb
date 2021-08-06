@@ -52,7 +52,9 @@ RSpec.describe AppointmentNotification::ScheduleExperimentReminders, type: :job 
 
       reminder_1.patient.discard
 
-      described_class.perform_now
+      expect {
+        described_class.perform_now
+      }.not_to raise_error
       expect(reminder_2.reload.status).to eq("scheduled")
       expect(reminder_1.reload.status).to eq("pending")
     end
