@@ -378,7 +378,6 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
 
           jan_2020_range = (Period.month(jan_2020.advance(months: -24))..Period.month(jan_2020))
           repo = Reports::Repository.new(facility.region, periods: jan_2020_range)
-          pp repo.ltfu[facility.region.slug]
         end
       end
 
@@ -386,8 +385,14 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
         it "counts missed visits for patients with no BPs taken" do
           facility = create(:facility, facility_group: facility_group_1)
           slug = facility.region.slug
-          # patient who never has a BP taken, and is therefore always LTFU
-          _missed_visit_2 = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: "January 1st 2018 00:00:00 UTC", registration_user: user)
+          # patient who never has a BP taken, so they become a missed visit in April 2018
+          _missed_visit = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: "January 1st 2018 00:00:00 UTC", registration_user: user)
+          patient_1_with_visits = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: "January 1st 2018 00:00:00 UTC", registration_user: user)
+          patient_2_with_visits = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: "January 1st 2018 00:00:00 UTC", registration_user: user)
+          [3, 6, 9, 12].product(["2018", "2019"]).each do |month, year|
+            create(:bp_with_encounter, :under_control, facility: facility, patient: patient_1_with_visits, recorded_at: "#{year}-#{month}-1st 08:00:00 UTC")
+            create(:bp_with_encounter, :under_control, facility: facility, patient: patient_2_with_visits, recorded_at: "#{year}-#{month}-1st 08:00:00 UTC")
+          end
 
           refresh_views
 
@@ -395,9 +400,19 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
           repo = Reports::Repository.new(facility.region, periods: jan_2020_range)
 
           months_with_one_missed_visit = ("April 2018".to_date.to_period...jan_2019.to_period).entries
-          repo.missed_visits_without_ltfu[slug].each do |period, count|
-            expected = period.in?(months_with_one_missed_visit) ? 1 : 0
-            expect(count).to eq(expected), "expected #{period} to have missed visits of #{expected} but got #{count}"
+          jan_2020_range.each do |period|
+            if period.in?(months_with_one_missed_visit)
+              expected_count = 1
+              expected_rate = 33
+            else
+              expected_count = 0
+              expected_rate = 0
+            end
+
+            count = repo.missed_visits_without_ltfu[slug][period]
+            rate = repo.missed_visits_without_ltfu_rates[slug][period]
+            expect(count).to eq(expected_count), "expected #{period} to have missed visits of #{expected_count} but got #{count}"
+            expect(rate).to eq(expected_rate), "expected #{period} to have missed visits rate of #{expected_rate} but got #{rate}"
           end
         end
 

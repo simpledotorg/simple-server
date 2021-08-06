@@ -160,8 +160,9 @@ module Reports
     memoize def missed_visits_without_ltfu_rates
       region_period_cached_query(__method__) do |entry|
         slug, period = entry.slug, entry.period
-        visit_rates = controlled_rates[slug][period] + uncontrolled_rates[slug][period] + visited_without_bp_taken_rate[slug][period]
-        100 - visit_rates
+        patients = denominator(entry.region, period, with_ltfu: false)
+        numerator = missed_visits_without_ltfu.dig(slug, period) || 0
+        percentage(numerator, patients)
       end
     end
 
