@@ -1,8 +1,8 @@
 require "rails_helper"
 
 RSpec.describe Reports::Repository, type: :model, v2_flag: true do
-  [true, false].each do |v2_flag|
-    context "with reporting_schema_v2 #{v2_flag}" do
+  [false, true].each do |v2_flag|
+    context "with reporting_schema_v2=>#{v2_flag}" do
       let(:v2_flag) { v2_flag }
       let(:organization) { create(:organization, name: "org-1") }
       let(:user) { create(:admin, :manager, :with_access, resource: organization, organization: organization) }
@@ -115,7 +115,7 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
 
           default_attrs = {registration_facility: facility_1, assigned_facility: facility_1, registration_user: user}
           _facility_1_registered_in_jan_2019 = create_list(:patient, 2, default_attrs.merge(recorded_at: jan_2019))
-          _facility_1_registered_in_august_2018 = create_list(:patient, 2, default_attrs.merge(recorded_at: Time.zone.parse("August 10th 2018")))
+          _facility_1_registered_in_august_2018 = create_list(:patient, 2, default_attrs.merge(recorded_at: "August 1st 2018 00:00 UTC"))
           _facility_2_registered = create(:patient, full_name: "other facility", recorded_at: jan_2019, assigned_facility: facility_2, registration_user: user)
 
           refresh_views
@@ -419,6 +419,7 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
           one_missed_visit = ("April 2019".to_date.to_period.."December 2019".to_date.to_period)
           two_missed_visit = ("April 2018".to_date.to_period.."December 2018".to_date.to_period)
 
+          repo.missed_visits_without_ltfu[slug]
           repo.missed_visits_without_ltfu[slug].each do |period, count|
             expected = if period.in?(one_missed_visit)
               1
@@ -430,7 +431,6 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
           end
         end
       end
-
 
       context "caching", skip: v2_flag do
         let(:facility_1) { create(:facility, name: "facility-1") }
