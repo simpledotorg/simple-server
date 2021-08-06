@@ -92,10 +92,10 @@ class MyFacilities::DrugStocksController < AdminController
   end
 
   def blocks_to_display
-    if @selected_facility_sizes != @facility_sizes || @selected_zones != @zones
-      Region.none
-    else
+    if @selected_facility_sizes == @facility_sizes && @selected_zones == @zones
       @query.blocks.order(:name)
+    else
+      Region.none
     end
   end
 

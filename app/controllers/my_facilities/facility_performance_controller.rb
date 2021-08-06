@@ -27,15 +27,16 @@ class MyFacilities::FacilityPerformanceController < AdminController
     @scores_for_facility = {}
 
     @facilities.each do |facility|
-      @data_for_facility[facility.name] = Reports::RegionService.new(region: facility,
-                                                                     period: @period).call
+      slug = facility.region.slug
+      @data_for_facility[slug] = Reports::RegionService.new(region: facility.region,
+                                                            period: @period).call
 
-      @scores_for_facility[facility.name] = Reports::PerformanceScore.new(region: facility,
-                                                                          reports_result: @data_for_facility[facility.name],
-                                                                          period: @period)
+      @scores_for_facility[slug] = Reports::PerformanceScore.new(region: facility,
+                                                                 reports_result: @data_for_facility[slug],
+                                                                 period: @period)
     end
 
-    @facilities = @facilities.sort_by { |facility| @scores_for_facility[facility.name].overall_score }
+    @facilities = @facilities.sort_by { |facility| @scores_for_facility[facility.region.slug].overall_score }
     @facilities_by_size = @facilities.group_by { |facility| facility.facility_size }
   end
 
