@@ -31,6 +31,7 @@ RSpec.describe Experimentation::DataExport, type: :model do
       bp = create(:blood_pressure, device_created_at: 21.days.ago)
       single_message_group.patients << patient1
       create_notification(experiment, single_template, patient1, appt1)
+      create(:blood_pressure, patient: patient1, device_created_at: 6.months.ago)
 
       patient2 = create(:patient)
       appt2 = create(:appointment, patient: patient2, scheduled_date: 22.days.ago)
