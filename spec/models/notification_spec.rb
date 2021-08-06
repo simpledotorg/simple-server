@@ -128,4 +128,15 @@ describe Notification, type: :model do
       expect(experimental_notification.next_communication_type).to eq(nil)
     end
   end
+
+  describe "#discard" do
+    it "discards the associated communications as well" do
+      notification = create(:notification)
+      create_list(:communication, 2, communication_type: "sms", notification: notification)
+
+      notification.discard
+      expect(Notification.find_by(id: notification.id)).not_to be_present
+      expect(Communication.find_by(notification_id: notification.id)).not_to be_present
+    end
+  end
 end

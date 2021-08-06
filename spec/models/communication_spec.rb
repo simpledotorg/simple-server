@@ -149,4 +149,22 @@ describe Communication, type: :model do
       end
     end
   end
+
+  context "#discard" do
+    it "discards the detailable as well, when present" do
+      detailable = create(:twilio_sms_delivery_detail, :sent)
+      communication = create(:communication, :sms, detailable: detailable)
+
+      communication.discard
+      expect(Communication.find_by(id: communication)).not_to be_present
+      expect(TwilioSmsDeliveryDetail.find_by(id: communication.detailable)).not_to be_present
+    end
+
+    it "discards itself successfully when there is no detailable" do
+      communication = create(:communication)
+      communication.discard
+
+      expect(Communication.find_by(id: communication)).not_to be_present
+    end
+  end
 end

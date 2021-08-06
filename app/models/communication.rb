@@ -9,6 +9,10 @@ class Communication < ApplicationRecord
 
   delegate :unsuccessful?, :successful?, :in_progress?, to: :detailable
 
+  after_discard do
+    detailable&.discard
+  end
+
   # the missed_visit types are being deprecated
   # keeping here to avoid invalidating records until we change existing records as part of:
   # https://app.clubhouse.io/simpledotorg/story/3585/backfill-notifications-from-communications

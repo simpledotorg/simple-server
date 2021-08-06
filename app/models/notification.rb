@@ -20,6 +20,10 @@ class Notification < ApplicationRecord
   validates :purpose, presence: true
   validates :subject, presence: true, if: proc { |n| n.missed_visit_reminder? }, on: :create
 
+  after_discard do
+    communications.discard_all
+  end
+
   enum status: {
     pending: "pending",
     scheduled: "scheduled",

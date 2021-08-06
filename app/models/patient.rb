@@ -228,6 +228,7 @@ class Patient < ApplicationRecord
     prescription_drugs.discard_all
     teleconsultations.discard_all
     notifications.discard_all
+    treatment_group_memberships.discard_all
     discard
   end
 end

@@ -699,5 +699,16 @@ describe Patient, type: :model do
       notification.patient.discard_data
       expect(Notification.where(id: notification.id)).to be_empty
     end
+
+    it "soft deletes the patient's membership in any experiment" do
+      patient = create(:patient)
+      experiment = create(:experiment, :with_treatment_group)
+      treatment_group = experiment.treatment_groups.first
+      treatment_group.patients << patient
+
+      patient.discard_data
+      # TODO: Fails because TreatmentGroupMembership doesn't have a 'deleted_at' column, and is not an ApplicationRecord
+      expect(Experimentation::TreatmentGroupMembership.where(patient_id: patient.id)).to be_empty
+    end
   end
 end
