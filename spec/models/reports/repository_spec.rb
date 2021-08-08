@@ -371,13 +371,26 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
       context "ltfu" do
         it "counts ltfu for patients who never have a BP taken" do
           facility = create(:facility, facility_group: facility_group_1)
+          slug = facility.region.slug
+          other_facility = create(:facility, facility_group: facility_group_1)
           # patient who never has a BP taken so they are LTFU in Jan 1st 2019
-          _missed_visit = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: "Jan 1st 2018 00:00:00 IST", registration_user: user)
+          _ltfu_1 = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: "Jan 1st 2018 00:00:00 UTC", registration_user: user)
+          # patient who becomes LTFU September 2019
+          ltfu_2 = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: "July 1st 2018 00:00:00 UTC", registration_user: user)
+          create(:bp_with_encounter, recorded_at: "July 1st 2018 00:00:00", facility: facility, patient: ltfu_2, user: user)
+          create(:bp_with_encounter, recorded_at: "September 1st 2018 00:00:00", facility: other_facility, patient: ltfu_2, user: user)
+          # patient who is not LTFU
+          non_ltfu_patient = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: "July 1st 2019 00:00:00 UTC", registration_user: user)
+          create(:bp_with_encounter, recorded_at: "July 1st 2019 00:00:00", facility: facility, patient: non_ltfu_patient, user: user)
 
           refresh_views
 
           jan_2020_range = (Period.month(jan_2020.advance(months: -24))..Period.month(jan_2020))
           repo = Reports::Repository.new(facility.region, periods: jan_2020_range)
+          result = repo.ltfu[slug]
+          ("January 2018".to_date.to_period.."December 2018".to_date.to_period).each  {|period| expect(result[period]).to eq(0)}
+          ("January 2019".to_date.to_period.."August 2019".to_date.to_period).each    {|period| expect(result[period]).to eq(1)}
+          ("September 2019".to_date.to_period.."January 2020".to_date.to_period).each {|period| expect(result[period]).to eq(2)}
         end
       end
 
