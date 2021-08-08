@@ -9,9 +9,8 @@ module SetForEndOfMonth
       scope.set_context("set_for_end_of_month",
         {
           for_end_of_month: params[:for_end_of_month],
-          show_current_month: @show_current_month,
-        }
-      )
+          show_current_month: @show_current_month
+        })
     end
 
     @for_end_of_month ||= if params[:for_end_of_month].present?
