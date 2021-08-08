@@ -207,6 +207,7 @@ module Reports
 
     delegate :sql, to: Arel
 
+    # Grab a particular summed field for a region.
     def sum(region, field)
       summed_field = "sum_#{field}"
       facility_state_data(region)
@@ -216,15 +217,18 @@ module Reports
         .tap { |hsh| hsh.default = 0 }
     end
 
-    private def facility_state_data(region)
-      selects = FIELDS.map { |field| Arel.sql("COALESCE(SUM(#{field}::int), 0) as sum_#{field}") }
-      selects.prepend(:month_date)
+    # Grab all the summed data for a particular region grouped by month_date.
+    # We need to use COALESCE to avoid getting nil back from some of the values, and we need to use
+    # `select` because the `sum` methods in ActiveRecord can't sum multiple fields.
+    memoize def facility_state_data(region)
+      calculations = FIELDS.map { |field| Arel.sql("COALESCE(SUM(#{field}::int), 0) as sum_#{field}") }
 
       FacilityState.for_region(region)
         .where("cumulative_registrations IS NOT NULL OR cumulative_assigned_patients IS NOT NULL")
         .order(:month_date)
         .group(:month_date)
-        .select(*selects)
+        .select(:month_date)
+        .select(*calculations)
     end
 
   end
