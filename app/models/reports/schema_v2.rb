@@ -205,9 +205,9 @@ module Reports
       ((numerator.to_f / denominator) * 100).round(PERCENTAGE_PRECISION)
     end
 
-    delegate :sql, to: Arel
-
     # Grab a particular summed field for a region.
+    # Note that we do filtering on the result set to limit the returned amount of data to the data that callers are
+    # requesting via the `periods` argument the Repository was created with.
     def sum(region, field)
       summed_field = "sum_#{field}"
       facility_state_data(region)
@@ -216,6 +216,8 @@ module Reports
         .to_h { |facility_state| [Period.month(facility_state.month_date), facility_state.public_send(summed_field)] }
         .tap { |hsh| hsh.default = 0 }
     end
+
+    delegate :sql, to: Arel
 
     # Grab all the summed data for a particular region grouped by month_date.
     # We need to use COALESCE to avoid getting nil back from some of the values, and we need to use
