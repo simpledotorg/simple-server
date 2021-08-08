@@ -39,3 +39,13 @@ RSpec.configure do |config|
 
   config.shared_context_metadata_behavior = :apply_to_host_groups
 end
+
+# Provide an easy way to convert a date string to a month Period
+# for example "December 2019".to_period
+module StringToPeriod
+  refine String do
+    def to_period
+      to_date.to_period
+    end
+  end
+end

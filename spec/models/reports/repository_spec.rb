@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe Reports::Repository, type: :model, v2_flag: true do
+  using StringToPeriod
+
   [true, false].each do |v2_flag|
     context "with reporting_schema_v2=>#{v2_flag}" do
       let(:v2_flag) { v2_flag }
@@ -87,16 +89,16 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
 
           refresh_views
 
-          range = jan_2019.to_period..("June 2019".to_date.to_period)
+          range = jan_2019.to_period..("June 2019".to_period)
           repo = described_class.new(region, periods: range)
           expected_registered = {
             facility_group_1.slug => {
               jan_2019.to_period => 2,
-              "Feb 2019".to_date.to_period => 0,
-              "March 2019".to_date.to_period => 0,
-              "April 2019".to_date.to_period => 0,
-              "May 2019".to_date.to_period => 0,
-              "June 2019".to_date.to_period => 0
+              "Feb 2019".to_period => 0,
+              "March 2019".to_period => 0,
+              "April 2019".to_period => 0,
+              "May 2019".to_period => 0,
+              "June 2019".to_period => 0
             }
           }
           # handle slight difference in return values from v1 and v2 - in practice this won't matter,
@@ -383,9 +385,9 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
           jan_2020_range = (Period.month(jan_2020.advance(months: -24))..Period.month(jan_2020))
           repo = Reports::Repository.new(facility.region, periods: jan_2020_range)
           result = repo.ltfu[slug]
-          ("January 2018".to_date.to_period.."December 2018".to_date.to_period).each  {|period| expect(result[period]).to eq(0)}
-          ("January 2019".to_date.to_period.."August 2019".to_date.to_period).each    {|period| expect(result[period]).to eq(1)}
-          ("September 2019".to_date.to_period.."January 2020".to_date.to_period).each {|period| expect(result[period]).to eq(2)}
+          ("January 2018".to_period.."December 2018".to_period).each  {|period| expect(result[period]).to eq(0)}
+          ("January 2019".to_period.."August 2019".to_period).each    {|period| expect(result[period]).to eq(1)}
+          ("September 2019".to_period.."January 2020".to_period).each {|period| expect(result[period]).to eq(2)}
         end
       end
 
@@ -407,7 +409,7 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
           jan_2020_range = (Period.month(jan_2020.advance(months: -24))..Period.month(jan_2020))
           repo = Reports::Repository.new(facility.region, periods: jan_2020_range)
 
-          months_with_one_missed_visit = ("April 2018".to_date.to_period...jan_2019.to_period).entries
+          months_with_one_missed_visit = ("April 2018".to_period...jan_2019.to_period).entries
           jan_2020_range.each do |period|
             if period.in?(months_with_one_missed_visit)
               expected_count = 1
@@ -424,7 +426,7 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
           end
         end
 
-        it "counts missed visits with and with ltfu" do
+        it "counts missed visits without ltfu" do
           facility = create(:facility, facility_group: facility_group_1)
           slug = facility.region.slug
           # patient w/ missed visit starting in April 2018 who is LTFU as of Jan 2019
@@ -438,20 +440,13 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
 
           jan_2020_range = (Period.month(jan_2020.advance(months: -24))..Period.month(jan_2020))
           repo = Reports::Repository.new(facility.region, periods: jan_2020_range)
+          result = repo.missed_visits_without_ltfu[slug]
 
-          one_missed_visit = ("April 2019".to_date.to_period.."December 2019".to_date.to_period)
-          two_missed_visit = ("April 2018".to_date.to_period.."December 2018".to_date.to_period)
-
-          repo.missed_visits_without_ltfu[slug]
-          repo.missed_visits_without_ltfu[slug].each do |period, count|
-            expected = if period.in?(one_missed_visit)
-              1
-            elsif period.in?(two_missed_visit)
-              2
-            else 0
-            end
-            expect(count).to eq(expected), "expected #{period} to have missed visits of #{expected} but got #{count}"
-          end
+          ("January 2018".to_period.."March 2018".to_period).each { |period| expect(result[period]).to eq(0)}
+          ("April 2018".to_period.."December 2018".to_period).each {|period| expect(result[period]).to eq(2)}
+          ("January 2019".to_period.."March 2019".to_period).each { |period| expect(result[period]).to eq(0)}
+          ("April 2019".to_period.."December 2019".to_period).each {|period| expect(result[period]).to eq(1)}
+          expect(result["January 2020".to_period]).to eq(0)
         end
       end
 

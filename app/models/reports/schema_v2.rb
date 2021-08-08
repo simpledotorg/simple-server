@@ -222,6 +222,8 @@ module Reports
     # Grab all the summed data for a particular region grouped by month_date.
     # We need to use COALESCE to avoid getting nil back from some of the values, and we need to use
     # `select` because the `sum` methods in ActiveRecord can't sum multiple fields.
+    # We also order by `month_date` because some code in the views expects elements to be ordered by Period from
+    # oldest to newest - it also makes reading output in specs and debugging much easier.
     memoize def facility_state_data(region)
       calculations = FIELDS.map { |field| Arel.sql("COALESCE(SUM(#{field}::int), 0) as sum_#{field}") }
 
