@@ -78,17 +78,6 @@ module Reports
       regions.each_with_object({}) { |region, result| result[region.slug] = sum(region, :monthly_registrations) }
     end
 
-    def registered_patients_query_v2(region)
-      return {} if earliest_patient_recorded_at_period[region.slug].nil?
-      FacilityState.for_region(region)
-        .where("month_date >= ?", earliest_patient_recorded_at_period[region.slug].to_date)
-        .order(:month_date)
-        .group(:month_date)
-        .sum("monthly_registrations::int")
-        .to_h(&period_hash)
-        .tap { |hsh| hsh.default = 0 }
-    end
-
     memoize def cumulative_registrations
       regions.each_with_object({}) { |region, result| result[region.slug] = sum(region, :cumulative_registrations) }
     end

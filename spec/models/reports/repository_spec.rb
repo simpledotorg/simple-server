@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Reports::Repository, type: :model, v2_flag: true do
-  [true, false].each do |v2_flag|
+  [true].each do |v2_flag|
     context "with reporting_schema_v2=>#{v2_flag}" do
       let(:v2_flag) { v2_flag }
       let(:organization) { create(:organization, name: "org-1") }
@@ -162,7 +162,7 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
           expect(repo.visited_without_bp_taken_rate(with_ltfu: true)).to eq({slug => {}})
         end
 
-        it "gets controlled counts and rates for single region" do
+        fit "gets controlled counts and rates for single region" do
           facilities = FactoryBot.create_list(:facility, 2, facility_group: facility_group_1).sort_by(&:slug)
           other_facility = create(:facility)
           facility_1, facility_2 = facilities.take(2)
@@ -193,6 +193,7 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
           }
           with_reporting_time_zone do
             repo = Reports::Repository.new(facility_1.region, periods: jan_2020.to_period)
+            pp repo.cumulative_assigned_patients[facility_1.slug]
             (jan_2019.to_period..jan_2020.to_period).each do |period|
               count = repo.cumulative_assigned_patients[facility_1.slug][period]
               expect(count).to eq(4), "expected 4 assigned patients for #{period} but got #{count.inspect}"
