@@ -16,9 +16,9 @@ module Experimentation
       adjust_notifications_length(data)
       adjust_appointments_length(data)
       adjust_encounters_length(data)
-      create_headers
+      headers = create_headers(data)
       # make csv
-      data
+      return {headers: headers, data: data.map(&:values)}
     end
 
     private
@@ -54,7 +54,7 @@ module Experimentation
             assigned_facility_type: assigned_facility&.facility_type,
             assigned_facility_state: assigned_facility&.state,
             assigned_facility_district: assigned_facility&.district,
-            assigned_facility_block: "what is a facility block?",
+            assigned_facility_block: assigned_facility&.block,
             patient_registration_date: patient.device_created_at.to_date,
             patient_id: tgm.id
           }
@@ -67,7 +67,7 @@ module Experimentation
       notifications.each_with_object([]) do |n, obj|
         next if n.communications.empty?
         communication = n.communications.order(created_at: :desc).last
-        obj << { message_type: communication.communication_type, message_sent: communication.detailable.delivered_on, message_status: communication.detailable.result }
+        obj << { message_type: communication.communication_type, message_sent: communication&.detailable&.delivered_on, message_status: communication&.detailable&.result }
       end
     end
 
@@ -83,7 +83,7 @@ module Experimentation
       bps = patient.blood_pressures.where(device_created_at: (experiment.start_date - 1.year)..Date.current).pluck(:device_created_at).map(&:to_date)
       bss = patient.blood_sugars.where(device_created_at: (experiment.start_date - 1.year)..Date.current).pluck(:device_created_at).map(&:to_date)
       pds = patient.prescription_drugs.where(device_created_at: (experiment.start_date - 1.year)..Date.current).pluck(:device_created_at).map(&:to_date)
-      encounters = (bps + bss + pds).uniq
+      encounters = (bps + bss + pds).uniq.sort
       @max_encounters = encounters.count if encounters.count > max_encounters
       encounters
     end
@@ -110,12 +110,29 @@ module Experimentation
       end
     end
 
-    def create_headers
-    #   headers = []
-    #   HEADERS.each do |header|
-    #     case header
-    #     when 
-    #   end
+    def create_headers(data)
+      keys = data.first.keys
+      keys.each_with_object([]) do |k, headers|
+        case k
+        when :notifications
+          @max_notifications.times do |i|
+            headers << "Message #{i} Type"
+            headers << "Message #{i} Sent"
+            headers << "Message #{i} Status"
+          end
+        when :appointments
+          @max_appointments.times do |i|
+            headers << "Appointment #{i} Creation Date"
+            headers << "Appointment #{i} Date"
+          end
+        when :encounters
+          @max_encounters.times do |i|
+            headers << "Encounter #{i} Date"
+          end
+        else
+          headers << k.to_s.split("_").each(&:capitalize!).join(" ")
+        end
+      end
     end
   end
 end

@@ -30,20 +30,30 @@ RSpec.describe Experimentation::DataExport, type: :model do
       appt1 = create(:appointment, patient: patient1, scheduled_date: 20.days.ago)
       bp = create(:blood_pressure, device_created_at: 21.days.ago)
       single_message_group.patients << patient1
-      create_notification(experiment, single_template, patient1, appt1)
+      n = create_notification(experiment, single_template, patient1, appt1)
+      c = create(:communication, notification: n)
+      create(:twilio_sms_delivery_detail, communication: c, delivered_on: n.remind_on)
       create(:blood_pressure, patient: patient1, device_created_at: 6.months.ago)
 
       patient2 = create(:patient)
       appt2 = create(:appointment, patient: patient2, scheduled_date: 22.days.ago)
       cascade_group.patients << patient2
-      create_notification(experiment, cascade_template1, patient2, appt2)
-      create_notification(experiment, cascade_template2, patient2, appt2)
-      create_notification(experiment, cascade_template3, patient2, appt2)
+      n = create_notification(experiment, cascade_template1, patient2, appt2)
+      c = create(:communication, notification: n)
+      create(:twilio_sms_delivery_detail, communication: c, delivered_on: n.remind_on)
+      n = create_notification(experiment, cascade_template2, patient2, appt2)
+      c = create(:communication, notification: n)
+      create(:twilio_sms_delivery_detail, communication: c, delivered_on: n.remind_on)
+      n = create_notification(experiment, cascade_template3, patient2, appt2)
+      c = create(:communication, notification: n)
+      create(:twilio_sms_delivery_detail, communication: c, delivered_on: n.remind_on)
+
 
       subject = described_class.new(experiment.name)
       results = subject.results
       pp results
-      expect(results.class).to eq Array
+      length = results[:data].map(&:length).uniq
+      expect([results[:headers].length]).to eq length
     end
   end
 end
