@@ -78,17 +78,6 @@ module Reports
       regions.each_with_object({}) { |region, result| result[region.slug] = sum(region, :monthly_registrations) }
     end
 
-    def registered_patients_query_v2(region)
-      return {} if earliest_patient_recorded_at_period[region.slug].nil?
-      FacilityState.for_region(region)
-        .where("month_date >= ?", earliest_patient_recorded_at_period[region.slug].to_date)
-        .order(:month_date)
-        .group(:month_date)
-        .sum("monthly_registrations::int")
-        .to_h(&period_hash)
-        .tap { |hsh| hsh.default = 0 }
-    end
-
     memoize def cumulative_registrations
       regions.each_with_object({}) { |region, result| result[region.slug] = sum(region, :cumulative_registrations) }
     end
@@ -218,7 +207,16 @@ module Reports
 
     delegate :sql, to: Arel
 
-    private def summed_data(region)
+    def sum(region, field)
+      summed_field = "sum_#{field}"
+      facility_state_data(region)
+        .reject { |facility_state| Period.month(facility_state.month_date) < earliest_patient_recorded_at_period[region.slug] }
+        .select { |facility_state| facility_state.period_month_date.in?(periods) }
+        .to_h { |facility_state| [Period.month(facility_state.month_date), facility_state.public_send(summed_field)] }
+        .tap { |hsh| hsh.default = 0 }
+    end
+
+    private def facility_state_data(region)
       selects = FIELDS.map { |field| Arel.sql("COALESCE(SUM(#{field}::int), 0) as sum_#{field}") }
       selects.prepend(:month_date)
 
@@ -229,24 +227,5 @@ module Reports
         .select(*selects)
     end
 
-    def sum(region, field)
-      summed_field = "sum_#{field}"
-      summed_data(region)
-        .reject { |facility_state| Period.month(facility_state.month_date) < earliest_patient_recorded_at_period[region.slug] }
-        .select { |facility_state| facility_state.period_month_date.in?(periods) }
-        .to_h { |facility_state| [Period.month(facility_state.month_date), facility_state.public_send(summed_field)] }
-        .tap { |hsh| hsh.default = 0 }
-    end
-
-    def missed_visits_query(region, with_ltfu:)
-      field = with_ltfu ? :missed_visit_lost_to_follow_up : :missed_visit_under_care
-      FacilityState.for_region(region)
-        .where("month_date >= ?", earliest_patient_recorded_at_period[region.slug].to_date)
-        .order(:month_date)
-        .group(:month_date)
-        .sum("#{field}::int")
-        .to_h(&period_hash)
-        .tap { |hsh| hsh.default = 0 }
-    end
   end
 end
