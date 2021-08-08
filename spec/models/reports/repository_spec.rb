@@ -166,8 +166,6 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
           facilities = FactoryBot.create_list(:facility, 2, facility_group: facility_group_1).sort_by(&:slug)
           other_facility = create(:facility)
           facility_1, facility_2 = facilities.take(2)
-          # TODO we shouldn't need to create a registered patient here to make FacilityStates return records...
-          # _facility_1_registered_but_not_assigned = create(:patient, recorded_at: jan_2019, assigned_facility: other_facility, registration_facility: facility_1, registration_user: user)
           facility_1_controlled = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
           facility_1_uncontrolled = create_list(:patient, 2, full_name: "uncontrolled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
           facility_2_controlled = create(:patient, full_name: "other facility", recorded_at: jan_2019, assigned_facility: facility_2, registration_user: user)
