@@ -26,6 +26,12 @@ RSpec.describe Experimentation::DataExport, type: :model do
       cascade_template2 = create(:reminder_template, treatment_group: single_message_group, remind_on_in_days: 0, message: "cascade 2")
       cascade_template3 = create(:reminder_template, treatment_group: single_message_group, remind_on_in_days: 3, message: "cascade 3")
 
+      control_patient = create(:patient)
+      appt1 = create(:appointment, patient: control_patient, scheduled_date: 20.days.ago)
+      bp = create(:blood_pressure, device_created_at: 21.days.ago)
+      control_group.patients << control_patient
+      create(:blood_pressure, patient: control_patient, device_created_at: 2.months.ago)
+
       patient1 = create(:patient)
       appt1 = create(:appointment, patient: patient1, scheduled_date: 20.days.ago)
       bp = create(:blood_pressure, device_created_at: 21.days.ago)

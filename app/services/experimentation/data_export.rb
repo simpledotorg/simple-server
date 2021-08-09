@@ -1,11 +1,11 @@
 module Experimentation
   class DataExport
 
-    attr_reader :experiment, :max_notifications, :max_appointments, :max_encounters
+    attr_reader :experiment, :max_communications, :max_appointments, :max_encounters
 
     def initialize(name)
       @experiment = Experimentation::Experiment.find_by!(name: name)
-      @max_notifications = 0
+      @max_communications = 0
       @max_appointments = 0
       @max_encounters = 0
     end
@@ -13,12 +13,12 @@ module Experimentation
     def results
       data = aggregate_data
       # fill in expandable data sets
-      adjust_notifications_length(data)
+      adjust_communications_length(data)
       adjust_appointments_length(data)
       adjust_encounters_length(data)
       headers = create_headers(data)
       # make csv
-      return {headers: headers, data: data.map(&:values)}
+      return { headers: headers, data: data.map{|patient_data| patient_data.values.flatten }}
     end
 
     private
@@ -29,7 +29,6 @@ module Experimentation
         group.patients.each do |patient|
           tgm = patient.treatment_group_memberships.find_by(treatment_group_id: group.id)
           notifications = patient.notifications.where(experiment_id: experiment.id)
-          @max_notifications = notifications.count if notifications.count > @max_notifications
           assigned_facility = patient.assigned_facility
 
           data << {
@@ -38,7 +37,7 @@ module Experimentation
             experiment_inclusion_date: tgm.created_at,
             appointments: process_appointments(notifications),
             encounters: encounters(patient),
-            notifications: process_notifications(notifications),
+            communications: process_communications(notifications),
             bp_recorded_at_visit: "bp recorded at visit", ###
             patient_gender: patient.gender,
             patient_age: patient.age,
@@ -63,19 +62,23 @@ module Experimentation
       data
     end
 
-    def process_notifications(notifications)
-      notifications.each_with_object([]) do |n, obj|
-        next if n.communications.empty?
-        communication = n.communications.order(created_at: :desc).last
-        obj << { message_type: communication.communication_type, message_sent: communication&.detailable&.delivered_on, message_status: communication&.detailable&.result }
+    def process_communications(notifications)
+      communications = notifications.each_with_object([]) do |n, ary|
+        n.communications.each do |c|
+          communication = n.communications.order(created_at: :desc).last
+          ary << [communication.communication_type, communication.detailable&.delivered_on, communication.detailable&.result]
+        end
       end
+
+      @max_communications = communications.count if communications.count > @max_communications
+      communications
     end
 
     def process_appointments(notifications)
       appts = notifications.map(&:subject).uniq
       @max_appointments = appts.count if appts.count > max_appointments
       appts.map do |appt|
-        { appointment_creation_date: appt.device_created_at.to_date, appointment_date: appt.scheduled_date }
+        [appt.device_created_at.to_date, appt.scheduled_date]
       end
     end
 
@@ -88,18 +91,20 @@ module Experimentation
       encounters
     end
 
-    def adjust_notifications_length(data)
+    def adjust_communications_length(data)
       data.each do |patient_data|
-        (@max_notifications - patient_data[:notifications].count).times do
-           patient_data[:notifications] << { message_type: nil, message_sent: nil, message_status: nil }
+        fillers_needed = @max_communications - patient_data[:communications].count
+        fillers_needed.times do
+           patient_data[:communications] << [nil, nil, nil]
         end
       end
     end
 
     def adjust_appointments_length(data)
       data.each do |patient_data|
-        (@max_appointments - patient_data[:appointments].count).times do
-          patient_data[:appointments] << { appointment_creation_date: nil, appointment_date: nil }
+        fillers_needed = @max_appointments - patient_data[:appointments].count
+        fillers_needed.times do
+          patient_data[:appointments] << [nil, nil]
         end
       end
     end
@@ -114,8 +119,8 @@ module Experimentation
       keys = data.first.keys
       keys.each_with_object([]) do |k, headers|
         case k
-        when :notifications
-          @max_notifications.times do |i|
+        when :communications
+          @max_communications.times do |i|
             headers << "Message #{i} Type"
             headers << "Message #{i} Sent"
             headers << "Message #{i} Status"
