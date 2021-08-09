@@ -187,7 +187,6 @@ module Reports
         .minimum(:month_date)
     end
 
-
     # Grab a particular summed field for a region. We return data in the format of:
     #   { region_slug => { period_1 => x, period_2 => y }, ...}
     # to maintain consistency w/ the format callers expect from the Repository.
