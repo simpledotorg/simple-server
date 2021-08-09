@@ -1,0 +1,40 @@
+en_ET:
+  facility_group: "zone"
+  facility_group_zone: "woreda"
+  helpers:
+    label:
+      facility:
+        street_address: "House number and street"
+        village_or_colony: "Town / Area"
+        zone: "Woreda *"
+        district: "District *"
+        state: "Province *"
+        country: "Country *"
+        pin: "Postal Code"
+      facility_group:
+        state: "Province"
+      address:
+        street_address: "House and street number"
+        village_or_colony: "Town / Area"
+        zone: "Woreda *"
+        district: "District"
+        state: "Province *"
+        country: "Country *"
+        pin: "Postal Code"
+      drug:
+        frequency:
+          one_per_day: "Daily"
+          two_per_day: "BD (morning and night)"
+          three_per_day: "TDS"
+          four_per_day: "6 hourly"
+    submit:
+      facility:
+        create: "Save facility"
+        update: "Save facility"
+  activerecord:
+    facility:
+      facility_size:
+        community: "Primary medical care unit"
+        small: "Divisional Hospital"
+        medium: "Base Hospital"
+        large: "District General Hospital"
