@@ -194,12 +194,15 @@ module Reports
     # Note that we do filtering on the result set to limit the returned amount of data to the data that callers are
     # requesting via the `periods` argument the Repository was created with.
     def sum(region, field)
-      summed_field = "sum_#{field}"
       facility_state_data(region)
         .reject { |facility_state| Period.month(facility_state.month_date) < earliest_patient_recorded_at_period[region.slug] }
         .select { |facility_state| facility_state.period.in?(periods) }
-        .to_h { |facility_state| [Period.month(facility_state.month_date), facility_state.public_send(summed_field)] }
+        .to_h { |facility_state| [Period.month(facility_state.month_date), facility_state.public_send(summary_field(field))] }
         .tap { |hsh| hsh.default = 0 }
+    end
+
+    def summary_field(field)
+      "sum_#{field}"
     end
 
     # Grab all the summed data for a particular region grouped by month_date.
@@ -208,7 +211,7 @@ module Reports
     # We also order by `month_date` because some code in the views expects elements to be ordered by Period from
     # oldest to newest - it also makes reading output in specs and debugging much easier.
     memoize def facility_state_data(region)
-      calculations = FIELDS.map { |field| Arel.sql("COALESCE(SUM(#{field}::int), 0) as sum_#{field}") }
+      calculations = FIELDS.map { |field| Arel.sql("COALESCE(SUM(#{field}::int), 0) as #{summary_field(field)}") }
 
       FacilityState.for_region(region)
         .where("cumulative_registrations IS NOT NULL OR cumulative_assigned_patients IS NOT NULL")
