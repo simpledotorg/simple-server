@@ -4,6 +4,7 @@ module Reports
     include Memery
 
     FIELDS = %i[
+      controlled_under_care
       cumulative_assigned_patients
       cumulative_registrations
       lost_to_follow_up
@@ -11,6 +12,9 @@ module Reports
       missed_visit_under_care
       monthly_registrations
       patients_under_care
+      uncontrolled_under_care
+      visited_no_bp_under_care
+      visited_no_bp_lost_to_follow_up
     ].freeze
 
     attr_reader :control_rate_query_v2
@@ -25,7 +29,6 @@ module Reports
       @regions = regions
       @periods = periods
       @period_type = @periods.first.type
-      @control_rate_query_v2 = ControlRateQueryV2.new
       @period_hash = lambda { |month_date, count| [Period.month(month_date), count] }
     end
 
@@ -94,23 +97,11 @@ module Reports
     end
 
     memoize def controlled
-      regions.each_with_object({}).each do |region, hsh|
-        if earliest_patient_recorded_at[region.slug].nil?
-          hsh[region.slug] = Hash.new(0)
-          next
-        end
-        hsh[region.slug] = control_rate_query_v2.controlled_counts(region, range: active_range(region))
-      end
+      regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, :controlled_under_care) }
     end
 
     memoize def uncontrolled
-      regions.each_with_object({}).each do |region, hsh|
-        if earliest_patient_recorded_at[region.slug].nil?
-          hsh[region.slug] = Hash.new(0)
-          next
-        end
-        hsh[region.slug] = control_rate_query_v2.uncontrolled_counts(region, range: active_range(region))
-      end
+      regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, :uncontrolled_under_care) }
     end
 
     memoize def controlled_rates(with_ltfu: false)
