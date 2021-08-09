@@ -24,7 +24,7 @@ class Statsd
     time
     timing
   ]
-  delegate *DELEGATED_METHODS, to: :statsd
+  delegate(*DELEGATED_METHODS, to: :statsd)
 
   private
 
