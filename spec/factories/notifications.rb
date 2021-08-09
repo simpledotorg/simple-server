@@ -6,6 +6,7 @@ FactoryBot.define do
     message { "notifications.set01.basic" }
     association :patient, factory: :patient
     purpose { "missed_visit_reminder" }
+    subject { build(:appointment) }
 
     trait :with_experiment do
       association :experiment, factory: :experiment
