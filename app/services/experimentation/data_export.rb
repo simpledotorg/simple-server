@@ -28,13 +28,13 @@ module Experimentation
       experiment.treatment_groups.each do |group|
         group.patients.each do |patient|
           tgm = patient.treatment_group_memberships.find_by(treatment_group_id: group.id)
-          notifications = patient.notifications.where(experiment_id: experiment.id)
+          notifications = patient.notifications.where(experiment_id: experiment.id).order(:remind_on)
           assigned_facility = patient.assigned_facility
 
           data << {
             experiment_name: experiment.name,
             treatment_group: group.description,
-            experiment_inclusion_date: tgm.created_at,
+            experiment_inclusion_date: tgm.created_at.to_date,
             appointments: process_appointments(notifications),
             encounters: encounters(patient),
             communications: process_communications(notifications),
@@ -64,9 +64,9 @@ module Experimentation
 
     def process_communications(notifications)
       communications = notifications.each_with_object([]) do |n, ary|
-        n.communications.each do |c|
-          communication = n.communications.order(created_at: :desc).last
-          ary << [communication.communication_type, communication.detailable&.delivered_on, communication.detailable&.result]
+        ordered_communications = n.communications.sort_by{|c| c.created_at }
+        ordered_communications.each do |c|
+          ary << [c.communication_type, c.detailable&.delivered_on, c.detailable&.result]
         end
       end
 
@@ -75,7 +75,7 @@ module Experimentation
     end
 
     def process_appointments(notifications)
-      appts = notifications.map(&:subject).uniq
+      appts = notifications.map(&:subject).uniq.sort_by{|appt| appt.scheduled_date }
       @max_appointments = appts.count if appts.count > max_appointments
       appts.map do |appt|
         [appt.device_created_at.to_date, appt.scheduled_date]
