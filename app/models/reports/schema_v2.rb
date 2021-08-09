@@ -197,7 +197,7 @@ module Reports
       summed_field = "sum_#{field}"
       facility_state_data(region)
         .reject { |facility_state| Period.month(facility_state.month_date) < earliest_patient_recorded_at_period[region.slug] }
-        .select { |facility_state| facility_state.period_month_date.in?(periods) }
+        .select { |facility_state| facility_state.period.in?(periods) }
         .to_h { |facility_state| [Period.month(facility_state.month_date), facility_state.public_send(summed_field)] }
         .tap { |hsh| hsh.default = 0 }
     end
