@@ -9,7 +9,7 @@ module Reports
       where("#{region.region_type}_region_id" => region.id)
     end
 
-    def period_month_date
+    def period
       Period.month(month_date)
     end
   end
