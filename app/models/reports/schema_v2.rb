@@ -147,13 +147,6 @@ module Reports
 
     private
 
-    # Return the actual 'active range' for a Region - this will be the from the first recorded at in a region until
-    # the end of the period range requested.
-    def active_range(region)
-      start = [earliest_patient_recorded_at_period[region.slug], periods.begin].compact.max
-      (start..periods.end)
-    end
-
     def denominator(region, period, with_ltfu: false)
       if with_ltfu
         adjusted_patients_without_ltfu[region.slug][period] + ltfu[region.slug][period]
