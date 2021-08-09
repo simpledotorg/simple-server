@@ -66,8 +66,7 @@ class CountryConfig
       name: "Sri Lanka",
       extended_region_reports: false,
       states: COUNTRYWISE_STATES["Sri Lanka"],
-      # Should add a en_LK before launch, this is placeholder
-      dashboard_locale: ENV["DEFAULT_PREFERRED_DASHBOARD_LOCALE"] || "en_IN",
+      dashboard_locale: ENV["DEFAULT_PREFERRED_DASHBOARD_LOCALE"] || "en_LK",
       faker_locale: "en-IND",
       time_zone: ENV["DEFAULT_TIME_ZONE"] || "Asia/Colombo",
       sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+94",

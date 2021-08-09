@@ -1,12 +1,12 @@
-en_ET:
-  facility_group: "zone"
-  facility_group_zone: "woreda"
+en_LK:
+  facility_group: "district"
+  facility_group_zone: "Zone (TBD)"
   helpers:
     label:
       facility:
         street_address: "House number and street"
-        village_or_colony: "Town / Area"
-        zone: "Woreda *"
+        village_or_colony: "Town/Area"
+        zone: "Zone (TBD)"
         district: "District *"
         state: "Province *"
         country: "Country *"
@@ -15,8 +15,8 @@ en_ET:
         state: "Province"
       address:
         street_address: "House and street number"
-        village_or_colony: "Town / Area"
-        zone: "Woreda *"
+        village_or_colony: "Town/Area"
+        zone: "Zone (TBD)"
         district: "District"
         state: "Province *"
         country: "Country *"
