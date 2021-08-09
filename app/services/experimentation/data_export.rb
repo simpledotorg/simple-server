@@ -1,10 +1,12 @@
 module Experimentation
   class DataExport
 
-    attr_reader :experiment, :max_communications, :max_appointments, :max_encounters
+    attr_reader :experiment, :max_communications, :max_appointments, :max_encounters, :notification_start_date
 
     def initialize(name)
       @experiment = Experimentation::Experiment.find_by!(name: name)
+      remind_ons = experiment.reminder_templates.pluck(:remind_on_in_days)
+      @notification_start_date = experiment.start_date - remind_ons.min.days
       @max_communications = 0
       @max_appointments = 0
       @max_encounters = 0
@@ -35,8 +37,8 @@ module Experimentation
             experiment_name: experiment.name,
             treatment_group: group.description,
             experiment_inclusion_date: tgm.created_at.to_date,
-            appointments: process_appointments(notifications),
-            encounters: encounters(patient),
+            appointments: process_appointments(patient, notifications),
+            encounters: process_past_visits(patient),
             communications: process_communications(notifications),
             bp_recorded_at_visit: "bp recorded at visit", ###
             patient_gender: patient.gender,
@@ -74,21 +76,36 @@ module Experimentation
       communications
     end
 
-    def process_appointments(notifications)
+    def process_appointments(patient, notifications)
       appts = notifications.map(&:subject).uniq.sort_by{|appt| appt.scheduled_date }
       @max_appointments = appts.count if appts.count > max_appointments
-      appts.map do |appt|
-        [appt.device_created_at.to_date, appt.scheduled_date]
+
+      encounters_during_experiment = encounters(patient, notification_start_date, Date.current)
+      appts.each_with_index.map do |appt, i|
+        corresponding_encounter_date = encounters_during_experiment[i - 1]
+        days_til_visit = nil
+        bp_at_visit = nil
+        if corresponding_encounter_date
+          days_til_visit = appt.scheduled_date - corresponding_encounter_date
+          bp_at_visit = patient.blood_pressures.find_by(device_created_at: corresponding_encounter_date)
+        end
+        [appt.device_created_at.to_date, appt.scheduled_date, days_til_visit, bp_at_visit]
       end
     end
 
-    def encounters(patient)
+    def process_past_visits(patient)
+      end_date = notification_start_date - 1.day
+      start_date = end_date - 1.year
+      encounters = encounters(patient, start_date, end_date)
+      @max_encounters = encounters.count if encounters.count > max_encounters
+      encounters
+    end
+
+    def encounters(patient, start_date, end_date)
       bps = patient.blood_pressures.where(device_created_at: (experiment.start_date - 1.year)..Date.current).pluck(:device_created_at).map(&:to_date)
       bss = patient.blood_sugars.where(device_created_at: (experiment.start_date - 1.year)..Date.current).pluck(:device_created_at).map(&:to_date)
       pds = patient.prescription_drugs.where(device_created_at: (experiment.start_date - 1.year)..Date.current).pluck(:device_created_at).map(&:to_date)
       encounters = (bps + bss + pds).uniq.sort
-      @max_encounters = encounters.count if encounters.count > max_encounters
-      encounters
     end
 
     def adjust_communications_length(data)
@@ -104,7 +121,7 @@ module Experimentation
       data.each do |patient_data|
         fillers_needed = @max_appointments - patient_data[:appointments].count
         fillers_needed.times do
-          patient_data[:appointments] << [nil, nil]
+          patient_data[:appointments] << [nil, nil, nil, nil]
         end
       end
     end
@@ -129,6 +146,8 @@ module Experimentation
           @max_appointments.times do |i|
             headers << "Appointment #{i} Creation Date"
             headers << "Appointment #{i} Date"
+            headers << "Days to visit #{i}"
+            headers << "BP recorded at visit #{i}"
           end
         when :encounters
           @max_encounters.times do |i|
