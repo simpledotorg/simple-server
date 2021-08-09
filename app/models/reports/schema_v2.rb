@@ -202,8 +202,6 @@ module Reports
         .tap { |hsh| hsh.default = 0 }
     end
 
-    delegate :sql, to: Arel
-
     # Grab all the summed data for a particular region grouped by month_date.
     # We need to use COALESCE to avoid getting nil back from some of the values, and we need to use
     # `select` because the `sum` methods in ActiveRecord can't sum multiple fields.
