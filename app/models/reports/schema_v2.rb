@@ -44,12 +44,6 @@ module Reports
       earliest_patient_recorded_at.each_with_object({}) { |(slug, time), hsh| hsh[slug] = Period.new(value: time, type: :month) if time }
     end
 
-    private def earliest_patient_data_query_v2(region)
-      FacilityState.for_region(region)
-        .where("cumulative_registrations > 0 OR cumulative_assigned_patients > 0")
-        .minimum(:month_date)
-    end
-
     # Adjusted patient counts are the patient counts from three months ago (the adjusted period) that
     # are the basis for control rates. These counts DO include lost to follow up.
     memoize def adjusted_patients_with_ltfu
@@ -123,7 +117,7 @@ module Reports
       regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, field) }
     end
 
-    def missed_visits_rates(with_ltfu: false)
+    memoize def missed_visits_rates(with_ltfu: false)
       region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
         slug, period = entry.slug, entry.period
         numerator = missed_visits(with_ltfu: with_ltfu)[slug][period]
@@ -145,7 +139,7 @@ module Reports
 
     private
 
-    def denominator(region, period, with_ltfu: false)
+    memoize def denominator(region, period, with_ltfu: false)
       if with_ltfu
         adjusted_patients_without_ltfu[region.slug][period] + ltfu[region.slug][period]
       else
@@ -186,6 +180,13 @@ module Reports
       return 0 if numerator.nil? || denominator.nil? || denominator == 0 || numerator == 0
       ((numerator.to_f / denominator) * 100).round(PERCENTAGE_PRECISION)
     end
+
+    memoize def earliest_patient_data_query_v2(region)
+      FacilityState.for_region(region)
+        .where("cumulative_registrations > 0 OR cumulative_assigned_patients > 0")
+        .minimum(:month_date)
+    end
+
 
     # Grab a particular summed field for a region. We return data in the format of:
     #   { region_slug => { period_1 => x, period_2 => y }, ...}
