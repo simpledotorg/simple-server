@@ -58,8 +58,10 @@ RSpec.describe Experimentation::DataExport, type: :model do
       subject = described_class.new(experiment.name)
       results = subject.results
       pp results
-      length = results[:data].map(&:length).uniq
-      expect([results[:headers].length]).to eq length
+      parsed = CSV.parse(results)
+
+      expect(parsed.length).to eq 4
+      expect(parsed.map {|row| row.length }.uniq.length).to eq 1
     end
   end
 end

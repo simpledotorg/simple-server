@@ -1,5 +1,6 @@
 module Experimentation
   class DataExport
+    require "csv"
 
     attr_reader :experiment, :max_communications, :max_appointments, :max_encounters, :notification_start_date
 
@@ -14,13 +15,10 @@ module Experimentation
 
     def results
       data = aggregate_data
-      # fill in expandable data sets
       adjust_communications_length(data)
       adjust_appointments_length(data)
       adjust_encounters_length(data)
-      headers = create_headers(data)
-      # make csv
-      return { headers: headers, data: data.map{|patient_data| patient_data.values.flatten }}
+      create_csv(data)
     end
 
     private
@@ -156,6 +154,14 @@ module Experimentation
         else
           headers << k.to_s.split("_").each(&:capitalize!).join(" ")
         end
+      end
+    end
+
+    def create_csv(data)
+      CSV.generate(headers: true) do |csv|
+        headers = create_headers(data)
+        csv << headers
+        data.each {|patient_data| csv << patient_data.values.flatten }
       end
     end
   end
