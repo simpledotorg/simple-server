@@ -20,7 +20,6 @@ module Reports
     attr_reader :control_rate_query_v2
     attr_reader :periods
     attr_reader :period_hash
-    attr_reader :period_type
     attr_reader :regions
 
     delegate :cache, :logger, to: Rails
@@ -28,7 +27,6 @@ module Reports
     def initialize(regions, periods:)
       @regions = regions
       @periods = periods
-      @period_type = @periods.first.type
       @period_hash = lambda { |month_date, count| [Period.month(month_date), count] }
     end
 
@@ -43,7 +41,7 @@ module Reports
     end
 
     memoize def earliest_patient_recorded_at_period
-      earliest_patient_recorded_at.each_with_object({}) { |(slug, time), hsh| hsh[slug] = Period.new(value: time, type: @period_type) if time }
+      earliest_patient_recorded_at.each_with_object({}) { |(slug, time), hsh| hsh[slug] = Period.new(value: time, type: :month) if time }
     end
 
     private def earliest_patient_data_query_v2(region)
@@ -189,7 +187,10 @@ module Reports
       ((numerator.to_f / denominator) * 100).round(PERCENTAGE_PRECISION)
     end
 
-    # Grab a particular summed field for a region.
+    # Grab a particular summed field for a region. We return data in the format of:
+    #   { region_slug => { period_1 => x, period_2 => y }, ...}
+    # to maintain consistency w/ the format callers expect from the Repository.
+    #
     # Note that we do filtering on the result set to limit the returned amount of data to the data that callers are
     # requesting via the `periods` argument the Repository was created with.
     def sum(region, field)

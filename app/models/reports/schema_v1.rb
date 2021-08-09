@@ -9,7 +9,6 @@ module Reports
       @period_type = @periods.first.type
       @assigned_patients_query = AssignedPatientsQuery.new
       @control_rate_query = ControlRateQuery.new
-      @control_rate_query_v2 = ControlRateQueryV2.new
       @earliest_patient_data_query = EarliestPatientDataQuery.new
       @no_bp_measure_query = NoBPMeasureQuery.new
       @registered_patients_query = RegisteredPatientsQuery.new
