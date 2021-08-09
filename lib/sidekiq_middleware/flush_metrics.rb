@@ -5,7 +5,7 @@ module SidekiqMiddleware
     def call(_worker, _job, _queue)
       begin
         yield
-      rescue => ex
+      ensure
         Statsd.instance.flush(sync: true)
       end
     end
