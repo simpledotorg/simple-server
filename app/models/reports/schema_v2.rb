@@ -219,6 +219,5 @@ module Reports
         .select(:month_date)
         .select(*calculations)
     end
-
   end
 end

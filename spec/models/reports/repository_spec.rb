@@ -385,9 +385,9 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
           jan_2020_range = (Period.month(jan_2020.advance(months: -24))..Period.month(jan_2020))
           repo = Reports::Repository.new(facility.region, periods: jan_2020_range)
           result = repo.ltfu[slug]
-          ("January 2018".to_period.."December 2018".to_period).each  {|period| expect(result[period]).to eq(0)}
-          ("January 2019".to_period.."August 2019".to_period).each    {|period| expect(result[period]).to eq(1)}
-          ("September 2019".to_period.."January 2020".to_period).each {|period| expect(result[period]).to eq(2)}
+          ("January 2018".to_period.."December 2018".to_period).each { |period| expect(result[period]).to eq(0) }
+          ("January 2019".to_period.."August 2019".to_period).each { |period| expect(result[period]).to eq(1) }
+          ("September 2019".to_period.."January 2020".to_period).each { |period| expect(result[period]).to eq(2) }
         end
       end
 
@@ -442,10 +442,10 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
           repo = Reports::Repository.new(facility.region, periods: jan_2020_range)
           result = repo.missed_visits_without_ltfu[slug]
 
-          ("January 2018".to_period.."March 2018".to_period).each { |period| expect(result[period]).to eq(0)}
-          ("April 2018".to_period.."December 2018".to_period).each {|period| expect(result[period]).to eq(2)}
-          ("January 2019".to_period.."March 2019".to_period).each { |period| expect(result[period]).to eq(0)}
-          ("April 2019".to_period.."December 2019".to_period).each {|period| expect(result[period]).to eq(1)}
+          ("January 2018".to_period.."March 2018".to_period).each { |period| expect(result[period]).to eq(0) }
+          ("April 2018".to_period.."December 2018".to_period).each { |period| expect(result[period]).to eq(2) }
+          ("January 2019".to_period.."March 2019".to_period).each { |period| expect(result[period]).to eq(0) }
+          ("April 2019".to_period.."December 2019".to_period).each { |period| expect(result[period]).to eq(1) }
           expect(result["January 2020".to_period]).to eq(0)
         end
       end
