@@ -38,17 +38,11 @@ module Experimentation
             appointments: process_appointments(patient, notifications),
             encounters: process_past_visits(patient),
             communications: process_communications(notifications),
-            bp_recorded_at_visit: "bp recorded at visit", ###
             patient_gender: patient.gender,
             patient_age: patient.age,
             patient_risk_level: patient.risk_priority,
             diagnosed_hypertensive: "aren't all of these patients diagnosed hypertensive?", ###
             patient_has_phone: "don't all these patients have a phone?", ###
-            encounter_date: "encounter date",
-            encounter_facility_type: "encounter facility type",
-            encounter_facility_state: "encounter facility state",
-            encounter_facility_district: "encounter facility district",
-            encounter_block: "encounter block",
             assigned_facility_name: assigned_facility&.name,
             assigned_facility_type: assigned_facility&.facility_type,
             assigned_facility_state: assigned_facility&.state,
@@ -78,32 +72,51 @@ module Experimentation
       appts = notifications.map(&:subject).uniq.sort_by{|appt| appt.scheduled_date }
       @max_appointments = appts.count if appts.count > max_appointments
 
-      encounters_during_experiment = encounters(patient, notification_start_date, Date.current)
+      encounters_during_experiment = encounter_dates(patient, notification_start_date, Date.current)
+
       appts.each_with_index.map do |appt, i|
-        corresponding_encounter_date = encounters_during_experiment[i - 1]
-        days_til_visit = nil
-        bp_at_visit = nil
-        if corresponding_encounter_date
-          days_til_visit = appt.scheduled_date - corresponding_encounter_date
-          bp_at_visit = patient.blood_pressures.find_by(device_created_at: corresponding_encounter_date)
+        # just pulling out encounters sequentially because there's no formal relationship to appointments
+        followup_date = encounters_during_experiment[i - 1]
+        days_til_followup = nil
+        bp_at_followup = nil
+        facility = nil
+
+        if followup_date
+          days_til_followup = appt.scheduled_date - followup_date
+          bp_at_followup = patient.blood_pressures.find_by(device_created_at: followup_date)
+          encounter = encounter_by_date(patient, followup_date)
+          facility = encounter.facility
         end
-        [appt.device_created_at.to_date, appt.scheduled_date, days_til_visit, bp_at_visit]
+        [appt.device_created_at.to_date, appt.scheduled_date, followup_date, days_til_followup, bp_at_followup,
+          facility&.facility_type, facility&.state, facility&.district, facility&.block]
       end
     end
 
     def process_past_visits(patient)
       end_date = notification_start_date - 1.day
       start_date = end_date - 1.year
-      encounters = encounters(patient, start_date, end_date)
-      @max_encounters = encounters.count if encounters.count > max_encounters
-      encounters
+      encounter_dates = encounter_dates(patient, start_date, end_date)
+      @max_encounters = encounter_dates.count if encounter_dates.count > max_encounters
+      encounter_dates
     end
 
-    def encounters(patient, start_date, end_date)
-      bps = patient.blood_pressures.where(device_created_at: (experiment.start_date - 1.year)..Date.current).pluck(:device_created_at).map(&:to_date)
-      bss = patient.blood_sugars.where(device_created_at: (experiment.start_date - 1.year)..Date.current).pluck(:device_created_at).map(&:to_date)
-      pds = patient.prescription_drugs.where(device_created_at: (experiment.start_date - 1.year)..Date.current).pluck(:device_created_at).map(&:to_date)
+    def encounter_dates(patient, start_date, end_date)
+      date_range = (start_date.beginning_of_day..end_date.end_of_day)
+      bps = patient.blood_pressures.where(device_created_at: date_range).pluck(:device_created_at).map(&:to_date)
+      bss = patient.blood_sugars.where(device_created_at: date_range).pluck(:device_created_at).map(&:to_date)
+      pds = patient.prescription_drugs.where(device_created_at: date_range).pluck(:device_created_at).map(&:to_date)
       encounters = (bps + bss + pds).uniq.sort
+    end
+
+    def encounter_by_date(patient, date)
+      date_range = (date.beginning_of_day..date.end_of_day)
+      bp = patient.blood_pressures.find_by(device_created_at: date_range)
+      return bp if bp
+      bs = patient.blood_sugars.find_by(device_created_at: date_range)
+      return bs if bs
+      pd = patient.prescription_drugs.find_by(device_created_at: date_range)
+      return pd if pd
+      # this shouldn't happen. consider raising error
     end
 
     def adjust_communications_length(data)
@@ -119,7 +132,7 @@ module Experimentation
       data.each do |patient_data|
         fillers_needed = @max_appointments - patient_data[:appointments].count
         fillers_needed.times do
-          patient_data[:appointments] << [nil, nil, nil, nil]
+          patient_data[:appointments] << [nil, nil, nil, nil, nil, nil, nil, nil, nil]
         end
       end
     end
@@ -135,20 +148,25 @@ module Experimentation
       keys.each_with_object([]) do |k, headers|
         case k
         when :communications
-          @max_communications.times do |i|
+          (1..@max_communications).step do |i|
             headers << "Message #{i} Type"
             headers << "Message #{i} Sent"
             headers << "Message #{i} Status"
           end
         when :appointments
-          @max_appointments.times do |i|
+          (1..@max_appointments).step do |i|
             headers << "Appointment #{i} Creation Date"
             headers << "Appointment #{i} Date"
+            headers << "Followup #{i} Date"
             headers << "Days to visit #{i}"
             headers << "BP recorded at visit #{i}"
+            headers << "Followup #{i} Facility Type"
+            headers << "Followup #{i} Facility State"
+            headers << "Followup #{i} Facility District"
+            headers << "Followup #{i} Facility Block"
           end
         when :encounters
-          @max_encounters.times do |i|
+          (1..@max_encounters).step do |i|
             headers << "Encounter #{i} Date"
           end
         else
