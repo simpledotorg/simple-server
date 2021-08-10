@@ -15,7 +15,7 @@ RSpec.describe Experimentation::DataExport, type: :model do
     )
   end
 
-  describe "#result" do
+  describe "#as_csv" do
     it "exports accurate data in the expected format" do
       experiment = create(:experiment, name: "exportable", experiment_type: "current_patients", start_date: 35.days.ago, end_date: 5.days.ago)
       control_group = create(:treatment_group, experiment: experiment, description: "control")
@@ -56,9 +56,9 @@ RSpec.describe Experimentation::DataExport, type: :model do
 
 
       subject = described_class.new(experiment.name)
-      results = subject.results
-      pp results
+      results = subject.as_csv
       parsed = CSV.parse(results)
+      pp parsed
 
       expect(parsed.length).to eq 4
       expect(parsed.map {|row| row.length }.uniq.length).to eq 1

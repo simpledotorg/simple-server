@@ -2,7 +2,7 @@ module Experimentation
   class DataExport
     require "csv"
 
-    attr_reader :experiment, :max_communications, :max_appointments, :max_encounters, :notification_start_date
+    attr_reader :experiment, :max_communications, :max_appointments, :max_past_visits, :notification_start_date, :aggregate
 
     def initialize(name)
       @experiment = Experimentation::Experiment.find_by!(name: name)
@@ -10,28 +10,28 @@ module Experimentation
       @notification_start_date = experiment.start_date - remind_ons.min.days
       @max_communications = 0
       @max_appointments = 0
-      @max_encounters = 0
+      @max_past_visits = 0
+      @aggregate = []
     end
 
-    def results
-      data = aggregate_data
-      adjust_communications_length(data)
-      adjust_appointments_length(data)
-      adjust_encounters_length(data)
-      create_csv(data)
+    def as_csv
+      aggregate_data
+      pad_communications
+      pad_appointments
+      pad_past_visits
+      create_csv
     end
 
     private
 
     def aggregate_data
-      data = []
       experiment.treatment_groups.each do |group|
         group.patients.each do |patient|
           tgm = patient.treatment_group_memberships.find_by(treatment_group_id: group.id)
           notifications = patient.notifications.where(experiment_id: experiment.id).order(:remind_on)
           assigned_facility = patient.assigned_facility
 
-          data << {
+          aggregate << {
             experiment_name: experiment.name,
             treatment_group: group.description,
             experiment_inclusion_date: tgm.created_at.to_date,
@@ -41,8 +41,8 @@ module Experimentation
             patient_gender: patient.gender,
             patient_age: patient.age,
             patient_risk_level: patient.risk_priority,
-            diagnosed_hypertensive: "aren't all of these patients diagnosed hypertensive?", ###
-            patient_has_phone: "don't all these patients have a phone?", ###
+            diagnosed_hypertensive: true, # remove?
+            patient_has_phone: true, # remove?
             assigned_facility_name: assigned_facility&.name,
             assigned_facility_type: assigned_facility&.facility_type,
             assigned_facility_state: assigned_facility&.state,
@@ -53,19 +53,27 @@ module Experimentation
           }
         end
       end
-      data
     end
 
     def process_communications(notifications)
-      communications = notifications.each_with_object([]) do |n, ary|
-        ordered_communications = n.communications.sort_by{|c| c.created_at }
+      communications = notifications.each_with_object([]) do |notification, communications_data|
+        ordered_communications = notification.communications.sort_by{|c| c.created_at }
         ordered_communications.each do |c|
-          ary << [c.communication_type, c.detailable&.delivered_on, c.detailable&.result]
+          communications_data << [c.communication_type, c.detailable&.delivered_on, c.detailable&.result]
         end
       end
 
       @max_communications = communications.count if communications.count > @max_communications
       communications
+    end
+
+    def pad_communications
+      aggregate.each do |patient_data|
+        communications_deficit = @max_communications - patient_data[:communications].count
+        communications_deficit.times do
+          patient_data[:communications] << Array.new(3, nil)
+        end
+      end
     end
 
     def process_appointments(patient, notifications)
@@ -74,17 +82,17 @@ module Experimentation
 
       encounters_during_experiment = encounter_dates(patient, notification_start_date, Date.current)
 
-      appts.each_with_index.map do |appt, i|
-        # just pulling out encounters sequentially because there's no formal relationship to appointments
-        followup_date = encounters_during_experiment[i - 1]
+      appts.each_with_index.map do |appt, index|
+        # pulling out encounters sequentially because there's no formal relationship to appointments
+        followup_date = encounters_during_experiment[index - 1]
         days_til_followup = nil
         bp_at_followup = nil
         facility = nil
 
         if followup_date
           days_til_followup = appt.scheduled_date - followup_date
-          bp_at_followup = patient.blood_pressures.find_by(device_created_at: followup_date)
           encounter = encounter_by_date(patient, followup_date)
+          bp_at_followup = encounter.class == BloodPressure
           facility = encounter.facility
         end
         [appt.device_created_at.to_date, appt.scheduled_date, followup_date, days_til_followup, bp_at_followup,
@@ -92,12 +100,28 @@ module Experimentation
       end
     end
 
+    def pad_appointments
+      aggregate.each do |patient_data|
+        appointments_deficit = @max_appointments - patient_data[:appointments].count
+        appointments_deficit.times do
+          patient_data[:appointments] << Array.new(9, nil)
+        end
+      end
+    end
+
     def process_past_visits(patient)
       end_date = notification_start_date - 1.day
       start_date = end_date - 1.year
       encounter_dates = encounter_dates(patient, start_date, end_date)
-      @max_encounters = encounter_dates.count if encounter_dates.count > max_encounters
+      @max_past_visits = encounter_dates.count if encounter_dates.count > max_past_visits
       encounter_dates
+    end
+
+    def pad_past_visits
+      aggregate.each do |patient_data|
+        past_visits_deficit = @max_past_visits - patient_data[:encounters].count
+        past_visits_deficit.times { patient_data[:encounters] << nil }
+      end
     end
 
     def encounter_dates(patient, start_date, end_date)
@@ -119,67 +143,42 @@ module Experimentation
       # this shouldn't happen. consider raising error
     end
 
-    def adjust_communications_length(data)
-      data.each do |patient_data|
-        fillers_needed = @max_communications - patient_data[:communications].count
-        fillers_needed.times do
-           patient_data[:communications] << [nil, nil, nil]
-        end
-      end
-    end
-
-    def adjust_appointments_length(data)
-      data.each do |patient_data|
-        fillers_needed = @max_appointments - patient_data[:appointments].count
-        fillers_needed.times do
-          patient_data[:appointments] << [nil, nil, nil, nil, nil, nil, nil, nil, nil]
-        end
-      end
-    end
-
-    def adjust_encounters_length(data)
-      data.each do |patient_data|
-        (@max_encounters - patient_data[:encounters].count).times { patient_data[:encounters] << nil }
-      end
-    end
-
-    def create_headers(data)
-      keys = data.first.keys
-      keys.each_with_object([]) do |k, headers|
-        case k
+    def headers
+      keys = aggregate.first.keys
+      keys.each_with_object([]) do |key, collection|
+        case key
         when :communications
           (1..@max_communications).step do |i|
-            headers << "Message #{i} Type"
-            headers << "Message #{i} Sent"
-            headers << "Message #{i} Status"
+            collection << "Message #{i} Type"
+            collection << "Message #{i} Sent"
+            collection << "Message #{i} Status"
           end
         when :appointments
           (1..@max_appointments).step do |i|
-            headers << "Appointment #{i} Creation Date"
-            headers << "Appointment #{i} Date"
-            headers << "Followup #{i} Date"
-            headers << "Days to visit #{i}"
-            headers << "BP recorded at visit #{i}"
-            headers << "Followup #{i} Facility Type"
-            headers << "Followup #{i} Facility State"
-            headers << "Followup #{i} Facility District"
-            headers << "Followup #{i} Facility Block"
+            collection << "Appointment #{i} Creation Date"
+            collection << "Appointment #{i} Date"
+            collection << "Followup #{i} Date"
+            collection << "Days to visit #{i}"
+            collection << "BP recorded at visit #{i}"
+            collection << "Followup #{i} Facility Type"
+            collection << "Followup #{i} Facility State"
+            collection << "Followup #{i} Facility District"
+            collection << "Followup #{i} Facility Block"
           end
         when :encounters
-          (1..@max_encounters).step do |i|
-            headers << "Encounter #{i} Date"
+          (1..@max_past_visits).step do |i|
+            collection << "Encounter #{i} Date"
           end
         else
-          headers << k.to_s.split("_").each(&:capitalize!).join(" ")
+          collection << key.to_s.split("_").each(&:capitalize!).join(" ")
         end
       end
     end
 
-    def create_csv(data)
+    def create_csv
       CSV.generate(headers: true) do |csv|
-        headers = create_headers(data)
         csv << headers
-        data.each {|patient_data| csv << patient_data.values.flatten }
+        aggregate.each {|patient_data| csv << patient_data.values.flatten }
       end
     end
   end
