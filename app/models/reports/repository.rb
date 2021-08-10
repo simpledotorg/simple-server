@@ -66,7 +66,7 @@ module Reports
       :missed_visits,
       :missed_visits_with_ltfu,
       :missed_visits_without_ltfu,
-      :missed_visits_rates,
+      :missed_visits_rate,
       :missed_visits_with_ltfu_rates,
       :missed_visits_without_ltfu_rates,
       :monthly_registrations,

@@ -130,6 +130,7 @@ module Reports
       end
     end
 
+    alias_method :missed_visits_rate, :missed_visits_rates
     alias_method :missed_visits_without_ltfu, :missed_visits
     alias_method :missed_visits_without_ltfu_rates, :missed_visits_rates
 
