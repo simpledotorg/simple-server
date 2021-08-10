@@ -30,38 +30,56 @@ RSpec.describe Experimentation::DataExport, type: :model do
       appt1 = create(:appointment, patient: control_patient, scheduled_date: 20.days.ago)
       bp = create(:blood_pressure, device_created_at: 21.days.ago)
       control_group.patients << control_patient
-      create(:blood_pressure, patient: control_patient, device_created_at: 2.months.ago)
+      control_encounter_1 = create(:blood_pressure, patient: control_patient, device_created_at: 8.months.ago)
+      control_encounter_2 = create(:blood_sugar, patient: control_patient, device_created_at: 2.months.ago)
+      _control_encounter_2_bs = create(:blood_sugar, patient: control_patient, device_created_at: 2.months.ago)
 
-      patient1 = create(:patient)
-      appt1 = create(:appointment, patient: patient1, scheduled_date: 20.days.ago)
+      single_message_patient = create(:patient)
+      appt1 = create(:appointment, patient: single_message_patient, scheduled_date: 20.days.ago)
       bp = create(:blood_pressure, device_created_at: 21.days.ago)
-      single_message_group.patients << patient1
-      n = create_notification(experiment, single_template, patient1, appt1)
+      single_message_group.patients << single_message_patient
+      n = create_notification(experiment, single_template, single_message_patient, appt1)
       c = create(:communication, notification: n)
       create(:twilio_sms_delivery_detail, communication: c, delivered_on: n.remind_on)
-      create(:blood_pressure, patient: patient1, device_created_at: 6.months.ago)
+      smp_encounter_1 = create(:blood_pressure, patient: single_message_patient, device_created_at: 6.months.ago)
+      _smp_encounter_1_pd = create(:prescription_drug, patient: single_message_patient, device_created_at: 6.months.ago)
 
-      patient2 = create(:patient)
-      appt2 = create(:appointment, patient: patient2, scheduled_date: 22.days.ago)
-      cascade_group.patients << patient2
-      n = create_notification(experiment, cascade_template1, patient2, appt2)
+      cascade_patient = create(:patient)
+      appt2 = create(:appointment, patient: cascade_patient, scheduled_date: 22.days.ago)
+      cascade_group.patients << cascade_patient
+      n = create_notification(experiment, cascade_template1, cascade_patient, appt2)
       c = create(:communication, notification: n)
       create(:twilio_sms_delivery_detail, communication: c, delivered_on: n.remind_on)
-      n = create_notification(experiment, cascade_template2, patient2, appt2)
+      n = create_notification(experiment, cascade_template2, cascade_patient, appt2)
       c = create(:communication, notification: n)
       create(:twilio_sms_delivery_detail, communication: c, delivered_on: n.remind_on)
-      n = create_notification(experiment, cascade_template3, patient2, appt2)
+      n = create_notification(experiment, cascade_template3, cascade_patient, appt2)
       c = create(:communication, notification: n)
       create(:twilio_sms_delivery_detail, communication: c, delivered_on: n.remind_on)
-
 
       subject = described_class.new(experiment.name)
       results = subject.as_csv
       parsed = CSV.parse(results)
       pp parsed
 
+      headers = parsed.first
+      first_encounter_index = headers.find_index("Encounter 1 Date")
+      second_encounter_index = headers.find_index("Encounter 2 Date")
+
       expect(parsed.length).to eq 4
       expect(parsed.map {|row| row.length }.uniq.length).to eq 1
+
+      control_patient_row = parsed.find {|row| row.last == control_patient.treatment_group_memberships.first.id.to_s }
+      expect(control_patient_row[first_encounter_index]).to eq(control_encounter_1.device_created_at.strftime("%Y-%m-%d"))
+      expect(control_patient_row[second_encounter_index]).to eq(control_encounter_2.device_created_at.strftime("%Y-%m-%d"))
+
+      single_message_patient_row = parsed.find {|row| row.last == single_message_patient.treatment_group_memberships.first.id.to_s }
+      expect(single_message_patient_row[first_encounter_index]).to eq(smp_encounter_1.device_created_at.strftime("%Y-%m-%d"))
+      expect(single_message_patient_row[second_encounter_index]).to eq(nil)
+
+      cascade_patient_row = parsed.find {|row| row.last == cascade_patient.treatment_group_memberships.first.id.to_s }
+      expect(cascade_patient_row[first_encounter_index]).to eq(nil)
+      expect(cascade_patient_row[second_encounter_index]).to eq(nil)
     end
   end
 end
