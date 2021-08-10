@@ -33,15 +33,13 @@ RSpec.describe Experimentation::DataExport, type: :model do
       control_followup_1 = create(:blood_pressure, patient: control_patient, device_created_at: 28.days.ago)
       control_appt2 = create(:appointment, patient: control_patient, scheduled_date: 20.days.ago, device_created_at: 40.days.ago)
       control_followup_2 = create(:blood_sugar, patient: control_patient, device_created_at: 21.days.ago)
-      control_group.patients << control_patient
       control_past_visit_1 = create(:blood_pressure, patient: control_patient, device_created_at: 8.months.ago)
       control_past_visit_2 = create(:blood_sugar, patient: control_patient, device_created_at: 2.months.ago)
       _control_past_visit_2_bs = create(:blood_sugar, patient: control_patient, device_created_at: 2.months.ago)
 
       single_message_patient = create(:patient)
       smp_appt1 = create(:appointment, patient: single_message_patient, scheduled_date: 20.days.ago)
-      followup_pd = create(:prescription_drug, patient: single_message_patient, device_created_at: 21.days.ago)
-      single_message_group.patients << single_message_patient
+      smp_followup_pd = create(:prescription_drug, patient: single_message_patient, device_created_at: 21.days.ago)
       n = create_notification(experiment, single_template, single_message_patient, smp_appt1)
       c = create(:communication, notification: n)
       create(:twilio_sms_delivery_detail, communication: c, delivered_on: n.remind_on)
@@ -50,7 +48,6 @@ RSpec.describe Experimentation::DataExport, type: :model do
 
       cascade_patient = create(:patient)
       appt2 = create(:appointment, patient: cascade_patient, scheduled_date: 22.days.ago)
-      cascade_group.patients << cascade_patient
       n = create_notification(experiment, cascade_template1, cascade_patient, appt2)
       c = create(:communication, notification: n)
       create(:twilio_sms_delivery_detail, communication: c, delivered_on: n.remind_on)
@@ -61,6 +58,12 @@ RSpec.describe Experimentation::DataExport, type: :model do
       c = create(:communication, notification: n)
       create(:twilio_sms_delivery_detail, communication: c, delivered_on: n.remind_on)
 
+      Timecop.freeze(experiment.start_date - 1.day) do
+        control_group.patients << control_patient
+        single_message_group.patients << single_message_patient
+        cascade_group.patients << cascade_patient
+      end
+
       subject = described_class.new(experiment.name)
       results = subject.as_csv
       parsed = CSV.parse(results)
@@ -68,9 +71,12 @@ RSpec.describe Experimentation::DataExport, type: :model do
 
       headers = parsed.first
       appt1_ceation_index = headers.find_index("Appointment 1 Date")
+      appt1_days_to_visit_index = headers.find_index("Days To Visit 1")
       appt2_ceation_index = headers.find_index("Appointment 2 Date")
+      appt2_days_to_visit_index = headers.find_index("Days To Visit 2")
       first_encounter_index = headers.find_index("Encounter 1 Date")
       second_encounter_index = headers.find_index("Encounter 2 Date")
+
 
       expect(parsed.length).to eq 4
       expect(parsed.map {|row| row.length }.uniq.length).to eq 1
@@ -80,12 +86,16 @@ RSpec.describe Experimentation::DataExport, type: :model do
       expect(control_patient_row[second_encounter_index]).to eq(control_past_visit_2.device_created_at.strftime(TIME_FORMAT))
       expect(control_patient_row[appt1_ceation_index]).to eq(control_appt1.scheduled_date.strftime(TIME_FORMAT))
       expect(control_patient_row[appt2_ceation_index]).to eq(control_appt2.scheduled_date.strftime(TIME_FORMAT))
+      expect(control_patient_row[appt1_days_to_visit_index]).to eq((control_appt1.scheduled_date - control_followup_1.device_created_at.to_date).to_i.to_s)
+      expect(control_patient_row[appt2_days_to_visit_index]).to eq((control_appt2.scheduled_date - control_followup_2.device_created_at.to_date).to_i.to_s)
 
       single_message_patient_row = parsed.find {|row| row.last == single_message_patient.treatment_group_memberships.first.id.to_s }
       expect(single_message_patient_row[first_encounter_index]).to eq(smp_past_visit_1.device_created_at.strftime(TIME_FORMAT))
       expect(single_message_patient_row[second_encounter_index]).to eq(nil)
       expect(single_message_patient_row[appt1_ceation_index]).to eq(smp_appt1.scheduled_date.strftime(TIME_FORMAT))
       expect(single_message_patient_row[appt2_ceation_index]).to eq(nil)
+      expect(single_message_patient_row[appt1_days_to_visit_index]).to eq((smp_appt1.scheduled_date - smp_followup_pd.device_created_at.to_date).to_i.to_s)
+      expect(single_message_patient_row[appt2_days_to_visit_index]).to be_nil
 
       cascade_patient_row = parsed.find {|row| row.last == cascade_patient.treatment_group_memberships.first.id.to_s }
       expect(cascade_patient_row[first_encounter_index]).to eq(nil)

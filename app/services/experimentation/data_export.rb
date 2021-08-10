@@ -92,13 +92,13 @@ module Experimentation
 
       appts.each_with_index.map do |appt, index|
         # pulling out encounters sequentially because there's no formal relationship to appointments
-        followup_date = encounters_during_experiment[index - 1]
+        followup_date = encounters_during_experiment[index]
         days_til_followup = nil
         bp_at_followup = nil
         facility = nil
 
         if followup_date
-          days_til_followup = appt.scheduled_date - followup_date
+          days_til_followup = (appt.scheduled_date - followup_date).to_i
           encounter = encounter_by_date(patient, followup_date)
           bp_at_followup = encounter.class == BloodPressure
           facility = encounter.facility
@@ -166,8 +166,8 @@ module Experimentation
             collection << "Appointment #{i} Creation Date"
             collection << "Appointment #{i} Date"
             collection << "Followup #{i} Date"
-            collection << "Days to visit #{i}"
-            collection << "BP recorded at visit #{i}"
+            collection << "Days To Visit #{i}"
+            collection << "BP Recorded At Visit #{i}"
             collection << "Followup #{i} Facility Type"
             collection << "Followup #{i} Facility State"
             collection << "Followup #{i} Facility District"
