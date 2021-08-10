@@ -2,7 +2,9 @@ module Experimentation
   class DataExport
     require "csv"
 
-    attr_reader :experiment, :max_communications, :max_appointments, :max_past_visits, :notification_start_date, :aggregate
+    FOLLOWUP_CUTOFF = 10.days
+
+    attr_reader :experiment, :max_communications, :max_appointments, :max_past_visits, :notification_start_date, :aggregate, :cutoff_date
 
     def initialize(name)
       @experiment = Experimentation::Experiment.find_by!(name: name)
@@ -12,6 +14,7 @@ module Experimentation
       @max_appointments = 0
       @max_past_visits = 0
       @aggregate = []
+      @cutoff_date = experiment.end_date + FOLLOWUP_CUTOFF
     end
 
     def as_csv
@@ -77,10 +80,15 @@ module Experimentation
     end
 
     def process_appointments(patient, notifications)
-      appts = notifications.map(&:subject).uniq.sort_by{|appt| appt.scheduled_date }
+      appts = if notifications.any?
+        notifications.map(&:subject).uniq.sort_by{|appt| appt.scheduled_date }
+      else
+        date_range = experiment.start_date.beginning_of_day..experiment.end_date.end_of_day
+        patient.appointments.where(scheduled_date: date_range).where("device_created_at < ?", notification_start_date).order(:scheduled_date)
+      end
       @max_appointments = appts.count if appts.count > max_appointments
 
-      encounters_during_experiment = encounter_dates(patient, notification_start_date, Date.current)
+      encounters_during_experiment = encounter_dates(patient, notification_start_date, cutoff_date)
 
       appts.each_with_index.map do |appt, index|
         # pulling out encounters sequentially because there's no formal relationship to appointments
