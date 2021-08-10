@@ -62,7 +62,7 @@ module Experimentation
       communications = notifications.each_with_object([]) do |notification, communications_data|
         ordered_communications = notification.communications.sort_by{|c| c.created_at }
         ordered_communications.each do |c|
-          communications_data << [c.communication_type, c.detailable&.delivered_on, c.detailable&.result]
+          communications_data << [notification.message, c.communication_type, c.detailable&.delivered_on, c.detailable&.result]
         end
       end
 
@@ -74,7 +74,7 @@ module Experimentation
       aggregate.each do |patient_data|
         communications_deficit = @max_communications - patient_data[:communications].count
         communications_deficit.times do
-          patient_data[:communications] << Array.new(3, nil)
+          patient_data[:communications] << Array.new(4, nil)
         end
       end
     end
@@ -104,7 +104,7 @@ module Experimentation
           facility = encounter.facility
         end
         [appt.device_created_at.to_date, appt.scheduled_date, followup_date, days_til_followup, bp_at_followup,
-          facility&.facility_type, facility&.state, facility&.district, facility&.block]
+         facility&.name, facility&.facility_type, facility&.state, facility&.district, facility&.block]
       end
     end
 
@@ -112,7 +112,7 @@ module Experimentation
       aggregate.each do |patient_data|
         appointments_deficit = @max_appointments - patient_data[:appointments].count
         appointments_deficit.times do
-          patient_data[:appointments] << Array.new(9, nil)
+          patient_data[:appointments] << Array.new(10, nil)
         end
       end
     end
@@ -157,6 +157,7 @@ module Experimentation
         case key
         when :communications
           (1..@max_communications).step do |i|
+            collection << "Message #{i} Text Identifier"
             collection << "Message #{i} Type"
             collection << "Message #{i} Sent"
             collection << "Message #{i} Status"
@@ -168,6 +169,7 @@ module Experimentation
             collection << "Followup #{i} Date"
             collection << "Days To Visit #{i}"
             collection << "BP Recorded At Visit #{i}"
+            collection << "Patient Visited Facility #{i}"
             collection << "Followup #{i} Facility Type"
             collection << "Followup #{i} Facility State"
             collection << "Followup #{i} Facility District"
