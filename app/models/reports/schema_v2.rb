@@ -17,6 +17,10 @@ module Reports
       visited_no_bp_lost_to_follow_up
     ].freeze
 
+    CALCULATED_FIELDS = %i[
+      visited_no_bp_under_care_and_ltfu
+    ].freeze
+
     attr_reader :control_rate_query_v2
     attr_reader :periods
     attr_reader :period_hash
@@ -137,6 +141,25 @@ module Reports
       missed_visits_rates(with_ltfu: true)
     end
 
+      # visited_no_bp_under_care
+      # visited_no_bp_lost_to_follow_up
+    memoize def visited_without_bp_taken(with_ltfu: false)
+      if with_ltfu
+        regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, :visited_no_bp_under_care_and_ltfu) }
+      else
+        regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, :visited_no_bp_under_care) }
+      end
+    end
+
+    memoize def visited_without_bp_taken_rates(with_ltfu: false)
+      region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
+        slug, period = entry.slug, entry.period
+        numerator = visited_without_bp_taken(with_ltfu: with_ltfu)[slug][period]
+        total = denominator(entry.region, period, with_ltfu: with_ltfu)
+        percentage(numerator, total)
+      end
+    end
+
     private
 
     memoize def denominator(region, period, with_ltfu: false)
@@ -202,6 +225,7 @@ module Reports
     end
 
     def summary_field(field)
+      raise ArgumentError, "field #{field} is not part of the FacilityState query" unless field.in?(FIELDS) || field.in?(CALCULATED_FIELDS)
       "sum_#{field}"
     end
 
@@ -212,6 +236,9 @@ module Reports
     # oldest to newest - it also makes reading output in specs and debugging much easier.
     memoize def facility_state_data(region)
       calculations = FIELDS.map { |field| Arel.sql("COALESCE(SUM(#{field}::int), 0) as #{summary_field(field)}") }
+      sum_visited_no_bp_under_care_and_ltfu = Arel.sql("SUM(COALESCE(visited_no_bp_under_care::int, 0) + COALESCE(visited_no_bp_lost_to_follow_up::int, 0)) as sum_visited_no_bp_under_care_and_ltfu")
+      # visited_no_bp_under_care
+      # visited_no_bp_lost_to_follow_up
 
       FacilityState.for_region(region)
         .where("cumulative_registrations IS NOT NULL OR cumulative_assigned_patients IS NOT NULL")
@@ -219,6 +246,7 @@ module Reports
         .group(:month_date)
         .select(:month_date)
         .select(*calculations)
+        .select(sum_visited_no_bp_under_care_and_ltfu)
     end
   end
 end

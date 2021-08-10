@@ -182,7 +182,7 @@ module Reports
         slug, period = entry.slug, entry.period
         visit_rates = controlled_rates(with_ltfu: true)[slug][period] +
           uncontrolled_rates(with_ltfu: true)[slug][period] +
-          visited_without_bp_taken_rate(with_ltfu: true)[slug][period]
+          visited_without_bp_taken_rates(with_ltfu: true)[slug][period]
         100 - visit_rates
       end
     end
@@ -212,7 +212,7 @@ module Reports
       end
     end
 
-    memoize def visited_without_bp_taken_rate(with_ltfu: false)
+    memoize def visited_without_bp_taken_rates(with_ltfu: false)
       region_period_cached_query(__method__, with_tlfu: with_ltfu) do |entry|
         numerator = visited_without_bp_taken[entry.slug][entry.period]
         total = denominator(entry.region, entry.period, with_ltfu: with_ltfu)

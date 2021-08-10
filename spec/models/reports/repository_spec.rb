@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe Reports::Repository, type: :model, v2_flag: true do
   using StringToPeriod
 
-  [true, false].each do |v2_flag|
+  [true].each do |v2_flag|
     context "with reporting_schema_v2=>#{v2_flag}" do
       let(:v2_flag) { v2_flag }
       let(:organization) { create(:organization, name: "org-1") }
@@ -156,12 +156,12 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
           facility_1 = FactoryBot.create(:facility, facility_group: facility_group_1)
           slug = facility_1.region.slug
           repo = Reports::Repository.new(facility_1.region, periods: july_2020_range)
-          expect(repo.monthly_registrations).to eq({facility_1.slug => {}})
-          expect(repo.controlled).to eq({facility_1.slug => {}})
-          expect(repo.controlled_rates).to eq({facility_1.slug => {}})
+          expect(repo.monthly_registrations).to eq({slug => {}})
+          expect(repo.controlled).to eq({slug => {}})
+          expect(repo.controlled_rates).to eq({slug => {}})
           expect(repo.visited_without_bp_taken).to eq({slug => {}})
-          expect(repo.visited_without_bp_taken_rate).to eq({slug => {}})
-          expect(repo.visited_without_bp_taken_rate(with_ltfu: true)).to eq({slug => {}})
+          expect(repo.visited_without_bp_taken_rates).to eq({slug => {}})
+          expect(repo.visited_without_bp_taken_rates(with_ltfu: true)).to eq({slug => {}})
         end
 
         it "gets controlled counts and rates for single region" do
@@ -305,6 +305,7 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
 
         it "gets visit without BP taken counts without LTFU" do
           facility_1 = FactoryBot.create_list(:facility, 1, facility_group: facility_group_1).first
+          slug = facility_1.region.slug
           # Since we are reporting for Jan 2020, this patient is lost to follow up -- they have been registered for 12 months but have no BPs taken
           visit_with_no_bp_and_ltfu = create(:patient, full_name: "visit_with_no_bp_and_ltfu", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
           # This user is NOT lost to follow up, as they have not been registered over 12 months
@@ -313,14 +314,20 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
 
           Timecop.freeze(jan_2020) do
             create(:appointment, patient: visit_with_no_bp_and_ltfu, facility: facility_1, user: user)
-            create(:blood_sugar, patient: visit_with_no_bp_and_not_ltfu, facility: facility_1, user: user)
+            create(:blood_sugar_with_encounter, patient: visit_with_no_bp_and_not_ltfu, facility: facility_1, user: user)
             create(:bp_with_encounter, :under_control, facility: facility_1, patient: visit_with_bp, user: user)
           end
 
           refresh_views
-          jan = Period.month(jan_2020)
-          repo = Reports::Repository.new(facility_1, periods: jan)
-          expect(repo.visited_without_bp_taken[facility_1.region.slug][jan]).to eq(1)
+          range = (jan_2020.to_period.."Jan 2021".to_period)
+          repo = Reports::Repository.new(facility_1, periods: range)
+
+          expect(repo.visited_without_bp_taken[slug][jan_2020.to_period]).to eq(1)
+          expect(repo.visited_without_bp_taken[slug]["April 2020".to_period]).to eq(0)
+          expect(repo.visited_without_bp_taken_rates[slug][jan_2020.to_period]).to eq(50)
+          expect(repo.visited_without_bp_taken(with_ltfu: true)[slug][jan_2020.to_period]).to eq(2)
+          expect(repo.visited_without_bp_taken(with_ltfu: true)[slug]["April 2020".to_period]).to eq(0)
+          expect(repo.visited_without_bp_taken_rates(with_ltfu: true)[slug][jan_2020.to_period]).to eq(67)
         end
       end
 

@@ -71,7 +71,9 @@ module Reports
       :missed_visits_without_ltfu_rates,
       :monthly_registrations,
       :uncontrolled_rates,
-      :uncontrolled
+      :uncontrolled,
+      :visited_without_bp_taken,
+      :visited_without_bp_taken_rates
     ]
 
     delegate(*DELEGATED_METHODS, to: :schema)
@@ -108,20 +110,6 @@ module Reports
       result.each_with_object({}) { |(region_entry, counts), hsh|
         hsh[region_entry.region.slug] = counts
       }
-    end
-
-    memoize def visited_without_bp_taken
-      region_period_cached_query(__method__) do |entry|
-        no_bp_measure_query.call(entry.region, entry.period)
-      end
-    end
-
-    memoize def visited_without_bp_taken_rate(with_ltfu: false)
-      region_period_cached_query(__method__, with_tlfu: with_ltfu) do |entry|
-        numerator = visited_without_bp_taken[entry.slug][entry.period]
-        total = denominator(entry.region, entry.period, with_ltfu: with_ltfu)
-        percentage(numerator, total)
-      end
     end
 
     private

@@ -662,7 +662,7 @@ Reports = function (withLtfu) {
       uncontrolledRate: jsonData.uncontrolled_patients_rate,
       uncontrolledWithLtfuRate: jsonData.uncontrolled_patients_with_ltfu_rate,
       visitButNoBPMeasure: jsonData.visited_without_bp_taken,
-      visitButNoBPMeasureRate: jsonData.visited_without_bp_taken_rate,
+      visitButNoBPMeasureRate: jsonData.visited_without_bp_taken_rates,
       periodInfo: jsonData.period_info
     };
   };
