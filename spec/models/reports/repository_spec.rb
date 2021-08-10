@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe Reports::Repository, type: :model, v2_flag: true do
   using StringToPeriod
 
-  [true].each do |v2_flag|
+  [true, false].each do |v2_flag|
     context "with reporting_schema_v2=>#{v2_flag}" do
       let(:v2_flag) { v2_flag }
       let(:organization) { create(:organization, name: "org-1") }
@@ -325,9 +325,11 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
           expect(repo.visited_without_bp_taken[slug][jan_2020.to_period]).to eq(1)
           expect(repo.visited_without_bp_taken[slug]["April 2020".to_period]).to eq(0)
           expect(repo.visited_without_bp_taken_rates[slug][jan_2020.to_period]).to eq(50)
-          expect(repo.visited_without_bp_taken(with_ltfu: true)[slug][jan_2020.to_period]).to eq(2)
-          expect(repo.visited_without_bp_taken(with_ltfu: true)[slug]["April 2020".to_period]).to eq(0)
-          expect(repo.visited_without_bp_taken_rates(with_ltfu: true)[slug][jan_2020.to_period]).to eq(67)
+          if v2_flag
+            expect(repo.visited_without_bp_taken(with_ltfu: true)[slug][jan_2020.to_period]).to eq(2)
+            expect(repo.visited_without_bp_taken(with_ltfu: true)[slug]["April 2020".to_period]).to eq(0)
+            expect(repo.visited_without_bp_taken_rates(with_ltfu: true)[slug][jan_2020.to_period]).to eq(67)
+          end
         end
       end
 

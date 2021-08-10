@@ -206,7 +206,8 @@ module Reports
       end
     end
 
-    memoize def visited_without_bp_taken
+    # with_ltfu argument is ignored here, as it was never implemented for SchemaV1
+    memoize def visited_without_bp_taken(with_ltfu: false)
       region_period_cached_query(__method__) do |entry|
         no_bp_measure_query.call(entry.region, entry.period)
       end
