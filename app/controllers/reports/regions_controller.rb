@@ -35,7 +35,7 @@ class Reports::RegionsController < AdminController
     @with_ltfu = with_ltfu?
 
     @child_regions = @region.reportable_children
-    repo = Reports::Repository.new(@child_regions, periods: @period)
+    repo = Reports::Repository.new(@child_regions, periods: @period, reporting_schema_v2: RequestStore[:reporting_schema_v2])
 
     @children_data = @child_regions.map { |region|
       slug = region.slug
@@ -47,7 +47,7 @@ class Reports::RegionsController < AdminController
         uncontrolled_patients: repo.uncontrolled[slug],
         uncontrolled_patients_rate: repo.uncontrolled_rates[slug],
         missed_visits: repo.missed_visits[slug],
-        missed_visits_rate: repo.missed_visits_rate[slug],
+        missed_visits_rate: repo.missed_visits_rates[slug],
         registrations: repo.monthly_registrations[slug],
         cumulative_patients: repo.cumulative_assigned_patients[slug],
         cumulative_registrations: repo.cumulative_registrations[slug]
@@ -73,8 +73,8 @@ class Reports::RegionsController < AdminController
     else
       [@region, @region.facility_regions].flatten
     end
-    @repository = Reports::Repository.new(regions, periods: @period_range)
-    chart_repo = Reports::Repository.new(@region, periods: chart_range)
+    @repository = Reports::Repository.new(regions, periods: @period_range, reporting_schema_v2: RequestStore[:reporting_schema_v2])
+    chart_repo = Reports::Repository.new(@region, periods: chart_range, reporting_schema_v2: RequestStore[:reporting_schema_v2])
 
     @chart_data = {
       patient_breakdown: PatientBreakdownService.call(region: @region, period: @period),
