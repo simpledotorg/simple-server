@@ -40,28 +40,31 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
     describe "monthly_registrations" do
       it "has the number of new registrations made that month" do
         facility = create(:facility)
-        create_list(:patient, 2, registration_facility: facility, recorded_at: june_2021[:under_12_months_ago])
-        create_list(:patient, 3, registration_facility: facility, recorded_at: june_2021[:now] - 2.months)
+        create_list(:patient, 2, registration_facility: facility, recorded_at: june_2021[:under_12_months_ago]) # "2020-07"
+        create_list(:patient, 3, registration_facility: facility, recorded_at: june_2021[:under_3_months_ago]) # "2021-04"
+
+        month_2020_07 = "2020-07-01"
+        month_2021_04 = "2021-04-01"
 
         RefreshMaterializedViews.new.refresh_v2
         with_reporting_time_zone do
           expect(described_class
             .where(facility_id: facility.id)
-            .where("month_date < ?", june_2021[:under_12_months_ago])
+            .where("month_date < ?", month_2020_07)
             .pluck(:monthly_registrations)).to all be nil
 
           expect(described_class
-            .find_by(facility_id: facility.id, month_date: june_2021[:under_12_months_ago])
+            .find_by(facility_id: facility.id, month_date: month_2020_07)
             .monthly_registrations).to eq 2
 
           expect(described_class
             .where(facility_id: facility.id)
-            .where("month_date > ?", june_2021[:under_12_months_ago].to_date)
-            .where("month_date < ?", june_2021[:under_3_months_ago].to_date)
+            .where("month_date > ?", month_2020_07)
+            .where("month_date < ?", month_2021_04)
             .pluck(:monthly_registrations)).to all eq 0
 
           expect(described_class
-            .find_by(facility_id: facility.id, month_date: june_2021[:under_3_months_ago])
+            .find_by(facility_id: facility.id, month_date: month_2021_04)
             .monthly_registrations).to eq 3
         end
       end
