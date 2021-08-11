@@ -1,0 +1,26 @@
+version: v1.0
+name: Sri Lanka Production Deployment
+blocks:
+  - name: Deploy to Sri Lanka Production
+    task:
+      secrets:
+        - name: sentry-release-auth-token
+        - name: semaphore-deploy-key
+      jobs:
+        - name: Deploy to Sri Lanka Production
+          commands:
+            - checkout
+            - sem-version ruby 2.6.6
+            - cache restore
+            - yarn install
+            - bundle install --deployment --path vendor/bundle
+            - cache store
+            - 'BRANCH=$SEMAPHORE_GIT_SHA bundle exec cap sri-lanka:production deploy'
+      prologue:
+        commands:
+          - chmod 600 ~/.ssh/semaphore_id_rsa
+          - ssh-add ~/.ssh/semaphore_id_rsa
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804

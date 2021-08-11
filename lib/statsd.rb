@@ -15,7 +15,16 @@ class Statsd
     @statsd = nil
   end
 
-  delegate :count, :increment, :time, :timing, :gauge, to: :statsd
+  DELEGATED_METHODS = %i[
+    close
+    count
+    flush
+    gauge
+    increment
+    time
+    timing
+  ]
+  delegate(*DELEGATED_METHODS, to: :statsd)
 
   private
 
