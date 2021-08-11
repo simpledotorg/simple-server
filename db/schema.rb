@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_28_100307) do
+ActiveRecord::Schema.define(version: 2021_07_28_100308) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -1548,5 +1548,56 @@ ActiveRecord::Schema.define(version: 2021_07_28_100307) do
        LEFT JOIN monthly_cohort_outcomes ON (((monthly_cohort_outcomes.month_date = cal.month_date) AND (monthly_cohort_outcomes.region_id = rf.facility_region_id))));
   SQL
   add_index "reporting_facility_states", ["month_date", "facility_region_id"], name: "facility_states_month_date_region_id", unique: true
+
+  create_view "reporting_quarterly_facility_states", materialized: true, sql_definition: <<-SQL
+      WITH quarterly_cohort_outcomes AS (
+           SELECT reporting_patient_states.assigned_facility_region_id AS region_id,
+              reporting_patient_states.quarter_string,
+              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_treatment_outcome_in_quarter = 'visited_no_bp'::text)) AS visited_no_bp,
+              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_treatment_outcome_in_quarter = 'controlled'::text)) AS controlled,
+              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_treatment_outcome_in_quarter = 'uncontrolled'::text)) AS uncontrolled,
+              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_treatment_outcome_in_quarter = 'missed_visit'::text)) AS missed_visit,
+              count(DISTINCT reporting_patient_states.patient_id) AS patients
+             FROM reporting_patient_states
+            WHERE ((reporting_patient_states.hypertension = 'yes'::text) AND ((((reporting_patient_states.month)::integer % 3) = 0) OR (reporting_patient_states.month_string = to_char(now(), 'YYYY-MM'::text))) AND (reporting_patient_states.quarters_since_registration = (1)::double precision))
+            GROUP BY reporting_patient_states.assigned_facility_region_id, reporting_patient_states.quarter_string
+          )
+   SELECT cal.month_date,
+      cal.month,
+      cal.quarter,
+      cal.year,
+      cal.month_string,
+      cal.quarter_string,
+      rf.facility_id,
+      rf.facility_name,
+      rf.facility_type,
+      rf.facility_size,
+      rf.facility_region_id,
+      rf.facility_region_name,
+      rf.facility_region_slug,
+      rf.block_region_id,
+      rf.block_name,
+      rf.block_slug,
+      rf.district_id,
+      rf.district_region_id,
+      rf.district_name,
+      rf.district_slug,
+      rf.state_region_id,
+      rf.state_name,
+      rf.state_slug,
+      rf.organization_id,
+      rf.organization_region_id,
+      rf.organization_name,
+      rf.organization_slug,
+      quarterly_cohort_outcomes.controlled AS quarterly_cohort_controlled,
+      quarterly_cohort_outcomes.uncontrolled AS quarterly_cohort_uncontrolled,
+      quarterly_cohort_outcomes.missed_visit AS quarterly_cohort_missed_visit,
+      quarterly_cohort_outcomes.visited_no_bp AS quarterly_cohort_visited_no_bp,
+      quarterly_cohort_outcomes.patients AS quarterly_cohort_patients
+     FROM ((reporting_facilities rf
+       JOIN reporting_months cal ON (((((cal.month)::integer % 3) = 0) OR (cal.month_string = to_char(now(), 'YYYY-MM'::text)))))
+       LEFT JOIN quarterly_cohort_outcomes ON (((quarterly_cohort_outcomes.quarter_string = cal.quarter_string) AND (quarterly_cohort_outcomes.region_id = rf.facility_region_id))));
+  SQL
+  add_index "reporting_quarterly_facility_states", ["quarter_string", "facility_region_id"], name: "quarterly_facility_states_quarter_string_region_id", unique: true
 
 end
