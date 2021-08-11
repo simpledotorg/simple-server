@@ -54,13 +54,12 @@ RSpec.describe Reports::QuarterlyFacilityState, {type: :model, reporting_spec: t
         create(:bp_with_encounter, :hypertensive, patient: patient, recorded_at: this_quarter)
       end
 
+      _patient_no_visit = create(:patient, assigned_facility: facility, recorded_at: previous_quarter)
+      _patient_not_in_cohort = create(:patient, assigned_facility: facility, recorded_at: two_quarters_ago)
       patients_missed_visit = create_list(:patient, 4, assigned_facility: facility, recorded_at: previous_quarter)
       patients_missed_visit.each do |patient|
         create(:bp_with_encounter, patient: patient, recorded_at: previous_quarter)
       end
-
-      _patient_no_visit = create(:patient, assigned_facility: facility, recorded_at: previous_quarter)
-      _patient_not_in_cohort = create(:patient, assigned_facility: facility, recorded_at: two_quarters_ago)
 
       patients_visited_no_bp = create_list(:patient, 2, assigned_facility: facility, recorded_at: previous_quarter)
       patients_visited_no_bp.each do |patient|
@@ -77,10 +76,10 @@ RSpec.describe Reports::QuarterlyFacilityState, {type: :model, reporting_spec: t
         quarterly_facility_state_2021_q2 = described_class.find_by(facility: facility, quarter_string: "2021-2")
 
         expect(quarterly_facility_state_2021_q2.quarterly_cohort_controlled).to eq 2
-        expect(quarterly_facility_state_2021_q2.quarterly_cohort_patients).to eq 12
-        expect(quarterly_facility_state_2021_q2.quarterly_cohort_visited_no_bp).to eq 2
         expect(quarterly_facility_state_2021_q2.quarterly_cohort_uncontrolled).to eq 3
+        expect(quarterly_facility_state_2021_q2.quarterly_cohort_visited_no_bp).to eq 2
         expect(quarterly_facility_state_2021_q2.quarterly_cohort_missed_visit).to eq 5
+        expect(quarterly_facility_state_2021_q2.quarterly_cohort_patients).to eq 12
       end
     end
   end
