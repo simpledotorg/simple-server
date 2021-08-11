@@ -60,9 +60,9 @@ module Experimentation
 
     def process_communications(notifications)
       communications = notifications.each_with_object([]) do |notification, communications_data|
-        ordered_communications = notification.communications.sort_by{|c| c.created_at }
+        ordered_communications = notification.communications.sort_by { |c| c.created_at }
         ordered_communications.each do |c|
-          communications_data << [c.communication_type, c.detailable&.delivered_on.to_date, c.detailable&.result, notification.message]
+          communications_data << [c.communication_type, c.detailable&.delivered_on&.to_date, c.detailable&.result, notification.message]
         end
       end
 
@@ -81,7 +81,7 @@ module Experimentation
 
     def process_appointments(patient, notifications)
       appts = if notifications.any?
-        notifications.map(&:subject).uniq.sort_by{|appt| appt.scheduled_date }
+        notifications.map(&:subject).uniq.sort_by { |appt| appt.scheduled_date }
       else
         date_range = experiment.start_date.beginning_of_day..experiment.end_date.end_of_day
         patient.appointments.where(scheduled_date: date_range).where("device_created_at < ?", notification_start_date).order(:scheduled_date)
@@ -100,11 +100,11 @@ module Experimentation
         if followup_date
           days_til_followup = (appt.scheduled_date - followup_date).to_i
           encounter = encounter_by_date(patient, followup_date)
-          bp_at_followup = encounter.class == BloodPressure
+          bp_at_followup = encounter.instance_of?(BloodPressure)
           facility = encounter.facility
         end
         [appt.device_created_at.to_date, appt.scheduled_date, followup_date, days_til_followup, bp_at_followup,
-         facility&.name, facility&.facility_type, facility&.state, facility&.district, facility&.block]
+          facility&.name, facility&.facility_type, facility&.state, facility&.district, facility&.block]
       end
     end
 
@@ -137,7 +137,7 @@ module Experimentation
       bps = patient.blood_pressures.where(device_created_at: date_range).pluck(:device_created_at).map(&:to_date)
       bss = patient.blood_sugars.where(device_created_at: date_range).pluck(:device_created_at).map(&:to_date)
       pds = patient.prescription_drugs.where(device_created_at: date_range).pluck(:device_created_at).map(&:to_date)
-      encounters = (bps + bss + pds).uniq.sort
+      (bps + bss + pds).uniq.sort
     end
 
     def encounter_by_date(patient, date)
@@ -188,7 +188,7 @@ module Experimentation
     def create_csv
       CSV.generate(headers: true) do |csv|
         csv << headers
-        aggregate.each {|patient_data| csv << patient_data.values.flatten }
+        aggregate.each { |patient_data| csv << patient_data.values.flatten }
       end
     end
   end

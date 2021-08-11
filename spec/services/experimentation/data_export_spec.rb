@@ -1,9 +1,8 @@
 require "rails_helper"
 
+TIME_FORMAT = "%Y-%m-%d"
+
 RSpec.describe Experimentation::DataExport, type: :model do
-
-  TIME_FORMAT = "%Y-%m-%d"
-
   def create_notification(experiment, template, patient, appt, status)
     create(:notification,
       experiment: experiment,
@@ -13,15 +12,14 @@ RSpec.describe Experimentation::DataExport, type: :model do
       remind_on: appt.scheduled_date + template.remind_on_in_days.days,
       reminder_template: template,
       status: status,
-      subject: appt
-    )
+      subject: appt)
   end
 
   describe "#as_csv" do
     it "exports accurate data in the expected format" do
       experiment = create(:experiment, name: "exportable", experiment_type: "current_patients", start_date: 35.days.ago, end_date: 5.days.ago)
       control_group = create(:treatment_group, experiment: experiment, description: "control")
-      single_message_group = create(:treatment_group, experiment: experiment,description: "single message")
+      single_message_group = create(:treatment_group, experiment: experiment, description: "single message")
       single_template = create(:reminder_template, treatment_group: single_message_group, remind_on_in_days: -1, message: "single group message")
       cascade_group = create(:treatment_group, experiment: experiment, description: "cascade group")
       cascade_template1 = create(:reminder_template, treatment_group: single_message_group, remind_on_in_days: -1, message: "cascade 1")
@@ -58,7 +56,7 @@ RSpec.describe Experimentation::DataExport, type: :model do
       create(:twilio_sms_delivery_detail, communication: cascade_comm3, delivered_on: cascade_notification2.remind_on, result: "failed")
       cascade_comm4 = create(:communication, notification: cascade_notification2, communication_type: "sms")
       create(:twilio_sms_delivery_detail, communication: cascade_comm4, delivered_on: cascade_notification2.remind_on, result: "delivered")
-      cascade_notification3 = create_notification(experiment, cascade_template3, cascade_patient, cascade_patient_appt, "cancelled")
+      _cascade_notification3 = create_notification(experiment, cascade_template3, cascade_patient, cascade_patient_appt, "cancelled")
 
       Timecop.freeze(experiment.start_date - 1.day) do
         control_group.patients << control_patient
@@ -89,10 +87,10 @@ RSpec.describe Experimentation::DataExport, type: :model do
       fourth_message_range = (fourth_message_index..(fourth_message_index + 3))
 
       expect(parsed.length).to eq 4
-      expect(parsed.map {|row| row.length }.uniq.length).to eq 1
+      expect(parsed.map { |row| row.length }.uniq.length).to eq 1
 
       # test control patient data
-      control_patient_row = parsed.find {|row| row.last == control_patient.treatment_group_memberships.first.id.to_s }
+      control_patient_row = parsed.find { |row| row.last == control_patient.treatment_group_memberships.first.id.to_s }
 
       expect(control_patient_row[first_encounter_index]).to eq(control_past_visit_1.device_created_at.strftime(TIME_FORMAT))
       expect(control_patient_row[second_encounter_index]).to eq(control_past_visit_2.device_created_at.strftime(TIME_FORMAT))
@@ -132,7 +130,7 @@ RSpec.describe Experimentation::DataExport, type: :model do
       end
 
       # test single message patient data
-      single_message_patient_row = parsed.find {|row| row.last == single_message_patient.treatment_group_memberships.first.id.to_s }
+      single_message_patient_row = parsed.find { |row| row.last == single_message_patient.treatment_group_memberships.first.id.to_s }
 
       expect(single_message_patient_row[first_encounter_index]).to eq(smp_past_visit_1.device_created_at.strftime(TIME_FORMAT))
       expect(single_message_patient_row[second_encounter_index]).to eq(nil)
@@ -166,7 +164,7 @@ RSpec.describe Experimentation::DataExport, type: :model do
       end
 
       # test cascade patient data
-      cascade_patient_row = parsed.find {|row| row.last == cascade_patient.treatment_group_memberships.first.id.to_s }
+      cascade_patient_row = parsed.find { |row| row.last == cascade_patient.treatment_group_memberships.first.id.to_s }
 
       expect(cascade_patient_row[first_encounter_index]).to eq(nil)
       expect(cascade_patient_row[second_encounter_index]).to eq(nil)
