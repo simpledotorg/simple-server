@@ -9,7 +9,6 @@ module Reports
       @period_type = @periods.first.type
       @assigned_patients_query = AssignedPatientsQuery.new
       @control_rate_query = ControlRateQuery.new
-      @control_rate_query_v2 = ControlRateQueryV2.new
       @earliest_patient_data_query = EarliestPatientDataQuery.new
       @no_bp_measure_query = NoBPMeasureQuery.new
       @registered_patients_query = RegisteredPatientsQuery.new
@@ -160,8 +159,9 @@ module Reports
     memoize def missed_visits_without_ltfu_rates
       region_period_cached_query(__method__) do |entry|
         slug, period = entry.slug, entry.period
-        visit_rates = controlled_rates[slug][period] + uncontrolled_rates[slug][period] + visited_without_bp_taken_rate[slug][period]
-        100 - visit_rates
+        patients = denominator(entry.region, period, with_ltfu: false)
+        numerator = missed_visits_without_ltfu.dig(slug, period) || 0
+        percentage(numerator, patients)
       end
     end
 
