@@ -4,10 +4,12 @@ module Experimentation
 
     FOLLOWUP_CUTOFF = 10.days
 
-    attr_reader :experiment, :max_communications, :max_appointments, :max_past_visits, :notification_start_date, :aggregate, :cutoff_date
+    attr_reader :experiment, :max_communications, :max_appointments, :max_past_visits, :notification_start_date,
+                :aggregate, :cutoff_date, :recipient_email_address
 
-    def initialize(name)
-      @experiment = Experimentation::Experiment.find_by!(name: name)
+    def initialize(experiment_name, recipient_email_address)
+      @experiment = Experimentation::Experiment.find_by!(name: experiment_name)
+      @recipient_email_address = recipient_email_address
       remind_ons = experiment.reminder_templates.pluck(:remind_on_in_days)
       @notification_start_date = experiment.start_date - remind_ons.min.days
       @max_communications = 0
@@ -190,6 +192,11 @@ module Experimentation
         csv << headers
         aggregate.each { |patient_data| csv << patient_data.values.flatten }
       end
+    end
+
+    def mail_csv
+      mailer = ExperimentResultsMailer.new
+      mailer.email_report(recipient: recipient_email_address, filename: experiment.name.gsub(" ", "_"), csv: csv)
     end
   end
 end
