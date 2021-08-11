@@ -4,17 +4,17 @@ module Reports
     include Memery
 
     FIELDS = %i[
-      controlled_under_care
+      adjusted_controlled_under_care
       cumulative_assigned_patients
       cumulative_registrations
       lost_to_follow_up
-      missed_visit_lost_to_follow_up
-      missed_visit_under_care
+      adjusted_missed_visit_lost_to_follow_up
+      adjusted_missed_visit_under_care
       monthly_registrations
-      patients_under_care
-      uncontrolled_under_care
-      visited_no_bp_under_care
-      visited_no_bp_lost_to_follow_up
+      adjusted_patients_under_care
+      adjusted_uncontrolled_under_care
+      adjusted_visited_no_bp_under_care
+      adjusted_visited_no_bp_lost_to_follow_up
     ].freeze
 
     attr_reader :control_rate_query_v2
@@ -89,11 +89,11 @@ module Reports
     end
 
     memoize def controlled
-      regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, :controlled_under_care) }
+      regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, :adjusted_controlled_under_care) }
     end
 
     memoize def uncontrolled
-      regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, :uncontrolled_under_care) }
+      regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, :adjusted_uncontrolled_under_care) }
     end
 
     memoize def controlled_rates(with_ltfu: false)
@@ -113,7 +113,7 @@ module Reports
     end
 
     memoize def missed_visits(with_ltfu: false)
-      field = with_ltfu ? :missed_visit_lost_to_follow_up : :missed_visit_under_care
+      field = with_ltfu ? :adjusted_missed_visit_lost_to_follow_up : :adjusted_missed_visit_under_care
       regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, field) }
     end
 
