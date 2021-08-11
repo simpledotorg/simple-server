@@ -1468,7 +1468,7 @@ ActiveRecord::Schema.define(version: 2021_07_28_100308) do
              FROM reporting_patient_states
             WHERE (reporting_patient_states.hypertension = 'yes'::text)
             GROUP BY reporting_patient_states.assigned_facility_region_id, reporting_patient_states.month_date
-          ), treatment_outcomes_in_last_3_months AS (
+          ), adjusted_outcomes AS (
            SELECT reporting_patient_states.assigned_facility_region_id AS region_id,
               reporting_patient_states.month_date,
               count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'controlled'::text))) AS controlled_under_care,
@@ -1481,6 +1481,17 @@ ActiveRecord::Schema.define(version: 2021_07_28_100308) do
               count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text)) AS patients_lost_to_follow_up
              FROM reporting_patient_states
             WHERE ((reporting_patient_states.hypertension = 'yes'::text) AND (reporting_patient_states.months_since_registration >= (3)::double precision))
+            GROUP BY reporting_patient_states.assigned_facility_region_id, reporting_patient_states.month_date
+          ), monthly_cohort_outcomes AS (
+           SELECT reporting_patient_states.assigned_facility_region_id AS region_id,
+              reporting_patient_states.month_date,
+              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_treatment_outcome_in_last_2_months = 'controlled'::text)) AS controlled,
+              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_treatment_outcome_in_last_2_months = 'uncontrolled'::text)) AS uncontrolled,
+              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_treatment_outcome_in_last_2_months = 'missed_visit'::text)) AS missed_visit,
+              count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_treatment_outcome_in_last_2_months = 'visited_no_bp'::text)) AS visited_no_bp,
+              count(DISTINCT reporting_patient_states.patient_id) AS patients
+             FROM reporting_patient_states
+            WHERE ((reporting_patient_states.hypertension = 'yes'::text) AND (reporting_patient_states.months_since_registration = (2)::double precision))
             GROUP BY reporting_patient_states.assigned_facility_region_id, reporting_patient_states.month_date
           )
    SELECT cal.month_date,
@@ -1516,19 +1527,25 @@ ActiveRecord::Schema.define(version: 2021_07_28_100308) do
       assigned_patients.lost_to_follow_up,
       assigned_patients.dead,
       assigned_patients.cumulative_assigned_patients,
-      outcomes.controlled_under_care,
-      outcomes.uncontrolled_under_care,
-      outcomes.missed_visit_under_care,
-      outcomes.visited_no_bp_under_care,
-      outcomes.missed_visit_lost_to_follow_up,
-      outcomes.visited_no_bp_lost_to_follow_up,
-      outcomes.patients_under_care,
-      outcomes.patients_lost_to_follow_up
-     FROM ((((reporting_facilities rf
+      adjusted_outcomes.controlled_under_care AS adjusted_controlled_under_care,
+      adjusted_outcomes.uncontrolled_under_care AS adjusted_uncontrolled_under_care,
+      adjusted_outcomes.missed_visit_under_care AS adjusted_missed_visit_under_care,
+      adjusted_outcomes.visited_no_bp_under_care AS adjusted_visited_no_bp_under_care,
+      adjusted_outcomes.missed_visit_lost_to_follow_up AS adjusted_missed_visit_lost_to_follow_up,
+      adjusted_outcomes.visited_no_bp_lost_to_follow_up AS adjusted_visited_no_bp_lost_to_follow_up,
+      adjusted_outcomes.patients_under_care AS adjusted_patients_under_care,
+      adjusted_outcomes.patients_lost_to_follow_up AS adjusted_patients_lost_to_follow_up,
+      monthly_cohort_outcomes.controlled AS monthly_cohort_controlled,
+      monthly_cohort_outcomes.uncontrolled AS monthly_cohort_uncontrolled,
+      monthly_cohort_outcomes.missed_visit AS monthly_cohort_missed_visit,
+      monthly_cohort_outcomes.visited_no_bp AS monthly_cohort_visited_no_bp,
+      monthly_cohort_outcomes.patients AS monthly_cohort_patients
+     FROM (((((reporting_facilities rf
        JOIN reporting_months cal ON (true))
        LEFT JOIN registered_patients ON (((registered_patients.month_date = cal.month_date) AND (registered_patients.region_id = rf.facility_region_id))))
        LEFT JOIN assigned_patients ON (((assigned_patients.month_date = cal.month_date) AND (assigned_patients.region_id = rf.facility_region_id))))
-       LEFT JOIN treatment_outcomes_in_last_3_months outcomes ON (((outcomes.month_date = cal.month_date) AND (outcomes.region_id = rf.facility_region_id))));
+       LEFT JOIN adjusted_outcomes ON (((adjusted_outcomes.month_date = cal.month_date) AND (adjusted_outcomes.region_id = rf.facility_region_id))))
+       LEFT JOIN monthly_cohort_outcomes ON (((monthly_cohort_outcomes.month_date = cal.month_date) AND (monthly_cohort_outcomes.region_id = rf.facility_region_id))));
   SQL
   add_index "reporting_facility_states", ["month_date", "facility_region_id"], name: "facility_states_month_date_region_id", unique: true
 
