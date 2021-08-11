@@ -24,6 +24,9 @@ class AppointmentNotification::Worker
     end
 
     notification = Notification.includes(:subject, :patient).find(notification_id)
+    patient = notification.patient
+    Sentry.set_tags(patient_id: patient.id)
+
     communication_type = notification.next_communication_type
     unless communication_type
       logger.info "skipping notification #{notification_id}, no next communication type"
@@ -34,6 +37,12 @@ class AppointmentNotification::Worker
     unless notification.status_scheduled?
       logger.info "skipping notification #{notification_id}, scheduled already"
       metrics.increment("skipped.not_scheduled")
+      return
+    end
+
+    unless notification.patient.latest_mobile_number
+      logger.info "skipping notification #{notification_id}, patient #{patient.id} does not have a mobile number"
+      metrics.increment("skipped.no_mobile_number")
       return
     end
 

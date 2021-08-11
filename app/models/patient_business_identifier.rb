@@ -7,6 +7,7 @@ class PatientBusinessIdentifier < ApplicationRecord
   enum identifier_type: {
     simple_bp_passport: "simple_bp_passport",
     bangladesh_national_id: "bangladesh_national_id",
+    sri_lanka_national_id: "sri_lanka_national_id",
     ethiopia_medical_record: "ethiopia_medical_record",
     india_national_health_id: "india_national_health_id"
   }

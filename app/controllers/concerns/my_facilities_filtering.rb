@@ -85,7 +85,7 @@ module MyFacilitiesFiltering
         .select { |district| district.feature_enabled?(:drug_stocks) }
         .pluck(:source_id)
 
-      FacilityGroup.where(id: facility_group_ids)
+      FacilityGroup.where(id: facility_group_ids).order(:name)
     end
   end
 end

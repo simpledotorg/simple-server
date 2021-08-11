@@ -30,6 +30,18 @@ RSpec.describe PatientBusinessIdentifier, type: :model do
     it_behaves_like "a record that is deletable"
   end
 
+  describe "enums" do
+    it {
+      should define_enum_for(:identifier_type)
+        .with_values(simple_bp_passport: "simple_bp_passport",
+                     bangladesh_national_id: "bangladesh_national_id",
+                     sri_lanka_national_id: "sri_lanka_national_id",
+                     ethiopia_medical_record: "ethiopia_medical_record",
+                     india_national_health_id: "india_national_health_id")
+        .backed_by_column_of_type(:string)
+    }
+  end
+
   describe "#shortcode" do
     let(:business_identifier) { build(:patient_business_identifier) }
 
