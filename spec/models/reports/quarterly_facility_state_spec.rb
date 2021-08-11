@@ -32,6 +32,8 @@ RSpec.describe Reports::QuarterlyFacilityState, {type: :model, reporting_spec: t
       expect(described_class.find_by(facility: facility, quarter_string: "2021-2").quarterly_cohort_patients).to eq 1
       expect(described_class.find_by(facility: facility, quarter_string: "2021-1").quarterly_cohort_patients).to eq 1
       expect(described_class.find_by(facility: facility, quarter_string: "2020-4").quarterly_cohort_patients).to eq 1
+      expect(described_class.where(facility: facility).where("quarter_string < '2020-4'").count).to eq 11
+      expect(described_class.where(facility: facility).where("quarter_string < '2020-4'").pluck(:quarterly_cohort_patients)).to all eq nil
     end
   end
 
