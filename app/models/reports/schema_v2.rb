@@ -4,17 +4,17 @@ module Reports
     include Memery
 
     FIELDS = %i[
-      controlled_under_care
+      adjusted_controlled_under_care
       cumulative_assigned_patients
       cumulative_registrations
       lost_to_follow_up
-      missed_visit_lost_to_follow_up
-      missed_visit_under_care
+      adjusted_missed_visit_lost_to_follow_up
+      adjusted_missed_visit_under_care
       monthly_registrations
-      patients_under_care
-      uncontrolled_under_care
-      visited_no_bp_under_care
-      visited_no_bp_lost_to_follow_up
+      adjusted_patients_under_care
+      adjusted_uncontrolled_under_care
+      adjusted_visited_no_bp_under_care
+      adjusted_visited_no_bp_lost_to_follow_up
     ].freeze
 
     CALCULATED_FIELDS = %i[
@@ -62,7 +62,7 @@ module Reports
     # Adjusted patient counts are the patient counts from three months ago (the adjusted period) that
     # are the basis for control rates. These counts DO NOT include lost to follow up.
     memoize def adjusted_patients_without_ltfu
-      regions.each_with_object({}) { |region, result| result[region.slug] = sum(region, :patients_under_care) }
+      regions.each_with_object({}) { |region, result| result[region.slug] = sum(region, :adjusted_patients_under_care) }
     end
 
     alias_method :adjusted_patients, :adjusted_patients_without_ltfu
@@ -93,11 +93,11 @@ module Reports
     end
 
     memoize def controlled
-      regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, :controlled_under_care) }
+      regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, :adjusted_controlled_under_care) }
     end
 
     memoize def uncontrolled
-      regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, :uncontrolled_under_care) }
+      regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, :adjusted_uncontrolled_under_care) }
     end
 
     memoize def controlled_rates(with_ltfu: false)
@@ -117,7 +117,7 @@ module Reports
     end
 
     memoize def missed_visits(with_ltfu: false)
-      field = with_ltfu ? :missed_visit_lost_to_follow_up : :missed_visit_under_care
+      field = with_ltfu ? :adjusted_missed_visit_lost_to_follow_up : :adjusted_missed_visit_under_care
       regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, field) }
     end
 
