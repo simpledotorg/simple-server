@@ -4,7 +4,7 @@ RSpec.describe Experimentation::DataExport, type: :model do
 
   TIME_FORMAT = "%Y-%m-%d"
 
-  def create_notification(experiment, template, patient, appt)
+  def create_notification(experiment, template, patient, appt, status)
     create(:notification,
       experiment: experiment,
       message: template.message,
@@ -12,7 +12,7 @@ RSpec.describe Experimentation::DataExport, type: :model do
       purpose: :experimental_appointment_reminder,
       remind_on: appt.scheduled_date + template.remind_on_in_days.days,
       reminder_template: template,
-      status: "sent",
+      status: status,
       subject: appt
     )
   end
@@ -40,23 +40,25 @@ RSpec.describe Experimentation::DataExport, type: :model do
       single_message_patient = create(:patient)
       smp_appt1 = create(:appointment, patient: single_message_patient, scheduled_date: 20.days.ago)
       smp_followup_pd = create(:prescription_drug, patient: single_message_patient, device_created_at: 21.days.ago)
-      n = create_notification(experiment, single_template, single_message_patient, smp_appt1)
-      c = create(:communication, notification: n)
-      create(:twilio_sms_delivery_detail, communication: c, delivered_on: n.remind_on)
+      smp_notification = create_notification(experiment, single_template, single_message_patient, smp_appt1, "sent")
+      smp_communication = create(:communication, notification: smp_notification, communication_type: "whatsapp")
+      create(:twilio_sms_delivery_detail, communication: smp_communication, delivered_on: smp_notification.remind_on, result: "read")
       smp_past_visit_1 = create(:blood_pressure, patient: single_message_patient, device_created_at: 6.months.ago)
       _smp_past_visit_1_pd = create(:prescription_drug, patient: single_message_patient, device_created_at: 6.months.ago)
 
       cascade_patient = create(:patient)
       cascade_patient_appt = create(:appointment, patient: cascade_patient, scheduled_date: 22.days.ago)
-      n = create_notification(experiment, cascade_template1, cascade_patient, cascade_patient_appt)
-      c = create(:communication, notification: n)
-      create(:twilio_sms_delivery_detail, communication: c, delivered_on: n.remind_on)
-      n = create_notification(experiment, cascade_template2, cascade_patient, cascade_patient_appt)
-      c = create(:communication, notification: n)
-      create(:twilio_sms_delivery_detail, communication: c, delivered_on: n.remind_on)
-      n = create_notification(experiment, cascade_template3, cascade_patient, cascade_patient_appt)
-      c = create(:communication, notification: n)
-      create(:twilio_sms_delivery_detail, communication: c, delivered_on: n.remind_on)
+      cascade_notification1 = create_notification(experiment, cascade_template1, cascade_patient, cascade_patient_appt, "sent")
+      cascade_comm1 = create(:communication, notification: cascade_notification1, communication_type: "whatsapp")
+      create(:twilio_sms_delivery_detail, communication: cascade_comm1, delivered_on: cascade_notification1.remind_on, result: "failed")
+      cascade_comm2 = create(:communication, notification: cascade_notification1, communication_type: "sms")
+      create(:twilio_sms_delivery_detail, communication: cascade_comm2, delivered_on: cascade_notification1.remind_on, result: "delivered")
+      cascade_notification2 = create_notification(experiment, cascade_template2, cascade_patient, cascade_patient_appt, "sent")
+      cascade_comm3 = create(:communication, notification: cascade_notification2, communication_type: "whatsapp")
+      create(:twilio_sms_delivery_detail, communication: cascade_comm3, delivered_on: cascade_notification2.remind_on, result: "failed")
+      cascade_comm4 = create(:communication, notification: cascade_notification2, communication_type: "sms")
+      create(:twilio_sms_delivery_detail, communication: cascade_comm4, delivered_on: cascade_notification2.remind_on, result: "delivered")
+      cascade_notification3 = create_notification(experiment, cascade_template3, cascade_patient, cascade_patient_appt, "cancelled")
 
       Timecop.freeze(experiment.start_date - 1.day) do
         control_group.patients << control_patient
@@ -69,6 +71,7 @@ RSpec.describe Experimentation::DataExport, type: :model do
       parsed = CSV.parse(results)
       pp parsed
 
+      # grab indexes from header row
       headers = parsed.first
       appt1_start_index = headers.find_index("Appointment 1 Creation Date")
       appt1_end_index = appt1_start_index + 9
@@ -76,6 +79,14 @@ RSpec.describe Experimentation::DataExport, type: :model do
       appt2_end_index = appt2_start_index + 9
       first_encounter_index = headers.find_index("Encounter 1 Date")
       second_encounter_index = headers.find_index("Encounter 2 Date")
+      first_message_index = headers.find_index("Message 1 Type")
+      first_message_range = (first_message_index..(first_message_index + 3))
+      second_message_index = headers.find_index("Message 2 Type")
+      second_message_range = (second_message_index..(second_message_index + 3))
+      third_message_index = headers.find_index("Message 3 Type")
+      third_message_range = (third_message_index..(third_message_index + 3))
+      fourth_message_index = headers.find_index("Message 4 Type")
+      fourth_message_range = (fourth_message_index..(fourth_message_index + 3))
 
       expect(parsed.length).to eq 4
       expect(parsed.map {|row| row.length }.uniq.length).to eq 1
@@ -99,7 +110,6 @@ RSpec.describe Experimentation::DataExport, type: :model do
         control_followup_1.facility.district,
         control_followup_1.facility.block
       ]
-
       expect(control_patient_appt1_data).to match_array(expected_appt1_data)
 
       control_patient_appt2_data = control_patient_row[appt2_start_index..appt2_end_index]
@@ -116,6 +126,10 @@ RSpec.describe Experimentation::DataExport, type: :model do
         control_followup_2.facility.block
       ]
       expect(control_patient_appt2_data).to match_array(expected_appt2_data)
+
+      [first_message_range, second_message_range, third_message_range, fourth_message_range].each do |range|
+        expect(control_patient_row[range].uniq).to eq([nil])
+      end
 
       # test single message patient data
       single_message_patient_row = parsed.find {|row| row.last == single_message_patient.treatment_group_memberships.first.id.to_s }
@@ -140,6 +154,17 @@ RSpec.describe Experimentation::DataExport, type: :model do
 
       expect(single_message_patient_row[appt2_start_index..appt2_end_index]).to eq(Array.new(10, nil))
 
+      expected_first_communication_data = [
+        smp_communication.communication_type,
+        smp_communication.detailable.delivered_on.strftime(TIME_FORMAT),
+        smp_communication.detailable.result,
+        smp_notification.message
+      ]
+      expect(single_message_patient_row[first_message_range]).to eq(expected_first_communication_data)
+      [second_message_range, third_message_range, fourth_message_range].each do |range|
+        expect(single_message_patient_row[range].uniq).to eq([nil])
+      end
+
       # test cascade patient data
       cascade_patient_row = parsed.find {|row| row.last == cascade_patient.treatment_group_memberships.first.id.to_s }
 
@@ -161,6 +186,35 @@ RSpec.describe Experimentation::DataExport, type: :model do
       expect(cascade_patient_appt1_data).to match_array(expected_appt1_data)
 
       expect(cascade_patient_row[appt2_start_index..appt2_end_index]).to eq(Array.new(10, nil))
+
+      expected_first_communication_data = [
+        cascade_comm1.communication_type,
+        cascade_comm1.detailable.delivered_on.strftime(TIME_FORMAT),
+        cascade_comm1.detailable.result,
+        cascade_notification1.message
+      ]
+      expect(cascade_patient_row[first_message_range]).to eq(expected_first_communication_data)
+      expected_second_communication_data = [
+        cascade_comm2.communication_type,
+        cascade_comm2.detailable.delivered_on.strftime(TIME_FORMAT),
+        cascade_comm2.detailable.result,
+        cascade_notification1.message
+      ]
+      expect(cascade_patient_row[second_message_range]).to eq(expected_second_communication_data)
+      expected_third_communication_data = [
+        cascade_comm3.communication_type,
+        cascade_comm3.detailable.delivered_on.strftime(TIME_FORMAT),
+        cascade_comm3.detailable.result,
+        cascade_notification2.message
+      ]
+      expect(cascade_patient_row[third_message_range]).to eq(expected_third_communication_data)
+      expected_fourth_communication_data = [
+        cascade_comm4.communication_type,
+        cascade_comm4.detailable.delivered_on.strftime(TIME_FORMAT),
+        cascade_comm4.detailable.result,
+        cascade_notification2.message
+      ]
+      expect(cascade_patient_row[fourth_message_range]).to eq(expected_fourth_communication_data)
     end
   end
 end

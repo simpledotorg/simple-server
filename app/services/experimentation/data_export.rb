@@ -62,7 +62,7 @@ module Experimentation
       communications = notifications.each_with_object([]) do |notification, communications_data|
         ordered_communications = notification.communications.sort_by{|c| c.created_at }
         ordered_communications.each do |c|
-          communications_data << [notification.message, c.communication_type, c.detailable&.delivered_on, c.detailable&.result]
+          communications_data << [c.communication_type, c.detailable&.delivered_on.to_date, c.detailable&.result, notification.message]
         end
       end
 
@@ -157,10 +157,10 @@ module Experimentation
         case key
         when :communications
           (1..@max_communications).step do |i|
-            collection << "Message #{i} Text Identifier"
             collection << "Message #{i} Type"
             collection << "Message #{i} Sent"
             collection << "Message #{i} Status"
+            collection << "Message #{i} Text Identifier"
           end
         when :appointments
           (1..@max_appointments).step do |i|
