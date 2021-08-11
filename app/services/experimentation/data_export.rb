@@ -195,8 +195,20 @@ module Experimentation
     end
 
     def mail_csv
-      mailer = ExperimentResultsMailer.new
-      mailer.email_report(recipient: recipient_email_address, filename: experiment.name.gsub(" ", "_"), csv: csv)
+      mailer = ApplicationMailer.new
+      email_params = {
+        to: recipient_email_address,
+        subject: "Experiment data export: #{experiment.name}",
+        content_type: "multipart/mixed",
+        body: "Please see attached CSV."
+      }
+      email = mailer.mail(email_params)
+      filename = experiment.name.gsub(" ", "_")
+      email.attachments[filename] = {
+        mime_type: "text/csv",
+        content: csv
+      }
+      email.deliver
     end
   end
 end
