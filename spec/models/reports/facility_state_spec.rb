@@ -51,10 +51,18 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
             .pluck(:monthly_registrations)).to all be nil
 
           expect(described_class
+            .find_by(facility_id: facility.id, month_date: june_2021[:under_12_months_ago])
+            .monthly_registrations).to eq 2
+
+          expect(described_class
             .where(facility_id: facility.id)
-            .where("month_date >= ?", june_2021[:under_12_months_ago].to_date)
-            .where("month_date <= ?", june_2021[:under_3_months_ago].to_date)
-            .pluck(:monthly_registrations)).to eq [2, 0, 0, 0, 0, 0, 0, 0, 0, 3]
+            .where("month_date > ?", june_2021[:under_12_months_ago].to_date)
+            .where("month_date < ?", june_2021[:under_3_months_ago].to_date)
+            .pluck(:monthly_registrations)).to all eq 0
+
+          expect(described_class
+            .find_by(facility_id: facility.id, month_date: june_2021[:under_3_months_ago])
+            .monthly_registrations).to eq 3
         end
       end
     end
