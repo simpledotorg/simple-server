@@ -13,14 +13,20 @@ RSpec.describe Reports::Matview, {type: :model, reporting_spec: true} do
     SQL
   end
 
-  def column_descriptions(table_name)
-    ActiveRecord::Base.connection.execute(column_descriptions_sql(table_name))
+  def table_descriptions_sql(table_name)
+    <<~SQL
+      SELECT c.relname, d.description
+      FROM pg_class c
+      JOIN pg_catalog.pg_description d ON c.relfilenode = d.objoid
+      WHERE c.relname = '#{table_name}'
+        AND d.objsubid = 0;
+    SQL
   end
 
   it "has documentation for all reporting materialized views, and their columns" do
     [Reports::PatientState].each do |klass|
       klass.add_comments
-      expect(ActiveRecord::Base)
+      expect(ActiveRecord::Base.connection.execute(table_descriptions_sql(klass.table_name)).map { |d| d["description"] }).to all be_present
       expect(ActiveRecord::Base.connection.execute(column_descriptions_sql(klass.table_name)).map { |d| d["col_description"] }).to all be_present
     end
   end
