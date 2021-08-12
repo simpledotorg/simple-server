@@ -5,20 +5,21 @@ module Reports
 
     FIELDS = %i[
       adjusted_controlled_under_care
+      adjusted_missed_visit_lost_to_follow_up
+      adjusted_missed_visit_under_care
+      adjusted_patients_under_care
+      adjusted_uncontrolled_under_care
+      adjusted_visited_no_bp_lost_to_follow_up
+      adjusted_visited_no_bp_under_care
       cumulative_assigned_patients
       cumulative_registrations
       lost_to_follow_up
-      adjusted_missed_visit_lost_to_follow_up
-      adjusted_missed_visit_under_care
       monthly_registrations
-      adjusted_patients_under_care
-      adjusted_uncontrolled_under_care
-      adjusted_visited_no_bp_under_care
-      adjusted_visited_no_bp_lost_to_follow_up
     ].freeze
 
-    CALCULATED_FIELDS = %i[
-      adjusted_visited_no_bp_under_care_and_ltfu
+    UNDER_CARE_WITH_LTFU = %i[
+      adjusted_missed_visit
+      adjusted_visited_no_bp
     ].freeze
 
     attr_reader :control_rate_query_v2
