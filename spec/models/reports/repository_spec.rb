@@ -469,7 +469,7 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
 
         it "creates cache keys" do
           repo = Reports::Repository.new(facility_1, periods: Period.month("June 1 2019")..Period.month("Jan 1 2020"))
-          cache_keys = repo.send(:cache_entries, :controlled).map(&:cache_key)
+          cache_keys = repo.schema.send(:cache_entries, :controlled).map(&:cache_key)
           cache_keys.each do |key|
             expect(key).to include("controlled")
           end
@@ -497,7 +497,7 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
           _controlled_in_jan = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
 
           repo = Reports::Repository.new(facility_1.region, periods: july_2020_range)
-          keys = repo.send(:cache_entries, :controlled)
+          keys = repo.schema.send(:cache_entries, :controlled)
           periods = keys.map(&:period)
           expected_periods = (jan_2019.to_period..july_2020.to_period).to_a
           expect(periods).to eq(expected_periods)
