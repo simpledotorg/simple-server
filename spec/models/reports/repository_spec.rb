@@ -447,11 +447,7 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
           }
           ("Apr 2018".to_period.."December 2018".to_period).each { |period|
             expect(result_without_ltfu[period]).to eq(2)
-            if v2_flag # handle bug in v1 code
-              expect(result_with_ltfu[period]).to eq(0)
-            else
-              expect(result_with_ltfu[period]).to eq(2)
-            end
+            expect(result_with_ltfu[period]).to eq(2)
           }
           ("Jan 2019".to_period.."March 2019".to_period).each { |period|
             expect(result_without_ltfu[period]).to eq(0)
@@ -463,11 +459,7 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
           }
           ("July 2019".to_period.."Jan 2020".to_period).each { |period|
             expect(result_without_ltfu[period]).to eq(1)
-            if v2_flag # handle bug in v1 code
-              expect(result_with_ltfu[period]).to eq(1)
-            else
-              expect(result_with_ltfu[period]).to eq(2)
-            end
+            expect(result_with_ltfu[period]).to eq(2)
           }
         end
       end
