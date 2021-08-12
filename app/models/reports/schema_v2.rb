@@ -17,6 +17,14 @@ module Reports
       monthly_registrations
     ].freeze
 
+    UNDER_CARE_WITH_LTFU = %i[
+      adjusted_missed_visit
+      adjusted_visited_no_bp
+    ].freeze
+    UNDER_CARE_WITH_LTFU_CALCULATED_FIELDS = UNDER_CARE_WITH_LTFU.map { |field|
+      "#{field}_under_care_with_lost_to_follow_up".to_sym
+    }
+
     attr_reader :control_rate_query_v2
     attr_reader :periods
     attr_reader :period_hash
@@ -113,7 +121,7 @@ module Reports
     end
 
     memoize def missed_visits(with_ltfu: false)
-      field = with_ltfu ? :adjusted_missed_visit_lost_to_follow_up : :adjusted_missed_visit_under_care
+      field = with_ltfu ? :adjusted_missed_visit_under_care_with_lost_to_follow_up : :adjusted_missed_visit_under_care
       regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, field) }
     end
 
@@ -139,11 +147,8 @@ module Reports
     end
 
     memoize def visited_without_bp_taken(with_ltfu: false)
-      if with_ltfu
-        regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, :adjusted_visited_no_bp_lost_to_follow_up) }
-      else
-        regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, :adjusted_visited_no_bp_under_care) }
-      end
+      field = with_ltfu ? :adjusted_visited_no_bp_under_care_with_lost_to_follow_up : :adjusted_visited_no_bp_under_care
+      regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, field) }
     end
 
     memoize def visited_without_bp_taken_rates(with_ltfu: false)
@@ -220,8 +225,16 @@ module Reports
     end
 
     def summary_field(field)
-      raise ArgumentError, "field #{field} is not part of the FacilityState query" unless field.in?(FIELDS)
+      raise ArgumentError, "field #{field} is not part of the FacilityState query" unless field.in?(FIELDS) || field.in?(UNDER_CARE_WITH_LTFU_CALCULATED_FIELDS)
       "sum_#{field}"
+    end
+
+    # For some fields we need to sum the under_care numbers with the LTFU numbers to support the "include LTFU"
+    # toggle in reports.
+    def under_care_with_ltfu(field)
+      Arel.sql(<<-EOL)
+        SUM(COALESCE(#{field}_under_care::int, 0) + COALESCE(#{field}_lost_to_follow_up::int, 0)) as sum_#{field}_under_care_with_lost_to_follow_up
+      EOL
     end
 
     # Grab all the summed data for a particular region grouped by month_date.
@@ -231,13 +244,15 @@ module Reports
     # oldest to newest - it also makes reading output in specs and debugging much easier.
     memoize def facility_state_data(region)
       calculations = FIELDS.map { |field| Arel.sql("COALESCE(SUM(#{field}::int), 0) as #{summary_field(field)}") }
+      under_care_with_ltfu = UNDER_CARE_WITH_LTFU.map { |field| under_care_with_ltfu(field) }
+      selects = calculations.concat(under_care_with_ltfu)
 
       FacilityState.for_region(region)
         .where("cumulative_registrations IS NOT NULL OR cumulative_assigned_patients IS NOT NULL")
         .order(:month_date)
         .group(:month_date)
         .select(:month_date)
-        .select(*calculations)
+        .select(*selects)
     end
   end
 end
