@@ -82,6 +82,7 @@ class UserAccess
   end
 
   def accessible_facilities(action)
+    return Facility.all.includes(:region) if power_user?
     resources_for(Facility, action)
       .union(Facility.where(facility_group: accessible_facility_groups(action)))
       .includes(:region, facility_group: :organization)
@@ -104,6 +105,7 @@ class UserAccess
   end
 
   def accessible_facility_regions(action)
+    return Region.facility_regions if power_user?
     facility_ids = accessible_facilities(action).pluck("facilities.id")
     Region.facility_regions.where(source_id: facility_ids)
   end
