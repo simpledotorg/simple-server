@@ -1,8 +1,10 @@
 require "rails_helper"
 
 RSpec.describe Reports::Repository, type: :model, v2_flag: true do
+  using StringToPeriod
+
   [true, false].each do |v2_flag|
-    context "with reporting_schema_v2 #{v2_flag}" do
+    context "with reporting_schema_v2=>#{v2_flag}" do
       let(:v2_flag) { v2_flag }
       let(:organization) { create(:organization, name: "org-1") }
       let(:user) { create(:admin, :manager, :with_access, resource: organization, organization: organization) }
@@ -87,16 +89,16 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
 
           refresh_views
 
-          range = jan_2019.to_period..("June 2019".to_date.to_period)
+          range = jan_2019.to_period..("June 2019".to_period)
           repo = described_class.new(region, periods: range)
           expected_registered = {
             facility_group_1.slug => {
               jan_2019.to_period => 2,
-              "Feb 2019".to_date.to_period => 0,
-              "March 2019".to_date.to_period => 0,
-              "April 2019".to_date.to_period => 0,
-              "May 2019".to_date.to_period => 0,
-              "June 2019".to_date.to_period => 0
+              "Feb 2019".to_period => 0,
+              "March 2019".to_period => 0,
+              "April 2019".to_period => 0,
+              "May 2019".to_period => 0,
+              "June 2019".to_period => 0
             }
           }
           # handle slight difference in return values from v1 and v2 - in practice this won't matter,
@@ -115,7 +117,7 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
 
           default_attrs = {registration_facility: facility_1, assigned_facility: facility_1, registration_user: user}
           _facility_1_registered_in_jan_2019 = create_list(:patient, 2, default_attrs.merge(recorded_at: jan_2019))
-          _facility_1_registered_in_august_2018 = create_list(:patient, 2, default_attrs.merge(recorded_at: Time.zone.parse("August 10th 2018")))
+          _facility_1_registered_in_august_2018 = create_list(:patient, 2, default_attrs.merge(recorded_at: "August 1st 2018 00:00 UTC"))
           _facility_2_registered = create(:patient, full_name: "other facility", recorded_at: jan_2019, assigned_facility: facility_2, registration_user: user)
 
           refresh_views
@@ -164,10 +166,7 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
 
         it "gets controlled counts and rates for single region" do
           facilities = FactoryBot.create_list(:facility, 2, facility_group: facility_group_1).sort_by(&:slug)
-          other_facility = create(:facility)
           facility_1, facility_2 = facilities.take(2)
-          # TODO we shouldn't need to create a registered patient here to make FacilityStates return records...
-          _facility_1_registered_but_not_assigned = create(:patient, recorded_at: jan_2019, assigned_facility: other_facility, registration_facility: facility_1, registration_user: user)
           facility_1_controlled = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
           facility_1_uncontrolled = create_list(:patient, 2, full_name: "uncontrolled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
           facility_2_controlled = create(:patient, full_name: "other facility", recorded_at: jan_2019, assigned_facility: facility_2, registration_user: user)
@@ -193,10 +192,7 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
           }
           with_reporting_time_zone do
             repo = Reports::Repository.new(facility_1.region, periods: jan_2020.to_period)
-            (jan_2019.to_period..jan_2020.to_period).each do |period|
-              count = repo.cumulative_assigned_patients[facility_1.slug][period]
-              expect(count).to eq(4), "expected 4 assigned patients for #{period} but got #{count.inspect}"
-            end
+            expect(repo.cumulative_assigned_patients[facility_1.slug][jan_2020.to_period]).to eq(4)
             expect(repo.controlled).to eq(expected_counts)
             expect(repo.controlled_rates).to eq(expected_rates)
           end
@@ -368,6 +364,91 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
         end
       end
 
+      context "ltfu" do
+        it "counts ltfu for patients who never have a BP taken" do
+          facility = create(:facility, facility_group: facility_group_1)
+          slug = facility.region.slug
+          other_facility = create(:facility, facility_group: facility_group_1)
+          # patient who never has a BP taken so they are LTFU in Jan 1st 2019
+          _ltfu_1 = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: "Jan 1st 2018 00:00:00 UTC", registration_user: user)
+          # patient who becomes LTFU September 2019
+          ltfu_2 = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: "July 1st 2018 00:00:00 UTC", registration_user: user)
+          create(:bp_with_encounter, recorded_at: "July 1st 2018 00:00:00", facility: facility, patient: ltfu_2, user: user)
+          create(:bp_with_encounter, recorded_at: "September 1st 2018 00:00:00", facility: other_facility, patient: ltfu_2, user: user)
+          # patient who is not LTFU
+          non_ltfu_patient = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: "July 1st 2019 00:00:00 UTC", registration_user: user)
+          create(:bp_with_encounter, recorded_at: "July 1st 2019 00:00:00", facility: facility, patient: non_ltfu_patient, user: user)
+
+          refresh_views
+
+          jan_2020_range = (Period.month(jan_2020.advance(months: -24))..Period.month(jan_2020))
+          repo = Reports::Repository.new(facility.region, periods: jan_2020_range)
+          result = repo.ltfu[slug]
+          ("January 2018".to_period.."December 2018".to_period).each { |period| expect(result[period]).to eq(0) }
+          ("January 2019".to_period.."August 2019".to_period).each { |period| expect(result[period]).to eq(1) }
+          ("September 2019".to_period.."January 2020".to_period).each { |period| expect(result[period]).to eq(2) }
+        end
+      end
+
+      context "missed visits" do
+        it "counts missed visits for patients with no BPs taken" do
+          facility = create(:facility, facility_group: facility_group_1)
+          slug = facility.region.slug
+          # patient who never has a BP taken, so they become a missed visit in April 2018
+          _missed_visit = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: "January 1st 2018 00:00:00 UTC", registration_user: user)
+          patient_1_with_visits = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: "January 1st 2018 00:00:00 UTC", registration_user: user)
+          patient_2_with_visits = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: "January 1st 2018 00:00:00 UTC", registration_user: user)
+          [3, 6, 9, 12].product(["2018", "2019"]).each do |month, year|
+            create(:bp_with_encounter, :under_control, facility: facility, patient: patient_1_with_visits, recorded_at: "#{year}-#{month}-1st 08:00:00 UTC")
+            create(:bp_with_encounter, :under_control, facility: facility, patient: patient_2_with_visits, recorded_at: "#{year}-#{month}-1st 08:00:00 UTC")
+          end
+
+          refresh_views
+
+          jan_2020_range = (Period.month(jan_2020.advance(months: -24))..Period.month(jan_2020))
+          repo = Reports::Repository.new(facility.region, periods: jan_2020_range)
+
+          months_with_one_missed_visit = ("April 2018".to_period...jan_2019.to_period).entries
+          jan_2020_range.each do |period|
+            if period.in?(months_with_one_missed_visit)
+              expected_count = 1
+              expected_rate = 33
+            else
+              expected_count = 0
+              expected_rate = 0
+            end
+
+            count = repo.missed_visits_without_ltfu[slug][period]
+            rate = repo.missed_visits_without_ltfu_rates[slug][period]
+            expect(count).to eq(expected_count), "expected #{period} to have missed visits of #{expected_count} but got #{count}"
+            expect(rate).to eq(expected_rate), "expected #{period} to have missed visits rate of #{expected_rate} but got #{rate}"
+          end
+        end
+
+        it "counts missed visits without ltfu" do
+          facility = create(:facility, facility_group: facility_group_1)
+          slug = facility.region.slug
+          # patient w/ missed visit starting in April 2018 who is LTFU as of Jan 2019
+          missed_visit_1 = FactoryBot.create(:patient, assigned_facility: facility, registration_facility: facility, recorded_at: "Jan 1st 2018 08:00:00 UTC", registration_user: user)
+          create(:bp_with_encounter, :under_control, facility: facility, patient: missed_visit_1, recorded_at: "Jan 1st 2019 08:00:00 UTC")
+
+          # patient who never has a BP taken, and is missed visit from April 2018 to Dec 2018
+          _missed_visit_2 = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: "Jan 1st 2018 00:00:00 UTC", registration_user: user)
+
+          refresh_views
+
+          jan_2020_range = (Period.month(jan_2020.advance(months: -24))..Period.month(jan_2020))
+          repo = Reports::Repository.new(facility.region, periods: jan_2020_range)
+          result = repo.missed_visits_without_ltfu[slug]
+
+          ("January 2018".to_period.."March 2018".to_period).each { |period| expect(result[period]).to eq(0) }
+          ("April 2018".to_period.."December 2018".to_period).each { |period| expect(result[period]).to eq(2) }
+          ("January 2019".to_period.."March 2019".to_period).each { |period| expect(result[period]).to eq(0) }
+          ("April 2019".to_period.."December 2019".to_period).each { |period| expect(result[period]).to eq(1) }
+          expect(result["January 2020".to_period]).to eq(0)
+        end
+      end
+
       context "caching", skip: v2_flag do
         let(:facility_1) { create(:facility, name: "facility-1") }
 
@@ -439,38 +520,6 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
           # cumulative registrations returns all summed registrations for all months we have in reporting_months...
           # not sure who should be responsible for trimming the result set
           expect(repo.cumulative_registrations[facility_1.slug]).to eq({})
-        end
-
-        it "gets same results as RegionService for missed_visits" do
-          very_old = Time.zone.parse("December 1st 2010")
-          may_1_2020 = Time.zone.parse("May 1st, 2020")
-          may_15_2020 = Time.zone.parse("May 15th, 2020")
-          facility = create(:facility, facility_group: facility_group_1)
-          slug = facility.region.slug
-          # patients without any visits
-          _patient_missed_visit_1_always_ltfu = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: very_old, registration_user: user)
-          _patient_missed_visit_2 = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: jan_2020, registration_user: user)
-          # patients with visits
-          patient_with_appt_visit = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: jan_2020, registration_user: user)
-          patient_with_bp_visit = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: jan_2020, registration_user: user)
-          create(:appointment, creation_facility: facility, scheduled_date: may_1_2020, device_created_at: may_1_2020, patient: patient_with_appt_visit)
-          create(:bp_with_encounter, :under_control, facility: facility, patient: patient_with_bp_visit, recorded_at: may_15_2020)
-
-          service = Reports::RegionService.new(region: facility, period: july_2020.to_period)
-          repo = Reports::Repository.new(facility.region, periods: service.range)
-          legacy_results = service.call
-
-          expect(legacy_results[:missed_visits].size).to eq(service.range.entries.size)
-          expect(repo.missed_visits[slug].size).to eq(service.range.entries.size)
-          expect(repo.missed_visits[slug]).to eq(legacy_results[:missed_visits])
-
-          expect(repo.missed_visits_without_ltfu[slug]).to eq(repo.missed_visits[slug])
-          expect(repo.missed_visits_without_ltfu[slug]).to eq(legacy_results[:missed_visits])
-          expect(repo.missed_visits_with_ltfu[slug]).to eq(legacy_results[:missed_visits_with_ltfu])
-
-          expect(repo.missed_visits_without_ltfu_rates[slug]).to eq(repo.missed_visits_rate[slug])
-          expect(repo.missed_visits_without_ltfu_rates[slug]).to eq(legacy_results[:missed_visits_rate])
-          expect(repo.missed_visits_with_ltfu_rates[slug]).to eq(legacy_results[:missed_visits_with_ltfu_rate])
         end
       end
 

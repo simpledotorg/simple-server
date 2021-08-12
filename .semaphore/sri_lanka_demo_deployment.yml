@@ -1,0 +1,31 @@
+version: v1.0
+name: Sri Lanka Demo Deployment
+blocks:
+  - name: Deploy to Sri Lanka Demo
+    task:
+      secrets:
+        - name: semaphore-deploy-key
+        - name: sentry-release-auth-token
+      jobs:
+        - name: Deploy to Sri Lanka Demo
+          commands:
+            - checkout
+            - sem-version ruby 2.6.6
+            - cache restore
+            - yarn install
+            - bundle install --deployment --path vendor/bundle
+            - cache store
+            - 'BRANCH=$SEMAPHORE_GIT_SHA bundle exec cap sri-lanka:demo deploy'
+      prologue:
+        commands:
+          - chmod 600 ~/.ssh/semaphore_id_rsa
+          - ssh-add ~/.ssh/semaphore_id_rsa
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+promotions:
+  - name: Sri Lanka Production Deployment
+    pipeline_file: sri_lanka_production_deployment.yml
+    auto_promote:
+      when: (branch = 'master' AND result = 'passed') OR (tag =~ '^release-.*' AND result = 'passed')
