@@ -65,6 +65,7 @@ class UserAccess
   #
   # See CH2217 - https://app.clubhouse.io/simpledotorg/epic/2217/migrate-user-access-to-regions
   def accessible_state_regions(action)
+    return Region.state_regions if power_user?
     if action == :view_reports
       districts = accessible_district_regions(:manage)
       state_region_ids = districts.map(&:state_region).pluck(:id)
@@ -75,6 +76,7 @@ class UserAccess
   end
 
   def accessible_facility_groups(action)
+    return FacilityGroup.all.includes(:facilities) if power_user?
     resources_for(FacilityGroup, action)
       .union(FacilityGroup.where(organization: accessible_organizations(action)))
       .includes(:organization)
@@ -89,6 +91,7 @@ class UserAccess
   end
 
   def accessible_district_regions(action)
+    return Region.district_regions if power_user?
     facility_group_ids = accessible_facility_groups(action).pluck("facility_groups.id")
     Region.district_regions.where(source_id: facility_group_ids)
   end
