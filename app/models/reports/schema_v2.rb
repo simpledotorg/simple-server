@@ -17,11 +17,6 @@ module Reports
       monthly_registrations
     ].freeze
 
-    UNDER_CARE_WITH_LTFU = %i[
-      adjusted_missed_visit
-      adjusted_visited_no_bp
-    ].freeze
-
     attr_reader :control_rate_query_v2
     attr_reader :periods
     attr_reader :period_hash
@@ -145,7 +140,7 @@ module Reports
 
     memoize def visited_without_bp_taken(with_ltfu: false)
       if with_ltfu
-        regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, :adjusted_visited_no_bp_under_care_and_ltfu) }
+        regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, :adjusted_visited_no_bp_lost_to_follow_up) }
       else
         regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, :adjusted_visited_no_bp_under_care) }
       end
@@ -225,7 +220,7 @@ module Reports
     end
 
     def summary_field(field)
-      raise ArgumentError, "field #{field} is not part of the FacilityState query" unless field.in?(FIELDS) || field.in?(CALCULATED_FIELDS)
+      raise ArgumentError, "field #{field} is not part of the FacilityState query" unless field.in?(FIELDS)
       "sum_#{field}"
     end
 
@@ -236,7 +231,6 @@ module Reports
     # oldest to newest - it also makes reading output in specs and debugging much easier.
     memoize def facility_state_data(region)
       calculations = FIELDS.map { |field| Arel.sql("COALESCE(SUM(#{field}::int), 0) as #{summary_field(field)}") }
-      sum_visited_no_bp_under_care_and_ltfu = Arel.sql("SUM(COALESCE(adjusted_visited_no_bp_under_care::int, 0) + COALESCE(adjusted_visited_no_bp_lost_to_follow_up::int, 0)) as sum_adjusted_visited_no_bp_under_care_and_ltfu")
 
       FacilityState.for_region(region)
         .where("cumulative_registrations IS NOT NULL OR cumulative_assigned_patients IS NOT NULL")
@@ -244,7 +238,6 @@ module Reports
         .group(:month_date)
         .select(:month_date)
         .select(*calculations)
-        .select(sum_visited_no_bp_under_care_and_ltfu)
     end
   end
 end

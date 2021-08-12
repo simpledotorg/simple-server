@@ -303,33 +303,55 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
           expect(uncontrolled[region.slug].fetch(jan)).to eq(0)
         end
 
-        it "gets visit without BP taken counts without LTFU" do
+        it "gets visit without BP taken counts with and without LTFU" do
           facility_1 = FactoryBot.create_list(:facility, 1, facility_group: facility_group_1).first
           slug = facility_1.region.slug
-          # Since we are reporting for Jan 2020, this patient is lost to follow up -- they have been registered for 12 months but have no BPs taken
+          # Patient registeres Jan 2019 and has a visit with no BP Jan 2020...so visit w/ no BP _and_ LTFU Jan, Feb, March 2020
           visit_with_no_bp_and_ltfu = create(:patient, full_name: "visit_with_no_bp_and_ltfu", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
-          # This user is NOT lost to follow up, as they have not been registered over 12 months
-          visit_with_no_bp_and_not_ltfu = create(:patient, full_name: "visit_with_no_bp_and_not_ltfu", recorded_at: "June 2019", assigned_facility: facility_1, registration_user: user)
-          visit_with_bp = create(:patient, full_name: "visit_with_bp", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
-
-          Timecop.freeze(jan_2020) do
-            create(:appointment, patient: visit_with_no_bp_and_ltfu, facility: facility_1, user: user)
-            create(:blood_sugar_with_encounter, patient: visit_with_no_bp_and_not_ltfu, facility: facility_1, user: user)
-            create(:bp_with_encounter, :under_control, facility: facility_1, patient: visit_with_bp, user: user)
-          end
+          create(:appointment, patient: visit_with_no_bp_and_ltfu, recorded_at: jan_2020, facility: facility_1, user: user)
+          # This patient registers June 2019, and has a visit with no BP in Sept 2019 and June 2020. They also become LTFU June 2020.
+          visit_with_no_bp_and_not_ltfu = create(:patient, full_name: "visit_with_no_bp_and_not_ltfu", recorded_at: "June 2nd 2019", assigned_facility: facility_1, registration_user: user)
+          create(:blood_sugar_with_encounter, patient: visit_with_no_bp_and_not_ltfu, recorded_at: "September 1st 2019", facility: facility_1, user: user)
+          create(:blood_sugar_with_encounter, patient: visit_with_no_bp_and_not_ltfu, recorded_at: "June 1st 2020", facility: facility_1, user: user)
+          # This patient registers June 2019, and has a BP taken every three months in 2020
+          visit_with_bp = create(:patient, full_name: "visit_with_bp", recorded_at: "June 1st 2019 00:00:00 UTC", assigned_facility: facility_1, registration_user: user)
+          [1, 4, 7, 10].each { |month_num|
+            create(:bp_with_encounter, :under_control, recorded_at: "2020-#{month_num}-01 00:00:00 UTC", facility: facility_1, patient: visit_with_bp, user: user)
+          }
 
           refresh_views
-          range = (jan_2020.to_period.."Jan 2021".to_period)
+          range = (jan_2019.to_period.."Jan 2021".to_period)
           repo = Reports::Repository.new(facility_1, periods: range)
 
-          expect(repo.visited_without_bp_taken[slug][jan_2020.to_period]).to eq(1)
-          expect(repo.visited_without_bp_taken[slug]["April 2020".to_period]).to eq(0)
-          expect(repo.visited_without_bp_taken_rates[slug][jan_2020.to_period]).to eq(50)
-          if v2_flag
-            expect(repo.visited_without_bp_taken(with_ltfu: true)[slug][jan_2020.to_period]).to eq(2)
-            expect(repo.visited_without_bp_taken(with_ltfu: true)[slug]["April 2020".to_period]).to eq(0)
-            expect(repo.visited_without_bp_taken_rates(with_ltfu: true)[slug][jan_2020.to_period]).to eq(67)
-          end
+          counts_without_ltfu = repo.visited_without_bp_taken[slug]
+          counts_with_ltfu = repo.visited_without_bp_taken(with_ltfu: true)[slug]
+          rates_without_ltfu = repo.visited_without_bp_taken_rates[slug]
+          rates_with_ltfu = repo.visited_without_bp_taken_rates(with_ltfu: true)[slug]
+          ("Jan 2019".to_period.."Aug 2019".to_period).each { |period|
+            expect(counts_without_ltfu[period]).to eq(0)
+            expect(counts_with_ltfu[period]).to eq(0)
+            expect(rates_without_ltfu[period]).to eq(0)
+          }
+          ("Sep 2019".to_period.."Nov 2019".to_period).each { |period|
+            expect(counts_without_ltfu[period]).to eq(1)
+            expect(rates_without_ltfu[period]).to eq(33)
+            unless v2_flag # ignore bug in v1
+              expect(counts_with_ltfu[period]).to eq(1)
+              expect(rates_with_ltfu[period]).to eq(33)
+            end
+          }
+          ("June 2020".to_period.."August 2020".to_period).each { |period|
+            expect(counts_without_ltfu[period]).to eq(0)
+            expect(rates_without_ltfu[period]).to eq(0)
+            if v2_flag # ignore bug in v1
+              expect(counts_with_ltfu[period]).to eq(1)
+              expect(rates_with_ltfu[period]).to eq(33)
+            end
+          }
+          ("Sept 2020".to_period.."Jan 2021".to_period).each { |period|
+            expect(counts_without_ltfu[period]).to eq(0)
+            expect(counts_with_ltfu[period]).to eq(0)
+          }
         end
       end
 
@@ -400,61 +422,53 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
       end
 
       context "missed visits" do
-        it "counts missed visits for patients with no BPs taken" do
+        it "counts missed visits with and without ltfu" do
           facility = create(:facility, facility_group: facility_group_1)
           slug = facility.region.slug
-          # patient who never has a BP taken, so they become a missed visit in April 2018
-          _missed_visit = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: "January 1st 2018 00:00:00 UTC", registration_user: user)
-          patient_1_with_visits = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: "January 1st 2018 00:00:00 UTC", registration_user: user)
-          patient_2_with_visits = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: "January 1st 2018 00:00:00 UTC", registration_user: user)
-          [3, 6, 9, 12].product(["2018", "2019"]).each do |month, year|
-            create(:bp_with_encounter, :under_control, facility: facility, patient: patient_1_with_visits, recorded_at: "#{year}-#{month}-1st 08:00:00 UTC")
-            create(:bp_with_encounter, :under_control, facility: facility, patient: patient_2_with_visits, recorded_at: "#{year}-#{month}-1st 08:00:00 UTC")
-          end
-
-          refresh_views
-
-          jan_2020_range = (Period.month(jan_2020.advance(months: -24))..Period.month(jan_2020))
-          repo = Reports::Repository.new(facility.region, periods: jan_2020_range)
-
-          months_with_one_missed_visit = ("April 2018".to_period...jan_2019.to_period).entries
-          jan_2020_range.each do |period|
-            if period.in?(months_with_one_missed_visit)
-              expected_count = 1
-              expected_rate = 33
-            else
-              expected_count = 0
-              expected_rate = 0
-            end
-
-            count = repo.missed_visits_without_ltfu[slug][period]
-            rate = repo.missed_visits_without_ltfu_rates[slug][period]
-            expect(count).to eq(expected_count), "expected #{period} to have missed visits of #{expected_count} but got #{count}"
-            expect(rate).to eq(expected_rate), "expected #{period} to have missed visits rate of #{expected_rate} but got #{rate}"
-          end
-        end
-
-        it "counts missed visits without ltfu" do
-          facility = create(:facility, facility_group: facility_group_1)
-          slug = facility.region.slug
-          # patient w/ missed visit starting in April 2018 who is LTFU as of Jan 2019
+          # patient who has missed_visit from April 2018 to Dec 2018 and who is LTFU as of Jan 2019
           missed_visit_1 = FactoryBot.create(:patient, assigned_facility: facility, registration_facility: facility, recorded_at: "Jan 1st 2018 08:00:00 UTC", registration_user: user)
-          create(:bp_with_encounter, :under_control, facility: facility, patient: missed_visit_1, recorded_at: "Jan 1st 2019 08:00:00 UTC")
+          create(:bp_with_encounter, :under_control, facility: facility, patient: missed_visit_1, recorded_at: "Jan 1st 2018 08:00:00 UTC")
 
-          # patient who never has a BP taken, and is missed visit from April 2018 to Dec 2018
-          _missed_visit_2 = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: "Jan 1st 2018 00:00:00 UTC", registration_user: user)
+          # patient who has missed_visit from April 2018 to Dec 2018 and who is LTFU from Jan 2019 until
+          # April 2019 when they get a BP taken. They are then missed_visit again starting in July 2019.
+          missed_visit_2 = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: "Jan 1st 2018 00:00:00 UTC", registration_user: user)
+          create(:bp_with_encounter, :under_control, facility: facility, patient: missed_visit_2, recorded_at: "April 1st 2019 23:59:00 UTC")
 
           refresh_views
 
           jan_2020_range = (Period.month(jan_2020.advance(months: -24))..Period.month(jan_2020))
           repo = Reports::Repository.new(facility.region, periods: jan_2020_range)
-          result = repo.missed_visits_without_ltfu[slug]
+          result_without_ltfu = repo.missed_visits_without_ltfu[slug]
+          result_with_ltfu = repo.missed_visits_with_ltfu[slug]
 
-          ("January 2018".to_period.."March 2018".to_period).each { |period| expect(result[period]).to eq(0) }
-          ("April 2018".to_period.."December 2018".to_period).each { |period| expect(result[period]).to eq(2) }
-          ("January 2019".to_period.."March 2019".to_period).each { |period| expect(result[period]).to eq(0) }
-          ("April 2019".to_period.."December 2019".to_period).each { |period| expect(result[period]).to eq(1) }
-          expect(result["January 2020".to_period]).to eq(0)
+          ("Jan 2018".to_period.."Mar 2018".to_period).each { |period|
+            expect(result_without_ltfu[period]).to eq(0)
+            expect(result_with_ltfu[period]).to eq(0)
+          }
+          ("Apr 2018".to_period.."December 2018".to_period).each { |period|
+            expect(result_without_ltfu[period]).to eq(2)
+            if v2_flag # handle bug in v1 code
+              expect(result_with_ltfu[period]).to eq(0)
+            else
+              expect(result_with_ltfu[period]).to eq(2)
+            end
+          }
+          ("Jan 2019".to_period.."March 2019".to_period).each { |period|
+            expect(result_without_ltfu[period]).to eq(0)
+            expect(result_with_ltfu[period]).to eq(2)
+          }
+          ("Apr 2019".to_period.."June 2019".to_period).each { |period|
+            expect(result_without_ltfu[period]).to eq(0)
+            expect(result_with_ltfu[period]).to eq(1)
+          }
+          ("July 2019".to_period.."Jan 2020".to_period).each { |period|
+            expect(result_without_ltfu[period]).to eq(1)
+            if v2_flag # handle bug in v1 code
+              expect(result_with_ltfu[period]).to eq(1)
+            else
+              expect(result_with_ltfu[period]).to eq(2)
+            end
+          }
         end
       end
 
