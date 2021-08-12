@@ -18,6 +18,7 @@ class PhoneNumberAuthentication
       @otp = otp
       @password = password
       @phone_number = phone_number
+      @metrics = Metrics.with_prefix("authentication")
     end
 
     def call
@@ -28,6 +29,7 @@ class PhoneNumberAuthentication
         authentication.invalidate_otp
         authentication.failed_attempts = 0
         authentication.save!
+        metrics.increment("success")
       end
       result
     end
@@ -35,7 +37,10 @@ class PhoneNumberAuthentication
     private
 
     attr_accessor :authentication
-    attr_reader :otp, :password, :phone_number
+    attr_reader :metrics
+    attr_reader :otp
+    attr_reader :password 
+    attr_reader :phone_number
     delegate :track_failed_attempt, to: :authentication
 
     def lockout_time
@@ -44,29 +49,31 @@ class PhoneNumberAuthentication
 
     def verify_auth
       if authentication.nil?
-        failure("login.error_messages.unknown_user")
+        failure("unknown_user")
       elsif authentication.locked_at
         if authentication.in_lockout_period?
-          failure("login.error_messages.account_locked", minutes: authentication.minutes_left_on_lockout)
+          failure("account_locked", minutes: authentication.minutes_left_on_lockout)
         else
           authentication.unlock
           verify_auth
         end
       elsif authentication.otp != otp
         track_failed_attempt
-        failure("login.error_messages.invalid_otp")
+        failure("invalid_otp")
       elsif !authentication.otp_valid?
         track_failed_attempt
-        failure("login.error_messages.expired_otp")
+        failure("expired_otp")
       elsif !authentication.authenticate(password)
         track_failed_attempt
-        failure("login.error_messages.invalid_password")
+        failure("invalid_password")
       else
         success
       end
     end
 
-    def failure(message_key, opts = {})
+    def failure(failure_type, opts = {})
+      metrics.increment("failures.#{failure_type}")
+      message_key = "login.error_messages.#{failure_type}"
       error_string = I18n.t(message_key, opts)
       Result.new(authentication, false, error_string)
     end
