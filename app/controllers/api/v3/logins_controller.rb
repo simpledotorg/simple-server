@@ -49,7 +49,7 @@ class Api::V3::LoginsController < APIController
   end
 
   def notify_sentry(result)
-    Sentry.capture_message("Login Error",
+    Sentry.capture_message("Login Error: #{result.error_message}",
       extra: {
         login_params: login_params,
         errors: result.error_message
