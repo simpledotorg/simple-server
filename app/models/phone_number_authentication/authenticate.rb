@@ -18,7 +18,7 @@ class PhoneNumberAuthentication
       @otp = otp
       @password = password
       @phone_number = phone_number
-      @metrics = Metrics.with_prefix("authentication")
+      @metrics = Metrics.with_prefix(:authentication)
     end
 
     def call
@@ -29,7 +29,7 @@ class PhoneNumberAuthentication
         authentication.invalidate_otp
         authentication.failed_attempts = 0
         authentication.save!
-        metrics.increment("success")
+        metrics.increment(:success)
       end
       result
     end
@@ -49,23 +49,23 @@ class PhoneNumberAuthentication
 
     def verify_auth
       if authentication.nil?
-        failure("unknown_user")
+        failure(:unknown_user)
       elsif authentication.locked_at
         if authentication.in_lockout_period?
-          failure("account_locked", minutes: authentication.minutes_left_on_lockout)
+          failure(:account_locked, minutes: authentication.minutes_left_on_lockout)
         else
           authentication.unlock
           verify_auth
         end
       elsif authentication.otp != otp
         track_failed_attempt
-        failure("invalid_otp")
+        failure(:invalid_otp)
       elsif !authentication.otp_valid?
         track_failed_attempt
-        failure("expired_otp")
+        failure(:expired_otp)
       elsif !authentication.authenticate(password)
         track_failed_attempt
-        failure("invalid_password")
+        failure(:invalid_password)
       else
         success
       end
