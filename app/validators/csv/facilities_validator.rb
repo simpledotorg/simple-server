@@ -29,7 +29,13 @@ class Csv::FacilitiesValidator
   end
 
   def duplicate_rows
-    fields = facilities.map { |facility| facility.slice(:organization_name, :facility_group_name, :name) }
+    fields = facilities
+      .map do |facility|
+        {name: facility[:name].gsub(/\s+/, ""),
+         organization_name: facility[:organization_name],
+         facility_group_name: facility[:facility_group_name]}
+      end
+
     errors << "Uploaded file has duplicate facilities" if fields.count != fields.uniq.count
   end
 
