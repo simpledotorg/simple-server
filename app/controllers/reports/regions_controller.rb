@@ -160,9 +160,9 @@ class Reports::RegionsController < AdminController
   end
 
   def check_reporting_schema_toggle
-    return yield unless current_admin.power_user?
     original = RequestStore[:reporting_schema_v2]
     RequestStore[:reporting_schema_v2] = true if report_params[:v2]
+    RequestStore[:reporting_schema_v2] = true if current_admin.feature_enabled?(:reporting_schema_v2)
     yield
   ensure
     RequestStore[:reporting_schema_v2] = original

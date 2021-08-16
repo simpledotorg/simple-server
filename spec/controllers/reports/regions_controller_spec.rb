@@ -7,6 +7,8 @@ RSpec.describe Reports::RegionsController, type: :controller do
     let(:organization) { FactoryBot.create(:organization) }
     let(:cvho) { create(:admin, :manager, :with_access, resource: organization, organization: organization) }
     let(:call_center_user) { create(:admin, :call_center, full_name: "call_center") }
+    let(:facility_group_1) { FactoryBot.create(:facility_group, name: "facility_group_1", organization: organization) }
+    let(:facility_1) { FactoryBot.create(:facility, name: "facility_1", facility_group: facility_group_1) }
 
     def refresh_views
       RefreshMaterializedViews.call
@@ -17,6 +19,27 @@ RSpec.describe Reports::RegionsController, type: :controller do
       Reports::Repository.use_schema_v2 = v2_flag
       example.run
       Reports::Repository.use_schema_v2 = original
+    end
+
+    fcontext "feature flags" do
+      it "reporting_schema_v2 can be enabled per user" do
+        Flipper.enable(:reporting_schema_v2, cvho)
+
+        Time.parse("January 1 2020")
+        patient = create(:patient, registration_facility: facility_1, recorded_at: jan_2020.advance(months: -4))
+        create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: facility_1)
+        refresh_views
+
+        Timecop.freeze("June 1 2020") do
+          sign_in(cvho.email_authentication)
+          get :show, params: {id: facility_1.slug, report_scope: "facility"}
+        end
+        expect(response).to be_successful
+        expect(assigns(:service).reporting_schema_v2?).to be_truthy
+        data = assigns(:data)
+        expect(data[:controlled_patients].size).to eq(10) # sanity check
+        expect(data[:controlled_patients][Date.parse("Dec 2019").to_period]).to eq(1)
+      end
     end
 
     context "index" do
@@ -203,7 +226,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
         expect(response).to be_redirect
       end
 
-      it "raises error if user does not have authorization to region" do
+      it "redirects if user does not have authorization to region" do
         other_fg = create(:facility_group, name: "other facility group")
         other_fg.facilities << build(:facility, name: "other facility")
         user = create(:admin, :viewer_reports_only, :with_access, resource: other_fg)
