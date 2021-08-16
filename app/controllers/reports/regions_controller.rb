@@ -176,12 +176,6 @@ class Reports::RegionsController < AdminController
     nil
   end
 
-  def reporting_schema_v2_enabled?
-    RequestStore[:reporting_schema_v2]
-  end
-
-  helper_method :reporting_schema_v2_enabled?
-
   def accessible_region?(region, action)
     return false unless region.reportable_region?
     current_admin.region_access(memoized: true).accessible_region?(region, action)
