@@ -139,6 +139,6 @@ class AdminsController < AdminController
   end
 
   def set_facilities_pre_checks(user)
-    user.visible_facilities.map(&:id).product([true]).to_h
+    @facilities_pre_checks = user.visible_facilities.map(&:id).product([true]).to_h
   end
 end
