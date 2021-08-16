@@ -31,7 +31,7 @@ class Csv::FacilitiesValidator
   def duplicate_rows
     fields = facilities
       .map do |facility|
-        {name: facility[:name].gsub(/\s+/, ""),
+        {name: facility[:name]&.gsub(/\s+/, ""),
          organization_name: facility[:organization_name],
          facility_group_name: facility[:facility_group_name]}
       end

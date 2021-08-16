@@ -71,7 +71,9 @@ module Reports
       :missed_visits_without_ltfu_rates,
       :monthly_registrations,
       :uncontrolled_rates,
-      :uncontrolled
+      :uncontrolled,
+      :visited_without_bp_taken,
+      :visited_without_bp_taken_rates
     ]
 
     delegate(*DELEGATED_METHODS, to: :schema)
@@ -108,70 +110,6 @@ module Reports
       result.each_with_object({}) { |(region_entry, counts), hsh|
         hsh[region_entry.region.slug] = counts
       }
-    end
-
-    memoize def visited_without_bp_taken
-      region_period_cached_query(__method__) do |entry|
-        no_bp_measure_query.call(entry.region, entry.period)
-      end
-    end
-
-    memoize def visited_without_bp_taken_rate(with_ltfu: false)
-      region_period_cached_query(__method__, with_tlfu: with_ltfu) do |entry|
-        numerator = visited_without_bp_taken[entry.slug][entry.period]
-        total = denominator(entry.region, entry.period, with_ltfu: with_ltfu)
-        percentage(numerator, total)
-      end
-    end
-
-    private
-
-    # Return the actual 'active range' for a Region - this will be the from the first recorded at in a region until
-    # the end of the period range requested.
-    def active_range(region)
-      start = [earliest_patient_recorded_at_period[region.slug], periods.begin].compact.max
-      (start..periods.end)
-    end
-
-    def denominator(region, period, with_ltfu: false)
-      if with_ltfu
-        cumulative_assigned_patients[region.slug][period.adjusted_period]
-      else
-        cumulative_assigned_patients[region.slug][period.adjusted_period] - ltfu[region.slug][period]
-      end
-    end
-
-    # Generate all necessary cache keys for a calculation, then yield to the block for every entry.
-    # Once all results are returned via fetch_multi, return the data in a standard format of:
-    #   {
-    #     region_1_slug: { period_1: value, period_2: value }
-    #     region_2_slug: { period_1: value, period_2: value }
-    #   }
-    #
-    def region_period_cached_query(calculation, **options, &block)
-      results = regions.each_with_object({}) { |region, hsh| hsh[region.slug] = Hash.new(0) }
-      items = cache_entries(calculation, **options)
-      cached_results = cache.fetch_multi(*items, force: bust_cache?) { |entry| block.call(entry) }
-      cached_results.each { |(entry, count)| results[entry.region.slug][entry.period] = count }
-      results
-    end
-
-    # Generate all necessary region period cache entries, only going back to the earliest
-    # patient registration date for Periods. This ensures that we don't create many cache entries
-    # with 0 data for newer Regions.
-    def cache_entries(calculation, **options)
-      combinations = regions.each_with_object([]) do |region, results|
-        earliest_period = earliest_patient_recorded_at_period[region.slug]
-        next if earliest_period.nil?
-        periods_with_data = periods.select { |period| period >= earliest_period }
-        results.concat(periods_with_data.to_a.map { |period| [region, period] })
-      end
-      combinations.map { |region, period| Reports::RegionPeriodEntry.new(region, period, calculation, options) }
-    end
-
-    def percentage(numerator, denominator)
-      return 0 if denominator == 0 || numerator == 0
-      ((numerator.to_f / denominator) * 100).round(PERCENTAGE_PRECISION)
     end
   end
 end
