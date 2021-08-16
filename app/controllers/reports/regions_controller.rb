@@ -161,8 +161,7 @@ class Reports::RegionsController < AdminController
 
   def check_reporting_schema_toggle
     original = RequestStore[:reporting_schema_v2]
-    flag = reporting_schema_via_param_or_feature_flag
-    RequestStore[:reporting_schema_v2] = flag
+    RequestStore[:reporting_schema_v2] = reporting_schema_via_param_or_feature_flag
     yield
   ensure
     RequestStore[:reporting_schema_v2] = original
