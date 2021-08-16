@@ -21,165 +21,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
       Reports::Repository.use_schema_v2 = original
     end
 
-    context "index" do
-      render_views
-
-      before do
-        @facility_group = create(:facility_group, organization: organization)
-        @facility_1 = create(:facility, name: "Facility 1", block: "Block 1", facility_group: @facility_group)
-        @facility_2 = create(:facility, name: "Facility 2", block: "Block 1", facility_group: @facility_group)
-        @block = @facility_1.block_region
-      end
-
-      it "loads nothing if user has no access to any regions" do
-        sign_in(call_center_user.email_authentication)
-        get :index
-        expect(assigns[:accessible_regions]).to eq({})
-        expect(response).to be_successful
-      end
-
-      it "only loads districts the user has access to" do
-        sign_in(cvho.email_authentication)
-        get :index
-        expect(response).to be_successful
-        facility_regions = [@facility_1.region, @facility_2.region]
-        org_region = organization.region
-        state_region = @facility_1.region.state_region
-        expect(assigns[:accessible_regions].keys).to eq([org_region])
-        expect(assigns[:accessible_regions][org_region].keys).to match_array(org_region.state_regions)
-        expect(assigns[:accessible_regions].dig(org_region, state_region, @facility_group.region, @block.region)).to match_array(facility_regions)
-      end
-    end
-
-    context "details" do
-      render_views
-
-      before do
-        @facility_group = create(:facility_group, organization: organization)
-        @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
-      end
-
-      it "is successful for an organization" do
-        patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
-        create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
-        create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
-        refresh_views
-
-        org = @facility_group.organization
-
-        Timecop.freeze("June 1 2020") do
-          sign_in(cvho.email_authentication)
-          get :details, params: {id: org.slug, report_scope: "organization"}
-        end
-        expect(response).to be_successful
-      end
-
-      it "is successful for a district" do
-        patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
-        create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
-        create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
-        refresh_views
-
-        Timecop.freeze("June 1 2020") do
-          sign_in(cvho.email_authentication)
-          get :details, params: {id: @facility.facility_group.region.slug, report_scope: "district"}
-        end
-        expect(response).to be_successful
-      end
-
-      it "is successful for a block" do
-        patient_2 = create(:patient, registration_facility: @facility, recorded_at: "June 01 2019 00:00:00 UTC", registration_user: cvho)
-        create(:bp_with_encounter, :hypertensive, recorded_at: "Feb 2020", facility: @facility, patient: patient_2, user: cvho)
-
-        patient_1 = create(:patient, registration_facility: @facility, recorded_at: "September 01 2019 00:00:00 UTC", registration_user: cvho)
-        create(:bp_with_encounter, :under_control, recorded_at: "December 10th 2019", patient: patient_1, facility: @facility, user: cvho)
-        create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility, user: cvho)
-
-        refresh_views
-
-        block = @facility.region.block_region
-
-        Timecop.freeze("June 1 2020") do
-          sign_in(cvho.email_authentication)
-          get :details, params: {id: block.slug, report_scope: "block"}
-        end
-        expect(response).to be_successful
-      end
-
-      it "is successful for a facility" do
-        patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
-        create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
-        create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
-        refresh_views
-
-        Timecop.freeze("June 1 2020") do
-          sign_in(cvho.email_authentication)
-          get :details, params: {id: @facility.region.slug, report_scope: "facility"}
-        end
-        expect(response).to be_successful
-      end
-
-      it "renders period hash info" do
-        patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
-        create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
-        create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
-        refresh_views
-
-        Timecop.freeze("June 1 2020") do
-          sign_in(cvho.email_authentication)
-          get :details, params: {id: @facility.region.slug, report_scope: "facility"}
-          period_info = assigns(:chart_data)[:ltfu_trend][:period_info]
-          expect(period_info.keys.size).to eq(24)
-          period_info.each do |period, hsh|
-            expect(hsh).to eq(period.to_hash)
-          end
-        end
-      end
-    end
-
-    context "cohort" do
-      render_views_on_ci
-
-      before do
-        @facility_group = create(:facility_group, organization: organization)
-        @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
-      end
-
-      it "retrieves monthly cohort data by default" do
-        patient = create(:patient, registration_facility: @facility, registration_user: cvho, recorded_at: jan_2020.advance(months: -1))
-        create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
-        create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
-        refresh_views
-
-        Timecop.freeze("June 1 2020") do
-          sign_in(cvho.email_authentication)
-          get :cohort, params: {id: @facility.facility_group.slug, report_scope: "district"}
-        end
-        expect(response).to be_successful
-        data = assigns(:cohort_data)
-        dec_cohort = data.find { |hsh| hsh["patients_registered"] == "Dec-2019" }
-        expect(dec_cohort["registered"]).to eq(1)
-      end
-
-      it "can retrieve quarterly cohort data" do
-        patient = create(:patient, registration_facility: @facility, registration_user: cvho, recorded_at: jan_2020.advance(months: -2))
-        create(:bp_with_encounter, :under_control, recorded_at: jan_2020 + 1.day, patient: patient, facility: @facility)
-        refresh_views
-
-        Timecop.freeze("June 1 2020") do
-          sign_in(cvho.email_authentication)
-          get :cohort, params: {id: @facility.facility_group.slug, report_scope: "district", period: {type: "quarter", value: "Q2-2020"}}
-          expect(response).to be_successful
-          data = assigns(:cohort_data)
-          expect(data.size).to eq(6)
-          q2_data = data[1]
-          expect(q2_data["results_in"]).to eq("Q1-2020")
-          expect(q2_data["registered"]).to eq(1)
-          expect(q2_data["controlled"]).to eq(1)
-        end
-      end
-    end
-
     context "show" do
       render_views
 
@@ -426,6 +267,165 @@ RSpec.describe Reports::RegionsController, type: :controller do
         data = assigns(:data)
         expect(data[:controlled_patients]).to eq({})
         expect(data[:period_info]).to eq({})
+      end
+    end
+
+    context "index" do
+      render_views
+
+      before do
+        @facility_group = create(:facility_group, organization: organization)
+        @facility_1 = create(:facility, name: "Facility 1", block: "Block 1", facility_group: @facility_group)
+        @facility_2 = create(:facility, name: "Facility 2", block: "Block 1", facility_group: @facility_group)
+        @block = @facility_1.block_region
+      end
+
+      it "loads nothing if user has no access to any regions" do
+        sign_in(call_center_user.email_authentication)
+        get :index
+        expect(assigns[:accessible_regions]).to eq({})
+        expect(response).to be_successful
+      end
+
+      it "only loads districts the user has access to" do
+        sign_in(cvho.email_authentication)
+        get :index
+        expect(response).to be_successful
+        facility_regions = [@facility_1.region, @facility_2.region]
+        org_region = organization.region
+        state_region = @facility_1.region.state_region
+        expect(assigns[:accessible_regions].keys).to eq([org_region])
+        expect(assigns[:accessible_regions][org_region].keys).to match_array(org_region.state_regions)
+        expect(assigns[:accessible_regions].dig(org_region, state_region, @facility_group.region, @block.region)).to match_array(facility_regions)
+      end
+    end
+
+    context "details" do
+      render_views
+
+      before do
+        @facility_group = create(:facility_group, organization: organization)
+        @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
+      end
+
+      it "is successful for an organization" do
+        patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
+        create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+        create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
+        refresh_views
+
+        org = @facility_group.organization
+
+        Timecop.freeze("June 1 2020") do
+          sign_in(cvho.email_authentication)
+          get :details, params: {id: org.slug, report_scope: "organization"}
+        end
+        expect(response).to be_successful
+      end
+
+      it "is successful for a district" do
+        patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
+        create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+        create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
+        refresh_views
+
+        Timecop.freeze("June 1 2020") do
+          sign_in(cvho.email_authentication)
+          get :details, params: {id: @facility.facility_group.region.slug, report_scope: "district"}
+        end
+        expect(response).to be_successful
+      end
+
+      it "is successful for a block" do
+        patient_2 = create(:patient, registration_facility: @facility, recorded_at: "June 01 2019 00:00:00 UTC", registration_user: cvho)
+        create(:bp_with_encounter, :hypertensive, recorded_at: "Feb 2020", facility: @facility, patient: patient_2, user: cvho)
+
+        patient_1 = create(:patient, registration_facility: @facility, recorded_at: "September 01 2019 00:00:00 UTC", registration_user: cvho)
+        create(:bp_with_encounter, :under_control, recorded_at: "December 10th 2019", patient: patient_1, facility: @facility, user: cvho)
+        create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility, user: cvho)
+
+        refresh_views
+
+        block = @facility.region.block_region
+
+        Timecop.freeze("June 1 2020") do
+          sign_in(cvho.email_authentication)
+          get :details, params: {id: block.slug, report_scope: "block"}
+        end
+        expect(response).to be_successful
+      end
+
+      it "is successful for a facility" do
+        patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
+        create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+        create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
+        refresh_views
+
+        Timecop.freeze("June 1 2020") do
+          sign_in(cvho.email_authentication)
+          get :details, params: {id: @facility.region.slug, report_scope: "facility"}
+        end
+        expect(response).to be_successful
+      end
+
+      it "renders period hash info" do
+        patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
+        create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+        create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
+        refresh_views
+
+        Timecop.freeze("June 1 2020") do
+          sign_in(cvho.email_authentication)
+          get :details, params: {id: @facility.region.slug, report_scope: "facility"}
+          period_info = assigns(:chart_data)[:ltfu_trend][:period_info]
+          expect(period_info.keys.size).to eq(24)
+          period_info.each do |period, hsh|
+            expect(hsh).to eq(period.to_hash)
+          end
+        end
+      end
+    end
+
+    context "cohort" do
+      render_views_on_ci
+
+      before do
+        @facility_group = create(:facility_group, organization: organization)
+        @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
+      end
+
+      it "retrieves monthly cohort data by default" do
+        patient = create(:patient, registration_facility: @facility, registration_user: cvho, recorded_at: jan_2020.advance(months: -1))
+        create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+        create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
+        refresh_views
+
+        Timecop.freeze("June 1 2020") do
+          sign_in(cvho.email_authentication)
+          get :cohort, params: {id: @facility.facility_group.slug, report_scope: "district"}
+        end
+        expect(response).to be_successful
+        data = assigns(:cohort_data)
+        dec_cohort = data.find { |hsh| hsh["patients_registered"] == "Dec-2019" }
+        expect(dec_cohort["registered"]).to eq(1)
+      end
+
+      it "can retrieve quarterly cohort data" do
+        patient = create(:patient, registration_facility: @facility, registration_user: cvho, recorded_at: jan_2020.advance(months: -2))
+        create(:bp_with_encounter, :under_control, recorded_at: jan_2020 + 1.day, patient: patient, facility: @facility)
+        refresh_views
+
+        Timecop.freeze("June 1 2020") do
+          sign_in(cvho.email_authentication)
+          get :cohort, params: {id: @facility.facility_group.slug, report_scope: "district", period: {type: "quarter", value: "Q2-2020"}}
+          expect(response).to be_successful
+          data = assigns(:cohort_data)
+          expect(data.size).to eq(6)
+          q2_data = data[1]
+          expect(q2_data["results_in"]).to eq("Q1-2020")
+          expect(q2_data["registered"]).to eq(1)
+          expect(q2_data["controlled"]).to eq(1)
+        end
       end
     end
 
