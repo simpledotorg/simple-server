@@ -21,9 +21,10 @@ module Reports
       adjusted_missed_visit
       adjusted_visited_no_bp
     ].freeze
+
     UNDER_CARE_WITH_LTFU_CALCULATED_FIELDS = UNDER_CARE_WITH_LTFU.map { |field|
       "#{field}_under_care_with_lost_to_follow_up".to_sym
-    }
+    }.freeze
 
     attr_reader :control_rate_query_v2
     attr_reader :periods
