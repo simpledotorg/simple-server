@@ -119,42 +119,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
         expect(data[:period_info][Period.month(today.beginning_of_month)]).to_not be_nil
       end
 
-      it "reporting_schema_v2 is enabled if v2 param is set" do
-        sign_in(create(:admin, :power_user).email_authentication)
-        # sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility.facility_group.slug, report_scope: "district", v2: "1"}
-        expect(assigns(:service).reporting_schema_v2?).to be_truthy
-        expect(response).to be_successful
-        expect(RequestStore[:reporting_schema_v2]).to be_falsey
-      end
-
-      it "reporting_schema_v2 is disabled if v2 param is not set" do
-        sign_in(create(:admin, :power_user).email_authentication)
-        # sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility.facility_group.slug, report_scope: "district"}
-        expect(assigns(:service).reporting_schema_v2?).to be_falsey
-        expect(response).to be_successful
-      end
-
-      it "reporting_schema_v2 can be enabled per user" do
-        Flipper.enable(:reporting_schema_v2, cvho)
-
-        Time.parse("January 1 2020")
-        patient = create(:patient, registration_facility: facility_1, recorded_at: jan_2020.advance(months: -4), registration_user: cvho)
-        create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: facility_1, user: cvho)
-        refresh_views
-
-        Timecop.freeze("June 1 2020") do
-          sign_in(cvho.email_authentication)
-          get :show, params: {id: facility_1.slug, report_scope: "facility"}
-        end
-        expect(response).to be_successful
-        expect(assigns(:service).reporting_schema_v2?).to be_truthy
-        data = assigns(:data)
-        expect(data[:controlled_patients].size).to eq(10) # sanity check
-        expect(data[:controlled_patients][Date.parse("Dec 2019").to_period]).to eq(1)
-      end
-
       it "retrieves district data" do
         patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
         create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)

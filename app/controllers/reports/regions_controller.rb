@@ -161,11 +161,19 @@ class Reports::RegionsController < AdminController
 
   def check_reporting_schema_toggle
     original = RequestStore[:reporting_schema_v2]
-    RequestStore[:reporting_schema_v2] = true if report_params[:v2]
-    RequestStore[:reporting_schema_v2] = true if current_admin.feature_enabled?(:reporting_schema_v2)
+    flag = reporting_schema_via_param_or_feature_flag
+    RequestStore[:reporting_schema_v2] = flag
     yield
   ensure
     RequestStore[:reporting_schema_v2] = original
+  end
+
+  def reporting_schema_via_param_or_feature_flag
+    param_flag = ActiveRecord::Type::Boolean.new.deserialize(report_params[:v2])
+    user_flag = current_admin.feature_enabled?(:reporting_schema_v2)
+    return param_flag unless param_flag.nil?
+    return user_flag unless user_flag.nil?
+    nil
   end
 
   def reporting_schema_v2_enabled?
