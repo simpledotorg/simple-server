@@ -167,6 +167,7 @@ class Reports::RegionsController < AdminController
     RequestStore[:reporting_schema_v2] = original
   end
 
+  # We want a negative param value to override a user feature flagged value, hence the awkwardness below
   def reporting_schema_via_param_or_feature_flag
     param_flag = ActiveRecord::Type::Boolean.new.deserialize(report_params[:v2])
     user_flag = current_admin.feature_enabled?(:reporting_schema_v2)
