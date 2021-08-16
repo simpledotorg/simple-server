@@ -76,7 +76,8 @@ module Reports
       :assigned_patients, :cumulative_assigned_patients,
       :ltfu_patients,
       :ltfu_patients_rate,
-      :adjusted_patient_counts_with_ltfu, :adjusted_patient_counts,
+      :adjusted_patient_counts_with_ltfu,
+      :adjusted_patient_counts,
       :controlled_patients,
       :controlled_patients_rate,
       :controlled_patients_with_ltfu_rate,
@@ -84,9 +85,10 @@ module Reports
       :uncontrolled_patients_rate,
       :uncontrolled_patients_with_ltfu_rate,
       :visited_without_bp_taken,
-      :visited_without_bp_taken_rate,
-      :visited_without_bp_taken_with_ltfu_rate,
-      :missed_visits, :missed_visits_with_ltfu,
+      :visited_without_bp_taken_rates,
+      :visited_without_bp_taken_with_ltfu_rates,
+      :missed_visits,
+      :missed_visits_with_ltfu,
       :missed_visits_rate,
       :missed_visits_with_ltfu_rate].each do |key|
       define_method(key) do
