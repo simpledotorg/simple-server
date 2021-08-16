@@ -29,6 +29,7 @@ class AdminsController < AdminController
       end
 
     user_being_edited = page_for_access_tree.eql?(:edit) ? AdminAccessPresenter.new(@admin) : nil
+    @facilities_pre_checks = user_being_edited && user_being_edited.visible_facilities.map(&:id).product([true]).to_h
 
     render partial: access_tree[:render_partial],
            locals: {
