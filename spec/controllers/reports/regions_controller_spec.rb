@@ -136,13 +136,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
         expect(response).to be_successful
       end
 
-      it "reporting_schema_v2 can only be enabled by power users" do
-        sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility.facility_group.slug, report_scope: "district", v2: "1"}
-        expect(assigns(:service).reporting_schema_v2?).to be_falsey
-        expect(response).to be_successful
-      end
-
       it "reporting_schema_v2 can be enabled per user" do
         Flipper.enable(:reporting_schema_v2, cvho)
 
