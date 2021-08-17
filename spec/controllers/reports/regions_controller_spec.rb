@@ -21,7 +21,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       Reports::Repository.use_schema_v2 = original
     end
 
-    context "show" do
+    describe "show" do
       render_views
 
       before do
@@ -226,7 +226,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
     end
 
-    context "index" do
+    describe "index" do
       render_views
 
       before do
@@ -256,7 +256,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
     end
 
-    context "details" do
+    describe "details" do
       render_views
 
       before do
@@ -342,7 +342,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
     end
 
-    context "cohort" do
+    describe "cohort" do
       render_views_on_ci
 
       before do
@@ -385,7 +385,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
     end
 
-    context "download" do
+    describe "download" do
       render_views
 
       before do
@@ -438,7 +438,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
         sign_in(cvho.email_authentication)
       end
 
-      context "html requested" do
+      describe "html requested" do
         it "renders graphics_header partial" do
           get :whatsapp_graphics, format: :html, params: {id: @facility.region.slug, report_scope: "facility"}
 
@@ -447,7 +447,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
         end
       end
 
-      context "png requested" do
+      describe "png requested" do
         it "renders the image template for downloading" do
           get :whatsapp_graphics, format: :png, params: {id: @facility_group.region.slug, report_scope: "district"}
 
