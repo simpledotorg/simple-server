@@ -1,12 +1,12 @@
 en_LK:
   facility_group: "district"
-  facility_group_zone: "Zone (TBD)"
+  facility_group_zone: "Block"
   helpers:
     label:
       facility:
         street_address: "House number and street"
         village_or_colony: "Town/Area"
-        zone: "Zone (TBD)"
+        zone: "Block"
         district: "District *"
         state: "Province *"
         country: "Country *"
@@ -16,7 +16,7 @@ en_LK:
       address:
         street_address: "House and street number"
         village_or_colony: "Town/Area"
-        zone: "Zone (TBD)"
+        zone: "Block"
         district: "District"
         state: "Province *"
         country: "Country *"
