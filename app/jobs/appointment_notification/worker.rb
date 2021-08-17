@@ -3,7 +3,6 @@ class AppointmentNotification::Worker
   include Sidekiq::Worker
 
   sidekiq_options queue: :high
-  delegate :logger, to: Rails
 
   class UnknownCommunicationType < StandardError
   end
@@ -12,26 +11,42 @@ class AppointmentNotification::Worker
     @metrics ||= Metrics.with_object(self)
   end
 
+  def logger
+    @logger ||= Notification.logger(class: self.class.name)
+  end
+
   def perform(notification_id)
     metrics.increment("attempts")
     unless Flipper.enabled?(:notifications) || Flipper.enabled?(:experiment)
-      logger.info class: self.class.name, msg: "notifications feature is disabled"
+      logger.warn "notifications or experiment feature flag are disabled"
       metrics.increment("skipped.feature_disabled")
       return
     end
 
     notification = Notification.includes(:subject, :patient).find(notification_id)
+    patient = notification.patient
+    Sentry.set_tags(patient_id: patient.id)
+
     communication_type = notification.next_communication_type
     unless communication_type
+      logger.info "skipping notification #{notification_id}, no next communication type"
       metrics.increment("skipped.no_next_communication_type")
       return
     end
 
     unless notification.status_scheduled?
+      logger.info "skipping notification #{notification_id}, scheduled already"
       metrics.increment("skipped.not_scheduled")
       return
     end
 
+    unless notification.patient.latest_mobile_number
+      logger.info "skipping notification #{notification_id}, patient #{patient.id} does not have a mobile number"
+      metrics.increment("skipped.no_mobile_number")
+      return
+    end
+
+    logger.info "send_message for notification #{notification_id} communication_type=#{communication_type}"
     send_message(notification, communication_type)
   end
 
@@ -47,8 +62,10 @@ class AppointmentNotification::Worker
     context = {
       calling_class: self.class.name,
       notification_id: notification.id,
+      notification_purpose: notification.purpose,
       communication_type: communication_type
     }
+    Sentry.set_tags(context)
 
     # remove missed_visit_whatsapp_reminder and missed_visit_sms_reminder
     # https://app.clubhouse.io/simpledotorg/story/3585/backfill-notifications-from-communications
@@ -80,6 +97,7 @@ class AppointmentNotification::Worker
       create_communication(notification, communication_type, response)
       notification.status_sent!
     end
+    logger.info("notification #{notification.id} communication_type=#{communication_type} sent")
   end
 
   def create_communication(notification, communication_type, response)

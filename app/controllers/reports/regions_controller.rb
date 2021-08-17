@@ -35,7 +35,7 @@ class Reports::RegionsController < AdminController
     @with_ltfu = with_ltfu?
 
     @child_regions = @region.reportable_children
-    repo = Reports::Repository.new(@child_regions, periods: @period)
+    repo = Reports::Repository.new(@child_regions, periods: @period, reporting_schema_v2: RequestStore[:reporting_schema_v2])
 
     @children_data = @child_regions.map { |region|
       slug = region.slug
@@ -73,8 +73,8 @@ class Reports::RegionsController < AdminController
     else
       [@region, @region.facility_regions].flatten
     end
-    @repository = Reports::Repository.new(regions, periods: @period_range)
-    chart_repo = Reports::Repository.new(@region, periods: chart_range)
+    @repository = Reports::Repository.new(regions, periods: @period_range, reporting_schema_v2: RequestStore[:reporting_schema_v2])
+    chart_repo = Reports::Repository.new(@region, periods: chart_range, reporting_schema_v2: RequestStore[:reporting_schema_v2])
 
     @chart_data = {
       patient_breakdown: PatientBreakdownService.call(region: @region, period: @period),
@@ -118,20 +118,7 @@ class Reports::RegionsController < AdminController
   end
 
   def monthly_district_data_report
-    # re-implementing part of the find_region method with a modification as a temporary workaround for this bug:
-    # https://app.clubhouse.io/simpledotorg/story/3380/facilitydistrict-should-be-initialized-with-name-not-slug
-    report_scope = report_params[:report_scope]
-    @region ||= authorize {
-      case report_scope
-      when "facility_district"
-        scope = current_admin.accessible_facilities(:view_reports)
-        FacilityDistrict.new(name: report_params[:id], scope: scope)
-      when "district"
-        current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id])
-      else
-        raise ActiveRecord::RecordNotFound, "unknown report_scope #{report_scope}"
-      end
-    }
+    @region ||= authorize { current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id]) }
     @period = Period.month(params[:period] || Date.current)
     csv = MonthlyDistrictDataService.new(@region, @period).report
     report_date = @period.to_s.downcase
@@ -231,9 +218,6 @@ class Reports::RegionsController < AdminController
         organization.region
       when "state"
         current_admin.user_access.accessible_state_regions(:view_reports).find_by!(slug: report_params[:id])
-      when "facility_district"
-        scope = current_admin.accessible_facilities(:view_reports)
-        FacilityDistrict.new(name: report_params[:id], scope: scope)
       when "district"
         current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id])
       when "block"

@@ -30,7 +30,7 @@ after "deploy:published", "sentry:notice_deployment"
 
 append :linked_dirs, ".bundle"
 append :linked_files, ".env.production"
-append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"
+append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system", "public/packs", "node_modules"
 
 set :whenever_path, -> { release_path }
 set :whenever_roles, [:cron, :whitelist_phone_numbers]

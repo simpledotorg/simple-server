@@ -17,9 +17,7 @@ describe Reports::Result, type: :model do
     result = Reports::Result.new(region: region, period_type: :month)
     result[:uncontrolled_patients][june_2020] = 30
     result[:controlled_patients][june_2020] = 100
-    expect(result.uncontrolled_patients_for(june_2020)).to eq(30)
     expect(result.uncontrolled_patients).to be(result[:uncontrolled_patients])
-    expect(result.controlled_patients_for(june_2020)).to eq(100)
     expect(result.controlled_patients).to be(result[:controlled_patients])
   end
 
@@ -28,13 +26,6 @@ describe Reports::Result, type: :model do
     hsh = {june_2020 => 30}
     result.uncontrolled_patients = hsh
     expect(result.uncontrolled_patients).to eq(hsh)
-  end
-
-  it "can get last value for the data" do
-    result = Reports::Result.new(region: region, period_type: :month)
-    result[:uncontrolled_patients][may_2020] = 20
-    result[:uncontrolled_patients][june_2020] = 30
-    expect(result.last_value(:uncontrolled_patients)).to eq(30)
   end
 
   it "can return report data that limits results to the range requested" do

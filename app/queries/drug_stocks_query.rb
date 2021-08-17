@@ -66,11 +66,17 @@ class DrugStocksQuery
   end
 
   memoize def protocol_drugs_by_category
-    drugs
+    drugs_by_category = drugs
       .sort_by(&:sort_key)
       .group_by(&:drug_category)
-      .sort_by { |(drug_category, _)| drug_category }
-      .to_h
+
+    custom_drug_category_order = CountryConfig.current.fetch(:custom_drug_category_order, [])
+
+    if custom_drug_category_order.to_set == drugs_by_category.keys.to_set
+      drugs_by_category.sort_by { |drug_category, _| custom_drug_category_order.find_index(drug_category) }.to_h
+    else
+      drugs_by_category.sort_by { |drug_category, _| drug_category }.to_h
+    end
   end
 
   memoize def drug_categories
@@ -130,6 +136,20 @@ class DrugStocksQuery
     DrugStock.latest_for_regions_cte(@district, end_of_previous_month).load
   end
 
+  memoize def district_facilities_selected_month_drug_stocks
+    DrugStock
+      .latest_for_facilities_cte(@district.facilities, @for_end_of_month)
+      .with_region_information
+      .load
+  end
+
+  memoize def district_facilities_previous_month_drug_stocks
+    DrugStock
+      .latest_for_facilities_cte(@district.facilities, end_of_previous_month)
+      .with_region_information
+      .load
+  end
+
   memoize def facilities_total_drugs_in_stock
     selected_month_drug_stocks.group("protocol_drugs.rxnorm_code").sum(:in_stock)
   end
@@ -138,8 +158,12 @@ class DrugStocksQuery
     district_selected_month_drug_stocks.group("protocol_drugs.rxnorm_code").sum(:in_stock)
   end
 
+  memoize def district_facilities_total_drugs_in_stock
+    district_facilities_selected_month_drug_stocks.group("protocol_drugs.rxnorm_code").sum(:in_stock)
+  end
+
   memoize def total_drugs_in_stock
-    district_drugs_in_stock.merge(facilities_total_drugs_in_stock) do |_, district_stock, facilities_stock|
+    district_drugs_in_stock.merge(district_facilities_total_drugs_in_stock) do |_, district_stock, facilities_stock|
       district_stock + facilities_stock
     end
   end
@@ -158,7 +182,7 @@ class DrugStocksQuery
     drug_categories.each_with_object({}) do |drug_category, result|
       result[drug_category] = category_patient_days(
         drug_category,
-        (selected_month_drug_stocks + district_selected_month_drug_stocks),
+        (district_facilities_selected_month_drug_stocks + district_selected_month_drug_stocks),
         district_patient_count || 0
       )
     end
@@ -264,8 +288,8 @@ class DrugStocksQuery
     drug_categories.each_with_object(Hash.new(0)) do |drug_category, result|
       result[drug_category] = category_drug_consumption(
         drug_category,
-        (district_selected_month_drug_stocks + selected_month_drug_stocks),
-        (district_previous_month_drug_stocks + previous_month_drug_stocks)
+        (district_selected_month_drug_stocks + district_facilities_selected_month_drug_stocks),
+        (district_previous_month_drug_stocks + district_facilities_previous_month_drug_stocks)
       )
     end
   end

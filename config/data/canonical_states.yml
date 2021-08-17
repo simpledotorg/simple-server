@@ -38,10 +38,9 @@ India:
 Bangladesh:
   - Barisal
   - Bogura
-  - Chittagong
+  - Chattogram
   - Comilla
-  - Dhaka North
-  - Dhaka South
+  - Dhaka
   - Gazipur
   - Khulna
   - Mymensingh
@@ -62,3 +61,13 @@ Ethiopia:
   - Somali
   - Southern Nations, Nationalities, and Peoples' Region
   - Tigray
+Sri Lanka:
+  - Central Province
+  - Eastern Province
+  - North Central Province
+  - Northern Province
+  - North Western Province
+  - Sabaragamuwa Province
+  - Southern Province
+  - Uva Province
+  - Western Province
