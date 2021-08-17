@@ -6,7 +6,7 @@
       current deploy: <%= SimpleServer.github_url %>
 -->
     <% end %>
-    <% if current_admin %>
+    <% if email_authentication_signed_in? && current_admin %>
 <!-- >
       enabled feature flags: <%= raw current_enabled_features %>
 -->
