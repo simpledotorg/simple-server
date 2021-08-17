@@ -5,17 +5,26 @@ module Reports
 
     FIELDS = %i[
       adjusted_controlled_under_care
+      adjusted_missed_visit_lost_to_follow_up
+      adjusted_missed_visit_under_care
+      adjusted_patients_under_care
+      adjusted_uncontrolled_under_care
+      adjusted_visited_no_bp_lost_to_follow_up
+      adjusted_visited_no_bp_under_care
       cumulative_assigned_patients
       cumulative_registrations
       lost_to_follow_up
-      adjusted_missed_visit_lost_to_follow_up
-      adjusted_missed_visit_under_care
       monthly_registrations
-      adjusted_patients_under_care
-      adjusted_uncontrolled_under_care
-      adjusted_visited_no_bp_under_care
-      adjusted_visited_no_bp_lost_to_follow_up
     ].freeze
+
+    UNDER_CARE_WITH_LTFU = %i[
+      adjusted_missed_visit
+      adjusted_visited_no_bp
+    ].freeze
+
+    UNDER_CARE_WITH_LTFU_CALCULATED_FIELDS = UNDER_CARE_WITH_LTFU.map { |field|
+      "#{field}_under_care_with_lost_to_follow_up".to_sym
+    }.freeze
 
     attr_reader :control_rate_query_v2
     attr_reader :periods
@@ -113,7 +122,7 @@ module Reports
     end
 
     memoize def missed_visits(with_ltfu: false)
-      field = with_ltfu ? :adjusted_missed_visit_lost_to_follow_up : :adjusted_missed_visit_under_care
+      field = with_ltfu ? :adjusted_missed_visit_under_care_with_lost_to_follow_up : :adjusted_missed_visit_under_care
       regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, field) }
     end
 
@@ -126,6 +135,7 @@ module Reports
       end
     end
 
+    alias_method :missed_visits_rate, :missed_visits_rates
     alias_method :missed_visits_without_ltfu, :missed_visits
     alias_method :missed_visits_without_ltfu_rates, :missed_visits_rates
 
@@ -135,6 +145,20 @@ module Reports
 
     def missed_visits_with_ltfu_rates
       missed_visits_rates(with_ltfu: true)
+    end
+
+    memoize def visited_without_bp_taken(with_ltfu: false)
+      field = with_ltfu ? :adjusted_visited_no_bp_under_care_with_lost_to_follow_up : :adjusted_visited_no_bp_under_care
+      regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, field) }
+    end
+
+    memoize def visited_without_bp_taken_rates(with_ltfu: false)
+      region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
+        slug, period = entry.slug, entry.period
+        numerator = visited_without_bp_taken(with_ltfu: with_ltfu)[slug][period]
+        total = denominator(entry.region, period, with_ltfu: with_ltfu)
+        percentage(numerator, total)
+      end
     end
 
     private
@@ -202,7 +226,16 @@ module Reports
     end
 
     def summary_field(field)
+      raise ArgumentError, "field #{field} is not part of the FacilityState query" unless field.in?(FIELDS) || field.in?(UNDER_CARE_WITH_LTFU_CALCULATED_FIELDS)
       "sum_#{field}"
+    end
+
+    # For some fields we need to sum the under_care numbers with the LTFU numbers to support the "include LTFU"
+    # toggle in reports.
+    def under_care_with_ltfu(field)
+      Arel.sql(<<-EOL)
+        SUM(COALESCE(#{field}_under_care::int, 0) + COALESCE(#{field}_lost_to_follow_up::int, 0)) as sum_#{field}_under_care_with_lost_to_follow_up
+      EOL
     end
 
     # Grab all the summed data for a particular region grouped by month_date.
@@ -212,13 +245,15 @@ module Reports
     # oldest to newest - it also makes reading output in specs and debugging much easier.
     memoize def facility_state_data(region)
       calculations = FIELDS.map { |field| Arel.sql("COALESCE(SUM(#{field}::int), 0) as #{summary_field(field)}") }
+      under_care_with_ltfu = UNDER_CARE_WITH_LTFU.map { |field| under_care_with_ltfu(field) }
+      selects = calculations.concat(under_care_with_ltfu)
 
       FacilityState.for_region(region)
         .where("cumulative_registrations IS NOT NULL OR cumulative_assigned_patients IS NOT NULL")
         .order(:month_date)
         .group(:month_date)
         .select(:month_date)
-        .select(*calculations)
+        .select(*selects)
     end
   end
 end
