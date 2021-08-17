@@ -75,8 +75,8 @@ RSpec.describe Experimentation::DataExport, type: :model do
       appt1_end_index = appt1_start_index + 9
       appt2_start_index = headers.find_index("Appointment 2 Creation Date")
       appt2_end_index = appt2_start_index + 9
-      first_encounter_index = headers.find_index("Encounter 1 Date")
-      second_encounter_index = headers.find_index("Encounter 2 Date")
+      first_encounter_index = headers.find_index("Blood Pressure 1 Date")
+      second_encounter_index = headers.find_index("Blood Pressure 2 Date")
       first_message_index = headers.find_index("Message 1 Type")
       first_message_range = (first_message_index..(first_message_index + 3))
       second_message_index = headers.find_index("Message 2 Type")

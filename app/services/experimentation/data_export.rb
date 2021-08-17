@@ -3,12 +3,13 @@ module Experimentation
     require "csv"
 
     FOLLOWUP_CUTOFF = 10.days
+    EXPANDABLE_COLUMNS = ["Communications", "Appointments", "Blood Pressures"]
 
     attr_reader :experiment, :aggregate, :query_date_range
 
     def initialize(experiment_name)
       @experiment = Experimentation::Experiment.find_by!(name: experiment_name)
-      @recipient_email_address = recipient_email_address
+      # @recipient_email_address = recipient_email_address
       remind_ons = experiment.reminder_templates.pluck(:remind_on_in_days)
       @aggregate = []
 
@@ -32,47 +33,39 @@ module Experimentation
           assigned_facility = patient.assigned_facility
 
           aggregate << {
-            "Experiment Name": experiment.name,
-            "Treatment Group": group.description,
-            "Experiment Inclusion Date": tgm.created_at.to_date,
-            "Appointments": appointments(patient),
-            "Encounters": past_visits(patient),
-            "Communications": experimental_communications(notifications),
-            "Patient Gender": patient.gender,
-            "Patient Age": patient.age,
-            "Patient Risk Level": patient.risk_priority,
-            "Assigned Facility Name": assigned_facility&.name,
-            "Assigned Facility Type": assigned_facility&.facility_type,
-            "Assigned Facility State": assigned_facility&.state,
-            "Assigned Facility District": assigned_facility&.district,
-            "Assigned Facility Block": assigned_facility&.block,
-            "Patient Registration Date": patient.device_created_at.to_date,
-            "Patient Id": tgm.id
+            "Experiment Name" => experiment.name,
+            "Treatment Group" => group.description,
+            "Experiment Inclusion Date" => tgm.created_at.to_date,
+            "Appointments" => appointments(patient),
+            "Blood Pressures" => blood_pressures(patient),
+            "Communications" => experimental_communications(notifications),
+            "Patient Gender" => patient.gender,
+            "Patient Age" => patient.age,
+            "Patient Risk Level" => patient.risk_priority,
+            "Assigned Facility Name" => assigned_facility&.name,
+            "Assigned Facility Type" => assigned_facility&.facility_type,
+            "Assigned Facility State" => assigned_facility&.state,
+            "Assigned Facility District" => assigned_facility&.district,
+            "Assigned Facility Block" => assigned_facility&.block,
+            "Patient Registration Date" => patient.device_created_at.to_date,
+            "Patient Id" => tgm.id
           }
         end
       end
     end
 
     def experimental_communications(notifications)
-      notifications.map do |notification|
+      index = 1
+      notifications.each_with_object([]) do |notification, communications|
         ordered_communications = notification.communications.order(:device_created_at)
-        ordered_communications.each_with_index do |comm, index|
-          adjusted_index = index + 1
-          {
-            "Message #{adjusted_index} Type" => comm.communication_type,
-            "Message #{adjusted_index} Date Sent" => comm.detailable&.delivered_on&.to_date,
-            "Message #{adjusted_index} Status" => comm.detailable&.result,
-            "Message #{adjusted_index} Text Identifier" => notification.message
+        ordered_communications.each do |comm|
+          communications << {
+            "Message #{index} Type" => comm.communication_type,
+            "Message #{index} Date Sent" => comm.detailable&.delivered_on&.to_date,
+            "Message #{index} Status" => comm.detailable&.result,
+            "Message #{index} Text Identifier" => notification.message
           }
-        end
-      end
-    end
-
-    def pad_communications
-      aggregate.each do |patient_data|
-        communications_deficit = @max_communications - patient_data[:communications].count
-        communications_deficit.times do
-          patient_data[:communications] << Array.new(4, nil)
+          index += 1
         end
       end
     end
@@ -85,7 +78,7 @@ module Experimentation
       end
     end
 
-    def past_visits(patients)
+    def blood_pressures(patient)
       bp_dates = patient.blood_pressures.where(device_created_at: query_date_range).order(:device_created_at).pluck(:device_created_at).map(&:to_date)
       bp_dates.each_with_index.map do |bp_date, index|
         adjusted_index = index + 1
@@ -95,42 +88,25 @@ module Experimentation
 
     def headers
       keys = aggregate.first.keys
-      keys.each_with_object([]) do |key, collection|
-        case key
-        when :communications
-          (1..@max_communications).step do |i|
-            collection << "Message #{i} Type"
-            collection << "Message #{i} Sent"
-            collection << "Message #{i} Status"
-            collection << "Message #{i} Text Identifier"
-          end
-        when :appointments
-          (1..@max_appointments).step do |i|
-            collection << "Appointment #{i} Creation Date"
-            collection << "Appointment #{i} Date"
-            collection << "Followup #{i} Date"
-            collection << "Days To Visit #{i}"
-            collection << "BP Recorded At Visit #{i}"
-            collection << "Patient Visited Facility #{i}"
-            collection << "Followup #{i} Facility Type"
-            collection << "Followup #{i} Facility State"
-            collection << "Followup #{i} Facility District"
-            collection << "Followup #{i} Facility Block"
-          end
-        when :encounters
-          (1..@max_past_visits).step do |i|
-            collection << "Encounter #{i} Date"
-          end
+      keys.map do |key|
+        if key.in?(EXPANDABLE_COLUMNS)
+          largest_entry = aggregate.max {|a,b| a[key].length <=> b[key].length }
+          largest_entry[key].map(&:keys)
         else
-          collection << key.to_s.split("_").each(&:capitalize!).join(" ")
+          key
         end
-      end
+      end.flatten
     end
 
     def create_csv
       CSV.generate(headers: true) do |csv|
         csv << headers
-        aggregate.each { |patient_data| csv << patient_data.values.flatten }
+        aggregate.each do |patient_data|
+          EXPANDABLE_COLUMNS.each do |column|
+            patient_data[column].each {|column_data| patient_data.merge!(column_data) }
+          end
+          csv << patient_data
+        end
       end
     end
 
