@@ -12,6 +12,7 @@ class Appointment < ApplicationRecord
 
   has_many :notifications, as: :subject
   has_many :communications
+  has_many :call_results
 
   ANONYMIZED_DATA_FIELDS = %w[id patient_id created_at registration_facility_name user_id scheduled_date
     overdue status agreed_to_visit remind_on]
