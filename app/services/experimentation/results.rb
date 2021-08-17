@@ -62,10 +62,10 @@ module Experimentation
     end
 
     def appointments(patient)
-      appointments = patient.appointments.where(status: ["visited", "scheduled"], scheduled_date: query_date_range)
+      appointments = patient.appointments.where(status: ["visited", "scheduled"], scheduled_date: query_date_range).order(:scheduled_date)
       appointments.each_with_index.map do |appt, index|
         adjusted_index = index + 1
-        { "Appointment #{adjusted_index} Creation Date" => appt.device_created_at, "Appointment #{adjusted_index} Date" => appt.scheduled_date }
+        { "Appointment #{adjusted_index} Creation Date" => appt.device_created_at.to_date, "Appointment #{adjusted_index} Date" => appt.scheduled_date }
       end
     end
 
