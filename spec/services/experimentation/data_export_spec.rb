@@ -64,7 +64,7 @@ RSpec.describe Experimentation::DataExport, type: :model do
         cascade_group.patients << cascade_patient
       end
 
-      subject = described_class.new(experiment.name)
+      subject = described_class.new(experiment.name, "person@example.com")
       results = subject.as_csv
       parsed = CSV.parse(results)
       pp parsed
