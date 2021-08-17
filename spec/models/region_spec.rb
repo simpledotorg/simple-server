@@ -65,7 +65,7 @@ RSpec.describe Region, type: :model do
       expect(CountryConfig).to receive(:current).and_return(CountryConfig.for(:BD)).at_least(:once)
 
       org = Seed.seed_org.region
-      state = FactoryBot.create(:region, :state, reparent_to: Seed.seed_org.region)
+      state = FactoryBot.create(:region, :state, reparent_to: org)
       district = FactoryBot.create(:region, :district, reparent_to: state)
       fg = FactoryBot.create(:facility_group, region: district)
       facility = FactoryBot.create(:facility, facility_group: fg)
