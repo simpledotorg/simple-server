@@ -172,8 +172,7 @@ class Reports::RegionsController < AdminController
     param_flag = ActiveRecord::Type::Boolean.new.deserialize(report_params[:v2])
     user_flag = current_admin.feature_enabled?(:reporting_schema_v2)
     return param_flag unless param_flag.nil?
-    return user_flag unless user_flag.nil?
-    nil
+    user_flag
   end
 
   def accessible_region?(region, action)
