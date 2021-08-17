@@ -4,26 +4,21 @@ module Experimentation
 
     FOLLOWUP_CUTOFF = 10.days
 
-    attr_reader :experiment, :max_communications, :max_appointments, :max_past_visits, :notification_start_date,
-                :aggregate, :cutoff_date, :recipient_email_address
+    attr_reader :experiment, :aggregate, :query_date_range
 
-    def initialize(experiment_name, recipient_email_address)
+    def initialize(experiment_name)
       @experiment = Experimentation::Experiment.find_by!(name: experiment_name)
       @recipient_email_address = recipient_email_address
       remind_ons = experiment.reminder_templates.pluck(:remind_on_in_days)
-      @notification_start_date = experiment.start_date - remind_ons.min.days
-      @max_communications = 0
-      @max_appointments = 0
-      @max_past_visits = 0
       @aggregate = []
-      @cutoff_date = experiment.end_date + FOLLOWUP_CUTOFF
+
+      start_date = experiment.start_date - 1.year
+      end_date = experiment.end_date + FOLLOWUP_CUTOFF
+      @query_date_range = start_date..end_date
     end
 
     def as_csv
       aggregate_data
-      pad_communications
-      pad_appointments
-      pad_past_visits
       create_csv
     end
 
@@ -37,39 +32,40 @@ module Experimentation
           assigned_facility = patient.assigned_facility
 
           aggregate << {
-            experiment_name: experiment.name,
-            treatment_group: group.description,
-            experiment_inclusion_date: tgm.created_at.to_date,
-            appointments: process_appointments(patient, notifications),
-            encounters: process_past_visits(patient),
-            communications: process_communications(notifications),
-            patient_gender: patient.gender,
-            patient_age: patient.age,
-            patient_risk_level: patient.risk_priority,
-            diagnosed_hypertensive: true, # remove?
-            patient_has_phone: true, # remove?
-            assigned_facility_name: assigned_facility&.name,
-            assigned_facility_type: assigned_facility&.facility_type,
-            assigned_facility_state: assigned_facility&.state,
-            assigned_facility_district: assigned_facility&.district,
-            assigned_facility_block: assigned_facility&.block,
-            patient_registration_date: patient.device_created_at.to_date,
-            patient_id: tgm.id
+            "Experiment Name": experiment.name,
+            "Treatment Group": group.description,
+            "Experiment Inclusion Date": tgm.created_at.to_date,
+            "Appointments": appointments(patient),
+            "Encounters": past_visits(patient),
+            "Communications": experimental_communications(notifications),
+            "Patient Gender": patient.gender,
+            "Patient Age": patient.age,
+            "Patient Risk Level": patient.risk_priority,
+            "Assigned Facility Name": assigned_facility&.name,
+            "Assigned Facility Type": assigned_facility&.facility_type,
+            "Assigned Facility State": assigned_facility&.state,
+            "Assigned Facility District": assigned_facility&.district,
+            "Assigned Facility Block": assigned_facility&.block,
+            "Patient Registration Date": patient.device_created_at.to_date,
+            "Patient Id": tgm.id
           }
         end
       end
     end
 
-    def process_communications(notifications)
-      communications = notifications.each_with_object([]) do |notification, communications_data|
-        ordered_communications = notification.communications.sort_by { |c| c.created_at }
-        ordered_communications.each do |c|
-          communications_data << [c.communication_type, c.detailable&.delivered_on&.to_date, c.detailable&.result, notification.message]
+    def experimental_communications(notifications)
+      notifications.map do |notification|
+        ordered_communications = notification.communications.order(:device_created_at)
+        ordered_communications.each_with_index do |comm, index|
+          adjusted_index = index + 1
+          {
+            "Message #{adjusted_index} Type" => comm.communication_type,
+            "Message #{adjusted_index} Date Sent" => comm.detailable&.delivered_on&.to_date,
+            "Message #{adjusted_index} Status" => comm.detailable&.result,
+            "Message #{adjusted_index} Text Identifier" => notification.message
+          }
         end
       end
-
-      @max_communications = communications.count if communications.count > @max_communications
-      communications
     end
 
     def pad_communications
@@ -81,76 +77,20 @@ module Experimentation
       end
     end
 
-    def process_appointments(patient, notifications)
-      appts = if notifications.any?
-        notifications.map(&:subject).uniq.sort_by { |appt| appt.scheduled_date }
-      else
-        date_range = experiment.start_date.beginning_of_day..experiment.end_date.end_of_day
-        patient.appointments.where(scheduled_date: date_range).where("device_created_at < ?", notification_start_date).order(:scheduled_date)
-      end
-      @max_appointments = appts.count if appts.count > max_appointments
-
-      encounters_during_experiment = encounter_dates(patient, notification_start_date, cutoff_date)
-
-      appts.each_with_index.map do |appt, index|
-        # pulling out encounters sequentially because there's no formal relationship to appointments
-        followup_date = encounters_during_experiment[index]
-        days_til_followup = nil
-        bp_at_followup = nil
-        facility = nil
-
-        if followup_date
-          days_til_followup = (appt.scheduled_date - followup_date).to_i
-          encounter = encounter_by_date(patient, followup_date)
-          bp_at_followup = encounter.instance_of?(BloodPressure)
-          facility = encounter.facility
-        end
-        [appt.device_created_at.to_date, appt.scheduled_date, followup_date, days_til_followup, bp_at_followup,
-          facility&.name, facility&.facility_type, facility&.state, facility&.district, facility&.block]
+    def appointments(patient)
+      appointments = patient.appointments.where(status: ["visited", "scheduled"], scheduled_date: query_date_range)
+      appointments.each_with_index.map do |appt, index|
+        adjusted_index = index + 1
+        { "Appointment #{adjusted_index} Creation Date" => appt.device_created_at, "Appointment #{adjusted_index} Date" => appt.scheduled_date }
       end
     end
 
-    def pad_appointments
-      aggregate.each do |patient_data|
-        appointments_deficit = @max_appointments - patient_data[:appointments].count
-        appointments_deficit.times do
-          patient_data[:appointments] << Array.new(10, nil)
-        end
+    def past_visits(patients)
+      bp_dates = patient.blood_pressures.where(device_created_at: query_date_range).order(:device_created_at).pluck(:device_created_at).map(&:to_date)
+      bp_dates.each_with_index.map do |bp_date, index|
+        adjusted_index = index + 1
+        { "Blood Pressure #{adjusted_index} Date" => bp_date }
       end
-    end
-
-    def process_past_visits(patient)
-      end_date = notification_start_date - 1.day
-      start_date = end_date - 1.year
-      encounter_dates = encounter_dates(patient, start_date, end_date)
-      @max_past_visits = encounter_dates.count if encounter_dates.count > max_past_visits
-      encounter_dates
-    end
-
-    def pad_past_visits
-      aggregate.each do |patient_data|
-        past_visits_deficit = @max_past_visits - patient_data[:encounters].count
-        past_visits_deficit.times { patient_data[:encounters] << nil }
-      end
-    end
-
-    def encounter_dates(patient, start_date, end_date)
-      date_range = (start_date.beginning_of_day..end_date.end_of_day)
-      bps = patient.blood_pressures.where(device_created_at: date_range).pluck(:device_created_at).map(&:to_date)
-      bss = patient.blood_sugars.where(device_created_at: date_range).pluck(:device_created_at).map(&:to_date)
-      pds = patient.prescription_drugs.where(device_created_at: date_range).pluck(:device_created_at).map(&:to_date)
-      (bps + bss + pds).uniq.sort
-    end
-
-    def encounter_by_date(patient, date)
-      date_range = (date.beginning_of_day..date.end_of_day)
-      bp = patient.blood_pressures.find_by(device_created_at: date_range)
-      return bp if bp
-      bs = patient.blood_sugars.find_by(device_created_at: date_range)
-      return bs if bs
-      pd = patient.prescription_drugs.find_by(device_created_at: date_range)
-      return pd if pd
-      # this shouldn't happen. consider raising error
     end
 
     def headers
