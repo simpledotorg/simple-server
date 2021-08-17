@@ -147,7 +147,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
           get :show, params: {id: @facility_region.slug, report_scope: "facility"}
         end
         expect(response).to be_successful
-        expect(assigns(:service).reporting_schema_v2?).to be_falsey
         data = assigns(:data)
         expect(data[:controlled_patients].size).to eq(10) # sanity check
         expect(data[:controlled_patients][Date.parse("Dec 2019").to_period]).to eq(1)
