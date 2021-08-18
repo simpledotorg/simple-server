@@ -1,116 +1,15 @@
 require "rails_helper"
 require_relative "./experiment_data_examples.rb"
 
-TIME_FORMAT = "%Y-%m-%d"
-
-RSpec.describe Experimentation::DataExport, type: :model do
+RSpec.describe Experimentation::DataExportWorker, type: :model do
   describe "#as_csv" do
     include_context "active experiment data"
 
     it "exports accurate data in the expected format" do
-      subject = described_class.new(@experiment.name, "person@example.com")
-      results = subject.as_csv
-      parsed = CSV.parse(results)
+      described_class.perform_async(@experiment.name, "person@example.com")
+      described_class.drain
+
       pp parsed
-
-      # grab indexes from header row
-      headers = parsed.first
-      appt1_created_index = headers.find_index("Appointment 1 Creation Date")
-      appt1_scheduled_index = headers.find_index("Appointment 1 Date")
-
-      appt2_created_index = headers.find_index("Appointment 2 Creation Date")
-      appt2_scheduled_index = headers.find_index("Appointment 2 Date")
-      first_encounter_index = headers.find_index("Blood Pressure 1 Date")
-      second_encounter_index = headers.find_index("Blood Pressure 2 Date")
-      first_message_index = headers.find_index("Message 1 Type")
-      first_message_range = (first_message_index..(first_message_index + 3))
-      second_message_index = headers.find_index("Message 2 Type")
-      second_message_range = (second_message_index..(second_message_index + 3))
-      third_message_index = headers.find_index("Message 3 Type")
-      third_message_range = (third_message_index..(third_message_index + 3))
-      fourth_message_index = headers.find_index("Message 4 Type")
-      fourth_message_range = (fourth_message_index..(fourth_message_index + 3))
-
-      expect(parsed.length).to eq 4
-      expect(parsed.map { |row| row.length }.uniq.length).to eq 1
-
-      # test control patient data
-      control_patient_row = parsed.find { |row| row.last == @control_patient.treatment_group_memberships.first.id.to_s }
-
-      expect(control_patient_row[first_encounter_index]).to eq(@control_past_visit_1.device_created_at.strftime(TIME_FORMAT))
-      expect(control_patient_row[second_encounter_index]).to eq(@control_past_visit_2.device_created_at.strftime(TIME_FORMAT))
-
-      expect(control_patient_row[appt1_created_index]).to eq(@control_appt1.device_created_at.strftime(TIME_FORMAT))
-      expect(control_patient_row[appt1_scheduled_index]).to eq(@control_appt1.scheduled_date.strftime(TIME_FORMAT))
-      expect(control_patient_row[appt2_created_index]).to eq(@control_appt2.device_created_at.strftime(TIME_FORMAT))
-      expect(control_patient_row[appt2_scheduled_index]).to eq(@control_appt2.scheduled_date.strftime(TIME_FORMAT))
-
-      [first_message_range, second_message_range, third_message_range, fourth_message_range].each do |range|
-        expect(control_patient_row[range].uniq).to eq([nil])
-      end
-
-      # test single message patient data
-      single_message_patient_row = parsed.find { |row| row.last == @single_message_patient.treatment_group_memberships.first.id.to_s }
-
-      expect(single_message_patient_row[first_encounter_index]).to eq(@smp_past_visit_1.device_created_at.strftime(TIME_FORMAT))
-      expect(single_message_patient_row[second_encounter_index]).to eq(nil)
-
-      expect(single_message_patient_row[appt1_created_index]).to eq(@smp_appt1.device_created_at.strftime(TIME_FORMAT))
-      expect(single_message_patient_row[appt1_scheduled_index]).to eq(@smp_appt1.scheduled_date.strftime(TIME_FORMAT))
-
-      expect(single_message_patient_row[appt2_created_index]).to eq(nil)
-      expect(single_message_patient_row[appt2_scheduled_index]).to eq(nil)
-
-      expected_first_communication_data = [
-        @smp_communication.communication_type,
-        @smp_communication.detailable.delivered_on.strftime(TIME_FORMAT),
-        @smp_communication.detailable.result,
-        @smp_notification.message
-      ]
-      expect(single_message_patient_row[first_message_range]).to eq(expected_first_communication_data)
-      [second_message_range, third_message_range, fourth_message_range].each do |range|
-        expect(single_message_patient_row[range].uniq).to eq([nil])
-      end
-
-      # test cascade patient data
-      cascade_patient_row = parsed.find { |row| row.last == @cascade_patient.treatment_group_memberships.first.id.to_s }
-
-      expect(cascade_patient_row[first_encounter_index]).to eq(nil)
-      expect(cascade_patient_row[second_encounter_index]).to eq(nil)
-
-      expect(cascade_patient_row[appt1_created_index]).to eq(@cascade_patient_appt.device_created_at.strftime(TIME_FORMAT))
-      expect(cascade_patient_row[appt1_scheduled_index]).to eq(@cascade_patient_appt.scheduled_date.strftime(TIME_FORMAT))
-      expect(cascade_patient_row[appt2_created_index]).to eq(nil)
-      expect(cascade_patient_row[appt2_scheduled_index]).to eq(nil)
-
-      expected_first_communication_data = [
-        @cascade_comm1.communication_type,
-        @cascade_comm1.detailable.delivered_on.strftime(TIME_FORMAT),
-        @cascade_comm1.detailable.result,
-        @cascade_notification1.message
-      ]
-      expect(cascade_patient_row[first_message_range]).to eq(expected_first_communication_data)
-      expected_second_communication_data = [
-        @cascade_comm2.communication_type,
-        @cascade_comm2.detailable.delivered_on.strftime(TIME_FORMAT),
-        @cascade_comm2.detailable.result,
-        @cascade_notification1.message
-      ]
-      expect(cascade_patient_row[second_message_range]).to eq(expected_second_communication_data)
-      expected_third_communication_data = [
-        @cascade_comm3.communication_type,
-        @cascade_comm3.detailable.delivered_on.strftime(TIME_FORMAT),
-        @cascade_comm3.detailable.result,
-        @cascade_notification2.message
-      ]
-      expect(cascade_patient_row[third_message_range]).to eq(expected_third_communication_data)
-      expected_fourth_communication_data = [
-        @cascade_comm4.communication_type,
-        @cascade_comm4.detailable.delivered_on.strftime(TIME_FORMAT),
-        @cascade_comm4.detailable.result,
-        @cascade_notification2.message
-      ]
-      expect(cascade_patient_row[fourth_message_range]).to eq(expected_fourth_communication_data)
 
       # csv_data = subject.mail_csv
       # csv_data.attachments.to_json

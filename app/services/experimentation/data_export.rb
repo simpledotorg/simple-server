@@ -1,22 +1,20 @@
 module Experimentation
-  class DataExport
+  class DataExportWorker
     require "csv"
+    include Sidekiq::Worker
 
     EXPANDABLE_COLUMNS = ["Communications", "Appointments", "Blood Pressures"]
 
     attr_reader :experiment_name, :recipient_email_address, :results
 
-    def initialize(experiment_name, recipient_email_address)
+    def perform(experiment_name, recipient_email_address)
       @experiment_name = experiment_name
       @recipient_email_address = recipient_email_address
+      fetch_results
+      mail_csv
     end
 
-    def as_csv
-      results_service = Results.new(experiment_name)
-      results_service.aggregate_data
-      @results = results_service.patient_data_aggregate
-      create_csv
-    end
+    private
 
     def mail_csv
       mailer = ApplicationMailer.new
@@ -30,12 +28,28 @@ module Experimentation
       filename = experiment_name.gsub(" ", "_")
       email.attachments[filename] = {
         mime_type: "text/csv",
-        content: @temp_csv
+        content: csv_file
       }
       email.deliver
     end
 
-    private
+    def fetch_results
+      results_service = Results.new(experiment_name)
+      results_service.aggregate_data
+      @results = results_service.patient_data_aggregate
+    end
+
+    def csv_file
+      CSV.generate(headers: true) do |csv|
+        csv << headers
+        results.each do |patient_data|
+          EXPANDABLE_COLUMNS.each do |column|
+            patient_data[column].each {|column_data| patient_data.merge!(column_data) }
+          end
+          csv << patient_data
+        end
+      end
+    end
 
     def headers
       keys = results.first.keys
@@ -47,18 +61,6 @@ module Experimentation
           key
         end
       end.flatten
-    end
-
-    def create_csv
-      @temp_csv = CSV.generate(headers: true) do |csv|
-        csv << headers
-        results.each do |patient_data|
-          EXPANDABLE_COLUMNS.each do |column|
-            patient_data[column].each {|column_data| patient_data.merge!(column_data) }
-          end
-          csv << patient_data
-        end
-      end
     end
   end
 end
