@@ -3,9 +3,10 @@
 # Script to send messages via our Twilio notification system.
 #
 # Provide a patient name as the first argument, and a recipient phone number as the second.
-# Note that the patient name must be a real patient in our database - it is only used to
-# create a notification for that patient. The phone number provided will be used as the actual recipient,
-# and you can use any fully qualified phone number -- including country code.
+# Note that the patient name must be a real patient in our database - it is used to
+# have a patient to hang the notification record off of, and for the full name in the message.
+# The phone number provided will be used as the actual recipient,
+# and you can use any fully qualified phone number (include the country code).
 #
 #   script/send_notification.rb "Patient Name" "+1605551234"
 #
