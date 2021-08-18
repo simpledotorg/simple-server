@@ -257,7 +257,7 @@ West Bengal:
       '979467': 1
     hypertension_diuretic:
       new_patient_coefficient: 0.06
-      'Chlor6.25': 1
+      'Chlor6.25': 0.5
       '331132': 1
-      '429503': 1
+      '429503': 0.5
       '316049': 1
