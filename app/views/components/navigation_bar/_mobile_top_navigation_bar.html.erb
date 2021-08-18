@@ -1,0 +1,26 @@
+<div class="top-navigation-bar">
+  <div class="organization-dropdown">
+    <%= image_tag "simple_logo.svg", :width => '28' %>
+    <p class="organization-name">
+      <%= @organization.name %>
+    </p>
+  </div>
+  <div class="user-dropdown">
+    <div class="user-profile-icon">
+      <%= render partial: "components/icon", :locals => {
+          name: "user",
+          size: "large",
+          style: "fill",
+          color: "white"
+        }
+      %>
+    </div>
+    <%= render partial: "components/icon", :locals => {
+        name: "chevron-bottom",
+        size: "small",
+        style: "outline",
+        color: "white"
+      }
+    %>
+  </div>
+</div>

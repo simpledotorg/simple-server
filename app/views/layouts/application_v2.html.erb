@@ -1,11 +1,21 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta charset="utf-8">
+    <meta content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
     <%= javascript_pack_tag 'application' %>
     <%= stylesheet_pack_tag 'application' %>
+    <%= stylesheet_pack_tag 'reset' %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   </head>
 
   <body>
-    <%= yield %>
+    <%= render partial: "components/navigation_bar/mobile_top_navigation_bar" %>
+    <div>
+      <%= yield %>
+    </div>
   </body>
 </html>

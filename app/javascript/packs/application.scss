@@ -10,12 +10,131 @@ layout file, like app/views/layouts/application.html.erb
 
 @import 'bootstrap/scss/bootstrap';
 
-h1 {
-  text-decoration: underline;
+/*
+
+  GLOBAL
+
+*/
+html { height: 100%; }
+
+/*
+
+  COLOR STYLES
+  - Brand colors
+  - Grey colors
+  - Colors
+
+*/
+// Brand colors
+$brand-blue: #103047;
+$brand-light-blue: #40596C;
+// Grey colors
+$black: #000000;
+$dark-grey: #6C737A;
+$light-grey: #DFE3EE;
+$silver: #F1F3F8;
+$white: #FFFFFF;
+// Colors
+$dark-blue: #016E95;
+$blue: #007AA6;
+$light-blue: #D9EBF2;
+$dark-red: #952D2D;
+$red: #BD3838;
+$light-red: #F5E1E1;
+$dark-orange: #CF7024;
+$orange: #E77D27;
+$light-orange: #FCECDF;
+$dark-yellow: #E4B439;
+$yellow: FFC93F;
+$light-yellow: #FFF7E2;
+$dark-green: #668C23;
+$green: #729C26;
+$light-green: #EAF0DF;
+$dark-purple: #563B8A;
+$purple: #60419A;
+$light-purple: #E7E3F0;
+/*
+
+  TEXT STYLES
+  - Text
+  - Modifiers
+  - Colors
+
+*/
+@mixin large-header-text {
+  font-family: Inter, sans-serif;
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 135%;
 }
+@mixin header-text {
+  font-family: Inter, sans-serif;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 135%;
+}
+@mixin small-header-text {
+  font-family: Inter;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 150%;
+}
+@mixin large-body-text {
+  font-family: Inter;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 150%;
+}
+@mixin large-body-text {
+  font-family: Inter;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 150%;
+}
+@mixin body-text {
+  font-family: Inter;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 175%;
+}
+@mixin small-body-text {
+  font-family: Inter;
+  font-weight: 600;
+  font-size: 10px;
+  line-height: 100%;
+}
+// Modifiers
+.underline { text-decoration: underline; }
+.strong { font-weight: 500; }
+.phone { letter-spacing: 1px; }
+/*
 
-body {
-  padding: 2em
+  COMPONENTS
+  - Navigation bar
 
-
+*/
+// Navigation bar
+.top-navigation-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 58px;
+  padding: 8px 16px 8px 9px;
+  background-color: $brand-blue;
+}
+.organization-dropdown {
+  display: flex;
+  align-items: center;
+}
+.organization-name {
+  margin-left: 4px;
+  @include header-text;
+  color: $white;
+}
+.user-dropdown {
+  display: flex;
+  align-items: center;
+}
+.user-profile-icon {
+  margin-right: 4px;
 }
