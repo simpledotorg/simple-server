@@ -99,6 +99,7 @@ class AppointmentNotification::Worker
       notification.status_sent!
     end
     logger.info("notification #{notification.id} communication_type=#{communication_type} sent")
+    response
   end
 
   def create_communication(notification, communication_type, response)
