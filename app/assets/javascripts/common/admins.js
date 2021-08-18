@@ -235,15 +235,25 @@ AdminAccessInvite.prototype = Object.assign(AdminAccessInvite.prototype, {
     // list of all checkboxes under facilityAccess
     const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, this.facilityAccess)
 
-    // go through all the checkboxes that are pre-checked and update their parents accordingly
-    for (const checkbox of checkboxes) {
-      if (!checkbox.checked) continue
+    function groupByParentId(objectArray) {
+      return objectArray.reduce(function (acc, obj) {
+        let key = obj.dataset.parentId
+        if (!acc[key]) {
+          acc[key] = []
+        }
+        acc[key].push(obj)
+        return acc
+      }, {})
+    }
 
-      const _self = this
-      // a large tree can take a lot of time to load on the DOM,
-      // so we queue up our updates by requesting frames so as to not cause overwhelming repaints
+    let elementsByParentId = groupByParentId([...$('[data-parent-id]')]);
+
+    // go through all the checkboxes that are pre-checked and update their parents accordingly
+    for (const parentId in elementsByParentId) {
+      let _self = this
+
       requestAnimationFrame(function () {
-        _self.updateParentCheckedState(checkbox, ACCESS_LIST_INPUT_SELECTOR)
+        _self.updateParentCheckedState(elementsByParentId[parentId][0], ACCESS_LIST_INPUT_SELECTOR)
       })
     }
 
