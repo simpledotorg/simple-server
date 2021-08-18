@@ -1,8 +1,6 @@
 require "rails_helper"
 require_relative "./experiment_data_examples.rb"
 
-TIME_FORMAT = "%Y-%m-%d"
-
 RSpec.describe Experimentation::Results, type: :model do
   describe "#as_csv" do
     include_context "active experiment data"
@@ -12,137 +10,101 @@ RSpec.describe Experimentation::Results, type: :model do
       subject.aggregate_data
       results = subject.patient_data_aggregate
 
-      pp results
+      expect(results.length).to eq(3)
 
-      {"Experiment Name"=>@experiment.name,
-        "Treatment Group"=>@control_group.description,
-        "Experiment Inclusion Date"=>Tue, 13 Jul 2021,
-        "Appointments"=>
-         [{"Appointment 1 Creation Date"=>Fri, 09 Jul 2021,
-           "Appointment 1 Date"=>Mon, 19 Jul 2021},
-          {"Appointment 2 Creation Date"=>Fri, 09 Jul 2021,
-           "Appointment 2 Date"=>Thu, 29 Jul 2021}],
-        "Blood Pressures"=>
-         [{"Blood Pressure 1 Date"=>Fri, 18 Dec 2020},
-          {"Blood Pressure 2 Date"=>Tue, 18 May 2021},
-          {"Blood Pressure 3 Date"=>Wed, 21 Jul 2021}],
-        "Communications"=>[],
-        "Patient Gender"=>"female",
-        "Patient Age"=>88,
-        "Patient Risk Level"=>1,
-        "Assigned Facility Name"=>"Facility 1",
-        "Assigned Facility Type"=>"PHC",
-        "Assigned Facility State"=>"Punjab",
-        "Assigned Facility District"=>"South Hazelshire",
-        "Assigned Facility Block"=>"Paradise Pointe",
-        "Patient Registration Date"=>Wed, 18 Aug 2021,
-        "Patient Id"=>1343},
-       {"Experiment Name"=>"exportable",
-        "Treatment Group"=>"single message",
-        "Experiment Inclusion Date"=>Tue, 13 Jul 2021,
-        "Appointments"=>
-         [{"Appointment 1 Creation Date"=>Wed, 18 Aug 2021,
-           "Appointment 1 Date"=>Thu, 29 Jul 2021}],
-        "Blood Pressures"=>[{"Blood Pressure 1 Date"=>Thu, 18 Feb 2021}],
-        "Communications"=>
-         [{"Message 1 Type"=>"whatsapp",
-           "Message 1 Date Sent"=>Wed, 28 Jul 2021,
-           "Message 1 Status"=>"read",
-           "Message 1 Text Identifier"=>"single group message"}],
-        "Patient Gender"=>"male",
-        "Patient Age"=>46,
-        "Patient Risk Level"=>1,
-        "Assigned Facility Name"=>"Facility 17",
-        "Assigned Facility Type"=>"PHC",
-        "Assigned Facility State"=>"Maharashtra",
-        "Assigned Facility District"=>"Acacia County",
-        "Assigned Facility Block"=>"Royal Village",
-        "Patient Registration Date"=>Wed, 18 Aug 2021,
-        "Patient Id"=>1344}
+      expected_control_patient_result = {
+        "Experiment Name" => @experiment.name,
+        "Treatment Group" => @control_group.description,
+        "Experiment Inclusion Date" => @control_patient.treatment_group_memberships.first.created_at.to_date,
+        "Appointments" =>
+         [{"Appointment 1 Creation Date" => @control_appt1.device_created_at.to_date,
+           "Appointment 1 Date" => @control_appt1.scheduled_date.to_date},
+          {"Appointment 2 Creation Date" => @control_appt2.device_created_at.to_date,
+           "Appointment 2 Date" => @control_appt2.scheduled_date.to_date}],
+        "Blood Pressures" =>
+         [{"Blood Pressure 1 Date" => @control_past_visit_1.device_created_at.to_date},
+          {"Blood Pressure 2 Date" => @control_past_visit_2.device_created_at.to_date},
+          {"Blood Pressure 3 Date" => @control_followup_1.device_created_at.to_date}],
+        "Communications" => [],
+        "Patient Gender" => @control_patient.gender,
+        "Patient Age" => @control_patient.age,
+        "Patient Risk Level" => @control_patient.risk_priority,
+        "Assigned Facility Name" => @control_patient.assigned_facility.name,
+        "Assigned Facility Type" =>  @control_patient.assigned_facility.facility_type,
+        "Assigned Facility State" =>  @control_patient.assigned_facility.state,
+        "Assigned Facility District" => @control_patient.assigned_facility.district,
+        "Assigned Facility Block" => @control_patient.assigned_facility.block,
+        "Patient Registration Date" => @control_patient.registration_date.to_date,
+        "Patient Id" =>  @control_patient.treatment_group_memberships.first.id
+      }
+      expect(results.first).to eq(expected_control_patient_result)
 
+      expected_single_message_patient_result = {
+        "Experiment Name" => @experiment.name,
+        "Treatment Group" => @single_message_group.description,
+        "Experiment Inclusion Date" => @single_message_patient.treatment_group_memberships.first.created_at.to_date,
+        "Appointments" =>
+         [{"Appointment 1 Creation Date" => @smp_appt1.device_created_at.to_date,
+           "Appointment 1 Date" => @smp_appt1.scheduled_date.to_date}],
+        "Blood Pressures" =>
+         [{"Blood Pressure 1 Date" => @smp_past_visit_1.device_created_at.to_date}],
+        "Communications" => [{"Message 1 Type" => @smp_communication.communication_type,
+          "Message 1 Date Sent" => @smp_communication.detailable.delivered_on.to_date,
+          "Message 1 Status" => @smp_communication.detailable.result,
+          "Message 1 Text Identifier" => @smp_notification.message
+          }],
+        "Patient Gender" => @single_message_patient.gender,
+        "Patient Age" => @single_message_patient.age,
+        "Patient Risk Level" => @single_message_patient.risk_priority,
+        "Assigned Facility Name" => @single_message_patient.assigned_facility.name,
+        "Assigned Facility Type" =>  @single_message_patient.assigned_facility.facility_type,
+        "Assigned Facility State" =>  @single_message_patient.assigned_facility.state,
+        "Assigned Facility District" => @single_message_patient.assigned_facility.district,
+        "Assigned Facility Block" => @single_message_patient.assigned_facility.block,
+        "Patient Registration Date" => @single_message_patient.registration_date.to_date,
+        "Patient Id" =>  @single_message_patient.treatment_group_memberships.first.id
+      }
+      expect(results.second).to eq(expected_single_message_patient_result)
 
-      control_patient_row = []
-
-      # test control patient data
-      control_patient_row = parsed.find { |row| row.last == @control_patient.treatment_group_memberships.first.id.to_s }
-
-      expect(control_patient_row[first_encounter_index]).to eq(@control_past_visit_1.device_created_at.strftime(TIME_FORMAT))
-      expect(control_patient_row[second_encounter_index]).to eq(@control_past_visit_2.device_created_at.strftime(TIME_FORMAT))
-
-      expect(control_patient_row[appt1_created_index]).to eq(@control_appt1.device_created_at.strftime(TIME_FORMAT))
-      expect(control_patient_row[appt1_scheduled_index]).to eq(@control_appt1.scheduled_date.strftime(TIME_FORMAT))
-      expect(control_patient_row[appt2_created_index]).to eq(@control_appt2.device_created_at.strftime(TIME_FORMAT))
-      expect(control_patient_row[appt2_scheduled_index]).to eq(@control_appt2.scheduled_date.strftime(TIME_FORMAT))
-
-      [first_message_range, second_message_range, third_message_range, fourth_message_range].each do |range|
-        expect(control_patient_row[range].uniq).to eq([nil])
-      end
-
-      # test single message patient data
-      single_message_patient_row = parsed.find { |row| row.last == @single_message_patient.treatment_group_memberships.first.id.to_s }
-
-      expect(single_message_patient_row[first_encounter_index]).to eq(@smp_past_visit_1.device_created_at.strftime(TIME_FORMAT))
-      expect(single_message_patient_row[second_encounter_index]).to eq(nil)
-
-      expect(single_message_patient_row[appt1_created_index]).to eq(@smp_appt1.device_created_at.strftime(TIME_FORMAT))
-      expect(single_message_patient_row[appt1_scheduled_index]).to eq(@smp_appt1.scheduled_date.strftime(TIME_FORMAT))
-
-      expect(single_message_patient_row[appt2_created_index]).to eq(nil)
-      expect(single_message_patient_row[appt2_scheduled_index]).to eq(nil)
-
-      expected_first_communication_data = [
-        @smp_communication.communication_type,
-        @smp_communication.detailable.delivered_on.strftime(TIME_FORMAT),
-        @smp_communication.detailable.result,
-        @smp_notification.message
-      ]
-      expect(single_message_patient_row[first_message_range]).to eq(expected_first_communication_data)
-      [second_message_range, third_message_range, fourth_message_range].each do |range|
-        expect(single_message_patient_row[range].uniq).to eq([nil])
-      end
-
-      # test cascade patient data
-      cascade_patient_row = parsed.find { |row| row.last == @cascade_patient.treatment_group_memberships.first.id.to_s }
-
-      expect(cascade_patient_row[first_encounter_index]).to eq(nil)
-      expect(cascade_patient_row[second_encounter_index]).to eq(nil)
-
-      expect(cascade_patient_row[appt1_created_index]).to eq(@cascade_patient_appt.device_created_at.strftime(TIME_FORMAT))
-      expect(cascade_patient_row[appt1_scheduled_index]).to eq(@cascade_patient_appt.scheduled_date.strftime(TIME_FORMAT))
-      expect(cascade_patient_row[appt2_created_index]).to eq(nil)
-      expect(cascade_patient_row[appt2_scheduled_index]).to eq(nil)
-
-      expected_first_communication_data = [
-        @cascade_comm1.communication_type,
-        @cascade_comm1.detailable.delivered_on.strftime(TIME_FORMAT),
-        @cascade_comm1.detailable.result,
-        @cascade_notification1.message
-      ]
-      expect(cascade_patient_row[first_message_range]).to eq(expected_first_communication_data)
-      expected_second_communication_data = [
-        @cascade_comm2.communication_type,
-        @cascade_comm2.detailable.delivered_on.strftime(TIME_FORMAT),
-        @cascade_comm2.detailable.result,
-        @cascade_notification1.message
-      ]
-      expect(cascade_patient_row[second_message_range]).to eq(expected_second_communication_data)
-      expected_third_communication_data = [
-        @cascade_comm3.communication_type,
-        @cascade_comm3.detailable.delivered_on.strftime(TIME_FORMAT),
-        @cascade_comm3.detailable.result,
-        @cascade_notification2.message
-      ]
-      expect(cascade_patient_row[third_message_range]).to eq(expected_third_communication_data)
-      expected_fourth_communication_data = [
-        @cascade_comm4.communication_type,
-        @cascade_comm4.detailable.delivered_on.strftime(TIME_FORMAT),
-        @cascade_comm4.detailable.result,
-        @cascade_notification2.message
-      ]
-      expect(cascade_patient_row[fourth_message_range]).to eq(expected_fourth_communication_data)
-
-      # csv_data = subject.mail_csv
-      # csv_data.attachments.to_json
+      expected_cascade_patient_result = {
+        "Experiment Name" => @experiment.name,
+        "Treatment Group" => @cascade_group.description,
+        "Experiment Inclusion Date" => @cascade_patient.treatment_group_memberships.first.created_at.to_date,
+        "Appointments" =>
+         [{"Appointment 1 Creation Date" => @cascade_patient_appt.device_created_at.to_date,
+           "Appointment 1 Date" => @cascade_patient_appt.scheduled_date.to_date}],
+        "Blood Pressures" =>
+         [],
+        "Communications" => [
+          {"Message 1 Type" => @cascade_comm1.communication_type,
+          "Message 1 Date Sent" => @cascade_comm1.detailable.delivered_on.to_date,
+          "Message 1 Status" => @cascade_comm1.detailable.result,
+          "Message 1 Text Identifier" => @cascade_notification1.message},
+          {"Message 2 Type" => @cascade_comm2.communication_type,
+          "Message 2 Date Sent" => @cascade_comm2.detailable.delivered_on.to_date,
+          "Message 2 Status" => @cascade_comm2.detailable.result,
+          "Message 2 Text Identifier" => @cascade_notification1.message},
+          {"Message 3 Type" => @cascade_comm3.communication_type,
+          "Message 3 Date Sent" => @cascade_comm3.detailable.delivered_on.to_date,
+          "Message 3 Status" => @cascade_comm3.detailable.result,
+          "Message 3 Text Identifier" => @cascade_notification2.message},
+          {"Message 4 Type" => @cascade_comm4.communication_type,
+          "Message 4 Date Sent" => @cascade_comm4.detailable.delivered_on.to_date,
+          "Message 4 Status" => @cascade_comm4.detailable.result,
+          "Message 4 Text Identifier" => @cascade_notification2.message}
+        ],
+        "Patient Gender" => @cascade_patient.gender,
+        "Patient Age" => @cascade_patient.age,
+        "Patient Risk Level" => @cascade_patient.risk_priority,
+        "Assigned Facility Name" => @cascade_patient.assigned_facility.name,
+        "Assigned Facility Type" =>  @cascade_patient.assigned_facility.facility_type,
+        "Assigned Facility State" =>  @cascade_patient.assigned_facility.state,
+        "Assigned Facility District" => @cascade_patient.assigned_facility.district,
+        "Assigned Facility Block" => @cascade_patient.assigned_facility.block,
+        "Patient Registration Date" => @cascade_patient.registration_date.to_date,
+        "Patient Id" =>  @cascade_patient.treatment_group_memberships.first.id
+      }
+      expect(results.last).to eq(expected_cascade_patient_result)
     end
   end
 end
