@@ -157,7 +157,6 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
     end
 
     it "localizes the message based on facility state, not patient address" do
-      mock_successful_delivery
       notification.patient.address.update!(state: "maharashtra")
       notification.subject.facility.update!(state: "punjab")
       localized_message = I18n.t(
@@ -180,6 +179,22 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
         }
       )
       described_class.perform_async(notification.id)
+      described_class.drain
+    end
+
+    it "can send to a specified phone number if provided" do
+      expect_any_instance_of(TwilioApiService).to receive(:send_sms).with(
+        recipient_number: "+14145555555",
+        message: notification.localized_message,
+        callback_url: "https://localhost/api/v3/twilio_sms_delivery",
+        context: {
+          calling_class: "AppointmentNotification::Worker",
+          communication_type: "sms",
+          notification_id: notification.id,
+          notification_purpose: "missed_visit_reminder"
+        }
+      )
+      described_class.perform_async(notification.id, "+14145555555")
       described_class.drain
     end
 
