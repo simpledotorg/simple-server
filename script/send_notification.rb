@@ -9,11 +9,13 @@
 #
 #   script/send_notification.rb "Patient Name" "+1605551234"
 #
-# To use this from a development box you will need the following in your env before running.
+# To send real messages from a development box you will need the following in your env before running.
 #
 # export SIMPLE_SERVER_HOST="api-sandbox.simple.org"
-# export TWILIO_PRODUCTION_OVERRIDE=true
+# export TWILIO_ACCOUNT_SID=[production SID here]
+# export TWILIO_AUTH_TOKEN=[production auth token here]
 # export TWILIO_PHONE_NUMBER="+17044524471"
+# export TWILIO_PRODUCTION_OVERRIDE=true
 
 full_name = ARGV.first || raise(ArgumentError, "You must provide a patient name")
 phone_number = ARGV.second || raise(ArgumentError, "You must provide a phone number to receive the message")
