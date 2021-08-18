@@ -10,7 +10,11 @@
 #
 #   script/send_notification.rb "Patient Name" "+1605551234"
 #
-# To send real messages from a development box you will need the following in your env before running.
+# To send real messages from Sandbox, set the following first:
+#
+# export TWILIO_PRODUCTION_OVERRIDE=true
+#
+# To send real messages from development, set the following first:
 #
 # export SIMPLE_SERVER_HOST="api-sandbox.simple.org"
 # export TWILIO_ACCOUNT_SID=[production SID here]
