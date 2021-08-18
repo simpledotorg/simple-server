@@ -1,12 +1,12 @@
 en_LK:
   facility_group: "district"
-  facility_group_zone: "Block"
+  facility_group_zone: "town"
   helpers:
     label:
       facility:
         street_address: "House number and street"
-        village_or_colony: "Town/Area"
-        zone: "Block"
+        village_or_colony: "Village or colony"
+        zone: "Town *"
         district: "District *"
         state: "Province *"
         country: "Country *"
@@ -15,8 +15,8 @@ en_LK:
         state: "Province"
       address:
         street_address: "House and street number"
-        village_or_colony: "Town/Area"
-        zone: "Block"
+        village_or_colony: "Village or colony"
+        zone: "Town *"
         district: "District"
         state: "Province *"
         country: "Country *"
