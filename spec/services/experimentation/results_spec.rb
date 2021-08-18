@@ -2,10 +2,10 @@ require "rails_helper"
 require_relative "./experiment_data_examples.rb"
 
 RSpec.describe Experimentation::Results, type: :model do
-  describe "#as_csv" do
+  describe "#aggregate_data" do
     include_context "active experiment data"
 
-    it "exports accurate data in the expected format" do
+    it "aggregates data for all experiment patients" do
       subject = described_class.new(@experiment.name)
       subject.aggregate_data
       results = subject.patient_data_aggregate
