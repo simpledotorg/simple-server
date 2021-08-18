@@ -18,6 +18,23 @@ module Experimentation
       create_csv
     end
 
+    def mail_csv
+      mailer = ApplicationMailer.new
+      email_params = {
+        to: recipient_email_address,
+        subject: "Experiment data export: #{experiment_name}",
+        content_type: "multipart/mixed",
+        body: "Please see attached CSV."
+      }
+      email = mailer.mail(email_params)
+      filename = experiment_name.gsub(" ", "_")
+      email.attachments[filename] = {
+        mime_type: "text/csv",
+        content: @temp_csv
+      }
+      email.deliver
+    end
+
     private
 
     def headers
@@ -33,7 +50,7 @@ module Experimentation
     end
 
     def create_csv
-      CSV.generate(headers: true) do |csv|
+      @temp_csv = CSV.generate(headers: true) do |csv|
         csv << headers
         results.each do |patient_data|
           EXPANDABLE_COLUMNS.each do |column|
@@ -42,23 +59,6 @@ module Experimentation
           csv << patient_data
         end
       end
-    end
-
-    def mail_csv
-      mailer = ApplicationMailer.new
-      email_params = {
-        to: recipient_email_address,
-        subject: "Experiment data export: #{experiment.name}",
-        content_type: "multipart/mixed",
-        body: "Please see attached CSV."
-      }
-      email = mailer.mail(email_params)
-      filename = experiment.name.gsub(" ", "_")
-      email.attachments[filename] = {
-        mime_type: "text/csv",
-        content: csv
-      }
-      email.deliver
     end
   end
 end
