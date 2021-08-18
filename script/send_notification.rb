@@ -1,4 +1,4 @@
-#!/usr/bin/env rails runner
+#!/usr/bin/env ruby
 #
 # Script to send messages via our Twilio notification system.
 #
@@ -21,6 +21,8 @@
 # export TWILIO_AUTH_TOKEN=[production auth token here]
 # export TWILIO_PHONE_NUMBER="+17044524471"
 # export TWILIO_PRODUCTION_OVERRIDE=true
+
+require_relative "../config/environment"
 
 full_name = ARGV.first || raise(ArgumentError, "You must provide a patient name")
 phone_number = ARGV.second || raise(ArgumentError, "You must provide a phone number to receive the message")
