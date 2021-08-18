@@ -160,19 +160,20 @@ class Reports::RegionsController < AdminController
   end
 
   def check_reporting_schema_toggle
-    return yield unless current_admin.power_user?
     original = RequestStore[:reporting_schema_v2]
-    RequestStore[:reporting_schema_v2] = true if report_params[:v2]
+    RequestStore[:reporting_schema_v2] = reporting_schema_via_param_or_feature_flag
     yield
   ensure
     RequestStore[:reporting_schema_v2] = original
   end
 
-  def reporting_schema_v2_enabled?
-    RequestStore[:reporting_schema_v2]
+  # We want a falsey param value (ie v2=false) to override a user feature flagged value, hence the awkwardness below
+  def reporting_schema_via_param_or_feature_flag
+    param_flag = ActiveRecord::Type::Boolean.new.deserialize(report_params[:v2])
+    user_flag = current_admin.feature_enabled?(:reporting_schema_v2)
+    return param_flag unless param_flag.nil?
+    user_flag
   end
-
-  helper_method :reporting_schema_v2_enabled?
 
   def accessible_region?(region, action)
     return false unless region.reportable_region?

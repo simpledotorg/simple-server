@@ -6,6 +6,12 @@
       current deploy: <%= SimpleServer.github_url %>
 -->
     <% end %>
+    <% if email_authentication_signed_in? && current_admin %>
+<!-- >
+      enabled feature flags: <%= raw current_enabled_features %>
+-->
+    <% end %>
+
     <% if ENV["GOOGLE_ANALYTICS_ID"].present? %>
       <!-- Global site tag (gtag.js) - Google Analytics -->
       <script async src="https://www.googletagmanager.com/gtag/js?id=<%= ENV["GOOGLE_ANALYTICS_ID"] %>"></script>

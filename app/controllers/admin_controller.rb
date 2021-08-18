@@ -29,6 +29,7 @@ class AdminController < ApplicationController
   end
 
   helper_method :current_admin
+  helper_method :current_enabled_features
 
   private
 
@@ -37,6 +38,10 @@ class AdminController < ApplicationController
     admin = current_email_authentication.user
     admin.email_authentications.load
     @current_admin = admin
+  end
+
+  def current_enabled_features
+    Flipper.features.select { |feature| feature.enabled?(current_admin) }.map(&:name)
   end
 
   def pundit_user
