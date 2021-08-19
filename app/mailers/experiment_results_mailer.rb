@@ -1,16 +1,16 @@
 class ExperimentResultsMailer
   require "csv"
 
-  attr_reader :experiment_name, :recipient_email_address, :results
+  attr_reader :experiment_name, :recipient_email_address, :mailer, :results
 
   def initialize(experiment_name, recipient_email_address)
     @experiment_name = experiment_name
     @recipient_email_address = recipient_email_address
+    @mailer = ApplicationMailer.new
     fetch_results
   end
 
   def mail_csv
-    mailer = ApplicationMailer.new
     email_params = {
       to: recipient_email_address,
       subject: "Experiment data export: #{experiment_name}",
