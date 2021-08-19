@@ -20,8 +20,8 @@ class Api::V4::AppointmentsController < Api::V4::SyncController
       {errors_hash: validator.errors_hash}
     else
       record_params = Api::V3::AppointmentTransformer
-                        .from_request(appointment_params)
-                        .merge(metadata)
+        .from_request(appointment_params)
+        .merge(metadata)
 
       appointment = Appointment.merge(record_params)
       appointment.update_patient_status
@@ -35,13 +35,13 @@ class Api::V4::AppointmentsController < Api::V4::SyncController
 
   def appointments_params
     permitted_call_result_params = %i[
-      id,
-      user_id,
-      cancel_reason,
-      agreed_to_visit,
-      remind_on,
-      created_at,
-      updated_at,
+      id
+      user_id
+      cancel_reason
+      agreed_to_visit
+      remind_on
+      created_at
+      updated_at
       deleted_at
     ]
 

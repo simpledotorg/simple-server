@@ -1,5 +1,4 @@
 class CallResult < ApplicationRecord
-
   belongs_to :appointment
   belongs_to :user
 
@@ -18,5 +17,4 @@ class CallResult < ApplicationRecord
     moved_to_private: "moved_to_private",
     other: "other"
   }
-
 end
