@@ -25,7 +25,7 @@ module Experimentation
         body: "Please see attached CSV."
       }
       email = mailer.mail(email_params)
-      filename = experiment_name.gsub(" ", "_")
+      filename = experiment_name.gsub(" ", "_") + ".csv"
       email.attachments[filename] = {
         mime_type: "text/csv",
         content: csv_file
