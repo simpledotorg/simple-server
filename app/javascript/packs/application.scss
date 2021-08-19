@@ -31,6 +31,7 @@ $brand-light-blue: #40596C;
 // Grey colors
 $black: #000000;
 $dark-grey: #6C737A;
+$grey: #A3A9B8;
 $light-grey: #DFE3EE;
 $silver: #F1F3F8;
 $white: #FFFFFF;
@@ -107,6 +108,92 @@ $light-purple: #E7E3F0;
 .underline { text-decoration: underline; }
 .strong { font-weight: 500; }
 .phone { letter-spacing: 1px; }
+// Colors
+.text-brand-blue { color: $brand-blue; }
+.text-brand-light-blue { color: $brand-light-blue; }
+.text-black { color: $black; }
+.text-dark-grey { color: $dark-grey; }
+.text-grey { color: $grey; }
+.text-light-grey { color: $light-grey; }
+.text-silver { color: $silver; }
+.text-white { color: $white; }
+.text-dark-blue { color: $dark-blue; }
+.text-blue { color: $blue; }
+.text-light-blue { color: $light-blue; }
+.text-dark-red { color: $dark-red; }
+.text-red { color: $red; }
+.text-light-red { color: $light-red; }
+.text-dark-orange { color: $dark-orange; }
+.text-orange { color: $orange; }
+.text-light-orange { color: $light-orange; }
+.text-dark-yellow { color: $dark-yellow; }
+.text-yellow { color: $yellow; }
+.text-light-yellow { color: $light-yellow; }
+.text-dark-green { color: $dark-green; }
+.text-green { color: $green; }
+.text-light-green { color: $light-green; }
+.text-dark-purple { color: $dark-purple; }
+.text-purple { color: $purple; }
+.text-light-purple { color: $light-purple; }
+/*
+
+  SVG
+  - Fills
+  - Strokes
+
+*/
+.fill-brand-blue { fill: $brand-blue; }
+.fill-brand-light-blue { fill: $brand-light-blue; }
+.fill-black { fill: $black; }
+.fill-dark-grey { fill: $dark-grey; }
+.fill-grey { fill: $grey; }
+.fill-light-grey { fill: $light-grey; }
+.fill-silver { fill: $silver; }
+.fill-white { fill: $white; }
+.fill-dark-blue { fill: $dark-blue; }
+.fill-blue { fill: $blue; }
+.fill-light-blue { fill: $light-blue; }
+.fill-dark-red { fill: $dark-red; }
+.fil-red { fill: $red; }
+.fill-light-red { fill: $light-red; }
+.fill-dark-orange { fill: $dark-orange; }
+.fill-orange { fill: $orange; }
+.fill-light-orange { fill: $light-orange; }
+.fill-dark-yellow { fill: $dark-yellow; }
+.fill-yellow { fill: $yellow; }
+.fill-light-yellow { fill: $light-yellow; }
+.fill-dark-green { fill: $dark-green; }
+.fill-green { fill: $green; }
+.fill-light-green { fill: $light-green; }
+.fill-dark-purple { fill: $dark-purple; }
+.fill-purple { fill: $purple; }
+.fill-light-purple { fill: $light-purple; }
+.stroke-brand-blue { stroke: $brand-blue; }
+.stroke-brand-light-blue { stroke: $brand-light-blue; }
+.stroke-black { stroke: $black; }
+.stroke-dark-grey { stroke: $dark-grey; }
+.stroke-grey { stroke: $grey; }
+.stroke-light-grey { stroke: $light-grey; }
+.stroke-silver { stroke: $silver; }
+.stroke-white { stroke: $white; }
+.stroke-dark-blue { stroke: $dark-blue; }
+.stroke-blue { stroke: $blue; }
+.stroke-light-blue { stroke: $light-blue; }
+.stroke-dark-red { stroke: $dark-red; }
+.stroke-red { stroke: $red; }
+.stroke-light-red { stroke: $light-red; }
+.stroke-dark-orange { stroke: $dark-orange; }
+.stroke-orange { stroke: $orange; }
+.stroke-light-orange { stroke: $light-orange; }
+.stroke-dark-yellow { stroke: $dark-yellow; }
+.stroke-yellow { stroke: $yellow; }
+.stroke-light-yellow { stroke: $light-yellow; }
+.stroke-dark-green { stroke: $dark-green; }
+.stroke-green { stroke: $green; }
+.stroke-light-green { stroke: $light-green; }
+.stroke-dark-purple { stroke: $dark-purple; }
+.stroke-purple { stroke: $purple; }
+.stroke-light-purple { stroke: $light-purple; }
 /*
 
   COMPONENTS
