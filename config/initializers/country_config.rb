@@ -18,7 +18,7 @@ class CountryConfig
     BD: {
       abbreviation: "BD",
       name: "Bangladesh",
-      extended_region_reports: false,
+      extended_region_reports: true,
       states: COUNTRYWISE_STATES["Bangladesh"],
       dashboard_locale: ENV["DEFAULT_PREFERRED_DASHBOARD_LOCALE"] || "en_BD",
       time_zone: ENV["DEFAULT_TIME_ZONE"] || "Asia/Dhaka",

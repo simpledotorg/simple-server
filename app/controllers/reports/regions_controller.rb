@@ -35,7 +35,7 @@ class Reports::RegionsController < AdminController
     @with_ltfu = with_ltfu?
 
     @child_regions = @region.reportable_children
-    repo = Reports::Repository.new(@child_regions, periods: @period)
+    repo = Reports::Repository.new(@child_regions, periods: @period, reporting_schema_v2: RequestStore[:reporting_schema_v2])
 
     @children_data = @child_regions.map { |region|
       slug = region.slug
@@ -73,8 +73,8 @@ class Reports::RegionsController < AdminController
     else
       [@region, @region.facility_regions].flatten
     end
-    @repository = Reports::Repository.new(regions, periods: @period_range)
-    chart_repo = Reports::Repository.new(@region, periods: chart_range)
+    @repository = Reports::Repository.new(regions, periods: @period_range, reporting_schema_v2: RequestStore[:reporting_schema_v2])
+    chart_repo = Reports::Repository.new(@region, periods: chart_range, reporting_schema_v2: RequestStore[:reporting_schema_v2])
 
     @chart_data = {
       patient_breakdown: PatientBreakdownService.call(region: @region, period: @period),
@@ -160,19 +160,20 @@ class Reports::RegionsController < AdminController
   end
 
   def check_reporting_schema_toggle
-    return yield unless current_admin.power_user?
     original = RequestStore[:reporting_schema_v2]
-    RequestStore[:reporting_schema_v2] = true if report_params[:v2]
+    RequestStore[:reporting_schema_v2] = reporting_schema_via_param_or_feature_flag
     yield
   ensure
     RequestStore[:reporting_schema_v2] = original
   end
 
-  def reporting_schema_v2_enabled?
-    RequestStore[:reporting_schema_v2]
+  # We want a falsey param value (ie v2=false) to override a user feature flagged value, hence the awkwardness below
+  def reporting_schema_via_param_or_feature_flag
+    param_flag = ActiveRecord::Type::Boolean.new.deserialize(report_params[:v2])
+    user_flag = current_admin.feature_enabled?(:reporting_schema_v2)
+    return param_flag unless param_flag.nil?
+    user_flag
   end
-
-  helper_method :reporting_schema_v2_enabled?
 
   def accessible_region?(region, action)
     return false unless region.reportable_region?
