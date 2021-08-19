@@ -110,7 +110,7 @@ class Api::V4::Models
     def lookup_patient
       Api::V3::Models.nested_patient.deep_merge(
         properties: {
-          appointments: {"$ref" => "#/definitions/appointments"},
+          appointments: {"$ref" => "#/definitions/v3_appointments"},
           blood_pressures: {"$ref" => "#/definitions/blood_pressures"},
           blood_sugars: {"$ref" => "#/definitions/blood_sugars"},
           medical_history: {"$ref" => "#/definitions/nullable_medical_history"},
@@ -353,18 +353,55 @@ class Api::V4::Models
        required: %w[id name created_at updated_at]}
     end
 
+    def appointment
+      {type: :object,
+       properties: {
+         id: {"$ref" => "#/definitions/uuid"},
+         patient_id: {"$ref" => "#/definitions/uuid"},
+         facility_id: {"$ref" => "#/definitions/uuid"},
+         creation_facility_id: {"$ref" => "#/definitions/uuid"},
+         scheduled_date: {type: :string, format: :date},
+         status: {type: :string, enum: Appointment.statuses.keys},
+         remind_on: {type: [:string, "null"], format: :date},
+         appointment_type: {type: :string, enum: Appointment.appointment_types.keys},
+         deleted_at: {"$ref" => "#/definitions/nullable_timestamp"},
+         created_at: {"$ref" => "#/definitions/timestamp"},
+         updated_at: {"$ref" => "#/definitions/timestamp"}
+       },
+       required: %w[id patient_id facility_id scheduled_date status created_at updated_at appointment_type]}
+    end
+
+    def call_result
+      {type: :object,
+       properties: {
+         id: {"$ref" => "#/definitions/uuid"},
+         user_id: {"$ref" => "#/definitions/uuid"},
+         appointment_id: {"$ref" => "#/definitions/uuid"},
+         cancel_reason: {type: :string, enum: CallResult.cancel_reasons.keys},
+         result: {type: :string, enum: CallResult.results.keys},
+         deleted_at: {"$ref" => "#/definitions/nullable_timestamp"},
+         created_at: {"$ref" => "#/definitions/timestamp"},
+         updated_at: {"$ref" => "#/definitions/timestamp"}
+       },
+       required: %w[id user_id appointment_id result created_at updated_at]}
+    end
+
     def definitions
       {
         activate_user: activate_user,
         address: Api::V3::Models.address,
         app_user_capabilities: app_user_capabilities,
-        appointment: Api::V3::Models.appointment,
+        appointment: appointment,
         appointments: array_of("appointment"),
+        v3_appointment: Api::V3::Models.appointment,
+        v3_appointments: array_of("v3_appointment"),
         bcrypt_password: bcrypt_password,
         blood_pressure: Api::V3::Models.blood_pressure,
         blood_pressures: array_of("blood_pressure"),
         blood_sugar: blood_sugar,
         blood_sugars: array_of("blood_sugar"),
+        call_result: call_result,
+        call_results: array_of("call_result"),
         facility_medical_officer: facility_medical_officer,
         facility_medical_officers: array_of("facility_medical_officer"),
         find_user: find_user,

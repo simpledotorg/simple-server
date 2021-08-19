@@ -193,6 +193,18 @@ class Api::V4::Schema
       sync_to_user_response(:medications)
     end
 
+    def appointment_sync_from_user_request
+      sync_from_user_request(:appointments)
+    end
+
+    def appointment_sync_to_user_response
+      sync_to_user_response(:appointments)
+    end
+
+    def call_result_sync_from_user_request
+      sync_from_user_request(:call_results)
+    end
+
     def definitions
       {error: error,
        errors: Api::V4::Models.array_of("error"),

@@ -129,6 +129,18 @@ ActiveRecord::Schema.define(version: 2021_07_28_100308) do
     t.index ["deleted_at"], name: "index_call_logs_on_deleted_at"
   end
 
+  create_table "call_results", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id", null: false
+    t.uuid "appointment_id", null: false
+    t.string "cancel_reason"
+    t.string "result", null: false
+    t.datetime "device_created_at", null: false
+    t.datetime "device_updated_at", null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "communications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "appointment_id"
     t.uuid "user_id"
@@ -678,6 +690,7 @@ ActiveRecord::Schema.define(version: 2021_07_28_100308) do
   add_foreign_key "blood_sugars", "facilities"
   add_foreign_key "blood_sugars", "users"
   add_foreign_key "communications", "notifications"
+  add_foreign_key "drug_stocks", "facilities"
   add_foreign_key "drug_stocks", "protocol_drugs"
   add_foreign_key "drug_stocks", "users"
   add_foreign_key "encounters", "facilities"
