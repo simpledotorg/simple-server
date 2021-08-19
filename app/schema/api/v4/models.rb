@@ -110,7 +110,7 @@ class Api::V4::Models
     def lookup_patient
       Api::V3::Models.nested_patient.deep_merge(
         properties: {
-          appointments: {"$ref" => "#/definitions/v3_appointments"},
+          appointments: {"$ref" => "#/definitions/appointments"},
           blood_pressures: {"$ref" => "#/definitions/blood_pressures"},
           blood_sugars: {"$ref" => "#/definitions/blood_sugars"},
           medical_history: {"$ref" => "#/definitions/nullable_medical_history"},
@@ -353,24 +353,6 @@ class Api::V4::Models
        required: %w[id name created_at updated_at]}
     end
 
-    def appointment
-      {type: :object,
-       properties: {
-         id: {"$ref" => "#/definitions/uuid"},
-         patient_id: {"$ref" => "#/definitions/uuid"},
-         facility_id: {"$ref" => "#/definitions/uuid"},
-         creation_facility_id: {"$ref" => "#/definitions/uuid"},
-         scheduled_date: {type: :string, format: :date},
-         status: {type: :string, enum: Appointment.statuses.keys},
-         remind_on: {type: [:string, "null"], format: :date},
-         appointment_type: {type: :string, enum: Appointment.appointment_types.keys},
-         deleted_at: {"$ref" => "#/definitions/nullable_timestamp"},
-         created_at: {"$ref" => "#/definitions/timestamp"},
-         updated_at: {"$ref" => "#/definitions/timestamp"}
-       },
-       required: %w[id patient_id facility_id scheduled_date status created_at updated_at appointment_type]}
-    end
-
     def call_result
       {type: :object,
        properties: {
@@ -391,10 +373,8 @@ class Api::V4::Models
         activate_user: activate_user,
         address: Api::V3::Models.address,
         app_user_capabilities: app_user_capabilities,
-        appointment: appointment,
+        appointment: Api::V3::Models.appointment,
         appointments: array_of("appointment"),
-        v3_appointment: Api::V3::Models.appointment,
-        v3_appointments: array_of("v3_appointment"),
         bcrypt_password: bcrypt_password,
         blood_pressure: Api::V3::Models.blood_pressure,
         blood_pressures: array_of("blood_pressure"),
