@@ -29,7 +29,8 @@ class Notification < ApplicationRecord
   enum purpose: {
     covid_medication_reminder: "covid_medication_reminder",
     experimental_appointment_reminder: "experimental_appointment_reminder",
-    missed_visit_reminder: "missed_visit_reminder"
+    missed_visit_reminder: "missed_visit_reminder",
+    test_message: "test_message"
   }
 
   scope :due_today, -> { where(remind_on: Date.current, status: [:pending]) }
@@ -60,6 +61,8 @@ class Notification < ApplicationRecord
         appointment_date: subject.scheduled_date,
         locale: subject.facility.locale
       )
+    when "test_message"
+      "Test message sent by Simple.org to #{patient.full_name}"
     else
       raise ArgumentError, "No localized_message defined for notification of type #{purpose}"
     end
