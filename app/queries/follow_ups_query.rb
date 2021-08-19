@@ -14,17 +14,15 @@ class FollowUpsQuery
     end
   end
 
-  def self.with(model, period, time_column: "recorded_at", at_region: nil, current: true, last: nil)
+  def self.with(model_name, period, time_column: "recorded_at", at_region: nil, **groupdate_opts)
     raise ArgumentError, "Only day, month and quarter allowed" unless period.in?([:day, :month, :quarter])
 
-    table_name = model.table_name.to_sym
+    table_name = model_name.table_name.to_sym
     time_column_with_table_name = "#{table_name}.#{time_column}"
-    column_type = model.columns_hash[time_column].type
-    groupdate_time_zone = column_type != :date
 
     relation = Patient.joins(table_name)
-      .where("patients.recorded_at < #{model.date_to_period_sql(time_column_with_table_name, period)}")
-      .group_by_period(period, time_column_with_table_name, current: current, last: last, time_zone:groupdate_time_zone )
+      .where("patients.recorded_at < #{model_name.date_to_period_sql(time_column_with_table_name, period)}")
+      .group_by_period(period, time_column_with_table_name, groupdate_opts)
       .distinct
 
     if at_region.present?
