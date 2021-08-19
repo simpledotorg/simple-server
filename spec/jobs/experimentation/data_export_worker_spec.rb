@@ -1,5 +1,5 @@
 require "rails_helper"
-require_relative "./experiment_data_examples.rb"
+require_relative Rails.root.join("spec/support/experiment_data_examples.rb")
 
 RSpec.describe Experimentation::DataExportWorker, type: :model do
   describe "#perform" do
@@ -32,7 +32,6 @@ RSpec.describe Experimentation::DataExportWorker, type: :model do
       allow(ApplicationMailer).to receive(:new).and_return(mailer)
       allow(email_double).to receive(:attachments).and_return(attachments_double)
 
-      # expect(email_double).to receive(:deliver)
       expect(attachments_double).to receive(:[]=).with(filename, attachment_data)
 
       described_class.perform_async(@experiment.name, recipient_email_address)

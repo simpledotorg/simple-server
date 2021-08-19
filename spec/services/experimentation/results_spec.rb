@@ -1,5 +1,5 @@
 require "rails_helper"
-require_relative "./experiment_data_examples.rb"
+require_relative Rails.root.join("spec/support/experiment_data_examples.rb")
 
 RSpec.describe Experimentation::Results, type: :model do
   describe "#aggregate_data" do
