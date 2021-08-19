@@ -7,6 +7,8 @@ RSpec.describe Reports::RegionsController, type: :controller do
     let(:organization) { FactoryBot.create(:organization) }
     let(:cvho) { create(:admin, :manager, :with_access, resource: organization, organization: organization) }
     let(:call_center_user) { create(:admin, :call_center, full_name: "call_center") }
+    let(:facility_group_1) { FactoryBot.create(:facility_group, name: "facility_group_1", organization: organization) }
+    let(:facility_1) { FactoryBot.create(:facility, name: "facility_1", facility_group: facility_group_1) }
 
     def refresh_views
       RefreshMaterializedViews.call
@@ -19,7 +21,212 @@ RSpec.describe Reports::RegionsController, type: :controller do
       Reports::Repository.use_schema_v2 = original
     end
 
-    context "index" do
+    describe "show" do
+      render_views
+
+      before do
+        @facility_group = create(:facility_group, organization: organization)
+        @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
+        @facility_region = @facility.region
+      end
+
+      it "redirects if matching region slug not found" do
+        sign_in(cvho.email_authentication)
+        get :show, params: {id: "String-unknown", report_scope: "bad-report_scope"}
+        expect(flash[:alert]).to eq("You are not authorized to perform this action.")
+        expect(response).to be_redirect
+      end
+
+      it "redirects if user does not have proper access to org" do
+        district_official = create(:admin, :viewer_reports_only, :with_access, resource: @facility_group)
+
+        sign_in(district_official.email_authentication)
+        get :show, params: {id: @facility_group.organization.slug, report_scope: "organization"}
+        expect(flash[:alert]).to eq("You are not authorized to perform this action.")
+        expect(response).to be_redirect
+      end
+
+      it "redirects if user does not have authorization to region" do
+        other_fg = create(:facility_group, name: "other facility group")
+        other_fg.facilities << build(:facility, name: "other facility")
+        user = create(:admin, :viewer_reports_only, :with_access, resource: other_fg)
+
+        sign_in(user.email_authentication)
+        get :show, params: {id: @facility_region.slug, report_scope: "facility"}
+        expect(flash[:alert]).to eq("You are not authorized to perform this action.")
+        expect(response).to be_redirect
+      end
+
+      it "finds a district region if it has different slug compared to the facility group" do
+        other_fg = create(:facility_group, name: "other facility group", organization: organization)
+        region = other_fg.region
+        slug = region.slug
+        region.update!(slug: "#{slug}-district")
+        expect(region.slug).to_not eq(other_fg.slug)
+        other_fg.facilities << build(:facility, name: "other facility")
+        user = create(:admin, :viewer_reports_only, :with_access, resource: other_fg)
+
+        sign_in(user.email_authentication)
+        get :show, params: {id: region.slug, report_scope: "district"}
+        expect(response).to be_successful
+      end
+
+      it "renders successfully for an organization" do
+        other_fg = create(:facility_group, name: "other facility group", organization: organization)
+        create(:facility, name: "other facility", facility_group: other_fg)
+        user = create(:admin, :viewer_reports_only, :with_access, resource: other_fg)
+
+        sign_in(user.email_authentication)
+        get :show, params: {id: organization.slug, report_scope: "organization"}
+      end
+
+      it "renders successfully if report viewer has access to region" do
+        other_fg = create(:facility_group, name: "other facility group", organization: organization)
+        create(:facility, name: "other facility", facility_group: other_fg)
+        user = create(:admin, :viewer_reports_only, :with_access, resource: other_fg)
+
+        sign_in(user.email_authentication)
+        get :show, params: {id: other_fg.region.slug, report_scope: "district"}
+        expect(response).to be_successful
+      end
+
+      it "returns period info for every month" do
+        Timecop.freeze("June 1 2020") do
+          sign_in(cvho.email_authentication)
+          get :show, params: {id: @facility.facility_group.region.slug, report_scope: "district"}
+        end
+        data = assigns(:data)
+        period_hash = {
+          "name" => "Dec-2019",
+          "bp_control_start_date" => "1-Oct-2019",
+          "bp_control_end_date" => "31-Dec-2019",
+          "ltfu_since_date" => "31-Dec-2018",
+          "bp_control_registration_date" => "30-Sep-2019"
+        }
+        expect(data[:period_info][dec_2019_period]).to eq(period_hash)
+      end
+
+      it "returns period info for current month" do
+        today = Date.current
+        Timecop.freeze(today) do
+          patient = create(:patient, registration_facility: @facility, recorded_at: 2.months.ago)
+          create(:bp_with_encounter, :under_control, recorded_at: Time.current.yesterday, patient: patient, facility: @facility)
+          refresh_views
+          sign_in(cvho.email_authentication)
+          get :show, params: {id: @facility.facility_group.slug, report_scope: "district"}
+        end
+        data = assigns(:data)
+        expect(data[:period_info][Period.month(today.beginning_of_month)]).to_not be_nil
+      end
+
+      it "retrieves district data" do
+        patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
+        create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+        create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
+        refresh_views
+
+        Timecop.freeze("June 1 2020") do
+          sign_in(cvho.email_authentication)
+          get :show, params: {id: @facility.facility_group.slug, report_scope: "district"}
+        end
+        expect(response).to be_successful
+        data = assigns(:data)
+        expect(data[:controlled_patients].size).to eq(10) # sanity check
+        expect(data[:controlled_patients][dec_2019_period]).to eq(1)
+      end
+
+      it "retrieves facility data" do
+        Time.parse("January 1 2020")
+        patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
+        create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+        create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
+        refresh_views
+
+        Timecop.freeze("June 1 2020") do
+          sign_in(cvho.email_authentication)
+          get :show, params: {id: @facility_region.slug, report_scope: "facility"}
+        end
+        expect(response).to be_successful
+        data = assigns(:data)
+        expect(data[:controlled_patients].size).to eq(10) # sanity check
+        expect(data[:controlled_patients][Date.parse("Dec 2019").to_period]).to eq(1)
+      end
+
+      it "retrieves block data" do
+        patient_2 = create(:patient, registration_facility: @facility, recorded_at: "June 01 2019 00:00:00 UTC", registration_user: cvho)
+        create(:bp_with_encounter, :hypertensive, recorded_at: "Feb 2020", facility: @facility, patient: patient_2, user: cvho)
+
+        patient_1 = create(:patient, registration_facility: @facility, recorded_at: "September 01 2019 00:00:00 UTC", registration_user: cvho)
+        create(:bp_with_encounter, :under_control, recorded_at: "December 10th 2019", patient: patient_1, facility: @facility, user: cvho)
+        create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility, user: cvho)
+
+        refresh_views
+
+        block = @facility.region.block_region
+        Timecop.freeze("June 1 2020") do
+          sign_in(cvho.email_authentication)
+          get :show, params: {id: block.to_param, report_scope: "block"}
+        end
+        expect(response).to be_successful
+        data = assigns(:data)
+
+        expect(data[:registrations][Period.month("June 2019")]).to eq(1)
+        expect(data[:registrations][Period.month("September 2019")]).to eq(1)
+        expect(data[:controlled_patients][Period.month("Dec 2019")]).to eq(1)
+        expect(data[:uncontrolled_patients][Period.month("Feb 2020")]).to eq(1)
+        expect(data[:uncontrolled_patients_rate][Period.month("Feb 2020")]).to eq(50)
+        expect(data[:missed_visits][Period.month("September 2019")]).to eq(1)
+        expect(data[:missed_visits][Period.month("May 2020")]).to eq(2)
+      end
+
+      it "works when a user requests data just before the earliest registration date" do
+        patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
+        create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+        create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
+        refresh_views
+        one_month_before = patient.recorded_at.advance(months: -1)
+
+        sign_in(cvho.email_authentication)
+        get :show, params: {id: @facility_region.slug, report_scope: "facility",
+                            period: {type: :month, value: one_month_before}}
+        expect(response).to be_successful
+        data = assigns(:data)
+        expect(data[:controlled_patients]).to eq({})
+        expect(data[:period_info]).to eq({})
+      end
+
+      it "works for very old dates" do
+        patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
+        create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+        refresh_views
+        ten_years_ago = patient.recorded_at.advance(years: -10)
+
+        sign_in(cvho.email_authentication)
+        get :show, params: {id: @facility_region.slug, report_scope: "facility",
+                            period: {type: :month, value: ten_years_ago}}
+        expect(response).to be_successful
+        data = assigns(:data)
+        expect(data[:controlled_patients]).to eq({})
+        expect(data[:period_info]).to eq({})
+      end
+
+      it "works for far future dates" do
+        patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
+        create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+        refresh_views
+        ten_years_from_now = patient.recorded_at.advance(years: -10)
+
+        sign_in(cvho.email_authentication)
+        get :show, params: {id: @facility_region.slug, report_scope: "facility",
+                            period: {type: :month, value: ten_years_from_now}}
+        expect(response).to be_successful
+        data = assigns(:data)
+        expect(data[:controlled_patients]).to eq({})
+        expect(data[:period_info]).to eq({})
+      end
+    end
+
+    describe "index" do
       render_views
 
       before do
@@ -49,7 +256,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
     end
 
-    context "details" do
+    describe "details" do
       render_views
 
       before do
@@ -135,7 +342,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
     end
 
-    context "cohort" do
+    describe "cohort" do
       render_views_on_ci
 
       before do
@@ -178,237 +385,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
     end
 
-    context "show" do
-      render_views
-
-      before do
-        @facility_group = create(:facility_group, organization: organization)
-        @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
-        @facility_region = @facility.region
-      end
-
-      it "redirects if matching region slug not found" do
-        sign_in(cvho.email_authentication)
-        get :show, params: {id: "String-unknown", report_scope: "bad-report_scope"}
-        expect(flash[:alert]).to eq("You are not authorized to perform this action.")
-        expect(response).to be_redirect
-      end
-
-      it "redirects if user does not have proper access to org" do
-        district_official = create(:admin, :viewer_reports_only, :with_access, resource: @facility_group)
-
-        sign_in(district_official.email_authentication)
-        get :show, params: {id: @facility_group.organization.slug, report_scope: "organization"}
-        expect(flash[:alert]).to eq("You are not authorized to perform this action.")
-        expect(response).to be_redirect
-      end
-
-      it "raises error if user does not have authorization to region" do
-        other_fg = create(:facility_group, name: "other facility group")
-        other_fg.facilities << build(:facility, name: "other facility")
-        user = create(:admin, :viewer_reports_only, :with_access, resource: other_fg)
-
-        sign_in(user.email_authentication)
-        get :show, params: {id: @facility_region.slug, report_scope: "facility"}
-        expect(flash[:alert]).to eq("You are not authorized to perform this action.")
-        expect(response).to be_redirect
-      end
-
-      it "finds a district region if it has different slug compared to the facility group" do
-        other_fg = create(:facility_group, name: "other facility group", organization: organization)
-        region = other_fg.region
-        slug = region.slug
-        region.update!(slug: "#{slug}-district")
-        expect(region.slug).to_not eq(other_fg.slug)
-        other_fg.facilities << build(:facility, name: "other facility")
-        user = create(:admin, :viewer_reports_only, :with_access, resource: other_fg)
-
-        sign_in(user.email_authentication)
-        get :show, params: {id: region.slug, report_scope: "district"}
-        expect(response).to be_successful
-      end
-
-      it "renders successfully for an organization" do
-        other_fg = create(:facility_group, name: "other facility group", organization: organization)
-        create(:facility, name: "other facility", facility_group: other_fg)
-        user = create(:admin, :viewer_reports_only, :with_access, resource: other_fg)
-
-        sign_in(user.email_authentication)
-        get :show, params: {id: organization.slug, report_scope: "organization"}
-      end
-
-      it "renders successfully if report viewer has access to region" do
-        other_fg = create(:facility_group, name: "other facility group", organization: organization)
-        create(:facility, name: "other facility", facility_group: other_fg)
-        user = create(:admin, :viewer_reports_only, :with_access, resource: other_fg)
-
-        sign_in(user.email_authentication)
-        get :show, params: {id: other_fg.region.slug, report_scope: "district"}
-        expect(response).to be_successful
-      end
-
-      it "returns period info for every month" do
-        Timecop.freeze("June 1 2020") do
-          sign_in(cvho.email_authentication)
-          get :show, params: {id: @facility.facility_group.region.slug, report_scope: "district"}
-        end
-        data = assigns(:data)
-        period_hash = {
-          "name" => "Dec-2019",
-          "bp_control_start_date" => "1-Oct-2019",
-          "bp_control_end_date" => "31-Dec-2019",
-          "ltfu_since_date" => "31-Dec-2018",
-          "bp_control_registration_date" => "30-Sep-2019"
-        }
-        expect(data[:period_info][dec_2019_period]).to eq(period_hash)
-      end
-
-      it "returns period info for current month" do
-        today = Date.current
-        Timecop.freeze(today) do
-          patient = create(:patient, registration_facility: @facility, recorded_at: 2.months.ago)
-          create(:bp_with_encounter, :under_control, recorded_at: Time.current.yesterday, patient: patient, facility: @facility)
-          refresh_views
-          sign_in(cvho.email_authentication)
-          get :show, params: {id: @facility.facility_group.slug, report_scope: "district"}
-        end
-        data = assigns(:data)
-        expect(data[:period_info][Period.month(today.beginning_of_month)]).to_not be_nil
-      end
-
-      it "reporting_schema_v2 is enabled if v2 param is set" do
-        sign_in(create(:admin, :power_user).email_authentication)
-        # sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility.facility_group.slug, report_scope: "district", v2: "1"}
-        expect(assigns(:service).reporting_schema_v2?).to be_truthy
-        expect(response).to be_successful
-        expect(RequestStore[:reporting_schema_v2]).to be_falsey
-      end
-
-      it "reporting_schema_v2 is disabled if v2 param is not set" do
-        sign_in(create(:admin, :power_user).email_authentication)
-        # sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility.facility_group.slug, report_scope: "district"}
-        expect(assigns(:service).reporting_schema_v2?).to be_falsey
-        expect(response).to be_successful
-      end
-
-      it "reporting_schema_v2 can only be enabled by power users" do
-        sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility.facility_group.slug, report_scope: "district", v2: "1"}
-        expect(assigns(:service).reporting_schema_v2?).to be_falsey
-        expect(response).to be_successful
-      end
-
-      it "retrieves district data" do
-        patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
-        create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
-        create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
-        refresh_views
-
-        Timecop.freeze("June 1 2020") do
-          sign_in(cvho.email_authentication)
-          get :show, params: {id: @facility.facility_group.slug, report_scope: "district"}
-        end
-        expect(response).to be_successful
-        data = assigns(:data)
-        expect(data[:controlled_patients].size).to eq(10) # sanity check
-        expect(data[:controlled_patients][dec_2019_period]).to eq(1)
-      end
-
-      it "retrieves facility data" do
-        Time.parse("January 1 2020")
-        patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
-        create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
-        create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
-        refresh_views
-
-        Timecop.freeze("June 1 2020") do
-          sign_in(cvho.email_authentication)
-          get :show, params: {id: @facility_region.slug, report_scope: "facility"}
-        end
-        expect(response).to be_successful
-        expect(assigns(:service).reporting_schema_v2?).to be_falsey
-        data = assigns(:data)
-        expect(data[:controlled_patients].size).to eq(10) # sanity check
-        expect(data[:controlled_patients][Date.parse("Dec 2019").to_period]).to eq(1)
-      end
-
-      it "retrieves block data" do
-        patient_2 = create(:patient, registration_facility: @facility, recorded_at: "June 01 2019 00:00:00 UTC", registration_user: cvho)
-        create(:bp_with_encounter, :hypertensive, recorded_at: "Feb 2020", facility: @facility, patient: patient_2, user: cvho)
-
-        patient_1 = create(:patient, registration_facility: @facility, recorded_at: "September 01 2019 00:00:00 UTC", registration_user: cvho)
-        create(:bp_with_encounter, :under_control, recorded_at: "December 10th 2019", patient: patient_1, facility: @facility, user: cvho)
-        create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility, user: cvho)
-
-        refresh_views
-
-        block = @facility.region.block_region
-        Timecop.freeze("June 1 2020") do
-          sign_in(cvho.email_authentication)
-          get :show, params: {id: block.to_param, report_scope: "block"}
-        end
-        expect(response).to be_successful
-        data = assigns(:data)
-
-        expect(data[:registrations][Period.month("June 2019")]).to eq(1)
-        expect(data[:registrations][Period.month("September 2019")]).to eq(1)
-        expect(data[:controlled_patients][Period.month("Dec 2019")]).to eq(1)
-        expect(data[:uncontrolled_patients][Period.month("Feb 2020")]).to eq(1)
-        expect(data[:uncontrolled_patients_rate][Period.month("Feb 2020")]).to eq(50)
-        expect(data[:missed_visits][Period.month("September 2019")]).to eq(1)
-        expect(data[:missed_visits][Period.month("May 2020")]).to eq(2)
-      end
-
-      it "works when a user requests data just before the earliest registration date" do
-        patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
-        create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
-        create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
-        refresh_views
-        one_month_before = patient.recorded_at.advance(months: -1)
-
-        sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility_region.slug, report_scope: "facility",
-                            period: {type: :month, value: one_month_before}}
-        expect(response).to be_successful
-        data = assigns(:data)
-        expect(data[:controlled_patients]).to eq({})
-        expect(data[:period_info]).to eq({})
-      end
-
-      it "works for very old dates" do
-        patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
-        create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
-        refresh_views
-        ten_years_ago = patient.recorded_at.advance(years: -10)
-
-        sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility_region.slug, report_scope: "facility",
-                            period: {type: :month, value: ten_years_ago}}
-        expect(response).to be_successful
-        data = assigns(:data)
-        expect(data[:controlled_patients]).to eq({})
-        expect(data[:period_info]).to eq({})
-      end
-
-      it "works for far future dates" do
-        patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
-        create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
-        refresh_views
-        ten_years_from_now = patient.recorded_at.advance(years: -10)
-
-        sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility_region.slug, report_scope: "facility",
-                            period: {type: :month, value: ten_years_from_now}}
-        expect(response).to be_successful
-        data = assigns(:data)
-        expect(data[:controlled_patients]).to eq({})
-        expect(data[:period_info]).to eq({})
-      end
-    end
-
-    context "download" do
+    describe "download" do
       render_views
 
       before do
@@ -461,7 +438,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
         sign_in(cvho.email_authentication)
       end
 
-      context "html requested" do
+      describe "html requested" do
         it "renders graphics_header partial" do
           get :whatsapp_graphics, format: :html, params: {id: @facility.region.slug, report_scope: "facility"}
 
@@ -470,7 +447,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
         end
       end
 
-      context "png requested" do
+      describe "png requested" do
         it "renders the image template for downloading" do
           get :whatsapp_graphics, format: :png, params: {id: @facility_group.region.slug, report_scope: "district"}
 

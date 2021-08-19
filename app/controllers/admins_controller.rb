@@ -28,7 +28,12 @@ class AdminsController < AdminController
         head(:not_found) && return
       end
 
-    user_being_edited = page_for_access_tree.eql?(:edit) ? AdminAccessPresenter.new(@admin) : nil
+    if page_for_access_tree.eql?(:edit)
+      user_being_edited = AdminAccessPresenter.new(@admin)
+      set_facilities_pre_checks(user_being_edited)
+    else
+      user_being_edited = nil
+    end
 
     render partial: access_tree[:render_partial],
            locals: {
@@ -131,5 +136,9 @@ class AdminsController < AdminController
 
   def validate_selected_facilities?
     selected_facilities.blank? && user_params[:access_level] != User.access_levels[:power_user]
+  end
+
+  def set_facilities_pre_checks(user)
+    @facilities_pre_checks = user.visible_facilities.map(&:id).product([true]).to_h
   end
 end
