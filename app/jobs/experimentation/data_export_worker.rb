@@ -23,7 +23,7 @@ module Experimentation
         body: "Please see attached CSV."
       }
       email = mailer.mail(email_params)
-      filename = experiment_name.gsub(" ", "_") + ".csv"
+      filename = experiment_name.tr(" ", "_") + ".csv"
       email.attachments[filename] = {
         mime_type: "text/csv",
         content: csv_file
@@ -42,7 +42,7 @@ module Experimentation
         csv << headers
         results.each do |patient_data|
           Results::EXPANDABLE_COLUMNS.each do |column|
-            patient_data[column].each {|column_data| patient_data.merge!(column_data) }
+            patient_data[column].each { |column_data| patient_data.merge!(column_data) }
           end
           csv << patient_data
         end
@@ -53,7 +53,7 @@ module Experimentation
       keys = results.first.keys
       keys.map do |key|
         if key.in?(Results::EXPANDABLE_COLUMNS)
-          largest_entry = results.max {|a,b| a[key].length <=> b[key].length }
+          largest_entry = results.max { |a, b| a[key].length <=> b[key].length }
           largest_entry[key].map(&:keys)
         else
           key

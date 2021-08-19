@@ -1,4 +1,4 @@
-RSpec.shared_context "active experiment data", :shared_context => :metadata do
+RSpec.shared_context "active experiment data", shared_context: :metadata do
   def create_notification(experiment, template, patient, appt, status)
     create(:notification,
       experiment: experiment,

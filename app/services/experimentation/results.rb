@@ -7,7 +7,6 @@ module Experimentation
 
     def initialize(experiment_name)
       @experiment = Experimentation::Experiment.find_by!(name: experiment_name)
-      remind_ons = experiment.reminder_templates.pluck(:remind_on_in_days)
       @patient_data_aggregate = []
 
       start_date = experiment.start_date - 1.year
@@ -66,7 +65,7 @@ module Experimentation
       appointments = patient.appointments.where(status: ["visited", "scheduled"], scheduled_date: query_date_range).order(:scheduled_date)
       appointments.each_with_index.map do |appt, index|
         adjusted_index = index + 1
-        { "Appointment #{adjusted_index} Creation Date" => appt.device_created_at.to_date, "Appointment #{adjusted_index} Date" => appt.scheduled_date }
+        {"Appointment #{adjusted_index} Creation Date" => appt.device_created_at.to_date, "Appointment #{adjusted_index} Date" => appt.scheduled_date}
       end
     end
 
@@ -74,7 +73,7 @@ module Experimentation
       bp_dates = patient.blood_pressures.where(device_created_at: query_date_range).order(:device_created_at).pluck(:device_created_at).map(&:to_date)
       bp_dates.each_with_index.map do |bp_date, index|
         adjusted_index = index + 1
-        { "Blood Pressure #{adjusted_index} Date" => bp_date }
+        {"Blood Pressure #{adjusted_index} Date" => bp_date}
       end
     end
   end
