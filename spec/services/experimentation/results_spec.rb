@@ -10,8 +10,6 @@ RSpec.describe Experimentation::Results, type: :model do
       subject.aggregate_data
       results = subject.patient_data_aggregate
 
-      expect(results.length).to eq(3)
-
       expected_control_patient_result = {
         "Experiment Name" => @experiment.name,
         "Treatment Group" => @control_group.description,
@@ -37,7 +35,6 @@ RSpec.describe Experimentation::Results, type: :model do
         "Patient Registration Date" => @control_patient.registration_date.to_date,
         "Patient Id" =>  @control_patient.treatment_group_memberships.first.id
       }
-      expect(results.first).to eq(expected_control_patient_result)
 
       expected_single_message_patient_result = {
         "Experiment Name" => @experiment.name,
@@ -64,7 +61,6 @@ RSpec.describe Experimentation::Results, type: :model do
         "Patient Registration Date" => @single_message_patient.registration_date.to_date,
         "Patient Id" =>  @single_message_patient.treatment_group_memberships.first.id
       }
-      expect(results.second).to eq(expected_single_message_patient_result)
 
       expected_cascade_patient_result = {
         "Experiment Name" => @experiment.name,
@@ -74,7 +70,7 @@ RSpec.describe Experimentation::Results, type: :model do
          [{"Appointment 1 Creation Date" => @cascade_patient_appt.device_created_at.to_date,
            "Appointment 1 Date" => @cascade_patient_appt.scheduled_date.to_date}],
         "Blood Pressures" =>
-         [],
+         [{"Blood Pressure 1 Date" => @cascade_past_visit_1.device_created_at.to_date}],
         "Communications" => [
           {"Message 1 Type" => @cascade_communication_1.communication_type,
           "Message 1 Date Sent" => @cascade_communication_1.detailable.delivered_on.to_date,
@@ -104,7 +100,13 @@ RSpec.describe Experimentation::Results, type: :model do
         "Patient Registration Date" => @cascade_patient.registration_date.to_date,
         "Patient Id" =>  @cascade_patient.treatment_group_memberships.first.id
       }
-      expect(results.last).to eq(expected_cascade_patient_result)
+
+      expected_results = [
+        expected_control_patient_result,
+        expected_single_message_patient_result,
+        expected_cascade_patient_result
+      ]
+      expect(results).to eq(expected_results)
     end
   end
 end
