@@ -3,8 +3,6 @@ module Experimentation
     require "csv"
     include Sidekiq::Worker
 
-    EXPANDABLE_COLUMNS = ["Communications", "Appointments", "Blood Pressures"]
-
     attr_reader :experiment_name, :recipient_email_address, :results
 
     def perform(experiment_name, recipient_email_address)
@@ -43,7 +41,7 @@ module Experimentation
       CSV.generate(headers: true) do |csv|
         csv << headers
         results.each do |patient_data|
-          EXPANDABLE_COLUMNS.each do |column|
+          Results::EXPANDABLE_COLUMNS.each do |column|
             patient_data[column].each {|column_data| patient_data.merge!(column_data) }
           end
           csv << patient_data
@@ -54,7 +52,7 @@ module Experimentation
     def headers
       keys = results.first.keys
       keys.map do |key|
-        if key.in?(EXPANDABLE_COLUMNS)
+        if key.in?(Results::EXPANDABLE_COLUMNS)
           largest_entry = results.max {|a,b| a[key].length <=> b[key].length }
           largest_entry[key].map(&:keys)
         else

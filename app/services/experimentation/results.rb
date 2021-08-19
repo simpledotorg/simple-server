@@ -1,5 +1,6 @@
 module Experimentation
   class Results
+    EXPANDABLE_COLUMNS = ["Communications", "Appointments", "Blood Pressures"].freeze
     FOLLOWUP_CUTOFF = 10.days
 
     attr_reader :experiment, :patient_data_aggregate, :query_date_range
