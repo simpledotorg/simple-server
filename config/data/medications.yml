@@ -28,7 +28,7 @@
   dosage: 10 mg
   frequency: two_per_day
   rxnorm_code:
-  drug_category:
+  drug_category: hypertension_ccb
   deleted: false
 - id: bf3f1200-aaf6-40d7-a229-ad6ed5f7c5a9
   name: Amlodipine
@@ -36,7 +36,7 @@
   dosage: 2.5 mg
   frequency: two_per_day
   rxnorm_code:
-  drug_category:
+  drug_category: hypertension_ccb
   deleted: false
 - id: 26a810f2-dcd6-480f-ac32-44d4f2e0b951
   name: Amlodipine
@@ -60,7 +60,7 @@
   dosage: 5 mg
   frequency: two_per_day
   rxnorm_code:
-  drug_category:
+  drug_category: hypertension_ccb
   deleted: false
 - id: a24c46eb-b4d7-45bc-a00d-01c618cff6a7
   name: Aspirin
@@ -108,7 +108,7 @@
   dosage: 25 mg
   frequency: two_per_day
   rxnorm_code:
-  drug_category:
+  drug_category: hypertension_other
   deleted: false
 - id: 2d318512-203c-4cec-8cc6-657760bec80e
   name: Atenolol
@@ -124,7 +124,7 @@
   dosage: 50 mg
   frequency: two_per_day
   rxnorm_code:
-  drug_category:
+  drug_category: hypertension_other
   deleted: false
 - id: 9bd7665c-c776-4a2a-a955-27bdfa3b5b6b
   name: Atenolol
@@ -212,7 +212,7 @@
   dosage: 25 mg
   frequency: two_per_day
   rxnorm_code:
-  drug_category:
+  drug_category: hypertension_ace
   deleted: false
 - id: 51bf484c-1b9b-4b71-ba73-5c05315f6290
   name: Captopril
@@ -220,7 +220,7 @@
   dosage: 25 mg
   frequency: one_per_day
   rxnorm_code:
-  drug_category:
+  drug_category: hypertension_ace
   deleted: false
 - id: 9978235b-2c28-4da7-9b89-302a27e973d3
   name: Captopril
@@ -228,7 +228,7 @@
   dosage: 50 mg
   frequency: one_per_day
   rxnorm_code:
-  drug_category:
+  drug_category: hypertension_ace
   deleted: false
 - id: 5fbfba70-ef6c-4dfb-a7de-9356e570c2a3
   name: Captopril
@@ -236,7 +236,7 @@
   dosage: 50 mg
   frequency: two_per_day
   rxnorm_code:
-  drug_category:
+  drug_category: hypertension_ace
   deleted: false
 - id: bbacff5c-474a-4fbc-b7f8-aade6e4b8526
   name: Captopril
@@ -428,7 +428,7 @@
   dosage: 10 mg
   frequency: two_per_day
   rxnorm_code:
-  drug_category:
+  drug_category: diabetes
   deleted: false
 - id: 1be2d256-e928-425f-8650-d84c2f9bada7
   name: Glibenclamide
@@ -476,7 +476,7 @@
   dosage: 120 mg
   frequency: two_per_day
   rxnorm_code:
-  drug_category:
+  drug_category: diabetes
   deleted: false
 - id: e81f2a6a-a74b-4a43-a75d-239397f99d23
   name: Gliclazide
@@ -484,7 +484,7 @@
   dosage: 160 mg
   frequency: two_per_day
   rxnorm_code:
-  drug_category:
+  drug_category: diabetes
   deleted: false
 - id: 0ecdb318-757c-44a4-8a76-2e75ca3d1578
   name: Gliclazide
@@ -540,7 +540,7 @@
   dosage: 1 mg
   frequency: two_per_day
   rxnorm_code:
-  drug_category:
+  drug_category: diabetes
   deleted: false
 - id: 8f460801-1fa6-44aa-ae05-8ce2f2f1e87b
   name: Glimepiride
@@ -548,7 +548,7 @@
   dosage: 2 mg
   frequency: two_per_day
   rxnorm_code:
-  drug_category:
+  drug_category: diabetes
   deleted: false
 - id: 9525bce7-7f17-4e32-ac7e-0873baa05d70
   name: Glimepiride
@@ -564,7 +564,7 @@
   dosage: 4 mg
   frequency: two_per_day
   rxnorm_code:
-  drug_category:
+  drug_category: diabetes
   deleted: false
 - id: 6daa089c-ebfe-466a-9532-d7ea85d27193
   name: Glimepiride
@@ -804,7 +804,7 @@
   dosage: 25 mg
   frequency: two_per_day
   rxnorm_code:
-  drug_category:
+  drug_category: hypertension_arb
   deleted: false
 - id: ade11140-0edc-4913-b634-52c1b33a68e9
   name: Losartan
@@ -820,7 +820,7 @@
   dosage: 50 mg
   frequency: two_per_day
   rxnorm_code:
-  drug_category:
+  drug_category: hypertension_arb
   deleted: false
 - id: e8205c60-5b9d-41e1-b06c-f92a896b9298
   name: Losartan
@@ -908,7 +908,7 @@
   dosage: 750 mg
   frequency: two_per_day
   rxnorm_code:
-  drug_category:
+  drug_category: diabetes
   deleted: false
 - id: 49a3192a-6da9-499e-86f7-9391ebe2c81f
   name: Metoprolol
