@@ -243,6 +243,8 @@ AdminAccessInvite.prototype = Object.assign(AdminAccessInvite.prototype, {
     const oneChildPerParent = distinctByFn(checkboxes, this.parentID);
 
     for (const checkbox of oneChildPerParent) {
+      // a large tree can take a lot of time to load on the DOM,
+      // so we queue up our updates by requesting frames so as to not cause overwhelming repaints
       requestAnimationFrame(function () {
         _self.updateParentCheckedState(checkbox, ACCESS_LIST_INPUT_SELECTOR)
       })
