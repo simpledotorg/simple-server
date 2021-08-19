@@ -5,7 +5,7 @@
 # Sort this file before committing. You can use this command in a rails console and paste the result here:
 # puts YAML.dump(YAML.load_file("config/data/medications.yml").sort_by { |m| m["name"] + m["dosage"].to_s })
 #
-# You can use SecureRandom.uiud to generate IDs for new medications.
+# Use SecureRandom.uuid to generate IDs for new medications.
 - id: e9865df7-39b5-4fb8-8ab3-354f87a5d369
   name: Amlodipine
   composition:
