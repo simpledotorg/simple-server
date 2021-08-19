@@ -33,7 +33,7 @@ class Api::V3::PatientTransformer
       address = payload_attributes[:address]
       phone_numbers = payload_attributes[:phone_numbers]
       business_identifiers = payload_attributes[:business_identifiers]
-      address_attributes = Api::V3::Transformer.from_request(address) if address.present?
+      address_attributes = Api::V3::Transformer.from_request(address)
 
       if phone_numbers.present?
         phone_numbers_attributes = phone_numbers.map { |phone_number|

@@ -12,20 +12,19 @@ json.patient do
     json.number phone_number.number
   end
 
-  if @current_patient.address.present?
-    address = @current_patient.address
 
-    json.address do
-      json.id address.id
-      json.street_address address.street_address
-      json.village_or_colony address.village_or_colony
-      json.district address.district
-      json.zone address.zone
-      json.state address.state
-      json.country address.country
-      json.pin address.pin
-    end
+  address = @current_patient.address
+  json.address do
+    json.id address.id
+    json.street_address address.street_address
+    json.village_or_colony address.village_or_colony
+    json.district address.district
+    json.zone address.zone
+    json.state address.state
+    json.country address.country
+    json.pin address.pin
   end
+
 
   json.registration_facility do
     facility = @current_patient.registration_facility

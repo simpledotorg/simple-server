@@ -197,7 +197,7 @@ module PatientDeduplication
 
     def create_address
       new_address = Address.create!(copyable_attributes(latest_available_property(:address)).merge(id: SecureRandom.uuid))
-      @patients.each { |patient| track(Address, patient.address, new_address) if patient.address.present? }
+      @patients.each { |patient| track(Address, patient.address, new_address) }
       new_address
     end
 

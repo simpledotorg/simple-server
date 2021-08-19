@@ -6,7 +6,7 @@ class MergePatientService
 
   def merge
     patient_before_merge = existing_patient
-    merged_address = Address.merge(payload[:address]) if payload[:address].present?
+    merged_address = Address.merge(payload[:address])
 
     patient_attributes =
       payload
@@ -47,7 +47,7 @@ class MergePatientService
   end
 
   def set_address_id(patient_params, address)
-    patient_params["address_id"] = address.id if address.present?
+    patient_params["address_id"] = address.id
     patient_params
   end
 
@@ -83,7 +83,7 @@ class MergePatientService
   end
 
   def associations_updated?(address, phone_numbers, business_ids)
-    (address.present? && address.merged?) || phone_numbers.any?(&:merged?) || business_ids.any?(&:merged?)
+    address.merged? || phone_numbers.any?(&:merged?) || business_ids.any?(&:merged?)
   end
 
   def touch_patient(patient)
