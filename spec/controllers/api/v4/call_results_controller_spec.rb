@@ -25,7 +25,6 @@ RSpec.describe Api::V4::CallResultsController, type: :controller do
     create_list(:call_result, n, options)
   end
 
-
   # it_behaves_like "a sync controller that authenticates user requests"
   # it_behaves_like "a sync controller that audits the data access"
 
