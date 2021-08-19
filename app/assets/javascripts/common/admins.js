@@ -334,8 +334,8 @@ const containsClass = (className) => ({classList}) =>
 
 const distinctByFn = function (collection, fn) {
   return Object.values(
-      collection.reduce(function (accumulator, item) {
-        accumulator[fn(item)] = item
-        return accumulator
-      }, {}))
-}
+    collection.reduce(function (accumulator, item) {
+      accumulator[fn(item)] = item
+      return accumulator
+    }, {})
+)}
