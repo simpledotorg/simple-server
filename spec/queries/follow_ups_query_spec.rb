@@ -129,7 +129,7 @@ RSpec.describe FollowUpsQuery do
                                   second_follow_up_date => 1})
         end
 
-        it "counts encounters created today when last is supplied and group date time zone is not UTC" do
+        it "counts encounters created today when last is supplied and Groupdate time zone is not UTC" do
           with_reporting_time_zone do
             create(:blood_pressure,
               :with_encounter,
@@ -138,7 +138,7 @@ RSpec.describe FollowUpsQuery do
               user: current_user,
               recorded_at: Time.current)
 
-            expect(Patient.follow_ups_by_period(:day, last: 30).count).to include({Date.today => 1})
+            expect(Patient.follow_ups_by_period(:day, current: true, last: 30).count).to include({Date.today => 1})
           end
         end
 
