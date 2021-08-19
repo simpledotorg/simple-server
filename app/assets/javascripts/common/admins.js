@@ -236,7 +236,7 @@ AdminAccessInvite.prototype = Object.assign(AdminAccessInvite.prototype, {
   },
 
   updateIndeterminateCheckboxes: function () {
-    let _self = this
+    const _self = this
 
     // list of all checkboxes under facilityAccess
     const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, this.facilityAccess)
