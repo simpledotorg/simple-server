@@ -2,7 +2,7 @@
 # Whenever this list of canonical medications is updated, please notify the Simple Operations team (Meg Farrell) to
 # update the list of common medications in any patient data entry spreadsheets that have been distributed.
 #
-# Sort this file before committing. You can use this command in a rails console:
+# Sort this file before committing. You can use this command in a rails console and paste the result here:
 # puts YAML.dump(YAML.load_file("config/data/medications.yml").sort_by { |m| m["name"] + m["dosage"].to_s })
 #
 # You can use SecureRandom.uiud to generate IDs for new medications.
