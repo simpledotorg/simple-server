@@ -130,18 +130,16 @@ RSpec.describe FollowUpsQuery do
         end
 
         it "counts encounters created today when last is supplied and group date time zone is not UTC" do
-          create(:blood_pressure,
-            :with_encounter,
-            patient: hypertensive_patient,
-            facility: current_facility,
-            user: current_user,
-            recorded_at: Time.current)
+          with_reporting_time_zone do
+            create(:blood_pressure,
+              :with_encounter,
+              patient: hypertensive_patient,
+              facility: current_facility,
+              user: current_user,
+              recorded_at: Time.current)
 
-          Groupdate.time_zone = "Asia/Kolkata"
-
-          expect(Patient.follow_ups_by_period(:day, last: 30).count).to include({Date.today => 1})
-
-          Groupdate.time_zone = "UTC"
+            expect(Patient.follow_ups_by_period(:day, last: 30).count).to include({Date.today => 1})
+          end
         end
 
         it "can be grouped by facility and day" do
