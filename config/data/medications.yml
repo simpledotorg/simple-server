@@ -22,14 +22,6 @@
   rxnorm_code: '329526'
   drug_category: hypertension_ccb
   deleted: false
-- id: df4ba71e-d5d7-4f73-bf23-b551b24605b1
-  name: Amlodipine
-  composition:
-  dosage: 10 mg
-  frequency: one_per_day
-  rxnorm_code:
-  drug_category:
-  deleted: false
 - id: be352bf5-8834-477a-a528-02d293f572dd
   name: Amlodipine
   composition:
@@ -54,14 +46,6 @@
   rxnorm_code: '329527'
   drug_category: hypertension_ccb
   deleted: false
-- id: a96accf6-16c6-4945-a730-45caef56df1a
-  name: Amlodipine
-  composition:
-  dosage: 2.5 mg
-  frequency: one_per_day
-  rxnorm_code:
-  drug_category:
-  deleted: false
 - id: 93bc74a8-26c6-4150-af00-69a572e01163
   name: Amlodipine
   composition:
@@ -75,14 +59,6 @@
   composition:
   dosage: 5 mg
   frequency: two_per_day
-  rxnorm_code:
-  drug_category:
-  deleted: false
-- id: aa6b3e3e-52fd-4ce6-8e91-33daef1bf5ca
-  name: Amlodipine
-  composition:
-  dosage: 5 mg
-  frequency: one_per_day
   rxnorm_code:
   drug_category:
   deleted: false
