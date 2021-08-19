@@ -146,6 +146,10 @@ Rails.application.routes.draw do
       scope :patients do
         post "/lookup", to: "patients#lookup"
       end
+
+      scope :call_results do
+        post "/call_results", to: "call_results#sync_from_user"
+      end
     end
   end
 

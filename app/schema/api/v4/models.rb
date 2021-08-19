@@ -33,6 +33,10 @@ class Api::V4::Models
        items: {"$ref" => "#/definitions/#{type}"}}
     end
 
+    def nullable_enum(enum_values)
+      {type: [:string, "null"], enum: enum_values << nil}
+    end
+
     def blood_sugar
       {type: :object,
        properties: {
@@ -287,7 +291,7 @@ class Api::V4::Models
               requester_id: {"$ref" => "#/definitions/uuid"},
               facility_id: {"$ref" => "#/definitions/uuid"},
               requested_at: {"$ref" => "#/definitions/timestamp"},
-              requester_completion_status: {type: [:string, "null"], enum: Teleconsultation.requester_completion_statuses.keys << nil}
+              requester_completion_status: nullable_enum(Teleconsultation.requester_completion_statuses.keys)
             }
           },
           record: {
@@ -339,8 +343,8 @@ class Api::V4::Models
        properties: {
          id: {"$ref" => "#/definitions/uuid"},
          name: {"$ref" => "#/definitions/non_empty_string"},
-         category: {type: [:string, "null"], enum: Medication::CATEGORIES.keys << nil},
-         frequency: {type: [:string, "null"], enum: Medication::FREQUENCIES.keys << nil},
+         category: nullable_enum(Medication::CATEGORIES.keys),
+         frequency: nullable_enum(Medication::FREQUENCIES.keys),
          composition: {type: [:string, "null"]},
          dosage: {type: [:string, "null"]},
          rxnorm_code: {type: [:string, "null"]},
@@ -359,8 +363,8 @@ class Api::V4::Models
          id: {"$ref" => "#/definitions/uuid"},
          user_id: {"$ref" => "#/definitions/uuid"},
          appointment_id: {"$ref" => "#/definitions/uuid"},
-         cancel_reason: {type: :string, enum: CallResult.cancel_reasons.keys},
-         result: {type: :string, enum: CallResult.results.keys},
+         cancel_reason: nullable_enum(CallResult.cancel_reasons.keys),
+         result: {type: :string, enum: CallResult.results.keys },
          deleted_at: {"$ref" => "#/definitions/nullable_timestamp"},
          created_at: {"$ref" => "#/definitions/timestamp"},
          updated_at: {"$ref" => "#/definitions/timestamp"}

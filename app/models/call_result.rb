@@ -1,4 +1,6 @@
 class CallResult < ApplicationRecord
+  include Mergeable
+
   belongs_to :appointment
   belongs_to :user
 
