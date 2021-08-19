@@ -1,6 +1,7 @@
 class EmailAuthentications::InvitationsController < Devise::InvitationsController
   before_action :verify_params, only: [:create]
   helper_method :current_admin
+  helper_method :current_enabled_features
 
   rescue_from UserAccess::NotAuthorizedError, with: :user_not_authorized
 
@@ -85,5 +86,9 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   def user_not_authorized
     flash[:alert] = "You are not authorized to perform this action."
     redirect_to(request.referrer || root_path)
+  end
+
+  def current_enabled_features
+    Flipper.features.select { |feature| feature.enabled?(current_admin) }.map(&:name)
   end
 end
