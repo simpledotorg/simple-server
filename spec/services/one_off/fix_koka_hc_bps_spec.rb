@@ -16,8 +16,8 @@ RSpec.describe OneOff::FixKokaHcBps do
     facility = create(:facility, name: "Koka Health Center")
     patient = create(:patient, recorded_at: "2013-04-30")
 
-    good_bp = create(:blood_pressure, :with_encounter, patient: patient, facility: facility, recorded_at: "2020-10-30")
-    bad_bp = create(:blood_pressure, :with_encounter, patient: patient, facility: facility, recorded_at: "2013-04-30")
+    _good_bp = create(:blood_pressure, :with_encounter, patient: patient, facility: facility, recorded_at: "2020-10-30")
+    _bad_bp = create(:blood_pressure, :with_encounter, patient: patient, facility: facility, recorded_at: "2013-04-30")
 
     described_class.call
 

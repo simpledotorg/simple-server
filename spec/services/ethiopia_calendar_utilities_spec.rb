@@ -13,7 +13,7 @@ RSpec.describe EthiopiaCalendarUtilities do
         [2012, 10, 5] => "2020-06-12",
         [2013, 11, 6] => "2021-07-13",
         [2013, 11, 8] => "2021-07-15",
-        [2013, 11, 28] => "2021-08-04 ",
+        [2013, 11, 28] => "2021-08-04 "
       }
 
       conversions.each do |ethiopia_date, gregorian_date|
