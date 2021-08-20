@@ -1,5 +1,7 @@
 module Experimentation
   class Results
+    require "csv"
+
     EXPANDABLE_COLUMNS = ["Communications", "Appointments", "Blood Pressures"].freeze
     FOLLOWUP_CUTOFF = 10.days
 
@@ -12,7 +14,22 @@ module Experimentation
       start_date = experiment.start_date - 1.year
       end_date = experiment.end_date + FOLLOWUP_CUTOFF
       @query_date_range = start_date..end_date
+      aggregate_data
     end
+
+    def as_csv
+      CSV.generate(headers: true) do |csv|
+        csv << headers
+        patient_data_aggregate.each do |patient_data|
+          EXPANDABLE_COLUMNS.each do |column|
+            patient_data[column].each { |column_data| patient_data.merge!(column_data) }
+          end
+          csv << patient_data
+        end
+      end
+    end
+
+    private
 
     def aggregate_data
       experiment.treatment_groups.each do |group|
@@ -42,8 +59,6 @@ module Experimentation
         end
       end
     end
-
-    private
 
     def experimental_communications(notifications)
       index = 1
@@ -75,6 +90,18 @@ module Experimentation
         adjusted_index = index + 1
         {"Blood Pressure #{adjusted_index} Date" => bp_date}
       end
+    end
+
+    def headers
+      keys = patient_data_aggregate.first.keys
+      keys.map do |key|
+        if key.in?(EXPANDABLE_COLUMNS)
+          largest_entry = patient_data_aggregate.max { |a, b| a[key].length <=> b[key].length }
+          largest_entry[key].map(&:keys)
+        else
+          key
+        end
+      end.flatten
     end
   end
 end

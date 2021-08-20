@@ -40,7 +40,7 @@ RSpec.shared_context "active experiment data", shared_context: :metadata do
     @control_past_visit_2 = create(:blood_pressure, :hypertensive, patient: @control_patient, device_created_at: experiment_start_date - 3.months, facility: @facility_1)
 
     @single_message_patient = create(:patient, assigned_facility: @facility_2, age: 70, gender: "male", device_created_at: one_year_ago)
-    @smp_appt = create(:appointment, patient: @single_message_patient, scheduled_date: second_week_of_experiment, facility: @facility_2)
+    @smp_appt = create(:appointment, patient: @single_message_patient, scheduled_date: second_week_of_experiment, device_created_at: week_before_experiment, facility: @facility_2)
     @smp_notification = create_notification(@experiment, @single_template, @single_message_patient, @smp_appt, "sent")
     @smp_communication = create(:communication, notification: @smp_notification, communication_type: "whatsapp")
     create(:twilio_sms_delivery_detail, communication: @smp_communication, delivered_on: @smp_notification.remind_on, result: "read")
@@ -48,7 +48,7 @@ RSpec.shared_context "active experiment data", shared_context: :metadata do
 
     @cascade_patient = create(:patient, assigned_facility: @facility_1, age: 50, gender: "female", device_created_at: one_year_ago)
     @cascade_past_visit_1 = create(:blood_pressure, :hypertensive, patient: @cascade_patient, device_created_at: experiment_start_date - 2.months, facility: @facility_1)
-    @cascade_patient_appt = create(:appointment, patient: @cascade_patient, scheduled_date: third_week_of_experiment, facility: @facility_1)
+    @cascade_patient_appt = create(:appointment, patient: @cascade_patient, scheduled_date: third_week_of_experiment, device_created_at: week_before_experiment, facility: @facility_1)
     @cascade_notification_1 = create_notification(@experiment, @cascade_template_1, @cascade_patient, @cascade_patient_appt, "sent")
     @cascade_communication_1 = create(:communication, notification: @cascade_notification_1, communication_type: "whatsapp")
     create(:twilio_sms_delivery_detail, communication: @cascade_communication_1, delivered_on: @cascade_notification_1.remind_on, result: "failed")

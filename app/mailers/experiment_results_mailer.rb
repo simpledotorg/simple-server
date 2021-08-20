@@ -1,13 +1,10 @@
 class ExperimentResultsMailer
-  require "csv"
-
-  attr_reader :experiment_name, :recipient_email_address, :mailer, :results
+  attr_reader :experiment_name, :recipient_email_address, :mailer
 
   def initialize(experiment_name, recipient_email_address)
     @experiment_name = experiment_name
     @recipient_email_address = recipient_email_address
     @mailer = ApplicationMailer.new
-    fetch_results
   end
 
   def mail_csv
@@ -28,34 +25,8 @@ class ExperimentResultsMailer
 
   private
 
-  def fetch_results
-    results_service = Experimentation::Results.new(experiment_name)
-    results_service.aggregate_data
-    @results = results_service.patient_data_aggregate
-  end
-
   def csv_file
-    CSV.generate(headers: true) do |csv|
-      csv << headers
-      results.each do |patient_data|
-        Experimentation::Results::EXPANDABLE_COLUMNS.each do |column|
-          patient_data[column].each { |column_data| patient_data.merge!(column_data) }
-        end
-        csv << patient_data
-      end
-    end
-  end
-
-  def headers
-    # raise error if there are no Experimentation::
-    keys = results.first.keys
-    keys.map do |key|
-      if key.in?(Experimentation::Results::EXPANDABLE_COLUMNS)
-        largest_entry = results.max { |a, b| a[key].length <=> b[key].length }
-        largest_entry[key].map(&:keys)
-      else
-        key
-      end
-    end.flatten
+    results_service = Experimentation::Results.new(experiment_name)
+    results_service.as_csv
   end
 end
