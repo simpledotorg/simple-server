@@ -146,6 +146,21 @@ RSpec.describe FollowUpsQuery do
                    .count).to eq({[first_follow_up_date, current_facility.id] => 2,
                                   [second_follow_up_date, current_facility.id] => 1})
         end
+
+        it "counts encounters created today regardless of reporting timezone" do
+          with_reporting_time_zone do
+            Timecop.freeze("May 1st 2021 12:00") do
+              create(:blood_pressure,
+                :with_encounter,
+                patient: hypertensive_patient,
+                facility: current_facility,
+                user: current_user,
+                recorded_at: Time.current)
+
+              expect(Patient.follow_ups_by_period(:day, current: true, last: 30).count).to include({Date.today => 1})
+            end
+          end
+        end
       end
 
       context "by month" do
