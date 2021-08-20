@@ -1,0 +1,9 @@
+<% results = data.map do |country| %>
+  <% {
+    country_code: country["country_code"],
+    display_name: country["display_name"],
+    isd_code: country["isd_code"],
+    endpoint: country["deployments"].first["endpoint"]
+  } %>
+<% end %>
+<%= raw(results.as_json) %>
