@@ -157,7 +157,7 @@ RSpec.describe FollowUpsQuery do
                 user: current_user,
                 recorded_at: Time.current)
 
-                expect(Patient.follow_ups_by_period(:day, current: true, last: 30).count).to include({Date.today => 1})
+              expect(Patient.follow_ups_by_period(:day, current: true, last: 30).count).to include({Date.today => 1})
             end
           end
         end
