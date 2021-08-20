@@ -79,15 +79,15 @@ class Patient < ApplicationRecord
   scope :search_by_address, ->(term) { joins(:address).merge(Address.search_by_street_or_village(term)) }
 
   scope :follow_ups_by_period, ->(period, at_region: nil, current: true, last: nil) {
-    FollowUpsQuery.with(Encounter, period, at_region: at_region, current: current, time_column: "encountered_on", last: last)
+    FollowUpsQuery.new.with(Encounter, period, at_region: at_region, time_column: "encountered_on", current: current, last: last, time_zone: false)
   }
 
   scope :diabetes_follow_ups_by_period, ->(period, at_region: nil, current: true, last: nil) {
-    FollowUpsQuery.with(BloodSugar, period, at_region: at_region, current: current, last: last).with_diabetes
+    FollowUpsQuery.new.with(BloodSugar, period, at_region: at_region, current: current, last: last).with_diabetes
   }
 
   scope :hypertension_follow_ups_by_period, ->(period, at_region: nil, current: true, last: nil) {
-    FollowUpsQuery.with(BloodPressure, period, at_region: at_region, current: current, last: last).with_hypertension
+    FollowUpsQuery.new.with(BloodPressure, period, at_region: at_region, current: current, last: last).with_hypertension
   }
 
   scope :contactable, -> {
