@@ -82,7 +82,7 @@ class Facility < ApplicationRecord
 
   validates :name, presence: true
   validates :district, presence: true
-  validates :slug, presence: true
+  validates :slug, presence: true, uniqueness: true
   # this validation (and the field) should go away from facility after regions become first-class
   validates :state, presence: true, if: -> { facility_group.present? }
   validates :country, presence: true

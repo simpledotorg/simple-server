@@ -17,6 +17,12 @@
       "endpoint": "https://simple-demo.moh.gov.et/api/",
       "display_name": "Ethiopia",
       "isd_code": "251"
+    },
+    {
+      "country_code": "LK",
+      "endpoint": "https://api-demo.lk.simple.org/api/",
+      "display_name": "Sri Lanka",
+      "isd_code": "94"
     }
   ]
 }

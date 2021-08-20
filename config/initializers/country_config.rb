@@ -18,7 +18,7 @@ class CountryConfig
     BD: {
       abbreviation: "BD",
       name: "Bangladesh",
-      extended_region_reports: false,
+      extended_region_reports: true,
       states: COUNTRYWISE_STATES["Bangladesh"],
       dashboard_locale: ENV["DEFAULT_PREFERRED_DASHBOARD_LOCALE"] || "en_BD",
       time_zone: ENV["DEFAULT_TIME_ZONE"] || "Asia/Dhaka",
@@ -60,6 +60,18 @@ class CountryConfig
         cumulative_registrations: "PX8qBGsdF5G",
         monthly_registrations: "Tx3CKEUFqNN"
       }
+    },
+    LK: {
+      abbreviation: "LK",
+      name: "Sri Lanka",
+      extended_region_reports: false,
+      states: COUNTRYWISE_STATES["Sri Lanka"],
+      dashboard_locale: ENV["DEFAULT_PREFERRED_DASHBOARD_LOCALE"] || "en_LK",
+      faker_locale: "en-IND",
+      time_zone: ENV["DEFAULT_TIME_ZONE"] || "Asia/Colombo",
+      sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+94",
+      supported_genders: %w[male female],
+      patient_line_list_show_zone: false
     },
     US: {
       abbreviation: "US",

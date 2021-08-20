@@ -53,7 +53,7 @@
           <p>
             <%= t("help.support.contents_html") %>
           </p>
-          <a href="<%= ENV['HELP_SCREEN_SUPPORT_GROUP_URL'] %>" class="support-button <%= CountryConfig.current[:abbreviation] %>-button">
+        <a href="<%= ENV['HELP_SCREEN_SUPPORT_GROUP_URL'] %>" class="support-button <%= CountryConfig.current[:abbreviation] %>-button">
             <%= inline_svg(ENV['HELP_SCREEN_SUPPORT_GROUP_ICON']) %> <%= ENV['HELP_SCREEN_SUPPORT_GROUP_NUMBER'] %>
           </a>
         </div>

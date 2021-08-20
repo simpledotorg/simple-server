@@ -266,7 +266,7 @@ RSpec.describe Reports::RegionService, type: :model do
       service = Reports::RegionService.new(region: facility, period: july_2020.to_period)
       result = service.call
       expect(result[:visited_without_bp_taken][may_1.to_period]).to eq(1)
-      expect(result[:visited_without_bp_taken_rate][may_1.to_period]).to eq(50)
+      expect(result[:visited_without_bp_taken_rates][may_1.to_period]).to eq(50)
     end
 
     it "counts missed visits for the reporting range _only_" do

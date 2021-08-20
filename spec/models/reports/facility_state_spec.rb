@@ -40,21 +40,32 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
     describe "monthly_registrations" do
       it "has the number of new registrations made that month" do
         facility = create(:facility)
-        create_list(:patient, 2, registration_facility: facility, recorded_at: june_2021[:under_12_months_ago])
-        create_list(:patient, 3, registration_facility: facility, recorded_at: june_2021[:now] - 2.months)
+        create_list(:patient, 2, registration_facility: facility, recorded_at: june_2021[:under_12_months_ago]) # "2020-07"
+        create_list(:patient, 3, registration_facility: facility, recorded_at: june_2021[:under_3_months_ago]) # "2021-04"
+
+        month_2020_07 = "2020-07-01"
+        month_2021_04 = "2021-04-01"
 
         RefreshMaterializedViews.new.refresh_v2
         with_reporting_time_zone do
           expect(described_class
             .where(facility_id: facility.id)
-            .where("month_date < ?", june_2021[:under_12_months_ago])
+            .where("month_date < ?", month_2020_07)
             .pluck(:monthly_registrations)).to all be nil
 
           expect(described_class
+            .find_by(facility_id: facility.id, month_date: month_2020_07)
+            .monthly_registrations).to eq 2
+
+          expect(described_class
             .where(facility_id: facility.id)
-            .where("month_date >= ?", june_2021[:under_12_months_ago].to_date)
-            .where("month_date <= ?", june_2021[:under_3_months_ago].to_date)
-            .pluck(:monthly_registrations)).to eq [2, 0, 0, 0, 0, 0, 0, 0, 0, 3]
+            .where("month_date > ?", month_2020_07)
+            .where("month_date < ?", month_2021_04)
+            .pluck(:monthly_registrations)).to all eq 0
+
+          expect(described_class
+            .find_by(facility_id: facility.id, month_date: month_2021_04)
+            .monthly_registrations).to eq 3
         end
       end
     end
@@ -135,12 +146,12 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       with_reporting_time_zone do
         facility_state_june_2021 = described_class.find_by(facility: facility, month_date: june_2021[:now])
 
-        expect(facility_state_june_2021.controlled_under_care).to eq 2
-        expect(facility_state_june_2021.uncontrolled_under_care).to eq 3
-        expect(facility_state_june_2021.missed_visit_under_care).to eq 4
-        expect(facility_state_june_2021.visited_no_bp_under_care).to eq 2
-        expect(facility_state_june_2021.patients_under_care).to eq 11
-        expect(facility_state_june_2021.patients_lost_to_follow_up).to eq 1
+        expect(facility_state_june_2021.adjusted_controlled_under_care).to eq 2
+        expect(facility_state_june_2021.adjusted_uncontrolled_under_care).to eq 3
+        expect(facility_state_june_2021.adjusted_missed_visit_under_care).to eq 4
+        expect(facility_state_june_2021.adjusted_visited_no_bp_under_care).to eq 2
+        expect(facility_state_june_2021.adjusted_patients_under_care).to eq 11
+        expect(facility_state_june_2021.adjusted_patients_lost_to_follow_up).to eq 1
       end
     end
 
@@ -164,10 +175,54 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       with_reporting_time_zone do
         facility_state_june_2021 = described_class.find_by(facility: facility, month_date: june_2021[:now])
 
-        expect(facility_state_june_2021.missed_visit_lost_to_follow_up).to eq 2
-        expect(facility_state_june_2021.visited_no_bp_lost_to_follow_up).to eq 1
-        expect(facility_state_june_2021.patients_under_care).to eq 0
-        expect(facility_state_june_2021.patients_lost_to_follow_up).to eq 3
+        expect(facility_state_june_2021.adjusted_missed_visit_lost_to_follow_up).to eq 2
+        expect(facility_state_june_2021.adjusted_visited_no_bp_lost_to_follow_up).to eq 1
+        expect(facility_state_june_2021.adjusted_patients_under_care).to eq 0
+        expect(facility_state_june_2021.adjusted_patients_lost_to_follow_up).to eq 3
+      end
+    end
+  end
+
+  context "monthly cohort outcomes" do
+    it "computes totals for under care patients" do
+      facility = create(:facility)
+
+      patients_controlled = create_list(:patient, 2, assigned_facility: facility, recorded_at: june_2021[:under_3_months_ago])
+      patients_controlled.each do |patient|
+        create(:bp_with_encounter, :under_control, patient: patient, recorded_at: june_2021[:now] - 1.month)
+      end
+
+      patients_uncontrolled = create_list(:patient, 3, assigned_facility: facility, recorded_at: june_2021[:under_3_months_ago])
+      patients_uncontrolled.each do |patient|
+        create(:bp_with_encounter, :hypertensive, patient: patient, recorded_at: june_2021[:now] - 1.months)
+      end
+
+      patients_missed_visit = create_list(:patient, 4, assigned_facility: facility, recorded_at: june_2021[:under_3_months_ago])
+      patients_missed_visit.each do |patient|
+        create(:bp_with_encounter, patient: patient, recorded_at: june_2021[:over_3_months_ago])
+      end
+
+      _patient_no_visit = create(:patient, assigned_facility: facility, recorded_at: june_2021[:under_3_months_ago])
+
+      patients_visited_no_bp = create_list(:patient, 2, assigned_facility: facility, recorded_at: june_2021[:under_3_months_ago])
+      patients_visited_no_bp.each do |patient|
+        create(:prescription_drug,
+          device_created_at: june_2021[:now] - 1.month,
+          facility: facility,
+          patient: patient,
+          user: patient.registration_user)
+        create(:blood_pressure, patient: patient, recorded_at: june_2021[:over_3_months_ago])
+      end
+
+      RefreshMaterializedViews.new.refresh_v2
+      with_reporting_time_zone do
+        facility_state_june_2021 = described_class.find_by(facility: facility, month_date: june_2021[:now])
+
+        expect(facility_state_june_2021.monthly_cohort_controlled).to eq 2
+        expect(facility_state_june_2021.monthly_cohort_uncontrolled).to eq 3
+        expect(facility_state_june_2021.monthly_cohort_missed_visit).to eq 5
+        expect(facility_state_june_2021.monthly_cohort_visited_no_bp).to eq 2
+        expect(facility_state_june_2021.monthly_cohort_patients).to eq 12
       end
     end
   end

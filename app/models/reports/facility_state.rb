@@ -8,5 +8,9 @@ module Reports
       region = region_or_source.region
       where("#{region.region_type}_region_id" => region.id)
     end
+
+    def period
+      Period.month(month_date)
+    end
   end
 end
