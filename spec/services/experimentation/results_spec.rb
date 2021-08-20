@@ -128,8 +128,8 @@ exportable,cascade,2020-12-31,2020-12-25,2021-01-22,,,2020-11-01,,,whatsapp,2021
 2021-01-21,delivered,cascade 1,whatsapp,2021-01-22,failed,cascade 2,sms,2021-01-22,delivered,cascade 2,female,50,1,\
 Bangalore Clinic,City,Karnataka,South,Red Zone,2020-01-01,#{@cascade_patient.treatment_group_memberships.last.id}\n)
 
-        service = described_class.new(@experiment.name)
-        expect(service.as_csv).to eq(expected_file_contents)
+      service = described_class.new(@experiment.name)
+      expect(service.as_csv).to eq(expected_file_contents)
     end
   end
 end
