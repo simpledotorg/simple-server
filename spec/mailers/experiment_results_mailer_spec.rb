@@ -2,7 +2,7 @@ require "rails_helper"
 require_relative Rails.root.join("spec/support/experiment_data_examples.rb")
 
 RSpec.describe ExperimentResultsMailer, type: :model do
-  describe "#mail_csv" do
+  describe "#deliver_csv" do
     it "formats the email and attachment correctly" do
       recipient_email_address = "person@example.com"
       experiment_name = "current_patient"
@@ -12,14 +12,12 @@ RSpec.describe ExperimentResultsMailer, type: :model do
         csv << ["column 1", "column 2"]
         csv << ["facts", "figures"]
       end
-      results_service_double = instance_double(Experimentation::Results, as_csv: csv_file)
-      allow(Experimentation::Results).to receive(:new).and_return(results_service_double)
 
       expect_any_instance_of(Mail::Message).to receive(:deliver)
 
-      service = described_class.new(experiment_name, recipient_email_address)
+      service = described_class.new(csv_file, experiment_name, recipient_email_address)
       mailer = service.mailer
-      service.mail_csv
+      service.deliver_csv
       attachment = mailer.mail.attachments.first
 
       expect(attachment.filename).to eq(filename)

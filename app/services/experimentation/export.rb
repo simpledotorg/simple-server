@@ -1,5 +1,5 @@
 module Experimentation
-  class Results
+  class Export
     require "csv"
 
     EXPANDABLE_COLUMNS = ["Communications", "Appointments", "Blood Pressures"].freeze
@@ -7,8 +7,8 @@ module Experimentation
 
     attr_reader :experiment, :patient_data_aggregate, :query_date_range
 
-    def initialize(experiment_name)
-      @experiment = Experimentation::Experiment.find_by!(name: experiment_name)
+    def initialize(experiment)
+      @experiment = experiment
       @patient_data_aggregate = []
 
       start_date = experiment.start_date - 1.year

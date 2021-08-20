@@ -1,12 +1,12 @@
 require "rails_helper"
 require_relative Rails.root.join("spec/support/experiment_data_examples.rb")
 
-RSpec.describe Experimentation::Results, type: :model do
+RSpec.describe Experimentation::Export, type: :model do
   describe "patient_data_aggregate" do
     include_context "active experiment data"
 
     it "aggregates data for all experiment patients" do
-      subject = described_class.new(@experiment.name)
+      subject = described_class.new(@experiment)
       results = subject.patient_data_aggregate
 
       expected_control_patient_result = {
@@ -128,7 +128,7 @@ exportable,cascade,2020-12-31,2020-12-25,2021-01-22,,,2020-11-01,,,whatsapp,2021
 2021-01-21,delivered,cascade 1,whatsapp,2021-01-22,failed,cascade 2,sms,2021-01-22,delivered,cascade 2,female,50,1,\
 Bangalore Clinic,City,Karnataka,South,Red Zone,2020-01-01,#{@cascade_patient.treatment_group_memberships.last.id}\n)
 
-      service = described_class.new(@experiment.name)
+      service = described_class.new(@experiment)
       expect(service.as_csv).to eq(expected_file_contents)
     end
   end
