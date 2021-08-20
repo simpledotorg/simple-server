@@ -15,7 +15,7 @@ class AppointmentNotification::Worker
     @logger ||= Notification.logger(class: self.class.name)
   end
 
-  def perform(notification_id)
+  def perform(notification_id, phone_number = nil)
     metrics.increment("attempts")
     unless Flipper.enabled?(:notifications) || Flipper.enabled?(:experiment)
       logger.warn "notifications or experiment feature flag are disabled"
@@ -47,12 +47,13 @@ class AppointmentNotification::Worker
     end
 
     logger.info "send_message for notification #{notification_id} communication_type=#{communication_type}"
-    send_message(notification, communication_type)
+    recipient_number = phone_number || notification.patient.latest_mobile_number
+    send_message(notification, communication_type, recipient_number: recipient_number)
   end
 
   private
 
-  def send_message(notification, communication_type)
+  def send_message(notification, communication_type, recipient_number:)
     notification_service = if communication_type == "imo"
       ImoApiService.new
     else
@@ -72,14 +73,14 @@ class AppointmentNotification::Worker
     response = case communication_type
     when "whatsapp", "missed_visit_whatsapp_reminder"
       notification_service.send_whatsapp(
-        recipient_number: notification.patient.latest_mobile_number,
+        recipient_number: recipient_number,
         message: notification.localized_message,
         callback_url: callback_url,
         context: context
       )
     when "sms", "missed_visit_sms_reminder"
       notification_service.send_sms(
-        recipient_number: notification.patient.latest_mobile_number,
+        recipient_number: recipient_number,
         message: notification.localized_message,
         callback_url: callback_url,
         context: context
@@ -98,6 +99,7 @@ class AppointmentNotification::Worker
       notification.status_sent!
     end
     logger.info("notification #{notification.id} communication_type=#{communication_type} sent")
+    response
   end
 
   def create_communication(notification, communication_type, response)
