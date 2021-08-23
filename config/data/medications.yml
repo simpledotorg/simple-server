@@ -1025,3 +1025,299 @@
   rxnorm_code: '757711'
   drug_category: diabetes
   deleted: false
+- id: bf3f1200-aaf6-40d7-a229-ad6ed5f7c5a9
+  name: Amlodipine
+  composition:
+  dosage: 2.5 mg
+  frequency: two_per_day
+  rxnorm_code:
+  drug_category: hypertension_ccb
+  deleted: false
+- id: c68cd48c-4c2c-447d-a5f3-d3d882c06ff7
+  name: Amlodipine
+  composition:
+  dosage: 5 mg
+  frequency: two_per_day
+  rxnorm_code:
+  drug_category: hypertension_ccb
+  deleted: false
+- id: be352bf5-8834-477a-a528-02d293f572dd
+  name: Amlodipine
+  composition:
+  dosage: 10 mg
+  frequency: two_per_day
+  rxnorm_code:
+  drug_category: hypertension_ccb
+  deleted: false
+- id: 7ccf5cc4-ba60-45d9-8f40-1358e3aacb0b
+  name: Atenolol
+  composition:
+  dosage: 25 mg
+  frequency: two_per_day
+  rxnorm_code:
+  drug_category: hypertension_other
+  deleted: false
+- id: 262cb73e-c702-41b5-8065-97ec34192e51
+  name: Atenolol
+  composition:
+  dosage: 50 mg
+  frequency: two_per_day
+  rxnorm_code:
+  drug_category: hypertension_other
+  deleted: false
+- id: f5d21b48-b029-4486-ad5b-5a192b14619d
+  name: Bisoprolol
+  composition:
+  dosage: 2.5 mg
+  frequency: one_per_day
+  rxnorm_code:
+  drug_category: hypertension_other
+  deleted: false
+- id: 04d9257d-cafd-4363-882a-01ae813645b2
+  name: Bisoprolol
+  composition:
+  dosage: 5 mg
+  frequency: one_per_day
+  rxnorm_code:
+  drug_category: hypertension_other
+  deleted: false
+- id: 51bf484c-1b9b-4b71-ba73-5c05315f6290
+  name: Captopril
+  composition:
+  dosage: 25 mg
+  frequency: one_per_day
+  rxnorm_code:
+  drug_category: hypertension_ace
+  deleted: false
+- id: 01c4cf91-a6f4-4abe-a183-1926e9c424d2
+  name: Captopril
+  composition:
+  dosage: 25 mg
+  frequency: two_per_day
+  rxnorm_code:
+  drug_category: hypertension_ace
+  deleted: false
+- id: 9978235b-2c28-4da7-9b89-302a27e973d3
+  name: Captopril
+  composition:
+  dosage: 50 mg
+  frequency: one_per_day
+  rxnorm_code:
+  drug_category: hypertension_ace
+  deleted: false
+- id: 5fbfba70-ef6c-4dfb-a7de-9356e570c2a3
+  name: Captopril
+  composition:
+  dosage: 50 mg
+  frequency: two_per_day
+  rxnorm_code:
+  drug_category: hypertension_ace
+  deleted: false
+- id: 99dd10c3-87a5-4341-a022-a8494a134c5e
+  name: Carvedilol
+  composition:
+  dosage: 6.25 mg
+  frequency: one_per_day
+  rxnorm_code:
+  drug_category: hypertension_other
+  deleted: false
+- id: bb25629a-671f-4971-80a1-e0c6dee2c969
+  name: Carvedilol
+  composition:
+  dosage: 6.25 mg
+  frequency: two_per_day
+  rxnorm_code:
+  drug_category: hypertension_other
+  deleted: false
+- id: 8ab23f49-edb4-4615-a5d9-36b8ef872c0c
+  name: Carvedilol
+  composition:
+  dosage: 12.5 mg
+  frequency: one_per_day
+  rxnorm_code:
+  drug_category: hypertension_other
+  deleted: false
+- id: 893b527a-1bb6-4e22-a250-acf7c234897f
+  name: Carvedilol
+  composition:
+  dosage: 12.5 mg
+  frequency: two_per_day
+  rxnorm_code:
+  drug_category: hypertension_other
+  deleted: false
+- id: c1144935-ca94-4289-b991-201bb7713881
+  name: Diltiazem
+  composition:
+  dosage: 30 mg
+  frequency: two_per_day
+  rxnorm_code:
+  drug_category: ccb
+  deleted: false
+- id: ac9ae6be-8a24-4be6-a818-a5bba38248da
+  name: Diltiazem
+  composition:
+  dosage: 30 mg
+  frequency: three_per_day
+  rxnorm_code:
+  drug_category: ccb
+  deleted: false
+- id: e742f380-15c4-4671-9276-2a0660f87ebc
+  name: Glibenclamide
+  composition:
+  dosage: 10 mg
+  frequency: two_per_day
+  rxnorm_code:
+  drug_category: diabetes
+  deleted: false
+- id: 6335e2a6-de05-4a2d-b54b-18579de60751
+  name: Gliclazide
+  composition:
+  dosage: 120 mg
+  frequency: two_per_day
+  rxnorm_code:
+  drug_category: diabetes
+  deleted: false
+- id: e81f2a6a-a74b-4a43-a75d-239397f99d23
+  name: Gliclazide
+  composition:
+  dosage: 160 mg
+  frequency: two_per_day
+  rxnorm_code:
+  drug_category: diabetes
+  deleted: false
+- id: 38c13147-df55-494b-bc9b-12607ee84f53
+  name: Glimepiride
+  composition:
+  dosage: 1 mg
+  frequency: two_per_day
+  rxnorm_code:
+  drug_category: diabetes
+  deleted: false
+- id: 8f460801-1fa6-44aa-ae05-8ce2f2f1e87b
+  name: Glimepiride
+  composition:
+  dosage: 2 mg
+  frequency: two_per_day
+  rxnorm_code:
+  drug_category: diabetes
+  deleted: false
+- id: e2d1666c-4ba2-41b3-ba5e-ab622ea00aa2
+  name: Glimepiride
+  composition:
+  dosage: 4 mg
+  frequency: two_per_day
+  rxnorm_code:
+  drug_category: diabetes
+  deleted: false
+- id: 62909942-bf73-47f5-83d5-af831678637d
+  name: Insulin
+  composition:
+  dosage:
+  frequency:
+  rxnorm_code:
+  drug_category: diabetes
+  deleted: false
+- id: 69521cf7-c0d2-4026-acd2-0cfd087d0e94
+  name: Losartan
+  composition:
+  dosage: 25 mg
+  frequency: two_per_day
+  rxnorm_code:
+  drug_category: hypertension_arb
+  deleted: false
+- id: e5ab38b4-7a16-48aa-bdcf-3ca5546da87d
+  name: Losartan
+  composition:
+  dosage: 50 mg
+  frequency: two_per_day
+  rxnorm_code:
+  drug_category: hypertension_arb
+  deleted: false
+- id: 11c3e26c-5f45-484d-a685-5a627d01ac24
+  name: Metformin
+  composition:
+  dosage: 750 mg
+  frequency: two_per_day
+  rxnorm_code:
+  drug_category: diabetes
+  deleted: false
+- id: d8ffcf83-b1df-43b6-b86a-7f2aa5aaa809
+  name: Nifedipine
+  composition:
+  dosage: 20 mg
+  frequency: two_per_day
+  rxnorm_code:
+  drug_category: ccb
+  deleted: false
+- id: d9780505-a15d-430a-9d66-671ad49f49e9
+  name: Pioglitazone
+  composition:
+  dosage: 15 mg
+  frequency: one_per_day
+  rxnorm_code:
+  drug_category: diabetes
+  deleted: false
+- id: bc5022b5-6297-4459-8efe-303f3b686a3d
+  name: Pioglitazone
+  composition:
+  dosage: 30 mg
+  frequency: one_per_day
+  rxnorm_code:
+  drug_category: diabetes
+  deleted: false
+- id: cfc7de05-dd6c-4574-9b9f-bed1d508316e
+  name: Pioglitazone
+  composition:
+  dosage: 45 mg
+  frequency: one_per_day
+  rxnorm_code:
+  drug_category: diabetes
+  deleted: false
+- id: 0515f1b3-f09a-45da-841f-c815df0e711a
+  name: Prazosin
+  composition:
+  dosage: 0.5 mg
+  frequency: two_per_day
+  rxnorm_code:
+  drug_category: hypertension_other
+  deleted: false
+- id: 625e60a9-d29c-4fa2-8814-b9c91181dcc1
+  name: Prazosin
+  composition:
+  dosage: 0.5 mg
+  frequency: three_per_day
+  rxnorm_code:
+  drug_category: hypertension_other
+  deleted: false
+- id: 646eb097-5342-45f7-8030-011e3f5fb660
+  name: Prazosin
+  composition:
+  dosage: 1 mg
+  frequency: two_per_day
+  rxnorm_code:
+  drug_category: hypertension_other
+  deleted: false
+- id: ecbce5ab-b6df-4f47-9674-2781379f8054
+  name: Prazosin
+  composition:
+  dosage: 1 mg
+  frequency: three_per_day
+  rxnorm_code:
+  drug_category: hypertension_other
+  deleted: false
+- id: 0b9c3f37-b547-4664-90d5-099eed2095ee
+  name: Tolbutamide
+  composition:
+  dosage: 500 mg
+  frequency: two_per_day
+  rxnorm_code:
+  drug_category: diabetes
+  deleted: false
+- id: d58247b1-2339-4ddb-9b24-2f70fe6caade
+  name: Tolbutamide
+  composition:
+  dosage: 1 g
+  frequency: two_per_day
+  rxnorm_code:
+  drug_category: diabetes
+  deleted: false
