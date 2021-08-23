@@ -1,5 +1,4 @@
 require "rails_helper"
-require_relative Rails.root.join("spec/support/experiment_data_examples.rb")
 
 RSpec.describe ExperimentResultsExportWorker, type: :model do
   describe "#perform" do
