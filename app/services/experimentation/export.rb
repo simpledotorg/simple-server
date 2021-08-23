@@ -2,7 +2,8 @@ module Experimentation
   class Export
     require "csv"
 
-    EXPANDABLE_COLUMNS = ["Communications", "Appointments", "Blood Pressures"].freeze
+    EXPANDABLE_COLUMNS = ["Followups", "Communications", "Appointments", "Blood Pressures"].freeze
+    FOLLOWUP_START = 3.days
     FOLLOWUP_CUTOFF = 10.days
 
     attr_reader :experiment, :patient_data_aggregate, :query_date_range
@@ -17,7 +18,14 @@ module Experimentation
       aggregate_data
     end
 
-    def as_csv
+    def write_csv
+      file_location = "/tmp/" + experiment.name.downcase.tr(" ", "_") + ".csv"
+      File.write(file_location, csv_data)
+    end
+
+    private
+
+    def csv_data
       CSV.generate(headers: true) do |csv|
         csv << headers
         patient_data_aggregate.each do |patient_data|
@@ -28,8 +36,6 @@ module Experimentation
         end
       end
     end
-
-    private
 
     def aggregate_data
       experiment.treatment_groups.each do |group|
@@ -42,12 +48,13 @@ module Experimentation
             "Experiment Name" => experiment.name,
             "Treatment Group" => group.description,
             "Experiment Inclusion Date" => tgm.created_at.to_date,
+            "Followups" => followup_results(patient, tgm, notifications),
             "Appointments" => appointments(patient),
             "Blood Pressures" => blood_pressures(patient),
             "Communications" => experimental_communications(notifications),
             "Patient Gender" => patient.gender,
             "Patient Age" => patient.age,
-            "Patient Risk Level" => patient.risk_priority,
+            "Patient Risk Level" => patient.high_risk? ? "High" : "Normal",
             "Assigned Facility Name" => assigned_facility&.name,
             "Assigned Facility Type" => assigned_facility&.facility_type,
             "Assigned Facility State" => assigned_facility&.state,
@@ -74,6 +81,56 @@ module Experimentation
           index += 1
         end
       end
+    end
+
+    def followup_results(patient, tgm, notifications)
+      if experiment.experiment_type == "current_patients"
+        active_patient_followups(patient, notifications)
+      elsif experiment.experiment_type == "stale_patients"
+        stale_patient_followups(patient, tgm)
+      else
+        raise ArgumentError("No followup logic available for experiment type #{experiment.experiment_type}")
+      end
+    end
+
+    def active_patient_experimental_appointment_dates(patient, notifications)
+      if notifications.any?
+        notifications.map(&:subject).pluck(:scheduled_date).uniq
+      else
+        # control patients don't have notifications
+        experiment_date_range = (experiment.start_date..experiment.end_date)
+        patient.appointments.where(scheduled_date: experiment_date_range)
+          .where("device_created_at < ?", experiment.start_date.beginning_of_day)
+          .order(:scheduled_date)
+          .pluck(:scheduled_date)
+          .uniq
+      end
+    end
+
+    def active_patient_followups(patient, notifications)
+      appointment_dates = active_patient_experimental_appointment_dates(patient, notifications)
+      appointment_dates.map.each_with_index do |appointment_date, index|
+        adjusted_index = index + 1
+        followup_date_range = ((appointment_date - FOLLOWUP_START)..(appointment_date + FOLLOWUP_CUTOFF))
+        followup_date = patient.blood_pressures.where(device_created_at: followup_date_range).order(:device_created_at).first&.device_created_at&.to_date
+        days_to_followup = followup_date.nil? ? nil : (followup_date - appointment_date).to_i
+        {
+          "Experiment Appointment #{adjusted_index} Date" => appointment_date,
+          "Followup #{adjusted_index} Date" => followup_date,
+          "Days to visit #{adjusted_index}" => days_to_followup
+        }
+      end
+    end
+
+    def stale_patient_followups(patient, tgm)
+      date_added = tgm.created_at.to_date
+      followup_date_range = (date_added..(date_added + FOLLOWUP_CUTOFF))
+      followup_date = patient.blood_pressures.where(device_created_at: followup_date_range).order(:device_created_at).first&.device_created_at&.to_date
+      days_to_followup = followup_date.nil? ? nil : (followup_date - date_added).to_i
+      [{
+        "Followup Date" => followup_date,
+        "Days to visit" => days_to_followup
+      }]
     end
 
     def appointments(patient)
