@@ -1,7 +1,7 @@
 <%= bootstrap_form_with(url: form_url, method: :get, layout: :horizontal, class: "mt-4") do |form| %>
   <% form_id = local_assigns[:form_id]
-     html_options = { onchange: "this.form.submit();" }
-     html_options.merge!(form: form_id) if form_id.present?
+     facility_html_options = { form: form_id, onchange: "this.form.submit();", class: "selectpicker", data: {live_search: true} }.compact
+     page_html_options = { form: form_id, onchange: "this.form.submit();" }.compact
   %>
   <div class="form-row">
     <div id="facility-selector" class="form-group col-md-6">
@@ -13,7 +13,7 @@
                           selected: facility_id,
                           wrapper: false
                       },
-                      html_options
+                      facility_html_options
       %>
     </div>
     <div id="limit-selector" class="form-group col-md-3">
@@ -23,7 +23,7 @@
                           hide_label: true,
                           selected: per_page,
                       },
-                      html_options
+                      page_html_options
       %>
     </div>
   </div>

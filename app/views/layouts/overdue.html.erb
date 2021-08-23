@@ -5,23 +5,13 @@
   <p>
     Patients that are overdue for a follow-up visit<% if current_admin.accessible_facilities(:manage_overdue_list) %>. If you select a facility, you can download a patient list.<% end %>
   </p>
-  <% if current_admin.accessible_facilities(:manage_overdue_list) %>
-    <%= render('shared/paginate_and_filter_by_facility',
-               form_url: appointments_path,
-               current_admin: current_admin,
-               facility_id: @facility_id,
-               per_page: @per_page,
-               form_id: "search-filters",
-               scope_namespace: current_admin.accessible_facilities(:manage_overdue_list)) %>
-  <% else %>
-    <%= render('shared/paginate_and_filter_by_facility',
-               form_url: appointments_path,
-               current_admin: current_admin,
-               facility_id: @facility_id,
-               per_page: @per_page,
-               form_id: "search-filters",
-               scope_namespace: [:overdue_list, Facility]) %>
-  <% end %>
+  <%= render('shared/paginate_and_filter_by_facility',
+             form_url: appointments_path,
+             current_admin: current_admin,
+             facility_id: @facility_id,
+             per_page: @per_page,
+             form_id: "search-filters",
+             scope_namespace: current_admin.accessible_facilities(:manage_overdue_list)) %>
   <section class="secondary-nav-filters">
     <h4 class="mt-2">
       Filters
