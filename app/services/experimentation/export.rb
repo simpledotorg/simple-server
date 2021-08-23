@@ -81,7 +81,7 @@ module Experimentation
     def followup_results(patient, tgm, notifications)
       if experiment.experiment_type == "current_patients"
         active_patient_followups(patient, notifications)
-      elsif "stale_patients"
+      elsif experiment.experiment_type == "stale_patients"
         stale_patient_followups(patient, tgm)
       else
         raise ArgumentError("No followup logic available for experiment type #{experiment.experiment_type}")
@@ -89,7 +89,7 @@ module Experimentation
     end
 
     def active_patient_experimental_appointment_dates(patient, notifications)
-      appointment_dates = if notifications.any?
+      if notifications.any?
         notifications.map(&:subject).pluck(:scheduled_date).uniq
       else
         # control patients don't have notifications

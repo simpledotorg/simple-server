@@ -1,7 +1,6 @@
 require "rails_helper"
 
 RSpec.describe Experimentation::Export, type: :model do
-
   def create_notification(experiment, template, patient, appt, status)
     create(:notification,
       experiment: experiment,
@@ -75,7 +74,6 @@ RSpec.describe Experimentation::Export, type: :model do
   end
 
   describe "patient_data_aggregate" do
-
     it "aggregates data for all experiment patients" do
       subject = described_class.new(@experiment)
       results = subject.patient_data_aggregate
@@ -86,12 +84,13 @@ RSpec.describe Experimentation::Export, type: :model do
         "Experiment Inclusion Date" => @control_patient.treatment_group_memberships.first.created_at.to_date,
         "Followups" =>
           [{"Experiment Appointment 1 Date" => @control_appt_1.scheduled_date.to_date,
-            "Followup 1 Date"=>@control_followup_1.device_created_at.to_date,
+            "Followup 1 Date" => @control_followup_1.device_created_at.to_date,
             "Days to visit 1" => @control_appt_1_followup_days},
-           {
-            "Experiment Appointment 2 Date"=>@control_appt_2.scheduled_date.to_date,
-            "Followup 2 Date"=>nil,
-            "Days to visit 2"=>nil}],
+            {
+              "Experiment Appointment 2 Date" => @control_appt_2.scheduled_date.to_date,
+              "Followup 2 Date" => nil,
+              "Days to visit 2" => nil
+            }],
         "Appointments" =>
          [{"Appointment 1 Creation Date" => @control_appt_1.device_created_at.to_date,
            "Appointment 1 Date" => @control_appt_1.scheduled_date.to_date},
@@ -118,16 +117,16 @@ RSpec.describe Experimentation::Export, type: :model do
         "Experiment Name" => @experiment.name,
         "Treatment Group" => @single_message_group.description,
         "Experiment Inclusion Date" => @single_message_patient.treatment_group_memberships.first.created_at.to_date,
-        "Followups"=>
-           [{"Days to visit 1"=>@smp_appt_followup_days,
-             "Experiment Appointment 1 Date"=>@smp_appt.scheduled_date.to_date,
-             "Followup 1 Date"=>@smp_followup_1.device_created_at.to_date}],
+        "Followups" =>
+           [{"Days to visit 1" => @smp_appt_followup_days,
+             "Experiment Appointment 1 Date" => @smp_appt.scheduled_date.to_date,
+             "Followup 1 Date" => @smp_followup_1.device_created_at.to_date}],
         "Appointments" =>
          [{"Appointment 1 Creation Date" => @smp_appt.device_created_at.to_date,
            "Appointment 1 Date" => @smp_appt.scheduled_date.to_date}],
         "Blood Pressures" =>
          [{"Blood Pressure 1 Date" => @smp_past_visit_1.device_created_at.to_date},
-          {"Blood Pressure 2 Date" => @smp_followup_1.device_created_at.to_date}],
+           {"Blood Pressure 2 Date" => @smp_followup_1.device_created_at.to_date}],
         "Communications" => [{"Message 1 Type" => @smp_communication.communication_type,
                               "Message 1 Date Sent" => @smp_communication.detailable.delivered_on.to_date,
                               "Message 1 Status" => @smp_communication.detailable.result,
@@ -148,10 +147,10 @@ RSpec.describe Experimentation::Export, type: :model do
         "Experiment Name" => @experiment.name,
         "Treatment Group" => @cascade_group.description,
         "Experiment Inclusion Date" => @cascade_patient.treatment_group_memberships.first.created_at.to_date,
-        "Followups"=>
-          [{"Days to visit 1"=>nil,
-            "Experiment Appointment 1 Date"=>@cascade_patient_appt.scheduled_date.to_date,
-            "Followup 1 Date"=>nil}],
+        "Followups" =>
+          [{"Days to visit 1" => nil,
+            "Experiment Appointment 1 Date" => @cascade_patient_appt.scheduled_date.to_date,
+            "Followup 1 Date" => nil}],
         "Appointments" =>
          [{"Appointment 1 Creation Date" => @cascade_patient_appt.device_created_at.to_date,
            "Appointment 1 Date" => @cascade_patient_appt.scheduled_date.to_date}],
