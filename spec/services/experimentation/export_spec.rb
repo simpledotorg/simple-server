@@ -195,7 +195,7 @@ RSpec.describe Experimentation::Export, type: :model do
     end
   end
 
-  describe "#as_csv" do
+  describe "#write_csv" do
     it "returns a csv with the expected data" do
       expected_file_contents = %(Experiment Name,Treatment Group,Experiment Inclusion Date,\
 Experiment Appointment 1 Date,Followup 1 Date,Days to visit 1,Experiment Appointment 2 Date,Followup 2 Date,\
@@ -215,8 +215,8 @@ single message,2020-12-31,2021-01-15,2021-01-18,3,,,,2020-12-25,2021-01-15,,,202
 whatsapp,2021-01-22,failed,cascade 2,sms,2021-01-22,delivered,cascade 2,female,50,Normal,Bangalore Clinic,City,\
 Karnataka,South,Red Zone,2020-01-01,#{@cascade_patient.treatment_group_memberships.last.id}\n)
 
-      service = described_class.new(@experiment)
-      expect(service.as_csv).to eq(expected_file_contents)
+      expect(File).to receive(:write).with("/tmp/#{@experiment.name}.csv", expected_file_contents)
+      described_class.new(@experiment).write_csv
     end
   end
 end

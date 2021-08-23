@@ -18,7 +18,14 @@ module Experimentation
       aggregate_data
     end
 
-    def as_csv
+    def write_csv
+      file_location = "/tmp/" + experiment.name.downcase.tr(" ", "_") + ".csv"
+      File.write(file_location, csv_data)
+    end
+
+    private
+
+    def csv_data
       CSV.generate(headers: true) do |csv|
         csv << headers
         patient_data_aggregate.each do |patient_data|
@@ -29,8 +36,6 @@ module Experimentation
         end
       end
     end
-
-    private
 
     def aggregate_data
       experiment.treatment_groups.each do |group|
