@@ -231,15 +231,18 @@ AdminAccessInvite.prototype = Object.assign(AdminAccessInvite.prototype, {
     this.selectAllFacilitiesInput().checked = checkboxes.every(checkbox => checkbox.checked)
   },
 
+  parentID: function(checkbox) {
+    return checkbox.dataset.parentId
+  },
+
   updateIndeterminateCheckboxes: function () {
+    const _self = this
+
     // list of all checkboxes under facilityAccess
     const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, this.facilityAccess)
+    const oneChildPerParent = distinctByFn(checkboxes, this.parentID);
 
-    // go through all the checkboxes that are pre-checked and update their parents accordingly
-    for (const checkbox of checkboxes) {
-      if (!checkbox.checked) continue
-
-      const _self = this
+    for (const checkbox of oneChildPerParent) {
       // a large tree can take a lot of time to load on the DOM,
       // so we queue up our updates by requesting frames so as to not cause overwhelming repaints
       requestAnimationFrame(function () {
@@ -328,3 +331,11 @@ const nodeListToArray = (selector, parent = document) =>
 // return a function that checks if element contains class
 const containsClass = (className) => ({classList}) =>
   classList && classList.contains(className)
+
+const distinctByFn = function (collection, fn) {
+  return Object.values(
+    collection.reduce(function (accumulator, item) {
+      accumulator[fn(item)] = item
+      return accumulator
+    }, {})
+)}

@@ -18,5 +18,42 @@
       "display_name": "Ethiopia",
       "isd_code": "251"
     }
-  ]
+  ],
+  "v2": {
+    "countries": [
+      {
+        "country_code": "IN",
+        "display_name": "India",
+        "isd_code": "91",
+        "deployments": [
+          {
+            "display_name": "IHCI",
+            "endpoint": "https://api.simple.org/api/"
+          }
+        ]
+      },
+      {
+        "country_code": "BD",
+        "display_name": "Bangladesh",
+        "isd_code": "880",
+        "deployments": [
+          {
+            "display_name": "Bangladesh",
+            "endpoint": "https://api.bd.simple.org/api/"
+          }
+        ]
+      },
+      {
+        "country_code": "ET",
+        "display_name": "Ethiopia",
+        "isd_code": "251",
+        "deployments": [
+          {
+            "display_name": "Ethiopia",
+            "endpoint": "https://simple.moh.gov.et/api/"
+          }
+        ]
+      }
+    ]
+  }
 }

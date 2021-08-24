@@ -28,7 +28,6 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
     it "landing page -Facility and page dropdown " do
       create_list(:facility, 2, facility_group: ihmi_facility_group)
       nav_page.click_main_menu_tab("Overdue")
-      appoint_page.select_facility_drop_down
       expect(appoint_page.get_all_facility_count).to eq(2)
 
       appoint_page.select_page_dropdown

@@ -14,4 +14,4 @@ jobs:
         stale-pr-message: 'This PR is stale. Please review/update it or close it.'
         stale-pr-label: 'stale-pr'
         days-before-stale: 10
-        days-before-pr-close: -1
+        exempt-pr-labels: 'keep-alive'

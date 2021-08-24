@@ -193,6 +193,12 @@ class Api::V4::Schema
       sync_to_user_response(:medications)
     end
 
+    def states_response
+      {type: :array,
+       items: {type: :string},
+       description: "List of available state names"}
+    end
+
     def definitions
       {error: error,
        errors: Api::V4::Models.array_of("error"),
