@@ -41,7 +41,7 @@ RSpec.describe Api::ManifestsController, type: :controller do
     end
 
     context "in non-production environments" do
-      environments = %w[development review]
+      environments = %w[development]
 
       environments.each do |env|
         it "returns a dynamic manifest for #{env}" do
