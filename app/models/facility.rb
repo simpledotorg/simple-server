@@ -211,7 +211,7 @@ class Facility < ApplicationRecord
   end
 
   def discardable?
-    registered_patients.none? && blood_pressures.none? && blood_sugars.none? && appointments.none?
+    registered_patients.none? && blood_pressures.none? && blood_sugars.none? && appointments.status_scheduled.none? && users.none?
   end
 
   def valid_block
