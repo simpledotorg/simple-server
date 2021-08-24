@@ -1,0 +1,29 @@
+{
+  "v1": [
+    {
+      "country_code": "IN",
+      "endpoint": "<simple review link>",
+      "display_name": "India",
+      "isd_code": "91"
+    }
+  ],
+  "v2": {
+    "countries": [
+      {
+        "country_code": "IN",
+        "display_name": "India",
+        "isd_code": "91",
+        "deployments": [
+          {
+            "display_name": "Kerala",
+            "endpoint": "<simple review link>"
+          },
+          {
+            "display_name": "QA",
+            "endpoint": "https://api-qa.simple.org/api/"
+          }
+        ]
+      }
+    ]
+  }
+}
