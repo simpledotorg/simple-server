@@ -2,7 +2,7 @@
   "v1": [
     {
       "country_code": "IN",
-      "endpoint": "<simple review link>",
+      "endpoint": "http://simple-review-pr-2870.herokuapp.com/",
       "display_name": "India",
       "isd_code": "91"
     }
@@ -16,7 +16,7 @@
         "deployments": [
           {
             "display_name": "Kerala",
-            "endpoint": "<simple review link>"
+            "endpoint": "http://simple-review-pr-2870.herokuapp.com/"
           },
           {
             "display_name": "QA",
