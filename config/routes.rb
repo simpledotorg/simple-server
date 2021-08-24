@@ -147,7 +147,7 @@ Rails.application.routes.draw do
         post "/lookup", to: "patients#lookup"
       end
 
-      get "states", to: "states#sync_to_user"
+      get "states", to: "states#index"
     end
   end
 
