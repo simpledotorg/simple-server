@@ -16,7 +16,7 @@ layout file, like app/views/layouts/application.html.erb
 
 */
 html { height: 100%; }
-
+body { position: relative; }
 /*
 
   COLOR STYLES
@@ -196,6 +196,14 @@ $light-purple: #E7E3F0;
 .stroke-light-purple { stroke: $light-purple; }
 /*
 
+  SHADOW STYLES
+
+*/
+@mixin mobile-nav-shadow {
+  box-shadow: 0 -4px 8px rgba(0,0,0,0.1);
+}
+/*
+
   COMPONENTS
   - Navigation bar
 
@@ -224,4 +232,25 @@ $light-purple: #E7E3F0;
 }
 .user-profile-icon {
   margin-right: 4px;
+}
+.bottom-navigation-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background-color: $white;
+  @include mobile-nav-shadow;
+}
+.navigation-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.navigation-tab-name {
+  margin-top: 2px;
+  @include small-body-text;
 }
