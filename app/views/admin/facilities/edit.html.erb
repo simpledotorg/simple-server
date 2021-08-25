@@ -2,9 +2,21 @@
   <h1 class="page-title">Edit facility</h1>
   <nav class="page-nav">
 
-    <% if current_admin.accessible_facilities(:manage).find_by_id(@facility) && @facility.discardable? %>
-      <%= link_to 'Delete facility', [:admin, @facility_group, @facility], method: :delete, data: {confirm: "Are you sure you want to delete #{@facility.name}?"}, class: "btn btn-outline-danger ml-4" %>
+    <% if current_admin.accessible_facilities(:manage).find_by_id(@facility) %>
+    <span class="d-inline-block"
+          tabindex="0"
+          data-toggle="tooltip"
+          data-placement="bottom"
+          title="<% unless @facility.discardable? %>
+                  This facility cannot be deleted because <%= @facility.discard_prevention_reasons.join(', ') %> are present.
+                 <% end %>">
+      <%= link_to 'Delete facility',
+                  [:admin, @facility_group, @facility],
+                  method: :delete,
+                  data: { confirm: "Are you sure you want to delete #{@facility.name}?" },
+                  class: "btn btn-outline-danger ml-4 #{'disabled' unless @facility.discardable?}" %>
     <% end %>
+    </span>
   </nav>
 </div>
 

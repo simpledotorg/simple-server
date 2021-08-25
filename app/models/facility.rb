@@ -210,8 +210,24 @@ class Facility < ApplicationRecord
     teleconsultation_medical_officers.map(&:full_teleconsultation_phone_number)
   end
 
+  def records_preventing_discard
+    {
+      "registered patients" => registered_patients,
+      "blood pressures" => blood_pressures,
+      "blood sugars" => blood_sugars,
+      "scheduled appointments" => appointments.status_scheduled,
+      "users" => users
+    }
+  end
+
   def discardable?
-    registered_patients.none? && blood_pressures.none? && blood_sugars.none? && appointments.status_scheduled.none? && users.none?
+    records_preventing_discard.values.all? { |records| records.none? }
+  end
+
+  def discard_prevention_reasons
+    records_preventing_discard.map do |record_name, records|
+      "#{records.count} #{record_name}" if records.any?
+    end.compact
   end
 
   def valid_block
