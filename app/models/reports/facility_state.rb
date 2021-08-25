@@ -1,8 +1,12 @@
 module Reports
-  class FacilityState < Matview
+  class FacilityState < Reports::View
     self.table_name = "reporting_facility_states"
 
     belongs_to :facility
+
+    def self.materialized?
+      true
+    end
 
     def self.for_region(region_or_source)
       region = region_or_source.region
