@@ -418,8 +418,13 @@ RSpec.describe Facility, type: :model do
         expect(facility.discardable?).to be false
       end
 
-      it "has appointments" do
-        create(:appointment, facility: facility)
+      it "has scheduled appointments" do
+        create(:appointment, status: :scheduled, facility: facility)
+        expect(facility.discardable?).to be false
+      end
+
+      it "has registered users" do
+        create(:user, registration_facility: facility)
         expect(facility.discardable?).to be false
       end
     end

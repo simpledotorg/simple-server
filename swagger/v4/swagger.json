@@ -462,6 +462,26 @@
         }
       }
     },
+    "/states": {
+      "get": {
+        "summary": "Lists available state names",
+        "tags": [
+          "States"
+        ],
+        "responses": {
+          "200": {
+            "description": "returns state names",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "List of available state names"
+            }
+          }
+        }
+      }
+    },
     "/facility_medical_officers/sync": {
       "get": {
         "summary": "Syncs Teleconsultation MOs data from server to device.",
@@ -1983,6 +2003,7 @@
           "enum": [
             "simple_bp_passport",
             "bangladesh_national_id",
+            "sri_lanka_national_id",
             "ethiopia_medical_record",
             "india_national_health_id"
           ]
