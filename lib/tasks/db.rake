@@ -1,7 +1,7 @@
 namespace :db do
   desc "Refresh materialized views for dashboards"
   task refresh_materialized_views: :environment do
-    RefreshMaterializedViews.call
+    RefreshReportingViews.call
     puts "Materialized views have been refreshed"
   end
 
@@ -23,7 +23,7 @@ namespace :db do
     require "tasks/scripts/purge_users_data"
     PurgeUsersData.perform
 
-    RefreshMaterializedViews.call
+    RefreshReportingViews.call
   end
 end
 
