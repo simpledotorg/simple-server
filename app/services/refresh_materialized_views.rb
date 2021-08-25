@@ -61,6 +61,8 @@ class RefreshMaterializedViews
 
   # The order for these must remain BPs -> Visits -> States
   V2_MATVIEWS = %w[
+    Reports::Month
+    Reports::Facility
     Reports::PatientBloodPressure
     Reports::PatientVisit
     Reports::PatientState
