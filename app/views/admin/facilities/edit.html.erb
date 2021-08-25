@@ -9,6 +9,7 @@
           data-placement="bottom"
           title="<% unless @facility.discardable? %>
                   This facility cannot be deleted because it contains <%= @facility.discard_prevention_reasons.to_sentence %>.
+                  Please transfer all data to a different facility to delete this facility.
                  <% end %>">
       <%= link_to 'Delete facility',
                   [:admin, @facility_group, @facility],
