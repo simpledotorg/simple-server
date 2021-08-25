@@ -212,11 +212,11 @@ class Facility < ApplicationRecord
 
   def records_preventing_discard
     {
-      "registered patients" => registered_patients,
-      "blood pressures" => blood_pressures,
-      "blood sugars" => blood_sugars,
-      "scheduled appointments" => appointments.status_scheduled,
-      "users" => users
+      "registered patient" => registered_patients,
+      "blood pressure" => blood_pressures,
+      "blood sugar" => blood_sugars,
+      "scheduled appointment" => appointments.status_scheduled,
+      "user" => users
     }
   end
 
@@ -226,7 +226,10 @@ class Facility < ApplicationRecord
 
   def discard_prevention_reasons
     records_preventing_discard.map do |record_name, records|
-      "#{records.count} #{record_name}" if records.any?
+      if records.any?
+        number_of_records = records.count
+        "#{number_of_records} #{record_name.pluralize(number_of_records)}"
+      end
     end.compact
   end
 

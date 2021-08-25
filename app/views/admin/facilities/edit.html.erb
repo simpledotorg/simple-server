@@ -8,7 +8,7 @@
           data-toggle="tooltip"
           data-placement="bottom"
           title="<% unless @facility.discardable? %>
-                  This facility cannot be deleted because <%= @facility.discard_prevention_reasons.join(', ') %> are present.
+                  This facility cannot be deleted because it contains <%= @facility.discard_prevention_reasons.to_sentence %>.
                  <% end %>">
       <%= link_to 'Delete facility',
                   [:admin, @facility_group, @facility],
