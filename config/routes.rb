@@ -146,6 +146,8 @@ Rails.application.routes.draw do
       scope :patients do
         post "/lookup", to: "patients#lookup"
       end
+
+      get "states", to: "states#index"
     end
   end
 
