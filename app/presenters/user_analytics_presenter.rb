@@ -4,6 +4,7 @@ class UserAnalyticsPresenter
   include PeriodHelper
   include DashboardHelper
   include ActionView::Helpers::NumberHelper
+  include BustCache
 
   def initialize(current_facility)
     @current_facility = current_facility
@@ -146,7 +147,7 @@ class UserAnalyticsPresenter
 
   def statistics
     @statistics ||=
-      Rails.cache.fetch(statistics_cache_key, expires_in: EXPIRE_STATISTICS_CACHE_IN) {
+      Rails.cache.fetch(statistics_cache_key, expires_in: EXPIRE_STATISTICS_CACHE_IN, force: bust_cache?) {
         {
           daily: daily_stats,
           monthly: monthly_stats,
@@ -371,7 +372,7 @@ class UserAnalyticsPresenter
   end
 
   def statistics_cache_key
-    "user_analytics/#{current_facility.id}/#{CACHE_VERSION}"
+    "user_analytics/#{current_facility.id}/#{diabetes_enabled?}/#{CACHE_VERSION}"
   end
 
   def sum_by_gender(data)
