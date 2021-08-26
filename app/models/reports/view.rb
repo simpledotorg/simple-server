@@ -2,12 +2,14 @@ module Reports
   class View < ActiveRecord::Base
     def self.refresh
       ActiveRecord::Base.transaction do
-        if materialized?
-          ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{Period::REPORTING_TIME_ZONE}'")
-          Scenic.database.refresh_materialized_view(table_name, concurrently: true, cascade: false)
-        end
+        refresh_view if materialized?
         add_comments
       end
+    end
+
+    def self.refresh_view
+      ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{Period::REPORTING_TIME_ZONE}'")
+      Scenic.database.refresh_materialized_view(table_name, concurrently: true, cascade: false)
     end
 
     def self.add_comments
@@ -20,15 +22,9 @@ module Reports
     end
 
     def self.add_table_description(table_name, table_description)
-      if materialized?
-        ActiveRecord::Base.connection.exec_query(
-          "COMMENT ON MATERIALIZED VIEW #{table_name} #{ActiveRecord::Base.sanitize_sql(["IS ?", table_description])}"
-        )
-      else
-        ActiveRecord::Base.connection.exec_query(
-          "COMMENT ON VIEW #{table_name} #{ActiveRecord::Base.sanitize_sql(["IS ?", table_description])}"
-        )
-      end
+      ActiveRecord::Base.connection.exec_query(
+        "COMMENT ON #{"MATERIALIZED" if materialized?} VIEW #{table_name} #{ActiveRecord::Base.sanitize_sql(["IS ?", table_description])}"
+      )
     end
 
     def self.add_column_description(column_description, column_name)
