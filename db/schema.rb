@@ -1634,24 +1634,6 @@ ActiveRecord::Schema.define(version: 2021_08_26_080108) do
       follow_up_blood_pressures.facility_id,
       follow_up_blood_pressures.user_id,
       follow_up_blood_pressures.month_string
-     FROM follow_up_blood_pressures
-  UNION
-   SELECT follow_up_blood_sugars.patient_id,
-      follow_up_blood_sugars.facility_id,
-      follow_up_blood_sugars.user_id,
-      follow_up_blood_sugars.month_string
-     FROM follow_up_blood_sugars
-  UNION
-   SELECT follow_up_prescription_drugs.patient_id,
-      follow_up_prescription_drugs.facility_id,
-      follow_up_prescription_drugs.user_id,
-      follow_up_prescription_drugs.month_string
-     FROM follow_up_prescription_drugs
-  UNION
-   SELECT follow_up_appointments.patient_id,
-      follow_up_appointments.facility_id,
-      follow_up_appointments.user_id,
-      follow_up_appointments.month_string
-     FROM follow_up_appointments;
+     FROM follow_up_blood_pressures;
   SQL
 end

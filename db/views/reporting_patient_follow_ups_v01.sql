@@ -56,6 +56,8 @@ follow_up_appointments AS (
 )
 
 SELECT * FROM follow_up_blood_pressures
-UNION (SELECT * FROM follow_up_blood_sugars)
-UNION (SELECT * FROM follow_up_prescription_drugs)
-UNION (SELECT * FROM follow_up_appointments)
+-- Follow-ups only look for BPs. Consider including more criteria in v2:
+-- -------
+-- UNION (SELECT * FROM follow_up_blood_sugars)
+-- UNION (SELECT * FROM follow_up_prescription_drugs)
+-- UNION (SELECT * FROM follow_up_appointments)
