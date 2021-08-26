@@ -2,6 +2,7 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
   include ApplicationHelper
   include SetForEndOfMonth
   before_action :set_for_end_of_month
+  before_action :set_bust_cache
 
   layout false
 
@@ -20,5 +21,9 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
       format.html { render :show }
       format.json { render json: stats }
     end
+  end
+
+  def set_bust_cache
+    RequestStore.store[:bust_cache] = true if params[:bust_cache].present?
   end
 end
