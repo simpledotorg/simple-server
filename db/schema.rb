@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_28_100308) do
+ActiveRecord::Schema.define(version: 2021_08_26_080108) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -1600,4 +1600,58 @@ ActiveRecord::Schema.define(version: 2021_07_28_100308) do
   SQL
   add_index "reporting_quarterly_facility_states", ["quarter_string", "facility_region_id"], name: "quarterly_facility_states_quarter_string_region_id", unique: true
 
+  create_view "reporting_patient_follow_ups", sql_definition: <<-SQL
+      WITH follow_up_blood_pressures AS (
+           SELECT p.id AS patient_id,
+              bp.facility_id,
+              bp.user_id,
+              to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at)), 'YYYY-MM'::text) AS month_string
+             FROM (patients p
+               JOIN blood_pressures bp ON (((p.id = bp.patient_id) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at)), 'YYYY-MM'::text) > to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)), 'YYYY-MM'::text)))))
+          ), follow_up_blood_sugars AS (
+           SELECT p.id AS patient_id,
+              bs.facility_id,
+              bs.user_id,
+              to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)), 'YYYY-MM'::text) AS month_string
+             FROM (patients p
+               JOIN blood_sugars bs ON (((p.id = bs.patient_id) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)), 'YYYY-MM'::text) > to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)), 'YYYY-MM'::text)))))
+          ), follow_up_prescription_drugs AS (
+           SELECT p.id AS patient_id,
+              pd.facility_id,
+              pd.user_id,
+              to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at)), 'YYYY-MM'::text) AS month_string
+             FROM (patients p
+               JOIN prescription_drugs pd ON (((p.id = pd.patient_id) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at)), 'YYYY-MM'::text) > to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)), 'YYYY-MM'::text)))))
+          ), follow_up_appointments AS (
+           SELECT p.id AS patient_id,
+              app.creation_facility_id AS facility_id,
+              app.user_id,
+              to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at)), 'YYYY-MM'::text) AS month_string
+             FROM (patients p
+               JOIN appointments app ON (((p.id = app.patient_id) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at)), 'YYYY-MM'::text) > to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)), 'YYYY-MM'::text)))))
+          )
+   SELECT follow_up_blood_pressures.patient_id,
+      follow_up_blood_pressures.facility_id,
+      follow_up_blood_pressures.user_id,
+      follow_up_blood_pressures.month_string
+     FROM follow_up_blood_pressures
+  UNION
+   SELECT follow_up_blood_sugars.patient_id,
+      follow_up_blood_sugars.facility_id,
+      follow_up_blood_sugars.user_id,
+      follow_up_blood_sugars.month_string
+     FROM follow_up_blood_sugars
+  UNION
+   SELECT follow_up_prescription_drugs.patient_id,
+      follow_up_prescription_drugs.facility_id,
+      follow_up_prescription_drugs.user_id,
+      follow_up_prescription_drugs.month_string
+     FROM follow_up_prescription_drugs
+  UNION
+   SELECT follow_up_appointments.patient_id,
+      follow_up_appointments.facility_id,
+      follow_up_appointments.user_id,
+      follow_up_appointments.month_string
+     FROM follow_up_appointments;
+  SQL
 end
