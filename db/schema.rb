@@ -1600,7 +1600,7 @@ ActiveRecord::Schema.define(version: 2021_08_26_080108) do
   SQL
   add_index "reporting_quarterly_facility_states", ["quarter_string", "facility_region_id"], name: "quarterly_facility_states_quarter_string_region_id", unique: true
 
-  create_view "reporting_patient_follow_ups", sql_definition: <<-SQL
+  create_view "reporting_patient_follow_ups", materialized: true, sql_definition: <<-SQL
       WITH follow_up_blood_pressures AS (
            SELECT p.id AS patient_id,
               bp.facility_id,
