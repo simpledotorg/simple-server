@@ -1,7 +1,11 @@
 module Reports
-  class PatientState < Matview
+  class PatientState < Reports::View
     self.table_name = "reporting_patient_states"
     belongs_to :patient
+
+    def self.materialized?
+      true
+    end
 
     def self.by_assigned_region(region_or_source)
       region = region_or_source.region

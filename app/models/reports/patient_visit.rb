@@ -1,6 +1,10 @@
 module Reports
-  class PatientVisit < Matview
+  class PatientVisit < Reports::View
     self.table_name = "reporting_patient_visits"
     belongs_to :patient
+
+    def self.materialized?
+      true
+    end
   end
 end

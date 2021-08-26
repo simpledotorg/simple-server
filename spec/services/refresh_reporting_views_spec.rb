@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe RefreshMaterializedViews do
+RSpec.describe RefreshReportingViews do
   around(:example) do |example|
     Rails.cache.clear
     example.run
@@ -8,15 +8,15 @@ RSpec.describe RefreshMaterializedViews do
   end
 
   it "returns nil if no time set" do
-    expect(RefreshMaterializedViews.last_updated_at).to be_nil
+    expect(RefreshReportingViews.last_updated_at).to be_nil
   end
 
   it "returns Time if time has been set" do
     Timecop.freeze("January 1st 2020 01:30 AM") do
       time = Time.current
-      RefreshMaterializedViews.set_last_updated_at
+      RefreshReportingViews.set_last_updated_at
 
-      expect(RefreshMaterializedViews.last_updated_at).to eq(time)
+      expect(RefreshReportingViews.last_updated_at).to eq(time)
     end
   end
 
@@ -28,14 +28,14 @@ RSpec.describe RefreshMaterializedViews do
     expect {
       Timecop.freeze(time) do
         create_list(:blood_pressure, 2)
-        RefreshMaterializedViews.call
+        RefreshReportingViews.call
       end
     }.to change { LatestBloodPressuresPerPatientPerMonth.count }.by(2)
       .and change { LatestBloodPressuresPerPatient.count }.by(2)
       .and change { LatestBloodPressuresPerPatientPerQuarter.count }.by(2)
       .and change { BloodPressuresPerFacilityPerDay.count }.by(2)
       .and change { PatientRegistrationsPerDayPerFacility.count }.by(2)
-      .and change { RefreshMaterializedViews.last_updated_at }.from(nil).to(time)
+      .and change { RefreshReportingViews.last_updated_at }.from(nil).to(time)
   end
 
   it "updates v2 matviews" do
@@ -43,7 +43,7 @@ RSpec.describe RefreshMaterializedViews do
     expect {
       Timecop.freeze(time) do
         create_list(:blood_pressure, 2)
-        RefreshMaterializedViews.call
+        RefreshReportingViews.call
       end
     }.to change { Reports::PatientBloodPressure.count }.by(2)
       .and change { Reports::PatientState.count }.by(2)

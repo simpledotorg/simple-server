@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Reports::Matview, {type: :model, reporting_spec: true} do
+RSpec.describe Reports::View, {type: :model, reporting_spec: true} do
   def column_descriptions_sql(table_name)
     <<~SQL
       SELECT a.attname, pg_catalog.col_description(a.attrelid, a.attnum)
@@ -24,7 +24,7 @@ RSpec.describe Reports::Matview, {type: :model, reporting_spec: true} do
   end
 
   it "has documentation for all reporting materialized views, and their columns" do
-    [Reports::PatientState].each do |klass|
+    [Reports::Facility, Reports::Month, Reports::PatientState].each do |klass|
       klass.add_comments
       expect(ActiveRecord::Base.connection.execute(table_descriptions_sql(klass.table_name)).map { |d| d["description"] }).to all be_present
       expect(ActiveRecord::Base.connection.execute(column_descriptions_sql(klass.table_name)).map { |d| d["col_description"] }).to all be_present
