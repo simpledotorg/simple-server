@@ -14,7 +14,7 @@
     },
     {
       "country_code": "ET",
-      "endpoint": "https://simple-demo.moh.gov.et/api/",
+      "endpoint": "https://api-demo.et.simple.org/api/",
       "display_name": "Ethiopia",
       "isd_code": "251"
     },
@@ -24,5 +24,53 @@
       "display_name": "Sri Lanka",
       "isd_code": "94"
     }
-  ]
+  ],
+  "v2": {
+    "countries": [
+      {
+        "country_code": "IN",
+        "display_name": "India",
+        "isd_code": "91",
+        "deployments": [
+          {
+            "display_name": "India",
+            "endpoint": "https://api-demo.simple.org/api/"
+          }
+        ]
+      },
+      {
+        "country_code": "BD",
+        "display_name": "Bangladesh",
+        "isd_code": "880",
+        "deployments": [
+          {
+            "display_name": "Bangladesh",
+            "endpoint": "https://api-demo.bd.simple.org/api/"
+          }
+        ]
+      },
+      {
+        "country_code": "ET",
+        "display_name": "Ethiopia",
+        "isd_code": "251",
+        "deployments": [
+          {
+            "display_name": "Ethiopia",
+            "endpoint": "https://simple-demo.moh.gov.et/api/"
+          }
+        ]
+      },
+      {
+        "country_code": "LK",
+        "display_name": "Sri Lanka",
+        "isd_code": "94",
+        "deployments": [
+          {
+            "display_name": "Sri Lanka",
+            "endpoint": "https://api-demo.lk.simple.org/api/"
+          }
+        ]
+      }
+    ]
+  }
 }

@@ -1,13 +1,13 @@
-class RefreshMaterializedViews
+class RefreshReportingViews
   include ActiveSupport::Benchmarkable
-  MATVIEW_REFRESH_TIME_KEY = "last_materialized_view_refresh_time".freeze
+  REPORTING_VIEW_REFRESH_TIME_KEY = "last_reporting_view_refresh_time".freeze
 
   def self.last_updated_at
-    Rails.cache.fetch(MATVIEW_REFRESH_TIME_KEY)
+    Rails.cache.fetch(REPORTING_VIEW_REFRESH_TIME_KEY)
   end
 
   def self.set_last_updated_at
-    Rails.cache.write(MATVIEW_REFRESH_TIME_KEY, Time.current.in_time_zone(tz))
+    Rails.cache.write(REPORTING_VIEW_REFRESH_TIME_KEY, Time.current.in_time_zone(tz))
   end
 
   def self.call
@@ -25,7 +25,7 @@ class RefreshMaterializedViews
   end
 
   def benchmark_and_statsd(operation)
-    name = "refresh_matviews.#{operation}"
+    name = "refresh_reporting_views.#{operation}"
     benchmark(name) do
       Statsd.instance.time(name) do
         yield
@@ -34,14 +34,14 @@ class RefreshMaterializedViews
   end
 
   def call
-    logger.info "Beginning full materialized view refresh"
+    logger.info "Beginning full reporting view refresh"
     benchmark_and_statsd("all_v1") do
       refresh_v1
     end
     benchmark_and_statsd("all_v2") do
       refresh_v2
     end
-    logger.info "Completed full materialized view refresh"
+    logger.info "Completed full reporting view refresh"
   end
 
   def self.tz
@@ -50,7 +50,7 @@ class RefreshMaterializedViews
 
   delegate :tz, :set_last_updated_at, to: self
 
-  V1_MATVIEWS = %w[
+  V1_REPORTING_VIEWS = %w[
     LatestBloodPressuresPerPatientPerMonth
     LatestBloodPressuresPerPatient
     LatestBloodPressuresPerPatientPerQuarter
@@ -60,7 +60,9 @@ class RefreshMaterializedViews
   ].freeze
 
   # The order for these must remain BPs -> Visits -> States
-  V2_MATVIEWS = %w[
+  V2_REPORTING_VIEWS = %w[
+    Reports::Month
+    Reports::Facility
     Reports::PatientBloodPressure
     Reports::PatientVisit
     Reports::PatientState
@@ -73,7 +75,7 @@ class RefreshMaterializedViews
   def refresh_v1
     ActiveRecord::Base.transaction do
       ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{tz}'")
-      V1_MATVIEWS.each do |name|
+      V1_REPORTING_VIEWS.each do |name|
         benchmark_and_statsd(name) do
           klass = name.constantize
           klass.refresh
@@ -84,7 +86,7 @@ class RefreshMaterializedViews
   end
 
   def refresh_v2
-    V2_MATVIEWS.each do |name|
+    V2_REPORTING_VIEWS.each do |name|
       benchmark_and_statsd(name) do
         klass = name.constantize
         klass.refresh

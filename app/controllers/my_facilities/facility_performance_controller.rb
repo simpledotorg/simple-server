@@ -43,7 +43,7 @@ class MyFacilities::FacilityPerformanceController < AdminController
   private
 
   def set_last_updated_at
-    last_updated_at = RefreshMaterializedViews.last_updated_at
+    last_updated_at = RefreshReportingViews.last_updated_at
     @last_updated_at =
       if last_updated_at.nil?
         "unknown"

@@ -14,7 +14,7 @@
 
           <% unless page.eql?(:show) %>
             <% pre_checked = page.eql?(:edit) && user_being_edited.visible_facility_groups.include?(facility_group) %>
-            <%= access_checkbox(:facility_groups, facility_group, checked: pre_checked) %>
+            <%= access_checkbox(:facility_groups, facility_group, checked: pre_checked, parent_id: facility_group.organization.id) %>
           <% end %>
 
           <%= access_resource_label(facility_group) %>

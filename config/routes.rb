@@ -150,6 +150,8 @@ Rails.application.routes.draw do
       scope :call_results do
         post "/sync", to: "call_results#sync_from_user"
       end
+
+      get "states", to: "states#index"
     end
   end
 

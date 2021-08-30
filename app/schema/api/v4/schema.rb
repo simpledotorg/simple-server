@@ -197,6 +197,12 @@ class Api::V4::Schema
       sync_from_user_request(:call_results)
     end
 
+    def states_response
+      {type: :array,
+       items: {type: :string},
+       description: "List of available state names"}
+    end
+
     def definitions
       {error: error,
        errors: Api::V4::Models.array_of("error"),
