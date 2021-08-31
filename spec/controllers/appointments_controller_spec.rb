@@ -59,13 +59,33 @@ RSpec.describe AppointmentsController, type: :controller do
     end
 
     describe "filtering by district" do
-      it "displays appointments for first district if none is selected" do
+      it "displays appointments in the selected district for patients in the selected district" do
+        overdue_appointments_in_facility_1
+        overdue_appointments_in_facility_2
+
+        other_district_facility = create(:facility)
+        create(:patient, registration_facility: other_district_facility)
+        create(:appointment, facility: other_district_facility)
+        get :index, params: {district_slug: facility_group.region.slug}
+
+        expect(response.body).to include("recorded at #{facility_1.name}")
+        expect(response.body).to include("recorded at #{facility_2.name}")
+        expect(response.body).not_to include("recorded at #{other_district_facility.name}")
       end
 
-      it "displays appointments for the selected district" do
-      end
+      it "displays appointments for alphabetically first district if none is selected" do
+        sign_in(manager.email_authentication)
+        overdue_appointments_in_facility_1
+        overdue_appointments_in_facility_2
 
-      it "displays nothing if no districts exist" do
+        other_fg = create(:facility_group, name: "aaaaaaa-alphabetically-first", organization: organization)
+        other_district_facility = create(:facility, facility_group: other_fg)
+        patient = create(:patient, registration_facility: other_district_facility)
+        create(:appointment, :overdue, facility: other_district_facility, patient: patient)
+        get :index
+
+        expect(response.body).to include(patient.full_name)
+        expect(response.body).not_to include("recorded at #{facility_1.name}")
       end
     end
 
