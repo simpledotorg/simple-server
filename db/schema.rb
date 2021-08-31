@@ -1602,28 +1602,28 @@ ActiveRecord::Schema.define(version: 2021_08_26_080108) do
 
   create_view "reporting_patient_follow_ups", materialized: true, sql_definition: <<-SQL
       WITH follow_up_blood_pressures AS (
-           SELECT p.id AS patient_id,
+           SELECT DISTINCT ON (p.id, bp.facility_id, bp.user_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at)), 'YYYY-MM'::text))) p.id AS patient_id,
               bp.facility_id,
               bp.user_id,
               to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at)), 'YYYY-MM'::text) AS month_string
              FROM (patients p
                JOIN blood_pressures bp ON (((p.id = bp.patient_id) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at)), 'YYYY-MM'::text) > to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)), 'YYYY-MM'::text)))))
           ), follow_up_blood_sugars AS (
-           SELECT p.id AS patient_id,
+           SELECT DISTINCT ON (p.id, bs.facility_id, bs.user_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)), 'YYYY-MM'::text))) p.id AS patient_id,
               bs.facility_id,
               bs.user_id,
               to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)), 'YYYY-MM'::text) AS month_string
              FROM (patients p
                JOIN blood_sugars bs ON (((p.id = bs.patient_id) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)), 'YYYY-MM'::text) > to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)), 'YYYY-MM'::text)))))
           ), follow_up_prescription_drugs AS (
-           SELECT p.id AS patient_id,
+           SELECT DISTINCT ON (p.id, pd.facility_id, pd.user_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at)), 'YYYY-MM'::text))) p.id AS patient_id,
               pd.facility_id,
               pd.user_id,
               to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at)), 'YYYY-MM'::text) AS month_string
              FROM (patients p
                JOIN prescription_drugs pd ON (((p.id = pd.patient_id) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at)), 'YYYY-MM'::text) > to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)), 'YYYY-MM'::text)))))
           ), follow_up_appointments AS (
-           SELECT p.id AS patient_id,
+           SELECT DISTINCT ON (p.id, app.creation_facility_id, app.user_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at)), 'YYYY-MM'::text))) p.id AS patient_id,
               app.creation_facility_id AS facility_id,
               app.user_id,
               to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at)), 'YYYY-MM'::text) AS month_string

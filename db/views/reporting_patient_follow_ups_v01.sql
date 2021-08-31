@@ -1,6 +1,6 @@
 WITH
 follow_up_blood_pressures AS (
-  SELECT
+  SELECT DISTINCT ON (patient_id, facility_id, user_id, month_string)
     p.id AS patient_id,
     bp.facility_id,
     bp.user_id,
@@ -14,7 +14,7 @@ follow_up_blood_pressures AS (
 ),
 
 follow_up_blood_sugars AS (
-  SELECT
+  SELECT DISTINCT ON (patient_id, facility_id, user_id, month_string)
     p.id AS patient_id,
     bs.facility_id,
     bs.user_id,
@@ -28,7 +28,7 @@ follow_up_blood_sugars AS (
 ),
 
 follow_up_prescription_drugs AS (
-  SELECT
+  SELECT DISTINCT ON (patient_id, facility_id, user_id, month_string)
     p.id AS patient_id,
     pd.facility_id,
     pd.user_id,
@@ -42,7 +42,7 @@ follow_up_prescription_drugs AS (
 ),
 
 follow_up_appointments AS (
-  SELECT
+  SELECT DISTINCT ON (patient_id, facility_id, user_id, month_string)
     p.id AS patient_id,
     app.creation_facility_id AS facility_id,
     app.user_id,
@@ -56,6 +56,7 @@ follow_up_appointments AS (
 )
 
 SELECT * FROM follow_up_blood_pressures
+
 -- Follow-ups only look for BPs. Consider including more criteria in v2:
 -- -------
 -- UNION (SELECT * FROM follow_up_blood_sugars)
