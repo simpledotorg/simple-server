@@ -1,5 +1,5 @@
 class AppointmentsController < AdminController
-  include FacilityFiltering
+  include OverdueListFiltering
   include Pagination
 
   before_action :set_appointment, only: [:update]
