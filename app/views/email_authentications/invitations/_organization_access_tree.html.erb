@@ -11,7 +11,7 @@
 
           <% unless page.eql?(:show) %>
             <% pre_checked = page.eql?(:edit) && user_being_edited.visible_organizations.include?(organization) %>
-            <%= access_checkbox(:organizations, organization, checked: pre_checked) %>
+            <%= access_checkbox(:organizations, organization, checked: pre_checked, parent_id: "root") %>
           <% end %>
 
           <%= access_resource_label(organization) %>

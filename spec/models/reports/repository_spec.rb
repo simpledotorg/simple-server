@@ -22,7 +22,7 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
       let(:july_2020) { Time.parse("July 1st, 2020 00:00:00+00:00") }
 
       def refresh_views
-        RefreshMaterializedViews.call
+        RefreshReportingViews.call
       end
 
       around do |example|

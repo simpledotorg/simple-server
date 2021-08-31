@@ -13,7 +13,8 @@ module AdminPage
       end
 
       def edit_registration_facility(name)
-        find(:xpath, "//select[@name='user[registration_facility_id]']").find(:option, name).select_option
+        find(:xpath, "//select[@name='user[registration_facility_id]']/following-sibling::button").click
+        find("ul.dropdown-menu.inner > li", text: name).click
         click(UPDATE_USER)
       end
     end

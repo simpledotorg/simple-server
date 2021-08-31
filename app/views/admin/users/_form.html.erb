@@ -24,7 +24,9 @@
       <%= form.password_field :password_confirmation, id: :user_password_confirmation, pattern: "[0-9]{4}", label: "PIN confirmation", optional: true %>
       <%= form.select :registration_facility_id, current_admin.accessible_facilities(:manage) \
         .sort_by { |facility| facility.name.sub /^Dr(.?)(\s*)/, '' } \
-        .collect { |facility| [facility.name, facility.id] } %>
+        .collect { |facility| [facility.name, facility.id] },
+        {},
+        {class: "selectpicker", data: {live_search: true, size: 5}} %>
       <%= form.primary %>
     <% end %>
   </div>

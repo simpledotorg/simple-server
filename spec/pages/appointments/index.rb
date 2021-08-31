@@ -21,12 +21,12 @@ module AppointmentsPage
     end
 
     def select_facility_drop_down
-      click(FACILITY_DROPDOWN)
+      find(:xpath, "//select[@name='facility_id']/following-sibling::button").click
     end
 
     def get_all_facility_count
-      click(FACILITY_DROPDOWN)
-      all_option = find(:css, "select[name='facility_id']").all("option").collect(&:text)
+      select_facility_drop_down
+      all_option = find(:css, "select[name='facility_id'] ~ .dropdown-menu").all("li").collect(&:text)
       # We subtract 1 to exclude the value of "All Facilities"
       all_option.length - 1
     end
