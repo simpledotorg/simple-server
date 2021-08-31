@@ -41,5 +41,12 @@ RSpec.describe Api::V3::PatientTransformer do
       transformed_nested_patient = Api::V3::PatientTransformer.to_nested_response(patient)
       expect(transformed_nested_patient["registration_facility_id"]).to eq(patient.registration_facility.id)
     end
+
+    it "patient does not have an existing address" do
+      patient.address_id = nil
+      patient.save!
+      transformed_nested_patient = Api::V3::PatientTransformer.to_nested_response(patient)
+      expect(transformed_nested_patient["address"]).to eq({})
+    end
   end
 end

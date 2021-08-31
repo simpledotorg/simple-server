@@ -58,13 +58,19 @@ class Api::V3::PatientTransformer
     end
 
     def to_nested_response(patient)
+      address_attrs = if patient.address.nil?
+        Statsd.instance.increment("sync.missing_address")
+        {}
+      else
+        Api::V3::Transformer.to_response(patient.address)
+      end
       Api::V3::Transformer.to_response(patient)
         .except("address_id",
           "registration_user_id",
           "test_data",
           "deleted_by_user_id")
         .merge(
-          "address" => Api::V3::Transformer.to_response(patient.address),
+          "address" => address_attrs,
           "phone_numbers" => patient.phone_numbers.map do |phone_number|
             Api::V3::PatientPhoneNumberTransformer.to_response(phone_number)
           end,
