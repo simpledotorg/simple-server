@@ -8,11 +8,12 @@
   <%= render('shared/paginate_and_filter_by_facility',
              form_url: appointments_path,
              current_admin: current_admin,
-             facility_id: @selected_facility&.id,
              per_page: @per_page,
              form_id: "search-filters",
              districts: @districts,
-             facilities: @facilities) %>
+             facilities: @facilities,
+             selected_district: @selected_district,
+             selected_facility: @selected_facility) %>
   <section class="secondary-nav-filters">
     <h4 class="mt-2">
       Filters

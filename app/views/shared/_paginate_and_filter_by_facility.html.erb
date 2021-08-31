@@ -7,7 +7,7 @@
                       districts.order(:name).map { |district| [district.name, district.slug] },
                       {
                         hide_label: true,
-                        selected: @selected_district.slug,
+                        selected: selected_district&.slug,
                         wrapper: false
                       },
                       searchable_select_options
@@ -19,7 +19,7 @@
                       {
                           hide_label: true,
                           include_blank: "All facilities",
-                          selected: facility_id,
+                          selected: selected_facility&.facility_id,
                           wrapper: false
                       },
                       searchable_select_options

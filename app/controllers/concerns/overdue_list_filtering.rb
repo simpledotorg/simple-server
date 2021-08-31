@@ -23,13 +23,15 @@ module OverdueListFiltering
       @selected_district =
         if params[:district_slug]
           @districts.find_by(slug: params[:district_slug])
-        else
+        elsif @districts.present?
           @districts.first
+        else
+          nil
         end
     end
 
     def populate_facilities
-      @facilities = @accessible_facilities.where(id: @selected_district.facilities)
+      @facilities = @accessible_facilities.where(id: @selected_district&.facilities)
     end
 
     def set_selected_facility
