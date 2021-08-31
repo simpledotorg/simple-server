@@ -25,8 +25,6 @@ module OverdueListFiltering
           @districts.find_by(slug: params[:district_slug])
         elsif @districts.present?
           @districts.first
-        else
-          nil
         end
     end
 
