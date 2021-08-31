@@ -68,6 +68,7 @@ class RefreshReportingViews
     Reports::PatientState
     Reports::FacilityState
     Reports::QuarterlyFacilityState
+    Reports::PatientFollowUp
   ].freeze
 
   # LatestBloodPressuresPerPatientPerMonth should be refreshed before
