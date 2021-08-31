@@ -46,6 +46,7 @@ Goa:
       '331132': 2
 Gujarat:
   load_coefficient: 1
+  drug_categories:
     hypertension_ccb:
       new_patient_coefficient: 1.12
       '329528': 1
