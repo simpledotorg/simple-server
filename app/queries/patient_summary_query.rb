@@ -22,7 +22,7 @@ class PatientSummaryQuery
     @only_overdue = only_overdue
     @relation = PatientSummary
     @relation = @relation.where(next_appointment_facility_id: next_appointment_facilities)
-    @relation = @relation.where(assigned_facility_id: assigned_facilities.pluck(:id))
+    @relation = @relation.where(assigned_facility_id: assigned_facilities.map(&:id))
     @filters = filters
   end
 

@@ -110,7 +110,8 @@ RSpec.describe AppointmentsController, type: :controller do
         really_overdue_appointment = create(:appointment,
           facility: facility_2,
           scheduled_date: 380.days.ago,
-          status: "scheduled")
+          status: "scheduled",
+          patient: create(:patient, registration_facility: facility_1))
         create(:blood_pressure, patient: really_overdue_appointment.patient, facility: facility_2)
         really_overdue_patient_id = really_overdue_appointment.patient_id
 
