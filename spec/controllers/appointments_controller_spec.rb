@@ -58,6 +58,17 @@ RSpec.describe AppointmentsController, type: :controller do
       expect(assigns(:patient_summaries).map(&:id)).to match_array(patient_ids)
     end
 
+    describe "filtering by district" do
+      it "displays appointments for first district if none is selected" do
+      end
+
+      it "displays appointments for the selected district" do
+      end
+
+      it "displays nothing if no districts exist" do
+      end
+    end
+
     describe "filtering by facility" do
       before :each do
         overdue_appointments_in_facility_1
