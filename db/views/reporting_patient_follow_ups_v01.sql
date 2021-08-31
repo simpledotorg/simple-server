@@ -53,12 +53,23 @@ follow_up_appointments AS (
     -- removing rows that were recorded the same month as registration
     AND to_char(app.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')), 'YYYY-MM')
       > to_char(p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')), 'YYYY-MM')
+),
+
+all_follow_ups AS (
+  SELECT *
+  FROM follow_up_blood_pressures
+  -- Follow-ups only look for BPs. Consider including more criteria in v2:
+  -- -------
+  -- UNION (SELECT * FROM follow_up_blood_sugars)
+  -- UNION (SELECT * FROM follow_up_prescription_drugs)
+  -- UNION (SELECT * FROM follow_up_appointments)
 )
 
-SELECT * FROM follow_up_blood_pressures
-
--- Follow-ups only look for BPs. Consider including more criteria in v2:
--- -------
--- UNION (SELECT * FROM follow_up_blood_sugars)
--- UNION (SELECT * FROM follow_up_prescription_drugs)
--- UNION (SELECT * FROM follow_up_appointments)
+SELECT
+  all_follow_ups.patient_id,
+  all_follow_ups.facility_id,
+  all_follow_ups.user_id,
+  cal.*
+FROM all_follow_ups
+LEFT OUTER JOIN reporting_months cal
+    ON all_follow_ups.month_string = cal.month_string

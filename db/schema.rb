@@ -1629,11 +1629,25 @@ ActiveRecord::Schema.define(version: 2021_08_26_080108) do
               to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at)), 'YYYY-MM'::text) AS month_string
              FROM (patients p
                JOIN appointments app ON (((p.id = app.patient_id) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at)), 'YYYY-MM'::text) > to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)), 'YYYY-MM'::text)))))
+          ), all_follow_ups AS (
+           SELECT follow_up_blood_pressures.patient_id,
+              follow_up_blood_pressures.facility_id,
+              follow_up_blood_pressures.user_id,
+              follow_up_blood_pressures.month_string
+             FROM follow_up_blood_pressures
           )
-   SELECT follow_up_blood_pressures.patient_id,
-      follow_up_blood_pressures.facility_id,
-      follow_up_blood_pressures.user_id,
-      follow_up_blood_pressures.month_string
-     FROM follow_up_blood_pressures;
+   SELECT all_follow_ups.patient_id,
+      all_follow_ups.facility_id,
+      all_follow_ups.user_id,
+      cal.month_date,
+      cal.month,
+      cal.quarter,
+      cal.year,
+      cal.month_string,
+      cal.quarter_string
+     FROM (all_follow_ups
+       LEFT JOIN reporting_months cal ON ((all_follow_ups.month_string = cal.month_string)));
   SQL
+  add_index "reporting_patient_follow_ups", ["patient_id", "user_id", "facility_id", "month_date"], name: "reporting_patient_follow_ups_unique_index", unique: true
+
 end
