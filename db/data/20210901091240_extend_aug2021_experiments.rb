@@ -1,7 +1,7 @@
 class ExtendAug2021Experiments < ActiveRecord::Migration[5.2]
   def up
-    return unless CountryConfig.current_country?("India") && SimpleServer.env.production?
-
+    return unless CountryConfig.current_country?("India")
+    
     experiments = Experimentation::Experiment.where(name: ["Stale Patient August 2021", "Current Patient August 2021"])
     end_date = Date.new(2021, 09, 19)
     experiments.each do |experiment|
