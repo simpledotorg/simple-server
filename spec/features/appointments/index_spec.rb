@@ -78,6 +78,8 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
       var_bp = create(:blood_pressure, :critical, facility: test_facility, patient: var_patients)
 
       nav_page.click_main_menu_tab("Overdue")
+      # Select district from district dropdown
+      find("option[value=#{ihmi_facility_group.slug}]").click
 
       within(".card") do
         expect(page).to have_content(var_patients.full_name)
