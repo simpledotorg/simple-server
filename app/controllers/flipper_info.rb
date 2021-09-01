@@ -12,7 +12,7 @@ module FlipperInfo
     current_span = Datadog.tracer.active_span
     return if current_span.nil?
     current_enabled_features.each do |name|
-      current_span.set_tag("enabled_features.#{name}", true)
+      current_span.set_tag("features.#{name}", "enabled")
     end
   end
 end
