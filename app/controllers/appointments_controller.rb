@@ -2,6 +2,7 @@ class AppointmentsController < AdminController
   include OverdueListFiltering
   include Pagination
 
+  before_action :filter_district_and_facilities, only: [:index]
   before_action :set_appointment, only: [:update]
 
   DEFAULT_SEARCH_FILTERS = ["only_less_than_year_overdue"]

@@ -2,13 +2,15 @@ module OverdueListFiltering
   extend ActiveSupport::Concern
 
   included do
-    before_action :set_accessible_facilities, only: [:index]
-    before_action :populate_districts, only: [:index]
-    before_action :set_selected_district, only: [:index]
-    before_action :populate_facilities, only: [:index]
-    before_action :set_selected_facility, only: [:index]
-
     private
+
+    def filter_district_and_facilities
+      set_accessible_facilities
+      populate_districts
+      set_selected_district
+      populate_facilities
+      set_selected_facility
+    end
 
     def set_accessible_facilities
       @accessible_facilities = current_admin.accessible_facilities(:manage_overdue_list)
