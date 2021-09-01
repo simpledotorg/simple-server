@@ -86,6 +86,20 @@ RSpec.describe AdminController, type: :controller do
     end
   end
 
+  context "flipper info" do
+    it "sends enabled features as datadog tag" do
+      Flipper.enable(:enabled_1)
+      Flipper.enable(:enabled_2)
+      Flipper.disable(:disabled)
+      span_double = instance_double("Datadog::Span")
+
+      expect(span_double).to receive(:set_tag).with(:enabled_features, ["enabled_1", "enabled_2"])
+      expect(Datadog.tracer).to receive(:active_span).and_return(span_double)
+      routes.draw { get "authorized" => "admin#authorized" }
+      get :authorized
+    end
+  end
+
   context "#verify_authorization_attempted" do
     it "raises an error if authorize is not called but required" do
       routes.draw { get "authorization_not_attempted" => "admin#authorization_not_attempted" }
