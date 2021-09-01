@@ -11,6 +11,8 @@ module FlipperInfo
   def set_enabled_features_as_datadog_tags
     current_span = Datadog.tracer.active_span
     return if current_span.nil?
-    current_span.set_tag(:enabled_features, current_enabled_features.map(&:to_s))
+    current_enabled_features.each do |name|
+      current_span.set_tag("enabled_features.#{name}", true)
+    end
   end
 end
