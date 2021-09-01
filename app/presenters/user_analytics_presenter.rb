@@ -18,7 +18,7 @@ class UserAnalyticsPresenter
   TROPHY_MILESTONES = [10, 25, 50, 100, 250, 500, 1_000, 2_000, 3_000, 4_000, 5_000]
   TROPHY_MILESTONE_INCR = 10_000
   CACHE_VERSION = 3
-  EXPIRE_STATISTICS_CACHE_IN = 15.minutes
+  EXPIRE_STATISTICS_CACHE_IN = 60.minutes
 
   def daily_stats_by_date(*stats)
     zero_if_unavailable statistics.dig(:daily, :grouped_by_date, *stats)
