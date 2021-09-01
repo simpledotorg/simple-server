@@ -18,7 +18,11 @@ module OverdueListFiltering
 
     def populate_districts
       @districts =
-        Region.district_regions.where(source_id: @accessible_facilities.map(&:facility_group_id).uniq).order(:name)
+        Region.district_regions
+          .joins("INNER JOIN regions facility_region ON regions.path @> facility_region.path")
+          .where("facility_region.source_id" => @accessible_facilities.map(&:id))
+          .distinct(:slug)
+          .order(:name)
     end
 
     def set_selected_district
