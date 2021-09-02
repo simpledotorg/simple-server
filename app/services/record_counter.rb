@@ -5,6 +5,7 @@ class RecordCounter
     BloodSugar,
     Facility,
     FacilityGroup,
+    Notification,
     Patient,
     Region,
     User

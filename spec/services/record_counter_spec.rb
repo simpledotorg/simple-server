@@ -9,7 +9,7 @@ RSpec.describe RecordCounter do
     create(:appointment, patient: patients.first, facility: facility, user: user)
     create(:blood_pressure, patient: patients.first, facility: facility, user: user)
 
-    expect(Statsd.instance).to receive(:gauge).with(anything, 0)
+    expect(Statsd.instance).to receive(:gauge).with(anything, 0).at_least(1).times
     expect(Statsd.instance).to receive(:gauge).with("counts.Appointment", 1)
     expect(Statsd.instance).to receive(:gauge).with("counts.BloodPressure", 1)
     expect(Statsd.instance).to receive(:gauge).with("counts.Facility", 2)
