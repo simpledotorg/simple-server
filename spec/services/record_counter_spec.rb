@@ -14,6 +14,7 @@ RSpec.describe RecordCounter do
     expect(Statsd.instance).to receive(:gauge).with("counts.BloodPressure", 1)
     expect(Statsd.instance).to receive(:gauge).with("counts.Facility", 2)
     expect(Statsd.instance).to receive(:gauge).with("counts.FacilityGroup", 2)
+    expect(Statsd.instance).to receive(:gauge).with("counts.MedicalHistory", 3)
     expect(Statsd.instance).to receive(:gauge).with("counts.Patient", 3)
     expect(Statsd.instance).to receive(:gauge).with("counts.Region", Region.count)
     expect(Statsd.instance).to receive(:gauge).with("counts.User", 1)
