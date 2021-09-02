@@ -614,7 +614,7 @@ describe Experimentation::Runner, type: :model do
 
     it "does not affect existing notifications in the experiment" do
       patient1 = create(:patient, age: 80)
-      appointment = create(:appointment, patient: patient1, scheduled_date: 10.days.from_now)
+      _appointment = create(:appointment, patient: patient1, scheduled_date: 10.days.from_now)
       patient2 = create(:patient, age: 80)
       create(:appointment, patient: patient2, scheduled_date: 38.days.from_now)
 
@@ -625,7 +625,7 @@ describe Experimentation::Runner, type: :model do
         start_date: 5.days.from_now,
         end_date: 35.days.from_now
       )
-      template = create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
+      _template = create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
       extended_end_date = 40.days.from_now
 
       # Include patients into the original experiment window
