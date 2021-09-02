@@ -25,13 +25,12 @@ class RecordCounter
       metrics.gauge(model.to_s, model.count)
     end
     Region.facility_regions.find_each do |facility|
-      count = facility.assigned_patients
+      count = facility.assigned_patients.count
       metrics.histogram("assigned_patients_per_facility", count)
     end
     Region.block_regions.each do |block|
-      count = block.assigned_patients
+      count = block.assigned_patients.count
       metrics.histogram("assigned_patients_per_block", count)
     end
   end
-
 end

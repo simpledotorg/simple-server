@@ -18,6 +18,10 @@ RSpec.describe RecordCounter do
     expect(Statsd.instance).to receive(:gauge).with("counts.Region", Region.count)
     expect(Statsd.instance).to receive(:gauge).with("counts.User", 1)
 
+    expect(Statsd.instance).to receive(:histogram)
+      .with("counts.assigned_patients_per_facility", kind_of(Numeric)).at_least(1).times
+    expect(Statsd.instance).to receive(:histogram)
+      .with("counts.assigned_patients_per_block", kind_of(Numeric)).at_least(1).times
     RecordCounter.new.call
   end
 end
