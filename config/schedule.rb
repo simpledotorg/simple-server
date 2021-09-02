@@ -35,7 +35,7 @@ every :day, at: local("02:00 am"), roles: [:cron] do
   runner "PatientDeduplication::Runner.new(PatientDeduplication::Strategies.identifier_and_full_name_match).perform"
 end
 
-every :day, at: local("02:30 am"), roles: [:cron] do
+every :day, at: local("01:30 am"), roles: [:cron] do
   runner "RecordCounter.perform_async"
 end
 

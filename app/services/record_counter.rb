@@ -3,8 +3,10 @@ class RecordCounter
     Appointment,
     BloodPressure,
     BloodSugar,
+    Encounter,
     Facility,
     FacilityGroup,
+    MedicalHistory,
     Notification,
     Patient,
     Region,
@@ -22,9 +24,19 @@ class RecordCounter
   end
 
   def call
+    count_totals
+    count_per_region_totals
+  end
+
+  private
+
+  def count_totals
     MODELS_TO_COUNT.each do |model|
       metrics.gauge(model.to_s, model.count)
     end
+  end
+
+  def count_per_region_totals
     Region.facility_regions.find_each do |facility|
       count = facility.assigned_patients.count
       metrics.histogram("assigned_patients_per_facility", count)
