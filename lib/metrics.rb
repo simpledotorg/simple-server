@@ -21,4 +21,9 @@ class Metrics
     name = "#{@prefix}.#{event}"
     Statsd.instance.increment(name)
   end
+
+  def histogram(event, count)
+    name = "#{@prefix}.#{event}"
+    Statsd.instance.histogram(name, count)
+  end
 end

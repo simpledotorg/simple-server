@@ -20,6 +20,7 @@ class Statsd
     count
     flush
     gauge
+    histogram
     increment
     time
     timing

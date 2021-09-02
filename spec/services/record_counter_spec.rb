@@ -10,13 +10,13 @@ RSpec.describe RecordCounter do
     create(:blood_pressure, patient: patients.first, facility: facility, user: user)
 
     expect(Statsd.instance).to receive(:gauge).with(anything, 0)
-    expect(Statsd.instance).to receive(:gauge).with("total_counts.Appointment", 1)
-    expect(Statsd.instance).to receive(:gauge).with("total_counts.BloodPressure", 1)
-    expect(Statsd.instance).to receive(:gauge).with("total_counts.Facility", 2)
-    expect(Statsd.instance).to receive(:gauge).with("total_counts.FacilityGroup", 2)
-    expect(Statsd.instance).to receive(:gauge).with("total_counts.Patient", 3)
-    expect(Statsd.instance).to receive(:gauge).with("total_counts.Region", Region.count)
-    expect(Statsd.instance).to receive(:gauge).with("total_counts.User", 1)
+    expect(Statsd.instance).to receive(:gauge).with("counts.Appointment", 1)
+    expect(Statsd.instance).to receive(:gauge).with("counts.BloodPressure", 1)
+    expect(Statsd.instance).to receive(:gauge).with("counts.Facility", 2)
+    expect(Statsd.instance).to receive(:gauge).with("counts.FacilityGroup", 2)
+    expect(Statsd.instance).to receive(:gauge).with("counts.Patient", 3)
+    expect(Statsd.instance).to receive(:gauge).with("counts.Region", Region.count)
+    expect(Statsd.instance).to receive(:gauge).with("counts.User", 1)
 
     RecordCounter.new.call
   end
