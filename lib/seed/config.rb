@@ -4,13 +4,15 @@ module Seed
     def initialize
       @type = ENV["SEED_TYPE"] ||
         case SimpleServer.env
+        when "test"
+          "test"
         when "android_review"
           "empty"
         when "development", "review"
           "small"
-        when "test"
-          "test"
-        when "sandbox", "demo"
+        when "demo"
+          "medium"
+        when "sandbox"
           "large"
         else
           raise ArgumentError, "Invalid SimpleServer.env #{SimpleServer.env} for Seed configuration"
