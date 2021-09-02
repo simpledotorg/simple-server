@@ -1,7 +1,10 @@
 class AdminController < ApplicationController
   include BustCache
+  include FlipperInfo
+
   before_action :authenticate_email_authentication!
   before_action :set_bust_cache
+  before_action :set_enabled_features_as_datadog_tags
 
   after_action :verify_authorization_attempted, except: [:root]
 
@@ -29,7 +32,6 @@ class AdminController < ApplicationController
   end
 
   helper_method :current_admin
-  helper_method :current_enabled_features
 
   private
 
@@ -38,10 +40,6 @@ class AdminController < ApplicationController
     admin = current_email_authentication.user
     admin.email_authentications.load
     @current_admin = admin
-  end
-
-  def current_enabled_features
-    Flipper.features.select { |feature| feature.enabled?(current_admin) }.map(&:name)
   end
 
   def pundit_user
