@@ -34,7 +34,7 @@
               <% if user.registration_facility.present? %>
                 Registration facility:
                 <% facility = user.registration_facility %>
-                <%= link_to facility.name, [:admin, facility.facility_group, facility], class: "text-dark" %>
+                <%= link_to facility.label_with_district, [:admin, facility.facility_group, facility], class: "text-dark" %>
               <% end %>
             </div>
             <div class="mt-2">
