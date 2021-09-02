@@ -28,7 +28,7 @@ class RecordCounter
       count = facility.assigned_patients.count
       metrics.histogram("assigned_patients_per_facility", count)
     end
-    Region.block_regions.each do |block|
+    Region.block_regions.find_each.each do |block|
       count = block.assigned_patients.count
       metrics.histogram("assigned_patients_per_block", count)
     end

@@ -36,7 +36,7 @@ every :day, at: local("02:00 am"), roles: [:cron] do
 end
 
 every :day, at: local("02:30 am"), roles: [:cron] do
-  runner "RecordCounter.call"
+  runner "RecordCounter.perform_async"
 end
 
 every :day, at: local("04:00 am"), roles: [:cron] do
