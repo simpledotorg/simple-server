@@ -39,7 +39,7 @@ class Api::V3::UsersController < APIController
     phone_number_authentication.set_otp
     phone_number_authentication.save
 
-    unless user.feature_enabled?(:auto_approve_users)
+    unless Flipper.enabled?(:fixed_otp_on_request)
       delay_seconds = (ENV["USER_OTP_SMS_DELAY_IN_SECONDS"] || DEFAULT_USER_OTP_DELAY_IN_SECONDS).to_i.seconds
       RequestOtpSmsJob.set(wait: delay_seconds).perform_later(user)
     end
