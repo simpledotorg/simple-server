@@ -61,7 +61,6 @@ RSpec.describe Api::V3::UsersController, type: :controller do
       end
 
       it "sets the user status to approved if auto_approve_users feature is enabled" do
-        allow(Flipper).to receive(:enabled?).with(:fixed_otp_on_request).and_return(false)
         Flipper.enable(:auto_approve_users)
 
         post :register, params: {user: user_params}
