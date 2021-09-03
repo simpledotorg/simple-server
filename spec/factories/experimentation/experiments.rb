@@ -14,4 +14,8 @@ FactoryBot.define do
   trait :with_treatment_group_and_template do
     treatment_groups { create_list(:treatment_group, 1, :with_template) }
   end
+
+  trait :running do
+    state { "running" }
+  end
 end
