@@ -58,7 +58,7 @@ class PassportAuthentication < ActiveRecord::Base
   private
 
   def build_otp
-    new_otp = if Flipper.enabled?(:fixed_otp_on_request)
+    new_otp = if Flipper.enabled?(:fixed_otp)
       "000000"
     else
       SecureRandom.random_number.to_s[2..7]

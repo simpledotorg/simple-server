@@ -68,7 +68,7 @@ RSpec.describe Api::V4::UsersController, type: :controller do
     end
 
     it "does not send an OTP if fixed OTPs are enabled" do
-      Flipper.enable(:fixed_otp_on_request)
+      Flipper.enable(:fixed_otp)
 
       expect(RequestOtpSmsJob).not_to receive(:set)
 

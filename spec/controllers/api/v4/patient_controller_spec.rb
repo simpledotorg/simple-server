@@ -33,7 +33,7 @@ RSpec.describe Api::V4::PatientController, type: :controller do
     end
 
     it "does not send an SMS when fixed OTPs are enabled" do
-      Flipper.enable(:fixed_otp_on_request)
+      Flipper.enable(:fixed_otp)
 
       expect(SendPatientOtpSmsJob).not_to receive(:perform_later)
       post :activate, params: {passport_id: bp_passport.identifier}

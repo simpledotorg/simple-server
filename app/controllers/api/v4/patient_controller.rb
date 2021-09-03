@@ -17,7 +17,7 @@ class Api::V4::PatientController < PatientAPIController
       authentication.save!
     end
 
-    unless Flipper.enabled?(:fixed_otp_on_request)
+    unless Flipper.enabled?(:fixed_otp)
       SendPatientOtpSmsJob.perform_later(authentication)
     end
 
