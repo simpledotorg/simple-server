@@ -60,7 +60,7 @@ RSpec.describe Api::V3::UsersController, type: :controller do
         expect(created_user.sync_approval_status_reason).to eq(I18n.t("registration"))
       end
 
-      it "sets the user status to approved if AUTO_APPROVE_USER_FOR_QA feature is enabled" do
+      it "sets the user status to approved if auto_approve_users feature is enabled" do
         allow(Flipper).to receive(:enabled?).with(:fixed_otp_on_request).and_return(false)
         Flipper.enable(:auto_approve_users)
 
