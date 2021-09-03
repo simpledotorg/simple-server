@@ -166,6 +166,14 @@ RSpec.describe Api::V3::UsersController, type: :controller do
       user.reload
       expect(user.otp).not_to eq(existing_otp)
     end
+
+    it "does not send an OTP if fixed_otp_on_request is enabled" do
+      Flipper.enable(:fixed_otp_on_request)
+
+      expect(RequestOtpSmsJob).not_to receive(:set)
+
+      post :request_otp, params: {id: user.id}
+    end
   end
 
   describe "#reset_password" do
@@ -187,6 +195,17 @@ RSpec.describe Api::V3::UsersController, type: :controller do
       expect(user.password_digest).to eq(new_password_digest)
       expect(user.sync_approval_status).to eq("requested")
       expect(user.sync_approval_status_reason).to eq(I18n.t("reset_password"))
+    end
+
+    it "leaves the user approved if auto approve is enabled" do
+      Flipper.enable(:auto_approve_users)
+
+      new_password_digest = BCrypt::Password.create("1234").to_s
+      post :reset_password, params: {id: user.id, password_digest: new_password_digest}
+      user.reload
+      expect(response.status).to eq(200)
+      expect(user.password_digest).to eq(new_password_digest)
+      expect(user.sync_approval_status).to eq("allowed")
     end
 
     it "Returns 401 if the user is not authorized" do
@@ -211,6 +230,17 @@ RSpec.describe Api::V3::UsersController, type: :controller do
       expect(approval_email.cc).to include(organization_owner.email)
       expect(approval_email.body.to_s).to match(Regexp.quote(user.phone_number))
       expect(approval_email.body.to_s).to match("reset")
+    end
+
+    it "does not send an email if users are auto approved" do
+      Flipper.enable(:auto_approve_users)
+
+      Sidekiq::Testing.inline! do
+        post :reset_password, params: {id: user.id, password_digest: BCrypt::Password.create("1234").to_s}
+      end
+      approval_email = ActionMailer::Base.deliveries.last
+
+      expect(approval_email).to be_nil
     end
 
     it "sends an email using sidekiq" do
