@@ -61,8 +61,7 @@ RSpec.describe Api::V3::UsersController, type: :controller do
       end
 
       it "sets the user status to approved if AUTO_APPROVE_USER_FOR_QA feature is enabled" do
-        allow(FeatureToggle).to receive(:enabled?).with("MASTER_USER_AUTHENTICATION").and_return(true)
-        allow(FeatureToggle).to receive(:enabled?).with("FIXED_OTP_ON_REQUEST_FOR_QA").and_return(false)
+        allow(Flipper).to receive(:enabled?).with(:fixed_otp_on_request).and_return(false)
         Flipper.enable(:auto_approve_users)
 
         post :register, params: {user: user_params}
