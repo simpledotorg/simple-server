@@ -66,6 +66,16 @@ RSpec.describe Api::V4::UsersController, type: :controller do
       expect(response.status).to eq(401)
       expect(JSON(response.body)).to eq("errors" => {"user" => [I18n.t("login.error_messages.invalid_password")]})
     end
+
+    it "does not send an OTP if fixed OTPs are enabled" do
+      Flipper.enable(:fixed_otp_on_request)
+
+      existing_otp = user.otp
+
+      expect(RequestOtpSmsJob).not_to receive(:set)
+
+      post :activate, params: {user: {id: user.id, password: "1234"}}
+    end
   end
 
   describe "#me" do

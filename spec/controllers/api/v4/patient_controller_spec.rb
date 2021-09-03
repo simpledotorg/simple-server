@@ -20,20 +20,23 @@ RSpec.describe Api::V4::PatientController, type: :controller do
       post :activate, params: {passport_id: bp_passport.identifier}
     end
 
-    context "when BP passport ID does not exist" do
-      it "returns a 404 response" do
-        post :activate, params: {passport_id: "some-identifier"}
-        expect(response.status).to eq(404)
-      end
+    it "returns a 404 response when BP passport ID does not exist" do
+      post :activate, params: {passport_id: "some-identifier"}
+      expect(response.status).to eq(404)
     end
 
-    context "when patient does not have any mobile numbers" do
-      it "returns a 404 response" do
-        patient.phone_numbers.destroy_all
+    it "returns a 404 response when patient does not have any mobile numbers" do
+      patient.phone_numbers.destroy_all
 
-        post :activate, params: {passport_id: bp_passport.identifier}
-        expect(response.status).to eq(404)
-      end
+      post :activate, params: {passport_id: bp_passport.identifier}
+      expect(response.status).to eq(404)
+    end
+
+    it "does not send an SMS when fixed OTPs are enabled" do
+      Flipper.enable(:fixed_otp_on_request)
+
+      expect(SendPatientOtpSmsJob).not_to receive(:perform_later)
+      post :activate, params: {passport_id: bp_passport.identifier}
     end
   end
 
