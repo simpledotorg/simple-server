@@ -122,10 +122,11 @@ RSpec.describe User, type: :model do
       let(:user) { User.build_with_phone_number_authentication(params) }
       let(:phone_number_authentication) { user.phone_number_authentication }
 
-      it "builds a valid user" do
+      it "builds a valid unapproved user" do
         expect(user).to be_valid
         expect(user.id).to eq(id)
         expect(user.full_name).to eq(full_name)
+        expect(user.sync_approval_status).to eq("requested")
         expect(user.user_authentications).to be_present
         expect(user.user_authentications.size).to eq(1)
       end

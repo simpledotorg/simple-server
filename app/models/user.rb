@@ -226,7 +226,7 @@ class User < ApplicationRecord
       authentication = phone_number_authentication
       authentication.password_digest = password_digest
       authentication.set_access_token
-      sync_approval_requested(I18n.t("reset_password"))
+      sync_approval_requested(I18n.t("reset_password")) unless feature_enabled?(:auto_approve_users)
       authentication.save!
       save!
     end
