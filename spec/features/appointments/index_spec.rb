@@ -78,7 +78,6 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
       var_bp = create(:blood_pressure, :critical, facility: test_facility, patient: var_patients)
 
       nav_page.click_main_menu_tab("Overdue")
-      # Select district from district dropdown
       find("option[value=#{ihmi_facility_group.slug}]").click
 
       within(".card") do
@@ -109,6 +108,7 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
       create(:appointment, :overdue, facility: test_facility, patient: var_patients, scheduled_date: 365.days.ago)
 
       nav_page.click_main_menu_tab("Overdue")
+      find("option[value=#{ihmi_facility_group.slug}]").click
       expect(page).to have_content(var_patients.full_name)
     end
 
@@ -118,6 +118,7 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
       create(:appointment, :overdue, facility: test_facility, patient: var_patients, scheduled_date: 366.days.ago)
 
       nav_page.click_main_menu_tab("Overdue")
+      find("option[value=#{ihmi_facility_group.slug}]").click
       expect(page).not_to have_content(var_patients.full_name)
     end
 
@@ -127,6 +128,7 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
       create(:appointment, :overdue, facility: test_facility, patient: var_patients, scheduled_date: 0.days.ago)
 
       nav_page.click_main_menu_tab("Overdue")
+      find("option[value=#{ihmi_facility_group.slug}]").click
       expect(page).not_to have_content(var_patients.full_name)
     end
   end
