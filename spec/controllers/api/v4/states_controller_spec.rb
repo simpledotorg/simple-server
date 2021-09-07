@@ -8,7 +8,7 @@ RSpec.describe Api::V4::StatesController, type: :controller do
 
       get :index
 
-      expect(JSON.parse(response.body)["states"]).to match_array(states)
+      expect(JSON.parse(response.body)["states"].map { |state| state["name"] }).to match_array(states)
     end
 
     it "returns only states that have facilities" do

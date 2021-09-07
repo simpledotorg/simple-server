@@ -196,7 +196,8 @@ class Api::V4::Schema
     def states_response
       {type: :object,
        properties: {states: {type: :array,
-                             items: {type: :string}}},
+                             items: {type: :object,
+                                     properties: {name: {type: :string}}}}},
        description: "List of available state names"}
     end
 
