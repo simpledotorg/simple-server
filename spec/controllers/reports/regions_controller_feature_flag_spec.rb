@@ -10,7 +10,7 @@ RSpec.describe Reports::RegionsController, "feature flags", type: :controller do
   let(:facility_1) { FactoryBot.create(:facility, name: "facility_1", facility_group: facility_group_1) }
 
   def refresh_views
-    RefreshMaterializedViews.call
+    RefreshReportingViews.call
   end
 
   context "reporting schema v2 flag" do

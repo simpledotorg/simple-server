@@ -11,6 +11,6 @@ class Api::V4::StatesController < APIController
       .distinct("states.name")
       .pluck("states.name")
 
-    render json: state_names
+    render json: {states: state_names.map { |state| {name: state} }}
   end
 end

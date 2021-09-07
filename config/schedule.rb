@@ -24,7 +24,7 @@ every :week, at: local("01:00 am"), roles: [:whitelist_phone_numbers] do
 end
 
 every :day, at: local("12:30am"), roles: [:cron] do
-  rake "db:refresh_materialized_views"
+  rake "db:refresh_reporting_views"
 end
 
 every :day, at: local("01:00 am"), roles: [:cron] do
@@ -33,6 +33,10 @@ end
 
 every :day, at: local("02:00 am"), roles: [:cron] do
   runner "PatientDeduplication::Runner.new(PatientDeduplication::Strategies.identifier_and_full_name_match).perform"
+end
+
+every :day, at: local("02:30 am"), roles: [:cron] do
+  runner "RecordCounterJob.perform_async"
 end
 
 every :day, at: local("04:00 am"), roles: [:cron] do

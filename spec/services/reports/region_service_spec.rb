@@ -17,7 +17,7 @@ RSpec.describe Reports::RegionService, type: :model do
   let(:july_2020) { Time.parse("July 1st, 2020") }
 
   def refresh_views
-    RefreshMaterializedViews.call
+    RefreshReportingViews.call
   end
 
   context ".default_period" do
