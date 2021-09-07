@@ -8,10 +8,12 @@
   <%= render('shared/paginate_and_filter_by_facility',
              form_url: appointments_path,
              current_admin: current_admin,
-             facility_id: @facility_id,
              per_page: @per_page,
              form_id: "search-filters",
-             scope_namespace: current_admin.accessible_facilities(:manage_overdue_list)) %>
+             districts: @districts,
+             facilities: @facilities,
+             selected_district: @selected_district,
+             selected_facility: @selected_facility) %>
   <section class="secondary-nav-filters">
     <h4 class="mt-2">
       Filters
@@ -31,7 +33,7 @@
       </label>
     <% end %>
   </section>
-  <% if current_facility && @patient_summaries.present? && current_admin.accessible_facilities(:manage_overdue_list).include?(current_facility) %>
+  <% if @selected_facility && @patient_summaries.present? && current_admin.accessible_facilities(:manage_overdue_list).include?(@selected_facility) %>
     <section class="mb-5">
       <h4>
         Download
