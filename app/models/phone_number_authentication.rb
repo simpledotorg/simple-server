@@ -89,7 +89,7 @@ class PhoneNumberAuthentication < ApplicationRecord
   end
 
   def self.generate_otp
-    digits = FeatureToggle.enabled?("FIXED_OTP_ON_REQUEST_FOR_QA") ? [0] : (0..9).to_a
+    digits = Flipper.enabled?(:fixed_otp) ? [0] : (0..9).to_a
     otp = ""
     6.times do
       otp += digits.sample.to_s
