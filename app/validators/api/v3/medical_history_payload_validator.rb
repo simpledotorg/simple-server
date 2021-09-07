@@ -6,6 +6,7 @@ class Api::V3::MedicalHistoryPayloadValidator < Api::V3::PayloadValidator
     :prior_stroke,
     :chronic_kidney_disease,
     :receiving_treatment_for_hypertension,
+    :receiving_treatment_for_diabetes,
     :diabetes,
     :hypertension,
     :diagnosed_with_hypertension,
