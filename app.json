@@ -54,14 +54,8 @@
     "EMAIL_SUBJECT_PREFIX": {
       "value": "[REVIEW]"
     },
-    "ENABLE_AUTO_APPROVE_USER_FOR_QA" : {
-      "value": "true"
-    },
     "ENABLE_EXOTEL_WHITELIST_API": {
       "value": "false"
-    },
-    "ENABLE_FIXED_OTP_ON_REQUEST_FOR_QA" : {
-      "value": "true"
     },
     "ENABLE_GENERATE_ENCOUNTER_ID_ENDPOINT": {
       "value": "true"

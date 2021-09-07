@@ -15,7 +15,7 @@
     </div>
     <div id="facility-selector" class="form-group col-md-5">
       <%= form.select :facility_id,
-                      facilities.order(:name).map { |facility| [facility.name, facility.id] },
+                      facilities.order(:name).map { |facility| [facility.label_with_district, facility.id] },
                       {
                           hide_label: true,
                           include_blank: "All facilities",

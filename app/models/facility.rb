@@ -168,6 +168,10 @@ class Facility < ApplicationRecord
     nil
   end
 
+  def label_with_district
+    "#{name} (#{facility_group.name})"
+  end
+
   def cohort_analytics(period:, prev_periods:)
     CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods).call
   end
