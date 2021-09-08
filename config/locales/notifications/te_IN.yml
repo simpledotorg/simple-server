@@ -1,4 +1,4 @@
-te-IN:
+te_IN:
   notifications:
     set01:
       basic: "%{patient_name}, దయచేసి బిపి పరీక్ష మరియు మందుల కోసం %{appointment_date}న %{facility_name}ను సందర్శించండి."
