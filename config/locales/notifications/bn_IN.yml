@@ -1,4 +1,4 @@
-bn_IN:
+bn-IN:
   notifications:
     set01:
       basic: "%{patient_name}, দয়া করে ব্লাড প্রেসার পরিমাপ ও ওষুধের জন্য %{appointment_date} তারিখে %{facility_name}-এ আসুন।"
