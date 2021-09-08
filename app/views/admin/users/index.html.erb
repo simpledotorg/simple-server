@@ -15,7 +15,7 @@
   <% end %>
 
   <% @users.group_by(&:facility).each do |facility, users| %>
-    <h3 class="mt-5" id="facility_name"><%= facility.name %></h3>
+    <h3 class="mt-5" id="facility_name"><%= facility.label_with_district %></h3>
     <% users.sort_by(&:full_name).each do |user| %>
       <div class="card" name="<%= facility.name %>">
         <div class="row" name="<%= user.full_name %>">
@@ -34,7 +34,7 @@
               <% if user.registration_facility.present? %>
                 Registration facility:
                 <% facility = user.registration_facility %>
-                <%= link_to facility.name, [:admin, facility.facility_group, facility], class: "text-dark" %>
+                <%= link_to facility.label_with_district, [:admin, facility.facility_group, facility], class: "text-dark" %>
               <% end %>
             </div>
             <div class="mt-2">
