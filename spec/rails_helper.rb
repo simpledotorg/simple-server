@@ -33,6 +33,20 @@ RSpec.configure do |config|
     Region.root || Region.create!(name: "India", region_type: Region.region_types[:root], path: "india")
   end
 
+  def common_org
+    @common_org ||= Organization.find_or_create_by!(name: "Common Test Organization")
+  end
+
+  def with_reporting_time_zone(&blk)
+    Time.use_zone(Period::REPORTING_TIME_ZONE) do
+      original_group_date_time_zone = Groupdate.time_zone
+      Groupdate.time_zone = Period::REPORTING_TIME_ZONE
+      blk.call
+    ensure
+      Groupdate.time_zone = original_group_date_time_zone
+    end
+  end
+
   config.before(:each) do
     RequestStore.clear!
   end

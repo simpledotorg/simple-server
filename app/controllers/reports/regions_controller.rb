@@ -5,8 +5,9 @@ class Reports::RegionsController < AdminController
   before_action :set_period, only: [:show, :cohort]
   before_action :set_page, only: [:details]
   before_action :set_per_page, only: [:details]
-  before_action :find_region, except: [:index]
-  around_action :set_time_zone
+  before_action :find_region, except: [:index, :monthly_district_data_report]
+  around_action :check_reporting_schema_toggle, only: [:show]
+  around_action :set_reporting_time_zone
   after_action :log_cache_metrics
   delegate :cache, to: Rails
 
@@ -17,7 +18,7 @@ class Reports::RegionsController < AdminController
     cache_version = "#{accessible_facility_regions.cache_key} / v2"
     @accessible_regions = cache.fetch(cache_key, version: cache_version, expires_in: 7.days) {
       accessible_facility_regions.each_with_object({}) { |facility, result|
-        ancestors = Hash[facility.cached_ancestors.map { |facility| [facility.region_type, facility] }]
+        ancestors = facility.cached_ancestors.map { |facility| [facility.region_type, facility] }.to_h
         org, state, district, block = ancestors.values_at("organization", "state", "district", "block")
         result[org] ||= {}
         result[org][state] ||= {}
@@ -29,48 +30,61 @@ class Reports::RegionsController < AdminController
   end
 
   def show
-    @data = Reports::RegionService.new(region: @region, period: @period, with_exclusions: report_with_exclusions?).call
+    @service = Reports::RegionService.new(region: @region, period: @period, reporting_schema_v2: RequestStore[:reporting_schema_v2])
+    @data = @service.call
     @with_ltfu = with_ltfu?
 
     @child_regions = @region.reportable_children
-    repo = Reports::Repository.new(@child_regions, periods: @period, with_exclusions: report_with_exclusions?)
+    repo = Reports::Repository.new(@child_regions, periods: @period, reporting_schema_v2: RequestStore[:reporting_schema_v2])
 
     @children_data = @child_regions.map { |region|
       slug = region.slug
       {
         region: region,
-        adjusted_patient_counts: repo.adjusted_patient_counts[slug],
-        controlled_patients: repo.controlled_patients_count[slug],
-        controlled_patients_rate: repo.controlled_patient_rates[slug],
-        uncontrolled_patients: repo.uncontrolled_patients_count[slug],
-        uncontrolled_patients_rate: repo.uncontrolled_patient_rates[slug],
+        adjusted_patient_counts: repo.adjusted_patients[slug],
+        controlled_patients: repo.controlled[slug],
+        controlled_patients_rate: repo.controlled_rates[slug],
+        uncontrolled_patients: repo.uncontrolled[slug],
+        uncontrolled_patients_rate: repo.uncontrolled_rates[slug],
         missed_visits: repo.missed_visits[slug],
         missed_visits_rate: repo.missed_visits_rate[slug],
-        registrations: repo.registration_counts[slug],
-        cumulative_patients: repo.cumulative_assigned_patients_count[slug],
+        registrations: repo.monthly_registrations[slug],
+        cumulative_patients: repo.cumulative_assigned_patients[slug],
         cumulative_registrations: repo.cumulative_registrations[slug]
       }
     }
+    respond_to do |format|
+      format.html
+      format.js
+      format.json { render json: @data }
+    end
   end
 
+  # We display two ranges of data on this page - the chart range is for the LTFU chart,
+  # and the period_range is the data we display in the detail tables.
   def details
-    authorize { current_admin.accessible_facilities(:view_reports).any? }
-
-    @show_current_period = true
     @period = Period.month(Time.current)
-    @dashboard_analytics = @region.dashboard_analytics(period: @period.type,
-                                                       prev_periods: 6,
-                                                       include_current_period: true)
+    months = -(Reports::MAX_MONTHS_OF_DATA - 1)
+    chart_range = (@period.advance(months: months)..@period)
+    @period_range = Range.new(@period.advance(months: -5), @period)
+
+    regions = if @region.facility_region?
+      [@region]
+    else
+      [@region, @region.facility_regions].flatten
+    end
+    @repository = Reports::Repository.new(regions, periods: @period_range, reporting_schema_v2: RequestStore[:reporting_schema_v2])
+    chart_repo = Reports::Repository.new(@region, periods: chart_range, reporting_schema_v2: RequestStore[:reporting_schema_v2])
+
     @chart_data = {
       patient_breakdown: PatientBreakdownService.call(region: @region, period: @period),
-      ltfu_trend: Reports::RegionService.new(region: @region,
-                                             period: @period,
-                                             with_exclusions: report_with_exclusions?).call
+      ltfu_trend: ltfu_chart_data(chart_repo, chart_range)
     }
 
-    region_source = @region.source
-    if region_source.respond_to?(:recent_blood_pressures)
-      @recent_blood_pressures = paginate(region_source.recent_blood_pressures)
+    if @region.facility_region?
+      @recent_blood_pressures = paginate(
+        @region.source.blood_pressures.for_recent_bp_log.includes(:patient, :facility)
+      )
     end
   end
 
@@ -78,7 +92,7 @@ class Reports::RegionsController < AdminController
     authorize { current_admin.accessible_facilities(:view_reports).any? }
     periods = @period.downto(5)
 
-    @cohort_data = CohortService.new(region: @region, periods: periods, with_exclusions: report_with_exclusions?).call
+    @cohort_data = CohortService.new(region: @region, periods: periods).call
   end
 
   def download
@@ -103,6 +117,20 @@ class Reports::RegionsController < AdminController
     end
   end
 
+  def monthly_district_data_report
+    @region ||= authorize { current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id]) }
+    @period = Period.month(params[:period] || Date.current)
+    csv = MonthlyDistrictDataService.new(@region, @period).report
+    report_date = @period.to_s.downcase
+    filename = "monthly-district-data-#{@region.slug}-#{report_date}.csv"
+
+    respond_to do |format|
+      format.csv do
+        send_data csv, filename: filename
+      end
+    end
+  end
+
   def whatsapp_graphics
     authorize { current_admin.accessible_facilities(:view_reports).any? }
 
@@ -121,6 +149,31 @@ class Reports::RegionsController < AdminController
   end
 
   private
+
+  def ltfu_chart_data(repo, range)
+    {
+      cumulative_assigned_patients: repo.cumulative_assigned_patients[@region.slug],
+      ltfu_patients: repo.ltfu[@region.slug],
+      ltfu_patients_rate: repo.ltfu_rates[@region.slug],
+      period_info: range.each_with_object({}) { |period, hsh| hsh[period] = period.to_hash }
+    }
+  end
+
+  def check_reporting_schema_toggle
+    original = RequestStore[:reporting_schema_v2]
+    RequestStore[:reporting_schema_v2] = reporting_schema_via_param_or_feature_flag
+    yield
+  ensure
+    RequestStore[:reporting_schema_v2] = original
+  end
+
+  # We want a falsey param value (ie v2=false) to override a user feature flagged value, hence the awkwardness below
+  def reporting_schema_via_param_or_feature_flag
+    param_flag = ActiveRecord::Type::Boolean.new.deserialize(report_params[:v2])
+    user_flag = current_admin.feature_enabled?(:reporting_schema_v2)
+    return param_flag unless param_flag.nil?
+    user_flag
+  end
 
   def accessible_region?(region, action)
     return false unless region.reportable_region?
@@ -161,11 +214,11 @@ class Reports::RegionsController < AdminController
     report_scope = report_params[:report_scope]
     @region ||= authorize {
       case report_scope
+      when "organization"
+        organization = current_admin.user_access.accessible_organizations(:view_reports).find_by!(slug: report_params[:id])
+        organization.region
       when "state"
         current_admin.user_access.accessible_state_regions(:view_reports).find_by!(slug: report_params[:id])
-      when "facility_district"
-        scope = current_admin.accessible_facilities(:view_reports)
-        FacilityDistrict.new(name: report_params[:id], scope: scope)
       when "district"
         current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id])
       when "block"
@@ -179,24 +232,11 @@ class Reports::RegionsController < AdminController
   end
 
   def report_params
-    params.permit(:id, :bust_cache, :report_scope, {period: [:type, :value]})
-  end
-
-  def set_time_zone
-    time_zone = Rails.application.config.country[:time_zone] || DEFAULT_ANALYTICS_TIME_ZONE
-
-    Groupdate.time_zone = time_zone
-
-    Time.use_zone(time_zone) { yield }
-    Groupdate.time_zone = "UTC"
-  end
-
-  def report_with_exclusions?
-    current_admin.feature_enabled?(:report_with_exclusions)
+    params.permit(:id, :bust_cache, :v2, :report_scope, {period: [:type, :value]})
   end
 
   def with_ltfu?
-    current_admin.feature_enabled?(:report_with_exclusions) && params[:with_ltfu].present?
+    params[:with_ltfu].present?
   end
 
   def log_cache_metrics

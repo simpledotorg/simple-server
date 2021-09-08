@@ -2,7 +2,7 @@ class DistrictAnalyticsQuery
   include BustCache
   include DashboardHelper
 
-  CACHE_VERSION = 3
+  CACHE_VERSION = 4
 
   attr_reader :region, :facilities
 
@@ -16,6 +16,8 @@ class DistrictAnalyticsQuery
     @district_name = @region.name
     @from_time = from_time
     @include_current_period = include_current_period
+    @current_period = Period.month(Date.current)
+    @range = Range.new(@current_period.advance(months: -prev_periods), @current_period)
   end
 
   def call
@@ -39,7 +41,7 @@ class DistrictAnalyticsQuery
   def total_assigned_patients
     @total_assigned_patients ||=
       Patient
-        .with_hypertension
+        .for_reports
         .where(assigned_facility: facilities)
         .group(:assigned_facility_id)
         .count
@@ -51,26 +53,30 @@ class DistrictAnalyticsQuery
       .to_h
   end
 
+  def repository
+    @repository ||= Reports::Repository.new(facilities, periods: @range)
+  end
+
   def total_registered_patients
-    @total_registered_patients ||=
-      Patient
-        .with_hypertension
-        .joins(:registration_facility)
-        .where(facilities: {id: facilities})
-        .group("facilities.id")
-        .count
+    @total_registered_patients ||= @facilities.each_with_object({}) { |facility, result|
+      result[facility.id] = {
+        total_registered_patients: repository.cumulative_registrations.dig(facility.region.slug, @current_period)
+      }
+    }
+  end
 
-    return if @total_registered_patients.blank?
-
-    @total_registered_patients
-      .map { |facility_id, count| [facility_id, {total_registered_patients: count}] }
-      .to_h
+  def period_to_dates(hsh)
+    return unless hsh
+    hsh.transform_keys { |k| k.to_date }
   end
 
   def registered_patients_by_period
-    result = ActivityService.new(region, group: [:registration_facility_id]).registrations
+    @facilities.each_with_object({}) { |facility, result|
+      counts = period_to_dates(repository.monthly_registrations[facility.region.slug])
+      next unless counts&.any?
 
-    group_by_date_and_facility(result, :registered_patients_by_period)
+      result[facility.id] = {registered_patients_by_period: counts}
+    }
   end
 
   def follow_up_patients_by_period

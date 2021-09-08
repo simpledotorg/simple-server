@@ -18,6 +18,8 @@
           <span class="badge badge-light text-muted">STOCK RECEIVED THIS MONTH</span>
           <small><i class="fas fa-minus"></i></small>
           <span class="badge badge-light text-muted">CLOSING BALANCE OF THIS MONTH</span>
+          <small><i class="fas fa-minus"></i></small>
+          <span class="badge badge-light text-muted">STOCK ISSUED TO OTHER FACILITIES THIS MONTH</span>
         </p>
         <p>
 
@@ -30,14 +32,19 @@
             <%= @for_end_of_month_display %>
           </a>
           <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-            <% last_n_months(n: 6, inclusive: true).each do |month| %>
+            <% last_n_months(n: 6, inclusive: @show_current_month).each do |month| %>
               <% button_class = "dropdown-item query-filter-size filter-by-size" %>
               <% button_class = "dropdown-item active " if month.end_of_month == @for_end_of_month %>
-              <button class="<%= button_class %>" value="<%= month.strftime("%b-%Y") %>" name="for_end_of_month" type="submit" form="query-filters">
+              <button class="<%= button_class %>" value="<%= month.strftime("%b-%Y") %>" name="for_end_of_month" type="submit" form="query-filters" onclick="$('#selected-month').remove()">
                 <%= month.strftime("%b-%Y") %>
               </button>
             <% end %>
           </div>
+        </div>
+        <div class="mb-8px mr-8px d-flex flex-grow-1 justify-content-sm-end">
+          <%= link_to "Download Report",
+                      my_facilities_drug_consumption_path(format: :csv, **request.query_parameters.symbolize_keys),
+                      class: "btn btn-sm btn-outline-primary" %>
         </div>
       </div>
       <% if @facilities.present? %>

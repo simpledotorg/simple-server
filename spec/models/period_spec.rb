@@ -81,16 +81,22 @@ RSpec.describe Period, type: :model do
   end
 
   it "has validations" do
-    period = Period.new(type: "invalid", value: jan_1_2020)
-    expect(period).to be_invalid
-    expect(period.errors[:type]).to eq(["must be month or quarter"])
-    period.type = :month
+    expect { Period.new(type: "invalid", value: jan_1_2020) }.to raise_error(ActiveModel::ValidationError)
+    period = Period.new(value: jan_1_2019, type: :month)
     expect(period).to be_valid
   end
 
   it "has to_s in correct format" do
     expect(jan_1_2019_month_period.to_s).to eq("Jan-2019")
     expect(q1_2019_period.to_s).to eq("Q1-2019")
+  end
+
+  it "month periods take an optional arg for to_s formatting" do
+    expect(jan_1_2019_month_period.to_s(:mon_year_multiline)).to eq("Jan\n2019")
+  end
+
+  it "quarter periods ignore extra formatting" do
+    expect(q1_2019_period.to_s(:mon_year_multiline)).to eq("Q1-2019")
   end
 
   it "period months can be compared" do
@@ -170,5 +176,23 @@ RSpec.describe Period, type: :model do
   it "has adjective description" do
     expect(jan_1_2019_month_period.adjective).to eq("Monthly")
     expect(q2_2020_period.adjective).to eq("Quarterly")
+  end
+
+  describe "quarter?" do
+    it "returns true when period is a quarter, false when it's a not" do
+      period = Period.quarter(Date.parse("December 2019"))
+      expect(period.quarter?).to eq true
+      period = Period.month(Date.parse("December 2019"))
+      expect(period.quarter?).to eq false
+    end
+  end
+
+  describe "month?" do
+    it "returns true when period is month, false when it's not" do
+      period = Period.month(Date.parse("December 2019"))
+      expect(period.month?).to eq true
+      period = Period.quarter(Date.parse("December 2019"))
+      expect(period.month?).to eq false
+    end
   end
 end

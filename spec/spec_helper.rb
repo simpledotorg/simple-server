@@ -3,12 +3,16 @@ require "utils"
 require "webmock/rspec"
 require "sidekiq/testing"
 require "flipper_helper"
+require "reporting_helpers"
 
 WebMock.allow_net_connect!
+
+RSpec::Matchers.define_negated_matcher :not_change, :change
 
 RSpec.configure do |config|
   SimpleCov.start if ENV["CI"]
   config.include FlipperHelpers
+  config.include ReportingHelpers, reporting_spec: true
   config.filter_run focus: true
   config.run_all_when_everything_filtered = true
 
@@ -34,4 +38,14 @@ RSpec.configure do |config|
   end
 
   config.shared_context_metadata_behavior = :apply_to_host_groups
+end
+
+# Provide an easy way to convert a date string to a month Period
+# for example "December 2019".to_period
+module StringToPeriod
+  refine String do
+    def to_period
+      to_date.to_period
+    end
+  end
 end

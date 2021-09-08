@@ -6,6 +6,6 @@ FactoryBot.define do
     rxnorm_code { Faker::Code.npi }
     stock_tracked { false }
     drug_category { "other" }
-    association :protocol, strategy: :build
+    association :protocol
   end
 end

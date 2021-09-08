@@ -1,8 +1,12 @@
 require "rails_helper"
 
 describe Patient, type: :model do
+  let(:reporting_timezone) { Period::REPORTING_TIME_ZONE }
   def refresh_views
+    original = ActiveRecord::Base.connection.execute("SELECT current_setting('TIMEZONE')").first["current_setting"]
+    ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{Period::REPORTING_TIME_ZONE}'")
     LatestBloodPressuresPerPatientPerMonth.refresh
+    ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE #{original}")
   end
 
   subject(:patient) { build(:patient) }
@@ -24,6 +28,7 @@ describe Patient, type: :model do
 
   describe "Associations" do
     it { is_expected.to have_one(:medical_history) }
+    it { is_expected.to have_one(:imo_authorization).optional }
 
     it { is_expected.to have_many(:phone_numbers) }
     it { is_expected.to have_many(:business_identifiers) }
@@ -35,6 +40,10 @@ describe Patient, type: :model do
     it { is_expected.to have_many(:facilities).through(:blood_pressures) }
     it { is_expected.to have_many(:users).through(:blood_pressures) }
     it { is_expected.to have_many(:appointments) }
+    it { is_expected.to have_many(:notifications) }
+    it { is_expected.to have_many(:treatment_group_memberships) }
+    it { is_expected.to have_many(:treatment_groups).through(:treatment_group_memberships) }
+    it { is_expected.to have_many(:experiments).through(:treatment_groups) }
     it { is_expected.to have_many(:teleconsultations) }
 
     it { is_expected.to have_many(:encounters) }
@@ -43,10 +52,6 @@ describe Patient, type: :model do
     it { is_expected.to belong_to(:address).optional }
     it { is_expected.to belong_to(:registration_facility).class_name("Facility").optional }
     it { is_expected.to belong_to(:registration_user).class_name("User") }
-
-    it { is_expected.to have_many(:merged_from_patients).class_name("Patient") }
-    it { is_expected.to belong_to(:merged_into_patient).class_name("Patient").optional }
-    it { is_expected.to belong_to(:merged_by_user).class_name("User").optional }
 
     it "has distinct facilities" do
       patient = create(:patient)
@@ -140,199 +145,6 @@ describe Patient, type: :model do
       end
     end
 
-    context "follow ups" do
-      let(:reg_date) { Date.new(2018, 1, 1) }
-      let(:current_user) { create(:user) }
-      let(:current_facility) { create(:facility, facility_group: current_user.facility.facility_group) }
-      let(:follow_up_facility) { create(:facility, facility_group: current_user.facility.facility_group) }
-      let(:hypertensive_patient) { create(:patient, registration_facility: current_facility, recorded_at: reg_date) }
-      let(:diabetic_patient) {
-        create(:patient,
-          :diabetes,
-          registration_facility: current_facility,
-          recorded_at: reg_date)
-      }
-      let(:first_follow_up_date) { reg_date + 1.month }
-      let(:second_follow_up_date) { first_follow_up_date + 1.day }
-
-      before do
-        2.times do
-          create(:blood_sugar,
-            :with_encounter,
-            facility: current_facility,
-            patient: diabetic_patient,
-            user: current_user,
-            recorded_at: first_follow_up_date)
-          create(:blood_pressure,
-            :with_encounter,
-            patient: hypertensive_patient,
-            facility: current_facility,
-            user: current_user,
-            recorded_at: first_follow_up_date)
-        end
-
-        # visit at a facility different from registration
-        create(:blood_pressure,
-          :with_encounter,
-          patient: hypertensive_patient,
-          facility: follow_up_facility,
-          user: current_user,
-          recorded_at: first_follow_up_date)
-
-        # diabetic patient following up with a BP
-        create(:blood_pressure,
-          :with_encounter,
-          patient: diabetic_patient,
-          facility: current_facility,
-          user: current_user,
-          recorded_at: first_follow_up_date)
-
-        # another follow up in the same month but another day
-        create(:blood_pressure,
-          :with_encounter,
-          patient: hypertensive_patient,
-          facility: current_facility,
-          user: current_user,
-          recorded_at: second_follow_up_date)
-      end
-
-      describe ".follow_ups" do
-        context "by day" do
-          it "groups follow ups by day" do
-            expect(Patient
-                     .follow_ups_by_period(:day)
-                     .count).to eq({first_follow_up_date => 2,
-                                    second_follow_up_date => 1})
-          end
-
-          it "can be grouped by facility and day" do
-            expect(Patient
-                     .follow_ups_by_period(:day)
-                     .group("encounters.facility_id")
-                     .count).to eq({[first_follow_up_date, current_facility.id] => 2,
-                                    [first_follow_up_date, follow_up_facility.id] => 1,
-                                    [second_follow_up_date, current_facility.id] => 1,
-                                    [second_follow_up_date, follow_up_facility.id] => 0})
-          end
-
-          it "can be filtered by region" do
-            expect(Patient
-                     .follow_ups_by_period(:day, at_region: current_facility)
-                     .group("encounters.facility_id")
-                     .count).to eq({[first_follow_up_date, current_facility.id] => 2,
-                                    [second_follow_up_date, current_facility.id] => 1})
-          end
-        end
-
-        context "by month" do
-          it "groups follow ups by month" do
-            expect(Patient
-                     .follow_ups_by_period(:month)
-                     .count).to eq({first_follow_up_date => 2})
-          end
-
-          it "can be grouped by facility and day" do
-            expect(Patient
-                     .follow_ups_by_period(:month)
-                     .group("encounters.facility_id")
-                     .count).to eq({[first_follow_up_date, current_facility.id] => 2,
-                                    [first_follow_up_date, follow_up_facility.id] => 1})
-          end
-
-          it "can be filtered by facility" do
-            expect(Patient
-                     .follow_ups_by_period(:month, at_region: current_facility)
-                     .group("encounters.facility_id")
-                     .count).to eq({[first_follow_up_date, current_facility.id] => 2})
-          end
-        end
-      end
-
-      describe ".diabetes_follow_ups" do
-        context "by day" do
-          it "groups follow ups by day" do
-            expect(Patient
-                     .diabetes_follow_ups_by_period(:day)
-                     .count).to eq({first_follow_up_date => 1})
-          end
-
-          it "can be grouped by facility and day" do
-            expect(Patient
-                     .diabetes_follow_ups_by_period(:day)
-                     .group("blood_sugars.facility_id")
-                     .count).to eq({[first_follow_up_date, current_facility.id] => 1})
-          end
-        end
-
-        context "by month" do
-          it "groups follow ups by month" do
-            expect(Patient
-                     .diabetes_follow_ups_by_period(:month)
-                     .count).to eq({first_follow_up_date => 1})
-          end
-
-          it "can be grouped by facility and month" do
-            expect(Patient
-                     .diabetes_follow_ups_by_period(:month)
-                     .group("blood_sugars.facility_id")
-                     .count).to eq({[first_follow_up_date, current_facility.id] => 1})
-          end
-        end
-      end
-
-      describe ".hypertension_follow_ups" do
-        context "by day" do
-          it "groups follow ups by day" do
-            expect(Patient
-                     .hypertension_follow_ups_by_period(:day)
-                     .count).to eq({first_follow_up_date => 1,
-                                    second_follow_up_date => 1})
-          end
-
-          it "can be grouped by facility and day" do
-            expect(Patient
-                     .hypertension_follow_ups_by_period(:day)
-                     .group("blood_pressures.facility_id")
-                     .count).to eq({[first_follow_up_date, current_facility.id] => 1,
-                                    [first_follow_up_date, follow_up_facility.id] => 1,
-                                    [second_follow_up_date, current_facility.id] => 1,
-                                    [second_follow_up_date, follow_up_facility.id] => 0})
-          end
-
-          it "can be filtered by region" do
-            expect(Patient
-                     .hypertension_follow_ups_by_period(:day, at_region: current_facility)
-                     .group("blood_pressures.facility_id")
-                     .count).to eq({[first_follow_up_date, current_facility.id] => 1,
-                                    [second_follow_up_date, current_facility.id] => 1})
-          end
-        end
-
-        context "by month" do
-          it "groups follow ups by month" do
-            expect(Patient
-                     .hypertension_follow_ups_by_period(:month)
-                     .count).to eq({first_follow_up_date => 1})
-          end
-
-          it "can be grouped by facility and month" do
-            expect(Patient
-                     .hypertension_follow_ups_by_period(:month)
-                     .group("blood_pressures.facility_id")
-                     .count).to eq({[first_follow_up_date, current_facility.id] => 1,
-                                    [first_follow_up_date, follow_up_facility.id] => 1})
-          end
-
-          it "can be filtered by region" do
-            expect(Patient
-                     .hypertension_follow_ups_by_period(:month, at_region: current_facility)
-                     .group("blood_pressures.facility_id")
-                     .count).to eq({[first_follow_up_date, current_facility.id] => 1})
-          end
-        end
-      end
-    end
-
     describe ".not_contacted" do
       let(:patient_to_followup) { create(:patient, device_created_at: 5.days.ago) }
       let(:patient_to_not_followup) { create(:patient, device_created_at: 1.day.ago) }
@@ -394,6 +206,96 @@ describe Patient, type: :model do
 
         expect(described_class.ltfu_as_of(Time.current)).not_to include(not_ltfu_patient)
       end
+
+      describe "timezone-specific boundaries" do
+        it "bp cutoffs for a year ago" do
+          # For any provided date in June in the local timezone, the LTFU BP cutoff is the end of June 30 of the
+          # previous year in the local timezone.
+          #
+          # Eg. For any date provided in June 2021, the cutoff is the June 30-Jul 1 boundary of 2020
+
+          long_ago = 5.years.ago
+
+          # We explicitly set the times in the reporting TZ here, but don't use the block helper because its a hassle w/
+          # all the local vars we need
+          timezone = Time.find_zone(reporting_timezone)
+          under_a_year_ago = timezone.local(2020, 7, 1, 0, 0, 1) # Beginning of July 1 2020 in local timezone
+          over_a_year_ago = timezone.local(2020, 6, 30, 23, 59, 59) # End of June 30 2020 in local timezone
+          beginning_of_month = timezone.local(2021, 6, 1, 0, 0, 0) # Beginning of June 1 2021 in local timezone
+          end_of_month = timezone.local(2021, 6, 30, 23, 59, 59) # End of June 30 2021 in local timezone
+
+          not_ltfu_patient = create(:patient, recorded_at: long_ago)
+          ltfu_patient = create(:patient, recorded_at: long_ago)
+
+          create(:blood_pressure, patient: not_ltfu_patient, recorded_at: under_a_year_ago)
+          create(:blood_pressure, patient: ltfu_patient, recorded_at: over_a_year_ago)
+          with_reporting_time_zone do # We don't actually need this, but its a nice sanity check
+            refresh_views
+
+            expect(described_class.ltfu_as_of(beginning_of_month)).not_to include(not_ltfu_patient)
+            expect(described_class.ltfu_as_of(end_of_month)).not_to include(not_ltfu_patient)
+
+            expect(described_class.ltfu_as_of(beginning_of_month)).to include(ltfu_patient)
+            expect(described_class.ltfu_as_of(end_of_month)).to include(ltfu_patient)
+          end
+        end
+
+        it "bp cutoffs for now" do
+          # For any provided date in June in the local timezone, the LTFU BP ending cutoff is the time provided
+
+          long_ago = 5.years.ago
+          timezone = Time.find_zone(reporting_timezone)
+          beginning_of_month = timezone.local(2021, 6, 1, 0, 0, 0) # Beginning of June 1 2021 in local timezone
+          a_moment_ago = beginning_of_month - 1.minute # A moment before the provided date
+          a_moment_from_now = beginning_of_month + 1.minute # A moment after the provided date
+
+          end_of_month = timezone.local(2021, 6, 30, 23, 59, 59) # End of June 30 2021 in local timezone
+
+          not_ltfu_patient = create(:patient, recorded_at: long_ago)
+          ltfu_patient = create(:patient, recorded_at: long_ago)
+
+          create(:blood_pressure, patient: not_ltfu_patient, recorded_at: a_moment_ago)
+          create(:blood_pressure, patient: ltfu_patient, recorded_at: a_moment_from_now)
+
+          with_reporting_time_zone do
+            refresh_views
+
+            expect(described_class.ltfu_as_of(beginning_of_month)).not_to include(not_ltfu_patient)
+            expect(described_class.ltfu_as_of(beginning_of_month)).to include(ltfu_patient)
+
+            # Both patients are not LTFU at the end of the month
+            expect(described_class.ltfu_as_of(end_of_month)).not_to include(not_ltfu_patient)
+            expect(described_class.ltfu_as_of(end_of_month)).not_to include(ltfu_patient)
+          end
+        end
+
+        it "registration cutoffs for a year ago" do
+          # For any provided date in June in the local timezone, the LTFU registration cutoff is the end of June 30 of
+          # the previous year in the local timezone
+          #
+          # Eg. For any date provided in June 2021, the cutoff is the June 30-Jul 1 boundary of 2020
+
+          timezone = Time.find_zone(reporting_timezone)
+
+          under_a_year_ago = timezone.local(2020, 7, 1, 0, 0, 1) # Beginning of July 1 2020 in local timezone
+          over_a_year_ago = timezone.local(2020, 6, 30, 23, 59, 59) # End of June 30 2020 in local timezone
+          beginning_of_month = timezone.local(2021, 6, 1, 0, 0, 0) # Beginning of June 1 2021 in local timezone
+          end_of_month = timezone.local(2021, 6, 30, 23, 59, 59) # End of June 30 2021 in local timezone
+
+          not_ltfu_patient = create(:patient, recorded_at: under_a_year_ago)
+          ltfu_patient = create(:patient, recorded_at: over_a_year_ago)
+
+          with_reporting_time_zone do
+            refresh_views
+
+            expect(described_class.ltfu_as_of(beginning_of_month)).not_to include(not_ltfu_patient)
+            expect(described_class.ltfu_as_of(end_of_month)).not_to include(not_ltfu_patient)
+
+            expect(described_class.ltfu_as_of(beginning_of_month)).to include(ltfu_patient)
+            expect(described_class.ltfu_as_of(end_of_month)).to include(ltfu_patient)
+          end
+        end
+      end
     end
 
     describe ".not_ltfu_as_of" do
@@ -417,6 +319,92 @@ describe Patient, type: :model do
         refresh_views
 
         expect(described_class.not_ltfu_as_of(Time.current)).to include(not_ltfu_patient)
+      end
+
+      describe "timezone-specific boundaries" do
+        it "bp cutoffs for a year ago" do
+          # For any provided date in June in the local timezone, the LTFU BP cutoff is the end of June 30 of the
+          # previous year in the local timezone.
+          #
+          # Eg. For any date provided in June 2021, the cutoff is the June 30-Jul 1 boundary of 2020
+
+          long_ago = 5.years.ago
+
+          # We explicitly set the times in the reporting TZ here, but don't use the block helper because its a hassle w/
+          # all the local vars we need
+          timezone = Time.find_zone(reporting_timezone)
+          under_a_year_ago = timezone.local(2020, 7, 1, 0, 0, 1) # Beginning of July 1 2020 in local timezone
+          over_a_year_ago = timezone.local(2020, 6, 30, 23, 59, 59) # End of June 30 2020 in local timezone
+          beginning_of_month = timezone.local(2021, 6, 1, 0, 0, 0) # Beginning of June 1 2021 in local timezone
+          end_of_month = timezone.local(2021, 6, 30, 23, 59, 59) # End of June 30 2021 in local timezone
+
+          not_ltfu_patient = create(:patient, recorded_at: long_ago)
+          ltfu_patient = create(:patient, recorded_at: long_ago)
+
+          create(:blood_pressure, patient: not_ltfu_patient, recorded_at: under_a_year_ago)
+          create(:blood_pressure, patient: ltfu_patient, recorded_at: over_a_year_ago)
+          refresh_views
+
+          expect(described_class.not_ltfu_as_of(beginning_of_month)).to include(not_ltfu_patient)
+          expect(described_class.not_ltfu_as_of(end_of_month)).to include(not_ltfu_patient)
+
+          expect(described_class.not_ltfu_as_of(beginning_of_month)).not_to include(ltfu_patient)
+          expect(described_class.not_ltfu_as_of(end_of_month)).not_to include(ltfu_patient)
+        end
+
+        it "bp cutoffs for now" do
+          # For any provided date in June in the local timezone, the LTFU BP ending cutoff is the time provided
+
+          long_ago = 5.years.ago
+          timezone = Time.find_zone(reporting_timezone)
+          beginning_of_month = timezone.local(2021, 6, 1, 0, 0, 0) # Beginning of June 1 2021 in local timezone
+          a_moment_ago = beginning_of_month - 1.minute # A moment before the provided date
+          a_moment_from_now = beginning_of_month + 1.minute # A moment after the provided date
+
+          end_of_month = timezone.local(2021, 6, 30, 23, 59, 59) # End of June 30 2021 in local timezone
+
+          not_ltfu_patient = create(:patient, recorded_at: long_ago)
+          ltfu_patient = create(:patient, recorded_at: long_ago)
+
+          create(:blood_pressure, patient: not_ltfu_patient, recorded_at: a_moment_ago)
+          create(:blood_pressure, patient: ltfu_patient, recorded_at: a_moment_from_now)
+
+          with_reporting_time_zone do
+            refresh_views
+
+            expect(described_class.not_ltfu_as_of(beginning_of_month)).to include(not_ltfu_patient)
+            expect(described_class.not_ltfu_as_of(beginning_of_month)).not_to include(ltfu_patient)
+
+            # Both patients are not LTFU at the end of the month
+            expect(described_class.not_ltfu_as_of(end_of_month)).to include(not_ltfu_patient)
+            expect(described_class.not_ltfu_as_of(end_of_month)).to include(ltfu_patient)
+          end
+        end
+
+        it "registration cutoffs for a year ago" do
+          # For any provided date in June in the local timezone, the LTFU registration cutoff is the end of June 30 of
+          # the previous year in the local timezone
+          #
+          # Eg. For any date provided in June 2021, the cutoff is the June 30-Jul 1 boundary of 2020
+          timezone = Time.find_zone(reporting_timezone)
+          under_a_year_ago = timezone.local(2020, 7, 1, 0, 0, 1) # Beginning of July 1 2020 in local timezone
+          over_a_year_ago = timezone.local(2020, 6, 30, 23, 59, 59) # End of June 30 2020 in local timezone
+          beginning_of_month = timezone.local(2021, 6, 1, 0, 0, 0) # Beginning of June 1 2021 in local timezone
+          end_of_month = timezone.local(2021, 6, 30, 23, 59, 59) # End of June 30 2021 in local timezone
+
+          not_ltfu_patient = create(:patient, recorded_at: under_a_year_ago)
+          ltfu_patient = create(:patient, recorded_at: over_a_year_ago)
+
+          with_reporting_time_zone do
+            refresh_views
+
+            expect(described_class.not_ltfu_as_of(beginning_of_month)).to include(not_ltfu_patient)
+            expect(described_class.not_ltfu_as_of(end_of_month)).to include(not_ltfu_patient)
+
+            expect(described_class.not_ltfu_as_of(beginning_of_month)).not_to include(ltfu_patient)
+            expect(described_class.not_ltfu_as_of(end_of_month)).not_to include(ltfu_patient)
+          end
+        end
       end
     end
   end
@@ -516,6 +504,17 @@ describe Patient, type: :model do
         expect(patient.current_age).to eq(Date.current.year - 1980)
       end
 
+      it "takes into account months for date_of_birth" do
+        patient.date_of_birth = Date.parse("June 1st 1960")
+
+        Timecop.freeze("January 1st 2020") do
+          expect(patient.current_age).to eq(59)
+        end
+        Timecop.freeze("June 2nd 2020") do
+          expect(patient.current_age).to eq(60)
+        end
+      end
+
       it "returns age based on age_updated_at if date of birth is not present" do
         patient = create(:patient, age: 30, age_updated_at: 25.months.ago, date_of_birth: nil)
 
@@ -545,11 +544,12 @@ describe Patient, type: :model do
     describe "#latest_mobile_number" do
       it "returns the last mobile number for the patient" do
         patient = create(:patient)
-        number_1 = create(:patient_phone_number, patient: patient)
-        _number_2 = create(:patient_phone_number, phone_type: :landline, patient: patient)
-        _number_3 = create(:patient_phone_number, phone_type: :invalid, patient: patient)
+        _mobile_number_1 = create(:patient_phone_number, patient: patient, phone_type: "mobile", number: "9999999999")
+        mobile_number_2 = create(:patient_phone_number, patient: patient, phone_type: "mobile", number: "1234567890")
+        _landline_number = create(:patient_phone_number, phone_type: :landline, patient: patient)
+        _invalid_number = create(:patient_phone_number, phone_type: :invalid, patient: patient)
 
-        expect(patient.reload.latest_mobile_number).to eq(number_1.number)
+        expect(patient.reload.latest_mobile_number).to eq("+91" + mobile_number_2.number)
       end
     end
 

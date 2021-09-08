@@ -29,21 +29,23 @@
       </div>
 
       <div class="title-caps">Report for end of <%= @for_end_of_month.to_s(:mon_year) %></div>
-      <% facility_report = @report[:facilities][current_facility.id] %>
-
       <% @drugs_by_category.each do |category, drugs| %>
-        <% patient_days = facility_report.dig(category, :patient_days) %>
+        <% patient_days = @query.patient_days_by_facility_id.dig(@current_facility.id, category, :patient_days) || 0 %>
 
         <div class="card">
           <h3 style="margin-bottom: 8px;"><%= protocol_drug_labels[category][:full] %></h3>
           <span class="<%= patient_days_css_class(patient_days, prefix: "text") %>"><%= patient_days %> days of drug stock</span>
 
           <% drugs.each do |drug| %>
-            <% drug_stock = facility_report.dig(category, :drug_stocks, drug.id) %>
+            <% drug_stock = @query.drugs_in_stock_by_facility_id.dig([@current_facility.id, drug.rxnorm_code]) %>
 
             <div class="card-row">
-              <span class="dark float-right"><%= drug_stock.in_stock %> tablets</span>
-              <h6><%= drug.name %> <%= drug.dosage %> </h6>
+              <% if drug_stock.present? %>
+                <span class="dark float-right"><%= drug_stock %> tablets</span>
+              <% else %>
+                <span class="dark float-right">&#8212;</span>
+              <% end %>
+                <h6><%= drug.name %> <%= drug.dosage %> </h6>
             </div>
 
           <% end %>

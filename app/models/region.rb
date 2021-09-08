@@ -1,4 +1,6 @@
 class Region < ApplicationRecord
+  include Flipperable
+
   MAX_LABEL_LENGTH = 255
 
   delegate :cache, to: Rails
@@ -14,6 +16,7 @@ class Region < ApplicationRecord
   belongs_to :source, polymorphic: true, optional: true
   auto_strip_attributes :name, squish: true, upcase_first: true
 
+  has_many :drug_stocks
   # To set a new path for a Region, assign the parent region via `reparent_to`, and the before_validation
   # callback will assign the new path.
   attr_accessor :reparent_to
@@ -54,6 +57,7 @@ class Region < ApplicationRecord
   # like in Bangladesh for example.
   def legacy_children
     case region_type
+    when "organization" then district_regions
     when "district" then facility_regions
     when "facility" then []
     else raise ArgumentError, "unsupported region_type #{region_type} for legacy_children"
@@ -109,6 +113,10 @@ class Region < ApplicationRecord
       source_ids = facility_regions.pluck(:source_id)
       Facility.where(id: source_ids)
     end
+  end
+
+  def facility_ids
+    facilities.pluck(:id)
   end
 
   def cohort_analytics(period:, prev_periods:)

@@ -3,13 +3,25 @@ require "rails_helper"
 RSpec.describe Reports::DrugStockCalculation, type: :model do
   let(:state) { "Punjab" }
   let(:protocol) { FactoryBot.create(:protocol, :with_tracked_drugs) }
+  let(:protocol_drugs) { protocol.protocol_drugs }
   let(:facility_group) { FactoryBot.create(:facility_group, protocol: protocol) }
   let(:facility) { FactoryBot.create(:facility, facility_group: facility_group, state: state) }
+  let(:user) { create(:admin) }
   let(:drug_category) { "hypertension_ccb" }
-  let(:stocks_by_rxnorm) {
-    {"329528" => {in_stock: 10000}, "329526" => {in_stock: 20000}, "316764" => {in_stock: 10000}, "316765" => {in_stock: 20000},
-     "979467" => {in_stock: 10000}, "316049" => {in_stock: 10000}, "331132" => {in_stock: 10000}}
+  let(:drug_stocks) {
+    [build(:drug_stock, in_stock: 10000, received: 5000, redistributed: 1000, facility: facility, user: user, protocol_drug: protocol_drugs.find_by(rxnorm_code: "329528")),
+      build(:drug_stock, in_stock: 20000, received: 20000, redistributed: 500, facility: facility, user: user, protocol_drug: protocol_drugs.find_by(rxnorm_code: "329526")),
+      build(:drug_stock, in_stock: 10000, redistributed: 0, facility: facility, user: user, protocol_drug: protocol_drugs.find_by(rxnorm_code: "316764")),
+      build(:drug_stock, in_stock: 20000, redistributed: 0, facility: facility, user: user, protocol_drug: protocol_drugs.find_by(rxnorm_code: "316765")),
+      build(:drug_stock, in_stock: 10000, redistributed: 0, facility: facility, user: user, protocol_drug: protocol_drugs.find_by(rxnorm_code: "979467")),
+      build(:drug_stock, in_stock: 10000, redistributed: 0, facility: facility, user: user, protocol_drug: protocol_drugs.find_by(rxnorm_code: "316049")),
+      build(:drug_stock, in_stock: 10000, redistributed: 0, facility: facility, user: user, protocol_drug: protocol_drugs.find_by(rxnorm_code: "331132"))]
   }
+  let(:previous_month_drug_stocks) {
+    [build(:drug_stock, in_stock: 10000, facility: facility, user: user, protocol_drug: protocol_drugs.find_by(rxnorm_code: "329528")),
+      build(:drug_stock, in_stock: 10000, facility: facility, user: user, protocol_drug: protocol_drugs.find_by(rxnorm_code: "329526"))]
+  }
+
   let(:punjab_drug_stock_config) {
     {"load_coefficient" => 1,
      "drug_categories" =>
@@ -27,18 +39,18 @@ RSpec.describe Reports::DrugStockCalculation, type: :model do
     it "calculates correctly when it has all drug stocks, and protocol and formula are cohesive" do
       result = described_class.new(
         state: state,
-        protocol: protocol,
+        protocol_drugs: protocol_drugs,
         drug_category: drug_category,
-        stocks_by_rxnorm_code: stocks_by_rxnorm,
+        current_drug_stocks: drug_stocks,
         patient_count: patient_count
       ).stocks_on_hand
 
       expect(result).to match_array [
-        {protocol_drug: protocol.protocol_drugs.find_by(rxnorm_code: "329528"),
+        {protocol_drug: protocol_drugs.find_by(rxnorm_code: "329528"),
          in_stock: 10000,
          coefficient: 1.2,
          stock_on_hand: 12000},
-        {protocol_drug: protocol.protocol_drugs.find_by(rxnorm_code: "329526"),
+        {protocol_drug: protocol_drugs.find_by(rxnorm_code: "329526"),
          in_stock: 20000,
          coefficient: 2,
          stock_on_hand: 40000}
@@ -49,9 +61,9 @@ RSpec.describe Reports::DrugStockCalculation, type: :model do
       FactoryBot.create(:protocol_drug, protocol: protocol, drug_category: drug_category, stock_tracked: true)
       result = described_class.new(
         state: state,
-        protocol: protocol,
+        protocol_drugs: protocol_drugs,
         drug_category: drug_category,
-        stocks_by_rxnorm_code: stocks_by_rxnorm,
+        current_drug_stocks: drug_stocks,
         patient_count: patient_count
       ).stocks_on_hand
       expect(result.map { |stock_on_hand| stock_on_hand[:protocol_drug].rxnorm_code }).to match_array ["329528", "329526"]
@@ -68,21 +80,20 @@ RSpec.describe Reports::DrugStockCalculation, type: :model do
       allow_any_instance_of(described_class).to receive(:patient_days_coefficients).and_return(drug_stock_config)
       result = described_class.new(
         state: state,
-        protocol: protocol,
+        protocol_drugs: protocol_drugs,
         drug_category: drug_category,
-        stocks_by_rxnorm_code: stocks_by_rxnorm,
+        current_drug_stocks: drug_stocks,
         patient_count: patient_count
       ).stocks_on_hand
       expect(result.map { |stock_on_hand| stock_on_hand[:protocol_drug].rxnorm_code }).to match_array ["329528", "329526"]
     end
 
     it "ignores a drug for which the stock is unknown" do
-      stocks_by_rxnorm.except!("329528")
       result = described_class.new(
         state: state,
-        protocol: protocol,
+        protocol_drugs: protocol_drugs,
         drug_category: drug_category,
-        stocks_by_rxnorm_code: stocks_by_rxnorm,
+        current_drug_stocks: drug_stocks.drop(1),
         patient_count: patient_count
       ).stocks_on_hand
       expect(result.map { |stock_on_hand| stock_on_hand[:protocol_drug].rxnorm_code }).to match_array ["329526"]
@@ -91,9 +102,9 @@ RSpec.describe Reports::DrugStockCalculation, type: :model do
     it "returns a empty list when stock is not available for any drug" do
       result = described_class.new(
         state: state,
-        protocol: protocol,
+        protocol_drugs: protocol_drugs,
         drug_category: drug_category,
-        stocks_by_rxnorm_code: {},
+        current_drug_stocks: [],
         patient_count: patient_count
       ).stocks_on_hand
       expect(result.map { |stock_on_hand| stock_on_hand[:protocol_drug].rxnorm_code }).to match_array []
@@ -102,9 +113,9 @@ RSpec.describe Reports::DrugStockCalculation, type: :model do
     it "computes stock as 0 when all stocks are 0" do
       result = described_class.new(
         state: state,
-        protocol: protocol,
+        protocol_drugs: protocol_drugs,
         drug_category: drug_category,
-        stocks_by_rxnorm_code: {"329526" => {in_stock: 0}, "329528" => {in_stock: 0}},
+        current_drug_stocks: drug_stocks.take(2).each { |drug_stock| drug_stock.update(in_stock: 0) },
         patient_count: patient_count
       ).stocks_on_hand
       expect(result.map { |stock_on_hand| stock_on_hand[:stock_on_hand] }).to match_array [0, 0]
@@ -114,25 +125,25 @@ RSpec.describe Reports::DrugStockCalculation, type: :model do
       allow_any_instance_of(described_class).to receive(:patient_days_coefficients).and_return(nil)
       instance = described_class.new(
         state: state,
-        protocol: protocol,
+        protocol_drugs: protocol_drugs,
         drug_category: drug_category,
-        stocks_by_rxnorm_code: stocks_by_rxnorm,
+        current_drug_stocks: drug_stocks,
         patient_count: patient_count
       )
       expect { instance.stocks_on_hand }.to raise_error(NoMethodError)
     end
   end
 
-  describe "#calculate" do
+  describe "#patient_days" do
     before do
       allow_any_instance_of(described_class).to receive(:patient_days_coefficients).and_return(punjab_drug_stock_config)
     end
     it "works correctly when all inputs are present" do
       result = described_class.new(
         state: state,
-        protocol: protocol,
+        protocol_drugs: protocol_drugs,
         drug_category: drug_category,
-        stocks_by_rxnorm_code: stocks_by_rxnorm,
+        current_drug_stocks: drug_stocks,
         patient_count: patient_count
       ).patient_days
       expect(result[:load_coefficient]).to eq 1
@@ -145,9 +156,9 @@ RSpec.describe Reports::DrugStockCalculation, type: :model do
     it "patient count is nil" do
       result = described_class.new(
         state: state,
-        protocol: protocol,
+        protocol_drugs: protocol_drugs,
         drug_category: drug_category,
-        stocks_by_rxnorm_code: stocks_by_rxnorm,
+        current_drug_stocks: drug_stocks,
         patient_count: nil
       ).patient_days
       expect(result).to eq(patient_days: "error")
@@ -156,9 +167,9 @@ RSpec.describe Reports::DrugStockCalculation, type: :model do
     it "patient count is 0" do
       result = described_class.new(
         state: state,
-        protocol: protocol,
+        protocol_drugs: protocol_drugs,
         drug_category: drug_category,
-        stocks_by_rxnorm_code: stocks_by_rxnorm,
+        current_drug_stocks: drug_stocks,
         patient_count: 0
       ).patient_days
       expect(result).to eq(patient_days: "error")
@@ -168,9 +179,9 @@ RSpec.describe Reports::DrugStockCalculation, type: :model do
       allow_any_instance_of(described_class).to receive(:patient_days_coefficients).and_return(nil)
       result = described_class.new(
         state: state,
-        protocol: protocol,
+        protocol_drugs: protocol_drugs,
         drug_category: drug_category,
-        stocks_by_rxnorm_code: stocks_by_rxnorm,
+        current_drug_stocks: drug_stocks,
         patient_count: patient_count
       ).patient_days
       expect(result).to eq(patient_days: "error")
@@ -180,9 +191,9 @@ RSpec.describe Reports::DrugStockCalculation, type: :model do
       allow(Sentry).to receive(:capture_message)
       result = described_class.new(
         state: state,
-        protocol: protocol,
+        protocol_drugs: protocol_drugs,
         drug_category: drug_category,
-        stocks_by_rxnorm_code: stocks_by_rxnorm,
+        current_drug_stocks: drug_stocks,
         patient_count: 0
       ).patient_days
       expect(result).to eq(patient_days: "error")
@@ -196,9 +207,9 @@ RSpec.describe Reports::DrugStockCalculation, type: :model do
       allow(Rails.application.config).to receive(:drug_stock_config).and_return({"some_state" => "first config"})
       instance = described_class.new(
         state: state,
-        protocol: protocol,
+        protocol_drugs: protocol_drugs,
         drug_category: drug_category,
-        stocks_by_rxnorm_code: stocks_by_rxnorm,
+        current_drug_stocks: drug_stocks,
         patient_count: 0
       )
       expect(instance.patient_days_coefficients("state_that_does_not_exist")).to eq "first config"
@@ -209,12 +220,46 @@ RSpec.describe Reports::DrugStockCalculation, type: :model do
       allow(Rails.application.config).to receive(:drug_stock_config).and_return({"some_state" => "first config"})
       instance = described_class.new(
         state: state,
-        protocol: protocol,
+        protocol_drugs: protocol_drugs,
         drug_category: drug_category,
-        stocks_by_rxnorm_code: stocks_by_rxnorm,
+        current_drug_stocks: drug_stocks,
         patient_count: 0
       )
       expect(instance.patient_days_coefficients("state_that_does_not_exist")).to eq nil
+    end
+  end
+
+  describe "#consumption" do
+    it "calculates consumption using in_stock, previous month's in_stock, received and redistributed" do
+      result = described_class.new(
+        state: state,
+        protocol_drugs: protocol_drugs,
+        drug_category: drug_category,
+        current_drug_stocks: drug_stocks,
+        previous_drug_stocks: previous_month_drug_stocks,
+        patient_count: patient_count
+      ).consumption
+      drug = protocol_drugs.find_by(rxnorm_code: "329528")
+
+      expect(result[drug][:consumed]).to eq(4000)
+      expect(result[drug][:received]).to eq(5000)
+      expect(result[drug][:redistributed]).to eq(1000)
+    end
+
+    it "calculates consumption using in_stock, previous month's in_stock, received and redistributed" do
+      result = described_class.new(
+        state: state,
+        protocol_drugs: protocol_drugs,
+        drug_category: drug_category,
+        current_drug_stocks: drug_stocks,
+        previous_drug_stocks: previous_month_drug_stocks,
+        patient_count: patient_count
+      ).consumption
+      drug = protocol_drugs.find_by(rxnorm_code: "329526")
+
+      expect(result[drug][:consumed]).to eq(9500)
+      expect(result[drug][:received]).to eq(20000)
+      expect(result[drug][:redistributed]).to eq(500)
     end
   end
 end

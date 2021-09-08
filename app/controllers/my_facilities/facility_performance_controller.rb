@@ -6,12 +6,11 @@ class MyFacilities::FacilityPerformanceController < AdminController
 
   layout "my_facilities"
 
-  DEFAULT_ANALYTICS_TIME_ZONE = "Asia/Kolkata"
   PERIODS_TO_DISPLAY = {quarter: 3, month: 3, day: 14}.freeze
 
   after_action :verify_authorization_attempted
 
-  around_action :set_time_zone
+  around_action :set_reporting_time_zone
   before_action :authorize_my_facilities
   before_action :set_last_updated_at
 
@@ -28,34 +27,29 @@ class MyFacilities::FacilityPerformanceController < AdminController
     @scores_for_facility = {}
 
     @facilities.each do |facility|
-      @data_for_facility[facility.name] = Reports::RegionService.new(region: facility,
-                                                                     period: @period).call
+      slug = facility.region.slug
+      @data_for_facility[slug] = Reports::RegionService.new(region: facility.region,
+                                                            period: @period).call
 
-      @scores_for_facility[facility.name] = Reports::PerformanceScore.new(region: facility,
-                                                                          reports_result: @data_for_facility[facility.name],
-                                                                          period: @period)
+      @scores_for_facility[slug] = Reports::PerformanceScore.new(region: facility,
+                                                                 reports_result: @data_for_facility[slug],
+                                                                 period: @period)
     end
 
-    @facilities = @facilities.sort_by { |facility| @scores_for_facility[facility.name].overall_score }
+    @facilities = @facilities.sort_by { |facility| @scores_for_facility[facility.region.slug].overall_score }
     @facilities_by_size = @facilities.group_by { |facility| facility.facility_size }
   end
 
   private
 
   def set_last_updated_at
-    last_updated_at = RefreshMaterializedViews.last_updated_at
+    last_updated_at = RefreshReportingViews.last_updated_at
     @last_updated_at =
       if last_updated_at.nil?
         "unknown"
       else
         last_updated_at.in_time_zone(Rails.application.config.country[:time_zone]).strftime("%d-%^b-%Y %I:%M%p")
       end
-  end
-
-  def set_time_zone
-    time_zone = Rails.application.config.country[:time_zone] || DEFAULT_ANALYTICS_TIME_ZONE
-
-    Time.use_zone(time_zone) { yield }
   end
 
   def authorize_my_facilities

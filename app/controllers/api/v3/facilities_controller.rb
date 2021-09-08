@@ -1,5 +1,6 @@
 class Api::V3::FacilitiesController < Api::V3::SyncController
   include Api::V3::PublicApi
+  include Memery
 
   def sync_to_user
     __sync_to_user__("facilities")
@@ -49,19 +50,15 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
     end
   end
 
-  private
-
-  # Memoize this call so that we don't end up making thousands of calls to check user for each facility
-  def block_level_sync?
-    return @block_level_sync_enabled if defined? @block_level_sync_enabled
-    @block_level_sync_enabled = current_user&.block_level_sync?
+  memoize def district_level_sync?
+    current_user&.district_level_sync?
   end
 
   def sync_region_id(facility)
-    if block_level_sync?
-      facility.block_region_id
-    else
+    if district_level_sync?
       facility.facility_group_id
+    else
+      facility.block_region_id
     end
   end
 end

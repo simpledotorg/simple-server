@@ -38,4 +38,21 @@ RSpec.describe Seed::Config do
     expect(config.max_patients_to_create[:community]).to eq(3)
     expect(config.max_patients_to_create[:large]).to eq(8)
   end
+
+  it "uses ENV var values from the correct config for different environments" do
+    mapping = {
+      "test" => "test",
+      "android_review" => "empty",
+      "development" => "small",
+      "review" => "small",
+      "demo" => "medium",
+      "sandbox" => "large"
+    }
+
+    mapping.each do |environment, seed|
+      allow(SimpleServer).to receive(:env).and_return(environment)
+
+      expect(Seed::Config.new.type).to eq(seed)
+    end
+  end
 end

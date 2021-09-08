@@ -25,29 +25,12 @@ RSpec.describe Reports::PatientListsController, type: :controller do
         admin_with_pii.email,
         "facility_group",
         {id: facility_group.id},
-        with_medication_history: false,
-        with_exclusions: false
+        with_medication_history: false
       )
       admin_with_pii.accesses.create!(resource: facility_group)
       sign_in(admin_with_pii.email_authentication)
       get :show, params: {id: facility_group.slug, report_scope: "district"}
       expect(response).to redirect_to(reports_region_path(facility_group.slug, report_scope: "district"))
-    end
-
-    it "asks for dead patients to be excluded if admin has report_with_exclusions enabled" do
-      enable_flag(:report_with_exclusions, admin_with_pii)
-      expect(PatientListDownloadJob).to receive(:perform_later).with(
-        admin_with_pii.email,
-        "facility_group",
-        {id: facility_group.id},
-        with_medication_history: false,
-        with_exclusions: true
-      )
-
-      admin_with_pii.accesses.create!(resource: facility_group)
-      sign_in(admin_with_pii.email_authentication)
-
-      get :show, params: {id: facility_group.slug, report_scope: "district"}
     end
 
     it "rejects attempts for facility groups admin does not have access to" do
@@ -73,12 +56,22 @@ RSpec.describe Reports::PatientListsController, type: :controller do
         admin_with_pii.email,
         "facility_group",
         {id: facility_group.id},
-        with_medication_history: true,
-        with_exclusions: false
+        with_medication_history: true
       )
       admin_with_pii.accesses.create!(resource: facility_group)
       sign_in(admin_with_pii.email_authentication)
       get :show, params: {id: facility_group.slug, report_scope: "district", medication_history: true}
+    end
+
+    it "works for facilities where the region slug does not match the facility slug" do
+      facility = create(:facility)
+      facility.update(slug: "a-facility-slug")
+      facility.region.update(slug: "a-facility-region-slug")
+      expect(PatientListDownloadJob).to receive(:perform_later)
+      admin_with_pii.accesses.create!(resource: facility)
+      sign_in(admin_with_pii.email_authentication)
+      get :show, params: {id: facility.region.slug, report_scope: "facility", medication_history: true}
+      expect(response).to redirect_to(reports_region_path(facility.region.slug, report_scope: "facility"))
     end
   end
 end

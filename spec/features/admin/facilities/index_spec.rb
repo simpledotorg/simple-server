@@ -33,7 +33,7 @@ RSpec.feature "Facility page functionality", type: :feature do
           create(:facility_group, organization: ihmi, state: "Punjab", name: "Bathinda")
           facility_page.click_add_facility_group_button
 
-          expect(page).to have_content("New facility group")
+          expect(page).to have_content("New district")
           facility_group.add_new_facility_group_without_assigning_facility(
             org_name: "IHMI2",
             name: "testfacilitygroup",
@@ -53,7 +53,7 @@ RSpec.feature "Facility page functionality", type: :feature do
 
           facility_page.click_add_facility_group_button
 
-          expect(page).to have_content("New facility group")
+          expect(page).to have_content("New district")
           facility_group.add_new_facility_group(
             org_name: "IHMI2",
             name: "testfacilitygroup",
@@ -70,14 +70,14 @@ RSpec.feature "Facility page functionality", type: :feature do
 
       it "admin should be able to delete facility group without facility " do
         facility_page.click_edit_button_present_for_facilitygroup(ihmi_group_bathinda.name)
-        expect(page).to have_content("Edit facility group")
+        expect(page).to have_content("Edit district")
         facility_group.click_on_delete_facility_group_button
       end
     end
   end
 
   context "facility listing" do
-    context "admin has permission to manage facilities for a facility group" do
+    context "admin has permission to manage facilities for a district" do
       before(:each) do
         visit root_path
         sign_in(admin.email_authentication)
@@ -85,11 +85,11 @@ RSpec.feature "Facility page functionality", type: :feature do
       end
 
       it "displays a new facility link" do
-        expect(page).to have_link("Add a facility", href: new_admin_facility_group_facility_path(ihmi_group_bathinda))
+        expect(page).to have_link("Facility", href: new_admin_facility_group_facility_path(ihmi_group_bathinda))
       end
     end
 
-    context "admin does not have permission to manage facilities at a facility group" do
+    context "admin does not have permission to manage facilities at a district" do
       let(:admin) { create(:admin, :manager, accesses: [build(:access, resource: create(:facility_group))]) }
 
       before(:each) do
@@ -99,7 +99,7 @@ RSpec.feature "Facility page functionality", type: :feature do
       end
 
       it "does not display a new facility link" do
-        expect(page).not_to have_link("Add a facility", href: new_admin_facility_group_facility_path(ihmi_group_bathinda))
+        expect(page).not_to have_link("Facility", href: new_admin_facility_group_facility_path(ihmi_group_bathinda))
       end
     end
   end

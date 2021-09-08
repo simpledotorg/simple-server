@@ -34,6 +34,11 @@ class BloodPressure < ApplicationRecord
 
   scope :for_sync, -> { with_discarded }
 
+  scope :for_recent_bp_log, -> do
+    recorded_date = "DATE(recorded_at at time zone 'UTC' at time zone '#{CountryConfig.current[:time_zone]}')"
+    order(Arel.sql("#{recorded_date} DESC, recorded_at ASC"))
+  end
+
   def critical?
     systolic >= THRESHOLDS[:critical][:systolic] || diastolic >= THRESHOLDS[:critical][:diastolic]
   end

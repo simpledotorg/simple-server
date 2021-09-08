@@ -2,13 +2,13 @@ FactoryBot.define do
   factory :communication do
     id { SecureRandom.uuid }
     appointment
+    notification { nil }
     user
     communication_type { :manual_call }
     device_created_at { Time.current }
     device_updated_at { Time.current }
 
-    trait(:missed_visit_sms_reminder) { communication_type { :missed_visit_sms_reminder } }
-    trait(:missed_visit_whatsapp_reminder) { communication_type { :missed_visit_whatsapp_reminder } }
+    trait(:with_appointment) { appointment { create(:appointment) } }
   end
 end
 

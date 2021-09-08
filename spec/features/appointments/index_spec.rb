@@ -4,7 +4,7 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
   let(:ihmi) { create(:organization, name: "IHMI") }
   let(:ihmi_facility_group) { create(:facility_group, organization: ihmi, name: "Bathinda") }
   let(:test_facility) { create(:facility, facility_group: ihmi_facility_group, name: "test_facility") }
-  let(:owner) { create(:admin, :power_user) }
+  let(:owner) { create(:admin, :power_user, facility_group: ihmi_facility_group) }
 
   login = AdminPage::Sessions::New.new
   appoint_page = AppointmentsPage::Index.new
@@ -28,7 +28,6 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
     it "landing page -Facility and page dropdown " do
       create_list(:facility, 2, facility_group: ihmi_facility_group)
       nav_page.click_main_menu_tab("Overdue")
-      appoint_page.select_facility_drop_down
       expect(appoint_page.get_all_facility_count).to eq(2)
 
       appoint_page.select_page_dropdown
@@ -79,6 +78,7 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
       var_bp = create(:blood_pressure, :critical, facility: test_facility, patient: var_patients)
 
       nav_page.click_main_menu_tab("Overdue")
+      find("option[value=#{ihmi_facility_group.slug}]").click
 
       within(".card") do
         expect(page).to have_content(var_patients.full_name)
@@ -108,6 +108,7 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
       create(:appointment, :overdue, facility: test_facility, patient: var_patients, scheduled_date: 365.days.ago)
 
       nav_page.click_main_menu_tab("Overdue")
+      find("option[value=#{ihmi_facility_group.slug}]").click
       expect(page).to have_content(var_patients.full_name)
     end
 
@@ -117,6 +118,7 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
       create(:appointment, :overdue, facility: test_facility, patient: var_patients, scheduled_date: 366.days.ago)
 
       nav_page.click_main_menu_tab("Overdue")
+      find("option[value=#{ihmi_facility_group.slug}]").click
       expect(page).not_to have_content(var_patients.full_name)
     end
 
@@ -126,6 +128,7 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
       create(:appointment, :overdue, facility: test_facility, patient: var_patients, scheduled_date: 0.days.ago)
 
       nav_page.click_main_menu_tab("Overdue")
+      find("option[value=#{ihmi_facility_group.slug}]").click
       expect(page).not_to have_content(var_patients.full_name)
     end
   end

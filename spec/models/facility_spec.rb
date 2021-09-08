@@ -53,20 +53,15 @@ RSpec.describe Facility, type: :model do
     it { should delegate_method(:follow_ups_by_period).to(:patients).with_prefix(:patient) }
 
     describe ".assigned_hypertension_patients" do
-      let!(:assigned_facility) { create(:facility) }
-      let!(:registration_facility) { create(:facility) }
-      let!(:assigned_patients) do
-        [create(:patient,
-          assigned_facility: assigned_facility,
-          registration_facility: registration_facility),
-          create(:patient,
-            :without_hypertension,
-            assigned_facility: assigned_facility,
-            registration_facility: registration_facility)]
+      let(:assigned_facility) { create(:facility) }
+      let(:registration_facility) { create(:facility) }
+      before do
+        @assigned_patients = [create(:patient, assigned_facility: assigned_facility, registration_facility: registration_facility),
+          create(:patient, :without_hypertension, assigned_facility: assigned_facility, registration_facility: registration_facility)]
       end
 
       it "returns assigned hypertensive patients for facilities" do
-        expect(assigned_facility.assigned_hypertension_patients).to contain_exactly assigned_patients.first
+        expect(assigned_facility.assigned_hypertension_patients).to contain_exactly(@assigned_patients.first)
       end
 
       it "ignores registration patients" do
@@ -75,10 +70,9 @@ RSpec.describe Facility, type: :model do
     end
 
     describe "#teleconsultation_medical_officers" do
-      let!(:facility) { create(:facility) }
-      let!(:medical_officer) { create(:user, teleconsultation_facilities: [facility]) }
-
       specify do
+        facility = create(:facility)
+        medical_officer = create(:user, teleconsultation_facilities: [facility])
         expect(facility.teleconsultation_medical_officers).to contain_exactly medical_officer
       end
     end
@@ -160,22 +154,33 @@ RSpec.describe Facility, type: :model do
         expected_output = {
           second_follow_up_date.to_date.beginning_of_month => 1
         }
+        expected_repo_output = {
+          Period.month(second_follow_up_date) => 1
+        }
+
+        region = facility.region
+        periods = Range.new(registration_date.to_period, second_follow_up_date.to_period)
+        repository = Reports::Repository.new(region, periods: periods)
 
         expect(facility.hypertension_follow_ups_by_period(:month).count).to eq(expected_output)
+        expect(repository.hypertension_follow_ups[facility.region.slug]).to eq(expected_repo_output)
       end
 
       it "counts the patients' hypertension follow ups at the facility only" do
-        facilities = create_list(:facility, 2)
+        facility_1, facility_2 = create_list(:facility, 2)
+        _regions = [facility_1.region, facility_2.region]
+        _periods = (3.months.ago.to_period..1.month.ago.to_period)
+
         patient = create(:patient, :hypertension, recorded_at: 10.months.ago)
 
-        create(:blood_pressure, :with_encounter, recorded_at: 3.months.ago, facility: facilities.first, patient: patient)
-        create(:blood_pressure, :with_encounter, recorded_at: 1.month.ago, facility: facilities.second, patient: patient)
+        create(:blood_pressure, :with_encounter, recorded_at: 3.months.ago, facility: facility_1, patient: patient)
+        create(:blood_pressure, :with_encounter, recorded_at: 1.month.ago, facility: facility_2, patient: patient)
 
-        expect(facilities.first.hypertension_follow_ups_by_period(:month, last: 4).count[1.month.ago.beginning_of_month.to_date]).to eq 0
-        expect(facilities.second.hypertension_follow_ups_by_period(:month, last: 4).count[3.months.ago.beginning_of_month.to_date]).to eq 0
+        expect(facility_1.hypertension_follow_ups_by_period(:month, last: 4).count[1.month.ago.beginning_of_month.to_date]).to eq 0
+        expect(facility_2.hypertension_follow_ups_by_period(:month, last: 4).count[3.months.ago.beginning_of_month.to_date]).to eq 0
 
-        expect(facilities.first.hypertension_follow_ups_by_period(:month, last: 4).count[3.month.ago.beginning_of_month.to_date]).to eq 1
-        expect(facilities.second.hypertension_follow_ups_by_period(:month, last: 4).count[1.months.ago.beginning_of_month.to_date]).to eq 1
+        expect(facility_1.hypertension_follow_ups_by_period(:month, last: 4).count[3.month.ago.beginning_of_month.to_date]).to eq 1
+        expect(facility_2.hypertension_follow_ups_by_period(:month, last: 4).count[1.months.ago.beginning_of_month.to_date]).to eq 1
       end
     end
 
@@ -413,8 +418,13 @@ RSpec.describe Facility, type: :model do
         expect(facility.discardable?).to be false
       end
 
-      it "has appointments" do
-        create(:appointment, facility: facility)
+      it "has scheduled appointments" do
+        create(:appointment, status: :scheduled, facility: facility)
+        expect(facility.discardable?).to be false
+      end
+
+      it "has registered users" do
+        create(:user, registration_facility: facility)
         expect(facility.discardable?).to be false
       end
     end
@@ -423,6 +433,23 @@ RSpec.describe Facility, type: :model do
       it "has no data" do
         expect(facility.discardable?).to be true
       end
+    end
+  end
+
+  describe "#locale" do
+    it "determines locale based on country and state" do
+      facility = create(:facility, country: "India", state: "West Bengal")
+      expect(facility.locale).to eq "bn-IN"
+    end
+
+    it "determines locale based on country if state is not found" do
+      facility = create(:facility, country: "India", state: "Wyoming")
+      expect(facility.locale).to eq "hi-IN"
+    end
+
+    it "defaults to English if the country is not found" do
+      facility = create(:facility, country: "Pakistan")
+      expect(facility.locale).to eq "en"
     end
   end
 end

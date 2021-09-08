@@ -1,33 +1,25 @@
 class Reports::PatientListsController < AdminController
   def show
     scope = if region_class == "facility_group"
-      authorize { current_admin.accessible_facility_groups(:view_pii) }
+      authorize { current_admin.accessible_district_regions(:view_pii) }
     else
-      authorize { current_admin.accessible_facilities(:view_pii) }
+      authorize { current_admin.accessible_facility_regions(:view_pii) }
     end
 
-    @region = if region_class == "facility_district"
-      FacilityDistrict.new(name: params[:id], scope: scope)
-    else
-      scope.find_by!(slug: params[:id])
-    end
-
+    @region = scope.find_by!(slug: params[:id])
     recipient_email = current_admin.email
     download_params = case region_class
     when "facility_group"
-      {id: @region.id}
-    when "facility_district"
-      {name: @region.name, user_id: current_admin.id}
+      {id: @region.source_id}
     else
-      {facility_id: @region.id}
+      {facility_id: @region.source_id}
     end
 
     PatientListDownloadJob.perform_later(
       recipient_email,
       region_class,
       download_params,
-      with_medication_history: with_medication_history?,
-      with_exclusions: current_admin.feature_enabled?(:report_with_exclusions)
+      with_medication_history: with_medication_history?
     )
     redirect_back(
       fallback_location: reports_region_path(@region, report_scope: params[:report_scope]),
@@ -53,8 +45,6 @@ class Reports::PatientListsController < AdminController
       "facility_group"
     when "facility"
       "facility"
-    when "facility_district"
-      "facility_district"
     else
       raise ActiveRecord::RecordNotFound, "unknown report scope #{filtered_params[:report_scope].inspect}"
     end

@@ -24,7 +24,7 @@ every :week, at: local("01:00 am"), roles: [:whitelist_phone_numbers] do
 end
 
 every :day, at: local("12:30am"), roles: [:cron] do
-  rake "db:refresh_materialized_views"
+  rake "db:refresh_reporting_views"
 end
 
 every :day, at: local("01:00 am"), roles: [:cron] do
@@ -33,6 +33,10 @@ end
 
 every :day, at: local("02:00 am"), roles: [:cron] do
   runner "PatientDeduplication::Runner.new(PatientDeduplication::Strategies.identifier_and_full_name_match).perform"
+end
+
+every :day, at: local("02:30 am"), roles: [:cron] do
+  runner "RecordCounterJob.perform_async"
 end
 
 every :day, at: local("04:00 am"), roles: [:cron] do
@@ -49,10 +53,29 @@ every :monday, at: local("6:00 am"), roles: [:cron] do
   end
 end
 
+every :day, at: local("07:30 am"), roles: [:cron] do
+  if CountryConfig.current_country?("India")
+    runner "Experimentation::Runner.start_current_patient_experiment(name: 'Current Patient August 2021')"
+    runner "Experimentation::Runner.schedule_daily_stale_patient_notifications(name: 'Stale Patient August 2021', patients_per_day: 2000)"
+  end
+end
+
+every :day, at: local("08:30 am"), roles: [:cron] do
+  if CountryConfig.current_country?("India")
+    runner "AppointmentNotification::ScheduleExperimentReminders.perform_now"
+  end
+end
+
 every 2.minutes, roles: [:cron] do
   runner "TracerJob.perform_async(Time.current.iso8601, false)"
 end
 
 every 30.minutes, roles: [:cron] do
   runner "RegionsIntegrityCheck.sweep"
+end
+
+every 1.month, at: local("4:00 am"), roles: [:cron] do
+  if Flipper.enabled?(:dhis2_export)
+    rake "dhis2:export"
+  end
 end

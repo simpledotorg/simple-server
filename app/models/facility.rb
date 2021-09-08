@@ -13,6 +13,7 @@ class Facility < ApplicationRecord
 
   belongs_to :facility_group, optional: true
 
+  has_many :business_identifiers, class_name: "FacilityBusinessIdentifier"
   has_many :phone_number_authentications, foreign_key: "registration_facility_id"
   has_many :users, through: :phone_number_authentications
   has_and_belongs_to_many :teleconsultation_medical_officers,
@@ -49,11 +50,16 @@ class Facility < ApplicationRecord
     class_name: "Patient",
     foreign_key: "assigned_facility_id"
 
-  pg_search_scope :search_by_name, against: {name: "A", slug: "B"}, using: {tsearch: {prefix: true, any_word: true}}
+  pg_search_scope :search_by_name, against: {name: "A", slug: "B"}, using: {tsearch: {prefix: true}}
   scope :with_block_region_id, -> {
     joins("INNER JOIN regions facility_regions ON facility_regions.source_id = facilities.id")
       .joins("INNER JOIN regions block_region ON block_region.path @> facility_regions.path AND block_region.region_type = 'block'")
       .select("block_region.id AS block_region_id, facilities.*")
+  }
+
+  scope :with_region_information, -> {
+    joins("INNER JOIN reporting_facilities on reporting_facilities.facility_id = facilities.id")
+      .select("facilities.*, reporting_facilities.*")
   }
 
   enum facility_size: {
@@ -76,7 +82,7 @@ class Facility < ApplicationRecord
 
   validates :name, presence: true
   validates :district, presence: true
-  validates :slug, presence: true
+  validates :slug, presence: true, uniqueness: true
   # this validation (and the field) should go away from facility after regions become first-class
   validates :state, presence: true, if: -> { facility_group.present? }
   validates :country, presence: true
@@ -126,7 +132,7 @@ class Facility < ApplicationRecord
     )
   end
 
-  def update_region
+  private def update_region
     region.reparent_to = block_region
     region.name = name
     region.save!
@@ -141,19 +147,12 @@ class Facility < ApplicationRecord
     self
   end
 
-  private :update_region
-  # ----------------
-
   def hypertension_follow_ups_by_period(*args)
-    patients
-      .hypertension_follow_ups_by_period(*args)
-      .where(blood_pressures: {facility: self})
+    patients.hypertension_follow_ups_by_period(*args).where(blood_pressures: {facility: self})
   end
 
   def diabetes_follow_ups_by_period(*args)
-    patients
-      .diabetes_follow_ups_by_period(*args)
-      .where(blood_sugars: {facility: self})
+    patients.diabetes_follow_ups_by_period(*args).where(blood_sugars: {facility: self})
   end
 
   # For compatibility w/ parent FacilityGroups
@@ -161,12 +160,16 @@ class Facility < ApplicationRecord
     [self]
   end
 
+  def facility_ids
+    [id]
+  end
+
   def child_region_type
     nil
   end
 
-  def recent_blood_pressures
-    blood_pressures.includes(:patient, :user).order(Arel.sql("DATE(recorded_at) DESC, recorded_at ASC"))
+  def label_with_district
+    "#{name} (#{facility_group.name})"
   end
 
   def cohort_analytics(period:, prev_periods:)
@@ -211,8 +214,27 @@ class Facility < ApplicationRecord
     teleconsultation_medical_officers.map(&:full_teleconsultation_phone_number)
   end
 
+  def records_preventing_discard
+    {
+      "registered patient" => registered_patients,
+      "blood pressure" => blood_pressures,
+      "blood sugar" => blood_sugars,
+      "scheduled appointment" => appointments.status_scheduled,
+      "user" => users
+    }
+  end
+
   def discardable?
-    registered_patients.none? && blood_pressures.none? && blood_sugars.none? && appointments.none?
+    records_preventing_discard.values.all? { |records| records.none? }
+  end
+
+  def discard_prevention_reasons
+    records_preventing_discard.map do |record_name, records|
+      if records.any?
+        number_of_records = records.count
+        "#{number_of_records} #{record_name.pluralize(number_of_records)}"
+      end
+    end.compact
   end
 
   def valid_block
@@ -234,4 +256,40 @@ class Facility < ApplicationRecord
     return unless facility_size
     I18n.t("activerecord.facility.facility_size.#{facility_size}", default: facility_size.capitalize)
   end
+
+  def locale
+    LOCALE_MAP.dig(country.downcase, state.downcase) || LOCALE_MAP.dig(country.downcase, "default") || LOCALE_MAP["default"]
+  end
+
+  LOCALE_MAP = {
+    "bangladesh" => {"default" => "bn-BD"},
+    "default" => "en",
+    "ethiopia" => {
+      "addis ababa" => "am-ET",
+      "amhara" => "am-ET",
+      "default" => "am-ET",
+      "dire dawa" => "am-ET",
+      "oromia" => "om-ET",
+      "sidama" => "sid-ET",
+      "somali" => "so-ET",
+      "tigray" => "ti-ET"
+    },
+    "india" => {
+      "andhra pradesh" => "te-IN",
+      "bihar" => "hi-IN",
+      "default" => "hi-IN",
+      "jharkhand" => "hi-IN",
+      "karnataka" => "kn-IN",
+      "maharashtra" => "mr-IN",
+      "nagaland" => "en",
+      "puducherry" => "ta-IN",
+      "punjab" => "pa-Guru-IN",
+      "rajasthan" => "hi-IN",
+      "sikkim" => "hi-IN",
+      "tamil nadu" => "ta-IN",
+      "telangana" => "te-IN",
+      "uttar pradesh" => "hi-IN",
+      "west bengal" => "bn-IN"
+    }
+  }.freeze
 end

@@ -2,9 +2,6 @@
   <h2>
     Facilities using Simple
   </h2>
-  <p>
-    Active facilities have &ge;10 patients with BPs recorded in the last 7 days
-  </p>
   <section id="facilities-by-size">
     <table class="table table-compact table-hover">
       <colgroup>
@@ -16,7 +13,20 @@
       <tr>
         <th></th>
         <th>Total</th>
-        <th>Inactive</th>
+        <th>
+          Inactive
+          <span class="p-relative t-1px">
+            <i
+              class="fas fa-question-circle fs-14px c-grey-dark"
+              data-toggle="tooltip"
+              data-placement="right"
+              data-trigger="hover click"
+              data-html="true"
+              title="Facilities with &lt;10 patients with a BP taken in the last 7 days"
+            >
+            </i>
+          </span>
+        </th>
       </tr>
       </thead>
       <tbody>

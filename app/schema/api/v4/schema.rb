@@ -100,6 +100,28 @@ class Api::V4::Schema
       }
     end
 
+    def lookup_request
+      {
+        type: :object,
+        properties: {
+          identifier: {
+            type: :string,
+            description: "Full identifier string of the BP Passport, or other supported identifier type"
+          }
+        },
+        required: [:identifier]
+      }
+    end
+
+    def lookup_response
+      {
+        type: :object,
+        properties: {
+          patients: {"$ref" => "#/definitions/lookup_patients"}
+        }
+      }
+    end
+
     def patient_response
       {
         type: :object,
@@ -169,6 +191,14 @@ class Api::V4::Schema
 
     def medication_sync_to_user_response
       sync_to_user_response(:medications)
+    end
+
+    def states_response
+      {type: :object,
+       properties: {states: {type: :array,
+                             items: {type: :object,
+                                     properties: {name: {type: :string}}}}},
+       description: "List of available state names"}
     end
 
     def definitions

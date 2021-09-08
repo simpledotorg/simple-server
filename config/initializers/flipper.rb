@@ -12,4 +12,8 @@ Flipper.configure do |config|
   end
 end
 
+if SimpleServer.env.android_review?
+  Flipper.enable(:auto_approve_users)
+end
+
 Rails.configuration.middleware.use Flipper::Middleware::Memoizer, preload_all: true

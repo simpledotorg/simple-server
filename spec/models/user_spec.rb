@@ -4,7 +4,6 @@ RSpec.describe User, type: :model do
   describe "Associations" do
     it { is_expected.to have_many(:user_authentications) }
     it { is_expected.to have_many(:accesses) }
-    it { is_expected.to have_many(:merged_patients) }
     it { is_expected.to have_and_belong_to_many(:teleconsultation_facilities) }
   end
 
@@ -123,10 +122,11 @@ RSpec.describe User, type: :model do
       let(:user) { User.build_with_phone_number_authentication(params) }
       let(:phone_number_authentication) { user.phone_number_authentication }
 
-      it "builds a valid user" do
+      it "builds a valid unapproved user" do
         expect(user).to be_valid
         expect(user.id).to eq(id)
         expect(user.full_name).to eq(full_name)
+        expect(user.sync_approval_status).to eq("requested")
         expect(user.user_authentications).to be_present
         expect(user.user_authentications.size).to eq(1)
       end
@@ -339,31 +339,53 @@ RSpec.describe User, type: :model do
     end
   end
 
-  describe "#block_level_sync?" do
-    let(:user) { create(:user) }
-    let(:mo) { create(:teleconsultation_medical_officer) }
-
-    before do
-      Flipper.enable(:block_level_sync, user)
-      Flipper.enable(:block_level_sync, mo)
+  describe "#district_level_sync?" do
+    it "is true when the user is enabled for teleconsultation" do
+      mo = create(:teleconsultation_medical_officer)
+      expect(mo.district_level_sync?).to eq true
     end
 
-    after do
-      Flipper.disable(:block_level_sync, mo)
-      Flipper.disable(:block_level_sync, user)
+    it "is false when the user cannot teleconsult" do
+      nurse = create(:user)
+      expect(nurse.district_level_sync?).to eq false
+    end
+  end
+
+  describe "flipperable" do
+    it "has a flipper_id" do
+      user = create(:user)
+
+      expect(user.flipper_id).to eq("User;#{user.id}")
     end
 
-    it "is true when the flipper flag is on" do
-      expect(user.block_level_sync?).to eq true
+    it "has feature_enabled?" do
+      user = create(:user)
+      Flipper.enable(:a_flag, user)
+
+      expect(user.feature_enabled?(:a_flag)).to be true
+    end
+  end
+
+  describe "drug_stocks_enabled?" do
+    it "is true if any district accessible by the user is enabled" do
+      admin = create(:admin, :viewer_all)
+      facility_group = create(:facility_group)
+      create(:facility, facility_group: facility_group)
+      create(:access, user: admin, resource: facility_group)
+      Flipper.enable(:drug_stocks, facility_group.region)
+
+      expect(admin.drug_stocks_enabled?).to be true
     end
 
-    it "is false when the flipper flag is off" do
-      Flipper.disable(:block_level_sync, user)
-      expect(user.block_level_sync?).to eq false
-    end
+    it "is false if no district accessible by the user is enabled" do
+      admin = create(:admin, :viewer_all)
+      facility_group = create(:facility_group)
+      other_facility_group = create(:facility_group)
+      create(:facility, facility_group: facility_group)
+      create(:access, user: admin, resource: facility_group)
+      Flipper.enable(:drug_stocks, other_facility_group.region)
 
-    it "is false when the user is enabled for teleconsulation" do
-      expect(mo.block_level_sync?).to eq false
+      expect(admin.drug_stocks_enabled?).to be false
     end
   end
 end

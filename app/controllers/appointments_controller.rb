@@ -1,13 +1,14 @@
 class AppointmentsController < AdminController
-  include FacilityFiltering
+  include OverdueListFiltering
   include Pagination
 
+  before_action :filter_district_and_facilities, only: [:index]
   before_action :set_appointment, only: [:update]
 
   DEFAULT_SEARCH_FILTERS = ["only_less_than_year_overdue"]
 
   def index
-    authorize { current_admin.accessible_facilities(:manage_overdue_list).any? }
+    authorize { @accessible_facilities.any? }
 
     @search_filters = index_params[:search_filters] || []
     # only apply default search filters on navigating to this page
@@ -16,21 +17,13 @@ class AppointmentsController < AdminController
       @search_filters = DEFAULT_SEARCH_FILTERS
     end
 
-    scope = PatientSummary.where(next_appointment_facility_id: current_admin.accessible_facilities(:manage_overdue_list))
-
-    @patient_summaries = PatientSummaryQuery.call(relation: scope, filters: @search_filters)
-
-    if current_facility
-      @patient_summaries = @patient_summaries.where(assigned_facility_id: current_facility.id)
-    end
-    @patient_summaries = @patient_summaries.order(risk_level: :desc, next_appointment_scheduled_date: :desc, id: :asc)
-
     respond_to do |format|
       format.html do
-        @patient_summaries = paginate(@patient_summaries).includes(:next_appointment, patient: :appointments)
+        @patient_summaries = paginate(patient_summaries(only_overdue: true)).includes(:next_appointment, patient: :appointments)
         render layout: "overdue"
       end
       format.csv do
+        @patient_summaries = patient_summaries(only_overdue: false)
         send_data render_to_string("index.csv.erb"), filename: download_filename
       end
     end
@@ -88,7 +81,16 @@ class AppointmentsController < AdminController
   end
 
   def download_filename
-    facility_name = current_facility.present? ? current_facility.name.parameterize : "all"
+    facility_name = @selected_facility.present? ? @selected_facility.name.parameterize : "all"
     "overdue-patients_#{facility_name}_#{Time.current.to_s(:number)}.csv"
+  end
+
+  def patient_summaries(only_overdue: true)
+    PatientSummaryQuery.call(
+      assigned_facilities: @selected_facility.present? ? [@selected_facility] : @facilities,
+      next_appointment_facilities: @facilities,
+      filters: @search_filters,
+      only_overdue: only_overdue
+    ).order(risk_level: :desc, next_appointment_scheduled_date: :desc, id: :asc)
   end
 end

@@ -8,6 +8,9 @@
     <%= @facility.name %>
   </h1>
   <nav class="page-nav">
+    <% if current_admin.power_user? %>
+      <%= link_to 'Import patients', new_admin_patient_import_path(facility_id: @facility.id), class: "btn btn-sm btn-primary" %>
+    <% end %>
     <% if current_admin.accessible_facilities(:manage).find_by_id(@facility) %>
       <%= link_to 'Edit facility', edit_admin_facility_group_facility_path(@facility_group, @facility), class: "btn btn-sm btn-primary" %>
     <% end %>

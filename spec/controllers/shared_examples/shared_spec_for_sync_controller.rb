@@ -21,7 +21,7 @@ end
 RSpec.shared_examples "a sync controller that authenticates user requests" do
   describe "user api authentication" do
     let(:request_key) { model.to_s.underscore.pluralize }
-    let(:empty_payload) { Hash[request_key, []] }
+    let(:empty_payload) { {request_key => []} }
 
     before :each do
       _request_user = FactoryBot.create(:user)
@@ -84,16 +84,16 @@ end
 
 RSpec.shared_examples "a working sync controller creating records" do
   let(:request_key) { model.to_s.underscore.pluralize }
-  let(:empty_payload) { Hash[request_key, []] }
+  let(:empty_payload) { {request_key => []} }
 
   let(:new_records) { (1..10).map { build_payload.call } }
-  let(:new_records_payload) { Hash[request_key, new_records] }
+  let(:new_records_payload) { {request_key => new_records} }
 
-  let(:invalid_payload) { Hash[request_key, [invalid_record]] }
+  let(:invalid_payload) { {request_key => [invalid_record]} }
 
   let(:invalid_records_payload) { (1..5).map { build_invalid_payload.call } }
   let(:valid_records_payload) { (1..5).map { build_payload.call } }
-  let(:partially_valid_payload) { Hash[request_key, invalid_records_payload + valid_records_payload] }
+  let(:partially_valid_payload) { {request_key => invalid_records_payload + valid_records_payload} }
 
   before :each do
     set_authentication_headers
@@ -144,7 +144,7 @@ RSpec.shared_examples "a working sync controller updating records" do
   let(:request_key) { model.to_s.underscore.pluralize }
   let(:existing_records) { create_record_list(10) }
   let(:updated_records) { existing_records.map(&update_payload) }
-  let(:updated_payload) { Hash[request_key, updated_records] }
+  let(:updated_payload) { {request_key => updated_records} }
 
   before :each do
     set_authentication_headers
@@ -179,6 +179,24 @@ RSpec.shared_examples "a working sync controller updating records" do
                            .except("user_id")
                            .with_int_timestamps)
       end
+    end
+
+    it "updates deduped records if a record was merged" do
+      deduped_record = create_record_list(1).first
+      deleted_record = existing_records.first
+      updated_record = updated_records.first
+
+      DeduplicationLog.create!(
+        record_type: deleted_record.class.to_s,
+        deduped_record_id: deduped_record.id,
+        deleted_record_id: deleted_record.id
+      )
+
+      post :sync_from_user, params: updated_payload, as: :json
+
+      db_record = model.find(deduped_record["id"])
+      expect(db_record.attributes.to_json_and_back.except("id", "user_id").with_payload_keys.with_int_timestamps)
+        .to eq(updated_record.to_json_and_back.except("id", "user_id").with_int_timestamps)
     end
   end
 end
@@ -311,9 +329,7 @@ RSpec.shared_examples "a working sync controller that supports region level sync
 
   before { set_authentication_headers }
 
-  context "region-level sync is turned on" do
-    before { enable_flag(:block_level_sync, request_user) }
-
+  context "region-level sync" do
     context "when X_SYNC_REGION_ID is blank (support for old apps)" do
       it "sends facility group records irrespective of process_token's sync_region_id" do
         facility_group_records = [
@@ -394,6 +410,27 @@ RSpec.shared_examples "a working sync controller that supports region level sync
           expect(response_record_ids).to match_array model.pluck(:id)
         end
       end
+
+      it "syncs facility group records when user is a teleconsult MO" do
+        allow_any_instance_of(User).to receive(:can_teleconsult?).and_return true
+        block_records = Timecop.travel(15.minutes.ago) {
+          create_record_list(2, patient: patient_in_same_block, facility: facility_in_same_block)
+        }
+        non_block_records = Timecop.travel(15.minutes.ago) { create_record_list(2, facility: facility_in_other_block) }
+
+        # 2 current facility records
+        get :sync_to_user, params: {limit: 2}
+        response_record_ids = JSON(response.body)[response_key].map { |r| r["id"] }
+        reset_controller
+
+        # 1 current facility record, 2 other facility records
+        # The last record in the first request is repeated as the first record in the second request.
+        # This happens because of the >= comparison in the updated_on_server_since method.
+        get :sync_to_user, params: {process_token: JSON(response.body)["process_token"], limit: 3}
+        response_record_ids += JSON(response.body)[response_key].map { |r| r["id"] }
+
+        expect(response_record_ids.uniq).to match_array (block_records + non_block_records).map(&:id).uniq
+      end
     end
 
     context "when X_SYNC_REGION_ID is block_id" do
@@ -437,6 +474,27 @@ RSpec.shared_examples "a working sync controller that supports region level sync
           expect(response_record_ids).to match_array block_records.map(&:id)
           expect(non_block_records).not_to include(*response_record_ids)
         end
+
+        it "sync facility group records when user is a teleconsult MO" do
+          allow_any_instance_of(User).to receive(:can_teleconsult?).and_return true
+          block_records = Timecop.travel(15.minutes.ago) {
+            create_record_list(2, patient: patient_in_same_block, facility: facility_in_same_block)
+          }
+          non_block_records = Timecop.travel(15.minutes.ago) { create_record_list(2, facility: facility_in_other_block) }
+
+          # 2 current facility records
+          get :sync_to_user, params: {limit: 2}
+          response_record_ids = JSON(response.body)[response_key].map { |r| r["id"] }
+          reset_controller
+
+          # 1 current facility record, 2 other facility records
+          # The last record in the first request is repeated as the first record in the second request.
+          # This happens because of the >= comparison in the updated_on_server_since method.
+          get :sync_to_user, params: {process_token: JSON(response.body)["process_token"], limit: 3}
+          response_record_ids += JSON(response.body)[response_key].map { |r| r["id"] }
+
+          expect(response_record_ids.uniq).to match_array (block_records + non_block_records).map(&:id).uniq
+        end
       end
 
       context "when process_token's sync_region_id is block_id (when we switch from FG sync to block level sync)" do
@@ -464,65 +522,6 @@ RSpec.shared_examples "a working sync controller that supports region level sync
       end
     end
   end
-
-  context "when region-level sync is turned off" do
-    it "sends facility group records irrespective of X_SYNC_REGION_ID and process_token's sync_region_id" do
-      facility_group_records = [
-        *create_record_list(2, patient: patient_in_request_facility, facility: request_facility),
-        *create_record_list(2, patient: patient_in_same_block, facility: facility_in_same_block),
-        *create_record_list(2, patient: patient_in_other_block, facility: facility_in_other_block)
-      ]
-
-      other_facility_group_records = create_record_list(2, patient: patient_in_other_facility_group, facility: facility_in_other_group)
-
-      requested_sync_region_ids = [nil, request_facility.region.block_region.id, request_facility.facility_group_id, "invalid_id"]
-      process_token_sync_region_ids = [nil, request_facility.region.block_region.id, request_facility.facility_group_id]
-
-      requested_sync_region_ids.each do |requested_sync_region_id|
-        process_token_sync_region_ids.each do |process_token_sync_region_id|
-          request.env["HTTP_X_SYNC_REGION_ID"] = requested_sync_region_id
-          process_token = make_process_token(sync_region_id: process_token_sync_region_id)
-
-          get :sync_to_user, params: {process_token: process_token}
-
-          response_record_ids = JSON(response.body)[response_key].map { |r| r["id"] }
-          expect(response_record_ids).to match_array facility_group_records.map(&:id)
-          expect(other_facility_group_records).not_to include(*response_record_ids)
-        end
-      end
-    end
-
-    it "does not trigger a resync irrespective of X_SYNC_REGION_ID and process_token's sync_region_id" do
-      old_facility_group_records = Timecop.travel(15.minutes.ago) {
-        create_record_list(4, patient: patient_in_request_facility, facility: request_facility)
-      }
-
-      get :sync_to_user
-
-      response_body = JSON(response.body)
-      response_process_token = parse_process_token(response_body)
-
-      new_facility_group_records = create_record_list(2, patient: patient_in_request_facility, facility: request_facility)
-      requested_sync_region_ids = [nil, request_facility.region.block_region.id, request_facility.facility_group_id, "invalid_id"]
-      process_token_sync_region_ids = [nil, request_facility.region.block_region.id, request_facility.facility_group_id]
-
-      requested_sync_region_ids.each do |requested_sync_region_id|
-        process_token_sync_region_ids.each do |process_token_sync_region_id|
-          request.env["HTTP_X_SYNC_REGION_ID"] = requested_sync_region_id
-          process_token = make_process_token(response_process_token.merge(sync_region_id: process_token_sync_region_id))
-
-          reset_controller
-
-          get :sync_to_user, params: {process_token: process_token}
-
-          response_record_ids = JSON(response.body)[response_key].map { |r| r["id"] }
-
-          expect(response_record_ids).to match_array new_facility_group_records.map(&:id) << old_facility_group_records.last.id
-          expect(response_record_ids).not_to include(*old_facility_group_records)
-        end
-      end
-    end
-  end
 end
 
 RSpec.shared_examples "a sync controller that audits the data access" do
@@ -538,7 +537,7 @@ RSpec.shared_examples "a sync controller that audits the data access" do
 
   describe "creates an audit log for data synced from user" do
     let(:record) { build_payload.call }
-    let(:payload) { Hash[request_key, [record]] }
+    let(:payload) { {request_key => [record]} }
 
     it "creates an audit log for new data created by the user" do
       Timecop.freeze do

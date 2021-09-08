@@ -6,10 +6,9 @@ class MyFacilitiesController < AdminController
   include CohortPeriodSelection
   include PeriodSelection
 
-  DEFAULT_ANALYTICS_TIME_ZONE = "Asia/Kolkata"
   PERIODS_TO_DISPLAY = {quarter: 3, month: 3, day: 14}.freeze
 
-  around_action :set_time_zone
+  around_action :set_reporting_time_zone
   before_action :set_period, except: [:index]
   before_action :authorize_my_facilities
   before_action :set_selected_cohort_period, only: [:blood_pressure_control]
@@ -50,19 +49,13 @@ class MyFacilitiesController < AdminController
   private
 
   def set_last_updated_at
-    last_updated_at = RefreshMaterializedViews.last_updated_at
+    last_updated_at = RefreshReportingViews.last_updated_at
     @last_updated_at =
       if last_updated_at.nil?
         "unknown"
       else
         last_updated_at.in_time_zone(Rails.application.config.country[:time_zone]).strftime("%d-%^b-%Y %I:%M%p")
       end
-  end
-
-  def set_time_zone
-    time_zone = Rails.application.config.country[:time_zone] || DEFAULT_ANALYTICS_TIME_ZONE
-
-    Time.use_zone(time_zone) { yield }
   end
 
   def authorize_my_facilities
@@ -78,17 +71,13 @@ class MyFacilitiesController < AdminController
     params.permit(:id, :bust_cache, :report_scope, {period: [:type, :value]})
   end
 
-  def report_with_exclusions?
-    current_admin.feature_enabled?(:report_with_exclusions)
-  end
-
   def process_facility_stats(type)
     facilities = filter_facilities
     @data_for_facility = {}
 
     facilities.each do |facility|
       @data_for_facility[facility.name] = Reports::RegionService.new(
-        region: facility, period: @period, with_exclusions: report_with_exclusions?, months: 6
+        region: facility.region, period: @period, months: 6
       ).call
     end
     sizes = @data_for_facility.map { |_, facility| facility.region.source.facility_size }.uniq

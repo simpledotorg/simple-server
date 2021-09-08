@@ -21,6 +21,8 @@ class PrescriptionDrug < ApplicationRecord
   validates :is_protocol_drug, inclusion: {in: [true, false]}
   validates :is_deleted, inclusion: {in: [true, false]}
 
+  alias_attribute :recorded_at, :device_created_at
+
   scope :for_sync, -> { with_discarded }
 
   def self.prescribed_as_of(date)

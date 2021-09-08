@@ -1,23 +1,9 @@
 class AnalyticsController < AdminController
-  around_action :set_time_zone
+  around_action :set_reporting_time_zone
   before_action :set_quarter, only: [:whatsapp_graphics]
   before_action :set_period
 
-  DEFAULT_ANALYTICS_TIME_ZONE = "Asia/Kolkata"
   CACHE_VERSION = 1
-
-  def set_time_zone
-    time_zone = Rails.application.config.country[:time_zone] || DEFAULT_ANALYTICS_TIME_ZONE
-
-    Groupdate.time_zone = time_zone
-
-    Time.use_zone(time_zone) do
-      yield
-    end
-
-    # Make sure we reset the timezone
-    Groupdate.time_zone = "UTC"
-  end
 
   def set_period
     # Store the period in the session for consistency across views.

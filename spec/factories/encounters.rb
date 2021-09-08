@@ -56,7 +56,7 @@ def updated_encounters_payload(existing_encounter)
 end
 
 def associate_encounter(observable)
-  encountered_on = Encounter.generate_encountered_on(observable.recorded_at, 0)
+  encountered_on = Encounter.generate_encountered_on(observable.recorded_at, Time.find_zone(Period::REPORTING_TIME_ZONE).utc_offset)
   encounter_id = Encounter.generate_id(observable.facility_id, observable.patient_id, encountered_on)
 
   Encounter.find_by(id: encounter_id) || create(:encounter,

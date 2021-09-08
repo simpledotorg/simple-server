@@ -45,6 +45,10 @@ FactoryBot.define do
       blood_sugar_value { 8.5 }
     end
   end
+
+  factory :blood_sugar_with_encounter, parent: :blood_sugar do
+    with_encounter
+  end
 end
 
 def build_blood_sugar_payload(blood_sugar = FactoryBot.build(:blood_sugar))

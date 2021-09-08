@@ -1,4 +1,5 @@
 class EmailAuthentications::InvitationsController < Devise::InvitationsController
+  include FlipperInfo
   before_action :verify_params, only: [:create]
   helper_method :current_admin
 

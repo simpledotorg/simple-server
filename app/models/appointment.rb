@@ -10,6 +10,7 @@ class Appointment < ApplicationRecord
   belongs_to :facility
   belongs_to :creation_facility, class_name: "Facility", optional: true
 
+  has_many :notifications, as: :subject
   has_many :communications
 
   ANONYMIZED_DATA_FIELDS = %w[id patient_id created_at registration_facility_name user_id scheduled_date
@@ -39,17 +40,38 @@ class Appointment < ApplicationRecord
   validate :cancel_reason_is_present_if_cancelled
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
+  validates :appointment_type, presence: true
+
+  after_update :cancel_reminders, if: proc { |appt| appt.saved_changes["status"] && !appt.status_scheduled? }
 
   scope :for_sync, -> { with_discarded }
 
+  alias_attribute :recorded_at, :device_created_at
+
+  def self.between(start_date, end_date)
+    where("scheduled_date BETWEEN ? and ?", start_date, end_date)
+  end
+
+  def self.passed_unvisited
+    # Scheduled or cancelled appointments whose scheduled date has passed.
+    where.not(appointments: {status: :visited})
+      .where("appointments.scheduled_date < ?", Date.current)
+      .joins(:patient)
+      .where.not(patients: {status: :dead})
+  end
+
+  def self.last_year_unvisited
+    passed_unvisited.where("appointments.scheduled_date >= ?", 365.days.ago)
+  end
+
   def self.all_overdue
-    where(status: "scheduled")
-      .where(arel_table[:scheduled_date].lt(Date.current))
+    passed_unvisited
+      .where(status: :scheduled)
       .where(arel_table[:remind_on].eq(nil).or(arel_table[:remind_on].lteq(Date.current)))
   end
 
   def self.overdue
-    all_overdue.where(arel_table[:scheduled_date].gteq(365.days.ago))
+    all_overdue.where("appointments.scheduled_date >= ?", 365.days.ago)
   end
 
   def self.overdue_by(number_of_days)
@@ -60,6 +82,8 @@ class Appointment < ApplicationRecord
     overdue_by(days_overdue)
       .joins(:patient)
       .merge(Patient.contactable)
+      .left_joins(:notifications)
+      .where(notifications: {id: nil})
   end
 
   def days_overdue
@@ -84,12 +108,6 @@ class Appointment < ApplicationRecord
 
   def overdue_for_under_a_month?
     scheduled? && scheduled_date > 30.days.ago
-  end
-
-  def cancel_reason_is_present_if_cancelled
-    if status == :cancelled && !cancel_reason.present?
-      errors.add(:cancel_reason, "should be present for cancelled appointments")
-    end
   end
 
   def mark_remind_to_call_later
@@ -143,6 +161,23 @@ class Appointment < ApplicationRecord
   end
 
   def previously_communicated_via?(communication_type)
-    communications.latest_by_type(communication_type)&.attempted?
+    latest_notification = notifications.includes(:communications)
+      .where(communications: {communication_type: communication_type})
+      .order(created_at: :desc)
+      .first
+    latest_notification&.communications&.any? { |c| c.attempted? }
+  end
+
+  private
+
+  def cancel_reason_is_present_if_cancelled
+    if status == :cancelled && !cancel_reason.present?
+      errors.add(:cancel_reason, "should be present for cancelled appointments")
+    end
+  end
+
+  def cancel_reminders
+    reminders = notifications.where(status: ["pending", "scheduled"])
+    reminders.update_all(status: "cancelled")
   end
 end

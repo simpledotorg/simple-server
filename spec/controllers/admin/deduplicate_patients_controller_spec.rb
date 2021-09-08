@@ -1,19 +1,47 @@
 require "rails_helper"
 
 RSpec.describe Admin::DeduplicatePatientsController, type: :controller do
-  context "#merge" do
-    it "merges patients given their IDs" do
-      admin = create(:admin, :power_user)
+  context "#show" do
+    it "shows patients accessible by the user" do
+      patient = create(:patient, full_name: "Patient one")
+      patient_passport_id = patient.business_identifiers.first.identifier
+
+      patient_dup = create(:patient, full_name: "Patient one dup")
+      patient_dup.business_identifiers.first.update(identifier: patient_passport_id)
+
+      admin = create(:admin, :manager, :with_access, resource: patient.assigned_facility)
       sign_in(admin.email_authentication)
 
+      get :show
+
+      expect(assigns(:patients)).to contain_exactly(patient, patient_dup)
+    end
+
+    it "omits patients not accessible by the user" do
+      patient = create(:patient, full_name: "Patient one")
+      patient_passport_id = patient.business_identifiers.first.identifier
+
+      patient_dup = create(:patient, full_name: "Patient one dup")
+      patient_dup.business_identifiers.first.update(identifier: patient_passport_id)
+
+      admin = create(:admin, :manager, :with_access, resource: create(:facility))
+      sign_in(admin.email_authentication)
+
+      get :show
+
+      expect(assigns(:patients)).to be_empty
+    end
+  end
+
+  context "#merge" do
+    it "returns unauthorized when none of the patient IDs is accessible by the user" do
       patients = [create(:patient, full_name: "Patient one"), create(:patient, full_name: "Patient two")]
+      admin = create(:admin, :manager, :with_access, resource: create(:facility))
+      sign_in(admin.email_authentication)
 
       post :merge, params: {duplicate_patients: patients.map(&:id)}
 
-      patients.each(&:reload)
-      expect(patients).to all be_discarded
-      expect(Patient.pluck(:merged_by_user_id)).to all eq admin.id
-      expect(Patient.count).to eq 1
+      expect(response.status).to eq(401)
     end
 
     it "handles any errors with merge" do

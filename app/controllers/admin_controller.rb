@@ -1,7 +1,10 @@
 class AdminController < ApplicationController
   include BustCache
+  include FlipperInfo
+
   before_action :authenticate_email_authentication!
   before_action :set_bust_cache
+  before_action :set_enabled_features_as_datadog_tags
 
   after_action :verify_authorization_attempted, except: [:root]
 

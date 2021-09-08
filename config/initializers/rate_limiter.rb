@@ -5,6 +5,13 @@ module RateLimit
 
     {limit: limit_proc, period: period_proc}
   end
+
+  def self.patient_lookup_api_options
+    limit_proc = proc { |_req| 5 }
+    period_proc = proc { |_req| 5.second }
+
+    {limit: limit_proc, period: period_proc}
+  end
 end
 
 class Rack::Attack
@@ -26,6 +33,12 @@ class Rack::Attack
 
   throttle("throttle_password_reset", RateLimit.auth_api_options) do |req|
     if (req.post? || req.put?) && req.path.start_with?("/email_authentications/password")
+      req.ip
+    end
+  end
+
+  throttle("throttle_patient_lookup", RateLimit.patient_lookup_api_options) do |req|
+    if req.get? && req.path.match?(/\/api\/v4\/patients\/.+/)
       req.ip
     end
   end

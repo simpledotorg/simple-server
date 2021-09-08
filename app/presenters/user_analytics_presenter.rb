@@ -4,14 +4,13 @@ class UserAnalyticsPresenter
   include PeriodHelper
   include DashboardHelper
   include ActionView::Helpers::NumberHelper
+  include BustCache
 
-  def initialize(current_facility, with_exclusions: false)
+  def initialize(current_facility)
     @current_facility = current_facility
-    @with_exclusions = with_exclusions
   end
 
   attr_reader :current_facility
-  attr_reader :with_exclusions
 
   DAYS_AGO = 30
   MONTHS_AGO = 6
@@ -120,7 +119,7 @@ class UserAnalyticsPresenter
   end
 
   def diabetes_enabled?
-    FeatureToggle.enabled?("DIABETES_SUPPORT_IN_PROGRESS_TAB") && current_facility.diabetes_enabled?
+    current_facility.diabetes_enabled?
   end
 
   def daily_period_list
@@ -148,7 +147,7 @@ class UserAnalyticsPresenter
 
   def statistics
     @statistics ||=
-      Rails.cache.fetch(statistics_cache_key, expires_in: EXPIRE_STATISTICS_CACHE_IN) {
+      Rails.cache.fetch(statistics_cache_key, expires_in: EXPIRE_STATISTICS_CACHE_IN, force: bust_cache?) {
         {
           daily: daily_stats,
           monthly: monthly_stats,
@@ -201,6 +200,16 @@ class UserAnalyticsPresenter
       monthly_dm_stats].inject(:deep_merge)
   end
 
+  def controlled_stats(range)
+    repo = Reports::Repository.new(current_facility.region, periods: range)
+    slug = current_facility.region.slug
+    {
+      adjusted_patient_counts: repo.adjusted_patients_without_ltfu[slug],
+      controlled_patients: repo.controlled[slug],
+      controlled_patients_rate: repo.controlled_rates[slug]
+    }
+  end
+
   def all_time_stats
     return all_time_htn_stats unless diabetes_enabled?
 
@@ -211,7 +220,7 @@ class UserAnalyticsPresenter
 
   def cohort_stats
     periods = Period.quarter(Date.current).previous.downto(3)
-    CohortService.new(region: current_facility, periods: periods, with_exclusions: with_exclusions).call
+    CohortService.new(region: current_facility, periods: periods).call
   end
 
   #
@@ -276,12 +285,7 @@ class UserAnalyticsPresenter
 
     control_rate_end = Period.month(Date.current.advance(months: -1).beginning_of_month)
     control_rate_start = control_rate_end.advance(months: -HTN_CONTROL_MONTHS_AGO)
-    controlled_visits =
-      ControlRateService.new(
-        current_facility,
-        periods: control_rate_start..control_rate_end,
-        with_exclusions: with_exclusions
-      ).call.to_hash
+    range = (control_rate_start..control_rate_end)
 
     {
       grouped_by_date_and_gender: {
@@ -295,7 +299,7 @@ class UserAnalyticsPresenter
         hypertension: {
           registrations: activity.registrations,
           follow_ups: activity.follow_ups,
-          controlled_visits: controlled_visits
+          controlled_visits: controlled_stats(range)
         }
       }
     }
@@ -368,7 +372,7 @@ class UserAnalyticsPresenter
   end
 
   def statistics_cache_key
-    "user_analytics/#{current_facility.id}/#{CACHE_VERSION}"
+    "user_analytics/#{current_facility.id}/#{diabetes_enabled?}/#{CACHE_VERSION}"
   end
 
   def sum_by_gender(data)

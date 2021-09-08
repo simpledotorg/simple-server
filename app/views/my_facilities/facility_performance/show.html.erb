@@ -43,7 +43,7 @@
           </colgroup>
           <thead>
             <tr data-sort-method="thead" class="sorts">
-              <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="rank" data-sort-default style="width: 80px"">
+              <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="rank" data-sort-default style="width: 80px">
                 Grade
               </th>
               <th class="row-label sort-label" style="width: 200px">
@@ -70,14 +70,15 @@
           </thead>
           <tbody>
             <% @facilities_by_size[size].each do |facility| %>
-              <% overall_score = number_with_precision(@scores_for_facility[facility.name].overall_score, precision: 2) %>
+              <% slug = facility.region.slug %>
+              <% overall_score = number_with_precision(@scores_for_facility[slug].overall_score, precision: 2) %>
               <tr>
-                <td class="type-grade grade-<%= @scores_for_facility[facility.name].letter_grade.downcase %>"
+                <td class="type-grade grade-<%= @scores_for_facility[slug].letter_grade.downcase %>"
                     data-sort-column-key="rank"
                     data-sort="<%= overall_score %>"
                     data-toggle="tooltip"
                     title="Overall score: <%= overall_score %>">
-                  <%= @scores_for_facility[facility.name].letter_grade %>
+                  <%= @scores_for_facility[slug].letter_grade %>
                 </td>
                 <td class="type-title">
                   <%= link_to(reports_region_path(facility, report_scope: "facility"))do %>
@@ -85,27 +86,27 @@
                   <% end %>
                 </td>
                 <td class="type-number">
-                  <%= number_with_delimiter(@data_for_facility[facility.name]["controlled_patients"].values.last || 0) %>
+                  <%= number_with_delimiter(@data_for_facility[slug]["controlled_patients"].values.last || 0) %>
                 </td>
                 <td class="type-percent" data-sort-column-key="controlled_patients_rate">
                   <em>
-                    <%= number_to_percentage(@data_for_facility[facility.name]["controlled_patients_rate"].values.last || 0, precision: 0) %>
+                    <%= number_to_percentage(@data_for_facility[slug]["controlled_patients_rate"].values.last || 0, precision: 0) %>
                   </em>
                 </td>
                 <td class="type-number">
-                  <%= number_with_delimiter(@data_for_facility[facility.name]["missed_visits"].values.last || 0) %>
+                  <%= number_with_delimiter(@data_for_facility[slug]["missed_visits"].values.last || 0) %>
                 </td>
                 <td class="type-percent" data-sort-column-key="missed_visits_rate">
                   <em>
-                    <%= number_to_percentage(@data_for_facility[facility.name]["missed_visits_rate"].values.last || 0, precision: 0) %>
+                    <%= number_to_percentage(@data_for_facility[slug]["missed_visits_rate"].values.last || 0, precision: 0) %>
                   </em>
                 </td>
                 <td class="type-number" data-sort-column-key="monthly_registrations">
-                  <%= number_with_delimiter(@data_for_facility[facility.name]["registrations"].values.last || 0) %>
+                  <%= number_with_delimiter(@data_for_facility[slug]["registrations"].values.last || 0) %>
                 </td>
                 <td class="type-percent" data-sort-column-key="registration_rate">
                   <em>
-                    <%= number_to_percentage(@scores_for_facility[facility.name].registrations_rate, precision: 0) %>
+                    <%= number_to_percentage(@scores_for_facility[slug].registrations_rate, precision: 0) %>
                   </em>
                 </td>
                 <td class="type-number" data-sort-column-key="opd_load">

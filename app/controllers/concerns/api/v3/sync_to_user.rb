@@ -87,10 +87,10 @@ module Api::V3::SyncToUser
     end
 
     def sync_region_modified?
-      return unless current_user.feature_enabled?(:block_level_sync)
-      return if requested_sync_region_id.blank?
+      # If the user has been syncing a different region than
+      # what we think the user's sync region should be, we resync.
       return if process_token[:sync_region_id].blank?
-      process_token[:sync_region_id] != requested_sync_region_id
+      process_token[:sync_region_id] != current_sync_region.id
     end
 
     def time(method_name, &block)

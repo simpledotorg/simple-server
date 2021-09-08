@@ -12,19 +12,31 @@ class CountryConfig
       faker_locale: "en-IND",
       sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+91",
       supported_genders: %w[male female transgender],
-      patient_line_list_show_zone: false
+      patient_line_list_show_zone: false,
+      custom_drug_category_order: %w[hypertension_ccb hypertension_arb hypertension_diuretic]
     },
     BD: {
       abbreviation: "BD",
       name: "Bangladesh",
-      extended_region_reports: false,
+      extended_region_reports: true,
       states: COUNTRYWISE_STATES["Bangladesh"],
       dashboard_locale: ENV["DEFAULT_PREFERRED_DASHBOARD_LOCALE"] || "en_BD",
       time_zone: ENV["DEFAULT_TIME_ZONE"] || "Asia/Dhaka",
       faker_locale: "en-IND",
       sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+880",
       supported_genders: %w[male female transgender],
-      patient_line_list_show_zone: true
+      patient_line_list_show_zone: true,
+      dhis2_data_elements: {
+        cumulative_assigned: "cc2oSjEbiqv",
+        cumulative_assigned_adjusted: "jQBsCW7wjqx",
+        controlled: "ItViYyHGgZf",
+        uncontrolled: "IH0SueuKSWe",
+        missed_visits: "N7rI9y9Kywp",
+        ltfu: "nso1TSN7ukq",
+        dead: "Qf8Wq8u6AkK",
+        cumulative_registrations: "BK2KRHKcTtU",
+        monthly_registrations: "GxLDDKPxjxx"
+      }
     },
     ET: {
       abbreviation: "ET",
@@ -35,6 +47,29 @@ class CountryConfig
       faker_locale: "en-IND",
       time_zone: ENV["DEFAULT_TIME_ZONE"] || "Africa/Addis_Ababa",
       sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+251",
+      supported_genders: %w[male female],
+      patient_line_list_show_zone: false,
+      dhis2_data_elements: {
+        cumulative_assigned: "nrK3Yj6ELl0",
+        cumulative_assigned_adjusted: "DxHkdQjTpXC",
+        controlled: "ZCkeHFQETzb",
+        uncontrolled: "z4mVPviB8OH",
+        missed_visits: "tNRBsYt0ZOK",
+        ltfu: "qI3kE1DizFL",
+        dead: "ZNYhcG2efAB",
+        cumulative_registrations: "PX8qBGsdF5G",
+        monthly_registrations: "Tx3CKEUFqNN"
+      }
+    },
+    LK: {
+      abbreviation: "LK",
+      name: "Sri Lanka",
+      extended_region_reports: false,
+      states: COUNTRYWISE_STATES["Sri Lanka"],
+      dashboard_locale: ENV["DEFAULT_PREFERRED_DASHBOARD_LOCALE"] || "en_LK",
+      faker_locale: "en-IND",
+      time_zone: ENV["DEFAULT_TIME_ZONE"] || "Asia/Colombo",
+      sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+94",
       supported_genders: %w[male female],
       patient_line_list_show_zone: false
     },
@@ -72,6 +107,10 @@ class CountryConfig
 
   def self.country_environment_file
     ".env.#{current[:abbreviation]}"
+  end
+
+  def self.current_country?(country)
+    CountryConfig.current[:name] == country
   end
 end
 

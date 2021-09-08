@@ -90,6 +90,38 @@ class Api::V4::Models
       }
     end
 
+    def retention
+      {
+        type: :object,
+        properties: {
+          type: {
+            type: :string,
+            enum: Api::V4::PatientsController::RETENTION_TYPES.values,
+            description: "This enum might have more values in the future."
+          },
+          duration_seconds: {
+            type: :integer,
+            description: "This key is only present in the response when the retention type is temporary."
+          }
+        }
+      }
+    end
+
+    def lookup_patient
+      Api::V3::Models.nested_patient.deep_merge(
+        properties: {
+          appointments: {"$ref" => "#/definitions/appointments"},
+          blood_pressures: {"$ref" => "#/definitions/blood_pressures"},
+          blood_sugars: {"$ref" => "#/definitions/blood_sugars"},
+          medical_history: {"$ref" => "#/definitions/nullable_medical_history"},
+          prescription_drugs: {"$ref" => "#/definitions/prescription_drugs"},
+          retention: retention
+        },
+        description: "Sync a single patient to a device",
+        required: %w[appointments blood_pressures blood_sugars medical_history prescription_drugs retention]
+      )
+    end
+
     def patient_phone_number
       {
         type: :object,
@@ -290,7 +322,7 @@ class Api::V4::Models
 
     def app_user_capabilities
       {type: :object,
-       properties: Hash[User::APP_USER_CAPABILITIES.product([app_user_capability_values])]}
+       properties: User::APP_USER_CAPABILITIES.product([app_user_capability_values]).to_h}
     end
 
     def activate_user
@@ -322,26 +354,43 @@ class Api::V4::Models
     end
 
     def definitions
-      {timestamp: timestamp,
-       uuid: uuid,
-       non_empty_string: non_empty_string,
-       nullable_timestamp: nullable_timestamp,
-       bcrypt_password: bcrypt_password,
-       blood_sugar: blood_sugar,
-       blood_sugars: array_of("blood_sugar"),
-       login_patient: login_patient,
-       patient: patient,
-       user: user,
-       find_user: find_user,
-       activate_user: activate_user,
-       app_user_capabilities: app_user_capabilities,
-       medical_officer: medical_officer,
-       facility_medical_officer: facility_medical_officer,
-       facility_medical_officers: array_of("facility_medical_officer"),
-       teleconsultation: teleconsultation,
-       teleconsultations: array_of("teleconsultation"),
-       medication: medication,
-       medications: array_of("medication")}
+      {
+        activate_user: activate_user,
+        address: Api::V3::Models.address,
+        app_user_capabilities: app_user_capabilities,
+        appointment: Api::V3::Models.appointment,
+        appointments: array_of("appointment"),
+        bcrypt_password: bcrypt_password,
+        blood_pressure: Api::V3::Models.blood_pressure,
+        blood_pressures: array_of("blood_pressure"),
+        blood_sugar: blood_sugar,
+        blood_sugars: array_of("blood_sugar"),
+        facility_medical_officer: facility_medical_officer,
+        facility_medical_officers: array_of("facility_medical_officer"),
+        find_user: find_user,
+        login_patient: login_patient,
+        lookup_patient: lookup_patient,
+        lookup_patients: array_of("lookup_patient"),
+        nullable_medical_history: Api::V3::Models.medical_history.merge(type: [:object, "null"]),
+        medical_officer: medical_officer,
+        medication: medication,
+        medications: array_of("medication"),
+        non_empty_string: non_empty_string,
+        nullable_timestamp: nullable_timestamp,
+        nullable_uuid: Api::V3::Models.nullable_uuid,
+        patient: patient,
+        patient_business_identifier: Api::V3::Models.patient_business_identifier,
+        patient_business_identifiers: array_of("patient_business_identifier"),
+        phone_number: Api::V3::Models.phone_number,
+        phone_numbers: array_of("phone_number"),
+        prescription_drug: Api::V3::Models.prescription_drug,
+        prescription_drugs: array_of("prescription_drug"),
+        teleconsultation: teleconsultation,
+        teleconsultations: array_of("teleconsultation"),
+        timestamp: timestamp,
+        user: user,
+        uuid: uuid
+      }
     end
   end
 end

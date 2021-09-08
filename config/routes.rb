@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get "home/index"
+
   devise_scope :email_authentication do
     authenticated :email_authentication do
       root to: "admin#root"
@@ -81,6 +83,8 @@ Rails.application.routes.draw do
 
       resource :twilio_sms_delivery, only: [:create], controller: :twilio_sms_delivery
 
+      post "patient/:patient_id/imo_authorization", to: "imo_callbacks#subscribe", as: :imo_authorization_callback
+
       scope :users do
         get "find", to: "users#find"
         post "register", to: "users#register"
@@ -138,6 +142,12 @@ Rails.application.routes.draw do
       scope :medications do
         get "sync", to: "medications#sync_to_user"
       end
+
+      scope :patients do
+        post "/lookup", to: "patients#lookup"
+      end
+
+      get "states", to: "states#index"
     end
   end
 
@@ -171,6 +181,8 @@ Rails.application.routes.draw do
     get "regions/:report_scope/:id/details", to: "regions#details", as: :region_details
     get "regions/:report_scope/:id/cohort", to: "regions#cohort", as: :region_cohort
     get "regions/:report_scope/:id/download", to: "regions#download", as: :region_download
+    get "regions/:report_scope/:id/monthly_district_data_report",
+      to: "regions#monthly_district_data_report", as: :region_monthly_district_data
     get "regions/:report_scope/:id/graphics", to: "regions#whatsapp_graphics", as: :graphics
   end
 
@@ -188,7 +200,7 @@ Rails.application.routes.draw do
     get "drug_stocks", to: "drug_stocks#drug_stocks"
     get "drug_consumption", to: "drug_stocks#drug_consumption"
     post "drug_stocks", to: "drug_stocks#create"
-    get "drug_stocks/:facility_id/new", to: "drug_stocks#new", as: :drug_stock_form
+    get "drug_stocks/:region_id/new", to: "drug_stocks#new", as: :drug_stock_form
   end
 
   scope :resources do
@@ -204,9 +216,12 @@ Rails.application.routes.draw do
         post "upload"
       end
     end
+
     resources :facility_groups, except: [:index] do
       resources :facilities
     end
+
+    resources :patient_imports, only: [:new, :create]
 
     resources :protocols do
       resources :protocol_drugs

@@ -1,4 +1,6 @@
 class Period
+  REPORTING_TIME_ZONE = CountryConfig.current[:time_zone] || "Asia/Kolkata"
+
   include Comparable
   include ActiveModel::Model
   validates :type, presence: true, inclusion: {in: [:month, :quarter], message: "must be month or quarter"}
@@ -6,7 +8,10 @@ class Period
 
   attr_accessor :type, :value
 
-  REGISTRATION_BUFFER_MONTHS = 3
+  # Return the current month Period
+  def self.current
+    month(Date.current)
+  end
 
   def self.month(date)
     new(type: :month, value: date.to_date)
@@ -30,6 +35,13 @@ class Period
     end
   end
 
+  # Return the common formatteer so groupdate can return Period keys instead of dates
+  def self.formatter(period_type)
+    lambda { |v| period_type == :quarter ? Period.quarter(v) : Period.month(v) }
+  end
+
+  # Create a Period with an attributes hash of type and value.
+  # Note that we call super here to allow ActiveModel::Model to setup the attributes hash.
   def initialize(attributes = {})
     super
     self.type = type.intern if type
@@ -38,14 +50,17 @@ class Period
     else
       value.to_date.beginning_of_month
     end
+    validate!
   end
 
   def attributes
     {type: type, value: value}
   end
 
+  # Returns a new Period adjusted by the registration buffer. This is used in our denominators to determine
+  # control rates, so that new patients aren't included in the calculations.
   def adjusted_period
-    advance(months: -REGISTRATION_BUFFER_MONTHS)
+    advance(months: -Reports::REGISTRATION_BUFFER_IN_MONTHS)
   end
 
   # Convert this Period to a quarter period - so:
@@ -75,6 +90,14 @@ class Period
 
   def bp_control_range_end_date
     bp_control_range.end.to_s(:day_mon_year)
+  end
+
+  def ltfu_since_date
+    self.begin.advance(months: -12).end_of_month.to_s(:day_mon_year)
+  end
+
+  def month?
+    type == :month
   end
 
   def quarter?
@@ -143,7 +166,7 @@ class Period
   end
 
   def <=>(other)
-    raise ArgumentError, "you are trying to compare a #{other.class} with a Period" unless other.respond_to?(:type)
+    raise ArgumentError, "you are trying to compare a #{other.class} with a Period" unless other.respond_to?(:type) && other.respond_to?(:value)
     return nil if type != other.type
     value <=> other.value
   end
@@ -154,12 +177,23 @@ class Period
     "<Period type:#{type} value=#{value}>"
   end
 
-  def to_s
+  def to_s(format = :mon_year)
     if quarter?
       value.to_s
     else
-      value.to_s(:mon_year)
+      value.to_s(format)
     end
+  end
+
+  # Returns a Hash with various Period related dates for eash consumption by the view
+  def to_hash
+    {
+      name: to_s,
+      ltfu_since_date: ltfu_since_date,
+      bp_control_start_date: bp_control_range_start_date,
+      bp_control_end_date: bp_control_range_end_date,
+      bp_control_registration_date: bp_control_registrations_until_date
+    }
   end
 
   def adjective

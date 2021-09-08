@@ -23,6 +23,12 @@ class PhoneNumberAuthentication < ApplicationRecord
 
   alias_method :registration_facility, :facility
 
+  def localized_phone_number
+    parsed_number = Phonelib.parse(phone_number, Rails.application.config.country[:abbreviation]).raw_national
+    default_country_code = Rails.application.config.country[:sms_country_code]
+    default_country_code + parsed_number
+  end
+
   def presence_of_password
     unless password_digest.present? || password.present?
       errors.add(:password, "Either password_digest or password should be present")
@@ -83,7 +89,7 @@ class PhoneNumberAuthentication < ApplicationRecord
   end
 
   def self.generate_otp
-    digits = FeatureToggle.enabled?("FIXED_OTP_ON_REQUEST_FOR_QA") ? [0] : (0..9).to_a
+    digits = Flipper.enabled?(:fixed_otp) ? [0] : (0..9).to_a
     otp = ""
     6.times do
       otp += digits.sample.to_s

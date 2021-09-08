@@ -18,6 +18,8 @@ module Mergeable
         :discarded
       elsif new_record.device_updated_at > existing_record.device_updated_at
         :updated
+      elsif new_record.device_updated_at == existing_record.device_updated_at
+        :identical
       else
         :old
       end
@@ -36,6 +38,8 @@ module Mergeable
         create_new_record(attributes)
       when :updated
         update_existing_record(existing_record, attributes)
+      when :identical
+        return_identical_record(existing_record)
       when :old
         return_old_record(existing_record)
       end
@@ -79,6 +83,13 @@ module Mergeable
       increment_metric(:updated)
       existing_record.update(attributes)
       existing_record.merge_status = :updated
+      existing_record
+    end
+
+    def return_identical_record(existing_record)
+      logger.debug "#{self} with id #{existing_record.id} is identical, doing nothing."
+      increment_metric(:identical)
+      existing_record.merge_status = :identical
       existing_record
     end
 

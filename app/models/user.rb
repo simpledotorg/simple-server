@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  include Memery
+  include Flipperable
   include PgSearch::Model
 
   AUTHENTICATION_TYPES = {
@@ -61,11 +63,6 @@ class User < ApplicationRecord
     join_table: "facilities_teleconsultation_medical_officers"
   has_many :accesses, dependent: :destroy
   has_many :drug_stocks
-  has_many :merged_patients,
-    -> { with_discarded },
-    inverse_of: :merged_by_user,
-    class_name: "Patient",
-    foreign_key: :merged_by_user_id
 
   pg_search_scope :search_by_name, against: [:full_name], using: {tsearch: {prefix: true, any_word: true}}
   pg_search_scope :search_by_teleconsultation_phone_number,
@@ -103,6 +100,7 @@ class User < ApplicationRecord
     :has_never_logged_in?,
     :mark_as_logged_in,
     :phone_number,
+    :localized_phone_number,
     :otp,
     :otp_valid?,
     :facility_group,
@@ -228,7 +226,7 @@ class User < ApplicationRecord
       authentication = phone_number_authentication
       authentication.password_digest = password_digest
       authentication.set_access_token
-      sync_approval_requested(I18n.t("reset_password"))
+      sync_approval_requested(I18n.t("reset_password")) unless feature_enabled?(:auto_approve_users)
       authentication.save!
       save!
     end
@@ -251,15 +249,13 @@ class User < ApplicationRecord
     power_user_access? && email_authentication.present?
   end
 
-  def block_level_sync?
-    feature_enabled?(:block_level_sync) && !can_teleconsult?
+  def district_level_sync?
+    can_teleconsult?
   end
 
-  def flipper_id
-    "User;#{id}"
-  end
+  memoize def drug_stocks_enabled?
+    facility_group_ids = accessible_facilities(:view_reports).select(:facility_group_id).distinct
 
-  def feature_enabled?(name)
-    Flipper.enabled?(name, self)
+    Region.where(source_id: facility_group_ids).any? { |district| district.feature_enabled?(:drug_stocks) }
   end
 end

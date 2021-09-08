@@ -52,10 +52,7 @@ module PatientDeduplication
 
     def mark_as_merged(new_patient)
       @patients.each do |patient|
-        patient.update!(
-          merged_into_patient_id: new_patient.id,
-          merged_by_user_id: @user_id
-        )
+        track(Patient, patient, new_patient)
       end
       @patients.map(&:discard_data)
     end
@@ -74,7 +71,6 @@ module PatientDeduplication
         assigned_facility: latest_patient.assigned_facility,
         status: latest_patient.status,
         address: create_address,
-        merged_by_user_id: @user_id,
         **age_and_dob
       }
       Patient.create!(attributes)
@@ -111,13 +107,15 @@ module PatientDeduplication
     def create_medical_history(patient)
       medical_histories = MedicalHistory.where(patient_id: @patients).order(:device_updated_at)
 
-      MedicalHistory.create!(consolidate_medical_history(medical_histories).merge(
+      new_medical_history = MedicalHistory.create!(consolidate_medical_history(medical_histories).merge(
         id: SecureRandom.uuid,
         patient_id: patient.id,
         device_created_at: medical_histories.last.device_created_at,
         device_updated_at: medical_histories.last.device_updated_at,
         user_id: medical_histories.last.user_id
       ))
+
+      medical_histories.each { |medical_history| track(MedicalHistory, medical_history, new_medical_history) }
     end
 
     def consolidate_medical_history(medical_histories)
@@ -166,11 +164,13 @@ module PatientDeduplication
       encounters = Encounter.where(patient: @patients)
       encounters.each do |encounter|
         encounter_id = Encounter.generate_id(encounter.facility.id, patient.id, encounter.encountered_on)
-        new_encounter = Encounter.find_by(id: encounter_id) || Encounter.create!(
+        existing_encounter = Encounter.find_by(id: encounter_id)
+        new_encounter = existing_encounter || Encounter.create!(
           copyable_attributes(encounter)
             .merge(id: encounter_id,
                    patient_id: patient.id)
         )
+        track(Encounter, encounter, new_encounter) unless existing_encounter.present?
 
         encounter.observations.each do |observation|
           observable = observation.observable
@@ -178,7 +178,8 @@ module PatientDeduplication
           next unless observable.present?
 
           new_observable = create_cloned_record!(patient, observable.class, observable)
-          Observation.create!(user_id: observation.user_id, observable: new_observable, encounter: new_encounter)
+          new_observation = Observation.create!(user_id: observation.user_id, observable: new_observable, encounter: new_encounter)
+          track(Observation, observation, new_observation)
         end
       end
     end
@@ -195,7 +196,9 @@ module PatientDeduplication
     end
 
     def create_address
-      Address.create!(copyable_attributes(latest_available_property(:address)).merge(id: SecureRandom.uuid))
+      new_address = Address.create!(copyable_attributes(latest_available_property(:address)).merge(id: SecureRandom.uuid))
+      @patients.each { |patient| track(Address, patient.address, new_address) if patient.address.present? }
+      new_address
     end
 
     def latest_available_property(property)
@@ -213,10 +216,12 @@ module PatientDeduplication
     end
 
     def create_cloned_record!(patient, klass, record)
-      klass.create!(
+      new_record = klass.create!(
         copyable_attributes(record)
           .merge(id: SecureRandom.uuid, patient_id: patient.id)
       )
+      track(klass, record, new_record)
+      new_record
     end
 
     def copyable_attributes(record)
@@ -229,6 +234,15 @@ module PatientDeduplication
       if patients.count < 2
         @errors << "Select at least 2 patients to be merged."
       end
+    end
+
+    def track(klass, deleted_record, deduped_record)
+      DeduplicationLog.create!(
+        user_id: @user_id,
+        record_type: klass.to_s,
+        deleted_record_id: deleted_record.id,
+        deduped_record_id: deduped_record.id
+      )
     end
   end
 end

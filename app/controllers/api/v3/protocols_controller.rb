@@ -34,10 +34,6 @@ class Api::V3::ProtocolsController < Api::V3::SyncController
     }
   end
 
-  def block_level_sync?
-    current_user&.block_level_sync?
-  end
-
   def force_resync?
     resync_token_modified?
   end

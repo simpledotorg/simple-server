@@ -158,8 +158,6 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
                    .except("address_id")
                    .except("registration_user_id")
                    .except("test_data")
-                   .except("merged_into_patient_id")
-                   .except("merged_by_user_id")
                    .except("deleted_by_user_id"))
             .to eq(updated_patient.with_int_timestamps)
         end
@@ -206,9 +204,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
                      .except("address_id")
                      .except("registration_user_id")
                      .except("test_data")
-                     .except("deleted_by_user_id")
-                     .except("merged_into_patient_id")
-                     .except("merged_by_user_id"))
+                     .except("deleted_by_user_id"))
               .to eq(updated_patient.except("address", "phone_numbers", "business_identifiers"))
           end
         end
@@ -248,6 +244,39 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
             expect(db_business_identifier.attributes.with_payload_keys.with_int_timestamps)
               .to eq(updated_business_identifier.merge("metadata" => updated_business_identifier_metadata))
           end
+        end
+      end
+
+      context "when a patient record has been deduped" do
+        it "updates the deduped patient record" do
+          deduped_patient = create(:patient)
+          deleted_patient = existing_patients.first
+          updated_patient_payload = updated_patients_payload.first
+
+          DeduplicationLog.create!(
+            record_type: deleted_patient.class.to_s,
+            deduped_record_id: deduped_patient.id,
+            deleted_record_id: deleted_patient.id
+          )
+
+          post :sync_from_user, params: {patients: updated_patients_payload}, as: :json
+
+          db_patient = model.find(deduped_patient["id"])
+          expect(db_patient.attributes.with_payload_keys.with_int_timestamps
+                           .except("id")
+                           .except("address_id")
+                           .except("registration_user_id")
+                           .except("registration_facility_id")
+                           .except("merged_by_user_id")
+                           .except("merged_into_patient_id")
+                           .except("test_data")
+                           .except("deleted_by_user_id"))
+            .to eq(updated_patient_payload.with_int_timestamps
+                     .except("id")
+                     .except("address")
+                     .except("phone_numbers")
+                     .except("business_identifiers")
+                     .except("registration_facility_id"))
         end
       end
 
@@ -384,11 +413,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
 
       before { set_authentication_headers }
 
-      context "region-level sync is turned on" do
-        before :each do
-          enable_flag(:block_level_sync, request_user)
-        end
-
+      context "region-level sync" do
         context "when X_SYNC_REGION_ID is blank (support for old apps)" do
           it "sends facility group records irrespective of process_token's sync_region_id" do
             patient_in_request_facility = create(:patient, :without_medical_history, registration_facility: request_facility)
@@ -548,36 +573,6 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
               response_record_ids = JSON(response.body)["patients"].map { |r| r["id"] }
               expect(response_record_ids).to match_array block_records.map(&:id)
               expect(non_block_records).not_to include(*response_record_ids)
-            end
-          end
-        end
-      end
-
-      context "when region-level sync is turned off" do
-        it "sends facility group records irrespective of X_SYNC_REGION_ID and process_token's sync_region_id" do
-          patient_in_request_facility = create(:patient, :without_medical_history, registration_facility: request_facility)
-          patient_in_same_block = create(:patient, :without_medical_history, registration_facility: facility_in_same_block)
-          patient_in_other_block = create(:patient, :without_medical_history, registration_facility: facility_in_other_block)
-          patient_in_other_facility_group = create(:patient, :without_medical_history, registration_facility: facility_in_other_group)
-
-          facility_group_records =
-            [patient_in_request_facility, patient_in_same_block, patient_in_other_block]
-
-          other_facility_group_records = [patient_in_other_facility_group]
-
-          requested_sync_region_ids = [nil, request_facility.region.block_region.id, request_facility.facility_group_id, "invalid_id"]
-          process_token_sync_region_ids = [nil, request_facility.region.block_region.id, request_facility.facility_group_id]
-
-          requested_sync_region_ids.each do |requested_sync_region_id|
-            process_token_sync_region_ids.each do |process_token_sync_region_id|
-              request.env["HTTP_X_SYNC_REGION_ID"] = requested_sync_region_id
-              process_token = make_process_token(sync_region_id: process_token_sync_region_id)
-
-              get :sync_to_user, params: {process_token: process_token}
-
-              response_record_ids = JSON(response.body)[response_key].map { |r| r["id"] }
-              expect(response_record_ids).to match_array facility_group_records.map(&:id)
-              expect(other_facility_group_records).not_to include(*response_record_ids)
             end
           end
         end
