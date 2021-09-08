@@ -189,4 +189,22 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
 
     expect(described_class.count).to eq(1)
   end
+
+  it "identifies months in the reporting timezone" do
+    patient = create(:patient, recorded_at: june_2021[:over_12_months_ago])
+    user = create(:user)
+    facility = create(:facility)
+
+    create(
+      :blood_pressure,
+      patient: patient,
+      user: user,
+      facility: facility,
+      recorded_at: june_2021[:under_12_months_ago]
+    )
+
+    RefreshReportingViews.call
+
+    expect(described_class.count).to eq(1)
+  end
 end
