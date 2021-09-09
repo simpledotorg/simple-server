@@ -7,7 +7,7 @@ require "datadog/statsd"
 SEND_DATA_TO_DD_AGENT = !(Rails.env.development? || Rails.env.test? || SimpleServer.env.review?)
 
 # Trying out Ruby code profiling in selected environments
-ENABLE_DD_PROFILING = SimpleServer.env.sandbox? || SimpleServer.env.review?
+ENABLE_DD_PROFILING = SimpleServer.env.sandbox?
 
 Datadog.configure do |c|
   c.tracer.enabled = SEND_DATA_TO_DD_AGENT
