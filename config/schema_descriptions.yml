@@ -21,7 +21,6 @@ reporting_patient_states:
     chronic_kidney_disease: "Has the patient had a chronic kidney disease? Values can be yes, no, unknown, or null if the data is unavailable."
     receiving_treatment_for_hypertension: "Was the patient already receiving treatment for hypertension during registration? Values can be yes, no, unknown, or null if the data is unavailable."
     diabetes: "Has the patient been diagnosed with diabetes? Values can be yes, no, unknown, or null if the data is unavailable."
-    receiving_treatment_for_diabetes: "Was the patient already receiving treatment for diabetes during registration? Values can be yes, no, unknown, or null if the data is unavailable."
     assigned_facility_id: "ID of the patient's assigned facility"
     assigned_facility_size: "Size of the patient's assigned facility"
     assigned_facility_type: "Type of the patient's assigned facility"
