@@ -53,6 +53,20 @@ class UserAccess
     manage: [:manager]
   }.freeze
 
+  def can_access?(resource, action)
+    return true if power_user?
+    return false unless action_to_level(action).include?(user.access_level.to_sym)
+
+    case resource
+    when Facility
+      user.accesses.exists?(resource: resource) || user.can_access?(resource.facility_group, action)
+    when FacilityGroup
+      user.accesses.exists?(resource: resource) || user.can_access?(resource.organization, action)
+    when Organization
+      user.accesses.exists?(resource: resource)
+    end
+  end
+
   def accessible_organizations(action)
     resources_for(Organization, action)
       .includes(facility_groups: :facilities)
