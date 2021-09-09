@@ -5,11 +5,9 @@ require "datadog/statsd"
 # We want Datadog to run everywhere, but we won't have the DD agent running
 # in dev, test, or on Heroku - so we don't want to send payloads there.
 SEND_DATA_TO_DD_AGENT = !(Rails.env.development? || Rails.env.test? || SimpleServer.env.review?)
+
 # Trying out Ruby code profiling in selected environments
 ENABLE_DD_PROFILING = SimpleServer.env.sandbox? || SimpleServer.env.review?
-if ENABLE_DD_PROFILING
-  require "google-protobuf"
-end
 
 Datadog.configure do |c|
   c.tracer.enabled = SEND_DATA_TO_DD_AGENT
