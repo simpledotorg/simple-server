@@ -78,10 +78,7 @@ RSpec.describe UserAccess, type: :model do
                 action,
                 expected_resources,
                 admin.accessible_organizations(action))
-
-            expected_resources.each do |resource|
-              expect(admin.can_access?(current_resource, action)).to be_truthy
-            end
+            expected_resources.each { |resource| expect(admin.can_access?(current_resource, action)).to be_truthy }
             expect(admin.can_access?(organization_1, action)).to be_falsey
             admin.accesses.delete_all
           end
@@ -117,14 +114,13 @@ RSpec.describe UserAccess, type: :model do
           it "returns the facility groups an admin can perform actions on with organization access" do
             permission_matrix.each do |admin, action, current_resource, expected_resources|
               admin.accesses.create!(resource: current_resource)
+
               expect(admin.accessible_facility_groups(action)).to match_array(expected_resources),
                 error_message(admin,
                   action,
                   expected_resources,
                   admin.accessible_facility_groups(action))
-              expected_resources.each do |resource|
-                expect(admin.can_access?(current_resource, action)).to be_truthy
-              end
+              expected_resources.each { |resource| expect(admin.can_access?(current_resource, action)).to be_truthy }
               admin.accesses.delete_all
             end
           end
@@ -291,6 +287,7 @@ RSpec.describe UserAccess, type: :model do
                   action,
                   expected_resources,
                   admin.accessible_facilities(action))
+              expected_resources.each { |resource| expect(admin.can_access?(resource, action)).to be_truthy }
               admin.accesses.delete_all
             end
           end
@@ -301,7 +298,6 @@ RSpec.describe UserAccess, type: :model do
               expect(result).to be_falsey, "admin #{admin.full_name} should not have access to #{other_facility.name} with #{action}, but got #{result}"
             end
           end
-
         end
 
         context "Facility access" do
@@ -339,14 +335,13 @@ RSpec.describe UserAccess, type: :model do
           it "returns the facilities an admin can perform actions on with facility access" do
             permission_matrix.each do |admin, action, current_resource, expected_resources|
               admin.accesses.create!(resource: current_resource)
+
               expect(admin.accessible_facilities(action)).to match_array(expected_resources),
                 error_message(admin,
                   action,
                   expected_resources,
                   admin.accessible_facilities(action))
-              expected_resources.each do |resource|
-                expect(admin.can_access?(resource, action)).to be_truthy
-              end
+              expected_resources.each { |resource| expect(admin.can_access?(resource, action)).to be_truthy }
               admin.accesses.delete_all
             end
           end
