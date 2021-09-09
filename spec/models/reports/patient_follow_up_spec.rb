@@ -188,6 +188,8 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
     RefreshReportingViews.call
 
     expect(described_class.count).to eq(1)
+    follow_up = described_class.find_by(patient: patient, user: user, facility: facility, month_string: june_2021[:month_string])
+    expect(follow_up).to be_present
   end
 
   it "identifies months in the reporting timezone" do
