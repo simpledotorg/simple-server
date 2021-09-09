@@ -276,8 +276,8 @@ RSpec.describe User, type: :model do
       include_examples "full_name search", :teleconsult_search
 
       context "searches against phone_number and teleconsultation_phone_number" do
-        let!(:user_1) { create(:user, full_name: "Sri Priyanka John") }
-        let!(:user_2) { create(:user, full_name: "Priya Sri Gupta") }
+        let!(:user_1) { create(:user, full_name: "Sri Priyanka John", teleconsultation_phone_number: Faker::PhoneNumber.phone_number) }
+        let!(:user_2) { create(:user, full_name: "Priya Sri Gupta", teleconsultation_phone_number: Faker::PhoneNumber.phone_number) }
 
         it "matches a user with a phone number" do
           expect(User.search_by_name_or_phone(user_1.phone_number)).to match_array(user_1)
