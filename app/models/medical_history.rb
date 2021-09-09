@@ -26,7 +26,7 @@ class MedicalHistory < ApplicationRecord
   enum prior_stroke: MEDICAL_HISTORY_ANSWERS, _prefix: true
   enum chronic_kidney_disease: MEDICAL_HISTORY_ANSWERS, _prefix: true
   enum receiving_treatment_for_hypertension: MEDICAL_HISTORY_ANSWERS, _prefix: true
-  enum receiving_treatment_for_hypertension: MEDICAL_HISTORY_ANSWERS, _prefix: true
+  enum receiving_treatment_for_diabetes: MEDICAL_HISTORY_ANSWERS, _prefix: true
   enum diabetes: MEDICAL_HISTORY_ANSWERS, _prefix: true
   enum hypertension: MEDICAL_HISTORY_ANSWERS, _prefix: true
   enum diagnosed_with_hypertension: MEDICAL_HISTORY_ANSWERS, _prefix: true
