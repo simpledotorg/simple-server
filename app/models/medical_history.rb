@@ -11,6 +11,7 @@ class MedicalHistory < ApplicationRecord
     :prior_stroke,
     :chronic_kidney_disease,
     :receiving_treatment_for_hypertension,
+    :receiving_treatment_for_diabetes,
     :diabetes,
     :diagnosed_with_hypertension
   ].freeze
@@ -24,6 +25,7 @@ class MedicalHistory < ApplicationRecord
   enum prior_heart_attack: MEDICAL_HISTORY_ANSWERS, _prefix: true
   enum prior_stroke: MEDICAL_HISTORY_ANSWERS, _prefix: true
   enum chronic_kidney_disease: MEDICAL_HISTORY_ANSWERS, _prefix: true
+  enum receiving_treatment_for_hypertension: MEDICAL_HISTORY_ANSWERS, _prefix: true
   enum receiving_treatment_for_hypertension: MEDICAL_HISTORY_ANSWERS, _prefix: true
   enum diabetes: MEDICAL_HISTORY_ANSWERS, _prefix: true
   enum hypertension: MEDICAL_HISTORY_ANSWERS, _prefix: true
