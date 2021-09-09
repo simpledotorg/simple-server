@@ -78,6 +78,11 @@ RSpec.describe UserAccess, type: :model do
                 action,
                 expected_resources,
                 admin.accessible_organizations(action))
+
+            expected_resources.each do |resource|
+              expect(admin.can_access?(current_resource, action)).to be_truthy
+            end
+            expect(admin.can_access?(organization_1, action)).to be_falsey
             admin.accesses.delete_all
           end
         end
