@@ -1,8 +1,8 @@
 class Api::V4::FacilityMedicalOfficersController < APIController
   def sync_to_user
-    medical_officers = current_facility_group.facilities.eager_load(:teleconsultation_medical_officers).map { |facility|
-      facility_medical_officers(facility)
-    }
+    medical_officers = current_facility_group.facilities
+      .eager_load(teleconsultation_medical_officers: :phone_number_authentications)
+      .map { |facility| facility_medical_officers(facility) }
     render json: to_response(medical_officers)
   end
 

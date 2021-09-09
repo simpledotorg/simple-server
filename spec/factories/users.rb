@@ -9,7 +9,7 @@ FactoryBot.define do
     full_name { Faker::Name.name }
     device_created_at { Time.current }
     device_updated_at { Time.current }
-    teleconsultation_phone_number { Faker::PhoneNumber.phone_number }
+    teleconsultation_phone_number { rand > 0.50 ? Faker::PhoneNumber.phone_number : nil }
     teleconsultation_isd_code { "+91" }
 
     sync_allowed
