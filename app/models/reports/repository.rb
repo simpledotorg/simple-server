@@ -30,13 +30,11 @@ module Reports
       end
 
       @bp_measures_query = BPMeasuresQuery.new
-      @follow_ups_query = FollowUpsQuery.new
       @no_bp_measure_query = NoBPMeasureQuery.new
       @registered_patients_query = RegisteredPatientsQuery.new
     end
 
     attr_reader :bp_measures_query
-    attr_reader :follow_ups_query
     attr_reader :no_bp_measure_query
     attr_reader :period_type
     attr_reader :periods
@@ -61,6 +59,7 @@ module Reports
       :cumulative_registrations,
       :earliest_patient_recorded_at,
       :earliest_patient_recorded_at_period,
+      :hypertension_follow_ups,
       :ltfu_rates,
       :ltfu,
       :missed_visits,
@@ -85,17 +84,6 @@ module Reports
       items = regions.map { |region| RegionEntry.new(region, __method__, group_by: :registration_user_id, period_type: period_type) }
       result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
         registered_patients_query.count(entry.region, period_type, group_by: :registration_user_id)
-      end
-      result.each_with_object({}) { |(region_entry, counts), hsh|
-        hsh[region_entry.region.slug] = counts
-      }
-    end
-
-    # Returns Follow ups per Region / Period. Takes an optional group_by clause (commonly used to group by `blood_pressures.user_id`)
-    memoize def hypertension_follow_ups(group_by: nil)
-      items = regions.map { |region| RegionEntry.new(region, __method__, group_by: group_by, period_type: period_type) }
-      result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
-        follow_ups_query.hypertension(entry.region, period_type, group_by: group_by)
       end
       result.each_with_object({}) { |(region_entry, counts), hsh|
         hsh[region_entry.region.slug] = counts

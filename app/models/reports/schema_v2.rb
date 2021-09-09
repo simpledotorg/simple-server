@@ -121,6 +121,15 @@ module Reports
       end
     end
 
+    memoize def hypertension_follow_ups(group_by: nil)
+      regions.each_with_object({}) do |region, hsh|
+        hsh[region.slug] = Reports::PatientFollowUp.for_region(region)
+          .order(:month_date)
+          .group(:month_date)
+          .count
+      end
+    end
+
     memoize def missed_visits(with_ltfu: false)
       field = with_ltfu ? :adjusted_missed_visit_under_care_with_lost_to_follow_up : :adjusted_missed_visit_under_care
       regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, field) }
