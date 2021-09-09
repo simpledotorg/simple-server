@@ -7,6 +7,23 @@ RSpec.describe User, type: :model do
     it { is_expected.to have_and_belong_to_many(:teleconsultation_facilities) }
   end
 
+  describe "can_access?" do
+    let(:viewer_all) { UserAccess.new(create(:admin, :viewer_all)) }
+    let(:manager) { UserAccess.new(create(:admin, :manager)) }
+    let(:power_user) { UserAccess.new(create(:admin, :power_user)) }
+
+    it "works" do
+      facility_group = create(:facility_group)
+      facility_1 = create(:facility, facility_group: facility_group)
+      facility_2 = create(:facility)
+      user = manager.user
+      user.accesses.create!(resource: facility_group)
+      expect(user.can_access?(facility_group, :viewer_reports_only)).to be_truthy
+      expect(user.can_access?(facility_1, :viewer_reports_only)).to be_truthy
+      expect(user.can_access?(facility_2, :viewer_reports_only)).to be_falsey
+    end
+  end
+
   describe "Validations" do
     it { should validate_presence_of(:full_name) }
     it_behaves_like "a record that validates device timestamps"

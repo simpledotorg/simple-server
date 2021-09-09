@@ -140,6 +140,18 @@ class User < ApplicationRecord
     UserAccess.new(self)
   end
 
+  def can_access?(obj, action)
+    return true if power_user?
+    case obj
+    when Facility
+      accesses.find_by(resource: obj) || can_access?(obj.facility_group, action)
+    when FacilityGroup
+      accesses.find_by(resource: obj) || can_access?(obj.organization, action)
+    when Organization
+      accesses.find_by(resource: obj)
+    end
+  end
+
   def region_access(memoized: false)
     @region_access ||= RegionAccess.new(self, memoized: memoized)
   end

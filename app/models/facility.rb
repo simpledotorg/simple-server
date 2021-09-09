@@ -147,6 +147,10 @@ class Facility < ApplicationRecord
     self
   end
 
+  def accessible_by(user, action: nil)
+    user.can_access?(self, action) || user.can_access?(facility_group, action)
+  end
+
   def hypertension_follow_ups_by_period(*args)
     patients.hypertension_follow_ups_by_period(*args).where(blood_pressures: {facility: self})
   end
