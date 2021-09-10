@@ -315,7 +315,6 @@ RSpec.describe UserAccess, type: :model do
               admin.accesses.delete_all
             end
           end
-
         end
 
         context "Facility access" do
