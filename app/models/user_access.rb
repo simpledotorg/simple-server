@@ -55,6 +55,11 @@ class UserAccess
 
   class UnsupportedAccessRequest < RuntimeError; end
 
+  # Determine if a user has access to single Facility, FacilityGroup, or Organization
+  # For checking for a wider set of regions or other resources (like Users, ProtocolDrugs, etc), use the
+  # accessible_ methods below
+  #
+  # Returns a Boolean
   def can_access?(resource, action)
     unless resource.class.in?([Facility, FacilityGroup, Organization])
       raise UnsupportedAccessRequest, "can only be called with a Facility, FacilityGroup, or Organization"
