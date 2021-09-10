@@ -1,0 +1,3 @@
+class ImoDeliveryDetail < ApplicationRecord
+
+end

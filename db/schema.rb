@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_26_121045) do
+ActiveRecord::Schema.define(version: 2021_09_10_200224) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -346,6 +346,14 @@ ActiveRecord::Schema.define(version: 2021_08_26_121045) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["patient_id"], name: "index_imo_authorizations_on_patient_id"
+  end
+
+  create_table "imo_delivery_details", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "result"
+    t.string "callee_phone_number", null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "medical_histories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
