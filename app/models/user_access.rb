@@ -53,26 +53,22 @@ class UserAccess
     manage: [:manager]
   }.freeze
 
+  class UnsupportedAccessRequest < RuntimeError; end
+
   def can_access?(resource, action)
+    unless resource.class.in?([Facility, FacilityGroup, Organization])
+      raise UnsupportedAccessRequest, "can only be called with a Facility, FacilityGroup, or Organization"
+    end
     return true if power_user?
     return false unless action_to_level(action).include?(user.access_level.to_sym)
 
-    case resource
-    when Facility
-      user.accesses.exists?(resource: resource) || user.can_access?(resource.facility_group, action)
-    when FacilityGroup
-      user.accesses.exists?(resource: resource) || user.can_access?(resource.organization, action)
-    when Organization
-      user.accesses.exists?(resource: resource)
-    end
+    has_access?(resource)
   end
 
   def accessible_organizations(action)
     resources_for(Organization, action)
       .includes(facility_groups: :facilities)
   end
-
-  class UnsupportedAccessRequest < RuntimeError; end
 
   # Users can view reports for a state if they can manage any district within the state.
   # Any other access requests (ie manage, view_pii, etc) for a state receive an error and are not supported.
@@ -214,6 +210,17 @@ class UserAccess
   end
 
   private
+
+  def has_access?(resource)
+    case resource
+    when Facility
+      user.accesses.exists?(resource: resource) || has_access?(resource.facility_group)
+    when FacilityGroup
+      user.accesses.exists?(resource: resource) || has_access?(resource.organization)
+    when Organization
+      user.accesses.exists?(resource: resource)
+    end
+  end
 
   def resources_for(resource_model, action)
     return resource_model.all if power_user?

@@ -5,6 +5,25 @@ RSpec.describe UserAccess, type: :model do
   let(:manager) { UserAccess.new(create(:admin, :manager)) }
   let(:power_user) { UserAccess.new(create(:admin, :power_user)) }
 
+  describe "can_access?" do
+    let(:admin) { build(:user, access_level: :viewer_all) }
+    it "raises error for invalid resource" do
+      [Region, ProtocolDrug, User, Protocol].each do |klass|
+        resource = klass.new
+        expect {
+          admin.can_access?(resource, :manage)
+        }.to raise_error(UserAccess::UnsupportedAccessRequest, "can only be called with a Facility, FacilityGroup, or Organization")
+      end
+    end
+
+    it "returns for a valid resource" do
+      [Facility, FacilityGroup, Organization].each do |klass|
+        resource = klass.new
+        expect(admin.can_access?(resource, :manage)).to be false
+      end
+    end
+  end
+
   describe "accessible_*" do
     let(:organization_1) { create(:organization, name: "org_1") }
     let(:organization_2) { create(:organization, name: "org_2") }
