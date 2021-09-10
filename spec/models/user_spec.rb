@@ -32,6 +32,9 @@ RSpec.describe User, type: :model do
       expect(viewer_all.can_access?(facility_1, :view_pii)).to be true
       expect(viewer_all.can_access?(facility_1, :manage)).to be false
       expect(viewer_all.can_access?(facility_2, :view_reports)).to be false
+      [facility_1, facility_2, facility_group_1, facility_group_2, facility_group_2.organization].each do |resource|
+        expect(manager.can_access?(resource, :view_reports)).to be false
+      end
     end
   end
 
