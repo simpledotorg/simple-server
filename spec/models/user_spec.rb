@@ -7,20 +7,31 @@ RSpec.describe User, type: :model do
     it { is_expected.to have_and_belong_to_many(:teleconsultation_facilities) }
   end
 
-  describe "can_access?" do
-    let(:viewer_all) { UserAccess.new(create(:admin, :viewer_all)) }
-    let(:manager) { UserAccess.new(create(:admin, :manager)) }
-    let(:power_user) { UserAccess.new(create(:admin, :power_user)) }
+  describe "can_access?" do # For broader spec coverage on this, see user_access_spec
+    let(:viewer_all_access) { UserAccess.new(create(:admin, :viewer_all)) }
+    let(:viewer_all) { viewer_all_access.user }
+    let(:manager_access) { UserAccess.new(create(:admin, :manager)) }
+    let(:manager) { manager_access.user }
+    let(:facility_group_1) { create(:facility_group) }
+    let(:facility_group_2) { create(:facility_group) }
 
-    it "works" do
-      facility_group = create(:facility_group)
-      facility_1 = create(:facility, facility_group: facility_group)
-      facility_2 = create(:facility)
-      user = manager.user
-      user.accesses.create!(resource: facility_group)
-      expect(user.can_access?(facility_group, :viewer_reports_only)).to be_truthy
-      expect(user.can_access?(facility_1, :viewer_reports_only)).to be_truthy
-      expect(user.can_access?(facility_2, :viewer_reports_only)).to be_falsey
+    it "returns true for allowed actions on resources user has auth to" do
+      facility_1 = create(:facility, facility_group: facility_group_1)
+      manager.accesses.create!(resource: facility_group_1)
+      expect(manager.can_access?(facility_group_1, :manage)).to be true
+      expect(manager.can_access?(facility_group_1, :view_reports)).to be true
+      expect(manager.can_access?(facility_1, :view_reports)).to be true
+    end
+
+    it "returns false for resources user does not have access to" do
+      facility_1 = create(:facility, facility_group: facility_group_1)
+      facility_2 = create(:facility, facility_group: facility_group_2)
+      viewer_all.accesses.create!(resource: facility_group_1)
+      expect(viewer_all.can_access?(facility_group_1, :view_reports)).to be true
+      expect(viewer_all.can_access?(facility_1, :view_reports)).to be true
+      expect(viewer_all.can_access?(facility_1, :view_pii)).to be true
+      expect(viewer_all.can_access?(facility_1, :manage)).to be false
+      expect(viewer_all.can_access?(facility_2, :view_reports)).to be false
     end
   end
 
