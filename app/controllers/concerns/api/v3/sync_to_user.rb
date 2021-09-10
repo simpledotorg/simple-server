@@ -33,9 +33,7 @@ module Api::V3::SyncToUser
     end
 
     def records_to_sync
-      Datadog.tracer.trace("api.records_to_sync", resource: model.to_s) do
-        current_facility_records + other_facility_records
-      end
+      current_facility_records + other_facility_records
     end
 
     def processed_until(records)

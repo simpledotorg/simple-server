@@ -11,14 +11,18 @@ class Api::V3::SyncController < APIController
   end
 
   def __sync_to_user__(response_key)
-    records = records_to_sync
+    records = trace("api.records_to_sync") do
+      records_to_sync
+    end
 
-    AuditLog.create_logs_async(current_user, records, "fetch", Time.current) unless disable_audit_logs?
+    trace("api.create_audit_logs") do
+      AuditLog.create_logs_async(current_user, records, "fetch", Time.current) unless disable_audit_logs?
+    end
 
-    transformed_records = Datadog.tracer.trace("api.transform", resource: model.to_s) do
+    transformed_records = trace("api.transform") do
       records.map { |record| transform_to_response(record) }
     end
-    json = Datadog.tracer.trace("api.to_json", resource: model.to_s) do
+    json = trace("api.to_json") do
       Oj.dump({
         response_key => transformed_records,
         "process_token" => encode_process_token(response_process_token)
@@ -29,6 +33,12 @@ class Api::V3::SyncController < APIController
   end
 
   private
+
+  def trace(name)
+    Datadog.tracer.trace(name, resource: model.to_s) do
+      yield
+    end
+  end
 
   def model
     controller_name.classify.constantize
