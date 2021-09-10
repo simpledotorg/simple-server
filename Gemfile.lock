@@ -132,7 +132,7 @@ GEM
       thor (~> 0.20.3)
     data_migrate (6.3.0)
       rails (>= 5.0)
-    ddtrace (0.51.1)
+    ddtrace (0.52.0)
       ffi (~> 1.0)
       msgpack
     devise (4.7.1)
@@ -215,7 +215,7 @@ GEM
     faraday-net_http_persistent (1.2.0)
     faraday-patron (1.0.0)
     faraday-rack (1.0.0)
-    ffi (1.14.2)
+    ffi (1.15.4)
     ffi-compiler (1.0.1)
       ffi (>= 1.0.0)
       rake
