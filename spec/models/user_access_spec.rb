@@ -7,6 +7,7 @@ RSpec.describe UserAccess, type: :model do
 
   describe "can_access?" do
     let(:admin) { build(:user, access_level: :viewer_all) }
+
     it "raises error for invalid resource" do
       [Region, ProtocolDrug, User, Protocol].each do |klass|
         resource = klass.new
@@ -14,6 +15,15 @@ RSpec.describe UserAccess, type: :model do
           admin.can_access?(resource, :manage)
         }.to raise_error(UserAccess::UnsupportedAccessRequest, "can only be called with a Facility, FacilityGroup, or Organization")
       end
+    end
+
+    it "raises for invalid action" do
+      expect {
+        admin.can_access?(Facility.new, :foo)
+      }.to raise_error(ArgumentError, /unknown action foo/)
+      expect {
+        admin.can_access?(Facility.new, nil)
+      }.to raise_error(ArgumentError, /unknown action /)
     end
 
     it "returns for a valid resource" do
