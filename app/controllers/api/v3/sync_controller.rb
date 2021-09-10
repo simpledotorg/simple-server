@@ -15,7 +15,7 @@ class Api::V3::SyncController < APIController
 
     AuditLog.create_logs_async(current_user, records, "fetch", Time.current) unless disable_audit_logs?
 
-    transformed_records = Datadog.tracer.trace("api.tranform", resource: model.to_s) do
+    transformed_records = Datadog.tracer.trace("api.transform", resource: model.to_s) do
       records.map { |record| transform_to_response(record) }
     end
     json = Datadog.tracer.trace("api.to_json", resource: model.to_s) do
