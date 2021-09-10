@@ -63,11 +63,11 @@ class Communication < ApplicationRecord
     end
   end
 
-  def self.create_with_imo_details!(appointment:, notification:)
+  def self.create_with_imo_details!(appointment:, notification:, response:)
     patient = notification.patient
     now = DateTime.current
     transaction do
-      ImoDeliveryDetail.create!(callee_phone_number: patient.latest_mobile_number)
+      ImoDeliveryDetail.create!(callee_phone_number: patient.latest_mobile_number, response: response)
       communication = create!(communication_type: "imo",
                               detailable: nil,
                               appointment: appointment,
