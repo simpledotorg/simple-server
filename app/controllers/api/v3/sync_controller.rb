@@ -14,16 +14,25 @@ class Api::V3::SyncController < APIController
     records = records_to_sync
 
     AuditLog.create_logs_async(current_user, records, "fetch", Time.current) unless disable_audit_logs?
-    render(
-      json: Oj.dump({
-        response_key => records.map { |record| transform_to_response(record) },
+
+    transformed_records = Datadog.tracer.trace("api.tranform", resource: model.to_s) do
+      records.map { |record| transform_to_response(record) }
+    end
+    json = Datadog.tracer.trace("api.to_json", resource: model.to_s) do
+      Oj.dump({
+        response_key => transformed_records,
         "process_token" => encode_process_token(response_process_token)
-      }, mode: :compat),
-      status: :ok
-    )
+      }, mode: :compat)
+    end
+
+    render(json: json, status: :ok)
   end
 
   private
+
+  def model
+    controller_name.classify.constantize
+  end
 
   def merge_records(params)
     params.flat_map { |single_entity_params|
