@@ -188,6 +188,7 @@ RSpec.describe UserAccess, type: :model do
                   action,
                   expected_resources,
                   admin.accessible_facility_groups(action))
+              expected_resources.each { |resource| expect(admin.can_access?(current_resource, action)).to be_truthy }
               admin.accesses.delete_all
             end
           end
