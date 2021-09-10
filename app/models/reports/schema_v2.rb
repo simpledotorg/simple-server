@@ -123,10 +123,12 @@ module Reports
 
     memoize def hypertension_follow_ups(group_by: nil)
       regions.each_with_object({}) do |region, hsh|
-        hsh[region.slug] = Reports::PatientFollowUp.for_region(region)
+        count = Reports::PatientFollowUp.for_region(region)
           .order(:month_date)
           .group(:month_date)
           .count
+        pp count
+        hsh[region.slug] = count
       end
     end
 

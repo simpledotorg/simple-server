@@ -356,7 +356,7 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
       end
 
       context "follow ups" do
-        it "returns correct per region results with optional group_by" do
+        fit "returns correct per region results with optional group_by" do
           facility_1, facility_2 = create_list(:facility, 2)
           regions = [facility_1.region, facility_2.region]
 
