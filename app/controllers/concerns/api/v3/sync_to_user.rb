@@ -37,7 +37,7 @@ module Api::V3::SyncToUser
     end
 
     def records_to_sync
-      time(__method__) do
+      Datadog.tracer.trace("api.records_to_sync", resource: model) do
         current_facility_records + other_facility_records
       end
     end
