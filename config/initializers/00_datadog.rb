@@ -4,7 +4,7 @@ require "datadog/statsd"
 
 # Allow running via an ENV var (for development usage, for example) ...otherwise
 # exclude some envs by default
-SEND_DATA_TO_DD_AGENT = ENV["DD_ENABLED"] || !(Rails.env.development? || Rails.env.test? || SimpleServer.env.review?)
+SEND_DATA_TO_DD_AGENT = ENV["DATADOG_ENABLED"] || !(Rails.env.development? || Rails.env.test? || SimpleServer.env.review?)
 
 # Trying out Ruby code profiling in selected environments
 ENABLE_DD_PROFILING = SimpleServer.env.sandbox?

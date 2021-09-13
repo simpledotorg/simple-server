@@ -1,5 +1,5 @@
 # Don't merge the datadog trace info in some environments as it clutters up logs
-DATADOG_TRACE_INFO_ENABLED = !(Rails.env.development? || Rails.env.test?)
+DATADOG_TRACE_INFO_ENABLED = ENV["DATADOG_ENABLED"] || !(Rails.env.development? || Rails.env.test?)
 
 class JsonLogger < Ougai::Logger
   include ActiveSupport::LoggerThreadSafeLevel
@@ -29,7 +29,7 @@ class JsonLogger < Ougai::Logger
   end
 
   def create_formatter
-    if Rails.env.development? || Rails.env.test?
+    if Rails.env.development? || Rails.env.profiling? || Rails.env.test?
       Ougai::Formatters::Readable.new
     else
       Ougai::Formatters::Bunyan.new
