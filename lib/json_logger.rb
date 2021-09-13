@@ -29,10 +29,6 @@ class JsonLogger < Ougai::Logger
   end
 
   def create_formatter
-    if Rails.env.development? || Rails.env.profiling? || Rails.env.test?
-      Ougai::Formatters::Readable.new
-    else
-      Ougai::Formatters::Bunyan.new
-    end
+    LoggingExtensions.default_log_formatter
   end
 end
