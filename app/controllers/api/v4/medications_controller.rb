@@ -12,9 +12,7 @@ class Api::V4::MedicationsController < Api::V4::SyncController
   end
 
   def other_facility_records
-    time(__method__) do
-      Medication.all
-    end
+    Medication.all
   end
 
   def disable_audit_logs?
@@ -39,8 +37,6 @@ class Api::V4::MedicationsController < Api::V4::SyncController
   end
 
   def records_to_sync
-    time(__method__) do
-      other_facility_records
-    end
+    other_facility_records
   end
 end
