@@ -1,6 +1,5 @@
-# frozen_string_literal: true
-
-if Rails.env.development? && !ENV["PROFILE"]
+# Only use mini profiler in dev if we _don't_ have datadog turned on
+if Rails.env.development? && !ENV["DD_PROFILE"]
   require "rack-mini-profiler"
 
   # initialization is skipped so trigger it
