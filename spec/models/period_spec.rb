@@ -91,6 +91,11 @@ RSpec.describe Period, type: :model do
     expect(q1_2019_period.to_s).to eq("Q1-2019")
   end
 
+  it "has to_dhis2 in correct format" do
+    expect(jan_1_2019_month_period.to_dhis2).to eq("201901")
+    expect(q1_2019_period.to_dhis2).to eq("2019Q1")
+  end
+
   it "month periods take an optional arg for to_s formatting" do
     expect(jan_1_2019_month_period.to_s(:mon_year_multiline)).to eq("Jan\n2019")
   end

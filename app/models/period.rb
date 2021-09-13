@@ -185,6 +185,14 @@ class Period
     end
   end
 
+  def to_dhis2
+    if quarter?
+      "#{value.year}Q#{value.number}"
+    else
+      value.to_s(:dhis2_mon_year)
+    end
+  end
+
   # Returns a Hash with various Period related dates for eash consumption by the view
   def to_hash
     {
