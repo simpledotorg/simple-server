@@ -35,9 +35,13 @@ class Api::V3::SyncController < APIController
   private
 
   def trace(name)
-    Datadog.tracer.trace(name, resource: model.to_s) do
+    Datadog.tracer.trace(name, resource: datadog_resource) do |span|
       yield
     end
+  end
+
+  def datadog_resource
+    @datadog_resource ||= "#{self.class}##{action_name}"
   end
 
   def model
