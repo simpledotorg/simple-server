@@ -52,40 +52,107 @@ RSpec.describe Api::ManifestsController, type: :controller do
           get :show
 
           expect(response).to be_ok
-          expect(JSON.parse(response.body)).to eq(
-            "v1" => [
+
+          parsed_body = JSON.parse(response.body)
+          expect(parsed_body["v1"]).to eq(v1_response)
+          expect(parsed_body["v2"]).to eq(v2_response)
+        end
+
+        let(:v1_response) do
+          [
+            {
+              "country_code" => "IN",
+              "display_name" => "India",
+              "endpoint" => "https://simple.example.com/api/",
+              "isd_code" => "91"
+            },
+            {
+              "country_code" => "BD",
+              "display_name" => "Bangladesh",
+              "endpoint" => "https://simple.example.com/api/",
+              "isd_code" => "880"
+            },
+            {
+              "country_code" => "ET",
+              "display_name" => "Ethiopia",
+              "endpoint" => "https://simple.example.com/api/",
+              "isd_code" => "251"
+            },
+            {
+              "country_code" => "US",
+              "display_name" => "United States",
+              "endpoint" => "https://simple.example.com/api/",
+              "isd_code" => "1"
+            },
+            {
+              "country_code" => "UK",
+              "display_name" => "United Kingdom",
+              "endpoint" => "https://simple.example.com/api/",
+              "isd_code" => "44"
+            }
+          ]
+        end
+
+        let(:v2_response) do
+          {
+            "countries" => [
               {
                 "country_code" => "IN",
                 "display_name" => "India",
-                "endpoint" => "https://simple.example.com/api/",
-                "isd_code" => "91"
+                "isd_code" => "91",
+                "deployments" => [
+                  {
+                    "display_name" => "India",
+                    "endpoint" => "https://simple.example.com/api/"
+                  }
+                ]
               },
               {
                 "country_code" => "BD",
                 "display_name" => "Bangladesh",
-                "endpoint" => "https://simple.example.com/api/",
-                "isd_code" => "880"
+                "isd_code" => "880",
+                "deployments" => [
+                  {
+                    "display_name" => "Bangladesh",
+                    "endpoint" => "https://simple.example.com/api/"
+                  }
+                ]
               },
               {
                 "country_code" => "ET",
                 "display_name" => "Ethiopia",
-                "endpoint" => "https://simple.example.com/api/",
-                "isd_code" => "251"
+                "isd_code" => "251",
+                "deployments" => [
+                  {
+                    "display_name" => "Ethiopia",
+                    "endpoint" => "https://simple.example.com/api/"
+                  }
+                ]
               },
               {
                 "country_code" => "US",
                 "display_name" => "United States",
-                "endpoint" => "https://simple.example.com/api/",
-                "isd_code" => "1"
+                "isd_code" => "1",
+                "deployments" => [
+                  {
+                    "display_name" => "United States",
+                    "endpoint" => "https://simple.example.com/api/"
+                  }
+                ]
               },
               {
                 "country_code" => "UK",
                 "display_name" => "United Kingdom",
-                "endpoint" => "https://simple.example.com/api/",
-                "isd_code" => "44"
+                "isd_code" => "44",
+                "deployments" => [
+                  {
+                    "display_name" => "United Kingdom",
+                    "endpoint" => "https://simple.example.com/api/"
+                  }
+                ]
               }
             ]
-          )
+          }
         end
       end
     end
