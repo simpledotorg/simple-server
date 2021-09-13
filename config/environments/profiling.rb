@@ -1,11 +1,4 @@
 Rails.application.configure do
-  # Settings specified here will take precedence over those in config/application.rb.
-
-  # Set correct host name dynamically in Heroku Review Apps
-  if ENV["HEROKU_APP_NAME"].present?
-    ENV["SIMPLE_SERVER_HOST"] = "#{ENV["HEROKU_APP_NAME"]}.herokuapp.com"
-  end
-
   # Code is not reloaded between requests.
   config.cache_classes = true
 
@@ -30,17 +23,13 @@ Rails.application.configure do
 
   # Compress JavaScripts and CSS.
   config.assets.js_compressor = Uglifier.new(harmony: true)
-  # config.assets.css_compressor = :sass
 
-  # Do not fallback to assets pipeline if a precompiled asset is missed.
+  # Do fallback to assets pipeline if a precompiled asset is missed.
   config.assets.compile = true
 
   # Use the lowest log level to ensure availability of diagnostic information
   # when problems arise.
   config.log_level = :debug
-
-  # Show full error reports.
-  config.consider_all_requests_local = true
 
   # Use a different cache store in production.
   config.cache_store = if ENV["RAILS_CACHE_REDIS_URL"].present?
@@ -58,19 +47,12 @@ Rails.application.configure do
   config.action_mailer.raise_delivery_errors = false
   config.action_mailer.perform_caching = false
 
-  config.action_mailer.raise_delivery_errors = false
-  config.action_mailer.perform_caching = false
-
   config.action_mailer.default_url_options = {host: "localhost", port: 3000}
   config.action_mailer.asset_host = "http://localhost:3000"
 
   # Use Mailcatcher to test mail in development
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {address: "localhost", port: 1025}
-
-  # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
-  # the I18n.default_locale when a translation cannot be found).
-  # config.i18n.fallbacks = true
 
   # Send deprecation notices to registered listeners.
   config.active_support.deprecation = :notify

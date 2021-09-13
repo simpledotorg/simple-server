@@ -1,6 +1,4 @@
 Rails.application.configure do
-  # Settings specified here will take precedence over those in config/application.rb.
-
   # Use a memory store for tests for speed and simplicity.
   config.cache_store = :memory_store
 
