@@ -18,11 +18,11 @@ class PatientSummaryQuery
     FILTERS.fetch(filter)
   end
 
-  def initialize(assigned_facilities:, next_appointment_facilities:, only_overdue: true, filters: [])
+  def initialize(assigned_facilities:, next_appointment_facilities: nil, only_overdue: true, filters: [])
     @only_overdue = only_overdue
     @relation = PatientSummary
-    @relation = @relation.where(next_appointment_facility_id: next_appointment_facilities)
     @relation = @relation.where(assigned_facility_id: assigned_facilities.map(&:id))
+    @relation = @relation.where(next_appointment_facility_id: next_appointment_facilities) if next_appointment_facilities.present?
     @filters = filters
   end
 
