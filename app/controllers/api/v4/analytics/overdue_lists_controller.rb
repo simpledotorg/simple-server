@@ -1,8 +1,8 @@
 class Api::V4::Analytics::OverdueListsController < Api::V4::AnalyticsController
   def show
     @patient_summaries = PatientSummaryQuery.call(
-      assigned_facility: current_facility,
-      next_appointment_facilities: current_facility,
+      assigned_facilities: [current_facility],
+      next_appointment_facilities: [current_facility],
       only_overdue: false
     ).order(risk_level: :desc, next_appointment_scheduled_date: :desc, id: :asc)
 
