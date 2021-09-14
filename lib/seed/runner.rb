@@ -8,7 +8,6 @@ module Seed
     include ActiveSupport::Benchmarkable
     include ConsoleLogger
     SIZES = Facility.facility_sizes
-    FEATURE_FLAGS_ENABLED_BY_DEFAULT = %i[drug_stocks notifications]
 
     attr_reader :config
     attr_reader :logger
@@ -54,8 +53,17 @@ module Seed
       [counts, total_counts]
     end
 
+    def feature_flags_enabled_by_default
+      [
+        :drug_stocks,
+        :notifications,
+        (:auto_approve_users if SimpleServer.env.android_review?),
+        (:fixed_otp if SimpleServer.env.android_review?)
+      ].compact
+    end
+
     def seed_feature_flags
-      FEATURE_FLAGS_ENABLED_BY_DEFAULT.each { |flag| Flipper.enable(flag) }
+      feature_flags_enabled_by_default.each { |flag| Flipper.enable(flag) }
     end
 
     def seed_patients(progress)
