@@ -33,8 +33,6 @@ class DHIS2Exporter
       repository = Reports::Repository.new(facility.region, periods: range)
 
       range.each do |period|
-        dhis2_period = period.to_date.strftime("%Y%m")
-
         data = {
           cumulative_assigned: repository.cumulative_assigned_patients[slug][period],
           cumulative_assigned_adjusted: repository.adjusted_patients_with_ltfu[slug][period],
@@ -54,7 +52,7 @@ class DHIS2Exporter
           facility_bulk_data << {
             data_element: data_element_id,
             org_unit: org_unit_id,
-            period: dhis2_period,
+            period: reporting_period(period),
             value: value
           }
           puts "Adding data for #{facility.name}, #{period}, #{data_element}: #{facility_bulk_data.last}"
@@ -62,6 +60,14 @@ class DHIS2Exporter
       end
 
       pp Dhis2.client.data_value_sets.bulk_create(data_values: facility_bulk_data)
+    end
+  end
+
+  def reporting_period(period)
+    if Flipper.enabled?(:dhis2_use_ethiopian_calendar)
+      EthiopiaCalendarUtilities.gregorian_month_period_to_ethiopian(period).to_dhis2
+    else
+      period.to_dhis2
     end
   end
 end
