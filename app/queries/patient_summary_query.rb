@@ -19,22 +19,22 @@ class PatientSummaryQuery
   end
 
   def initialize(assigned_facilities:, only_overdue: true, filters: [])
+    @patient_summaries = PatientSummary.where(assigned_facility_id: assigned_facilities.map(&:id))
     @only_overdue = only_overdue
-    @relation = PatientSummary.where(assigned_facility_id: assigned_facilities.map(&:id))
     @filters = filters
   end
 
   def call
-    result = if @only_overdue
+    result = if only_overdue
       if filters.include?("only_less_than_year_overdue")
-        relation.overdue
+        patient_summaries.overdue
       else
-        relation.all_overdue
+        patient_summaries.all_overdue
       end
     elsif filters.include?("only_less_than_year_overdue")
-      relation.last_year_unvisited
+      patient_summaries.last_year_unvisited
     else
-      relation.passed_unvisited
+      patient_summaries.passed_unvisited
     end
 
     if filters.include?("high_risk")
@@ -54,5 +54,5 @@ class PatientSummaryQuery
 
   private
 
-  attr_reader :filters, :relation
+  attr_reader :patient_summaries, :only_overdue, :filters
 end
