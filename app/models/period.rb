@@ -186,6 +186,8 @@ class Period
   end
 
   def to_dhis2
+    # DHIS2 has its own period string formats
+    # https://docs.dhis2.org/en/develop/using-the-api/dhis-core-version-master/introduction.html#webapi_date_perid_format
     if quarter?
       "#{value.year}Q#{value.number}"
     else
