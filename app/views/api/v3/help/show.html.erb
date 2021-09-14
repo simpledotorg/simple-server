@@ -46,17 +46,19 @@
           <%= inline_svg('icon_chevron_right.svg') %>
           </a>
         </nav>
-        <div class="card support <%= CountryConfig.current[:abbreviation] %>">
-          <h3>
-            <%= t("help.support.heading_html") %>
-          </h3>
-          <p>
-            <%= t("help.support.contents_html") %>
-          </p>
-        <a href="<%= ENV['HELP_SCREEN_SUPPORT_GROUP_URL'] %>" class="support-button <%= CountryConfig.current[:abbreviation] %>-button">
-            <%= inline_svg(ENV['HELP_SCREEN_SUPPORT_GROUP_ICON']) %> <%= ENV['HELP_SCREEN_SUPPORT_GROUP_NUMBER'] %>
-          </a>
-        </div>
+        <% if ENV['HELP_SCREEN_SUPPORT_GROUP_URL'] %>
+          <div class="card support">
+            <h3>
+              <%= t("help.support.heading_html") %>
+            </h3>
+            <p>
+              <%= t("help.support.contents_html") %>
+            </p>
+            <a href="<%= ENV['HELP_SCREEN_SUPPORT_GROUP_URL'] %>" class="support-button <%= CountryConfig.current[:abbreviation] %>-button">
+              <%= inline_svg(ENV['HELP_SCREEN_SUPPORT_GROUP_ICON']) %> <%= ENV['HELP_SCREEN_SUPPORT_GROUP_NUMBER'] %>
+            </a>
+          </div>
+        <% end %>
         <div class="card">
           <a href="#" onclick="openWindow('help-bp-passport-app'); return false" class="card-header" style="background: #FF3355 url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzQ0IiBoZWlnaHQ9IjI0MCIgdmlld0JveD0iMCAwIDM0NCAyNDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHg9IjEyMSIgeT0iMzAiIHdpZHRoPSIxMDkiIGhlaWdodD0iMTc5IiByeD0iOSIgZmlsbD0iIzAwNDc4RiIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSI2Ii8+CjxyZWN0IHg9IjE3OCIgeT0iODQiIHdpZHRoPSI2IiBoZWlnaHQ9Ijc1IiBmaWxsPSIjM0I3Q0JFIi8+CjxjaXJjbGUgY3g9IjE4MSIgY3k9Ijg0IiByPSIzIiBmaWxsPSIjRkYzMzU1Ii8+CjxjaXJjbGUgY3g9IjE4MSIgY3k9IjE1OSIgcj0iMyIgZmlsbD0iIzAwQjg0OSIvPgo8cmVjdCB4PSIxODciIHk9Ijk5IiB3aWR0aD0iNiIgaGVpZ2h0PSI3MiIgZmlsbD0iIzNCN0NCRSIvPgo8Y2lyY2xlIGN4PSIxOTAiIGN5PSI5OSIgcj0iMyIgZmlsbD0iI0ZGMzM1NSIvPgo8Y2lyY2xlIGN4PSIxOTAiIGN5PSIxNzEiIHI9IjMiIGZpbGw9IiMwMEI4NDkiLz4KPHJlY3QgeD0iMTk2IiB5PSI4NiIgd2lkdGg9IjYiIGhlaWdodD0iNjgiIGZpbGw9IiMzQjdDQkUiLz4KPGNpcmNsZSBjeD0iMTk5IiBjeT0iODYiIHI9IjMiIGZpbGw9IiNGRjMzNTUiLz4KPGNpcmNsZSBjeD0iMTk5IiBjeT0iMTU0IiByPSIzIiBmaWxsPSIjMDBCODQ5Ii8+CjxyZWN0IHg9IjIwNSIgeT0iOTIiIHdpZHRoPSI2IiBoZWlnaHQ9IjczIiBmaWxsPSIjM0I3Q0JFIi8+CjxjaXJjbGUgY3g9IjIwOCIgY3k9IjkyIiByPSIzIiBmaWxsPSIjRkYzMzU1Ii8+CjxjaXJjbGUgY3g9IjIwOCIgY3k9IjE2NSIgcj0iMyIgZmlsbD0iIzAwQjg0OSIvPgo8cmVjdCB4PSIyMTQiIHk9Ijk0IiB3aWR0aD0iNiIgaGVpZ2h0PSI2NSIgZmlsbD0iIzNCN0NCRSIvPgo8Y2lyY2xlIGN4PSIyMTciIGN5PSI5NCIgcj0iMyIgZmlsbD0iI0ZGMzM1NSIvPgo8Y2lyY2xlIGN4PSIyMTciIGN5PSIxNTkiIHI9IjMiIGZpbGw9IiMwMEI4NDkiLz4KPHJlY3QgeD0iMTMyIiB5PSI4NCIgd2lkdGg9IjYiIGhlaWdodD0iNzUiIGZpbGw9IiMzQjdDQkUiLz4KPGNpcmNsZSBjeD0iMTM1IiBjeT0iODQiIHI9IjMiIGZpbGw9IiNGRjMzNTUiLz4KPGNpcmNsZSBjeD0iMTM1IiBjeT0iMTU5IiByPSIzIiBmaWxsPSIjMDBCODQ5Ii8+CjxyZWN0IHg9IjE0MSIgeT0iOTkiIHdpZHRoPSI2IiBoZWlnaHQ9IjcyIiBmaWxsPSIjM0I3Q0JFIi8+CjxjaXJjbGUgY3g9IjE0NCIgY3k9Ijk5IiByPSIzIiBmaWxsPSIjRkYzMzU1Ii8+CjxjaXJjbGUgY3g9IjE0NCIgY3k9IjE3MSIgcj0iMyIgZmlsbD0iIzAwQjg0OSIvPgo8cmVjdCB4PSIxNTAiIHk9Ijg2IiB3aWR0aD0iNiIgaGVpZ2h0PSI2OCIgZmlsbD0iIzNCN0NCRSIvPgo8Y2lyY2xlIGN4PSIxNTMiIGN5PSI4NiIgcj0iMyIgZmlsbD0iI0ZGMzM1NSIvPgo8Y2lyY2xlIGN4PSIxNTMiIGN5PSIxNTQiIHI9IjMiIGZpbGw9IiMwMEI4NDkiLz4KPHJlY3QgeD0iMTU5IiB5PSI5MiIgd2lkdGg9IjYiIGhlaWdodD0iNzMiIGZpbGw9IiMzQjdDQkUiLz4KPGNpcmNsZSBjeD0iMTYyIiBjeT0iOTIiIHI9IjMiIGZpbGw9IiNGRjMzNTUiLz4KPGNpcmNsZSBjeD0iMTYyIiBjeT0iMTY1IiByPSIzIiBmaWxsPSIjMDBCODQ5Ii8+CjxyZWN0IHg9IjE2OCIgeT0iOTQiIHdpZHRoPSI2IiBoZWlnaHQ9IjY1IiBmaWxsPSIjM0I3Q0JFIi8+CjxjaXJjbGUgY3g9IjE3MSIgY3k9Ijk0IiByPSIzIiBmaWxsPSIjRkYzMzU1Ii8+CjxjaXJjbGUgY3g9IjE3MSIgY3k9IjE1OSIgcj0iMyIgZmlsbD0iIzAwQjg0OSIvPgo8cmVjdCB4PSI4NSIgeT0iMTI1IiB3aWR0aD0iNjMiIGhlaWdodD0iNjMiIHJ4PSI5IiBmaWxsPSIjMDAzNjZEIi8+CjxwYXRoIGQ9Ik0xMTUuNSAxNzZDMTIzLjUwOCAxNzYgMTMwIDE2OS40ODggMTMwIDE2MS40NTVDMTMwIDE1MC41NDUgMTE1LjUgMTM2IDExNS41IDEzNkMxMTUuNSAxMzYgMTAxIDE1MC41NDUgMTAxIDE2MS40NTVDMTAxIDE2OS40ODggMTA3LjQ5MiAxNzYgMTE1LjUgMTc2WiIgZmlsbD0iI0ZGMzM1NSIvPgo8cGF0aCBkPSJNMTA2LjQxNiAxNjcuODk5QzEwNS43NjEgMTY3LjEzIDEwNS44OTQgMTY2LjAwNyAxMDYuNzEzIDE2NS4zOTFDMTA3LjUzMyAxNjQuNzc1IDEwOC43MjggMTY0LjkgMTA5LjM4NCAxNjUuNjdDMTEyLjA4NiAxNjguODQyIDExNy4wMTUgMTY5LjM1NyAxMjAuMzkzIDE2Ni44MTlDMTIwLjg0NSAxNjYuNDc5IDEyMS4yNTUgMTY2LjA5NCAxMjEuNjE2IDE2NS42N0MxMjIuMjcyIDE2NC45IDEyMy40NjcgMTY0Ljc3NSAxMjQuMjg3IDE2NS4zOTFDMTI1LjEwNiAxNjYuMDA3IDEyNS4yMzkgMTY3LjEzIDEyNC41ODQgMTY3Ljg5OUMxMjQuMDQ3IDE2OC41MjkgMTIzLjQzOCAxNjkuMTAyIDEyMi43NjcgMTY5LjYwNkMxMTcuNzUgMTczLjM3NSAxMTAuNDMgMTcyLjYxMSAxMDYuNDE2IDE2Ny44OTlaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K) no-repeat 50% 50%; background-size: contain;">
           </a>
