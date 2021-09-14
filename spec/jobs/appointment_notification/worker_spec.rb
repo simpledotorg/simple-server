@@ -123,12 +123,12 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
 
     it "creates a Communication with imo details when communication type is Imo" do
       allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("imo")
-      imo_service = instance_double(ImoApiService, send_notification: :success)
+      imo_service = instance_double(ImoApiService, send_notification: :sent)
       allow(ImoApiService).to receive(:new).and_return(imo_service)
 
       expect(Communication).to receive(:create_with_imo_details!).with(
-        appointment: notification.subject,
-        notification: notification
+        notification: notification,
+        response: :sent
       ).and_call_original
       expect {
         described_class.perform_async(notification.id)

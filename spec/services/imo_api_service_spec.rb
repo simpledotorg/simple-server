@@ -89,11 +89,12 @@ describe ImoApiService, type: :model do
   end
 
   describe "#send_notification" do
+    let(:notification) { create(:notification, patient: patient) }
     let(:request_url) { "https://sgp.imo.im/api/simple/send_notification" }
 
     context "with feature flag off" do
       it "returns nil" do
-        expect(service.send_notification(patient, "Come back in to the clinic")).to eq(nil)
+        expect(service.send_notification(patient, notification)).to eq(nil)
       end
     end
 
@@ -104,59 +105,37 @@ describe ImoApiService, type: :model do
         imo_auth
       end
 
-      it "returns success on a successful 200 response" do
+      it "returns sent on a successful 200 response" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: success_body)
         expect(Sentry).not_to receive(:capture_message)
-        expect(service.send_notification(patient, "Come back in to the clinic")).to eq(:success)
+        expect(service.send_notification(patient, notification)).to eq(:sent)
       end
 
       it "reports to sentry and returns error on other 200 responses" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: {}.to_json)
         expect(Sentry).to receive(:capture_message)
-        expect(service.send_notification(patient, "Come back in to the clinic")).to eq(:error)
-      end
-
-      it "updates patient's ImoAuthorization and returns no_imo_account when imo user does not exist" do
-        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: nonexistent_user_body)
-        expect {
-          service.send_notification(patient, "Come back in to the clinic")
-        }.to change { patient.imo_authorization.status }.from("invited").to("no_imo_account")
-      end
-
-      it "updates patient's ImoAuthorization and returns not_subscribed when imo user is not subscribed" do
-        not_subscribed_body = JSON(
-          status: "success",
-          response: {
-            status: "failed",
-            error_code: "not_subscribed"
-          }
-        )
-
-        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: not_subscribed_body)
-        expect {
-          service.send_notification(patient, "Come back in to the clinic")
-        }.to change { patient.imo_authorization.status }.from("invited").to("not_subscribed")
+        expect(service.send_notification(patient, notification)).to eq(:error)
       end
 
       it "reports to sentry and returns error on other 400 responses" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: {}.to_json)
 
         expect(Sentry).to receive(:capture_message)
-        expect(service.send_notification(patient, "Come back in to the clinic")).to eq(:error)
+        expect(service.send_notification(patient, notification)).to eq(:error)
       end
 
       it "reports to sentry and returns error on other statuses" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 401, body: {}.to_json)
 
         expect(Sentry).to receive(:capture_message)
-        expect(service.send_notification(patient, "Come back in to the clinic")).to eq(:error)
+        expect(service.send_notification(patient, notification)).to eq(:error)
       end
 
       it "raises a custom error on network error" do
         stub_request(:post, request_url).to_timeout
 
         expect {
-          service.send_notification(patient, "Come back in to the clinic")
+          service.send_notification(patient, notification)
         }.to raise_error(ImoApiService::Error)
       end
     end

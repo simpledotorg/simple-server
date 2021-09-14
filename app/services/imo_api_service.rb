@@ -49,10 +49,11 @@ class ImoApiService
     ImoAuthorization.create!(patient: patient, status: status, last_invited_at: Time.current)
   end
 
-  def send_notification(patient, message)
+  def send_notification(patient, notification)
     return unless Flipper.enabled?(:imo_messaging)
 
     Statsd.instance.increment("imo.notifications.attempt")
+    message = notification.localized_message
     url = IMO_BASE_URL + "send_notification"
     request_body = JSON(
       phone: patient.latest_mobile_number,
@@ -61,15 +62,14 @@ class ImoApiService
       title: "Notification",
       action: "Click here",
       url: PATIENT_REDIRECT_URL,
-      read_receipt: "will be filled in later"
+      read_receipt: api_v3_imo_notification_callback_url(
+        host: ENV.fetch("SIMPLE_SERVER_HOST"),
+        protocol: ENV.fetch("SIMPLE_SERVER_HOST_PROTOCOL"),
+        notification_id: notification.id
+      )
     )
     response = execute_post(url, body: request_body)
-    result = process_response(response, url, "notification")
-
-    if patient.imo_authorization.status != result.to_s && result.in?([:not_subscribed, :no_imo_account])
-      patient.imo_authorization.update!(status: result)
-    end
-    result
+    process_response(response, url, "notification")
   end
 
   private
