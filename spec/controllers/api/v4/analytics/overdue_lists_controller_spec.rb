@@ -28,5 +28,13 @@ RSpec.describe Api::V4::Analytics::OverdueListsController, type: :controller do
 
       expect(assigns(:patient_summaries).map(&:id)).to match_array(patient_ids)
     end
+
+    it "returns a 401 if user is not authenticated" do
+      request.env["HTTP_AUTHORIZATION"] = nil
+
+      get :show, params: {format: :csv}
+
+      expect(response.status).to eq(401)
+    end
   end
 end
