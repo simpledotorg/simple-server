@@ -21,6 +21,10 @@ class Api::V3::ImoCallbacksController < ApplicationController
     head :ok
   end
 
+  def read_receipt
+    
+  end
+
   private
 
   def permitted_params

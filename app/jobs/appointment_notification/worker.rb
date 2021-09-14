@@ -105,7 +105,6 @@ class AppointmentNotification::Worker
   def create_communication(notification, communication_type, response)
     if communication_type == "imo"
       Communication.create_with_imo_details!(
-        appointment: notification.subject,
         notification: notification,
         response: response
       )

@@ -44,9 +44,8 @@ class ImoApiService
     end
 
     response = execute_post(url, body: request_body)
-    result = process_response(response, url, "invitation")
+    status = process_response(response, url, "invitation")
 
-    status = result == :success ? :invited : result
     ImoAuthorization.create!(patient: patient, status: status, last_invited_at: Time.current)
   end
 
@@ -87,7 +86,11 @@ class ImoApiService
     case response.status
     when 200
       body = JSON.parse(response.body)
-      return :success if body.dig("response", "status") == "success"
+
+      if body.dig("response", "status") == "success"
+        return :invited if action == "invitation"
+        return :sent if action == "notification"
+      end
 
       if body.dig("response", "error_code") == "not_subscribed"
         Statsd.instance.increment("imo.#{action}.not_subscribed")
