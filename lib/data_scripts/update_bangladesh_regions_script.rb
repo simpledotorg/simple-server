@@ -23,7 +23,7 @@ class UpdateBangladeshRegionsScript < DataScript
       NOT EXISTS (SELECT 1 FROM patients where patients.registration_facility_id = facilities.id) AND
       NOT EXISTS (SELECT 1 FROM patients where patients.assigned_facility_id = facilities.id)
     SQL
-    facilities = Facility.where(sql)
+    facilities = Facility.where(facility_size: ["community", "small"]).where(sql)
     facilities.each do |facility|
       facility.destroy unless dry_run?
     end

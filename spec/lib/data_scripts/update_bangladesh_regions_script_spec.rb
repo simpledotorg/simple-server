@@ -16,13 +16,13 @@ describe UpdateBangladeshRegionsScript do
     expect(CountryConfig).to receive(:current_country?).with("Bangladesh").and_return(true)
     other_facility = create(:facility)
     user = create(:user, registration_facility: other_facility)
-    empty_facilities = create_list(:facility, 2)
+    empty_facilities = create_list(:facility, 2, facility_size: "community")
+    large_empty_facility = create(:facility, facility_size: "large")
     assigned_facility = create(:facility)
     registration_facility = create(:facility)
     create(:patient, registration_facility: registration_facility, assigned_facility: other_facility, registration_user: user)
     create(:patient, registration_facility: other_facility, assigned_facility: assigned_facility, registration_user: user)
 
-    expect(Facility.count).to eq(5)
     expect {
       described_class.call(dry_run: false)
     }.to change { Facility.count }.by(-2)
