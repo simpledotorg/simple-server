@@ -67,6 +67,13 @@ To remove the server and clear the volumes of database data, run the command:
 ```
 docker compose down --volumes
 ```
+After a successful docker installation and running the services, The Docker will also creates a seed data for you and also will create an admin dashboard account.
+The default username and password for the dashboard account is:
+```bash
+username: admin@simple.org
+password: Resolve2SaveLives
+```
+
 
 #### Manual Setup
 
