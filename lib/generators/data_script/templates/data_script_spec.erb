@@ -1,0 +1,15 @@
+require "rails_helper"
+
+describe <%= class_name %> do
+  it "runs" do
+    described_class.call
+  end
+
+  it "changes nothing in dry run mode" do
+    expect {
+      described_class.call
+    }.to_not change {
+      fail("add assertions")
+    }
+  end
+end
