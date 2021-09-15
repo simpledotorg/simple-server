@@ -6,14 +6,18 @@ describe UpdateBangladeshRegionsScript do
     described_class.call
   end
 
+  before do
+    expect(CountryConfig).to receive(:current_country?).with("Bangladesh").and_return(true)
+  end
+
   it "changes nothing in dry run mode" do
+    create(:facility, facility_size: "community")
     expect {
-      described_class.call
+      described_class.call(dry_run: true)
     }.to not_change { Facility.count }.and not_change { Region.count }
   end
 
   it "removes Facilities without patients and users" do
-    expect(CountryConfig).to receive(:current_country?).with("Bangladesh").and_return(true)
     other_facility = create(:facility)
     user = create(:user, registration_facility: other_facility)
     empty_facilities = create_list(:facility, 2, facility_size: "community")
@@ -30,4 +34,5 @@ describe UpdateBangladeshRegionsScript do
       expect(Facility.find_by(id: facility.id)).to be_nil
     end
   end
+
 end
