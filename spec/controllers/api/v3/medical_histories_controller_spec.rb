@@ -158,9 +158,9 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
       params[:medical_histories][0][:id] = medical_history_id
       params[:medical_histories][0][:receiving_treatment_for_diabetes] = "unknown"
 
-      expect{
+      expect {
         post :sync_from_user, params: params
-      }.not_to change{ patient.reload.medical_history.receiving_treatment_for_diabetes }.from("no")
+      }.not_to change { patient.reload.medical_history.receiving_treatment_for_diabetes }.from("no")
       expect(response.status).to eq 200
     end
   end
