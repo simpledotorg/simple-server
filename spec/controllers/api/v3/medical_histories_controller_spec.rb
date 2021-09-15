@@ -107,51 +107,6 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
       request.env["HTTP_X_FACILITY_ID"] = request_facility.id
     end
 
-    it "returns a 200 and creates a patient medical history with valid inputs" do
-      # we don't want a medical history for this and the patient factory creates one by default
-      patient.medical_history.destroy!
-      patient.reload
-
-      post :sync_from_user, params: params
-
-      expect(response.status).to eq 200
-      history = patient.medical_history
-      expected_values = params[:medical_histories].first
-
-      expect(history.id).to eq(expected_values[:id])
-      expect(history.patient_id).to eq(expected_values[:patient_id])
-      expect(history.prior_heart_attack_boolean).to eq(expected_values[:prior_heart_attack_boolean])
-      expect(history.prior_stroke_boolean).to eq(expected_values[:prior_stroke_boolean])
-      expect(history.chronic_kidney_disease_boolean).to eq(expected_values[:chronic_kidney_disease_boolean])
-      expect(history.receiving_treatment_for_hypertension_boolean).to eq(expected_values[:receiving_treatment_for_hypertension_boolean])
-      expect(history.diabetes_boolean).to eq(expected_values[:diabetes_boolean])
-      expect(history.diagnosed_with_hypertension_boolean).to eq(expected_values[:diagnosed_with_hypertension_boolean])
-      expect(history.prior_heart_attack).to eq(expected_values[:prior_heart_attack])
-      expect(history.prior_stroke).to eq(expected_values[:prior_stroke])
-      expect(history.chronic_kidney_disease).to eq(expected_values[:chronic_kidney_disease])
-      expect(history.receiving_treatment_for_hypertension).to eq(expected_values[:receiving_treatment_for_hypertension])
-      expect(history.diabetes).to eq(expected_values[:diabetes])
-      expect(history.diagnosed_with_hypertension).to eq(expected_values[:diagnosed_with_hypertension])
-      expect(history.hypertension).to eq(expected_values[:hypertension])
-      expect(history.receiving_treatment_for_diabetes).to eq(expected_values[:receiving_treatment_for_diabetes])
-    end
-
-    it "returns 200 but returns errors and does not create a medical history when provided invalid values" do
-      # we don't want a medical history for this and the patient factory creates one by default
-      patient.medical_history.destroy!
-      patient.reload
-
-      params[:medical_histories][0][:receiving_treatment_for_diabetes] = "probably"
-      post :sync_from_user, params: params
-
-      expect(response.status).to eq 200
-      parsed_body = JSON.parse(response.body)
-      expect(parsed_body["errors"][0]["schema"][0]).to start_with(
-        "The property '#/receiving_treatment_for_diabetes' value \"probably\" did not match one of the following values: yes, no, unknown in schema"
-      )
-      expect(patient.medical_history).to eq(nil)
-    end
-
     it "does not update existing medical history" do
       medical_history_id = patient.medical_history.id
 
@@ -162,6 +117,78 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
         post :sync_from_user, params: params
       }.not_to change { patient.reload.medical_history.receiving_treatment_for_diabetes }.from("no")
       expect(response.status).to eq 200
+    end
+
+    context "without a pre-existing medical history" do
+      before :each do
+        # we don't want a medical history for this and the patient factory creates one by default
+        patient.medical_history.destroy!
+        patient.reload
+      end
+
+      it "returns a 200 and creates a patient medical history with valid inputs" do
+        post :sync_from_user, params: params
+
+        expect(response.status).to eq 200
+        history = patient.medical_history
+        expected_values = params[:medical_histories].first
+
+        expect(history.id).to eq(expected_values[:id])
+        expect(history.patient_id).to eq(expected_values[:patient_id])
+        expect(history.prior_heart_attack_boolean).to eq(expected_values[:prior_heart_attack_boolean])
+        expect(history.prior_stroke_boolean).to eq(expected_values[:prior_stroke_boolean])
+        expect(history.chronic_kidney_disease_boolean).to eq(expected_values[:chronic_kidney_disease_boolean])
+        expect(history.receiving_treatment_for_hypertension_boolean).to eq(expected_values[:receiving_treatment_for_hypertension_boolean])
+        expect(history.diabetes_boolean).to eq(expected_values[:diabetes_boolean])
+        expect(history.diagnosed_with_hypertension_boolean).to eq(expected_values[:diagnosed_with_hypertension_boolean])
+        expect(history.prior_heart_attack).to eq(expected_values[:prior_heart_attack])
+        expect(history.prior_stroke).to eq(expected_values[:prior_stroke])
+        expect(history.chronic_kidney_disease).to eq(expected_values[:chronic_kidney_disease])
+        expect(history.receiving_treatment_for_hypertension).to eq(expected_values[:receiving_treatment_for_hypertension])
+        expect(history.diabetes).to eq(expected_values[:diabetes])
+        expect(history.diagnosed_with_hypertension).to eq(expected_values[:diagnosed_with_hypertension])
+        expect(history.hypertension).to eq(expected_values[:hypertension])
+        expect(history.receiving_treatment_for_diabetes).to eq(expected_values[:receiving_treatment_for_diabetes])
+      end
+
+      it "sets values to nil when not provided" do
+        params[:medical_histories][0].delete(:receiving_treatment_for_diabetes)
+
+        post :sync_from_user, params: params
+
+        expect(response.status).to eq 200
+        history = patient.medical_history
+        expected_values = params[:medical_histories].first
+
+        expect(history.id).to eq(expected_values[:id])
+        expect(history.patient_id).to eq(expected_values[:patient_id])
+        expect(history.prior_heart_attack_boolean).to eq(expected_values[:prior_heart_attack_boolean])
+        expect(history.prior_stroke_boolean).to eq(expected_values[:prior_stroke_boolean])
+        expect(history.chronic_kidney_disease_boolean).to eq(expected_values[:chronic_kidney_disease_boolean])
+        expect(history.receiving_treatment_for_hypertension_boolean).to eq(expected_values[:receiving_treatment_for_hypertension_boolean])
+        expect(history.diabetes_boolean).to eq(expected_values[:diabetes_boolean])
+        expect(history.diagnosed_with_hypertension_boolean).to eq(expected_values[:diagnosed_with_hypertension_boolean])
+        expect(history.prior_heart_attack).to eq(expected_values[:prior_heart_attack])
+        expect(history.prior_stroke).to eq(expected_values[:prior_stroke])
+        expect(history.chronic_kidney_disease).to eq(expected_values[:chronic_kidney_disease])
+        expect(history.receiving_treatment_for_hypertension).to eq(expected_values[:receiving_treatment_for_hypertension])
+        expect(history.diabetes).to eq(expected_values[:diabetes])
+        expect(history.diagnosed_with_hypertension).to eq(expected_values[:diagnosed_with_hypertension])
+        expect(history.hypertension).to eq(expected_values[:hypertension])
+        expect(history.receiving_treatment_for_diabetes).to eq(nil)
+      end
+
+      it "returns 200 but returns errors and does not create a medical history when provided invalid values" do
+        params[:medical_histories][0][:receiving_treatment_for_diabetes] = "probably"
+        post :sync_from_user, params: params
+
+        expect(response.status).to eq 200
+        parsed_body = JSON.parse(response.body)
+        expect(parsed_body["errors"][0]["schema"][0]).to start_with(
+          "The property '#/receiving_treatment_for_diabetes' value \"probably\" did not match one of the following values: yes, no, unknown in schema"
+        )
+        expect(patient.medical_history).to eq(nil)
+      end
     end
   end
 end
