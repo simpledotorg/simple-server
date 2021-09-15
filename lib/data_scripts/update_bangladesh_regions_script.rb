@@ -11,15 +11,17 @@ class UpdateBangladeshRegionsScript < DataScript
     super(*args)
     fields = {module: :data_script, class: self.class}
     @logger = Rails.logger.child(fields)
-    @results = {
-      dry_run: dry_run?,
-      facilities_deleted: 0
-    }
+    @results = Hash.new(0)
+    @results[:dry_run] = dry_run?
   end
 
   def call
     return unless CountryConfig.current_country?("Bangladesh")
     destroy_empty_facilities
+    create_facilities
+  end
+
+  def create_facilities
     BangladeshRegionsReader.new.each_row do |row|
       next if row[:division].blank? || row[:division] == "Division" || row[:facility_name].blank?
       facility_name = row[:facility_name]
@@ -40,14 +42,23 @@ class UpdateBangladeshRegionsScript < DataScript
       upazila_region = find_or_create_region(:block, upazila_name, district_region)
       facility_region = find_or_create_region(:facility, facility_name, upazila_region)
       facility = Facility.new(name: facility_name, region: facility_region, facility_size: facility_size, zone: upazila_region.name, district: district_region.name, country: "Bangladesh")
-      facility.save!
+      if run_safely { facility.save! }
+        results[:facility_creates] += 1
+      else
+        results[:facility_errors] += 1
+      end
     end
 
     results
   end
 
   def find_or_create_region(region_type, name, parent)
-    Region.where(name: name).first || Region.create!(name: name, region_type: region_type, reparent_to: parent)
+    region = run_safely {
+      Region.where(name: name).first || Region.create!(name: name, region_type: region_type, reparent_to: parent)
+    }
+    region ? results[:region_creates] += 1 : results[:region_errors] += 1
+    region
+
   end
 
   def destroy_empty_facilities

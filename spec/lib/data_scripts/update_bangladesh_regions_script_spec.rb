@@ -7,6 +7,9 @@ describe UpdateBangladeshRegionsScript do
   end
 
   before do
+    Region.delete_all
+    root = Region.create!(name: "Bangladesh", region_type: "root", path: "bangladesh")
+    Region.create!(name: "NCDC, DGHS and NHF", region_type: :organization, slug: "nhf", reparent_to: root)
     expect(CountryConfig).to receive(:current_country?).with("Bangladesh").and_return(true)
   end
 
@@ -18,17 +21,12 @@ describe UpdateBangladeshRegionsScript do
   end
 
   context "region import" do
-    before do
-      Region.delete_all
-      root = Region.create!(name: "Bangladesh", region_type: "root", path: "bangladesh")
-      Region.create!(name: "NCDC, DGHS and NHF", region_type: :organization, slug: "nhf", reparent_to: root)
-    end
-
-    fit "creates new facilities from CSV" do
-      pp Region.root_regions
+    it "creates new facilities from CSV" do
+      result = nil
       expect {
-        described_class.call(dry_run: false)
-      }.to change { Region.count }.by(3).and change { Facility.count }.by(1)
+        result = described_class.call(dry_run: false)
+      }.to change { Region.count }.by(1432).and change { Facility.count }.by(1449)
+      pp result
     end
   end
 
