@@ -1,3 +1,4 @@
+require_relative "./bangladesh_regions_reader"
 class UpdateBangladeshRegionsScript < DataScript
   attr_reader :logger
   attr_reader :results
@@ -19,7 +20,34 @@ class UpdateBangladeshRegionsScript < DataScript
   def call
     return unless CountryConfig.current_country?("Bangladesh")
     destroy_empty_facilities
+    BangladeshRegionsReader.new.each_row do |row|
+      next if row[:division].blank? || row[:division] == "Division" || row[:facility_name].blank?
+      facility_name = row[:facility_name]
+      division = row[:division]
+      district = row[:district]
+      upazila_name = row[:upazila]
+      facility_size = case row[:facility_type]
+        when "CC" then "community"
+        when "UHC" then "large"
+        when "USC" then "medium"
+        else raise ArgumentError, "unknown facility_type #{row[:facility_type]}"
+      end
+      logger.debug { "processing #{row[:facility_name]}" }
+
+      org_region = Region.organization_regions.find_by!(slug: "nhf")
+      division_region = find_or_create_region(:state, division, org_region)
+      district_region = find_or_create_region(:district, district, division_region)
+      upazila_region = find_or_create_region(:block, upazila_name, district_region)
+      facility_region = find_or_create_region(:facility, facility_name, upazila_region)
+      facility = Facility.new(name: facility_name, region: facility_region, facility_size: facility_size, zone: upazila_region.name, district: district_region.name, country: "Bangladesh")
+      facility.save!
+    end
+
     results
+  end
+
+  def find_or_create_region(region_type, name, parent)
+    Region.where(name: name).first || Region.create!(name: name, region_type: region_type, reparent_to: parent)
   end
 
   def destroy_empty_facilities
@@ -39,5 +67,4 @@ class UpdateBangladeshRegionsScript < DataScript
     return true if dry_run?
     yield
   end
-
 end

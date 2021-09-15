@@ -17,6 +17,21 @@ describe UpdateBangladeshRegionsScript do
     }.to not_change { Facility.count }.and not_change { Region.count }
   end
 
+  context "region import" do
+    before do
+      Region.delete_all
+      root = Region.create!(name: "Bangladesh", region_type: "root", path: "bangladesh")
+      Region.create!(name: "NCDC, DGHS and NHF", region_type: :organization, slug: "nhf", reparent_to: root)
+    end
+
+    fit "creates new facilities from CSV" do
+      pp Region.root_regions
+      expect {
+        described_class.call(dry_run: false)
+      }.to change { Region.count }.by(3).and change { Facility.count }.by(1)
+    end
+  end
+
   it "returns results" do
     create_list(:facility, 2, facility_size: "community")
     results = described_class.call(dry_run: false)
