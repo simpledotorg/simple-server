@@ -11,6 +11,7 @@ class UpdateBangladeshRegionsScript < DataScript
     fields = {module: :data_script, class: self.class}
     @logger = Rails.logger.child(fields)
     @results = {
+      dry_run: dry_run?,
       facilities_deleted: 0
     }
   end
@@ -18,6 +19,7 @@ class UpdateBangladeshRegionsScript < DataScript
   def call
     return unless CountryConfig.current_country?("Bangladesh")
     destroy_empty_facilities
+    results
   end
 
   def destroy_empty_facilities

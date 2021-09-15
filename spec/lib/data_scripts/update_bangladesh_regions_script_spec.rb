@@ -17,11 +17,18 @@ describe UpdateBangladeshRegionsScript do
     }.to not_change { Facility.count }.and not_change { Region.count }
   end
 
+  it "returns results" do
+    create_list(:facility, 2, facility_size: "community")
+    results = described_class.call(dry_run: false)
+    expect(results[:facilities_deleted]).to eq(2)
+    expect(results[:dry_run]).to be false
+  end
+
   it "removes Facilities without patients and users" do
     other_facility = create(:facility)
     user = create(:user, registration_facility: other_facility)
     empty_facilities = create_list(:facility, 2, facility_size: "community")
-    large_empty_facility = create(:facility, facility_size: "large")
+    _large_empty_facility = create(:facility, facility_size: "large")
     assigned_facility = create(:facility)
     registration_facility = create(:facility)
     create(:patient, registration_facility: registration_facility, assigned_facility: other_facility, registration_user: user)
