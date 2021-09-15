@@ -1,4 +1,9 @@
 class <%= class_name %> < DataScript
+  attr_reader :logger
+
   def initialize
+    fields = {module: :data_script, class: self.class}
+    @logger = Rails.logger.child(fields)
   end
+
 end
