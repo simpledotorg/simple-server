@@ -2,15 +2,15 @@ require "simple_server_extensions"
 require "ddtrace"
 require "datadog/statsd"
 
-# We want Datadog to run everywhere, but we won't have the DD agent running
-# in dev, test, or on Heroku - so we don't want to send payloads there.
-SEND_DATA_TO_DD_AGENT = !(Rails.env.development? || Rails.env.test? || SimpleServer.env.review?)
+# Allow running via an ENV var (for development usage, for example) ...otherwise
+# exclude some envs by default
+DATADOG_ENABLED = ENV["DATADOG_ENABLED"] || !(Rails.env.development? || Rails.env.test? || SimpleServer.env.review?)
 
 # Trying out Ruby code profiling in selected environments
 ENABLE_DD_PROFILING = SimpleServer.env.sandbox?
 
 Datadog.configure do |c|
-  c.tracer.enabled = SEND_DATA_TO_DD_AGENT
+  c.tracer.enabled = DATADOG_ENABLED
   c.profiling.enabled = ENABLE_DD_PROFILING
   c.version = SimpleServer.git_ref(short: true)
   c.use :rails, analytics_enabled: true

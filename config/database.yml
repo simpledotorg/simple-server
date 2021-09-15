@@ -11,6 +11,10 @@ development:
   <<: *default
   database: simple-server_development
 
+profiling:
+  <<: *default
+  database: simple-server_development
+
 test:
   <<: *default
   database: simple-server_test<%= ENV['TEST_ENV_NUMBER'] %>

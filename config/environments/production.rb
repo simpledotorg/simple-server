@@ -1,6 +1,4 @@
 Rails.application.configure do
-  # Settings specified here will take precedence over those in config/application.rb.
-
   # Set correct host name dynamically in Heroku Review Apps
   if ENV["HEROKU_APP_NAME"].present?
     ENV["SIMPLE_SERVER_HOST"] = "#{ENV["HEROKU_APP_NAME"]}.herokuapp.com"
