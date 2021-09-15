@@ -3,7 +3,7 @@ class DataScriptGenerator < Rails::Generators::NamedBase
 
   def create_data_script
     generate(:migration, file_name)
-    copy_file "data_script.rb", "lib/data_scripts/#{file_name}.rb"
-    copy_file "data_script_spec.rb", "spec/lib/data_scripts/#{file_name}_spec.rb"
+    template "data_script.erb", "lib/data_scripts/#{file_name}_script.rb"
+    template "data_script_spec.erb", "spec/lib/data_scripts/#{file_name}_script_spec.rb"
   end
 end
