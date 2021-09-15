@@ -1,11 +1,15 @@
 class Api::V4::Analytics::OverdueListsController < Api::V4::AnalyticsController
   def show
-    @patient_summaries = PatientSummaryQuery.call(
-      assigned_facilities: [current_facility],
-      only_overdue: false
-    ).order(risk_level: :desc, next_appointment_scheduled_date: :desc, id: :asc)
+    respond_to do |format|
+      format.csv do
+        @patient_summaries = PatientSummaryQuery.call(
+          assigned_facilities: [current_facility],
+          only_overdue: false
+        ).includes(:latest_bp_passport).order(risk_level: :desc, next_appointment_scheduled_date: :desc, id: :asc)
 
-    send_data render_to_string("appointments/index.csv.erb"), filename: download_filename
+        send_data render_to_string("show.csv.erb"), filename: download_filename
+      end
+    end
   end
 
   private
