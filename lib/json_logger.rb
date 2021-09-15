@@ -1,6 +1,3 @@
-# Don't merge the datadog trace info in some environments as it clutters up logs
-DATADOG_TRACE_INFO_ENABLED = !(Rails.env.development? || Rails.env.test?)
-
 class JsonLogger < Ougai::Logger
   include ActiveSupport::LoggerThreadSafeLevel
   include LoggerSilence
@@ -19,7 +16,8 @@ class JsonLogger < Ougai::Logger
         },
         ddsource: ["ruby"]
       }
-      data.merge!(datadog_trace_info) if DATADOG_TRACE_INFO_ENABLED
+      # Only merge datadog info if Datadog is enabled, as it clutters up the logs
+      data.merge!(datadog_trace_info) if DATADOG_ENABLED
       if RequestStore.store[:current_user_id]
         data[:current_user_id] = RequestStore.store[:current_user_id]
       end
@@ -29,10 +27,6 @@ class JsonLogger < Ougai::Logger
   end
 
   def create_formatter
-    if Rails.env.development? || Rails.env.test?
-      Ougai::Formatters::Readable.new
-    else
-      Ougai::Formatters::Bunyan.new
-    end
+    LoggingExtensions.default_log_formatter
   end
 end
