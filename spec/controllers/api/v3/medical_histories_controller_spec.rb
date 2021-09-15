@@ -136,7 +136,7 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
       expect(history.receiving_treatment_for_diabetes).to eq(expected_values[:receiving_treatment_for_diabetes])
     end
 
-    it "returns 200 but does not create a medical history when provided invalid values" do
+    it "returns 200 but returns errors and does not create a medical history when provided invalid values" do
       # we don't want a medical history for this and the patient factory creates one by default
       patient.medical_history.destroy!
       patient.reload
