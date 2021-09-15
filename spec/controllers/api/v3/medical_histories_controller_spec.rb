@@ -145,19 +145,22 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
       post :sync_from_user, params: params
 
       expect(response.status).to eq 200
+      parsed_body = JSON.parse(response.body)
+      expect(parsed_body["errors"][0]["schema"][0]).to start_with(
+        "The property '#/receiving_treatment_for_diabetes' value \"probably\" did not match one of the following values: yes, no, unknown in schema"
+      )
       expect(patient.medical_history).to eq(nil)
     end
 
-    it "does not update existing medical histroy" do
+    it "does not update existing medical history" do
       medical_history_id = patient.medical_history.id
 
       params[:medical_histories][0][:id] = medical_history_id
-      params[:medical_histories][0][:receiving_treatment_for_diabetes] = "probably"
+      params[:medical_histories][0][:receiving_treatment_for_diabetes] = "unknown"
 
       expect{
         post :sync_from_user, params: params
-      }.not_to change{ patient.reload.medical_history }
-
+      }.not_to change{ patient.reload.medical_history.receiving_treatment_for_diabetes }.from("no")
       expect(response.status).to eq 200
     end
   end
