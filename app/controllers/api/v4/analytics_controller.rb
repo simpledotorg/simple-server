@@ -1,3 +1,2 @@
-class Api::V4::AnalyticsController < APIController
-  around_action :set_reporting_time_zone
+class Api::V4::AnalyticsController < Api::V3::AnalyticsController
 end
