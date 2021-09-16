@@ -16,12 +16,7 @@ class UpdateBangladeshRegionsScript < DataScript
     @results = Hash.new(0)
     @results[:dry_run] = dry_run?
     @csv_path = csv_path
-    @cache = {
-      :state => {},
-      :district => {},
-      :block => {},
-      :facility => {}
-    }
+    @cache = { state: {}, district: {}, block: {}, facility: {} }
   end
 
   def call
@@ -63,7 +58,7 @@ class UpdateBangladeshRegionsScript < DataScript
 
   def find_or_create_region(region_type, name, parent)
     cache[region_type][name] ||= begin
-      region = Region.where(name: name).first || Region.new(name: name, region_type: region_type, reparent_to: parent)
+      region = Region.find_by(name: name) || Region.new(name: name, region_type: region_type, reparent_to: parent)
       region.save unless dry_run?
       region.valid? ? results[:region_creates] += 1 : results[:region_errors] += 1
       region
@@ -88,12 +83,17 @@ class UpdateBangladeshRegionsScript < DataScript
     yield
   end
 
-  CONVERTERS = lambda {|field, _| field.try(:strip) rescue nil }
+  CONVERTERS = lambda { |field, _|
+    begin
+      field.try(:strip)
+    rescue
+      nil
+    end
+  }
 
   def each_row
     CSV.foreach(@csv_path, headers: true, header_converters: :symbol, converters: [CONVERTERS]).with_index do |row, i|
       yield row, i
     end
   end
-
 end
