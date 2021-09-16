@@ -16,23 +16,25 @@ describe UpdateBangladeshRegionsScript do
   it "changes nothing in dry run mode" do
     create(:facility, facility_size: "community")
     expect {
-      described_class.call(dry_run: true)
+      described_class.call(dry_run: true, csv_path: test_csv_path)
     }.to not_change { Facility.count }.and not_change { Region.count }
   end
+
+  let(:test_csv_path) { Rails.root.join("spec", "fixtures", "files", "bd_test_regions.csv") }
 
   context "region import" do
     it "creates new facilities from CSV" do
       result = nil
       expect {
-        result = described_class.call(dry_run: false)
-      }.to change { Region.count }.by(1432).and change { Facility.count }.by(1449)
+        result = described_class.call(dry_run: false, csv_path: test_csv_path)
+      }.to change { Region.count }.by(73).and change { Facility.count }.by(55)
       pp result
     end
   end
 
   it "returns results" do
     create_list(:facility, 2, facility_size: "community")
-    results = described_class.call(dry_run: false)
+    results = described_class.call(dry_run: false, csv_path: test_csv_path)
     expect(results[:facilities_deleted]).to eq(2)
     expect(results[:dry_run]).to be false
   end
@@ -48,7 +50,7 @@ describe UpdateBangladeshRegionsScript do
     create(:patient, registration_facility: other_facility, assigned_facility: assigned_facility, registration_user: user)
 
     expect {
-      described_class.call(dry_run: false)
+      described_class.new(dry_run: false, csv_path: test_csv_path).destroy_empty_facilities
     }.to change { Facility.count }.by(-2)
     empty_facilities.each do |facility|
       expect(Facility.find_by(id: facility.id)).to be_nil

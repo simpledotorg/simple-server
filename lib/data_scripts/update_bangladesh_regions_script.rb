@@ -1,18 +1,28 @@
 require_relative "./bangladesh_regions_reader"
 class UpdateBangladeshRegionsScript < DataScript
+  attr_reader :cache
   attr_reader :logger
   attr_reader :results
+  DEFAULT_CSV_PATH = Rails.root.join("db", "bd_regions.csv")
 
   def self.call(*args)
     new(*args).call
   end
 
-  def initialize(*args)
-    super(*args)
+  def initialize(dry_run: true, csv_path: DEFAULT_CSV_PATH)
+    super(dry_run: dry_run)
+
     fields = {module: :data_script, class: self.class}
     @logger = Rails.logger.child(fields)
     @results = Hash.new(0)
     @results[:dry_run] = dry_run?
+    @csv_path = csv_path
+    @cache = {
+      :state => {},
+      :district => {},
+      :block => {},
+      :facility => {}
+    }
   end
 
   def call
@@ -22,7 +32,8 @@ class UpdateBangladeshRegionsScript < DataScript
   end
 
   def create_facilities
-    BangladeshRegionsReader.new.each_row do |row|
+    org_region = Region.organization_regions.find_by!(slug: "nhf")
+    each_row do |row|
       next if row[:division].blank? || row[:division] == "Division" || row[:facility_name].blank?
       facility_name = row[:facility_name]
       division = row[:division]
@@ -36,7 +47,6 @@ class UpdateBangladeshRegionsScript < DataScript
       end
       logger.debug { "processing #{row[:facility_name]}" }
 
-      org_region = Region.organization_regions.find_by!(slug: "nhf")
       division_region = find_or_create_region(:state, division, org_region)
       district_region = find_or_create_region(:district, district, division_region)
       upazila_region = find_or_create_region(:block, upazila_name, district_region)
@@ -53,12 +63,12 @@ class UpdateBangladeshRegionsScript < DataScript
   end
 
   def find_or_create_region(region_type, name, parent)
-    region = run_safely {
-      Region.where(name: name).first || Region.create!(name: name, region_type: region_type, reparent_to: parent)
-    }
-    region ? results[:region_creates] += 1 : results[:region_errors] += 1
-    region
-
+    cache[region_type][name] ||= begin
+      region = Region.where(name: name).first || Region.new(name: name, region_type: region_type, reparent_to: parent)
+      region.save unless dry_run?
+      region.valid? ? results[:region_creates] += 1 : results[:region_errors] += 1
+      region
+    end
   end
 
   def destroy_empty_facilities
@@ -78,4 +88,13 @@ class UpdateBangladeshRegionsScript < DataScript
     return true if dry_run?
     yield
   end
+
+  CONVERTERS = lambda {|field, _| field.try(:strip) rescue nil }
+
+  def each_row
+    CSV.foreach(@csv_path, headers: true, header_converters: :symbol, converters: [CONVERTERS]).with_index do |row, i|
+      yield row, i
+    end
+  end
+
 end
