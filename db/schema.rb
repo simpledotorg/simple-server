@@ -348,7 +348,7 @@ ActiveRecord::Schema.define(version: 2021_09_10_200224) do
     t.index ["patient_id"], name: "index_imo_authorizations_on_patient_id"
   end
 
-  create_table "imo_delivery_details", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "imo_delivery_details", force: :cascade do |t|
     t.string "result"
     t.string "callee_phone_number", null: false
     t.datetime "deleted_at"

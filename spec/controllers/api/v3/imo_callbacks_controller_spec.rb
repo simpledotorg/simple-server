@@ -81,8 +81,8 @@ RSpec.describe Api::V3::ImoCallbacksController, type: :controller do
 
       it "updates the notification's imo delivery detail status to 'read'" do
         notification = create(:notification)
-        communication = create(:communication, communication_type: "imo", notification: notification)
-        detail = create(:imo_delivery_detail, communication: communication)
+        detail = create(:imo_delivery_detail)
+        communication = create(:communication, communication_type: "imo", notification: notification, detailable: detail)
 
         params = {notification_id: notification.id}
         expect {

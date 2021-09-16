@@ -91,8 +91,7 @@ describe Communication, type: :model do
       appt = create(:appointment, patient: patient)
       notification = create(:notification, subject: appt, patient: patient)
       expect {
-        Communication.create_with_imo_details!(appointment: notification.subject,
-                                               notification: notification)
+        Communication.create_with_imo_details!(notification: notification, response: :sent)
       }.to change { notification.communications.count }.by(1)
       communication = notification.communications.last
       expect(communication.communication_type).to eq("imo")

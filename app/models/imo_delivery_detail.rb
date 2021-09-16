@@ -11,6 +11,18 @@ class ImoDeliveryDetail < ApplicationRecord
 
   after_create :update_authorization, if: proc {|detail| detail.result.in? [:not_subscribed, :no_imo_account] }
 
+  # def unsuccessful?
+  #   failed? || undelivered? || unknown?
+  # end
+
+  # def successful?
+  #   delivered? || read?
+  # end
+
+  # def in_progress?
+  #   queued? || sending? || sent?
+  # end
+
   private
 
   def update_authorization
