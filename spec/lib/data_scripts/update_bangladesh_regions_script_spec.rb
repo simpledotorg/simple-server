@@ -50,7 +50,9 @@ describe UpdateBangladeshRegionsScript do
     create(:patient, registration_facility: other_facility, assigned_facility: assigned_facility, registration_user: user)
 
     expect {
-      described_class.new(dry_run: false, csv_path: test_csv_path).destroy_empty_facilities
+      script = described_class.new(dry_run: false, csv_path: test_csv_path)
+      expect(script).to receive(:create_facilities)
+      script.call
     }.to change { Facility.count }.by(-2)
     empty_facilities.each do |facility|
       expect(Facility.find_by(id: facility.id)).to be_nil

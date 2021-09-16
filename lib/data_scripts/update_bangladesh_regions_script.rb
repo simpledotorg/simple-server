@@ -1,4 +1,3 @@
-require_relative "./bangladesh_regions_reader"
 class UpdateBangladeshRegionsScript < DataScript
   attr_reader :cache
   attr_reader :logger
