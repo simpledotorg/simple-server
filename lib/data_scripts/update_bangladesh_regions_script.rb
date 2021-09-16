@@ -46,7 +46,7 @@ class UpdateBangladeshRegionsScript < DataScript
       upazila_region = find_or_create_region(:block, upazila_name, district_region)
       facility_region = find_or_create_region(:facility, facility_name, upazila_region)
       facility = Facility.new(name: facility_name, region: facility_region, facility_size: facility_size, zone: upazila_region.name, district: district_region.name, country: "Bangladesh")
-      if run_safely { facility.save! }
+      if run_safely { facility.save }
         results[:facility_creates] += 1
       else
         results[:facility_errors] += 1
@@ -58,11 +58,18 @@ class UpdateBangladeshRegionsScript < DataScript
 
   def find_or_create_region(region_type, name, parent)
     cache[region_type][name] ||= begin
-      region = Region.find_by(name: name) || Region.new(name: name, region_type: region_type, reparent_to: parent)
-      region.save unless dry_run?
-      region.valid? ? results[:region_creates] += 1 : results[:region_errors] += 1
-      region
+      Region.find_by(name: name) || create_region(region_type, name, parent)
     end
+  end
+
+  def create_region(region_type, name, parent)
+    region = Region.new(name: name, region_type: region_type, reparent_to: parent)
+    if run_safely { region.save }
+      results[:region_creates] += 1
+    else
+      results[:region_errors] += 1
+    end
+    region
   end
 
   def destroy_empty_facilities

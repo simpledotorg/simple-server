@@ -2,9 +2,7 @@ require "rails_helper"
 require_relative "../../../lib/data_scripts/update_bangladesh_regions_script"
 
 describe UpdateBangladeshRegionsScript do
-  it "runs" do
-    described_class.call
-  end
+  let(:test_csv_path) { Rails.root.join("spec", "fixtures", "files", "bd_test_regions.csv") }
 
   before do
     Region.delete_all
@@ -13,30 +11,35 @@ describe UpdateBangladeshRegionsScript do
     expect(CountryConfig).to receive(:current_country?).with("Bangladesh").and_return(true)
   end
 
-  it "changes nothing in dry run mode" do
-    create(:facility, facility_size: "community")
-    expect {
-      described_class.call(dry_run: true, csv_path: test_csv_path)
-    }.to not_change { Facility.count }.and not_change { Region.count }
-  end
+  context "dry_run" do
+    it "changes nothing in dry run mode" do
+      create(:facility, facility_size: "community")
+      expect {
+        described_class.call(dry_run: true, csv_path: test_csv_path)
+      }.to not_change { Facility.count }.and not_change { Region.count }
+    end
 
-  let(:test_csv_path) { Rails.root.join("spec", "fixtures", "files", "bd_test_regions.csv") }
+    it "returns results" do
+      create_list(:facility, 2, facility_size: "community")
+      expect {
+        results = described_class.call(dry_run: true, csv_path: test_csv_path)
+        expect(results[:facilities_deleted]).to eq(2)
+        expect(results[:facility_creates]).to eq(44)
+        expect(results[:region_creates]).to eq(64)
+        expect(results[:dry_run]).to be true
+      }.to not_change { Facility.count }.and not_change { Region.count }
+    end
+  end
 
   context "region import" do
     it "creates new facilities from CSV" do
       result = nil
       expect {
         result = described_class.call(dry_run: false, csv_path: test_csv_path)
-      }.to change { Region.count }.by(73).and change { Facility.count }.by(55)
-      pp result
+        expect(result[:region_creates]).to eq(63)
+        expect(result[:facility_creates]).to eq(44)
+      }.to change { Region.count }.by(63).and change { Facility.count }.by(44)
     end
-  end
-
-  it "returns results" do
-    create_list(:facility, 2, facility_size: "community")
-    results = described_class.call(dry_run: false, csv_path: test_csv_path)
-    expect(results[:facilities_deleted]).to eq(2)
-    expect(results[:dry_run]).to be false
   end
 
   it "removes Facilities without patients and users" do
@@ -58,5 +61,4 @@ describe UpdateBangladeshRegionsScript do
       expect(Facility.find_by(id: facility.id)).to be_nil
     end
   end
-
 end
