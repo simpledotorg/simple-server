@@ -8,8 +8,8 @@ describe UpdateBangladeshRegionsScript do
     Region.delete_all
     root = Region.create!(name: "Bangladesh", region_type: "root", path: "bangladesh")
     org_region = Region.create!(name: "NCDC, DGHS and NHF", region_type: :organization, slug: "nhf", reparent_to: root)
-    org = Organization.create!(name: "NHF", region: org_region)
-    protocol = create(:protocol, name: "Bangladesh Hypertension Management Protocol for Primary Healthcare Setting")
+    _org = Organization.create!(name: "NHF", region: org_region)
+    _protocol = create(:protocol, name: "Bangladesh Hypertension Management Protocol for Primary Healthcare Setting")
 
     expect(CountryConfig).to receive(:current_country?).with("Bangladesh").and_return(true)
   end

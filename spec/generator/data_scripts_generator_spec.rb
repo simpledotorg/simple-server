@@ -12,7 +12,7 @@ RSpec.describe "DataScripts", type: :generator do
 
   it "creates the script and the spec" do
     generator = DataScriptGenerator.new(["widget_renamer"])
-    expect(generator).to receive(:generate).with(:migration, "widget_renamer")
+    expect(generator).to receive(:generate).with(:data_migration, "widget_renamer")
     generator.create_data_script
 
     expect(script).to exist
