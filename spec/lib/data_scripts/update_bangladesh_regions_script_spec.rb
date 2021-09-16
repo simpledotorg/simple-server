@@ -46,6 +46,7 @@ describe UpdateBangladeshRegionsScript do
     other_facility = create(:facility)
     user = create(:user, registration_facility: other_facility)
     empty_facilities = create_list(:facility, 2, facility_size: "community")
+    _empty_facility_with_no_size = create(:facility, facility_size: nil)
     _large_empty_facility = create(:facility, facility_size: "large")
     assigned_facility = create(:facility)
     registration_facility = create(:facility)
@@ -56,7 +57,7 @@ describe UpdateBangladeshRegionsScript do
       script = described_class.new(dry_run: false, csv_path: test_csv_path)
       expect(script).to receive(:create_facilities)
       script.call
-    }.to change { Facility.count }.by(-2)
+    }.to change { Facility.count }.by(-3).and change { Region.count }.by(-3)
     empty_facilities.each do |facility|
       expect(Facility.find_by(id: facility.id)).to be_nil
     end
