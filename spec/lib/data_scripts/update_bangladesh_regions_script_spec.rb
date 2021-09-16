@@ -7,7 +7,10 @@ describe UpdateBangladeshRegionsScript do
   before do
     Region.delete_all
     root = Region.create!(name: "Bangladesh", region_type: "root", path: "bangladesh")
-    Region.create!(name: "NCDC, DGHS and NHF", region_type: :organization, slug: "nhf", reparent_to: root)
+    org_region = Region.create!(name: "NCDC, DGHS and NHF", region_type: :organization, slug: "nhf", reparent_to: root)
+    org = Organization.create!(name: "NHF", region: org_region)
+    protocol = create(:protocol, name: "Bangladesh Hypertension Management Protocol for Primary Healthcare Setting")
+
     expect(CountryConfig).to receive(:current_country?).with("Bangladesh").and_return(true)
   end
 
@@ -23,22 +26,35 @@ describe UpdateBangladeshRegionsScript do
       create_list(:facility, 2, facility_size: "community")
       expect {
         results = described_class.call(dry_run: true, csv_path: test_csv_path)
-        expect(results[:facilities_deleted]).to eq(2)
-        expect(results[:facility_creates]).to eq(44)
-        expect(results[:region_creates]).to eq(64)
+        expect(results[:deleted][:facilities]).to eq(2)
+        expect(results[:created][:facilities]).to eq(44)
+        expect(results[:created][:regions]).to eq(64)
         expect(results[:dry_run]).to be true
       }.to not_change { Facility.count }.and not_change { Region.count }
     end
   end
 
   context "region import" do
-    it "creates new facilities from CSV" do
+    it "creates new regions, facilities, and facility groups from CSV" do
       result = nil
       expect {
+        pp Region.district_regions.map(&:name)
+        pp FacilityGroup.all.map(&:name)
         result = described_class.call(dry_run: false, csv_path: test_csv_path)
-        expect(result[:region_creates]).to eq(63)
-        expect(result[:facility_creates]).to eq(44)
-      }.to change { Region.count }.by(63).and change { Facility.count }.by(44)
+        expect(result[:created][:regions]).to eq(64)
+        expect(result[:created][:facilities]).to eq(44)
+        pp Region.district_regions.map(&:name).sort
+        pp FacilityGroup.all.map(&:name).sort
+      }.to change { Region.count }.by(64)
+        .and change { Facility.count }.by(44)
+        .and change { Region.facility_regions.count }.by(44)
+        .and change { FacilityGroup.count }.by(6)
+        .and change { Region.district_regions.count }.by(6)
+      Facility.all.each do |facility|
+        fg = facility.facility_group
+        expect(fg).to_not be_nil
+        expect(fg.name).to eq(fg.region.name)
+      end
     end
   end
 

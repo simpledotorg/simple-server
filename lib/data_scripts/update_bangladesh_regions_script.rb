@@ -11,10 +11,9 @@ class UpdateBangladeshRegionsScript < DataScript
   def initialize(dry_run: true, csv_path: DEFAULT_CSV_PATH)
     super(dry_run: dry_run)
 
-    fields = {module: :data_script, class: self.class}
+    fields = {module: :data_script, class: self.class.to_s}
     @logger = Rails.logger.child(fields)
-    @results = Hash.new(0)
-    @results[:dry_run] = dry_run?
+    @results = {created: Hash.new(0), deleted: Hash.new(0), errors: Hash.new(0), dry_run: dry_run?}
     @csv_path = csv_path
     @cache = {state: {}, district: {}, block: {}, facility: {}}
   end
@@ -27,28 +26,40 @@ class UpdateBangladeshRegionsScript < DataScript
 
   def create_facilities
     org_region = Region.organization_regions.find_by!(slug: "nhf")
+    protocol = Protocol.find_by!(name: "Bangladesh Hypertension Management Protocol for Primary Healthcare Setting")
     each_row do |row|
       next if row[:division].blank? || row[:division] == "Division" || row[:facility_name].blank?
+      logger.debug { "Processing #{row[:facility_name]}" }
+
       facility_name = row[:facility_name]
-      division = row[:division]
-      district = row[:district]
+      division_name = row[:division]
+      district_name = row[:district]
       upazila_name = row[:upazila]
       facility_size = case row[:facility_type]
         when "CC", "USC" then "community"
         when "UHC" then "large"
         else raise ArgumentError, "unknown facility_type #{row[:facility_type]}"
       end
-      logger.debug { "processing #{row[:facility_name]}" }
 
-      division_region = find_or_create_region(:state, division, org_region)
-      district_region = find_or_create_region(:district, district, division_region)
+      division_region = find_or_create_region(:state, division_name, org_region)
+      district_region = find_or_create_region(:district, district_name, division_region)
+      facility_group = FacilityGroup.find_by(name: district_name) || FacilityGroup.new(name: district_name, organization: org_region.source, region: district_region, protocol: protocol, generating_seed_data: true)
+      if facility_group.new_record?
+        if run_safely { facility_group.save! }
+          results[:created][:facility_groups] += 1
+        else
+          logger.warn(errors: facility_group.errors, msg: "Errors trying to save facility group #{facility_group.name}")
+          results[:errors][:facility_groups] += 1
+        end
+      end
       upazila_region = find_or_create_region(:block, upazila_name, district_region)
       facility_region = find_or_create_region(:facility, facility_name, upazila_region)
-      facility = Facility.new(name: facility_name, region: facility_region, facility_size: facility_size, zone: upazila_region.name, district: district_region.name, country: "Bangladesh")
+      facility = Facility.new(name: facility_name, facility_group: facility_group, region: facility_region, state: division_region.name, facility_size: facility_size, zone: upazila_region.name, district: district_region.name, country: "Bangladesh")
       if run_safely { facility.save }
-        results[:facility_creates] += 1
+        results[:created][:facilities] += 1
       else
-        results[:facility_errors] += 1
+        logger.warn(errors: facility.errors, msg: "Errors trying to save facility #{facility.name}")
+        results[:errors][:facilities] += 1
       end
     end
 
@@ -56,15 +67,15 @@ class UpdateBangladeshRegionsScript < DataScript
   end
 
   def find_or_create_region(region_type, name, parent)
-    cache[region_type][name] ||= Region.find_by(name: name) || create_region(region_type, name, parent)
+    cache[region_type][name] ||= Region.where(region_type: region_type).find_by(name: name) || create_region(region_type, name, parent)
   end
 
   def create_region(region_type, name, parent)
     region = Region.new(name: name, region_type: region_type, reparent_to: parent)
     if run_safely { region.save }
-      results[:region_creates] += 1
+      results[:created][:regions] += 1
     else
-      results[:region_errors] += 1
+      results[:errors][:regions] += 1
     end
     region
   end
@@ -77,7 +88,7 @@ class UpdateBangladeshRegionsScript < DataScript
     facilities = Facility.where(facility_size: ["community", nil]).where(sql)
     facilities.each do |facility|
       if run_safely { facility.destroy }
-        results[:facilities_deleted] += 1
+        results[:deleted][:facilities] += 1
       end
     end
   end
