@@ -22,7 +22,11 @@ class Api::V3::ImoCallbacksController < ApplicationController
   end
 
   def read_receipt
-    
+    notification = Notification.find(params[:notification_id])
+    communication = notification.communications.find_by(communication_type: "imo")
+    detail = communication.detailable
+
+    detail.update(result: "read")
   end
 
   private

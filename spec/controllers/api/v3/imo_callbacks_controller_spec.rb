@@ -54,4 +54,41 @@ RSpec.describe Api::V3::ImoCallbacksController, type: :controller do
       end
     end
   end
+
+  describe "#read_receipt" do
+    it "returns 401 when authentication fails" do
+      post :read_receipt, params: {notification_id: "does_not_matter"}
+      expect(response.status).to eq(401)
+    end
+
+    context "with valid authentication" do
+      before :each do
+        request.env["HTTP_AUTHORIZATION"] = ActionController::HttpAuthentication::Basic.encode_credentials(
+          ENV["IMO_CALLBACK_USERNAME"],
+          ENV["IMO_CALLBACK_PASSWORD"]
+        )
+      end
+
+      it "raises an error when notification is not found" do
+        params = {notification_id: "does_not_exist"}
+
+        expect {
+          post :read_receipt, params: params
+        }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+
+      it "raises an error when the notification does not have an imo delivery detail"
+
+      it "updates the notification's imo delivery detail status to 'read'" do
+        notification = create(:notification)
+        communication = create(:communication, communication_type: "imo", notification: notification)
+        detail = create(:imo_delivery_detail, communication: communication)
+
+        params = {notification_id: notification.id}
+        expect {
+          post :read_receipt, params: params
+        }.to change{detail.reload.result}.from("sent").to("read")
+      end
+    end
+  end
 end
