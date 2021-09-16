@@ -85,10 +85,20 @@ class UpdateBangladeshRegionsScript < DataScript
       NOT EXISTS (SELECT 1 FROM patients where patients.registration_facility_id = facilities.id) AND
       NOT EXISTS (SELECT 1 FROM patients where patients.assigned_facility_id = facilities.id)
     SQL
+    related_facility_groups = []
     facilities = Facility.where(facility_size: ["community", nil]).where(sql)
+    logger.info { "Removing #{facilities.size} empty facilities" }
     facilities.each do |facility|
+      related_facility_groups << facility.facility_group
       if run_safely { facility.destroy }
         results[:deleted][:facilities] += 1
+      end
+    end
+    logger.info { "Removing facility groups with no facilities"}
+    related_facility_groups.each do |facility_group|
+      if facility_group.facilities.size == 0
+        logger.info { "Removing facility group #{facility_group.name} "}
+        facility_group.destroy
       end
     end
   end
