@@ -2433,6 +2433,14 @@
             "unknown"
           ]
         },
+        "receiving_treatment_for_diabetes": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
         "diabetes": {
           "type": "string",
           "enum": [
