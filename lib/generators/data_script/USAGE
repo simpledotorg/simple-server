@@ -1,8 +1,9 @@
 Description:
-    Explain the generator
+    Create a script to update production data.
 
 Example:
-    rails generate data_script Thing
+    rails generate data_script widget_updater
 
     This will create:
-        what/will/it/create
+        lib/data_scripts/widget_updater_script.rb
+        spec/lib/data_scripts/widget_updater_script_spec.rb
