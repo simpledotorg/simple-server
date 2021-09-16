@@ -34,9 +34,8 @@ class UpdateBangladeshRegionsScript < DataScript
       district = row[:district]
       upazila_name = row[:upazila]
       facility_size = case row[:facility_type]
-        when "CC" then "community"
+        when "CC", "USC" then "community"
         when "UHC" then "large"
-        when "USC" then "medium"
         else raise ArgumentError, "unknown facility_type #{row[:facility_type]}"
       end
       logger.debug { "processing #{row[:facility_name]}" }
