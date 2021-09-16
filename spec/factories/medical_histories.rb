@@ -6,6 +6,7 @@ FactoryBot.define do
     prior_stroke { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:no] }
     chronic_kidney_disease { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:no] }
     receiving_treatment_for_hypertension { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:no] }
+    receiving_treatment_for_diabetes { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:no] }
     diabetes { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:no] }
     hypertension { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:no] }
     diagnosed_with_hypertension { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:no] }
@@ -18,6 +19,7 @@ FactoryBot.define do
       prior_stroke { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:unknown] }
       chronic_kidney_disease { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:unknown] }
       receiving_treatment_for_hypertension { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:unknown] }
+      receiving_treatment_for_diabetes { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:unknown] }
       diabetes { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:unknown] }
       hypertension { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:unknown] }
       diagnosed_with_hypertension { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:unknown] }

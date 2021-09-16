@@ -13,11 +13,9 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
   end
 
   def other_facility_records
-    time(__method__) do
-      Facility
-        .with_discarded
-        .updated_on_server_since(other_facilities_processed_since, limit)
-    end
+    Facility
+      .with_discarded
+      .updated_on_server_since(other_facilities_processed_since, limit)
   end
 
   def disable_audit_logs?
@@ -42,12 +40,10 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
   end
 
   def records_to_sync
-    time(__method__) do
-      other_facility_records
-        .with_block_region_id
-        .includes(:facility_group)
-        .where.not(facility_group: nil)
-    end
+    other_facility_records
+      .with_block_region_id
+      .includes(:facility_group)
+      .where.not(facility_group: nil)
   end
 
   memoize def district_level_sync?
