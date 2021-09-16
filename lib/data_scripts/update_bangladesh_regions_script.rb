@@ -16,7 +16,7 @@ class UpdateBangladeshRegionsScript < DataScript
     @results = Hash.new(0)
     @results[:dry_run] = dry_run?
     @csv_path = csv_path
-    @cache = { state: {}, district: {}, block: {}, facility: {} }
+    @cache = {state: {}, district: {}, block: {}, facility: {}}
   end
 
   def call
@@ -56,9 +56,7 @@ class UpdateBangladeshRegionsScript < DataScript
   end
 
   def find_or_create_region(region_type, name, parent)
-    cache[region_type][name] ||= begin
-      Region.find_by(name: name) || create_region(region_type, name, parent)
-    end
+    cache[region_type][name] ||= Region.find_by(name: name) || create_region(region_type, name, parent)
   end
 
   def create_region(region_type, name, parent)
