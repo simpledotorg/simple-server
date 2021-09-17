@@ -11,7 +11,7 @@ RSpec.describe "Homes", type: :request do
       post email_authentication_session_path, params: {email_authentication: {email: user.email, password: password}}
       follow_redirect!
 
-      get "/home/index"
+      get "/home"
       expect(response).to have_http_status(:success)
     end
   end
