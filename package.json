@@ -2,7 +2,7 @@
   "name": "simple-server",
   "private": true,
   "dependencies": {
-    "@rails/webpacker": "^5.4.3",
+    "@rails/webpacker": "^6.0.0-beta.7",
     "bootstrap": "^5.0.2",
     "css-loader": "^6.2.0",
     "css-minimizer-webpack-plugin": "^3.0.2",
