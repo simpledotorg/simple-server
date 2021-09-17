@@ -64,7 +64,7 @@ Once the Docker Compose server is running, the logs should provide the ngrok URL
 
 After a successful docker installation, an admin dashboard account is automatically created.
 
-The default username...
+The default username and password for the dashboard account is:
 
 ```bash
 username: admin@simple.org
