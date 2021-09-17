@@ -38,14 +38,14 @@ class UpdateBangladeshRegionsScript < DataScript
       facility_size = case row[:facility_type]
         when "CC", "USC" then "community"
         when "UHC" then "large"
-        else raise ArgumentError, "unknown facility_type #{row[:facility_type]}"
+        else results[:errors][:unknown_facility_size] += 1
       end
 
       division_region = find_or_create_region(:state, division_name, org_region)
       district_region = find_or_create_region(:district, district_name, division_region)
       facility_group = FacilityGroup.find_by(name: district_name) || FacilityGroup.new(name: district_name, organization: org_region.source, region: district_region, protocol: protocol, generating_seed_data: true)
       if facility_group.new_record?
-        if run_safely { facility_group.save! }
+        if run_safely { facility_group.save }
           results[:created][:facility_groups] += 1
         else
           logger.warn(errors: facility_group.errors, msg: "Errors trying to save facility group #{facility_group.name}")
