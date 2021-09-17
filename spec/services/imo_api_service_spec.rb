@@ -94,7 +94,7 @@ describe ImoApiService, type: :model do
 
     context "with feature flag off" do
       it "returns nil" do
-        expect(service.send_notification(patient, notification)).to eq(nil)
+        expect(service.send_notification(notification)).to eq(nil)
       end
     end
 
@@ -108,34 +108,34 @@ describe ImoApiService, type: :model do
       it "returns sent on a successful 200 response" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: success_body)
         expect(Sentry).not_to receive(:capture_message)
-        expect(service.send_notification(patient, notification)).to eq(:sent)
+        expect(service.send_notification(notification)).to eq(:sent)
       end
 
       it "reports to sentry and returns error on other 200 responses" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: {}.to_json)
         expect(Sentry).to receive(:capture_message)
-        expect(service.send_notification(patient, notification)).to eq(:error)
+        expect(service.send_notification(notification)).to eq(:error)
       end
 
       it "reports to sentry and returns error on other 400 responses" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: {}.to_json)
 
         expect(Sentry).to receive(:capture_message)
-        expect(service.send_notification(patient, notification)).to eq(:error)
+        expect(service.send_notification(notification)).to eq(:error)
       end
 
       it "reports to sentry and returns error on other statuses" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 401, body: {}.to_json)
 
         expect(Sentry).to receive(:capture_message)
-        expect(service.send_notification(patient, notification)).to eq(:error)
+        expect(service.send_notification(notification)).to eq(:error)
       end
 
       it "raises a custom error on network error" do
         stub_request(:post, request_url).to_timeout
 
         expect {
-          service.send_notification(patient, notification)
+          service.send_notification(notification)
         }.to raise_error(ImoApiService::Error)
       end
     end

@@ -86,7 +86,7 @@ class AppointmentNotification::Worker
         context: context
       )
     when "imo"
-      notification_service.send_notification(notification.patient, notification)
+      notification_service.send_notification(notification)
     else
       raise UnknownCommunicationType, "#{self.class.name} is not configured to handle communication type #{communication_type}"
     end

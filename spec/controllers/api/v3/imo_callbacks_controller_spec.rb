@@ -75,10 +75,20 @@ RSpec.describe Api::V3::ImoCallbacksController, type: :controller do
         expect(response.status).to eq(404)
       end
 
+      it "raises an error when notification does not have an imo communication" do
+        notification = create(:notification)
+        params = {notification_id: notification.id}
+
+        post :read_receipt, params: params
+
+        expect(response.status).to eq(404)
+      end
+
       it "raises an error when the notification does not have an imo delivery detail" do
         notification = create(:notification)
-
+        communication = create(:communication, communication_type: "imo", notification: notification)
         params = {notification_id: notification.id}
+
         post :read_receipt, params: params
 
         expect(response.status).to eq(404)
@@ -88,11 +98,24 @@ RSpec.describe Api::V3::ImoCallbacksController, type: :controller do
         notification = create(:notification)
         detail = create(:imo_delivery_detail)
         communication = create(:communication, communication_type: "imo", notification: notification, detailable: detail)
-
         params = {notification_id: notification.id}
+
         expect {
           post :read_receipt, params: params
         }.to change{detail.reload.result}.from("sent").to("read")
+        expect(response.status).to eq(200)
+      end
+
+      it "returns 400 if the result is changed to 'read' multiple times" do
+        notification = create(:notification)
+        detail = create(:imo_delivery_detail, result: "read", created_at: 10.minutes.ago)
+        communication = create(:communication, communication_type: "imo", notification: notification, detailable: detail)
+        params = {notification_id: notification.id}
+
+        expect(Rails.logger).to receive(:error).with("detail #{detail.id} already marked read")
+        expect {
+          post :read_receipt, params: params
+        }.not_to change{detail.reload}
         expect(response.status).to eq(200)
       end
     end

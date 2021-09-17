@@ -25,12 +25,17 @@ class Api::V3::ImoCallbacksController < ApplicationController
   end
 
   def read_receipt
-    notification = Notification.find(params[:notification_id])
-    communication = notification.communications.find_by!(communication_type: "imo")
-
-    # this should raise
+    communication = Communication.find_by!(notification_id: params[:notification_id], communication_type: "imo", detailable_type: "ImoDeliveryDetail")
     detail = communication.detailable
-    detail.update!(result: "read")
+    unless detail
+      raise ActiveRecord::RecordNotFound, "no ImoDeliveryDetail found for communication #{communication.id}"
+    end
+    if detail.result == "read"
+      # adding this logging to catch errors in imo's system
+      logger.error "detail #{detail.id} already marked read"
+    else
+      detail.update!(result: "read")
+    end
 
     head :ok
   end
