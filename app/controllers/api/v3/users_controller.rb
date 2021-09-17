@@ -39,7 +39,7 @@ class Api::V3::UsersController < APIController
     phone_number_authentication.set_otp
     phone_number_authentication.save
 
-    unless FeatureToggle.auto_approve_for_qa?
+    unless user.feature_enabled?(:fixed_otp)
       delay_seconds = (ENV["USER_OTP_SMS_DELAY_IN_SECONDS"] || DEFAULT_USER_OTP_DELAY_IN_SECONDS).to_i.seconds
       RequestOtpSmsJob.set(wait: delay_seconds).perform_later(user)
     end
@@ -50,7 +50,7 @@ class Api::V3::UsersController < APIController
   def reset_password
     current_user.reset_phone_number_authentication_password!(reset_password_digest)
 
-    unless FeatureToggle.auto_approve_for_qa?
+    unless current_user.feature_enabled?(:auto_approve_users)
       ApprovalNotifierMailer
         .delay
         .reset_password_approval_email(user_id: current_user.id)
@@ -65,7 +65,7 @@ class Api::V3::UsersController < APIController
   private
 
   def approve_and_save(user)
-    FeatureToggle.auto_approve_for_qa? ?
+    user.feature_enabled?(:auto_approve_users) ?
       user.sync_approval_allowed :
       user.sync_approval_requested(I18n.t("registration"))
 
@@ -73,7 +73,7 @@ class Api::V3::UsersController < APIController
   end
 
   def send_approval_email(user)
-    return if FeatureToggle.auto_approve_for_qa?
+    return if user.feature_enabled?(:auto_approve_users)
 
     ApprovalNotifierMailer
       .delay

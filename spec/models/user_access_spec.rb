@@ -5,6 +5,35 @@ RSpec.describe UserAccess, type: :model do
   let(:manager) { UserAccess.new(create(:admin, :manager)) }
   let(:power_user) { UserAccess.new(create(:admin, :power_user)) }
 
+  describe "can_access?" do
+    let(:admin) { build(:user, access_level: :viewer_all) }
+
+    it "raises error for invalid resource" do
+      [Region, ProtocolDrug, User, Protocol].each do |klass|
+        resource = klass.new
+        expect {
+          admin.can_access?(resource, :manage)
+        }.to raise_error(UserAccess::UnsupportedAccessRequest, "can only be called with a Facility, FacilityGroup, or Organization")
+      end
+    end
+
+    it "raises for invalid action" do
+      expect {
+        admin.can_access?(Facility.new, :foo)
+      }.to raise_error(ArgumentError, /unknown action foo/)
+      expect {
+        admin.can_access?(Facility.new, nil)
+      }.to raise_error(ArgumentError, /unknown action /)
+    end
+
+    it "returns for a valid resource" do
+      [Facility, FacilityGroup, Organization].each do |klass|
+        resource = klass.new
+        expect(admin.can_access?(resource, :manage)).to be false
+      end
+    end
+  end
+
   describe "accessible_*" do
     let(:organization_1) { create(:organization, name: "org_1") }
     let(:organization_2) { create(:organization, name: "org_2") }
@@ -21,6 +50,7 @@ RSpec.describe UserAccess, type: :model do
     let(:facility_4) { create(:facility, facility_group: facility_group_3_2) }
     let(:facility_5) { create(:facility) }
     let(:facility_6) { create(:facility) }
+    let(:other_facility) { create(:facility, name: "other facility") }
 
     let(:user_1) { create(:user, :with_phone_number_authentication, registration_facility: facility_1) }
     let(:user_2) { create(:user, :with_phone_number_authentication, registration_facility: facility_2) }
@@ -77,6 +107,8 @@ RSpec.describe UserAccess, type: :model do
                 action,
                 expected_resources,
                 admin.accessible_organizations(action))
+            expected_resources.each { |resource| expect(admin.can_access?(current_resource, action)).to be_truthy }
+            expect(admin.can_access?(organization_1, action)).to be_falsey
             admin.accesses.delete_all
           end
         end
@@ -111,11 +143,13 @@ RSpec.describe UserAccess, type: :model do
           it "returns the facility groups an admin can perform actions on with organization access" do
             permission_matrix.each do |admin, action, current_resource, expected_resources|
               admin.accesses.create!(resource: current_resource)
+
               expect(admin.accessible_facility_groups(action)).to match_array(expected_resources),
                 error_message(admin,
                   action,
                   expected_resources,
                   admin.accessible_facility_groups(action))
+              expected_resources.each { |resource| expect(admin.can_access?(current_resource, action)).to be_truthy }
               admin.accesses.delete_all
             end
           end
@@ -154,6 +188,7 @@ RSpec.describe UserAccess, type: :model do
                   action,
                   expected_resources,
                   admin.accessible_facility_groups(action))
+              expected_resources.each { |resource| expect(admin.can_access?(current_resource, action)).to be_truthy }
               admin.accesses.delete_all
             end
           end
@@ -243,7 +278,9 @@ RSpec.describe UserAccess, type: :model do
           it "returns the facilities an admin can perform actions on with organization access" do
             permission_matrix.each do |admin, action, current_resource, expected_resources|
               admin.accesses.create!(resource: current_resource)
+
               expect(admin.accessible_facilities(action)).to match_array(expected_resources)
+              expected_resources.each { |resource| expect(admin.can_access?(resource, action)).to be_truthy }
               admin.accesses.delete_all
             end
           end
@@ -277,11 +314,15 @@ RSpec.describe UserAccess, type: :model do
           it "returns the facilities an admin can perform actions on with facility group access" do
             permission_matrix.each do |admin, action, current_resource, expected_resources|
               admin.accesses.create!(resource: current_resource)
+
               expect(admin.accessible_facilities(action)).to match_array(expected_resources),
                 error_message(admin,
                   action,
                   expected_resources,
                   admin.accessible_facilities(action))
+              expected_resources.each { |resource| expect(admin.can_access?(resource, action)).to be_truthy }
+              expect(admin.can_access?(other_facility, action)).to be_falsey
+
               admin.accesses.delete_all
             end
           end
@@ -312,14 +353,23 @@ RSpec.describe UserAccess, type: :model do
             ]
           }
 
+          it "returns false for can_access for facilities without access" do
+            permission_matrix.each do |admin, action, current_resource, expected_resources|
+              result = admin.can_access?(other_facility, action)
+              expect(result).to be_falsey, "admin #{admin.full_name} should not have access to #{other_facility.name} with #{action}, but got #{result}"
+            end
+          end
+
           it "returns the facilities an admin can perform actions on with facility access" do
             permission_matrix.each do |admin, action, current_resource, expected_resources|
               admin.accesses.create!(resource: current_resource)
+
               expect(admin.accessible_facilities(action)).to match_array(expected_resources),
                 error_message(admin,
                   action,
                   expected_resources,
                   admin.accessible_facilities(action))
+              expected_resources.each { |resource| expect(admin.can_access?(resource, action)).to be_truthy }
               admin.accesses.delete_all
             end
           end

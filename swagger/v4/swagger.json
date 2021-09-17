@@ -472,9 +472,19 @@
           "200": {
             "description": "returns state names",
             "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
+              "type": "object",
+              "properties": {
+                "states": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
               },
               "description": "List of available state names"
             }
@@ -1358,6 +1368,14 @@
           ]
         },
         "receiving_treatment_for_hypertension": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
+        "receiving_treatment_for_diabetes": {
           "type": "string",
           "enum": [
             "yes",

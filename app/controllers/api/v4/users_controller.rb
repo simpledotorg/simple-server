@@ -27,7 +27,7 @@ class Api::V4::UsersController < APIController
       authentication.set_otp
       authentication.save
 
-      unless FeatureToggle.auto_approve_for_qa?
+      unless user.feature_enabled?(:fixed_otp)
         delay_seconds = (ENV["USER_OTP_SMS_DELAY_IN_SECONDS"] || DEFAULT_USER_OTP_DELAY_IN_SECONDS).to_i.seconds
         RequestOtpSmsJob.set(wait: delay_seconds).perform_later(user)
       end

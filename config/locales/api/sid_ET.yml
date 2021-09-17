@@ -85,7 +85,7 @@ sid-ET:
       faq_html: Rosantino xa’muwa
     support:
       heading_html: Kaa’lo xa’mi
-      contents_html: Qarru woyi xa’mo heedhuhero, kaa’lote gaamo ilka (button) kisi Ninketi jaallanke gaamo kaa’litanohe
+      contents_html: "Qarru woyi xa’mo heedhuhero, kaa’lote gaamo ilka (button) kisi Ninketi jaallanke gaamo kaa’litanohe"
     bp_passport_app_summary:
       new_html: HAARO!
       heading_html: App xagisiraanote
@@ -132,7 +132,7 @@ sid-ET:
         heading_html: Viidio lai
         contents_html: Ontu/5 dhiqqeessi giddo Simple qara coyibba affe
       who_to_record:
-        heading_html: Simple ayi borreessi?
+        heading_html: "Simple ayi borreessi?"
         contents_1_html: Borreessate Simple Horonsiri <i>mittu mittunku Jawa Mundeete xiiwo noonsarira</i> woyi jawa Mundeete xiiwora xagga adhitayi noorira.
         contents_2_html: Xagisiraanchu layirara higiro mittu gari xiwamaancho hasi nna haaro Mundeete xiiwo eessi.
       step_1:
@@ -142,11 +142,11 @@ sid-ET:
       step_2:
         label_html: Deerra 2
         heading_html: Mundeete xiiwo passporte giddo borreessi
-        contents_html: Mundeete xiiwo passporte nooheha ikkiro, xagisiraanchu su’ma borreessi. Hakuyi gedensaanni, Simple app horonsiratenni daa”ati (scan) assi.
+        contents_html: "Mundeete xiiwo passporte nooheha ikkiro, xagisiraanchu su’ma borreessi. Hakuyi gedensaanni, Simple app horonsiratenni daa”ati (scan) assi."
       step_3:
         label_html: Deerra 3
         heading_html: Xagisiraancho borreesi
-        contents_html: Haaro ikkituro, xagisiraancho borreesi
+        contents_html: "Haaro ikkituro, xagisiraancho borreesi"
       step_4:
         label_html: Deerra 4
         heading_html: Simple Mundeete xiiwo eessi
@@ -161,11 +161,11 @@ sid-ET:
         contents_html: "Hit <span class=\"code\">AMADI</span> nna harunsitewota xagisiraanchu koyinya/lao yanna qixxeesi Mundeete xiiwo passporte aana hakoye barra borreesi"
       missed_visit:
         label_html: Xea koyinya/lao
-        heading_html: Harunse maikanno?
+        heading_html: "Harunse maikanno?"
         contents_html: Xagisiraanchu koyinyisi/laomasi yannasi sa’usiro Simple ikkitewoti qole higawo gede qaagisitawisi borro sokka sooyanno.
       tip:
         heading_html: Horo uyitawo (dancha) amaale
-        contents_html: Wo’ma woyite Xiwamaasine garu uurrinshi giddo borreessaki buuxi. Hanafote qooli iskiriine (screen) aana, wo’ma woyite aleenni guracho widoonni noo uurrinsha buuxi
+        contents_html: "Wo’ma woyite Xiwamaasine garu uurrinshi giddo borreessaki buuxi. Hanafote qooli iskiriine (screen) aana, wo’ma woyite aleenni guracho widoonni noo uurrinsha buuxi"
     register:
       heading_html: Xagisiraano borreesse
       contents_html: "Haaro haaro Xagisiraano borreesinayiti lame/2 doogo no:"
@@ -190,15 +190,15 @@ sid-ET:
         step_6_html: "Borreesi xagisiraanchu koyinya/lao, kisi  <span class=\"code\">amadi</span>."
       tips:
         heading_html: Dancha amaale
-        tip_1_html: Wo’ma woyite Xiwamaasine garu uurrinshi giddo borreessaki buuxi. Hanafote qooli iskiriine (screen) aana, wo’ma woyite aleenni guracho widoonni noo uurrinsha buuxi
-        tip_2_html: Dandiitiniro, bilbilu kiiro eesse
-        tip_3_html: Harunsirayino xiwamaancho/xagisiraancho afa hooginiro, hatto haaru xagisiraanchi gede borreesitiniro danchaho.
-        tip_4_html: Xagisiraanchu Mundeete xiiwo (BP) passporte hu’niro, haaro uyyensa. Xagisiraanote haammata Mundeete xiiwo passporte dandiitanno,baalanti guruyi loosaata ikkitara dandiitanno
+        tip_1_html: "Wo’ma woyite Xiwamaasine garu uurrinshi giddo borreessaki buuxi. Hanafote qooli iskiriine (screen) aana, wo’ma woyite aleenni guracho widoonni noo uurrinsha buuxi"
+        tip_2_html: "Dandiitiniro, bilbilu kiiro eesse"
+        tip_3_html: "Harunsirayino xiwamaancho/xagisiraancho afa hooginiro, hatto haaru xagisiraanchi gede borreesitiniro danchaho."
+        tip_4_html: "Xagisiraanchu Mundeete xiiwo (BP) passporte hu’niro, haaro uyyensa. Xagisiraanote haammata Mundeete xiiwo passporte dandiitanno,baalanti guruyi loosaata ikkitara dandiitanno"
     search:
       heading_html: Garu/addu Xagisiraancho afiri
       find_patient:
         heading_html: Xagisiraano/xiwamaano hiittoonni afira dandiinayiro
-        contents_html: Su’missinni woyi bilblu kiironni xagisiraancho hassinnanni yannara, addu xiwamaancho afirate hasiissanno.
+        contents_html: "Su’missinni woyi bilblu kiironni xagisiraancho hassinnanni yannara, addu xiwamaancho afirate hasiissanno."
       choose_patient:
         heading_html: Doori <i>addu/garu</i> xagisiraancho
         contents_1_html: "Hasate gumi giddo, Lowo Geeshsha hasiissanno addu/garu xagisiraancho doora. Wo’ma woyite buuxi:"
@@ -207,19 +207,19 @@ sid-ET:
         check_item_3_html: "<span class=\"code\">bayicho</span> xagisiraanchu heerawaati"
         check_item_4_html: "<span class=\"code\">bilbilu kiiro</span> xaaddino"
         check_item_5_html: "<span class=\"code\">Saiha la’noonni barra</span> hosipiitaalete xagisiraanchu la”amino barraati."
-        contents_2_html: Xiwamaanchu hasatote giddo nooro mittu xagisiraanchi ledono xaadawokiha ikkiro, hato haaru xagisiraanchi gede assitine borreesse
+        contents_2_html: "Xiwamaanchu hasatote giddo nooro mittu xagisiraanchi ledono xaadawokiha ikkiro, hato haaru xagisiraanchi gede assitine borreesse"
       tip:
         heading_html: Horo uyitawo (dancha) amaale
-        contents_html: BP (Mundeete xiiwo) passporte iskaane (scan) loosawokiha ikkiro, daa'atinayi (Scan) mittu gari iskiriine (screen) qooli aana xano ledine BP (Mundeete xiiwo) kiiro hakka Simple widira type assa dandiitinanni.
+        contents_html: "BP (Mundeete xiiwo) passporte iskaane (scan) loosawokiha ikkiro, daa'atinayi (Scan) mittu gari iskiriine (screen) qooli aana xano ledine BP (Mundeete xiiwo) kiiro hakka Simple widira type assa dandiitinanni."
     record:
       heading_html: Borreesi xagisiraanchu daa"atata.
       find_patient:
-        heading_html: Umo, xagisiraancho afi
+        heading_html: "Umo, xagisiraancho afi"
         contents_html: "Xagisiraano lame doogonni afira dandiinnanni: BP (Mundeete xiiwo daa”ate (scan asse) woyi xiwamaancho su’munni woyi bilbilu kiironni  hasse."
       record_info:
         heading_html: Borreesse BP (Mundeete xiiwo) nna xagga
         step_1_html: "Xagisiraanchu gumulshu iskiriine(screen) aana kisi <span class=\"code\">+&nbsp;Mundeete xiiwo</span>"
-        step_2_html: Hakuyi gedensaanni, ledi jawa Mundeete xiiwo xagga xagisiraanoyita
+        step_2_html: "Hakuyi gedensaanni, ledi jawa Mundeete xiiwo xagga xagisiraanoyita"
         step_3_html: "Garu xagga nna deerransa/jilbansa doore. Mitto Xagicho hunate,kisi jilbanna  <span class=\"code\">dino</span> doori"
         step_4_html: "Kisi <span class=\"code\">amadi</span> nna harunsewoha laote barra doori Buuxantinokita: Xagisiraanchu xa noo uurrinshi woroonni’soorro’ yaaha kisatenni harunsino xiwamaancho la”ate bayicho soorrira dandiitinanni."
         step_5_html: Loosamino/injjino. Xagisiraanchu koyinyi/lao amadantino.
@@ -241,7 +241,7 @@ sid-ET:
     overdue:
       heading_html: Yanna sa’inonsa xagisiraanora bilbille/woshshe
       what_is_overdue:
-        heading_html: “Yanna sa’inohu” maati?
+        heading_html: "“Yanna sa’inohu” maati?"
         contents_1_html: Xagisiraano gaammonninsa koyinyi/lao barra borreessantino BP(Mundeete xiiwo) hoogunsaro yanna sa’ino yaate’
         contents_2_html: Yanna sa’eewonsa xiwamaano tittirshira umoho noo Xagisiraano lowo Geeshsha hasiissanoreeti Yanna sa’inonsari titirshi umira noo xagisiraanora bilbila hanaffe
       calling:
@@ -262,23 +262,23 @@ sid-ET:
           condition_6_html: Fooliishirino/Reyino
     faq:
       heading_html: Rosantino xa’muwa
-      app_crash_question_html: Ane app loosa gibburo maa assa nooe?
+      app_crash_question_html: "Ane app loosa gibburo maa assa nooe?"
       app_crash_answer_html: Umo computereki uduunnichi wirro hanafisiisate wo’naali Simple ba”ayi noohanna iso biddi assate dandaamahekiha ikkiro haka <span class="help">kaa’lo</span> iasikiriinete (screen) qoolira haratenni qorqoraasine woyi gaamonke hasaawisse.
-      scan_not_working_question_html: Iskaane(scan) loosayi dino Maa assa nooe?
-      scan_not_working_answer_html: Isikiriinete (screen) qoolira woroonni BP (Mundeete xiiwo) passporte kiiro eesse. Qarru harunsiro, bilbilaki wirro hanafisi Xano loosa hooguro, hasaawisi qorqoraanchoki.
-      udpate_app_question_html: App/e hiittoonni yannannita/woyyaabinota assa dandeemo/ma?
+      scan_not_working_question_html: "Iskaane(scan) loosayi dino Maa assa nooe?"
+      scan_not_working_answer_html: "Isikiriinete (screen) qoolira woroonni BP (Mundeete xiiwo) passporte kiiro eesse. Qarru harunsiro, bilbilaki wirro hanafisi Xano loosa hooguro, hasaawisi qorqoraanchoki."
+      udpate_app_question_html: "App/e hiittoonni yannannita/woyyaabinota assa dandeemo/ma?"
       udpate_app_answer_html: "Qinnibirete ayikone (icon) kisatenni nna <span class=\"code\">woyyeesse</span> kisatenni app yannannita asse/woyyeesse Bilbiliki uduunichi aana yannannita Simple ittime afira hasiissanno"
       cant_find_followup_question_html: Harunsiranno xagisiraancho afira didandoomo/ma
-      cant_find_followup_answer_html: BP (Mundeete xiiwo) passporte heedhawonsakki woyite, mite mite yanna harunsitanno xagisiraanno afira qarrissanno 5 dhiqqeessi gedensaanni, xagisiraancho afira dandaa hooginiro, haaru xiwamaanchi gede assitine borreessensa. Albilliteeta xagisiraanchu borreesammete dabitara karsiisa/mitto assa dandiinanni
+      cant_find_followup_answer_html: "BP (Mundeete xiiwo) passporte heedhawonsakki woyite, mite mite yanna harunsitanno xagisiraanno afira qarrissanno 5 dhiqqeessi gedensaanni, xagisiraancho afira dandaa hooginiro, haaru xiwamaanchi gede assitine borreessensa. Albilliteeta xagisiraanchu borreesammete dabitara karsiisa/mitto assa dandiinanni"
       two_bp_passports_question_html: Mittu xagisiraanchira 2 BP (Mundeete xiiwo) passporte heedhasira dandiitanno.
       two_bp_passports_answer_html: Ee. Mittu xagisiraanchira lowoti BP (Mundeete xiiwo) heedhasira dandiitanno. Baalunku loosasna harunsitanno.
       no_more_bp_passports_question_html: BP (Mundeete xiiwo) passporte goofino
-      no_more_bp_passports_answer_html: Goofasira albaanni, qorqoraanchokki ledote Mundeete xiiwo passporte amadawo gede xa’mi Wodanchi, ayi gari BP (Mundeete xiiwo) passporte hooguhero nafa xano xiwamaasine borreessa dandiitinanni&#8212; BP (Mundeete xiiwo) gaama dandiitinanni.
-      what_is_sync_question_html: '"Sync" maati?'
-      what_is_sync_answer_html: '"Sync" Taje mereerima serverera ofoshiishshano. Tajekki ajayi ajeena mitte hige barrunni duunamase buuxi. Danchu internetete xaadi hoogiro, tajekki "sync" assate shiima dhiqqeessa adhitara dandiitano'
-      data_usage_question_html: Simple Mageeshiha mashallaqqe horonsirato/ta?
+      no_more_bp_passports_answer_html: "Goofasira albaanni, qorqoraanchokki ledote Mundeete xiiwo passporte amadawo gede xa’mi Wodanchi, ayi gari BP (Mundeete xiiwo) passporte hooguhero nafa xano xiwamaasine borreessa dandiitinanni&#8212; BP (Mundeete xiiwo) gaama dandiitinanni."
+      what_is_sync_question_html: "\"Sync\" maati?"
+      what_is_sync_answer_html: "\"Sync\" Taje mereerima serverera ofoshiishshano. Tajekki ajayi ajeena mitte hige barrunni duunamase buuxi. Danchu internetete xaadi hoogiro, tajekki \"sync\" assate shiima dhiqqeessa adhitara dandiitano"
+      data_usage_question_html: "Simple Mageeshiha mashallaqqe horonsirato/ta?"
       data_usage_answer_html: Simple lowo Geeshsha shiima taje horonsidhanno. Mereerimuyi aganu giddo 20 MB looso aana hosssanno.
-      access_my_info_question_html: Mashallaqqe’ya Simple afira dandaanno?
+      access_my_info_question_html: "Mashallaqqe’ya Simple afira dandaanno?"
       access_my_info_answer_html: Simple bilbilu woyi tabiletete aana ayitano hallanshu mashallaqqe diafiranno.
     bp_passport_app:
       heading_html: Mundeete xiiwo passporte app
@@ -289,7 +289,7 @@ sid-ET:
         feature_2_html: Mundeete sukkaare charte
         feature_3_html: Xagga adhittanno gede qaagiishuwa
         feature_4_html: Keeraancho amaale
-        feature_5_html: Mulla, egensiishshiweelo
+        feature_5_html: "Mulla, egensiishshiweelo"
         learn_more_html: "Roore afate"
       platforms:
         headings_html: Apple nna Android

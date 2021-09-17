@@ -194,8 +194,10 @@ class Api::V4::Schema
     end
 
     def states_response
-      {type: :array,
-       items: {type: :string},
+      {type: :object,
+       properties: {states: {type: :array,
+                             items: {type: :object,
+                                     properties: {name: {type: :string}}}}},
        description: "List of available state names"}
     end
 

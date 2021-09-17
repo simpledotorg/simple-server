@@ -35,6 +35,10 @@
           {
             "display_name": "India",
             "endpoint": "https://api-sandbox.simple.org/api/"
+          },
+          {
+            "display_name": "India test deployment",
+            "endpoint": "https://api-sandbox.simple.org/api/"
           }
         ]
       },
