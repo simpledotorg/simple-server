@@ -18,9 +18,8 @@ RSpec.describe Api::V3::ImoCallbacksController, type: :controller do
       it "raises error if patient is not found" do
         params = {patient_id: "does_not_exist", event: "accept_invite"}
 
-        expect {
-          post :subscribe, params: params
-        }.to raise_error(ActiveRecord::RecordNotFound)
+        post :subscribe, params: params
+        expect(response.status).to eq(404)
       end
 
       it "raises error if patient does not have an imo authorization record" do
@@ -72,12 +71,18 @@ RSpec.describe Api::V3::ImoCallbacksController, type: :controller do
       it "raises an error when notification is not found" do
         params = {notification_id: "does_not_exist"}
 
-        expect {
-          post :read_receipt, params: params
-        }.to raise_error(ActiveRecord::RecordNotFound)
+        post :read_receipt, params: params
+        expect(response.status).to eq(404)
       end
 
-      it "raises an error when the notification does not have an imo delivery detail"
+      it "raises an error when the notification does not have an imo delivery detail" do
+        notification = create(:notification)
+
+        params = {notification_id: notification.id}
+        post :read_receipt, params: params
+
+        expect(response.status).to eq(404)
+      end
 
       it "updates the notification's imo delivery detail status to 'read'" do
         notification = create(:notification)
@@ -88,6 +93,7 @@ RSpec.describe Api::V3::ImoCallbacksController, type: :controller do
         expect {
           post :read_receipt, params: params
         }.to change{detail.reload.result}.from("sent").to("read")
+        expect(response.status).to eq(200)
       end
     end
   end

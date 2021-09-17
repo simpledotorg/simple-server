@@ -3,9 +3,12 @@ class Api::V3::ImoCallbacksController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   class ImoCallbackError < StandardError; end
-
   rescue_from ImoCallbackError do
     head :bad_request
+  end
+
+  rescue_from ActiveRecord::RecordNotFound do
+    head :not_found
   end
 
   def subscribe
@@ -23,10 +26,13 @@ class Api::V3::ImoCallbacksController < ApplicationController
 
   def read_receipt
     notification = Notification.find(params[:notification_id])
-    communication = notification.communications.find_by(communication_type: "imo")
-    detail = communication.detailable
+    communication = notification.communications.find_by!(communication_type: "imo")
+    head :not_found unless communication
 
+    detail = communication.detailable
     detail.update(result: "read")
+
+    head :ok
   end
 
   private
