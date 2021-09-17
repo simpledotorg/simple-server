@@ -47,11 +47,22 @@ describe UpdateBangladeshRegionsScript do
         .and change { Region.facility_regions.count }.by(44)
         .and change { FacilityGroup.count }.by(6)
         .and change { Region.district_regions.count }.by(6)
-      Facility.all.each do |facility|
+      Facility.all.eager_load(:business_identifiers).each do |facility|
+        expect(facility.business_identifiers.size).to eq(1)
         fg = facility.facility_group
         expect(fg).to_not be_nil
         expect(fg.name).to eq(fg.region.name)
       end
+      # Spot check a facility
+      #  Sylhet,Sunamganj,Bishwambarpur,Dhonpur,Halabadi Cc ,10012777,CC Halabadi ,CC,,,,,,,,,,,,,,,,
+      facility = Facility.find_by(name: "CC Halabadi")
+      expect(facility.business_identifiers.find_by!(identifier_type: :dhis2_org_unit_id).identifier).to eq("10012777")
+      expect(facility.state).to eq("Sylhet")
+      expect(facility.district).to eq("Sunamganj")
+      expect(facility.block).to eq("Bishwambarpur")
+      expect(facility.region.state_region.name).to eq("Sylhet")
+      expect(facility.region.district_region.name).to eq("Sunamganj")
+      expect(facility.region.block_region.name).to eq("Bishwambarpur")
     end
 
     it "removes Facilities without patients and users" do

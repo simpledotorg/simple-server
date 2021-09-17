@@ -54,7 +54,17 @@ class UpdateBangladeshRegionsScript < DataScript
       end
       upazila_region = find_or_create_region(:block, upazila_name, district_region)
       facility_region = find_or_create_region(:facility, facility_name, upazila_region)
-      facility = Facility.new(name: facility_name, facility_group: facility_group, region: facility_region, state: division_region.name, facility_size: facility_size, zone: upazila_region.name, district: district_region.name, country: "Bangladesh")
+      facility_attrs = {
+        country: "Bangladesh",
+        business_identifiers: [FacilityBusinessIdentifier.new(identifier_type: :dhis2_org_unit_id, identifier: row[:facilityorganization_code])],
+        district: district_region.name,
+        facility_group: facility_group,
+        facility_size: facility_size,
+        name: facility_name,
+        region: facility_region,
+        state: division_region.name,
+        zone: upazila_region.name, }
+      facility = Facility.new(facility_attrs)
       if run_safely { facility.save }
         results[:created][:facilities] += 1
       else
