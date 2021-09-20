@@ -64,10 +64,12 @@ describe UpdateBangladeshRegionsScript do
           .and change { FacilityGroup.count }.by(6)
           .and change { Region.district_regions.count }.by(6)
         Facility.all.eager_load(:business_identifiers).each do |facility|
+          expect(facility.region).to_not be_nil
           expect(facility.business_identifiers.size).to eq(1)
           fg = facility.facility_group
           expect(fg).to_not be_nil
           expect(fg.name).to eq(fg.region.name)
+          expect(fg.region).to_not be_nil
         end
         # Spot check a facility
         #  Sylhet,Sunamganj,Bishwambarpur,Dhonpur,Halabadi Cc ,10012777,CC Halabadi ,CC,,,,,,,,,,,,,,,,
