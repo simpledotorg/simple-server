@@ -4,6 +4,7 @@ class DataScript
   def initialize(dry_run: true)
     @dry_run = dry_run
     @logger = Rails.logger
+    RequestStore[:readonly] = true if dry_run?
   end
 
   def dry_run?
