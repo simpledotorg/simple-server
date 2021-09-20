@@ -15,16 +15,16 @@ class UpdateBangladeshRegionsScript < DataScript
     @logger = Rails.logger.child(fields)
     @results = {created: Hash.new(0), deleted: Hash.new(0), errors: Hash.new(0), dry_run: dry_run?}
     @csv_path = csv_path
-    @cache = {state: {}, district: {}, block: {}, facility: {}}
+    @cache = {state: {}, district: {}, block: {}, facility: {}, users: {}}
   end
 
   def call
     return unless CountryConfig.current_country?("Bangladesh")
     destroy_empty_facilities
-    create_facilities
+    import_from_csv
   end
 
-  def create_facilities
+  def import_from_csv
     org_region = Region.organization_regions.find_by!(slug: "nhf")
     protocol = Protocol.find_by!(name: "Bangladesh Hypertension Management Protocol for Primary Healthcare Setting")
     each_row do |row|
@@ -63,7 +63,8 @@ class UpdateBangladeshRegionsScript < DataScript
         name: facility_name,
         region: facility_region,
         state: division_region.name,
-        zone: upazila_region.name, }
+        zone: upazila_region.name
+      }
       facility = Facility.new(facility_attrs)
       if run_safely { facility.save }
         results[:created][:facilities] += 1
@@ -96,19 +97,28 @@ class UpdateBangladeshRegionsScript < DataScript
       NOT EXISTS (SELECT 1 FROM patients where patients.assigned_facility_id = facilities.id)
     SQL
     related_facility_groups = []
-    facilities = Facility.where(facility_size: ["community", nil]).where(sql)
+    related_users = []
+
+    facilities = Facility.where(facility_size: ["community", nil]).includes(:facility_group, :users).where(sql)
     logger.info { "Removing #{facilities.size} empty facilities" }
     facilities.each do |facility|
       related_facility_groups << facility.facility_group
+      related_users.concat(facility.users)
       if run_safely { facility.destroy }
         results[:deleted][:facilities] += 1
       end
     end
-    logger.info { "Removing facility groups with no facilities"}
+    related_users.each do |user|
+      next if user.phone_number_authentications.size > 1
+      if run_safely { user.destroy }
+        results[:deleted][:users] += 1
+      end
+    end
+    logger.info { "Removing facility groups with no facilities" }
     related_facility_groups.each do |facility_group|
       if facility_group.facilities.size == 0
-        logger.info { "Removing facility group #{facility_group.name} "}
-        facility_group.destroy
+        logger.info { "Removing facility group #{facility_group.name} " }
+        run_safely { facility_group.destroy }
       end
     end
   end
