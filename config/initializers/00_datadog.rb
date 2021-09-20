@@ -13,8 +13,9 @@ Datadog.configure do |c|
   c.tracer.enabled = DATADOG_ENABLED
   c.profiling.enabled = ENABLE_DD_PROFILING
   c.version = SimpleServer.git_ref(short: true)
-  c.use :rails, analytics_enabled: true
   c.use :rack, headers: {request: %w[X-USER-ID X-FACILITY-ID X-SYNC-REGION-ID], response: %w[Content-Type X-Request-ID]}
+  c.use :rake
+  c.use :rails, analytics_enabled: true
   c.use :sidekiq, analytics_enabled: true
 end
 
