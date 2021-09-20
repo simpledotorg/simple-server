@@ -1569,9 +1569,8 @@ ActiveRecord::Schema.define(version: 2021_09_15_134540) do
           END AS risk_level,
       latest_bp_passport.id AS latest_bp_passport_id,
       latest_bp_passport.identifier AS latest_bp_passport_identifier,
-      latest_medicines.prescription_drugs AS latest_medicines,
       p.id
-     FROM ((((((((((((patients p
+     FROM (((((((((((patients p
        LEFT JOIN addresses ON ((addresses.id = p.address_id)))
        LEFT JOIN facilities reg_facility ON ((reg_facility.id = p.registration_facility_id)))
        LEFT JOIN medical_histories mh ON ((mh.patient_id = p.id)))
@@ -1639,10 +1638,6 @@ ActiveRecord::Schema.define(version: 2021_09_15_134540) do
             WHERE (((bp_passport.identifier_type)::text = 'simple_bp_passport'::text) AND (bp_passport.patient_id = p.id))
             ORDER BY bp_passport.device_created_at DESC
            LIMIT 1) latest_bp_passport ON (true))
-       LEFT JOIN LATERAL ( SELECT array_to_string(array_agg((((pd.name)::text || ' '::text) || (pd.dosage)::text)), ', '::text) AS prescription_drugs
-             FROM prescription_drugs pd
-            WHERE ((pd.patient_id = p.id) AND (pd.is_deleted = false))
-            GROUP BY pd.patient_id) latest_medicines ON (true))
        LEFT JOIN LATERAL ( SELECT a.id,
               a.patient_id,
               a.facility_id,

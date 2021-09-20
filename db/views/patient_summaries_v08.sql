@@ -69,7 +69,6 @@ next_appointment_facility.state AS next_appointment_state,
 
 latest_bp_passport.id AS latest_bp_passport_id,
 latest_bp_passport.identifier AS latest_bp_passport_identifier,
-latest_medicines.prescription_drugs AS latest_medicines,
 
 p.id
 
@@ -113,14 +112,6 @@ LEFT JOIN LATERAL (
     ORDER by bp_passport.device_created_at desc
     LIMIT 1
 ) latest_bp_passport ON TRUE
-
-LEFT JOIN LATERAL (
-    SELECT array_to_string(array_agg(pd.name || ' ' || pd.dosage), ', ') as prescription_drugs
-    FROM prescription_drugs pd
-    WHERE pd.patient_id = p.id
-      AND pd.is_deleted = false
-    GROUP BY pd.patient_id
-) latest_medicines ON TRUE
 
 LEFT JOIN LATERAL (
     SELECT *
