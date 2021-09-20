@@ -1,7 +1,10 @@
 class UpdateBangladeshRegionsScript < DataScript
+  DEFAULT_CSV_PATH = Rails.root.join("db", "bd_regions.csv").freeze
+
   attr_reader :cache
+  attr_reader :org_region
+  attr_reader :protocol
   attr_reader :results
-  DEFAULT_CSV_PATH = Rails.root.join("db", "bd_regions.csv")
 
   def self.call(*args)
     new(*args).call
@@ -15,6 +18,8 @@ class UpdateBangladeshRegionsScript < DataScript
     @results = {created: Hash.new(0), deleted: Hash.new(0), errors: Hash.new(0), dry_run: dry_run?}
     @csv_path = csv_path
     @cache = {state: {}, district: {}, block: {}, facility: {}}
+    @org_region = Region.organization_regions.find_by!(slug: "nhf")
+    @protocol = Protocol.find_by!(name: "Bangladesh Hypertension Management Protocol for Primary Healthcare Setting")
   end
 
   def call
@@ -23,17 +28,14 @@ class UpdateBangladeshRegionsScript < DataScript
     import_from_csv
   end
 
+  private
+
   def import_from_csv
-    org_region = Region.organization_regions.find_by!(slug: "nhf")
-    protocol = Protocol.find_by!(name: "Bangladesh Hypertension Management Protocol for Primary Healthcare Setting")
     each_row do |row|
       next if row[:division].blank? || row[:division] == "Division" || row[:facility_name].blank?
       logger.debug { "Processing #{row[:facility_name]}" }
 
-      facility_name = row[:facility_name]
-      division_name = row[:division]
-      district_name = row[:district]
-      upazila_name = row[:upazila]
+      facility_name, division_name, district_name, upazila_name = row[:facility_name], row[:division], row[:district], row[:upazila]
       facility_size = case row[:facility_type]
         when "CC", "USC" then "community"
         when "UHC" then "large"
@@ -42,17 +44,10 @@ class UpdateBangladeshRegionsScript < DataScript
 
       division_region = find_or_create_region(:state, division_name, org_region)
       district_region = find_or_create_region(:district, district_name, division_region)
-      facility_group = FacilityGroup.find_by(name: district_name) || FacilityGroup.new(name: district_name, organization: org_region.source, region: district_region, protocol: protocol, generating_seed_data: true)
-      if facility_group.new_record?
-        if run_safely { facility_group.save }
-          results[:created][:facility_groups] += 1
-        else
-          logger.warn(errors: facility_group.errors, msg: "Errors trying to save facility group #{facility_group.name}")
-          results[:errors][:facility_groups] += 1
-        end
-      end
+      facility_group = find_or_create_facility_group(district_name, district_region)
       upazila_region = find_or_create_region(:block, upazila_name, district_region)
       facility_region = find_or_create_region(:facility, facility_name, upazila_region)
+
       facility_attrs = {
         country: "Bangladesh",
         business_identifiers: [FacilityBusinessIdentifier.new(identifier_type: :dhis2_org_unit_id, identifier: row[:facilityorganization_code])],
@@ -74,6 +69,19 @@ class UpdateBangladeshRegionsScript < DataScript
     end
 
     results
+  end
+
+  def find_or_create_facility_group(district_name, district_region)
+    facility_group = FacilityGroup.find_by(name: district_name) || FacilityGroup.new(name: district_name, organization: org_region.source, region: district_region, protocol: protocol, generating_seed_data: true)
+    if facility_group.new_record?
+      if run_safely { facility_group.save }
+        results[:created][:facility_groups] += 1
+      else
+        logger.warn(errors: facility_group.errors, msg: "Errors trying to save facility group #{facility_group.name}")
+        results[:errors][:facility_groups] += 1
+      end
+    end
+    facility_group
   end
 
   def find_or_create_region(region_type, name, parent)

@@ -1,5 +1,5 @@
 Description:
-    Create a script to update production data.
+    Create a data_script to update production data.
 
 Example:
     rails generate data_script widget_updater
