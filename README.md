@@ -62,11 +62,22 @@ The Dockerfile and docker-compose.yml files replicate the steps detailed below f
 
 Once the Docker Compose server is running, the logs should provide the ngrok URL. For example: `SIMPLE_SERVER_HOST=91a705dde8c1.ngrok.io`. This is the value that should be used when setting up the Android app as described in the section below.
 
+After a successful docker installation, an admin dashboard account is automatically created.
+
+The default username and password for the dashboard account is:
+
+```bash
+username: admin@simple.org
+password: Resolve2SaveLives
+```
+
 To remove the server and clear the volumes of database data, run the command:
 
 ```
 docker compose down --volumes
 ```
+
+
 
 #### Manual Setup
 

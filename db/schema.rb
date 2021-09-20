@@ -377,6 +377,7 @@ ActiveRecord::Schema.define(version: 2021_09_10_200224) do
     t.datetime "deleted_at"
     t.uuid "user_id"
     t.text "hypertension"
+    t.text "receiving_treatment_for_diabetes"
     t.index ["deleted_at"], name: "index_medical_histories_on_deleted_at"
     t.index ["patient_id", "updated_at"], name: "index_medical_histories_on_patient_id_and_updated_at"
     t.index ["patient_id"], name: "index_medical_histories_on_patient_id"

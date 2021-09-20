@@ -121,6 +121,7 @@ class User < ApplicationRecord
     :accessible_protocol_drugs,
     :access_across_organizations?,
     :access_across_facility_groups?,
+    :can_access?,
     :manage_organization?,
     :grant_access,
     :permitted_access_levels, to: :user_access, allow_nil: false
