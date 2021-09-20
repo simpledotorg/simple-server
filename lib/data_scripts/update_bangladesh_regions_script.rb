@@ -18,12 +18,15 @@ class UpdateBangladeshRegionsScript < DataScript
     @results = {created: Hash.new(0), deleted: Hash.new(0), errors: Hash.new(0), dry_run: dry_run?}
     @csv_path = csv_path
     @cache = {state: {}, district: {}, block: {}, facility: {}}
+    unless CountryConfig.current_country?("Bangladesh")
+      logger.warn("Current country is #{CountryConfig.current[:name]} - aborting!")
+      return
+    end
     @org_region = Region.organization_regions.find_by!(slug: "nhf")
     @protocol = Protocol.find_by!(name: "Bangladesh Hypertension Management Protocol for Primary Healthcare Setting")
   end
 
   def call
-    return unless CountryConfig.current_country?("Bangladesh")
     destroy_empty_facilities
     import_from_csv
   end
