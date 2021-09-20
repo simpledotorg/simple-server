@@ -123,7 +123,7 @@ RSpec.describe PatientImport::SpreadsheetTransformer do
       hash_including(
         name: "Hydrochlorothiazide",
         dosage: "12.5 mg",
-        rxnorm_code: "316047",
+        rxnorm_code: "429503",
         is_deleted: true,
         is_protocol_drug: false,
         created_at: registration_time,
