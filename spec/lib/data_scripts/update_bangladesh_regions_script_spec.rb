@@ -90,7 +90,7 @@ describe UpdateBangladeshRegionsScript do
       }.to change { Facility.count }.by(-3)
         .and change { FacilityGroup.count }.by(-2)
         .and change { Region.count }.by(-7)
-        .and change { User.count }.by(-1)  # 3 facilities, 2 facility groups, and 2 blocks
+        .and change { User.count }.by(-1) # 3 facilities, 2 facility groups, and 2 blocks
       empty_facilities.each do |facility|
         expect(Facility.find_by(id: facility.id)).to be_nil
       end
