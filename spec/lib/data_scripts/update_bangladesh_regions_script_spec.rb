@@ -65,7 +65,7 @@ describe UpdateBangladeshRegionsScript do
       expect(facility.region.block_region.name).to eq("Bishwambarpur")
     end
 
-    it "removes Facilities without patients and users" do
+    it "removes community & unsized Facilities without patients" do
       other_facility = create(:facility, facility_group: facility_group)
       user = create(:user, registration_facility: other_facility)
       empty_facilities = create_list(:facility, 2, facility_size: "community")
