@@ -454,7 +454,7 @@
   composition:
   dosage: 12.5 mg
   frequency: one_per_day
-  rxnorm_code: '316047'
+  rxnorm_code: '429503'
   drug_category: hypertension_diuretic
   deleted: false
 - id: 1cfc79fd-8c9f-4a1e-8ba0-4389c54593ab

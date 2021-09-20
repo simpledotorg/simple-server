@@ -59,7 +59,7 @@ gem "pg", ">= 0.18", "< 2.0"
 gem "phonelib"
 gem "pry-rails"
 gem "rack-attack"
-gem "rack-mini-profiler"
+gem "rack-mini-profiler", require: false
 gem "redis"
 gem "render_async"
 gem "request_store-sidekiq"
