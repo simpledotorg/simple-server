@@ -1,6 +1,5 @@
 class UpdateBangladeshRegionsScript < DataScript
   attr_reader :cache
-  attr_reader :logger
   attr_reader :results
   DEFAULT_CSV_PATH = Rails.root.join("db", "bd_regions.csv")
 
@@ -15,7 +14,7 @@ class UpdateBangladeshRegionsScript < DataScript
     @logger = Rails.logger.child(fields)
     @results = {created: Hash.new(0), deleted: Hash.new(0), errors: Hash.new(0), dry_run: dry_run?}
     @csv_path = csv_path
-    @cache = {state: {}, district: {}, block: {}, facility: {}, users: {}}
+    @cache = {state: {}, district: {}, block: {}, facility: {}}
   end
 
   def call
@@ -121,11 +120,6 @@ class UpdateBangladeshRegionsScript < DataScript
         run_safely { facility_group.destroy }
       end
     end
-  end
-
-  def run_safely
-    return true if dry_run?
-    yield
   end
 
   CONVERTERS = lambda { |field, _|
