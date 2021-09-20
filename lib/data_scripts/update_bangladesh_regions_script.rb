@@ -29,6 +29,8 @@ class UpdateBangladeshRegionsScript < DataScript
   def call
     destroy_empty_facilities
     import_from_csv
+  ensure
+    RequestStore[:readonly] = false
   end
 
   private
