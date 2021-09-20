@@ -45,7 +45,7 @@ class AppointmentsController < AdminController
   private
 
   def index_params
-    @index_params ||= params.permit(:facility_id, :per_page, search_filters: [])
+    @index_params ||= params.permit(:district_slug, :facility_id, :per_page, search_filters: [])
   end
 
   def set_appointment

@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  get "home/index"
+  resources :home
 
   devise_scope :email_authentication do
     authenticated :email_authentication do
