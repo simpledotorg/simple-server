@@ -15,5 +15,4 @@ class DataScript
     return true if dry_run?
     yield
   end
-
 end
