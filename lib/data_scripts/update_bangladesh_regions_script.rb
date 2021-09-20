@@ -118,6 +118,8 @@ class UpdateBangladeshRegionsScript < DataScript
       related_users.concat(facility.users)
       if run_safely { facility.destroy }
         results[:deleted][:facilities] += 1
+      else
+        results[:errors][:facility_deletes] += 1
       end
     end
     related_users.each do |user|

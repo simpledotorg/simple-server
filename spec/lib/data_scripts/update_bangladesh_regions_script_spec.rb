@@ -24,11 +24,6 @@ describe UpdateBangladeshRegionsScript do
     end
 
     context "dry_run" do
-      it "enables readonly mode for dry run mode" do
-        described_class.call(dry_run: true, csv_path: test_csv_path)
-        expect(User.new).to be_readonly
-      end
-
       it "changes nothing in dry run mode" do
         create(:facility, facility_size: "community")
         expect {
@@ -59,6 +54,7 @@ describe UpdateBangladeshRegionsScript do
           expect(result[:created][:regions]).to eq(64)
           expect(result[:created][:facilities]).to eq(44)
         }.to change { Region.count }.by(64)
+          .and change { Region.facility_regions.count }.by(44)
           .and change { Facility.count }.by(44)
           .and change { Region.facility_regions.count }.by(44)
           .and change { FacilityGroup.count }.by(6)
