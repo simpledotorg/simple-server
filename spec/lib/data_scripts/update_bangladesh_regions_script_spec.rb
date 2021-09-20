@@ -16,7 +16,7 @@ describe UpdateBangladeshRegionsScript do
   end
 
   context "dry_run" do
-    fit "enables readonly mode for dry run mode" do
+    it "enables readonly mode for dry run mode" do
       described_class.call(dry_run: true, csv_path: test_csv_path)
       expect(User.new).to be_readonly
     end
