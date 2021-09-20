@@ -9,7 +9,7 @@ class ImoDeliveryDetail < ApplicationRecord
     sent: "sent"
   }
 
-  after_create :update_authorization, if: proc {|detail| detail.result.in? ["not_subscribed", "no_imo_account"] }
+  after_create :update_authorization, if: proc { |detail| detail.result.in? ["not_subscribed", "no_imo_account"] }
 
   def unsuccessful?
     error? || no_imo_account? || not_subscribed?

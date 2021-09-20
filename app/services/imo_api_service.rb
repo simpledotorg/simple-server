@@ -49,10 +49,11 @@ class ImoApiService
     ImoAuthorization.create!(patient: patient, status: status, last_invited_at: Time.current)
   end
 
-  def send_notification(patient, notification)
+  def send_notification(notification)
     return unless Flipper.enabled?(:imo_messaging)
 
     Statsd.instance.increment("imo.notifications.attempt")
+    patient = notification.patient
     message = notification.localized_message
     url = IMO_BASE_URL + "send_notification"
     request_body = JSON(

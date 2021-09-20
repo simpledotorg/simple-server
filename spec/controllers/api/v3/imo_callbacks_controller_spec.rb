@@ -102,7 +102,7 @@ RSpec.describe Api::V3::ImoCallbacksController, type: :controller do
 
         expect {
           post :read_receipt, params: params
-        }.to change{detail.reload.result}.from("sent").to("read")
+        }.to change { detail.reload.result }.from("sent").to("read")
         expect(response.status).to eq(200)
       end
 
@@ -115,7 +115,7 @@ RSpec.describe Api::V3::ImoCallbacksController, type: :controller do
         expect(Rails.logger).to receive(:error).with("detail #{detail.id} already marked read")
         expect {
           post :read_receipt, params: params
-        }.not_to change{detail.reload}
+        }.not_to change { detail.reload }
         expect(response.status).to eq(200)
       end
     end
