@@ -89,7 +89,6 @@ class UpdateBangladeshRegionsScript < DataScript
   end
 
   def find_or_create_region(region_type, name, parent)
-    return create_region(region_type, name, parent) if parent.nil?
     parent.children.find_by(name: name) || create_region(region_type, name, parent)
   end
 
