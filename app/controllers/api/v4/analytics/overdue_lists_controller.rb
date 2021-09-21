@@ -15,6 +15,6 @@ class Api::V4::Analytics::OverdueListsController < Api::V4::AnalyticsController
   private
 
   def download_filename
-    "overdue-patients_#{current_facility.name.parameterize}_#{Time.current.to_s(:number)}.csv"
+    "overdue-patients_#{current_facility.name.parameterize}_#{Time.current.strftime("%d-%b-%Y-%H%M%S")}.csv"
   end
 end
