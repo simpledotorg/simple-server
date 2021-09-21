@@ -36,7 +36,7 @@ class Api::V3::ImoCallbacksController < ApplicationController
       # adding this logging to catch errors in imo's system
       logger.error "detail #{detail.id} already marked read"
     else
-      detail.update!(result: "read")
+      detail.update!(result: "read", read_at: Time.current)
     end
 
     head :ok

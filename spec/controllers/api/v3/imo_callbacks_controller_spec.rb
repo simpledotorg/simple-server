@@ -73,10 +73,15 @@ RSpec.describe Api::V3::ImoCallbacksController, type: :controller do
         detail = create(:imo_delivery_detail)
         _communication = create(:communication, communication_type: "imo", notification: notification, detailable: detail)
         params = {notification_id: notification.id}
+        now = Time.current
 
-        expect {
-          post :read_receipt, params: params
-        }.to change { detail.reload.result }.from("sent").to("read")
+        Timecop.freeze(now) do
+          expect {
+            post :read_receipt, params: params
+          }.to change { detail.reload.result }.from("sent").to("read")
+          .and change { detail.read_at }.from(nil).to(now)
+        end
+
         expect(response.status).to eq(200)
       end
 
