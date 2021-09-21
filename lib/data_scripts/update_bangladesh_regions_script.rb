@@ -13,8 +13,7 @@ class UpdateBangladeshRegionsScript < DataScript
   def initialize(dry_run: true, csv_path: DEFAULT_CSV_PATH)
     super(dry_run: dry_run)
 
-    fields = {module: :data_script, class: self.class.to_s}
-    @logger = Rails.logger.child(fields)
+    @logger = Rails.logger.child(module: :data_script, class: self.class.to_s)
     @results = {created: Hash.new(0), deleted: Hash.new(0), errors: Hash.new(0), dry_run: dry_run?}
     @csv_path = csv_path
     @cache = {state: {}, district: {}, block: {}, facility: {}}
@@ -68,7 +67,7 @@ class UpdateBangladeshRegionsScript < DataScript
       if run_safely { facility.save }
         results[:created][:facilities] += 1
       else
-        logger.warn(errors: facility.errors, msg: "Errors trying to save facility #{facility.name}")
+        logger.error(errors: facility.errors, msg: "Errors trying to save facility #{facility.name}")
         results[:errors][:facilities] += 1
       end
     end
@@ -82,7 +81,7 @@ class UpdateBangladeshRegionsScript < DataScript
       if run_safely { facility_group.save }
         results[:created][:facility_groups] += 1
       else
-        logger.warn(errors: facility_group.errors, msg: "Errors trying to save facility group #{facility_group.name}")
+        logger.error(errors: facility_group.errors, msg: "Error trying to create facility group #{facility_group.name}")
         results[:errors][:facility_groups] += 1
       end
     end
@@ -98,6 +97,7 @@ class UpdateBangladeshRegionsScript < DataScript
     if run_safely { region.save }
       results[:created][:regions] += 1
     else
+      logger.error("Error creating #{region_type} region #{name}", errors: region.errors)
       results[:errors][:regions] += 1
     end
     region
