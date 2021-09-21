@@ -27,6 +27,50 @@
     }
   },
   "paths": {
+    "/analytics/overdue_list.csv": {
+      "get": {
+        "summary": "Downloads a CSV with the facility's overdue list",
+        "tags": [
+          "analytics"
+        ],
+        "security": [
+          {
+            "access_token": [
+
+            ],
+            "user_id": [
+
+            ],
+            "facility_id": [
+
+            ]
+          }
+        ],
+        "produces": [
+          "text/html"
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "CSV downloaded"
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
+      }
+    },
     "/blood_sugars/sync": {
       "post": {
         "summary": "Syncs blood sugar data from device to server.",
