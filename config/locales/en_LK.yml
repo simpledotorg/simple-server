@@ -14,12 +14,11 @@ en_LK:
       facility_group:
         state: "Province"
       address:
-        street_address: "House and street number"
-        village_or_colony: "Village or colony"
-        zone: "Town *"
+        street_address: "House and road number"
+        village_or_colony: "Town/Area"
         district: "District"
-        state: "Province *"
-        country: "Country *"
+        state: "Province"
+        country: "Country"
         pin: "Postal Code"
       drug:
         frequency:
