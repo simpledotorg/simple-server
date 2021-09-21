@@ -25,7 +25,9 @@ class Api::V3::ImoCallbacksController < ApplicationController
   end
 
   def read_receipt
-    communication = Communication.find_by!(notification_id: params[:notification_id], communication_type: "imo", detailable_type: "ImoDeliveryDetail")
+    communication = Communication.includes(:detailable).find_by!(
+      notification_id: params[:notification_id], communication_type: "imo", detailable_type: "ImoDeliveryDetail"
+    )
     detail = communication.detailable
     unless detail
       raise ActiveRecord::RecordNotFound, "no ImoDeliveryDetail found for communication #{communication.id}"
