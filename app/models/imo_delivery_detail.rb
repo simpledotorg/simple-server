@@ -9,7 +9,8 @@ class ImoDeliveryDetail < ApplicationRecord
     sent: "sent"
   }
 
-  after_create :update_authorization, if: proc { |detail| detail.result.in? ["not_subscribed", "no_imo_account"] }
+  validates :result, presence: true
+  validates :callee_phone_number, presence: true
 
   def unsuccessful?
     error? || no_imo_account? || not_subscribed?
@@ -21,12 +22,5 @@ class ImoDeliveryDetail < ApplicationRecord
 
   def in_progress?
     sent?
-  end
-
-  private
-
-  def update_authorization
-    patient = communication.notification.patient
-    patient.imo_authorization.update!(status: result)
   end
 end

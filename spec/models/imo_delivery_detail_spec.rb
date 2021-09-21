@@ -3,37 +3,13 @@ require "rails_helper"
 describe ImoDeliveryDetail, type: :model do
   subject(:imo_delivery_detail) { create(:imo_delivery_detail) }
 
-  describe "Associations" do
+  describe "associations" do
     it { should have_one(:communication) }
   end
 
-  describe "#update_authorization" do
-    let(:patient) { create(:patient) }
-    let(:imo_authorization) { create(:imo_authorization, status: "subscribed", patient: patient) }
-    let(:notification) { create(:notification, patient: patient) }
-    let(:communication) { create(:communication, notification: notification, detailable: subject) }
-
-    before { patient.imo_authorization = imo_authorization }
-
-    it "updates the patient's imo authorization when creating a detail of result 'no_imo_account'" do
-      expect {
-        create(:imo_delivery_detail, result: :no_imo_account, communication: communication)
-      }.to change { patient.imo_authorization.reload.status }.from("subscribed").to("no_imo_account")
-    end
-
-    it "updates the patient's imo authorization when creating a detail of result 'not_subscribed'" do
-      expect {
-        create(:imo_delivery_detail, result: :not_subscribed, communication: communication)
-      }.to change { patient.imo_authorization.reload.status }.from("subscribed").to("not_subscribed")
-    end
-
-    it "does not update the patient's imo authorization when creating a detail with other result types" do
-      expect {
-        create(:imo_delivery_detail, result: :sent, communication: communication)
-        create(:imo_delivery_detail, result: :read, communication: communication)
-        create(:imo_delivery_detail, result: :error, communication: communication)
-      }.not_to change { patient.imo_authorization.reload }
-    end
+  describe "validations" do
+    it { should validate_presence_of(:result) }
+    it { should validate_presence_of(:callee_phone_number) }
   end
 
   describe "#unsucessful?" do

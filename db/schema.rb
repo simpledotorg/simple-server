@@ -349,8 +349,9 @@ ActiveRecord::Schema.define(version: 2021_09_10_200224) do
   end
 
   create_table "imo_delivery_details", force: :cascade do |t|
-    t.string "result"
+    t.string "result", null: false
     t.string "callee_phone_number", null: false
+    t.datetime "read_at"
     t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
