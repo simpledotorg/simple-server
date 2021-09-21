@@ -36,5 +36,13 @@ RSpec.describe Api::V4::Analytics::OverdueListsController, type: :controller do
 
       expect(response.status).to eq(401)
     end
+
+    it "returns a 401 if user does not have access to the facility" do
+      request.env["HTTP_X_FACILITY_ID"] = create(:facility)
+
+      get :show, params: {format: :csv}
+
+      expect(response.status).to eq(401)
+    end
   end
 end
