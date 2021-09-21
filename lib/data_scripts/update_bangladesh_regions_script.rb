@@ -50,7 +50,7 @@ class UpdateBangladeshRegionsScript < DataScript
       district_region = find_or_create_region(:district, district_name, division_region)
       facility_group = find_or_create_facility_group(district_name, district_region)
       upazila_region = find_or_create_region(:block, upazila_name, district_region)
-      facility_region = find_or_create_region(:facility, facility_name, upazila_region)
+      facility_region = create_region(:facility, facility_name, upazila_region)
 
       facility_attrs = {
         country: "Bangladesh",
@@ -63,7 +63,7 @@ class UpdateBangladeshRegionsScript < DataScript
         state: division_region.name,
         zone: upazila_region.name
       }
-      facility = Facility.new(facility_attrs)
+      facility = facility_group.facilities.build(facility_attrs)
       if run_safely { facility.save }
         results[:created][:facilities] += 1
       else
@@ -89,13 +89,13 @@ class UpdateBangladeshRegionsScript < DataScript
   end
 
   def find_or_create_region(region_type, name, parent)
-    cache[region_type][name] ||= Region.where(region_type: region_type).find_by(name: name) || create_region(region_type, name, parent)
+    parent.children.find_by(name: name) || create_region(region_type, name, parent)
   end
 
   def create_region(region_type, name, parent)
     region = Region.new(name: name, region_type: region_type, reparent_to: parent)
     if run_safely { region.save }
-      results[:created][:regions] += 1
+      results[:created]["#{region_type}_regions".intern] += 1
     else
       logger.error("Error creating #{region_type} region #{name}", errors: region.errors)
       results[:errors][:regions] += 1

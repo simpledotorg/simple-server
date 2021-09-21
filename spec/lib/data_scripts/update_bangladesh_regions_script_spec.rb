@@ -41,32 +41,27 @@ describe UpdateBangladeshRegionsScript do
           results[:errors].each { |type, count| expect(count).to eq(0) }
           expect(results[:deleted][:facilities]).to eq(2)
           expect(results[:created][:facilities]).to eq(44)
-          expect(results[:created][:regions]).to eq(64)
+          expect(results[:created][:facility_regions]).to eq(44)
           expect(results[:dry_run]).to be true
-          expect(results[:errors].all)
         }.to not_change { Facility.count }.and not_change { Region.count }
       end
     end
 
     context "write mode" do
-      fit "creates new regions, facilities, and facility groups from CSV" do
-        result = described_class.call(dry_run: false)
-        pp result
+      it "creates new regions, facilities, and facility groups from CSV" do
+        result = described_class.call(dry_run: false, csv_path: test_csv_path)
         result[:errors].each { |type, count| expect(count).to eq(0) }
-        # expect(result[:created][:regions]).to eq(64)
-        # expect(result[:created][:facilities]).to eq(44)
+        expect(result[:created][:facility_regions]).to eq(44)
+        expect(result[:created][:facilities]).to eq(44)
 
-        # .to change { Region.count }.by(64)
-        # .and change { Region.facility_regions.count }.by(44)
-        # .and change { Facility.count }.by(44)
-        # .and change { Region.facility_regions.count }.by(44)
-        # .and change { FacilityGroup.count }.by(6)
-        # .and change { Region.district_regions.count }.by(6)
-        missing_regions =
-          (Facility.pluck(:id).to_set -
-            Region.facility_regions.pluck(:source_id).to_set
-          ).to_a
-        pp missing_regions
+        expect(Region.count).to eq(66)
+        expect(Region.facility_regions.count).to eq(44)
+        expect(Facility.count).to eq(44)
+        expect(FacilityGroup.count).to eq(6)
+        expect(Region.district_regions.count).to eq(6)
+
+        missing_regions = (Facility.pluck(:id).to_set - Region.facility_regions.pluck(:source_id).to_set).to_a
+        expect(missing_regions).to be_empty
         Facility.all.eager_load(:business_identifiers).each do |facility|
           expect(facility.region).to_not be_nil
           expect(facility.business_identifiers.size).to eq(1)
@@ -85,6 +80,10 @@ describe UpdateBangladeshRegionsScript do
         expect(facility.region.state_region.name).to eq("Sylhet")
         expect(facility.region.district_region.name).to eq("Sunamganj")
         expect(facility.region.block_region.name).to eq("Bishwambarpur")
+        check = RegionsIntegrityCheck.sweep
+        check.inconsistencies.each {|region_type, problems|
+          expect(problems).to be_empty
+        }
       end
 
       it "removes community & unsized Facilities without patients" do
