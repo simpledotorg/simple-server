@@ -38,27 +38,35 @@ describe UpdateBangladeshRegionsScript do
         create_list(:facility, 2, facility_size: "community")
         expect {
           results = described_class.call(dry_run: true, csv_path: test_csv_path)
+          results[:errors].each { |type, count| expect(count).to eq(0) }
           expect(results[:deleted][:facilities]).to eq(2)
           expect(results[:created][:facilities]).to eq(44)
           expect(results[:created][:regions]).to eq(64)
           expect(results[:dry_run]).to be true
+          expect(results[:errors].all)
         }.to not_change { Facility.count }.and not_change { Region.count }
       end
     end
 
     context "write mode" do
-      it "creates new regions, facilities, and facility groups from CSV" do
-        result = nil
-        expect {
-          result = described_class.call(dry_run: false, csv_path: test_csv_path)
-          expect(result[:created][:regions]).to eq(64)
-          expect(result[:created][:facilities]).to eq(44)
-        }.to change { Region.count }.by(64)
-          .and change { Region.facility_regions.count }.by(44)
-          .and change { Facility.count }.by(44)
-          .and change { Region.facility_regions.count }.by(44)
-          .and change { FacilityGroup.count }.by(6)
-          .and change { Region.district_regions.count }.by(6)
+      fit "creates new regions, facilities, and facility groups from CSV" do
+        result = described_class.call(dry_run: false)
+        pp result
+        result[:errors].each { |type, count| expect(count).to eq(0) }
+        # expect(result[:created][:regions]).to eq(64)
+        # expect(result[:created][:facilities]).to eq(44)
+
+        # .to change { Region.count }.by(64)
+        # .and change { Region.facility_regions.count }.by(44)
+        # .and change { Facility.count }.by(44)
+        # .and change { Region.facility_regions.count }.by(44)
+        # .and change { FacilityGroup.count }.by(6)
+        # .and change { Region.district_regions.count }.by(6)
+        missing_regions =
+          (Facility.pluck(:id).to_set -
+            Region.facility_regions.pluck(:source_id).to_set
+          ).to_a
+        pp missing_regions
         Facility.all.eager_load(:business_identifiers).each do |facility|
           expect(facility.region).to_not be_nil
           expect(facility.business_identifiers.size).to eq(1)
