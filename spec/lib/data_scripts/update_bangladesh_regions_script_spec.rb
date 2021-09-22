@@ -81,7 +81,7 @@ describe UpdateBangladeshRegionsScript do
         expect(facility.region.district_region.name).to eq("Sunamganj")
         expect(facility.region.block_region.name).to eq("Bishwambarpur")
         check = RegionsIntegrityCheck.sweep
-        check.inconsistencies.each {|region_type, problems|
+        check.inconsistencies.each { |region_type, problems|
           expect(problems).to be_empty
         }
       end
