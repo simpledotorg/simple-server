@@ -19,7 +19,11 @@ module Reports
     end
 
     def refresh_concurrently?
-      ActiveModel::Type::Boolean.new.cast(ENV["REFRESH_MATVIEWS_CONCURRENTLY"]) || true
+      if ENV.key?["REFRESH_MATVIEWS_CONCURRENTLY"]
+        ActiveModel::Type::Boolean.new.cast(ENV["REFRESH_MATVIEWS_CONCURRENTLY"])
+      else
+        true
+      end
     end
   end
 end
