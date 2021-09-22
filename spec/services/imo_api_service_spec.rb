@@ -91,10 +91,11 @@ describe ImoApiService, type: :model do
   describe "#send_notification" do
     let(:notification) { create(:notification, patient: patient) }
     let(:request_url) { "https://sgp.imo.im/api/simple/send_notification" }
+    let(:phone_number) { "+9990001112222" }
 
     context "with feature flag off" do
       it "returns nil" do
-        expect(service.send_notification(notification)).to eq(nil)
+        expect(service.send_notification(notification, phone_number)).to eq(nil)
       end
     end
 
@@ -105,37 +106,61 @@ describe ImoApiService, type: :model do
         imo_auth
       end
 
-      it "returns sent on a successful 200 response" do
-        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: success_body)
+      it "returns sent result and post_id on a successful 200 response" do
+        response = JSON(
+          response: {
+            status: "success",
+            result: { post_id: "abcde12345" }
+          }
+        )
+        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: response)
         expect(Sentry).not_to receive(:capture_message)
-        expect(service.send_notification(notification)).to eq(:sent)
+        expect(service.send_notification(notification, phone_number)).to eq({ result: :sent, post_id: "abcde12345" })
+      end
+
+      it "handles no_imo_account response" do
+        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: nonexistent_user_body)
+        expect(Sentry).not_to receive(:capture_message)
+        expect(service.send_notification(notification, phone_number)).to eq({ result: :no_imo_account, post_id: nil })
+      end
+
+      it "handles not_subscribed response" do
+        response = JSON(
+          status: "error",
+          response: {
+            error_code: "not_subscribed"
+          }
+        )
+        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: response)
+        expect(Sentry).not_to receive(:capture_message)
+        expect(service.send_notification(notification, phone_number)).to eq({ result: :not_subscribed, post_id: nil })
       end
 
       it "reports to sentry and returns error on other 200 responses" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: {}.to_json)
         expect(Sentry).to receive(:capture_message)
-        expect(service.send_notification(notification)).to eq(:error)
+        expect(service.send_notification(notification, phone_number)).to eq({result: :error, post_id: nil})
       end
 
       it "reports to sentry and returns error on other 400 responses" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: {}.to_json)
 
         expect(Sentry).to receive(:capture_message)
-        expect(service.send_notification(notification)).to eq(:error)
+        expect(service.send_notification(notification, phone_number)).to eq({result: :error, post_id: nil})
       end
 
       it "reports to sentry and returns error on other statuses" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 401, body: {}.to_json)
 
         expect(Sentry).to receive(:capture_message)
-        expect(service.send_notification(notification)).to eq(:error)
+        expect(service.send_notification(notification, phone_number)).to eq({result: :error, post_id: nil})
       end
 
       it "raises a custom error on network error" do
         stub_request(:post, request_url).to_timeout
 
         expect {
-          service.send_notification(notification)
+          service.send_notification(notification, phone_number)
         }.to raise_error(ImoApiService::Error)
       end
     end

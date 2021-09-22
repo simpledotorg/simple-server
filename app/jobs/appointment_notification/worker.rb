@@ -86,7 +86,7 @@ class AppointmentNotification::Worker
         context: context
       )
     when "imo"
-      notification_service.send_notification(notification)
+      notification_service.send_notification(notification, recipient_number)
     else
       raise UnknownCommunicationType, "#{self.class.name} is not configured to handle communication type #{communication_type}"
     end
@@ -106,7 +106,8 @@ class AppointmentNotification::Worker
     if communication_type == "imo"
       Communication.create_with_imo_details!(
         notification: notification,
-        response: response
+        result: response[:result],
+        post_id: response[:post_id]
       )
     else
       Communication.create_with_twilio_details!(

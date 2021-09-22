@@ -12,11 +12,11 @@ class Api::V3::ImoCallbacksController < ApplicationController
   end
 
   def subscribe
-    unless permitted_params[:event] == "accept_invite"
-      raise ImoCallbackError.new("unexcepted Imo invitation event: #{permitted_params[:event]}")
+    unless params[:event] == "accept_invite"
+      raise ImoCallbackError.new("unexcepted Imo invitation event: #{params[:event]}")
     end
 
-    patient = Patient.find(permitted_params[:patient_id])
+    patient = Patient.find(params[:patient_id])
     unless patient.imo_authorization
       raise ImoCallbackError.new("patient #{patient.id} does not have an ImoAuthorization")
     end
@@ -25,26 +25,17 @@ class Api::V3::ImoCallbacksController < ApplicationController
   end
 
   def read_receipt
-    communication = Communication.includes(:detailable).find_by!(
-      notification_id: params[:notification_id], communication_type: "imo", detailable_type: "ImoDeliveryDetail"
-    )
-    detail = communication.detailable
+    detail = ImoDeliveryDetail.find_by!(post_id: params[:post_id])
     unless detail
       raise ActiveRecord::RecordNotFound, "no ImoDeliveryDetail found for communication #{communication.id}"
     end
     if detail.result == "read"
-      # adding this logging to catch errors in imo's system
+      # just in case any errors in imo's system result in repeated callbacks
       logger.error "detail #{detail.id} already marked read"
     else
       detail.update!(result: "read", read_at: Time.current)
     end
 
     head :ok
-  end
-
-  private
-
-  def permitted_params
-    params.permit(:patient_id, :event)
   end
 end

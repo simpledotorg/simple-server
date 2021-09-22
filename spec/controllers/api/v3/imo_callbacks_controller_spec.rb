@@ -56,7 +56,7 @@ RSpec.describe Api::V3::ImoCallbacksController, type: :controller do
 
   describe "#read_receipt" do
     it "returns 401 when authentication fails" do
-      post :read_receipt, params: {notification_id: "does_not_matter"}
+      post :read_receipt
       expect(response.status).to eq(401)
     end
 
@@ -68,11 +68,9 @@ RSpec.describe Api::V3::ImoCallbacksController, type: :controller do
         )
       end
 
-      it "updates the notification's imo delivery detail status to 'read' and returns 200" do
-        notification = create(:notification)
-        detail = create(:imo_delivery_detail)
-        _communication = create(:communication, communication_type: "imo", notification: notification, detailable: detail)
-        params = {notification_id: notification.id}
+      it "updates the imo_delivery_detail status to 'read' and returns 200" do
+        detail = create(:imo_delivery_detail, post_id: "find_me")
+        params = {post_id: "find_me"}
         now = Time.current
 
         Timecop.freeze(now) do
@@ -85,37 +83,16 @@ RSpec.describe Api::V3::ImoCallbacksController, type: :controller do
         expect(response.status).to eq(200)
       end
 
-      it "returns 404 when notification is not found" do
-        params = {notification_id: "does_not_exist"}
+      it "returns 404 when imo_delivery_detail is not found" do
+        params = {post_id: "does_not_exist"}
 
         post :read_receipt, params: params
-        expect(response.status).to eq(404)
-      end
-
-      it "returns 404 when notification does not have an imo communication" do
-        notification = create(:notification)
-        params = {notification_id: notification.id}
-
-        post :read_receipt, params: params
-
-        expect(response.status).to eq(404)
-      end
-
-      it "returns 404 when the notification does not have an imo delivery detail" do
-        notification = create(:notification)
-        _communication = create(:communication, communication_type: "imo", notification: notification)
-        params = {notification_id: notification.id}
-
-        post :read_receipt, params: params
-
         expect(response.status).to eq(404)
       end
 
       it "returns 400 if the result is changed to 'read' multiple times" do
-        notification = create(:notification)
-        detail = create(:imo_delivery_detail, result: "read", created_at: 10.minutes.ago)
-        _communication = create(:communication, communication_type: "imo", notification: notification, detailable: detail)
-        params = {notification_id: notification.id}
+        detail = create(:imo_delivery_detail, result: "read", post_id: "find_me", created_at: 10.minutes.ago)
+        params = {post_id: "find_me"}
 
         expect(Rails.logger).to receive(:error).with("detail #{detail.id} already marked read")
         expect {
