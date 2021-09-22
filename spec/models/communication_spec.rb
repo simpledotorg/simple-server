@@ -91,7 +91,7 @@ describe Communication, type: :model do
       appt = create(:appointment, patient: patient)
       notification = create(:notification, subject: appt, patient: patient)
       expect {
-        Communication.create_with_imo_details!(notification: notification, response: :sent)
+        Communication.create_with_imo_details!(notification: notification, result: :sent, post_id: "imo_post_id")
       }.to change { notification.communications.count }.by(1)
       communication = notification.communications.last
       expect(communication.communication_type).to eq("imo")
@@ -103,7 +103,7 @@ describe Communication, type: :model do
       _imo_auth = create(:imo_authorization, status: "subscribed", patient: patient)
       notification = create(:notification, patient: patient)
       expect {
-        Communication.create_with_imo_details!(notification: notification, response: :no_imo_account)
+        Communication.create_with_imo_details!(notification: notification, result: :no_imo_account, post_id: "imo_post_id")
       }.to change { patient.imo_authorization.reload.status }.from("subscribed").to("no_imo_account")
     end
 
@@ -112,7 +112,7 @@ describe Communication, type: :model do
       _imo_auth = create(:imo_authorization, status: "subscribed", patient: patient)
       notification = create(:notification, patient: patient)
       expect {
-        Communication.create_with_imo_details!(notification: notification, response: :not_subscribed)
+        Communication.create_with_imo_details!(notification: notification, result: :not_subscribed, post_id: "imo_post_id")
       }.to change { patient.imo_authorization.reload.status }.from("subscribed").to("not_subscribed")
     end
 
@@ -121,9 +121,9 @@ describe Communication, type: :model do
       _imo_auth = create(:imo_authorization, status: "subscribed", patient: patient)
       notification = create(:notification, patient: patient)
       expect {
-        Communication.create_with_imo_details!(notification: notification, response: :sent)
-        Communication.create_with_imo_details!(notification: notification, response: :read)
-        Communication.create_with_imo_details!(notification: notification, response: :error)
+        Communication.create_with_imo_details!(notification: notification, result: :sent, post_id: "imo_post_id")
+        Communication.create_with_imo_details!(notification: notification, result: :read, post_id: "imo_post_id")
+        Communication.create_with_imo_details!(notification: notification, result: :error, post_id: "imo_post_id")
       }.not_to change { patient.imo_authorization.reload.status }
     end
   end
