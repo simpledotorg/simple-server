@@ -84,8 +84,9 @@ RSpec.describe FacilityStatsService do
         medium_facility2, large_facility1, large_facility2]
       refresh_views
 
-      stats_by_size = FacilityStatsService.call(facilities: facilities_data(all_facilities),
-                                                period: period, rate_numerator: :controlled_patients)
+      stats_by_size = with_reporting_time_zone {
+        FacilityStatsService.call(facilities: facilities_data(all_facilities), period: period, rate_numerator: :controlled_patients)
+      }
 
       # all numbers except cumulative_registrations appear in data 3 months after they're recorded
       small = stats_by_size[:small][:periods]
