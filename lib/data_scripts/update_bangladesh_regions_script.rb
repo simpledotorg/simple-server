@@ -28,6 +28,8 @@ class UpdateBangladeshRegionsScript < DataScript
   def call
     destroy_empty_facilities
     import_from_csv
+    puts "Done running #{self.class} data_script - results:"
+    pp results
   ensure
     RequestStore[:readonly] = false
   end

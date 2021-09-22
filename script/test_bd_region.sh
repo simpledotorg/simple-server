@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -ex
+set -e
 
 export DEFAULT_COUNTRY="BD"
 bin/rails db:drop
