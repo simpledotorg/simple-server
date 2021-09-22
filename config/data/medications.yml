@@ -1030,7 +1030,7 @@
   composition:
   dosage: 2.5 mg
   frequency: two_per_day
-  rxnorm_code:
+  rxnorm_code: '329527'
   drug_category: hypertension_ccb
   deleted: false
 - id: c68cd48c-4c2c-447d-a5f3-d3d882c06ff7
@@ -1038,7 +1038,7 @@
   composition:
   dosage: 5 mg
   frequency: two_per_day
-  rxnorm_code:
+  rxnorm_code: '329528'
   drug_category: hypertension_ccb
   deleted: false
 - id: be352bf5-8834-477a-a528-02d293f572dd
@@ -1046,7 +1046,7 @@
   composition:
   dosage: 10 mg
   frequency: two_per_day
-  rxnorm_code:
+  rxnorm_code: '329526'
   drug_category: hypertension_ccb
   deleted: false
 - id: 7ccf5cc4-ba60-45d9-8f40-1358e3aacb0b
@@ -1054,7 +1054,7 @@
   composition:
   dosage: 25 mg
   frequency: two_per_day
-  rxnorm_code:
+  rxnorm_code: '315437'
   drug_category: hypertension_other
   deleted: false
 - id: 262cb73e-c702-41b5-8065-97ec34192e51
@@ -1062,7 +1062,7 @@
   composition:
   dosage: 50 mg
   frequency: two_per_day
-  rxnorm_code:
+  rxnorm_code: '315438'
   drug_category: hypertension_other
   deleted: false
 - id: f5d21b48-b029-4486-ad5b-5a192b14619d
@@ -1086,7 +1086,7 @@
   composition:
   dosage: 25 mg
   frequency: one_per_day
-  rxnorm_code:
+  rxnorm_code: '315561'
   drug_category: hypertension_ace
   deleted: false
 - id: 01c4cf91-a6f4-4abe-a183-1926e9c424d2
@@ -1094,7 +1094,7 @@
   composition:
   dosage: 25 mg
   frequency: two_per_day
-  rxnorm_code:
+  rxnorm_code: '315561'
   drug_category: hypertension_ace
   deleted: false
 - id: 9978235b-2c28-4da7-9b89-302a27e973d3
@@ -1102,7 +1102,7 @@
   composition:
   dosage: 50 mg
   frequency: one_per_day
-  rxnorm_code:
+  rxnorm_code: '315562'
   drug_category: hypertension_ace
   deleted: false
 - id: 5fbfba70-ef6c-4dfb-a7de-9356e570c2a3
@@ -1110,7 +1110,7 @@
   composition:
   dosage: 50 mg
   frequency: two_per_day
-  rxnorm_code:
+  rxnorm_code: '315562'
   drug_category: hypertension_ace
   deleted: false
 - id: 99dd10c3-87a5-4341-a022-a8494a134c5e
@@ -1190,7 +1190,7 @@
   composition:
   dosage: 1 mg
   frequency: two_per_day
-  rxnorm_code:
+  rxnorm_code: '315978'
   drug_category: diabetes
   deleted: false
 - id: 8f460801-1fa6-44aa-ae05-8ce2f2f1e87b
@@ -1198,7 +1198,7 @@
   composition:
   dosage: 2 mg
   frequency: two_per_day
-  rxnorm_code:
+  rxnorm_code: '317637'
   drug_category: diabetes
   deleted: false
 - id: e2d1666c-4ba2-41b3-ba5e-ab622ea00aa2
@@ -1206,7 +1206,7 @@
   composition:
   dosage: 4 mg
   frequency: two_per_day
-  rxnorm_code:
+  rxnorm_code: '315979'
   drug_category: diabetes
   deleted: false
 - id: 62909942-bf73-47f5-83d5-af831678637d
@@ -1222,7 +1222,7 @@
   composition:
   dosage: 25 mg
   frequency: two_per_day
-  rxnorm_code:
+  rxnorm_code: '979484'
   drug_category: hypertension_arb
   deleted: false
 - id: e5ab38b4-7a16-48aa-bdcf-3ca5546da87d
@@ -1230,7 +1230,7 @@
   composition:
   dosage: 50 mg
   frequency: two_per_day
-  rxnorm_code:
+  rxnorm_code: '979467'
   drug_category: hypertension_arb
   deleted: false
 - id: 11c3e26c-5f45-484d-a685-5a627d01ac24
@@ -1246,7 +1246,7 @@
   composition:
   dosage: 20 mg
   frequency: two_per_day
-  rxnorm_code:
+  rxnorm_code: '316353'
   drug_category: ccb
   deleted: false
 - id: d9780505-a15d-430a-9d66-671ad49f49e9
