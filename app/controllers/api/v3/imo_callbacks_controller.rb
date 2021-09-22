@@ -29,7 +29,7 @@ class Api::V3::ImoCallbacksController < ApplicationController
     unless detail
       raise ActiveRecord::RecordNotFound, "no ImoDeliveryDetail found for communication #{communication.id}"
     end
-    if detail.result == "read"
+    if detail.read?
       # just in case any errors in imo's system result in repeated callbacks
       logger.error "detail #{detail.id} already marked read"
     else
