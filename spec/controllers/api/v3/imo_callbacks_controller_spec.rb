@@ -71,15 +71,11 @@ RSpec.describe Api::V3::ImoCallbacksController, type: :controller do
       it "updates the imo_delivery_detail status to 'read' and returns 200" do
         detail = create(:imo_delivery_detail, post_id: "find_me")
         params = {post_id: "find_me"}
-        now = Time.current
 
-        Timecop.freeze(now) do
-          expect {
-            post :read_receipt, params: params
-          }.to change { detail.reload.result }.from("sent").to("read")
-            .and change { detail.read_at }.from(nil).to(now)
-        end
-
+        expect {
+          post :read_receipt, params: params
+        }.to change { detail.reload.result }.from("sent").to("read")
+          .and change { detail.read_at }.from(nil)
         expect(response.status).to eq(200)
       end
 
