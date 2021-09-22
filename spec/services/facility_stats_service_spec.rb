@@ -9,11 +9,9 @@ RSpec.describe FacilityStatsService do
   let(:user) { create(:admin, :manager, :with_access, resource: organization, organization: organization) }
 
   def refresh_views
-    ActiveRecord::Base.transaction do
-      LatestBloodPressuresPerPatientPerMonth.refresh
-      LatestBloodPressuresPerPatientPerQuarter.refresh
-      PatientRegistrationsPerDayPerFacility.refresh
-    end
+    LatestBloodPressuresPerPatientPerMonth.refresh
+    LatestBloodPressuresPerPatientPerQuarter.refresh
+    PatientRegistrationsPerDayPerFacility.refresh
   end
 
   def facilities_data(facilities)
