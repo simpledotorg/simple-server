@@ -5,6 +5,7 @@ class DataScript
     @dry_run = dry_run
     @logger = Rails.logger
     RequestStore[:readonly] = true if dry_run?
+    logger.info "Creating #{self.class} with dry_run=#{dry_run?}"
   end
 
   def dry_run?

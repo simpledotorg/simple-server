@@ -19,7 +19,7 @@ class UpdateBangladeshRegionsScript < DataScript
     @cache = {state: {}, district: {}, block: {}, facility: {}}
     unless CountryConfig.current_country?("Bangladesh")
       logger.warn("Current country is #{CountryConfig.current[:name]} - aborting!")
-      return
+      abort "Error - aborting! This script only runs in Bangladesh"
     end
     @org_region = Region.organization_regions.find_by!(slug: "nhf")
     @protocol = Protocol.find_by!(name: "Bangladesh Hypertension Management Protocol for Primary Healthcare Setting")
@@ -89,6 +89,7 @@ class UpdateBangladeshRegionsScript < DataScript
   end
 
   def find_or_create_region(region_type, name, parent)
+    logger.debug(msg: "find_or_create_region #{region_type} #{name}", parent: parent)
     parent.children.find_by(name: name) || create_region(region_type, name, parent)
   end
 
