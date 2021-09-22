@@ -148,6 +148,10 @@ Rails.application.routes.draw do
         post "/lookup", to: "patients#lookup"
       end
 
+      namespace :analytics do
+        resource :overdue_list, only: [:show]
+      end
+
       get "states", to: "states#index"
     end
   end
