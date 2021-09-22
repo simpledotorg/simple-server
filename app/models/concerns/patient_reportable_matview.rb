@@ -1,6 +1,6 @@
 module PatientReportableMatview
   extend ActiveSupport::Concern
-  include Reports::PatientReportable
+  include PatientReportable
   LTFU_TIME = PatientReportable::LTFU_TIME
 
   included do
