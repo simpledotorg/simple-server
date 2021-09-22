@@ -110,18 +110,18 @@ describe ImoApiService, type: :model do
         response = JSON(
           response: {
             status: "success",
-            result: { post_id: "abcde12345" }
+            result: {post_id: "find_me"}
           }
         )
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: response)
         expect(Sentry).not_to receive(:capture_message)
-        expect(service.send_notification(notification, phone_number)).to eq({ result: :sent, post_id: "abcde12345" })
+        expect(service.send_notification(notification, phone_number)).to eq({result: :sent, post_id: "find_me"})
       end
 
       it "handles no_imo_account response" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: nonexistent_user_body)
         expect(Sentry).not_to receive(:capture_message)
-        expect(service.send_notification(notification, phone_number)).to eq({ result: :no_imo_account, post_id: nil })
+        expect(service.send_notification(notification, phone_number)).to eq({result: :no_imo_account, post_id: nil})
       end
 
       it "handles not_subscribed response" do
@@ -133,7 +133,7 @@ describe ImoApiService, type: :model do
         )
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: response)
         expect(Sentry).not_to receive(:capture_message)
-        expect(service.send_notification(notification, phone_number)).to eq({ result: :not_subscribed, post_id: nil })
+        expect(service.send_notification(notification, phone_number)).to eq({result: :not_subscribed, post_id: nil})
       end
 
       it "reports to sentry and returns error on other 200 responses" do

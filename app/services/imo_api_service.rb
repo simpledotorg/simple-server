@@ -72,7 +72,7 @@ class ImoApiService
     body = parsed_body(response.body)
     result = process_response(response, body, url, "notification")
     post_id = body.dig("response", "result", "post_id")
-    { result: result, post_id: post_id }
+    {result: result, post_id: post_id}
   end
 
   private

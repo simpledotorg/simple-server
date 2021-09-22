@@ -77,7 +77,7 @@ RSpec.describe Api::V3::ImoCallbacksController, type: :controller do
           expect {
             post :read_receipt, params: params
           }.to change { detail.reload.result }.from("sent").to("read")
-          .and change { detail.read_at }.from(nil).to(now)
+            .and change { detail.read_at }.from(nil).to(now)
         end
 
         expect(response.status).to eq(200)
