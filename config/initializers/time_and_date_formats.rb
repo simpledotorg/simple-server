@@ -1,7 +1,8 @@
-Time::DATE_FORMATS[:mon_year] = "%b-%Y"
-Date::DATE_FORMATS[:mon_year] = "%b-%Y"
-Time::DATE_FORMATS[:default_period] = "%b-%Y"
-Date::DATE_FORMATS[:default_period] = "%b-%Y"
+DEFAULT_PERIOD_FORMAT = "%b-%Y".freeze
+Time::DATE_FORMATS[:mon_year] = DEFAULT_PERIOD_FORMAT
+Date::DATE_FORMATS[:mon_year] = DEFAULT_PERIOD_FORMAT
+Time::DATE_FORMATS[:default_period] = DEFAULT_PERIOD_FORMAT
+Date::DATE_FORMATS[:default_period] = DEFAULT_PERIOD_FORMAT
 
 Date::DATE_FORMATS[:mon_year_multiline] = "%b\n%Y"
 Time::DATE_FORMATS[:mon_year_multiline] = "%b\n%Y"
