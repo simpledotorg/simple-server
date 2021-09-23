@@ -36,7 +36,14 @@ class Quarter
     @date = date.to_date.freeze
     @year = date.year.freeze
     @number = QuarterHelper.quarter(date).freeze
-    @to_s = "Q#{number}-#{year}".freeze
+  end
+
+  def to_s(format = :default_period)
+    if format == :dhis2
+      "#{year}Q#{number}"
+    else
+      "Q#{number}-#{year}"
+    end
   end
 
   def next_quarter
