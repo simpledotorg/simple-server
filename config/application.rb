@@ -12,6 +12,8 @@ require "action_cable/engine"
 require "sprockets/railtie"
 require "view_component/engine"
 
+require_relative "../lib/extensions/logging_extensions"
+
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
@@ -46,6 +48,7 @@ module SimpleServer
     config.i18n.default_locale = :en
 
     require "json_logger"
+    config.log_formatter = LoggingExtensions.default_log_formatter
     config.logger = ActiveSupport::TaggedLogging.new(JsonLogger.new(Rails.root.join("log", "#{Rails.env}.log")))
   end
 end

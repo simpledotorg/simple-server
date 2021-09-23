@@ -7,8 +7,7 @@ class Quarter
   end
 
   def self.parse(string)
-    date = if string.match(PARSE_REGEX)
-      match = string.match(PARSE_REGEX)
+    date = if (match = string.match(PARSE_REGEX))
       number = Integer(match[1])
       year = Integer(match[2])
       quarter_month = quarter_to_month(number)

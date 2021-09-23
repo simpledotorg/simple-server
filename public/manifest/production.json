@@ -17,6 +17,12 @@
       "endpoint": "https://simple.moh.gov.et/api/",
       "display_name": "Ethiopia",
       "isd_code": "251"
+    },
+    {
+      "country_code": "LK",
+      "endpoint": "https://api.lk.simple.org/api/",
+      "display_name": "Sri Lanka",
+      "isd_code": "94"
     }
   ],
   "v2": {
@@ -51,6 +57,17 @@
           {
             "display_name": "Ethiopia",
             "endpoint": "https://simple.moh.gov.et/api/"
+          }
+        ]
+      },
+      {
+        "country_code": "LK",
+        "display_name": "Sri Lanka",
+        "isd_code": "94",
+        "deployments": [
+          {
+            "display_name": "Sri Lanka",
+            "endpoint": "https://api.lk.simple.org/api/"
           }
         ]
       }

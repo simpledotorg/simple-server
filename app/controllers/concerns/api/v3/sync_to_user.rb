@@ -32,14 +32,8 @@ module Api::V3::SyncToUser
       model.for_sync
     end
 
-    def model
-      controller_name.classify.constantize
-    end
-
     def records_to_sync
-      time(__method__) do
-        current_facility_records + other_facility_records
-      end
+      current_facility_records + other_facility_records
     end
 
     def processed_until(records)

@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  get "home/index"
+  resources :home
 
   devise_scope :email_authentication do
     authenticated :email_authentication do
@@ -149,6 +149,10 @@ Rails.application.routes.draw do
 
       scope :call_results do
         post "/sync", to: "call_results#sync_from_user"
+      end
+
+      namespace :analytics do
+        resource :overdue_list, only: [:show]
       end
 
       get "states", to: "states#index"

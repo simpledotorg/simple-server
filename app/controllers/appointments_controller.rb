@@ -1,13 +1,14 @@
 class AppointmentsController < AdminController
-  include FacilityFiltering
+  include OverdueListFiltering
   include Pagination
 
+  before_action :filter_district_and_facilities, only: [:index]
   before_action :set_appointment, only: [:update]
 
   DEFAULT_SEARCH_FILTERS = ["only_less_than_year_overdue"]
 
   def index
-    authorize { current_admin.accessible_facilities(:manage_overdue_list).any? }
+    authorize { @accessible_facilities.any? }
 
     @search_filters = index_params[:search_filters] || []
     # only apply default search filters on navigating to this page
@@ -44,7 +45,7 @@ class AppointmentsController < AdminController
   private
 
   def index_params
-    @index_params ||= params.permit(:facility_id, :per_page, search_filters: [])
+    @index_params ||= params.permit(:district_slug, :facility_id, :per_page, search_filters: [])
   end
 
   def set_appointment
@@ -80,14 +81,13 @@ class AppointmentsController < AdminController
   end
 
   def download_filename
-    facility_name = current_facility.present? ? current_facility.name.parameterize : "all"
+    facility_name = @selected_facility.present? ? @selected_facility.name.parameterize : "all"
     "overdue-patients_#{facility_name}_#{Time.current.to_s(:number)}.csv"
   end
 
   def patient_summaries(only_overdue: true)
     PatientSummaryQuery.call(
-      assigned_facility: current_facility,
-      next_appointment_facilities: current_admin.accessible_facilities(:manage_overdue_list),
+      assigned_facilities: @selected_facility.present? ? [@selected_facility] : @facilities,
       filters: @search_filters,
       only_overdue: only_overdue
     ).order(risk_level: :desc, next_appointment_scheduled_date: :desc, id: :asc)

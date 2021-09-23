@@ -121,6 +121,7 @@ class User < ApplicationRecord
     :accessible_protocol_drugs,
     :access_across_organizations?,
     :access_across_facility_groups?,
+    :can_access?,
     :manage_organization?,
     :grant_access,
     :permitted_access_levels, to: :user_access, allow_nil: false
@@ -226,7 +227,7 @@ class User < ApplicationRecord
       authentication = phone_number_authentication
       authentication.password_digest = password_digest
       authentication.set_access_token
-      sync_approval_requested(I18n.t("reset_password"))
+      sync_approval_requested(I18n.t("reset_password")) unless feature_enabled?(:auto_approve_users)
       authentication.save!
       save!
     end
