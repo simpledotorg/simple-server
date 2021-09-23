@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  get "home/index"
+  resources :home
 
   devise_scope :email_authentication do
     authenticated :email_authentication do
@@ -145,6 +145,10 @@ Rails.application.routes.draw do
 
       scope :patients do
         post "/lookup", to: "patients#lookup"
+      end
+
+      namespace :analytics do
+        resource :overdue_list, only: [:show]
       end
 
       get "states", to: "states#index"

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_07_205603) do
+ActiveRecord::Schema.define(version: 2021_09_15_134540) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -1517,7 +1517,8 @@ ActiveRecord::Schema.define(version: 2021_09_07_205603) do
               WHEN ((((latest_blood_sugar.blood_sugar_type)::text = 'random'::text) AND (latest_blood_sugar.blood_sugar_value >= (300)::numeric)) OR (((latest_blood_sugar.blood_sugar_type)::text = 'post_prandial'::text) AND (latest_blood_sugar.blood_sugar_value >= (300)::numeric)) OR (((latest_blood_sugar.blood_sugar_type)::text = 'fasting'::text) AND (latest_blood_sugar.blood_sugar_value >= (200)::numeric)) OR (((latest_blood_sugar.blood_sugar_type)::text = 'hba1c'::text) AND (latest_blood_sugar.blood_sugar_value >= 9.0))) THEN 1
               ELSE 0
           END AS risk_level,
-      latest_bp_passport.identifier AS latest_bp_passport,
+      latest_bp_passport.id AS latest_bp_passport_id,
+      latest_bp_passport.identifier AS latest_bp_passport_identifier,
       p.id
      FROM (((((((((((patients p
        LEFT JOIN addresses ON ((addresses.id = p.address_id)))
