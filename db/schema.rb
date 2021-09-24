@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_15_134540) do
+ActiveRecord::Schema.define(version: 2021_09_24_102745) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -86,6 +86,7 @@ ActiveRecord::Schema.define(version: 2021_09_15_134540) do
     t.datetime "deleted_at"
     t.datetime "recorded_at"
     t.index ["deleted_at"], name: "index_blood_pressures_on_deleted_at"
+    t.index ["facility_id"], name: "index_blood_pressures_on_facility_id"
     t.index ["patient_id", "recorded_at"], name: "index_blood_pressures_on_patient_id_and_recorded_at", order: { recorded_at: :desc }
     t.index ["patient_id", "updated_at"], name: "index_blood_pressures_on_patient_id_and_updated_at"
     t.index ["patient_id"], name: "index_blood_pressures_on_patient_id"
