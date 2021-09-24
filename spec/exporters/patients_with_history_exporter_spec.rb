@@ -3,6 +3,10 @@ require "rails_helper"
 RSpec.describe PatientsWithHistoryExporter, type: :model do
   include QuarterHelper
 
+  around do |example|
+    with_reporting_time_zone { example.run }
+  end
+
   let!(:facility) { create(:facility) }
   let!(:registration_facility) { create(:facility) }
   let!(:patient) {
