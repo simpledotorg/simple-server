@@ -5,7 +5,13 @@ module RegionSource
       region&.discard
     end
     klass.define_method :clean_up_empty_regions do
-      region.destroy! if region.children.none?
+      children = region.children
+      if children.empty?
+        logger.warn "Destroying region #{region.region_type} #{region.name} as it has no children and source #{self.class} #{name} is being destroyed"
+        region.destroy!
+      else
+        logger.warn "Not destroying region #{region.region_type} #{region.name} still has children #{children.map(&:name)}"
+      end
     end
     klass.before_destroy :clean_up_empty_regions
   end

@@ -3,7 +3,7 @@ require_relative "../../../lib/data_scripts/update_bangladesh_regions_script"
 
 describe UpdateBangladeshRegionsScript do
   let(:test_csv_path) { Rails.root.join("spec", "fixtures", "files", "bd_test_regions.csv") }
-  let(:facility_group) { create(:facility_group) }
+  let(:facility_group) { create(:facility_group, name: "Brooklyn District") }
 
   context "non Bangladesh deployments" do
     it "does nothing in other countries" do
@@ -109,8 +109,9 @@ describe UpdateBangladeshRegionsScript do
           script.call
         }.to change { Facility.count }.by(-3)
           .and change { FacilityGroup.count }.by(-2)
-          .and change { Region.count }.by(-7)
-          .and change { User.count }.by(-1) # 3 facilities, 2 facility groups, and 2 blocks
+          .and change { Region.block_regions.count }.by(-3)
+          .and change { Region.count }.by(-8) # 3 facilities, 2 facility groups, and 3 blocks
+          .and change { User.count }.by(-1)
         empty_facilities.each do |facility|
           expect(Facility.find_by(id: facility.id)).to be_nil
         end

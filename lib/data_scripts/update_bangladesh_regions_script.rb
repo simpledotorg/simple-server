@@ -131,10 +131,21 @@ class UpdateBangladeshRegionsScript < DataScript
         results[:deleted][:users] += 1
       end
     end
+    Region.block_regions.each do |block|
+      if block.children.none?
+        logger.info { "Removing block #{block.name}" }
+        if run_safely { block.destroy }
+          results[:deleted][:blocks] += 1
+        else
+          results[:errors][:block_deletes] += 1
+        end
+      end
+    end
+
     logger.info { "Removing facility groups with no facilities" }
     related_facility_groups.each do |facility_group|
       if facility_group.facilities.size == 0
-        logger.info { "Removing facility group #{facility_group.name} " }
+        logger.info { "Removing facility group #{facility_group.name}" }
         run_safely { facility_group.destroy }
       end
     end
