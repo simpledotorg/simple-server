@@ -146,7 +146,11 @@ class UpdateBangladeshRegionsScript < DataScript
     related_facility_groups.each do |facility_group|
       if facility_group.facilities.size == 0
         logger.info { "Removing facility group #{facility_group.name}" }
-        run_safely { facility_group.destroy }
+        if run_safely { facility_group.destroy }
+          results[:deleted][:facility_groups] += 1
+        else
+          results[:errors][:facility_group_deletes] += 1
+        end
       end
     end
   end
