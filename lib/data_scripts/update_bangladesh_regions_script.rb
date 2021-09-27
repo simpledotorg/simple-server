@@ -106,15 +106,17 @@ class UpdateBangladeshRegionsScript < DataScript
     region
   end
 
-  def destroy_empty_facilities
+  def empty_facilities
     sql = <<-SQL
       NOT EXISTS (SELECT 1 FROM patients where patients.registration_facility_id = facilities.id) AND
       NOT EXISTS (SELECT 1 FROM patients where patients.assigned_facility_id = facilities.id)
     SQL
-    related_facility_groups = []
-    related_users = []
+    Facility.where(facility_size: ["community", nil]).includes(:facility_group, :users).where(sql)
+  end
 
-    facilities = Facility.where(facility_size: ["community", nil]).includes(:facility_group, :users).where(sql)
+  def destroy_empty_facilities
+    related_facility_groups, related_users = [], []
+    facilities = empty_facilities
     logger.info { "Removing #{facilities.size} empty facilities" }
     facilities.each do |facility|
       related_facility_groups << facility.facility_group
@@ -153,6 +155,7 @@ class UpdateBangladeshRegionsScript < DataScript
         end
       end
     end
+    logger.info { "There are #{empty_facilities.size} remaining empty facilities" }
   end
 
   CONVERTERS = lambda { |field, _|
