@@ -8,7 +8,9 @@ describe UpdateBangladeshRegionsScript do
   context "non Bangladesh deployments" do
     it "does nothing in other countries" do
       expect(CountryConfig).to receive(:current_country?).with("Bangladesh").and_return(false)
-      described_class.new(dry_run: false, csv_path: test_csv_path)
+      expect {
+        described_class.new(dry_run: false, csv_path: test_csv_path)
+      }.to raise_error(SystemExit, "Error - aborting! This script only runs in Bangladesh")
     end
   end
 

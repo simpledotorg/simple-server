@@ -18,4 +18,4 @@ require_relative "../config/environment"
 require_relative "../lib/data_scripts/#{script}"
 
 klass = script.classify.constantize
-klass.call(dry_run: !write_mode)
+pp klass.call(dry_run: !write_mode)
