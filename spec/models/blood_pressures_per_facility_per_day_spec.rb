@@ -1,6 +1,10 @@
 require "rails_helper"
 
 RSpec.describe BloodPressuresPerFacilityPerDay, type: :model do
+  around do |example|
+    with_reporting_time_zone { example.run }
+  end
+
   describe "Associations" do
     it { should belong_to(:facility) }
   end
