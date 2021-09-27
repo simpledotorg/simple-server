@@ -31,7 +31,7 @@ class Api::V3::ImoCallbacksController < ApplicationController
     end
     if detail.read?
       # just in case any errors in imo's system result in repeated callbacks
-      logger.error "detail #{detail.id} already marked read"
+      logger.error(class: self.class.name, msg: "detail #{detail.id} already marked read")
     else
       detail.update!(result: "read", read_at: Time.current)
     end
