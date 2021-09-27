@@ -44,7 +44,7 @@ class ImoApiService
     end
 
     response = execute_post(url, body: request_body)
-    body = parse_body(response.body)
+    body = JSON.parse(response.body)
     status = process_response(response, body, url, "invitation")
 
     ImoAuthorization.create!(patient: patient, status: status, last_invited_at: Time.current)
@@ -69,7 +69,7 @@ class ImoApiService
     )
 
     response = execute_post(url, body: request_body)
-    body = parse_body(response.body)
+    body = JSON.parse(response.body)
     result = process_response(response, body, url, "notification")
     post_id = body.dig("response", "result", "post_id")
     {result: result, post_id: post_id}
@@ -83,12 +83,6 @@ class ImoApiService
       .post(url, data)
   rescue HTTP::Error => e
     raise Error.new("Error while calling the Imo API", path: url, exception_message: e)
-  end
-
-  def parse_body(body)
-    JSON.parse(body)
-  rescue JSON::ParserError
-    {}
   end
 
   def process_response(response, body, url, action)

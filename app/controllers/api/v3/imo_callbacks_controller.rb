@@ -13,7 +13,7 @@ class Api::V3::ImoCallbacksController < ApplicationController
 
   def subscribe
     unless params[:event] == "accept_invite"
-      raise ImoCallbackError.new("unexcepted Imo invitation event: #{params[:event]}")
+      raise ImoCallbackError.new("unexpected Imo invitation event: #{params[:event]}")
     end
 
     patient = Patient.find(params[:patient_id])
@@ -25,10 +25,12 @@ class Api::V3::ImoCallbacksController < ApplicationController
   end
 
   def read_receipt
-    detail = ImoDeliveryDetail.find_by!(post_id: params[:post_id])
-    unless detail
-      raise ActiveRecord::RecordNotFound, "no ImoDeliveryDetail found for communication #{communication.id}"
+    unless params[:event] == "read_receipt"
+      raise ImoCallbackError.new("unexpected Imo receipt event: #{params[:event]}")
     end
+
+    detail = ImoDeliveryDetail.find_by!(post_id: params[:post_id])
+
     if detail.read?
       # just in case any errors in imo's system result in repeated callbacks
       logger.error(class: self.class.name, msg: "detail #{detail.id} already marked read")

@@ -56,4 +56,19 @@ describe ImoDeliveryDetail, type: :model do
       expect(subject.in_progress?).to be_falsey
     end
   end
+
+  describe "#unsubscribed_or_missing?" do
+    it "returns true for no_imo_account and not_subscribed" do
+      subject.sent!
+      expect(subject.unsubscribed_or_missing?).to be_falsey
+      subject.no_imo_account!
+      expect(subject.unsubscribed_or_missing?).to be_truthy
+      subject.not_subscribed!
+      expect(subject.unsubscribed_or_missing?).to be_truthy
+      subject.read!
+      expect(subject.unsubscribed_or_missing?).to be_falsey
+      subject.error!
+      expect(subject.unsubscribed_or_missing?).to be_falsey
+    end
+  end
 end

@@ -23,4 +23,8 @@ class ImoDeliveryDetail < ApplicationRecord
   def in_progress?
     sent?
   end
+
+  def unsubscribed_or_missing?
+    no_imo_account? || not_subscribed?
+  end
 end

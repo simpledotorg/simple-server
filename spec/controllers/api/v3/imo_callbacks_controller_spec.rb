@@ -70,7 +70,7 @@ RSpec.describe Api::V3::ImoCallbacksController, type: :controller do
 
       it "updates the imo_delivery_detail status to 'read' and returns 200" do
         detail = create(:imo_delivery_detail, post_id: "find_me")
-        params = {post_id: "find_me"}
+        params = {post_id: "find_me", event: "read_receipt"}
 
         expect {
           post :read_receipt, params: params
@@ -80,17 +80,26 @@ RSpec.describe Api::V3::ImoCallbacksController, type: :controller do
       end
 
       it "returns 404 when imo_delivery_detail is not found" do
-        params = {post_id: "does_not_exist"}
+        params = {post_id: "does_not_exist", event: "read_receipt"}
 
         post :read_receipt, params: params
         expect(response.status).to eq(404)
       end
 
-      it "returns 400 if the result is changed to 'read' multiple times" do
-        detail = create(:imo_delivery_detail, result: "read", post_id: "find_me", created_at: 10.minutes.ago)
-        params = {post_id: "find_me"}
+      it "returns 400 when event is not 'read_receipt'" do
+        params = {post_id: "does_not_exist", event: "rejected"}
 
-        expect(Rails.logger).to receive(:error).with("detail #{detail.id} already marked read")
+        post :read_receipt, params: params
+        expect(response.status).to eq(400)
+      end
+
+      it "returns 200 if the result is changed to 'read' multiple times" do
+        detail = create(:imo_delivery_detail, result: "read", post_id: "find_me", created_at: 10.minutes.ago)
+        params = {post_id: "find_me", event: "read_receipt"}
+
+        expect(Rails.logger).to receive(:error).with(
+          class: "Api::V3::ImoCallbacksController", msg: "detail #{detail.id} already marked read"
+        )
         expect {
           post :read_receipt, params: params
         }.not_to change { detail.reload }
