@@ -134,12 +134,16 @@ class Region < ApplicationRecord
   def syncable_patients
     case region_type
       when "block"
-        registered_patients.with_discarded
-          .or(assigned_patients.with_discarded)
-          .union(appointed_patients.with_discarded)
+        Patient.where(id: syncable_patient_ids)
       else
         registered_patients.with_discarded
     end
+  end
+
+  def syncable_patient_ids
+    registered_patients.with_discarded.select(:id)
+      .or(assigned_patients.with_discarded.select(:id))
+      .union(appointed_patient_ids.with_discarded)
   end
 
   def registered_patients
@@ -150,8 +154,8 @@ class Region < ApplicationRecord
     Patient.where(assigned_facility: facility_regions.pluck(:source_id))
   end
 
-  def appointed_patients
-    Patient.joins(:appointments).where(appointments: {facility: facility_regions.pluck(:source_id)})
+  def appointed_patient_ids
+    Appointment.where(facility: facility_regions.pluck(:source_id)).select(:patient_id)
   end
 
   REGION_TYPES.reject { |t| t == "root" }.map do |region_type|
