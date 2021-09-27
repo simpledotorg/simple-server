@@ -68,7 +68,7 @@ class Communication < ApplicationRecord
     now = DateTime.current
     transaction do
       detailable = ImoDeliveryDetail.create!(callee_phone_number: patient.latest_mobile_number, result: result, post_id: post_id)
-      communication = create!(communication_type: "imo",
+      communication = create!(communication_type: :imo,
                               detailable: detailable,
                               appointment: notification.subject,
                               notification: notification,
