@@ -1,10 +1,12 @@
 require "rails_helper"
 
-module Reports::FakeMatView
-  extend Refreshable
+module Reports
+  class FakeMatView
+    extend Refreshable
 
-  def self.table_name
-    "fake_mat_view"
+    def self.table_name
+      "fake_mat_view"
+    end
   end
 end
 
