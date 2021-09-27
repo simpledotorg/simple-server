@@ -13,4 +13,4 @@ script/run_data_script update_bangladesh_regions_script
 
 echo "You can now run the real thing with dry_run turned off with:"
 echo
-echo " DEFAULT_COUNTRY=BD script/run_data_script update_bangladesh_regions_script true"
+echo "  DEFAULT_COUNTRY=BD script/run_data_script update_bangladesh_regions_script true"
