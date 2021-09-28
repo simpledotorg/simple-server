@@ -145,8 +145,8 @@ class Region < ApplicationRecord
       when "block"
         registered_patients(exclude_facility: exclude_facility)
           .with_discarded.select(:id)
-          .or(assigned_patients(exclude_facility: exclude_facility).with_discarded.select(:id))
-          .union(appointed_patient_ids(exclude_facility: exclude_facility).with_discarded)
+          .or(assigned_patients.with_discarded.select(:id))
+          .union(appointed_patient_ids.with_discarded)
       else
         registered_patients.with_discarded.select(:id)
     end
@@ -156,12 +156,12 @@ class Region < ApplicationRecord
     Patient.where(registration_facility: facility_regions.pluck(:source_id) - [exclude_facility])
   end
 
-  def assigned_patients(exclude_facility: nil)
-    Patient.where(assigned_facility: facility_regions.pluck(:source_id) - [exclude_facility])
+  def assigned_patients
+    Patient.where(assigned_facility: facility_regions.pluck(:source_id))
   end
 
-  def appointed_patient_ids(exclude_facility: nil)
-    Appointment.select(:patient_id).where(facility: facility_regions.pluck(:source_id) - [exclude_facility])
+  def appointed_patient_ids
+    Appointment.select(:patient_id).where(facility: facility_regions.pluck(:source_id))
   end
 
   REGION_TYPES.reject { |t| t == "root" }.map do |region_type|
