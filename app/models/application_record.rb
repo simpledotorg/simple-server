@@ -11,4 +11,8 @@ class ApplicationRecord < ActiveRecord::Base
       .order(:updated_at)
       .limit(number_of_records)
   end
+
+  def readonly?
+    RequestStore[:readonly] || @readonly
+  end
 end
