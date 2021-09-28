@@ -5,6 +5,8 @@ require "capybara/rails"
 
 Dir[Rails.root.join("spec/pages/**/*.rb")].sort.each { |f| require f }
 
+WebMock.allow_net_connect!
+
 RSpec.configure do |config|
   config.include Devise::Test::IntegrationHelpers, type: :feature
 

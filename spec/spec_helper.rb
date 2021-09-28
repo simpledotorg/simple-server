@@ -5,8 +5,6 @@ require "sidekiq/testing"
 require "flipper_helper"
 require "reporting_helpers"
 
-WebMock.allow_net_connect!
-
 RSpec::Matchers.define_negated_matcher :not_change, :change
 
 RSpec.configure do |config|

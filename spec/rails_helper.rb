@@ -13,6 +13,8 @@ Dir[Rails.root.join("spec/**/shared_examples/**/*.rb")].sort.each { |f| require 
 
 ActiveRecord::Migration.maintain_test_schema!
 
+WebMock.disable_net_connect!
+
 RSpec.configure do |config|
   config.include ActiveSupport::Testing::TimeHelpers
 
