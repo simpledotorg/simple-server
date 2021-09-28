@@ -76,8 +76,6 @@ RSpec.describe Api::V4::UsersController, type: :controller do
     end
 
     it "logs failures" do
-      existing_otp = user.otp
-
       allow(Rails.logger).to receive(:info).and_call_original
 
       expect(Rails.logger).to receive(:info).with(
