@@ -1,0 +1,9 @@
+Description:
+    Create a data_script to update production data.
+
+Example:
+    rails generate data_script widget_updater
+
+    This will create:
+        lib/data_scripts/widget_updater_script.rb
+        spec/lib/data_scripts/widget_updater_script_spec.rb
