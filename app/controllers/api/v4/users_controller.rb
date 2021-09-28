@@ -19,11 +19,11 @@ class Api::V4::UsersController < APIController
 
     user = User.find_by(id: activate_params[:id])
     authentication = user&.phone_number_authentication
-    error = login_errors(authentication)
+    errors = login_errors(authentication)
 
-    if error.present?
-      log_failure(error)
-      render json: {errors: error}, status: :unauthorized
+    if errors.present?
+      log_failure(user: user, errors: errors)
+      render json: {errors: errors}, status: :unauthorized
     else
       authentication.set_otp
       authentication.save
@@ -62,9 +62,13 @@ class Api::V4::UsersController < APIController
     end
   end
 
-  def log_failure(error)
-    Sentry.capture_message("Login Error",
-      extra: {activate_params: activate_params, errors: error},
-      tags: {type: "login"})
+  def log_failure(user:, errors:)
+    Rails.logger.info(
+      msg: "login_error",
+      controller: self.class.name,
+      action: action_name,
+      user_id: user&.id,
+      error: errors
+    )
   end
 end

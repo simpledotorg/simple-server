@@ -52,7 +52,7 @@ class Api::V3::LoginsController < APIController
     Rails.logger.info(
       msg: "login_error",
       controller: self.class.name,
-      action: "login_user",
+      action: action_name,
       user_id: result.authentication&.user&.id,
       error: result.error_message
     )
