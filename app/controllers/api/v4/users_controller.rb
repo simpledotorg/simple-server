@@ -19,10 +19,11 @@ class Api::V4::UsersController < APIController
 
     user = User.find_by(id: activate_params[:id])
     authentication = user&.phone_number_authentication
-    errors = errors_in_user_login(authentication)
+    error = login_errors(authentication)
 
-    if errors.present?
-      render json: {errors: errors}, status: :unauthorized
+    if error.present?
+      log_failure(error)
+      render json: {errors: error}, status: :unauthorized
     else
       authentication.set_otp
       authentication.save
@@ -55,16 +56,15 @@ class Api::V4::UsersController < APIController
     {"user" => Api::V4::UserTransformer.to_response(user)}
   end
 
-  def errors_in_user_login(user)
-    error_string = if user.blank? || !user.authenticate(activate_params[:password])
-      I18n.t("login.error_messages.invalid_password")
+  def login_errors(authentication)
+    if authentication.blank? || !authentication.authenticate(activate_params[:password])
+      {user: [I18n.t("login.error_messages.invalid_password")]}
     end
+  end
 
-    if error_string.present?
-      Sentry.capture_message("Login Error",
-        extra: {activate_params: activate_params, errors: error_string},
-        tags: {type: "login"})
-      {user: [error_string]}
-    end
+  def log_failure(error)
+    Sentry.capture_message("Login Error",
+      extra: {activate_params: activate_params, errors: error},
+      tags: {type: "login"})
   end
 end
