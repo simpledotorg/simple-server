@@ -44,33 +44,35 @@ class ImoApiService
     end
 
     response = execute_post(url, body: request_body)
-    result = process_response(response, url, "invitation")
+    body = JSON.parse(response.body)
+    status = process_response(response, body, url, "invitation")
 
-    status = result == :success ? :invited : result
     ImoAuthorization.create!(patient: patient, status: status, last_invited_at: Time.current)
   end
 
-  def send_notification(patient, message)
+  def send_notification(notification, phone_number)
     return unless Flipper.enabled?(:imo_messaging)
 
     Statsd.instance.increment("imo.notifications.attempt")
+
+    patient = notification.patient
+    message = notification.localized_message
     url = IMO_BASE_URL + "send_notification"
     request_body = JSON(
-      phone: patient.latest_mobile_number,
+      phone: phone_number,
       msg: message,
       contents: [{key: "Name", value: patient.full_name}, {key: "Notes", value: message}],
       title: "Notification",
       action: "Click here",
       url: PATIENT_REDIRECT_URL,
-      read_receipt: "will be filled in later"
+      callback_url: notification_callback_url
     )
-    response = execute_post(url, body: request_body)
-    result = process_response(response, url, "notification")
 
-    if patient.imo_authorization.status != result.to_s && result.in?([:not_subscribed, :no_imo_account])
-      patient.imo_authorization.update!(status: result)
-    end
-    result
+    response = execute_post(url, body: request_body)
+    body = JSON.parse(response.body)
+    result = process_response(response, body, url, "notification")
+    post_id = body.dig("response", "result", "post_id")
+    {result: result, post_id: post_id}
   end
 
   private
@@ -83,18 +85,20 @@ class ImoApiService
     raise Error.new("Error while calling the Imo API", path: url, exception_message: e)
   end
 
-  def process_response(response, url, action)
+  def process_response(response, body, url, action)
     case response.status
     when 200
-      body = JSON.parse(response.body)
-      return :success if body.dig("response", "status") == "success"
+      if body.dig("response", "status") == "success"
+        return :invited if action == "invitation"
+        return :sent if action == "notification"
+      end
 
       if body.dig("response", "error_code") == "not_subscribed"
         Statsd.instance.increment("imo.#{action}.not_subscribed")
         return :not_subscribed
       end
     when 400
-      if JSON.parse(response.body).dig("response", "type") == "nonexistent_user"
+      if body.dig("response", "type") == "nonexistent_user"
         Statsd.instance.increment("imo.#{action}.no_imo_account")
         return :no_imo_account
       end
@@ -109,6 +113,13 @@ class ImoApiService
       host: ENV.fetch("SIMPLE_SERVER_HOST"),
       protocol: ENV.fetch("SIMPLE_SERVER_HOST_PROTOCOL"),
       patient_id: patient_id
+    )
+  end
+
+  def notification_callback_url
+    api_v3_imo_notification_callback_url(
+      host: ENV.fetch("SIMPLE_SERVER_HOST"),
+      protocol: ENV.fetch("SIMPLE_SERVER_HOST_PROTOCOL")
     )
   end
 
