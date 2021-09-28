@@ -42,6 +42,20 @@ class Admin::FacilitiesController < AdminController
           .uniq
           .compact
     end
+    respond_to do |format|
+      format.html
+      format.csv { render plain: to_csv(accessible_facilities)}
+    end
+  end
+
+  def to_csv(facilities)
+    CSV.generate(headers: true) do |csv|
+      csv << Facility.attribute_names
+
+      facilities.each do |facility|
+        csv << facility.attributes.values
+      end
+    end
   end
 
   def show
