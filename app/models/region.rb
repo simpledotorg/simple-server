@@ -135,8 +135,9 @@ class Region < ApplicationRecord
     case region_type
       when "block"
         registered_patients.with_discarded
-          .or(assigned_patients.with_discarded)
-          .union(appointed_patients.with_discarded)
+          .select(:id, :registration_facility_id, :updated_at)
+          .or(assigned_patients.with_discarded.select(:id, :registration_facility_id, :updated_at))
+          .union(appointed_patients.with_discarded.select(:id, :registration_facility_id, :updated_at))
       else
         registered_patients.with_discarded
     end
