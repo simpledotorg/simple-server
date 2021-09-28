@@ -147,9 +147,8 @@ class Region < ApplicationRecord
           .with_discarded.select(:id)
           .or(assigned_patients(exclude_facility: exclude_facility).with_discarded.select(:id))
           .union(appointed_patient_ids(exclude_facility: exclude_facility).with_discarded)
-          .pluck(:id)
       else
-        registered_patients.with_discarded.pluck(:id)
+        registered_patients.with_discarded.select(:id)
     end
   end
 

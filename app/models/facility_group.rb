@@ -105,8 +105,8 @@ class FacilityGroup < ApplicationRecord
     registered_patients.with_discarded
   end
 
-  def syncable_patient_ids(exclude_facility: nil)
-    syncable_patients.pluck(:id)
+  def syncable_patient_ids(exclude_facility: exclude_facility)
+    syncable_patients.where.not(registration_facility: exclude_facility).select(:id)
   end
 
   def source
