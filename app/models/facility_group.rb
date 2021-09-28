@@ -105,6 +105,10 @@ class FacilityGroup < ApplicationRecord
     registered_patients.with_discarded
   end
 
+  def syncable_patient_ids(exclude_facility: nil)
+    syncable_patients.pluck(:id)
+  end
+
   def source
     self
   end

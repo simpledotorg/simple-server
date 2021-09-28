@@ -151,7 +151,6 @@ class Region < ApplicationRecord
       else
         registered_patients.with_discarded.pluck(:id)
     end
-
   end
 
   def registered_patients(exclude_facility: nil)
