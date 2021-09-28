@@ -18,10 +18,7 @@ module Api::V3::SyncToUser
         @other_facility_records ||=
           model_sync_scope
             .where("patient_id = ANY (array(?))",
-              current_sync_region
-                .syncable_patients
-                .where.not(registration_facility: current_facility)
-                .select(:id))
+              current_sync_region.syncable_patient_ids(exclude_facility: current_facility))
             .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
       end
     end

@@ -134,28 +134,36 @@ class Region < ApplicationRecord
   def syncable_patients
     case region_type
       when "block"
-        Patient.where(id: syncable_patient_ids)
+        Patient.with_discarded.where(id: syncable_patient_ids)
       else
         registered_patients.with_discarded
     end
   end
 
-  def syncable_patient_ids
-    registered_patients.with_discarded.select(:id)
-      .or(assigned_patients.with_discarded.select(:id))
-      .union(appointed_patient_ids.with_discarded)
+  def syncable_patient_ids(exclude_facility: nil)
+    case region_type
+      when "block"
+        registered_patients(exclude_facility: exclude_facility)
+          .with_discarded.select(:id)
+          .or(assigned_patients(exclude_facility: exclude_facility).with_discarded.select(:id))
+          .union(appointed_patient_ids(exclude_facility: exclude_facility).with_discarded)
+          .pluck(:id)
+      else
+        registered_patients.with_discarded.pluck(:id)
+    end
+
   end
 
-  def registered_patients
-    Patient.where(registration_facility: facility_regions.pluck(:source_id))
+  def registered_patients(exclude_facility: nil)
+    Patient.where(registration_facility: facility_regions.pluck(:source_id) - [exclude_facility])
   end
 
-  def assigned_patients
-    Patient.where(assigned_facility: facility_regions.pluck(:source_id))
+  def assigned_patients(exclude_facility: nil)
+    Patient.where(assigned_facility: facility_regions.pluck(:source_id) - [exclude_facility])
   end
 
-  def appointed_patient_ids
-    Appointment.where(facility: facility_regions.pluck(:source_id)).select(:patient_id)
+  def appointed_patient_ids(exclude_facility: nil)
+    Appointment.select(:patient_id).where(facility: facility_regions.pluck(:source_id) - [exclude_facility])
   end
 
   REGION_TYPES.reject { |t| t == "root" }.map do |region_type|
