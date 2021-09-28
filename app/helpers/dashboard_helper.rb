@@ -1,4 +1,4 @@
-module DashboardHelper extend ActionView::Helpers::NumberHelper ################# REMOVE EXTEND STUFF
+module DashboardHelper
   def number_or_dash_with_delimiter(value, options = {})
     return "-" if zero?(value)
     number_with_delimiter(value, options)
