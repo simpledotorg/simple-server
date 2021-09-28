@@ -5,8 +5,6 @@ require "capybara/rails"
 
 Dir[Rails.root.join("spec/pages/**/*.rb")].sort.each { |f| require f }
 
-WebMock.allow_net_connect!
-
 RSpec.configure do |config|
   config.include Devise::Test::IntegrationHelpers, type: :feature
 
@@ -14,6 +12,10 @@ RSpec.configure do |config|
     Rails.cache.clear
     example.run
     Rails.cache.clear
+  end
+
+  config.before(:each) do
+    WebMock.allow_net_connect!
   end
 
   Capybara.default_max_wait_time = 5

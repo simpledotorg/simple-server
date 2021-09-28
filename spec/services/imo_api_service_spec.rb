@@ -40,7 +40,7 @@ describe ImoApiService, type: :model do
       before { Flipper.enable(:imo_messaging) }
 
       it "creates an ImoAuthorization on 200 success" do
-        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: success_body)
+        # stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: success_body)
 
         expect { service.send_invitation(patient) }.to change { patient.imo_authorization }.from(nil)
         expect(patient.imo_authorization.status).to eq("invited")
