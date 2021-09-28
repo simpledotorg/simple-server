@@ -53,10 +53,11 @@ describe ImoApiService, type: :model do
           callback_url: "https://localhost/api/v3/patients/#{patient.id}/imo_authorization"
         )
 
-        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: success_body)
+        stub = stub_request(:post, request_url).with(headers: request_headers, body: request_body).to_return(status: 200, body: success_body)
 
         expect { service.send_invitation(patient) }.to change { patient.imo_authorization }.from(nil)
         expect(patient.imo_authorization.status).to eq("invited")
+        expect(stub).to have_been_requested
       end
 
       it "creates an ImoAuthorization and reports to sentry on any other 200 response" do
@@ -114,12 +115,13 @@ describe ImoApiService, type: :model do
           callback_url: "https://localhost/api/v3/patients/#{patient.id}/imo_authorization"
         )
 
-        stub_request(:post, request_url).with(headers: request_headers, body: request_body).to_return(status: 200, body: success_body)
+        stub = stub_request(:post, request_url).with(headers: request_headers, body: request_body).to_return(status: 200, body: success_body)
 
         expect {
           service.send_invitation(patient, phone_number: phone_number)
         }.to change { patient.imo_authorization }.from(nil)
         expect(patient.imo_authorization.status).to eq("invited")
+        expect(stub).to have_been_requested
       end
     end
   end
