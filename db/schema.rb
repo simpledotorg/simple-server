@@ -338,6 +338,16 @@ ActiveRecord::Schema.define(version: 2021_09_28_134120) do
     t.index ["patient_id"], name: "index_imo_authorizations_on_patient_id"
   end
 
+  create_table "imo_delivery_details", force: :cascade do |t|
+    t.string "post_id"
+    t.string "result", null: false
+    t.string "callee_phone_number", null: false
+    t.datetime "read_at"
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "medical_histories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "patient_id", null: false
     t.boolean "prior_heart_attack_boolean"
