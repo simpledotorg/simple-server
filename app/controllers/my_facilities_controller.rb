@@ -50,16 +50,13 @@ class MyFacilitiesController < AdminController
   end
 ############################### -- URL to localhost:3000/my_facilities/csv_maker, I added a line in routes.rb for this method
   def csv_maker
+    rate_name = "#{params[:type]}_rate"
     process_facility_stats(params[:type])
-    send_data generate_csv(),  type: "text/csv"
+    send_data generate_csv(rate_name),  type: "text/csv"
   end
 
-  def generate_csv() ### abstracted csv stuff to this code, will in order to be executed above
+  def generate_csv(rate_name) ### abstracted csv stuff to this code, will in order to be executed above
     return CSV.generate(){ |csv|
-      # rate_name = "controlled_patients_rate" #1
-      # rate_name = "uncontrolled_patients_rate"
-      rate_name = "missed_visits_rate"
-
       headers = ["Facilities", "Total assigned", "Total registered","6-month change"]
       (@start_period..@period).each {|period| headers << period << "Ratio" } # Monthly percentage headers, Monthly ratio headers
       csv << headers
