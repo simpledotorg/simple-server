@@ -30,7 +30,7 @@ class FacilityRegionCsv
     region.state_region.name
   end
   memoize def district_region
-    region.state_region.name
+    region.district_region.name
   end
   memoize def block_region
     region.block_region.name
