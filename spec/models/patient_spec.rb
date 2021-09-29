@@ -3,10 +3,7 @@ require "rails_helper"
 describe Patient, type: :model do
   let(:reporting_timezone) { Period::REPORTING_TIME_ZONE }
   def refresh_views
-    original = ActiveRecord::Base.connection.execute("SELECT current_setting('TIMEZONE')").first["current_setting"]
-    ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{Period::REPORTING_TIME_ZONE}'")
     LatestBloodPressuresPerPatientPerMonth.refresh
-    ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE #{original}")
   end
 
   subject(:patient) { build(:patient) }

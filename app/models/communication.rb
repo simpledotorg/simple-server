@@ -57,22 +57,32 @@ class Communication < ApplicationRecord
                               notification: notification,
                               device_created_at: now,
                               device_updated_at: now)
-      logger.info class: self.class.name, msg: "create_with_twilio_details", communication_id: communication.id,
+      logger.info(class: self.class.name, msg: __method__.to_s, communication_id: communication.id,
                   communication_type: communication_type, appointment_id: appointment&.id, result: twilio_msg_status,
-                  notification_id: notification&.id
+                  notification_id: notification&.id)
     end
   end
 
-  def self.create_with_imo_details!(appointment:, notification:)
+  def self.create_with_imo_details!(notification:, result:, post_id:)
+    patient = notification.patient
     now = DateTime.current
-    communication = create!(communication_type: "imo",
-                            detailable: nil,
-                            appointment: appointment,
-                            notification: notification,
-                            device_created_at: now,
-                            device_updated_at: now)
-    logger.info class: self.class.name, msg: "create_with_imo_details", communication_id: communication.id,
-                communication_type: "imo", appointment_id: appointment&.id, notification_id: notification&.id
+    transaction do
+      detailable = ImoDeliveryDetail.create!(callee_phone_number: patient.latest_mobile_number, result: result, post_id: post_id)
+      communication = create!(communication_type: :imo,
+                              detailable: detailable,
+                              appointment: notification.subject,
+                              notification: notification,
+                              device_created_at: now,
+                              device_updated_at: now)
+
+      if detailable.unsubscribed_or_missing?
+        patient = notification.patient
+        patient.imo_authorization.update!(status: detailable.result)
+      end
+
+      logger.info(class: self.class.name, msg: __method__.to_s, communication_id: communication.id,
+                  communication_type: "imo", appointment_id: notification.subject&.id, notification_id: notification&.id)
+    end
   end
 
   def self.messaging_start_hour

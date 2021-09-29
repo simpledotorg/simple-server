@@ -1,6 +1,10 @@
 require "rails_helper"
 
 describe MaterializedPatientSummary, type: :model do
+  around do |example|
+    with_reporting_time_zone { example.run }
+  end
+
   subject(:patient_summary) { MaterializedPatientSummary.find(patient.id) }
 
   let(:old_date) { DateTime.new(2019, 1, 1) }
