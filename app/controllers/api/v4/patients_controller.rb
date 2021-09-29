@@ -6,9 +6,9 @@ class Api::V4::PatientsController < APIController
   def lookup
     identifiers = PatientBusinessIdentifier.where(identifier: identifier)
     current_state = current_facility.region.state_region
-    patients = current_state
-      .syncable_patients
+    patients = Patient
       .where(id: identifiers.pluck(:patient_id))
+      .where(id: current_state.syncable_patients)
 
     return render json: {}, status: :not_found if patients.empty?
 
