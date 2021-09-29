@@ -27,6 +27,7 @@ class UpdateBangladeshRegionsScript < DataScript
 
   def call
     destroy_empty_facilities
+    fix_incorrect_regions
     import_from_csv
     logger.info "Done running #{self.class} data_script - results:"
     results
@@ -35,6 +36,15 @@ class UpdateBangladeshRegionsScript < DataScript
   end
 
   private
+
+  # https://api.bd.simple.org/admin/facility_groups/jamalpur-district/facilities/uhc-melandah
+  # This Upazila is incorrect on prod - we need to fix the name or the import will create a duplicate w/ the correct name.
+  def fix_incorrect_regions
+    melandaha = Region.block_regions.find_by(name: "Melandah")
+    run_safely {
+      melandaha.update!(name: "Melandaha")
+    }
+  end
 
   def import_from_csv
     each_row do |row|
