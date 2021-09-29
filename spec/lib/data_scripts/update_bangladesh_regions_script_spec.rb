@@ -74,7 +74,9 @@ describe UpdateBangladeshRegionsScript do
         end
         # Spot check a facility
         #  Sylhet,Sunamganj,Bishwambarpur,Dhonpur,Halabadi Cc ,10012777,CC Halabadi ,CC,,,,,,,,,,,,,,,,
-        facility = Facility.find_by(name: "CC Halabadi")
+        facility = Facility.find_by!(name: "CC Halabadi")
+        expect(facility.facility_type).to eq("CC")
+        expect(facility.facility_size).to eq("community")
         expect(facility.business_identifiers.find_by!(identifier_type: :dhis2_org_unit_id).identifier).to eq("10012777")
         expect(facility.state).to eq("Sylhet")
         expect(facility.district).to eq("Sunamganj")

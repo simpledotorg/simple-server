@@ -60,6 +60,7 @@ class UpdateBangladeshRegionsScript < DataScript
         district: district_region.name,
         facility_group: facility_group,
         facility_size: facility_size,
+        facility_type: row[:facility_type],
         name: facility_name,
         region: facility_region,
         state: division_region.name,
