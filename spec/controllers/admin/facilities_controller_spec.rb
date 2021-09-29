@@ -48,6 +48,17 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
     end
   end
 
+  fdescribe "GET #index.csv" do
+    it "works" do
+      facility = create_list(:facility, 3)
+      power_user = create(:admin, :power_user)
+      sign_in(power_user.email_authentication)
+      get :index, format: :csv
+      expect(response).to be_successful
+      pp response.body
+    end
+  end
+
   describe "GET #show" do
     it "returns a success response" do
       facility = create(:facility, valid_attributes)
