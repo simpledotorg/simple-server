@@ -16,6 +16,7 @@ class ChennaiHierarchyCleanup
 
       state.facilities.update_all(facility_group_id: new_district.source.id)
 
+      # make sure facility gropus are empty before deleting
       FacilityGroup.where(id: old_districts.pluck(:source_id)).discard_all
     end
   end

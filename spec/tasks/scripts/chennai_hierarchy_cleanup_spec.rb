@@ -30,6 +30,5 @@ describe "ChennaiHierarchyCleanup" do
   end
 
   it "only one district remains in Tamil Nadu after the cleanup" do
-
   end
 end
