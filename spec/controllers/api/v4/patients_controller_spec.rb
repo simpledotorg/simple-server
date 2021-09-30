@@ -81,26 +81,17 @@ RSpec.describe Api::V4::PatientsController, type: :controller do
 
     it "returns nothing when an identifier is not discarded but patient is discarded" do
       patient_1 = create(:patient)
-      patient_2 = create(:patient, registration_facility: patient_1.registration_facility)
-      b = patient_1.business_identifiers.first
+      business_identifier = patient_1.business_identifiers.first
       patient_1.business_identifiers.first.update(
         identifier_type: PatientBusinessIdentifier.identifier_types.values.first
       )
 
-      patient_2.business_identifiers.first.update(
-        identifier: patient_1.business_identifiers.first.identifier,
-        identifier_type: PatientBusinessIdentifier.identifier_types.values.second
-      )
-
       set_headers(patient_1.registration_user, patient_1.registration_facility)
       patient_1.discard_data
-      b.reload
-      b.undiscard
-
+      business_identifier.reload.undiscard
 
       post :lookup, params: {identifier: patient_1.business_identifiers.first.identifier}, as: :json
-      response_data = JSON.parse(response.body).with_indifferent_access
-      expect(response_data[:patients].count).to eq 1
+      expect(response.status).to eq(404)
     end
 
     it "sets the retention as temporary and specifies the duration when patient is outside syncable region" do
