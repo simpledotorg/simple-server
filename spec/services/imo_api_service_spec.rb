@@ -44,14 +44,16 @@ describe ImoApiService, type: :model do
         request_body = JSON(
           phone: patient.latest_mobile_number,
           msg: I18n.t("notifications.imo.invitation.request", patient_name: patient.full_name, locale: locale),
-          contents: [{
-            key: I18n.t("notifications.imo.section_headers.name", locale: locale),
-            value: patient.full_name
-          },
-          {
-            key: I18n.t("notifications.imo.section_headers.message", locale: locale),
-            value: I18n.t("notifications.imo.invitation.request", patient_name: patient.full_name, locale: locale)
-          }],
+          contents: [
+            {
+              key: I18n.t("notifications.imo.section_headers.name", locale: locale),
+              value: patient.full_name
+            },
+            {
+              key: I18n.t("notifications.imo.section_headers.message", locale: locale),
+              value: I18n.t("notifications.imo.invitation.request", patient_name: patient.full_name, locale: locale)
+            }
+          ],
           title: I18n.t("notifications.imo.invitation.title", locale: locale),
           action: I18n.t("notifications.imo.invitation.action", locale: locale),
           callback_url: "https://localhost/api/v3/patients/#{patient.id}/imo_authorization"
@@ -109,14 +111,16 @@ describe ImoApiService, type: :model do
         request_body = JSON(
           phone: phone_number,
           msg: I18n.t("notifications.imo.invitation.request", patient_name: patient.full_name, locale: locale),
-          contents: [{
-            key: I18n.t("notifications.imo.section_headers.name", locale: locale),
-            value: patient.full_name
-          },
-          {
-            key: I18n.t("notifications.imo.section_headers.message", locale: locale),
-            value: I18n.t("notifications.imo.invitation.request", patient_name: patient.full_name, locale: locale)
-          }],
+          contents: [
+            {
+              key: I18n.t("notifications.imo.section_headers.name", locale: locale),
+              value: patient.full_name
+            },
+            {
+              key: I18n.t("notifications.imo.section_headers.message", locale: locale),
+              value: I18n.t("notifications.imo.invitation.request", patient_name: patient.full_name, locale: locale)
+            }
+          ],
           title: I18n.t("notifications.imo.invitation.title", locale: locale),
           action: I18n.t("notifications.imo.invitation.action", locale: locale),
           callback_url: "https://localhost/api/v3/patients/#{patient.id}/imo_authorization"
