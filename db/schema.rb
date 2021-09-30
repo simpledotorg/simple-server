@@ -633,6 +633,7 @@ ActiveRecord::Schema.define(version: 2021_09_28_134120) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
+    t.datetime "read_at"
     t.index ["session_id"], name: "index_twilio_sms_delivery_details_on_session_id"
   end
 
