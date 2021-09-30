@@ -40,10 +40,24 @@ describe ImoApiService, type: :model do
       before { Flipper.enable(:imo_messaging) }
 
       it "creates an ImoAuthorization on 200 success" do
-        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: success_body)
+        locale = "bn-BD"
+        request_body = JSON(
+          phone: patient.latest_mobile_number,
+          msg: I18n.t("notifications.imo.invitations.message", patient_name: patient.full_name, locale: locale),
+          contents: [{
+            key: I18n.t("notifications.imo.invitations.message_key", locale: locale),
+            value: I18n.t("notifications.imo.invitations.message", patient_name: patient.full_name, locale: locale)
+          }],
+          title: I18n.t("notifications.imo.invitations.title", locale: locale),
+          action: I18n.t("notifications.imo.invitations.action", locale: locale),
+          callback_url: "https://localhost/api/v3/patients/#{patient.id}/imo_authorization"
+        )
+
+        stub = stub_request(:post, request_url).with(headers: request_headers, body: request_body).to_return(status: 200, body: success_body)
 
         expect { service.send_invitation(patient) }.to change { patient.imo_authorization }.from(nil)
         expect(patient.imo_authorization.status).to eq("invited")
+        expect(stub).to have_been_requested
       end
 
       it "creates an ImoAuthorization and reports to sentry on any other 200 response" do
@@ -84,6 +98,30 @@ describe ImoApiService, type: :model do
         expect {
           service.send_invitation(patient)
         }.to raise_error(ImoApiService::Error)
+      end
+
+      it "overrides the patient's phone number with an optional phone number argument" do
+        phone_number = "+9991112223333"
+        locale = "bn-BD"
+        request_body = JSON(
+          phone: phone_number,
+          msg: I18n.t("notifications.imo.invitations.message", patient_name: patient.full_name, locale: locale),
+          contents: [{
+            key: I18n.t("notifications.imo.invitations.message_key", locale: locale),
+            value: I18n.t("notifications.imo.invitations.message", patient_name: patient.full_name, locale: locale)
+          }],
+          title: I18n.t("notifications.imo.invitations.title", locale: locale),
+          action: I18n.t("notifications.imo.invitations.action", locale: locale),
+          callback_url: "https://localhost/api/v3/patients/#{patient.id}/imo_authorization"
+        )
+
+        stub = stub_request(:post, request_url).with(headers: request_headers, body: request_body).to_return(status: 200, body: success_body)
+
+        expect {
+          service.send_invitation(patient, phone_number: phone_number)
+        }.to change { patient.imo_authorization }.from(nil)
+        expect(patient.imo_authorization.status).to eq("invited")
+        expect(stub).to have_been_requested
       end
     end
   end
