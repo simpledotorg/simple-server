@@ -23,6 +23,7 @@ describe UpdateBangladeshRegionsScript do
       _protocol = create(:protocol, name: "Bangladesh Hypertension Management Protocol for Primary Healthcare Setting")
       jamalpur = create(:facility_group, name: "Jamalpur District", state: "Myemsing")
       facility = create(:facility, name: "UHC Melandah", block: "Melandah", district: "Jamalpur District", facility_group: jamalpur)
+      facility.business_identifiers.create!(identifier_type: :dhis2_org_unit_id, identifier: "55555")
       expect(CountryConfig).to receive(:current_country?).with("Bangladesh").and_return(true)
     end
 
@@ -52,16 +53,16 @@ describe UpdateBangladeshRegionsScript do
 
     context "write mode" do
       it "creates new regions, facilities, and facility groups from CSV" do
-        result = described_class.call(dry_run: false, csv_path: test_csv_path)
-        result[:errors].each { |type, count| expect(count).to eq(0) }
-        expect(result[:created][:facility_regions]).to eq(45)
-        expect(result[:created][:facilities]).to eq(45)
-
-        expect(Region.count).to eq(66)
-        expect(Region.facility_regions.count).to eq(44)
-        expect(Facility.count).to eq(44)
-        expect(FacilityGroup.count).to eq(6)
-        expect(Region.district_regions.count).to eq(6)
+        expect {
+          result = described_class.call(dry_run: false, csv_path: test_csv_path)
+          result[:errors].each { |type, count| expect(count).to eq(0) }
+          expect(result[:created][:facility_regions]).to eq(45)
+          expect(result[:created][:facilities]).to eq(45)
+        }.to change { Region.count }.by(66)
+          .and change { Region.facility_regions.count }.by(45)
+          .and change { Region.district_regions.count }.by(6)
+          .and change { Facility.count }.by(45)
+          .and change { FacilityGroup.count }.by(6)
 
         missing_regions = (Facility.pluck(:id).to_set - Region.facility_regions.pluck(:source_id).to_set).to_a
         expect(missing_regions).to be_empty

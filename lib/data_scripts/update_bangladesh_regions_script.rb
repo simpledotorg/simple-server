@@ -41,7 +41,10 @@ class UpdateBangladeshRegionsScript < DataScript
   # This Upazila is incorrect on prod - we need to fix the name or the import will create a duplicate w/ the correct name.
   def fix_incorrect_regions
     melandaha = Region.block_regions.find_by(name: "Melandah")
-    if run_safely { melandaha.update!(name: "Melandaha") }
+    if run_safely {
+         melandaha.update!(name: "Melandaha")
+         melandaha.facility_regions.each { |r| r.source.update!(block: "Melandaha") }
+       }
       results[:updates][:block_name_updates] += 1
     else
       results[:errors][:block_name_errors] += 1
