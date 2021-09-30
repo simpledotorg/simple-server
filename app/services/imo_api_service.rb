@@ -28,6 +28,11 @@ class ImoApiService
     phone = phone_number || patient.latest_mobile_number
     locale = patient.locale
     url = IMO_BASE_URL + "send_invite"
+
+    unless locale.in?(["bn-BD", "en"])
+      raise Error.new("Translation missing for language #{locale}", path: url, patient_id: patient.id)
+    end
+
     request_body = JSON(
       phone: phone,
       msg: I18n.t("notifications.imo.invitation.request", patient_name: patient.full_name, locale: locale),
@@ -40,13 +45,9 @@ class ImoApiService
         value: I18n.t("notifications.imo.invitation.request", patient_name: patient.full_name, locale: locale)
       }],
       title: I18n.t("notifications.imo.invitation.title", locale: locale),
-      action: I18n.t("notifications.imo.section_headers.action", locale: locale),
+      action: I18n.t("notifications.imo.invitation.action", locale: locale),
       callback_url: invitation_callback_url(patient.id)
     )
-
-    if request_body.include?("translation missing")
-      raise Error.new("Translation missing for language #{locale}", path: url, patient_id: patient.id)
-    end
 
     response = execute_post(url, body: request_body)
     body = JSON.parse(response.body)
@@ -61,14 +62,27 @@ class ImoApiService
     Statsd.instance.increment("imo.notifications.attempt")
 
     patient = notification.patient
+    locale = patient.locale
     message = notification.localized_message
     url = IMO_BASE_URL + "send_notification"
+
+    unless locale.in?(["bn-BD", "en"])
+      raise Error.new("Translation missing for language #{locale}", path: url, patient_id: patient.id)
+    end
+
     request_body = JSON(
       phone: phone_number,
       msg: message,
-      contents: [{key: "Name", value: patient.full_name}, {key: "Notes", value: message}],
-      title: "Notification",
-      action: "Click here",
+      contents: [{
+        key: I18n.t("notifications.imo.section_headers.name", locale: locale),
+        value: patient.full_name
+      },
+      {
+        key: I18n.t("notifications.imo.section_headers.message", locale: locale),
+        value: message
+      }],
+      title: I18n.t("notifications.imo.appointment_reminder.title", locale: locale),
+      action: I18n.t("notifications.imo.appointment_reminder.action", locale: locale),
       url: PATIENT_REDIRECT_URL,
       callback_url: notification_callback_url
     )

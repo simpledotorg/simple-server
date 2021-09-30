@@ -43,13 +43,17 @@ describe ImoApiService, type: :model do
         locale = "bn-BD"
         request_body = JSON(
           phone: patient.latest_mobile_number,
-          msg: I18n.t("notifications.imo.invitations.message", patient_name: patient.full_name, locale: locale),
+          msg: I18n.t("notifications.imo.invitation.request", patient_name: patient.full_name, locale: locale),
           contents: [{
-            key: I18n.t("notifications.imo.invitations.message_key", locale: locale),
-            value: I18n.t("notifications.imo.invitations.message", patient_name: patient.full_name, locale: locale)
+            key: I18n.t("notifications.imo.section_headers.name", locale: locale),
+            value: patient.full_name
+          },
+          {
+            key: I18n.t("notifications.imo.section_headers.message", locale: locale),
+            value: I18n.t("notifications.imo.invitation.request", patient_name: patient.full_name, locale: locale)
           }],
-          title: I18n.t("notifications.imo.invitations.title", locale: locale),
-          action: I18n.t("notifications.imo.invitations.action", locale: locale),
+          title: I18n.t("notifications.imo.invitation.title", locale: locale),
+          action: I18n.t("notifications.imo.invitation.action", locale: locale),
           callback_url: "https://localhost/api/v3/patients/#{patient.id}/imo_authorization"
         )
 
@@ -92,8 +96,7 @@ describe ImoApiService, type: :model do
       end
 
       it "raises an error when the patient's locale is not supported" do
-        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: success_body)
-        allow(patient).to receive(:locale).and_return("en")
+        allow(patient).to receive(:locale).and_return("bn-IN")
 
         expect {
           service.send_invitation(patient)
@@ -105,13 +108,17 @@ describe ImoApiService, type: :model do
         locale = "bn-BD"
         request_body = JSON(
           phone: phone_number,
-          msg: I18n.t("notifications.imo.invitations.message", patient_name: patient.full_name, locale: locale),
+          msg: I18n.t("notifications.imo.invitation.request", patient_name: patient.full_name, locale: locale),
           contents: [{
-            key: I18n.t("notifications.imo.invitations.message_key", locale: locale),
-            value: I18n.t("notifications.imo.invitations.message", patient_name: patient.full_name, locale: locale)
+            key: I18n.t("notifications.imo.section_headers.name", locale: locale),
+            value: patient.full_name
+          },
+          {
+            key: I18n.t("notifications.imo.section_headers.message", locale: locale),
+            value: I18n.t("notifications.imo.invitation.request", patient_name: patient.full_name, locale: locale)
           }],
-          title: I18n.t("notifications.imo.invitations.title", locale: locale),
-          action: I18n.t("notifications.imo.invitations.action", locale: locale),
+          title: I18n.t("notifications.imo.invitation.title", locale: locale),
+          action: I18n.t("notifications.imo.invitation.action", locale: locale),
           callback_url: "https://localhost/api/v3/patients/#{patient.id}/imo_authorization"
         )
 
@@ -196,6 +203,14 @@ describe ImoApiService, type: :model do
 
       it "raises a custom error on network error" do
         stub_request(:post, request_url).to_timeout
+
+        expect {
+          service.send_notification(notification, phone_number)
+        }.to raise_error(ImoApiService::Error)
+      end
+
+      it "raises an error when the patient's locale is not supported" do
+        allow(patient).to receive(:locale).and_return("bn-IN")
 
         expect {
           service.send_notification(notification, phone_number)
