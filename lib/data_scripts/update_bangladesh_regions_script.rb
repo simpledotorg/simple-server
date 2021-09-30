@@ -14,7 +14,7 @@ class UpdateBangladeshRegionsScript < DataScript
     super(dry_run: dry_run)
 
     @logger = Rails.logger.child(module: :data_script, class: self.class.to_s)
-    @results = {created: Hash.new(0), deleted: Hash.new(0), errors: Hash.new(0), dry_run: dry_run?}
+    @results = {created: Hash.new(0), updates: Hash.new(0), deleted: Hash.new(0), errors: Hash.new(0), dry_run: dry_run?}
     @csv_path = csv_path
     @cache = {state: {}, district: {}, block: {}, facility: {}}
     unless CountryConfig.current_country?("Bangladesh")
@@ -41,9 +41,11 @@ class UpdateBangladeshRegionsScript < DataScript
   # This Upazila is incorrect on prod - we need to fix the name or the import will create a duplicate w/ the correct name.
   def fix_incorrect_regions
     melandaha = Region.block_regions.find_by(name: "Melandah")
-    run_safely {
-      melandaha.update!(name: "Melandaha")
-    }
+    if run_safely { melandaha.update!(name: "Melandaha") }
+      results[:updates][:block_name_updates] += 1
+    else
+      results[:errors][:block_name_errors] += 1
+    end
   end
 
   def import_from_csv

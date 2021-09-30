@@ -21,7 +21,8 @@ describe UpdateBangladeshRegionsScript do
       org_region = Region.create!(name: "NCDC, DGHS and NHF", region_type: :organization, slug: "nhf", reparent_to: root)
       _org = Organization.create!(name: "NHF", region: org_region)
       _protocol = create(:protocol, name: "Bangladesh Hypertension Management Protocol for Primary Healthcare Setting")
-      facility = create(:facility, name: "UHC Melandah", block: "Melandah", district: "Jamalpur District", state: "Mymensingh")
+      jamalpur = create(:facility_group, name: "Jamalpur District", state: "Myemsing")
+      facility = create(:facility, name: "UHC Melandah", block: "Melandah", district: "Jamalpur District", facility_group: jamalpur)
       expect(CountryConfig).to receive(:current_country?).with("Bangladesh").and_return(true)
     end
 
@@ -42,8 +43,8 @@ describe UpdateBangladeshRegionsScript do
           results = described_class.call(dry_run: true, csv_path: test_csv_path)
           results[:errors].each { |type, count| expect(count).to eq(0) }
           expect(results[:deleted][:facilities]).to eq(2)
-          expect(results[:created][:facilities]).to eq(44)
-          expect(results[:created][:facility_regions]).to eq(44)
+          expect(results[:created][:facilities]).to eq(45)
+          expect(results[:created][:facility_regions]).to eq(45)
           expect(results[:dry_run]).to be true
         }.to not_change { Facility.count }.and not_change { Region.count }
       end
@@ -53,8 +54,8 @@ describe UpdateBangladeshRegionsScript do
       it "creates new regions, facilities, and facility groups from CSV" do
         result = described_class.call(dry_run: false, csv_path: test_csv_path)
         result[:errors].each { |type, count| expect(count).to eq(0) }
-        expect(result[:created][:facility_regions]).to eq(44)
-        expect(result[:created][:facilities]).to eq(44)
+        expect(result[:created][:facility_regions]).to eq(45)
+        expect(result[:created][:facilities]).to eq(45)
 
         expect(Region.count).to eq(66)
         expect(Region.facility_regions.count).to eq(44)
