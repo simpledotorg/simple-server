@@ -1,7 +1,7 @@
 require "rails_helper"
 require "tasks/scripts/chennai_hierarchy_cleanup"
 
-describe 'ChennaiHierarchyCleanup' do
+describe "ChennaiHierarchyCleanup" do
   it "doesn't run outside india prod" do
     expect { ChennaiHierarchyCleanup.run }.to raise_error "Cannot run this outside India production"
   end
@@ -24,5 +24,12 @@ describe 'ChennaiHierarchyCleanup' do
     expect(block.reload.district_region).to eq(new_district.region)
     expect(old_district.reload.deleted_at).to be_present
     expect(old_district.region).to be_nil
+  end
+
+  it "sync region ID of any facility remains unchanged" do
+  end
+
+  it "only one district remains in Tamil Nadu after the cleanup" do
+
   end
 end
