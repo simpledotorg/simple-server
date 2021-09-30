@@ -20,15 +20,16 @@ class ImoApiService
     end
   end
 
-  def send_invitation(patient)
+  def send_invitation(patient, phone_number: nil)
     return unless Flipper.enabled?(:imo_messaging)
 
     Statsd.instance.increment("imo.invites.attempt")
 
+    phone = phone_number || patient.latest_mobile_number
     locale = patient.locale
     url = IMO_BASE_URL + "send_invite"
     request_body = JSON(
-      phone: patient.latest_mobile_number,
+      phone: phone,
       msg: I18n.t("notifications.imo.invitations.message", patient_name: patient.full_name, locale: locale),
       contents: [{
         key: I18n.t("notifications.imo.invitations.message_key", locale: locale),
