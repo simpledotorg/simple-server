@@ -1,12 +1,11 @@
 class FacilityRegionCsv
   include Memery
-  attr_reader :region
 
   HEADERS = {
     state: :state_region,
     district: :district_region,
     block: :block_region,
-    facility_code: :dhis2_identifer,
+    facility_code: :facility_code,
     facility_name: :name,
     facility_type: :facility_type
   }
@@ -33,31 +32,16 @@ class FacilityRegionCsv
     end
   end
 
+  attr_reader :region
+  attr_reader :state_region, :district_region, :block_region, :name, :facility_code, :facility_type
+
   def initialize(region)
     @region = region
-  end
-
-  memoize def state_region
-    region.state_region.name
-  end
-
-  memoize def district_region
-    region.district_region.name
-  end
-
-  memoize def block_region
-    region.block_region.name
-  end
-
-  memoize def name
-    region.name
-  end
-
-  memoize def facility_type
-    region.source.facility_type
-  end
-
-  memoize def dhis2_identifer
-    region.source.business_identifiers.first { |i| i.identifier_type == "dhis2_org_unit_id" }&.identifier
+    @state_region = region.state_region.name
+    @district_region = region.district_region.name
+    @block_region = region.block_region.name
+    @name = region.name
+    @facility_type = region.source.facility_type
+    @facility_code = region.source.business_identifiers.first { |i| i.identifier_type == "dhis2_org_unit_id" }&.identifier
   end
 end
