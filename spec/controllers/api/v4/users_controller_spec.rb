@@ -74,6 +74,20 @@ RSpec.describe Api::V4::UsersController, type: :controller do
 
       post :activate, params: {user: {id: user.id, password: "1234"}}
     end
+
+    it "logs failures" do
+      allow(Rails.logger).to receive(:info).and_call_original
+
+      expect(Rails.logger).to receive(:info).with(
+        msg: "login_error",
+        controller: "Api::V4::UsersController",
+        action: "activate",
+        user_id: user.id,
+        error: {user: [/password/]}
+      )
+
+      post :activate, params: {user: {id: user.id, password: "9999"}}
+    end
   end
 
   describe "#me" do

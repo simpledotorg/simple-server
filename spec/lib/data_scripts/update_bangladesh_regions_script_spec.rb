@@ -21,7 +21,9 @@ describe UpdateBangladeshRegionsScript do
       org_region = Region.create!(name: "NCDC, DGHS and NHF", region_type: :organization, slug: "nhf", reparent_to: root)
       _org = Organization.create!(name: "NHF", region: org_region)
       _protocol = create(:protocol, name: "Bangladesh Hypertension Management Protocol for Primary Healthcare Setting")
-
+      jamalpur = create(:facility_group, name: "Jamalpur District", state: "Myemsing")
+      facility = create(:facility, name: "UHC Melandah", block: "Melandah", district: "Jamalpur District", facility_group: jamalpur)
+      facility.business_identifiers.create!(identifier_type: :dhis2_org_unit_id, identifier: "55555")
       expect(CountryConfig).to receive(:current_country?).with("Bangladesh").and_return(true)
     end
 
@@ -42,8 +44,8 @@ describe UpdateBangladeshRegionsScript do
           results = described_class.call(dry_run: true, csv_path: test_csv_path)
           results[:errors].each { |type, count| expect(count).to eq(0) }
           expect(results[:deleted][:facilities]).to eq(2)
-          expect(results[:created][:facilities]).to eq(44)
-          expect(results[:created][:facility_regions]).to eq(44)
+          expect(results[:created][:facilities]).to eq(45)
+          expect(results[:created][:facility_regions]).to eq(45)
           expect(results[:dry_run]).to be true
         }.to not_change { Facility.count }.and not_change { Region.count }
       end
@@ -51,16 +53,16 @@ describe UpdateBangladeshRegionsScript do
 
     context "write mode" do
       it "creates new regions, facilities, and facility groups from CSV" do
-        result = described_class.call(dry_run: false, csv_path: test_csv_path)
-        result[:errors].each { |type, count| expect(count).to eq(0) }
-        expect(result[:created][:facility_regions]).to eq(44)
-        expect(result[:created][:facilities]).to eq(44)
-
-        expect(Region.count).to eq(66)
-        expect(Region.facility_regions.count).to eq(44)
-        expect(Facility.count).to eq(44)
-        expect(FacilityGroup.count).to eq(6)
-        expect(Region.district_regions.count).to eq(6)
+        expect {
+          result = described_class.call(dry_run: false, csv_path: test_csv_path)
+          result[:errors].each { |type, count| expect(count).to eq(0) }
+          expect(result[:created][:facility_regions]).to eq(45)
+          expect(result[:created][:facilities]).to eq(45)
+        }.to change { Region.count }.by(66)
+          .and change { Region.facility_regions.count }.by(45)
+          .and change { Region.district_regions.count }.by(6)
+          .and change { Facility.count }.by(45)
+          .and change { FacilityGroup.count }.by(6)
 
         missing_regions = (Facility.pluck(:id).to_set - Region.facility_regions.pluck(:source_id).to_set).to_a
         expect(missing_regions).to be_empty
@@ -74,7 +76,9 @@ describe UpdateBangladeshRegionsScript do
         end
         # Spot check a facility
         #  Sylhet,Sunamganj,Bishwambarpur,Dhonpur,Halabadi Cc ,10012777,CC Halabadi ,CC,,,,,,,,,,,,,,,,
-        facility = Facility.find_by(name: "CC Halabadi")
+        facility = Facility.find_by!(name: "CC Halabadi")
+        expect(facility.facility_type).to eq("CC")
+        expect(facility.facility_size).to eq("community")
         expect(facility.business_identifiers.find_by!(identifier_type: :dhis2_org_unit_id).identifier).to eq("10012777")
         expect(facility.state).to eq("Sylhet")
         expect(facility.district).to eq("Sunamganj")

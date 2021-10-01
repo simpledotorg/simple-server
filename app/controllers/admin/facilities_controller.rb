@@ -42,6 +42,10 @@ class Admin::FacilitiesController < AdminController
           .uniq
           .compact
     end
+    respond_to do |format|
+      format.html
+      format.csv { render plain: FacilityRegionCsv.to_csv(accessible_facilities.eager_load(:business_identifiers, :region)) }
+    end
   end
 
   def show
