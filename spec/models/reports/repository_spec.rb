@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe Reports::Repository, type: :model, v2_flag: true do
   using StringToPeriod
 
-  [true, false].each do |v2_flag|
+  [true].each do |v2_flag|
     context "with reporting_schema_v2=>#{v2_flag}" do
       let(:v2_flag) { v2_flag }
       let(:organization) { create(:organization, name: "org-1") }
@@ -198,7 +198,7 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
           end
         end
 
-        it "gets controlled counts and rates for one month" do
+        fit "gets controlled counts and rates for one month" do
           facilities = FactoryBot.create_list(:facility, 3, facility_group: facility_group_1).sort_by(&:slug)
           facility_1, facility_2, facility_3 = *facilities.take(3)
           regions = facilities.map(&:region)
@@ -220,8 +220,11 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
 
           jan = Period.month(jan_2020)
           repo = Reports::Repository.new(regions, periods: Period.month(jan))
+          pp facility_1.region.id
+          pp repo.schema.send(:facility_state_data).where(month_date: jan).map(&:attributes)
           controlled = repo.controlled
           uncontrolled = repo.uncontrolled
+          # pp Reports::FacilityState.for_region(facility_2).order(:month_date).pluck(:facility_region_id, :month_date, :adjusted_controlled_under_care)
           expect(controlled[facility_1.slug][jan]).to eq(2)
           expect(controlled[facility_2.slug][jan]).to eq(1)
           expect(controlled[facility_3.slug][jan]).to eq(0)
@@ -584,6 +587,8 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
             repo_v1 = Reports::Repository.new(regions, periods: range, reporting_schema_v2: false)
             repo_v2 = Reports::Repository.new(regions, periods: range, reporting_schema_v2: true)
             expect(repo_v2.controlled[facility_1.slug]).to eq(repo_v1.controlled[facility_1.slug])
+            pp "uncontrolled for facility 1 for repo v2"
+            pp repo_v2.uncontrolled[facility_1.slug]
             expect(repo_v2.uncontrolled[facility_1.slug]).to eq(repo_v1.uncontrolled[facility_1.slug])
             result = repo_v2.controlled
 

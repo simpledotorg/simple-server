@@ -9,6 +9,28 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
     freeze_time_for_reporting_specs(example)
   end
 
+  describe "for_regions" do
+    fit "grabs data for regions" do
+      facilities = create_list(:facility, 3)
+      two_years_ago = june_2021[:now] - 2.years
+      create_list(:patient, 3, registration_facility: facilities[0], recorded_at: two_years_ago)
+      create_list(:patient, 3, registration_facility: facilities[1], recorded_at: june_2021[:under_three_months_ago])
+      create_list(:patient, 2, registration_facility: facilities[2], recorded_at: two_years_ago)
+      RefreshReportingViews.new.refresh_v2
+      regions = facilities.map(&:region)
+      result = described_class.for_regions(regions)
+      result.each do |row|
+        expect(facilities.map(&:id)).to include(row.facility_id)
+      end
+      block = facilities[0].region.block_region
+      block_result = described_class.for_regions(block)
+      block_result.each do |row|
+        expect(row.facility_id).to eq(facilities[0].id)
+        expect(row.block_region_id).to eq(block.id)
+      end
+    end
+  end
+
   context "registrations" do
     describe "cumulative_registrations" do
       it "has the total registrations from beginning of reporting_months (2018) until current month for every facility" do
