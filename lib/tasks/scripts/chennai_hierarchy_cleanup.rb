@@ -35,7 +35,7 @@ class ChennaiHierarchyCleanup
 
   def copy_accesses
     accesses = Access.where(resource_id: @old_districts.pluck(:source_id))
-    user_ids_with_access = accesses.pluck(:user_id)
+    user_ids_with_access = accesses.pluck(:user_id).uniq
 
     user_ids_with_access.each do |user_id|
       Access.create!(user_id: user_id, resource_type: "FacilityGroup", resource_id: @new_district.source_id)
