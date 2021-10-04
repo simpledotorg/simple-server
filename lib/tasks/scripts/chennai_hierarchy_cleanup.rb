@@ -41,7 +41,8 @@ class ChennaiHierarchyCleanup
   end
 
   def discard_old_fgs
-    # TODO: make sure facility groups are empty before deleting
+    raise "Old facility groups still have facilities" if FacilityGroup.where(id: @old_districts.pluck(:source_id)).map(&:facilities).any? { |facilities| facilities.count > 0 }
+
     FacilityGroup.where(id: @old_districts.pluck(:source_id)).discard_all
   end
 end
