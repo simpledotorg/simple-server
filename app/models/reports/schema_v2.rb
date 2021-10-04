@@ -99,11 +99,15 @@ module Reports
     end
 
     memoize def controlled
-      regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, :adjusted_controlled_under_care) }
+      data.each_with_object({}) { |(slug, period_values), hsh| 
+        hsh[slug] = period_values.transform_values { |values| values["adjusted_controlled_under_care"] }
+      }
     end
 
     memoize def uncontrolled
-      regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, :adjusted_uncontrolled_under_care) }
+      data.each_with_object({}) { |(slug, period_values), hsh| 
+        hsh[slug] = period_values.transform_values { |values| values["adjusted_uncontrolled_under_care"] }
+      }
     end
 
     memoize def controlled_rates(with_ltfu: false)
@@ -210,6 +214,14 @@ module Reports
       FacilityState.for_region(region)
         .where("cumulative_registrations > 0 OR cumulative_assigned_patients > 0")
         .minimum(:month_date)
+    end
+
+    def data
+      @data ||= RegionSummary.call(regions, range: periods)
+    end
+
+    def grab(region, field)
+      data[region.slug]
     end
 
     # Grab a particular summed field for a region. We return data in the format of:

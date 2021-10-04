@@ -198,7 +198,7 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
           end
         end
 
-        fit "gets controlled counts and rates for one month" do
+        it "gets controlled counts and rates for one month" do
           facilities = FactoryBot.create_list(:facility, 3, facility_group: facility_group_1).sort_by(&:slug)
           facility_1, facility_2, facility_3 = *facilities.take(3)
           regions = facilities.map(&:region)
@@ -221,16 +221,14 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
           jan = Period.month(jan_2020)
           repo = Reports::Repository.new(regions, periods: Period.month(jan))
           pp facility_1.region.id
-          pp repo.schema.send(:facility_state_data).where(month_date: jan).map(&:attributes)
           controlled = repo.controlled
           uncontrolled = repo.uncontrolled
-          # pp Reports::FacilityState.for_region(facility_2).order(:month_date).pluck(:facility_region_id, :month_date, :adjusted_controlled_under_care)
           expect(controlled[facility_1.slug][jan]).to eq(2)
           expect(controlled[facility_2.slug][jan]).to eq(1)
-          expect(controlled[facility_3.slug][jan]).to eq(0)
+          expect(controlled[facility_3.slug][jan]).to be_nil
           expect(uncontrolled[facility_1.slug][jan]).to eq(2)
           expect(uncontrolled[facility_2.slug][jan]).to eq(0)
-          expect(uncontrolled[facility_3.slug][jan]).to eq(0)
+          expect(uncontrolled[facility_3.slug][jan]).to be_nil
         end
 
         it "gets controlled info for range of month periods" do

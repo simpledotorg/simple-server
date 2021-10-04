@@ -10,8 +10,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
   let(:organization) { create(:organization, name: "org-1") }
   let(:user) { create(:admin, :manager, :with_access, resource: organization, organization: organization) }
   let(:facility_group_1) { FactoryBot.create(:facility_group, name: "facility_group_1", organization: organization) }
-  let(:jan_2019) { Time.parse("January 1st, 2019 00:00:00+00:00") }
-  let(:jan_2020) { Time.parse("January 1st, 2020 00:00:00+00:00") }
+  let(:jan_2019) { Time.zone.parse("January 1st, 2019 00:00:00+00:00") }
+  let(:jan_2020) { Time.zone.parse("January 1st, 2020 00:00:00+00:00") }
 
   def refresh_views
     RefreshReportingViews.new.refresh_v2
@@ -40,16 +40,17 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
     refresh_views
 
     result = described_class.call(facilities, range: jan_2020)
-    expect(result[facility_1.slug]).to eq(jan_2020.to_period => 2)
-    expect(result[facility_2.slug]).to eq(jan_2020.to_period => 1)
-    expect(result[facility_3.slug]).to eq(jan_2020.to_period => nil)
+    expect(result[facility_1.slug][jan_2020.to_period]).to include("adjusted_controlled_under_care" => 2)
+    expect(result[facility_2.slug][jan_2020.to_period]).to include("adjusted_controlled_under_care" => 1)
+    expect(result[facility_3.slug][jan_2020.to_period]).to include("adjusted_controlled_under_care" => nil)
 
     district_data = described_class.call(district_region, range: jan_2020)
-    expect(district_data["facility_group_1"][jan_2020.to_period]).to eq(3)
+    expect(district_data["facility_group_1"][jan_2020.to_period]).to include("adjusted_controlled_under_care" => 3)
 
     block_data = described_class.call(block_regions)
-    expect(block_data["block-1"]["December 2019".to_period]).to eq(3)
-    expect(block_data["block-1"][jan_2020.to_period]).to eq(3)
-    expect(block_data["block-2"][jan_2020.to_period]).to be_nil
+    expect(block_data["block-1"]["November 2019".to_period]).to include("adjusted_controlled_under_care" => 0)
+    expect(block_data["block-1"]["December 2020".to_period]).to include("adjusted_controlled_under_care" => 0)
+    expect(block_data["block-1"]["January 2020".to_period]).to include("adjusted_controlled_under_care" => 3)
+    expect(block_data["block-2"]["January 2020".to_period]).to include("adjusted_controlled_under_care" => nil)
   end
 end

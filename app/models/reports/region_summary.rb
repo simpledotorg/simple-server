@@ -4,9 +4,27 @@ module Reports
       new(regions, range: range).call
     end
 
-    attr_reader :regions
-    attr_reader :region_type, :id_field, :slug_field
+    attr_reader :id_field
     attr_reader :range
+    attr_reader :region_type
+    attr_reader :regions
+    attr_reader :slug_field
+    
+    FIELDS = %i[
+      adjusted_controlled_under_care
+      adjusted_missed_visit_lost_to_follow_up
+      adjusted_missed_visit_under_care
+      adjusted_patients_under_care
+      adjusted_uncontrolled_under_care
+      adjusted_visited_no_bp_lost_to_follow_up
+      adjusted_visited_no_bp_under_care
+      cumulative_assigned_patients
+      cumulative_registrations
+      lost_to_follow_up
+      monthly_registrations
+    ].freeze
+
+    SUMS = FIELDS.map { |field| Arel.sql("SUM(#{field}::int) as #{field}") }
 
     def initialize(regions, range: nil)
       @range = range
@@ -20,11 +38,11 @@ module Reports
       query = for_regions
       query = query.where(month_date: range) if range
       result = query.group(:month_date, slug_field)
-        .select("month_date, #{slug_field}, sum(adjusted_controlled_under_care) as adjusted_controlled_under_care")
+        .select("month_date", slug_field, SUMS)
       result.each_with_object({}) { |facility_state, hsh|
         slug = facility_state.send(slug_field)
         hsh[slug] ||= {}
-        hsh[facility_state.send(slug_field)][facility_state.period] = facility_state.adjusted_controlled_under_care
+        hsh[facility_state.send(slug_field)][facility_state.period] = facility_state.attributes.except("month_date")
       }
     end
 
