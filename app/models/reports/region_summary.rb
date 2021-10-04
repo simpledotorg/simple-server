@@ -1,6 +1,6 @@
 module Reports
   class RegionSummary
-    def self.call(regions, range:)
+    def self.call(regions, range: nil)
       new(regions, range: range).call
     end
 
@@ -8,10 +8,10 @@ module Reports
     attr_reader :region_type, :id_field, :slug_field
     attr_reader :range
 
-    def initialize(regions, range:)
+    def initialize(regions, range: nil)
       @range = range
-      @regions = regions.map(&:region)
-      @region_type = regions.first.region_type
+      @regions = Array(regions).map(&:region)
+      @region_type = @regions.first.region_type
       @id_field = "#{region_type}_region_id"
       @slug_field = region_type == "facility" ? "#{region_type}_region_slug" : "#{region_type}_slug"
     end
