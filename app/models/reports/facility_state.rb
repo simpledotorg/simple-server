@@ -8,6 +8,15 @@ module Reports
       true
     end
 
+    def self.region_field(region_type)
+      "#{region_type}_region_id"
+    end
+
+    def self.summary(region_type)
+      group(:month_date, region_field(region_type))
+        .select("month_date, #{region_field(region_type)}, sum(adjusted_controlled_under_care) as adjusted_controlled_under_care")
+    end
+
     def self.for_region(region_or_source)
       region = region_or_source.region
       where("#{region.region_type}_region_id" => region.id)
