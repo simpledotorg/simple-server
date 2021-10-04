@@ -8,6 +8,23 @@ module Reports
       true
     end
 
+    def self.regions_summary(regions, range:)
+      Summary.for(regions, range: range)
+    end
+
+    class Summary < SimpleDelegator
+      def self.for(regions, range:)
+        regions = regions.map(&:region)
+        region_type = regions.first.region_type
+        region_field = "#{region_type}_region_id"
+        result = new(FacilityState).for_regions(regions).where(month_date: range).summary(region_type)
+
+        result.each_with_object({}) { |facility_state, hsh|
+          hsh[facility_state.send(region_field)] = { Period.month(facility_state.month_date) => facility_state.adjusted_controlled_under_care }
+        }
+      end
+    end
+
     def self.region_field(region_type)
       "#{region_type}_region_id"
     end
@@ -34,7 +51,6 @@ module Reports
         field = "#{region_type}_region_id"
         queries[field] = regions.map(&:id)
       end
-      pp queries
       where(queries)
     end
 

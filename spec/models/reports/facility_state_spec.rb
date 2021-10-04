@@ -20,7 +20,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       RefreshReportingViews.new.refresh_v2
     end
 
-    it "works" do
+    fit "works" do
       facility_1, facility_2 = *FactoryBot.create_list(:facility, 2, block: "block-1", facility_group: facility_group_1).sort_by(&:slug)
       facility_3 = FactoryBot.create(:facility, block: "block-2", facility_group: facility_group_1)
       facilities = [facility_1, facility_2, facility_3]
@@ -42,6 +42,11 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
 
       refresh_views
 
+      result = described_class.regions_summary(facilities, range: jan_2020)
+      pp result
+      expect(result[facility_1.slug]).to eq(jan_2020 => 2)
+
+
       jan_2020_data = described_class.where(month_date: jan_2020)
       expect(jan_2020_data.for_region(facility_1.region).to_a.first.adjusted_controlled_under_care).to eq(2)
       expect(jan_2020_data.for_region(facility_2.region).to_a.first.adjusted_controlled_under_care).to eq(1)
@@ -54,6 +59,8 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       grouped_data = block_data.group_by { |r| r.block_region_id }
       expect(grouped_data[facility_1.block_region.id].first.adjusted_controlled_under_care).to eq(3)
       expect(grouped_data[facility_3.block_region.id].first.adjusted_controlled_under_care).to be_nil
+
+
     end
   end
 
