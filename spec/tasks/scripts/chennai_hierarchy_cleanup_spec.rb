@@ -17,6 +17,7 @@ RSpec.describe ChennaiHierarchyCleanup do
 
     new_district = create(:facility_group, name: "Chennai", state: "Tamil Nadu")
     old_district = create(:facility_group, name: "Chennai old", state: "Tamil Nadu")
+    old_district.region.update(id: "75e586ec-e008-4d13-8abb-67cf83303b89")
     block = create(:region, :block, name: "Chennai old - block", reparent_to: old_district.region)
 
     described_class.call
@@ -31,6 +32,7 @@ RSpec.describe ChennaiHierarchyCleanup do
 
     new_district = create(:facility_group, name: "Chennai", state: "Tamil Nadu")
     old_district = create(:facility_group, name: "Chennai old", state: "Tamil Nadu")
+    old_district.region.update(id: "75e586ec-e008-4d13-8abb-67cf83303b89")
     block = create(:region, :block, name: "Chennai old - block", reparent_to: old_district.region)
     facility = create(:facility, block: block.name, facility_group: old_district)
 
@@ -46,7 +48,9 @@ RSpec.describe ChennaiHierarchyCleanup do
     stub_const("SIMPLE_SERVER_ENV", "production")
 
     create(:facility_group, name: "Chennai", state: "Tamil Nadu")
-    create_list(:facility_group, 2, name: "Chennai old", state: "Tamil Nadu")
+    old_districts = create_list(:facility_group, 2, name: "Chennai old", state: "Tamil Nadu")
+    old_districts.first.region.update(id: "75e586ec-e008-4d13-8abb-67cf83303b89")
+    old_districts.second.region.update(id: "5d9ed1b4-0f02-42a1-b36f-5b348314e35a")
 
     described_class.call
     expect(Region.state_regions.find_by(name: "Tamil Nadu").district_regions.count).to eq(1)
@@ -58,6 +62,7 @@ RSpec.describe ChennaiHierarchyCleanup do
     user = create(:admin, :viewer_all)
     organization = create(:organization)
     old_district = create(:facility_group, name: "Chennai old", state: "Tamil Nadu", organization: organization)
+    old_district.region.update(id: "75e586ec-e008-4d13-8abb-67cf83303b89")
     new_district = create(:facility_group, name: "Chennai", state: "Tamil Nadu", organization: organization)
 
     create(:access, user: user, resource: old_district)
