@@ -34,8 +34,8 @@ class ChennaiHierarchyCleanup
   end
 
   def copy_accesses
-    Access.where(resource_id: @old_districts).each do |access|
-      Access.create!(access.slice(:resource_type, :user_id).merge(resource_id: @new_district.id))
+    Access.where(resource_id: @old_districts.pluck(:source_id)).each do |access|
+      Access.create!(access.slice(:resource_type, :user_id).merge(resource_id: @new_district.source_id))
       access.discard
     end
   end
