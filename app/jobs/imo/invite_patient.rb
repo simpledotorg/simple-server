@@ -7,6 +7,7 @@ class Imo::InvitePatient
     return unless Flipper.enabled?(:imo_messaging)
 
     patient = Patient.find(patient_id)
-    ImoApiService.new.send_invitation(patient)
+    status = ImoApiService.new.send_invitation(patient)
+    ImoAuthorization.create!(patient: patient, status: status, last_invited_at: Time.current)
   end
 end

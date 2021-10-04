@@ -39,7 +39,7 @@ describe ImoApiService, type: :model do
     context "with feature flag on" do
       before { Flipper.enable(:imo_messaging) }
 
-      it "creates an ImoAuthorization on 200 success" do
+      it "returns 'invited' on 200 success" do
         locale = "bn-BD"
         request_body = JSON(
           phone: patient.latest_mobile_number,
@@ -58,43 +58,69 @@ describe ImoApiService, type: :model do
           action: I18n.t("notifications.imo.invitation.action", locale: locale),
           callback_url: "https://localhost/api/v3/patients/#{patient.id}/imo_authorization"
         )
-
         stub = stub_request(:post, request_url).with(headers: request_headers, body: request_body).to_return(status: 200, body: success_body)
 
-        expect { service.send_invitation(patient) }.to change { patient.imo_authorization }.from(nil)
-        expect(patient.imo_authorization.status).to eq("invited")
+        expect(service.send_invitation(patient)).to eq(:invited)
         expect(stub).to have_been_requested
       end
 
-      it "creates an ImoAuthorization and reports to sentry on any other 200 response" do
+      it "returns 'invited' when patient is already invited" do
+        already_invited = JSON(
+          status: "success",
+          response: {
+            error_code: "invited"
+          }
+        )
+        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: already_invited)
+
+        expect(service.send_invitation(patient)).to eq(:invited)
+      end
+
+      it "returns 'subscribed' when patient is already subscribed'" do
+        already_subscribed = JSON(
+          status: "success",
+          response: {
+            error_code: "subscribed"
+          }
+        )
+        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: already_subscribed)
+
+        expect(service.send_invitation(patient)).to eq(:subscribed)
+      end
+
+      it "returns 'error' and reports to sentry on any other 200 response" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: {}.to_json)
 
         expect(Sentry).to receive(:capture_message)
-        expect { service.send_invitation(patient) }.to change { patient.imo_authorization }.from(nil)
-        expect(patient.imo_authorization.status).to eq("error")
+        expect(service.send_invitation(patient)).to eq(:error)
       end
 
-      it "creates an ImoAuthorization when status is 400 and type is nonexistent_user" do
+      it "returns 'no_imo_account' on 400 when response type is nonexistent_user" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: nonexistent_user_body)
 
-        expect { service.send_invitation(patient) }.to change { patient.imo_authorization }.from(nil)
-        expect(patient.imo_authorization.status).to eq("no_imo_account")
+        expect(service.send_invitation(patient)).to eq(:no_imo_account)
       end
 
-      it "creates an ImoAuthorization reports to sentry on any other 400 response" do
+      it "returns 'error' and reports to sentry on any other 400 response" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: {}.to_json)
 
         expect(Sentry).to receive(:capture_message)
-        service.send_invitation(patient)
+        expect(service.send_invitation(patient)).to eq(:error)
       end
 
-      it "raises a custom error and does not create an ImoAuthorization on network error" do
+      it "returns 'error' and reports to sentry on any other response code" do
+        stub_request(:post, request_url).with(headers: request_headers).to_return(status: 500, body: {}.to_json)
+
+        expect(Sentry).to receive(:capture_message)
+        expect(service.send_invitation(patient)).to eq(:error)
+      end
+
+      it "raises a custom error on network error" do
         stub_request(:post, request_url).to_timeout
 
         expect {
           service.send_invitation(patient)
         }.to raise_error(ImoApiService::Error)
-        expect(patient.imo_authorization).to be_nil
       end
 
       it "raises an error when the patient's locale is not supported" do
@@ -128,10 +154,7 @@ describe ImoApiService, type: :model do
 
         stub = stub_request(:post, request_url).with(headers: request_headers, body: request_body).to_return(status: 200, body: success_body)
 
-        expect {
-          service.send_invitation(patient, phone_number: phone_number)
-        }.to change { patient.imo_authorization }.from(nil)
-        expect(patient.imo_authorization.status).to eq("invited")
+        expect(service.send_invitation(patient, phone_number: phone_number)).to eq(:invited)
         expect(stub).to have_been_requested
       end
     end

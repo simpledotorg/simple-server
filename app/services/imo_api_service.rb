@@ -53,9 +53,7 @@ class ImoApiService
 
     response = execute_post(url, body: request_body)
     body = JSON.parse(response.body)
-    status = process_response(response, body, url, "invitation")
-
-    ImoAuthorization.create!(patient: patient, status: status, last_invited_at: Time.current)
+    process_response(response, body, url, "invitation")
   end
 
   def send_notification(notification, phone_number)
@@ -116,9 +114,16 @@ class ImoApiService
         return :sent if action == "notification"
       end
 
-      if body.dig("response", "error_code") == "not_subscribed"
+      case body.dig("response", "error_code")
+      when "not_subscribed"
         Statsd.instance.increment("imo.#{action}.not_subscribed")
         return :not_subscribed
+      when "subscribed"
+        Statsd.instance.increment("imo.#{action}.already_subscribed")
+        return :subscribed
+      when "invited"
+        Statsd.instance.increment("imo.#{action}.already_invited")
+        return :invited
       end
     when 400
       if body.dig("response", "type") == "nonexistent_user"
