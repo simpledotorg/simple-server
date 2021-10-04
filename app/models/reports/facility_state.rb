@@ -17,10 +17,11 @@ module Reports
         regions = regions.map(&:region)
         region_type = regions.first.region_type
         region_field = "#{region_type}_region_id"
+        slug_field = region_type == "facility" ? "#{region_type}_region_slug" : "#{region_type}_slug"
         result = new(FacilityState).for_regions(regions).where(month_date: range).summary(region_type)
 
         result.each_with_object({}) { |facility_state, hsh|
-          hsh[facility_state.send(region_field)] = { Period.month(facility_state.month_date) => facility_state.adjusted_controlled_under_care }
+          hsh[facility_state.send(slug_field)] = { Period.month(facility_state.month_date) => facility_state.adjusted_controlled_under_care }
         }
       end
     end
