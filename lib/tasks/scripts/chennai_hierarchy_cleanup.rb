@@ -62,7 +62,7 @@ class ChennaiHierarchyCleanup
   end
 
   def discard_old_fgs
-    raise "Old facility groups still have facilities" unless FacilityGroup.where(id: @old_districts.pluck(:source_id)).select(&:discardable?).present?
+    raise "Old facility groups still have facilities" if FacilityGroup.where(id: @old_districts.pluck(:source_id)).select(&:discardable?).includes?(false)
 
     FacilityGroup.where(id: @old_districts.pluck(:source_id)).discard_all
   end
