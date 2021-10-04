@@ -146,4 +146,4 @@
   form="query-filters"
   hidden
 >
-<%= link_to "Export as CSV", my_facilities_csv_maker_path(type: type, facility_group: @selected_facility_group), { method: :get } %>
+<%= link_to "<button>Export County Data</button>".html_safe, my_facilities_csv_maker_path(type: type, facility_group: @selected_facility_group), { method: :get } %>
