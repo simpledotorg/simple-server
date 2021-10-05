@@ -60,7 +60,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
   end
 
   context "visits without BP taken" do
-    fit "adds together LTFU and under care counts" do
+    it "adds together LTFU and under care counts" do
       facility_1 = FactoryBot.create_list(:facility, 1, facility_group: facility_group_1).first
       slug = facility_1.region.slug
       # Patient registeres Jan 2019 and has a visit with no BP Jan 2020...so visit w/ no BP _and_ LTFU Jan, Feb, March 2020
