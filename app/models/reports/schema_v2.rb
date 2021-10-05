@@ -166,7 +166,8 @@ module Reports
 
     memoize def denominator(region, period, with_ltfu: false)
       if with_ltfu
-        adjusted_patients_without_ltfu[region.slug][period] + ltfu[region.slug][period]
+        patients = adjusted_patients_without_ltfu[region.slug][period] || raise(ArgumentError, "Missing adjusted patient counts for #{region.region_type} #{region.slug} #{period}")
+        patients + ltfu[region.slug][period]
       else
         adjusted_patients_without_ltfu[region.slug][period]
       end
