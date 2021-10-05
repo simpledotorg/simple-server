@@ -91,19 +91,19 @@ module Reports
       values_at("lost_to_follow_up")
     end
 
-    memoize def ltfu_rates
-      region_period_cached_query(__method__) do |entry|
-        slug, period = entry.slug, entry.period
-        percentage(ltfu[slug][period], cumulative_assigned_patients[slug][period])
-      end
-    end
-
     memoize def controlled
       values_at("adjusted_controlled_under_care")
     end
 
     memoize def uncontrolled
       values_at("adjusted_uncontrolled_under_care")
+    end
+
+    memoize def ltfu_rates
+      region_period_cached_query(__method__) do |entry|
+        slug, period = entry.slug, entry.period
+        percentage(ltfu[slug][period], cumulative_assigned_patients[slug][period])
+      end
     end
 
     memoize def controlled_rates(with_ltfu: false)
@@ -234,35 +234,6 @@ module Reports
         .select { |facility_state| facility_state.period.in?(periods) }
         .to_h { |facility_state| [Period.month(facility_state.month_date), facility_state.public_send(summary_field(field))] }
         .tap { |hsh| hsh.default = 0 }
-    end
-
-    # For some fields we need to sum the under_care numbers with the LTFU numbers to support the "include LTFU"
-    # toggle in reports.
-    def under_care_with_ltfu(field)
-      Arel.sql(<<-EOL)
-        SUM(COALESCE(#{field}_under_care::int, 0) + COALESCE(#{field}_lost_to_follow_up::int, 0)) as sum_#{field}_under_care_with_lost_to_follow_up
-      EOL
-    end
-
-    # Grab all the summed data for a particular region grouped by month_date.
-    # We need to use COALESCE to avoid getting nil back from some of the values, and we need to use
-    # `select` because the `sum` methods in ActiveRecord can't sum multiple fields.
-    # We also order by `month_date` because some code in the views expects elements to be ordered by Period from
-    # oldest to newest - it also makes reading output in specs and debugging much easier.
-    memoize def facility_state_data
-      calculations = FIELDS.map { |field| Arel.sql("COALESCE(SUM(#{field}::int), 0) as #{summary_field(field)}") }
-      under_care_with_ltfu = UNDER_CARE_WITH_LTFU.map { |field| under_care_with_ltfu(field) }
-      selects = calculations.concat(under_care_with_ltfu)
-
-      region_id_field = "#{regions.first.region_type}_region_id"
-      FacilityState.for_regions(regions)
-        .where("cumulative_registrations IS NOT NULL OR cumulative_assigned_patients IS NOT NULL")
-        .order(:month_date)
-        .group(:month_date)
-        .group_by_region_field(regions.first) # TODO - this assumes all the same region types
-        .select(:month_date)
-        .select(region_id_field)
-        .select(*selects)
     end
   end
 end
