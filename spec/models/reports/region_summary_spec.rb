@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
   using StringToPeriod
-  
+
   around do |example|
     freeze_time_for_reporting_specs(example)
   end
@@ -15,6 +15,11 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
 
   def refresh_views
     RefreshReportingViews.new.refresh_v2
+  end
+
+  it "regions with no data return hash w/ slugs and empty hash" do
+    result = described_class.call(facility_group_1)
+    expect(result).to eq("facility_group_1" => {})
   end
 
   it "returns correct data for regions" do
@@ -52,5 +57,20 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
     expect(block_data["block-1"]["December 2020".to_period]).to include("adjusted_controlled_under_care" => 0)
     expect(block_data["block-1"]["January 2020".to_period]).to include("adjusted_controlled_under_care" => 3)
     expect(block_data["block-2"]["January 2020".to_period]).to include("adjusted_controlled_under_care" => nil)
+  end
+
+  context "visits without BP taken" do
+    fit "adds together LTFU and under care counts" do
+      facility_1 = FactoryBot.create_list(:facility, 1, facility_group: facility_group_1).first
+      slug = facility_1.region.slug
+      # Patient registeres Jan 2019 and has a visit with no BP Jan 2020...so visit w/ no BP _and_ LTFU Jan, Feb, March 2020
+      visit_with_no_bp_and_ltfu = create(:patient, full_name: "visit_with_no_bp_and_ltfu", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
+      create(:appointment, patient: visit_with_no_bp_and_ltfu, recorded_at: jan_2020, facility: facility_1, user: user)
+
+      refresh_views
+      result = described_class.call(facility_1)
+      expect(result[slug]["adjusted_visited_no_bp_under_care_with_lost_to_follow_up"]).to eq(0)
+      expect(result[slug]["adjusted_visited_no_bp_under_care"]).to eq(0)
+    end
   end
 end

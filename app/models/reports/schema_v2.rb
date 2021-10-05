@@ -68,27 +68,27 @@ module Reports
     # Adjusted patient counts are the patient counts from three months ago (the adjusted period) that
     # are the basis for control rates. These counts DO NOT include lost to follow up.
     memoize def adjusted_patients_without_ltfu
-      regions.each_with_object({}) { |region, result| result[region.slug] = sum(region, :adjusted_patients_under_care) }
+      values_at("adjusted_patients_under_care")
     end
 
     alias_method :adjusted_patients, :adjusted_patients_without_ltfu
 
     # Return the running total of cumulative assigned patient counts. Note that this *includes* LTFU.
     memoize def cumulative_assigned_patients
-      regions.each_with_object({}) { |region, result| result[region.slug] = sum(region, :cumulative_assigned_patients) }
+      values_at("cumulative_assigned_patients")
     end
 
     # Returns registration counts per region / period
     memoize def monthly_registrations
-      regions.each_with_object({}) { |region, result| result[region.slug] = sum(region, :monthly_registrations) }
+      values_at("monthly_registrations")
     end
 
     memoize def cumulative_registrations
-      regions.each_with_object({}) { |region, result| result[region.slug] = sum(region, :cumulative_registrations) }
+      values_at("cumulative_registrations")
     end
 
     memoize def ltfu
-      regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, :lost_to_follow_up) }
+      values_at("lost_to_follow_up")
     end
 
     memoize def ltfu_rates
@@ -99,15 +99,11 @@ module Reports
     end
 
     memoize def controlled
-      data.each_with_object({}) { |(slug, period_values), hsh| 
-        hsh[slug] = period_values.transform_values { |values| values["adjusted_controlled_under_care"] }
-      }
+      values_at("adjusted_controlled_under_care")
     end
 
     memoize def uncontrolled
-      data.each_with_object({}) { |(slug, period_values), hsh| 
-        hsh[slug] = period_values.transform_values { |values| values["adjusted_uncontrolled_under_care"] }
-      }
+      values_at("adjusted_uncontrolled_under_care")
     end
 
     memoize def controlled_rates(with_ltfu: false)
@@ -128,7 +124,7 @@ module Reports
 
     memoize def missed_visits(with_ltfu: false)
       field = with_ltfu ? :adjusted_missed_visit_under_care_with_lost_to_follow_up : :adjusted_missed_visit_under_care
-      regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, field) }
+      values_at(field)
     end
 
     memoize def missed_visits_rates(with_ltfu: false)
@@ -152,9 +148,9 @@ module Reports
       missed_visits_rates(with_ltfu: true)
     end
 
-    memoize def visited_without_bp_taken(with_ltfu: false)
+    def visited_without_bp_taken(with_ltfu: false)
       field = with_ltfu ? :adjusted_visited_no_bp_under_care_with_lost_to_follow_up : :adjusted_visited_no_bp_under_care
-      regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, field) }
+      values_at(field)
     end
 
     memoize def visited_without_bp_taken_rates(with_ltfu: false)
@@ -220,8 +216,10 @@ module Reports
       @data ||= RegionSummary.call(regions, range: periods)
     end
 
-    def grab(region, field)
-      data[region.slug]
+    def values_at(field)
+      data.each_with_object({}) { |(slug, period_values), hsh|
+        hsh[slug] = period_values.transform_values { |values| values.fetch(field.to_s) }
+      }
     end
 
     # Grab a particular summed field for a region. We return data in the format of:
@@ -236,11 +234,6 @@ module Reports
         .select { |facility_state| facility_state.period.in?(periods) }
         .to_h { |facility_state| [Period.month(facility_state.month_date), facility_state.public_send(summary_field(field))] }
         .tap { |hsh| hsh.default = 0 }
-    end
-
-    def summary_field(field)
-      raise ArgumentError, "field #{field} is not part of the FacilityState query" unless field.in?(FIELDS) || field.in?(UNDER_CARE_WITH_LTFU_CALCULATED_FIELDS)
-      "sum_#{field}"
     end
 
     # For some fields we need to sum the under_care numbers with the LTFU numbers to support the "include LTFU"
