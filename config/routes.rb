@@ -83,7 +83,8 @@ Rails.application.routes.draw do
 
       resource :twilio_sms_delivery, only: [:create], controller: :twilio_sms_delivery
 
-      post "patient/:patient_id/imo_authorization", to: "imo_callbacks#subscribe", as: :imo_authorization_callback
+      post "patients/:patient_id/imo_authorization", to: "imo_callbacks#subscribe", as: :imo_authorization_callback
+      post "imo_callbacks/receipt", to: "imo_callbacks#read_receipt", as: :imo_notification_callback
 
       scope :users do
         get "find", to: "users#find"

@@ -1,6 +1,6 @@
 en_BD:
-  facility_group: "upazila"
-  facility_group_zone: "union"
+  facility_group: "District"
+  facility_group_zone: "Upazila"
   helpers:
     label:
       facility:
@@ -9,12 +9,12 @@ en_BD:
         size: "Size *"
         street_address: "House and road number"
         village_or_colony: "Village or ward"
-        zone: "Union *"
-        district: "Upazila *"
-        state: "District *"
+        zone: "Upazila *"
+        district: "District *"
+        state: "Division *"
         country: "Country *"
       facility_group:
-        state: "District"
+        state: "Division"
       drug:
         frequency:
           one_per_day: "OD"

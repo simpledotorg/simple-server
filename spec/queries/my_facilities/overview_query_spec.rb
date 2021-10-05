@@ -1,6 +1,10 @@
 require "rails_helper"
 
 RSpec.describe OverviewQuery do
+  around do |example|
+    with_reporting_time_zone { example.run }
+  end
+
   describe "#inactive_facilities" do
     let!(:active_facility) { create(:facility) }
     let!(:inactive_facility) { create :facility }
