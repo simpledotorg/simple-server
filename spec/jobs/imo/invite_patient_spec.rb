@@ -45,6 +45,18 @@ RSpec.describe Imo::InvitePatient, type: :job do
         }.to raise_error(ArgumentError)
         expect(patient.reload.imo_authorization).to be_nil
       end
+
+      it "updates the patient's imo auth if they have one" do
+        patient = create(:patient)
+        imo_auth = create(:imo_authorization, status: :error, patient: patient)
+        imo_service = instance_double(ImoApiService, send_invitation: :invited)
+        allow(ImoApiService).to receive(:new).and_return(imo_service)
+
+        expect {
+          described_class.perform_async(patient.id)
+          described_class.drain
+        }.to change{ imo_auth.reload.status }.from("error").to("invited")
+      end
     end
   end
 end
