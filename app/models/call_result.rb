@@ -5,14 +5,15 @@ class CallResult < ApplicationRecord
 
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
+  validates :result_type, presence: true
 
-  enum result: {
+  enum result_type: {
     agreed_to_visit: "agreed_to_visit",
     removed_from_overdue_list: "removed_from_overdue_list",
     remind_to_call_later: "remind_to_call_later"
   }
 
-  enum cancel_reason: {
+  enum remove_reason: {
     not_responding: "not_responding",
     moved: "moved",
     dead: "dead",

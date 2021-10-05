@@ -250,7 +250,15 @@
         ],
         "responses": {
           "200": {
-            "description": "some, or no errors were found"
+            "description": "some, or no errors were found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "$ref": "#/definitions/errors"
+                }
+              }
+            }
           },
           "403": {
             "description": "user is not allowed to sync"
@@ -1213,8 +1221,11 @@
         "appointment_id": {
           "$ref": "#/definitions/uuid"
         },
-        "cancel_reason": {
-          "type": "string",
+        "remove_reason": {
+          "type": [
+            "string",
+            "null"
+          ],
           "enum": [
             "not_responding",
             "moved",
@@ -1222,10 +1233,11 @@
             "invalid_phone_number",
             "public_hospital_transfer",
             "moved_to_private",
-            "other"
+            "other",
+            null
           ]
         },
-        "result": {
+        "result_type": {
           "type": "string",
           "enum": [
             "agreed_to_visit",
@@ -1247,7 +1259,7 @@
         "id",
         "user_id",
         "appointment_id",
-        "result",
+        "result_type",
         "created_at",
         "updated_at"
       ]

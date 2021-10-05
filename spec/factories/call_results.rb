@@ -3,8 +3,8 @@ FactoryBot.define do
     id { SecureRandom.uuid }
     association :user
     association :appointment
-    cancel_reason { nil }
-    result { CallResult.results.keys.sample }
+    remove_reason { nil }
+    result_type { CallResult.result_types.keys.sample }
     device_created_at { Time.current }
     device_updated_at { Time.current }
     deleted_at { nil }
@@ -18,7 +18,7 @@ end
 def build_invalid_call_result_payload
   build_call_result_payload.merge(
     "user_id" => nil,
-    "result" => "foo"
+    "result_type" => "foo"
   )
 end
 
@@ -27,6 +27,6 @@ def updated_call_result_payload(existing_call_result)
 
   build_call_result_payload(existing_call_result).merge(
     "updated_at" => update_time,
-    "cancel_reason" => CallResult.cancel_reasons.keys.sample
+    "remove_reason" => CallResult.remove_reasons.keys.sample
   )
 end

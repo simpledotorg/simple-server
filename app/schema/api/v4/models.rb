@@ -363,13 +363,13 @@ class Api::V4::Models
          id: {"$ref" => "#/definitions/uuid"},
          user_id: {"$ref" => "#/definitions/uuid"},
          appointment_id: {"$ref" => "#/definitions/uuid"},
-         cancel_reason: nullable_enum(CallResult.cancel_reasons.keys),
-         result: {type: :string, enum: CallResult.results.keys},
+         remove_reason: nullable_enum(CallResult.remove_reasons.keys),
+         result_type: {type: :string, enum: CallResult.result_types.keys},
          deleted_at: {"$ref" => "#/definitions/nullable_timestamp"},
          created_at: {"$ref" => "#/definitions/timestamp"},
          updated_at: {"$ref" => "#/definitions/timestamp"}
        },
-       required: %w[id user_id appointment_id result created_at updated_at]}
+       required: %w[id user_id appointment_id result_type created_at updated_at]}
     end
 
     def definitions

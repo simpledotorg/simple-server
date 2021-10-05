@@ -4,8 +4,8 @@ class CreateCallResults < ActiveRecord::Migration[5.2]
       t.uuid :user_id, null: false, foreign_key: true
       t.uuid :appointment_id, null: false, foreign_key: true
 
-      t.string :cancel_reason
-      t.string :result, null: false
+      t.string :remove_reason
+      t.string :result_type, null: false
 
       t.timestamp :device_created_at, null: false
       t.timestamp :device_updated_at, null: false

@@ -7,6 +7,7 @@ describe CallResult, type: :model do
   end
 
   context "Validations" do
+    it { should validate_presence_of(:result_type) }
     it_behaves_like "a record that validates device timestamps"
   end
 

@@ -24,8 +24,8 @@ class Api::V4::CallResultsController < Api::V4::SyncController
         :id,
         :user_id,
         :appointment_id,
-        :cancel_reason,
-        :result,
+        :remove_reason,
+        :result_type,
         :deleted_at,
         :created_at,
         :updated_at

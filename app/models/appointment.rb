@@ -23,7 +23,7 @@ class Appointment < ApplicationRecord
     visited: "visited"
   }, _prefix: true
 
-  enum cancel_reason: CallResult.cancel_reasons
+  enum cancel_reason: CallResult.remove_reasons
 
   enum appointment_type: {
     manual: "manual",

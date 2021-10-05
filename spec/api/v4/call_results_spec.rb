@@ -27,6 +27,7 @@ describe "CallResults v4 API", swagger_doc: "v4/swagger.json" do
         let(:HTTP_X_USER_ID) { request_user.id }
         let(:HTTP_X_FACILITY_ID) { request_facility.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
+        schema Api::V4::Schema.sync_from_user_errors
 
         let(:call_results) { {call_results: (1..3).map { build_invalid_call_result_payload }} }
         run_test!
