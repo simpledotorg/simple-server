@@ -4,6 +4,7 @@ class WardhaPatientCleanup
 
     ActiveRecord::Base.transaction do
       Patient.where(id: patient_ids).map(&:discard_data)
+      Patient.where(id: patient_ids).each(&:discard_data)
     end
   end
 
