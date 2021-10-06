@@ -199,6 +199,7 @@ module Reports
         results.concat(periods_with_data.to_a.map { |period| [region, period] })
       end
       options[:class] = self.class
+      options[:version] = "2"
       combinations.map { |region, period| Reports::RegionPeriodEntry.new(region, period, calculation, options) }
     end
 
