@@ -63,7 +63,7 @@ module Reports
         field = "#{region_type}_region_id"
         queries[field] = regions.map(&:id)
       end
-      FacilityState.where(queries)
+      FacilityState.where(queries).where("cumulative_registrations IS NOT NULL OR cumulative_assigned_patients IS NOT NULL")
     end
   end
 end
