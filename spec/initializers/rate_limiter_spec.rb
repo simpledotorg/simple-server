@@ -147,6 +147,31 @@ describe "RateLimiter", type: :controller do
         end
       end
     end
+
+    context "user phone number lookups by IP address" do
+      let(:limit) { 5 }
+      before(:each, type: :controller) do
+        @request.remote_addr = "127.0.0.1"
+      end
+
+      it "does not change the request status when the number of requests is lower than the limit" do
+        limit.times do
+          post "/api/v4/users/find", phone_number: "1234567890"
+          expect(last_response.status).to eq(404)
+        end
+      end
+
+      it "returns 429 when the number of requests is lower than the limit" do
+        (limit * 2).times do |i|
+          post "/api/v4/users/find", phone_number: "1234567890"
+          if i > limit
+            expect(i > limit).to eq(true)
+            expect(last_response.status).to eq(429)
+            expect(last_response.body).to eq("Too many requests. Please wait and try again later.\n")
+          end
+        end
+      end
+    end
   end
 
   describe "throttle patient lookup API" do
