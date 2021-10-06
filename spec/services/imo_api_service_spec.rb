@@ -178,7 +178,7 @@ describe ImoApiService, type: :model do
         imo_auth
       end
 
-      it "returns sent result and post_id on a successful 200 response" do
+      it "returns 'sent' result and post_id on a successful 200 response" do
         response = JSON(
           response: {
             status: "success",
@@ -208,20 +208,20 @@ describe ImoApiService, type: :model do
         expect(service.send_notification(notification, phone_number)).to eq({result: :not_subscribed, post_id: nil})
       end
 
-      it "reports to sentry and returns error on other 200 responses" do
+      it "reports to sentry and returns 'error' on other 200 responses" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: {}.to_json)
         expect(Sentry).to receive(:capture_message)
         expect(service.send_notification(notification, phone_number)).to eq({result: :error, post_id: nil})
       end
 
-      it "reports to sentry and returns error on other 400 responses" do
+      it "reports to sentry and returns 'error' on other 400 responses" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: {}.to_json)
 
         expect(Sentry).to receive(:capture_message)
         expect(service.send_notification(notification, phone_number)).to eq({result: :error, post_id: nil})
       end
 
-      it "reports to sentry and returns error on other statuses" do
+      it "reports to sentry and returns 'error' on other statuses" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 401, body: {}.to_json)
 
         expect(Sentry).to receive(:capture_message)

@@ -22,7 +22,7 @@ RSpec.describe Imo::InvitePatient, type: :job do
         }.to raise_error(ActiveRecord::RecordNotFound)
       end
 
-      it "creates an ImoAuthorization with a status returned by the imo service" do
+      it "creates an ImoAuthorization using the status returned by the imo service" do
         current_date = "1-1-2020".to_date
         patient = create(:patient)
         imo_service = instance_double(ImoApiService, send_invitation: :invited)
