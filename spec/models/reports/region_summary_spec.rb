@@ -12,6 +12,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
   let(:facility_group_1) { FactoryBot.create(:facility_group, name: "facility_group_1", organization: organization) }
   let(:jan_2019) { Time.zone.parse("January 1st, 2019 00:00:00+00:00") }
   let(:jan_2020) { Time.zone.parse("January 1st, 2020 00:00:00+00:00") }
+  let(:mar_2020) { Time.zone.parse("March 1st, 2020 00:00:00+00:00") }
 
   def refresh_views
     RefreshReportingViews.new.refresh_v2
@@ -20,6 +21,24 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
   it "regions with no data return hash w/ slugs and empty hash" do
     result = described_class.call(facility_group_1)
     expect(result).to eq("facility_group_1" => {})
+  end
+
+  context "with explicit range" do
+    fit "does not return data for periods with no patients" do
+      facility_1 = create(:facility, name: "facility opened jan 2020", facility_group: facility_group_1)
+      facility_2 = create(:facility, name: "facility opened mar 2020", facility_group: facility_group_1)
+      facility_1_patients = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2020, assigned_facility: facility_1, registration_user: user)
+      facility_2_patients = create_list(:patient, 2, full_name: "controlled", recorded_at: mar_2020, assigned_facility: facility_2, registration_user: user)
+
+      Timecop.freeze("June 1st 2021") do
+        refresh_views
+        range = (Period.current.advance(months: -24)..Period.current)
+        result = described_class.call([facility_1, facility_2], range: range)
+        periods = result["facility-opened-jan-2020"].keys
+        expect(periods.first).to eq(jan_2020.to_period)
+      end
+
+    end
   end
 
   it "returns correct data for regions" do
