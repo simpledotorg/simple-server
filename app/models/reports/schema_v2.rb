@@ -32,6 +32,12 @@ module Reports
     attr_reader :regions
 
     delegate :cache, :logger, to: Rails
+    delegate :cache_version, to: self
+    CACHE_MINOR_VERSION = 1
+
+    def self.cache_version
+      "2.#{CACHE_MINOR_VERSION}"
+    end
 
     def initialize(regions, periods:)
       @regions = regions
@@ -198,8 +204,7 @@ module Reports
         periods_with_data = periods.select { |period| period >= earliest_period }
         results.concat(periods_with_data.to_a.map { |period| [region, period] })
       end
-      options[:class] = self.class
-      options[:version] = "2"
+      options[:version] = cache_version
       combinations.map { |region, period| Reports::RegionPeriodEntry.new(region, period, calculation, options) }
     end
 
