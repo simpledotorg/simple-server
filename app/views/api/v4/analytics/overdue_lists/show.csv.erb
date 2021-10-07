@@ -26,7 +26,7 @@
       patient_summary.village_or_colony,
       patient_summary.days_overdue.to_i,
       patient_summary.latest_phone_number,
-      *patient_summary.current_prescription_drugs.map { |drug| "#{drug.name} #{drug.dosage}" }
+      patient_summary.current_prescription_drugs.map { |drug| "#{drug.name} #{drug.dosage}" }.join(", ")
     ] %>
   <% end %>
 <% end.html_safe %>
