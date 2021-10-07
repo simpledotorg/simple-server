@@ -6,6 +6,7 @@ class CallResult < ApplicationRecord
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
   validates :result_type, presence: true
+  validates :appointment_id, presence: true
 
   enum result_type: {
     agreed_to_visit: "agreed_to_visit",
