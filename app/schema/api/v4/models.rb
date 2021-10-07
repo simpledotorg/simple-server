@@ -33,6 +33,10 @@ class Api::V4::Models
        items: {"$ref" => "#/definitions/#{type}"}}
     end
 
+    def nullable_enum(enum_values)
+      {type: [:string, "null"], enum: enum_values << nil}
+    end
+
     def blood_sugar
       {type: :object,
        properties: {
@@ -287,7 +291,7 @@ class Api::V4::Models
               requester_id: {"$ref" => "#/definitions/uuid"},
               facility_id: {"$ref" => "#/definitions/uuid"},
               requested_at: {"$ref" => "#/definitions/timestamp"},
-              requester_completion_status: {type: [:string, "null"], enum: Teleconsultation.requester_completion_statuses.keys << nil}
+              requester_completion_status: nullable_enum(Teleconsultation.requester_completion_statuses.keys)
             }
           },
           record: {
@@ -339,8 +343,8 @@ class Api::V4::Models
        properties: {
          id: {"$ref" => "#/definitions/uuid"},
          name: {"$ref" => "#/definitions/non_empty_string"},
-         category: {type: [:string, "null"], enum: Medication::CATEGORIES.keys << nil},
-         frequency: {type: [:string, "null"], enum: Medication::FREQUENCIES.keys << nil},
+         category: nullable_enum(Medication::CATEGORIES.keys),
+         frequency: nullable_enum(Medication::FREQUENCIES.keys),
          composition: {type: [:string, "null"]},
          dosage: {type: [:string, "null"]},
          rxnorm_code: {type: [:string, "null"]},
@@ -351,6 +355,21 @@ class Api::V4::Models
          deleted_at: {"$ref" => "#/definitions/nullable_timestamp"}
        },
        required: %w[id name created_at updated_at]}
+    end
+
+    def call_result
+      {type: :object,
+       properties: {
+         id: {"$ref" => "#/definitions/uuid"},
+         user_id: {"$ref" => "#/definitions/uuid"},
+         appointment_id: {"$ref" => "#/definitions/uuid"},
+         remove_reason: nullable_enum(CallResult.remove_reasons.keys),
+         result_type: {type: :string, enum: CallResult.result_types.keys},
+         deleted_at: {"$ref" => "#/definitions/nullable_timestamp"},
+         created_at: {"$ref" => "#/definitions/timestamp"},
+         updated_at: {"$ref" => "#/definitions/timestamp"}
+       },
+       required: %w[id user_id appointment_id result_type created_at updated_at]}
     end
 
     def definitions
@@ -365,6 +384,8 @@ class Api::V4::Models
         blood_pressures: array_of("blood_pressure"),
         blood_sugar: blood_sugar,
         blood_sugars: array_of("blood_sugar"),
+        call_result: call_result,
+        call_results: array_of("call_result"),
         facility_medical_officer: facility_medical_officer,
         facility_medical_officers: array_of("facility_medical_officer"),
         find_user: find_user,
