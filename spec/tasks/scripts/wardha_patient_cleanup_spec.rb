@@ -20,7 +20,7 @@ RSpec.describe WardhaPatientCleanup do
       patients = [create(:patient, id: "0373ae28-64dc-4352-b7f5-6c26c95f11ac"),
         create(:patient, id: "f7f333f1-dfc9-4f62-b23b-9e5e4dc63127")]
 
-      expect(PatientDeduplication::Runner).to receive(:new).with(patients.pluck(:id)).once.and_call_original
+      expect(PatientDeduplication::Runner).to receive(:new).with([patients.pluck(:id)]).once.and_call_original
 
       described_class.deduplicate
     end
