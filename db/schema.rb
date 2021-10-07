@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_28_134120) do
+ActiveRecord::Schema.define(version: 2021_10_07_075808) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -245,8 +245,8 @@ ActiveRecord::Schema.define(version: 2021_09_28_134120) do
     t.string "name", null: false
     t.string "state", default: "new", null: false
     t.string "experiment_type", null: false
-    t.date "start_date"
-    t.date "end_date"
+    t.date "start_date", null: false
+    t.date "end_date", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_experiments_on_name", unique: true
