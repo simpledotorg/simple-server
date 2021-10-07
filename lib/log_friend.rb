@@ -7,7 +7,7 @@ module LogFriend
       path = location.absolute_path
       line = Pathname(path).readlines[location.lineno - 1]
 
-      arg_name = if match = line.match(REGEXP)
+      arg_name = if (match = line.match(REGEXP))
         match[1]
       else
         "error finding arg name"
