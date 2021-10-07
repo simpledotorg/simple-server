@@ -28,7 +28,7 @@ module Reports
     delegate :cache_version, to: self
 
     def self.cache_version
-      1.0
+      "1.0"
     end
 
     # Returns the earliest patient record for a Region from either assigned or registered patients. Note that this *ignores*

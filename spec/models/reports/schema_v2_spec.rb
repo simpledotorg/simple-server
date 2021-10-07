@@ -1,0 +1,33 @@
+require "rails_helper"
+
+describe Reports::SchemaV2, type: :model do
+  let(:july_2018) { Period.month("July 1 2018") }
+  let(:june_2020) { Period.month("June 1 2020") }
+
+  let(:jan_2020) { Time.zone.parse("January 1st, 2020 00:00:00+00:00") }
+  let(:range) { (july_2018..june_2020) }
+  let(:facility) { create(:facility) }
+
+  def refresh_views
+    RefreshReportingViews.new.refresh_v2
+  end
+
+  it "can return earliest patient recorded at" do
+    Timecop.freeze(jan_2020) { create(:patient, assigned_facility: facility) }
+
+    refresh_views
+
+    schema = described_class.new([facility.region], periods: range)
+    expect(schema.earliest_patient_recorded_at["facility-1"]).to eq(jan_2020)
+  end
+
+  it "has cache key" do
+    Timecop.freeze(jan_2020) { create(:patient, assigned_facility: facility) }
+
+    refresh_views
+
+    entries = described_class.new([facility.region], periods: range).cache_entries(:earliest_patient_recorded_at)
+    d entries.map(&:cache_key).first
+    expect(entries.map(&:cache_key)).to eq("f")
+  end
+end

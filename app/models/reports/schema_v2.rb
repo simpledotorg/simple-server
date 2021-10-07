@@ -4,30 +4,6 @@ module Reports
     include Memery
     include RegionCaching
 
-    FIELDS = %i[
-      adjusted_controlled_under_care
-      adjusted_missed_visit_lost_to_follow_up
-      adjusted_missed_visit_under_care
-      adjusted_patients_under_care
-      adjusted_uncontrolled_under_care
-      adjusted_visited_no_bp_lost_to_follow_up
-      adjusted_visited_no_bp_under_care
-      cumulative_assigned_patients
-      cumulative_registrations
-      lost_to_follow_up
-      monthly_registrations
-    ].freeze
-
-    UNDER_CARE_WITH_LTFU = %i[
-      adjusted_missed_visit
-      adjusted_visited_no_bp
-    ].freeze
-
-    UNDER_CARE_WITH_LTFU_CALCULATED_FIELDS = UNDER_CARE_WITH_LTFU.map { |field|
-      "#{field}_under_care_with_lost_to_follow_up".to_sym
-    }.freeze
-
-    attr_reader :control_rate_query_v2
     attr_reader :periods
     attr_reader :period_hash
     attr_reader :regions
@@ -42,7 +18,6 @@ module Reports
     def initialize(regions, periods:)
       @regions = regions
       @periods = periods
-      logger.info "rjs regions #{regions.map { |r| [r.region_type, r.id] }}"
       @period_hash = lambda { |month_date, count| [Period.month(month_date), count] }
     end
 
@@ -198,20 +173,6 @@ module Reports
       data.each_with_object({}) { |(slug, period_values), hsh|
         hsh[slug] = period_values.transform_values { |values| values.fetch(field.to_s) }
       }
-    end
-
-    # Grab a particular summed field for a region. We return data in the format of:
-    #   { region_slug => { period_1 => x, period_2 => y }, ...}
-    # to maintain consistency w/ the format callers expect from the Repository.
-    #
-    # Note that we do filtering on the result set to limit the returned amount of data to the data that callers are
-    # requesting via the `periods` argument the Repository was created with.
-    def sum(region, field)
-      # pp facility_state_data
-      facility_state_data # .reject { |facility_state| Period.month(facility_state.month_date) < earliest_patient_recorded_at_period[region.slug] }
-        .select { |facility_state| facility_state.period.in?(periods) }
-        .to_h { |facility_state| [Period.month(facility_state.month_date), facility_state.public_send(summary_field(field))] }
-        .tap { |hsh| hsh.default = 0 }
     end
   end
 end
