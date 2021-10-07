@@ -8,30 +8,25 @@ module Reports
       true
     end
 
-    def self.regions_summary(regions, range:)
-      Summary.for(regions, range: range)
-    end
-
-    def self.region_field(region_type)
-      "#{region_type}_region_id"
-    end
-
     def self.for_region(region_or_source)
       region = region_or_source.region
-      where("#{region.region_type}_region_id" => region.id)
+      where(region_id_field(region) => region.id)
     end
 
     def self.group_by_region_field(region)
-      region_field = "#{region.region_type}_region_id"
-      group(region_field)
+      group(region_id_field(region))
+    end
+
+    def self.region_id_field(region)
+      "#{region.region_type}_region_id"
     end
 
     def self.for_regions(regions)
       regions = Array(regions)
       regions_by_type = regions.group_by { |r| r.region_type }
       queries = regions_by_type.each_with_object({}) do |(region_type, regions), queries|
-        field = "#{region_type}_region_id"
-        queries[field] = regions.map(&:id)
+        id_field = region_id_field(regions.first)
+        queries[id_field] = regions.map(&:id)
       end
       where(queries)
     end
