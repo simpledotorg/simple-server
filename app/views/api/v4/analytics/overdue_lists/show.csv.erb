@@ -1,7 +1,6 @@
 <% csv = CSV.generate do |csv| %>
   <% csv << [
-    "Report generated at:",
-    Time.current
+    "Report generated at: #{Time.current}",
   ] %>
   <% csv << [
     "Registration date",
