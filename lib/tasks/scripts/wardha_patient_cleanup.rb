@@ -10,7 +10,7 @@ class WardhaPatientCleanup
   def self.deduplicate
     rows = CSV.read("lib/data/wardha_deduplicate_patients.csv")
 
-    rows.map do |patient_ids|
+    rows.each do |patient_ids|
       patient_ids = patient_ids.map(&:strip)
       next if Patient.where(id: patient_ids).count < 2
 
