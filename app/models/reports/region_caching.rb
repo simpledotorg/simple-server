@@ -25,8 +25,9 @@ module Reports
         periods_with_data = periods.select { |period| period >= earliest_period }
         results.concat(periods_with_data.to_a.map { |period| [region, period] })
       end
+      namespace = self.class.name.demodulize.underscore
       options[:version] = cache_version
-      combinations.map { |region, period| Reports::RegionPeriodEntry.new(region, period, calculation, options) }
+      combinations.map { |region, period| Reports::RegionPeriodEntry.new(namespace, region, period, calculation, options) }
     end
   end
 end

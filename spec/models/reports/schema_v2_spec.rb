@@ -26,8 +26,12 @@ describe Reports::SchemaV2, type: :model do
 
     refresh_views
 
-    entries = described_class.new([facility.region], periods: range).cache_entries(:earliest_patient_recorded_at)
-    d entries.map(&:cache_key).first
-    expect(entries.map(&:cache_key)).to eq("f")
+    schema = described_class.new([facility.region], periods: range)
+    entries = schema.cache_entries(:earliest_patient_recorded_at)
+    entries.each do |entry|
+      expect(entry.to_s).to include("schema_v2")
+      expect(entry.to_s).to include(facility.region.id)
+      expect(entry.to_s).to include(schema.cache_version)
+    end
   end
 end
