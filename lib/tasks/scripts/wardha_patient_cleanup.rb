@@ -1,9 +1,8 @@
 class WardhaPatientCleanup
   def self.discard
-    patient_ids = CSV.read("lib/data/wardha_discard_patients.csv").map(&:first)
+    patient_ids = CSV.read("lib/data/wardha_discard_patients.csv").map(&:first).map(&:strip)
 
     ActiveRecord::Base.transaction do
-      Patient.where(id: patient_ids).map(&:discard_data)
       Patient.where(id: patient_ids).each(&:discard_data)
     end
   end
