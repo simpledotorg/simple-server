@@ -16,6 +16,7 @@ class WardhaPatientCleanup
       next if Patient.where(id: patient_ids).count < 2
 
       PatientDeduplication::Runner.new(patient_ids).perform
+      PatientDeduplication::Runner.new([patient_ids]).perform
     end
   end
 end
