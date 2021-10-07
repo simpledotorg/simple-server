@@ -12,10 +12,19 @@ We will initially start sending notifications via an A/B test to determine the m
 
 ## Approach
 
-The Imo API first requires patients to opt-in to receiving notifications from the Simple Imo account. We will create a new job that will send invitations to all patients with mobile phone numbers. The result of each invitation will be stored in the patient's newly created ImoAuthorization model, along with a `last_invited_at` timestamp. The Imo invitation response will inform us if the patient does not have an Imo account and we will store that in the patient's ImoAuthorization. If the patient does have an account, we will record that they were invited. We will also include a callback url with the request, and Imo will inform us once the patient has accepted the invitation, at which point we will update their ImoAuthorization status to "subscribed".
+The Imo API first requires patients to opt in to receiving notifications from the Simple Imo account. We will create a new job that will send invitations to all patients with mobile phone numbers. We will store the invitation result in the patient's ImoAuthorization model, along with a `last_invited_at` timestamp. We will also include a callback url with the invitation request, and Imo will inform us once the patient has accepted the invitation, at which point we will update their ImoAuthorization status to "subscribed".
 
-This invitations job will be scheduled as a cron. This will pick up any newly registered patients and send them invitations. We will also configure the job to re-invite any unsubscribed patients who were last invited more than six months prior.
+This invitations job will be scheduled as a cron. It will pick up any newly registered patients and send them invitations. We will also configure the job to re-invite any patients who were previously invited but did not accept our invitation or did not have an Imo account.
 
+Imo will be the preferred means of sending notifications for patient whose ImoAuthorization status is "subscribed". When we send a notification, Imo gives us a response status and a unique post_id that we store in the Communication's ImoDeliveryDetail. If the patient reads the message, Imo sends us a callback with the unique post_id, which we use to look up and update the ImoDeliveryDetail.
+
+***FEATURE FLAG
+
+## Imo Architecture (as best we understand it)
+
+We have two Imo accounts: an API test account and our real account. Both accounts are on Imo's production server and both have the ability to send real notifications to users' phones. The difference is that the test account is highly rate limited and we don't have the ability to modify it. We can modify our production account through their web portal, and we should be able to send 15-20 thousand requests (invitations and notifications) per second.
+
+Imo's API appears to be synchronous...
 
 ## Consequences
 
