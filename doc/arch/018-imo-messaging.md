@@ -8,7 +8,7 @@ We do not currently send any notifications to patients in Bangladesh. As part of
 
 Imo has recently created a partner API at our request. We will use that API in Bangladesh to send appointment reminder notifications to patients. We will first attempt to send the notification via Imo, then fall back to SMS. This mirrors the approach we use in India of first sending via WhatsApp and falling back to SMS.
 
-We will initially start sending notifications via an A/B test to determine the most effective message types. Once we've established the most effective messaging, we will use that messaging for all appointments moving forward.
+We will initially start sending notifications via an A/B test to determine the most effective message types. Once we've established the most effective messaging strategy, we will use that messaging for all appointments moving forward.
 
 ## Approach
 
@@ -16,21 +16,11 @@ The Imo API first requires patients to opt in to receiving notifications from th
 
 This invitations job will be scheduled as a cron. It will pick up any newly registered patients and send them invitations. We will also configure the job to re-invite any patients who were previously invited but did not accept our invitation or did not have an Imo account.
 
-Imo will be the preferred means of sending notifications for patient whose ImoAuthorization status is "subscribed". When we send a notification, Imo gives us a response status and a unique post_id that we store in the Communication's ImoDeliveryDetail. If the patient reads the message, Imo sends us a callback with the unique post_id, which we use to look up and update the ImoDeliveryDetail.
-
-***FEATURE FLAG
+Imo will be the preferred means of sending notifications for patient whose ImoAuthorization status is "subscribed". When we send a notification, Imo gives us a response status and a unique post_id that we store in the Communication's ImoDeliveryDetail. If the patient reads the message, Imo sends us a callback with the post_id, which we use to look up and update the ImoDeliveryDetail.
 
 ## Imo Architecture (as best we understand it)
 
 We have two Imo accounts: an API test account and our real account. Both accounts are on Imo's production server and both have the ability to send real notifications to users' phones. The difference is that the test account is highly rate limited and we don't have the ability to modify it. We can modify our production account through their web portal, and we should be able to send 15-20 thousand requests (invitations and notifications) per second.
 
-Imo's API appears to be synchronous...
-
 ## Consequences
 
-
-
-## Resources
-
-Imo's API documentation:
-https://docs.google.com/document/d/1zaTouxdfGg4IqrkCk59KAP905vwynON5Up2ckUax8Mg/edit
