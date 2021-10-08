@@ -22,12 +22,13 @@ Imo will be the preferred means of sending notifications for patients whose ImoA
 
 We have two Imo accounts: an API test account and our real account. Both accounts are on Imo's production server and both have the ability to send real notifications to users' phones. The difference is that the test account is highly rate limited and we don't have the ability to modify it. We can modify our production account through their web portal, and we should be able to send 15-20 thousand requests (invitations and notifications) per second.
 
+## Testing
+
 Because our test account is capable of sending real messages, we should only set the API keys for lower environments when we're actively testing and have turned off any code that could accidentally send Imo notifications.
 
-The Imo app in the US is a different product than the Imo app used by the rest of the world. As a result of that, the Imo we've partnered with is not capable of sending notifications to US phone numbers. For testing purposes, they have a special country code "+999" for US numbers. To use a US number, we must first request that Imo whitelist it. Then we can send notifications to US phone numbers through our test account.
+Imo exists as two separate apps run by completely different companies. "Imo HD" is the US version of the app, and "Imo" is the international version. As a result of that split, the Imo app we're using is not capable of sending notifications to US phone numbers. For testing purposes, they have a special country code "+999" for US numbers. To use a US number, we must first request that the Imo team whitelist it. Then we can send notifications to US phone numbers through our test account. If your US number is `111-222-3333`, you would need to send send the Imo request to the phone number `+9991112223333`. That is also the number you will need to enter into the Imo app when prompted for your phone number.
 
-Installation of Android App (perhaps testing should be its own section)
-
+US based users can download the international version of the APK from: http://imo.im/
 
 ## Consequences
 
