@@ -52,8 +52,8 @@ class ImoApiService
     )
 
     response = execute_post(url, body: request_body)
-    body = JSON.parse(response.body)
-    process_response(response, body, url, "invitation")
+    response_body = JSON.parse(response.body)
+    process_response(response.status, response_body, request_body, "invitation")
   end
 
   def send_notification(notification, phone_number)
@@ -90,8 +90,8 @@ class ImoApiService
     )
 
     response = execute_post(url, body: request_body)
-    body = JSON.parse(response.body)
-    result = process_response(response, body, url, "notification")
+    response_body = JSON.parse(response.body)
+    result = process_response(response.status, response_body, request_body, "notification")
     post_id = body.dig("response", "result", "post_id")
     {result: result, post_id: post_id}
   end
@@ -106,8 +106,8 @@ class ImoApiService
     raise Error.new("Error while calling the Imo API", path: url, exception_message: e)
   end
 
-  def process_response(response, body, url, action)
-    case response.status
+  def process_response(response_status, response_body, request_body, action)
+    case response_status
     when 200
       if body.dig("response", "status") == "success"
         return :invited if action == "invitation"
@@ -131,9 +131,7 @@ class ImoApiService
         return :no_imo_account
       end
     end
-    Statsd.instance.increment("imo.#{action}.error")
-    report_error("Unknown #{response.status} error from Imo", url, response)
-    :error
+    raise Error.new("Error while calling the Imo API", path: url, response: response)
   end
 
   def invitation_callback_url(patient_id)
@@ -148,18 +146,6 @@ class ImoApiService
     api_v3_imo_notification_callback_url(
       host: ENV.fetch("SIMPLE_SERVER_HOST"),
       protocol: ENV.fetch("SIMPLE_SERVER_HOST_PROTOCOL")
-    )
-  end
-
-  def report_error(message, url, response)
-    Sentry.capture_message(
-      "Error while calling the Imo API",
-      extra: {
-        message: message,
-        path: url,
-        response: response
-      },
-      tags: {type: "imo-api"}
     )
   end
 end
