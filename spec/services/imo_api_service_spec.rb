@@ -104,7 +104,7 @@ describe ImoApiService, type: :model do
       it "raises an error on any other 400 response" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: {}.to_json)
 
-        expect{
+        expect {
           service.send_invitation(patient)
         }.to raise_error(ImoApiService::Error)
       end
@@ -112,7 +112,7 @@ describe ImoApiService, type: :model do
       it "raises an error on any other response code" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 500, body: {}.to_json)
 
-        expect{
+        expect {
           service.send_invitation(patient)
         }.to raise_error(ImoApiService::Error)
       end

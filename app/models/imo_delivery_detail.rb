@@ -12,7 +12,7 @@ class ImoDeliveryDetail < ApplicationRecord
   validates :callee_phone_number, presence: true
 
   def unsuccessful?
-    error? || no_imo_account? || not_subscribed?
+    no_imo_account? || not_subscribed?
   end
 
   def successful?

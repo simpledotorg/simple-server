@@ -54,7 +54,7 @@ RSpec.describe Imo::InvitePatient, type: :job do
         patient = create(:patient)
         current_date = "1-1-2020".to_date
         older_date = current_date - 6.months
-        imo_auth = create(:imo_authorization, status: :error, patient: patient, last_invited_at: older_date)
+        imo_auth = create(:imo_authorization, status: :no_imo_account, patient: patient, last_invited_at: older_date)
         imo_service = instance_double(ImoApiService, send_invitation: :invited)
         allow(ImoApiService).to receive(:new).and_return(imo_service)
 
@@ -62,7 +62,7 @@ RSpec.describe Imo::InvitePatient, type: :job do
           expect {
             described_class.perform_async(patient.id)
             described_class.drain
-          }.to change { imo_auth.reload.status }.from("error").to("invited")
+          }.to change { imo_auth.reload.status }.from("no_imo_account").to("invited")
             .and change { imo_auth.last_invited_at }.from(older_date).to(current_date)
         end
       end

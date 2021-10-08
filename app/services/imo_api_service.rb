@@ -27,7 +27,7 @@ class ImoApiService
     url = IMO_BASE_URL + "send_invite"
 
     unless locale.in?(["bn-BD", "en"])
-      details = { action: "invitation", patient_id: patient.id }
+      details = {action: "invitation", patient_id: patient.id}
       raise Error.new("Translation missing for language #{locale}", details: details)
     end
 
@@ -65,7 +65,7 @@ class ImoApiService
     url = IMO_BASE_URL + "send_notification"
 
     unless locale.in?(["bn-BD", "en"])
-      details = {path: url, patient_id: patient.id }
+      details = {path: url, patient_id: patient.id}
       raise Error.new("Translation missing for language #{locale}", details: details)
     end
 
@@ -102,7 +102,7 @@ class ImoApiService
       .basic_auth(user: IMO_USERNAME, pass: IMO_PASSWORD)
       .post(url, data)
   rescue HTTP::Error => e
-    raise Error.new("Error while calling the Imo API", details: { path: url, data: data, exception_message: e })
+    raise Error.new("Error while calling the Imo API", details: {path: url, data: data, exception_message: e})
   end
 
   def process_response(response_status, response_body, request_body, action)
