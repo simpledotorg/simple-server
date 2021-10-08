@@ -148,6 +148,10 @@ Rails.application.routes.draw do
         post "/lookup", to: "patients#lookup"
       end
 
+      scope :call_results do
+        post "/sync", to: "call_results#sync_from_user"
+      end
+
       namespace :analytics do
         resource :overdue_list, only: [:show]
       end
