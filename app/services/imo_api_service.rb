@@ -10,13 +10,10 @@ class ImoApiService
   PATIENT_REDIRECT_URL = "https://www.nhf.org.bd".freeze
 
   class Error < StandardError
-    attr_reader :path, :response, :exception_message, :patient_id
-    def initialize(message, path: nil, response: nil, exception_message: nil, patient_id: nil)
+    attr_reader :details
+    def initialize(message, details: nil)
       super(message)
-      @path = path
-      @response = response
-      @exception_message = exception_message
-      @patient_id = patient_id
+      @details = details
     end
   end
 
@@ -30,7 +27,8 @@ class ImoApiService
     url = IMO_BASE_URL + "send_invite"
 
     unless locale.in?(["bn-BD", "en"])
-      raise Error.new("Translation missing for language #{locale}", path: url, patient_id: patient.id)
+      details = { action: "invitation", patient_id: patient.id }
+      raise Error.new("Translation missing for language #{locale}", details: details)
     end
 
     request_body = JSON(
@@ -67,7 +65,8 @@ class ImoApiService
     url = IMO_BASE_URL + "send_notification"
 
     unless locale.in?(["bn-BD", "en"])
-      raise Error.new("Translation missing for language #{locale}", path: url, patient_id: patient.id)
+      details = {path: url, patient_id: patient.id }
+      raise Error.new("Translation missing for language #{locale}", details: details)
     end
 
     request_body = JSON(
@@ -92,7 +91,7 @@ class ImoApiService
     response = execute_post(url, body: request_body)
     response_body = JSON.parse(response.body)
     result = process_response(response.status, response_body, request_body, "notification")
-    post_id = body.dig("response", "result", "post_id")
+    post_id = response_body.dig("response", "result", "post_id")
     {result: result, post_id: post_id}
   end
 
@@ -103,18 +102,18 @@ class ImoApiService
       .basic_auth(user: IMO_USERNAME, pass: IMO_PASSWORD)
       .post(url, data)
   rescue HTTP::Error => e
-    raise Error.new("Error while calling the Imo API", path: url, exception_message: e)
+    raise Error.new("Error while calling the Imo API", details: { path: url, data: data, exception_message: e })
   end
 
   def process_response(response_status, response_body, request_body, action)
     case response_status
     when 200
-      if body.dig("response", "status") == "success"
+      if response_body.dig("response", "status") == "success"
         return :invited if action == "invitation"
         return :sent if action == "notification"
       end
 
-      case body.dig("response", "error_code")
+      case response_body.dig("response", "error_code")
       when "not_subscribed"
         Statsd.instance.increment("imo.#{action}.not_subscribed")
         return :not_subscribed
@@ -126,12 +125,19 @@ class ImoApiService
         return :invited
       end
     when 400
-      if body.dig("response", "type") == "nonexistent_user"
+      if response_body.dig("response", "type") == "nonexistent_user"
         Statsd.instance.increment("imo.#{action}.no_imo_account")
         return :no_imo_account
       end
     end
-    raise Error.new("Error while calling the Imo API", path: url, response: response)
+
+    details = {
+      action: action,
+      request_body: request_body,
+      response_status: response_status,
+      response_body: response_body
+    }
+    raise Error.new("Error while calling the Imo API", details: details)
   end
 
   def invitation_callback_url(patient_id)

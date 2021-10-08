@@ -88,11 +88,11 @@ describe ImoApiService, type: :model do
         expect(service.send_invitation(patient)).to eq(:subscribed)
       end
 
-      it "returns 'error' and reports to sentry on any other 200 response" do
+      it "raises an error on any other 200 response" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: {}.to_json)
-
-        expect(Sentry).to receive(:capture_message)
-        expect(service.send_invitation(patient)).to eq(:error)
+        expect {
+          service.send_invitation(patient)
+        }.to raise_error(ImoApiService::Error)
       end
 
       it "returns 'no_imo_account' on 400 when response type is nonexistent_user" do
@@ -101,21 +101,23 @@ describe ImoApiService, type: :model do
         expect(service.send_invitation(patient)).to eq(:no_imo_account)
       end
 
-      it "returns 'error' and reports to sentry on any other 400 response" do
+      it "raises an error on any other 400 response" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: {}.to_json)
 
-        expect(Sentry).to receive(:capture_message)
-        expect(service.send_invitation(patient)).to eq(:error)
+        expect{
+          service.send_invitation(patient)
+        }.to raise_error(ImoApiService::Error)
       end
 
-      it "returns 'error' and reports to sentry on any other response code" do
+      it "raises an error on any other response code" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 500, body: {}.to_json)
 
-        expect(Sentry).to receive(:capture_message)
-        expect(service.send_invitation(patient)).to eq(:error)
+        expect{
+          service.send_invitation(patient)
+        }.to raise_error(ImoApiService::Error)
       end
 
-      it "raises a custom error on network error" do
+      it "raises an error on network error" do
         stub_request(:post, request_url).to_timeout
 
         expect {
@@ -208,27 +210,31 @@ describe ImoApiService, type: :model do
         expect(service.send_notification(notification, phone_number)).to eq({result: :not_subscribed, post_id: nil})
       end
 
-      it "reports to sentry and returns 'error' on other 200 responses" do
+      it "raises an error on other 200 responses" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 200, body: {}.to_json)
-        expect(Sentry).to receive(:capture_message)
-        expect(service.send_notification(notification, phone_number)).to eq({result: :error, post_id: nil})
+
+        expect {
+          service.send_notification(notification, phone_number)
+        }.to raise_error(ImoApiService::Error)
       end
 
-      it "reports to sentry and returns 'error' on other 400 responses" do
+      it "raises an error on other 400 responses" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 400, body: {}.to_json)
 
-        expect(Sentry).to receive(:capture_message)
-        expect(service.send_notification(notification, phone_number)).to eq({result: :error, post_id: nil})
+        expect {
+          service.send_notification(notification, phone_number)
+        }.to raise_error(ImoApiService::Error)
       end
 
-      it "reports to sentry and returns 'error' on other statuses" do
+      it "raises an error on other statuses" do
         stub_request(:post, request_url).with(headers: request_headers).to_return(status: 401, body: {}.to_json)
 
-        expect(Sentry).to receive(:capture_message)
-        expect(service.send_notification(notification, phone_number)).to eq({result: :error, post_id: nil})
+        expect {
+          service.send_notification(notification, phone_number)
+        }.to raise_error(ImoApiService::Error)
       end
 
-      it "raises a custom error on network error" do
+      it "raises an error on network error" do
         stub_request(:post, request_url).to_timeout
 
         expect {
