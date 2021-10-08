@@ -1,5 +1,8 @@
 <% csv = CSV.generate do |csv| %>
-  <% columns = [
+  <% csv << [
+    "Overdue list downloaded at:\n#{Time.now.strftime("%d-%b-%Y %I:%M %p")}"
+  ] %>
+  <% csv << [
     "Registration date",
     "BP Passport number",
     "Patient name",
@@ -11,11 +14,6 @@
     "Patient phone",
     "Latest medicines"
   ] %>
-  <% csv << [
-    "Overdue list downloaded at:\n#{Time.now.strftime("%d-%b-%Y %I:%M %p")}",
-    *[nil]*(columns.size - 1)
-  ] %>
-  <% csv << columns %>
   <% @patient_summaries.each do |patient_summary| %>
     <% csv << [
       handle_impossible_registration_date(patient_summary.recorded_at),
