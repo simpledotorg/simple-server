@@ -4,13 +4,14 @@ class BloodPressureExportService
   include DashboardHelper
   require 'csv'
 
-  attr_reader :start_period, :end_period, :facilities, :data_type, :data_for_facility, :stats_by_size
+  attr_reader :start_period, :end_period, :facilities, :data_type, :data_for_facility, :stats_by_size, :display_sizes
 
-  def initialize(data_type:, start_period:, end_period:, facilities:)
+  def initialize(data_type:, start_period:, end_period:, facilities:, facility_sizes:)
     @data_type = data_type
     @start_period = start_period
     @end_period = end_period
     @facilities = facilities
+    @facility_sizes = facility_sizes
 
     @data_for_facility = {}
     facilities.each do |facility|
@@ -18,137 +19,149 @@ class BloodPressureExportService
         region: facility.region, period: @end_period, months: 6
       ).call
     end
-    # sizes = @data_for_facility.map { |_, facility| facility.region.source.facility_size }.uniq
-    # @display_sizes = @facility_sizes.select { |size| sizes.include? size }
-    @stats_by_size = FacilityStatsService.call(facilities: @data_for_facility, period: @end_period, rate_numerator: data_type) end
-  def call
-    {}
+    sizes = @data_for_facility.map { |_, facility| facility.region.source.facility_size }.uniq
+    # @display_sizes = @facility_sizes.select { |size| sizes.include? size } #@facility_sizes not accessible, ask if I should include
+    @display_sizes = facility_sizes.select { |size| sizes.include? size } # try this line as workaround
+    @stats_by_size = FacilityStatsService.call(facilities: @data_for_facility, period: @end_period, rate_numerator: data_type) 
   end
-  # def self.hello 
-  #   "HELLO I EXIST"
-  # end
-
-  def generate_csv(data_name) ### abstracted csv stuff to this code, will in order to be executed above
-    return CSV.generate(){ |csv|
-      headers = ["Facilities", "Total assigned", "Total registered","6-month change"]
-      (@start_period..@period).each {|period| headers << period << "Ratio" } # Monthly percentage headers, Monthly ratio headers
+  
+  def call  #generate_csv_with_formatted_stats(type)
+    CSV.generate(){|csv|
+      data = format_processed_stats_to_csv_rows    #(@data_type)
+      # debugger
+      headers = set_csv_headers
+      ###reserve line to add method to format headers to titlize and un-snakecase them
       csv << headers
-
-      @display_sizes.each_with_index do |size, i| #For loop for the top row/ Sites of that size
-        row = []
-        facility_size_six_month_rate_change = facility_size_six_month_rate_change(@stats_by_size[size][:periods], "#{data_name}_rate")
-        row << "All #{Facility.localized_facility_size(size)}s" # Facilities
-        row << number_or_zero_with_delimiter(@stats_by_size[size][:periods][@period][:cumulative_assigned_patients]) #Assigned
-        row << number_or_zero_with_delimiter(@stats_by_size[size][:periods][@period][:cumulative_registrations]) # Registered
-        row <<  number_to_percentage_with_symbol(facility_size_six_month_rate_change, precision: 0) #6 month change
-        @stats_by_size[size][:periods].each_pair do |period, data| 
-          data_name_rate = data["#{data_name}_rate"]
-          row << number_to_percentage(data_name_rate || 0, precision: 0) #Monthly rate change
-          row << "#{data[data_name]} / #{data["adjusted_patient_counts"]}" #Monthly ratio
+      data.keys.each_with_index do |size, i|
+        csv << data[size]["aggregate"].values_at(*headers)
+        data[size]["facilities"].each do |row_object|
+          csv << row_object.values_at(*headers)
         end
-        csv << row
-        @data_for_facility.each do |_, facility_data| #Hash iterator for subsequent rows
-          sub_row = []
-          facility = facility_data.region.source
-          next if facility.facility_size != size
-          six_month_rate_change = six_month_rate_change(facility, "#{data_name}_rate")
-          sub_row << facility.name # Facility name
-          sub_row << number_or_zero_with_delimiter(facility_data["cumulative_assigned_patients"].values.last) # Assigned
-          sub_row << number_or_zero_with_delimiter(facility_data["cumulative_registrations"].values.last) # Registered
-          sub_row << number_to_percentage_with_symbol(six_month_rate_change, precision: 0) # 6 month change
-          (@start_period..@period).each do |period|
-            data_name_rate = facility_data["#{data_name}_rate"][period] #redeclaring this variable for the inner loop we are using
-            sub_row << number_to_percentage(data_name_rate || 0, precision: 0) #Monthly rate
-            sub_row << "#{facility_data[data_name][period]} / #{facility_data["adjusted_patient_counts"][period]}" #Monthly ratio
-          end
-          csv << sub_row
-        end
-        csv << [] if i != @display_sizes.length-1 #Partition between the facility sizes, for clarity
+        csv << [] if i != @display_sizes.length-1
       end
     }
   end
 
-  def process_facility_stats(type)
-    @data_for_facility = {}
+  private
 
-    facilities.each do |facility|
-      @data_for_facility[facility.name] = Reports::RegionService.new(
-        region: facility.region, period: @period, months: 6
-      ).call
+  def format_processed_stats_to_csv_rows    #(@data_type)
+    #process_facility_stats    #(@data_type)
+    formatted = {}
+    @display_sizes.each do |size|
+      if !formatted[size]
+        formatted[size] = {}
+        formatted[size]["aggregate"] = format_aggregate_facility_stats(size)
+        formatted[size]["facilities"] = format_subsequent_stats(size)
+      end
+
     end
-    # sizes = @data_for_facility.map { |_, facility| facility.region.source.facility_size }.uniq
-    # @display_sizes = @facility_sizes.select { |size| sizes.include? size }
-    @stats_by_size = FacilityStatsService.call(facilities: @data_for_facility, period: @period, rate_numerator: type)
+    formatted
   end
+
+  def set_csv_headers
+    headers = ["facilities", "total_assigned", "total_registered","six_month_change"]
+    (@start_period..@end_period).each {|period| headers << period << "#{period}-ratio" }
+    headers
+  end
+
+  def format_aggregate_facility_stats(size)
+    aggregate_row = {}
+    # debugger
+    facility_size_six_month_rate_change = facility_size_six_month_rate_change(@stats_by_size[size][:periods], "#{@data_type}_rate")
+    aggregate_row["facilities"] = "All #{Facility.localized_facility_size(size)}s"
+    aggregate_row["total_assigned"] = number_or_zero_with_delimiter(@stats_by_size[size][:periods][@end_period][:cumulative_assigned_patients])
+    aggregate_row["total_registered"] = number_or_zero_with_delimiter(@stats_by_size[size][:periods][@end_period][:cumulative_registrations])
+    aggregate_row["six_month_change"] =  number_to_percentage_with_symbol(facility_size_six_month_rate_change, precision: 0)
+    @stats_by_size[size][:periods].each_pair do |period, data| 
+      data_type_rate = data["#{@data_type}_rate"]
+      aggregate_row[period] = number_to_percentage(data_type_rate || 0, precision: 0)
+      aggregate_row["#{period}-ratio"] = "#{data[@data_type]} / #{data["adjusted_patient_counts"]}"
+    end
+    aggregate_row
+  end
+
+  #had to add this because original dashboardhelper method uses @period instead of @end_period
+  def facility_size_six_month_rate_change(facility_size_data, rate_name) 
+    facility_size_data[@end_period][rate_name] - facility_size_data[@start_period][rate_name] || 0
+  end
+
+  def format_subsequent_stats(size)
+    row = []
+    @data_for_facility.each do |_, facility_data| #Hash iterator for subsequent rows
+      facility_row_obj = {}
+      facility = facility_data.region.source
+      next if facility.facility_size != size
+      six_month_rate_change = six_month_rate_change(facility, "#{@data_type}_rate")
+      facility_row_obj["facilities"] = facility.name # Facility name
+      facility_row_obj["total_assigned"] = number_or_zero_with_delimiter(facility_data["cumulative_assigned_patients"].values.last) # Assigned
+      facility_row_obj["total_registered"] = number_or_zero_with_delimiter(facility_data["cumulative_registrations"].values.last) # Registered
+      facility_row_obj["six_month_change"] = number_to_percentage_with_symbol(six_month_rate_change, precision: 0) # 6 month change
+      (@start_period..@end_period).each do |period|
+        data_type_rate = facility_data["#{@data_type}_rate"][period] #redeclaring this variable for the inner loop we are using
+        facility_row_obj[period] = number_to_percentage(data_type_rate || 0, precision: 0) #Monthly rate
+        facility_row_obj["#{period}-ratio"] = "#{facility_data[@data_type][period]} / #{facility_data["adjusted_patient_counts"][period]}" #Monthly ratio
+      end
+      row << facility_row_obj
+    end
+    row
+  end
+
 
 end
 
-  #DATA WE WANT IS:
-  #facility_name
-  # cumulative_assigned_patients 
-  # cumulative_registrations
-  # 6 month change
-  # data_type #controlled_patients / uncontrolled_patients / missed_visits
-  # adjusted_patient_counts
-  # data_rate #controlled_patients_rate / uncontrolled_patients_rate / missed_visits_rate
+  # def call
+  #   {}
+  # end
 
-  # def format_processed_stats_to_csv_rows(type)
-  #   process_facility_stats(type)
-  #   formatted = {}
-  #   formatted["headers"] = set_csv_headers
-  #   @display_sizes.each do |size|
-  #     if !formatted[size]
-  #       formatted[size] = {}
-  #       formatted[size]["aggregate"] = {format_aggregate_facility_stats(type)}
-  #       formatted[size]["facilities"] = []
+  # def self.hello 
+  #   "HELLO I EXIST"
+  # end
+
+  # def generate_csv(data_name) ### abstracted csv stuff to this code, will in order to be executed above
+  #   return CSV.generate(){ |csv|
+  #     headers = ["Facilities", "Total assigned", "Total registered","6-month change"]
+  #     (@start_period..@period).each {|period| headers << period << "Ratio" } # Monthly percentage headers, Monthly ratio headers
+  #     csv << headers
+
+  #     @display_sizes.each_with_index do |size, i| #For loop for the top row/ Sites of that size
+  #       row = []
+  #       facility_size_six_month_rate_change = facility_size_six_month_rate_change(@stats_by_size[size][:periods], "#{data_name}_rate")
+  #       row << "All #{Facility.localized_facility_size(size)}s" # Facilities
+  #       row << number_or_zero_with_delimiter(@stats_by_size[size][:periods][@period][:cumulative_assigned_patients]) #Assigned
+  #       row << number_or_zero_with_delimiter(@stats_by_size[size][:periods][@period][:cumulative_registrations]) # Registered
+  #       row <<  number_to_percentage_with_symbol(facility_size_six_month_rate_change, precision: 0) #6 month change
+  #       @stats_by_size[size][:periods].each_pair do |period, data| 
+  #         data_name_rate = data["#{data_name}_rate"]
+  #         row << number_to_percentage(data_name_rate || 0, precision: 0) #Monthly rate change
+  #         row << "#{data[data_name]} / #{data["adjusted_patient_counts"]}" #Monthly ratio
+  #       end
+  #       csv << row
+  #       @data_for_facility.each do |_, facility_data| #Hash iterator for subsequent rows
+  #         sub_row = []
+  #         facility = facility_data.region.source
+  #         next if facility.facility_size != size
+  #         six_month_rate_change = six_month_rate_change(facility, "#{data_name}_rate")
+  #         sub_row << facility.name # Facility name
+  #         sub_row << number_or_zero_with_delimiter(facility_data["cumulative_assigned_patients"].values.last) # Assigned
+  #         sub_row << number_or_zero_with_delimiter(facility_data["cumulative_registrations"].values.last) # Registered
+  #         sub_row << number_to_percentage_with_symbol(six_month_rate_change, precision: 0) # 6 month change
+  #         (@start_period..@period).each do |period|
+  #           data_name_rate = facility_data["#{data_name}_rate"][period] #redeclaring this variable for the inner loop we are using
+  #           sub_row << number_to_percentage(data_name_rate || 0, precision: 0) #Monthly rate
+  #           sub_row << "#{facility_data[data_name][period]} / #{facility_data["adjusted_patient_counts"][period]}" #Monthly ratio
+  #         end
+  #         csv << sub_row
+  #       end
+  #       csv << [] if i != @display_sizes.length-1 #Partition between the facility sizes, for clarity
   #     end
-      
-
-
-
-  #   end
-
+  #   }
   # end
 
-  # def set_csv_headers
-  #   headers = ["Facilities", "Total assigned", "Total registered","6-month change"]
-  #   (@start_period..@period).each {|period| headers << period << "Ratio" }
-  #   headers
-  # end
 
-  # def format_aggregate_facility_stats(type)
-  #   #should i use object or array?
-  #   aggregate_row = {}
-  #   facility_size_six_month_rate_change = facility_size_six_month_rate_change(@stats_by_size[size][:periods], "#{type}_rate")
-  #   aggregate_row["Facilities"] = "All #{Facility.localized_facility_size(size)}s"
-  #   aggregate_row["total_assigned"] << number_or_zero_with_delimiter(@stats_by_size[size][:periods][@period][:cumulative_assigned_patients])
-  #   aggregate_row["total_registered"] << number_or_zero_with_delimiter(@stats_by_size[size][:periods][@period][:cumulative_registrations])
-  #   aggregate_row["six_month_change"] <<  number_to_percentage_with_symbol(facility_size_six_month_rate_change, precision: 0)
-  #   @stats_by_size[size][:periods].each_pair do |period, data| 
-  #     #figure this part out
-  #     type_rate = data["#{type}_rate"]
-  #     aggregate_row["Facilities"] << number_to_percentage(type_rate || 0, precision: 0)
-  #     aggregate_row["Facilities"] << "#{data[type]} / #{data["adjusted_patient_counts"]}"
-  #   end
-  # end
 
-  # def format_subsequent_stats(type)
-  #   @data_for_facility.each do |_, facility_data| #Hash iterator for subsequent rows
-  #     sub_row = []
-  #     facility = facility_data.region.source
-  #     next if facility.facility_size != size
-  #     six_month_rate_change = six_month_rate_change(facility, "#{type}_rate")
-  #     sub_row << facility.name # Facility name
-  #     sub_row << number_or_zero_with_delimiter(facility_data["cumulative_assigned_patients"].values.last) # Assigned
-  #     sub_row << number_or_zero_with_delimiter(facility_data["cumulative_registrations"].values.last) # Registered
-  #     sub_row << number_to_percentage_with_symbol(six_month_rate_change, precision: 0) # 6 month change
-  #     (@start_period..@period).each do |period|
-  #       type_rate = facility_data["#{type}_rate"][period] #redeclaring this variable for the inner loop we are using
-  #       sub_row << number_to_percentage(type_rate || 0, precision: 0) #Monthly rate
-  #       sub_row << "#{facility_data[type][period]} / #{facility_data["adjusted_patient_counts"][period]}" #Monthly ratio
-  #     end
-  #   end
-  # end
+
+
+
 
 
 # {
