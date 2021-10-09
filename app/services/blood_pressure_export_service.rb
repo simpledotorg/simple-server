@@ -28,7 +28,6 @@ class BloodPressureExportService
   def call  #generate_csv_with_formatted_stats(type)
     CSV.generate(){|csv|
       data = format_processed_stats_to_csv_rows    #(@data_type)
-      # debugger
       headers = set_csv_headers
       ###reserve line to add method to format headers to titlize and un-snakecase them
       csv << headers
@@ -66,7 +65,6 @@ class BloodPressureExportService
 
   def format_aggregate_facility_stats(size)
     aggregate_row = {}
-    # debugger
     facility_size_six_month_rate_change = facility_size_six_month_rate_change(@stats_by_size[size][:periods], "#{@data_type}_rate")
     aggregate_row["facilities"] = "All #{Facility.localized_facility_size(size)}s"
     aggregate_row["total_assigned"] = number_or_zero_with_delimiter(@stats_by_size[size][:periods][@end_period][:cumulative_assigned_patients])

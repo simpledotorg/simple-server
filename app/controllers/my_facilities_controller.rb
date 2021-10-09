@@ -110,7 +110,6 @@ class MyFacilitiesController < AdminController
   # def generate_csv_with_formatted_stats(type)
   #   CSV.generate(){|csv|
   #     data = format_processed_stats_to_csv_rows(type)
-  #     debugger
   #     headers = set_csv_headers
   #     ###reserve line to add method to format headers to titlize and un-snakecase them
   #     csv << headers
