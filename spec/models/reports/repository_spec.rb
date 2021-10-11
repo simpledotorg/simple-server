@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe Reports::Repository, type: :model, v2_flag: true do
   using StringToPeriod
 
-  [true].each do |v2_flag|
+  [false, true].each do |v2_flag|
     context "with reporting_schema_v2=>#{v2_flag}" do
       let(:v2_flag) { v2_flag }
       let(:organization) { create(:organization, name: "org-1") }
@@ -212,7 +212,7 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
               create(:bp_with_encounter, :under_control, facility: facility_1, patient: patient, recorded_at: 15.days.ago, user: user)
             end
             facility_1_uncontrolled.map do |patient|
-              create(:bp_with_encounter, :hypertensive, facility: facility_1, patient: patient, recorded_at: 15.days.ago)
+              create(:bp_with_encounter, :hypertensive, facility: facility_1, patient: patient, recorded_at: 15.days.ago, user: user)
             end
           end
 
@@ -220,15 +220,15 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
 
           jan = Period.month(jan_2020)
           repo = Reports::Repository.new(regions, periods: Period.month(jan))
-          pp facility_1.region.id
           controlled = repo.controlled
           uncontrolled = repo.uncontrolled
           expect(controlled[facility_1.slug][jan]).to eq(2)
           expect(controlled[facility_2.slug][jan]).to eq(1)
-          expect(controlled[facility_3.slug][jan]).to eq(0)
+          empty_value = v2_flag ? nil : 0
+          expect(controlled[facility_3.slug][jan]).to eq(empty_value)
           expect(uncontrolled[facility_1.slug][jan]).to eq(2)
           expect(uncontrolled[facility_2.slug][jan]).to eq(0)
-          expect(uncontrolled[facility_3.slug][jan]).to eq(0)
+          expect(uncontrolled[facility_3.slug][jan]).to eq(empty_value)
         end
 
         it "gets controlled info for range of month periods" do

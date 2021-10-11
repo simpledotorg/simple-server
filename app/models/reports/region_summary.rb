@@ -1,4 +1,6 @@
 module Reports
+  # Handles the task of returning summed values from Reports::FacilityState for an array of
+  # regions. Must be called with regions all having the same region_type.
   class RegionSummary
     def self.call(regions, range: nil)
       new(regions, range: range).call
@@ -41,6 +43,9 @@ module Reports
     def initialize(regions, range: nil)
       @range = range
       @regions = Array(regions).map(&:region)
+      if @regions.map(&:region_type).uniq.size != 1
+        raise ArgumentError, "RegionSummary must be called with regions of the same region_type"
+      end
       @region_type = @regions.first.region_type
       @id_field = "#{region_type}_region_id"
       @slug_field = region_type == "facility" ? "#{region_type}_region_slug" : "#{region_type}_slug"
@@ -58,12 +63,9 @@ module Reports
     end
 
     def for_regions
-      regions_by_type = regions.group_by { |r| r.region_type }
-      queries = regions_by_type.each_with_object({}) do |(region_type, regions), queries|
-        field = "#{region_type}_region_id"
-        queries[field] = regions.map(&:id)
-      end
-      FacilityState.where(queries).where("cumulative_registrations IS NOT NULL OR cumulative_assigned_patients IS NOT NULL")
+      FacilityState
+        .where(id_field => regions.map(&:id))
+        .where("cumulative_registrations IS NOT NULL OR cumulative_assigned_patients IS NOT NULL")
     end
   end
 end

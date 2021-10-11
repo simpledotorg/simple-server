@@ -23,6 +23,10 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
     expect(result).to eq("facility_group_1" => {})
   end
 
+  it "raises error if passed regions of different types" do
+    expect { described_class.call([facility_group_1, create(:facility)]) }.to raise_error(ArgumentError, /must be called with regions of the same region_type/)
+  end
+
   context "with explicit range" do
     it "does not return data for periods with no patients" do
       facility_1 = create(:facility, name: "facility opened jan 2020", facility_group: facility_group_1)

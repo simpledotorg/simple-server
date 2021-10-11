@@ -7,6 +7,7 @@ module Reports
     attr_reader :periods
     attr_reader :period_hash
     attr_reader :regions
+    attr_reader :regions_by_type
 
     delegate :cache, :logger, to: Rails
     delegate :cache_version, to: self
@@ -17,6 +18,7 @@ module Reports
 
     def initialize(regions, periods:)
       @regions = regions
+      @regions_by_type = regions.group_by { |region| region.region_type }
       @periods = periods
       @period_hash = lambda { |month_date, count| [Period.month(month_date), count] }
     end
@@ -165,12 +167,16 @@ module Reports
         .minimum(:month_date)
     end
 
-    def data
-      @data ||= RegionSummary.call(regions, range: periods)
+    # Calls RegionSummary for each region_type in our collection of regions -- this is necessary because
+    # RegionSummary queries for only type of region at a time.
+    memoize def region_summaries
+      regions_by_type.each_with_object({}) do |(region_type, regions), result|
+        result.merge! RegionSummary.call(regions, range: periods)
+      end
     end
 
     def values_at(field)
-      data.each_with_object({}) { |(slug, period_values), hsh|
+      region_summaries.each_with_object({}) { |(slug, period_values), hsh|
         hsh[slug] = period_values.transform_values { |values| values.fetch(field.to_s) }
       }
     end
