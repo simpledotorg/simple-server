@@ -56,7 +56,7 @@ RSpec.describe AdminController, type: :controller do
 
     it "redirects to root_path when referrer url is the same as request url" do
       routes.draw { get "not_authorized" => "admin#not_authorized" }
-      request.env['HTTP_REFERER'] = "http://test.host/not_authorized"
+      request.env["HTTP_REFERER"] = "http://test.host/not_authorized"
 
       get :not_authorized
       expect(response.headers["Location"]).to eq "http://test.host/"
@@ -65,7 +65,7 @@ RSpec.describe AdminController, type: :controller do
     it "redirects to referrer url when it is different from request url" do
       routes.draw { get "not_authorized" => "admin#not_authorized" }
       referrer_url = "http://test.host/some_other_url"
-      request.env['HTTP_REFERER'] = referrer_url
+      request.env["HTTP_REFERER"] = referrer_url
 
       get :not_authorized
       expect(response.headers["Location"]).to eq referrer_url
