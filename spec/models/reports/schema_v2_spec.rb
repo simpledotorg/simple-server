@@ -22,8 +22,6 @@ describe Reports::SchemaV2, type: :model do
     facility_1, facility_2 = *FactoryBot.create_list(:facility, 2, block: "block-1", facility_group: facility_group_1).sort_by(&:slug)
     facility_3 = FactoryBot.create(:facility, block: "block-2", facility_group: facility_group_1)
     facilities = [facility_1, facility_2, facility_3]
-    district_region = facility_group_1.region
-    block_regions = facilities.map(&:block_region)
 
     facility_1_controlled = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
     facility_1_uncontrolled = create_list(:patient, 2, full_name: "uncontrolled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
@@ -43,7 +41,7 @@ describe Reports::SchemaV2, type: :model do
     regions = [facility_group_1.region].concat(facilities.map(&:region))
     july_2021 = Period.month("July 1st 2021")
     range = (july_2021.advance(months: -24)..july_2021)
-    result = described_class.new(regions, periods: jan_2020).send(:region_summaries)
+    result = described_class.new(regions, periods: range).send(:region_summaries)
 
     expect(result[facility_group_1.slug][jan_2020.to_period]).to include("cumulative_assigned_patients" => 5)
     expect(result[facility_group_1.slug][jan_2020.to_period]).to include("adjusted_controlled_under_care" => 3)
