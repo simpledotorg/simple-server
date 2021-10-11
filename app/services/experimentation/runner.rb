@@ -1,6 +1,5 @@
 module Experimentation
   class Runner
-    LAST_EXPERIMENT_BUFFER = 14.days.freeze
     PATIENTS_PER_DAY = 10_000
     BATCH_SIZE = 100
 

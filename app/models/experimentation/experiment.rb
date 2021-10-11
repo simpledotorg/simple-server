@@ -1,5 +1,7 @@
 module Experimentation
   class Experiment < ActiveRecord::Base
+    LAST_EXPERIMENT_BUFFER = 14.days.freeze
+
     has_many :treatment_groups, dependent: :delete_all
     has_many :reminder_templates, through: :treatment_groups
     has_many :patients, through: :treatment_groups
@@ -28,12 +30,12 @@ module Experimentation
     def self.candidate_patients
       Patient.with_hypertension
         .contactable
-        .where("age >= ?", 18)
+        .where("age >= ?", 18) # TODO: Fix age calculation
         .where("NOT EXISTS (:treatment_group_memberships)",
           treatment_group_memberships: Experimentation::TreatmentGroupMembership
                                          .joins(treatment_group: :experiment)
                                          .where("treatment_group_memberships.patient_id = patients.id")
-                                         .where("end_date > ?", Runner::LAST_EXPERIMENT_BUFFER.ago)
+                                         .where("end_date > ?", LAST_EXPERIMENT_BUFFER.ago)
                                          .select(:patient_id))
     end
 
