@@ -26,23 +26,69 @@ module Experimentation
     }
 
     def self.candidate_patients
-      Patient
-        .with_hypertension
-        .contactable
-        .where("age >= ?", 18)
-        .where.not(id: Experimentation::TreatmentGroupMembership
-                         .joins(treatment_group: :experiment)
-                         .where("end_date > ?", Runner::LAST_EXPERIMENT_BUFFER.ago)
-                         .select(:patient_id))
+      # Patient
+      # .contactable
+      # .with_hypertension
+      # .where("age >= ?", 18)
+      #   .where.not(id: Experimentation::TreatmentGroupMembership
+      #                    .joins(treatment_group: :experiment)
+      #                    .where("end_date > ?", Runner::LAST_EXPERIMENT_BUFFER.ago)
+      #                    .select(:patient_id))
+
+
+      #
+      #   Patient
+      #     .where("
+      #     NOT EXISTS(
+      #         SELECT patient_id
+      #         FROM treatment_group_memberships
+      #         INNER JOIN treatment_groups ON treatment_groups.id = treatment_group_memberships.treatment_group_id
+      #         INNER JOIN experiments ON experiments.id = treatment_groups.experiment_id
+      #         WHERE treatment_group_memberships.patient_id = patients.id
+      #         AND end_date > now() - interval '14 days')")
+      #
+      #
+      # SELECT "treatment_group_memberships"."patient_id"
+      # FROM "treatment_group_memberships"
+      # INNER JOIN "treatment_groups" ON "treatment_groups"."id" = "treatment_group_memberships"."treatment_group_id"
+      # INNER JOIN "experiments" ON "experiments"."id" = "treatment_groups"."experiment_id"
+      # WHERE (end_date > '2021-09-27 10:10:17.974508')
+
+      Patient.where("NOT EXISTS (:treatment_group_memberships)",
+                    treatment_group_memberships: Experimentation::TreatmentGroupMembership
+                                                   .joins(treatment_group: :experiment)
+                                                   .where("treatment_group_memberships.patient_id = patients.id")
+                                                   .where("end_date > ?", Runner::LAST_EXPERIMENT_BUFFER.ago)
+                                                   .select(:patient_id))
+
 
       # Patient
-      #   .with_hypertension
-      #   .contactable
-      #   .where("age >= ?", 18)
+      #   .joins("left join lateral (
+      #          select distinct on (patient_id) end_date from experiments
+      #          inner join treatment_group_memberships tgm on tgm.patient_id = patients.id
+      #          inner join treatment_groups tg on tg.id = tgm.treatment_group_id
+      #          where patient_id = patients.id
+      #          order by patient_id, end_date desc
+      #         ) latest_end_date ON TRUE")
+      #   .where("end_date < now() - interval '14 days' OR end_date IS NULL").to_sql
+
+      # Patient
       #   .joins("left outer join treatment_group_memberships ON treatment_group_memberships.patient_id = patients.id ")
       #   .joins("left outer join treatment_groups ON treatment_groups.id = treatment_group_memberships.treatment_group_id")
-      #   .joins("left outer join experiments ON experiments.id = treatment_groups.experiment_id AND experiments.end_date > '#{Runner::LAST_EXPERIMENT_BUFFER.ago}'")
-      #   .where(experiments: {id: nil})
+      #   .joins("left outer join experiments ON experiments.id = treatment_groups.experiment_id ON end_date > ?", Runner::LAST_EXPERIMENT_BUFFER.ago)
+      #   .where("experiments.id IS NULL")
+
+
+
+      # Patient.where(id:
+      #                 Patient
+      #                   .select("distinct on (patients.id) patients.id, experiments.end_date")
+      #                   .joins("left outer join treatment_group_memberships ON treatment_group_memberships.patient_id = patients.id ")
+      #                   .joins("left outer join treatment_groups ON treatment_groups.id = treatment_group_memberships.treatment_group_id")
+      #                   .joins("left outer join experiments ON experiments.id = treatment_groups.experiment_id")
+      #                   .order("patients.id, experiments.end_date desc")
+      # )
+      #   .where("end_date < ? OR experiments.id IS NULL", Runner::LAST_EXPERIMENT_BUFFER.ago)
     end
 
     def random_treatment_group
