@@ -21,16 +21,6 @@ module Reports
       "#{region.region_type}_region_id"
     end
 
-    def self.for_regions(regions)
-      regions = Array(regions)
-      regions_by_type = regions.group_by { |r| r.region_type }
-      queries = regions_by_type.each_with_object({}) do |(region_type, regions), queries|
-        id_field = region_id_field(regions.first)
-        queries[id_field] = regions.map(&:id)
-      end
-      where(queries)
-    end
-
     def period
       Period.month(month_date)
     end
