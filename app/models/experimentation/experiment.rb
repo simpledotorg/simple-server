@@ -27,9 +27,9 @@ module Experimentation
 
     def self.candidate_patients
       Patient.with_hypertension
-             .contactable
-             .where("age >= ?", 18)
-             .where("NOT EXISTS (:treatment_group_memberships)",
+        .contactable
+        .where("age >= ?", 18)
+        .where("NOT EXISTS (:treatment_group_memberships)",
                treatment_group_memberships: Experimentation::TreatmentGroupMembership
                                               .joins(treatment_group: :experiment)
                                               .where("treatment_group_memberships.patient_id = patients.id")
