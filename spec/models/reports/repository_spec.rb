@@ -199,10 +199,6 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
         end
 
         it "gets controlled counts and rates for one month" do
-          arg = "42"
-          @ivar = "Hello"
-          d arg
-          d @ivar
           facilities = FactoryBot.create_list(:facility, 3, facility_group: facility_group_1).sort_by(&:slug)
           facility_1, facility_2, facility_3 = *facilities.take(3)
           regions = facilities.map(&:region)
