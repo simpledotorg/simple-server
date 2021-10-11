@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe Reports::Repository, type: :model, v2_flag: true do
   using StringToPeriod
 
-  [false, true].each do |v2_flag|
+  [true, false].each do |v2_flag|
     context "with reporting_schema_v2=>#{v2_flag}" do
       let(:v2_flag) { v2_flag }
       let(:organization) { create(:organization, name: "org-1") }
@@ -198,7 +198,7 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
           end
         end
 
-        fit "gets controlled counts and rates for one month" do
+        it "gets controlled counts and rates for one month" do
           arg = "42"
           @ivar = "Hello"
           d arg
