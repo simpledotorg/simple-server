@@ -202,6 +202,70 @@
         }
       }
     },
+    "/call_results/sync": {
+      "post": {
+        "summary": "Syncs call_result data from device to server.",
+        "tags": [
+          "Call Result"
+        ],
+        "security": [
+          {
+            "access_token": [
+
+            ],
+            "user_id": [
+
+            ],
+            "facility_id": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "call_results",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "call_results": {
+                  "$ref": "#/definitions/call_results"
+                }
+              },
+              "required": [
+                "call_results"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "some, or no errors were found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "$ref": "#/definitions/errors"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
+      }
+    },
     "/facility_teleconsultations/{facility_id}": {
       "get": {
         "summary": "Fetch a facility's teleconsultation phone number",
@@ -1143,6 +1207,70 @@
       ],
       "items": {
         "$ref": "#/definitions/blood_sugar"
+      }
+    },
+    "call_result": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "user_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "appointment_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "remove_reason": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "not_responding",
+            "moved",
+            "dead",
+            "invalid_phone_number",
+            "public_hospital_transfer",
+            "moved_to_private",
+            "other",
+            null
+          ]
+        },
+        "result_type": {
+          "type": "string",
+          "enum": [
+            "agreed_to_visit",
+            "removed_from_overdue_list",
+            "remind_to_call_later"
+          ]
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "user_id",
+        "appointment_id",
+        "result_type",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "call_results": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/call_result"
       }
     },
     "facility_medical_officer": {
