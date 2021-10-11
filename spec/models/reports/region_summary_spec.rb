@@ -74,7 +74,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
     result = described_class.call(facilities, range: jan_2020)
     expect(result[facility_1.slug][jan_2020.to_period]).to include("adjusted_controlled_under_care" => 2)
     expect(result[facility_2.slug][jan_2020.to_period]).to include("adjusted_controlled_under_care" => 1)
-    # expect(result[facility_3.slug][jan_2020.to_period]).to include("adjusted_controlled_under_care" => 0)
+    expect(result[facility_3.slug][jan_2020.to_period]).to include("adjusted_controlled_under_care" => 0)
 
     district_data = described_class.call(district_region, range: jan_2020)
     expect(district_data["facility_group_1"][jan_2020.to_period]).to include("adjusted_controlled_under_care" => 3)
@@ -83,7 +83,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
     expect(block_data["block-1"]["November 2019".to_period]).to include("adjusted_controlled_under_care" => 0)
     expect(block_data["block-1"]["December 2020".to_period]).to include("adjusted_controlled_under_care" => 0)
     expect(block_data["block-1"]["January 2020".to_period]).to include("adjusted_controlled_under_care" => 3)
-    # expect(block_data["block-2"]["January 2020".to_period]).to include("adjusted_controlled_under_care" => 0)
+    expect(block_data["block-2"]["January 2020".to_period]).to include("adjusted_controlled_under_care" => 0)
   end
 
   context "visits without BP taken" do
