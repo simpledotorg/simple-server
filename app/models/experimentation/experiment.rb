@@ -26,12 +26,15 @@ module Experimentation
     }
 
     def self.candidate_patients
-      Patient.where("NOT EXISTS (:treatment_group_memberships)",
-        treatment_group_memberships: Experimentation::TreatmentGroupMembership
-                           .joins(treatment_group: :experiment)
-                           .where("treatment_group_memberships.patient_id = patients.id")
-                           .where("end_date > ?", Runner::LAST_EXPERIMENT_BUFFER.ago)
-                           .select(:patient_id))
+      Patient.with_hypertension
+             .contactable
+             .where("age >= ?", 18)
+             .where("NOT EXISTS (:treatment_group_memberships)",
+               treatment_group_memberships: Experimentation::TreatmentGroupMembership
+                                              .joins(treatment_group: :experiment)
+                                              .where("treatment_group_memberships.patient_id = patients.id")
+                                              .where("end_date > ?", Runner::LAST_EXPERIMENT_BUFFER.ago)
+                                              .select(:patient_id))
     end
 
     def random_treatment_group
