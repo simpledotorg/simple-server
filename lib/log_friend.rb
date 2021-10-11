@@ -1,3 +1,14 @@
+# LogFriend makes it easy to do quick, easy logging in dev/test with output that includes
+# the name of object being logged.
+# For example:
+#   arg = "42"
+#   @ivar = "Hello"
+#   d arg
+#   d @ivar
+# Outputs:
+#   ["arg", "42"]
+#   ["@ivar", "Hello"]
+#
 module LogFriend
   module Extensions
     if Rails.env.development? || Rails.env.test?
@@ -17,9 +28,12 @@ module LogFriend
         end
         pp [arg_name, msg]
       end
+
     else
+      # Shim a noop method for non dev / test environments
       def d(msg)
       end
+
     end
   end
 end
