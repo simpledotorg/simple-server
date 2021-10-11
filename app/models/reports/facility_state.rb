@@ -13,10 +13,6 @@ module Reports
       where(region_id_field(region) => region.id)
     end
 
-    def self.group_by_region_field(region)
-      group(region_id_field(region))
-    end
-
     def self.region_id_field(region)
       "#{region.region_type}_region_id"
     end
