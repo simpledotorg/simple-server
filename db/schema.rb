@@ -126,6 +126,18 @@ ActiveRecord::Schema.define(version: 2021_10_07_075808) do
     t.datetime "deleted_at"
   end
 
+  create_table "call_results", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id", null: false
+    t.uuid "appointment_id", null: false
+    t.string "remove_reason"
+    t.string "result_type", null: false
+    t.datetime "device_created_at", null: false
+    t.datetime "device_updated_at", null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "communications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "appointment_id"
     t.uuid "user_id"
