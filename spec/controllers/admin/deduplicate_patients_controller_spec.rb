@@ -31,6 +31,15 @@ RSpec.describe Admin::DeduplicatePatientsController, type: :controller do
 
       expect(assigns(:patients)).to be_empty
     end
+
+    it "returns unauthorized when the user does not have any managerial roles" do
+      admin = create(:admin, :viewer_all)
+      sign_in(admin.email_authentication)
+
+      get :show
+      expect(response.status).to eq(302)
+      expect(flash[:alert]).to eq("You are not authorized to perform this action.")
+    end
   end
 
   context "#merge" do
