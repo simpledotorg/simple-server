@@ -356,6 +356,22 @@ Sidama:
         '858816': 2
         '314076': 1
         '314077': 2
+Somali:
+  load_coefficient: 1
+    drug_categories:
+      hypertension_ccb:
+        new_patient_coefficient: 1.55
+        '329528': 1
+        '329526': 2
+      hypertension_diuretic:
+        new_patient_coefficient: 0.26
+        '316049': 1
+      hypertension_ace:
+        new_patient_coefficient: 0.2
+        '833236': 1
+        '858816': 2
+        '314076': 1
+        '314077': 2
 Tigray:
   load_coefficient: 1
     drug_categories:
