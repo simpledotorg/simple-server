@@ -134,24 +134,26 @@ describe Experimentation::Runner, type: :model do
     end
 
     it "adds reminders for all appointments scheduled in the date range and not for appointments outside the range" do
-      patient = create(:patient, age: 80)
-      old_appointment = create(:appointment, patient: patient, scheduled_date: 10.days.ago)
-      far_future_appointment = create(:appointment, patient: patient, scheduled_date: 100.days.from_now)
-      upcoming_appointment1 = create(:appointment, patient: patient, scheduled_date: 10.days.from_now)
-      upcoming_appointment2 = create(:appointment, patient: patient, scheduled_date: 20.days.from_now)
+      patients = create_list(:patient, 4, age: 20)
+
+      old_appointment = create(:appointment, patient: patients.first, scheduled_date: 10.days.ago)
+      far_future_appointment = create(:appointment, patient: patients.second, scheduled_date: 100.days.from_now)
+      upcoming_appointment1 = create(:appointment, patient: patients.third, scheduled_date: 10.days.from_now)
+      upcoming_appointment2 = create(:appointment, patient: patients.fourth, scheduled_date: 20.days.from_now)
+      Experimentation::Experiment.candidate_patients
 
       experiment = create(:experiment, :with_treatment_group, start_date: 5.days.from_now, end_date: 35.days.from_now)
       create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
 
       described_class.start_current_patient_experiment(name: experiment.name)
 
-      reminder1 = Notification.find_by(patient: patient, subject: upcoming_appointment1)
+      reminder1 = Notification.find_by(subject: upcoming_appointment1)
       expect(reminder1).to be_truthy
-      reminder2 = Notification.find_by(patient: patient, subject: upcoming_appointment2)
+      reminder2 = Notification.find_by(subject: upcoming_appointment2)
       expect(reminder2).to be_truthy
-      unexpected_reminder1 = Notification.find_by(patient: patient, subject: old_appointment)
+      unexpected_reminder1 = Notification.find_by(subject: old_appointment)
       expect(unexpected_reminder1).to be_falsey
-      unexpected_reminder2 = Notification.find_by(patient: patient, subject: far_future_appointment)
+      unexpected_reminder2 = Notification.find_by(subject: far_future_appointment)
       expect(unexpected_reminder2).to be_falsey
     end
 
@@ -372,34 +374,6 @@ describe Experimentation::Runner, type: :model do
 
       expect(experiment.patients.include?(patient1)).to be_falsey
       expect(experiment.patients.include?(patient2)).to be_truthy
-    end
-
-    it "only selects from patients with appointments scheduled during the extended date range" do
-      patient1 = create(:patient, age: 80)
-      create(:appointment, patient: patient1, scheduled_date: 35.days.from_now)
-      patient2 = create(:patient, age: 80)
-      create(:appointment, patient: patient2, scheduled_date: 36.days.from_now)
-      patient3 = create(:patient, age: 80)
-      create(:appointment, patient: patient3, scheduled_date: 40.days.from_now)
-      patient4 = create(:patient, age: 80)
-      create(:appointment, patient: patient3, scheduled_date: 41.days.from_now)
-
-      experiment = create(
-        :experiment,
-        :with_treatment_group,
-        :running,
-        experiment_type: "current_patients",
-        start_date: 5.days.from_now,
-        end_date: 35.days.from_now
-      )
-      extended_end_date = 40.days.from_now
-
-      described_class.extend_current_patient_experiment(name: experiment.name, end_date: extended_end_date)
-
-      expect(experiment.patients.include?(patient1)).to be_falsey
-      expect(experiment.patients.include?(patient2)).to be_truthy
-      expect(experiment.patients.include?(patient3)).to be_truthy
-      expect(experiment.patients.include?(patient4)).to be_falsey
     end
 
     it "excludes patients who have recently been in an experiment" do
