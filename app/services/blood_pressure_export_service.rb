@@ -22,12 +22,16 @@ class BloodPressureExportService
     sizes = @data_for_facility.map { |_, facility| facility.region.source.facility_size }.uniq
     # @display_sizes = @facility_sizes.select { |size| sizes.include? size } #@facility_sizes not accessible, ask if I should include
     @display_sizes = facility_sizes.select { |size| sizes.include? size } # try this line as workaround
-    @stats_by_size = FacilityStatsService.call(facilities: @data_for_facility, period: @end_period, rate_numerator: data_type) 
+    @stats_by_size = FacilityStatsService.call(facilities: @data_for_facility, period: @start_period, rate_numerator: data_type) 
   end
-  
+
   def call  #generate_csv_with_formatted_stats(type)
+    format_processed_stats_to_csv_rows
+  end
+
+  def as_csv
     CSV.generate(){|csv|
-      data = format_processed_stats_to_csv_rows    #(@data_type)
+          #(@data_type)
       headers = set_csv_headers
       ###reserve line to add method to format headers to titlize and un-snakecase them
       csv << headers
