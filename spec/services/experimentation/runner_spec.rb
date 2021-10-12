@@ -376,6 +376,34 @@ describe Experimentation::Runner, type: :model do
       expect(experiment.patients.include?(patient2)).to be_truthy
     end
 
+    it "only selects from patients with appointments scheduled during the extended date range" do
+      patient1 = create(:patient, age: 80)
+      create(:appointment, patient: patient1, scheduled_date: 35.days.from_now)
+      patient2 = create(:patient, age: 80)
+      create(:appointment, patient: patient2, scheduled_date: 36.days.from_now)
+      patient3 = create(:patient, age: 80)
+      create(:appointment, patient: patient3, scheduled_date: 40.days.from_now)
+      patient4 = create(:patient, age: 80)
+      create(:appointment, patient: patient4, scheduled_date: 41.days.from_now)
+
+      experiment = create(
+        :experiment,
+        :with_treatment_group,
+        :running,
+        experiment_type: "current_patients",
+        start_date: 5.days.from_now,
+        end_date: 35.days.from_now
+      )
+      extended_end_date = 40.days.from_now
+
+      described_class.extend_current_patient_experiment(name: experiment.name, end_date: extended_end_date)
+
+      expect(experiment.patients.include?(patient1)).to be_falsey
+      expect(experiment.patients.include?(patient2)).to be_truthy
+      expect(experiment.patients.include?(patient3)).to be_truthy
+      expect(experiment.patients.include?(patient4)).to be_falsey
+    end
+
     it "excludes patients who have recently been in an experiment" do
       old_experiment = create(:experiment, :with_treatment_group, name: "old", start_date: 2.days.ago, end_date: 1.day.ago)
       old_group = old_experiment.treatment_groups.first
@@ -449,39 +477,6 @@ describe Experimentation::Runner, type: :model do
       described_class.extend_current_patient_experiment(name: experiment.name, end_date: extended_end_date)
 
       expect(experiment.treatment_groups.first.patients.include?(patient)).to be_truthy
-    end
-
-    it "adds reminders for all appointments scheduled strictly in the extension date range" do
-      patient = create(:patient, age: 80)
-      old_appointment = create(:appointment, patient: patient, scheduled_date: 10.days.ago)
-      original_range_appointment = create(:appointment, patient: patient, scheduled_date: 10.days.from_now)
-      far_future_appointment = create(:appointment, patient: patient, scheduled_date: 100.days.from_now)
-      upcoming_appointment1 = create(:appointment, patient: patient, scheduled_date: 37.days.from_now)
-      upcoming_appointment2 = create(:appointment, patient: patient, scheduled_date: 38.days.from_now)
-
-      experiment = create(
-        :experiment,
-        :with_treatment_group,
-        :running,
-        experiment_type: "current_patients",
-        start_date: 5.days.from_now,
-        end_date: 35.days.from_now
-      )
-      create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
-      extended_end_date = 40.days.from_now
-
-      described_class.extend_current_patient_experiment(name: experiment.name, end_date: extended_end_date)
-
-      reminder1 = Notification.find_by(patient: patient, subject: upcoming_appointment1)
-      expect(reminder1).to be_truthy
-      reminder2 = Notification.find_by(patient: patient, subject: upcoming_appointment2)
-      expect(reminder2).to be_truthy
-      unexpected_reminder1 = Notification.find_by(patient: patient, subject: old_appointment)
-      expect(unexpected_reminder1).to be_falsey
-      unexpected_reminder2 = Notification.find_by(patient: patient, subject: original_range_appointment)
-      expect(unexpected_reminder2).to be_falsey
-      unexpected_reminder3 = Notification.find_by(patient: patient, subject: far_future_appointment)
-      expect(unexpected_reminder3).to be_falsey
     end
 
     it "schedules cascading reminders based on reminder templates" do
