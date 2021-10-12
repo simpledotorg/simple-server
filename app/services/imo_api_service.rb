@@ -134,7 +134,7 @@ class ImoApiService
       response_status: response_status,
       response_body: response_body
     }
-    raise Error.new("Error while calling the Imo API", details: details)
+    raise Error.new("Unknown #{response_status} error while calling the Imo API", details: details)
   end
 
   def validate_locale!(locale, patient, action)
