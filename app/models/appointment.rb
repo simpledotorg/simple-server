@@ -35,8 +35,6 @@ class Appointment < ApplicationRecord
   validates :device_updated_at, presence: true
   validates :appointment_type, presence: true
 
-  after_update :cancel_reminders, if: proc { |appt| appt.saved_changes["status"] && !appt.status_scheduled? }
-
   scope :for_sync, -> { with_discarded }
 
   alias_attribute :recorded_at, :device_created_at
@@ -167,10 +165,5 @@ class Appointment < ApplicationRecord
     if status == :cancelled && !cancel_reason.present?
       errors.add(:cancel_reason, "should be present for cancelled appointments")
     end
-  end
-
-  def cancel_reminders
-    reminders = notifications.where(status: ["pending", "scheduled"])
-    reminders.update_all(status: "cancelled")
   end
 end

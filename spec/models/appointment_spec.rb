@@ -373,39 +373,4 @@ describe Appointment, type: :model do
       end
     end
   end
-
-  describe "appointment reminder cancellation" do
-    it "does not cancel reminders when appointment status is changed to 'scheduled'" do
-      appointment.update!(status: nil)
-      reminder = create(:notification, subject: appointment, status: "pending")
-
-      expect {
-        appointment.update!(status: "scheduled")
-      }.not_to change { reminder.reload.status }
-    end
-
-    it "cancels reminders when an appointment status is changed to 'visited'" do
-      reminder = create(:notification, subject: appointment, status: "pending")
-
-      expect {
-        appointment.update!(status: "visited")
-      }.to change { reminder.reload.status }.from("pending").to("cancelled")
-    end
-
-    it "cancels reminders when an appointment status is changed to 'cancelled'" do
-      reminder = create(:notification, subject: appointment, status: "pending")
-
-      expect {
-        appointment.update!(status: "cancelled")
-      }.to change { reminder.reload.status }.from("pending").to("cancelled")
-    end
-
-    it "does not cancel sent reminders" do
-      reminder = create(:notification, subject: appointment, status: "sent")
-
-      expect {
-        appointment.update!(status: "visited")
-      }.not_to change { reminder.reload.status }
-    end
-  end
 end
