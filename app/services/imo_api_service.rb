@@ -8,6 +8,7 @@ class ImoApiService
   IMO_BASE_URL = "https://sgp.imo.im/api/simple/".freeze
   # this is where the patient is redirected to when they click on the invitation card details section
   PATIENT_REDIRECT_URL = "https://www.nhf.org.bd".freeze
+  SUPPORTED_LOCALES = ["bn-BD", "en"].freeze
 
   class Error < StandardError
     attr_reader :details
@@ -22,14 +23,12 @@ class ImoApiService
 
     Statsd.instance.increment("imo.invites.attempt")
 
+    action = "invitation"
     phone = phone_number || patient.latest_mobile_number
     locale = patient.locale
-    url = IMO_BASE_URL + "send_invite"
+    url = URI.join(IMO_BASE_URL, "send_invite")
 
-    unless locale.in?(["bn-BD", "en"])
-      details = {action: "invitation", patient_id: patient.id}
-      raise Error.new("Translation missing for language #{locale}", details: details)
-    end
+    validate_locale!(locale, patient, action)
 
     request_body = JSON(
       phone: phone,
@@ -51,7 +50,7 @@ class ImoApiService
 
     response = execute_post(url, body: request_body)
     response_body = JSON.parse(response.body)
-    process_response(response.status, response_body, request_body, "invitation")
+    process_response(response.status, response_body, request_body, action)
   end
 
   def send_notification(notification, phone_number)
@@ -59,15 +58,13 @@ class ImoApiService
 
     Statsd.instance.increment("imo.notifications.attempt")
 
+    action = "notification"
     patient = notification.patient
     locale = patient.locale
     message = notification.localized_message
-    url = IMO_BASE_URL + "send_notification"
+    url = URI.join(IMO_BASE_URL, "send_notification")
 
-    unless locale.in?(["bn-BD", "en"])
-      details = {path: url, patient_id: patient.id}
-      raise Error.new("Translation missing for language #{locale}", details: details)
-    end
+    validate_locale!(locale, patient, action)
 
     request_body = JSON(
       phone: phone_number,
@@ -90,7 +87,7 @@ class ImoApiService
 
     response = execute_post(url, body: request_body)
     response_body = JSON.parse(response.body)
-    result = process_response(response.status, response_body, request_body, "notification")
+    result = process_response(response.status, response_body, request_body, action)
     post_id = response_body.dig("response", "result", "post_id")
     {result: result, post_id: post_id}
   end
@@ -138,6 +135,13 @@ class ImoApiService
       response_body: response_body
     }
     raise Error.new("Error while calling the Imo API", details: details)
+  end
+
+  def validate_locale!(locale, patient, action)
+    unless locale.in?(SUPPORTED_LOCALES)
+      details = {action: action, patient_id: patient.id}
+      raise Error.new("Translation missing for language #{locale}", details: details)
+    end
   end
 
   def invitation_callback_url(patient_id)
