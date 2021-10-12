@@ -6,9 +6,9 @@ class MyFacilitiesController < AdminController
   include CohortPeriodSelection
   include PeriodSelection
   ###
-  include ActionView::Helpers::NumberHelper
-  include DashboardHelper
-  require 'csv'
+  # include ActionView::Helpers::NumberHelper
+  # include DashboardHelper
+  # require 'csv'
   # include BloodPressureExportService
 
   PERIODS_TO_DISPLAY = {quarter: 3, month: 3, day: 14}.freeze
