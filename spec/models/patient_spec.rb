@@ -494,6 +494,35 @@ describe Patient, type: :model do
       end
     end
 
+    describe ".where_current_age" do
+      describe ".with_current_age" do
+        it "returns patients based on date of birth year if present" do
+          patient.date_of_birth = Date.parse("1980-01-01")
+          patient.save
+
+          expect(Patient.where_current_age("<=", Date.current.year - 1980)).to match_array([patient])
+        end
+
+        it "takes into account months for date_of_birth" do
+          patient.date_of_birth = Date.parse("June 1st 1960")
+          patient.save
+
+          Timecop.freeze("January 1st 2020") do
+            expect(Patient.where_current_age("=", 59)).to contain_exactly(patient)
+          end
+          Timecop.freeze("June 2nd 2020") do
+            expect(Patient.where_current_age("=", 60)).to contain_exactly(patient)
+          end
+        end
+
+        it "returns patients based on age_updated_at if date of birth is not present" do
+          patient = create(:patient, age: 30, age_updated_at: 25.months.ago, date_of_birth: nil)
+
+          expect(patient.current_age).to eq(32)
+        end
+      end
+    end
+
     describe "#current_age" do
       it "returns age based on date of birth year if present" do
         patient.date_of_birth = Date.parse("1980-01-01")

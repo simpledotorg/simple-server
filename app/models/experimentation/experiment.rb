@@ -30,13 +30,18 @@ module Experimentation
     def self.candidate_patients
       Patient.with_hypertension
         .contactable
-        .where("age >= ?", 18) # TODO: Fix age calculation
+        .where_current_age(">=", 18)
         .where("NOT EXISTS (:treatment_group_memberships)",
           treatment_group_memberships: Experimentation::TreatmentGroupMembership
                                          .joins(treatment_group: :experiment)
                                          .where("treatment_group_memberships.patient_id = patients.id")
                                          .where("end_date > ?", LAST_EXPERIMENT_BUFFER.ago)
                                          .select(:patient_id))
+        .where.not(id: Appointment
+                       .where(status: :scheduled)
+                       .group(:patient_id)
+                       .having("count(*) > 1")
+                       .select(:patient_id))
     end
 
     def random_treatment_group

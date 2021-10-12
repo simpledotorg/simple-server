@@ -98,6 +98,14 @@ class Patient < ApplicationRecord
       .merge(PatientPhoneNumber.unscoped.phone_type_mobile)
   }
 
+  scope :where_current_age, ->(comparison_operator, age) do
+    # comparison_operator is any of the SQL comparison operators (=, > etc.)
+    where("EXTRACT(YEAR
+            FROM COALESCE(
+              age('#{Date.today}', date_of_birth),
+              make_interval(years => age) + age('#{Date.today}', age_updated_at))) #{comparison_operator} #{age}")
+  end
+
   validate :past_date_of_birth
   validates :status, presence: true
 
