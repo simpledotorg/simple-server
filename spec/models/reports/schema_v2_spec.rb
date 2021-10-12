@@ -18,7 +18,7 @@ describe Reports::SchemaV2, type: :model do
     RefreshReportingViews.new.refresh_v2
   end
 
-  it "returns data correctly gruped when passed mixed region types" do
+  it "returns data correctly grouped when passed mixed region types" do
     facility_1, facility_2 = *FactoryBot.create_list(:facility, 2, block: "block-1", facility_group: facility_group_1).sort_by(&:slug)
     facility_3 = FactoryBot.create(:facility, block: "block-2", facility_group: facility_group_1)
     facilities = [facility_1, facility_2, facility_3]
