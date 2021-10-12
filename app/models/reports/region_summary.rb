@@ -49,7 +49,7 @@ module Reports
       @region_type = @regions.first.region_type
       @id_field = "#{region_type}_region_id"
       @slug_field = region_type == "facility" ? "#{region_type}_region_slug" : "#{region_type}_slug"
-      @results = @regions.each_with_object({}) { |region, hsh| hsh[region.slug] = Hash.new(0) }
+      @results = @regions.each_with_object({}) { |region, hsh| hsh[region.slug] = {} }
     end
 
     def call

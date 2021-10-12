@@ -3,28 +3,88 @@ require "rails_helper"
 RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
   using StringToPeriod
 
-  around do |example|
-    freeze_time_for_reporting_specs(example)
-  end
-
   let(:organization) { create(:organization, name: "org-1") }
   let(:user) { create(:admin, :manager, :with_access, resource: organization, organization: organization) }
   let(:facility_group_1) { FactoryBot.create(:facility_group, name: "facility_group_1", organization: organization) }
+  let(:facility_1) { create(:facility, name: "facility-1", facility_group: facility_group_1) }
+  let(:facility_2) { create(:facility, name: "facility-2", facility_group: facility_group_1) }
   let(:jan_2019) { Time.zone.parse("January 1st, 2019 00:00:00+00:00") }
   let(:jan_2020) { Time.zone.parse("January 1st, 2020 00:00:00+00:00") }
   let(:mar_2020) { Time.zone.parse("March 1st, 2020 00:00:00+00:00") }
+
+  around do |example|
+    with_reporting_time_zone { example.run }
+  end
 
   def refresh_views
     RefreshReportingViews.new.refresh_v2
   end
 
-  it "regions with no data return hash w/ slugs and empty hash" do
-    result = described_class.call(facility_group_1)
-    expect(result).to eq("facility_group_1" => {})
-  end
+  context "API contract" do
+    it "regions with no patient data an empty hash" do
+      result = described_class.call(facility_group_1)
+      expect(result).to eq("facility_group_1" => {})
+      expect(result["facility_group_1"][jan_2020.to_period]).to be_nil
+    end
 
-  it "raises error if passed regions of different types" do
-    expect { described_class.call([facility_group_1, create(:facility)]) }.to raise_error(ArgumentError, /must be called with regions of the same region_type/)
+    # This spec illustrates that the data returned relies on current_date in reporting_months, regardless of what
+    # we do with freezing time in Ruby-land.
+    it "returns data from first patient record to PostgreSQL current_date, regardless of Ruby frozen time" do
+      _facility_1_patients = create(:patient, recorded_at: jan_2020, assigned_facility: facility_1, registration_user: user)
+      results = Timecop.freeze(mar_2020) do
+        refresh_views
+        described_class.call(facility_1)
+      end
+      expected_range = (jan_2020.to_period..Time.current.to_period)
+      expect(results["facility-1"].keys).to eq(expected_range.entries)
+    end
+
+    context "explicit range provided" do
+      it "returns data only for periods with patient data" do
+        _facility_1_patients = create(:patient, recorded_at: jan_2020, assigned_facility: facility_1, registration_user: user)
+        explicit_range = (jan_2019.to_period..mar_2020.to_period)
+        expected_range = (jan_2020.to_period..mar_2020.to_period)
+        results = Timecop.freeze(mar_2020) do
+          refresh_views
+          described_class.call([facility_1, facility_2], range: explicit_range)
+        end
+        expect(results["facility-1"].keys).to eq(expected_range.entries)
+      end
+    end
+
+    it "raises error if passed regions of different types" do
+      expect { described_class.call([facility_group_1, create(:facility)]) }.to raise_error(ArgumentError, /must be called with regions of the same region_type/)
+    end
+
+    it "returns a hash of hashes containing key/value pairs of attributes for each period" do
+      registration_time, now = 3.months.ago, Time.current
+      _facility_1_patients = create_list(:patient, 2, full_name: "controlled", recorded_at: registration_time, assigned_facility: facility_1, registration_user: user)
+      results = Timecop.freeze(now) do
+        refresh_views
+        described_class.call(facility_1)
+      end
+      # Intentionally non-DRY here because we want to double check and easily see what fields are returned in our hashes
+      expected_keys = %i[
+        adjusted_controlled_under_care
+        adjusted_missed_visit_lost_to_follow_up
+        adjusted_missed_visit_under_care
+        adjusted_missed_visit_under_care_with_lost_to_follow_up
+        adjusted_patients_under_care
+        adjusted_uncontrolled_under_care
+        adjusted_visited_no_bp_lost_to_follow_up
+        adjusted_visited_no_bp_under_care
+        adjusted_visited_no_bp_under_care_with_lost_to_follow_up
+        cumulative_assigned_patients
+        cumulative_registrations
+        facility_region_slug
+        lost_to_follow_up
+        monthly_registrations
+      ].map(&:to_s)
+      (3.months.ago.to_period..now.to_period).each do |period|
+        expect(results["facility-1"][period].keys).to match_array(expected_keys)
+        expect(results["facility-1"][period].values.reject { |v| v == "facility-1" }).to all(be_an(Integer))
+      end
+    end
   end
 
   context "with explicit range" do
@@ -74,7 +134,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
     result = described_class.call(facilities, range: jan_2020)
     expect(result[facility_1.slug][jan_2020.to_period]).to include("adjusted_controlled_under_care" => 2)
     expect(result[facility_2.slug][jan_2020.to_period]).to include("adjusted_controlled_under_care" => 1)
-    expect(result[facility_3.slug][jan_2020.to_period]).to include("adjusted_controlled_under_care" => 0)
+    expect(result[facility_3.slug][jan_2020.to_period]).to be_nil
 
     district_data = described_class.call(district_region, range: jan_2020)
     expect(district_data["facility_group_1"][jan_2020.to_period]).to include("adjusted_controlled_under_care" => 3)
@@ -83,21 +143,45 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
     expect(block_data["block-1"]["November 2019".to_period]).to include("adjusted_controlled_under_care" => 0)
     expect(block_data["block-1"]["December 2020".to_period]).to include("adjusted_controlled_under_care" => 0)
     expect(block_data["block-1"]["January 2020".to_period]).to include("adjusted_controlled_under_care" => 3)
-    expect(block_data["block-2"]["January 2020".to_period]).to include("adjusted_controlled_under_care" => 0)
+    expect(block_data["block-2"]["January 2020".to_period]).to be_nil
   end
 
-  context "visits without BP taken" do
-    it "adds together LTFU and under care counts" do
-      facility_1 = FactoryBot.create_list(:facility, 1, facility_group: facility_group_1).first
-      slug = facility_1.region.slug
-      # Patient registeres Jan 2019 and has a visit with no BP Jan 2020...so visit w/ no BP _and_ LTFU Jan, Feb, March 2020
-      visit_with_no_bp_and_ltfu = create(:patient, full_name: "visit_with_no_bp_and_ltfu", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
-      create(:appointment, patient: visit_with_no_bp_and_ltfu, recorded_at: jan_2020, facility: facility_1, user: user)
+  it "sums LTFU and under care counts for missed visits and visited no BP" do
+    facility_1 = FactoryBot.create_list(:facility, 1, facility_group: facility_group_1).first
+    slug = facility_1.region.slug
+    # Patient registers Jan 2019 and has a visit with no BP Jan 2020...so they have a
+    # visit w/ no BP and are LTFU in Jan, Feb, and March 2020.
+    visit_with_no_bp_and_ltfu = create(:patient, full_name: "visit_with_no_bp_and_ltfu", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
+    create(:appointment, patient: visit_with_no_bp_and_ltfu, recorded_at: jan_2020, facility: facility_1, user: user)
 
+    result = Timecop.freeze("October 1st 2021") do
       refresh_views
-      result = described_class.call(facility_1)
-      expect(result[slug]["adjusted_visited_no_bp_under_care_with_lost_to_follow_up"]).to eq(0)
-      expect(result[slug]["adjusted_visited_no_bp_under_care"]).to eq(0)
+      described_class.call(facility_1)
+    end
+    facility_results = result[slug]
+    (("January 2019".to_period)..("March 2019".to_period)).each do |period|
+      expect(facility_results[period]["cumulative_assigned_patients"]).to eq(1)
+      expect(facility_results[period]["adjusted_missed_visit_under_care"]).to eq(0)
+      expect(facility_results[period]["adjusted_missed_visit_under_care_with_lost_to_follow_up"]).to eq(0)
+    end
+    (("April 2019".to_period)..("December 2019".to_period)).each do |period|
+      expect(facility_results[period]["cumulative_assigned_patients"]).to eq(1)
+      expect(facility_results[period]["adjusted_missed_visit_under_care"]).to eq(1)
+      expect(facility_results[period]["adjusted_missed_visit_under_care_with_lost_to_follow_up"]).to eq(1)
+    end
+    (("January 2020".to_period)..("March 2020".to_period)).each do |period|
+      expect(facility_results[period]["cumulative_assigned_patients"]).to eq(1)
+      expect(facility_results[period]["adjusted_missed_visit_under_care"]).to eq(0)
+      expect(facility_results[period]["adjusted_missed_visit_under_care_with_lost_to_follow_up"]).to eq(0)
+      expect(facility_results[period]["adjusted_visited_no_bp_lost_to_follow_up"]).to eq(1)
+      expect(facility_results[period]["lost_to_follow_up"]).to eq(1)
+    end
+    (("April 2020".to_period)..("October 2021".to_period)).each do |period|
+      expect(facility_results[period]["cumulative_assigned_patients"]).to eq(1)
+      expect(facility_results[period]["adjusted_missed_visit_under_care"]).to eq(0)
+      expect(facility_results[period]["adjusted_missed_visit_under_care_with_lost_to_follow_up"]).to eq(1)
+      expect(facility_results[period]["adjusted_visited_no_bp_lost_to_follow_up"]).to eq(0)
+      expect(facility_results[period]["lost_to_follow_up"]).to eq(1)
     end
   end
 end
