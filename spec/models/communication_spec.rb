@@ -123,7 +123,6 @@ describe Communication, type: :model do
       expect {
         Communication.create_with_imo_details!(notification: notification, result: :sent, post_id: "imo_post_id")
         Communication.create_with_imo_details!(notification: notification, result: :read, post_id: "imo_post_id")
-        Communication.create_with_imo_details!(notification: notification, result: :error, post_id: "imo_post_id")
       }.not_to change { patient.imo_authorization.reload.status }
     end
   end
