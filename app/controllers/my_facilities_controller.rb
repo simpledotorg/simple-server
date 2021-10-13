@@ -55,7 +55,7 @@ class MyFacilitiesController < AdminController
     rate_name = params[:type]
 
     # send_data generate_csv_with_formatted_stats(rate_name),  type: "text/csv", filename: "BP #{params[:type].split("_").map(&:titleize).join(" ")} #{@selected_facility_group.name}.csv"
-    send_data BloodPressureExportService.new(start_period: @start_period, end_period: @period, data_type:rate_name, facilities: filter_facilities, facility_sizes: @facility_sizes).call,  type: "text/csv", filename: "BP #{params[:type].split("_").map(&:titleize).join(" ")} #{@selected_facility_group.name}.csv"
+    send_data BloodPressureExportService.new(start_period: @start_period, end_period: @period, data_type:rate_name, facilities: filter_facilities).call,  type: "text/csv", filename: "BP #{params[:type].split("_").map(&:titleize).join(" ")} #{@selected_facility_group.name}.csv"
   end
 ##################################
   private

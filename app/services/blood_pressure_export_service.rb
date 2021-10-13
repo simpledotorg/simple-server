@@ -6,12 +6,13 @@ class BloodPressureExportService
 
   attr_reader :start_period, :end_period, :facilities, :data_type, :data_for_facility, :stats_by_size, :display_sizes
 
-  def initialize(data_type:, start_period:, end_period:, facilities:, facility_sizes:)
+  FACILITY_SIZES = ["large", "medium", "small", "community"]
+
+  def initialize(data_type:, start_period:, end_period:, facilities:)
     @data_type = data_type
     @start_period = start_period
     @end_period = end_period
     @facilities = facilities
-    @facility_sizes = facility_sizes
 
     @data_for_facility = {}
     facilities.each do |facility|
@@ -20,8 +21,7 @@ class BloodPressureExportService
       ).call
     end
     sizes = @data_for_facility.map { |_, facility| facility.region.source.facility_size }.uniq
-    # @display_sizes = @facility_sizes.select { |size| sizes.include? size } #@facility_sizes not accessible, ask if I should include
-    @display_sizes = facility_sizes.select { |size| sizes.include? size } # try this line as workaround
+    @display_sizes = FACILITY_SIZES.select { |size| sizes.include? size }
     @stats_by_size = FacilityStatsService.call(facilities: @data_for_facility, period: @end_period, rate_numerator: data_type) 
   end
   
@@ -39,6 +39,10 @@ class BloodPressureExportService
         csv << [] if i != @display_sizes.length-1
       end
     }
+  end
+
+  def poop
+    {}
   end
 
   private
