@@ -24,10 +24,14 @@ class BloodPressureExportService
     @display_sizes = FACILITY_SIZES.select { |size| sizes.include? size }
     @stats_by_size = FacilityStatsService.call(facilities: @data_for_facility, period: @end_period, rate_numerator: data_type) 
   end
-  
+
   def call  #generate_csv_with_formatted_stats(type)
+    format_processed_stats_to_csv_rows
+  end
+
+  def as_csv
     CSV.generate(){|csv|
-      data = format_processed_stats_to_csv_rows    #(@data_type)
+          #(@data_type)
       headers = set_csv_headers
       ###reserve line to add method to format headers to titlize and un-snakecase them
       csv << headers
