@@ -2,13 +2,14 @@ require "rails_helper"
 
 RSpec.describe DrugConsumptionReportExporter do
   around do |example|
-    I18n.with_locale(:en_IN) do
-      example.run
+    Timecop.freeze do
+      I18n.with_locale(:en_IN) do
+        example.run
+      end
     end
   end
 
   context "exports the csv" do
-    Timecop.freeze do
       let(:protocol) { create(:protocol, :with_tracked_drugs) }
       let(:facility_group) { create(:facility_group, protocol: protocol, state: "Punjab") }
       let(:facilities) { create_list(:facility, 2, facility_group: facility_group) }
@@ -216,4 +217,3 @@ RSpec.describe DrugConsumptionReportExporter do
       end
     end
   end
-end
