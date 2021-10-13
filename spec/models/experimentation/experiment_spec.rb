@@ -127,10 +127,14 @@ RSpec.describe Experimentation::Experiment, type: :model do
     end
 
     it "excludes any patients who have multiple scheduled appointments" do
-      patient = create(:patient, age: 18)
-      create_list(:appointment, 2, patient: patient, status: :scheduled)
+      excluded_patient = create(:patient, age: 18)
+      create_list(:appointment, 2, patient: excluded_patient, status: :scheduled)
 
-      expect(described_class.candidate_patients).not_to include(patient)
+      included_patient = create(:patient, age: 18)
+      create(:appointment, patient: included_patient, status: :scheduled)
+
+      expect(described_class.candidate_patients).not_to include(excluded_patient)
+      expect(described_class.candidate_patients).to include(included_patient)
     end
   end
 
