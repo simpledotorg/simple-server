@@ -48,7 +48,8 @@ class AdminController < ApplicationController
 
   def user_not_authorized
     flash[:alert] = "You are not authorized to perform this action."
-    redirect_to(request.referrer || root_path)
+    referrer = request.referrer == request.url ? root_path : request.referrer
+    redirect_to(referrer || root_path)
   end
 
   def authorize(&blk)

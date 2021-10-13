@@ -8,8 +8,7 @@ module Experimentation
     validates :name, presence: true, uniqueness: true
     validates :state, presence: true
     validates :experiment_type, presence: true
-    validates :experiment_type, uniqueness: true, if: proc { |experiment| experiment.experiment_type == "medication_reminder" }
-    validate :date_range, if: proc { |experiment| experiment.start_date_changed? || experiment.end_date_changed? }
+    validate :validate_date_range
     validate :one_active_experiment_per_type
 
     enum state: {
@@ -48,14 +47,10 @@ module Experimentation
       end
     end
 
-    def date_range
-      if start_date.nil? || end_date.nil?
-        errors.add(:date_range, "start date and end date must be set together")
-        return
-      end
-      if start_date > end_date
-        errors.add(:date_range, "start date must precede end date")
-      end
+    def validate_date_range
+      errors.add(:start_date, "must be present") if start_date.blank?
+      errors.add(:end_date, "must be present") if end_date.blank?
+      errors.add(:date_range, "start date must precede end date") if start_date.present? && end_date.present? && start_date > end_date
     end
   end
 end

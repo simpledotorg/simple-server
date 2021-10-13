@@ -1,7 +1,6 @@
 <% csv = CSV.generate do |csv| %>
   <% csv << [
-    "Report generated at:",
-    Time.current
+    "Overdue list downloaded at: #{Time.now.strftime("%d-%b-%Y %I:%M %p")}"
   ] %>
   <% csv << [
     "Registration date",
@@ -26,7 +25,7 @@
       patient_summary.village_or_colony,
       patient_summary.days_overdue.to_i,
       patient_summary.latest_phone_number,
-      *patient_summary.current_prescription_drugs.map { |drug| "#{drug.name} #{drug.dosage}" }
+      patient_summary.current_prescription_drugs.map { |drug| "#{drug.name} #{drug.dosage}" }.join(", ")
     ] %>
   <% end %>
 <% end.html_safe %>
