@@ -247,9 +247,10 @@ class Facility < ApplicationRecord
     registered_patients.with_discarded
   end
 
-  def self.localized_facility_size(facility_size)
+  def self.localized_facility_size(facility_size, pluralize: false)
     return unless facility_size
-    I18n.t("activerecord.facility.facility_size.#{facility_size}", default: facility_size.capitalize)
+    sizes_key = pluralize ? "pluralized_facility_size" : "facility_size"
+    I18n.t("activerecord.facility.#{sizes_key}.#{facility_size}", default: facility_size.capitalize)
   end
 
   def localized_facility_size
