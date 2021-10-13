@@ -32,6 +32,7 @@ class BloodPressureExportService
   def as_csv
     CSV.generate(){|csv|
           #(@data_type)
+      data = call
       headers = set_csv_headers
       ###reserve line to add method to format headers to titlize and un-snakecase them
       csv << headers
