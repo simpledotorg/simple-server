@@ -71,4 +71,16 @@ RSpec.describe PhoneNumberAuthentication, type: :model do
       expect(authentication.otp_expires_at.to_i).to eq(0)
     end
   end
+
+  describe "#localized_phone_number" do
+    it "works with only a phone number" do
+      auth = create(:phone_number_authentication, phone_number: "+91123456790")
+      expect(auth.localized_phone_number).to eq(auth.phone_number)
+    end
+
+    it "works with a country code" do
+      auth = create(:phone_number_authentication, phone_number: "1234567890", country_code: "+999")
+      expect(auth.localized_phone_number).to eq(auth.country_code + auth.phone_number)
+    end
+  end
 end

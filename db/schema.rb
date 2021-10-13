@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_07_075808) do
+ActiveRecord::Schema.define(version: 2021_10_13_161109) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -466,6 +466,7 @@ ActiveRecord::Schema.define(version: 2021_10_07_075808) do
     t.datetime "device_updated_at", null: false
     t.datetime "deleted_at"
     t.boolean "dnd_status", default: true, null: false
+    t.string "country_code"
     t.index ["deleted_at"], name: "index_patient_phone_numbers_on_deleted_at"
     t.index ["dnd_status"], name: "index_patient_phone_numbers_on_dnd_status"
     t.index ["patient_id"], name: "index_patient_phone_numbers_on_patient_id"
@@ -517,6 +518,7 @@ ActiveRecord::Schema.define(version: 2021_10_07_075808) do
     t.datetime "deleted_at"
     t.integer "failed_attempts", default: 0, null: false
     t.datetime "locked_at"
+    t.string "country_code"
     t.index "to_tsvector('simple'::regconfig, COALESCE((phone_number)::text, ''::text))", name: "index_gin_phone_number_authentications_on_phone_number", using: :gin
     t.index ["deleted_at"], name: "index_phone_number_authentications_on_deleted_at"
   end

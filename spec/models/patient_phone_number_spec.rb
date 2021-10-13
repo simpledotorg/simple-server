@@ -159,6 +159,11 @@ RSpec.describe PatientPhoneNumber, type: :model do
         phone_number = create(:patient_phone_number, number: "+911234567890")
         expect(phone_number.number_with_country_code).to eq("+11234567890")
       end
+
+      it "overrides the default country code with country_code if provided" do
+        phone_number = create(:patient_phone_number, number: "1234567890", country_code: "+999")
+        expect(phone_number.number_with_country_code).to eq("+9991234567890")
+      end
     end
   end
 end

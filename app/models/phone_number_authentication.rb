@@ -1,5 +1,6 @@
 class PhoneNumberAuthentication < ApplicationRecord
   include PgSearch::Model
+  include PhoneNumberHelpers
 
   USER_AUTH_MAX_FAILED_ATTEMPTS = Integer(ENV["USER_AUTH_MAX_FAILED_ATTEMPTS"] || 5).freeze
   USER_AUTH_LOCKOUT_IN_MINUTES = Integer(ENV["USER_AUTH_LOCKOUT_IN_MINUTES"] || 20).freeze
@@ -24,9 +25,7 @@ class PhoneNumberAuthentication < ApplicationRecord
   alias_method :registration_facility, :facility
 
   def localized_phone_number
-    parsed_number = Phonelib.parse(phone_number, Rails.application.config.country[:abbreviation]).raw_national
-    default_country_code = Rails.application.config.country[:sms_country_code]
-    default_country_code + parsed_number
+    localize_phone_number(phone_number, country_code)
   end
 
   def presence_of_password
