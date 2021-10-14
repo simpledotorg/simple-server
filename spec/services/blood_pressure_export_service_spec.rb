@@ -20,7 +20,7 @@ RSpec.describe BloodPressureExportService, type: :model do
   end
 
   before :each do
-I18n.default_locale = "en_IN"
+    I18n.default_locale = :en_IN
   end
 
   describe "#call" do #more for a thing
