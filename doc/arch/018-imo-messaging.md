@@ -26,9 +26,9 @@ We have two Imo API accounts: a test account and our real account. Both accounts
 
 Because our test account is capable of sending real messages, we should only set the API keys for lower environments when we're actively testing and have turned off any code that could accidentally send Imo notifications.
 
-Imo exists as two separate apps run by completely different companies. "Imo HD" is the US version of the app, and "Imo" is the international version. As a result of that split, the Imo app we're using is not capable of sending notifications to US phone numbers. For testing purposes, they have a special country code `+999` for US numbers. To use a US number, we must first request that the Imo team whitelist it. Then we can send notifications to US phone numbers through our test account. If your US number is `111-222-3333`, you would need to send send the Imo request to the phone number `+9991112223333`. That is also the number you will need to enter into the Imo app when prompted for your phone number.
+Imo exists as two separate apps run by completely different companies. "Imo HD" is the US version of the app, and "Imo" is the international version. As a result of that split, the Imo app we're using is not capable of sending notifications to US phone numbers. For testing purposes, they have a special country code `+999` for US numbers. To use a US number, we must first request that the Imo team whitelist it. Then we can send notifications to US phone numbers through our test account. If your US number is `111-222-3333`, you would need to send the Imo request to the phone number `+9991112223333`. That is also the number you will need to enter into the Imo app when prompted for your phone number.
 
-US based users can download the international version of the APK from: http://imo.im/
+US based users will not have access to the international version of the Imo app through the Google Play Store and will have to download the app from http://imo.im. To install the APK without the store, you will first have to enable the ability to install from unknown sources and elect to trust the download source. See this video tutorial for help: https://www.youtube.com/watch?v=4X5hOvH-fbs
 
 ## Consequences
 
