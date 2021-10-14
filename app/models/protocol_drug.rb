@@ -11,6 +11,7 @@ class ProtocolDrug < ApplicationRecord
     hypertension_ccb: "Hypertension: CCB",
     hypertension_arb: "Hypertension: ARB",
     hypertension_diuretic: "Hypertension: Diuretic",
+    hypertension_ace: "Hypertension: ACE",
     hypertension_other: "Hypertension: Other",
     diabetes: "Diabetes",
     other: "Other"

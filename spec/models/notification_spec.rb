@@ -83,7 +83,7 @@ describe Notification, type: :model do
       before { Flipper.enable(:imo_messaging) }
 
       it "returns sms if patient can't receive Imo notifications" do
-        create(:imo_authorization, status: "error", patient: notification.patient)
+        create(:imo_authorization, status: "no_imo_account", patient: notification.patient)
         expect(notification.next_communication_type).to eq("sms")
       end
 
