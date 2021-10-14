@@ -18,7 +18,7 @@ def discard_patient(record)
   record.instance_of?(Patient) ? record.discard_data : record.patient.discard_data
 end
 
-RSpec.shared_examples "a sync controller that authenticates user requests" do
+RSpec.shared_examples "a sync controller that authenticates user requests: sync_from_user" do
   describe "user api authentication" do
     let(:request_key) { model.to_s.underscore.pluralize }
     let(:empty_payload) { {request_key => []} }
@@ -32,6 +32,25 @@ RSpec.shared_examples "a sync controller that authenticates user requests" do
       post :sync_from_user, params: empty_payload
 
       expect(response.status).not_to eq(401)
+    end
+    it "does not allow sync_from_user requests to the controller with invalid user_id and access_token" do
+      request.env["X_USER_ID"] = "invalid user id"
+      request.env["HTTP_AUTHORIZATION"] = "invalid access token"
+      post :sync_from_user, params: empty_payload
+
+      expect(response.status).to eq(401)
+    end
+  end
+end
+
+RSpec.shared_examples "a sync controller that authenticates user requests: sync_to_user" do
+  describe "user api authentication" do
+    let(:request_key) { model.to_s.underscore.pluralize }
+    let(:empty_payload) { {request_key => []} }
+
+    before :each do
+      _request_user = FactoryBot.create(:user)
+      set_authentication_headers
     end
 
     it "allows sync_to_user requests to the controller with valid user_id and access_token" do
@@ -64,14 +83,6 @@ RSpec.shared_examples "a sync controller that authenticates user requests" do
       end
     end
 
-    it "does not allow sync_from_user requests to the controller with invalid user_id and access_token" do
-      request.env["X_USER_ID"] = "invalid user id"
-      request.env["HTTP_AUTHORIZATION"] = "invalid access token"
-      post :sync_from_user, params: empty_payload
-
-      expect(response.status).to eq(401)
-    end
-
     it "does not allow sync_to_user requests to the controller with invalid user_id and access_token" do
       request.env["X_USER_ID"] = "invalid user id"
       request.env["HTTP_AUTHORIZATION"] = "invalid access token"
@@ -80,6 +91,11 @@ RSpec.shared_examples "a sync controller that authenticates user requests" do
       expect(response.status).to eq(401)
     end
   end
+end
+
+RSpec.shared_examples "a sync controller that authenticates user requests" do
+  it_behaves_like "a sync controller that authenticates user requests: sync_from_user"
+  it_behaves_like "a sync controller that authenticates user requests: sync_to_user"
 end
 
 RSpec.shared_examples "a working sync controller creating records" do
@@ -524,7 +540,7 @@ RSpec.shared_examples "a working sync controller that supports region level sync
   end
 end
 
-RSpec.shared_examples "a sync controller that audits the data access" do
+RSpec.shared_examples "a sync controller that audits the data access: sync_from_user" do
   include ActiveJob::TestHelper
 
   before :each do
@@ -585,6 +601,18 @@ RSpec.shared_examples "a sync controller that audits the data access" do
       end
     end
   end
+end
+
+RSpec.shared_examples "a sync controller that audits the data access: sync_to_user" do
+  include ActiveJob::TestHelper
+
+  before :each do
+    set_authentication_headers
+  end
+
+  let(:auditable_type) { model.to_s }
+  let(:request_key) { model.to_s.underscore.pluralize }
+  let(:model_class_sym) { model.to_s.underscore.to_sym }
 
   describe "creates an audit log for data synced to user" do
     let!(:records) { create_record_list(5) }
@@ -607,4 +635,9 @@ RSpec.shared_examples "a sync controller that audits the data access" do
       end
     end
   end
+end
+
+RSpec.shared_examples "a sync controller that audits the data access" do
+  it_behaves_like "a sync controller that audits the data access: sync_from_user"
+  it_behaves_like "a sync controller that audits the data access: sync_to_user"
 end

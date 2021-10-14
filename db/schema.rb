@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_28_134120) do
+ActiveRecord::Schema.define(version: 2021_10_07_075808) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -124,6 +124,18 @@ ActiveRecord::Schema.define(version: 2021_09_28_134120) do
     t.datetime "updated_at", null: false
     t.string "caller_phone_number", null: false
     t.datetime "deleted_at"
+  end
+
+  create_table "call_results", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id", null: false
+    t.uuid "appointment_id", null: false
+    t.string "remove_reason"
+    t.string "result_type", null: false
+    t.datetime "device_created_at", null: false
+    t.datetime "device_updated_at", null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "communications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -245,8 +257,8 @@ ActiveRecord::Schema.define(version: 2021_09_28_134120) do
     t.string "name", null: false
     t.string "state", default: "new", null: false
     t.string "experiment_type", null: false
-    t.date "start_date"
-    t.date "end_date"
+    t.date "start_date", null: false
+    t.date "end_date", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_experiments_on_name", unique: true

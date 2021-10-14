@@ -3,7 +3,8 @@ class Admin::DeduplicatePatientsController < AdminController
   DUPLICATE_LIMIT = 250
 
   def show
-    facilities = authorize { current_admin.accessible_facilities(:manage) }
+    facilities = current_admin.accessible_facilities(:manage)
+    authorize { facilities.any? }
 
     # Scoping by facilities is costly for users who have a lot of facilities
     duplicate_patient_ids = if current_admin.accessible_organizations(:manage).any?

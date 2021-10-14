@@ -193,6 +193,10 @@ class Api::V4::Schema
       sync_to_user_response(:medications)
     end
 
+    def call_result_sync_from_user_request
+      sync_from_user_request(:call_results)
+    end
+
     def states_response
       {type: :object,
        properties: {states: {type: :array,

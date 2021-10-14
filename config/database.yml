@@ -13,7 +13,7 @@ development:
 
 profiling:
   <<: *default
-  database: simple-server_development
+  database: simple-server_profiling
 
 test:
   <<: *default

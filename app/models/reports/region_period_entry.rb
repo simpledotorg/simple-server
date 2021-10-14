@@ -1,8 +1,9 @@
 module Reports
   class RegionPeriodEntry
-    attr_reader :region, :period, :calculation
+    attr_reader :namespace, :region, :period, :calculation
 
-    def initialize(region, period, calculation, **options)
+    def initialize(namespace, region, period, calculation, **options)
+      @namespace = namespace
       @region = region
       @period = period
       @calculation = calculation
@@ -10,7 +11,7 @@ module Reports
     end
 
     def cache_key
-      [region.cache_key, period.cache_key, calculation, @options].join("/")
+      [namespace, region.cache_key, period.cache_key, calculation, @options].join("/")
     end
 
     delegate :adjusted_period, to: :period

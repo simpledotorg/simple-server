@@ -39,9 +39,19 @@ RSpec.describe Experimentation::Experiment, type: :model do
       expect(experiment).to be_valid
     end
 
-    it "only allows one instance of type 'medication_reminder'" do
-      _existing = create(:experiment, experiment_type: "medication_reminder")
-      expect(build(:experiment, experiment_type: "medication_reminder")).to be_invalid
+    it "should validate that start and end dates are present on the experiment" do
+      experiment = build(:experiment, start_date: nil, end_date: nil)
+
+      experiment.validate
+      expect(experiment.errors[:start_date]).to be_present
+      expect(experiment.errors[:end_date]).to be_present
+    end
+
+    it "should validate that start date is after the end date" do
+      experiment = build(:experiment, start_date: Time.now, end_date: 10.days.ago)
+
+      experiment.validate
+      expect(experiment.errors[:date_range]).to be_present
     end
   end
 
