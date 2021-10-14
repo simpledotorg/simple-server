@@ -13,7 +13,7 @@ describe ImoDeliveryDetail, type: :model do
   end
 
   describe "#unsucessful?" do
-    it "is true if result is error, no_imo_account, or not_subscribed" do
+    it "is true if result is no_imo_account or not_subscribed" do
       subject.sent!
       expect(subject.unsuccessful?).to be_falsey
       subject.no_imo_account!
@@ -22,8 +22,6 @@ describe ImoDeliveryDetail, type: :model do
       expect(subject.unsuccessful?).to be_truthy
       subject.read!
       expect(subject.unsuccessful?).to be_falsey
-      subject.error!
-      expect(subject.unsuccessful?).to be_truthy
     end
   end
 
@@ -37,8 +35,6 @@ describe ImoDeliveryDetail, type: :model do
       expect(subject.successful?).to be_falsey
       subject.read!
       expect(subject.successful?).to be_truthy
-      subject.error!
-      expect(subject.successful?).to be_falsey
     end
   end
 
@@ -52,8 +48,6 @@ describe ImoDeliveryDetail, type: :model do
       expect(subject.in_progress?).to be_falsey
       subject.read!
       expect(subject.in_progress?).to be_falsey
-      subject.error!
-      expect(subject.in_progress?).to be_falsey
     end
   end
 
@@ -66,8 +60,6 @@ describe ImoDeliveryDetail, type: :model do
       subject.not_subscribed!
       expect(subject.unsubscribed_or_missing?).to be_truthy
       subject.read!
-      expect(subject.unsubscribed_or_missing?).to be_falsey
-      subject.error!
       expect(subject.unsubscribed_or_missing?).to be_falsey
     end
   end
