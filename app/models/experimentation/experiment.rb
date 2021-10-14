@@ -31,17 +31,19 @@ module Experimentation
       Patient.with_hypertension
         .contactable
         .where_current_age(">=", 18)
-        .where("NOT EXISTS (:treatment_group_memberships)",
-          treatment_group_memberships: Experimentation::TreatmentGroupMembership
+        .where("NOT EXISTS (:recent_treatment_group_memberships)",
+          recent_treatment_group_memberships: Experimentation::TreatmentGroupMembership
                                          .joins(treatment_group: :experiment)
                                          .where("treatment_group_memberships.patient_id = patients.id")
                                          .where("end_date > ?", LAST_EXPERIMENT_BUFFER.ago)
                                          .select(:patient_id))
-        .where.not(id: Appointment
-                       .where(status: :scheduled)
-                       .group(:patient_id)
-                       .having("count(*) > 1")
-                       .select(:patient_id))
+        .where("NOT EXISTS (:multiple_scheduled_appointments)",
+          multiple_scheduled_appointments: Appointment
+                                            .select(1)
+                                            .where("appointments.patient_id = patients.id")
+                                            .where(status: :scheduled)
+                                            .group(:patient_id)
+                                            .having("count(patient_id) > 1"))
     end
 
     def random_treatment_group
