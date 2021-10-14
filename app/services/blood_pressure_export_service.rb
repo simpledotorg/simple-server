@@ -47,6 +47,26 @@ class BloodPressureExportService
 
   private
 
+  # def data_map
+  #   [
+  #     {
+  #       "Facilities" => {
+  #         "aggregate" => lambda { |size| "All #{Facility.localized_facility_size(size, pluralize: true)}" },
+  #         "facility" => lambda { |facility| facility_data.region.source }
+  #       }
+  #     },
+  #     {
+  #     }
+  #   ]
+  # end
+
+  # row = {}
+  # data_map.each do |hsh|
+  #   hsh.each_pair do |k,v|
+  #     row[k] = v["aggregate"].call(size)
+  #   end
+  # end
+
   def aggregate_data
     @aggregate_data ||= begin
       formatted = {}
