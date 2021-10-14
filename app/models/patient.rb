@@ -117,6 +117,15 @@ class Patient < ApplicationRecord
 
   delegate :locale, to: :assigned_facility
 
+  def current_age
+    if date_of_birth.present?
+      ((Time.zone.now - date_of_birth.to_time) / 1.year).floor
+    elsif age.present?
+      years_since_update = (Time.current - age_updated_at) / 1.year
+      (age + years_since_update).floor
+    end
+  end
+
   def past_date_of_birth
     if date_of_birth.present? && date_of_birth > Date.current
       errors.add(:date_of_birth, "can't be in the future")
@@ -175,15 +184,6 @@ class Patient < ApplicationRecord
 
   def high_risk?
     risk_priority == RISK_PRIORITIES[:HIGH]
-  end
-
-  def current_age
-    if date_of_birth.present?
-      ((Time.zone.now - date_of_birth.to_time) / 1.year).floor
-    elsif age.present?
-      years_since_update = (Time.current - age_updated_at) / 1.year
-      (age + years_since_update).floor
-    end
   end
 
   def call_result=(new_call_result)
