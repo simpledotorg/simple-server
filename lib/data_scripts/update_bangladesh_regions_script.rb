@@ -27,7 +27,7 @@ class UpdateBangladeshRegionsScript < DataScript
 
   def call
     destroy_empty_facilities
-    fix_incorrect_regions
+    rename_upazilas
     import_from_csv
     logger.info "Done running #{self.class} data_script - results:"
     results
@@ -37,7 +37,7 @@ class UpdateBangladeshRegionsScript < DataScript
 
   private
 
-  RENAMES = {
+  UPAZILA_RENAMES = {
     "Biswambarpur" => "Bishwambarpur",
     "Dakhin Surma" => "Dakshin Surma",
     "Dharmapasha" => "Dharampasha",
@@ -52,8 +52,8 @@ class UpdateBangladeshRegionsScript < DataScript
   # https://api.bd.simple.org/admin/facility_groups/jamalpur-district/facilities/uhc-melandah
   # Some Upazilas have on production have slightly different spellings in production than what is in the import CSV.
   # We need to fix the names in prod or else the import will create two upazila regions representing the same place.
-  def fix_incorrect_regions
-    RENAMES.each do |old_name, new_name|
+  def rename_upazilas
+    UPAZILA_RENAMES.each do |old_name, new_name|
       block_region = Region.block_regions.find_by(name: old_name)
       unless block_region
         results[:errors][:block_rename_missing] += 1
