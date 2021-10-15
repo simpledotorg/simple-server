@@ -39,11 +39,14 @@ class UpdateBangladeshRegionsScript < DataScript
 
   RENAMES = {
     "Biswambarpur" => "Bishwambarpur",
+    "Dakhin Surma" => "Dakshin Surma",
     "Dharmapasha" => "Dharampasha",
     "Doarabazar" => "Dowarabazar",
+    "Jaintapur" => "Jaintiapur",
     "Melandah" => "Melandaha",
     "Mithamoin" => "Mithamain",
-    "Taherpur" => "Tahirpur"
+    "Taherpur" => "Tahirpur",
+    "Zokiganj" => "Zakiganj"
   }
 
   # https://api.bd.simple.org/admin/facility_groups/jamalpur-district/facilities/uhc-melandah
