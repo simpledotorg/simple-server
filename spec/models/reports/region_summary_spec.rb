@@ -110,6 +110,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
   end
 
   it "returns correct data for regions" do
+    d Time.zone
     facility_1, facility_2 = *FactoryBot.create_list(:facility, 2, block: "block-1", facility_group: facility_group_1).sort_by(&:slug)
     facility_3 = FactoryBot.create(:facility, block: "block-2", facility_group: facility_group_1)
     facilities = [facility_1, facility_2, facility_3]
