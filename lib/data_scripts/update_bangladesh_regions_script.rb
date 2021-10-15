@@ -37,17 +37,33 @@ class UpdateBangladeshRegionsScript < DataScript
 
   private
 
+  RENAMES = {
+    "Biswambarpur" => "Bishwambarpur",
+    "Dharmapasha" => "Dharampasha",
+    "Doarabazar" => "Dowarabazar",
+    "Melandah" => "Melandaha",
+    "Mithamoin" => "Mithamain",
+    "Taherpur" => "Tahirpur"
+  }
+
   # https://api.bd.simple.org/admin/facility_groups/jamalpur-district/facilities/uhc-melandah
-  # This Upazila is incorrect on prod - we need to fix the name or the import will create a duplicate w/ the correct name.
+  # Some Upazilas have on production have slightly different spellings in production than what is in the import CSV.
+  # We need to fix the names in prod or else the import will create two upazila regions representing the same place.
   def fix_incorrect_regions
-    melandaha = Region.block_regions.find_by(name: "Melandah")
-    if run_safely {
-         melandaha.update!(name: "Melandaha")
-         melandaha.facility_regions.each { |r| r.source.update!(block: "Melandaha") }
-       }
-      results[:updates][:block_name_updates] += 1
-    else
-      results[:errors][:block_name_errors] += 1
+    RENAMES.each do |old_name, new_name|
+      block_region = Region.block_regions.find_by(name: old_name)
+      unless block_region
+        results[:errors][:block_rename_missing] += 1
+        next
+      end
+      if run_safely {
+           block_region.update!(name: new_name)
+           block_region.facility_regions.each { |r| r.source.update!(block: new_name) }
+         }
+        results[:updates][:block_rename] += 1
+      else
+        results[:errors][:block_rename_failed] += 1
+      end
     end
   end
 
