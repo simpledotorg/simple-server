@@ -6,7 +6,7 @@ describe Experimentation::Runner, type: :model do
   describe "self.start_current_patient_experiment" do
     before { Flipper.enable(:experiment) }
 
-    it "does not start the experiment, add patients, or create notifications if the feature flag is off" do
+    it "does not add patients, or create notifications if the feature flag is off" do
       Flipper.disable(:experiment)
 
       patient1 = create(:patient, age: 80)
@@ -17,7 +17,6 @@ describe Experimentation::Runner, type: :model do
 
       described_class.start_current_patient_experiment(name: experiment.name)
 
-      expect(experiment.reload.state).to eq("new")
       expect(experiment.patients.count).to eq(0)
       expect(experiment.notifications.count).to eq(0)
     end
@@ -28,7 +27,7 @@ describe Experimentation::Runner, type: :model do
       create(:appointment, patient: young_patient, scheduled_date: 10.days.from_now)
       create(:appointment, patient: old_patient, scheduled_date: 10.days.from_now)
 
-      experiment = create(:experiment, :with_treatment_group, start_time: 5.days.from_now, end_time: 35.days.from_now)
+      experiment = create(:experiment, :running, :with_treatment_group, name: "alla")
 
       described_class.start_current_patient_experiment(name: experiment.name)
 

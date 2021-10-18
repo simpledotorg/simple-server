@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe Experimentation::MedicationReminderService, type: :model do
   describe "self.schedule_daily_notifications" do
-    let(:experiment) { create(:experiment, :with_treatment_group_and_template, experiment_type: "medication_reminder") }
+    let(:experiment) { create(:experiment, :upcoming, :with_treatment_group_and_template, experiment_type: "medication_reminder") }
 
     before :each do
       Flipper.enable(:experiment)
@@ -16,7 +16,6 @@ RSpec.describe Experimentation::MedicationReminderService, type: :model do
       create(:blood_pressure, patient: patient1, device_created_at: 31.days.ago)
 
       Experimentation::MedicationReminderService.schedule_daily_notifications
-      expect(experiment.reload.state).to eq("new")
       expect(Notification.count).to eq(0)
     end
 
@@ -63,12 +62,6 @@ RSpec.describe Experimentation::MedicationReminderService, type: :model do
       expect {
         Experimentation::MedicationReminderService.schedule_daily_notifications(patients_per_day: 1)
       }.to change { Notification.count }.by(1)
-    end
-
-    it "updates the experiment state" do
-      expect {
-        Experimentation::MedicationReminderService.schedule_daily_notifications
-      }.to change { experiment.reload.state }.from("new").to("running")
     end
 
     it "excludes anyone who's already in this experiment" do

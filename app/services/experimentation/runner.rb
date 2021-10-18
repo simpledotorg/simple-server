@@ -13,7 +13,7 @@ module Experimentation
         return
       end
 
-      experiment = Experiment.current_patients.running.find_by(name: name)
+      experiment = Experiment.current_patients.upcoming.find_by(name: name)
       if experiment.nil?
         logger.info("Experiment #{name} not found and may need to be removed from scheduler - exiting.")
         return
@@ -60,7 +60,7 @@ module Experimentation
         return
       end
 
-      experiment = Experiment.stale_patients.running.find_by(name: name)
+      experiment = Experiment.stale_patients.upcoming.find_by(name: name)
       if experiment.nil?
         logger.info("Experiment #{name} not found and may need to be removed from scheduler - exiting.")
         return

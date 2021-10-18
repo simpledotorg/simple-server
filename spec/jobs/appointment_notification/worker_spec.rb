@@ -239,7 +239,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
 
     it "does not send if the notification belongs to a cancelled experiment" do
       mock_successful_delivery
-      experiment = create(:experiment, state: "cancelled")
+      experiment = create(:experiment, deleted_at: Time.now)
       notification.update!(experiment_id: experiment.id)
       expect {
         described_class.perform_async(notification.id)

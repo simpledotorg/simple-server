@@ -70,7 +70,7 @@ class Notification < ApplicationRecord
 
   def next_communication_type
     # guarding against experiment state to prevent race condition
-    return nil if status_cancelled? || experiment&.cancelled_state?
+    return nil if status_cancelled? || experiment.blank?
     if preferred_communication_method && !previously_communicated_by?(preferred_communication_method)
       return preferred_communication_method
     end
