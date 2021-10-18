@@ -40,7 +40,7 @@ module Experimentation
         patients = Patient
           .where(id: batch)
           .includes(:appointments)
-          .where(appointments: {scheduled_date: experiment.start_time..experiment.end_time, status: "scheduled"})
+          .where(appointments: {scheduled_date: experiment.start_time.to_date..experiment.end_time.to_date, status: "scheduled"})
 
         patients.each do |patient|
           group = experiment.random_treatment_group

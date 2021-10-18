@@ -98,7 +98,7 @@ module Experimentation
         notifications.map(&:subject).pluck(:scheduled_date).uniq
       else
         # control patients don't have notifications
-        experiment_date_range = (experiment.start_time..experiment.end_time)
+        experiment_date_range = (experiment.start_time.to_date..experiment.end_time.to_date)
         patient.appointments.where(scheduled_date: experiment_date_range)
           .where("device_created_at < ?", experiment.start_time.beginning_of_day)
           .order(:scheduled_date)
