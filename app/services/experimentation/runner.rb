@@ -100,6 +100,8 @@ module Experimentation
       notifications.find_each do |notification|
         notification.status_cancelled!
       end
+
+      experiment.discard
       logger.warn "Aborting experiment #{name} finished."
     end
 

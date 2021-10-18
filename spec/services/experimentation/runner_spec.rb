@@ -27,7 +27,7 @@ describe Experimentation::Runner, type: :model do
       create(:appointment, patient: young_patient, scheduled_date: 10.days.from_now)
       create(:appointment, patient: old_patient, scheduled_date: 10.days.from_now)
 
-      experiment = create(:experiment, :running, :with_treatment_group)
+      experiment = create(:experiment, :upcoming, :with_treatment_group)
 
       described_class.start_current_patient_experiment(name: experiment.name)
 
@@ -208,36 +208,14 @@ describe Experimentation::Runner, type: :model do
       expect(notification.experiment).to eq(experiment)
     end
 
-    it "updates the experiment state to 'running'" do
-      experiment = create(:experiment, start_time: 5.days.from_now, end_time: 35.days.from_now)
-      expect {
-        described_class.start_current_patient_experiment(name: experiment.name)
-      }.to change { experiment.reload.state }.to("running")
-
-      expect(experiment).to be_running_state
-    end
-
-    it "does nothing if the experiment is in 'running' state" do
+    it "does nothing if the experiment is running" do
       patient1 = create(:patient, age: 80)
       create(:appointment, patient: patient1, scheduled_date: 10.days.from_now)
-      experiment = create(:experiment, :with_treatment_group, state: "running", start_time: 5.days.from_now, end_time: 35.days.from_now)
+      experiment = create(:experiment, :running, :with_treatment_group)
       create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
 
       expect { described_class.start_current_patient_experiment(name: experiment.name) }
-        .to not_change { experiment.reload.state }
-        .and not_change { Notification.count }
-    end
-
-    it "marks the experiment complete if the end date has passed" do
-      patient1 = create(:patient, age: 80)
-      create(:appointment, patient: patient1, scheduled_date: 10.days.ago)
-      experiment = create(:experiment, :with_treatment_group, state: "running", start_time: 20.days.ago, end_time: 1.days.ago)
-      create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
-
-      expect {
-        described_class.start_current_patient_experiment(name: experiment.name)
-      }.to change { experiment.reload.state }.from("running").to("complete")
-        .and not_change { Notification.count }
+        .to not_change { Notification.count }
     end
 
     it "raises a sentry error if the experiment is not found" do
@@ -338,14 +316,6 @@ describe Experimentation::Runner, type: :model do
       expect(reminder2.remind_on).to eq(today + 3.days)
     end
 
-    it "updates the experiment state" do
-      experiment = create(:experiment, experiment_type: "stale_patients")
-      described_class.schedule_daily_stale_patient_notifications(name: experiment.name)
-      experiment.reload
-
-      expect(experiment).to be_running_state
-    end
-
     it "does not create appointment reminders or update the experiment if there's another experiment of the same type in progress" do
       experiment = create(:experiment, experiment_type: "stale_patients")
       create(:experiment, experiment_type: "stale_patients", state: "selecting")
@@ -356,8 +326,8 @@ describe Experimentation::Runner, type: :model do
         .and not_change { experiment.reload.state }
     end
 
-    it "does nothing if it the experiment is not in 'new' or 'running' state" do
-      experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients", state: "complete")
+    it "does nothing if it the experiment is end date is passed" do
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients", start_time: 20.days.ago, end_time: 10.days.ago)
       group = experiment.treatment_groups.first
       create(:reminder_template, treatment_group: group, message: "come today", remind_on_in_days: 0)
       patient1 = create(:patient, age: 80)
@@ -430,16 +400,15 @@ describe Experimentation::Runner, type: :model do
     end
 
     it "changes experiment state to 'cancelled' and changes pending and scheduled notification statuses to 'cancelled'" do
-      experiment = create(:experiment, state: "new")
+      experiment = create(:experiment)
       patient = create(:patient)
 
       pending_notification = create(:notification, experiment: experiment, patient: patient, status: "pending")
       scheduled_notification = create(:notification, experiment: experiment, patient: patient, status: "scheduled")
       sent_notification = create(:notification, experiment: experiment, patient: patient, status: "sent")
 
-      expect {
-        described_class.abort_experiment(experiment.name)
-      }.to change { experiment.reload.state }.to("cancelled")
+      described_class.abort_experiment(experiment.name)
+
       expect(pending_notification.reload.status).to eq("cancelled")
       expect(scheduled_notification.reload.status).to eq("cancelled")
       expect(sent_notification.reload.status).to eq("sent")
