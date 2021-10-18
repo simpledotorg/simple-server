@@ -18,8 +18,9 @@ module Experimentation
       medication_reminder: "medication_reminder"
     }
 
+    scope :upcoming, -> { where("start_date >= ?", Time.now) }
     scope :running, -> { where("start_date < ? AND end_date > ?", Time.now, Time.now) }
-    scope :complete, -> { where("end_date < ?", Time.now) }
+    scope :complete, -> { where("end_date <= ?", Time.now) }
     scope :cancelled, -> { with_discarded.discarded }
 
     def running?
