@@ -10,7 +10,6 @@ module Seed
       transaction do
         Experimentation::Experiment.current_patients.create!(
           name: experiment_name,
-          state: "new",
           start_time: start_time,
           end_time: end_time
         ).tap do |experiment|
@@ -31,7 +30,6 @@ module Seed
       transaction do
         Experimentation::Experiment.stale_patients.create!(
           name: experiment_name,
-          state: "new",
           start_time: start_time,
           end_time: end_time
         ).tap do |experiment|
