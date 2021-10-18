@@ -8,24 +8,23 @@ module Experimentation
     has_many :notifications
 
     validates :name, presence: true, uniqueness: true
-    validates :state, presence: true
     validates :experiment_type, presence: true
     validate :validate_date_range
     validate :one_active_experiment_per_type
-
-    enum state: {
-      new: "new",
-      selecting: "selecting",
-      running: "running",
-      cancelled: "cancelled",
-      complete: "complete"
-    }, _suffix: true
 
     enum experiment_type: {
       current_patients: "current_patients",
       stale_patients: "stale_patients",
       medication_reminder: "medication_reminder"
     }
+
+    scope :running, -> { where("start_date < ? AND end_date > ?", Time.now, Time.now) }
+    scope :complete, -> { where("end_date < ?", Time.now) }
+    scope :cancelled, -> { with_discarded.discarded }
+
+    def running?
+      start_date < Time.now && end_date > Time.now
+    end
 
     def self.candidate_patients
       Patient.with_hypertension
@@ -53,9 +52,9 @@ module Experimentation
     private
 
     def one_active_experiment_per_type
-      existing = self.class.where(state: ["running", "selecting"], experiment_type: experiment_type)
-      existing = existing.where("id != ?", id) if persisted?
-      if existing.any?
+      existing = self.class.running.where(experiment_type: experiment_type).where.not(id: id)
+
+      if existing.any? && running?
         errors.add(:state, "you cannot have multiple active experiments of type #{experiment_type}")
       end
     end

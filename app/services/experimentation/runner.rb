@@ -13,7 +13,7 @@ module Experimentation
         return
       end
 
-      experiment = Experiment.current_patients.find_by(name: name, state: [:new, :running])
+      experiment = Experiment.current_patients.running.find_by(name: name)
       if experiment.nil?
         logger.info("Experiment #{name} not found and may need to be removed from scheduler - exiting.")
         return
@@ -21,17 +21,13 @@ module Experimentation
 
       if experiment.end_date < Date.current
         logger.info("Experiment #{name} is past its end_date of #{experiment.end_date} - completing.")
-        experiment.complete_state!
         return
       end
 
-      if experiment.running_state?
+      if experiment.running?
         logger.info("Experiment #{name} is a running current_patient experiment, nothing to do - exiting.")
         return
       end
-
-      logger.info("Experiment #{name} is starting selecting state.")
-      experiment.selecting_state!
 
       eligible_ids = current_patient_candidates(experiment.start_date, experiment.end_date).shuffle!
       logger.info("Found #{eligible_ids.count} eligible patient ids for #{name} experiment, about to schedule_notifications.")
@@ -56,7 +52,6 @@ module Experimentation
       end
 
       logger.info("Finished scheduling notifications for #{name} current experiment - marking as running and exiting.")
-      experiment.running_state!
     end
 
     def self.schedule_daily_stale_patient_notifications(name:, patients_per_day: PATIENTS_PER_DAY)
@@ -65,7 +60,7 @@ module Experimentation
         return
       end
 
-      experiment = Experiment.find_by(name: name, experiment_type: "stale_patients", state: [:new, :running])
+      experiment = Experiment.stale_patients.running.find_by(name: name)
       if experiment.nil?
         logger.info("Experiment #{name} not found and may need to be removed from scheduler - exiting.")
         return
@@ -78,10 +73,8 @@ module Experimentation
       end
       if experiment.end_date < today
         logger.info "Experiment #{name} end_date #{experiment.end_date} has passed, marking complete"
-        experiment.complete_state!
         return
       end
-      experiment.selecting_state!
 
       eligible_ids = StalePatientSelection.call(start_date: today)
       logger.info "Experiment #{name} found #{eligible_ids.count} eligible patient ids for stale patient reminders"
@@ -97,13 +90,11 @@ module Experimentation
       end
 
       logger.info("Finished scheduling notifications for #{name} stale experiment - marking as running and exiting.")
-      experiment.running_state!
     end
 
     def self.abort_experiment(name)
       experiment = Experiment.find_by!(name: name)
       logger.warn "Aborting experiment #{name}! About to cancel all pending or scheduled notifications."
-      experiment.cancelled_state!
 
       notifications = experiment.notifications.where(status: ["pending", "scheduled"])
       notifications.find_each do |notification|
