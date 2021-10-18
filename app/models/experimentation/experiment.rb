@@ -1,5 +1,5 @@
 module Experimentation
-  class Experiment < ActiveRecord::Base
+  class Experiment < ApplicationRecord
     LAST_EXPERIMENT_BUFFER = 14.days.freeze
 
     has_many :treatment_groups, dependent: :delete_all
