@@ -27,7 +27,7 @@ describe Experimentation::Runner, type: :model do
       create(:appointment, patient: young_patient, scheduled_date: 10.days.from_now)
       create(:appointment, patient: old_patient, scheduled_date: 10.days.from_now)
 
-      experiment = create(:experiment, :running, :with_treatment_group, name: "alla")
+      experiment = create(:experiment, :running, :with_treatment_group)
 
       described_class.start_current_patient_experiment(name: experiment.name)
 
