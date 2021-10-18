@@ -246,6 +246,10 @@ class User < ApplicationRecord
     true
   end
 
+  def regions_access_cache_key
+    power_user? ? "users/power_user_region_access" : cache_key
+  end
+
   def power_user?
     power_user_access? && email_authentication.present?
   end
