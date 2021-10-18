@@ -7,7 +7,7 @@ RSpec.describe Experimentation::StalePatientSelection, type: :model do
     old_patient = create(:patient, age: 18)
     create(:blood_pressure, patient: old_patient, device_created_at: 100.days.ago)
 
-    result = described_class.call(start_date: Date.tomorrow)
+    result = described_class.call(start_time: Date.tomorrow)
 
     expect(result).to contain_exactly(old_patient.id)
   end
@@ -18,7 +18,7 @@ RSpec.describe Experimentation::StalePatientSelection, type: :model do
     non_hypertensive = create(:patient, :without_hypertension, age: 80)
     create(:blood_pressure, patient: non_hypertensive, device_created_at: 100.days.ago)
 
-    result = described_class.call(start_date: Date.tomorrow)
+    result = described_class.call(start_time: Date.tomorrow)
 
     expect(result).to contain_exactly(hypertensive.id)
   end
@@ -32,7 +32,7 @@ RSpec.describe Experimentation::StalePatientSelection, type: :model do
     patient_with_phone = create(:patient, age: 80)
     create(:blood_pressure, patient: patient_with_phone, device_created_at: 100.days.ago)
 
-    result = described_class.call(start_date: Date.tomorrow)
+    result = described_class.call(start_time: Date.tomorrow)
 
     expect(result).to contain_exactly(patient_with_phone.id)
   end
@@ -47,7 +47,7 @@ RSpec.describe Experimentation::StalePatientSelection, type: :model do
     ineligible_2 = create(:patient, age: 80)
     create(:blood_pressure, patient: ineligible_2, device_created_at: 1.days.ago)
 
-    result = described_class.call(start_date: Date.tomorrow)
+    result = described_class.call(start_time: Date.tomorrow)
 
     expect(result).to contain_exactly(eligible_1.id, eligible_2.id)
   end
@@ -61,7 +61,7 @@ RSpec.describe Experimentation::StalePatientSelection, type: :model do
     create(:blood_pressure, patient: patient_with_past_appt, device_created_at: 40.days.ago)
     create(:appointment, patient: patient_with_past_appt, device_created_at: 70.days.ago, scheduled_date: 40.days.ago)
 
-    result = described_class.call(start_date: Date.tomorrow)
+    result = described_class.call(start_time: Date.tomorrow)
 
     expect(result).to contain_exactly(patient_with_past_appt.id)
   end
@@ -72,7 +72,7 @@ RSpec.describe Experimentation::StalePatientSelection, type: :model do
     create(:blood_pressure, patient: patient, device_created_at: 90.days.ago)
     patient.appointments << create(:appointment, scheduled_date: 90.days.ago, status: "scheduled")
 
-    result = described_class.call(start_date: Date.tomorrow)
+    result = described_class.call(start_time: Date.tomorrow)
 
     expect(result).to contain_exactly(patient.id)
   end

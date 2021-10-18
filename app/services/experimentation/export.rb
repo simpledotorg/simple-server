@@ -12,9 +12,9 @@ module Experimentation
       @experiment = experiment
       @patient_data_aggregate = []
 
-      start_date = experiment.start_date - 1.year
-      end_date = experiment.end_date + FOLLOWUP_CUTOFF
-      @query_date_range = start_date..end_date
+      start_time = experiment.start_time - 1.year
+      end_time = experiment.end_time + FOLLOWUP_CUTOFF
+      @query_date_range = start_time.to_date..end_time.to_date
       aggregate_data
     end
 
@@ -98,9 +98,9 @@ module Experimentation
         notifications.map(&:subject).pluck(:scheduled_date).uniq
       else
         # control patients don't have notifications
-        experiment_date_range = (experiment.start_date..experiment.end_date)
+        experiment_date_range = (experiment.start_time..experiment.end_time)
         patient.appointments.where(scheduled_date: experiment_date_range)
-          .where("device_created_at < ?", experiment.start_date.beginning_of_day)
+          .where("device_created_at < ?", experiment.start_time.beginning_of_day)
           .order(:scheduled_date)
           .pluck(:scheduled_date)
           .uniq

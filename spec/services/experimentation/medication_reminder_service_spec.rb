@@ -83,7 +83,7 @@ RSpec.describe Experimentation::MedicationReminderService, type: :model do
     end
 
     it "includes patients who are in other experiments" do
-      experiment2 = create(:experiment, :with_treatment_group, start_date: 1.week.ago, end_date: 1.week.from_now)
+      experiment2 = create(:experiment, :with_treatment_group, start_time: 1.week.ago, end_time: 1.week.from_now)
       patient1 = create(:patient)
       create(:blood_pressure, patient: patient1, device_created_at: 31.days.ago)
       treatment_group = experiment2.treatment_groups.first

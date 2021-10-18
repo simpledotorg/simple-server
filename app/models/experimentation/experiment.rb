@@ -18,13 +18,13 @@ module Experimentation
       medication_reminder: "medication_reminder"
     }
 
-    scope :upcoming, -> { where("start_date >= ?", Time.now) }
-    scope :running, -> { where("start_date < ? AND end_date > ?", Time.now, Time.now) }
-    scope :complete, -> { where("end_date <= ?", Time.now) }
+    scope :upcoming, -> { where("start_time > ?", Time.now) }
+    scope :running, -> { where("start_time <= ? AND end_time => ?", Time.now, Time.now) }
+    scope :complete, -> { where("end_time <= ?", Time.now) }
     scope :cancelled, -> { with_discarded.discarded }
 
     def running?
-      start_date < Time.now && end_date > Time.now
+      start_time <= Time.now && end_time >= Time.now
     end
 
     def self.candidate_patients
@@ -35,7 +35,7 @@ module Experimentation
           recent_treatment_group_memberships: Experimentation::TreatmentGroupMembership
                                          .joins(treatment_group: :experiment)
                                          .where("treatment_group_memberships.patient_id = patients.id")
-                                         .where("end_date > ?", LAST_EXPERIMENT_BUFFER.ago)
+                                         .where("end_time > ?", LAST_EXPERIMENT_BUFFER.ago)
                                          .select(:patient_id))
         .where("NOT EXISTS (:multiple_scheduled_appointments)",
           multiple_scheduled_appointments: Appointment
@@ -61,9 +61,9 @@ module Experimentation
     end
 
     def validate_date_range
-      errors.add(:start_date, "must be present") if start_date.blank?
-      errors.add(:end_date, "must be present") if end_date.blank?
-      errors.add(:date_range, "start date must precede end date") if start_date.present? && end_date.present? && start_date > end_date
+      errors.add(:start_time, "must be present") if start_time.blank?
+      errors.add(:end_time, "must be present") if end_time.blank?
+      errors.add(:date_range, "start time must precede end time") if start_time.present? && end_time.present? && start_time > end_time
     end
   end
 end

@@ -7,7 +7,7 @@
 - in India, the `whatsapp_appointment_reminders` feature flag should also be turned on because WhatsApp notifications are of higher value than SMS.
 
 ## Current patient experiment:
-- current patient experiments can start sending notifications before the experiment start date. The start date and end date truly mean "selection start date" and "selection end date". Patients are selected for the experiment if they have appointments during the date range. But because reminder templates can be configured to send notifications before or after appointments, it's possible for notifications to be sent before the start date and after the end date. For the experiment to run correctly, the experiment must be created and added to scheduler before notifications should start sending, not just before the experiment start_date.
+- current patient experiments can start sending notifications before the experiment start date. The start date and end date truly mean "selection start date" and "selection end date". Patients are selected for the experiment if they have appointments during the date range. But because reminder templates can be configured to send notifications before or after appointments, it's possible for notifications to be sent before the start date and after the end date. For the experiment to run correctly, the experiment must be created and added to scheduler before notifications should start sending, not just before the experiment start_time.
 - experiments must first be created according to [experiment setup](#experiment-setup).
 - experiments will be run by adding the following to `config/schedule.rb`:
   - `runner "Experimentation::Runner.start_current_patient_experiment(name: 'experiment name')"`

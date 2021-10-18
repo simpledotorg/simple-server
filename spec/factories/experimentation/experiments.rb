@@ -2,8 +2,8 @@ FactoryBot.define do
   factory :experiment, class: Experimentation::Experiment do
     name { Faker::Lorem.unique.word }
     experiment_type { "current_patients" }
-    start_date { Date.current }
-    end_date { 1.week.from_now }
+    start_time { Date.current }
+    end_time { 1.week.from_now }
   end
 
   trait :with_treatment_group do
@@ -15,7 +15,7 @@ FactoryBot.define do
   end
 
   trait :running do
-    start_date { 1.week.ago }
-    end_date { 1.week.from_now }
+    start_time { 1.week.ago }
+    end_time { 1.week.from_now }
   end
 end

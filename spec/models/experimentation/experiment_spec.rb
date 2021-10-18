@@ -28,26 +28,26 @@ RSpec.describe Experimentation::Experiment, type: :model do
 
     it "can only be updated to a complete and valid date range" do
       experiment = create(:experiment)
-      experiment.update(start_date: Date.today, end_date: nil)
+      experiment.update(start_time: Date.today, end_time: nil)
       expect(experiment).to be_invalid
-      experiment.update(start_date: nil, end_date: Date.today)
+      experiment.update(start_time: nil, end_time: Date.today)
       expect(experiment).to be_invalid
-      experiment.update(start_date: Date.today + 3.days, end_date: Date.today)
+      experiment.update(start_time: Date.today + 3.days, end_time: Date.today)
       expect(experiment).to be_invalid
-      experiment.update(start_date: Date.today, end_date: Date.today + 3.days)
+      experiment.update(start_time: Date.today, end_time: Date.today + 3.days)
       expect(experiment).to be_valid
     end
 
     it "should validate that start and end dates are present on the experiment" do
-      experiment = build(:experiment, start_date: nil, end_date: nil)
+      experiment = build(:experiment, start_time: nil, end_time: nil)
 
       experiment.validate
-      expect(experiment.errors[:start_date]).to be_present
-      expect(experiment.errors[:end_date]).to be_present
+      expect(experiment.errors[:start_time]).to be_present
+      expect(experiment.errors[:end_time]).to be_present
     end
 
     it "should validate that start date is after the end date" do
-      experiment = build(:experiment, start_date: Time.now, end_date: 10.days.ago)
+      experiment = build(:experiment, start_time: Time.now, end_time: 10.days.ago)
 
       experiment.validate
       expect(experiment.errors[:date_range]).to be_present
@@ -56,7 +56,7 @@ RSpec.describe Experimentation::Experiment, type: :model do
 
   describe ".candidate_patients" do
     it "doesn't include patients from a running experiment" do
-      experiment = create(:experiment, start_date: 1.day.ago, end_date: 1.day.from_now)
+      experiment = create(:experiment, start_time: 1.day.ago, end_time: 1.day.from_now)
       treatment_group = create(:treatment_group, experiment: experiment)
 
       patient = create(:patient, age: 18)
@@ -69,7 +69,7 @@ RSpec.describe Experimentation::Experiment, type: :model do
     end
 
     it "includes patients from experiments that ended before 14 days" do
-      experiment = create(:experiment, start_date: 30.days.ago, end_date: 15.days.ago)
+      experiment = create(:experiment, start_time: 30.days.ago, end_time: 15.days.ago)
       treatment_group = create(:treatment_group, experiment: experiment)
       patient = create(:patient, age: 18)
       treatment_group.patients << patient
@@ -78,7 +78,7 @@ RSpec.describe Experimentation::Experiment, type: :model do
     end
 
     it "doesn't include patients from experiments that ended within 14 days" do
-      experiment = create(:experiment, start_date: 30.days.ago, end_date: 10.days.ago)
+      experiment = create(:experiment, start_time: 30.days.ago, end_time: 10.days.ago)
       treatment_group = create(:treatment_group, experiment: experiment)
       patient = create(:patient, age: 18)
       treatment_group.patients << patient
@@ -87,7 +87,7 @@ RSpec.describe Experimentation::Experiment, type: :model do
     end
 
     it "doesn't include patients are in a future experiment" do
-      future_experiment = create(:experiment, start_date: 10.days.from_now, end_date: 20.days.from_now)
+      future_experiment = create(:experiment, start_time: 10.days.from_now, end_time: 20.days.from_now)
       future_treatment_group = create(:treatment_group, experiment: future_experiment)
 
       patient = create(:patient, age: 18)
@@ -98,8 +98,8 @@ RSpec.describe Experimentation::Experiment, type: :model do
     end
 
     it "doesn't include patients who were once in a completed experiment but are now in a running experiment" do
-      running_experiment = create(:experiment, start_date: 1.day.ago, end_date: 1.day.from_now)
-      old_experiment = create(:experiment, start_date: 30.days.ago, end_date: 15.days.ago)
+      running_experiment = create(:experiment, start_time: 1.day.ago, end_time: 1.day.from_now)
+      old_experiment = create(:experiment, start_time: 30.days.ago, end_time: 15.days.ago)
       running_treatment_group = create(:treatment_group, experiment: running_experiment)
       old_treatment_group = create(:treatment_group, experiment: old_experiment)
 
@@ -112,8 +112,8 @@ RSpec.describe Experimentation::Experiment, type: :model do
     end
 
     it "doesn't include patients twice if they were in multiple experiments that ended" do
-      experiment_1 = create(:experiment, start_date: 10.days.ago, end_date: 5.days.ago)
-      experiment_2 = create(:experiment, start_date: 30.days.ago, end_date: 15.days.ago)
+      experiment_1 = create(:experiment, start_time: 10.days.ago, end_time: 5.days.ago)
+      experiment_2 = create(:experiment, start_time: 30.days.ago, end_time: 15.days.ago)
       treatment_group_1 = create(:treatment_group, experiment: experiment_1)
       treatment_group_2 = create(:treatment_group, experiment: experiment_2)
 

@@ -7,13 +7,13 @@ module Experimentation
       new(*args).call
     end
 
-    attr_reader :start_date
+    attr_reader :start_time
     attr_reader :eligible_range
 
-    def initialize(start_date:)
-      @start_date = start_date
-      range_start = (start_date - ELIGIBILITY_START).beginning_of_day
-      range_end = (start_date - ELIGIBILITY_END).end_of_day
+    def initialize(start_time:)
+      @start_time = start_time
+      range_start = (start_time - ELIGIBILITY_START).beginning_of_day
+      range_end = (start_time - ELIGIBILITY_END).end_of_day
       @eligible_range = (range_start..range_end)
     end
 
@@ -26,7 +26,7 @@ module Experimentation
         hypertension: "yes",
         range_start: eligible_range.begin,
         range_end: eligible_range.end,
-        start_date: start_date
+        start_time: start_time
       }
       sql = GitHub::SQL.new(<<~SQL, parameters)
         SELECT DISTINCT patients.id
@@ -50,7 +50,7 @@ module Experimentation
           AND patients.id IN :candidate_ids
           AND NOT EXISTS
             (SELECT 1 FROM appointments WHERE appointments.patient_id = patients.id
-               AND appointments.scheduled_date >= :start_date)
+               AND appointments.scheduled_date >= :start_time)
       SQL
       sql.values
     end

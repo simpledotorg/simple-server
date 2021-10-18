@@ -19,8 +19,8 @@ module Experimentation
         return
       end
 
-      if experiment.end_date < Date.current
-        logger.info("Experiment #{name} is past its end_date of #{experiment.end_date} - completing.")
+      if experiment.end_time < Date.current
+        logger.info("Experiment #{name} is past its end_time of #{experiment.end_time} - completing.")
         return
       end
 
@@ -29,7 +29,7 @@ module Experimentation
         return
       end
 
-      eligible_ids = current_patient_candidates(experiment.start_date, experiment.end_date).shuffle!
+      eligible_ids = current_patient_candidates(experiment.start_time, experiment.end_time).shuffle!
       logger.info("Found #{eligible_ids.count} eligible patient ids for #{name} experiment, about to schedule_notifications.")
 
       experiment_patient_count = (0.01 * percentage_of_patients * eligible_ids.length).round
@@ -40,7 +40,7 @@ module Experimentation
         patients = Patient
           .where(id: batch)
           .includes(:appointments)
-          .where(appointments: {scheduled_date: experiment.start_date..experiment.end_date, status: "scheduled"})
+          .where(appointments: {scheduled_date: experiment.start_time..experiment.end_time, status: "scheduled"})
 
         patients.each do |patient|
           group = experiment.random_treatment_group
@@ -67,16 +67,16 @@ module Experimentation
       end
 
       today = Date.current
-      if experiment.start_date > today
-        logger.info "Experiment #{name} start_date #{experiment.start_date} is in the future, skipping"
+      if experiment.start_time > today
+        logger.info "Experiment #{name} start_time #{experiment.start_time} is in the future, skipping"
         return
       end
-      if experiment.end_date < today
-        logger.info "Experiment #{name} end_date #{experiment.end_date} has passed, marking complete"
+      if experiment.end_time < today
+        logger.info "Experiment #{name} end_time #{experiment.end_time} has passed, marking complete"
         return
       end
 
-      eligible_ids = StalePatientSelection.call(start_date: today)
+      eligible_ids = StalePatientSelection.call(start_time: today)
       logger.info "Experiment #{name} found #{eligible_ids.count} eligible patient ids for stale patient reminders"
       if eligible_ids.any?
         eligible_ids.shuffle!
@@ -103,11 +103,11 @@ module Experimentation
       logger.warn "Aborting experiment #{name} finished."
     end
 
-    def self.current_patient_candidates(start_date, end_date)
+    def self.current_patient_candidates(start_time, end_time)
       Experiment.candidate_patients
         .joins(:appointments)
         .merge(Appointment.status_scheduled)
-        .where("appointments.scheduled_date BETWEEN ? and ?", start_date, end_date)
+        .where("appointments.scheduled_date BETWEEN ? and ?", start_time, end_time)
         .distinct
         .pluck(:id)
     end
