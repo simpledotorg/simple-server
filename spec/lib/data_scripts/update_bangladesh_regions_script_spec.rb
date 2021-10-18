@@ -42,7 +42,8 @@ describe UpdateBangladeshRegionsScript do
         create_list(:facility, 2, facility_size: "community")
         expect {
           results = described_class.call(dry_run: true, csv_path: test_csv_path)
-          results[:errors].each { |type, count| expect(count).to eq(0) }
+          # we expect some of the blocks to rename to be missing in our test data set
+          results[:errors].except(:block_rename_missing).each { |type, count| expect(count).to eq(0) }
           expect(results[:deleted][:facilities]).to eq(2)
           expect(results[:created][:facilities]).to eq(45)
           expect(results[:created][:facility_regions]).to eq(45)
@@ -55,9 +56,11 @@ describe UpdateBangladeshRegionsScript do
       it "creates new regions, facilities, and facility groups from CSV" do
         expect {
           result = described_class.call(dry_run: false, csv_path: test_csv_path)
-          result[:errors].each { |type, count| expect(count).to eq(0) }
+          # we expect some of the blocks to rename to be missing in our test data set
+          result[:errors].except(:block_rename_missing).each { |type, count| expect(count).to eq(0) }
           expect(result[:created][:facility_regions]).to eq(45)
           expect(result[:created][:facilities]).to eq(45)
+          expect(result[:updates][:block_rename]).to eq(1)
         }.to change { Region.count }.by(66)
           .and change { Region.facility_regions.count }.by(45)
           .and change { Region.district_regions.count }.by(6)
