@@ -49,7 +49,6 @@ class UpdateBangladeshRegionsScript < DataScript
     "Zokiganj" => "Zakiganj"
   }
 
-  # https://api.bd.simple.org/admin/facility_groups/jamalpur-district/facilities/uhc-melandah
   # Some Upazilas have on production have slightly different spellings in production than what is in the import CSV.
   # We need to fix the names in prod or else the import will create two upazila regions representing the same place.
   def rename_upazilas
