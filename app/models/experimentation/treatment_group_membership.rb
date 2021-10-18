@@ -2,5 +2,19 @@ module Experimentation
   class TreatmentGroupMembership < ActiveRecord::Base
     belongs_to :treatment_group
     belongs_to :patient
+
+    validate :one_active_experiment_per_patient
+
+    private
+
+    def one_active_experiment_per_patient
+      existing_memberships =
+        self.class
+          .joins(treatment_group: :experiment)
+          .where(experiments: {state: %w[running selecting]})
+          .where(patient_id: patient_id)
+
+      errors.add(:patient_id, "patient cannot belong to multiple active experiments") if existing_memberships.any?
+    end
   end
 end
