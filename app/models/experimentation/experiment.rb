@@ -19,7 +19,7 @@ module Experimentation
     }
 
     scope :upcoming, -> { where("start_time > ?", Time.now) }
-    scope :running, -> { where("start_time <= ? AND end_time => ?", Time.now, Time.now) }
+    scope :running, -> { where("start_time <= ? AND end_time >= ?", Time.now, Time.now) }
     scope :complete, -> { where("end_time <= ?", Time.now) }
     scope :cancelled, -> { with_discarded.discarded }
 
