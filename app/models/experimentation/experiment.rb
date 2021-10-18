@@ -1,5 +1,7 @@
 module Experimentation
   class Experiment < ActiveRecord::Base
+    LAST_EXPERIMENT_BUFFER = 14.days.freeze
+
     has_many :treatment_groups, dependent: :delete_all
     has_many :reminder_templates, through: :treatment_groups
     has_many :patients, through: :treatment_groups
@@ -28,9 +30,20 @@ module Experimentation
     def self.candidate_patients
       Patient.with_hypertension
         .contactable
-        .where("age >= ?", 18)
-        .includes(treatment_group_memberships: [treatment_group: [:experiment]])
-        .where(["experiments.end_date < ? OR experiments.id IS NULL", Runner::LAST_EXPERIMENT_BUFFER.ago]).references(:experiment)
+        .where_current_age(">=", 18)
+        .where("NOT EXISTS (:recent_treatment_group_memberships)",
+          recent_treatment_group_memberships: Experimentation::TreatmentGroupMembership
+                                         .joins(treatment_group: :experiment)
+                                         .where("treatment_group_memberships.patient_id = patients.id")
+                                         .where("end_date > ?", LAST_EXPERIMENT_BUFFER.ago)
+                                         .select(:patient_id))
+        .where("NOT EXISTS (:multiple_scheduled_appointments)",
+          multiple_scheduled_appointments: Appointment
+                                            .select(1)
+                                            .where("appointments.patient_id = patients.id")
+                                            .where(status: :scheduled)
+                                            .group(:patient_id)
+                                            .having("count(patient_id) > 1"))
     end
 
     def random_treatment_group
