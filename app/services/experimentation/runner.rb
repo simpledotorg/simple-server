@@ -56,7 +56,7 @@ module Experimentation
         return
       end
 
-      now = Time.now
+      now = Time.current
       eligible_ids = StalePatientSelection.call(start_time: now)
       logger.info "Experiment #{name} found #{eligible_ids.count} eligible patient ids for stale patient reminders"
       if eligible_ids.any?

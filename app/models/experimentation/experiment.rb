@@ -18,13 +18,13 @@ module Experimentation
       medication_reminder: "medication_reminder"
     }
 
-    scope :upcoming, -> { where("start_time > ?", Time.now) }
-    scope :running, -> { where("start_time <= ? AND end_time >= ?", Time.now, Time.now) }
-    scope :complete, -> { where("end_time <= ?", Time.now) }
+    scope :upcoming, -> { where("start_time > ?", Time.current) }
+    scope :running, -> { where("start_time <= ? AND end_time >= ?", Time.current, Time.current) }
+    scope :complete, -> { where("end_time <= ?", Time.current) }
     scope :cancelled, -> { with_discarded.discarded }
 
     def running?
-      start_time <= Time.now && end_time >= Time.now
+      start_time <= Time.current && end_time >= Time.current
     end
 
     def self.candidate_patients

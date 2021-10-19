@@ -47,7 +47,7 @@ RSpec.describe Experimentation::Experiment, type: :model do
     end
 
     it "should validate that start date is after the end date" do
-      experiment = build(:experiment, start_time: Time.now, end_time: 10.days.ago)
+      experiment = build(:experiment, start_time: Time.current, end_time: 10.days.ago)
 
       experiment.validate
       expect(experiment.errors[:date_range]).to be_present
