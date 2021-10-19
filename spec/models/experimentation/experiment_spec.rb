@@ -57,10 +57,10 @@ RSpec.describe Experimentation::Experiment, type: :model do
       it "does not allow creating experiments with overlapping intervals of the same type" do
         _existing_experiment = create(:experiment, experiment_type: "current_patients", start_time: "10 Feb 2021", end_time: "20 Feb 2021")
         overlapping_intervals = [
-          ["1 Feb 2021", "15 Feb 2021"], #  --(--|--)--|--
-          ["12 Feb 2021", "18 Feb 2021"], #  --|--(--)--|--
-          ["18 Feb 2021", "22 Feb 2021"], #  --|--(--|--)--
-          ["1 Feb 2021", "28 Feb 2021"] #  --(--|--|--)--
+          ["1 Feb 2021", "15 Feb 2021"],
+          ["12 Feb 2021", "18 Feb 2021"],
+          ["18 Feb 2021", "22 Feb 2021"],
+          ["1 Feb 2021", "28 Feb 2021"]
         ]
 
         overlapping_intervals.each do |interval|
@@ -74,8 +74,8 @@ RSpec.describe Experimentation::Experiment, type: :model do
       it "allows creating experiments of the same type where intervals don't overlap" do
         _existing_experiment = create(:experiment, experiment_type: "current_patients", start_time: "10 Feb 2021", end_time: "20 Feb 2021")
         valid_intervals = [
-          ["1 Feb 2021", "8 Feb 2021"], #  --(---)--|---|--
-          ["22 Feb 2021", "25 Feb 2021"] #  --|---|--(---)--
+          ["1 Feb 2021", "8 Feb 2021"],
+          ["22 Feb 2021", "25 Feb 2021"]
         ]
 
         valid_intervals.each do |interval|
