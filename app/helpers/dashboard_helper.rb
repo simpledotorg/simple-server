@@ -1,6 +1,6 @@
 module DashboardHelper
   def number_or_dash_with_delimiter(value, options = {})
-    return "-" if zero?(value)
+    return "-" if value.blank? || value.zero?
     number_with_delimiter(value, options)
   end
 
@@ -15,15 +15,13 @@ module DashboardHelper
   end
 
   def dash_if_zero(value)
-    zero?(value) ? "-" : value
+    return "-" if value.blank?
+    value
   end
 
   def zero_if_unavailable(value)
-    zero?(value) ? 0 : value
-  end
-
-  def zero?(value)
-    value.nil? || value.blank? || value.zero?
+    return 0 if value.blank?
+    value
   end
 
   def dates_for_periods(period, previous_periods, from_time: Time.current, include_current_period: false)
