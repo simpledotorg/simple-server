@@ -13,11 +13,11 @@
         <td class="snapshot-quarter"><%= format_period(:quarter, quarter) %></td>
 
         <td class="green text-right pr-3" style="border-right: 1px solid #dce4e8;">
-          <%= dash_if_blank(analytics_totals(dashboard_analytics, :registered_patients_by_period, quarter)) %>
+          <%= dash_if_blank_or_zero(analytics_totals(dashboard_analytics, :registered_patients_by_period, quarter)) %>
         </td>
 
         <td class="green text-right pl-3 pr-3">
-          <%= dash_if_blank(analytics_totals(dashboard_analytics, :follow_up_patients_by_period, quarter)) %>
+          <%= dash_if_blank_or_zero(analytics_totals(dashboard_analytics, :follow_up_patients_by_period, quarter)) %>
         </td>
       </tr>
     <% end %>

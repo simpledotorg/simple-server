@@ -14,13 +14,13 @@ module DashboardHelper
     symbol + number_to_percentage(value, options)
   end
 
-  def dash_if_blank(value)
+  def dash_if_blank_or_zero(value)
     return "-" if value.blank? || value.zero?
     value
   end
 
-  def zero_if_unavailable(value)
-    return 0 if value.blank?
+  def zero_if_blank_or_zero(value)
+    return 0 if value.blank? || value.zero?
     value
   end
 
