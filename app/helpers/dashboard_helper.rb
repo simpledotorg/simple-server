@@ -14,8 +14,8 @@ module DashboardHelper
     symbol + number_to_percentage(value, options)
   end
 
-  def dash_if_zero(value)
-    return "-" if value.blank?
+  def dash_if_blank(value)
+    return "-" if value.blank? || value.zero?
     value
   end
 
