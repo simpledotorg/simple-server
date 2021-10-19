@@ -24,7 +24,7 @@ RSpec.describe "Api authentication", type: :request, skip_request_store_clear: t
        "HTTP_AUTHORIZATION" => "Bearer #{request_user.access_token}"}
     end
 
-    it "works with sync" do
+    it "tracks current user info in request store" do
       get "/api/v3/blood_pressures/sync", params: {}, headers: headers
 
       expect(response.status).to eq 200
@@ -44,7 +44,7 @@ RSpec.describe "Api authentication", type: :request, skip_request_store_clear: t
        "HTTP_AUTHORIZATION" => "Bearer bad token"}
     end
 
-    it "works with sync" do
+    it "does not track anything in request store" do
       expect(RequestStore.store[:current_user]).to be_nil
       get "/api/v3/blood_pressures/sync", params: {}, headers: headers
 
