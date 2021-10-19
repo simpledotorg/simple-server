@@ -190,8 +190,8 @@ RSpec.describe Experimentation::Experiment, type: :model do
 
   describe "#random_treatment_group" do
     it "returns a treatment group from the experiment" do
-      experiment1 = create(:experiment, :upcoming, :with_treatment_group)
-      experiment2 = create(:experiment, :upcoming, :with_treatment_group)
+      experiment1 = create(:experiment, :with_treatment_group)
+      experiment2 = create(:experiment, :with_treatment_group, start_time: 10.days.from_now, end_time: 20.days.from_now)
 
       expect(experiment1.random_treatment_group).to eq(experiment1.treatment_groups.first)
       expect(experiment2.random_treatment_group).to eq(experiment2.treatment_groups.first)
