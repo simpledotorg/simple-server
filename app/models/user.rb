@@ -250,8 +250,12 @@ class User < ApplicationRecord
     {
       id: id,
       access_level: access_level,
-      sync: sync_approval_status
+      sync_approval_status: sync_approval_status
     }
+  end
+
+  def regions_access_cache_key
+    power_user? ? "users/power_user_region_access" : cache_key
   end
 
   def power_user?

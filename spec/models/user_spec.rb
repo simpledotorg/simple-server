@@ -420,4 +420,33 @@ RSpec.describe User, type: :model do
       expect(admin.drug_stocks_enabled?).to be false
     end
   end
+
+  describe "regions_access_cache_key" do
+    it "is cache key for non power users" do
+      admin = create(:admin, :viewer_all)
+      expect(admin.regions_access_cache_key).to eq("users/#{admin.id}")
+    end
+
+    it "is constant cache key for power users" do
+      admin = create(:admin, :power_user)
+      expect(admin.regions_access_cache_key).to eq("users/power_user_region_access")
+    end
+  end
+
+  describe "to_datadog_hash" do
+    it "returns key info for user" do
+      admin = build(:admin)
+      expect(admin.to_datadog_hash).to eq({
+        access_level: "power_user",
+        id: nil,
+        sync_approval_status: "denied"
+      })
+      user = build(:user_created_on_device)
+      expect(user.to_datadog_hash).to eq({
+        access_level: nil,
+        id: nil,
+        sync_approval_status: "allowed"
+      })
+    end
+  end
 end
