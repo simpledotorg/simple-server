@@ -18,8 +18,8 @@ class JsonLogger < Ougai::Logger
       }
       # Only merge datadog info if Datadog is enabled, as it clutters up the logs
       data.merge!(datadog_trace_info) if DATADOG_ENABLED
-      if RequestStore.store[:current_user_id]
-        data[:current_user_id] = RequestStore.store[:current_user_id]
+      if RequestStore.store[:current_user]
+        data[:usr] = RequestStore.store[:current_user]
       end
     end
 

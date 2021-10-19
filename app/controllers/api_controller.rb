@@ -90,14 +90,12 @@ class APIController < ApplicationController
   end
 
   def authenticate
-    return fail_request(:unauthorized, "access_token unauthorized") unless access_token_authorized?
-    RequestStore.store[:current_user_id] = current_user.id
-    current_user.mark_as_logged_in if current_user.has_never_logged_in?
-  end
-
-  def access_token_authorized?
     authenticate_or_request_with_http_token do |token, _options|
-      ActiveSupport::SecurityUtils.secure_compare(token, current_user.access_token)
+      if ActiveSupport::SecurityUtils.secure_compare(token, current_user.access_token)
+        RequestStore.store[:current_user] = current_user.to_datadog_hash
+        current_user.mark_as_logged_in if current_user.has_never_logged_in?
+        true
+      end
     end
   end
 

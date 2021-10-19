@@ -246,6 +246,14 @@ class User < ApplicationRecord
     true
   end
 
+  def to_datadog_hash
+    {
+      id: id,
+      access_level: access_level,
+      sync: sync_approval_status
+    }
+  end
+
   def power_user?
     power_user_access? && email_authentication.present?
   end
