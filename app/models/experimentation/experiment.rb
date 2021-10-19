@@ -50,19 +50,6 @@ module Experimentation
       treatment_groups.sample
     end
 
-    def abort
-      Rails.logger.warn "Aborting experiment #{name}! About to cancel all pending or scheduled notifications."
-      ActiveRecord::Base.transaction do
-        notifications.where(status: %w[pending scheduled]).find_each do |notification|
-          notification.status_cancelled!
-        end
-
-        discard
-      end
-
-      Rails.logger.warn "Aborting experiment #{name} finished."
-    end
-
     private
 
     def one_active_experiment_per_type

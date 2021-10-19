@@ -75,15 +75,17 @@ module Experimentation
 
     def self.abort_experiment(name)
       experiment = Experiment.find_by!(name: name)
-      logger.warn "Aborting experiment #{name}! About to cancel all pending or scheduled notifications."
+      logger.info "Aborting experiment #{name}! About to cancel all pending or scheduled notifications."
 
-      notifications = experiment.notifications.where(status: ["pending", "scheduled"])
-      notifications.find_each do |notification|
-        notification.status_cancelled!
+      ActiveRecord::Base.transaction do
+        notifications = experiment.notifications.where(status: ["pending", "scheduled"])
+        notifications.find_each do |notification|
+          notification.status_cancelled!
+        end
+
+        experiment.discard
       end
-
-      experiment.discard
-      logger.warn "Aborting experiment #{name} finished."
+      logger.info "Aborting experiment #{name} finished."
     end
 
     def self.current_patient_candidates(start_time, end_time)
