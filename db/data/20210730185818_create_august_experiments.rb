@@ -11,7 +11,7 @@ class CreateAugustExperiments < ActiveRecord::Migration[5.2]
     Seed::ExperimentSeeder.create_stale_experiment(
       experiment_name: "Stale Patient August 2021",
       start_time: Time.parse("Aug 5, 2021"),
-      end_time: Time.parse("Sep 4, 2021)"
+      end_time: Time.parse("Sep 4, 2021")
     )
   end
 
