@@ -78,7 +78,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
         cumulative_registrations
         facility_region_slug
         lost_to_follow_up
-      monthly_registrations
+        monthly_registrations
         month_date
       ].map(&:to_s)
       (3.months.ago.to_period..now.to_period).each do |period|
