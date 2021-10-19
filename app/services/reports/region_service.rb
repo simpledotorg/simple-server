@@ -1,4 +1,5 @@
 module Reports
+  # This class is deprecated -- use Reports::Repository directly instead
   class RegionService
     # The default period we report on is the current month.
     def self.default_period
