@@ -15,21 +15,13 @@ class RefreshReportingViews
   end
 
   attr_reader :logger
+  delegate :tz, :set_last_updated_at, to: self
 
   def initialize
     @logger = Rails.logger.child(class: self.class.name)
     if Rails.env.development?
       stdout_logger = Ougai::Logger.new($stdout)
       @logger.extend(Ougai::Logger.broadcast(stdout_logger))
-    end
-  end
-
-  def benchmark_and_statsd(operation)
-    name = "refresh_reporting_views.#{operation}"
-    benchmark(name) do
-      Statsd.instance.time(name) do
-        yield
-      end
     end
   end
 
@@ -41,14 +33,13 @@ class RefreshReportingViews
     benchmark_and_statsd("all_v2") do
       refresh_v2
     end
+    set_last_updated_at
     logger.info "Completed full reporting view refresh"
   end
 
   def self.tz
     Rails.application.config.country[:time_zone]
   end
-
-  delegate :tz, :set_last_updated_at, to: self
 
   V1_REPORTING_VIEWS = %w[
     LatestBloodPressuresPerPatientPerMonth
@@ -74,15 +65,11 @@ class RefreshReportingViews
   # LatestBloodPressuresPerPatientPerMonth should be refreshed before
   # LatestBloodPressuresPerPatientPerQuarter and LatestBloodPressuresPerPatient
   def refresh_v1
-    ActiveRecord::Base.transaction do
-      ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{tz}'")
-      V1_REPORTING_VIEWS.each do |name|
-        benchmark_and_statsd(name) do
-          klass = name.constantize
-          klass.refresh
-        end
+    V1_REPORTING_VIEWS.each do |name|
+      benchmark_and_statsd(name) do
+        klass = name.constantize
+        klass.refresh
       end
-      set_last_updated_at
     end
   end
 
@@ -91,6 +78,17 @@ class RefreshReportingViews
       benchmark_and_statsd(name) do
         klass = name.constantize
         klass.refresh
+      end
+    end
+  end
+
+  private
+
+  def benchmark_and_statsd(operation)
+    name = "refresh_reporting_views.#{operation}"
+    benchmark(name) do
+      Statsd.instance.time(name) do
+        yield
       end
     end
   end

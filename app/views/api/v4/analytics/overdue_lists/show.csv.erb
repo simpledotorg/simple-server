@@ -1,0 +1,32 @@
+<% csv = CSV.generate do |csv| %>
+  <% csv << [
+    "Overdue list downloaded at: #{Time.now.strftime("%d-%b-%Y %I:%M %p")}"
+  ] %>
+  <% csv << [
+    "Registration date",
+    "BP Passport number",
+    "Patient name",
+    "Gender",
+    "Age",
+    "Patient address",
+    "Patient village or colony",
+    "Days overdue",
+    "Patient phone",
+    "Latest medicines"
+  ] %>
+  <% @patient_summaries.each do |patient_summary| %>
+    <% csv << [
+      handle_impossible_registration_date(patient_summary.recorded_at),
+      patient_summary.latest_bp_passport&.shortcode,
+      patient_summary.full_name,
+      patient_summary.gender.capitalize,
+      patient_summary.current_age.to_i,
+      patient_summary.street_address,
+      patient_summary.village_or_colony,
+      patient_summary.days_overdue.to_i,
+      patient_summary.latest_phone_number,
+      patient_summary.current_prescription_drugs.map { |drug| "#{drug.name} #{drug.dosage}" }.join(", ")
+    ] %>
+  <% end %>
+<% end.html_safe %>
+<%= csv %>

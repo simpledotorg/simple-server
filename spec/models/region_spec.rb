@@ -25,6 +25,23 @@ RSpec.describe Region, type: :model do
     end
   end
 
+  describe "when Region sources are destroyed" do
+    it "destroys the region if there are no children" do
+      facility_group = create(:facility_group, name: "no-children")
+      district_region = facility_group.region
+      facility_group.destroy!
+      expect(Region.exists?(district_region.id)).to be false
+    end
+
+    it "does not destroys the region if there are children" do
+      facility_group = create(:facility_group, name: "no-children")
+      district_region = facility_group.region
+      facility_group.facilities << create(:facility, facility_group: facility_group)
+      facility_group.destroy!
+      expect(Region.exists?(district_region.id)).to be true
+    end
+  end
+
   describe "region_type" do
     it "has question methods for determining type" do
       region_1 = Region.create!(name: "New York", region_type: "state", reparent_to: Region.root)

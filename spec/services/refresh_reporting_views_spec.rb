@@ -3,7 +3,9 @@ require "rails_helper"
 RSpec.describe RefreshReportingViews do
   around(:example) do |example|
     Rails.cache.clear
-    example.run
+    with_reporting_time_zone do
+      example.run
+    end
     Rails.cache.clear
   end
 

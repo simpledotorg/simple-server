@@ -420,4 +420,16 @@ RSpec.describe User, type: :model do
       expect(admin.drug_stocks_enabled?).to be false
     end
   end
+
+  describe "regions_access_cache_key" do
+    it "is cache key for non power users" do
+      admin = create(:admin, :viewer_all)
+      expect(admin.regions_access_cache_key).to eq("users/#{admin.id}")
+    end
+
+    it "is constant cache key for power users" do
+      admin = create(:admin, :power_user)
+      expect(admin.regions_access_cache_key).to eq("users/power_user_region_access")
+    end
+  end
 end

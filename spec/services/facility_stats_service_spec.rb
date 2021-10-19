@@ -9,11 +9,9 @@ RSpec.describe FacilityStatsService do
   let(:user) { create(:admin, :manager, :with_access, resource: organization, organization: organization) }
 
   def refresh_views
-    ActiveRecord::Base.transaction do
-      LatestBloodPressuresPerPatientPerMonth.refresh
-      LatestBloodPressuresPerPatientPerQuarter.refresh
-      PatientRegistrationsPerDayPerFacility.refresh
-    end
+    LatestBloodPressuresPerPatientPerMonth.refresh
+    LatestBloodPressuresPerPatientPerQuarter.refresh
+    PatientRegistrationsPerDayPerFacility.refresh
   end
 
   def facilities_data(facilities)
@@ -86,8 +84,9 @@ RSpec.describe FacilityStatsService do
         medium_facility2, large_facility1, large_facility2]
       refresh_views
 
-      stats_by_size = FacilityStatsService.call(facilities: facilities_data(all_facilities),
-                                                period: period, rate_numerator: :controlled_patients)
+      stats_by_size = with_reporting_time_zone {
+        FacilityStatsService.call(facilities: facilities_data(all_facilities), period: period, rate_numerator: :controlled_patients)
+      }
 
       # all numbers except cumulative_registrations appear in data 3 months after they're recorded
       small = stats_by_size[:small][:periods]
