@@ -55,8 +55,8 @@ class MyFacilitiesController < AdminController
     data_type = params[:type]
     service = BloodPressureExportService.new(start_period: @start_period, end_period: @period, data_type: data_type, facilities: filter_facilities)
     csv_data = service.as_csv
-    filename = "BP #{data_type.gsub("_", " ").titleize} #{@selected_facility_group.name}.csv"
-    send_data csv_data,  type: "text/csv", filename: filename
+    filename = "BP #{data_type.tr("_", " ").titleize} #{@selected_facility_group.name}.csv"
+    send_data csv_data, type: "text/csv", filename: filename
   end
 
   private
