@@ -76,7 +76,15 @@ RSpec.describe User, type: :model do
       )
     }
 
-    it { is_expected.to validate_inclusion_of(:receive_approval_notifications).in_array([true, false]) }
+    it "restricts receive_approval_notifications to boolean values" do
+      now = Time.current
+      user = User.new(receive_approval_notifications: "false", full_name: "Jane Doe", device_created_at: now, device_updated_at: now)
+      expect(user.receive_approval_notifications).to be false
+      expect(user).to be_valid
+      user = User.new(receive_approval_notifications: 1, full_name: "Jane Doe", device_created_at: now, device_updated_at: now)
+      expect(user.receive_approval_notifications).to be true
+      expect(user).to be_valid
+    end
   end
 
   describe "#full_teleconsultation_phone_number" do
