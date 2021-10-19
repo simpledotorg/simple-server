@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_18_080612) do
+ActiveRecord::Schema.define(version: 2021_10_19_135407) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -157,7 +157,9 @@ ActiveRecord::Schema.define(version: 2021_10_18_080612) do
     t.index ["user_id"], name: "index_communications_on_user_id"
   end
 
-  create_table "data_migrations", primary_key: "version", id: :string, force: :cascade do |t|
+  create_table "data_migrations", id: false, force: :cascade do |t|
+    t.string "version", null: false
+    t.index ["version"], name: "unique_data_migrations", unique: true
   end
 
   create_table "deduplication_logs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -625,6 +627,56 @@ ActiveRecord::Schema.define(version: 2021_10_18_080612) do
     t.uuid "patient_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "experiment_id"
+    t.uuid "appointment_id"
+    t.string "experiment_name"
+    t.string "treatment_group_name"
+    t.datetime "experiment_inclusion_date"
+    t.datetime "expected_return_date"
+    t.uuid "expected_return_facility_id"
+    t.string "expected_return_facility_type"
+    t.string "expected_return_facility_name"
+    t.string "expected_return_facility_block"
+    t.string "expected_return_facility_district"
+    t.string "expected_return_facility_state"
+    t.datetime "appointment_creation_time"
+    t.uuid "appointment_creation_facility_id"
+    t.string "appointment_creation_facility_type"
+    t.string "appointment_creation_facility_name"
+    t.string "appointment_creation_facility_block"
+    t.string "appointment_creation_facility_district"
+    t.string "appointment_creation_facility_state"
+    t.string "gender"
+    t.integer "age"
+    t.string "risk_level"
+    t.string "diagnosed_htn"
+    t.uuid "assigned_facility_id"
+    t.string "assigned_facility_name"
+    t.string "assigned_facility_type"
+    t.string "assigned_facility_block"
+    t.string "assigned_facility_district"
+    t.string "assigned_facility_state"
+    t.uuid "registration_facility_id"
+    t.string "registration_facility_name"
+    t.string "registration_facility_type"
+    t.string "registration_facility_block"
+    t.string "registration_facility_district"
+    t.string "registration_facility_state"
+    t.date "visit_date"
+    t.uuid "visit_facility_id"
+    t.string "visit_facility_name"
+    t.string "visit_facility_type"
+    t.string "visit_facility_block"
+    t.string "visit_facility_district"
+    t.string "visit_facility_state"
+    t.uuid "visit_blood_pressure_id"
+    t.uuid "visit_blood_sugar_id"
+    t.boolean "visit_prescription_drug_created"
+    t.integer "days_to_visit"
+    t.jsonb "messages"
+    t.datetime "deleted_at"
+    t.index ["appointment_id"], name: "index_treatment_group_memberships_on_appointment_id"
+    t.index ["experiment_id"], name: "index_treatment_group_memberships_on_experiment_id"
     t.index ["patient_id"], name: "index_treatment_group_memberships_on_patient_id"
     t.index ["treatment_group_id"], name: "index_treatment_group_memberships_on_treatment_group_id"
   end
@@ -709,6 +761,8 @@ ActiveRecord::Schema.define(version: 2021_10_18_080612) do
   add_foreign_key "teleconsultations", "users", column: "medical_officer_id"
   add_foreign_key "teleconsultations", "users", column: "requested_medical_officer_id"
   add_foreign_key "teleconsultations", "users", column: "requester_id"
+  add_foreign_key "treatment_group_memberships", "appointments"
+  add_foreign_key "treatment_group_memberships", "experiments"
   add_foreign_key "treatment_group_memberships", "patients"
   add_foreign_key "treatment_group_memberships", "treatment_groups"
   add_foreign_key "treatment_groups", "experiments"
