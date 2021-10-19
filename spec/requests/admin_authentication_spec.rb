@@ -37,5 +37,4 @@ RSpec.describe "Admin authentication", type: :request do
       expect(RequestStore.store[:current_user]).to be_nil
     end
   end
-
 end
