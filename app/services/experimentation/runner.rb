@@ -19,16 +19,6 @@ module Experimentation
         return
       end
 
-      if experiment.end_time < Date.current
-        logger.info("Experiment #{name} is past its end_time of #{experiment.end_time} - completing.")
-        return
-      end
-
-      if experiment.running?
-        logger.info("Experiment #{name} is a running current_patient experiment, nothing to do - exiting.")
-        return
-      end
-
       eligible_ids = current_patient_candidates(experiment.start_time, experiment.end_time).shuffle!
       logger.info("Found #{eligible_ids.count} eligible patient ids for #{name} experiment, about to schedule_notifications.")
 
@@ -66,17 +56,8 @@ module Experimentation
         return
       end
 
-      today = Date.current
-      if experiment.start_time > today
-        logger.info "Experiment #{name} start_time #{experiment.start_time} is in the future, skipping"
-        return
-      end
-      if experiment.end_time < today
-        logger.info "Experiment #{name} end_time #{experiment.end_time} has passed, marking complete"
-        return
-      end
-
-      eligible_ids = StalePatientSelection.call(start_time: today)
+      now = Time.now
+      eligible_ids = StalePatientSelection.call(start_time: now)
       logger.info "Experiment #{name} found #{eligible_ids.count} eligible patient ids for stale patient reminders"
       if eligible_ids.any?
         eligible_ids.shuffle!
@@ -84,7 +65,7 @@ module Experimentation
         daily_patients = Patient.where(id: daily_ids).includes(:appointments)
         daily_patients.each do |patient|
           group = experiment.random_treatment_group
-          schedule_notifications(patient, patient.appointments.last, group, today)
+          schedule_notifications(patient, patient.appointments.last, group, now)
           group.patients << patient
         end
       end
