@@ -47,7 +47,7 @@ RSpec.configure do |config|
     end
   end
 
-  config.before(:each) do |example|
+  config.before(:each) do
     RequestStore.clear!
   end
 
