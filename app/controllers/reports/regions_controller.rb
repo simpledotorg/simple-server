@@ -6,7 +6,7 @@ class Reports::RegionsController < AdminController
   before_action :set_page, only: [:details]
   before_action :set_per_page, only: [:details]
   before_action :find_region, except: [:index, :monthly_district_data_report]
-  around_action :check_reporting_schema_toggle, only: [:show]
+  around_action :check_reporting_schema_toggle
   around_action :set_reporting_time_zone
   after_action :log_cache_metrics
   delegate :cache, to: Rails
