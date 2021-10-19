@@ -585,8 +585,6 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
             repo_v1 = Reports::Repository.new(regions, periods: range, reporting_schema_v2: false)
             repo_v2 = Reports::Repository.new(regions, periods: range, reporting_schema_v2: true)
             expect(repo_v2.controlled[facility_1.slug]).to eq(repo_v1.controlled[facility_1.slug])
-            pp "uncontrolled for facility 1 for repo v2"
-            pp repo_v2.uncontrolled[facility_1.slug]
             expect(repo_v2.uncontrolled[facility_1.slug]).to eq(repo_v1.uncontrolled[facility_1.slug])
             result = repo_v2.controlled
 
