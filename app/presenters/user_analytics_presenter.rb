@@ -21,19 +21,19 @@ class UserAnalyticsPresenter
   EXPIRE_STATISTICS_CACHE_IN = 15.minutes
 
   def daily_stats_by_date(*stats)
-    zero_if_unavailable statistics.dig(:daily, :grouped_by_date, *stats)
+    zero_if_blank_or_zero statistics.dig(:daily, :grouped_by_date, *stats)
   end
 
   def monthly_htn_stats_by_date(*stats)
-    zero_if_unavailable statistics.dig(:monthly, :grouped_by_date, :hypertension, *stats)
+    zero_if_blank_or_zero statistics.dig(:monthly, :grouped_by_date, :hypertension, *stats)
   end
 
   def monthly_dm_stats_by_date(*stats)
-    zero_if_unavailable statistics.dig(:monthly, :grouped_by_date, :diabetes, *stats)
+    zero_if_blank_or_zero statistics.dig(:monthly, :grouped_by_date, :diabetes, *stats)
   end
 
   def monthly_htn_or_dm_stats_by_date(*stats)
-    zero_if_unavailable statistics.dig(:monthly, :grouped_by_date, :htn_or_dm, *stats)
+    zero_if_blank_or_zero statistics.dig(:monthly, :grouped_by_date, :htn_or_dm, *stats)
   end
 
   def monthly_htn_control_rate(month_date)
@@ -67,31 +67,31 @@ class UserAnalyticsPresenter
   end
 
   def monthly_dm_stats_by_date_and_gender(stat, month_date, gender)
-    zero_if_unavailable statistics.dig(:monthly, :grouped_by_date_and_gender, :diabetes, stat, [month_date, gender])
+    zero_if_blank_or_zero statistics.dig(:monthly, :grouped_by_date_and_gender, :diabetes, stat, [month_date, gender])
   end
 
   def monthly_htn_stats_by_date_and_gender(stat, month_date, gender)
-    zero_if_unavailable statistics.dig(:monthly, :grouped_by_date_and_gender, :hypertension, stat, [month_date, gender])
+    zero_if_blank_or_zero statistics.dig(:monthly, :grouped_by_date_and_gender, :hypertension, stat, [month_date, gender])
   end
 
   def all_time_htn_or_dm_count(stat)
-    zero_if_unavailable statistics.dig(:all_time, :grouped_by_date, :htn_or_dm, stat)
+    zero_if_blank_or_zero statistics.dig(:all_time, :grouped_by_date, :htn_or_dm, stat)
   end
 
   def all_time_dm_count(stat)
-    zero_if_unavailable statistics.dig(:all_time, :grouped_by_gender, :diabetes, stat).values.sum
+    zero_if_blank_or_zero statistics.dig(:all_time, :grouped_by_gender, :diabetes, stat).values.sum
   end
 
   def all_time_htn_count(stat)
-    zero_if_unavailable statistics.dig(:all_time, :grouped_by_gender, :hypertension, stat).values.sum
+    zero_if_blank_or_zero statistics.dig(:all_time, :grouped_by_gender, :hypertension, stat).values.sum
   end
 
   def all_time_dm_stats_by_gender(stat, gender)
-    zero_if_unavailable statistics.dig(:all_time, :grouped_by_gender, :diabetes, stat, gender)
+    zero_if_blank_or_zero statistics.dig(:all_time, :grouped_by_gender, :diabetes, stat, gender)
   end
 
   def all_time_htn_stats_by_gender(stat, gender)
-    zero_if_unavailable statistics.dig(:all_time, :grouped_by_gender, :hypertension, stat, gender)
+    zero_if_blank_or_zero statistics.dig(:all_time, :grouped_by_gender, :hypertension, stat, gender)
   end
 
   def cohort_controlled(cohort)
