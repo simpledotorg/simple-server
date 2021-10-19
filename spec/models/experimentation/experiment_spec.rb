@@ -52,6 +52,57 @@ RSpec.describe Experimentation::Experiment, type: :model do
       experiment.validate
       expect(experiment.errors[:date_range]).to be_present
     end
+
+    describe "#one_active_experiment_per_type" do
+      it "does not allow creating experiments with overlapping intervals of the same type" do
+        _existing_experiment = create(:experiment, experiment_type: "current_patients", start_time: "10 Feb 2021", end_time: "20 Feb 2021")
+        overlapping_intervals = [
+          ["1 Feb 2021", "15 Feb 2021"], #  --(--|--)--|--
+          ["12 Feb 2021", "18 Feb 2021"], #  --|--(--)--|--
+          ["18 Feb 2021", "22 Feb 2021"], #  --|--(--|--)--
+          ["1 Feb 2021", "28 Feb 2021"] #  --(--|--|--)--
+        ]
+
+        overlapping_intervals.each do |interval|
+          experiment = build(:experiment, experiment_type: "current_patients", start_time: interval.first, end_time: interval.second)
+          experiment.validate
+
+          expect(experiment.errors[:state].first).to match(/you cannot have multiple active experiments/)
+        end
+      end
+
+      it "allows creating experiments of the same type where intervals don't overlap" do
+        _existing_experiment = create(:experiment, experiment_type: "current_patients", start_time: "10 Feb 2021", end_time: "20 Feb 2021")
+        valid_intervals = [
+          ["1 Feb 2021", "8 Feb 2021"], #  --(---)--|---|--
+          ["22 Feb 2021", "25 Feb 2021"] #  --|---|--(---)--
+        ]
+
+        valid_intervals.each do |interval|
+          experiment = build(:experiment, experiment_type: "current_patients", start_time: interval.first, end_time: interval.second)
+          experiment.validate
+
+          expect(experiment.errors[:state]).not_to be_present
+        end
+      end
+
+      it "allows overlapping experiments of different types" do
+        _existing_experiment = create(:experiment, experiment_type: "current_patients", start_time: "10 Feb 2021", end_time: "20 Feb 2021")
+        overlapping_intervals = [
+          ["1 Feb 2021", "15 Feb 2021"],
+          ["12 Feb 2021", "18 Feb 2021"],
+          ["18 Feb 2021", "22 Feb 2021"],
+          ["1 Feb 2021", "28 Feb 2021"]
+        ]
+
+        overlapping_intervals.each do |interval|
+          experiment = build(:experiment, experiment_type: "stale_patients", start_time: interval.first, end_time: interval.second)
+          experiment.validate
+
+          expect(experiment.errors[:state]).not_to be_present
+        end
+      end
+    end
   end
 
   describe ".candidate_patients" do

@@ -53,11 +53,15 @@ module Experimentation
     private
 
     def one_active_experiment_per_type
-      existing = self.class.running.where(experiment_type: experiment_type).where.not(id: id)
+      existing_experiments = self.class.where(experiment_type: experiment_type).where.not(id: id)
+      any_overlap = existing_experiments.any? { |experiment| overlap?(experiment.start_time, experiment.end_time) }
 
-      if existing.any? && running?
-        errors.add(:state, "you cannot have multiple active experiments of type #{experiment_type}")
-      end
+      errors.add(:state, "you cannot have multiple active experiments of type #{experiment_type}") if any_overlap
+    end
+
+    def overlap?(other_start_time, other_end_time)
+      !((start_time < other_start_time && end_time < other_start_time) ||
+        (start_time > other_end_time && end_time > other_end_time))
     end
 
     def validate_date_range
