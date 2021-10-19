@@ -4,13 +4,13 @@ class CreateSmallTestExperiments < ActiveRecord::Migration[5.2]
 
     Seed::ExperimentSeeder.create_current_experiment(
       experiment_name: "Small Current Patient July 2021",
-      start_time: "Jul 28, 2021".to_date,
-      end_time: "Jul 30, 2021".to_date
+      start_time: Time.parse("Jul 28, 2021"),
+      end_time: Time.parse("Jul 30, 2021")
     )
     Seed::ExperimentSeeder.create_stale_experiment(
       experiment_name: "Small Stale Patient July 2021",
-      start_time: "Jul 28, 2021".to_date,
-      end_time: "Jul 30, 2021".to_date
+      start_time: Time.parse("Jul 28, 2021"),
+      end_time: Time.parse("Jul 30, 2021")
     )
   end
 
