@@ -21,7 +21,7 @@ module Experimentation
 
     scope :upcoming, -> { where("start_time > ?", Time.current) }
     scope :running, -> { where("start_time <= ? AND end_time >= ?", Time.current, Time.current) }
-    scope :monitoring, -> { where("end_time < ? AND end_time > ?", Time.current, Time.current - MONITORING_BUFFER) }
+    scope :monitoring, -> { where("start_time <= ? AND end_time > ?", Time.current, Time.current - MONITORING_BUFFER) }
     scope :completed, -> { where("end_time < ?", Time.current - MONITORING_BUFFER) }
     scope :cancelled, -> { with_discarded.discarded }
 
