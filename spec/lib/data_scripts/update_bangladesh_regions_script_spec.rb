@@ -110,14 +110,16 @@ describe UpdateBangladeshRegionsScript do
         create(:patient, registration_facility: registration_facility, assigned_facility: other_facility, registration_user: user)
         create(:patient, registration_facility: other_facility, assigned_facility: assigned_facility, registration_user: user)
 
+        deleted_block_count = (empty_facilities << empty_facility_with_no_size).map(&:block_region).uniq.count
+        deleted_region_count = deleted_block_count + 3 + 2 # 3 facilities, 2 districts
         expect {
           script = described_class.new(dry_run: false, csv_path: test_csv_path)
           expect(script).to receive(:import_from_csv)
           script.call
         }.to change { Facility.count }.by(-3)
           .and change { FacilityGroup.count }.by(-2)
-          .and change { Region.block_regions.count }.by(-3)
-          .and change { Region.count }.by(-8) # 3 facilities, 2 facility groups, and 3 blocks
+          .and change { Region.block_regions.count }.by(-deleted_block_count)
+          .and change { Region.count }.by(-deleted_region_count)
           .and change { User.count }.by(-1)
         empty_facilities.each do |facility|
           expect(Facility.find_by(id: facility.id)).to be_nil
