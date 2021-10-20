@@ -2,6 +2,7 @@ class APIController < ApplicationController
   before_action :current_user_present?
   before_action :validate_sync_approval_status_allowed
   before_action :authenticate
+  before_action :set_datadog_user_info
   before_action :validate_facility
   before_action :validate_current_facility_belongs_to_users_facility_group
 
@@ -97,6 +98,12 @@ class APIController < ApplicationController
         true
       end
     end
+  end
+
+  def set_datadog_user_info
+    current_span = Datadog.tracer.active_span
+    return if current_span.nil?
+    current_span.set_tag("usr", RequestStore.store[:current_user])
   end
 
   def set_sentry_context
