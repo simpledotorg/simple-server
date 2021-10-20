@@ -248,9 +248,9 @@ class User < ApplicationRecord
 
   def to_datadog_hash
     {
-      id: id,
-      access_level: access_level,
-      sync_approval_status: sync_approval_status
+      "usr.id" => id,
+      "usr.access_level" => access_level,
+      "usr.sync_approval_status" => sync_approval_status
     }
   end
 

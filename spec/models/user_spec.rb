@@ -445,15 +445,15 @@ RSpec.describe User, type: :model do
     it "returns key info for user" do
       admin = build(:admin)
       expect(admin.to_datadog_hash).to eq({
-        access_level: "power_user",
-        id: nil,
-        sync_approval_status: "denied"
+        "usr.access_level" => "power_user",
+        "usr.id" => nil,
+        "usr.sync_approval_status" => "denied"
       })
       user = build(:user_created_on_device)
       expect(user.to_datadog_hash).to eq({
-        access_level: nil,
-        id: nil,
-        sync_approval_status: "allowed"
+        "usr.access_level" => nil,
+        "usr.id" => nil,
+        "usr.sync_approval_status" => "allowed"
       })
     end
   end
