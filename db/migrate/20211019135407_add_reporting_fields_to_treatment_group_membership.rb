@@ -48,6 +48,9 @@ class AddReportingFieldsToTreatmentGroupMembership < ActiveRecord::Migration[5.2
     add_column :treatment_group_memberships, "visit_prescription_drug_created", :boolean
     add_column :treatment_group_memberships, "days_to_visit", :integer
     add_column :treatment_group_memberships, "messages", :jsonb
+    add_column :treatment_group_memberships, "status", :string
+    add_column :treatment_group_memberships, "status_reason", :string
+    add_column :treatment_group_memberships, "status_updated_at", :datetime
     add_column :treatment_group_memberships, "deleted_at", :datetime
   end
 end
