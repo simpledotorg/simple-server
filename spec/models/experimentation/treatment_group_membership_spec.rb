@@ -4,6 +4,7 @@ RSpec.describe Experimentation::TreatmentGroupMembership, type: :model do
   describe "associations" do
     it { should belong_to(:treatment_group) }
     it { should belong_to(:patient) }
+    it { should belong_to(:experiment) }
 
     describe "validations" do
       it "should validate that a patient is allowed only in only one active experiment at a time" do
