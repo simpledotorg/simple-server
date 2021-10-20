@@ -48,9 +48,13 @@ RSpec.describe "Api authentication", type: :request, skip_request_store_clear: t
       expect(RequestStore.store[:current_user]).to be_nil
       get "/api/v3/blood_pressures/sync", params: {}, headers: headers
 
+      expect(response.body).to eq("HTTP Token: Access denied.\n")
       expect(response.status).to eq 401
 
       expect(RequestStore.store[:current_user]).to be_nil
+
+      get "/api/v3/blood_pressures/sync", params: {}, headers: headers
+      expect(response.status).to eq 401
     end
   end
 end
