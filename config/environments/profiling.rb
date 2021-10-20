@@ -1,12 +1,10 @@
 Rails.application.configure do
-  # Code is not reloaded between requests.
-  config.cache_classes = true
-
-  # Eager load code on boot. This eager loads most of Rails and
-  # your application in memory, allowing both threaded web servers
-  # and those relying on copy on write to perform better.
-  # Rake tasks automatically ignore this option for performance.
-  config.eager_load = true
+  # NOTE: for profiling purposes, you may wish to change both the below values to _true_ if you are
+  # running scripted benchmarks and would like more reliable results.  However, if you are analyzing lower level
+  # performance (with flamegraphs for example), and want to see the results of changes interactively, you'll
+  # probably want to keep them both to false. Otherwise any code changes require a full restart of yoru server.
+  config.cache_classes = false
+  config.eager_load = false
 
   # Full error reports are disabled and caching is turned on.
   config.consider_all_requests_local = false
@@ -27,8 +25,7 @@ Rails.application.configure do
   # Do fallback to assets pipeline if a precompiled asset is missed.
   config.assets.compile = true
 
-  # Use the lowest log level to ensure availability of diagnostic information
-  # when problems arise.
+  # Set this to :info to truly match production; debug will show each SQL statement in logs
   config.log_level = :debug
 
   # Use a different cache store in production.
