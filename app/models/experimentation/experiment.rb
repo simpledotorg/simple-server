@@ -1,6 +1,7 @@
 module Experimentation
   class Experiment < ApplicationRecord
     LAST_EXPERIMENT_BUFFER = 14.days.freeze
+    MONITORING_BUFFER = 14.days.freeze
 
     has_many :treatment_groups, dependent: :delete_all
     has_many :reminder_templates, through: :treatment_groups
@@ -20,7 +21,8 @@ module Experimentation
 
     scope :upcoming, -> { where("start_time > ?", Time.current) }
     scope :running, -> { where("start_time <= ? AND end_time >= ?", Time.current, Time.current) }
-    scope :complete, -> { where("end_time < ?", Time.current) }
+    scope :monitoring, -> { where("end_time < ? AND end_time > ?", Time.current, Time.current - MONITORING_BUFFER) }
+    scope :completed, -> { where("end_time < ?", Time.current - MONITORING_BUFFER) }
     scope :cancelled, -> { with_discarded.discarded }
 
     def running?

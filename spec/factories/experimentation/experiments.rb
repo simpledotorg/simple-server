@@ -18,13 +18,28 @@ FactoryBot.define do
     end
   end
 
+
+  trait :upcoming do
+    start_time { 2.week.from_now }
+    end_time { 3.week.from_now }
+  end
+
   trait :running do
     start_time { 1.week.ago }
     end_time { 1.week.from_now }
   end
 
-  trait :upcoming do
-    start_time { 1.week.from_now }
-    end_time { 2.week.from_now }
+  trait :monitoring do
+    start_time { 3.week.ago }
+    end_time { 13.days.ago }
+  end
+
+  trait :completed do
+    start_time { 2.month.ago }
+    end_time { 1.month.ago }
+  end
+
+  trait :cancelled do
+    deleted_at { Time.current }
   end
 end

@@ -10,6 +10,20 @@ RSpec.describe Experimentation::Experiment, type: :model do
     it { should have_many(:notifications) }
   end
 
+  describe "scopes" do
+    running = create(:experiment, :running)
+    upcoming = create(:experiment, :upcoming)
+    monitoring = create(:experiment, :monitoring)
+    completed = create(:experiment, :completed)
+    cancelled = create(:experiment, :cancelled, start_time: 5.months.ago, end_time: 4.months.ago)
+
+    expect(described_class.running).to contain_exactly(running)
+    expect(described_class.upcoming).to contain_exactly(upcoming)
+    expect(described_class.monitoring).to contain_exactly(monitoring)
+    expect(described_class.completed).to contain_exactly(completed)
+    expect(described_class.cancelled).to contain_exactly(cancelled)
+  end
+
   describe "validations" do
     it { should validate_presence_of(:name) }
     it { experiment.should validate_uniqueness_of(:name) }
