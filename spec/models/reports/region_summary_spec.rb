@@ -129,9 +129,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       facility_1_uncontrolled.map do |patient|
         create(:bp_with_encounter, :hypertensive, facility: facility_1, patient: patient, recorded_at: 15.days.ago)
       end
+      refresh_views
     end
-
-    refresh_views
 
     result = described_class.call(facilities, range: jan_2020)
     expect(result[facility_1.slug][jan_2020.to_period]).to include("adjusted_controlled_under_care" => 2)
