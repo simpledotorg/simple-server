@@ -35,7 +35,20 @@ RSpec.describe "Api authentication", type: :request, skip_request_store_clear: t
     end
   end
 
-  context "failed login" do
+  context "no authentication headers" do
+    let(:headers) do
+      {"ACCEPT" => "application/json",
+       "CONTENT_TYPE" => "application/json"}
+    end
+
+    it "does not track anything" do
+      get "/api/v3/ping"
+      expect(RequestStore.store[:current_user]).to be_nil
+      expect(response.status).to eq 200
+    end
+  end
+
+  context "invalid authentication headers" do
     let(:headers) do
       {"ACCEPT" => "application/json",
        "CONTENT_TYPE" => "application/json",
