@@ -11,7 +11,7 @@ module Experimentation
       existing_memberships =
         self.class
           .joins(treatment_group: :experiment)
-          .where(experiments: {state: %w[running selecting]})
+          .merge(Experiment.running)
           .where(patient_id: patient_id)
 
       errors.add(:patient_id, "patient cannot belong to multiple active experiments") if existing_memberships.any?

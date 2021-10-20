@@ -5,6 +5,8 @@ FactoryBot.define do
   end
 
   trait :with_template do
-    reminder_templates { create_list(:reminder_template, 1) }
+    after(:create) do |treatment_group|
+      create_list(:reminder_template, 1, treatment_group: treatment_group)
+    end
   end
 end

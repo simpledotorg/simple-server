@@ -13,27 +13,13 @@ module Experimentation
         return
       end
 
-      experiment = Experiment.current_patients.find_by(name: name, state: [:new, :running])
+      experiment = Experiment.current_patients.upcoming.find_by(name: name)
       if experiment.nil?
         logger.info("Experiment #{name} not found and may need to be removed from scheduler - exiting.")
         return
       end
 
-      if experiment.end_date < Date.current
-        logger.info("Experiment #{name} is past its end_date of #{experiment.end_date} - completing.")
-        experiment.complete_state!
-        return
-      end
-
-      if experiment.running_state?
-        logger.info("Experiment #{name} is a running current_patient experiment, nothing to do - exiting.")
-        return
-      end
-
-      logger.info("Experiment #{name} is starting selecting state.")
-      experiment.selecting_state!
-
-      eligible_ids = current_patient_candidates(experiment.start_date, experiment.end_date).shuffle!
+      eligible_ids = current_patient_candidates(experiment.start_time, experiment.end_time).shuffle!
       logger.info("Found #{eligible_ids.count} eligible patient ids for #{name} experiment, about to schedule_notifications.")
 
       experiment_patient_count = (0.01 * percentage_of_patients * eligible_ids.length).round
@@ -44,7 +30,7 @@ module Experimentation
         patients = Patient
           .where(id: batch)
           .includes(:appointments)
-          .where(appointments: {scheduled_date: experiment.start_date..experiment.end_date, status: "scheduled"})
+          .where(appointments: {scheduled_date: experiment.start_time.to_date..experiment.end_time.to_date, status: "scheduled"})
 
         patients.each do |patient|
           group = experiment.random_treatment_group
@@ -56,7 +42,6 @@ module Experimentation
       end
 
       logger.info("Finished scheduling notifications for #{name} current experiment - marking as running and exiting.")
-      experiment.running_state!
     end
 
     def self.schedule_daily_stale_patient_notifications(name:, patients_per_day: PATIENTS_PER_DAY)
@@ -65,25 +50,14 @@ module Experimentation
         return
       end
 
-      experiment = Experiment.find_by(name: name, experiment_type: "stale_patients", state: [:new, :running])
+      experiment = Experiment.stale_patients.running.find_by(name: name)
       if experiment.nil?
         logger.info("Experiment #{name} not found and may need to be removed from scheduler - exiting.")
         return
       end
 
-      today = Date.current
-      if experiment.start_date > today
-        logger.info "Experiment #{name} start_date #{experiment.start_date} is in the future, skipping"
-        return
-      end
-      if experiment.end_date < today
-        logger.info "Experiment #{name} end_date #{experiment.end_date} has passed, marking complete"
-        experiment.complete_state!
-        return
-      end
-      experiment.selecting_state!
-
-      eligible_ids = StalePatientSelection.call(start_date: today)
+      now = Time.current
+      eligible_ids = StalePatientSelection.call(start_time: now)
       logger.info "Experiment #{name} found #{eligible_ids.count} eligible patient ids for stale patient reminders"
       if eligible_ids.any?
         eligible_ids.shuffle!
@@ -91,32 +65,34 @@ module Experimentation
         daily_patients = Patient.where(id: daily_ids).includes(:appointments)
         daily_patients.each do |patient|
           group = experiment.random_treatment_group
-          schedule_notifications(patient, patient.appointments.last, group, today)
+          schedule_notifications(patient, patient.appointments.last, group, now)
           group.patients << patient
         end
       end
 
       logger.info("Finished scheduling notifications for #{name} stale experiment - marking as running and exiting.")
-      experiment.running_state!
     end
 
     def self.abort_experiment(name)
       experiment = Experiment.find_by!(name: name)
-      logger.warn "Aborting experiment #{name}! About to cancel all pending or scheduled notifications."
-      experiment.cancelled_state!
+      logger.info "Aborting experiment #{name}! About to cancel all pending or scheduled notifications."
 
-      notifications = experiment.notifications.where(status: ["pending", "scheduled"])
-      notifications.find_each do |notification|
-        notification.status_cancelled!
+      ActiveRecord::Base.transaction do
+        notifications = experiment.notifications.where(status: ["pending", "scheduled"])
+        notifications.find_each do |notification|
+          notification.status_cancelled!
+        end
+
+        experiment.discard
       end
-      logger.warn "Aborting experiment #{name} finished."
+      logger.info "Aborting experiment #{name} finished."
     end
 
-    def self.current_patient_candidates(start_date, end_date)
+    def self.current_patient_candidates(start_time, end_time)
       Experiment.candidate_patients
         .joins(:appointments)
         .merge(Appointment.status_scheduled)
-        .where("appointments.scheduled_date BETWEEN ? and ?", start_date, end_date)
+        .where("appointments.scheduled_date BETWEEN ? and ?", start_time, end_time)
         .distinct
         .pluck(:id)
     end

@@ -6,18 +6,17 @@ describe Experimentation::Runner, type: :model do
   describe "self.start_current_patient_experiment" do
     before { Flipper.enable(:experiment) }
 
-    it "does not start the experiment, add patients, or create notifications if the feature flag is off" do
+    it "does not add patients, or create notifications if the feature flag is off" do
       Flipper.disable(:experiment)
 
       patient1 = create(:patient, age: 80)
       create(:appointment, patient: patient1, scheduled_date: 10.days.from_now)
 
-      experiment = create(:experiment, :with_treatment_group, experiment_type: "current_patients", start_date: 5.days.from_now, end_date: 35.days.from_now)
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "current_patients", start_time: 5.days.from_now, end_time: 35.days.from_now)
       _template = create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
 
       described_class.start_current_patient_experiment(name: experiment.name)
 
-      expect(experiment.reload.state).to eq("new")
       expect(experiment.patients.count).to eq(0)
       expect(experiment.notifications.count).to eq(0)
     end
@@ -28,7 +27,7 @@ describe Experimentation::Runner, type: :model do
       create(:appointment, patient: young_patient, scheduled_date: 10.days.from_now)
       create(:appointment, patient: old_patient, scheduled_date: 10.days.from_now)
 
-      experiment = create(:experiment, :with_treatment_group, start_date: 5.days.from_now, end_date: 35.days.from_now)
+      experiment = create(:experiment, :upcoming, :with_treatment_group)
 
       described_class.start_current_patient_experiment(name: experiment.name)
 
@@ -42,7 +41,7 @@ describe Experimentation::Runner, type: :model do
       patient2 = create(:patient, :without_hypertension, age: 80)
       create(:appointment, patient: patient2, scheduled_date: 10.days.from_now)
 
-      experiment = create(:experiment, :with_treatment_group, start_date: 5.days.from_now, end_date: 35.days.from_now)
+      experiment = create(:experiment, :with_treatment_group, start_time: 5.days.from_now, end_time: 35.days.from_now)
 
       described_class.start_current_patient_experiment(name: experiment.name)
 
@@ -57,7 +56,7 @@ describe Experimentation::Runner, type: :model do
       patient2 = create(:patient, age: 80)
       create(:appointment, patient: patient2, scheduled_date: 10.days.from_now)
 
-      experiment = create(:experiment, :with_treatment_group, start_date: 5.days.from_now, end_date: 35.days.from_now)
+      experiment = create(:experiment, :with_treatment_group, start_time: 5.days.from_now, end_time: 35.days.from_now)
 
       described_class.start_current_patient_experiment(name: experiment.name)
 
@@ -73,7 +72,7 @@ describe Experimentation::Runner, type: :model do
       patient3 = create(:patient, age: 80)
       create(:appointment, patient: patient3, scheduled_date: 5.days.from_now)
 
-      experiment = create(:experiment, :with_treatment_group, start_date: 5.days.from_now, end_date: 5.days.from_now)
+      experiment = create(:experiment, :with_treatment_group, start_time: 5.days.from_now, end_time: 5.days.from_now)
 
       described_class.start_current_patient_experiment(name: experiment.name)
 
@@ -83,10 +82,10 @@ describe Experimentation::Runner, type: :model do
     end
 
     it "excludes patients who have recently been in an experiment" do
-      old_experiment = create(:experiment, :with_treatment_group, name: "old", start_date: 2.days.ago, end_date: 1.day.ago)
+      old_experiment = create(:experiment, :with_treatment_group, name: "old", start_time: 2.days.ago, end_time: 1.day.ago)
       old_group = old_experiment.treatment_groups.first
 
-      older_experiment = create(:experiment, :with_treatment_group, name: "older", start_date: 16.days.ago, end_date: 15.day.ago)
+      older_experiment = create(:experiment, :with_treatment_group, name: "older", start_time: 16.days.ago, end_time: 15.day.ago)
       older_group = older_experiment.treatment_groups.first
 
       patient1 = create(:patient, age: 80)
@@ -100,7 +99,7 @@ describe Experimentation::Runner, type: :model do
       patient3 = create(:patient, age: 80)
       create(:appointment, patient: patient3, scheduled_date: 10.days.from_now)
 
-      experiment = create(:experiment, :with_treatment_group, start_date: 5.days.from_now, end_date: 35.days.from_now)
+      experiment = create(:experiment, :with_treatment_group, start_time: 5.days.from_now, end_time: 35.days.from_now)
 
       described_class.start_current_patient_experiment(name: experiment.name)
 
@@ -116,7 +115,7 @@ describe Experimentation::Runner, type: :model do
       patient2 = create(:patient, age: 80)
       create(:appointment, patient: patient2, scheduled_date: 10.days.from_now)
 
-      experiment = create(:experiment, :with_treatment_group, start_date: 5.days.from_now, end_date: 35.days.from_now)
+      experiment = create(:experiment, :with_treatment_group, start_time: 5.days.from_now, end_time: 35.days.from_now)
 
       described_class.start_current_patient_experiment(name: experiment.name, percentage_of_patients: percentage)
 
@@ -126,7 +125,7 @@ describe Experimentation::Runner, type: :model do
     it "adds patients to treatment groups" do
       patient = create(:patient, age: 80)
       create(:appointment, patient: patient, scheduled_date: 10.days.from_now)
-      experiment = create(:experiment, :with_treatment_group, start_date: 5.days.from_now, end_date: 35.days.from_now)
+      experiment = create(:experiment, :with_treatment_group, start_time: 5.days.from_now, end_time: 35.days.from_now)
 
       described_class.start_current_patient_experiment(name: experiment.name)
 
@@ -142,7 +141,7 @@ describe Experimentation::Runner, type: :model do
       upcoming_appointment2 = create(:appointment, patient: patients.fourth, scheduled_date: 20.days.from_now)
       Experimentation::Experiment.candidate_patients
 
-      experiment = create(:experiment, :with_treatment_group, start_date: 5.days.from_now, end_date: 35.days.from_now)
+      experiment = create(:experiment, :with_treatment_group, start_time: 5.days.from_now, end_time: 35.days.from_now)
       create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
 
       described_class.start_current_patient_experiment(name: experiment.name)
@@ -162,7 +161,7 @@ describe Experimentation::Runner, type: :model do
       appointment_date = 10.days.from_now.to_date
       create(:appointment, patient: patient1, scheduled_date: appointment_date)
 
-      experiment = create(:experiment, :with_treatment_group, start_date: 5.days.from_now, end_date: 35.days.from_now)
+      experiment = create(:experiment, :with_treatment_group, start_time: 5.days.from_now, end_time: 35.days.from_now)
       group = experiment.treatment_groups.first
 
       create(:reminder_template, treatment_group: group, message: "come in 3 days", remind_on_in_days: -3)
@@ -181,7 +180,7 @@ describe Experimentation::Runner, type: :model do
       patient1 = create(:patient, age: 80)
       scheduled_appointment = create(:appointment, patient: patient1, scheduled_date: 10.days.from_now, status: "scheduled")
       visited_appointment = create(:appointment, patient: patient1, scheduled_date: 10.days.from_now, status: "visited")
-      experiment = create(:experiment, :with_treatment_group, start_date: 5.days.from_now, end_date: 35.days.from_now)
+      experiment = create(:experiment, :with_treatment_group, start_time: 5.days.from_now, end_time: 35.days.from_now)
       create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
 
       described_class.start_current_patient_experiment(name: experiment.name)
@@ -193,7 +192,7 @@ describe Experimentation::Runner, type: :model do
     it "creates experimental reminder notifications with correct attributes" do
       patient1 = create(:patient, age: 80)
       appointment = create(:appointment, patient: patient1, scheduled_date: 10.days.from_now)
-      experiment = create(:experiment, :with_treatment_group, start_date: 5.days.from_now, end_date: 35.days.from_now)
+      experiment = create(:experiment, :with_treatment_group, start_time: 5.days.from_now, end_time: 35.days.from_now)
       template = create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
 
       expect {
@@ -209,36 +208,14 @@ describe Experimentation::Runner, type: :model do
       expect(notification.experiment).to eq(experiment)
     end
 
-    it "updates the experiment state to 'running'" do
-      experiment = create(:experiment, start_date: 5.days.from_now, end_date: 35.days.from_now)
-      expect {
-        described_class.start_current_patient_experiment(name: experiment.name)
-      }.to change { experiment.reload.state }.to("running")
-
-      expect(experiment).to be_running_state
-    end
-
-    it "does nothing if the experiment is in 'running' state" do
+    it "does nothing if the experiment is running" do
       patient1 = create(:patient, age: 80)
       create(:appointment, patient: patient1, scheduled_date: 10.days.from_now)
-      experiment = create(:experiment, :with_treatment_group, state: "running", start_date: 5.days.from_now, end_date: 35.days.from_now)
+      experiment = create(:experiment, :running, :with_treatment_group)
       create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
 
       expect { described_class.start_current_patient_experiment(name: experiment.name) }
-        .to not_change { experiment.reload.state }
-        .and not_change { Notification.count }
-    end
-
-    it "marks the experiment complete if the end date has passed" do
-      patient1 = create(:patient, age: 80)
-      create(:appointment, patient: patient1, scheduled_date: 10.days.ago)
-      experiment = create(:experiment, :with_treatment_group, state: "running", start_date: 20.days.ago, end_date: 1.days.ago)
-      create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
-
-      expect {
-        described_class.start_current_patient_experiment(name: experiment.name)
-      }.to change { experiment.reload.state }.from("running").to("complete")
-        .and not_change { Notification.count }
+        .to not_change { Notification.count }
     end
 
     it "raises a sentry error if the experiment is not found" do
@@ -250,7 +227,7 @@ describe Experimentation::Runner, type: :model do
   describe "self.schedule_daily_stale_patient_notifications" do
     before { Flipper.enable(:experiment) }
 
-    it "does not start the experiment, add patients, or create notifications if the feature flag is off" do
+    it "does not add patients, or create notifications if the feature flag is off" do
       Flipper.disable(:experiment)
 
       patient1 = create(:patient, age: 80)
@@ -261,15 +238,14 @@ describe Experimentation::Runner, type: :model do
 
       described_class.schedule_daily_stale_patient_notifications(name: experiment.name)
 
-      expect(experiment.reload.state).to eq("new")
       expect(experiment.patients.count).to eq(0)
       expect(experiment.notifications.count).to eq(0)
     end
 
     it "excludes patients who have recently been in an experiment" do
-      recent_experiment = create(:experiment, :with_treatment_group, name: "old", start_date: 2.days.ago, end_date: 1.day.ago)
+      recent_experiment = create(:experiment, :with_treatment_group, name: "old", start_time: 2.days.ago, end_time: 1.day.ago)
 
-      old_experiment = create(:experiment, :with_treatment_group, name: "older", start_date: 16.days.ago, end_date: 15.day.ago)
+      old_experiment = create(:experiment, :with_treatment_group, name: "older", start_time: 16.days.ago, end_time: 15.day.ago)
       old_experiment.treatment_groups.first
 
       patient1 = create(:patient, age: 80)
@@ -326,7 +302,7 @@ describe Experimentation::Runner, type: :model do
       patient1 = create(:patient, age: 80)
       create(:appointment, patient: patient1, device_created_at: 100.days.ago, scheduled_date: 100.days.ago)
 
-      experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients")
+      experiment = create(:experiment, :running, :with_treatment_group, experiment_type: "stale_patients")
       group = experiment.treatment_groups.first
       create(:reminder_template, treatment_group: group, message: "come today", remind_on_in_days: 0)
       create(:reminder_template, treatment_group: group, message: "you're late", remind_on_in_days: 3)
@@ -339,26 +315,8 @@ describe Experimentation::Runner, type: :model do
       expect(reminder2.remind_on).to eq(today + 3.days)
     end
 
-    it "updates the experiment state" do
-      experiment = create(:experiment, experiment_type: "stale_patients")
-      described_class.schedule_daily_stale_patient_notifications(name: experiment.name)
-      experiment.reload
-
-      expect(experiment).to be_running_state
-    end
-
-    it "does not create appointment reminders or update the experiment if there's another experiment of the same type in progress" do
-      experiment = create(:experiment, experiment_type: "stale_patients")
-      create(:experiment, experiment_type: "stale_patients", state: "selecting")
-      expect {
-        described_class.schedule_daily_stale_patient_notifications(name: experiment.name)
-      }.to raise_error(ActiveRecord::RecordInvalid)
-        .and not_change { Notification.count }
-        .and not_change { experiment.reload.state }
-    end
-
-    it "does nothing if it the experiment is not in 'new' or 'running' state" do
-      experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients", state: "complete")
+    it "does nothing if it the experiment is end date is passed" do
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients", start_time: 20.days.ago, end_time: 10.days.ago)
       group = experiment.treatment_groups.first
       create(:reminder_template, treatment_group: group, message: "come today", remind_on_in_days: 0)
       patient1 = create(:patient, age: 80)
@@ -401,25 +359,23 @@ describe Experimentation::Runner, type: :model do
     end
 
     it "does not create notifications or update experiment status if today is before the experiment before date" do
-      experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients", start_date: 1.day.from_now, end_date: 1.week.from_now)
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients", start_time: 1.day.from_now, end_time: 1.week.from_now)
       patient1 = create(:patient, age: 80)
       create(:blood_pressure, patient: patient1, device_created_at: 100.days.ago)
 
       expect {
         described_class.schedule_daily_stale_patient_notifications(name: experiment.name)
       }.to not_change { Experimentation::TreatmentGroupMembership.count }
-        .and not_change { experiment.reload.state }
     end
 
-    it "changes the experiment state to 'complete' and does not create notifications if today is after the experiment end date" do
-      experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients", start_date: 1.week.ago, end_date: 1.day.ago)
+    it "does not create notifications if today is after the experiment end date" do
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients", start_time: 1.week.ago, end_time: 1.day.ago)
       patient1 = create(:patient, age: 80)
       create(:blood_pressure, patient: patient1, device_created_at: 100.days.ago)
 
       expect {
         described_class.schedule_daily_stale_patient_notifications(name: experiment.name)
-      }.to change { experiment.reload.state }.from("new").to("complete")
-        .and not_change { Experimentation::TreatmentGroupMembership.count }
+      }.to not_change { Experimentation::TreatmentGroupMembership.count }
     end
   end
 
@@ -430,17 +386,16 @@ describe Experimentation::Runner, type: :model do
       }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
-    it "changes experiment state to 'cancelled' and changes pending and scheduled notification statuses to 'cancelled'" do
-      experiment = create(:experiment, state: "new")
+    it "changes pending and scheduled notification statuses to 'cancelled'" do
+      experiment = create(:experiment)
       patient = create(:patient)
 
       pending_notification = create(:notification, experiment: experiment, patient: patient, status: "pending")
       scheduled_notification = create(:notification, experiment: experiment, patient: patient, status: "scheduled")
       sent_notification = create(:notification, experiment: experiment, patient: patient, status: "sent")
 
-      expect {
-        described_class.abort_experiment(experiment.name)
-      }.to change { experiment.reload.state }.to("cancelled")
+      described_class.abort_experiment(experiment.name)
+
       expect(pending_notification.reload.status).to eq("cancelled")
       expect(scheduled_notification.reload.status).to eq("cancelled")
       expect(sent_notification.reload.status).to eq("sent")
@@ -461,14 +416,13 @@ describe Experimentation::Runner, type: :model do
 
         patient = create(:patient, age: 80)
         create(:blood_pressure, patient: patient, device_created_at: 100.days.ago)
-        experiment = Seed::ExperimentSeeder.create_stale_experiment(start_date: Date.current, end_date: 45.days.from_now)
+        experiment = Seed::ExperimentSeeder.create_stale_experiment(start_time: Date.current, end_time: 45.days.from_now)
         active_group = experiment.treatment_groups.find_by!(description: "single_notification")
 
         expect_any_instance_of(Experimentation::Experiment).to receive(:random_treatment_group).and_return(active_group)
         expect {
           described_class.schedule_daily_stale_patient_notifications(name: experiment.name)
         }.to change { experiment.notifications.count }.by(1)
-          .and change { experiment.reload.state }.from("new").to("running")
 
         expect(active_group.patients.reload.include?(patient)).to be_truthy
 
