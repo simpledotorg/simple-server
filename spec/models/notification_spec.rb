@@ -121,11 +121,5 @@ describe Notification, type: :model do
       notification.status_cancelled!
       expect(notification.next_communication_type).to eq(nil)
     end
-
-    it "returns nil when it belongs to a cancelled experiment" do
-      experimental_notification = create(:notification, :with_experiment)
-      experimental_notification.experiment.cancelled_state!
-      expect(experimental_notification.next_communication_type).to eq(nil)
-    end
   end
 end
