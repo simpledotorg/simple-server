@@ -249,11 +249,11 @@ describe Experimentation::Runner, type: :model do
       old_experiment.treatment_groups.first
 
       patient1 = create(:patient, age: 80)
-      recent_experiment.treatment_groups.first.patients << patient1
+      recent_experiment.treatment_groups.first.enroll(patient1)
       create(:blood_sugar, patient: patient1, device_created_at: 100.days.ago)
 
       patient2 = create(:patient, age: 80)
-      old_experiment.treatment_groups.first.patients << patient2
+      old_experiment.treatment_groups.first.enroll(patient2)
       create(:blood_pressure, patient: patient2, device_created_at: 100.days.ago)
 
       patient3 = create(:patient, age: 80)

@@ -15,7 +15,7 @@ RSpec.describe Experimentation::TreatmentGroupMembership, type: :model do
 
         patient = create(:patient, age: 18)
 
-        treatment_group_1.patients << patient
+        treatment_group_1.enroll(patient)
         treatment_group_2_membership = build(:treatment_group_membership, patient: patient, treatment_group: treatment_group_2)
 
         treatment_group_2_membership.validate
