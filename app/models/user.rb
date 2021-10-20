@@ -246,6 +246,8 @@ class User < ApplicationRecord
     true
   end
 
+  # Datadog only accepts flat key/value pairs, not nested hashes. The "usr.xxx" format is converted
+  # in the DD UI into a hash for representation, but apparently it only deals with a flattened list of key/values.
   def to_datadog_hash
     {
       "usr.id" => id,

@@ -18,16 +18,16 @@ RSpec.describe "Admin authentication", type: :request do
 
       post email_authentication_session_path, params: {email_authentication: {email: user.email, password: password}}
 
-      expect(RequestStore.store[:current_user][:id]).to eq(user.id)
-      expect(RequestStore.store[:current_user][:access_level]).to eq("power_user")
+      expect(RequestStore.store[:current_user]["usr.id"]).to eq(user.id)
+      expect(RequestStore.store[:current_user]["usr.access_level"]).to eq("power_user")
       Thread.current[:request_store] = {}
 
       expect(response).to redirect_to("/")
 
       follow_redirect!
 
-      expect(RequestStore.store[:current_user][:id]).to eq(user.id)
-      expect(RequestStore.store[:current_user][:access_level]).to eq("power_user")
+      expect(RequestStore.store[:current_user]["usr.id"]).to eq(user.id)
+      expect(RequestStore.store[:current_user]["usr.access_level"]).to eq("power_user")
       Thread.current[:request_store] = {}
 
       expect(response).to redirect_to("/my_facilities")
