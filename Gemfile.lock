@@ -743,12 +743,12 @@ DEPENDENCIES
   web-console (>= 3.3.0)
   webdrivers
   webmock
-  webpacker (~> 6.x)
+  webpacker (= 6.0.0.rc.5)
   whenever
   wkhtmltoimage-binary
 
 RUBY VERSION
-   ruby 2.6.6p146
+   ruby 2.7.4p191
 
 BUNDLED WITH
    1.17.3

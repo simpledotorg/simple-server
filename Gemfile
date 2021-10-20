@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby "2.6.6"
+ruby "2.7.4"
 
 git_source(:github) do |repo_name|
   repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
@@ -86,7 +86,7 @@ gem "twilio-ruby", "~> 5.10", ">= 5.10.3"
 gem "uglifier", ">= 1.3.0"
 gem "uuidtools", require: false
 gem "view_component", require: "view_component/engine"
-gem "webpacker", "~> 6.x"
+gem "webpacker", "6.0.0.rc.5"
 gem "whenever", require: false
 gem "wkhtmltoimage-binary"
 
