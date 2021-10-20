@@ -2,6 +2,10 @@ module Experimentation
   class Experiment < ApplicationRecord
     LAST_EXPERIMENT_BUFFER = 14.days.freeze
     MONITORING_BUFFER = 14.days.freeze
+    EXPERIMENT_CLASSES = {
+      "current_patients" => CurrentPatientExperiment,
+      "stale_patients" => StalePatientExperiment
+    }
 
     has_many :treatment_groups, dependent: :delete_all
     has_many :reminder_templates, through: :treatment_groups
@@ -46,6 +50,10 @@ module Experimentation
                                             .where(status: :scheduled)
                                             .group(:patient_id)
                                             .having("count(patient_id) > 1"))
+    end
+
+    def klass
+      EXPERIMENT_CLASSES[experiment_type]
     end
 
     def random_treatment_group
