@@ -1,4 +1,4 @@
-# Tag some key information for Datadog
+# Tag some key information for Datadog so we can view it across all traces
 module DatadogTagging
   def self.included(base)
     base.helper_method :current_enabled_features
