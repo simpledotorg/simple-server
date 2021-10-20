@@ -1,4 +1,5 @@
 # Tag some key information for Datadog so we can view it across all traces
+# See https://docs.datadoghq.com/tracing/guide/add_span_md_and_graph_it/ for more info
 module DatadogTagging
   def self.included(base)
     base.helper_method :current_enabled_features
