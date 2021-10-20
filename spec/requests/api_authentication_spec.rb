@@ -31,7 +31,7 @@ RSpec.describe "Api authentication", type: :request, skip_request_store_clear: t
 
       expect(RequestStore.store[:current_user][:id]).to eq(request_user.id)
       expect(RequestStore.store[:current_user][:access_level]).to be_nil
-      expect(RequestStore.store[:current_user][:sync]).to eq("allowed")
+      expect(RequestStore.store[:current_user][:sync_approval_status]).to eq("allowed")
     end
   end
 
