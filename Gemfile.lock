@@ -379,7 +379,7 @@ GEM
     rack (2.2.3)
     rack-attack (6.3.1)
       rack (>= 1.0, < 3)
-    rack-mini-profiler (2.0.2)
+    rack-mini-profiler (2.3.3)
       rack (>= 1.2.0)
     rack-protection (2.0.8.1)
       rack
