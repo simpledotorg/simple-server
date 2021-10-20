@@ -78,7 +78,7 @@ class ExotelAPIService
   def parse_response(response)
     return unless response.status.ok?
 
-    JSON.parse(response, symbolize_names: true)
+    response.parse(:json).deep_symbolize_keys
   end
 
   def base_uri
