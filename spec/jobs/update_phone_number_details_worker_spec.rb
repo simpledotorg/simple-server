@@ -16,7 +16,7 @@ RSpec.describe UpdatePhoneNumberDetailsWorker, type: :job do
       "Authorization" => "Basic #{auth_token}",
       "Connection" => "close",
       "Host" => "api.exotel.com",
-      "User-Agent" => "http.rb/4.4.1"
+      "User-Agent" => "http.rb/#{HTTP::VERSION}"
     }
   end
 

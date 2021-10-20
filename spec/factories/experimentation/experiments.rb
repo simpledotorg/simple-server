@@ -1,21 +1,30 @@
 FactoryBot.define do
   factory :experiment, class: Experimentation::Experiment do
     name { Faker::Lorem.unique.word }
-    state { "new" }
     experiment_type { "current_patients" }
-    start_date { Date.current }
-    end_date { 1.week.from_now }
+    start_time { Date.current }
+    end_time { 1.week.from_now }
   end
 
   trait :with_treatment_group do
-    treatment_groups { create_list(:treatment_group, 1) }
+    after(:create) do |experiment|
+      create_list(:treatment_group, 1, experiment: experiment)
+    end
   end
 
   trait :with_treatment_group_and_template do
-    treatment_groups { create_list(:treatment_group, 1, :with_template) }
+    after(:create) do |experiment|
+      create_list(:treatment_group, 1, :with_template, experiment: experiment)
+    end
   end
 
   trait :running do
-    state { "running" }
+    start_time { 1.week.ago }
+    end_time { 1.week.from_now }
+  end
+
+  trait :upcoming do
+    start_time { 1.week.from_now }
+    end_time { 2.week.from_now }
   end
 end
