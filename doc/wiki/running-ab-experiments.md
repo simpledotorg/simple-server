@@ -55,7 +55,7 @@
 
 ## Ending an experiment early
 - the fastest way to stop experiment notifications from sending is to turn off the `experiment` and `notifications` feature flag. This is an option if we want to pause the experiment but not end it. Turning off `notifications` will turn off all notifications, not just experiment notifications.
-- if we need to end an experiment early, we can do it by running `Experimentation::Runner.abort_experiment("experiment name")`. This will:
+- if we need to end an experiment early, we can do it by calling `abort` on an experiment. This will:
   - change the experiment state to "cancelled"
   - mark all "pending" and "scheduled" notifications as "cancelled"
 - notifications that have already been scheduled to send will not send if either the experiment or the notification is cancelled

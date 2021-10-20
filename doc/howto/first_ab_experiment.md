@@ -54,7 +54,8 @@ ns.map {|n| n.communications.count}.uniq # (expect 1 and maybe 2; may still incl
 * If you need to cancel an experiment for any reason, run the following from a rails console:
 
 ```ruby
-Experimentation::Runner.abort_experiment(name)
+experiment = Experiment.find_by_name(name)
+experiment.abort
 ```
 
 

@@ -379,28 +379,6 @@ describe Experimentation::Runner, type: :model do
     end
   end
 
-  describe "self.abort_experiment" do
-    it "raises error if experiment is not found" do
-      expect {
-        described_class.abort_experiment("fake")
-      }.to raise_error(ActiveRecord::RecordNotFound)
-    end
-
-    it "changes pending and scheduled notification statuses to 'cancelled'" do
-      experiment = create(:experiment)
-      patient = create(:patient)
-
-      pending_notification = create(:notification, experiment: experiment, patient: patient, status: "pending")
-      scheduled_notification = create(:notification, experiment: experiment, patient: patient, status: "scheduled")
-      sent_notification = create(:notification, experiment: experiment, patient: patient, status: "sent")
-
-      described_class.abort_experiment(experiment.name)
-
-      expect(pending_notification.reload.status).to eq("cancelled")
-      expect(scheduled_notification.reload.status).to eq("cancelled")
-      expect(sent_notification.reload.status).to eq("sent")
-    end
-  end
 
   # NOTE: putting a best attempt at an e2e test here for now, with the intention that we can
   # pull it out to its own dedicated integration test file soon

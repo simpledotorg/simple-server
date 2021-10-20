@@ -73,21 +73,6 @@ module Experimentation
       logger.info("Finished scheduling notifications for #{name} stale experiment - marking as running and exiting.")
     end
 
-    def self.abort_experiment(name)
-      experiment = Experiment.find_by!(name: name)
-      logger.info "Aborting experiment #{name}! About to cancel all pending or scheduled notifications."
-
-      ActiveRecord::Base.transaction do
-        notifications = experiment.notifications.where(status: ["pending", "scheduled"])
-        notifications.find_each do |notification|
-          notification.status_cancelled!
-        end
-
-        experiment.discard
-      end
-      logger.info "Aborting experiment #{name} finished."
-    end
-
     def self.current_patient_candidates(start_time, end_time)
       Experiment.candidate_patients
         .joins(:appointments)

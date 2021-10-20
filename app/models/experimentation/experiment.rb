@@ -50,6 +50,15 @@ module Experimentation
       treatment_groups.sample
     end
 
+    def abort
+      ActiveRecord::Base.transaction do
+        notifications.where(status: %w[pending scheduled]).update_all(status: :cancelled)
+        discard
+      end
+
+      logger.info "Aborted experiment #{name}."
+    end
+
     private
 
     def one_active_experiment_per_type
