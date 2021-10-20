@@ -103,7 +103,10 @@ class APIController < ApplicationController
   def set_datadog_user_info
     current_span = Datadog.tracer.active_span
     return if current_span.nil? || RequestStore.store[:current_user].blank?
-    current_span.set_tag("usr", RequestStore.store[:current_user].stringify_keys)
+    user_hash = RequestStore.store[:current_user]
+    current_span.set_tag("usr.id", user_hash[:id])
+    current_span.set_tag("usr.access_level", user_hash[:access_level])
+    current_span.set_tag("usr.sync_approval_status", user_hash[:sync_approval_status])
   end
 
   def set_sentry_context
