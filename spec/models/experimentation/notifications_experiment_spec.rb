@@ -15,8 +15,13 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
         expect(described_class.notifying.pluck(:id)).to be_empty
       end
 
-      it "is notifying after the notifications have been sent out for patients enrolled on the last day" do
+      it "is notifying after all the reminders have been sent out for patients enrolled on the last day" do
+        create(:experiment, :with_treatment_group_and_template, :upcoming)
+        create(:experiment, :with_treatment_group_and_template, :monitoring)
+        create(:experiment, :with_treatment_group_and_template, :completed)
+        create(:experiment, :with_treatment_group_and_template, :cancelled, start_time: 5.months.ago, end_time: 4.months.ago)
         notifying_experiment = create(:experiment, start_time: 3.day.ago, end_time: 1.day.ago, experiment_type: "current_patients")
+
         treatment_group = create(:treatment_group, experiment: notifying_experiment)
         create(:reminder_template, treatment_group: treatment_group, remind_on_in_days: 0)
         create(:reminder_template, treatment_group: treatment_group, remind_on_in_days: 2)
