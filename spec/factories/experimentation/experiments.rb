@@ -18,7 +18,6 @@ FactoryBot.define do
     end
   end
 
-
   trait :upcoming do
     start_time { 2.week.from_now }
     end_time { 3.week.from_now }

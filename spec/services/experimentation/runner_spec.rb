@@ -379,7 +379,6 @@ describe Experimentation::Runner, type: :model do
     end
   end
 
-
   # NOTE: putting a best attempt at an e2e test here for now, with the intention that we can
   # pull it out to its own dedicated integration test file soon
   describe "end to end testing" do
