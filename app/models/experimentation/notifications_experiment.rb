@@ -4,7 +4,11 @@ module Experimentation
     MAX_PATIENTS_PER_DAY = 2000
 
     default_scope { where(experiment_type: %w[current_patients stale_patients]) }
-    scope :notifying, -> { where("end_time < ?", Time.current - reminder_templates.pluck(:remind_on_in_days).max.days) }
+    scope :notifying, -> do
+      joins(treatment_groups: :reminder_templates)
+        .where("end_time + make_interval(days := remind_on_in_days) > ? ", Time.current)
+        .distinct
+    end
 
     def self.candidate_patients(*args)
       # Return patients who are eligible for enrollment.

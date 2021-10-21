@@ -1,6 +1,38 @@
 require "rails_helper"
 
 RSpec.describe Experimentation::NotificationsExperiment, type: :model do
+  describe "scopes" do
+    context "experiment state" do
+      it "is notifying while the experiment is running" do
+        experiment = create(:experiment, :with_treatment_group_and_template, :running)
+
+        expect(described_class.notifying.pluck(:id)).to contain_exactly(experiment.id)
+      end
+
+      it "is not notifying if no reminder templates are present in the experiment" do
+        create(:experiment, :with_treatment_group, :running)
+
+        expect(described_class.notifying.pluck(:id)).to be_empty
+      end
+
+      it "is notifying after the notifications have been sent out for patients enrolled on the last day" do
+        notifying_experiment = create(:experiment, start_time: 3.day.ago, end_time: 1.day.ago, experiment_type: "current_patients")
+        treatment_group = create(:treatment_group, experiment: notifying_experiment)
+        create(:reminder_template, treatment_group: treatment_group, remind_on_in_days: 0)
+        create(:reminder_template, treatment_group: treatment_group, remind_on_in_days: 2)
+        create(:reminder_template, treatment_group: treatment_group, remind_on_in_days: 3)
+
+        not_notifying_experiment = create(:experiment,  start_time: 3.day.ago, end_time: 1.day.ago,  experiment_type: "stale_patients")
+        treatment_group = create(:treatment_group, experiment: not_notifying_experiment)
+
+        create(:reminder_template, treatment_group: treatment_group, remind_on_in_days: 1)
+        create(:reminder_template, treatment_group: treatment_group, remind_on_in_days: 0)
+
+        expect(described_class.notifying.pluck(:id)).to contain_exactly(notifying_experiment.id)
+      end
+    end
+  end
+
   describe ".candidate_patients" do
     it "doesn't include patients from a running experiment" do
       experiment = create(:experiment, start_time: 1.day.ago, end_time: 1.day.from_now)
