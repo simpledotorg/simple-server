@@ -28,7 +28,7 @@ module Reports
         end
       end
 
-      Region::REGION_TYPE.each do |region_type|
+      Region::REGION_TYPES.each do |region_type|
         Region.public_send("#{region_type}_regions").find_in_batches do |batch|
           warm_repository_v2_cache(batch)
         end
@@ -38,8 +38,12 @@ module Reports
     end
 
     def warm_repository_v2_cache(regions)
-      repo = Repository.new(regions, reporting_schema_v2: true)
-      repo.warm_cache
+      region_type = regions.first.region_type
+      Datadog.tracer.trace("region_cache_warmer.warm_repository_v2", resource: region_type) do |span|
+        repo = Repository.new(regions, reporting_schema_v2: true)
+        repo.warm_cache
+      end
+      Statsd.instance.increment("region_cache_warmer.#{region.region_type}.repository_v2.cache", regions.count)
     end
 
     def warm_region_cache(region)
