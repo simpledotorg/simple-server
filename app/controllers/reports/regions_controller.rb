@@ -30,8 +30,11 @@ class Reports::RegionsController < AdminController
   end
 
   def show
-    @service = Reports::RegionService.new(region: @region, period: @period, reporting_schema_v2: RequestStore[:reporting_schema_v2])
-    @data = @service.call
+    start_period = @period.advance(months: -(Reports::MAX_MONTHS_OF_DATA - 1))
+    range = Range.new(start_period, @period)
+    @repository = Reports::Repository.new(@region, periods: range, reporting_schema_v2: RequestStore[:reporting_schema_v2])
+    @presenter = Reports::RepositoryPresenter.new(@repository)
+    @data = @presenter.call(@region)
     @with_ltfu = with_ltfu?
 
     @child_regions = @region.reportable_children
