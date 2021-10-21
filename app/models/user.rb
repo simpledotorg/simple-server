@@ -246,6 +246,16 @@ class User < ApplicationRecord
     true
   end
 
+  # Datadog only accepts flat key/value pairs, not nested hashes. The "usr.xxx" format is converted
+  # in the DD UI into a hash for representation, but apparently it only deals with a flattened list of key/values.
+  def to_datadog_hash
+    {
+      "usr.id" => id,
+      "usr.access_level" => access_level,
+      "usr.sync_approval_status" => sync_approval_status
+    }
+  end
+
   def regions_access_cache_key
     power_user? ? "users/power_user_region_access" : cache_key
   end

@@ -108,10 +108,11 @@ RSpec.describe AdminController, type: :controller do
       Flipper.enable(:enabled_1)
       Flipper.enable(:enabled_2)
       Flipper.disable(:disabled)
-      span_double = instance_double("Datadog::Span")
 
+      span_double = instance_double("Datadog::Span")
       expect(span_double).to receive(:set_tag).with("features.enabled_1", "enabled")
       expect(span_double).to receive(:set_tag).with("features.enabled_2", "enabled")
+      allow(span_double).to receive(:set_tags)
       expect(Datadog.tracer).to receive(:active_span).and_return(span_double)
       routes.draw { get "authorized" => "admin#authorized" }
       get :authorized
