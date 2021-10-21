@@ -8,9 +8,9 @@ module Experimentation
 
       experiments = [Experimentation::CurrentPatientExperiment, Experimentation::StalePatientExperiment]
 
-      experiments.each(&:running).each { |experiment| experiment.enroll_patients(Date.current) }
-      experiments.each(&:monitoring).each { |experiment| experiment.monitor(Date.current) }
-      experiments.each(&:notifying).each { |experiment| experiment.send_notifications(Date.current) }
+      experiments.flat_map(&:running).each { |experiment| experiment.enroll_patients(Date.current) }
+      experiments.flat_map(&:monitoring).each { |experiment| experiment.monitor(Date.current) }
+      experiments.flat_map(&:notifying).each { |experiment| experiment.send_notifications(Date.current) }
     end
   end
 end
