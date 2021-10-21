@@ -14,7 +14,7 @@ RSpec.describe "RegionsControllers", type: :request do
   end
 
   describe "GET /regions_controllers" do
-    fit "renders show" do
+    it "renders show" do
       facility_group = create(:facility_group, organization: organization)
       facility = create(:facility, name: "CC Brooklyn", facility_group: facility_group)
       region = facility.region

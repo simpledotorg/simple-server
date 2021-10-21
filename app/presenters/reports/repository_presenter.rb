@@ -28,9 +28,8 @@ module Reports
         uncontrolled_patients: uncontrolled[slug],
         visited_without_bp_taken_rates: visited_without_bp_taken_rates[slug],
         visited_without_bp_taken_with_ltfu_rates: visited_without_bp_taken_rates(with_ltfu: true)[slug],
-        visited_without_bp_taken: visited_without_bp_taken[slug],
+        visited_without_bp_taken: visited_without_bp_taken[slug]
       }
     end
-
   end
 end

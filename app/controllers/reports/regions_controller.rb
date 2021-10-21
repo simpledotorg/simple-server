@@ -209,7 +209,7 @@ class Reports::RegionsController < AdminController
   end
 
   def set_period
-    period_params = report_params[:period].presence || Reports::RegionService.default_period.attributes
+    period_params = report_params[:period].presence || Reports.default_period.attributes
     @period = Period.new(period_params)
   end
 
