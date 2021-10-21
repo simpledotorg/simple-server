@@ -38,7 +38,7 @@ module Experimentation
     end
 
     def enrolled_patients
-      patients # TODO: add where not visited, not completed, not rejected etc
+      Patient.where(id: treatment_group_memberships.status_enrolled.select(:patient_id))
     end
 
     def monitor(date)

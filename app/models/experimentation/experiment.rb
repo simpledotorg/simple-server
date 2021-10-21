@@ -5,6 +5,7 @@ module Experimentation
 
     has_many :treatment_groups, dependent: :delete_all
     has_many :reminder_templates, through: :treatment_groups
+    has_many :treatment_group_memberships, through: :treatment_groups
     has_many :patients, through: :treatment_groups
     has_many :notifications
 

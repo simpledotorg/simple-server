@@ -13,7 +13,9 @@ module Experimentation
         treatment_group_name: description,
         patient_id: patient.id,
         experiment_id: experiment.id,
-        experiment_name: experiment.name
+        experiment_name: experiment.name,
+        status: :enrolled,
+        status_updated_at: Time.current
       )
     end
   end
