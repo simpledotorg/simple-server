@@ -108,7 +108,7 @@ class UserAccess
   def accessible_district_regions(action)
     return Region.district_regions if power_user?
     facility_group_ids = accessible_facility_groups(action).pluck("facility_groups.id")
-    Region.district_regions.where(source_id: facility_group_ids)
+    Region.where(source_id: facility_group_ids, source_type: "FacilityGroup")
   end
 
   # User block authorization is determined via the parent district.
@@ -125,7 +125,7 @@ class UserAccess
   def accessible_facility_regions(action)
     return Region.facility_regions if power_user?
     facility_ids = accessible_facilities(action).pluck("facilities.id")
-    Region.facility_regions.where(source_id: facility_ids)
+    Region.where(source_id: facility_ids, source_type: "Facility")
   end
 
   def accessible_admins(action)

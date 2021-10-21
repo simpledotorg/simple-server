@@ -10,8 +10,14 @@ describe ExotelAPIService, type: :model do
       "Authorization" => "Basic #{auth_token}",
       "Connection" => "close",
       "Host" => "api.exotel.com",
-      "User-Agent" => "http.rb/4.4.1"
+      "User-Agent" => "http.rb/#{HTTP::VERSION}"
     }
+  end
+
+  around do |example|
+    WebMock.disallow_net_connect!
+    example.run
+    WebMock.allow_net_connect!
   end
 
   describe "#call_details" do
@@ -27,7 +33,7 @@ describe ExotelAPIService, type: :model do
         "Authorization" => "Basic #{auth_token}",
         "Connection" => "close",
         "Host" => "api.exotel.com",
-        "User-Agent" => "http.rb/4.4.1"
+        "User-Agent" => "http.rb/#{HTTP::VERSION}"
       }
     end
 
@@ -35,10 +41,11 @@ describe ExotelAPIService, type: :model do
       stub_request(:get, request_url).with(headers: request_headers).to_return(status: 200,
                                                                                body: call_details_200,
                                                                                headers: {})
+      response = described_class.new(sid, token).call_details(call_sid)
 
-      expected_call_details_response = described_class.new(sid, token).call_details(call_sid)
-
-      expect(expected_call_details_response[:Call].keys).to eq(%i[Sid
+      expect(response[:Call][:From]).to eq("09663127355")
+      expect(response[:Call][:To]).to eq("01930483621")
+      expect(response[:Call].keys).to eq(%i[Sid
         ParentCallSid
         DateCreated
         DateUpdated
