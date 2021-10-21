@@ -141,7 +141,6 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
     expect(district_data["facility_group_1"][jan_2020.to_period]).to include("adjusted_controlled_under_care" => 3)
 
     block_data = described_class.call(block_regions)
-    expect(block_data["block-1"]["November 2019".to_period]).to include("adjusted_controlled_under_care" => 0)
     expect(block_data["block-1"]["December 2020".to_period]).to include("adjusted_controlled_under_care" => 0)
     expect(block_data["block-1"]["January 2020".to_period]).to include("adjusted_controlled_under_care" => 3)
     expect(block_data["block-2"]["January 2020".to_period]).to be_nil
