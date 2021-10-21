@@ -10,9 +10,9 @@ module Experimentation
         .distinct
     end
 
+    # Returns patients who are eligible for enrollment. These should be
+    # filtered further by individual notification experiments based on their criteria.
     def self.candidate_patients(*args)
-      # Returns patients who are eligible for enrollment. These should be
-      # filtered further by individual notification experiments based on their criteria.
       Patient.with_hypertension
         .contactable
         .where_current_age(">=", 18)
