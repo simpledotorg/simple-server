@@ -60,23 +60,23 @@ module Reports
       visited_without_bp_taken_rates
     ]
 
-    DELEGATED_METHODS = [
-      :adjusted_patients_with_ltfu,
-      :adjusted_patients_without_ltfu,
-      :assigned_patients,
-      :complete_monthly_registrations,
-      :controlled,
-      :cumulative_assigned_patients,
-      :cumulative_registrations,
-      :earliest_patient_recorded_at,
-      :earliest_patient_recorded_at_period,
-      :ltfu,
-      :missed_visits,
-      :missed_visits_with_ltfu,
-      :missed_visits_without_ltfu,
-      :monthly_registrations,
-      :uncontrolled,
-      :visited_without_bp_taken
+    DELEGATED_COUNTS = %i[
+      adjusted_patients_with_ltfu
+      adjusted_patients_without_ltfu
+      assigned_patients
+      complete_monthly_registrations
+      controlled
+      cumulative_assigned_patients
+      cumulative_registrations
+      earliest_patient_recorded_at
+      earliest_patient_recorded_at_period
+      ltfu
+      missed_visits
+      missed_visits_with_ltfu
+      missed_visits_without_ltfu
+      monthly_registrations
+      uncontrolled
+      visited_without_bp_taken
     ]
 
     def warm_cache
@@ -85,7 +85,7 @@ module Reports
       end
     end
 
-    delegate(*DELEGATED_METHODS, to: :schema)
+    delegate(*DELEGATED_COUNTS, to: :schema)
     delegate(*DELEGATED_RATES, to: :schema)
 
     alias_method :adjusted_patients, :adjusted_patients_without_ltfu
