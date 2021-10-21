@@ -76,7 +76,15 @@ RSpec.describe User, type: :model do
       )
     }
 
-    it { is_expected.to validate_inclusion_of(:receive_approval_notifications).in_array([true, false]) }
+    it "restricts receive_approval_notifications to boolean values" do
+      now = Time.current
+      user = User.new(receive_approval_notifications: "false", full_name: "Jane Doe", device_created_at: now, device_updated_at: now)
+      expect(user.receive_approval_notifications).to be false
+      expect(user).to be_valid
+      user = User.new(receive_approval_notifications: 1, full_name: "Jane Doe", device_created_at: now, device_updated_at: now)
+      expect(user.receive_approval_notifications).to be true
+      expect(user).to be_valid
+    end
   end
 
   describe "#full_teleconsultation_phone_number" do
@@ -418,6 +426,18 @@ RSpec.describe User, type: :model do
       Flipper.enable(:drug_stocks, other_facility_group.region)
 
       expect(admin.drug_stocks_enabled?).to be false
+    end
+  end
+
+  describe "regions_access_cache_key" do
+    it "is cache key for non power users" do
+      admin = create(:admin, :viewer_all)
+      expect(admin.regions_access_cache_key).to eq("users/#{admin.id}")
+    end
+
+    it "is constant cache key for power users" do
+      admin = create(:admin, :power_user)
+      expect(admin.regions_access_cache_key).to eq("users/power_user_region_access")
     end
   end
 end

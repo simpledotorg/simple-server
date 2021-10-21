@@ -79,10 +79,12 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
         facility_region_slug
         lost_to_follow_up
         monthly_registrations
+        month_date
       ].map(&:to_s)
       (3.months.ago.to_period..now.to_period).each do |period|
         expect(results["facility-1"][period].keys).to match_array(expected_keys)
-        expect(results["facility-1"][period].values.reject { |v| v == "facility-1" }).to all(be_an(Integer))
+        counts = results["facility-1"][period].except("facility_region_slug", "month_date")
+        expect(counts.values).to all(be_an(Integer))
       end
     end
   end
