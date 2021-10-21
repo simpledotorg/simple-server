@@ -6,7 +6,7 @@ module Experimentation
         return
       end
 
-      experiments = [Experimentation::CurrentPatientExperiment, Experimentation::StalePatientExperiment]
+      experiments = [CurrentPatientExperiment, StalePatientExperiment]
 
       experiments.flat_map(&:running).each { |experiment| experiment.enroll_patients(Date.current) }
       experiments.flat_map(&:monitoring).each { |experiment| experiment.monitor(Date.current) }

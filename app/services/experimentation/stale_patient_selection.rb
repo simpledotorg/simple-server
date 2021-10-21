@@ -18,7 +18,7 @@ module Experimentation
     end
 
     def call
-      candidate_ids = Experiment.candidate_patients.pluck(:id)
+      candidate_ids = NotificationsExperiment.candidate_patients.pluck(:id)
       return [] if candidate_ids.empty?
 
       parameters = {
