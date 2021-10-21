@@ -1,0 +1,56 @@
+module Experimentation
+  class NotificationsExperiment < Experiment
+    include Memery
+    MAX_PATIENTS_PER_DAY = 2000
+
+    default_scope { where(experiment_type: %w[current_patients stale_patients]) }
+    scope :notifying, -> { where("end_time < ?", Time.current - reminder_templates.pluck(:remind_on_in_days).max.days) }
+
+    def self.candidate_patients(*args)
+      # Return patients who are eligible for enrollment.
+      # These should be filtered further by individual
+      # notification experiments based on their criteria.
+      Patient.with_hypertension
+        .contactable
+        .where_current_age(">=", 18)
+        .where("NOT EXISTS (:recent_treatment_group_memberships)",
+          recent_treatment_group_memberships: Experimentation::TreatmentGroupMembership
+                                                .joins(treatment_group: :experiment)
+                                                .where("treatment_group_memberships.patient_id = patients.id")
+                                                .where("end_time > ?", LAST_EXPERIMENT_BUFFER.ago)
+                                                .select(:patient_id))
+        .where("NOT EXISTS (:multiple_scheduled_appointments)",
+          multiple_scheduled_appointments: Appointment
+                                             .select(1)
+                                             .where("appointments.patient_id = patients.id")
+                                             .where(status: :scheduled)
+                                             .group(:patient_id)
+                                             .having("count(patient_id) > 1"))
+    end
+
+    def enroll_patients(date)
+      self.class.candidate_patients(date)
+        .limit(MAX_PATIENTS_PER_DAY)
+        .then { |patients| enroll(patients) }
+    end
+
+    def enrolled_patients
+      patients # TODO: add where not visited, not completed, not rejected etc
+    end
+
+    def monitor(date)
+      # for enrolled_patients
+      mark_visits
+      evict_patients
+    end
+
+    def mark_visits
+    end
+
+    def evict_patients
+    end
+
+    def send_notifications(date)
+    end
+  end
+end
