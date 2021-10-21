@@ -1,5 +1,5 @@
 class EmailAuthentications::InvitationsController < Devise::InvitationsController
-  include FlipperInfo
+  include DatadogTagging # need to include here because this does not inherit from any of our base controllers
   before_action :verify_params, only: [:create]
   helper_method :current_admin
 
