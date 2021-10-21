@@ -440,4 +440,21 @@ RSpec.describe User, type: :model do
       expect(admin.regions_access_cache_key).to eq("users/power_user_region_access")
     end
   end
+
+  describe "to_datadog_hash" do
+    it "returns key info for user" do
+      admin = build(:admin)
+      expect(admin.to_datadog_hash).to eq({
+        "usr.access_level" => "power_user",
+        "usr.id" => nil,
+        "usr.sync_approval_status" => "denied"
+      })
+      user = build(:user_created_on_device)
+      expect(user.to_datadog_hash).to eq({
+        "usr.access_level" => nil,
+        "usr.id" => nil,
+        "usr.sync_approval_status" => "allowed"
+      })
+    end
+  end
 end
