@@ -28,7 +28,18 @@ module Reports
         end
       end
 
+      Region::REGION_TYPE.each do |region_type|
+        Region.public_send("#{region_type}_regions").find_in_batches do |batch|
+          warm_repository_v2_cache(batch)
+        end
+      end
+
       notify "finished region reports cache warming in #{Time.current.to_i - start_time.to_i}s"
+    end
+
+    def warm_repository_v2_cache(regions)
+      repo = Repository.new(regions, reporting_schema_v2: true)
+      repo.warm_cache
     end
 
     def warm_region_cache(region)
