@@ -76,7 +76,7 @@ module Reports
       :missed_visits_without_ltfu,
       :monthly_registrations,
       :uncontrolled,
-      :visited_without_bp_taken,
+      :visited_without_bp_taken
     ]
 
     def warm_cache
