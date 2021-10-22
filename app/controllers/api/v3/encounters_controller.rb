@@ -65,11 +65,11 @@ class Api::V3::EncountersController < Api::V3::SyncController
   end
 
   def stub_syncing_from_user
-    render(json: {errors: nil}, status: :ok) unless FeatureToggle.enabled?("SYNC_ENCOUNTERS")
+    render(json: {errors: nil}, status: :ok) unless Flipper.enabled?("sync_encounters")
   end
 
   def stub_syncing_to_user
-    unless FeatureToggle.enabled?("SYNC_ENCOUNTERS")
+    unless Flipper.enabled?("sync_encounters")
       render(
         json: {"encounters" => [], "process_token" => encode_process_token({})},
         status: :ok

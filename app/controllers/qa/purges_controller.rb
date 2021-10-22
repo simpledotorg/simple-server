@@ -9,7 +9,7 @@ class Qa::PurgesController < APIController
   before_action :validate_access
 
   def purge_patient_data
-    return unless FeatureToggle.enabled?("PURGE_ENDPOINT_FOR_QA")
+    return unless Flipper.enabled?("purge_endpoint_for_qa")
 
     PurgeUsersData.perform
     head :ok

@@ -99,7 +99,7 @@ Rails.application.routes.draw do
         get "sync", to: "encounters#sync_to_user"
         post "sync", to: "encounters#sync_from_user"
 
-        if FeatureToggle.enabled?("GENERATE_ENCOUNTER_ID_ENDPOINT")
+        if Flipper.enabled?("generate_encounter_id_endpoint")
           get "generate_id", to: "encounters#generate_id"
         end
       end
@@ -253,7 +253,7 @@ Rails.application.routes.draw do
     resources :error_traces, only: [:index, :create]
   end
 
-  if FeatureToggle.enabled?("PURGE_ENDPOINT_FOR_QA")
+  if Flipper.enabled?("purge_endpoint_for_qa")
     namespace :qa do
       delete "purge", to: "purges#purge_patient_data"
     end
