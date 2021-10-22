@@ -44,18 +44,15 @@ module Reports
       {
         adjusted_patient_counts: adjusted_patients_without_ltfu[slug],
         controlled_patients_rate: controlled_rates[slug],
-        controlled_patients_with_ltfu_rate: controlled_rates(with_ltfu: true)[slug],
         controlled_patients: controlled[slug],
         cumulative_assigned_patients: cumulative_assigned_patients[slug],
         cumulative_registrations: cumulative_registrations[slug],
-        earliest_registration_period: earliest_patient_recorded_at_period[slug],
         facility: region.source,
         facility_size: region.source.facility_size,
         missed_visits_rate: missed_visits_without_ltfu_rates[slug],
         missed_visits: missed_visits[slug],
         period_info: period_info(region),
         uncontrolled_patients_rate: uncontrolled_rates[slug],
-        uncontrolled_patients_with_ltfu_rate: uncontrolled_rates(with_ltfu: true)[slug],
         uncontrolled_patients: uncontrolled[slug],
       }
     end
