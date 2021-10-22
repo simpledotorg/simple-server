@@ -113,7 +113,7 @@ RSpec.describe Experimentation::Experiment, type: :model do
       patient = create(:patient, age: 18)
       not_enrolled_patient = create(:patient, age: 18)
 
-      treatment_group.patients << patient
+      treatment_group.enroll(patient)
 
       expect(described_class.candidate_patients).not_to include(patient)
       expect(described_class.candidate_patients).to include(not_enrolled_patient)
@@ -123,7 +123,7 @@ RSpec.describe Experimentation::Experiment, type: :model do
       experiment = create(:experiment, start_time: 30.days.ago, end_time: 15.days.ago)
       treatment_group = create(:treatment_group, experiment: experiment)
       patient = create(:patient, age: 18)
-      treatment_group.patients << patient
+      treatment_group.enroll(patient)
 
       expect(described_class.candidate_patients).to include(patient)
     end
@@ -132,7 +132,7 @@ RSpec.describe Experimentation::Experiment, type: :model do
       experiment = create(:experiment, start_time: 30.days.ago, end_time: 10.days.ago)
       treatment_group = create(:treatment_group, experiment: experiment)
       patient = create(:patient, age: 18)
-      treatment_group.patients << patient
+      treatment_group.enroll(patient)
 
       expect(described_class.candidate_patients).not_to include(patient)
     end
@@ -143,7 +143,7 @@ RSpec.describe Experimentation::Experiment, type: :model do
 
       patient = create(:patient, age: 18)
 
-      future_treatment_group.patients << patient
+      future_treatment_group.enroll(patient)
 
       expect(described_class.candidate_patients).not_to include(patient)
     end
@@ -156,8 +156,8 @@ RSpec.describe Experimentation::Experiment, type: :model do
 
       patient = create(:patient, age: 18)
 
-      old_treatment_group.patients << patient
-      running_treatment_group.patients << patient
+      old_treatment_group.enroll(patient)
+      running_treatment_group.enroll(patient)
 
       expect(described_class.candidate_patients).not_to include(patient)
     end
@@ -170,8 +170,8 @@ RSpec.describe Experimentation::Experiment, type: :model do
 
       patient = create(:patient, age: 18)
 
-      treatment_group_1.patients << patient
-      treatment_group_2.patients << patient
+      treatment_group_1.enroll(patient)
+      treatment_group_2.enroll(patient)
 
       expect(described_class.candidate_patients).not_to include(patient)
     end

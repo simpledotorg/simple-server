@@ -67,9 +67,9 @@ RSpec.describe Experimentation::Export, type: :model do
     _cascade_notification_3 = create_notification(@experiment, @cascade_template_3, @cascade_patient, @cascade_patient_appt, "cancelled")
 
     Timecop.freeze(experiment_start_time - 1.day) do
-      @control_group.patients << @control_patient
-      @single_message_group.patients << @single_message_patient
-      @cascade_group.patients << @cascade_patient
+      @control_group.enroll(@control_patient)
+      @single_message_group.enroll(@single_message_patient)
+      @cascade_group.enroll(@cascade_patient)
     end
   end
 
