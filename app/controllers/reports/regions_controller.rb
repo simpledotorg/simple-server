@@ -6,7 +6,6 @@ class Reports::RegionsController < AdminController
   before_action :set_page, only: [:details]
   before_action :set_per_page, only: [:details]
   before_action :find_region, except: [:index, :monthly_district_data_report]
-  around_action :check_reporting_schema_toggle
   around_action :set_reporting_time_zone
   after_action :log_cache_metrics
   delegate :cache, to: Rails
@@ -160,22 +159,6 @@ class Reports::RegionsController < AdminController
       ltfu_patients_rate: repo.ltfu_rates[@region.slug],
       period_info: range.each_with_object({}) { |period, hsh| hsh[period] = period.to_hash }
     }
-  end
-
-  def check_reporting_schema_toggle
-    original = RequestStore[:reporting_schema_v2]
-    RequestStore[:reporting_schema_v2] = reporting_schema_via_param_or_feature_flag
-    yield
-  ensure
-    RequestStore[:reporting_schema_v2] = original
-  end
-
-  # We want a falsey param value (ie v2=false) to override a user feature flagged value, hence the awkwardness below
-  def reporting_schema_via_param_or_feature_flag
-    param_flag = ActiveRecord::Type::Boolean.new.deserialize(report_params[:v2])
-    user_flag = current_admin.feature_enabled?(:reporting_schema_v2)
-    return param_flag unless param_flag.nil?
-    user_flag
   end
 
   def accessible_region?(region, action)
