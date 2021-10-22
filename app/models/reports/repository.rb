@@ -82,6 +82,7 @@ module Reports
     def warm_cache
       DELEGATED_RATES.each do |method|
         public_send(method)
+        public_send(method, with_ltfu: true) unless method.in?([:ltfu_rates, :missed_visits_with_ltfu_rates])
       end
     end
 

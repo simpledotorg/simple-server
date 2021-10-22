@@ -35,12 +35,16 @@ module Reports
       end
 
       notify "finished region reports cache warming in #{Time.current.to_i - start_time.to_i}s"
+    ensure
+      RequestStore.store[:bust_cache] = false
     end
 
     def warm_repository_v2_cache(regions)
       region_type = regions.first.region_type
+      notify "Starting V2 region cache for batch of #{region_type} regions"
+      range = (period.advance(months: -23)..period)
       Datadog.tracer.trace("region_cache_warmer.warm_repository_v2", resource: region_type) do |span|
-        repo = Repository.new(regions, periods: period, reporting_schema_v2: true)
+        repo = Repository.new(regions, periods: range, reporting_schema_v2: true)
         repo.warm_cache
       end
       Statsd.instance.increment("region_cache_warmer.#{region_type}.repository_v2.cache", regions.count)
