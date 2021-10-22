@@ -2,7 +2,7 @@ FactoryBot.define do
   factory :experiment, class: Experimentation::Experiment do
     name { Faker::Lorem.unique.word }
     experiment_type { "current_patients" }
-    start_time { Date.current }
+    start_time { 1.week.ago }
     end_time { 1.week.from_now }
   end
 

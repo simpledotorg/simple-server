@@ -44,8 +44,10 @@ module Experimentation
     end
 
     def enroll(patients)
-      patients.in_batches(of: 1000).each do |patient|
-        random_treatment_group.enroll(patient)
+      patients.in_batches(of: 1000) do |x|
+        x.each do |patient|
+          random_treatment_group.enroll(patient)
+        end
       end
     end
 
