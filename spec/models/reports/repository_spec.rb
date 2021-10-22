@@ -232,7 +232,7 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
           facility_1_uncontrolled = create_list(:patient, 2, full_name: "uncontrolled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
 
           Timecop.freeze(jan_2020) do
-            (facility_1_controlled).map do |patient|
+            facility_1_controlled.map do |patient|
               create(:bp_with_encounter, :under_control, facility: facility_1, patient: patient, recorded_at: 15.days.ago, user: user)
             end
             facility_1_uncontrolled.map do |patient|
@@ -242,16 +242,16 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
 
           refresh_views
 
-          nov_2019 = Period.month("November 2019")
+          nov_2019_period = Period.month("November 2019")
           repo = Reports::Repository.new([facility_1, facility_2], periods: jan_2020_period)
-          expect(repo.controlled[facility_1.slug][nov_2019]).to eq(0)
-          expect(repo.uncontrolled[facility_1.slug][nov_2019]).to eq(0)
+          expect(repo.controlled[facility_1.slug][nov_2019_period]).to eq(0)
+          expect(repo.uncontrolled[facility_1.slug][nov_2019_period]).to eq(0)
           expect(repo.uncontrolled[facility_1.slug][jan_2020_period]).to eq(2)
 
-          expect(repo.controlled[facility_2.slug][nov_2019]).to eq(0)
+          expect(repo.controlled[facility_2.slug][nov_2019_period]).to eq(0)
           expect(repo.controlled[facility_2.slug][jan_2020_period]).to eq(0)
           expect(repo.uncontrolled[facility_2.slug]).to eq({})
-          expect(repo.uncontrolled[facility_2.slug][nov_2019]).to eq(0)
+          expect(repo.uncontrolled[facility_2.slug][nov_2019_period]).to eq(0)
           expect(repo.uncontrolled[facility_2.slug][jan_2020_period]).to eq(0)
         end
 
