@@ -67,6 +67,5 @@ module Reports
         visited_without_bp_taken: visited_without_bp_taken[slug]
       }
     end
-
   end
 end
