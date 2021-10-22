@@ -2,6 +2,7 @@ class APIController < ApplicationController
   before_action :current_user_present?
   before_action :validate_sync_approval_status_allowed
   before_action :authenticate
+  before_action :set_datadog_user_info
   before_action :validate_facility
   before_action :validate_current_facility_belongs_to_users_facility_group
 
@@ -90,15 +91,19 @@ class APIController < ApplicationController
   end
 
   def authenticate
-    return fail_request(:unauthorized, "access_token unauthorized") unless access_token_authorized?
-    RequestStore.store[:current_user_id] = current_user.id
-    current_user.mark_as_logged_in if current_user.has_never_logged_in?
+    authenticate_or_request_with_http_token do |token, _options|
+      if ActiveSupport::SecurityUtils.secure_compare(token, current_user.access_token)
+        RequestStore.store[:current_user] = current_user.to_datadog_hash
+        current_user.mark_as_logged_in if current_user.has_never_logged_in?
+        true
+      end
+    end
   end
 
-  def access_token_authorized?
-    authenticate_or_request_with_http_token do |token, _options|
-      ActiveSupport::SecurityUtils.secure_compare(token, current_user.access_token)
-    end
+  def set_datadog_user_info
+    current_span = Datadog.tracer.active_span
+    return if current_span.nil? || RequestStore.store[:current_user].blank?
+    current_span.set_tags(RequestStore.store[:current_user])
   end
 
   def set_sentry_context
