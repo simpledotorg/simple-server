@@ -37,7 +37,7 @@ module Experimentation
           patient.appointments.each do |appointment|
             schedule_notifications(patient, appointment, group, appointment.scheduled_date)
           end
-          group.patients << patient
+          group.enroll(patient)
         end
       end
 
@@ -66,7 +66,7 @@ module Experimentation
         daily_patients.each do |patient|
           group = experiment.random_treatment_group
           schedule_notifications(patient, patient.appointments.last, group, now)
-          group.patients << patient
+          group.enroll(patient)
         end
       end
 
