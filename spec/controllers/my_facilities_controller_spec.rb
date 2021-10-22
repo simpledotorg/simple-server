@@ -92,7 +92,7 @@ RSpec.describe MyFacilitiesController, type: :controller do
 
       Timecop.freeze("January 15th 2021") do
         refresh_views
-        get :bp_controlled, params: {}
+        get :bp_not_controlled, params: {}
       end
 
       expect(response).to be_successful
@@ -115,7 +115,7 @@ RSpec.describe MyFacilitiesController, type: :controller do
 
       Timecop.freeze("January 15th 2021") do
         refresh_views
-        get :bp_controlled, params: {}
+        get :missed_visits, params: {}
       end
 
       expect(response).to be_successful

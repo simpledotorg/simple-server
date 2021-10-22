@@ -51,8 +51,6 @@ module Reports
         earliest_registration_period: earliest_patient_recorded_at_period[slug],
         facility: region.source,
         facility_size: region.source.facility_size,
-        ltfu_patients_rate: ltfu_rates[slug],
-        ltfu_patients: ltfu[slug],
         missed_visits_rate: missed_visits_without_ltfu_rates[slug],
         missed_visits_with_ltfu_rate: missed_visits_with_ltfu_rates[slug],
         missed_visits_with_ltfu: missed_visits_with_ltfu[slug],
