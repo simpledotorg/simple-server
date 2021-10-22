@@ -52,17 +52,11 @@ module Reports
         facility: region.source,
         facility_size: region.source.facility_size,
         missed_visits_rate: missed_visits_without_ltfu_rates[slug],
-        missed_visits_with_ltfu_rate: missed_visits_with_ltfu_rates[slug],
-        missed_visits_with_ltfu: missed_visits_with_ltfu[slug],
         missed_visits: missed_visits[slug],
         period_info: period_info(region),
-        registrations: monthly_registrations[slug],
         uncontrolled_patients_rate: uncontrolled_rates[slug],
         uncontrolled_patients_with_ltfu_rate: uncontrolled_rates(with_ltfu: true)[slug],
         uncontrolled_patients: uncontrolled[slug],
-        visited_without_bp_taken_rates: visited_without_bp_taken_rates[slug],
-        visited_without_bp_taken_with_ltfu_rates: visited_without_bp_taken_rates(with_ltfu: true)[slug],
-        visited_without_bp_taken: visited_without_bp_taken[slug]
       }
     end
   end
