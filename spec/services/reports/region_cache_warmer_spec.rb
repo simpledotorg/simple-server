@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe Reports::RegionCacheWarmer, type: :model do
+  let(:facility_group) { create(:facility_group) }
+
   before do
     memory_store = ActiveSupport::Cache.lookup_store(:memory_store)
 
@@ -15,7 +17,6 @@ RSpec.describe Reports::RegionCacheWarmer, type: :model do
   end
 
   it "completes successfully" do
-    facility_group = create(:facility_group)
     facility_1, facility_2 = create_list(:facility, 2, facility_group: facility_group)
     user = create(:user, organization: facility_group.organization)
     create(:patient, registration_facility: facility_1, registration_user: user)
@@ -40,6 +41,23 @@ RSpec.describe Reports::RegionCacheWarmer, type: :model do
     expect(instance).not_to receive(:warm_region_cache).with(Organization.first.region)
 
     instance.call
+  end
+
+  context "v2 caches" do
+    it "caches all non root/org regions in the v2 schema" do
+      facility_1 = create(:facility, facility_group: facility_group)
+      user = create(:user, organization: facility_group.organization)
+      patient = create(:patient, registration_facility: facility_1, recorded_at: 2.months.ago, registration_user: user)
+      create(:bp_with_encounter, :under_control, facility: facility_1, patient: patient, recorded_at: 15.days.ago)
+
+      RefreshReportingViews.call
+
+      described_class.call
+      repo = Reports::Repository.new(facility_1, periods: Period.current, reporting_schema_v2: true)
+      expect(repo.schema).to receive(:controlled).never # ensure the cache is hit and we don't retrieve counts again for the rate calc
+      repo.controlled_rates
+      repo.controlled_rates(with_ltfu: true)
+    end
   end
 
   context "#warm_region_cache" do
