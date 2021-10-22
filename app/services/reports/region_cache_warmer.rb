@@ -6,7 +6,7 @@ module Reports
 
     def initialize(period: RegionService.default_period)
       @period = period
-      notify "starting region reports cache warming"
+      notify "Starting region reports cache warming"
     end
 
     attr_reader :period
@@ -53,8 +53,6 @@ module Reports
     def warm_region_cache(region)
       Time.use_zone(Period::REPORTING_TIME_ZONE) do
         RequestStore.store[:bust_cache] = true
-
-        notify "starting region caching for region #{region.id}"
         Statsd.instance.time("region_cache_warmer.time") do
           Reports::RegionService.call(region: region, period: period)
           Statsd.instance.increment("region_cache_warmer.#{region.region_type}.cache")
@@ -63,8 +61,6 @@ module Reports
           PatientBreakdownService.call(region: region, period: period)
           Statsd.instance.increment("patient_breakdown_service.#{region.region_type}.cache")
         end
-
-        notify "finished region caching for region #{region.id}"
       end
     end
 
