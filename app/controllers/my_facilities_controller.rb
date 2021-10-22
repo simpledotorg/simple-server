@@ -74,11 +74,10 @@ class MyFacilitiesController < AdminController
   def process_facility_stats(type)
     facilities = filter_facilities
     sizes = facilities.pluck(:facility_size).uniq
-    @data_for_facility = {}
 
     presenter = Reports::RepositoryPresenter.create(facilities, period: @period, months: 6)
-    facilities.each do |facility|
-      @data_for_facility[facility.name] = presenter.my_facilities_hash(facility.region)
+    @data_for_facility = facilities.each_with_object({}) do |facility, result|
+      result[facility.name] = presenter.my_facilities_hash(facility.region)
     end
     @display_sizes = @facility_sizes.select { |size| sizes.include?(size) }
     @stats_by_size = FacilityStatsService.call(facilities: @data_for_facility, period: @period, rate_numerator: type)

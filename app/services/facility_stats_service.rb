@@ -57,11 +57,11 @@ class FacilityStatsService
   def size_data_template
     periods.reverse.each_with_object({}) do |period, hsh|
       hsh[period] = {
-        rate_numerator => 0,
         :adjusted_patient_counts => 0,
-        :cumulative_registrations => 0,
         :cumulative_assigned_patients => 0,
-        rate_name => 0
+        :cumulative_registrations => 0,
+        rate_name => 0,
+        rate_numerator => 0
       }
     end
   end

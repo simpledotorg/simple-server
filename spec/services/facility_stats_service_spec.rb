@@ -32,7 +32,7 @@ RSpec.describe FacilityStatsService do
     it "sets data for the past six periods" do
       stats_by_size = FacilityStatsService.call(facilities: facilities_data([small_facility]), period: period,
                                                 rate_numerator: :controlled_patients)
-      small = stats_by_size[:small][:periods]
+      small = stats_by_size["small"][:periods]
       periods = (1..5).inject([period]) { |periods|
         periods << periods.last.previous
       }
@@ -90,21 +90,21 @@ RSpec.describe FacilityStatsService do
       }
 
       # all numbers except cumulative_registrations appear in data 3 months after they're recorded
-      small = stats_by_size[:small][:periods]
+      small = stats_by_size["small"][:periods]
       expect(small.map { |_, v| v[:controlled_patients] }).to eq [0, 0, 0, 2, 0, 0]
       expect(small.map { |_, v| v[:adjusted_patient_counts] }).to eq [0, 0, 0, 3, 3, 3]
       expect(small.map { |_, v| v[:cumulative_registrations] }).to eq [3, 3, 3, 3, 3, 3]
       expect(small.map { |_, v| v[:cumulative_assigned_patients] }).to eq [3, 3, 3, 3, 3, 3]
       expect(small.map { |_, v| v[:controlled_patients_rate] }).to eq [0, 0, 0, 67, 0, 0]
 
-      medium = stats_by_size[:medium][:periods]
+      medium = stats_by_size["medium"][:periods]
       expect(medium.map { |_, v| v[:controlled_patients] }).to eq [0, 0, 0, 0, 1, 0]
       expect(medium.map { |_, v| v[:adjusted_patient_counts] }).to eq [0, 0, 0, 0, 2, 2]
       expect(medium.map { |_, v| v[:cumulative_registrations] }).to eq [0, 2, 2, 2, 2, 2]
       expect(medium.map { |_, v| v[:cumulative_assigned_patients] }).to eq [0, 2, 2, 2, 2, 2]
       expect(medium.map { |_, v| v[:controlled_patients_rate] }).to eq [0, 0, 0, 0, 50, 0]
 
-      large = stats_by_size[:large][:periods]
+      large = stats_by_size["large"][:periods]
       expect(large.map { |_, v| v[:controlled_patients] }).to eq [0, 0, 0, 0, 0, 1]
       expect(large.map { |_, v| v[:adjusted_patient_counts] }).to eq [0, 0, 0, 0, 0, 3]
       expect(large.map { |_, v| v[:cumulative_registrations] }).to eq [0, 0, 3, 3, 3, 3]
@@ -115,7 +115,7 @@ RSpec.describe FacilityStatsService do
     it "processes data for controlled_patients" do
       stats_by_size = FacilityStatsService.call(facilities: facilities_data([small_facility]),
                                                 period: period, rate_numerator: :controlled_patients)
-      period_keys = stats_by_size[:small][:periods].values.map(&:keys).flatten.uniq
+      period_keys = stats_by_size["small"][:periods].values.map(&:keys).flatten.uniq
       controlled_patient_keys = [:controlled_patients, :controlled_patients_rate]
       expect(period_keys & controlled_patient_keys).to match_array(controlled_patient_keys)
     end
@@ -123,7 +123,7 @@ RSpec.describe FacilityStatsService do
     it "processes data for uncontrolled_patients" do
       stats_by_size = FacilityStatsService.call(facilities: facilities_data([small_facility]),
                                                 period: period, rate_numerator: :uncontrolled_patients)
-      period_keys = stats_by_size[:small][:periods].values.map(&:keys).flatten.uniq
+      period_keys = stats_by_size["small"][:periods].values.map(&:keys).flatten.uniq
       uncontrolled_patient_keys = [:uncontrolled_patients, :uncontrolled_patients_rate]
       expect(period_keys & uncontrolled_patient_keys).to match_array(uncontrolled_patient_keys)
     end
@@ -131,7 +131,7 @@ RSpec.describe FacilityStatsService do
     it "processes data for missed_visits" do
       stats_by_size = FacilityStatsService.call(facilities: facilities_data([small_facility]),
                                                 period: period, rate_numerator: :missed_visits)
-      period_keys = stats_by_size[:small][:periods].values.map(&:keys).flatten.uniq
+      period_keys = stats_by_size["small"][:periods].values.map(&:keys).flatten.uniq
       missed_visits_keys = [:missed_visits, :missed_visits_rate]
       expect(period_keys & missed_visits_keys).to match_array(missed_visits_keys)
     end
@@ -139,8 +139,8 @@ RSpec.describe FacilityStatsService do
     it "handles invalid rate_numerator by setting values to zero" do
       stats_by_size = FacilityStatsService.call(facilities: facilities_data([small_facility]),
                                                 period: period, rate_numerator: :womp)
-      stat_keys = stats_by_size[:small][:periods].values.first.keys
-      stat_values = stats_by_size[:small][:periods].values.first.values
+      stat_keys = stats_by_size["small"][:periods].values.first.keys
+      stat_values = stats_by_size["small"][:periods].values.first.values
       expected_keys = [:womp, :adjusted_patient_counts, :cumulative_registrations, :cumulative_assigned_patients, :womp_rate]
       expect(stat_keys).to match_array(expected_keys)
       expect(stat_values).to match_array([0, 0, 0, 0, 0])
