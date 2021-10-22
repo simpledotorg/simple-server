@@ -17,11 +17,9 @@ RSpec.describe MyFacilitiesController, type: :controller do
   end
 
   def refresh_views
-    ActiveRecord::Base.transaction do
-      LatestBloodPressuresPerPatientPerMonth.refresh
-      LatestBloodPressuresPerPatientPerQuarter.refresh
-      PatientRegistrationsPerDayPerFacility.refresh
-    end
+    LatestBloodPressuresPerPatientPerMonth.refresh
+    LatestBloodPressuresPerPatientPerQuarter.refresh
+    PatientRegistrationsPerDayPerFacility.refresh
   end
 
   describe "GET #index" do
@@ -55,7 +53,7 @@ RSpec.describe MyFacilitiesController, type: :controller do
     end
 
     context "when admin has access to multiple facilities" do
-      let(:other_district) { create(:facility_group, name: "other district") }
+      let(:other_district) { create(:facility_group, name: "other district", organization: common_org) }
       let(:facility_2) { create(:facility, facility_group: other_district, zone: "foo") }
       let(:facility_3) { create(:facility, facility_group: other_district, zone: "oof") }
 

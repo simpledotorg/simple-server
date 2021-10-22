@@ -15,8 +15,9 @@ RSpec.describe FacilityStatsService do
   end
 
   def facilities_data(facilities)
+    presenter = Reports::RepositoryPresenter.create(facilities, period: period, months: 6)
     facilities.each_with_object({}) do |facility, hsh|
-      hsh[facility.name] = Reports::RegionService.new(region: facility, period: period).call
+      hsh[facility.name] = presenter.my_facilities_hash(facility.region)
     end
   end
 
@@ -115,7 +116,7 @@ RSpec.describe FacilityStatsService do
       stats_by_size = FacilityStatsService.call(facilities: facilities_data([small_facility]),
                                                 period: period, rate_numerator: :controlled_patients)
       period_keys = stats_by_size[:small][:periods].values.map(&:keys).flatten.uniq
-      controlled_patient_keys = ["controlled_patients", "controlled_patients_rate"]
+      controlled_patient_keys = [:controlled_patients, :controlled_patients_rate]
       expect(period_keys & controlled_patient_keys).to match_array(controlled_patient_keys)
     end
 
@@ -123,7 +124,7 @@ RSpec.describe FacilityStatsService do
       stats_by_size = FacilityStatsService.call(facilities: facilities_data([small_facility]),
                                                 period: period, rate_numerator: :uncontrolled_patients)
       period_keys = stats_by_size[:small][:periods].values.map(&:keys).flatten.uniq
-      uncontrolled_patient_keys = ["uncontrolled_patients", "uncontrolled_patients_rate"]
+      uncontrolled_patient_keys = [:uncontrolled_patients, :uncontrolled_patients_rate]
       expect(period_keys & uncontrolled_patient_keys).to match_array(uncontrolled_patient_keys)
     end
 
@@ -131,7 +132,7 @@ RSpec.describe FacilityStatsService do
       stats_by_size = FacilityStatsService.call(facilities: facilities_data([small_facility]),
                                                 period: period, rate_numerator: :missed_visits)
       period_keys = stats_by_size[:small][:periods].values.map(&:keys).flatten.uniq
-      missed_visits_keys = ["missed_visits", "missed_visits_rate"]
+      missed_visits_keys = [:missed_visits, :missed_visits_rate]
       expect(period_keys & missed_visits_keys).to match_array(missed_visits_keys)
     end
 
@@ -140,7 +141,7 @@ RSpec.describe FacilityStatsService do
                                                 period: period, rate_numerator: :womp)
       stat_keys = stats_by_size[:small][:periods].values.first.keys
       stat_values = stats_by_size[:small][:periods].values.first.values
-      expected_keys = ["womp", "adjusted_patient_counts", "cumulative_registrations", "cumulative_assigned_patients", "womp_rate"]
+      expected_keys = [:womp, :adjusted_patient_counts, :cumulative_registrations, :cumulative_assigned_patients, :womp_rate]
       expect(stat_keys).to match_array(expected_keys)
       expect(stat_values).to match_array([0, 0, 0, 0, 0])
     end

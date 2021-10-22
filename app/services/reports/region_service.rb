@@ -1,10 +1,5 @@
 module Reports
   class RegionService
-    # The default period we report on is the current month.
-    def self.default_period
-      Period.month(Time.current.in_time_zone(Period::REPORTING_TIME_ZONE))
-    end
-
     def self.call(*args)
       new(*args).call
     end
