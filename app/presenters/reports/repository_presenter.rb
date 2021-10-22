@@ -53,7 +53,7 @@ module Reports
         missed_visits: missed_visits[slug],
         period_info: period_info(region),
         uncontrolled_patients_rate: uncontrolled_rates[slug],
-        uncontrolled_patients: uncontrolled[slug],
+        uncontrolled_patients: uncontrolled[slug]
       }
     end
   end
