@@ -12,7 +12,7 @@ RSpec.describe Reports::RegionCacheWarmer, type: :model do
 
   it "skips caching if disabled via Flipper" do
     Flipper.enable(:disable_region_cache_warmer)
-    expect(Reports::RegionService).to receive(:new).never
+    expect(Reports::Repository).to receive(:new).never
     Reports::RegionCacheWarmer.call
   end
 
@@ -61,30 +61,6 @@ RSpec.describe Reports::RegionCacheWarmer, type: :model do
   end
 
   context "#warm_region_cache" do
-    it "calls RegionService for the region and period" do
-      facility = create(:facility)
-      period = Period.month(Time.current.beginning_of_month)
-
-      expect(Reports::RegionService).to receive(:call).with(region: facility.region, period: period)
-
-      described_class.new(period: period).warm_region_cache(facility.region)
-    end
-
-    it "refreshes the region service cache" do
-      facility = create(:facility)
-      period = Period.month(Time.current.beginning_of_month)
-
-      described_class.new(period: period).warm_region_cache(facility.region)
-      initial_registrations = Reports::RegionService.new(region: facility.region, period: period).call[:cumulative_registrations]
-
-      create(:patient, registration_facility: facility, recorded_at: 1.month.ago)
-      described_class.new(period: period).warm_region_cache(facility.region)
-
-      final_registrations = Reports::RegionService.new(region: facility.region, period: period).call[:cumulative_registrations]
-
-      expect(final_registrations).not_to eq(initial_registrations)
-    end
-
     it "refreshes the patient breakdown cache" do
       facility = create(:facility)
       period = Period.month(Time.current.beginning_of_month)

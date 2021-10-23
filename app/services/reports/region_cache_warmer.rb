@@ -56,7 +56,6 @@ module Reports
 
         notify "starting region caching for region #{region.id}"
         Statsd.instance.time("region_cache_warmer.time") do
-          Reports::RegionService.call(region: region, period: period)
           Statsd.instance.increment("region_cache_warmer.#{region.region_type}.cache")
           Reports::RepositoryCacheWarmer.call(region: region, period: period)
 
