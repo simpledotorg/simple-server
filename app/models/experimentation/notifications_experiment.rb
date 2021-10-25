@@ -44,9 +44,12 @@ module Experimentation
     end
 
     def monitor(date)
-      # for enrolled_patients
+      record_enrollment_data(date)
       mark_visits
       evict_patients
+    end
+
+    def record_enrollment_data(date)
     end
 
     def mark_visits
