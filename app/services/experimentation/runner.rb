@@ -53,7 +53,7 @@ module Experimentation
     end
 
     def self.current_patient_candidates(start_time, end_time)
-      NotificationsExperiment.candidate_patients
+      NotificationsExperiment.eligible_patients
         .joins(:appointments)
         .merge(Appointment.status_scheduled)
         .where("appointments.scheduled_date BETWEEN ? and ?", start_time, end_time)

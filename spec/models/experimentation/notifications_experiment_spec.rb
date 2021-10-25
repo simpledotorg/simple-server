@@ -38,7 +38,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
     end
   end
 
-  describe ".candidate_patients" do
+  describe ".eligible_patients" do
     it "doesn't include patients from a running experiment" do
       experiment = create(:experiment, start_time: 1.day.ago, end_time: 1.day.from_now)
       treatment_group = create(:treatment_group, experiment: experiment)
@@ -48,8 +48,8 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
 
       treatment_group.enroll(patient)
 
-      expect(described_class.candidate_patients).not_to include(patient)
-      expect(described_class.candidate_patients).to include(not_enrolled_patient)
+      expect(described_class.eligible_patients).not_to include(patient)
+      expect(described_class.eligible_patients).to include(not_enrolled_patient)
     end
 
     it "includes patients from experiments that ended before 14 days" do
@@ -58,7 +58,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       patient = create(:patient, age: 18)
       treatment_group.enroll(patient)
 
-      expect(described_class.candidate_patients).to include(patient)
+      expect(described_class.eligible_patients).to include(patient)
     end
 
     it "doesn't include patients from experiments that ended within 14 days" do
@@ -67,7 +67,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       patient = create(:patient, age: 18)
       treatment_group.enroll(patient)
 
-      expect(described_class.candidate_patients).not_to include(patient)
+      expect(described_class.eligible_patients).not_to include(patient)
     end
 
     it "doesn't include patients are in a future experiment" do
@@ -78,7 +78,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
 
       future_treatment_group.enroll(patient)
 
-      expect(described_class.candidate_patients).not_to include(patient)
+      expect(described_class.eligible_patients).not_to include(patient)
     end
 
     it "doesn't include patients who were once in a completed experiment but are now in a running experiment" do
@@ -92,7 +92,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       old_treatment_group.enroll(patient)
       running_treatment_group.enroll(patient)
 
-      expect(described_class.candidate_patients).not_to include(patient)
+      expect(described_class.eligible_patients).not_to include(patient)
     end
 
     it "doesn't include patients twice if they were in multiple experiments that ended" do
@@ -106,7 +106,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       treatment_group_1.enroll(patient)
       treatment_group_2.enroll(patient)
 
-      expect(described_class.candidate_patients).not_to include(patient)
+      expect(described_class.eligible_patients).not_to include(patient)
     end
 
     it "excludes any patients who have multiple scheduled appointments" do
@@ -116,8 +116,8 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       included_patient = create(:patient, age: 18)
       create(:appointment, patient: included_patient, status: :scheduled)
 
-      expect(described_class.candidate_patients).not_to include(excluded_patient)
-      expect(described_class.candidate_patients).to include(included_patient)
+      expect(described_class.eligible_patients).not_to include(excluded_patient)
+      expect(described_class.eligible_patients).to include(included_patient)
     end
   end
 

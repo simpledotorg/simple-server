@@ -18,7 +18,7 @@ module Experimentation
 
     # Returns patients who are eligible for enrollment. These should be
     # filtered further by individual notification experiments based on their criteria.
-    def self.candidate_patients(*args)
+    def self.eligible_patients(*args)
       Patient.with_hypertension
         .contactable
         .where_current_age(">=", 18)
@@ -38,7 +38,7 @@ module Experimentation
     end
 
     def enroll_patients(date)
-      self.class.candidate_patients(date)
+      self.class.eligible_patients(date)
         .limit(MAX_PATIENTS_PER_DAY)
         .then { |patients| enroll(patients) }
     end

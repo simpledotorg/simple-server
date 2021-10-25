@@ -14,7 +14,7 @@ module Experimentation
     attr_reader :date
 
     def call
-      candidate_ids = NotificationsExperiment.candidate_patients.pluck(:id)
+      candidate_ids = NotificationsExperiment.eligible_patients.pluck(:id)
       return [] if candidate_ids.empty?
 
       parameters = {
