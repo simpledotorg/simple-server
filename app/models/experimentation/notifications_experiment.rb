@@ -40,7 +40,7 @@ module Experimentation
     def enroll_patients(date)
       self.class.eligible_patients(date)
         .limit(MAX_PATIENTS_PER_DAY)
-        .then { |patients| enroll(patients) }
+        .then { |patients| assign_treatment_group(patients) }
     end
 
     def monitor(date)
