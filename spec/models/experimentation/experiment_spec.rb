@@ -150,13 +150,13 @@ RSpec.describe Experimentation::Experiment, type: :model do
     end
   end
 
-  describe "#enroll" do
+  describe "#assign_treatment_groups" do
     it "adds patients to a random treatment group in the experiment" do
       patients = create_list(:patient, 3)
       experiment = create(:experiment)
       create_list(:treatment_group, 2, experiment: experiment)
 
-      experiment.enroll(Patient.where(id: patients))
+      experiment.assign_treatment_groups(Patient.where(id: patients))
       expect(Experimentation::TreatmentGroupMembership.where(experiment_id: experiment.id, patient_id: patients.pluck(:id)).count).to eq(3)
     end
   end

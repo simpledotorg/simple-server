@@ -43,7 +43,7 @@ module Experimentation
       logger.info "Aborted experiment #{name}."
     end
 
-    def assign_treatment_group(patients)
+    def assign_treatment_groups(patients)
       patients.in_batches(of: 1000).each_record do |patient|
         random_treatment_group.enroll(patient)
       end
