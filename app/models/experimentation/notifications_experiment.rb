@@ -60,9 +60,5 @@ module Experimentation
 
     def send_notifications(date)
     end
-
-    def enrolled_patients
-      Patient.where(id: treatment_group_memberships.status_enrolled.select(:patient_id))
-    end
   end
 end
