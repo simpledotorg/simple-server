@@ -8,20 +8,9 @@ module Experimentation
     end
 
     def self.start_current_patient_experiment(name:, percentage_of_patients: 100)
-      unless Flipper.enabled?(:experiment)
-        logger.info("Experiment feature flag is off. Experiment #{name} will not be started.")
-        return
-      end
-
       experiment = Experiment.current_patients.upcoming.find_by(name: name)
-      if experiment.nil?
-        logger.info("Experiment #{name} not found and may need to be removed from scheduler - exiting.")
-        return
-      end
 
       eligible_ids = current_patient_candidates(experiment.start_time, experiment.end_time).shuffle!
-      logger.info("Found #{eligible_ids.count} eligible patient ids for #{name} experiment, about to schedule_notifications.")
-
       experiment_patient_count = (0.01 * percentage_of_patients * eligible_ids.length).round
       eligible_ids = eligible_ids.pop(experiment_patient_count)
 
@@ -45,27 +34,17 @@ module Experimentation
     end
 
     def self.schedule_daily_stale_patient_notifications(name:, patients_per_day: PATIENTS_PER_DAY)
-      unless Flipper.enabled?(:experiment)
-        logger.info("Experiment feature flag is off. No patients will be added to experiment #{name}.")
-        return
-      end
-
       experiment = Experiment.stale_patients.running.find_by(name: name)
-      if experiment.nil?
-        logger.info("Experiment #{name} not found and may need to be removed from scheduler - exiting.")
-        return
-      end
 
-      now = Time.current
-      eligible_ids = StalePatientSelection.call(start_time: now)
-      logger.info "Experiment #{name} found #{eligible_ids.count} eligible patient ids for stale patient reminders"
+      today = Date.today
+      eligible_ids = StalePatientSelection.call(date: today)
       if eligible_ids.any?
         eligible_ids.shuffle!
         daily_ids = eligible_ids.pop(patients_per_day)
         daily_patients = Patient.where(id: daily_ids).includes(:appointments)
         daily_patients.each do |patient|
           group = experiment.random_treatment_group
-          schedule_notifications(patient, patient.appointments.last, group, now)
+          schedule_notifications(patient, patient.appointments.last, group, today)
           group.enroll(patient)
         end
       end
