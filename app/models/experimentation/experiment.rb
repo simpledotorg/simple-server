@@ -31,6 +31,7 @@ module Experimentation
     end
 
     def random_treatment_group
+      raise "random treatment group requested for experiment with no treatment groups" unless treatment_groups.any?
       treatment_groups.sample
     end
 
