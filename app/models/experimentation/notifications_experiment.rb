@@ -16,7 +16,7 @@ module Experimentation
       Patient.with_hypertension
         .contactable
         .where_current_age(">=", 18)
-        .where("NOT EXISTS (:recent_treatment_group_memberships)",
+        .where("NOT EXISTS (:recent_experiment_memberships)",
           recent_treatment_group_memberships: Experimentation::TreatmentGroupMembership
                                                 .joins(treatment_group: :experiment)
                                                 .where("treatment_group_memberships.patient_id = patients.id")
