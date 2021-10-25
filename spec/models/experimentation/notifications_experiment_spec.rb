@@ -27,7 +27,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
         create(:reminder_template, treatment_group: treatment_group, remind_on_in_days: 2)
         create(:reminder_template, treatment_group: treatment_group, remind_on_in_days: 3)
 
-        not_notifying_experiment = create(:experiment,  start_time: 3.day.ago, end_time: 1.day.ago,  experiment_type: "stale_patients")
+        not_notifying_experiment = create(:experiment, start_time: 3.day.ago, end_time: 1.day.ago, experiment_type: "stale_patients")
         treatment_group = create(:treatment_group, experiment: not_notifying_experiment)
 
         create(:reminder_template, treatment_group: treatment_group, remind_on_in_days: 1)
@@ -120,5 +120,4 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       expect(described_class.eligible_patients).to include(included_patient)
     end
   end
-
 end

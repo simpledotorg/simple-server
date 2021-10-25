@@ -18,16 +18,16 @@ module Experimentation
 
     # Returns patients who are eligible for enrollment. These should be
     # filtered further by individual notification experiments based on their criteria.
-    def self.eligible_patients(*args)
+    def self.eligible_patients
       Patient.with_hypertension
         .contactable
         .where_current_age(">=", 18)
         .where("NOT EXISTS (:recent_experiment_memberships)",
-          recent_treatment_group_memberships: Experimentation::TreatmentGroupMembership
-                                                .joins(treatment_group: :experiment)
-                                                .where("treatment_group_memberships.patient_id = patients.id")
-                                                .where("end_time > ?", LAST_EXPERIMENT_BUFFER.ago)
-                                                .select(:patient_id))
+          recent_experiment_memberships: Experimentation::TreatmentGroupMembership
+                                           .joins(treatment_group: :experiment)
+                                           .where("treatment_group_memberships.patient_id = patients.id")
+                                           .where("end_time > ?", RECENT_EXPERIMENT_MEMBERSHIP_BUFFER.ago)
+                                           .select(:patient_id))
         .where("NOT EXISTS (:multiple_scheduled_appointments)",
           multiple_scheduled_appointments: Appointment
                                              .select(1)
