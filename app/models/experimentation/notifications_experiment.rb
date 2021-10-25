@@ -31,14 +31,16 @@ module Experimentation
                                              .having("count(patient_id) > 1"))
     end
 
+    def daily_run(date)
+      running.each { |experiment| experiment.enroll_patients(date) }
+      monitoring.each { |experiment| experiment.monitor(date) }
+      notifying.each { |experiment| experiment.send_notifications(date) }
+    end
+
     def enroll_patients(date)
       self.class.candidate_patients(date)
         .limit(MAX_PATIENTS_PER_DAY)
         .then { |patients| enroll(patients) }
-    end
-
-    def enrolled_patients
-      Patient.where(id: treatment_group_memberships.status_enrolled.select(:patient_id))
     end
 
     def monitor(date)
@@ -54,6 +56,10 @@ module Experimentation
     end
 
     def send_notifications(date)
+    end
+
+    def enrolled_patients
+      Patient.where(id: treatment_group_memberships.status_enrolled.select(:patient_id))
     end
   end
 end
