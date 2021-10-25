@@ -10,6 +10,12 @@ module Experimentation
         .distinct
     end
 
+    def self.daily_run(date)
+      running.each { |experiment| experiment.enroll_patients(date) }
+      monitoring.each { |experiment| experiment.monitor(date) }
+      notifying.each { |experiment| experiment.send_notifications(date) }
+    end
+
     # Returns patients who are eligible for enrollment. These should be
     # filtered further by individual notification experiments based on their criteria.
     def self.candidate_patients(*args)
@@ -29,12 +35,6 @@ module Experimentation
                                              .where(status: :scheduled)
                                              .group(:patient_id)
                                              .having("count(patient_id) > 1"))
-    end
-
-    def daily_run(date)
-      running.each { |experiment| experiment.enroll_patients(date) }
-      monitoring.each { |experiment| experiment.monitor(date) }
-      notifying.each { |experiment| experiment.send_notifications(date) }
     end
 
     def enroll_patients(date)
