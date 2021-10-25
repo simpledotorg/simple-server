@@ -4,8 +4,8 @@ class AdminController < ApplicationController
 
   before_action :authenticate_email_authentication!
   before_action :set_bust_cache
+  before_action :set_reporting_schema_v2
   before_action :set_datadog_tags
-  around_action :check_reporting_schema_toggle
 
   after_action :verify_authorization_attempted, except: [:root]
 
@@ -36,15 +36,11 @@ class AdminController < ApplicationController
 
   private
 
-  def check_reporting_schema_toggle
-    original = RequestStore[:reporting_schema_v2]
+  def set_reporting_schema_v2
     RequestStore[:reporting_schema_v2] = reporting_schema_via_param_or_feature_flag
-    yield
-  ensure
-    RequestStore[:reporting_schema_v2] = original
   end
 
-  # We want a falsey param value (ie v2=false) to override a user feature flagged value, hence the awkwardness below
+  # A query string provided feature flag (v2=1) will always override any other settings here.
   def reporting_schema_via_param_or_feature_flag
     param_flag = ActiveRecord::Type::Boolean.new.deserialize(params[:v2])
     user_flag = current_admin.feature_enabled?(:reporting_schema_v2)
