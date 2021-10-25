@@ -2,8 +2,13 @@ module Experimentation
   class StalePatientExperiment < NotificationsExperiment
     default_scope { where(experiment_type: %w[stale_patients]) }
 
-    def self.eligible_patients(date)
+    def eligible_patients(date)
       Patient.where(id: StalePatientSelection.call(date: date))
+    end
+
+    def memberships_for_notifications(date)
+      # Patients who were enrolled on the `date`.
+      # To be implemented in a follow up PR
     end
   end
 end

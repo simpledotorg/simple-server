@@ -38,7 +38,7 @@ module Experimentation
     end
 
     def enroll_patients(date)
-      self.class.eligible_patients(date)
+      eligible_patients(date)
         .limit(MAX_PATIENTS_PER_DAY)
         .then { |patients| assign_treatment_group(patients) }
     end
@@ -59,6 +59,7 @@ module Experimentation
     end
 
     def send_notifications(date)
+      # Send notifications to memberships_for_notifications(date)
     end
   end
 end
