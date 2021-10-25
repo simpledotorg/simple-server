@@ -19,7 +19,7 @@ RSpec.describe Reports::RegionsController, "feature flags", type: :controller do
       get :show, params: {id: facility_group_1.slug, report_scope: "district", v2: "1"}
       expect(assigns(:repository).reporting_schema_v2?).to be_truthy
       expect(response).to be_successful
-      expect(RequestStore[:reporting_schema_v2]).to be_falsey
+      expect(RequestStore[:reporting_schema_v2]).to be_truthy
     end
 
     it "is disabled if v2 param is not set" do
