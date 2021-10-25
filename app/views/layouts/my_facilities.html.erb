@@ -5,11 +5,6 @@
         <%= link_to(my_facilities_overview_path, class: "sub-nav-link #{active_controller_and_action?("my_facilities", "index")}") do %>
           Overview
         <% end %>
-        <% if current_admin.feature_enabled?(:ranked_facilities) %>
-          <%= link_to(my_facilities_facility_performance_path(preserve_query_params(request.query_parameters, ["zone", "size", "facility_group"])), class: "sub-nav-link #{"active" if params[:controller] == "my_facilities/facility_performance"}") do %>
-            Facility performance
-          <% end %>
-        <% end %>
         <%= link_to(my_facilities_bp_controlled_path(preserve_query_params(request.query_parameters, ["zone", "size", "facility_group"])), class: "sub-nav-link #{active_action?("bp_controlled")}") do %>
           BP controlled
         <% end %>
