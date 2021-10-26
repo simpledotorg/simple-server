@@ -264,6 +264,8 @@ Need a larger dataset? Try adding the `SEED_TYPE` variable. (It takes longer to 
 $ SEED_TYPE=medium bin/rails db:seed_patients
 ```
 
+Available sizes are `small`, `medium`, and `large`. (Large takes a LONG time to run. You probably don't need it.)
+
 To purge the generated patient data, run
 
 ```bash
