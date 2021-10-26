@@ -13,6 +13,15 @@ module Reports
       attr_writer :use_schema_v2
     end
 
+    attr_reader :bp_measures_query
+    attr_reader :follow_ups_query
+    attr_reader :no_bp_measure_query
+    attr_reader :period_type
+    attr_reader :periods
+    attr_reader :regions
+    attr_reader :registered_patients_query
+    attr_reader :schema
+
     def initialize(regions, periods:, reporting_schema_v2: self.class.use_schema_v2?)
       @regions = Array(regions).map(&:region)
       @periods = if periods.is_a?(Period)
@@ -34,15 +43,6 @@ module Reports
       @no_bp_measure_query = NoBPMeasureQuery.new
       @registered_patients_query = RegisteredPatientsQuery.new
     end
-
-    attr_reader :bp_measures_query
-    attr_reader :follow_ups_query
-    attr_reader :no_bp_measure_query
-    attr_reader :period_type
-    attr_reader :periods
-    attr_reader :regions
-    attr_reader :registered_patients_query
-    attr_reader :schema
 
     def reporting_schema_v2?
       @reporting_schema_v2
@@ -121,6 +121,12 @@ module Reports
       result.each_with_object({}) { |(region_entry, counts), hsh|
         hsh[region_entry.region.slug] = counts
       }
+    end
+
+    def period_info(region)
+      start_period = [earliest_patient_recorded_at_period[region.slug], periods.begin].compact.max
+      calc_range = (start_period..periods.end)
+      calc_range.each_with_object({}) { |period, hsh| hsh[period] = period.to_hash }
     end
   end
 end
