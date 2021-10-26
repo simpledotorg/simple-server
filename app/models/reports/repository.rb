@@ -50,33 +50,44 @@ module Reports
 
     delegate :cache, :logger, to: Rails
 
-    DELEGATED_METHODS = [
-      :adjusted_patients_with_ltfu,
-      :adjusted_patients_without_ltfu,
-      :assigned_patients,
-      :complete_monthly_registrations,
-      :controlled_rates,
-      :controlled,
-      :cumulative_assigned_patients,
-      :cumulative_registrations,
-      :earliest_patient_recorded_at,
-      :earliest_patient_recorded_at_period,
-      :ltfu_rates,
-      :ltfu,
-      :missed_visits,
-      :missed_visits_with_ltfu,
-      :missed_visits_without_ltfu,
-      :missed_visits_rate,
-      :missed_visits_with_ltfu_rates,
-      :missed_visits_without_ltfu_rates,
-      :monthly_registrations,
-      :uncontrolled_rates,
-      :uncontrolled,
-      :visited_without_bp_taken,
-      :visited_without_bp_taken_rates
+    DELEGATED_RATES = %i[
+      controlled_rates
+      ltfu_rates
+      missed_visits_rate
+      missed_visits_with_ltfu_rates
+      missed_visits_without_ltfu_rates
+      uncontrolled_rates
+      visited_without_bp_taken_rates
     ]
 
-    delegate(*DELEGATED_METHODS, to: :schema)
+    DELEGATED_COUNTS = %i[
+      adjusted_patients_with_ltfu
+      adjusted_patients_without_ltfu
+      assigned_patients
+      complete_monthly_registrations
+      controlled
+      cumulative_assigned_patients
+      cumulative_registrations
+      earliest_patient_recorded_at
+      earliest_patient_recorded_at_period
+      ltfu
+      missed_visits
+      missed_visits_with_ltfu
+      missed_visits_without_ltfu
+      monthly_registrations
+      uncontrolled
+      visited_without_bp_taken
+    ]
+
+    def warm_cache
+      DELEGATED_RATES.each do |method|
+        public_send(method)
+        public_send(method, with_ltfu: true) unless method.in?([:ltfu_rates, :missed_visits_with_ltfu_rates])
+      end
+    end
+
+    delegate(*DELEGATED_COUNTS, to: :schema)
+    delegate(*DELEGATED_RATES, to: :schema)
 
     alias_method :adjusted_patients, :adjusted_patients_without_ltfu
 
