@@ -65,7 +65,7 @@ well by this attribute alone. For example
 
 The cadences when put on a timeline look like:
 
-![ab-experiment-timeline](./resources/ab_experiment_timeline.png)
+![ab-experiment-timeline](https://github.com/simpledotorg/simple-server/raw/5a4008a79e1cffd635b2ce2348ec1b9dea5318e9/doc/arch/resources/ab_experiment_timeline.png)
 
 Additionally, the `state` attribute needs to be modified and kept track of. The `start_date` and `end_date` already have all the 
 information required to figure out the cadences. We will remove the `state` field and introduce methods that work with 
