@@ -23,7 +23,12 @@ RSpec.describe BloodPressureExportService, type: :model do
     I18n.default_locale = :en_IN
   end
 
+<<<<<<< HEAD
   describe "#call" do #state what you want to test
+=======
+  describe "#call" do # more for a thing
+    puts "hello"
+>>>>>>> b5aa723f075cb0d01e548ff0668598c1dbd1478e
     context "when data_type is bp_controlled" do # more for data setup
       it "processes results for small facilities" do
         small_facility1 = create(:facility, name: "small_1", facility_group: facility_group, facility_size: "small")
@@ -38,7 +43,6 @@ RSpec.describe BloodPressureExportService, type: :model do
           create(:blood_pressure, :under_control, patient: patient, facility: patient.assigned_facility,
                                                   recorded_at: may - 4.months, user: user)
           logger.info "--- end"
-
         end
         create(:blood_pressure, :hypertensive, patient: small_uncontrolled, facility: small_uncontrolled.assigned_facility,
                                                recorded_at: may - 4.months, user: user)
@@ -48,56 +52,56 @@ RSpec.describe BloodPressureExportService, type: :model do
         service = described_class.new(data_type: "controlled_patients", start_period: start_period, end_period: end_period, facilities: facilities)
         result = service.call
 
-        expected_results = {"small" => {"aggregate"=>
-          {"Facilities"=>"All PHCs",
-           "Total assigned"=>"3",
-           "Total registered"=>"3",
-           "Six month change"=>"0%",
-           period_range[0]=>"0%",
-           "Dec-2020-ratio"=>"0 / 0",
-           period_range[1]=>"0%",
-           "Jan-2021-ratio"=>"0 / 0",
-           period_range[2]=>"0%",
-           "Feb-2021-ratio"=>"0 / 0",
-           period_range[3]=>"0%",
-           "Mar-2021-ratio"=>"0 / 3",
-           period_range[4]=>"0%",
-           "Apr-2021-ratio"=>"0 / 3",
-           period_range[5]=>"0%",
-           "May-2021-ratio"=>"0 / 3"},
-         "facilities"=>
-          [{"Facilities"=>"Small_1",
-            "Total assigned"=>"2",
-            "Total registered"=>"2",
-            "Six month change"=>"0%",
-            period_range[0]=>"0%",
-            "Dec-2020-ratio"=>"0 / 0",
-            period_range[1]=>"0%",
-            "Jan-2021-ratio"=>"0 / 0",
-            period_range[2]=>"0%",
-            "Feb-2021-ratio"=>"0 / 0",
-            period_range[3]=>"0%",
-            "Mar-2021-ratio"=>"0 / 2",
-            period_range[4]=>"0%",
-            "Apr-2021-ratio"=>"0 / 2",
-            period_range[5]=>"0%",
-            "May-2021-ratio"=>"0 / 2"},
-           {"Facilities"=>"Small_2",
-            "Total assigned"=>"1",
-            "Total registered"=>"1",
-            "Six month change"=>"0%",
-            period_range[0]=>"0%",
-            "Dec-2020-ratio"=>"0 / 0",
-            period_range[1]=>"0%",
-            "Jan-2021-ratio"=>"0 / 0",
-            period_range[2]=>"0%",
-            "Feb-2021-ratio"=>"0 / 0",
-            period_range[3]=>"0%",
-            "Mar-2021-ratio"=>"0 / 1",
-            period_range[4]=>"0%",
-            "Apr-2021-ratio"=>"0 / 1",
-            period_range[5]=>"0%",
-            "May-2021-ratio"=>"0 / 1"}]}}
+        expected_results = {"small" => {"aggregate" =>
+          {"Facilities" => "All PHCs",
+           "Total assigned" => "3",
+           "Total registered" => "3",
+           "Six month change" => "0%",
+           period_range[0] => "0%",
+           "Dec-2020-ratio" => "0 / 0",
+           period_range[1] => "0%",
+           "Jan-2021-ratio" => "0 / 0",
+           period_range[2] => "0%",
+           "Feb-2021-ratio" => "0 / 0",
+           period_range[3] => "0%",
+           "Mar-2021-ratio" => "0 / 3",
+           period_range[4] => "0%",
+           "Apr-2021-ratio" => "0 / 3",
+           period_range[5] => "0%",
+           "May-2021-ratio" => "0 / 3"},
+                                        "facilities" =>
+          [{"Facilities" => "Small_1",
+            "Total assigned" => "2",
+            "Total registered" => "2",
+            "Six month change" => "0%",
+            period_range[0] => "0%",
+            "Dec-2020-ratio" => "0 / 0",
+            period_range[1] => "0%",
+            "Jan-2021-ratio" => "0 / 0",
+            period_range[2] => "0%",
+            "Feb-2021-ratio" => "0 / 0",
+            period_range[3] => "0%",
+            "Mar-2021-ratio" => "0 / 2",
+            period_range[4] => "0%",
+            "Apr-2021-ratio" => "0 / 2",
+            period_range[5] => "0%",
+            "May-2021-ratio" => "0 / 2"},
+            {"Facilities" => "Small_2",
+             "Total assigned" => "1",
+             "Total registered" => "1",
+             "Six month change" => "0%",
+             period_range[0] => "0%",
+             "Dec-2020-ratio" => "0 / 0",
+             period_range[1] => "0%",
+             "Jan-2021-ratio" => "0 / 0",
+             period_range[2] => "0%",
+             "Feb-2021-ratio" => "0 / 0",
+             period_range[3] => "0%",
+             "Mar-2021-ratio" => "0 / 1",
+             period_range[4] => "0%",
+             "Apr-2021-ratio" => "0 / 1",
+             period_range[5] => "0%",
+             "May-2021-ratio" => "0 / 1"}]}}
         expect(result).to eq(expected_results)
       end
 
@@ -105,7 +109,7 @@ RSpec.describe BloodPressureExportService, type: :model do
         medium_facility1 = create(:facility, name: "medium_1", facility_size: "medium", facility_group: facility_group)
         medium_facility2 = create(:facility, name: "medium_2", facility_size: "medium", facility_group: facility_group)
         medium_controlled = create_list(:patient, 2, full_name: "medium_controlled", registration_facility: medium_facility1,
-                                              recorded_at: may - 4.months, registration_user: user)
+                                                     recorded_at: may - 4.months, registration_user: user)
         medium_uncontrolled = create(:patient, full_name: "medium_uncontrolled", registration_facility: medium_facility2,
                                                recorded_at: may - 4.months, registration_user: user)
         # create(:blood_pressure, :under_control, patient: medium_controlled, user: user,
@@ -128,65 +132,63 @@ RSpec.describe BloodPressureExportService, type: :model do
         service = described_class.new(data_type: "controlled_patients", start_period: start_period, end_period: end_period, facilities: facilities)
         result = service.call
 
-
-        expected_results ={"medium"=>
-          {"aggregate"=>
-            {"Facilities"=>"All CHCs",
-            "Total assigned"=>"3",
-            "Total registered"=>"3",
-            "Six month change"=>"0%",
-            period_range[0]=>"0%",
-            "Dec-2020-ratio"=>"0 / 0",
-            period_range[1]=>"0%",
-            "Jan-2021-ratio"=>"0 / 0",
-            period_range[2]=>"0%",
-            "Feb-2021-ratio"=>"0 / 0",
-            period_range[3]=>"0%",
-            "Mar-2021-ratio"=>"0 / 0",
-            period_range[4]=>"0%",
-            "Apr-2021-ratio"=>"0 / 3",
-            period_range[5]=>"0%",
-            "May-2021-ratio"=>"0 / 3"},
-          "facilities"=>
-            [{"Facilities"=>"Medium_1",
-              "Total assigned"=>"2",
-              "Total registered"=>"2",
-              "Six month change"=>"0%",
-              period_range[0]=>"0%",
-              "Dec-2020-ratio"=>"0 / 0",
-              period_range[1]=>"0%",
-              "Jan-2021-ratio"=>"0 / 0",
-              period_range[2]=>"0%",
-              "Feb-2021-ratio"=>"0 / 0",
-              period_range[3]=>"0%",
-              "Mar-2021-ratio"=>"0 / 0",
-              period_range[4]=>"0%",
-              "Apr-2021-ratio"=>"0 / 2",
-              period_range[5]=>"0%",
-              "May-2021-ratio"=>"0 / 2"},
-            {"Facilities"=>"Medium_2",
-              "Total assigned"=>"1",
-              "Total registered"=>"1",
-              "Six month change"=>"0%",
-              period_range[0]=>"0%",
-              "Dec-2020-ratio"=>"0 / 0",
-              period_range[1]=>"0%",
-              "Jan-2021-ratio"=>"0 / 0",
-              period_range[2]=>"0%",
-              "Feb-2021-ratio"=>"0 / 0",
-              period_range[3]=>"0%",
-              "Mar-2021-ratio"=>"0 / 0",
-              period_range[4]=>"0%",
-              "Apr-2021-ratio"=>"0 / 1",
-              period_range[5]=>"0%",
-              "May-2021-ratio"=>"0 / 1"}]}}
+        expected_results = {"medium" =>
+          {"aggregate" =>
+            {"Facilities" => "All CHCs",
+             "Total assigned" => "3",
+             "Total registered" => "3",
+             "Six month change" => "0%",
+             period_range[0] => "0%",
+             "Dec-2020-ratio" => "0 / 0",
+             period_range[1] => "0%",
+             "Jan-2021-ratio" => "0 / 0",
+             period_range[2] => "0%",
+             "Feb-2021-ratio" => "0 / 0",
+             period_range[3] => "0%",
+             "Mar-2021-ratio" => "0 / 0",
+             period_range[4] => "0%",
+             "Apr-2021-ratio" => "0 / 3",
+             period_range[5] => "0%",
+             "May-2021-ratio" => "0 / 3"},
+           "facilities" =>
+            [{"Facilities" => "Medium_1",
+              "Total assigned" => "2",
+              "Total registered" => "2",
+              "Six month change" => "0%",
+              period_range[0] => "0%",
+              "Dec-2020-ratio" => "0 / 0",
+              period_range[1] => "0%",
+              "Jan-2021-ratio" => "0 / 0",
+              period_range[2] => "0%",
+              "Feb-2021-ratio" => "0 / 0",
+              period_range[3] => "0%",
+              "Mar-2021-ratio" => "0 / 0",
+              period_range[4] => "0%",
+              "Apr-2021-ratio" => "0 / 2",
+              period_range[5] => "0%",
+              "May-2021-ratio" => "0 / 2"},
+              {"Facilities" => "Medium_2",
+               "Total assigned" => "1",
+               "Total registered" => "1",
+               "Six month change" => "0%",
+               period_range[0] => "0%",
+               "Dec-2020-ratio" => "0 / 0",
+               period_range[1] => "0%",
+               "Jan-2021-ratio" => "0 / 0",
+               period_range[2] => "0%",
+               "Feb-2021-ratio" => "0 / 0",
+               period_range[3] => "0%",
+               "Mar-2021-ratio" => "0 / 0",
+               period_range[4] => "0%",
+               "Apr-2021-ratio" => "0 / 1",
+               period_range[5] => "0%",
+               "May-2021-ratio" => "0 / 1"}]}}
 
         expect(result).to eq(expected_results)
-
       end
 
       it "processes results for large sized facilities" do
-                # large_facility1 = create(:facility, name: "large_1", facility_size: "large", facility_group: facility_group)
+        # large_facility1 = create(:facility, name: "large_1", facility_size: "large", facility_group: facility_group)
         # large_facility2 = create(:facility, name: "large_2", facility_size: "large", facility_group: facility_group)
         # large_controlled = create(:patient, full_name: "large_controlled", registration_user: user,
         #                                     registration_facility: large_facility1, recorded_at: may - 3.months)
@@ -216,5 +218,4 @@ RSpec.describe BloodPressureExportService, type: :model do
   describe "#as_csv" do
     it "returns a csv object with expected data"
   end
-
 end

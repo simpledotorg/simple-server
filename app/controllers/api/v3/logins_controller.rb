@@ -20,7 +20,7 @@ class Api::V3::LoginsController < APIController
       }
       render json: response, status: :ok
     else
-      notify_sentry(result)
+      log_failure(result)
       response = {
         errors: {
           user: [result.error_message]
@@ -48,12 +48,13 @@ class Api::V3::LoginsController < APIController
     params.require(:user).permit(:phone_number, :password, :otp)
   end
 
-  def notify_sentry(result)
-    Sentry.capture_message("Login Error",
-      extra: {
-        login_params: login_params,
-        errors: result.error_message
-      },
-      tags: {type: "login"})
+  def log_failure(result)
+    Rails.logger.info(
+      msg: "login_error",
+      controller: self.class.name,
+      action: action_name,
+      user_id: result.authentication&.user&.id,
+      error: result.error_message
+    )
   end
 end

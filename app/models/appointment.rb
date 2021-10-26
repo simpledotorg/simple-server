@@ -12,6 +12,7 @@ class Appointment < ApplicationRecord
 
   has_many :notifications, as: :subject
   has_many :communications
+  has_many :call_results
 
   ANONYMIZED_DATA_FIELDS = %w[id patient_id created_at registration_facility_name user_id scheduled_date
     overdue status agreed_to_visit remind_on]
@@ -22,15 +23,7 @@ class Appointment < ApplicationRecord
     visited: "visited"
   }, _prefix: true
 
-  enum cancel_reason: {
-    not_responding: "not_responding",
-    moved: "moved",
-    dead: "dead",
-    invalid_phone_number: "invalid_phone_number",
-    public_hospital_transfer: "public_hospital_transfer",
-    moved_to_private: "moved_to_private",
-    other: "other"
-  }
+  enum cancel_reason: CallResult.remove_reasons
 
   enum appointment_type: {
     manual: "manual",
@@ -41,8 +34,6 @@ class Appointment < ApplicationRecord
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
   validates :appointment_type, presence: true
-
-  after_update :cancel_reminders, if: proc { |appt| appt.saved_changes["status"] && !appt.status_scheduled? }
 
   scope :for_sync, -> { with_discarded }
 
@@ -174,10 +165,5 @@ class Appointment < ApplicationRecord
     if status == :cancelled && !cancel_reason.present?
       errors.add(:cancel_reason, "should be present for cancelled appointments")
     end
-  end
-
-  def cancel_reminders
-    reminders = notifications.where(status: ["pending", "scheduled"])
-    reminders.update_all(status: "cancelled")
   end
 end

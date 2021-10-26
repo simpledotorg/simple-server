@@ -1,6 +1,5 @@
 module Experimentation
   class Runner
-    LAST_EXPERIMENT_BUFFER = 14.days.freeze
     PATIENTS_PER_DAY = 10_000
     BATCH_SIZE = 100
 
@@ -46,58 +45,6 @@ module Experimentation
           .where(id: batch)
           .includes(:appointments)
           .where(appointments: {scheduled_date: experiment.start_date..experiment.end_date, status: "scheduled"})
-
-        patients.each do |patient|
-          group = experiment.random_treatment_group
-          patient.appointments.each do |appointment|
-            schedule_notifications(patient, appointment, group, appointment.scheduled_date)
-          end
-          group.patients << patient
-        end
-      end
-
-      logger.info("Finished scheduling notifications for #{name} current experiment - marking as running and exiting.")
-      experiment.running_state!
-    end
-
-    def self.extend_current_patient_experiment(name:, end_date:, percentage_of_patients: 100)
-      unless Flipper.enabled?(:experiment)
-        logger.info("Experiment feature flag is off. Experiment #{name} will not be extended.")
-        return
-      end
-
-      experiment = Experiment.current_patients.find_by(name: name, state: [:running])
-      if experiment.nil?
-        logger.info("Experiment #{name} not available for extension. It may not be running, or may need to be removed from scheduler - exiting.")
-        return
-      end
-
-      if end_date <= experiment.end_date
-        logger.info("New end date must be later than existing end date. Experiment #{name} is currently scheduled to end on #{experiment.end_date}.")
-        return
-      end
-
-      extension_start_date = experiment.end_date + 1.day
-      extension_end_date = end_date
-
-      logger.info("Updating Experiment #{name} end date to #{end_date}.")
-      experiment.update!(end_date: end_date)
-
-      logger.info("Experiment #{name} is starting selecting state. Selecting patients for extended period #{extension_start_date} to #{extension_end_date}")
-      experiment.selecting_state!
-
-      eligible_ids = current_patient_candidates(extension_start_date, extension_end_date).shuffle!
-      logger.info("Found #{eligible_ids.count} eligible patient ids for #{name} experiment, about to schedule_notifications.")
-
-      experiment_patient_count = (0.01 * percentage_of_patients * eligible_ids.length).round
-      eligible_ids = eligible_ids.pop(experiment_patient_count)
-
-      while eligible_ids.any?
-        batch = eligible_ids.pop(BATCH_SIZE)
-        patients = Patient
-          .where(id: batch)
-          .includes(:appointments)
-          .where(appointments: {scheduled_date: extension_start_date..extension_end_date, status: "scheduled"})
 
         patients.each do |patient|
           group = experiment.random_treatment_group

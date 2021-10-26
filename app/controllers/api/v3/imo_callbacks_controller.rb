@@ -3,17 +3,20 @@ class Api::V3::ImoCallbacksController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   class ImoCallbackError < StandardError; end
-
   rescue_from ImoCallbackError do
     head :bad_request
   end
 
+  rescue_from ActiveRecord::RecordNotFound do
+    head :not_found
+  end
+
   def subscribe
-    unless permitted_params[:event] == "accept_invite"
-      raise ImoCallbackError.new("unexcepted Imo invitation event: #{permitted_params[:event]}")
+    unless params[:event] == "accept_invite"
+      raise ImoCallbackError.new("unexpected Imo invitation event: #{params[:event]}")
     end
 
-    patient = Patient.find(permitted_params[:patient_id])
+    patient = Patient.find(params[:patient_id])
     unless patient.imo_authorization
       raise ImoCallbackError.new("patient #{patient.id} does not have an ImoAuthorization")
     end
@@ -21,9 +24,20 @@ class Api::V3::ImoCallbacksController < ApplicationController
     head :ok
   end
 
-  private
+  def read_receipt
+    unless params[:event] == "read_receipt"
+      raise ImoCallbackError.new("unexpected Imo receipt event: #{params[:event]}")
+    end
 
-  def permitted_params
-    params.permit(:patient_id, :event)
+    detail = ImoDeliveryDetail.find_by!(post_id: params[:post_id])
+
+    if detail.read?
+      # just in case any errors in imo's system result in repeated callbacks
+      logger.error(class: self.class.name, msg: "detail #{detail.id} already marked read")
+    else
+      detail.update!(result: "read", read_at: Time.current)
+    end
+
+    head :ok
   end
 end

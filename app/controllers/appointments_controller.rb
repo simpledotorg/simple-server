@@ -88,7 +88,6 @@ class AppointmentsController < AdminController
   def patient_summaries(only_overdue: true)
     PatientSummaryQuery.call(
       assigned_facilities: @selected_facility.present? ? [@selected_facility] : @facilities,
-      next_appointment_facilities: @facilities,
       filters: @search_filters,
       only_overdue: only_overdue
     ).order(risk_level: :desc, next_appointment_scheduled_date: :desc, id: :asc)

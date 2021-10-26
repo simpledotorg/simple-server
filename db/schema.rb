@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_07_205603) do
+ActiveRecord::Schema.define(version: 2021_10_07_075808) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -63,8 +63,6 @@ ActiveRecord::Schema.define(version: 2021_09_07_205603) do
     t.string "appointment_type", null: false
     t.uuid "user_id"
     t.uuid "creation_facility_id"
-    t.index ["appointment_type"], name: "index_appointments_on_appointment_type"
-    t.index ["deleted_at"], name: "index_appointments_on_deleted_at"
     t.index ["facility_id"], name: "index_appointments_on_facility_id"
     t.index ["patient_id", "scheduled_date"], name: "index_appointments_on_patient_id_and_scheduled_date", order: { scheduled_date: :desc }
     t.index ["patient_id", "updated_at"], name: "index_appointments_on_patient_id_and_updated_at"
@@ -86,6 +84,7 @@ ActiveRecord::Schema.define(version: 2021_09_07_205603) do
     t.datetime "deleted_at"
     t.datetime "recorded_at"
     t.index ["deleted_at"], name: "index_blood_pressures_on_deleted_at"
+    t.index ["facility_id"], name: "index_blood_pressures_on_facility_id"
     t.index ["patient_id", "recorded_at"], name: "index_blood_pressures_on_patient_id_and_recorded_at", order: { recorded_at: :desc }
     t.index ["patient_id", "updated_at"], name: "index_blood_pressures_on_patient_id_and_updated_at"
     t.index ["patient_id"], name: "index_blood_pressures_on_patient_id"
@@ -107,7 +106,6 @@ ActiveRecord::Schema.define(version: 2021_09_07_205603) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["blood_sugar_type"], name: "index_blood_sugars_on_blood_sugar_type"
-    t.index ["blood_sugar_value"], name: "index_blood_sugars_on_blood_sugar_value"
     t.index ["facility_id"], name: "index_blood_sugars_on_facility_id"
     t.index ["patient_id", "updated_at"], name: "index_blood_sugars_on_patient_id_and_updated_at"
     t.index ["patient_id"], name: "index_blood_sugars_on_patient_id"
@@ -126,7 +124,18 @@ ActiveRecord::Schema.define(version: 2021_09_07_205603) do
     t.datetime "updated_at", null: false
     t.string "caller_phone_number", null: false
     t.datetime "deleted_at"
-    t.index ["deleted_at"], name: "index_call_logs_on_deleted_at"
+  end
+
+  create_table "call_results", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id", null: false
+    t.uuid "appointment_id", null: false
+    t.string "remove_reason"
+    t.string "result_type", null: false
+    t.datetime "device_created_at", null: false
+    t.datetime "device_updated_at", null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "communications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -177,8 +186,6 @@ ActiveRecord::Schema.define(version: 2021_09_07_205603) do
     t.uuid "region_id", null: false
     t.integer "redistributed"
     t.index ["facility_id"], name: "index_drug_stocks_on_facility_id"
-    t.index ["protocol_drug_id"], name: "index_drug_stocks_on_protocol_drug_id"
-    t.index ["user_id"], name: "index_drug_stocks_on_user_id"
   end
 
   create_table "email_authentications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -243,18 +250,15 @@ ActiveRecord::Schema.define(version: 2021_09_07_205603) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
-    t.index ["deleted_at"], name: "index_exotel_phone_number_details_on_deleted_at"
-    t.index ["patient_phone_number_id"], name: "index_exotel_phone_number_details_on_patient_phone_number_id"
     t.index ["patient_phone_number_id"], name: "index_unique_exotel_phone_number_details_on_phone_number_id", unique: true
-    t.index ["whitelist_status"], name: "index_exotel_phone_number_details_on_whitelist_status"
   end
 
   create_table "experiments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name", null: false
     t.string "state", default: "new", null: false
     t.string "experiment_type", null: false
-    t.date "start_date"
-    t.date "end_date"
+    t.date "start_date", null: false
+    t.date "end_date", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_experiments_on_name", unique: true
@@ -281,8 +285,6 @@ ActiveRecord::Schema.define(version: 2021_09_07_205603) do
     t.string "facility_size"
     t.integer "monthly_estimated_opd_load"
     t.boolean "enable_teleconsultation", default: false, null: false
-    t.index "to_tsvector('simple'::regconfig, COALESCE((name)::text, ''::text))", name: "index_gin_facilities_on_name", using: :gin
-    t.index "to_tsvector('simple'::regconfig, COALESCE((slug)::text, ''::text))", name: "index_gin_facilities_on_slug", using: :gin
     t.index ["deleted_at"], name: "index_facilities_on_deleted_at"
     t.index ["enable_diabetes_management"], name: "index_facilities_on_enable_diabetes_management"
     t.index ["facility_group_id"], name: "index_facilities_on_facility_group_id"
@@ -348,6 +350,16 @@ ActiveRecord::Schema.define(version: 2021_09_07_205603) do
     t.index ["patient_id"], name: "index_imo_authorizations_on_patient_id"
   end
 
+  create_table "imo_delivery_details", force: :cascade do |t|
+    t.string "post_id"
+    t.string "result", null: false
+    t.string "callee_phone_number", null: false
+    t.datetime "read_at"
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "medical_histories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "patient_id", null: false
     t.boolean "prior_heart_attack_boolean"
@@ -370,10 +382,8 @@ ActiveRecord::Schema.define(version: 2021_09_07_205603) do
     t.uuid "user_id"
     t.text "hypertension"
     t.text "receiving_treatment_for_diabetes"
-    t.index ["deleted_at"], name: "index_medical_histories_on_deleted_at"
     t.index ["patient_id", "updated_at"], name: "index_medical_histories_on_patient_id_and_updated_at"
     t.index ["patient_id"], name: "index_medical_histories_on_patient_id"
-    t.index ["user_id"], name: "index_medical_histories_on_user_id"
   end
 
   create_table "notifications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -491,7 +501,6 @@ ActiveRecord::Schema.define(version: 2021_09_07_205603) do
     t.index ["recorded_at"], name: "index_patients_on_recorded_at"
     t.index ["registration_facility_id"], name: "index_patients_on_registration_facility_id"
     t.index ["registration_user_id"], name: "index_patients_on_registration_user_id"
-    t.index ["reminder_consent"], name: "index_patients_on_reminder_consent"
     t.index ["updated_at"], name: "index_patients_on_updated_at"
   end
 
@@ -532,7 +541,6 @@ ActiveRecord::Schema.define(version: 2021_09_07_205603) do
     t.index ["deleted_at"], name: "index_prescription_drugs_on_deleted_at"
     t.index ["patient_id", "updated_at"], name: "index_prescription_drugs_on_patient_id_and_updated_at"
     t.index ["patient_id"], name: "index_prescription_drugs_on_patient_id"
-    t.index ["teleconsultation_id"], name: "index_prescription_drugs_on_teleconsultation_id"
     t.index ["updated_at"], name: "index_prescription_drugs_on_updated_at"
     t.index ["user_id"], name: "index_prescription_drugs_on_user_id"
   end
@@ -637,7 +645,7 @@ ActiveRecord::Schema.define(version: 2021_09_07_205603) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
-    t.index ["deleted_at"], name: "index_twilio_sms_delivery_details_on_deleted_at"
+    t.datetime "read_at"
     t.index ["session_id"], name: "index_twilio_sms_delivery_details_on_session_id"
   end
 
@@ -679,6 +687,7 @@ ActiveRecord::Schema.define(version: 2021_09_07_205603) do
   add_foreign_key "blood_sugars", "facilities"
   add_foreign_key "blood_sugars", "users"
   add_foreign_key "communications", "notifications"
+  add_foreign_key "drug_stocks", "facilities"
   add_foreign_key "drug_stocks", "protocol_drugs"
   add_foreign_key "drug_stocks", "users"
   add_foreign_key "encounters", "facilities"
@@ -755,10 +764,8 @@ ActiveRecord::Schema.define(version: 2021_09_07_205603) do
   add_index "latest_blood_pressures_per_patient_per_months", ["assigned_facility_id"], name: "index_bp_months_assigned_facility_id"
   add_index "latest_blood_pressures_per_patient_per_months", ["bp_id"], name: "index_latest_blood_pressures_per_patient_per_months", unique: true
   add_index "latest_blood_pressures_per_patient_per_months", ["bp_recorded_at"], name: "index_bp_months_bp_recorded_at"
-  add_index "latest_blood_pressures_per_patient_per_months", ["medical_history_hypertension"], name: "index_bp_months_medical_history_hypertension"
   add_index "latest_blood_pressures_per_patient_per_months", ["patient_id"], name: "index_latest_bp_per_patient_per_months_patient_id"
   add_index "latest_blood_pressures_per_patient_per_months", ["patient_recorded_at"], name: "index_bp_months_patient_recorded_at"
-  add_index "latest_blood_pressures_per_patient_per_months", ["registration_facility_id"], name: "index_bp_months_registration_facility_id"
 
   create_view "latest_blood_pressures_per_patient_per_quarters", materialized: true, sql_definition: <<-SQL
       SELECT DISTINCT ON (latest_blood_pressures_per_patient_per_months.patient_id, latest_blood_pressures_per_patient_per_months.year, latest_blood_pressures_per_patient_per_months.quarter) latest_blood_pressures_per_patient_per_months.bp_id,
@@ -802,7 +809,6 @@ ActiveRecord::Schema.define(version: 2021_09_07_205603) do
     ORDER BY latest_blood_pressures_per_patient_per_months.patient_id, latest_blood_pressures_per_patient_per_months.bp_recorded_at DESC, latest_blood_pressures_per_patient_per_months.bp_id;
   SQL
   add_index "latest_blood_pressures_per_patients", ["bp_id"], name: "index_latest_blood_pressures_per_patients", unique: true
-  add_index "latest_blood_pressures_per_patients", ["patient_id"], name: "index_latest_bp_per_patient_patient_id"
 
   create_view "materialized_patient_summaries", materialized: true, sql_definition: <<-SQL
       SELECT p.recorded_at,
@@ -1517,7 +1523,8 @@ ActiveRecord::Schema.define(version: 2021_09_07_205603) do
               WHEN ((((latest_blood_sugar.blood_sugar_type)::text = 'random'::text) AND (latest_blood_sugar.blood_sugar_value >= (300)::numeric)) OR (((latest_blood_sugar.blood_sugar_type)::text = 'post_prandial'::text) AND (latest_blood_sugar.blood_sugar_value >= (300)::numeric)) OR (((latest_blood_sugar.blood_sugar_type)::text = 'fasting'::text) AND (latest_blood_sugar.blood_sugar_value >= (200)::numeric)) OR (((latest_blood_sugar.blood_sugar_type)::text = 'hba1c'::text) AND (latest_blood_sugar.blood_sugar_value >= 9.0))) THEN 1
               ELSE 0
           END AS risk_level,
-      latest_bp_passport.identifier AS latest_bp_passport,
+      latest_bp_passport.id AS latest_bp_passport_id,
+      latest_bp_passport.identifier AS latest_bp_passport_identifier,
       p.id
      FROM (((((((((((patients p
        LEFT JOIN addresses ON ((addresses.id = p.address_id)))

@@ -366,11 +366,7 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
     end
 
     context "when diabetes management is disabled" do
-      let(:current_facility) {
-        create(:facility,
-          facility_group: current_user.facility.facility_group,
-          enable_diabetes_management: false)
-      }
+      let(:current_facility) { create(:facility, facility_group: current_user.facility.facility_group, enable_diabetes_management: false) }
 
       context "monthly" do
         let(:reg_date) { request_date - 2.months }
@@ -378,43 +374,14 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
         let(:controlled_follow_up_date) { request_date }
 
         before do
-          patients = [create(:patient,
-            :hypertension,
-            registration_facility: current_facility,
-            recorded_at: reg_date,
-            gender: "female"),
-            create(:patient,
-              :hypertension,
-              registration_facility: current_facility,
-              recorded_at: reg_date,
-              gender: "male"),
-            create(:patient,
-              :diabetes,
-              registration_facility: current_facility,
-              recorded_at: reg_date,
-              gender: "transgender")]
+          patients = [create(:patient, :hypertension, registration_facility: current_facility, recorded_at: reg_date, gender: "female"),
+            create(:patient, :hypertension, registration_facility: current_facility, recorded_at: reg_date, gender: "male"),
+            create(:patient, :diabetes, registration_facility: current_facility, recorded_at: reg_date, gender: "transgender")]
 
           patients.each do |patient|
-            create(:blood_pressure,
-              :with_encounter,
-              :critical,
-              patient: patient,
-              facility: current_facility,
-              user: current_user,
-              recorded_at: follow_up_date)
-
-            create(:blood_sugar,
-              patient: patient,
-              facility: current_facility,
-              user: current_user,
-              recorded_at: follow_up_date)
-
-            create(:blood_pressure,
-              :under_control,
-              patient: patient,
-              facility: current_facility,
-              user: current_user,
-              recorded_at: controlled_follow_up_date)
+            create(:blood_pressure, :with_encounter, :critical, patient: patient, facility: current_facility, user: current_user, recorded_at: follow_up_date)
+            create(:blood_sugar, patient: patient, facility: current_facility, user: current_user, recorded_at: follow_up_date)
+            create(:blood_pressure, :under_control, patient: patient, facility: current_facility, user: current_user, recorded_at: controlled_follow_up_date)
           end
 
           stub_const("ActivityService::MONTHS_AGO", 3)
@@ -457,20 +424,20 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
         end
 
         def refresh_views
-          ActiveRecord::Base.transaction do
-            LatestBloodPressuresPerPatientPerMonth.refresh
-            LatestBloodPressuresPerPatientPerQuarter.refresh
-            PatientRegistrationsPerDayPerFacility.refresh
-          end
+          LatestBloodPressuresPerPatientPerMonth.refresh
+          LatestBloodPressuresPerPatientPerQuarter.refresh
+          PatientRegistrationsPerDayPerFacility.refresh
         end
 
         it "has the monthly_htn_control_last_period_patient_counts" do
           Timecop.freeze(request_date + 2.month) do
-            refresh_views
-            presenter = described_class.new(current_facility)
-            control_summary = presenter.monthly_htn_control_last_period_patient_counts
-            expect(presenter.monthly_htn_control_rate(Date.current.last_month)).to eq(100)
-            expect(control_summary).to eq("2 of 2 patients")
+            with_reporting_time_zone do
+              refresh_views
+              presenter = described_class.new(current_facility)
+              control_summary = presenter.monthly_htn_control_last_period_patient_counts
+              expect(presenter.monthly_htn_control_rate(Date.current.last_month)).to eq(100)
+              expect(control_summary).to eq("2 of 2 patients")
+            end
           end
         end
 

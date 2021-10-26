@@ -14,7 +14,7 @@ class Reports::RegionsController < AdminController
   def index
     accessible_facility_regions = authorize { current_admin.accessible_facility_regions(:view_reports) }
 
-    cache_key = "#{current_admin.cache_key}/regions/index"
+    cache_key = current_admin.regions_access_cache_key
     cache_version = "#{accessible_facility_regions.cache_key} / v2"
     @accessible_regions = cache.fetch(cache_key, version: cache_version, expires_in: 7.days) {
       accessible_facility_regions.each_with_object({}) { |facility, result|

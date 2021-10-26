@@ -49,9 +49,9 @@ RSpec.describe PatientImport::Importer do
       # Patient 1 BPs
       basic_patient_1_bps = basic_patient_1.blood_pressures.map { |bp|
         "#{bp.systolic}/#{bp.diastolic}"
-      }.join(", ")
+      }
 
-      expect(basic_patient_1_bps).to eq("160/90, 145/89")
+      expect(basic_patient_1_bps).to contain_exactly("160/90", "145/89")
 
       # Patient 1 prescription drugs
       basic_patient_1_prescription_drugs = basic_patient_1.prescription_drugs.map { |pd|

@@ -73,5 +73,32 @@ RSpec.describe Api::V3::LoginsController, type: :controller do
         end
       end
     end
+
+    it "logs login failures" do
+      user = create(:user, password: "4041")
+      result = double(
+        "PhoneNumberAuthentication::Authenticate::Result",
+        success?: false,
+        error_message: "The login failed",
+        authentication: user.phone_number_authentication
+      )
+
+      allow(PhoneNumberAuthentication::Authenticate).to receive(:call).and_return(result)
+
+      allow(Rails.logger).to receive(:info).and_call_original
+
+      expect(Rails.logger).to receive(:info).with(
+        msg: "login_error",
+        controller: "Api::V3::LoginsController",
+        action: "login_user",
+        user_id: user.id,
+        error: "The login failed"
+      )
+
+      post :login_user, params: {user:
+        {phone_number: user.phone_number,
+         password: "4041",
+         otp: user.otp}}
+    end
   end
 end

@@ -31,6 +31,7 @@ class Api::V3::TwilioSmsDeliveryController < ApplicationController
   def update_params
     details = {result: message_status}
     details[:delivered_on] = DateTime.current if message_status == TwilioSmsDeliveryDetail.results[:delivered]
+    details[:read_at] = DateTime.current if message_status == TwilioSmsDeliveryDetail.results[:read]
 
     details
   end

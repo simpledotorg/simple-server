@@ -9,6 +9,8 @@ RSpec.describe LatestBloodPressuresPerPatientPerMonth, type: :model do
     original = ActiveRecord::Base.connection.execute("SELECT current_setting('TIMEZONE')").first["current_setting"]
     ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{Period::REPORTING_TIME_ZONE}'")
     described_class.refresh
+    # We need to reset to original TZ here, otherwise the reporting time zone will persist for the length of a
+    # test and break assertions later
     ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE #{original}")
   end
 

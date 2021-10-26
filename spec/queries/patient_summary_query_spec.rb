@@ -14,7 +14,7 @@ RSpec.describe PatientSummaryQuery do
   end
 
   it "returns nothing for no data" do
-    expect(PatientSummaryQuery.call(assigned_facilities: [facility], next_appointment_facilities: [facility])).to eq([])
+    expect(PatientSummaryQuery.call(assigned_facilities: [facility])).to eq([])
   end
 
   context "when only_overdue is false" do
@@ -22,13 +22,8 @@ RSpec.describe PatientSummaryQuery do
       patient = create(:patient, registration_facility: facility)
       create(:appointment, status: :cancelled, scheduled_date: 1.month.ago, patient: patient, facility: facility)
 
-      expect(PatientSummaryQuery.call(assigned_facilities: [facility],
-                                      next_appointment_facilities: [facility])
-                                .map(&:patient)).not_to include(patient)
-
-      expect(PatientSummaryQuery.call(assigned_facilities: [facility],
-                                      next_appointment_facilities: [facility],
-                                      only_overdue: false).map(&:patient)).to include(patient)
+      expect(PatientSummaryQuery.call(assigned_facilities: [facility]).map(&:patient)).not_to include(patient)
+      expect(PatientSummaryQuery.call(assigned_facilities: [facility], only_overdue: false).map(&:patient)).to include(patient)
     end
   end
 
@@ -36,9 +31,7 @@ RSpec.describe PatientSummaryQuery do
     create(:patient, :with_overdue_appointments, registration_facility: facility)
     create(:patient, :with_overdue_appointments, registration_facility: facility, phone_numbers: [])
 
-    result = PatientSummaryQuery.call(assigned_facilities: [facility],
-                                      next_appointment_facilities: [facility],
-                                      filters: ["phone_number", "no_phone_number"])
+    result = PatientSummaryQuery.call(assigned_facilities: [facility], filters: ["phone_number", "no_phone_number"])
     expected_patients = result.map(&:patient)
     expect(result.map(&:id)).to match_array(expected_patients.map(&:id))
   end
@@ -47,9 +40,7 @@ RSpec.describe PatientSummaryQuery do
     expected_patients = create_list(:patient, 2, :with_overdue_appointments, registration_facility: facility)
     really_overdue_patients = really_overdue_appointments.map(&:patient)
 
-    result = PatientSummaryQuery.call(assigned_facilities: [facility],
-                                      next_appointment_facilities: [facility],
-                                      filters: ["only_less_than_year_overdue"])
+    result = PatientSummaryQuery.call(assigned_facilities: [facility], filters: ["only_less_than_year_overdue"])
 
     patients = result.map(&:patient)
     expect(result.map(&:id)).to match_array(expected_patients.map(&:id))
@@ -61,7 +52,7 @@ RSpec.describe PatientSummaryQuery do
     overdue_patients = create_list(:patient, 2, :with_overdue_appointments, registration_facility: facility)
     expected_patients = overdue_patients + really_overdue_appointments.map(&:patient).uniq
 
-    result = PatientSummaryQuery.call(assigned_facilities: [facility], next_appointment_facilities: [facility])
+    result = PatientSummaryQuery.call(assigned_facilities: [facility])
 
     patients = result.map(&:patient)
     expect(result.map(&:id)).to match_array(patients.map(&:id))
@@ -72,9 +63,7 @@ RSpec.describe PatientSummaryQuery do
     expected_patients = create_list(:patient, 2, :with_overdue_appointments, registration_facility: facility)
     patients_without_phone_numbers = create_list(:patient, 2, :with_overdue_appointments, registration_facility: facility, phone_numbers: [])
 
-    result = PatientSummaryQuery.call(assigned_facilities: [facility],
-                                      next_appointment_facilities: [facility],
-                                      filters: ["phone_number"])
+    result = PatientSummaryQuery.call(assigned_facilities: [facility], filters: ["phone_number"])
     patients = result.map(&:patient)
 
     expect(result.map(&:id)).to match_array(expected_patients.map(&:id))
