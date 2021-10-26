@@ -11,6 +11,8 @@ class Api::V3::EncountersController < Api::V3::SyncController
   end
 
   def generate_id
+    raise ActionController::RoutingError.new("Not Found") unless Flipper.enabled?("generate_encounter_id_endpoint")
+
     params.require([:facility_id, :patient_id, :encountered_on])
 
     render plain: Encounter.generate_id(params[:facility_id].strip,
