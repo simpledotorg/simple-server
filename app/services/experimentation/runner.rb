@@ -56,8 +56,8 @@ module Experimentation
         return
       end
 
-      now = Time.current
-      eligible_ids = StalePatientSelection.call(start_time: now)
+      today = Date.today
+      eligible_ids = StalePatientExperiment.find(id: experiment.id).eligible_patients(today)
       logger.info "Experiment #{name} found #{eligible_ids.count} eligible patient ids for stale patient reminders"
       if eligible_ids.any?
         eligible_ids.shuffle!
@@ -65,7 +65,7 @@ module Experimentation
         daily_patients = Patient.where(id: daily_ids).includes(:appointments)
         daily_patients.each do |patient|
           group = experiment.random_treatment_group
-          schedule_notifications(patient, patient.appointments.last, group, now)
+          schedule_notifications(patient, patient.appointments.last, group, today)
           group.enroll(patient)
         end
       end
@@ -73,23 +73,8 @@ module Experimentation
       logger.info("Finished scheduling notifications for #{name} stale experiment - marking as running and exiting.")
     end
 
-    def self.abort_experiment(name)
-      experiment = Experiment.find_by!(name: name)
-      logger.info "Aborting experiment #{name}! About to cancel all pending or scheduled notifications."
-
-      ActiveRecord::Base.transaction do
-        notifications = experiment.notifications.where(status: ["pending", "scheduled"])
-        notifications.find_each do |notification|
-          notification.status_cancelled!
-        end
-
-        experiment.discard
-      end
-      logger.info "Aborting experiment #{name} finished."
-    end
-
     def self.current_patient_candidates(start_time, end_time)
-      Experiment.candidate_patients
+      NotificationsExperiment.eligible_patients
         .joins(:appointments)
         .merge(Appointment.status_scheduled)
         .where("appointments.scheduled_date BETWEEN ? and ?", start_time, end_time)
