@@ -142,7 +142,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       scheduled_notification = create(:notification, experiment: experiment, patient: patient, status: "scheduled")
       sent_notification = create(:notification, experiment: experiment, patient: patient, status: "sent")
 
-      experiment.cancel
+      described_class.first.cancel
 
       expect(pending_notification.reload.status).to eq("cancelled")
       expect(scheduled_notification.reload.status).to eq("cancelled")
