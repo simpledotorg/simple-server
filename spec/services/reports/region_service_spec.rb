@@ -20,14 +20,6 @@ RSpec.describe Reports::RegionService, type: :model do
     RefreshReportingViews.call
   end
 
-  context ".default_period" do
-    it "is the current month in the reporting time zone" do
-      Timecop.freeze("June 1st 2020 1:00 AM IST") do
-        expect(described_class.default_period).to eq(Period.month("June 30 2020"))
-      end
-    end
-  end
-
   it "sets the period" do
     period = Period.month(june_1_2020)
     service = Reports::RegionService.new(region: facility_group_1, period: period)
