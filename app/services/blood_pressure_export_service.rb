@@ -7,29 +7,21 @@ class BloodPressureExportService
 
   FACILITY_SIZES = %w[large medium small community]
 
-  def initialize(data_type:, start_period:, end_period:, facilities:)
+  def initialize(data_type:, period:, facilities:)
     @data_type = data_type
-    @rate_key = "#{@data_type}_rate"
-    @start_period = start_period
-    @end_period = end_period
+    @rate_key = "#{@data_type}_rate".to_sym
+    @period = period
+    @start_period = period.advance(months: -5)
+    @end_period = @period
     @facilities = facilities
 
-    range = Range.new(start_period, end_period)
-
-    @data_for_facility = {}
-
-    @repo = Reports::Repository.new(facilities, periods: range)
-    facilities.each do |facility|
-      # @data_for_facility[facility.name] = Reports::Repository.new(
-      #   facility.region, periods: range)
-      @data_for_facility[facility.name] = Reports::RegionService.new(
-        region: facility.region, period: @end_period, months: 6
-      ).call
+    presenter = Reports::RepositoryPresenter.create(facilities, period: @period, months: 6, reporting_schema_v2: RequestStore.store[:reporting_schema_v2])
+    @data_for_facility = facilities.each_with_object({}) do |facility, result|
+      result[facility.name] = presenter.my_facilities_hash(facility.region)
     end
 
-    unordered_sizes = @data_for_facility.map { |_, facility| facility.region.source.facility_size }.uniq
-    @display_sizes = FACILITY_SIZES.select { |size| unordered_sizes.include? size }
-    @stats_by_size = FacilityStatsService.call(facilities: @data_for_facility, period: @end_period, rate_numerator: data_type)
+    @sizes = @facilities.pluck(:facility_size).uniq
+    @stats_by_size = FacilityStatsService.call(facilities: @data_for_facility, period: @period, rate_numerator: data_type)
   end
 
   def call
@@ -46,7 +38,7 @@ class BloodPressureExportService
         aggregate_data[size]["facilities"].each do |row_object|
           csv << row_object.values_at(*headers)
         end
-        csv << [] if i != @display_sizes.length - 1
+        csv << [] if i != @sizes.length - 1
       end
     }
   end
@@ -76,7 +68,7 @@ class BloodPressureExportService
   def aggregate_data
     @aggregate_data ||= begin
       formatted = {}
-      @display_sizes.each do |size|
+      @sizes.each do |size|
         if !formatted[size]
           formatted[size] = {}
           formatted[size]["aggregate"] = format_aggregate_facility_stats(size)
@@ -112,7 +104,7 @@ class BloodPressureExportService
   def format_facilities_of_size(size)
     row = []
     @data_for_facility.each do |_, facility_data|
-      facility_size = facility_data.region.source.facility_size
+      facility_size = facility_data[:facility_size]
       next if facility_size != size
       row << format_individual_facility_stats(facility_data)
     end
@@ -121,11 +113,11 @@ class BloodPressureExportService
 
   def format_individual_facility_stats(facility_data)
     facility_row_obj = {}
-    facility = facility_data.region.source
+    facility = facility_data[:facility]
     six_month_rate_change = six_month_rate_change(facility, rate_key)
     facility_row_obj["Facilities"] = facility.name
-    facility_row_obj["Total assigned"] = number_or_zero_with_delimiter(facility_data["cumulative_assigned_patients"].values.last)
-    facility_row_obj["Total registered"] = number_or_zero_with_delimiter(facility_data["cumulative_registrations"].values.last)
+    facility_row_obj["Total assigned"] = number_or_zero_with_delimiter(facility_data[:cumulative_assigned_patients].values.last)
+    facility_row_obj["Total registered"] = number_or_zero_with_delimiter(facility_data[:cumulative_registrations].values.last)
     facility_row_obj["Six month change"] = number_to_percentage_with_symbol(six_month_rate_change, precision: 0)
     (@start_period..@end_period).each do |period|
       data_type_rate = facility_data[rate_key][period]
@@ -137,11 +129,11 @@ class BloodPressureExportService
 
   # is the || 0 necessary?
   def facility_size_six_month_rate_change(facility_size_data, rate_name)
-    facility_size_data[@end_period][rate_name] - facility_size_data[@start_period][rate_name] || 0
+    facility_size_data[end_period][rate_name] - facility_size_data[start_period][rate_name] || 0
   end
 
   def six_month_rate_change(facility, rate_name)
-    data_for_facility[facility.name][rate_name][@end_period] - data_for_facility[facility.name][rate_name][@start_period] || 0
+    data_for_facility[facility.name][rate_name][end_period] - data_for_facility[facility.name][rate_name][start_period] || 0
   end
 end
 

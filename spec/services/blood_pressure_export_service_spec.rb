@@ -34,70 +34,17 @@ RSpec.describe BloodPressureExportService, type: :model do
                                               recorded_at: may - 5.months, registration_user: user)
         # recorded_at needs to be in a month after registration in order to appear in control rate data
         small_controlled.each do |patient|
-          logger.info "--- start"
-          create(:blood_pressure, :under_control, patient: patient, facility: patient.assigned_facility,
-                                                  recorded_at: may - 4.months, user: user)
-          logger.info "--- end"
+          create(:blood_pressure, :under_control, patient: patient, facility: patient.assigned_facility, recorded_at: may - 4.months, user: user)
         end
-        create(:blood_pressure, :hypertensive, patient: small_uncontrolled, facility: small_uncontrolled.assigned_facility,
-                                               recorded_at: may - 4.months, user: user)
+        create(:blood_pressure, :hypertensive, patient: small_uncontrolled, facility: small_uncontrolled.assigned_facility, recorded_at: may - 4.months, user: user)
 
         facilities = [small_facility1, small_facility2]
 
-        service = described_class.new(data_type: "controlled_patients", start_period: start_period, end_period: end_period, facilities: facilities)
-        result = service.call
-
-        expected_results = {"small" => {"aggregate" =>
-          {"Facilities" => "All PHCs",
-           "Total assigned" => "3",
-           "Total registered" => "3",
-           "Six month change" => "0%",
-           period_range[0] => "0%",
-           "Dec-2020-ratio" => "0 / 0",
-           period_range[1] => "0%",
-           "Jan-2021-ratio" => "0 / 0",
-           period_range[2] => "0%",
-           "Feb-2021-ratio" => "0 / 0",
-           period_range[3] => "0%",
-           "Mar-2021-ratio" => "0 / 3",
-           period_range[4] => "0%",
-           "Apr-2021-ratio" => "0 / 3",
-           period_range[5] => "0%",
-           "May-2021-ratio" => "0 / 3"},
-                                        "facilities" =>
-          [{"Facilities" => "Small_1",
-            "Total assigned" => "2",
-            "Total registered" => "2",
-            "Six month change" => "0%",
-            period_range[0] => "0%",
-            "Dec-2020-ratio" => "0 / 0",
-            period_range[1] => "0%",
-            "Jan-2021-ratio" => "0 / 0",
-            period_range[2] => "0%",
-            "Feb-2021-ratio" => "0 / 0",
-            period_range[3] => "0%",
-            "Mar-2021-ratio" => "0 / 2",
-            period_range[4] => "0%",
-            "Apr-2021-ratio" => "0 / 2",
-            period_range[5] => "0%",
-            "May-2021-ratio" => "0 / 2"},
-            {"Facilities" => "Small_2",
-             "Total assigned" => "1",
-             "Total registered" => "1",
-             "Six month change" => "0%",
-             period_range[0] => "0%",
-             "Dec-2020-ratio" => "0 / 0",
-             period_range[1] => "0%",
-             "Jan-2021-ratio" => "0 / 0",
-             period_range[2] => "0%",
-             "Feb-2021-ratio" => "0 / 0",
-             period_range[3] => "0%",
-             "Mar-2021-ratio" => "0 / 1",
-             period_range[4] => "0%",
-             "Apr-2021-ratio" => "0 / 1",
-             period_range[5] => "0%",
-             "May-2021-ratio" => "0 / 1"}]}}
-        expect(result).to eq(expected_results)
+        service = described_class.new(data_type: "controlled_patients", period: end_period, facilities: facilities)
+        csv = service.as_csv
+        expect(csv).to_not be_nil
+        rows = CSV.readlines(csv)
+        expect(rows.first).to eq("HWC Lake Sesame Village", "Assigned Patients" => 5, "Registered Patients" => 5, "BP Controlled" => "25%")
       end
 
       it "processes results for medium sized facilities" do
@@ -124,7 +71,7 @@ RSpec.describe BloodPressureExportService, type: :model do
 
         facilities = [medium_facility1, medium_facility2]
 
-        service = described_class.new(data_type: "controlled_patients", start_period: start_period, end_period: end_period, facilities: facilities)
+        service = described_class.new(data_type: "controlled_patients", period: end_period, facilities: facilities)
         result = service.call
 
         expected_results = {"medium" =>

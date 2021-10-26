@@ -1,5 +1,6 @@
 module Reports
   class RepositoryPresenter < SimpleDelegator
+    # Takes a list of regions, a start period, and the number of months of data going back
     def self.create(regions, period:, months: Reports::MAX_MONTHS_OF_DATA, reporting_schema_v2: false)
       start_period = period.advance(months: -(months - 1))
       range = Range.new(start_period, period)
