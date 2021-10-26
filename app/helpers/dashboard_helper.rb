@@ -64,7 +64,7 @@ module DashboardHelper
   end
 
   def six_month_rate_change(facility, rate_name)
-    raise ArgumentError if rate_name.is_a?(String)
+    raise ArgumentError, "rate_name should be a symbol" if rate_name.is_a?(String)
     @data_for_facility[facility.name][rate_name][@period] - @data_for_facility[facility.name][rate_name][@start_period] || 0
   end
 

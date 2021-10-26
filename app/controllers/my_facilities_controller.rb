@@ -75,7 +75,7 @@ class MyFacilitiesController < AdminController
     facilities = filter_facilities
     sizes = facilities.pluck(:facility_size).uniq
 
-    presenter = Reports::RepositoryPresenter.create(facilities, period: @period, months: 6)
+    presenter = Reports::RepositoryPresenter.create(facilities, period: @period, months: 6, reporting_schema_v2: RequestStore.store[:reporting_schema_v2])
     @data_for_facility = facilities.each_with_object({}) do |facility, result|
       result[facility.name] = presenter.my_facilities_hash(facility.region)
     end
