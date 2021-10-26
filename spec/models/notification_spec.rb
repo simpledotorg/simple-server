@@ -83,7 +83,7 @@ describe Notification, type: :model do
       before { Flipper.enable(:imo_messaging) }
 
       it "returns sms if patient can't receive Imo notifications" do
-        create(:imo_authorization, status: "error", patient: notification.patient)
+        create(:imo_authorization, status: "no_imo_account", patient: notification.patient)
         expect(notification.next_communication_type).to eq("sms")
       end
 
@@ -120,12 +120,6 @@ describe Notification, type: :model do
     it "returns nil when notification is cancelled" do
       notification.status_cancelled!
       expect(notification.next_communication_type).to eq(nil)
-    end
-
-    it "returns nil when it belongs to a cancelled experiment" do
-      experimental_notification = create(:notification, :with_experiment)
-      experimental_notification.experiment.cancelled_state!
-      expect(experimental_notification.next_communication_type).to eq(nil)
     end
   end
 end

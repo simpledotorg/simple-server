@@ -57,6 +57,7 @@ module Seed
       [
         :drug_stocks,
         :notifications,
+        :reporting_schema_v2,
         (:auto_approve_users if SimpleServer.env.android_review?),
         (:fixed_otp if SimpleServer.env.android_review?)
       ].compact

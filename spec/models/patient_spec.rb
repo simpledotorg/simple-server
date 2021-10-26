@@ -3,10 +3,7 @@ require "rails_helper"
 describe Patient, type: :model do
   let(:reporting_timezone) { Period::REPORTING_TIME_ZONE }
   def refresh_views
-    original = ActiveRecord::Base.connection.execute("SELECT current_setting('TIMEZONE')").first["current_setting"]
-    ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{Period::REPORTING_TIME_ZONE}'")
     LatestBloodPressuresPerPatientPerMonth.refresh
-    ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE #{original}")
   end
 
   subject(:patient) { build(:patient) }
@@ -497,11 +494,14 @@ describe Patient, type: :model do
       end
     end
 
-    describe "#current_age" do
-      it "returns age based on date of birth year if present" do
+    describe "current_age" do
+      it "current age is based on date of birth year if present" do
         patient.date_of_birth = Date.parse("1980-01-01")
 
         expect(patient.current_age).to eq(Date.current.year - 1980)
+        patient.save
+
+        expect(Patient.where_current_age("<=", Date.current.year - 1980)).to match_array([patient])
       end
 
       it "takes into account months for date_of_birth" do
@@ -513,20 +513,22 @@ describe Patient, type: :model do
         Timecop.freeze("June 2nd 2020") do
           expect(patient.current_age).to eq(60)
         end
+
+        patient.save
+
+        Timecop.freeze("January 1st 2020") do
+          expect(Patient.where_current_age("=", 59)).to contain_exactly(patient)
+        end
+        Timecop.freeze("June 2nd 2020") do
+          expect(Patient.where_current_age("=", 60)).to contain_exactly(patient)
+        end
       end
 
       it "returns age based on age_updated_at if date of birth is not present" do
         patient = create(:patient, age: 30, age_updated_at: 25.months.ago, date_of_birth: nil)
 
         expect(patient.current_age).to eq(32)
-      end
-
-      it "returns 0 if age is 0" do
-        patient.date_of_birth = nil
-        patient.age = 0
-        patient.age_updated_at = 2.years.ago
-
-        expect(patient.current_age).to eq(0)
+        expect(Patient.where_current_age("=", 32)).to contain_exactly(patient)
       end
     end
 

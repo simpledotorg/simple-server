@@ -1,15 +1,12 @@
 module Reports
   class View < ActiveRecord::Base
+    extend Refreshable
+
     def self.refresh
       ActiveRecord::Base.transaction do
         refresh_view if materialized?
         add_comments
       end
-    end
-
-    def self.refresh_view
-      ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{Period::REPORTING_TIME_ZONE}'")
-      Scenic.database.refresh_materialized_view(table_name, concurrently: true, cascade: false)
     end
 
     def self.add_comments

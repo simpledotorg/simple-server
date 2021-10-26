@@ -34,6 +34,7 @@ module MyFacilitiesHelper
     {hypertension_ccb: {full: "CCB Tablets", short: "CCB"},
      hypertension_arb: {full: "ARB Tablets", short: "ARB"},
      hypertension_diuretic: {full: "Diuretic Tablets", short: "Diuretic"},
+     hypertension_ace: {full: "ACE Tablets", short: "ACE"},
      hypertension_other: {full: "Other Tablets", short: "Other(H)"},
      diabetes: {full: "Diabetes Tablets", short: "Diabetes"},
      other: {full: "Other Tablets", short: "Other"}}.with_indifferent_access

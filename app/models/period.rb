@@ -193,7 +193,7 @@ class Period
 
   # Returns a Hash with various Period related dates for eash consumption by the view
   def to_hash
-    {
+    @to_hash ||= {
       name: to_s,
       ltfu_since_date: ltfu_since_date,
       bp_control_start_date: bp_control_range_start_date,

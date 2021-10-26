@@ -2,39 +2,23 @@ module Reports
   class SchemaV2
     include BustCache
     include Memery
+    include RegionCaching
 
-    FIELDS = %i[
-      adjusted_controlled_under_care
-      adjusted_missed_visit_lost_to_follow_up
-      adjusted_missed_visit_under_care
-      adjusted_patients_under_care
-      adjusted_uncontrolled_under_care
-      adjusted_visited_no_bp_lost_to_follow_up
-      adjusted_visited_no_bp_under_care
-      cumulative_assigned_patients
-      cumulative_registrations
-      lost_to_follow_up
-      monthly_registrations
-    ].freeze
-
-    UNDER_CARE_WITH_LTFU = %i[
-      adjusted_missed_visit
-      adjusted_visited_no_bp
-    ].freeze
-
-    UNDER_CARE_WITH_LTFU_CALCULATED_FIELDS = UNDER_CARE_WITH_LTFU.map { |field|
-      "#{field}_under_care_with_lost_to_follow_up".to_sym
-    }.freeze
-
-    attr_reader :control_rate_query_v2
     attr_reader :periods
     attr_reader :period_hash
     attr_reader :regions
+    attr_reader :regions_by_type
 
     delegate :cache, :logger, to: Rails
+    delegate :cache_version, to: self
+
+    def self.cache_version
+      "2.0"
+    end
 
     def initialize(regions, periods:)
       @regions = regions
+      @regions_by_type = regions.group_by { |region| region.region_type }
       @periods = periods
       @period_hash = lambda { |month_date, count| [Period.month(month_date), count] }
     end
@@ -67,27 +51,35 @@ module Reports
     # Adjusted patient counts are the patient counts from three months ago (the adjusted period) that
     # are the basis for control rates. These counts DO NOT include lost to follow up.
     memoize def adjusted_patients_without_ltfu
-      regions.each_with_object({}) { |region, result| result[region.slug] = sum(region, :adjusted_patients_under_care) }
+      values_at("adjusted_patients_under_care")
     end
 
     alias_method :adjusted_patients, :adjusted_patients_without_ltfu
 
     # Return the running total of cumulative assigned patient counts. Note that this *includes* LTFU.
     memoize def cumulative_assigned_patients
-      regions.each_with_object({}) { |region, result| result[region.slug] = sum(region, :cumulative_assigned_patients) }
+      values_at("cumulative_assigned_patients")
     end
 
     # Returns registration counts per region / period
     memoize def monthly_registrations
-      regions.each_with_object({}) { |region, result| result[region.slug] = sum(region, :monthly_registrations) }
+      values_at("monthly_registrations")
     end
 
     memoize def cumulative_registrations
-      regions.each_with_object({}) { |region, result| result[region.slug] = sum(region, :cumulative_registrations) }
+      values_at("cumulative_registrations")
     end
 
     memoize def ltfu
-      regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, :lost_to_follow_up) }
+      values_at("lost_to_follow_up")
+    end
+
+    memoize def controlled
+      values_at("adjusted_controlled_under_care")
+    end
+
+    memoize def uncontrolled
+      values_at("adjusted_uncontrolled_under_care")
     end
 
     memoize def ltfu_rates
@@ -95,14 +87,6 @@ module Reports
         slug, period = entry.slug, entry.period
         percentage(ltfu[slug][period], cumulative_assigned_patients[slug][period])
       end
-    end
-
-    memoize def controlled
-      regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, :adjusted_controlled_under_care) }
-    end
-
-    memoize def uncontrolled
-      regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, :adjusted_uncontrolled_under_care) }
     end
 
     memoize def controlled_rates(with_ltfu: false)
@@ -123,7 +107,7 @@ module Reports
 
     memoize def missed_visits(with_ltfu: false)
       field = with_ltfu ? :adjusted_missed_visit_under_care_with_lost_to_follow_up : :adjusted_missed_visit_under_care
-      regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, field) }
+      values_at(field)
     end
 
     memoize def missed_visits_rates(with_ltfu: false)
@@ -147,9 +131,9 @@ module Reports
       missed_visits_rates(with_ltfu: true)
     end
 
-    memoize def visited_without_bp_taken(with_ltfu: false)
+    def visited_without_bp_taken(with_ltfu: false)
       field = with_ltfu ? :adjusted_visited_no_bp_under_care_with_lost_to_follow_up : :adjusted_visited_no_bp_under_care
-      regions.each_with_object({}) { |region, hsh| hsh[region.slug] = sum(region, field) }
+      values_at(field)
     end
 
     memoize def visited_without_bp_taken_rates(with_ltfu: false)
@@ -165,39 +149,11 @@ module Reports
 
     memoize def denominator(region, period, with_ltfu: false)
       if with_ltfu
-        adjusted_patients_without_ltfu[region.slug][period] + ltfu[region.slug][period]
+        patients = adjusted_patients_without_ltfu[region.slug][period] || raise(ArgumentError, "Missing adjusted patient counts for #{region.region_type} #{region.slug} #{period}")
+        patients + ltfu[region.slug][period]
       else
         adjusted_patients_without_ltfu[region.slug][period]
       end
-    end
-
-    # Generate all necessary cache keys for a calculation, then yield to the block for every entry.
-    # Once all results are returned via fetch_multi, return the data in a standard format of:
-    #   {
-    #     region_1_slug: { period_1: value, period_2: value }
-    #     region_2_slug: { period_1: value, period_2: value }
-    #   }
-    #
-    def region_period_cached_query(calculation, **options, &block)
-      results = regions.each_with_object({}) { |region, hsh| hsh[region.slug] = Hash.new(0) }
-      items = cache_entries(calculation, **options)
-      cached_results = cache.fetch_multi(*items, force: bust_cache?) { |entry| block.call(entry) }
-      cached_results.each { |(entry, count)| results[entry.region.slug][entry.period] = count }
-      results
-    end
-
-    # Generate all necessary region period cache entries, only going back to the earliest
-    # patient registration date for Periods. This ensures that we don't create many cache entries
-    # with 0 data for newer Regions.
-    def cache_entries(calculation, **options)
-      combinations = regions.each_with_object([]) do |region, results|
-        earliest_period = earliest_patient_recorded_at_period[region.slug]
-        next if earliest_period.nil?
-        periods_with_data = periods.select { |period| period >= earliest_period }
-        results.concat(periods_with_data.to_a.map { |period| [region, period] })
-      end
-      options[:class] = self.class
-      combinations.map { |region, period| Reports::RegionPeriodEntry.new(region, period, calculation, options) }
     end
 
     def percentage(numerator, denominator)
@@ -211,49 +167,18 @@ module Reports
         .minimum(:month_date)
     end
 
-    # Grab a particular summed field for a region. We return data in the format of:
-    #   { region_slug => { period_1 => x, period_2 => y }, ...}
-    # to maintain consistency w/ the format callers expect from the Repository.
-    #
-    # Note that we do filtering on the result set to limit the returned amount of data to the data that callers are
-    # requesting via the `periods` argument the Repository was created with.
-    def sum(region, field)
-      facility_state_data(region)
-        .reject { |facility_state| Period.month(facility_state.month_date) < earliest_patient_recorded_at_period[region.slug] }
-        .select { |facility_state| facility_state.period.in?(periods) }
-        .to_h { |facility_state| [Period.month(facility_state.month_date), facility_state.public_send(summary_field(field))] }
-        .tap { |hsh| hsh.default = 0 }
+    # Calls RegionSummary for each region_type in our collection of regions -- this is necessary because
+    # RegionSummary queries for only type of region at a time.
+    memoize def region_summaries
+      regions_by_type.each_with_object({}) do |(region_type, regions), result|
+        result.merge! RegionSummary.call(regions, range: periods)
+      end
     end
 
-    def summary_field(field)
-      raise ArgumentError, "field #{field} is not part of the FacilityState query" unless field.in?(FIELDS) || field.in?(UNDER_CARE_WITH_LTFU_CALCULATED_FIELDS)
-      "sum_#{field}"
-    end
-
-    # For some fields we need to sum the under_care numbers with the LTFU numbers to support the "include LTFU"
-    # toggle in reports.
-    def under_care_with_ltfu(field)
-      Arel.sql(<<-EOL)
-        SUM(COALESCE(#{field}_under_care::int, 0) + COALESCE(#{field}_lost_to_follow_up::int, 0)) as sum_#{field}_under_care_with_lost_to_follow_up
-      EOL
-    end
-
-    # Grab all the summed data for a particular region grouped by month_date.
-    # We need to use COALESCE to avoid getting nil back from some of the values, and we need to use
-    # `select` because the `sum` methods in ActiveRecord can't sum multiple fields.
-    # We also order by `month_date` because some code in the views expects elements to be ordered by Period from
-    # oldest to newest - it also makes reading output in specs and debugging much easier.
-    memoize def facility_state_data(region)
-      calculations = FIELDS.map { |field| Arel.sql("COALESCE(SUM(#{field}::int), 0) as #{summary_field(field)}") }
-      under_care_with_ltfu = UNDER_CARE_WITH_LTFU.map { |field| under_care_with_ltfu(field) }
-      selects = calculations.concat(under_care_with_ltfu)
-
-      FacilityState.for_region(region)
-        .where("cumulative_registrations IS NOT NULL OR cumulative_assigned_patients IS NOT NULL")
-        .order(:month_date)
-        .group(:month_date)
-        .select(:month_date)
-        .select(*selects)
+    def values_at(field)
+      region_summaries.each_with_object({}) { |(slug, period_values), hsh|
+        hsh[slug] = period_values.transform_values { |values| values.fetch(field.to_s) }.tap { |hsh| hsh.default = 0 }
+      }
     end
   end
 end

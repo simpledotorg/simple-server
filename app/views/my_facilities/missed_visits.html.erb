@@ -11,7 +11,7 @@
           </p>
         </div>
         <p class="mb-4px c-grey-dark">
-          <strong>What to look for:</strong> Low percentages are good, and 20% or lower is ideal 
+          <strong>What to look for:</strong> Low percentages are good, and 20% or lower is ideal
         </p>
         <p class="c-grey-dark c-print-black">
           <strong>Numerator:</strong> <%= t("missed_visits_copy.numerator") %>
@@ -23,7 +23,7 @@
         <%= render "shared/my_facilities_filters" %>
       </div>
       <%= render "shared/facility_size_overview",
-            rate_name: "missed_visits_rate",
+            rate_name: :missed_visits_rate,
             is_increase_positive: false %>
       <div class="ph-16px pb-16px">
         <% if @facility_sizes.empty? %>
@@ -78,7 +78,7 @@
               </tr>
             </thead>
             <tbody>
-              <% facility_size_six_month_rate_change = facility_size_six_month_rate_change(@stats_by_size[size][:periods], "missed_visits_rate") %>
+              <% facility_size_six_month_rate_change = facility_size_six_month_rate_change(@stats_by_size[size][:periods], :missed_visits_rate) %>
               <tr
                 class="row-total"
                 data-sort-method="none"
@@ -107,13 +107,13 @@
                   <%= number_to_percentage_with_symbol(facility_size_six_month_rate_change, precision: 0) %>
                 </td>
                 <% @stats_by_size[size][:periods].each_pair do |period, data| %>
-                  <% missed_visits_rate = data["missed_visits_rate"] %>
+                  <% missed_visits_rate = data[:missed_visits_rate] %>
                   <td
                     class="type-percent"
                     data-sort-column-key="total-patients-<%= period %>"
                     data-sort="<%= missed_visits_rate %>"
                     data-toggle="tooltip"
-                    title="<%= data["missed_visits"] %> / <%= data["adjusted_patient_counts"] %> patients"
+                    title="<%= data[:missed_visits] %> / <%= data[:adjusted_patient_counts] %> patients"
                   >
                     <em data-rate="<%= missed_visits_rate %>">
                       <%= number_to_percentage(missed_visits_rate || 0, precision: 0) %>
@@ -122,20 +122,20 @@
                 <% end %>
               </tr>
               <% @data_for_facility.each do |_, facility_data| %>
-                <% facility = facility_data.region.source %>
+                <% facility = facility_data[:facility] %>
                 <% next if facility.facility_size != size %>
-                <% six_month_rate_change = six_month_rate_change(facility, "missed_visits_rate") %>
+                <% six_month_rate_change = six_month_rate_change(facility, :missed_visits_rate) %>
                 <tr data-row="<%= facility.slug %>" data-trend-color="<% if six_month_rate_change > 0 %>red<% elsif six_month_rate_change < 0 %>green<% else %>grey<% end %>">
                   <td class="type-title">
-                    <%= link_to(reports_region_path(facility, report_scope: "facility")) do %>
+                    <%= link_to(reports_region_path(facility, report_scope: :facility)) do %>
                       <%= facility.name %>
                     <% end %>
                   </td>
                   <td>
-                    <%= number_or_zero_with_delimiter(facility_data["cumulative_assigned_patients"].values.last) %>
+                    <%= number_or_zero_with_delimiter(facility_data[:cumulative_assigned_patients].values.last) %>
                   </td>
                   <td>
-                    <%= number_or_zero_with_delimiter(facility_data["cumulative_registrations"].values.last) %>
+                    <%= number_or_zero_with_delimiter(facility_data[:cumulative_registrations].values.last) %>
                   </td>
                   <td>
                     <div class="w-90px h-20px">
@@ -149,13 +149,13 @@
                     <%= number_to_percentage_with_symbol(six_month_rate_change, precision: 0) %>
                   </td>
                   <% (@start_period..@period).each do |period| %>
-                    <% missed_visits_rate = facility_data["missed_visits_rate"][period] %>
+                    <% missed_visits_rate = facility_data[:missed_visits_rate][period] %>
                     <td
                       class="type-percent"
                       data-sort-column-key="total-patients-<%= period %>"
                       data-sort="<%= missed_visits_rate %>"
                       data-toggle="tooltip"
-                      title="<%= facility_data["missed_visits"][period] %> / <%= facility_data["adjusted_patient_counts"][period] %> patients"
+                      title="<%= facility_data[:missed_visits][period] %> / <%= facility_data[:adjusted_patient_counts][period] %> patients"
                     >
                       <em data-rate="<%= missed_visits_rate %>">
                         <%= number_to_percentage(missed_visits_rate || 0, precision: 0) %>
@@ -171,4 +171,4 @@
     </div>
   </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js" integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>

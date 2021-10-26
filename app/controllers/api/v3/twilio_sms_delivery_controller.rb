@@ -12,11 +12,11 @@ class Api::V3::TwilioSmsDeliveryController < ApplicationController
     event = [communication_type, twilio_message.result].join(".")
     metrics.increment(event)
 
-    reminder = twilio_message.communication.notification
+    notification = twilio_message.communication.notification
 
-    if twilio_message.unsuccessful? && reminder&.next_communication_type
-      reminder.status_scheduled!
-      AppointmentNotification::Worker.perform_at(Communication.next_messaging_time, reminder.id)
+    if twilio_message.unsuccessful? && notification&.next_communication_type
+      notification.status_scheduled!
+      AppointmentNotification::Worker.perform_at(Communication.next_messaging_time, notification.id)
     end
 
     head :ok
@@ -31,6 +31,7 @@ class Api::V3::TwilioSmsDeliveryController < ApplicationController
   def update_params
     details = {result: message_status}
     details[:delivered_on] = DateTime.current if message_status == TwilioSmsDeliveryDetail.results[:delivered]
+    details[:read_at] = DateTime.current if message_status == TwilioSmsDeliveryDetail.results[:read]
 
     details
   end

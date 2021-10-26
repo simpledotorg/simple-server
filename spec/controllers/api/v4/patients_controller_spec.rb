@@ -79,6 +79,21 @@ RSpec.describe Api::V4::PatientsController, type: :controller do
       expect(response_data[:patients].count).to eq 2
     end
 
+    it "returns nothing when an identifier is not discarded but patient is discarded" do
+      patient_1 = create(:patient)
+      business_identifier = patient_1.business_identifiers.first
+      patient_1.business_identifiers.first.update(
+        identifier_type: PatientBusinessIdentifier.identifier_types.values.first
+      )
+
+      set_headers(patient_1.registration_user, patient_1.registration_facility)
+      patient_1.discard_data
+      business_identifier.reload.undiscard
+
+      post :lookup, params: {identifier: patient_1.business_identifiers.first.identifier}, as: :json
+      expect(response.status).to eq(404)
+    end
+
     it "sets the retention as temporary and specifies the duration when patient is outside syncable region" do
       facility_group = create(:facility_group, name: "fg2", state: "State 1")
 

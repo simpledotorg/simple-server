@@ -7,7 +7,6 @@ class ImoAuthorization < ApplicationRecord
     invited: "invited",
     no_imo_account: "no_imo_account",
     subscribed: "subscribed",
-    not_subscribed: "not_subscribed",
-    error: "error"
+    not_subscribed: "not_subscribed"
   }, _prefix: true
 end

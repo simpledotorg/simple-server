@@ -98,6 +98,14 @@ class Patient < ApplicationRecord
       .merge(PatientPhoneNumber.unscoped.phone_type_mobile)
   }
 
+  scope :where_current_age, ->(comparison_operator, age) do
+    # comparison_operator is any of the SQL comparison operators (=, > etc.)
+    where("EXTRACT(YEAR
+            FROM COALESCE(
+              age('#{Date.today}', date_of_birth),
+              make_interval(years => age) + age('#{Date.today}', age_updated_at))) #{comparison_operator} #{age}")
+  end
+
   validate :past_date_of_birth
   validates :status, presence: true
 
@@ -108,6 +116,15 @@ class Patient < ApplicationRecord
   validates_associated :phone_numbers, if: :phone_numbers
 
   delegate :locale, to: :assigned_facility
+
+  def current_age
+    if date_of_birth.present?
+      ((Time.zone.now - date_of_birth.to_time) / 1.year).floor
+    elsif age.present?
+      years_since_update = (Time.current - age_updated_at) / 1.year
+      (age + years_since_update).floor
+    end
+  end
 
   def past_date_of_birth
     if date_of_birth.present? && date_of_birth > Date.current
@@ -167,17 +184,6 @@ class Patient < ApplicationRecord
 
   def high_risk?
     risk_priority == RISK_PRIORITIES[:HIGH]
-  end
-
-  def current_age
-    if date_of_birth.present?
-      ((Time.zone.now - date_of_birth.to_time) / 1.year).floor
-    elsif age.present?
-      return 0 if age == 0
-
-      years_since_update = (Time.current - age_updated_at) / 1.year
-      (age + years_since_update).floor
-    end
   end
 
   def call_result=(new_call_result)

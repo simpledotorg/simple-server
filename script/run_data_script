@@ -1,0 +1,21 @@
+#!/usr/bin/env ruby
+#
+# Harness for running datascripts from command line
+# Defaults to dry_run mode unless you provide a second arg
+#
+# Examples:
+#
+# Runs in dry_run mode:
+#   script/run_data_script update_bangladesh_regions_script
+# Runs in write mode:
+#   script/run_data_script update_bangladesh_regions_script true
+#
+
+script = ARGV[0] || raise(ArgumentError, "You must provide the name a script, for example: script/run_data_script update_user_emails")
+write_mode = ARGV[1] || false
+
+require_relative "../config/environment"
+require_relative "../lib/data_scripts/#{script}"
+
+klass = script.classify.constantize
+pp klass.call(dry_run: !write_mode)

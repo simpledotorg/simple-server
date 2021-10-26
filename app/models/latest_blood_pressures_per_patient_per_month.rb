@@ -1,4 +1,5 @@
 class LatestBloodPressuresPerPatientPerMonth < ApplicationRecord
+  extend Reports::Refreshable
   include BloodPressureable
   include PatientReportableMatview
 

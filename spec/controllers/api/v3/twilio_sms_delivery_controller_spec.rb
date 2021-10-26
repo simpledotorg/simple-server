@@ -67,7 +67,7 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
         it "updates the result and delivered_on" do
           expect(Statsd.instance).to receive(:increment).with("twilio_callback.manual_call.delivered")
           session_id = SecureRandom.uuid
-          create(:twilio_sms_delivery_detail,
+          twilio_sms_delivery_detail = create(:twilio_sms_delivery_detail,
             session_id: session_id,
             result: "sent")
           params = base_callback_params.merge("MessageSid" => session_id,
@@ -76,14 +76,14 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
           set_twilio_signature_header(callback_url, params)
           post :create, params: params
 
-          twilio_sms_delivery_detail = TwilioSmsDeliveryDetail.find_by_session_id(session_id)
+          twilio_sms_delivery_detail.reload
           expect(twilio_sms_delivery_detail.result).to eq("delivered")
           expect(twilio_sms_delivery_detail.delivered_on).to_not be_nil
         end
 
         it "does not update delivered_on if status is not delivered" do
           session_id = SecureRandom.uuid
-          create(:twilio_sms_delivery_detail, session_id: session_id, result: "queued")
+          twilio_sms_delivery_detail = create(:twilio_sms_delivery_detail, session_id: session_id, result: "queued")
 
           params = base_callback_params.merge(
             "MessageSid" => session_id,
@@ -93,8 +93,39 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
           set_twilio_signature_header(callback_url, params)
           post :create, params: params
 
-          twilio_sms_delivery_detail = TwilioSmsDeliveryDetail.find_by_session_id(session_id)
-          expect(twilio_sms_delivery_detail.delivered_on).to be_nil
+          expect(twilio_sms_delivery_detail.reload.delivered_on).to be_nil
+        end
+
+        it "updates the result and read_at when result is 'read'" do
+          expect(Statsd.instance).to receive(:increment).with("twilio_callback.manual_call.read")
+          session_id = SecureRandom.uuid
+          twilio_sms_delivery_detail = create(:twilio_sms_delivery_detail,
+            session_id: session_id,
+            result: "queued")
+          params = base_callback_params.merge("MessageSid" => session_id,
+                                              "MessageStatus" => "read")
+
+          set_twilio_signature_header(callback_url, params)
+          post :create, params: params
+
+          twilio_sms_delivery_detail.reload
+          expect(twilio_sms_delivery_detail.result).to eq("read")
+          expect(twilio_sms_delivery_detail.read_at).to_not be_nil
+        end
+
+        it "does not update read_at if status is not 'read'" do
+          session_id = SecureRandom.uuid
+          twilio_sms_delivery_detail = create(:twilio_sms_delivery_detail, session_id: session_id, result: "queued")
+
+          params = base_callback_params.merge(
+            "MessageSid" => session_id,
+            "MessageStatus" => "sent"
+          )
+
+          set_twilio_signature_header(callback_url, params)
+          post :create, params: params
+
+          expect(twilio_sms_delivery_detail.reload.read_at).to be_nil
         end
 
         it "logs failure and does not queue a retry when there is no next communication type" do

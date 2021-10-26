@@ -2,6 +2,7 @@
 # It is maintained separately so that the PatientSummary view can be slowly deprecated over time in favor of this
 class MaterializedPatientSummary < ActiveRecord::Base
   self.primary_key = :id
+  extend Reports::Refreshable
 
   belongs_to :patient, foreign_key: :id
   belongs_to :next_scheduled_appointment, class_name: "Appointment", foreign_key: :next_scheduled_appointment_id
@@ -15,10 +16,6 @@ class MaterializedPatientSummary < ActiveRecord::Base
 
   scope :overdue, -> { joins(:next_scheduled_appointment).merge(Appointment.overdue) }
   scope :all_overdue, -> { joins(:next_scheduled_appointment).merge(Appointment.all_overdue) }
-
-  def self.refresh
-    Scenic.database.refresh_materialized_view(table_name, concurrently: true, cascade: false)
-  end
 
   def readonly?
     true
