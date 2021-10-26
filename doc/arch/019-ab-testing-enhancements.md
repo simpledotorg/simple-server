@@ -83,7 +83,7 @@ The [experiment flow](https://docs.google.com/document/d/1IMXu_ca9xKU8Xox_3v403Z
 sub-parts of each of these.
 
 Currently these responsibilities are shared by `Experimentation::Experiment` and `Experimentation::Runner`.
-We will pull these apart into the following entities:
+We will pull these apart and have classes set up like so:
 
 - `Experimentation::Experiment` - Setup experiments and assign treatment groups integrally.
 - `Experimentation::TreatmentGroup` - Describes a treatment group and the behaviour for the patients in it. 
