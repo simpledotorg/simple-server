@@ -13,5 +13,7 @@ Date::DATE_FORMATS[:month_year] = "%B %Y"
 Time::DATE_FORMATS[:day_mon_year] = "%-d-%b-%Y"
 Date::DATE_FORMATS[:day_mon_year] = "%-d-%b-%Y"
 
+# DHIS2 has its own period string formats
+# https://docs.dhis2.org/en/develop/using-the-api/dhis-core-version-master/introduction.html#webapi_date_perid_format
 Time::DATE_FORMATS[:dhis2] = "%Y%m"
 Date::DATE_FORMATS[:dhis2] = "%Y%m"

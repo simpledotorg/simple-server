@@ -67,7 +67,7 @@ class DHIS2Exporter
     if Flipper.enabled?(:dhis2_use_ethiopian_calendar)
       EthiopiaCalendarUtilities.gregorian_month_period_to_ethiopian(month_period).to_dhis2
     else
-      period.to_dhis2
+      month_period.to_s(:dhis2)
     end
   end
 end

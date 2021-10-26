@@ -181,16 +181,6 @@ class Period
     value.to_s(format)
   end
 
-  def to_dhis2
-    # DHIS2 has its own period string formats
-    # https://docs.dhis2.org/en/develop/using-the-api/dhis-core-version-master/introduction.html#webapi_date_perid_format
-    if quarter?
-      "#{value.year}Q#{value.number}"
-    else
-      value.to_s(:dhis2)
-    end
-  end
-
   # Returns a Hash with various Period related dates for eash consumption by the view
   def to_hash
     @to_hash ||= {
