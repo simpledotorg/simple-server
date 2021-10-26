@@ -18,6 +18,7 @@ class BloodPressureExportService
 
     @data_for_facility = {}
 
+    @repo = Reports::Repository.new(facilities, periods: range)
     facilities.each do |facility|
       # @data_for_facility[facility.name] = Reports::Repository.new(
       #   facility.region, periods: range)
@@ -25,7 +26,6 @@ class BloodPressureExportService
         region: facility.region, period: @end_period, months: 6
       ).call
     end
-    @repo = Reports::Repository.new(facilities, periods: range)
 
     unordered_sizes = @data_for_facility.map { |_, facility| facility.region.source.facility_size }.uniq
     @display_sizes = FACILITY_SIZES.select { |size| unordered_sizes.include? size }
@@ -89,11 +89,7 @@ class BloodPressureExportService
 
   def set_csv_headers
     headers = ["Facilities", "Total assigned", "Total registered", "Six month change"]
-<<<<<<< HEAD
     (@start_period..@end_period).each {|period| headers << period} # << "#{period}-ratio" }
-=======
-    (@start_period..@end_period).each { |period| headers << period << "#{period}-ratio" }
->>>>>>> b5aa723f075cb0d01e548ff0668598c1dbd1478e
     headers
   end
 
@@ -472,7 +468,6 @@ end
 #        "cumulative_registrations"=>32,
 #        "cumulative_assigned_patients"=>32,
 #        "controlled_patients_rate"=>10}}}}
-<<<<<<< HEAD
 
 
 # #<Reports::Repository:0x00007fd1dafc08d8
@@ -749,5 +744,3 @@ end
 #       updated_at: Mon, 20 Sep 2021 14:53:58 UTC +00:00,
 #       region_type: "facility">],
 #    @registered_patients_query=#<RegisteredPatientsQuery:0x00007fd1dc857608>>>
-=======
->>>>>>> b5aa723f075cb0d01e548ff0668598c1dbd1478e
