@@ -18,6 +18,7 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
       let(:july_2020) { Time.parse("July 15, 2020 00:00:00+00:00") }
       let(:jan_2019) { Time.parse("January 1st, 2019 00:00:00+00:00") }
       let(:jan_2020) { Time.parse("January 1st, 2020 00:00:00+00:00") }
+      let(:jan_2020_period) { jan_2020.to_period }
       let(:july_2018) { Time.parse("July 1st, 2018 00:00:00+00:00") }
       let(:july_2020) { Time.parse("July 1st, 2020 00:00:00+00:00") }
 
@@ -199,10 +200,7 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
         end
 
         it "gets controlled counts and rates for one month" do
-          facilities = FactoryBot.create_list(:facility, 3, facility_group: facility_group_1).sort_by(&:slug)
-          facility_1, facility_2, facility_3 = *facilities.take(3)
-          regions = facilities.map(&:region)
-
+          facility_1, facility_2, facility_3 = FactoryBot.create_list(:facility, 3, facility_group: facility_group_1).sort_by(&:slug)
           facility_1_controlled = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
           facility_1_uncontrolled = create_list(:patient, 2, full_name: "uncontrolled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
           facility_2_controlled = create(:patient, full_name: "other facility", recorded_at: jan_2019, assigned_facility: facility_2, registration_user: user)
@@ -219,16 +217,42 @@ RSpec.describe Reports::Repository, type: :model, v2_flag: true do
           refresh_views
 
           jan = Period.month(jan_2020)
-          repo = Reports::Repository.new(regions, periods: Period.month(jan))
+          repo = Reports::Repository.new([facility_1, facility_2, facility_3], periods: Period.month(jan))
           controlled = repo.controlled
           uncontrolled = repo.uncontrolled
           expect(controlled[facility_1.slug][jan]).to eq(2)
           expect(controlled[facility_2.slug][jan]).to eq(1)
-          empty_value = v2_flag ? nil : 0
-          expect(controlled[facility_3.slug][jan]).to eq(empty_value)
           expect(uncontrolled[facility_1.slug][jan]).to eq(2)
           expect(uncontrolled[facility_2.slug][jan]).to eq(0)
-          expect(uncontrolled[facility_3.slug][jan]).to eq(empty_value)
+        end
+
+        it "returns 0 as a default for periods without any counts" do
+          facility_1, facility_2 = *FactoryBot.create_list(:facility, 2, facility_group: facility_group_1)
+          facility_1_controlled = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
+          facility_1_uncontrolled = create_list(:patient, 2, full_name: "uncontrolled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
+
+          Timecop.freeze(jan_2020) do
+            facility_1_controlled.map do |patient|
+              create(:bp_with_encounter, :under_control, facility: facility_1, patient: patient, recorded_at: 15.days.ago, user: user)
+            end
+            facility_1_uncontrolled.map do |patient|
+              create(:bp_with_encounter, :hypertensive, facility: facility_1, patient: patient, recorded_at: 15.days.ago, user: user)
+            end
+          end
+
+          refresh_views
+
+          nov_2019_period = Period.month("November 2019")
+          repo = Reports::Repository.new([facility_1, facility_2], periods: jan_2020_period)
+          expect(repo.controlled[facility_1.slug][nov_2019_period]).to eq(0)
+          expect(repo.uncontrolled[facility_1.slug][nov_2019_period]).to eq(0)
+          expect(repo.uncontrolled[facility_1.slug][jan_2020_period]).to eq(2)
+
+          expect(repo.controlled[facility_2.slug][nov_2019_period]).to eq(0)
+          expect(repo.controlled[facility_2.slug][jan_2020_period]).to eq(0)
+          expect(repo.uncontrolled[facility_2.slug]).to eq({})
+          expect(repo.uncontrolled[facility_2.slug][nov_2019_period]).to eq(0)
+          expect(repo.uncontrolled[facility_2.slug][jan_2020_period]).to eq(0)
         end
 
         it "gets controlled info for range of month periods" do

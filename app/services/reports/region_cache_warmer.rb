@@ -4,7 +4,7 @@ module Reports
       new.call
     end
 
-    def initialize(period: RegionService.default_period)
+    def initialize(period: Reports.default_period)
       @period = period
       notify "starting region reports cache warming"
     end
