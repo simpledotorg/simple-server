@@ -10,7 +10,7 @@ module Experimentation
         .distinct
     end
 
-    def self.daily_run(date)
+    def self.conduct_daily(date)
       running.each { |experiment| experiment.enroll_patients(date) }
       monitoring.each { |experiment| experiment.monitor(date) }
       notifying.each { |experiment| experiment.send_notifications(date) }

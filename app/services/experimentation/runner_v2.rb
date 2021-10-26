@@ -6,7 +6,7 @@ module Experimentation
         return
       end
 
-      [CurrentPatientExperiment, StalePatientExperiment].each { |experiment| experiment.daily_run(Date.current) }
+      [CurrentPatientExperiment, StalePatientExperiment].each { |experiment| experiment.conduct_daily(Date.current) }
     end
   end
 end

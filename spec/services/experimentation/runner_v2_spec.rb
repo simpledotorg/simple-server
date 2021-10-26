@@ -19,9 +19,9 @@ describe Experimentation::RunnerV2, type: :model do
       expect(experiment.notifications.count).to eq(0)
     end
 
-    it "calls daily_run on current and stale experiments with today's date" do
-      expect(Experimentation::CurrentPatientExperiment).to receive(:daily_run).with(Date.current)
-      expect(Experimentation::StalePatientExperiment).to receive(:daily_run).with(Date.current)
+    it "calls conduct_daily on current and stale experiments with today's date" do
+      expect(Experimentation::CurrentPatientExperiment).to receive(:conduct_daily).with(Date.current)
+      expect(Experimentation::StalePatientExperiment).to receive(:conduct_daily).with(Date.current)
 
       described_class.call
     end
