@@ -57,7 +57,7 @@ module Experimentation
       end
 
       today = Date.today
-      eligible_ids = StalePatientExperiment.find(id: experiment.id).eligible_patients(today)
+      eligible_ids = StalePatientExperiment.find(experiment.id).eligible_patients(today).pluck(:id)
       logger.info "Experiment #{name} found #{eligible_ids.count} eligible patient ids for stale patient reminders"
       if eligible_ids.any?
         eligible_ids.shuffle!
