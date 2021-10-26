@@ -5,9 +5,9 @@ class FacilityStatsService
     @facilities = facilities
     @period = period
     @rate_numerator = rate_numerator
-    @rate_name = "#{rate_numerator}_rate"
+    @rate_name = "#{rate_numerator}_rate".to_sym
     @periods = period.downto(5)
-    @stats_by_size = {}.with_indifferent_access
+    @stats_by_size = {}
   end
 
   def self.call(facilities:, period:, rate_numerator:)
@@ -27,7 +27,7 @@ class FacilityStatsService
   attr_reader :facilities, :rate_numerator, :rate_name, :periods
 
   def add_facility_stats(facility_data)
-    size = facility_data.region.source.facility_size
+    size = facility_data[:facility_size]
     add_size_section(size) unless stats_by_size[size]
     periods.each do |period|
       current_period = stats_by_size[size][:periods][period]
@@ -41,7 +41,7 @@ class FacilityStatsService
   def calculate_percentages
     stats_by_size.values.each do |size_data|
       size_data[:periods].values.each do |period_stats|
-        adjusted_patient_counts = period_stats["adjusted_patient_counts"]
+        adjusted_patient_counts = period_stats[:adjusted_patient_counts]
         next if adjusted_patient_counts == 0 || period_stats[rate_numerator] == 0
         period_stats[rate_name] = (period_stats[rate_numerator].to_f / adjusted_patient_counts.to_f * 100).round
       end
@@ -57,12 +57,12 @@ class FacilityStatsService
   def size_data_template
     periods.reverse.each_with_object({}) do |period, hsh|
       hsh[period] = {
-        rate_numerator => 0,
-        "adjusted_patient_counts" => 0,
-        "cumulative_registrations" => 0,
-        "cumulative_assigned_patients" => 0,
-        rate_name => 0
-      }.with_indifferent_access
+        :adjusted_patient_counts => 0,
+        :cumulative_assigned_patients => 0,
+        :cumulative_registrations => 0,
+        rate_name => 0,
+        rate_numerator => 0
+      }
     end
   end
 end

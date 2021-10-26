@@ -11,7 +11,7 @@
           </p>
         </div>
         <p class="mb-4px c-grey-dark">
-          <strong>What to look for:</strong> High percentages are good, and 70% or higher is ideal 
+          <strong>What to look for:</strong> High percentages are good, and 70% or higher is ideal
         </p>
         <p class="c-grey-dark c-print-black">
           <strong>Numerator:</strong> <%= t("bp_controlled_copy.numerator") %>
@@ -23,7 +23,7 @@
         <%= render "shared/my_facilities_filters", type: "controlled_patients" %>
       </div>
       <%= render "shared/facility_size_overview",
-            rate_name: "controlled_patients_rate",
+            rate_name: :controlled_patients_rate,
             is_increase_positive: true %>
       <div class="ph-16px pb-16px">
         <% if @facility_sizes.empty? %>
@@ -78,7 +78,7 @@
               </tr>
             </thead>
             <tbody>
-              <% facility_size_six_month_rate_change = facility_size_six_month_rate_change(@stats_by_size[size][:periods], "controlled_patients_rate") %>
+              <% facility_size_six_month_rate_change = facility_size_six_month_rate_change(@stats_by_size[size][:periods], :controlled_patients_rate) %>
               <tr
                 class="row-total"
                 data-sort-method="none"
@@ -107,13 +107,13 @@
                   <%= number_to_percentage_with_symbol(facility_size_six_month_rate_change, precision: 0) %>
                 </td>
                 <% @stats_by_size[size][:periods].each_pair do |period, data| %>
-                  <% controlled_patients_rate = data["controlled_patients_rate"] %>
+                  <% controlled_patients_rate = data[:controlled_patients_rate] %>
                   <td
                     class="type-percent"
                     data-sort-column-key="total-patients-<%= period %>"
                     data-sort="<%= controlled_patients_rate %>"
                     data-toggle="tooltip"
-                    title="<%= data["controlled_patients"] %> / <%= data["adjusted_patient_counts"] %> patients"
+                    title="<%= data[:controlled_patients] %> / <%= data[:adjusted_patient_counts] %> patients"
                   >
                     <em data-rate="<%= controlled_patients_rate %>">
                       <%= number_to_percentage(controlled_patients_rate || 0, precision: 0) %>
@@ -122,20 +122,20 @@
                 <% end %>
               </tr>
               <% @data_for_facility.each do |_, facility_data| %>
-                <% facility = facility_data.region.source %>
+                <% facility = facility_data[:facility] %>
                 <% next if facility.facility_size != size %>
-                <% six_month_rate_change = six_month_rate_change(facility, "controlled_patients_rate") %>
+                <% six_month_rate_change = six_month_rate_change(facility, :controlled_patients_rate) %>
                 <tr data-row="<%= facility.slug %>" data-trend-color="<% if six_month_rate_change > 0 %>green<% elsif six_month_rate_change < 0 %>red<% else %>grey<% end %>">
                   <td class="type-title">
-                    <%= link_to(reports_region_path(facility, report_scope: "facility")) do %>
+                    <%= link_to(reports_region_path(facility, report_scope: :facility)) do %>
                       <%= facility.name %>
                     <% end %>
                   </td>
                   <td>
-                    <%= number_or_zero_with_delimiter(facility_data["cumulative_assigned_patients"].values.last) %>
+                    <%= number_or_zero_with_delimiter(facility_data[:cumulative_assigned_patients].values.last) %>
                   </td>
                   <td>
-                    <%= number_or_zero_with_delimiter(facility_data["cumulative_registrations"].values.last) %>
+                    <%= number_or_zero_with_delimiter(facility_data[:cumulative_registrations].values.last) %>
                   </td>
                   <td>
                     <div class="w-90px h-20px">
@@ -150,13 +150,13 @@
                     <%= number_to_percentage_with_symbol(six_month_rate_change, precision: 0) %>
                   </td>
                   <% (@start_period..@period).each do |period| %>
-                    <% controlled_patients_rate = facility_data["controlled_patients_rate"][period] %>
+                    <% controlled_patients_rate = facility_data[:controlled_patients_rate][period] %>
                     <td
                       class="type-percent"
                       data-sort-column-key="total-patients-<%= period %>"
                       data-sort="<%= controlled_patients_rate %>"
                       data-toggle="tooltip"
-                      title="<%= facility_data["controlled_patients"][period] %> / <%= facility_data["adjusted_patient_counts"][period] %> patients"
+                      title="<%= facility_data[:controlled_patients][period] %> / <%= facility_data[:adjusted_patient_counts][period] %> patients"
                     >
                       <em data-rate="<%= controlled_patients_rate %>">
                         <%= number_to_percentage(controlled_patients_rate || 0, precision: 0) %>

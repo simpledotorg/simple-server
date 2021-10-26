@@ -206,7 +206,6 @@ Rails.application.routes.draw do
     get "registrations", to: redirect("/my_facilities/")
     get "missed_visits", to: "missed_visits"
     get "facility_performance", to: "facility_performance#show"
-    get "ranked_facilities", to: redirect("/my_facilities/facility_performance")
     get "drug_stocks", to: "drug_stocks#drug_stocks"
     get "drug_consumption", to: "drug_stocks#drug_consumption"
     post "drug_stocks", to: "drug_stocks#create"

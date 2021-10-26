@@ -237,17 +237,6 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       }.not_to change { Communication.count }
     end
 
-    it "does not send if the notification belongs to a cancelled experiment" do
-      mock_successful_delivery
-      experiment = create(:experiment, state: "cancelled")
-      notification.update!(experiment_id: experiment.id)
-      expect {
-        described_class.perform_async(notification.id)
-        described_class.drain
-      }.not_to change { Communication.count }
-      expect(notification.reload.status).to eq("scheduled")
-    end
-
     describe "twilio senders" do
       it "provides a sender if available" do
         mock_successful_delivery
