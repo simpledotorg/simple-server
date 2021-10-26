@@ -258,6 +258,12 @@ To generate seed (fake patients) data, execute the following command from the pr
 $ bin/rails db:seed_patients
 ```
 
+Need a larger dataset? Try adding the `SEED_TYPE` variable. (It takes longer to run, of course.) This works on all patient seeding commands:
+
+```bash
+$ SEED_TYPE=medium bin/rails db:seed_patients
+```
+
 To purge the generated patient data, run
 
 ```bash
