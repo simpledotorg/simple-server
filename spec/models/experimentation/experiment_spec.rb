@@ -133,20 +133,12 @@ RSpec.describe Experimentation::Experiment, type: :model do
     end
   end
 
-  describe "#abort" do
-    it "changes pending and scheduled notification statuses to 'cancelled'" do
+  describe "#cancel" do
+    it "cancels the experiment" do
       experiment = create(:experiment)
-      patient = create(:patient)
+      experiment.cancel
 
-      pending_notification = create(:notification, experiment: experiment, patient: patient, status: "pending")
-      scheduled_notification = create(:notification, experiment: experiment, patient: patient, status: "scheduled")
-      sent_notification = create(:notification, experiment: experiment, patient: patient, status: "sent")
-
-      experiment.abort
-
-      expect(pending_notification.reload.status).to eq("cancelled")
-      expect(scheduled_notification.reload.status).to eq("cancelled")
-      expect(sent_notification.reload.status).to eq("sent")
+      expect(experiment.reload.deleted_at).to be_present
     end
   end
 

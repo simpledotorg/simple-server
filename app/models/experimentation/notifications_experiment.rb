@@ -4,6 +4,7 @@ module Experimentation
     MAX_PATIENTS_PER_DAY = 2000
 
     default_scope { where(experiment_type: %w[current_patients stale_patients]) }
+
     scope :notifying, -> do
       joins(treatment_groups: :reminder_templates)
         .where("start_time <= ? AND end_time + make_interval(days := remind_on_in_days) > ? ", Time.current, Time.current)
@@ -60,6 +61,13 @@ module Experimentation
 
     def send_notifications(date)
       # Send notifications to memberships_for_notifications(date)
+    end
+
+    def cancel
+      ActiveRecord::Base.transaction do
+        notifications.where(status: %w[pending scheduled]).update_all(status: :cancelled)
+        super
+      end
     end
   end
 end

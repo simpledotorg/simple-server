@@ -132,4 +132,21 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       expect(Experimentation::TreatmentGroupMembership.pluck(:patient_id)).to match_array(patients.pluck(:id))
     end
   end
+
+  describe "#cancel" do
+    it "changes pending and scheduled notification statuses to 'cancelled'" do
+      experiment = create(:experiment)
+      patient = create(:patient)
+
+      pending_notification = create(:notification, experiment: experiment, patient: patient, status: "pending")
+      scheduled_notification = create(:notification, experiment: experiment, patient: patient, status: "scheduled")
+      sent_notification = create(:notification, experiment: experiment, patient: patient, status: "sent")
+
+      experiment.cancel
+
+      expect(pending_notification.reload.status).to eq("cancelled")
+      expect(scheduled_notification.reload.status).to eq("cancelled")
+      expect(sent_notification.reload.status).to eq("sent")
+    end
+  end
 end
