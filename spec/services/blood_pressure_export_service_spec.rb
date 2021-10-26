@@ -23,8 +23,7 @@ RSpec.describe BloodPressureExportService, type: :model do
     I18n.default_locale = :en_IN
   end
 
-  describe "#call" do #more for a thing
-    puts "hello"
+  describe "#call" do #state what you want to test
     context "when data_type is bp_controlled" do # more for data setup
       it "processes results for small facilities" do
         small_facility1 = create(:facility, name: "small_1", facility_group: facility_group, facility_size: "small")

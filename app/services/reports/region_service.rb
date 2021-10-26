@@ -16,6 +16,7 @@ module Reports
       @reporting_schema_v2 = reporting_schema_v2
       start_period = period.advance(months: -(months - 1))
       @range = Range.new(start_period, @period)
+      #--------------------------------- debugger
     end
 
     attr_reader :result
@@ -65,6 +66,7 @@ module Reports
 
     def repository
       @repository ||= Reports::Repository.new(region, periods: range, reporting_schema_v2: reporting_schema_v2?)
+      # debugger
     end
   end
 end

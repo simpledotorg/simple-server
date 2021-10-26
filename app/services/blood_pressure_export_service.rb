@@ -15,12 +15,19 @@ class BloodPressureExportService
     @end_period = end_period
     @facilities = facilities
 
+    range = Range.new(start_period, end_period)
+
     @data_for_facility = {}
+
     facilities.each do |facility|
+      # @data_for_facility[facility.name] = Reports::Repository.new(
+      #   facility.region, periods: range)
       @data_for_facility[facility.name] = Reports::RegionService.new(
         region: facility.region, period: @end_period, months: 6
       ).call
     end
+    @repo = Reports::Repository.new(facilities, periods: range)
+
     unordered_sizes = @data_for_facility.map { |_, facility| facility.region.source.facility_size }.uniq
     @display_sizes = FACILITY_SIZES.select { |size| unordered_sizes.include? size }
     @stats_by_size = FacilityStatsService.call(facilities: @data_for_facility, period: @end_period, rate_numerator: data_type)
@@ -83,7 +90,7 @@ class BloodPressureExportService
 
   def set_csv_headers
     headers = ["Facilities", "Total assigned", "Total registered", "Six month change"]
-    (@start_period..@end_period).each {|period| headers << period << "#{period}-ratio" }
+    (@start_period..@end_period).each {|period| headers << period} # << "#{period}-ratio" }
     headers
   end
 
@@ -98,7 +105,7 @@ class BloodPressureExportService
     period_data.each_pair do |period, data|
       data_type_rate = data[rate_key]
       aggregate_row[period] = number_to_percentage(data_type_rate || 0, precision: 0)
-      aggregate_row["#{period}-ratio"] = "#{data[@data_type]} / #{data["adjusted_patient_counts"]}"
+      # aggregate_row["#{period}-ratio"] = "#{data[@data_type]} / #{data["adjusted_patient_counts"]}"
     end
     aggregate_row
   end
@@ -124,7 +131,7 @@ class BloodPressureExportService
     (@start_period..@end_period).each do |period|
       data_type_rate = facility_data[rate_key][period]
       facility_row_obj[period] = number_to_percentage(data_type_rate || 0, precision: 0)
-      facility_row_obj["#{period}-ratio"] = "#{facility_data[@data_type][period]} / #{facility_data["adjusted_patient_counts"][period]}"
+      # facility_row_obj["#{period}-ratio"] = "#{facility_data[@data_type][period]} / #{facility_data["adjusted_patient_counts"][period]}"
     end
     facility_row_obj
   end
@@ -467,3 +474,279 @@ end
 #        "cumulative_registrations"=>32,
 #        "cumulative_assigned_patients"=>32,
 #        "controlled_patients_rate"=>10}}}}
+
+
+# #<Reports::Repository:0x00007fd1dafc08d8
+#  @bp_measures_query=#<BPMeasuresQuery:0x00007fd1dc85db70>,
+#  @follow_ups_query=#<FollowUpsQuery:0x00007fd1dc87f900>,
+#  @no_bp_measure_query=#<NoBPMeasureQuery:0x00007fd1dc87f8b0>,
+#  @period_type=:month,
+#  @periods=<Period type:month value=2019-10-01>..<Period type:month value=2021-09-01>,
+#  @regions=
+#   [#<Region:0x00007fd1dcb29110
+#     id: "5c1c1471-e54b-41ac-9f2f-0739a203b397",
+#     name: "HWC Lake Sesame Village",
+#     slug: "hwc-lake-sesame-village",
+#     description: nil,
+#     source_type: "Facility",
+#     source_id: "0fd2807e-06ee-470a-baad-287d0bd72904",
+#     path: "india.summit_heart_foundation.obsidian_province.alder_county.holly_grove.hwc_lake_sesame_village",
+#     deleted_at: nil,
+#     created_at: Mon, 20 Sep 2021 14:53:58 UTC +00:00,
+#     updated_at: Mon, 20 Sep 2021 14:53:58 UTC +00:00,
+#     region_type: "facility">],
+#  @registered_patients_query=#<RegisteredPatientsQuery:0x00007fd1dc87f888>,
+#  @reporting_schema_v2=false,
+#  @schema=
+#   #<Reports::SchemaV1:0x00007fd1dafe85e0
+#    @_memery_memoized_values=
+#     {"controlled_70269659169160"=>
+#       {[]=>
+#         {:result=>
+#           {"hwc-lake-sesame-village"=>
+#             {<Period type:month value=2020-07-01>=>0,
+#              <Period type:month value=2020-08-01>=>0,
+#              <Period type:month value=2020-09-01>=>0,
+#              <Period type:month value=2020-10-01>=>0,
+#              <Period type:month value=2020-11-01>=>0,
+#              <Period type:month value=2020-12-01>=>0,
+#              <Period type:month value=2021-01-01>=>0,
+#              <Period type:month value=2021-02-01>=>0,
+#              <Period type:month value=2021-03-01>=>0,
+#              <Period type:month value=2021-04-01>=>0,
+#              <Period type:month value=2021-05-01>=>0,
+#              <Period type:month value=2021-06-01>=>0,
+#              <Period type:month value=2021-07-01>=>0,
+#              <Period type:month value=2021-08-01>=>0,
+#              <Period type:month value=2021-09-01>=>1}},
+#          :time=>4849327.927034}},
+#      "earliest_patient_recorded_at_period_70269659169160"=>
+#       {[]=>{:result=>{"hwc-lake-sesame-village"=><Period type:month value=2020-07-01>}, :time=>4849327.728357}},
+#      "earliest_patient_recorded_at_70269659169160"=>
+#       {[]=>{:result=>{"hwc-lake-sesame-village"=>Tue, 28 Jul 2020 00:02:08 UTC +00:00}, :time=>4849327.72821}},
+#      "cumulative_assigned_patients_70269659169160"=>
+#       {[]=>
+#         {:result=>
+#           {"hwc-lake-sesame-village"=>
+#             {<Period type:month value=2020-07-01>=>1,
+#              <Period type:month value=2020-08-01>=>1,
+#              <Period type:month value=2020-09-01>=>2,
+#              <Period type:month value=2020-10-01>=>2,
+#              <Period type:month value=2020-11-01>=>2,
+#              <Period type:month value=2020-12-01>=>3,
+#              <Period type:month value=2021-01-01>=>3,
+#              <Period type:month value=2021-02-01>=>3,
+#              <Period type:month value=2021-03-01>=>4,
+#              <Period type:month value=2021-04-01>=>4,
+#              <Period type:month value=2021-05-01>=>4,
+#              <Period type:month value=2021-06-01>=>4,
+#              <Period type:month value=2021-07-01>=>5,
+#              <Period type:month value=2021-08-01>=>5,
+#              <Period type:month value=2021-09-01>=>5}},
+#          :time=>4849400.147148}},
+#      "complete_monthly_assigned_patients_70269659169160"=>
+#       {[]=>
+#         {:result=>
+#           {#<Reports::RegionEntry:0x00007fd1dc79aa30
+#             @calculation=:complete_monthly_assigned_patients,
+#             @options=[[:period_type, :month]],
+#             @region=
+#              #<Region:0x00007fd1dcb29110
+#               id: "5c1c1471-e54b-41ac-9f2f-0739a203b397",
+#               name: "HWC Lake Sesame Village",
+#               slug: "hwc-lake-sesame-village",
+#               description: nil,
+#               source_type: "Facility",
+#               source_id: "0fd2807e-06ee-470a-baad-287d0bd72904",
+#               path: "india.summit_heart_foundation.obsidian_province.alder_county.holly_grove.hwc_lake_sesame_village",
+#               deleted_at: nil,
+#               created_at: Mon, 20 Sep 2021 14:53:58 UTC +00:00,
+#               updated_at: Mon, 20 Sep 2021 14:53:58 UTC +00:00,
+#               region_type: "facility">>=>
+#             {<Period type:month value=2020-07-01>=>1,
+#              <Period type:month value=2020-08-01>=>0,
+#              <Period type:month value=2020-09-01>=>1,
+#              <Period type:month value=2020-10-01>=>0,
+#              <Period type:month value=2020-11-01>=>0,
+#              <Period type:month value=2020-12-01>=>1,
+#              <Period type:month value=2021-01-01>=>0,
+#              <Period type:month value=2021-02-01>=>0,
+#              <Period type:month value=2021-03-01>=>1,
+#              <Period type:month value=2021-04-01>=>0,
+#              <Period type:month value=2021-05-01>=>0,
+#              <Period type:month value=2021-06-01>=>0,
+#              <Period type:month value=2021-07-01>=>1}},
+#          :time=>4849400.14602}},
+#      "missed_visits_without_ltfu_rates_70269659169160"=>
+#       {[]=>
+#         {:result=>
+#           {"hwc-lake-sesame-village"=>
+#             {<Period type:month value=2020-07-01>=>0,
+#              <Period type:month value=2020-08-01>=>0,
+#              <Period type:month value=2020-09-01>=>0,
+#              <Period type:month value=2020-10-01>=>100,
+#              <Period type:month value=2020-11-01>=>100,
+#              <Period type:month value=2020-12-01>=>0,
+#              <Period type:month value=2021-01-01>=>50,
+#              <Period type:month value=2021-02-01>=>50,
+#              <Period type:month value=2021-03-01>=>100,
+#              <Period type:month value=2021-04-01>=>67,
+#              <Period type:month value=2021-05-01>=>67,
+#              <Period type:month value=2021-06-01>=>50,
+#              <Period type:month value=2021-07-01>=>75,
+#              <Period type:month value=2021-08-01>=>75,
+#              <Period type:month value=2021-09-01>=>50}},
+#          :time=>4849926.165527}},
+#      "ltfu_70269659169160"=>
+#       {[]=>
+#         {:result=>
+#           {"hwc-lake-sesame-village"=>
+#             {<Period type:month value=2020-07-01>=>0,
+#              <Period type:month value=2020-08-01>=>0,
+#              <Period type:month value=2020-09-01>=>0,
+#              <Period type:month value=2020-10-01>=>0,
+#              <Period type:month value=2020-11-01>=>0,
+#              <Period type:month value=2020-12-01>=>0,
+#              <Period type:month value=2021-01-01>=>0,
+#              <Period type:month value=2021-02-01>=>0,
+#              <Period type:month value=2021-03-01>=>0,
+#              <Period type:month value=2021-04-01>=>0,
+#              <Period type:month value=2021-05-01>=>0,
+#              <Period type:month value=2021-06-01>=>0,
+#              <Period type:month value=2021-07-01>=>0,
+#              <Period type:month value=2021-08-01>=>0,
+#              <Period type:month value=2021-09-01>=>0}},
+#          :time=>4849925.249578}},
+#      "missed_visits_without_ltfu_70269659169160"=>
+#       {[]=>
+#         {:result=>
+#           {"hwc-lake-sesame-village"=>
+#             {<Period type:month value=2020-07-01>=>0,
+#              <Period type:month value=2020-08-01>=>0,
+#              <Period type:month value=2020-09-01>=>0,
+#              <Period type:month value=2020-10-01>=>1,
+#              <Period type:month value=2020-11-01>=>1,
+#              <Period type:month value=2020-12-01>=>0,
+#              <Period type:month value=2021-01-01>=>1,
+#              <Period type:month value=2021-02-01>=>1,
+#              <Period type:month value=2021-03-01>=>3,
+#              <Period type:month value=2021-04-01>=>2,
+#              <Period type:month value=2021-05-01>=>2,
+#              <Period type:month value=2021-06-01>=>2,
+#              <Period type:month value=2021-07-01>=>3,
+#              <Period type:month value=2021-08-01>=>3,
+#              <Period type:month value=2021-09-01>=>2}},
+#          :time=>4849926.148326}},
+#      "uncontrolled_70269659169160"=>
+#       {[]=>
+#         {:result=>
+#           {"hwc-lake-sesame-village"=>
+#             {<Period type:month value=2020-07-01>=>0,
+#              <Period type:month value=2020-08-01>=>0,
+#              <Period type:month value=2020-09-01>=>0,
+#              <Period type:month value=2020-10-01>=>0,
+#              <Period type:month value=2020-11-01>=>0,
+#              <Period type:month value=2020-12-01>=>2,
+#              <Period type:month value=2021-01-01>=>1,
+#              <Period type:month value=2021-02-01>=>1,
+#              <Period type:month value=2021-03-01>=>0,
+#              <Period type:month value=2021-04-01>=>1,
+#              <Period type:month value=2021-05-01>=>1,
+#              <Period type:month value=2021-06-01>=>2,
+#              <Period type:month value=2021-07-01>=>1,
+#              <Period type:month value=2021-08-01>=>1,
+#              <Period type:month value=2021-09-01>=>0}},
+#          :time=>4849925.431325}},
+#      "visited_without_bp_taken_70269659169160"=>
+#       {[]=>
+#         {:result=>
+#           {"hwc-lake-sesame-village"=>
+#             {<Period type:month value=2020-07-01>=>0,
+#              <Period type:month value=2020-08-01>=>0,
+#              <Period type:month value=2020-09-01>=>0,
+#              <Period type:month value=2020-10-01>=>0,
+#              <Period type:month value=2020-11-01>=>0,
+#              <Period type:month value=2020-12-01>=>0,
+#              <Period type:month value=2021-01-01>=>0,
+#              <Period type:month value=2021-02-01>=>0,
+#              <Period type:month value=2021-03-01>=>0,
+#              <Period type:month value=2021-04-01>=>0,
+#              <Period type:month value=2021-05-01>=>0,
+#              <Period type:month value=2021-06-01>=>0,
+#              <Period type:month value=2021-07-01>=>0,
+#              <Period type:month value=2021-08-01>=>0,
+#              <Period type:month value=2021-09-01>=>1}},
+#          :time=>4849926.129717}},
+#      "cumulative_registrations_70269659169160"=>
+#       {[]=>
+#         {:result=>
+#           {"hwc-lake-sesame-village"=>
+#             {<Period type:month value=2020-07-01>=>1,
+#              <Period type:month value=2020-08-01>=>1,
+#              <Period type:month value=2020-09-01>=>2,
+#              <Period type:month value=2020-10-01>=>2,
+#              <Period type:month value=2020-11-01>=>2,
+#              <Period type:month value=2020-12-01>=>3,
+#              <Period type:month value=2021-01-01>=>3,
+#              <Period type:month value=2021-02-01>=>3,
+#              <Period type:month value=2021-03-01>=>4,
+#              <Period type:month value=2021-04-01>=>4,
+#              <Period type:month value=2021-05-01>=>4,
+#              <Period type:month value=2021-06-01>=>4,
+#              <Period type:month value=2021-07-01>=>5,
+#              <Period type:month value=2021-08-01>=>5,
+#              <Period type:month value=2021-09-01>=>5}},
+#          :time=>5207968.935711}},
+#      "complete_monthly_registrations_70269659169160"=>
+#       {[]=>
+#         {:result=>
+#           {#<Reports::RegionEntry:0x00007fd1dc9e8ff8
+#             @calculation=:complete_monthly_registrations,
+#             @options=[[:period_type, :month]],
+#             @region=
+#              #<Region:0x00007fd1dcb29110
+#               id: "5c1c1471-e54b-41ac-9f2f-0739a203b397",
+#               name: "HWC Lake Sesame Village",
+#               slug: "hwc-lake-sesame-village",
+#               description: nil,
+#               source_type: "Facility",
+#               source_id: "0fd2807e-06ee-470a-baad-287d0bd72904",
+#               path: "india.summit_heart_foundation.obsidian_province.alder_county.holly_grove.hwc_lake_sesame_village",
+#               deleted_at: nil,
+#               created_at: Mon, 20 Sep 2021 14:53:58 UTC +00:00,
+#               updated_at: Mon, 20 Sep 2021 14:53:58 UTC +00:00,
+#               region_type: "facility">>=>
+#             {<Period type:month value=2020-07-01>=>1,
+#              <Period type:month value=2020-08-01>=>0,
+#              <Period type:month value=2020-09-01>=>1,
+#              <Period type:month value=2020-10-01>=>0,
+#              <Period type:month value=2020-11-01>=>0,
+#              <Period type:month value=2020-12-01>=>1,
+#              <Period type:month value=2021-01-01>=>0,
+#              <Period type:month value=2021-02-01>=>0,
+#              <Period type:month value=2021-03-01>=>1,
+#              <Period type:month value=2021-04-01>=>0,
+#              <Period type:month value=2021-05-01>=>0,
+#              <Period type:month value=2021-06-01>=>0,
+#              <Period type:month value=2021-07-01>=>1}},
+#          :time=>5207968.933516}}},
+#    @assigned_patients_query=#<AssignedPatientsQuery:0x00007fd1dc817738>,
+#    @control_rate_query=#<ControlRateQuery:0x00007fd1dc82d7b8>,
+#    @earliest_patient_data_query=#<EarliestPatientDataQuery:0x00007fd1dc2705c8>,
+#    @no_bp_measure_query=#<NoBPMeasureQuery:0x00007fd1dc84c898>,
+#    @period_type=:month,
+#    @periods=<Period type:month value=2019-10-01>..<Period type:month value=2021-09-01>,
+#    @regions=
+#     [#<Region:0x00007fd1dcb29110
+#       id: "5c1c1471-e54b-41ac-9f2f-0739a203b397",
+#       name: "HWC Lake Sesame Village",
+#       slug: "hwc-lake-sesame-village",
+#       description: nil,
+#       source_type: "Facility",
+#       source_id: "0fd2807e-06ee-470a-baad-287d0bd72904",
+#       path: "india.summit_heart_foundation.obsidian_province.alder_county.holly_grove.hwc_lake_sesame_village",
+#       deleted_at: nil,
+#       created_at: Mon, 20 Sep 2021 14:53:58 UTC +00:00,
+#       updated_at: Mon, 20 Sep 2021 14:53:58 UTC +00:00,
+#       region_type: "facility">],
+#    @registered_patients_query=#<RegisteredPatientsQuery:0x00007fd1dc857608>>>
