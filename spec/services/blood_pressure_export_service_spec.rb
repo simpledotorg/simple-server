@@ -40,11 +40,12 @@ RSpec.describe BloodPressureExportService, type: :model do
 
         facilities = [small_facility1, small_facility2]
 
-        service = described_class.new(data_type: "controlled_patients", period: end_period, facilities: facilities)
+        service = described_class.new(data_type: "controlled_patients", start_period: start_period, end_period: end_period, facilities: facilities)
         csv = service.as_csv
         expect(csv).to_not be_nil
-        rows = CSV.readlines(csv)
-        expect(rows.first).to eq("HWC Lake Sesame Village", "Assigned Patients" => 5, "Registered Patients" => 5, "BP Controlled" => "25%")
+        rows = CSV.parse(csv, headers: true)
+        expect(rows[1]["Facilities"]).to eq("Small_1")
+        expect(rows[2]["Facilities"]).to eq("Small_2")
       end
 
       it "processes results for medium sized facilities" do
@@ -71,7 +72,7 @@ RSpec.describe BloodPressureExportService, type: :model do
 
         facilities = [medium_facility1, medium_facility2]
 
-        service = described_class.new(data_type: "controlled_patients", period: end_period, facilities: facilities)
+        service = described_class.new(data_type: "controlled_patients", start_period: start_period, end_period: end_period, facilities: facilities)
         result = service.call
 
         expected_results = {"medium" =>

@@ -7,21 +7,20 @@ class BloodPressureExportService
 
   FACILITY_SIZES = %w[large medium small community]
 
-  def initialize(data_type:, period:, facilities:)
+  def initialize(data_type:, start_period:, end_period:, facilities:)
     @data_type = data_type
     @rate_key = "#{@data_type}_rate".to_sym
-    @period = period
-    @start_period = period.advance(months: -5)
-    @end_period = @period
+    @start_period = start_period
+    @end_period = end_period
     @facilities = facilities
 
-    presenter = Reports::RepositoryPresenter.create(facilities, period: @period, months: 6, reporting_schema_v2: RequestStore.store[:reporting_schema_v2])
+    presenter = Reports::RepositoryPresenter.create(facilities, period: @end_period, months: 6, reporting_schema_v2: RequestStore.store[:reporting_schema_v2])
     @data_for_facility = facilities.each_with_object({}) do |facility, result|
       result[facility.name] = presenter.my_facilities_hash(facility.region)
     end
-
-    @sizes = @facilities.pluck(:facility_size).uniq
-    @stats_by_size = FacilityStatsService.call(facilities: @data_for_facility, period: @period, rate_numerator: data_type)
+    found_sizes = @facilities.pluck(:facility_size).uniq
+    @sizes = FACILITY_SIZES.select { |size| size.in?(found_sizes) }
+    @stats_by_size = FacilityStatsService.call(facilities: @data_for_facility, period: @end_period, rate_numerator: data_type)
   end
 
   def call
@@ -133,7 +132,8 @@ class BloodPressureExportService
   end
 
   def six_month_rate_change(facility, rate_name)
-    data_for_facility[facility.name][rate_name][end_period] - data_for_facility[facility.name][rate_name][start_period] || 0
+    data = data_for_facility[facility.name].fetch(rate_name) { |key| raise(ArgumentError, "missing data for #{facility.name} for rate #{rate_name} ")}
+    data[end_period] - data[start_period] || 0
   end
 end
 

@@ -146,6 +146,7 @@
   form="query-filters"
   hidden
 >
-<% if action_name.in?([:bp_controlled, :bp_not_controlled, :missed_visits]) %>
+
+<% if action_name.to_sym.in?([:bp_controlled, :bp_not_controlled, :missed_visits]) %>
   <%= link_to "<button>Export County Data</button>".html_safe, my_facilities_csv_maker_path(type: type, facility_group: @selected_facility_group), { method: :get } %>
 <% end %>
