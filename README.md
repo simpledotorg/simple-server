@@ -48,6 +48,13 @@ $ cd simple-server
 $ bin/setup
 ```
 
+Note: If you already have a previous dev environment you're trying to refresh, it's easiest to drop your database run setup again.
+```
+$ rails db:drop
+$ rails parallel:drop
+$ bin/setup
+```
+
 If you encounter issues with this script, please open [a new issue with details](https://github.com/simpledotorg/simple-server/issues/new?title=Problems+with+bin/setup). Please include the entire log from bin/setup, as well as your computer / OS details.
 
 #### Docker Compose
