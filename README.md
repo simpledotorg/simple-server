@@ -268,7 +268,7 @@ $ bin/rails db:seed_patients
 Need a larger dataset? Try adding the `SEED_TYPE` variable. (It takes longer to run, of course.) This works on all patient seeding commands:
 
 ```bash
-$ SEED_TYPE=medium bin/rails db:seed_patients
+  SEED_TYPE=medium bin/rails db:seed_patients
 # You also may want an entirely new large dataset, with more facilities and regions. You can do that with a full reset:
 SEED_TYPE=large bin/rails db:reset
 
