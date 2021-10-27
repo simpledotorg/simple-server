@@ -1,12 +1,16 @@
 name: Review Mobile App Build
 
-on: pull_request
+on: workflow_dispatch
+  inputs:
+    pr_number:
+      description: 'PR number'
+      required: true
 
 jobs:
   build_app:
     runs-on: [ ubuntu-latest ]
     env:
-      PR_NUMBER: ${{ github.event.pull_request.number }}
+      PR_NUMBER: ${{ github.event.inputs.name }}
     steps:
       - name: Checkout simple-android
         uses: actions/checkout@v2
