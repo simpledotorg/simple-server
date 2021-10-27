@@ -84,6 +84,12 @@ module Reports
         public_send(method)
         public_send(method, with_ltfu: true) unless method.in?([:ltfu_rates, :missed_visits_with_ltfu_rates])
       end
+      hypertension_follow_ups
+      if regions.all? { |region| region.facility_region? }
+        hypertension_follow_ups(group_by: "blood_pressures.user_id")
+        bp_measures_by_user
+        monthly_registrations_by_user
+      end
     end
 
     delegate(*DELEGATED_COUNTS, to: :schema)
