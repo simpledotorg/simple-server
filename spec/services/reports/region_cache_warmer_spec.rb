@@ -24,26 +24,7 @@ RSpec.describe Reports::RegionCacheWarmer, type: :model do
     Reports::RegionCacheWarmer.call
   end
 
-  it "warms cache for organization(s) if the organization_reports feature is enabled" do
-    create(:organization)
-    Flipper.enable(:organization_reports)
-
-    instance = described_class.new
-    expect(instance).to receive(:warm_region_cache).with(Organization.first.region)
-
-    instance.call
-  end
-
-  it "doesn't warm cache for organization(s) if the organization_reports feature is disabled" do
-    create(:organization)
-
-    instance = described_class.new
-    expect(instance).not_to receive(:warm_region_cache).with(Organization.first.region)
-
-    instance.call
-  end
-
-  context "v2 caches" do
+  context "warm_repository_cache" do
     it "caches all non root/org regions in the v2 schema" do
       facility_1 = create(:facility, facility_group: facility_group)
       user = create(:user, organization: facility_group.organization)
@@ -60,21 +41,20 @@ RSpec.describe Reports::RegionCacheWarmer, type: :model do
     end
   end
 
-  context "#warm_region_cache" do
+  context "#warm_patient_breakdown" do
     it "refreshes the patient breakdown cache" do
       facility = create(:facility)
-      period = Period.month(Time.current.beginning_of_month)
-
-      described_class.new(period: period).warm_region_cache(facility.region)
-      initial_breakdown = PatientBreakdownService.call(region: facility.region, period: period)
-
       create(:patient, assigned_facility: facility, recorded_at: 1.month.ago)
       create(:patient, status: :dead, assigned_facility: facility)
 
-      described_class.new(period: period).warm_region_cache(facility.region)
-      final_breakdown = PatientBreakdownService.call(region: facility.region, period: period)
+      period = Period.month(Time.current.beginning_of_month)
+      described_class.new(period: period).call
 
-      expect(final_breakdown).not_to eq(initial_breakdown)
+      expect(Patient).to receive(:with_hypertension).never
+
+      result_1 = PatientBreakdownService.call(region: facility.region, period: period)
+      result_2 = PatientBreakdownService.call(region: facility.region, period: period)
+      expect(result_1).to eq(result_2)
     end
   end
 end
