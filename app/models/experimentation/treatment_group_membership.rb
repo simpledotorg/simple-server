@@ -20,6 +20,7 @@ module Experimentation
           .joins(treatment_group: :experiment)
           .merge(Experiment.running)
           .where(patient_id: patient_id)
+          .where.not(experiments: {id: experiment.id})
 
       errors.add(:patient_id, "patient cannot belong to multiple active experiments") if existing_memberships.any?
     end

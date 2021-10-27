@@ -39,24 +39,16 @@ module Experimentation
     end
 
     def enroll_patients(date)
-      eligible_patients(date)
-        .limit(MAX_PATIENTS_PER_DAY)
-        .then { |patients| assign_treatment_groups(patients) }
+      patients = eligible_patients(date).limit(5)
+
+      pp patients
+      assign_treatment_groups(patients)
+      record_enrollment_data(patients)
     end
 
     def monitor(date)
-      record_enrollment_data(date)
       mark_visits
       evict_patients
-    end
-
-    def record_enrollment_data(date)
-    end
-
-    def mark_visits
-    end
-
-    def evict_patients
     end
 
     def send_notifications(date)
@@ -68,6 +60,66 @@ module Experimentation
         notifications.where(status: %w[pending scheduled]).update_all(status: :cancelled)
         super
       end
+    end
+
+    private
+
+    def record_enrollment_data(patients)
+      memberships = reload.treatment_group_memberships.where(patient_id: patients.pluck(:id))
+
+      memberships
+        .includes(patient: :assigned_facility)
+        .includes(patient: :registration_facility)
+        .includes(patient: :medical_history)
+        .includes(patient: {latest_scheduled_appointments: [:facility, :creation_facility]})
+        .in_batches(of: 1000).each_record do |membership|
+        if membership.experiment_inclusion_date.present?
+          Rails.logger.info "Overwrite attempted exiting"
+          next
+        end
+
+        patient = membership.patient
+        membership.update!(
+          gender: patient.gender,
+          age: patient.current_age,
+          risk_level: patient.risk_priority,
+          diagnosed_htn: patient.medical_history.hypertension,
+          experiment_inclusion_date: membership.created_at.to_date,
+          expected_return_date: patient.latest_scheduled_appointment.scheduled_date,
+          expected_return_facility_id: patient.latest_scheduled_appointment.facility_id,
+          expected_return_facility_type: patient.latest_scheduled_appointment.facility.facility_type,
+          expected_return_facility_name: patient.latest_scheduled_appointment.facility.name,
+          expected_return_facility_block: patient.latest_scheduled_appointment.facility.block,
+          expected_return_facility_district: patient.latest_scheduled_appointment.facility.district,
+          expected_return_facility_state: patient.latest_scheduled_appointment.facility.state,
+          appointment_id: patient.latest_scheduled_appointment.id,
+          appointment_creation_time: patient.latest_scheduled_appointment.created_at,
+          appointment_creation_facility_id: patient.latest_scheduled_appointment.creation_facility.id,
+          appointment_creation_facility_type: patient.latest_scheduled_appointment.creation_facility.facility_type,
+          appointment_creation_facility_name: patient.latest_scheduled_appointment.creation_facility.name,
+          appointment_creation_facility_block: patient.latest_scheduled_appointment.creation_facility.block,
+          appointment_creation_facility_district: patient.latest_scheduled_appointment.creation_facility.district,
+          appointment_creation_facility_state: patient.latest_scheduled_appointment.creation_facility.state,
+          assigned_facility_id: patient.assigned_facility.id,
+          assigned_facility_name: patient.assigned_facility.name,
+          assigned_facility_type: patient.assigned_facility.facility_type,
+          assigned_facility_block: patient.assigned_facility.block,
+          assigned_facility_district: patient.assigned_facility.district,
+          assigned_facility_state: patient.assigned_facility.state,
+          registration_facility_id: patient.registration_facility.id,
+          registration_facility_name: patient.registration_facility.name,
+          registration_facility_type: patient.registration_facility.facility_type,
+          registration_facility_block: patient.registration_facility.block,
+          registration_facility_district: patient.registration_facility.district,
+          registration_facility_state: patient.registration_facility.state
+        )
+      end
+    end
+
+    def mark_visits
+    end
+
+    def evict_patients
     end
   end
 end

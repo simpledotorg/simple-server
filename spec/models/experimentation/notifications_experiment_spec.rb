@@ -124,12 +124,14 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
   describe "#enroll_patients" do
     it "assigns eligible_patients to treatment groups" do
       patients = Patient.where(id: create_list(:patient, 2, age: 18))
+      patients.each { |patient| create(:appointment, status: :scheduled, patient: patient) }
+
       create(:experiment, :with_treatment_group, experiment_type: "current_patients")
       allow_any_instance_of(Experimentation::CurrentPatientExperiment).to receive(:eligible_patients).and_return(patients)
 
-      Experimentation::CurrentPatientExperiment.first.enroll_patients(Date.today)
+        Experimentation::CurrentPatientExperiment.first.enroll_patients(Date.today)
 
-      expect(Experimentation::TreatmentGroupMembership.pluck(:patient_id)).to match_array(patients.pluck(:id))
+      expect(Experimentation::CurrentPatientExperiment.first.treatment_group_memberships.pluck(:patient_id)).to match_array(patients.pluck(:id))
     end
   end
 
