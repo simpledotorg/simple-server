@@ -129,7 +129,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       create(:experiment, :with_treatment_group, experiment_type: "current_patients")
       allow_any_instance_of(Experimentation::CurrentPatientExperiment).to receive(:eligible_patients).and_return(patients)
 
-        Experimentation::CurrentPatientExperiment.first.enroll_patients(Date.today)
+      Experimentation::CurrentPatientExperiment.first.enroll_patients(Date.today)
 
       expect(Experimentation::CurrentPatientExperiment.first.treatment_group_memberships.pluck(:patient_id)).to match_array(patients.pluck(:id))
     end

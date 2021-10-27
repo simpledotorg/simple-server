@@ -7,7 +7,7 @@ module Experimentation
 
     validates :description, presence: true, uniqueness: {scope: :experiment_id}
 
-    def enroll(patient)
+    def enroll(patient, reporting_data = {})
       Experimentation::TreatmentGroupMembership.create(
         treatment_group_id: id,
         treatment_group_name: description,
@@ -15,7 +15,8 @@ module Experimentation
         experiment_id: experiment.id,
         experiment_name: experiment.name,
         status: :enrolled,
-        status_updated_at: Time.current
+        status_updated_at: Time.current,
+        **reporting_data
       )
     end
   end

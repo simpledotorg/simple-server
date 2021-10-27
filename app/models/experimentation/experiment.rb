@@ -43,10 +43,8 @@ module Experimentation
       logger.info "Cancelled experiment #{name}."
     end
 
-    def assign_treatment_groups(patients)
-      patients.in_batches(of: 1000).each_record do |patient|
-        random_treatment_group.enroll(patient)
-      end
+    def assign_treatment_group(patient, reporting_data)
+      random_treatment_group.enroll(patient, reporting_data)
     end
 
     private
