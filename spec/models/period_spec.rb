@@ -86,17 +86,24 @@ RSpec.describe Period, type: :model do
     expect(period).to be_valid
   end
 
-  it "has to_s in correct format" do
+  it "has to_s in correct default format" do
     expect(jan_1_2019_month_period.to_s).to eq("Jan-2019")
     expect(q1_2019_period.to_s).to eq("Q1-2019")
   end
 
-  it "month periods take an optional arg for to_s formatting" do
-    expect(jan_1_2019_month_period.to_s(:mon_year_multiline)).to eq("Jan\n2019")
+  it "has to_dhis2 in correct format" do
+    expect(jan_1_2019_month_period.to_s(:dhis2)).to eq("201901")
+    expect(q1_2019_period.to_s(:dhis2)).to eq("2019Q1")
   end
 
-  it "quarter periods ignore extra formatting" do
-    expect(q1_2019_period.to_s(:mon_year_multiline)).to eq("Q1-2019")
+  it "periods take an optional arg for to_s formatting" do
+    expect(jan_1_2019_month_period.to_s(:mon_year_multiline)).to eq("Jan\n2019")
+    expect(q1_2019_period.to_s(:dhis2)).to eq("2019Q1")
+  end
+
+  it "prints default format for unknown format strings" do
+    expect(jan_1_2019_month_period.to_s(:unknown)).to eq("2019-01-01")
+    expect(q1_2019_period.to_s(:unknown)).to eq("Q1-2019")
   end
 
   it "period months can be compared" do
