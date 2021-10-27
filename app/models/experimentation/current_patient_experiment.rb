@@ -3,7 +3,7 @@ module Experimentation
     default_scope { where(experiment_type: %w[current_patients]) }
 
     def eligible_patients(date)
-      appointment_date = date - reminder_templates.pluck(:remind_on_in_days).min.days
+      appointment_date = date - earliest_remind_on.days
 
       self.class.superclass.eligible_patients
         .joins(:appointments)
@@ -15,6 +15,12 @@ module Experimentation
     def memberships_for_notifications(date)
       # Patients where `date` equals one of their reminder template's remind_on.
       # To be implemented in a follow up PR.
+    end
+
+    private
+
+    def earliest_remind_on
+      reminder_templates.pluck(:remind_on_in_days).min
     end
   end
 end
