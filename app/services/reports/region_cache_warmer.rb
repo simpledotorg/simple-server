@@ -63,7 +63,8 @@ module Reports
         logger: {
           name: name
         },
-        class: name
+        class: name,
+        module: :reports
       }.merge(extra).merge(msg: msg)
       Rails.logger.info data
     end
