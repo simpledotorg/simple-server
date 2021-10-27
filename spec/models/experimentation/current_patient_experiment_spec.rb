@@ -17,12 +17,12 @@ RSpec.describe Experimentation::CurrentPatientExperiment do
       experiment = create(:experiment, experiment_type: "current_patients")
       group = create(:treatment_group, experiment: experiment)
 
-      _earliest_reminder = create(:reminder_template, treatment_group: group, remind_on_in_days: -1)
+      earliest_reminder = create(:reminder_template, treatment_group: group, remind_on_in_days: -1)
       create(:reminder_template, treatment_group: group, remind_on_in_days: 0)
 
       expect(described_class.first.eligible_patients(scheduled_appointment_date - 3.days)).not_to include(patient)
       expect(described_class.first.eligible_patients(scheduled_appointment_date - 2.days)).not_to include(patient)
-      expect(described_class.first.eligible_patients(scheduled_appointment_date + _earliest_reminder.remind_on_in_days.days)).to include(patient)
+      expect(described_class.first.eligible_patients(scheduled_appointment_date + earliest_reminder.remind_on_in_days.days)).to include(patient)
       expect(described_class.first.eligible_patients(scheduled_appointment_date)).not_to include(patient)
       expect(described_class.first.eligible_patients(scheduled_appointment_date + 1.days)).not_to include(patient)
     end
