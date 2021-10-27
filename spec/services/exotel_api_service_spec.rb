@@ -16,7 +16,9 @@ describe ExotelAPIService, type: :model do
 
   around do |example|
     WebMock.disallow_net_connect!
+    Flipper.enable(:exotel_whitelist_api)
     example.run
+    Flipper.disable(:exotel_whitelist_api)
     WebMock.allow_net_connect!
   end
 
