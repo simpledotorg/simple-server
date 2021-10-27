@@ -8,7 +8,7 @@ module Experimentation
     validates :description, presence: true, uniqueness: {scope: :experiment_id}
 
     def enroll(patient, reporting_data = {})
-      Experimentation::TreatmentGroupMembership.create(
+      Experimentation::TreatmentGroupMembership.create!(
         treatment_group_id: id,
         treatment_group_name: description,
         patient_id: patient.id,
