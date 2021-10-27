@@ -4,15 +4,48 @@ class CohortService
   CACHE_TTL = 7.days
   attr_reader :periods
   attr_reader :region
+  attr_reader :region_field
+  attr_reader :reporting_schema_v2
 
-  def initialize(region:, periods:)
-    @region = region
+  def initialize(region:, periods:, reporting_schema_v2: RequestStore.store[:reporting_schema_v2])
+    @region = region.region
     @periods = periods
+    @reporting_schema_v2 = reporting_schema_v2
+    @region_field = "#{@region.region_type}_region_id"
   end
 
+  COUNTS = %i[
+    quarterly_cohort_controlled
+    quarterly_cohort_missed_visit
+    quarterly_cohort_patients
+    quarterly_cohort_uncontrolled
+  ]
+  # SUMS = COUNTS.map { |field| Arel.sql("COALESCE(SUM(#{field}::int), 0) as #{field}") }
+  SUMS = COUNTS.map { |field| Arel.sql("SUM(#{field}::int) as #{field}") }
+
   def call
-    periods.each_with_object([]) do |period, arry|
-      arry << compute(period)
+    if reporting_schema_v2
+      periods.each_with_object([]) do |period, arry|
+        quarter_string = "#{period.value.year}-#{period.value.number}"
+        cohort_period = period.previous
+        stats = Reports::QuarterlyFacilityState.where(facility: region.facilities, quarter_string: quarter_string)
+          .group(region_field, :quarter_string)
+          .select(:quarter_string, region_field, SUMS)
+        stat = stats.all[0]
+
+        arry << {
+          controlled: stat.quarterly_cohort_controlled,
+          no_bp: stat.quarterly_cohort_missed_visit,
+          patients_registered: cohort_period.to_s,
+          registered: stat.quarterly_cohort_patients,
+          results_in: period.to_s,
+          uncontrolled: stat.quarterly_cohort_uncontrolled
+        }.with_indifferent_access
+      end
+    else
+      periods.each_with_object([]) do |period, arry|
+        arry << compute(period)
+      end
     end
   end
 
