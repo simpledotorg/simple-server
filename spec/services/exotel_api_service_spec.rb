@@ -16,9 +16,7 @@ describe ExotelAPIService, type: :model do
 
   around do |example|
     WebMock.disallow_net_connect!
-    Flipper.enable(:exotel_whitelist_api)
     example.run
-    Flipper.disable(:exotel_whitelist_api)
     WebMock.allow_net_connect!
   end
 
@@ -113,6 +111,8 @@ describe ExotelAPIService, type: :model do
     end
 
     it "calls the exotel whitelist api for given virtual number and phone number list" do
+      Flipper.enable(:exotel_whitelist_api)
+
       stub = stub_request(:post, request_url).with(
         headers: request_headers,
         body: request_body
@@ -120,6 +120,18 @@ describe ExotelAPIService, type: :model do
 
       service.whitelist_phone_numbers(virtual_number, phone_numbers)
       expect(stub).to have_been_requested
+
+      Flipper.disable(:exotel_whitelist_api)
+    end
+
+    it "does not call the exotel whitelist api if the feature flag is off" do
+      stub = stub_request(:post, request_url).with(
+        headers: request_headers,
+        body: request_body
+      )
+
+      service.whitelist_phone_numbers(virtual_number, phone_numbers)
+      expect(stub).not_to have_been_requested
     end
   end
 
