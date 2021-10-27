@@ -9,7 +9,7 @@ module Reports
 
     def initialize(period: Reports.default_period)
       @period = period
-      @name = self.class.name.demodulize.underscore
+      @name = self.class.name.to_s
       notify "Starting #{name} warming"
     end
 
