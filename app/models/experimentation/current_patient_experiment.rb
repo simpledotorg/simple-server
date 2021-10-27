@@ -12,7 +12,7 @@ module Experimentation
         .distinct
     end
 
-    def memberships_for_notifications(date)
+    def memberships_to_notify(date)
       # Patients where `date` equals one of their reminder template's remind_on.
       # To be implemented in a follow up PR.
     end

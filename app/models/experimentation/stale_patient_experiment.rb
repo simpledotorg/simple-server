@@ -5,6 +5,8 @@ module Experimentation
 
     default_scope { where(experiment_type: %w[stale_patients]) }
 
+    # Eligible patients whose last visit was 35-365 days ago and
+    # don't have an appointment in the future.
     def eligible_patients(date)
       parameters = {
         hypertension: "yes",
@@ -39,7 +41,7 @@ module Experimentation
       self.class.superclass.eligible_patients.where(id: sql.values)
     end
 
-    def memberships_for_notifications(date)
+    def memberships_to_notify(date)
       # Patients who were enrolled on the `date`.
       # To be implemented in a follow up PR.
     end

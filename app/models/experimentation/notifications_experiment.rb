@@ -60,7 +60,7 @@ module Experimentation
     end
 
     def send_notifications(date)
-      # Send notifications to memberships_for_notifications(date)
+      # Send notifications to memberships_to_notify(date)
     end
 
     def cancel
