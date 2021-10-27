@@ -2,6 +2,14 @@ require "rails_helper"
 
 RSpec.describe Experimentation::CurrentPatientExperiment do
   describe "#eligible_patients" do
+    it "calls super to get default eligible patients" do
+      create(:experiment, experiment_type: "current_patients")
+      allow(Experimentation::NotificationsExperiment).to receive(:eligible_patients).and_call_original
+      expect(Experimentation::NotificationsExperiment).to receive(:eligible_patients)
+
+      described_class.first.eligible_patients(Date.today)
+    end
+
     it "includes patients who have an appointment on the date the first reminder is to be sent" do
       patient = create(:patient, age: 18)
       scheduled_appointment_date = 2.days.from_now

@@ -20,7 +20,7 @@ module Experimentation
     private
 
     def earliest_remind_on
-      reminder_templates.pluck(:remind_on_in_days).min
+      reminder_templates.pluck(:remind_on_in_days).min || 0
     end
   end
 end
