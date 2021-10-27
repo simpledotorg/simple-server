@@ -53,12 +53,6 @@ module Experimentation
     def record_enrollment_data(date)
     end
 
-    def mark_visits
-    end
-
-    def evict_patients
-    end
-
     def send_notifications(date)
       # Send notifications to memberships_to_notify(date)
     end
@@ -68,6 +62,14 @@ module Experimentation
         notifications.where(status: %w[pending scheduled]).update_all(status: :cancelled)
         super
       end
+    end
+
+    private
+
+    def mark_visits
+    end
+
+    def evict_patients
     end
   end
 end
