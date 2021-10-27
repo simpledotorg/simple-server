@@ -39,14 +39,14 @@ module Experimentation
     end
 
     def enroll_patients(date)
-      patients = eligible_patients(date).limit(5)
+      eligible_patients(date)
+        .limit(MAX_PATIENTS_PER_DAY)
+        .then { |patients| assign_treatment_groups(patients) }
 
-      pp patients
-      assign_treatment_groups(patients)
-      record_enrollment_data(patients)
     end
 
     def monitor(date)
+      record_enrollment_data(date)
       mark_visits
       evict_patients
     end
@@ -64,8 +64,8 @@ module Experimentation
 
     private
 
-    def record_enrollment_data(patients)
-      memberships = reload.treatment_group_memberships.where(patient_id: patients.pluck(:id))
+    def record_enrollment_data(date)
+      memberships = treatment_group_memberships.where("created_at > ?", Date.current)
 
       memberships
         .includes(patient: :assigned_facility)
@@ -73,8 +73,9 @@ module Experimentation
         .includes(patient: :medical_history)
         .includes(patient: {latest_scheduled_appointments: [:facility, :creation_facility]})
         .in_batches(of: 1000).each_record do |membership|
+
         if membership.experiment_inclusion_date.present?
-          Rails.logger.info "Overwrite attempted exiting"
+          Rails.logger.info "Overwrite attempted. Exiting"
           next
         end
 
