@@ -65,7 +65,6 @@ module Experimentation
     private
 
     def reporting_data(patient, date)
-      # TODO: Any of these could be nil, ensure these are handled correctly
       medical_history = patient.medical_history
       latest_scheduled_appointment = patient.latest_scheduled_appointment
       assigned_facility = patient.assigned_facility
@@ -76,34 +75,34 @@ module Experimentation
         age: patient.current_age,
         risk_level: patient.risk_priority,
         diagnosed_htn: medical_history.hypertension,
-        experiment_inclusion_date: Date.current,
-        expected_return_date: latest_scheduled_appointment.scheduled_date,
-        expected_return_facility_id: latest_scheduled_appointment.facility_id,
-        expected_return_facility_type: latest_scheduled_appointment.facility.facility_type,
-        expected_return_facility_name: latest_scheduled_appointment.facility.name,
-        expected_return_facility_block: latest_scheduled_appointment.facility.block,
-        expected_return_facility_district: latest_scheduled_appointment.facility.district,
-        expected_return_facility_state: latest_scheduled_appointment.facility.state,
-        appointment_id: latest_scheduled_appointment.id,
-        appointment_creation_time: latest_scheduled_appointment.created_at,
-        appointment_creation_facility_id: latest_scheduled_appointment.creation_facility.id,
-        appointment_creation_facility_type: latest_scheduled_appointment.creation_facility.facility_type,
-        appointment_creation_facility_name: latest_scheduled_appointment.creation_facility.name,
-        appointment_creation_facility_block: latest_scheduled_appointment.creation_facility.block,
-        appointment_creation_facility_district: latest_scheduled_appointment.creation_facility.district,
-        appointment_creation_facility_state: latest_scheduled_appointment.creation_facility.state,
-        assigned_facility_id: assigned_facility.id,
-        assigned_facility_name: assigned_facility.name,
-        assigned_facility_type: assigned_facility.facility_type,
-        assigned_facility_block: assigned_facility.block,
-        assigned_facility_district: assigned_facility.district,
-        assigned_facility_state: assigned_facility.state,
-        registration_facility_id: registration_facility.id,
-        registration_facility_name: registration_facility.name,
-        registration_facility_type: registration_facility.facility_type,
-        registration_facility_block: registration_facility.block,
-        registration_facility_district: registration_facility.district,
-        registration_facility_state: registration_facility.state
+        experiment_inclusion_date: date,
+        expected_return_date: latest_scheduled_appointment&.scheduled_date,
+        expected_return_facility_id: latest_scheduled_appointment&.facility_id,
+        expected_return_facility_type: latest_scheduled_appointment&.facility&.facility_type,
+        expected_return_facility_name: latest_scheduled_appointment&.facility&.name,
+        expected_return_facility_block: latest_scheduled_appointment&.facility&.block,
+        expected_return_facility_district: latest_scheduled_appointment&.facility&.district,
+        expected_return_facility_state: latest_scheduled_appointment&.facility&.state,
+        appointment_id: latest_scheduled_appointment&.id,
+        appointment_creation_time: latest_scheduled_appointment&.created_at,
+        appointment_creation_facility_id: latest_scheduled_appointment&.creation_facility&.id,
+        appointment_creation_facility_type: latest_scheduled_appointment&.creation_facility&.facility_type,
+        appointment_creation_facility_name: latest_scheduled_appointment&.creation_facility&.name,
+        appointment_creation_facility_block: latest_scheduled_appointment&.creation_facility&.block,
+        appointment_creation_facility_district: latest_scheduled_appointment&.creation_facility&.district,
+        appointment_creation_facility_state: latest_scheduled_appointment&.creation_facility&.state,
+        assigned_facility_id: assigned_facility&.id,
+        assigned_facility_name: assigned_facility&.name,
+        assigned_facility_type: assigned_facility&.facility_type,
+        assigned_facility_block: assigned_facility&.block,
+        assigned_facility_district: assigned_facility&.district,
+        assigned_facility_state: assigned_facility&.state,
+        registration_facility_id: registration_facility&.id,
+        registration_facility_name: registration_facility&.name,
+        registration_facility_type: registration_facility&.facility_type,
+        registration_facility_block: registration_facility&.block,
+        registration_facility_district: registration_facility&.district,
+        registration_facility_state: registration_facility&.state
       }
     end
   end
