@@ -14,6 +14,7 @@ This is the backend for the Simple app to help track hypertensive patients acros
 * [Contributing](#contributing)
 
 ## Development
+
 ### Caveat for Apple Silicon M1 macs
 
 If you are installing on an M1 Mac, you should do all the below in Rosetta (ie `arch` returns i386 in a terminal). See [here](https://5balloons.info/correct-way-to-install-and-use-homebrew-on-m1-macs/) for how to create a Rosetta specific Terminal.
@@ -76,8 +77,6 @@ To remove the server and clear the volumes of database data, run the command:
 ```
 docker compose down --volumes
 ```
-
-
 
 #### Manual Setup
 
