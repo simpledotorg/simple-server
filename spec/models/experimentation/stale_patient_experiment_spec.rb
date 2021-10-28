@@ -114,8 +114,8 @@ RSpec.describe Experimentation::StalePatientExperiment do
         membership_1 = treatment_group.enroll(patient_1, experiment_inclusion_date: 1.days.ago.to_date)
         membership_2 = treatment_group.enroll(patient_2, experiment_inclusion_date: 10.days.ago.to_date)
 
-        template_1 = create(:reminder_template, treatment_group: treatment_group, remind_on_in_days: 1)
-        template_2 = create(:reminder_template, treatment_group: treatment_group, remind_on_in_days: 10)
+        template_1 = create(:reminder_template, message: "1", treatment_group: treatment_group, remind_on_in_days: 1)
+        template_2 = create(:reminder_template, message: "2", treatment_group: treatment_group, remind_on_in_days: 10)
 
         expect(described_class.first.memberships_to_notify(template_1, Date.today)).to contain_exactly(membership_1)
         expect(described_class.first.memberships_to_notify(template_2, Date.today)).to contain_exactly(membership_2)

@@ -17,8 +17,8 @@ RSpec.describe Experimentation::CurrentPatientExperiment do
       experiment = create(:experiment, experiment_type: "current_patients")
       group = create(:treatment_group, experiment: experiment)
 
-      earliest_reminder = create(:reminder_template, treatment_group: group, remind_on_in_days: -1)
-      create(:reminder_template, treatment_group: group, remind_on_in_days: 0)
+      earliest_reminder = create(:reminder_template, message: "1", treatment_group: group, remind_on_in_days: -1)
+      create(:reminder_template, message: "2", treatment_group: group, remind_on_in_days: 0)
 
       expect(described_class.first.eligible_patients(scheduled_appointment_date - 3.days)).not_to include(patient)
       expect(described_class.first.eligible_patients(scheduled_appointment_date - 2.days)).not_to include(patient)
@@ -39,8 +39,8 @@ RSpec.describe Experimentation::CurrentPatientExperiment do
         membership_1 = treatment_group.enroll(patient_1, expected_return_date: 2.days.from_now.to_date)
         membership_2 = treatment_group.enroll(patient_2, expected_return_date: 3.days.from_now.to_date)
 
-        template_1 = create(:reminder_template, treatment_group: treatment_group, remind_on_in_days: -2)
-        template_2 = create(:reminder_template, treatment_group: treatment_group, remind_on_in_days: -3)
+        template_1 = create(:reminder_template, message: "1", treatment_group: treatment_group, remind_on_in_days: -2)
+        template_2 = create(:reminder_template, message: "2", treatment_group: treatment_group, remind_on_in_days: -3)
 
         expect(described_class.first.memberships_to_notify(template_1, Date.today)).to contain_exactly(membership_1)
         expect(described_class.first.memberships_to_notify(template_2, Date.today)).to contain_exactly(membership_2)
@@ -65,8 +65,8 @@ RSpec.describe Experimentation::CurrentPatientExperiment do
         membership_1 = treatment_group.enroll(patient_1, expected_return_date: 1.days.from_now.to_date)
         membership_2 = treatment_group.enroll(patient_2, expected_return_date: 10.days.from_now.to_date)
 
-        template_1 = create(:reminder_template, treatment_group: treatment_group, remind_on_in_days: -1)
-        template_2 = create(:reminder_template, treatment_group: treatment_group, remind_on_in_days: -10)
+        template_1 = create(:reminder_template, message: "1", treatment_group: treatment_group, remind_on_in_days: -1)
+        template_2 = create(:reminder_template, message: "2", treatment_group: treatment_group, remind_on_in_days: -10)
 
         expect(described_class.first.memberships_to_notify(template_1, Date.today)).to contain_exactly(membership_1)
         expect(described_class.first.memberships_to_notify(template_2, Date.today)).to contain_exactly(membership_2)
