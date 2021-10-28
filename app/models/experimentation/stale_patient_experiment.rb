@@ -41,9 +41,12 @@ module Experimentation
       self.class.superclass.eligible_patients.where(id: sql.values)
     end
 
-    def memberships_to_notify(date)
-      # Patients who were enrolled on the `date`.
-      # To be implemented in a follow up PR.
+    # Patients who were enrollment date falls on
+    # one of the reminder template's remind_on days since `date`.
+    def memberships_to_notify(reminder_template, date)
+      treatment_group_memberships.status_enrolled.where(
+        experiment_inclusion_date: date - reminder_template.remind_on_in_days.days
+      )
     end
   end
 end
