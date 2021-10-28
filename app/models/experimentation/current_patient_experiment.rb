@@ -12,9 +12,12 @@ module Experimentation
         .distinct
     end
 
-    def memberships_to_notify(date)
-      # Patients where `date` equals one of their reminder template's remind_on.
-      # To be implemented in a follow up PR.
+    # Patients whose expected return date falls on
+    # one of the reminder template's remind_on days since `date`.
+    def memberships_to_notify(reminder_template, date)
+      treatment_group_memberships.status_enrolled.where(
+        expected_return_date: date - reminder_template.remind_on_in_days.days
+      )
     end
 
     private
