@@ -190,6 +190,21 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
     end
   end
 
+  describe "#schedule_notifications" do
+    it "creates a notification for each eligible membership to notify" do
+      create(:experiment, experiment_type: "current_patients")
+      experiment = Experimentation::CurrentPatientExperiment.first
+      treatment_group = create(:treatment_group, experiment: experiment)
+      create_list(:reminder_template, 2, treatment_group: treatment_group)
+      patient = create(:patient)
+      membership = treatment_group.enroll(patient)
+
+      allow(experiment).to receive(:memberships_to_notify).and_return(Experimentation::TreatmentGroupMembership.where(id: membership))
+      experiment.schedule_notifications(Date.today)
+      expect(Notification.pluck(:patient_id)).to contain_exactly(patient.id, patient.id) # Once for each reminder template
+    end
+  end
+
   describe "#cancel" do
     it "changes pending and scheduled notification statuses to 'cancelled'" do
       experiment = create(:experiment)

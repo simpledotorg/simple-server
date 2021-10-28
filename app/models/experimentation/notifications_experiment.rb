@@ -58,9 +58,9 @@ module Experimentation
 
     def schedule_notifications(date)
       reminder_templates.each do |template|
-        memberships_to_notify(template, date).in_batches(of: MEMBERSHIPS_BATCH_SIZE).each_record do |membership|
-          schedule_notification(membership, template, date)
-        end
+        memberships_to_notify(template, date)
+          .in_batches(of: MEMBERSHIPS_BATCH_SIZE)
+          .each_record { |membership| schedule_notification(membership, template, date) }
       end
     end
 
