@@ -43,10 +43,6 @@ module Experimentation
       logger.info "Cancelled experiment #{name}."
     end
 
-    def assign_treatment_group(patient, reporting_data = {})
-      random_treatment_group.enroll(patient, reporting_data)
-    end
-
     private
 
     def one_active_experiment_per_type
