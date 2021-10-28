@@ -2,7 +2,7 @@ module Experimentation
   class NotificationsExperiment < Experiment
     include Memery
     MAX_PATIENTS_PER_DAY = 2000
-    ENROLLMENT_BATCH_SIZE = 1000
+    MEMBERSHIPS_BATCH_SIZE = 1000
 
     default_scope { where(experiment_type: %w[current_patients stale_patients]) }
 
@@ -12,10 +12,12 @@ module Experimentation
         .distinct
     end
 
+    # The order of operations is important.
+    # See https://docs.google.com/document/d/1IMXu_ca9xKU8Xox_3v403ZdvNGQzczLWljy7LQ6RQ6A for more details.
     def self.conduct_daily(date)
       running.each { |experiment| experiment.enroll_patients(date) }
       monitoring.each { |experiment| experiment.monitor(date) }
-      notifying.each { |experiment| experiment.send_notifications(date) }
+      notifying.each { |experiment| experiment.schedule_notifications(date) }
     end
 
     # Returns patients who are eligible for enrollment. These should be
@@ -44,17 +46,34 @@ module Experimentation
         .limit(MAX_PATIENTS_PER_DAY)
         .includes(:assigned_facility, :registration_facility, :medical_history)
         .includes(latest_scheduled_appointments: [:facility, :creation_facility])
-        .in_batches(of: ENROLLMENT_BATCH_SIZE)
+        .in_batches(of: MEMBERSHIPS_BATCH_SIZE)
         .each_record { |patient| random_treatment_group.enroll(patient, reporting_data(patient, date)) }
     end
 
     def monitor(date)
+      # Add check_notification_statuses in a follow up PR
       mark_visits
       evict_patients
     end
 
-    def send_notifications(date)
-      # Send notifications to memberships_to_notify(date)
+    def schedule_notifications(date)
+      reminder_templates.each do |template|
+        memberships_to_notify(template, date).in_batches(of: MEMBERSHIPS_BATCH_SIZE).each_record do |membership|
+          schedule_notification(membership, template, date)
+        end
+      end
+    end
+
+    def schedule_notification(membership, template, date)
+      Notification.create!(
+        experiment: self,
+        message: template.message,
+        patient_id: membership.patient_id,
+        purpose: :experimental_appointment_reminder,
+        remind_on: date,
+        reminder_template: template,
+        status: "pending"
+      )
     end
 
     def cancel
