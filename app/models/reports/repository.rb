@@ -6,7 +6,7 @@ module Reports
     include Scientist
 
     def self.use_schema_v2?
-      @use_schema_v2 ||= false
+      @use_schema_v2 ||= true
     end
 
     class << self
