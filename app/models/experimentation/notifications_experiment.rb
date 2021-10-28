@@ -45,7 +45,6 @@ module Experimentation
         .includes(latest_scheduled_appointments: [:facility, :creation_facility])
         .in_batches(of: 1000)
         .each_record { |patient| random_treatment_group.enroll(patient, reporting_data(patient, date)) }
-      end
     end
 
     def monitor(date)
