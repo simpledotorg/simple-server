@@ -124,14 +124,69 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
   describe "#enroll_patients" do
     it "assigns eligible_patients to treatment groups" do
       patients = Patient.where(id: create_list(:patient, 2, age: 18))
-      patients.each { |patient| create(:appointment, status: :scheduled, patient: patient) }
-
       create(:experiment, :with_treatment_group, experiment_type: "current_patients")
       allow_any_instance_of(Experimentation::CurrentPatientExperiment).to receive(:eligible_patients).and_return(patients)
 
       Experimentation::CurrentPatientExperiment.first.enroll_patients(Date.today)
 
       expect(Experimentation::CurrentPatientExperiment.first.treatment_group_memberships.pluck(:patient_id)).to match_array(patients.pluck(:id))
+    end
+
+    it "records reporting data for patients" do
+      patient = create(:patient)
+      create(:appointment, patient: patient, status: :scheduled)
+      create(:experiment, :with_treatment_group, experiment_type: "current_patients")
+      allow_any_instance_of(Experimentation::CurrentPatientExperiment).to receive(:eligible_patients).and_return(Patient.where(id: patient.id))
+
+      Experimentation::CurrentPatientExperiment.first.enroll_patients(Date.today)
+
+      expect(Experimentation::CurrentPatientExperiment.first.treatment_group_memberships.first.slice(
+        :gender,
+        :age,
+        :risk_level,
+        :diagnosed_htn,
+        :experiment_inclusion_date,
+        :expected_return_date,
+        :expected_return_facility_id,
+        :expected_return_facility_type,
+        :expected_return_facility_name,
+        :expected_return_facility_block,
+        :expected_return_facility_district,
+        :expected_return_facility_state,
+        :appointment_id,
+        :appointment_creation_time,
+        :appointment_creation_facility_id,
+        :appointment_creation_facility_type,
+        :appointment_creation_facility_name,
+        :appointment_creation_facility_block,
+        :appointment_creation_facility_district,
+        :appointment_creation_facility_state,
+        :assigned_facility_id,
+        :assigned_facility_name,
+        :assigned_facility_type,
+        :assigned_facility_block,
+        :assigned_facility_district,
+        :assigned_facility_state,
+        :registration_facility_id,
+        :registration_facility_name,
+        :registration_facility_type,
+        :registration_facility_block,
+        :registration_facility_district,
+        :registration_facility_state
+      ).values).to all be_present
+    end
+
+    it "enrolls a patient even if assigned/registration facility was discarded, no scheduled appointments are present" do
+      patient = create(:patient)
+      create(:experiment, :with_treatment_group, experiment_type: "current_patients")
+      allow_any_instance_of(Experimentation::CurrentPatientExperiment).to receive(:eligible_patients).and_return(Patient.where(id: patient.id))
+
+      patient.assigned_facility.discard
+
+      Experimentation::CurrentPatientExperiment.first.enroll_patients(Date.today)
+      expect(Experimentation::CurrentPatientExperiment.first.treatment_group_memberships.first.assigned_facility_name).to be_nil
+      expect(Experimentation::CurrentPatientExperiment.first.treatment_group_memberships.first.registration_facility_name).to be_nil
+      expect(Experimentation::CurrentPatientExperiment.first.treatment_group_memberships.first.expected_return_date).to be_nil
     end
   end
 
