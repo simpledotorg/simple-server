@@ -5,14 +5,6 @@ module Reports
     include Memery
     include Scientist
 
-    def self.use_schema_v2?
-      @use_schema_v2 ||= true
-    end
-
-    class << self
-      attr_writer :use_schema_v2
-    end
-
     attr_reader :bp_measures_query
     attr_reader :follow_ups_query
     attr_reader :no_bp_measure_query
@@ -22,7 +14,7 @@ module Reports
     attr_reader :registered_patients_query
     attr_reader :schema
 
-    def initialize(regions, periods:, reporting_schema_v2: self.class.use_schema_v2?)
+    def initialize(regions, periods:, reporting_schema_v2: Reports.reporting_schema_v2?)
       @regions = Array(regions).map(&:region)
       @periods = if periods.is_a?(Period)
         Range.new(periods, periods)

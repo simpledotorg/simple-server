@@ -1,9 +1,9 @@
 module Reports
   class RepositoryPresenter < SimpleDelegator
-    def self.create(regions, period:, months: Reports::MAX_MONTHS_OF_DATA, reporting_schema_v2: false)
+    def self.create(regions, period:, months: Reports::MAX_MONTHS_OF_DATA)
       start_period = period.advance(months: -(months - 1))
       range = Range.new(start_period, period)
-      repo = Reports::Repository.new(regions, periods: range, reporting_schema_v2: reporting_schema_v2)
+      repo = Reports::Repository.new(regions, periods: range)
       RepositoryPresenter.new(repo)
     end
 

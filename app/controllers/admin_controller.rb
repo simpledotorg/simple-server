@@ -37,7 +37,7 @@ class AdminController < ApplicationController
   private
 
   def set_reporting_schema_v2
-    RequestStore[:reporting_schema_v2] = reporting_schema_via_param_or_feature_flag
+    Reports.reporting_schema_v2 = reporting_schema_via_param_or_feature_flag
   end
 
   # A query string provided feature flag (v2=1) will always override any other settings here.
