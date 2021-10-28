@@ -6,6 +6,12 @@ module Experimentation
 
     validate :one_active_experiment_per_patient
 
+    enum status: {
+      enrolled: "enrolled",
+      visited: "visited",
+      evicted: "evicted"
+    }, _prefix: true
+
     private
 
     def one_active_experiment_per_patient
