@@ -1,9 +1,14 @@
 module Experimentation
   class Experiment < ApplicationRecord
-    LAST_EXPERIMENT_BUFFER = 14.days.freeze
+    # RECENT_EXPERIMENT_MEMBERSHIP_BUFFER should be at least as big as
+    # MONITORING_BUFFER otherwise patients who are being monitored
+    # in an experiment can be considered eligible for an upcoming experiment.
+    MONITORING_BUFFER = 14.days.freeze
+    RECENT_EXPERIMENT_MEMBERSHIP_BUFFER = 14.days.freeze
 
     has_many :treatment_groups, dependent: :delete_all
     has_many :reminder_templates, through: :treatment_groups
+    has_many :treatment_group_memberships, through: :treatment_groups
     has_many :patients, through: :treatment_groups
     has_many :notifications
 
@@ -20,34 +25,22 @@ module Experimentation
 
     scope :upcoming, -> { where("start_time > ?", Time.current) }
     scope :running, -> { where("start_time <= ? AND end_time >= ?", Time.current, Time.current) }
-    scope :complete, -> { where("end_time < ?", Time.current) }
+    scope :monitoring, -> { where("start_time <= ? AND end_time > ?", Time.current, Time.current - MONITORING_BUFFER) }
+    scope :completed, -> { where("end_time < ?", Time.current - MONITORING_BUFFER) }
     scope :cancelled, -> { with_discarded.discarded }
 
     def running?
       start_time <= Time.current && end_time >= Time.current
     end
 
-    def self.candidate_patients
-      Patient.with_hypertension
-        .contactable
-        .where_current_age(">=", 18)
-        .where("NOT EXISTS (:recent_treatment_group_memberships)",
-          recent_treatment_group_memberships: Experimentation::TreatmentGroupMembership
-                                         .joins(treatment_group: :experiment)
-                                         .where("treatment_group_memberships.patient_id = patients.id")
-                                         .where("end_time > ?", LAST_EXPERIMENT_BUFFER.ago)
-                                         .select(:patient_id))
-        .where("NOT EXISTS (:multiple_scheduled_appointments)",
-          multiple_scheduled_appointments: Appointment
-                                            .select(1)
-                                            .where("appointments.patient_id = patients.id")
-                                            .where(status: :scheduled)
-                                            .group(:patient_id)
-                                            .having("count(patient_id) > 1"))
+    def random_treatment_group
+      raise "random treatment group requested for experiment with no treatment groups" unless treatment_groups.any?
+      treatment_groups.sample
     end
 
-    def random_treatment_group
-      treatment_groups.sample
+    def cancel
+      discard
+      logger.info "Cancelled experiment #{name}."
     end
 
     private
