@@ -43,7 +43,9 @@ module Experimentation
         .limit(MAX_PATIENTS_PER_DAY)
         .includes(:assigned_facility, :registration_facility, :medical_history)
         .includes(latest_scheduled_appointments: [:facility, :creation_facility])
-        .in_batches(of: 1000).each_record { |patient| random_treatment_group.enroll(patient, reporting_data(patient, date)) }
+        .in_batches(of: 1000)
+        .each_record { |patient| random_treatment_group.enroll(patient, reporting_data(patient, date)) }
+      end
     end
 
     def monitor(date)
