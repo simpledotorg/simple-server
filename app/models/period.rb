@@ -177,12 +177,8 @@ class Period
     "<Period type:#{type} value=#{value}>"
   end
 
-  def to_s(format = :mon_year)
-    if quarter?
-      value.to_s
-    else
-      value.to_s(format)
-    end
+  def to_s(format = :default_period)
+    value.to_s(format)
   end
 
   # Returns a Hash with various Period related dates for eash consumption by the view

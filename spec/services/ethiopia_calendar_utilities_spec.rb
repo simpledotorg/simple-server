@@ -23,4 +23,31 @@ RSpec.describe EthiopiaCalendarUtilities do
       end
     end
   end
+
+  describe ".gregorian_month_period_to_ethiopian" do
+    it "converts Gregorian monthly periods to Ethiopian monthly periods" do
+      conversions = {
+        [2021, 1, 1] => "2013-05",
+        [2021, 2, 1] => "2013-06",
+        [2021, 3, 1] => "2013-07",
+        [2021, 4, 1] => "2013-08",
+        [2021, 5, 1] => "2013-09",
+        [2021, 6, 1] => "2013-10",
+        [2021, 7, 1] => "2013-11",
+        [2021, 8, 1] => "2013-12",
+        [2021, 9, 1] => "2014-01",
+        [2021, 10, 1] => "2014-02",
+        [2021, 11, 1] => "2014-03",
+        [2021, 12, 1] => "2014-04",
+        [2022, 1, 1] => "2014-05"
+      }
+
+      conversions.each do |gregorian_month, ethiopian_month|
+        period = Period.month(Date.new(*gregorian_month))
+        converted_period = described_class.gregorian_month_period_to_ethiopian(period)
+
+        expect(converted_period.to_date.strftime("%Y-%m")).to eq(ethiopian_month)
+      end
+    end
+  end
 end
