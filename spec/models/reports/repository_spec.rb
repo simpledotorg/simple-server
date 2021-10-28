@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Reports::Repository, type: :model, v2_flag: true do
+RSpec.describe Reports::Repository, type: :model do
   using StringToPeriod
 
   let(:organization) { create(:organization, name: "org-1") }
