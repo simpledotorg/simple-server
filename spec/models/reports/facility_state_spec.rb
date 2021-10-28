@@ -184,7 +184,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
   end
 
   context "monthly cohort outcomes" do
-    it "computes totals for under care patients" do
+    fit "computes totals for under care patients" do
       facility = create(:facility)
 
       patients_controlled = create_list(:patient, 2, assigned_facility: facility, recorded_at: june_2021[:under_3_months_ago])
@@ -216,6 +216,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
 
       RefreshReportingViews.new.refresh_v2
       with_reporting_time_zone do
+        d june_2021[:now]
         facility_state_june_2021 = described_class.find_by(facility: facility, month_date: june_2021[:now])
 
         expect(facility_state_june_2021.monthly_cohort_controlled).to eq 2

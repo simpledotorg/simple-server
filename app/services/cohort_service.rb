@@ -12,34 +12,44 @@ class CohortService
     @periods = periods
     @reporting_schema_v2 = reporting_schema_v2
     @region_field = "#{@region.region_type}_region_id"
+    @quarterly = @periods.first.quarter?
+  end
+
+  def quarterly?
+    @quarterly
   end
 
   COUNTS = %i[
-    quarterly_cohort_controlled
-    quarterly_cohort_missed_visit
-    quarterly_cohort_patients
-    quarterly_cohort_uncontrolled
+    cohort_controlled
+    cohort_missed_visit
+    cohort_patients
+    cohort_uncontrolled
   ]
   # SUMS = COUNTS.map { |field| Arel.sql("COALESCE(SUM(#{field}::int), 0) as #{field}") }
-  SUMS = COUNTS.map { |field| Arel.sql("SUM(#{field}::int) as #{field}") }
+
+  def sums
+    @sums ||= if quarterly?
+      COUNTS.map { |field| Arel.sql("SUM(quarterly_#{field}::int) as #{field}") }
+    else
+      COUNTS.map { |field| Arel.sql("COALESCE(SUM(monthly_#{field}::int), 0) as #{field}") }
+    end
+  end
 
   def call
     if reporting_schema_v2
       periods.each_with_object([]) do |period, arry|
-        quarter_string = "#{period.value.year}-#{period.value.number}"
         cohort_period = period.previous
-        stats = Reports::QuarterlyFacilityState.where(facility: region.facilities, quarter_string: quarter_string)
-          .group(region_field, :quarter_string)
-          .select(:quarter_string, region_field, SUMS)
+        stats = v2_query(period)
+        d stats
         stat = stats.all[0]
 
         arry << {
-          controlled: stat.quarterly_cohort_controlled,
-          no_bp: stat.quarterly_cohort_missed_visit,
+          controlled: stat.cohort_controlled,
+          no_bp: stat.cohort_missed_visit,
           patients_registered: cohort_period.to_s,
-          registered: stat.quarterly_cohort_patients,
+          registered: stat.cohort_patients,
           results_in: period.to_s,
-          uncontrolled: stat.quarterly_cohort_uncontrolled
+          uncontrolled: stat.cohort_uncontrolled
         }.with_indifferent_access
       end
     else
@@ -50,6 +60,20 @@ class CohortService
   end
 
   private
+
+  def v2_query(period)
+    if quarterly?
+      quarter_string = "#{period.value.year}-#{period.value.number}"
+      Reports::QuarterlyFacilityState.where(facility: region.facilities, quarter_string: quarter_string)
+        .group(region_field, :quarter_string)
+        .select(:quarter_string, region_field, sums)
+    else
+      d period.to_s
+      Reports::FacilityState.where(facility: region.facilities, month_date: period.value)
+        .group(region_field, :month_date)
+        .select(:month_date, region_field, sums)
+    end
+  end
 
   def compute(period)
     Rails.cache.fetch(cache_key(period), version: cache_version, expires_in: CACHE_TTL, force: bust_cache?) do
