@@ -107,11 +107,11 @@ module Experimentation
         registration_facility_state: registration_facility&.state
       }
     end
-  end
 
-  def mark_visits
-  end
+    def mark_visits
+    end
 
-  def evict_patients
+    def evict_patients
+    end
   end
 end
