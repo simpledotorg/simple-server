@@ -18,7 +18,7 @@ module Reports
         notify "disabled via flipper - exiting"
         return
       end
-      RequestStore.store[:bust_cache] = false
+      RequestStore.store[:bust_cache] = true
 
       Time.use_zone(Period::REPORTING_TIME_ZONE) do
         Region::REGION_TYPES.reject { |t| t == "root" }.each do |region_type|
