@@ -9,9 +9,7 @@ RSpec.describe FacilityStatsService do
   let(:user) { create(:admin, :manager, :with_access, resource: organization, organization: organization) }
 
   def refresh_views
-    LatestBloodPressuresPerPatientPerMonth.refresh
-    LatestBloodPressuresPerPatientPerQuarter.refresh
-    PatientRegistrationsPerDayPerFacility.refresh
+    RefreshReportingViews.new.refresh_v2
   end
 
   def facilities_data(facilities)
@@ -48,12 +46,9 @@ RSpec.describe FacilityStatsService do
                                             recorded_at: december - 5.months, registration_user: user)
       # recorded_at needs to be in a month after registration in order to appear in control rate data
       small_controlled.each do |patient|
-        logger.info "--- start"
-        create(:blood_pressure, :under_control, patient: patient, facility: patient.assigned_facility,
-                                                recorded_at: december - 4.months, user: user)
-        logger.info "--- end"
+        create(:bp_with_encounter, :under_control, patient: patient, facility: patient.assigned_facility, recorded_at: december - 4.months, user: user)
       end
-      create(:blood_pressure, :hypertensive, patient: small_uncontrolled, facility: small_uncontrolled.assigned_facility,
+      create(:bp_with_encounter, :hypertensive, patient: small_uncontrolled, facility: small_uncontrolled.assigned_facility,
                                              recorded_at: december - 4.months, user: user)
 
       medium_facility1 = create(:facility, name: "medium_1", facility_size: "medium", facility_group: facility_group)
@@ -62,9 +57,9 @@ RSpec.describe FacilityStatsService do
                                            recorded_at: december - 4.months, registration_user: user)
       medium_uncontrolled = create(:patient, full_name: "medium_uncontrolled", registration_facility: medium_facility2,
                                              recorded_at: december - 4.months, registration_user: user)
-      create(:blood_pressure, :under_control, patient: medium_controlled, user: user,
+      create(:bp_with_encounter, :under_control, patient: medium_controlled, user: user,
                                               facility: medium_controlled.assigned_facility, recorded_at: december - 3.months)
-      create(:blood_pressure, :hypertensive, patient: medium_uncontrolled, user: user,
+      create(:bp_with_encounter, :hypertensive, patient: medium_uncontrolled, user: user,
                                              facility: medium_controlled.assigned_facility, recorded_at: december - 3.months)
 
       large_facility1 = create(:facility, name: "large_1", facility_size: "large", facility_group: facility_group)
@@ -74,10 +69,10 @@ RSpec.describe FacilityStatsService do
       expect(large_controlled.registration_facility).to eq(large_controlled.assigned_facility)
       large_uncontrolled = create_list(:patient, 2, full_name: "large_uncontrolled", registration_user: user,
                                                     registration_facility: large_facility2, recorded_at: december - 3.months)
-      create(:blood_pressure, :under_control, patient: large_controlled, user: user,
+      create(:bp_with_encounter, :under_control, patient: large_controlled, user: user,
                                               facility: large_controlled.assigned_facility, recorded_at: december - 2.months)
       large_uncontrolled.each do |patient|
-        create(:blood_pressure, :hypertensive, patient: patient, user: user,
+        create(:bp_with_encounter, :hypertensive, patient: patient, user: user,
                                                facility: patient.assigned_facility, recorded_at: december - 2.months)
       end
 
