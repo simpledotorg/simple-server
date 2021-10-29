@@ -497,16 +497,6 @@ RSpec.describe Reports::Repository, type: :model do
       3.times { _result = repo.controlled_rates }
     end
 
-    it "caches region_period entries only as far back as there is data" do
-      _controlled_in_jan = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
-
-      repo = Reports::Repository.new(facility_1.region, periods: july_2020_range)
-      keys = repo.schema.send(:cache_entries, :controlled_rates)
-      periods = keys.map(&:period)
-      expected_periods = (jan_2019.to_period..july_2020.to_period).to_a
-      expect(periods).to eq(expected_periods)
-    end
-
     it "will not ignore memoization when bust_cache is true" do
       controlled_in_jan = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
       Timecop.freeze(jan_2020) do
