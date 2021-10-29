@@ -41,9 +41,9 @@ module Experimentation
                                              .having("count(patient_id) > 1"))
     end
 
-    def enroll_patients(date)
+    def enroll_patients(date, limit = MAX_PATIENTS_PER_DAY)
       eligible_patients(date)
-        .limit(MAX_PATIENTS_PER_DAY)
+        .limit(limit)
         .includes(:assigned_facility, :registration_facility, :medical_history)
         .includes(latest_scheduled_appointments: [:facility, :creation_facility])
         .in_batches(of: MEMBERSHIPS_BATCH_SIZE)
