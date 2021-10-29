@@ -121,6 +121,7 @@ RSpec.describe DrugStocksReportExporter do
 
       expect(csv).to eq(expected_csv)
     end
+
     it "renders the csv in custom category order" do
       allow(CountryConfig.current).to receive(:fetch)
         .with(:custom_drug_category_order, [])
