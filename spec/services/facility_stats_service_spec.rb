@@ -49,7 +49,7 @@ RSpec.describe FacilityStatsService do
         create(:bp_with_encounter, :under_control, patient: patient, facility: patient.assigned_facility, recorded_at: december - 4.months, user: user)
       end
       create(:bp_with_encounter, :hypertensive, patient: small_uncontrolled, facility: small_uncontrolled.assigned_facility,
-                                             recorded_at: december - 4.months, user: user)
+                                                recorded_at: december - 4.months, user: user)
 
       medium_facility1 = create(:facility, name: "medium_1", facility_size: "medium", facility_group: facility_group)
       medium_facility2 = create(:facility, name: "medium_2", facility_size: "medium", facility_group: facility_group)
@@ -58,9 +58,9 @@ RSpec.describe FacilityStatsService do
       medium_uncontrolled = create(:patient, full_name: "medium_uncontrolled", registration_facility: medium_facility2,
                                              recorded_at: december - 4.months, registration_user: user)
       create(:bp_with_encounter, :under_control, patient: medium_controlled, user: user,
-                                              facility: medium_controlled.assigned_facility, recorded_at: december - 3.months)
+                                                 facility: medium_controlled.assigned_facility, recorded_at: december - 3.months)
       create(:bp_with_encounter, :hypertensive, patient: medium_uncontrolled, user: user,
-                                             facility: medium_controlled.assigned_facility, recorded_at: december - 3.months)
+                                                facility: medium_controlled.assigned_facility, recorded_at: december - 3.months)
 
       large_facility1 = create(:facility, name: "large_1", facility_size: "large", facility_group: facility_group)
       large_facility2 = create(:facility, name: "large_2", facility_size: "large", facility_group: facility_group)
@@ -70,10 +70,10 @@ RSpec.describe FacilityStatsService do
       large_uncontrolled = create_list(:patient, 2, full_name: "large_uncontrolled", registration_user: user,
                                                     registration_facility: large_facility2, recorded_at: december - 3.months)
       create(:bp_with_encounter, :under_control, patient: large_controlled, user: user,
-                                              facility: large_controlled.assigned_facility, recorded_at: december - 2.months)
+                                                 facility: large_controlled.assigned_facility, recorded_at: december - 2.months)
       large_uncontrolled.each do |patient|
         create(:bp_with_encounter, :hypertensive, patient: patient, user: user,
-                                               facility: patient.assigned_facility, recorded_at: december - 2.months)
+                                                  facility: patient.assigned_facility, recorded_at: december - 2.months)
       end
 
       all_facilities = [small_facility1, small_facility2, medium_facility1,

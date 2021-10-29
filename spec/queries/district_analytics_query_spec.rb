@@ -64,11 +64,11 @@ RSpec.describe DistrictAnalyticsQuery do
         #
         Timecop.travel(month + 1.month) do
           patients_1.each do |patient|
-            create(:blood_pressure, patient: patient, facility: facility_1, user: user)
+            create(:bp_with_encounter, patient: patient, facility: facility_1, user: user)
           end
 
           patients_2.each do |patient|
-            create(:blood_pressure, patient: patient, facility: facility_2, user: user)
+            create(:bp_with_encounter, patient: patient, facility: facility_2, user: user)
           end
         end
 
@@ -77,11 +77,11 @@ RSpec.describe DistrictAnalyticsQuery do
         #
         Timecop.travel(month + 2.months) do
           patients_1.each do |patient|
-            create(:blood_pressure, patient: patient, facility: facility_1, user: user)
+            create(:bp_with_encounter, patient: patient, facility: facility_1, user: user)
           end
 
           patients_2.each do |patient|
-            create(:blood_pressure, patient: patient, facility: facility_2, user: user)
+            create(:bp_with_encounter, patient: patient, facility: facility_2, user: user)
           end
         end
       end
@@ -193,7 +193,7 @@ RSpec.describe DistrictAnalyticsQuery do
 
     context "facilities in the same district but belonging to different organizations" do
       let!(:facility_in_another_org) { create(:facility) }
-      let!(:bp_in_another_org) { create(:blood_pressure, facility: facility_in_another_org) }
+      let!(:bp_in_another_org) { create(:bp_with_encounter, facility: facility_in_another_org) }
 
       it "does not contain data from a different organization" do
         expect(analytics.registered_patients_by_period.keys).not_to include(facility_in_another_org.id)
@@ -224,8 +224,8 @@ RSpec.describe DistrictAnalyticsQuery do
 
     before do
       Timecop.travel(three_months_back) do
-        create(:blood_pressure, patient: patients.first, facility: facility_2, user: user)
-        create(:blood_pressure, patient: patients.second, facility: facility_2, user: user)
+        create(:bp_with_encounter, patient: patients.first, facility: facility_2, user: user)
+        create(:bp_with_encounter, patient: patients.second, facility: facility_2, user: user)
       end
 
       patients.first.discard_data
