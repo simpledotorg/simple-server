@@ -5,8 +5,6 @@ RSpec.describe Reports::RegionCacheWarmer, type: :model do
   let(:user) { create(:user, organization: facility_group.organization) }
   let(:june_1_2020) { Time.parse("June 1, 2020 00:00:00+00:00") }
   let(:august_1_2020) { Time.parse("August 1, 2020 00:00:00+00:00") }
-  let(:june_30_2020) { Time.parse("June 30, 2020 00:00:00+00:00") }
-  let(:july_2020) { Time.parse("July 15, 2020 00:00:00+00:00") }
 
   before do
     memory_store = ActiveSupport::Cache.lookup_store(:memory_store)
