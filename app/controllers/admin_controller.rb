@@ -36,16 +36,16 @@ class AdminController < ApplicationController
 
   private
 
+  # We only want to set this via query string, as it now defaults to enabled globally
   def set_reporting_schema_v2
-    Reports.reporting_schema_v2 = reporting_schema_via_param_or_feature_flag
+    if params.key?(:v2)
+      param_flag = ActiveRecord::Type::Boolean.new.deserialize(params[:v2])
+      Reports.reporting_schema_v2 = param_flag
+    end
   end
 
   # A query string provided feature flag (v2=1) will always override any other settings here.
   def reporting_schema_via_param_or_feature_flag
-    param_flag = ActiveRecord::Type::Boolean.new.deserialize(params[:v2])
-    user_flag = current_admin.feature_enabled?(:reporting_schema_v2)
-    return param_flag unless param_flag.nil?
-    user_flag
   end
 
   def current_admin

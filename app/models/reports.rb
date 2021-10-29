@@ -9,7 +9,8 @@ module Reports
   end
 
   def self.reporting_schema_v2?
-    RequestStore.store[:reporting_schema_v2] || true
+    return RequestStore.store[:reporting_schema_v2] if RequestStore.store.key?(:reporting_schema_v2)
+    true
   end
 
   def self.reporting_schema_v2=(value)
