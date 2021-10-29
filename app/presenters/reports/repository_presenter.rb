@@ -4,7 +4,7 @@ module Reports
       start_period = period.advance(months: -(months - 1))
       range = Range.new(start_period, period)
       repo = Reports::Repository.new(regions, periods: range)
-      RepositoryPresenter.new(repo)
+      new(repo)
     end
 
     def call(region)
