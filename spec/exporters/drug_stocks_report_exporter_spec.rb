@@ -53,6 +53,10 @@ RSpec.describe DrugStocksReportExporter do
       end
     end
 
+    def refresh_views
+      RefreshReportingViews.new.refresh_v2
+    end
+
     it "renders the csv" do
       allow(CountryConfig.current).to receive(:fetch).with(:custom_drug_category_order, []).and_return([])
 
@@ -108,8 +112,10 @@ RSpec.describe DrugStocksReportExporter do
           10000, 10000, 20000, 81081,
           10000, 20000, 17857,
           nil, nil, nil]
+      refresh_views
 
       csv = described_class.csv(query)
+
       expected_csv =
         timestamp.to_csv +
         headers_row_1.to_csv +
@@ -188,6 +194,7 @@ RSpec.describe DrugStocksReportExporter do
         district_warehouse_row.to_csv +
         facility_1_row.to_csv +
         facility_2_row.to_csv
+      refresh_views
 
       expect(csv).to eq(expected_csv)
     end
