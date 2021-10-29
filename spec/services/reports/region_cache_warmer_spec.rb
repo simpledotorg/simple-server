@@ -2,6 +2,7 @@ require "rails_helper"
 
 RSpec.describe Reports::RegionCacheWarmer, type: :model do
   let(:facility_group) { create(:facility_group) }
+  let(:user) { create(:user, organization: facility_group.organization) }
 
   before do
     memory_store = ActiveSupport::Cache.lookup_store(:memory_store)
@@ -16,11 +17,20 @@ RSpec.describe Reports::RegionCacheWarmer, type: :model do
     Reports::RegionCacheWarmer.call
   end
 
+  it "sets bust cache to false before running queries" do
+    allow(RequestStore.store).to receive(:[]=)
+    warmer = Reports::RegionCacheWarmer.new
+    expect(RequestStore.store).to receive(:[]=).with(:bust_cache, true).ordered
+    expect(warmer).to receive(:warm_caches).once.ordered
+    expect(RequestStore.store).to receive(:[]=).with(:bust_cache, false).ordered
+
+    warmer.call
+  end
+
   it "completes successfully" do
-    facility_1, facility_2 = create_list(:facility, 2, facility_group: facility_group)
-    user = create(:user, organization: facility_group.organization)
-    create(:patient, registration_facility: facility_1, registration_user: user)
-    create(:patient, registration_facility: facility_2, registration_user: user)
+    facility = create(:facility, facility_group: facility_group)
+    create(:patient, registration_facility: facility, registration_user: user)
+    RefreshReportingViews.call
     Reports::RegionCacheWarmer.call
   end
 
