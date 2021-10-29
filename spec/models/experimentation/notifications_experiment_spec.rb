@@ -205,7 +205,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       expect(Notification.pluck(:patient_id)).to contain_exactly(patient.id, patient.id) # Once for each reminder template
     end
 
-    it "doesn't create duplicate notifications if it is called twice" do
+    it "doesn't create duplicate notifications if a notification has already been created" do
       create(:experiment, experiment_type: "current_patients")
       experiment = Experimentation::CurrentPatientExperiment.first
       treatment_group = create(:treatment_group, experiment: experiment)

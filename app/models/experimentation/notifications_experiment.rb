@@ -65,7 +65,11 @@ module Experimentation
     end
 
     def schedule_notification(membership, template, date)
-      return if Notification.find_by(reminder_template: template, experiment: self, patient_id: membership.patient_id)
+      return if Notification.find_by(
+        reminder_template: template,
+        experiment: self,
+        patient_id: membership.patient_id
+      )
 
       Notification.create!(
         experiment: self,
