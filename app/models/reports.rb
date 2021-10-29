@@ -15,5 +15,4 @@ module Reports
   def self.reporting_schema_v2=(value)
     RequestStore.store[:reporting_schema_v2] = value
   end
-
 end
