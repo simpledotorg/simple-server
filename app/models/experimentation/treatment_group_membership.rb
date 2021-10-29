@@ -12,6 +12,17 @@ module Experimentation
       evicted: "evicted"
     }, _prefix: true
 
+    def record_notification(notification)
+      self.messages ||= {}
+      self.messages[notification.message] = {
+        remind_on: notification.remind_on,
+        status: notification.status,
+        notification_id: notification.id,
+        localized_message: notification.localized_message
+      }
+      save!
+    end
+
     private
 
     def one_active_experiment_per_patient

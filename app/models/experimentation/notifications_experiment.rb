@@ -51,7 +51,7 @@ module Experimentation
     end
 
     def monitor(date)
-      # Add check_notification_statuses in a follow up PR
+      report_notification_statuses
       mark_visits
       evict_patients
     end
@@ -71,7 +71,7 @@ module Experimentation
         patient_id: membership.patient_id
       )
 
-      Notification.create!(
+      notification = Notification.create!(
         experiment: self,
         message: template.message,
         patient_id: membership.patient_id,
@@ -80,6 +80,43 @@ module Experimentation
         reminder_template: template,
         status: "pending"
       )
+
+      membership.record_notification(notification)
+    end
+
+    def report_notification_statuses
+      reminder_templates.each do |template|
+        notified_memberships =
+          treatment_group_memberships
+            .where("messages -> #{template.message} -> status = ?", :pending)
+            .select("messages -> #{template.message} -> 'notification_id' AS notification_id, *")
+
+        notified_memberships.in_batches(of: MEMBERSHIPS_BATCH_SIZE).each_record do |membership|
+          deliveries =
+            Notification
+              .joins("inner join communications on communications.notification_id = notifications.id")
+              .joins("inner join twilio_sms_delivery_details detailable on detailable.id = communications.detailable_id")
+              .select("communications.*, detailable.*,*")
+              .where(membership.notification_id)
+
+          successful_delivery = deliveries.find_by(result: [:read, :delivered, :sent])
+
+          if successful_delivery.present?
+            membership.messages[template.message].merge({
+              status: successful_delivery.status,
+              result: :success,
+              successful_communication_type: successful_delivery.communication.communication_type,
+              successful_communication_created_at: successful_delivery.communication.created_at,
+              delivery_status: successful_delivery.result
+            })
+          else
+            membership.messages[template.message].merge({
+              status: deliveries.first.status,
+              result: :failed
+            })
+          end
+        end
+      end
     end
 
     def cancel
