@@ -16,7 +16,7 @@ module Experimentation
     # See https://docs.google.com/document/d/1IMXu_ca9xKU8Xox_3v403ZdvNGQzczLWljy7LQ6RQ6A for more details.
     def self.conduct_daily(date)
       running.each { |experiment| experiment.enroll_patients(date) }
-      monitoring.each { |experiment| experiment.monitor(date) }
+      monitoring.each { |experiment| experiment.monitor }
       notifying.each { |experiment| experiment.schedule_notifications(date) }
     end
 
@@ -50,7 +50,7 @@ module Experimentation
         .each_record { |patient| random_treatment_group.enroll(patient, reporting_data(patient, date)) }
     end
 
-    def monitor(date)
+    def monitor
       report_notification_statuses
       mark_visits
       evict_patients
