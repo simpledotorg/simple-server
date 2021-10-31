@@ -13,6 +13,7 @@ module Experimentation
     }, _prefix: true
 
     def record_notification(notification)
+      # TODO: localized_message can blow up assigned facility is discarded
       self.messages ||= {}
       self.messages[notification.message] = {
         remind_on: notification.remind_on,
