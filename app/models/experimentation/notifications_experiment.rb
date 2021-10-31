@@ -64,62 +64,6 @@ module Experimentation
       end
     end
 
-    def schedule_notification(membership, template, date)
-      return if Notification.find_by(
-        reminder_template: template,
-        experiment: self,
-        patient_id: membership.patient_id
-      )
-
-      notification = Notification.create!(
-        experiment: self,
-        message: template.message,
-        patient_id: membership.patient_id,
-        purpose: :experimental_appointment_reminder,
-        remind_on: date,
-        reminder_template: template,
-        status: "pending"
-      )
-
-      membership.record_notification(notification)
-    end
-
-    def report_notification_statuses
-      reminder_templates.each do |template|
-        notified_memberships =
-          treatment_group_memberships
-            .where("(messages -> '#{template.message}' ->> 'status') = ?", :pending)
-            .select("(messages -> '#{template.message}' ->> 'notification_id') AS notification_id, treatment_group_memberships.*")
-
-        notified_memberships.in_batches(of: MEMBERSHIPS_BATCH_SIZE).each_record do |membership|
-          deliveries =
-            Notification
-              .joins("inner join communications on communications.notification_id = notifications.id")
-              .joins("inner join twilio_sms_delivery_details detailable on detailable.id = communications.detailable_id")
-              .select("communications.*, detailable.*, *")
-              .where(id: membership.notification_id)
-
-          successful_delivery = deliveries.find_by(detailable: {result: [:read, :delivered, :sent]})
-
-          delivery_data =
-            if successful_delivery.present?
-              {status: successful_delivery.status,
-               result: :success,
-               successful_communication_type: successful_delivery.communication.communication_type,
-               successful_communication_created_at: successful_delivery.communication.created_at,
-               delivery_status: successful_delivery.result}
-            elsif deliveries.present?
-              {status: deliveries.first.status, result: :failed}
-            else
-              {status: :kya_hua_ji, result: :pending}
-            end
-
-          membership.messages[template.message].merge!(delivery_data)
-          membership.save!
-        end
-      end
-    end
-
     def cancel
       ActiveRecord::Base.transaction do
         notifications.where(status: %w[pending scheduled]).update_all(status: :cancelled)
@@ -171,10 +115,64 @@ module Experimentation
       }
     end
 
+    def report_notification_statuses
+      reminder_templates.each do |template|
+        notified_memberships =
+          treatment_group_memberships
+            .where("(messages -> '#{template.message}' ->> 'status') = ?", :pending)
+            .select("(messages -> '#{template.message}' ->> 'notification_id') AS notification_id, treatment_group_memberships.*")
+
+        notified_memberships.in_batches(of: MEMBERSHIPS_BATCH_SIZE).each_record do |membership|
+          deliveries =
+            Notification
+              .where(id: membership.notification_id)
+              .joins("inner join communications on communications.notification_id = notifications.id")
+              .joins("inner join twilio_sms_delivery_details delivery_detail on delivery_detail.id = communications.detailable_id")
+              .select("communications.*, delivery_detail.*, notifications.*") # check if this is needed
+
+          next unless deliveries.any?
+          successful_delivery = deliveries.find_by(delivery_detail: {result: [:read, :delivered, :sent]})
+
+          delivery_data =
+            if successful_delivery.present?
+              {status: successful_delivery.status,
+               result: :success,
+               successful_communication_type: successful_delivery.communication.communication_type,
+               successful_communication_created_at: successful_delivery.communication.created_at,
+               delivery_status: successful_delivery.result}
+            else
+              {status: deliveries.first.status,
+               result: :failed}
+            end
+
+          membership.messages[template.message].merge!(delivery_data)
+          membership.save!
+        end
+      end
+    end
+
     def mark_visits
     end
 
     def evict_patients
+    def schedule_notification(membership, template, date)
+      return if Notification.find_by(
+        reminder_template: template,
+        experiment: self,
+        patient_id: membership.patient_id
+      )
+
+      notification = Notification.create!(
+        experiment: self,
+        message: template.message,
+        patient_id: membership.patient_id,
+        purpose: :experimental_appointment_reminder,
+        remind_on: date,
+        reminder_template: template,
+        status: "pending"
+      )
+
+      membership.record_notification(notification)
     end
   end
 end
