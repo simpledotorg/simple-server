@@ -23,6 +23,11 @@ module Experimentation
       save!
     end
 
+    def record_notification_result(message, delivery_result)
+      messages[message].merge!(delivery_result)
+      save!
+    end
+
     private
 
     def one_active_experiment_per_patient
