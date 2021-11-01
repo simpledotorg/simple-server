@@ -65,21 +65,20 @@ module Experimentation
     end
 
     def schedule_notification(membership, template, date)
-      return if Notification.find_by(
-        reminder_template: template,
+      Notification.where(
         experiment: self,
+        reminder_template: template,
         patient_id: membership.patient_id
-      )
-
-      Notification.create!(
-        experiment: self,
-        message: template.message,
-        patient_id: membership.patient_id,
-        purpose: :experimental_appointment_reminder,
-        remind_on: date,
-        reminder_template: template,
-        status: "pending"
-      )
+      ).exists? ||
+        Notification.create!(
+          experiment: self,
+          message: template.message,
+          patient_id: membership.patient_id,
+          purpose: :experimental_appointment_reminder,
+          remind_on: date,
+          reminder_template: template,
+          status: "pending"
+        )
     end
 
     def cancel
