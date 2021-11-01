@@ -188,6 +188,21 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       expect(Experimentation::CurrentPatientExperiment.first.treatment_group_memberships.first.registration_facility_name).to be_nil
       expect(Experimentation::CurrentPatientExperiment.first.treatment_group_memberships.first.expected_return_date).to be_nil
     end
+
+    it "enrolls max patients per day only even if called multiple times" do
+      patients = create_list(:patient, 2, age: 18)
+      patients.each { |patient| create(:appointment, scheduled_date: Date.today, patient: patient) }
+      experiment = create(:experiment, experiment_type: "current_patients")
+      treatment_group = create(:treatment_group, experiment: experiment)
+      create(:reminder_template, message: "1", treatment_group: treatment_group, remind_on_in_days: 0)
+      stub_const("#{Experimentation::NotificationsExperiment}::MAX_PATIENTS_PER_DAY", 1)
+
+      expect(Experimentation::CurrentPatientExperiment.first.eligible_patients(Date.today).count).to eq(2)
+      Experimentation::CurrentPatientExperiment.first.enroll_patients(Date.today, 1)
+      expect(Experimentation::TreatmentGroupMembership.count).to eq(1)
+      Experimentation::CurrentPatientExperiment.first.enroll_patients(Date.today, 1)
+      expect(Experimentation::TreatmentGroupMembership.count).to eq(1)
+    end
   end
 
   describe "#schedule_notifications" do
