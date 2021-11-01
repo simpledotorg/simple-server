@@ -72,11 +72,9 @@ module Experimentation
     end
 
     def schedule_notifications(date)
-      reminder_templates.each do |template|
-        memberships_to_notify(template, date)
-          .in_batches(of: MEMBERSHIPS_BATCH_SIZE)
-          .each_record { |membership| schedule_notification(membership, template, date) }
-      end
+      memberships_to_notify(date)
+        .in_batches(of: MEMBERSHIPS_BATCH_SIZE)
+        .each_record { |membership| schedule_notification(membership, date) }
     end
 
     def cancel
@@ -89,11 +87,7 @@ module Experimentation
     private
 
     def remaining_enrollments_allowed(date)
-      MAX_PATIENTS_PER_DAY - enrolled_patients(date).count
-    end
-
-    def enrolled_patients(date)
-      treatment_group_memberships.where(experiment_inclusion_date: date)
+      MAX_PATIENTS_PER_DAY - treatment_group_memberships.where(experiment_inclusion_date: date).count
     end
 
     def reporting_data(patient, date)
@@ -164,22 +158,21 @@ module Experimentation
     def evict_patients
     end
 
-    def schedule_notification(membership, template, date)
-      return if Notification.find_by(
-        reminder_template: template,
+    def schedule_notification(membership, date)
+      Notification.where(
         experiment: self,
+        reminder_template_id: membership.template_id,
         patient_id: membership.patient_id
-      )
-
-      notification = Notification.create!(
-        experiment: self,
-        message: template.message,
-        patient_id: membership.patient_id,
-        purpose: :experimental_appointment_reminder,
-        remind_on: date,
-        reminder_template: template,
-        status: "pending"
-      )
+      ).exists? ||
+        Notification.create!(
+          experiment: self,
+          message: membership.message,
+          patient_id: membership.patient_id,
+          purpose: :experimental_appointment_reminder,
+          remind_on: date,
+          reminder_template_id: membership.template_id,
+          status: "pending"
+        )
 
       membership.record_notification(notification)
     end

@@ -43,10 +43,12 @@ module Experimentation
 
     # Patients who were enrollment date falls on
     # one of the reminder template's remind_on days since `date`.
-    def memberships_to_notify(reminder_template, date)
-      treatment_group_memberships.status_enrolled.where(
-        experiment_inclusion_date: date - reminder_template.remind_on_in_days.days
-      )
+    def memberships_to_notify(date)
+      treatment_group_memberships
+        .status_enrolled
+        .joins(treatment_group: :reminder_templates)
+        .where("experiment_inclusion_date::timestamp + make_interval(days := reminder_templates.remind_on_in_days) = ?", date)
+        .select("treatment_group_memberships.*, reminder_templates.id template_id, reminder_templates.message message")
     end
   end
 end
