@@ -51,12 +51,13 @@ module Experimentation
     end
 
     def monitor
-      report_notification_statuses
+      record_notification_statuses
       mark_visits
       evict_patients
     end
 
-    def report_notification_statuses
+    def record_notification_statuses
+      # TODO: Look at query performance
       treatment_group_memberships
         .joins(treatment_group: :reminder_templates)
         .where("messages -> reminder_templates.message ->> 'status' = ?", :pending)
