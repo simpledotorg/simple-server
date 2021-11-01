@@ -19,7 +19,8 @@ module Experimentation
         remind_on: notification.remind_on,
         status: notification.status,
         notification_id: notification.id,
-        localized_message: notification.localized_message
+        localized_message: notification.localized_message,
+        created_at: notification.created_at
       }
       save!
     end
