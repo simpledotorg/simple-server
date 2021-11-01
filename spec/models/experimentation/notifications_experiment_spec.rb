@@ -206,7 +206,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
   end
 
   describe "#schedule_notifications" do
-    it "creates a notification for each eligible membership to notify" do
+    it "creates a notification for each eligible membership to notify and records it in treatment group memberships" do
       create(:experiment, experiment_type: "current_patients")
       experiment = Experimentation::CurrentPatientExperiment.first
       treatment_group = create(:treatment_group, experiment: experiment)
@@ -217,6 +217,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       experiment.enroll_patients(Date.today)
 
       experiment.schedule_notifications(Date.today)
+
       expect(Notification.pluck(:patient_id)).to contain_exactly(patient.id, patient.id) # Once for each reminder template
       expect(Experimentation::TreatmentGroupMembership.pluck(:messages).map(&:keys)).to contain_exactly(["1", "2"])
     end
@@ -232,6 +233,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       existing_notification = create(:notification, experiment: experiment, patient: patient, reminder_template: template)
 
       experiment.schedule_notifications(Date.today)
+
       expect(Notification.all).to contain_exactly(existing_notification)
     end
   end
