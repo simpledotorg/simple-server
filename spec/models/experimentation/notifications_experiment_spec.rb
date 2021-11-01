@@ -210,12 +210,12 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       create(:experiment, experiment_type: "current_patients")
       experiment = Experimentation::CurrentPatientExperiment.first
       treatment_group = create(:treatment_group, experiment: experiment)
-      create(:reminder_template, message: "1", treatment_group: treatment_group)
-      create(:reminder_template, message: "2", treatment_group: treatment_group)
+      create(:reminder_template, message: "1", treatment_group: treatment_group, remind_on_in_days: 0)
+      create(:reminder_template, message: "2", treatment_group: treatment_group, remind_on_in_days: 0)
       patient = create(:patient)
-      membership = treatment_group.enroll(patient)
+      create(:appointment, scheduled_date: Date.today, status: :scheduled, patient: patient)
+      experiment.enroll_patients(Date.today)
 
-      allow(experiment).to receive(:memberships_to_notify).and_return(Experimentation::TreatmentGroupMembership.where(id: membership))
       experiment.schedule_notifications(Date.today)
       expect(Notification.pluck(:patient_id)).to contain_exactly(patient.id, patient.id) # Once for each reminder template
     end
@@ -226,10 +226,10 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       treatment_group = create(:treatment_group, experiment: experiment)
       template = create(:reminder_template, treatment_group: treatment_group)
       patient = create(:patient)
-      membership = treatment_group.enroll(patient)
+      create(:appointment, scheduled_date: Date.today, status: :scheduled, patient: patient)
+      experiment.enroll_patients(Date.today)
       existing_notification = create(:notification, experiment: experiment, patient: patient, reminder_template: template)
 
-      allow(experiment).to receive(:memberships_to_notify).and_return(Experimentation::TreatmentGroupMembership.where(id: membership))
       experiment.schedule_notifications(Date.today)
       expect(Notification.all).to contain_exactly(existing_notification)
     end

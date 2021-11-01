@@ -29,31 +29,31 @@ RSpec.describe Experimentation::CurrentPatientExperiment do
   end
 
   describe "#memberships_to_notify" do
-    context "for a reminder_template in an experiment" do
-      it "returns treatment_group_memberships whose expected visit is in the future and need to be reminded `remind_on_in_days` before" do
-        experiment = create(:experiment, experiment_type: "current_patients")
-        treatment_group = create(:treatment_group, experiment: experiment)
-        patient_1 = create(:patient)
-        patient_2 = create(:patient)
+    it "returns treatment_group_memberships whose expected visit is in the future and need to be reminded `remind_on_in_days` before" do
+      experiment = create(:experiment, experiment_type: "current_patients")
+      treatment_group = create(:treatment_group, experiment: experiment)
+      patient_1 = create(:patient)
+      patient_2 = create(:patient)
 
-        membership_1 = treatment_group.enroll(patient_1, expected_return_date: 2.days.from_now.to_date)
-        membership_2 = treatment_group.enroll(patient_2, expected_return_date: 3.days.from_now.to_date)
+      membership_1 = treatment_group.enroll(patient_1, expected_return_date: 2.days.from_now.to_date)
+      membership_2 = treatment_group.enroll(patient_2, expected_return_date: 3.days.from_now.to_date)
 
-        template_1 = create(:reminder_template, message: "1", treatment_group: treatment_group, remind_on_in_days: -2)
-        template_2 = create(:reminder_template, message: "2", treatment_group: treatment_group, remind_on_in_days: -3)
+      create(:reminder_template, message: "1", treatment_group: treatment_group, remind_on_in_days: -2)
+      create(:reminder_template, message: "2", treatment_group: treatment_group, remind_on_in_days: -3)
+      create(:reminder_template, message: "3", treatment_group: treatment_group, remind_on_in_days: 0)
 
-        expect(described_class.first.memberships_to_notify(template_1, Date.today)).to contain_exactly(membership_1)
-        expect(described_class.first.memberships_to_notify(template_2, Date.today)).to contain_exactly(membership_2)
-      end
+      expect(described_class.first.memberships_to_notify(Date.today)).to contain_exactly(membership_1, membership_2)
+      expect(described_class.first.memberships_to_notify(Date.today).map(&:message)).to contain_exactly("1", "2")
+    end
 
       it "returns treatment_group_memberships whose expected visit is today and need to be reminded `remind_on_in_days` today" do
         experiment = create(:experiment, experiment_type: "current_patients")
         treatment_group = create(:treatment_group, experiment: experiment)
         patient = create(:patient)
         membership = treatment_group.enroll(patient, expected_return_date: Date.today)
-        template = create(:reminder_template, treatment_group: treatment_group, remind_on_in_days: 0)
+        create(:reminder_template, treatment_group: treatment_group, remind_on_in_days: 0)
 
-        expect(described_class.first.memberships_to_notify(template, Date.today)).to contain_exactly(membership)
+        expect(described_class.first.memberships_to_notify(Date.today)).to contain_exactly(membership)
       end
 
       it "returns treatment_group_memberships whose expected visit date has passed by `remind_on_in_days` days away" do
@@ -65,11 +65,12 @@ RSpec.describe Experimentation::CurrentPatientExperiment do
         membership_1 = treatment_group.enroll(patient_1, expected_return_date: 1.days.from_now.to_date)
         membership_2 = treatment_group.enroll(patient_2, expected_return_date: 10.days.from_now.to_date)
 
-        template_1 = create(:reminder_template, message: "1", treatment_group: treatment_group, remind_on_in_days: -1)
-        template_2 = create(:reminder_template, message: "2", treatment_group: treatment_group, remind_on_in_days: -10)
+        create(:reminder_template, message: "1", treatment_group: treatment_group, remind_on_in_days: -1)
+        create(:reminder_template, message: "2", treatment_group: treatment_group, remind_on_in_days: -10)
+        create(:reminder_template, message: "3", treatment_group: treatment_group, remind_on_in_days: 1)
 
-        expect(described_class.first.memberships_to_notify(template_1, Date.today)).to contain_exactly(membership_1)
-        expect(described_class.first.memberships_to_notify(template_2, Date.today)).to contain_exactly(membership_2)
+        expect(described_class.first.memberships_to_notify(Date.today)).to contain_exactly(membership_1, membership_2)
+        expect(described_class.first.memberships_to_notify(Date.today).map(&:message)).to contain_exactly("1", "2")
       end
 
       it "only picks patients who are still enrolled in the experiment" do
@@ -80,10 +81,9 @@ RSpec.describe Experimentation::CurrentPatientExperiment do
 
         membership_1 = treatment_group.enroll(patient_1, expected_return_date: Date.today, status: :enrolled)
         _membership_2 = treatment_group.enroll(patient_2, expected_return_date: Date.today, status: :evicted)
-        template_1 = create(:reminder_template, treatment_group: treatment_group, remind_on_in_days: 0)
+        create(:reminder_template, treatment_group: treatment_group, remind_on_in_days: 0)
 
-        expect(described_class.first.memberships_to_notify(template_1, Date.today)).to contain_exactly(membership_1)
+        expect(described_class.first.memberships_to_notify(Date.today)).to contain_exactly(membership_1)
       end
-    end
   end
 end

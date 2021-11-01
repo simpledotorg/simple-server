@@ -57,26 +57,26 @@ module Experimentation
     end
 
     def schedule_notifications(date)
-      reminder_templates.each do |template|
-        memberships_to_notify(template, date)
-          .in_batches(of: MEMBERSHIPS_BATCH_SIZE)
-          .each_record { |membership| schedule_notification(membership, template, date) }
+      memberships_to_notify(date)
+        .in_batches(of: MEMBERSHIPS_BATCH_SIZE)
+        .each_record do |membership|
+        schedule_notification(membership.patient_id, membership.template_id, membership.message, date)
       end
     end
 
-    def schedule_notification(membership, template, date)
+    def schedule_notification(patient_id, template_id, message, date)
       Notification.where(
         experiment: self,
-        reminder_template: template,
-        patient_id: membership.patient_id
+        reminder_template_id: template_id,
+        patient_id: patient_id
       ).exists? ||
         Notification.create!(
           experiment: self,
-          message: template.message,
-          patient_id: membership.patient_id,
+          message: message,
+          patient_id: patient_id,
           purpose: :experimental_appointment_reminder,
           remind_on: date,
-          reminder_template: template,
+          reminder_template_id: template_id,
           status: "pending"
         )
     end
