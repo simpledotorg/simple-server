@@ -42,7 +42,10 @@ class UpdateBangladeshRegionsScript < DataScript
     regions = Region.where(name: "Barisal")
     regions.each do |region|
       if run_safely {
-        region.update!(name: "Barishal")
+        region.transaction do
+          region.source.update!(name: "Barishal") if region.source
+          region.update!(name: "Barishal")
+        end
       }
         results[:updates][:region_rename] += 1
       else
