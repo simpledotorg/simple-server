@@ -173,7 +173,9 @@ module Experimentation
           purpose: :experimental_appointment_reminder,
           remind_on: date,
           reminder_template_id: membership.reminder_template_id,
-          status: "pending"
+          status: "pending",
+          subject_id: membership.appointment_id,
+          subject: "Appointment"
         )
 
       membership.record_notification(notification)
