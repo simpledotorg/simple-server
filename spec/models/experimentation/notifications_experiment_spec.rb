@@ -218,6 +218,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
 
       experiment.schedule_notifications(Date.today)
       expect(Notification.pluck(:patient_id)).to contain_exactly(patient.id, patient.id) # Once for each reminder template
+      expect(Experimentation::TreatmentGroupMembership.pluck(:messages).map(&:keys)).to contain_exactly(["1", "2"])
     end
 
     it "doesn't create duplicate notifications if a notification has already been created" do

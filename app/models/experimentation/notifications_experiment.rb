@@ -175,10 +175,8 @@ module Experimentation
           reminder_template_id: membership.reminder_template_id,
           status: "pending",
           subject_id: membership.appointment_id,
-          subject: "Appointment"
-        )
-
-      membership.record_notification(notification)
+          subject_type: "Appointment"
+        ).then { |notification| membership.record_notification(notification) }
     end
   end
 end

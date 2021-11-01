@@ -13,6 +13,7 @@ module Experimentation
     }, _prefix: true
 
     def record_notification(notification)
+      reload # this is to reload the `messages` field to avoid staleness while updating.
       self.messages ||= {}
       self.messages[notification.message] = {
         remind_on: notification.remind_on,
@@ -25,7 +26,7 @@ module Experimentation
     end
 
     def record_notification_result(message, delivery_result)
-      messages[message].merge!(delivery_result)
+      reload.messages[message].merge!(delivery_result)
       save!
     end
 
