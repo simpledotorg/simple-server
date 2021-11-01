@@ -43,7 +43,7 @@ class UpdateBangladeshRegionsScript < DataScript
     regions.each do |region|
       if run_safely {
         region.transaction do
-          region.source.update!(name: "Barishal") if region.source
+          region.source&.update!(name: "Barishal")
           region.update!(name: "Barishal")
         end
       }
