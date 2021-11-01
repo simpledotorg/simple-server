@@ -91,11 +91,7 @@ module Experimentation
     private
 
     def remaining_enrollments_allowed(date)
-      MAX_PATIENTS_PER_DAY - enrolled_patients(date).count
-    end
-
-    def enrolled_patients(date)
-      treatment_group_memberships.where(experiment_inclusion_date: date)
+      MAX_PATIENTS_PER_DAY - treatment_group_memberships.where(experiment_inclusion_date: date).count
     end
 
     def reporting_data(patient, date)
