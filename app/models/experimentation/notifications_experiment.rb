@@ -43,7 +43,7 @@ module Experimentation
 
     def enroll_patients(date, limit = MAX_PATIENTS_PER_DAY)
       eligible_patients(date)
-        .limit(limit)
+        .limit([remaining_enrollments_allowed(date), limit].min)
         .includes(:assigned_facility, :registration_facility, :medical_history)
         .includes(latest_scheduled_appointments: [:facility, :creation_facility])
         .in_batches(of: MEMBERSHIPS_BATCH_SIZE)
@@ -86,6 +86,14 @@ module Experimentation
     end
 
     private
+
+    def remaining_enrollments_allowed(date)
+      MAX_PATIENTS_PER_DAY - enrolled_patients(date).count
+    end
+
+    def enrolled_patients(date)
+      treatment_group_memberships.where(experiment_inclusion_date: date)
+    end
 
     def reporting_data(patient, date)
       medical_history = patient.medical_history
