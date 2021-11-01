@@ -59,26 +59,7 @@ module Experimentation
     def schedule_notifications(date)
       memberships_to_notify(date)
         .in_batches(of: MEMBERSHIPS_BATCH_SIZE)
-        .each_record do |membership|
-        schedule_notification(membership.patient_id, membership.template_id, membership.message, date)
-      end
-    end
-
-    def schedule_notification(patient_id, template_id, message, date)
-      Notification.where(
-        experiment: self,
-        reminder_template_id: template_id,
-        patient_id: patient_id
-      ).exists? ||
-        Notification.create!(
-          experiment: self,
-          message: message,
-          patient_id: patient_id,
-          purpose: :experimental_appointment_reminder,
-          remind_on: date,
-          reminder_template_id: template_id,
-          status: "pending"
-        )
+        .each_record { |membership| schedule_notification(membership, date) }
     end
 
     def cancel
@@ -140,6 +121,23 @@ module Experimentation
     end
 
     def evict_patients
+    end
+
+    def schedule_notification(membership, date)
+      Notification.where(
+        experiment: self,
+        reminder_template_id: membership.template_id,
+        patient_id: membership.patient_id
+      ).exists? ||
+        Notification.create!(
+          experiment: self,
+          message: membership.message,
+          patient_id: membership.patient_id,
+          purpose: :experimental_appointment_reminder,
+          remind_on: date,
+          reminder_template_id: membership.template_id,
+          status: "pending"
+        )
     end
   end
 end
