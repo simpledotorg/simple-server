@@ -27,6 +27,7 @@ class UpdateBangladeshRegionsScript < DataScript
 
   def call
     destroy_empty_facilities
+    rename_district
     rename_upazilas
     import_from_csv
     logger.info "Done running #{self.class} data_script - results:"
@@ -36,6 +37,19 @@ class UpdateBangladeshRegionsScript < DataScript
   end
 
   private
+
+  def rename_district
+    regions = Region.where(name: "Barisal")
+    regions.each do |region|
+      if run_safely {
+        region.update!(name: "Barishal")
+      }
+        results[:updates][:region_rename] += 1
+      else
+        results[:errors][:block_rename_failed] += 1
+      end
+    end
+  end
 
   UPAZILA_RENAMES = {
     "Biswambarpur" => "Bishwambarpur",
