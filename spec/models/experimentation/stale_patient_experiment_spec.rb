@@ -118,7 +118,7 @@ RSpec.describe Experimentation::StalePatientExperiment do
       create(:reminder_template, message: "3", treatment_group: treatment_group, remind_on_in_days: 0)
 
       expect(described_class.first.memberships_to_notify(Date.today)).to contain_exactly(membership_1, membership_2)
-      expect(described_class.first.memberships_to_notify(Date.today).map(&:message)).to contain_exactly("1", "2")
+      expect(described_class.first.memberships_to_notify(Date.today).select(:message).pluck(:message)).to contain_exactly("1", "2")
     end
 
     it "only picks patients who are still enrolled in the experiment" do
