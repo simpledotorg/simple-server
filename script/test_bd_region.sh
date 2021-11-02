@@ -11,6 +11,7 @@ bin/rails db:environment:set RAILS_ENV=development
 bin/rails db:refresh_matviews
 bin/rails db:migrate
 script/run_data_script update_bangladesh_regions_script
+bin/rails 'create_admin_user[admin,admin@simple.org,Resolve2SaveLives]'
 
 echo "You can now run the real thing with dry_run turned off with:"
 echo
