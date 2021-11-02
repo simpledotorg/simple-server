@@ -16,52 +16,26 @@ RSpec.describe DistrictAnalyticsQuery do
   let(:two_months_back) { current_month - 2.months }
   let(:one_month_back) { current_month - 1.months }
 
+  around do |example|
+    with_reporting_time_zone { example.run }
+  end
+
   context "when there is data available" do
     before do
       [four_months_back, three_months_back].each do |month|
-        #
         # register patients in facility_1 and assign it facility_2
-        #
         patients_1 = Timecop.travel(month) {
-          create_list(
-            :patient,
-            3,
-            :hypertension,
-            registration_facility: facility_1,
-            registration_user: user,
-            assigned_facility: facility_2
-          )
+          create_list(:patient, 3, :hypertension, registration_facility: facility_1, registration_user: user, assigned_facility: facility_2)
         }
-
-        #
         # register patients in facility_2 and assign it facility_3
-        #
         patients_2 = Timecop.travel(month) {
-          create_list(
-            :patient,
-            3,
-            :hypertension,
-            registration_facility: facility_2,
-            registration_user: user,
-            assigned_facility: facility_3
-          )
+          create_list(:patient, 3, :hypertension, registration_facility: facility_2, registration_user: user, assigned_facility: facility_3)
         }
-
-        #
         # register patient without HTN in facility_2
-        #
         Timecop.travel(month) do
-          create(
-            :patient,
-            :without_hypertension,
-            registration_user: user,
-            registration_facility: facility_2
-          )
+          create(:patient, :without_hypertension, registration_user: user, registration_facility: facility_2)
         end
-
-        #
         # add blood_pressures next month to facility_1 & facility_2
-        #
         Timecop.travel(month + 1.month) do
           patients_1.each do |patient|
             create(:bp_with_encounter, patient: patient, facility: facility_1, user: user)
@@ -71,18 +45,10 @@ RSpec.describe DistrictAnalyticsQuery do
             create(:bp_with_encounter, patient: patient, facility: facility_2, user: user)
           end
         end
-
-        #
         # add blood_pressures after a couple of months to facility_1 & facility_2
-        #
         Timecop.travel(month + 2.months) do
-          patients_1.each do |patient|
-            create(:bp_with_encounter, patient: patient, facility: facility_1, user: user)
-          end
-
-          patients_2.each do |patient|
-            create(:bp_with_encounter, patient: patient, facility: facility_2, user: user)
-          end
+          patients_1.each { |patient| create(:bp_with_encounter, patient: patient, facility: facility_1, user: user) }
+          patients_2.each { |patient| create(:bp_with_encounter, patient: patient, facility: facility_2, user: user) }
         end
       end
     end
@@ -121,6 +87,7 @@ RSpec.describe DistrictAnalyticsQuery do
           }
         }
 
+        refresh_views
         expect(analytics.call).to eq(expected_result)
       end
     end
@@ -147,6 +114,7 @@ RSpec.describe DistrictAnalyticsQuery do
                 }
             }
 
+          refresh_views
           expect(analytics.registered_patients_by_period).to eq(expected_result)
         end
       end
@@ -162,6 +130,7 @@ RSpec.describe DistrictAnalyticsQuery do
               facility_3.id => {total_registered_patients: 0}
             }
 
+          refresh_views
           expect(analytics.total_registered_patients).to eq(expected_result)
         end
       end
@@ -187,6 +156,7 @@ RSpec.describe DistrictAnalyticsQuery do
           }
         }
 
+        refresh_views
         expect(analytics.follow_up_patients_by_period).to eq(expected_result)
       end
     end
@@ -196,6 +166,7 @@ RSpec.describe DistrictAnalyticsQuery do
       let!(:bp_in_another_org) { create(:bp_with_encounter, facility: facility_in_another_org) }
 
       it "does not contain data from a different organization" do
+        refresh_views
         expect(analytics.registered_patients_by_period.keys).not_to include(facility_in_another_org.id)
         expect(analytics.total_registered_patients.keys).not_to include(facility_in_another_org.id)
         expect(analytics.follow_up_patients_by_period.keys).not_to include(facility_in_another_org.id)
@@ -205,6 +176,7 @@ RSpec.describe DistrictAnalyticsQuery do
 
   context "when there is no data available" do
     it "returns nil for all analytics queries" do
+      refresh_views
       expect(analytics.total_registered_patients[facility_1.id]).to eq(total_registered_patients: 0)
     end
   end
@@ -224,15 +196,17 @@ RSpec.describe DistrictAnalyticsQuery do
 
     before do
       Timecop.travel(three_months_back) do
+        d Time.current
         create(:bp_with_encounter, patient: patients.first, facility: facility_2, user: user)
         create(:bp_with_encounter, patient: patients.second, facility: facility_2, user: user)
       end
 
       patients.first.discard_data
+      refresh_views
     end
 
     describe "#registered_patients_by_period" do
-      it "excludes count discarded patients" do
+      it "excludes discarded patients" do
         expected_result =
           {
             facility_2.id =>
@@ -248,7 +222,7 @@ RSpec.describe DistrictAnalyticsQuery do
     end
 
     describe "#follow_up_patients_by_period" do
-      it "excludes count discarded patients" do
+      fit "excludes discarded patients" do
         expected_result =
           {
             facility_2.id =>
@@ -259,7 +233,16 @@ RSpec.describe DistrictAnalyticsQuery do
               }
           }
 
-        expect(analytics.follow_up_patients_by_period).to eq(expected_result)
+
+        result = analytics.follow_up_patients_by_period
+        d Date.new
+        d Date.current
+        d three_months_back
+        d expected_result[facility_2.id][:follow_up_patients_by_period].keys.first.class
+        d result[facility_2.id][:follow_up_patients_by_period].keys.first.class
+        d expected_result[facility_2.id].keys.first.class
+        d result[facility_2.id].keys.first.class
+        expect(result[facility_2.id][:follow_up_patients_by_period]).to eq({three_months_back => 1})
       end
     end
   end
@@ -270,6 +253,7 @@ RSpec.describe DistrictAnalyticsQuery do
       expected_result = {
         facility_1.id => {total_assigned_patients: 1}
       }
+      refresh_views
 
       expect(analytics.total_assigned_patients).to eq(expected_result)
     end

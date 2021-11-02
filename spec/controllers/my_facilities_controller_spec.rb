@@ -16,9 +16,6 @@ RSpec.describe MyFacilitiesController, type: :controller do
     sign_in(supervisor.email_authentication)
   end
 
-  def refresh_views
-    RefreshReportingViews.call
-  end
 
   describe "GET #index" do
     it "returns a success response" do
