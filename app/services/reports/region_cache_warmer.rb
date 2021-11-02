@@ -32,9 +32,11 @@ module Reports
     def warm_caches
       Time.use_zone(Period::REPORTING_TIME_ZONE) do
         Region::REGION_TYPES.reject { |t| t == "root" }.each do |region_type|
-          Region.public_send("#{region_type}_regions").find_in_batches do |batch|
-            warm_patient_breakdown_caches(batch)
-            warm_repository_caches(batch)
+          Datadog.tracer.trace("region_cache_warmer.warm_repository_cache", resource: region_type) do |span|
+            Region.public_send("#{region_type}_regions").find_in_batches do |batch|
+              warm_patient_breakdown_caches(batch)
+              warm_repository_caches(batch)
+            end
           end
         end
       end
@@ -44,10 +46,8 @@ module Reports
       region_type = regions.first.region_type
       notify "Starting warming cache for repository cache for batch of #{region_type} regions"
       range = (period.advance(months: -23)..period)
-      Datadog.tracer.trace("region_cache_warmer.warm_repository_cache", resource: region_type) do |span|
-        repo = Repository.new(regions, periods: range, reporting_schema_v2: true)
-        repo.warm_cache
-      end
+      repo = Repository.new(regions, periods: range, reporting_schema_v2: true)
+      repo.warm_cache
       Statsd.instance.increment("region_cache_warmer.#{region_type}.warm_repository_cache.region_count", regions.count)
     end
 
