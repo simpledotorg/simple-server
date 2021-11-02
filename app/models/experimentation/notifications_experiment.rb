@@ -81,7 +81,7 @@ module Experimentation
 
     def cancel
       ActiveRecord::Base.transaction do
-        notifications.where(status: %w[pending scheduled]).update_all(status: :cancelled)
+        notifications.cancel_pending_notifications
         super
       end
     end
@@ -158,6 +158,28 @@ module Experimentation
     end
 
     def evict_patients
+      treatment_group_memberships.status_enrolled
+        .joins(:appointment)
+        .where("appointments.status <> 'scheduled' or appointments.remind_on > expected_return_date")
+        .evict(reason: "appointment_moved")
+
+      treatment_group_memberships.status_enrolled
+        .joins(patient: :latest_scheduled_appointments)
+        .where("treatment_group_memberships.appointment_id <> appointments.id")
+        .evict(reason: "new_appointment_created_after_enrollment")
+
+      treatment_group_memberships.status_enrolled
+        .joins(treatment_group: :reminder_templates)
+        .where("messages -> reminder_template.message ->> 'result' = 'failed'")
+        .evict(reason: "notification_failed")
+
+      cancel_evicted_notifications
+    end
+
+    def cancel_evicted_notifications
+      Notification
+        .where(patient_id: treatment_group_memberships.status_evicted.select(:patient_id))
+        .cancel_pending_notifications
     end
 
     def schedule_notification(membership, date)

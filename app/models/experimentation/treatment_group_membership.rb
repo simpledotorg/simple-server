@@ -3,6 +3,7 @@ module Experimentation
     belongs_to :treatment_group
     belongs_to :patient
     belongs_to :experiment
+    belongs_to :appointment
 
     validate :one_active_experiment_per_patient
 
@@ -11,6 +12,11 @@ module Experimentation
       visited: "visited",
       evicted: "evicted"
     }, _prefix: true
+
+    def self.evict(reason:)
+      update_all(status: :evicted, status_updated_at: Time.current, status_reason: reason)
+
+    end
 
     def record_notification(notification)
       reload # this is to reload the `messages` field to avoid staleness while updating.
