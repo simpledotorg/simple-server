@@ -6,17 +6,19 @@ class Reports::RegionsController < AdminController
   before_action :set_page, only: [:details]
   before_action :set_per_page, only: [:details]
   before_action :find_region, except: [:index, :monthly_district_data_report]
-  around_action :check_reporting_schema_toggle
   around_action :set_reporting_time_zone
   after_action :log_cache_metrics
   delegate :cache, to: Rails
+
+  INDEX_CACHE_KEY = "v3"
 
   def index
     accessible_facility_regions = authorize { current_admin.accessible_facility_regions(:view_reports) }
 
     cache_key = current_admin.regions_access_cache_key
-    cache_version = "#{accessible_facility_regions.cache_key} / v2"
-    @accessible_regions = cache.fetch(cache_key, version: cache_version, expires_in: 7.days) {
+    cache_version = "#{accessible_facility_regions.cache_key}/#{INDEX_CACHE_KEY}"
+
+    @accessible_regions = cache.fetch(cache_key, force: bust_cache?, version: cache_version, expires_in: 7.days) {
       accessible_facility_regions.each_with_object({}) { |facility, result|
         ancestors = facility.cached_ancestors.map { |facility| [facility.region_type, facility] }.to_h
         org, state, district, block = ancestors.values_at("organization", "state", "district", "block")
@@ -30,8 +32,11 @@ class Reports::RegionsController < AdminController
   end
 
   def show
-    @service = Reports::RegionService.new(region: @region, period: @period, reporting_schema_v2: RequestStore[:reporting_schema_v2])
-    @data = @service.call
+    start_period = @period.advance(months: -(Reports::MAX_MONTHS_OF_DATA - 1))
+    range = Range.new(start_period, @period)
+    @repository = Reports::Repository.new(@region, periods: range, reporting_schema_v2: RequestStore[:reporting_schema_v2])
+    @presenter = Reports::RepositoryPresenter.new(@repository)
+    @data = @presenter.call(@region)
     @with_ltfu = with_ltfu?
 
     @child_regions = @region.reportable_children
@@ -159,22 +164,6 @@ class Reports::RegionsController < AdminController
     }
   end
 
-  def check_reporting_schema_toggle
-    original = RequestStore[:reporting_schema_v2]
-    RequestStore[:reporting_schema_v2] = reporting_schema_via_param_or_feature_flag
-    yield
-  ensure
-    RequestStore[:reporting_schema_v2] = original
-  end
-
-  # We want a falsey param value (ie v2=false) to override a user feature flagged value, hence the awkwardness below
-  def reporting_schema_via_param_or_feature_flag
-    param_flag = ActiveRecord::Type::Boolean.new.deserialize(report_params[:v2])
-    user_flag = current_admin.feature_enabled?(:reporting_schema_v2)
-    return param_flag unless param_flag.nil?
-    user_flag
-  end
-
   def accessible_region?(region, action)
     return false unless region.reportable_region?
     current_admin.region_access(memoized: true).accessible_region?(region, action)
@@ -206,7 +195,7 @@ class Reports::RegionsController < AdminController
   end
 
   def set_period
-    period_params = report_params[:period].presence || Reports::RegionService.default_period.attributes
+    period_params = report_params[:period].presence || Reports.default_period.attributes
     @period = Period.new(period_params)
   end
 

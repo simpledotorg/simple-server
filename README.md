@@ -48,6 +48,13 @@ $ cd simple-server
 $ bin/setup
 ```
 
+Note: If you already have a previous dev environment you're trying to refresh, it's easiest to drop your database run setup again.
+```
+$ rails db:drop
+$ rails parallel:drop
+$ bin/setup
+```
+
 If you encounter issues with this script, please open [a new issue with details](https://github.com/simpledotorg/simple-server/issues/new?title=Problems+with+bin/setup). Please include the entire log from bin/setup, as well as your computer / OS details.
 
 #### Docker Compose
@@ -87,11 +94,11 @@ set up the application step by step. You can do so as follows.
 First, you need to [install
 ruby](https://www.ruby-lang.org/en/documentation/installation). It is
 recommended to use [rbenv](https://github.com/rbenv/rbenv) to manage ruby
-versions. Note that we currently use Bundler version 1.17.3, so that is also hardcoded below.
+versions. Note that we currently use Bundler version 2.2.29, so that is also hardcoded below.
 
 ```bash
-gem install bundler -v 1.17.3
-bundle _1.17.3_ install
+gem install bundler -v 2.2.29
+bundle _2.2.29_ install
 rake yarn:install
 rails db:setup
 ```
@@ -257,6 +264,15 @@ To generate seed (fake patients) data, execute the following command from the pr
 ```bash
 $ bin/rails db:seed_patients
 ```
+
+Need a larger dataset? Try adding the `SEED_TYPE` variable. (It takes longer to run, of course.) This works on all patient seeding commands:
+
+```bash
+  SEED_TYPE=medium bin/rails db:seed_patients
+# You also may want an entirely new large dataset, with more facilities and regions. You can do that with a full reset:
+SEED_TYPE=large bin/rails db:reset
+
+Available sizes are `small`, `medium`, and `large`. (Large takes a LONG time to run. You probably don't need it.)
 
 To purge the generated patient data, run
 
