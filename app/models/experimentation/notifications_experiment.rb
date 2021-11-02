@@ -98,6 +98,21 @@ module Experimentation
         .each_record { |membership| schedule_notification(membership, date) }
     end
 
+    def record_notification_results
+      # TODO: Look at query performance
+      treatment_group_memberships
+        .joins(treatment_group: :reminder_templates)
+        .where("messages -> reminder_templates.message ->> 'notification_status' = ?", :pending)
+        .select("messages -> reminder_templates.message ->> 'notification_id' AS notification_id")
+        .select("reminder_templates.message, treatment_group_memberships.*")
+        .in_batches(of: BATCH_SIZE).each_record do |membership|
+        membership.record_notification_result(
+          membership.message,
+          notification_result(membership.notification_id)
+        )
+      end
+    end
+
     def cancel
       ActiveRecord::Base.transaction do
         notifications.cancel_pending_notifications

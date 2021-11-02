@@ -11,6 +11,6 @@ COPY Gemfile Gemfile.lock ./
 
 COPY . .
 
-RUN gem install bundler -v 1.17.3
-RUN bundle _1.17.3_ install
+RUN gem install bundler -v 2.2.29
+RUN bundle _2.2.29_ install
 RUN rake yarn:install
