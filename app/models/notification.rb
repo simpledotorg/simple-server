@@ -36,6 +36,8 @@ class Notification < ApplicationRecord
   scope :due_today, -> { where(remind_on: Date.current, status: [:pending]) }
 
   def localized_message
+    return unless patient
+
     case purpose
     when "covid_medication_reminder"
       I18n.t(
