@@ -33,7 +33,7 @@ RSpec.describe DrugStocksReportExporter do
     before do
       facilities.each do |facility|
         stocks_by_rxnorm.map do |(rxnorm_code, drug_stock)|
-          protocol_drug = protocol.protocol_drugs.find_by(rxnorm_code: rxnorm_code)
+          protocol_drug = protocol.protocol_drugs.find_by!(rxnorm_code: rxnorm_code)
           create(:drug_stock,
             facility: facility,
             protocol_drug: protocol_drug,
@@ -44,7 +44,7 @@ RSpec.describe DrugStocksReportExporter do
       end
 
       stocks_by_rxnorm.map do |(rxnorm_code, drug_stock)|
-        protocol_drug = protocol.protocol_drugs.find_by(rxnorm_code: rxnorm_code)
+        protocol_drug = protocol.protocol_drugs.find_by!(rxnorm_code: rxnorm_code)
         create(:drug_stock,
           region: facility_group.region,
           protocol_drug: protocol_drug,
@@ -184,8 +184,10 @@ RSpec.describe DrugStocksReportExporter do
           10000, 20000, 17857,
           10000, 10000, 20000, 81081,
           nil, nil, nil]
+      refresh_views
 
       csv = described_class.csv(query)
+
       expected_csv =
         timestamp.to_csv +
         headers_row_1.to_csv +
