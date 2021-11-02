@@ -2,7 +2,7 @@ module Experimentation
   class NotificationsExperiment < Experiment
     include Memery
     MAX_PATIENTS_PER_DAY = 2000
-    MEMBERSHIPS_BATCH_SIZE = 1000
+    BATCH_SIZE = 1000
 
     default_scope { where(experiment_type: %w[current_patients stale_patients]) }
 
@@ -16,7 +16,7 @@ module Experimentation
     # See https://docs.google.com/document/d/1IMXu_ca9xKU8Xox_3v403ZdvNGQzczLWljy7LQ6RQ6A for more details.
     def self.conduct_daily(date)
       running.each { |experiment| experiment.enroll_patients(date) }
-      monitoring.each { |experiment| experiment.monitor(date) }
+      monitoring.each { |experiment| experiment.monitor }
       notifying.each { |experiment| experiment.schedule_notifications(date) }
     end
 
@@ -46,12 +46,12 @@ module Experimentation
         .limit([remaining_enrollments_allowed(date), limit].min)
         .includes(:assigned_facility, :registration_facility, :medical_history)
         .includes(latest_scheduled_appointments: [:facility, :creation_facility])
-        .in_batches(of: MEMBERSHIPS_BATCH_SIZE)
+        .in_batches(of: BATCH_SIZE)
         .each_record { |patient| random_treatment_group.enroll(patient, reporting_data(patient, date)) }
     end
 
-    def monitor(date)
-      # Add check_notification_statuses in a follow up PR
+    def monitor
+      record_notification_results
       mark_visits
       evict_patients
     end
@@ -60,8 +60,23 @@ module Experimentation
       memberships_to_notify(date)
         .select("reminder_templates.id reminder_template_id")
         .select("reminder_templates.message message, treatment_group_memberships.*")
-        .in_batches(of: MEMBERSHIPS_BATCH_SIZE)
+        .in_batches(of: BATCH_SIZE)
         .each_record { |membership| schedule_notification(membership, date) }
+    end
+
+    def record_notification_results
+      # TODO: Look at query performance
+      treatment_group_memberships
+        .joins(treatment_group: :reminder_templates)
+        .where("messages -> reminder_templates.message ->> 'notification_status' = ?", :pending)
+        .select("messages -> reminder_templates.message ->> 'notification_id' AS notification_id")
+        .select("reminder_templates.message, treatment_group_memberships.*")
+        .in_batches(of: BATCH_SIZE).each_record do |membership|
+        membership.record_notification_result(
+          membership.message,
+          notification_result(membership.notification_id)
+        )
+      end
     end
 
     def cancel
@@ -119,6 +134,31 @@ module Experimentation
       }
     end
 
+    def notification_result(notification_id)
+      communications = Communication.where(notification_id: notification_id)
+      successful_delivery =
+        communications.with_delivery_detail.select("delivery_detail.result, communications.*").find_by(
+          delivery_detail: {result: [:read, :delivered, :sent]}
+        )
+      notification = Notification.find(notification_id)
+
+      if successful_delivery.present?
+        {notification_status: notification.status,
+         notification_status_updated_at: notification.updated_at,
+         result: :success,
+         successful_communication_type: successful_delivery.communication_type,
+         successful_communication_created_at: successful_delivery.created_at.to_s,
+         successful_delivery_status: successful_delivery.result}
+      elsif communications.exists?
+        {notification_status: notification.status,
+         notification_status_updated_at: notification.updated_at,
+         result: :failed}
+      else
+        {notification_status: notification.status,
+         status_updated_at: notification.updated_at}
+      end
+    end
+
     def mark_visits
     end
 
@@ -138,8 +178,10 @@ module Experimentation
           purpose: :experimental_appointment_reminder,
           remind_on: date,
           reminder_template_id: membership.reminder_template_id,
-          status: "pending"
-        )
+          status: "pending",
+          subject_id: membership.appointment_id,
+          subject_type: "Appointment"
+        ).then { |notification| membership.record_notification(notification) }
     end
   end
 end
