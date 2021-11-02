@@ -33,7 +33,7 @@ Patients may need to be evicted from the experiment as the experiment progresses
   A nurse can update a patient’s appointment from the app and change its status or scheduled date.
   In this case the patient’s expected return date becomes unclear because the appointment they were enrolled in the experiment for is no longer relevant.
   This can also happen if an accidental appointment with a different scheduled date was created.
-3. where we failed to send a notification. This could happen if we have a invalid number or due to network failures.
+2. where we failed to send a notification. This could happen if we have a invalid number or due to network failures.
 
 ### Tracking visits
 - The start date for monitoring return visits for each patient should be the date of enrollment in an experiment (and treatment group).
