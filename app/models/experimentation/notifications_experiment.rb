@@ -2,7 +2,7 @@ module Experimentation
   class NotificationsExperiment < Experiment
     include Memery
     MAX_PATIENTS_PER_DAY = 2000
-    MEMBERSHIPS_BATCH_SIZE = 1000
+    BATCH_SIZE = 1000
 
     default_scope { where(experiment_type: %w[current_patients stale_patients]) }
 
@@ -46,7 +46,7 @@ module Experimentation
         .limit([remaining_enrollments_allowed(date), limit].min)
         .includes(:assigned_facility, :registration_facility, :medical_history)
         .includes(latest_scheduled_appointments: [:facility, :creation_facility])
-        .in_batches(of: MEMBERSHIPS_BATCH_SIZE)
+        .in_batches(of: BATCH_SIZE)
         .each_record { |patient| random_treatment_group.enroll(patient, reporting_data(patient, date)) }
     end
 
@@ -60,10 +60,10 @@ module Experimentation
       # TODO: Look at query performance
       treatment_group_memberships
         .joins(treatment_group: :reminder_templates)
-        .where("messages -> reminder_templates.message ->> 'status' = ?", :pending)
+        .where("messages -> reminder_templates.message ->> 'notification_status' = ?", :pending)
         .select("messages -> reminder_templates.message ->> 'notification_id' AS notification_id")
         .select("reminder_templates.message, treatment_group_memberships.*")
-        .in_batches(of: MEMBERSHIPS_BATCH_SIZE).each_record do |membership|
+        .in_batches(of: BATCH_SIZE).each_record do |membership|
         membership.record_notification_result(
           membership.message,
           notification_result(membership.notification_id)
@@ -158,19 +158,23 @@ module Experimentation
       successful_delivery =
         communications.with_delivery_detail.select("delivery_detail.result, communications.*").find_by(
           delivery_detail: {result: [:read, :delivered, :sent]}
-      )
-      notification_status = Notification.find(notification_id).status
+        )
+      notification = Notification.find(notification_id)
 
       if successful_delivery.present?
-        {status: notification_status,
+        {notification_status: notification.status,
+         notification_status_updated_at: notification.updated_at,
          result: :success,
          successful_communication_type: successful_delivery.communication_type,
          successful_communication_created_at: successful_delivery.created_at.to_s,
-         delivery_status: successful_delivery.result}
+         successful_delivery_status: successful_delivery.result}
       elsif communications.exists?
-        {status: notification_status, result: :failed}
+        {notification_status: notification.status,
+         notification_status_updated_at: notification.updated_at,
+         result: :failed}
       else
-        {}
+        {notification_status: notification.status,
+         status_updated_at: notification.updated_at}
       end
     end
 
