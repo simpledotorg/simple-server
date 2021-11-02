@@ -20,7 +20,7 @@ module Experimentation
         status: notification.status,
         notification_id: notification.id,
         localized_message: notification.localized_message,
-        created_at: notification.created_at
+        created_at: notification.created_at.to_s
       }
       save!
     end
