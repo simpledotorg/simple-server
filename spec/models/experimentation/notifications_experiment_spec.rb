@@ -301,7 +301,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
 
       experiment.record_notification_results
 
-      expect(membership.reload.messages[reminder_template.message]).to include({ status: notification.status, result: "success"}.with_indifferent_access)
+      expect(membership.reload.messages[reminder_template.message]).to include({status: notification.status, result: "success"}.with_indifferent_access)
     end
   end
 

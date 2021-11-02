@@ -139,7 +139,7 @@ module Experimentation
       successful_delivery =
         communications.with_delivery_detail.select("delivery_detail.result, communications.*").find_by(
           delivery_detail: {result: [:read, :delivered, :sent]}
-      )
+        )
       notification_status = Notification.find(notification_id).status
 
       if successful_delivery.present?
