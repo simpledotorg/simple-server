@@ -2,7 +2,7 @@ module Experimentation
   class NotificationsExperiment < Experiment
     include Memery
     MAX_PATIENTS_PER_DAY = 2000
-    MEMBERSHIPS_BATCH_SIZE = 1000
+    BATCH_SIZE = 1000
 
     default_scope { where(experiment_type: %w[current_patients stale_patients]) }
 
@@ -46,7 +46,7 @@ module Experimentation
         .limit([remaining_enrollments_allowed(date), limit].min)
         .includes(:assigned_facility, :registration_facility, :medical_history)
         .includes(latest_scheduled_appointments: [:facility, :creation_facility])
-        .in_batches(of: MEMBERSHIPS_BATCH_SIZE)
+        .in_batches(of: BATCH_SIZE)
         .each_record { |patient| random_treatment_group.enroll(patient, reporting_data(patient, date)) }
     end
 
@@ -60,7 +60,7 @@ module Experimentation
       memberships_to_notify(date)
         .select("reminder_templates.id reminder_template_id")
         .select("reminder_templates.message message, treatment_group_memberships.*")
-        .in_batches(of: MEMBERSHIPS_BATCH_SIZE)
+        .in_batches(of: BATCH_SIZE)
         .each_record { |membership| schedule_notification(membership, date) }
     end
 
@@ -71,7 +71,7 @@ module Experimentation
         .where("messages -> reminder_templates.message ->> 'status' = ?", :pending)
         .select("messages -> reminder_templates.message ->> 'notification_id' AS notification_id")
         .select("reminder_templates.message, treatment_group_memberships.*")
-        .in_batches(of: MEMBERSHIPS_BATCH_SIZE).each_record do |membership|
+        .in_batches(of: BATCH_SIZE).each_record do |membership|
         membership.record_notification_result(
           membership.message,
           notification_result(membership.notification_id)
