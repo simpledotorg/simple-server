@@ -1,7 +1,7 @@
 # A/B Testing Framework enhancements
 
 ## Status
-Proposed
+Accepted
 
 ## Context
 Our first attempt at [A/B testing notifications](./017-ab-testing.md) surfaced some concerns:
