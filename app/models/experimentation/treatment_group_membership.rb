@@ -18,9 +18,9 @@ module Experimentation
       self.messages[notification.message] = {
         remind_on: notification.remind_on,
         notification_status: notification.status,
-        notification_status_updated_at: notification.updated_at,
         notification_id: notification.id,
         localized_message: notification.localized_message,
+        notification_status_updated_at: notification.updated_at.to_s,
         created_at: notification.created_at.to_s
       }
       save!

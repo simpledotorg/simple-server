@@ -34,7 +34,8 @@ RSpec.describe Experimentation::TreatmentGroupMembership, type: :model do
       expect(membership.reload.messages[notification.message]).to eq(
         {
           remind_on: notification.remind_on.to_s,
-          status: notification.status,
+          notification_status: notification.status,
+          notification_status_updated_at: notification.updated_at.to_s,
           notification_id: notification.id,
           localized_message: notification.localized_message,
           created_at: notification.created_at.to_s
