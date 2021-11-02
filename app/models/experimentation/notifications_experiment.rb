@@ -2,7 +2,7 @@ module Experimentation
   class NotificationsExperiment < Experiment
     include Memery
     MAX_PATIENTS_PER_DAY = 2000
-    ENROLLMENT_BATCH_SIZE = 1000
+    MEMBERSHIPS_BATCH_SIZE = 1000
 
     default_scope { where(experiment_type: %w[current_patients stale_patients]) }
 
@@ -12,10 +12,12 @@ module Experimentation
         .distinct
     end
 
+    # The order of operations is important.
+    # See https://docs.google.com/document/d/1IMXu_ca9xKU8Xox_3v403ZdvNGQzczLWljy7LQ6RQ6A for more details.
     def self.conduct_daily(date)
       running.each { |experiment| experiment.enroll_patients(date) }
       monitoring.each { |experiment| experiment.monitor(date) }
-      notifying.each { |experiment| experiment.send_notifications(date) }
+      notifying.each { |experiment| experiment.schedule_notifications(date) }
     end
 
     # Returns patients who are eligible for enrollment. These should be
@@ -39,22 +41,27 @@ module Experimentation
                                              .having("count(patient_id) > 1"))
     end
 
-    def enroll_patients(date)
+    def enroll_patients(date, limit = MAX_PATIENTS_PER_DAY)
       eligible_patients(date)
-        .limit(MAX_PATIENTS_PER_DAY)
+        .limit([remaining_enrollments_allowed(date), limit].min)
         .includes(:assigned_facility, :registration_facility, :medical_history)
         .includes(latest_scheduled_appointments: [:facility, :creation_facility])
-        .in_batches(of: ENROLLMENT_BATCH_SIZE)
+        .in_batches(of: MEMBERSHIPS_BATCH_SIZE)
         .each_record { |patient| random_treatment_group.enroll(patient, reporting_data(patient, date)) }
     end
 
     def monitor(date)
+      # Add check_notification_statuses in a follow up PR
       mark_visits
       evict_patients
     end
 
-    def send_notifications(date)
-      # Send notifications to memberships_to_notify(date)
+    def schedule_notifications(date)
+      memberships_to_notify(date)
+        .select("reminder_templates.id reminder_template_id")
+        .select("reminder_templates.message message, treatment_group_memberships.*")
+        .in_batches(of: MEMBERSHIPS_BATCH_SIZE)
+        .each_record { |membership| schedule_notification(membership, date) }
     end
 
     def cancel
@@ -65,6 +72,10 @@ module Experimentation
     end
 
     private
+
+    def remaining_enrollments_allowed(date)
+      MAX_PATIENTS_PER_DAY - treatment_group_memberships.where(experiment_inclusion_date: date).count
+    end
 
     def reporting_data(patient, date)
       medical_history = patient.medical_history
@@ -107,11 +118,28 @@ module Experimentation
         registration_facility_state: registration_facility&.state
       }
     end
-  end
 
-  def mark_visits
-  end
+    def mark_visits
+    end
 
-  def evict_patients
+    def evict_patients
+    end
+
+    def schedule_notification(membership, date)
+      Notification.where(
+        experiment: self,
+        reminder_template_id: membership.reminder_template_id,
+        patient_id: membership.patient_id
+      ).exists? ||
+        Notification.create!(
+          experiment: self,
+          message: membership.message,
+          patient_id: membership.patient_id,
+          purpose: :experimental_appointment_reminder,
+          remind_on: date,
+          reminder_template_id: membership.reminder_template_id,
+          status: "pending"
+        )
+    end
   end
 end
