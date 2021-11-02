@@ -3,7 +3,7 @@ module Experimentation
     belongs_to :treatment_group
     belongs_to :patient
     belongs_to :experiment
-    belongs_to :appointment
+    belongs_to :appointment, optional: true
 
     validate :one_active_experiment_per_patient
 
