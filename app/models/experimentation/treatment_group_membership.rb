@@ -15,7 +15,6 @@ module Experimentation
 
     def self.evict(reason:)
       update_all(status: :evicted, status_updated_at: Time.current, status_reason: reason)
-
     end
 
     def record_notification(notification)
