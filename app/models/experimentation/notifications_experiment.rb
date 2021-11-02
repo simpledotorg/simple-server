@@ -51,12 +51,20 @@ module Experimentation
     end
 
     def monitor
-      record_notification_statuses
+      record_notification_results
       mark_visits
       evict_patients
     end
 
-    def record_notification_statuses
+    def schedule_notifications(date)
+      memberships_to_notify(date)
+        .select("reminder_templates.id reminder_template_id")
+        .select("reminder_templates.message message, treatment_group_memberships.*")
+        .in_batches(of: MEMBERSHIPS_BATCH_SIZE)
+        .each_record { |membership| schedule_notification(membership, date) }
+    end
+
+    def record_notification_results
       # TODO: Look at query performance
       treatment_group_memberships
         .joins(treatment_group: :reminder_templates)
@@ -155,16 +163,17 @@ module Experimentation
 
     def notification_result(notification_id)
       communications = Communication.where(notification_id: notification_id)
-      successful_delivery = communications.with_delivery_detail.find_by(
-        delivery_detail: {result: [:read, :delivered, :sent]}
+      successful_delivery =
+        communications.with_delivery_detail.select("delivery_detail.result, communications.*").find_by(
+          delivery_detail: {result: [:read, :delivered, :sent]}
       )
       notification_status = Notification.find(notification_id).status
 
       if successful_delivery.present?
         {status: notification_status,
          result: :success,
-         successful_communication_type: successful_delivery.communication.communication_type,
-         successful_communication_created_at: successful_delivery.communication.created_at,
+         successful_communication_type: successful_delivery.communication_type,
+         successful_communication_created_at: successful_delivery.created_at.to_s,
          delivery_status: successful_delivery.result}
       elsif communications.exists?
         {status: notification_status, result: :failed}

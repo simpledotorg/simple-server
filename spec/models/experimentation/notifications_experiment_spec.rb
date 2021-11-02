@@ -237,6 +237,74 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
     end
   end
 
+  describe "#record_notification_statuses" do
+    it "records a result for all notifications that were recorded 'pending'" do
+      experiment = described_class.find(create(:experiment).id)
+      treatment_group = create(:treatment_group, experiment: experiment)
+      reminder_template = create(:reminder_template, message: "hello.set01", treatment_group: treatment_group)
+      notification = create(:notification, message: reminder_template.message)
+      membership = create(:treatment_group_membership, treatment_group: treatment_group)
+      membership.record_notification(notification)
+
+      successful_communication = create(:communication, notification: notification)
+      create(:twilio_sms_delivery_detail, :delivered, communication: successful_communication)
+
+      unsuccessful_communication = create(:communication, notification: notification)
+      create(:twilio_sms_delivery_detail, :failed, communication: unsuccessful_communication)
+      notification.update(status: :sent)
+
+      experiment.record_notification_results
+
+      expect(membership.reload.messages[reminder_template.message]).to include(
+        {
+          status: notification.status,
+          result: "success",
+          successful_communication_type: successful_communication.communication_type,
+          successful_communication_created_at: successful_communication.created_at.to_s,
+          delivery_status: "delivered"
+        }.with_indifferent_access
+      )
+    end
+
+    it "records a failure if only failed deliveries are present" do
+      experiment = described_class.find(create(:experiment).id)
+      treatment_group = create(:treatment_group, experiment: experiment)
+      reminder_template = create(:reminder_template, message: "hello.set01", treatment_group: treatment_group)
+      notification = create(:notification, message: reminder_template.message)
+      membership = create(:treatment_group_membership, treatment_group: treatment_group)
+      membership.record_notification(notification)
+
+      unsuccessful_communication = create(:communication, notification: notification)
+      create(:twilio_sms_delivery_detail, :failed, communication: unsuccessful_communication)
+      notification.update(status: :sent)
+
+      experiment.record_notification_results
+
+      expect(membership.reload.messages[reminder_template.message]).to include(
+        {
+          status: notification.status,
+          result: "failed"
+        }.with_indifferent_access
+      )
+    end
+
+    it "records notification statuses for all memberships (not just enrolled)" do
+      experiment = described_class.find(create(:experiment).id)
+      treatment_group = create(:treatment_group, experiment: experiment)
+      reminder_template = create(:reminder_template, message: "hello.set01", treatment_group: treatment_group)
+      notification = create(:notification, message: reminder_template.message)
+      membership = create(:treatment_group_membership, treatment_group: treatment_group, status: :evicted)
+      membership.record_notification(notification)
+
+      successful_communication = create(:communication, notification: notification)
+      create(:twilio_sms_delivery_detail, :delivered, communication: successful_communication)
+
+      experiment.record_notification_results
+
+      expect(membership.reload.messages[reminder_template.message]).to include({ status: notification.status, result: "success"}.with_indifferent_access)
+    end
+  end
+
   describe "#cancel" do
     it "changes pending and scheduled notification statuses to 'cancelled'" do
       experiment = create(:experiment)
