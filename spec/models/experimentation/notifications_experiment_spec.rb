@@ -206,7 +206,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
   end
 
   describe "#schedule_notifications" do
-    it "creates a notification for each eligible membership to notify" do
+    it "creates a notification for each eligible membership to notify and records it in treatment group memberships" do
       create(:experiment, experiment_type: "current_patients")
       experiment = Experimentation::CurrentPatientExperiment.first
       treatment_group = create(:treatment_group, experiment: experiment)
@@ -218,6 +218,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
 
       experiment.schedule_notifications(Date.today)
       expect(Notification.pluck(:patient_id)).to contain_exactly(patient.id, patient.id) # Once for each reminder template
+      expect(Experimentation::TreatmentGroupMembership.pluck(:messages).map(&:keys)).to contain_exactly(["1", "2"])
     end
 
     it "doesn't create duplicate notifications if a notification has already been created" do
@@ -231,7 +232,91 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       existing_notification = create(:notification, experiment: experiment, patient: patient, reminder_template: template)
 
       experiment.schedule_notifications(Date.today)
+
       expect(Notification.all).to contain_exactly(existing_notification)
+    end
+  end
+
+  describe "#record_notification_statuses" do
+    it "records a result for all notifications that were recorded 'pending'" do
+      patient = create(:patient)
+      experiment = described_class.find(create(:experiment).id)
+      treatment_group = create(:treatment_group, experiment: experiment)
+      reminder_template = create(:reminder_template, message: "hello.set01", treatment_group: treatment_group)
+      notification = create(:notification,
+        purpose: :experimental_appointment_reminder,
+        message: reminder_template.message,
+        patient: patient,
+        subject: nil)
+      membership = create(:treatment_group_membership, treatment_group: treatment_group, patient: patient)
+      membership.record_notification(notification)
+
+      successful_communication = create(:communication, notification: notification, user: nil, appointment: nil)
+      create(:twilio_sms_delivery_detail, :delivered, communication: successful_communication)
+
+      unsuccessful_communication = create(:communication, notification: notification, user: nil, appointment: nil)
+      create(:twilio_sms_delivery_detail, :failed, communication: unsuccessful_communication)
+      notification.update(status: :sent)
+
+      experiment.record_notification_results
+
+      expect(membership.reload.messages[reminder_template.message]).to include(
+        {
+          notification_status: "sent",
+          result: "success",
+          successful_communication_type: successful_communication.communication_type,
+          successful_communication_created_at: successful_communication.created_at.to_s,
+          successful_delivery_status: "delivered"
+        }.with_indifferent_access
+      )
+    end
+
+    it "records a failure if only failed deliveries are present" do
+      patient = create(:patient)
+      experiment = described_class.find(create(:experiment).id)
+      treatment_group = create(:treatment_group, experiment: experiment)
+      reminder_template = create(:reminder_template, message: "hello.set01", treatment_group: treatment_group)
+      notification = create(:notification,
+        purpose: :experimental_appointment_reminder,
+        message: reminder_template.message,
+        patient: patient,
+        subject: nil)
+      membership = create(:treatment_group_membership, treatment_group: treatment_group, patient: patient)
+      membership.record_notification(notification)
+
+      unsuccessful_communication = create(:communication, notification: notification, user: nil, appointment: nil)
+      create(:twilio_sms_delivery_detail, :failed, communication: unsuccessful_communication)
+      notification.update(status: :sent)
+
+      experiment.record_notification_results
+
+      expect(membership.reload.messages[reminder_template.message]).to include(
+        {
+          notification_status: notification.status,
+          result: "failed"
+        }.with_indifferent_access
+      )
+    end
+
+    it "records notification statuses for all memberships (not just enrolled)" do
+      patient = create(:patient)
+      experiment = described_class.find(create(:experiment).id)
+      treatment_group = create(:treatment_group, experiment: experiment)
+      reminder_template = create(:reminder_template, message: "hello.set01", treatment_group: treatment_group)
+      notification = create(:notification,
+        purpose: :experimental_appointment_reminder,
+        message: reminder_template.message,
+        patient: patient,
+        subject: nil)
+      membership = create(:treatment_group_membership, treatment_group: treatment_group, status: :evicted, patient: patient)
+      membership.record_notification(notification)
+
+      successful_communication = create(:communication, notification: notification, user: nil, appointment: nil)
+      create(:twilio_sms_delivery_detail, :delivered, communication: successful_communication)
+
+      experiment.record_notification_results
+
+      expect(membership.reload.messages[reminder_template.message]).to include({notification_status: notification.status, result: "success"}.with_indifferent_access)
     end
   end
 
