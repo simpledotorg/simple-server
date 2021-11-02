@@ -5,7 +5,6 @@ RSpec.describe Experimentation::TreatmentGroupMembership, type: :model do
     it { should belong_to(:treatment_group) }
     it { should belong_to(:patient) }
     it { should belong_to(:experiment) }
-
   end
 
   describe "validations" do
