@@ -196,7 +196,6 @@ RSpec.describe DrugStocksReportExporter do
         district_warehouse_row.to_csv +
         facility_1_row.to_csv +
         facility_2_row.to_csv
-      refresh_views
 
       expect(csv).to eq(expected_csv)
     end
