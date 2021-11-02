@@ -5,7 +5,7 @@ set -ex
 source ~/.toolbox/toolbox
 
 # Temporarily turn on cache clear if Semaphore has weird bunlding issues
-cache clear
+# cache clear
 
 sem-version ruby 2.6.6
 sem-service start postgres 10
