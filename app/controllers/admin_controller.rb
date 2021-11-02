@@ -4,6 +4,7 @@ class AdminController < ApplicationController
 
   before_action :authenticate_email_authentication!
   before_action :set_bust_cache
+  before_action :set_reporting_schema_v2
   before_action :set_datadog_tags
 
   after_action :verify_authorization_attempted, except: [:root]
@@ -34,6 +35,18 @@ class AdminController < ApplicationController
   helper_method :current_admin
 
   private
+
+  def set_reporting_schema_v2
+    RequestStore[:reporting_schema_v2] = reporting_schema_via_param_or_feature_flag
+  end
+
+  # A query string provided feature flag (v2=1) will always override any other settings here.
+  def reporting_schema_via_param_or_feature_flag
+    param_flag = ActiveRecord::Type::Boolean.new.deserialize(params[:v2])
+    user_flag = current_admin.feature_enabled?(:reporting_schema_v2)
+    return param_flag unless param_flag.nil?
+    user_flag
+  end
 
   def current_admin
     return @current_admin if defined?(@current_admin)

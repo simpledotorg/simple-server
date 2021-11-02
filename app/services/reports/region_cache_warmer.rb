@@ -4,48 +4,59 @@ module Reports
       new.call
     end
 
-    def initialize(period: RegionService.default_period)
-      @period = period
-      notify "starting region reports cache warming"
-    end
-
+    attr_reader :name
     attr_reader :period
+
+    def initialize(period: Reports.default_period)
+      @period = period
+      @name = self.class.name.to_s
+      notify "Starting #{name} warming"
+    end
 
     def call
       if Flipper.enabled?(:disable_region_cache_warmer)
         notify "disabled via flipper - exiting"
         return
       end
+      RequestStore.store[:bust_cache] = true
 
-      start_time = Time.current
-      Region.where.not(region_type: ["organization", "root"]).each do |region|
-        warm_region_cache(region)
-      end
+      warm_caches
 
-      if Flipper.feature(:organization_reports).state.in?([:on, :conditional])
-        Region.where(region_type: "organization").each do |region|
-          warm_region_cache(region)
-        end
-      end
-
-      notify "finished region reports cache warming in #{Time.current.to_i - start_time.to_i}s"
+      notify "Finished all caching for #{name}"
+    ensure
+      RequestStore.store[:bust_cache] = false
     end
 
-    def warm_region_cache(region)
+    private
+
+    def warm_caches
       Time.use_zone(Period::REPORTING_TIME_ZONE) do
-        RequestStore.store[:bust_cache] = true
+        Region::REGION_TYPES.reject { |t| t == "root" }.each do |region_type|
+          Region.public_send("#{region_type}_regions").find_in_batches do |batch|
+            warm_patient_breakdown_caches(batch)
+            warm_repository_caches(batch)
+          end
+        end
+      end
+    end
 
-        notify "starting region caching for region #{region.id}"
-        Statsd.instance.time("region_cache_warmer.time") do
-          Reports::RegionService.call(region: region, period: period)
-          Statsd.instance.increment("region_cache_warmer.#{region.region_type}.cache")
-          Reports::RepositoryCacheWarmer.call(region: region, period: period)
+    def warm_repository_caches(regions)
+      region_type = regions.first.region_type
+      notify "Starting warming cache for repository cache for batch of #{region_type} regions"
+      range = (period.advance(months: -23)..period)
+      Datadog.tracer.trace("region_cache_warmer.warm_repository_cache", resource: region_type) do |span|
+        repo = Repository.new(regions, periods: range, reporting_schema_v2: true)
+        repo.warm_cache
+      end
+      Statsd.instance.increment("region_cache_warmer.#{region_type}.warm_repository_cache.region_count", regions.count)
+    end
 
+    def warm_patient_breakdown_caches(batch)
+      batch.each do |region|
+        Statsd.instance.time("region_cache_warmer.patient_breakdown_service.time") do
           PatientBreakdownService.call(region: region, period: period)
           Statsd.instance.increment("patient_breakdown_service.#{region.region_type}.cache")
         end
-
-        notify "finished region caching for region #{region.id}"
       end
     end
 
@@ -54,9 +65,10 @@ module Reports
     def notify(msg, extra = {})
       data = {
         logger: {
-          name: self.class.name
+          name: name
         },
-        class: self.class.name
+        class: name,
+        module: "reports"
       }.merge(extra).merge(msg: msg)
       Rails.logger.info data
     end

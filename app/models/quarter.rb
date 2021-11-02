@@ -26,7 +26,6 @@ class Quarter
 
   attr_reader :date
   attr_reader :number
-  attr_reader :to_s
   attr_reader :year
 
   # Create a Quarter with any date-like object, needs to respond to `to_date`. So Date, DateTime, and Time will
@@ -35,7 +34,14 @@ class Quarter
     @date = date.to_date.freeze
     @year = date.year.freeze
     @number = QuarterHelper.quarter(date).freeze
-    @to_s = "Q#{number}-#{year}".freeze
+  end
+
+  def to_s(format = :default_period)
+    if format == :dhis2
+      "#{year}Q#{number}"
+    else
+      "Q#{number}-#{year}"
+    end
   end
 
   def next_quarter

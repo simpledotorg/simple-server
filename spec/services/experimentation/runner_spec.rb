@@ -27,7 +27,7 @@ describe Experimentation::Runner, type: :model do
       create(:appointment, patient: young_patient, scheduled_date: 10.days.from_now)
       create(:appointment, patient: old_patient, scheduled_date: 10.days.from_now)
 
-      experiment = create(:experiment, :upcoming, :with_treatment_group)
+      experiment = create(:experiment, :with_treatment_group, start_time: 5.days.from_now, end_time: 15.days.from_now)
 
       described_class.start_current_patient_experiment(name: experiment.name)
 
@@ -89,11 +89,11 @@ describe Experimentation::Runner, type: :model do
       older_group = older_experiment.treatment_groups.first
 
       patient1 = create(:patient, age: 80)
-      old_group.treatment_group_memberships.create!(patient: patient1)
+      old_group.enroll(patient1)
       create(:appointment, patient: patient1, scheduled_date: 10.days.from_now)
 
       patient2 = create(:patient, age: 80)
-      older_group.treatment_group_memberships.create!(patient: patient2)
+      older_group.enroll(patient2)
       create(:appointment, patient: patient2, scheduled_date: 10.days.from_now)
 
       patient3 = create(:patient, age: 80)
@@ -139,7 +139,6 @@ describe Experimentation::Runner, type: :model do
       far_future_appointment = create(:appointment, patient: patients.second, scheduled_date: 100.days.from_now)
       upcoming_appointment1 = create(:appointment, patient: patients.third, scheduled_date: 10.days.from_now)
       upcoming_appointment2 = create(:appointment, patient: patients.fourth, scheduled_date: 20.days.from_now)
-      Experimentation::Experiment.candidate_patients
 
       experiment = create(:experiment, :with_treatment_group, start_time: 5.days.from_now, end_time: 35.days.from_now)
       create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
@@ -249,11 +248,11 @@ describe Experimentation::Runner, type: :model do
       old_experiment.treatment_groups.first
 
       patient1 = create(:patient, age: 80)
-      recent_experiment.treatment_groups.first.patients << patient1
+      recent_experiment.treatment_groups.first.enroll(patient1)
       create(:blood_sugar, patient: patient1, device_created_at: 100.days.ago)
 
       patient2 = create(:patient, age: 80)
-      old_experiment.treatment_groups.first.patients << patient2
+      old_experiment.treatment_groups.first.enroll(patient2)
       create(:blood_pressure, patient: patient2, device_created_at: 100.days.ago)
 
       patient3 = create(:patient, age: 80)
@@ -376,29 +375,6 @@ describe Experimentation::Runner, type: :model do
       expect {
         described_class.schedule_daily_stale_patient_notifications(name: experiment.name)
       }.to not_change { Experimentation::TreatmentGroupMembership.count }
-    end
-  end
-
-  describe "self.abort_experiment" do
-    it "raises error if experiment is not found" do
-      expect {
-        described_class.abort_experiment("fake")
-      }.to raise_error(ActiveRecord::RecordNotFound)
-    end
-
-    it "changes pending and scheduled notification statuses to 'cancelled'" do
-      experiment = create(:experiment)
-      patient = create(:patient)
-
-      pending_notification = create(:notification, experiment: experiment, patient: patient, status: "pending")
-      scheduled_notification = create(:notification, experiment: experiment, patient: patient, status: "scheduled")
-      sent_notification = create(:notification, experiment: experiment, patient: patient, status: "sent")
-
-      described_class.abort_experiment(experiment.name)
-
-      expect(pending_notification.reload.status).to eq("cancelled")
-      expect(scheduled_notification.reload.status).to eq("cancelled")
-      expect(sent_notification.reload.status).to eq("sent")
     end
   end
 
