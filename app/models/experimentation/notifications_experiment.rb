@@ -56,6 +56,14 @@ module Experimentation
       evict_patients
     end
 
+    def schedule_notifications(date)
+      memberships_to_notify(date)
+        .select("reminder_templates.id reminder_template_id")
+        .select("reminder_templates.message message, treatment_group_memberships.*")
+        .in_batches(of: MEMBERSHIPS_BATCH_SIZE)
+        .each_record { |membership| schedule_notification(membership, date) }
+    end
+
     def record_notification_statuses
       # TODO: Look at query performance
       treatment_group_memberships
@@ -69,14 +77,6 @@ module Experimentation
           notification_result(membership.notification_id)
         )
       end
-    end
-
-    def schedule_notifications(date)
-      memberships_to_notify(date)
-        .select("reminder_templates.id reminder_template_id")
-        .select("reminder_templates.message message, treatment_group_memberships.*")
-        .in_batches(of: MEMBERSHIPS_BATCH_SIZE)
-        .each_record { |membership| schedule_notification(membership, date) }
     end
 
     def cancel
