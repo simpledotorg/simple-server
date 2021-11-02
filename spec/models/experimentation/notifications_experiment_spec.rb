@@ -262,11 +262,11 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
 
       expect(membership.reload.messages[reminder_template.message]).to include(
         {
-          status: notification.status,
+          notification_status: "sent",
           result: "success",
           successful_communication_type: successful_communication.communication_type,
           successful_communication_created_at: successful_communication.created_at.to_s,
-          delivery_status: "delivered"
+          successful_delivery_status: "delivered"
         }.with_indifferent_access
       )
     end
@@ -292,7 +292,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
 
       expect(membership.reload.messages[reminder_template.message]).to include(
         {
-          status: notification.status,
+          notification_status: notification.status,
           result: "failed"
         }.with_indifferent_access
       )
@@ -316,7 +316,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
 
       experiment.record_notification_results
 
-      expect(membership.reload.messages[reminder_template.message]).to include({status: notification.status, result: "success"}.with_indifferent_access)
+      expect(membership.reload.messages[reminder_template.message]).to include({notification_status: notification.status, result: "success"}.with_indifferent_access)
     end
   end
 

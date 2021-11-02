@@ -68,7 +68,7 @@ module Experimentation
       # TODO: Look at query performance
       treatment_group_memberships
         .joins(treatment_group: :reminder_templates)
-        .where("messages -> reminder_templates.message ->> 'status' = ?", :pending)
+        .where("messages -> reminder_templates.message ->> 'notification_status' = ?", :pending)
         .select("messages -> reminder_templates.message ->> 'notification_id' AS notification_id")
         .select("reminder_templates.message, treatment_group_memberships.*")
         .in_batches(of: BATCH_SIZE).each_record do |membership|
@@ -140,18 +140,22 @@ module Experimentation
         communications.with_delivery_detail.select("delivery_detail.result, communications.*").find_by(
           delivery_detail: {result: [:read, :delivered, :sent]}
         )
-      notification_status = Notification.find(notification_id).status
+      notification = Notification.find(notification_id)
 
       if successful_delivery.present?
-        {status: notification_status,
+        {notification_status: notification.status,
+         notification_status_updated_at: notification.updated_at,
          result: :success,
          successful_communication_type: successful_delivery.communication_type,
          successful_communication_created_at: successful_delivery.created_at.to_s,
-         delivery_status: successful_delivery.result}
+         successful_delivery_status: successful_delivery.result}
       elsif communications.exists?
-        {status: notification_status, result: :failed}
+        {notification_status: notification.status,
+         notification_status_updated_at: notification.updated_at,
+         result: :failed}
       else
-        {}
+        {notification_status: notification.status,
+         status_updated_at: notification.updated_at}
       end
     end
 
