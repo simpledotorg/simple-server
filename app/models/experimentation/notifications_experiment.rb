@@ -111,7 +111,13 @@ module Experimentation
         earliest_visit = [bp, bs, pd].compact.min_by(&:device_created_at)
         next unless earliest_visit
 
-        membership.record_visit(bp&.id, bs&.id, pd.present?, earliest_visit)
+        membership.record_visit(
+          bp&.id,
+          bs&.id,
+          pd.present?,
+          (earliest_visit.recorded_at.presence || earliest_visit.device_created_at).to_date,
+          earliest_visit.facility
+        )
       end
 
       # todo cancel notifications for visited patients
