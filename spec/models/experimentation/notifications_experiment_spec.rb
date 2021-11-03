@@ -341,14 +341,16 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
     it "evicts patients who have another scheduled appointment created since enrollment" do
       patient = create(:patient)
       appointment = create(:appointment, status: :scheduled, patient: patient)
+      other_patient = create(:patient)
       experiment = Experimentation::NotificationsExperiment.find(create(:experiment).id)
       treatment_group = create(:treatment_group, experiment: experiment)
       treatment_group.enroll(patient, appointment_id: appointment.id)
+      treatment_group.enroll(other_patient)
       _new_scheduled_appointment = create(:appointment, status: :scheduled, patient: patient)
 
       experiment.evict_patients
 
-      expect(experiment.treatment_group_memberships.status_enrolled.count).to eq 0
+      expect(experiment.treatment_group_memberships.status_enrolled.pluck(:patient_id)).to contain_exactly(other_patient.id)
       expect(experiment.treatment_group_memberships.status_evicted.pluck(:patient_id)).to contain_exactly(patient.id)
     end
 
