@@ -36,6 +36,25 @@ module Experimentation
       save!
     end
 
+    def record_visit(blood_pressure_id, blood_sugar_id, drug_created, visit)
+      visit_facility = visit.facility
+      update(
+        visit_blood_pressure_id: blood_pressure_id,
+        visit_blood_sugar_id: blood_sugar_id,
+        visit_prescription_drug_created: drug_created,
+        visit_date: visit.recorded_at.presence || visit.device_created_at,
+        visit_facility_id: visit_facility.id,
+        visit_facility_name: visit_facility.name,
+        visit_facility_type: visit_facility.facility_type,
+        visit_facility_block: visit_facility.block,
+        visit_facility_district: visit_facility.district,
+        visit_facility_state: visit_facility.state,
+        status: :visited,
+        status_reason: :visit_recorded,
+        days_to_visit: (visit.recorded_at - experiment_inclusion_date).to_i
+      )
+    end
+
     private
 
     def one_active_experiment_per_patient

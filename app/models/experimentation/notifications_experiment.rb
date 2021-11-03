@@ -90,6 +90,31 @@ module Experimentation
       cancel_evicted_notifications
     end
 
+    def mark_visits
+      treatment_group_memberships.status_enrolled.in_batches(of: 1000).each_record do |membership|
+        bp = BloodPressure
+          .where(patient_id: membership.patient_id)
+          .where("recorded_at > ?", membership.experiment_inclusion_date)
+          .select(:id, :recorded_at, :device_created_at, :facility_id)
+          .min_by(&:recorded_at)
+        bs = BloodSugar
+          .where(patient_id: membership.patient_id)
+          .where("recorded_at > ?", membership.experiment_inclusion_date)
+          .select(:id, :recorded_at, :device_created_at, :facility_id)
+          .min_by(&:recorded_at)
+        pd = PrescriptionDrug
+          .where(patient_id: membership.patient_id)
+          .where("device_created_at > ?", membership.experiment_inclusion_date)
+          .select(:id, :device_created_at, :facility_id)
+          .min_by(&:device_created_at)
+
+        earliest_visit = [bp, bs, pd].compact.min_by(&:device_created_at)
+        next unless earliest_visit
+
+        membership.record_visit(bp&.id, bs&.id, pd.present?, earliest_visit)
+      end
+    end
+
     def schedule_notifications(date)
       memberships_to_notify(date)
         .select("reminder_templates.id reminder_template_id")
@@ -176,9 +201,6 @@ module Experimentation
         {notification_status: notification.status,
          status_updated_at: notification.updated_at}
       end
-    end
-
-    def mark_visits
     end
 
     def cancel_evicted_notifications
