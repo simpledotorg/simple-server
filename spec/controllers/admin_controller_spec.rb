@@ -31,6 +31,10 @@ RSpec.describe AdminController, type: :controller do
     def authorization_not_attempted
       render plain: "Not, authorization_not_attempted"
     end
+
+    def test_route
+      render plain: "Test route"
+    end
   end
 
   let(:user) { create(:admin, :manager) }
@@ -84,6 +88,18 @@ RSpec.describe AdminController, type: :controller do
 
       get :not_authorized
       expect(response.body).to match(/Not, authorized/)
+    end
+  end
+
+  context "orphaned email authentications" do
+    before { user.update!(deleted_at: Time.current) }
+
+    it "signs the user out and redirects to sign-in page" do
+      routes.draw { get "test_route" => "admin#test_route" }
+
+      get :test_route
+      expect(response).to redirect_to(new_email_authentication_session_path)
+      expect(flash[:notice]).to match(/deactivated/)
     end
   end
 
