@@ -55,7 +55,7 @@ module Reports
     def call
       query = for_regions
       query = query.where(month_date: range) if range
-      facility_states = query.group(:month_date, slug_field).select("month_date", slug_field, SUMS, CALCULATIONS)
+      facility_states = query.group(:month_date, slug_field).select("month_date", slug_field, SUMS, CALCULATIONS).order(:month_date)
       facility_states.each { |facility_state|
         @results[facility_state.send(slug_field)][facility_state.period] = facility_state.attributes
       }

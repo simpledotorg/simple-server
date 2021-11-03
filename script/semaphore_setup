@@ -14,5 +14,9 @@ sudo dpkg -i /tmp/libpng12.deb
 gem install semaphore_test_boosters
 cache restore
 yarn install
-bundle install --deployment --path vendor/bundle
+bundle config set deployment 'true'
+bundle config set path 'vendor/bundle'
+bundle install
+bundle exec rake db:setup
+bundle exec rake db:test:prepare
 cache store
