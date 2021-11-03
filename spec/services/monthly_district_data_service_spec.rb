@@ -16,7 +16,7 @@ RSpec.describe MonthlyDistrictDataService do
   let(:follow_up_patient) do
     patient = create(:patient, :hypertension, recorded_at: 3.months.ago, assigned_facility: facility2, registration_facility: facility2)
     create(:appointment, creation_facility: facility2, scheduled_date: 2.month.ago, patient: patient)
-    create(:blood_pressure, facility: facility2, patient: patient, recorded_at: 2.months.ago)
+    create(:bp_with_encounter, facility: facility2, patient: patient, recorded_at: 2.months.ago)
     patient
   end
   let(:patient_without_hypertension) do
