@@ -113,6 +113,8 @@ module Experimentation
 
         membership.record_visit(bp&.id, bs&.id, pd.present?, earliest_visit)
       end
+
+      # todo cancel notifications for visited patients
     end
 
     def schedule_notifications(date)
