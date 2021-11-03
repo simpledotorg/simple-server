@@ -12,6 +12,25 @@ module Experimentation
       evicted: "evicted"
     }, _prefix: true
 
+    def record_notification(notification)
+      reload # this is to reload the `messages` field to avoid staleness while updating.
+      self.messages ||= {}
+      self.messages[notification.message] = {
+        remind_on: notification.remind_on,
+        notification_status: notification.status,
+        notification_id: notification.id,
+        localized_message: notification.localized_message,
+        notification_status_updated_at: notification.updated_at.to_s,
+        created_at: notification.created_at.to_s
+      }
+      save!
+    end
+
+    def record_notification_result(message, delivery_result)
+      reload.messages[message].merge!(delivery_result)
+      save!
+    end
+
     private
 
     def one_active_experiment_per_patient
@@ -20,6 +39,7 @@ module Experimentation
           .joins(treatment_group: :experiment)
           .merge(Experiment.running)
           .where(patient_id: patient_id)
+          .where.not(experiments: {id: id})
 
       errors.add(:patient_id, "patient cannot belong to multiple active experiments") if existing_memberships.any?
     end
