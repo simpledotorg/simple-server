@@ -47,6 +47,10 @@ RSpec.configure do |config|
     end
   end
 
+  def refresh_views
+    RefreshReportingViews.call
+  end
+
   config.before(:each) do
     RequestStore.clear!
   end

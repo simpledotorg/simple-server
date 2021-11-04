@@ -16,12 +16,6 @@ RSpec.describe MyFacilitiesController, type: :controller do
     sign_in(supervisor.email_authentication)
   end
 
-  def refresh_views
-    LatestBloodPressuresPerPatientPerMonth.refresh
-    LatestBloodPressuresPerPatientPerQuarter.refresh
-    PatientRegistrationsPerDayPerFacility.refresh
-  end
-
   describe "GET #index" do
     it "returns a success response" do
       facility
