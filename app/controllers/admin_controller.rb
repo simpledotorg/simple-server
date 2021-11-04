@@ -45,10 +45,6 @@ class AdminController < ApplicationController
     end
   end
 
-  # A query string provided feature flag (v2=1) will always override any other settings here.
-  def reporting_schema_via_param_or_feature_flag
-  end
-
   def current_admin
     return @current_admin if defined?(@current_admin)
     admin = current_email_authentication.user
