@@ -103,7 +103,6 @@ class DistrictAnalyticsQuery
       @prev_periods,
       from_time: @from_time,
       include_current_period: @include_current_period)
-      d valid_dates
 
     transformed_result = result.each_with_object({}) { |((date, facility_id), count), hsh|
       next unless date.in?(valid_dates)

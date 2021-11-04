@@ -228,15 +228,17 @@ RSpec.describe DistrictAnalyticsQuery do
 
     describe "#registered_patients_by_period" do
       it "excludes discarded patients" do
-        expected_result =
-          {
-            facility_2.id =>
-              {
-                registered_patients_by_period: {
-                  four_months_back => 1
-                }
+        expected_result = {
+          facility_2.id =>
+            {
+              registered_patients_by_period: {
+                four_months_back => 1,
+                three_months_back => 0,
+                two_months_back => 0,
+                one_month_back => 0
               }
-          }
+            }
+        }
 
         expect(analytics.registered_patients_by_period).to eq(expected_result)
       end
@@ -244,15 +246,14 @@ RSpec.describe DistrictAnalyticsQuery do
 
     describe "#follow_up_patients_by_period" do
       it "excludes discarded patients" do
-        expected_result =
-          {
-            facility_2.id =>
-              {
-                follow_up_patients_by_period: {
-                  three_months_back => 1
-                }
+        expected_result = {
+          facility_2.id =>
+            {
+              follow_up_patients_by_period: {
+                three_months_back => 1
               }
-          }
+            }
+        }
 
         with_reporting_time_zone do
           result = analytics.follow_up_patients_by_period
