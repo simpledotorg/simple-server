@@ -9,9 +9,7 @@ RSpec.describe FacilityStatsService do
   let(:user) { create(:admin, :manager, :with_access, resource: organization, organization: organization) }
 
   def refresh_views
-    LatestBloodPressuresPerPatientPerMonth.refresh
-    LatestBloodPressuresPerPatientPerQuarter.refresh
-    PatientRegistrationsPerDayPerFacility.refresh
+    RefreshReportingViews.new.refresh_v2
   end
 
   def facilities_data(facilities)
@@ -48,10 +46,7 @@ RSpec.describe FacilityStatsService do
                                             recorded_at: december - 5.months, registration_user: user)
       # recorded_at needs to be in a month after registration in order to appear in control rate data
       small_controlled.each do |patient|
-        logger.info "--- start"
-        create(:bp_with_encounter, :under_control, patient: patient, facility: patient.assigned_facility,
-                                                   recorded_at: december - 4.months, user: user)
-        logger.info "--- end"
+        create(:bp_with_encounter, :under_control, patient: patient, facility: patient.assigned_facility, recorded_at: december - 4.months, user: user)
       end
       create(:bp_with_encounter, :hypertensive, patient: small_uncontrolled, facility: small_uncontrolled.assigned_facility,
                                                 recorded_at: december - 4.months, user: user)
