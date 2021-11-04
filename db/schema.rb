@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_19_144905) do
+ActiveRecord::Schema.define(version: 2021_10_29_070915) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -678,6 +678,7 @@ ActiveRecord::Schema.define(version: 2021_10_19_144905) do
     t.datetime "deleted_at"
     t.index ["appointment_id"], name: "index_treatment_group_memberships_on_appointment_id"
     t.index ["experiment_id"], name: "index_treatment_group_memberships_on_experiment_id"
+    t.index ["patient_id", "experiment_id"], name: "index_tgm_patient_id_and_experiment_id", unique: true
     t.index ["patient_id"], name: "index_treatment_group_memberships_on_patient_id"
     t.index ["treatment_group_id"], name: "index_treatment_group_memberships_on_treatment_group_id"
   end

@@ -92,4 +92,46 @@ RSpec.describe Experimentation::StalePatientExperiment do
       expect(result).to contain_exactly(patient)
     end
   end
+
+  describe "#memberships_to_notify" do
+    it "returns treatment_group_memberships who were enrolled today and need to be reminded today" do
+      experiment = create(:experiment, experiment_type: "stale_patients")
+      treatment_group = create(:treatment_group, experiment: experiment)
+      patient = create(:patient)
+      membership = treatment_group.enroll(patient, experiment_inclusion_date: Date.today)
+      create(:reminder_template, treatment_group: treatment_group, remind_on_in_days: 0)
+
+      expect(described_class.first.memberships_to_notify(Date.today)).to contain_exactly(membership)
+    end
+
+    it "returns treatment_group_memberships whose were enrolled in the past `remind_on_in_days` days ago" do
+      experiment = create(:experiment, experiment_type: "stale_patients")
+      treatment_group = create(:treatment_group, experiment: experiment)
+      patient_1 = create(:patient)
+      patient_2 = create(:patient)
+
+      membership_1 = treatment_group.enroll(patient_1, experiment_inclusion_date: 1.days.ago.to_date)
+      membership_2 = treatment_group.enroll(patient_2, experiment_inclusion_date: 10.days.ago.to_date)
+
+      create(:reminder_template, message: "1", treatment_group: treatment_group, remind_on_in_days: 1)
+      create(:reminder_template, message: "2", treatment_group: treatment_group, remind_on_in_days: 10)
+      create(:reminder_template, message: "3", treatment_group: treatment_group, remind_on_in_days: 0)
+
+      expect(described_class.first.memberships_to_notify(Date.today)).to contain_exactly(membership_1, membership_2)
+      expect(described_class.first.memberships_to_notify(Date.today).select(:message).pluck(:message)).to contain_exactly("1", "2")
+    end
+
+    it "only picks patients who are still enrolled in the experiment" do
+      experiment = create(:experiment, experiment_type: "stale_patients")
+      treatment_group = create(:treatment_group, experiment: experiment)
+      patient_1 = create(:patient)
+      patient_2 = create(:patient)
+
+      membership_1 = treatment_group.enroll(patient_1, experiment_inclusion_date: Date.today, status: :enrolled)
+      _membership_2 = treatment_group.enroll(patient_2, experiment_inclusion_date: Date.today, status: :evicted)
+      create(:reminder_template, treatment_group: treatment_group, remind_on_in_days: 0)
+
+      expect(described_class.first.memberships_to_notify(Date.today)).to contain_exactly(membership_1)
+    end
+  end
 end

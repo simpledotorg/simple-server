@@ -33,8 +33,6 @@ blocks:
           commands:
             - checkout
             - script/semaphore_setup
-            - 'bundle exec rake db:setup'
-            - 'bundle exec rake db:test:prepare'
             - rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT
 promotions:
   - name: Deploy
