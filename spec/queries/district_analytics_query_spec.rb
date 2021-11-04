@@ -51,12 +51,14 @@ RSpec.describe DistrictAnalyticsQuery do
 
     describe "#call" do
       it "returns aggregated data for all facilities in the district" do
-        expected_result = {
+        expected = {
           facility_1.id => {
             total_registered_patients: 6,
             registered_patients_by_period: {
               four_months_back => 3,
-              three_months_back => 3
+              three_months_back => 3,
+              two_months_back => 0,
+              one_month_back => 0
             },
             follow_up_patients_by_period: {
               three_months_back => 3,
@@ -69,7 +71,9 @@ RSpec.describe DistrictAnalyticsQuery do
             total_registered_patients: 6,
             registered_patients_by_period: {
               four_months_back => 3,
-              three_months_back => 3
+              three_months_back => 3,
+              two_months_back => 0,
+              one_month_back => 0
             },
             follow_up_patients_by_period: {
               three_months_back => 3,
@@ -79,13 +83,22 @@ RSpec.describe DistrictAnalyticsQuery do
           },
           facility_3.id => {
             total_assigned_patients: 6,
-            total_registered_patients: 0
+            total_registered_patients: 0,
+            registered_patients_by_period: {
+              four_months_back => 0,
+              three_months_back => 0,
+              two_months_back => 0,
+              one_month_back => 0
+            }
           }
         }
         refresh_views
 
         with_reporting_time_zone do
-          expect(analytics.call).to eq(expected_result)
+          result = analytics.call
+          expect(result[facility_1.id]).to eq(expected[facility_1.id])
+          expect(result[facility_2.id]).to eq(expected[facility_2.id])
+          expect(result[facility_3.id]).to eq(expected[facility_3.id])
         end
       end
     end
@@ -93,28 +106,33 @@ RSpec.describe DistrictAnalyticsQuery do
     describe "#registered_patients_by_period" do
       context "considers only htn diagnosed patients" do
         it "groups the registered patients by facility and beginning of month" do
-          expected_result =
+          expected =
             {
               facility_1.id =>
                 {
                   registered_patients_by_period: {
                     four_months_back => 3,
-                    three_months_back => 3
+                    three_months_back => 3,
+                    two_months_back => 0,
+                    one_month_back => 0
                   }
                 },
-
               facility_2.id =>
                 {
                   registered_patients_by_period: {
                     four_months_back => 3,
-                    three_months_back => 3
+                    three_months_back => 3,
+                    two_months_back => 0,
+                    one_month_back => 0
                   }
                 }
             }
 
           refresh_views
           with_reporting_time_zone do
-            expect(analytics.registered_patients_by_period).to eq(expected_result)
+            result = analytics.call
+            expect(result[facility_1.id][:registered_patients_by_period]).to eq(expected[facility_1.id][:registered_patients_by_period])
+            expect(result[facility_2.id][:registered_patients_by_period]).to eq(expected[facility_2.id][:registered_patients_by_period])
           end
         end
       end

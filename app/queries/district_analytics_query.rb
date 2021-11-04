@@ -16,7 +16,7 @@ class DistrictAnalyticsQuery
     @district_name = @region.name
     @from_time = from_time
     @include_current_period = include_current_period
-    @current_period = Period.month(Date.current)
+    @current_period = include_current_period ? Period.current : Period.current.previous
     @range = Range.new(@current_period.advance(months: -prev_periods), @current_period)
   end
 
@@ -103,6 +103,7 @@ class DistrictAnalyticsQuery
       @prev_periods,
       from_time: @from_time,
       include_current_period: @include_current_period)
+      d valid_dates
 
     transformed_result = result.each_with_object({}) { |((date, facility_id), count), hsh|
       next unless date.in?(valid_dates)
