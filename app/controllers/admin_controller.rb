@@ -3,6 +3,7 @@ class AdminController < ApplicationController
   include DatadogTagging
 
   before_action :authenticate_email_authentication!
+  before_action :current_admin
   before_action :set_bust_cache
   before_action :set_reporting_schema_v2
   before_action :set_datadog_tags
@@ -51,6 +52,13 @@ class AdminController < ApplicationController
   def current_admin
     return @current_admin if defined?(@current_admin)
     admin = current_email_authentication.user
+
+    unless admin.present?
+      sign_out
+      redirect_to new_email_authentication_session_path, notice: "This account may be deactivated. Please try again or contact your administrator for assistance."
+      return
+    end
+
     admin.email_authentications.load
     @current_admin = admin
   end
