@@ -337,6 +337,16 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
     end
   end
 
+  describe "mark_visits" do
+
+    it "considers BP creation as a visit for enrolled patients"
+    it "considers BS creation as a visit for enrolled patients"
+    it "considers prescription drug creation as a visit for enrolled patients"
+    it "considers the earliest record out of BP, BS and drug for visit details"
+    it "doesn't consider visits from earlier than the patient's inclusion date"
+    it ""
+  end
+
   describe "#evict_patients" do
     it "evicts patients who have another scheduled appointment created since enrollment" do
       patient = create(:patient)

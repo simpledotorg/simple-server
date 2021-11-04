@@ -91,36 +91,29 @@ module Experimentation
     end
 
     def mark_visits
-      treatment_group_memberships.status_enrolled.in_batches(of: 1000).each_record do |membership|
-        bp = BloodPressure
-          .where(patient_id: membership.patient_id)
-          .where("recorded_at > ?", membership.experiment_inclusion_date)
-          .select(:id, :recorded_at, :device_created_at, :facility_id)
-          .min_by(&:recorded_at)
-        bs = BloodSugar
-          .where(patient_id: membership.patient_id)
-          .where("recorded_at > ?", membership.experiment_inclusion_date)
-          .select(:id, :recorded_at, :device_created_at, :facility_id)
-          .min_by(&:recorded_at)
-        pd = PrescriptionDrug
-          .where(patient_id: membership.patient_id)
-          .where("device_created_at > ?", membership.experiment_inclusion_date)
-          .select(:id, :device_created_at, :facility_id)
-          .min_by(&:device_created_at)
+      treatment_group_memberships.status_enrolled
+        .joins("left outer join blood_pressures bp on bp.patient_id = treatment_group_memberships.patient_id AND bp.recorded_at > experiment_inclusion_date")
+        .joins("left outer join blood_sugars bs on bs.patient_id = treatment_group_memberships.patient_id AND bs.recorded_at > experiment_inclusion_date")
+        .joins("left outer join prescription_drugs pd on pd.patient_id = treatment_group_memberships.patient_id AND pd.device_created_at > experiment_inclusion_date")
+        .select("DISTINCT ON (treatment_group_memberships.patient_id) treatment_group_memberships.*, bp.id bp_id, bs.id bs_id, pd.id pd_id")
+        .where("coalesce(bp.id, bs.id, pd.id) IS NOT NULL")
+        .order("treatment_group_memberships.patient_id, bp.recorded_at, bs.recorded_at, pd.device_created_at")
+        .each do |membership|
+        membership.update!(visit_blood_pressure_id: membership.bp_id,
+                           visit_blood_sugar_id: membership.bs_id,
+                           visit_prescription_drug_created: membership.pd_id.present?)
+
+        bp = BloodPressure.find(membership.bp_id) if membership.bp_id.present?
+        bs = BloodSugar.find(membership.bs_id) if membership.bs_id.present?
+        pd = PrescriptionDrug.find(membership.pd_id) if membership.pd_id.present?
 
         earliest_visit = [bp, bs, pd].compact.min_by(&:device_created_at)
-        next unless earliest_visit
 
         membership.record_visit(
-          bp&.id,
-          bs&.id,
-          pd.present?,
           (earliest_visit.recorded_at.presence || earliest_visit.device_created_at).to_date,
           earliest_visit.facility
         )
       end
-
-      # todo cancel notifications for visited patients
     end
 
     def schedule_notifications(date)

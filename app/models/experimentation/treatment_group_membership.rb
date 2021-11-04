@@ -36,11 +36,8 @@ module Experimentation
       save!
     end
 
-    def record_visit(blood_pressure_id, blood_sugar_id, drug_created, visit_date, visit_facility)
-      update(
-        visit_blood_pressure_id: blood_pressure_id,
-        visit_blood_sugar_id: blood_sugar_id,
-        visit_prescription_drug_created: drug_created,
+    def record_visit(visit_date, visit_facility)
+      update!(
         visit_date: visit_date,
         visit_facility_id: visit_facility.id,
         visit_facility_name: visit_facility.name,
