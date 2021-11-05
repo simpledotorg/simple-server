@@ -68,6 +68,8 @@ module Experimentation
     end
 
     def one_active_experiment_per_patient
+      return unless patient_id_changed? || treatment_group_id_changed? || experiment_id_changed?
+
       existing_memberships =
         self.class
           .joins(treatment_group: :experiment)
