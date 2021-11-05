@@ -104,7 +104,7 @@ module Experimentation
 
     def cancel
       ActiveRecord::Base.transaction do
-        notifications.cancel_pending_notifications
+        notifications.cancel_notifications
         super
       end
     end
@@ -188,7 +188,7 @@ module Experimentation
     def cancel_evicted_notifications
       notifications
         .where(patient_id: treatment_group_memberships.status_evicted.select(:patient_id))
-        .cancel_pending_notifications
+        .cancel_notifications
     end
 
     def schedule_notification(membership, date)
