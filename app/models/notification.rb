@@ -70,7 +70,7 @@ class Notification < ApplicationRecord
     end
   end
 
-  def self.cancel_notifications
+  def self.cancel
     where(status: %w[pending scheduled]).update_all(status: :cancelled)
   end
 
