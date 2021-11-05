@@ -38,7 +38,7 @@ module Experimentation
       save!
     end
 
-    def record_visit_details(blood_pressure:, blood_sugar:, prescription_drug:)
+    def record_visit(blood_pressure:, blood_sugar:, prescription_drug:)
       visits = [blood_pressure, blood_sugar, prescription_drug].compact
       return if visits.blank?
 

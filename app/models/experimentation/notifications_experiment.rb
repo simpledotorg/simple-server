@@ -99,7 +99,7 @@ module Experimentation
         .where("coalesce(bp.id, bs.id, pd.id) is not null")
         .order("treatment_group_memberships.patient_id, bp.recorded_at, bs.recorded_at, pd.device_created_at")
         .each do |membership|
-        membership.record_visit_details(
+        membership.record_visit(
           blood_pressure: membership.bp_id && BloodPressure.find(membership.bp_id),
           blood_sugar: membership.bs_id && BloodSugar.find(membership.bs_id),
           prescription_drug: membership.pd_id && PrescriptionDrug.find(membership.pd_id)

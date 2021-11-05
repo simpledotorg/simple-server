@@ -65,7 +65,7 @@ RSpec.describe Experimentation::TreatmentGroupMembership, type: :model do
       bs = create(:blood_sugar, recorded_at: 7.days.ago, patient: patient)
       drug = create(:prescription_drug, device_created_at: 8.days.ago, patient: patient)
 
-      membership.record_visit_details(blood_pressure: bp, blood_sugar: bs, prescription_drug: drug)
+      membership.record_visit(blood_pressure: bp, blood_sugar: bs, prescription_drug: drug)
 
       expect(membership.visit_blood_pressure_id).to eq(bp.id)
       expect(membership.visit_blood_sugar_id).to eq(bs.id)
