@@ -105,6 +105,8 @@ module Experimentation
           prescription_drug: membership.pd_id && PrescriptionDrug.find(membership.pd_id)
         )
       end
+
+      cancel_visited_notifications
     end
 
     def schedule_notifications(date)
@@ -198,6 +200,12 @@ module Experimentation
     def cancel_evicted_notifications
       notifications
         .where(patient_id: treatment_group_memberships.status_evicted.select(:patient_id))
+        .cancel_pending_notifications
+    end
+
+    def cancel_visited_notifications
+      notifications
+        .where(patient_id: treatment_group_memberships.status_visited.select(:patient_id))
         .cancel_pending_notifications
     end
 

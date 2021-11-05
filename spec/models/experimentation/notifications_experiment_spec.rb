@@ -361,6 +361,20 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       expect(membership.visit_blood_sugar_id).to eq(bs_1.id)
       expect(membership.visit_prescription_drug_created).to eq(true)
     end
+
+    it "cancels all pending notifications for evicted patients" do
+      membership = create(:treatment_group_membership, status: :visited)
+      patient = membership.patient
+      experiment = described_class.find(membership.experiment.id)
+
+      pending_notification = create(:notification, patient: patient, status: :pending, experiment: experiment)
+      scheduled_notification = create(:notification, patient: patient, status: :scheduled, experiment: experiment)
+      _non_experiment_notification = create(:notification, patient: patient, status: :scheduled)
+
+      experiment.mark_visits
+
+      expect(Notification.status_cancelled).to contain_exactly(pending_notification, scheduled_notification)
+    end
   end
 
   describe "#evict_patients" do
