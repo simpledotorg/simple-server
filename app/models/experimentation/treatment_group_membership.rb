@@ -42,8 +42,8 @@ module Experimentation
       visits = [blood_pressure, blood_sugar, prescription_drug].compact
       return if visits.blank?
 
-      earliest_visit = visits.min_by { |visit| recorded_or_device_created_at(visit) }
-      visit_date = recorded_or_device_created_at(earliest_visit)
+      earliest_visit = visits.min_by(&:recorded_at)
+      visit_date = earliest_visit.recorded_at
       visit_facility = earliest_visit.facility
 
       update!(
@@ -64,10 +64,6 @@ module Experimentation
     end
 
     private
-
-    def recorded_or_device_created_at(visit)
-      visit.recorded_at.presence || visit.device_created_at
-    end
 
     def one_active_experiment_per_patient
       existing_memberships =
