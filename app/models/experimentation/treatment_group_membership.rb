@@ -5,7 +5,9 @@ module Experimentation
     belongs_to :experiment
     belongs_to :appointment, optional: true
 
-    validate :one_active_experiment_per_patient
+    validate :one_active_experiment_per_patient, if: -> {
+      patient_id_changed? || treatment_group_id_changed? || experiment_id_changed?
+    }
 
     enum status: {
       enrolled: "enrolled",
@@ -68,8 +70,6 @@ module Experimentation
     end
 
     def one_active_experiment_per_patient
-      return unless patient_id_changed? || treatment_group_id_changed? || experiment_id_changed?
-
       existing_memberships =
         self.class
           .joins(treatment_group: :experiment)
