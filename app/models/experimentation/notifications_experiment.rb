@@ -209,7 +209,7 @@ module Experimentation
     def cancel_visited_notifications
       notifications
         .where(patient_id: treatment_group_memberships.status_visited.select(:patient_id))
-        .cancel_pending_notifications
+        .cancel
     end
 
     def schedule_notification(membership, date)
