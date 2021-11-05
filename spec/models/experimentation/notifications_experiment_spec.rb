@@ -192,10 +192,9 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
     it "enrolls max patients per day only even if called multiple times" do
       patients = create_list(:patient, 2, age: 18)
       patients.each { |patient| create(:appointment, scheduled_date: Date.today, patient: patient) }
-      experiment = create(:experiment, experiment_type: "current_patients")
+      experiment = create(:experiment, experiment_type: "current_patients", max_patients_per_day: 1)
       treatment_group = create(:treatment_group, experiment: experiment)
       create(:reminder_template, message: "1", treatment_group: treatment_group, remind_on_in_days: 0)
-      stub_const("#{Experimentation::NotificationsExperiment}::MAX_PATIENTS_PER_DAY", 1)
 
       expect(Experimentation::CurrentPatientExperiment.first.eligible_patients(Date.today).count).to eq(2)
       Experimentation::CurrentPatientExperiment.first.enroll_patients(Date.today, 1)
@@ -334,6 +333,46 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       expect(pending_notification.reload.status).to eq("cancelled")
       expect(scheduled_notification.reload.status).to eq("cancelled")
       expect(sent_notification.reload.status).to eq("sent")
+    end
+  end
+
+  describe "mark_visits" do
+    it "considers earliest BP created as a visit for enrolled patients" do
+      membership = create(:treatment_group_membership, status: :enrolled, experiment_inclusion_date: 10.days.ago)
+      experiment = described_class.find(membership.experiment.id)
+
+      patient = membership.patient
+      _old_bp = create(:blood_pressure, recorded_at: 20.days.ago, patient: patient)
+      _old_bs = create(:blood_sugar, recorded_at: 20.days.ago, patient: patient)
+
+      bp_1 = create(:blood_pressure, recorded_at: 6.days.ago, patient: patient)
+      _bp_2 = create(:blood_pressure, recorded_at: 5.days.ago, patient: patient)
+
+      bs_1 = create(:blood_sugar, recorded_at: 6.days.ago, patient: patient)
+      _bs_2 = create(:blood_sugar, recorded_at: 5.days.ago, patient: patient)
+
+      _drug = create(:prescription_drug, device_created_at: 6.days.ago, patient: patient)
+
+      experiment.mark_visits
+      membership.reload
+
+      expect(membership.visit_blood_pressure_id).to eq(bp_1.id)
+      expect(membership.visit_blood_sugar_id).to eq(bs_1.id)
+      expect(membership.visit_prescription_drug_created).to eq(true)
+    end
+
+    it "cancels all pending notifications for evicted patients" do
+      membership = create(:treatment_group_membership, status: :visited)
+      patient = membership.patient
+      experiment = described_class.find(membership.experiment.id)
+
+      pending_notification = create(:notification, patient: patient, status: :pending, experiment: experiment)
+      scheduled_notification = create(:notification, patient: patient, status: :scheduled, experiment: experiment)
+      _non_experiment_notification = create(:notification, patient: patient, status: :scheduled)
+
+      experiment.mark_visits
+
+      expect(Notification.status_cancelled).to contain_exactly(pending_notification, scheduled_notification)
     end
   end
 

@@ -1,7 +1,6 @@
 module Experimentation
   class NotificationsExperiment < Experiment
     include Memery
-    MAX_PATIENTS_PER_DAY = 2000
     BATCH_SIZE = 1000
 
     default_scope { where(experiment_type: %w[current_patients stale_patients]) }
@@ -41,7 +40,7 @@ module Experimentation
                                              .having("count(patient_id) > 1"))
     end
 
-    def enroll_patients(date, limit = MAX_PATIENTS_PER_DAY)
+    def enroll_patients(date, limit = max_patients_per_day)
       eligible_patients(date)
         .limit([remaining_enrollments_allowed(date), limit].min)
         .includes(:assigned_facility, :registration_facility, :medical_history)
@@ -94,6 +93,25 @@ module Experimentation
       cancel_evicted_notifications
     end
 
+    def mark_visits
+      treatment_group_memberships.status_enrolled
+        .select("distinct on (treatment_group_memberships.patient_id) treatment_group_memberships.*, bp.id bp_id, bs.id bs_id, pd.id pd_id")
+        .joins("left outer join blood_pressures bp on bp.patient_id = treatment_group_memberships.patient_id AND bp.recorded_at > experiment_inclusion_date")
+        .joins("left outer join blood_sugars bs on bs.patient_id = treatment_group_memberships.patient_id AND bs.recorded_at > experiment_inclusion_date")
+        .joins("left outer join prescription_drugs pd on pd.patient_id = treatment_group_memberships.patient_id AND pd.device_created_at > experiment_inclusion_date")
+        .where("coalesce(bp.id, bs.id, pd.id) is not null")
+        .order("treatment_group_memberships.patient_id, bp.recorded_at, bs.recorded_at, pd.device_created_at")
+        .each do |membership|
+        membership.record_visit(
+          blood_pressure: membership.bp_id && BloodPressure.find(membership.bp_id),
+          blood_sugar: membership.bs_id && BloodSugar.find(membership.bs_id),
+          prescription_drug: membership.pd_id && PrescriptionDrug.find(membership.pd_id)
+        )
+      end
+
+      cancel_visited_notifications
+    end
+
     def schedule_notifications(date)
       memberships_to_notify(date)
         .select("reminder_templates.id reminder_template_id")
@@ -112,7 +130,7 @@ module Experimentation
     private
 
     def remaining_enrollments_allowed(date)
-      MAX_PATIENTS_PER_DAY - treatment_group_memberships.where(experiment_inclusion_date: date).count
+      max_patients_per_day - treatment_group_memberships.where(experiment_inclusion_date: date).count
     end
 
     def reporting_data(patient, date)
@@ -182,12 +200,15 @@ module Experimentation
       end
     end
 
-    def mark_visits
-    end
-
     def cancel_evicted_notifications
       notifications
         .where(patient_id: treatment_group_memberships.status_evicted.select(:patient_id))
+        .cancel
+    end
+
+    def cancel_visited_notifications
+      notifications
+        .where(patient_id: treatment_group_memberships.status_visited.select(:patient_id))
         .cancel
     end
 
