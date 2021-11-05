@@ -98,12 +98,12 @@ RSpec.describe CohortAnalyticsQuery do
       it "calculates return and control patient counts in Q2 for patients registered in Q1" do
         travel_to(april) do
           # Facility 1: 2 patients under control, 3 not controlled
-          jan_patients_1[0..1].each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility1) }
-          jan_patients_1[2..4].each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility2) }
+          jan_patients_1[0..1].each { |patient| create(:bp_with_encounter, :under_control, patient: patient, facility: facility1) }
+          jan_patients_1[2..4].each { |patient| create(:bp_with_encounter, :hypertensive, patient: patient, facility: facility2) }
 
           # Facility 2: 3 patients under control, 1 not controlled
-          jan_patients_2[0..2].each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility1) }
-          jan_patients_2[3..3].each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility2) }
+          jan_patients_2[0..2].each { |patient| create(:bp_with_encounter, :under_control, patient: patient, facility: facility1) }
+          jan_patients_2[3..3].each { |patient| create(:bp_with_encounter, :hypertensive, patient: patient, facility: facility2) }
         end
 
         expected_result = {
@@ -142,8 +142,8 @@ RSpec.describe CohortAnalyticsQuery do
       context "when a patient makes multiple follow-up visits" do
         it "only counts the patient once in the registration facility" do
           travel_to(april) do
-            jan_patients_1[0].tap { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility1) }
-            jan_patients_1[0].tap { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility2) }
+            jan_patients_1[0].tap { |patient| create(:bp_with_encounter, :under_control, patient: patient, facility: facility1) }
+            jan_patients_1[0].tap { |patient| create(:bp_with_encounter, :under_control, patient: patient, facility: facility2) }
           end
 
           expected_follow_ups = {
@@ -158,10 +158,10 @@ RSpec.describe CohortAnalyticsQuery do
 
         it "marks patient uncontrolled if most recent bp is hypertensive" do
           travel_to(april) do
-            jan_patients_1[0].tap { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility1) }
+            jan_patients_1[0].tap { |patient| create(:bp_with_encounter, :under_control, patient: patient, facility: facility1) }
           end
           travel_to(may) do
-            jan_patients_1[0].tap { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility2) }
+            jan_patients_1[0].tap { |patient| create(:bp_with_encounter, :hypertensive, patient: patient, facility: facility2) }
           end
 
           analytics = CohortAnalyticsQuery.new(facility_group, period: :quarter, prev_periods: 3, from_time: report_end)
@@ -172,10 +172,10 @@ RSpec.describe CohortAnalyticsQuery do
 
         it "marks patient controlled if most recent bp is under control" do
           travel_to(april) do
-            jan_patients_1[0].tap { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility1) }
+            jan_patients_1[0].tap { |patient| create(:bp_with_encounter, :hypertensive, patient: patient, facility: facility1) }
           end
           travel_to(may) do
-            jan_patients_1[0].tap { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility2) }
+            jan_patients_1[0].tap { |patient| create(:bp_with_encounter, :under_control, patient: patient, facility: facility2) }
           end
 
           analytics = CohortAnalyticsQuery.new(facility_group, period: :quarter, prev_periods: 3, from_time: report_end)
@@ -202,13 +202,13 @@ RSpec.describe CohortAnalyticsQuery do
       it "calculates return and control patient counts in Feb-Mar for patients registered in Jan" do
         travel_to(march) do
           # Facility 1: 2 patients under control, 3 not controlled
-          jan_patients_1[0..1].each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility1) }
-          jan_patients_1[2..4].each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility2) }
+          jan_patients_1[0..1].each { |patient| create(:bp_with_encounter, :under_control, patient: patient, facility: facility1) }
+          jan_patients_1[2..4].each { |patient| create(:bp_with_encounter, :hypertensive, patient: patient, facility: facility2) }
 
           # Facility 2: 3 patients under control, 3 not controlled
-          jan_patients_2[0..2].each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility1) }
-          jan_patients_2[3..3].each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility2) }
-          jan_patients_3.each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility2) }
+          jan_patients_2[0..2].each { |patient| create(:bp_with_encounter, :under_control, patient: patient, facility: facility1) }
+          jan_patients_2[3..3].each { |patient| create(:bp_with_encounter, :hypertensive, patient: patient, facility: facility2) }
+          jan_patients_3.each { |patient| create(:bp_with_encounter, :hypertensive, patient: patient, facility: facility2) }
         end
 
         expected_result = {

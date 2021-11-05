@@ -16,12 +16,6 @@ RSpec.describe MyFacilitiesController, type: :controller do
     sign_in(supervisor.email_authentication)
   end
 
-  def refresh_views
-    LatestBloodPressuresPerPatientPerMonth.refresh
-    LatestBloodPressuresPerPatientPerQuarter.refresh
-    PatientRegistrationsPerDayPerFacility.refresh
-  end
-
   describe "GET #index" do
     it "returns a success response" do
       facility
@@ -37,7 +31,7 @@ RSpec.describe MyFacilitiesController, type: :controller do
         create_list(:patient, 2, full_name: "controlled", assigned_facility: facility, registration_user: supervisor)
       }
       Timecop.freeze("September 20th 2020") do
-        controlled.each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility, user: supervisor) }
+        controlled.each { |patient| create(:bp_with_encounter, :under_control, patient: patient, facility: facility, user: supervisor) }
       end
       Timecop.freeze("January 15th 2021") do
         refresh_views
@@ -87,7 +81,7 @@ RSpec.describe MyFacilitiesController, type: :controller do
         create_list(:patient, 2, full_name: "uncontrolled", assigned_facility: facility, registration_user: supervisor)
       }
       Timecop.freeze("September 20th 2020") do
-        controlled.each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility, user: supervisor) }
+        controlled.each { |patient| create(:bp_with_encounter, :hypertensive, patient: patient, facility: facility, user: supervisor) }
       end
 
       Timecop.freeze("January 15th 2021") do
@@ -110,7 +104,7 @@ RSpec.describe MyFacilitiesController, type: :controller do
         create_list(:patient, 2, full_name: "controlled", assigned_facility: facility, registration_user: supervisor)
       }
       Timecop.freeze("September 20th 2020") do
-        controlled.each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility, user: supervisor) }
+        controlled.each { |patient| create(:bp_with_encounter, :under_control, patient: patient, facility: facility, user: supervisor) }
       end
 
       Timecop.freeze("January 15th 2021") do
