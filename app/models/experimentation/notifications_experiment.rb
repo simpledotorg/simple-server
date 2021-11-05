@@ -1,7 +1,6 @@
 module Experimentation
   class NotificationsExperiment < Experiment
     include Memery
-    MAX_PATIENTS_PER_DAY = 2000
     BATCH_SIZE = 1000
 
     default_scope { where(experiment_type: %w[current_patients stale_patients]) }
@@ -41,7 +40,7 @@ module Experimentation
                                              .having("count(patient_id) > 1"))
     end
 
-    def enroll_patients(date, limit = MAX_PATIENTS_PER_DAY)
+    def enroll_patients(date, limit = max_patients_per_day)
       eligible_patients(date)
         .limit([remaining_enrollments_allowed(date), limit].min)
         .includes(:assigned_facility, :registration_facility, :medical_history)
@@ -127,7 +126,7 @@ module Experimentation
     private
 
     def remaining_enrollments_allowed(date)
-      MAX_PATIENTS_PER_DAY - treatment_group_memberships.where(experiment_inclusion_date: date).count
+      max_patients_per_day - treatment_group_memberships.where(experiment_inclusion_date: date).count
     end
 
     def reporting_data(patient, date)
