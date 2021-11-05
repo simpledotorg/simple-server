@@ -70,6 +70,10 @@ class Notification < ApplicationRecord
     end
   end
 
+  def self.cancel
+    where(status: %w[pending scheduled]).update_all(status: :cancelled)
+  end
+
   def next_communication_type
     return nil if status_cancelled?
     if preferred_communication_method && !previously_communicated_by?(preferred_communication_method)

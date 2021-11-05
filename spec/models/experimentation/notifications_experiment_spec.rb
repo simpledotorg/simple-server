@@ -336,4 +336,113 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       expect(sent_notification.reload.status).to eq("sent")
     end
   end
+
+  describe "#evict_patients" do
+    it "evicts patients who have another scheduled appointment created since enrollment" do
+      patient = create(:patient)
+      appointment = create(:appointment, status: :scheduled, patient: patient)
+      other_patient = create(:patient)
+      experiment = Experimentation::NotificationsExperiment.find(create(:experiment).id)
+      treatment_group = create(:treatment_group, experiment: experiment)
+      treatment_group.enroll(patient, appointment_id: appointment.id)
+      treatment_group.enroll(other_patient)
+      _new_scheduled_appointment = create(:appointment, status: :scheduled, patient: patient)
+
+      experiment.evict_patients
+
+      expect(experiment.treatment_group_memberships.status_enrolled.pluck(:patient_id)).to contain_exactly(other_patient.id)
+      expect(experiment.treatment_group_memberships.status_evicted.pluck(:patient_id)).to contain_exactly(patient.id)
+    end
+
+    it "evicts patients whose appointment is not scheduled anymore" do
+      patient = create(:patient)
+      appointment = create(:appointment, status: :scheduled, patient: patient)
+      experiment = Experimentation::NotificationsExperiment.find(create(:experiment).id)
+      treatment_group = create(:treatment_group, experiment: experiment)
+      treatment_group.enroll(patient, appointment_id: appointment.id)
+      appointment.update(status: :visited)
+
+      experiment.evict_patients
+
+      expect(experiment.treatment_group_memberships.status_enrolled.count).to eq 0
+      expect(experiment.treatment_group_memberships.status_evicted.pluck(:patient_id)).to contain_exactly(patient.id)
+    end
+
+    it "evicts patients whose appointment has been marked with a remind_on after the expected_return_date" do
+      patient = create(:patient)
+      appointment = create(:appointment, status: :scheduled, patient: patient)
+      experiment = Experimentation::NotificationsExperiment.find(create(:experiment).id)
+      treatment_group = create(:treatment_group, experiment: experiment)
+      treatment_group.enroll(patient, appointment_id: appointment.id, expected_return_date: 5.days.from_now)
+      appointment.update(remind_on: 10.days.from_now)
+
+      experiment.evict_patients
+
+      expect(experiment.treatment_group_memberships.status_enrolled.count).to eq 0
+      expect(experiment.treatment_group_memberships.status_evicted.pluck(:patient_id)).to contain_exactly(patient.id)
+    end
+
+    it "evicts patients whose notification has failed" do
+      patient = create(:patient)
+      appointment = create(:appointment, status: :scheduled, patient: patient)
+      experiment = Experimentation::NotificationsExperiment.find(create(:experiment).id)
+      treatment_group = create(:treatment_group, experiment: experiment)
+      create(:reminder_template, treatment_group: treatment_group, message: "hello.set01")
+      membership = treatment_group.enroll(patient, appointment_id: appointment.id, messages: {})
+
+      membership.messages["hello.set01"] = {result: :failed}
+      membership.save!
+
+      experiment.evict_patients
+
+      expect(experiment.treatment_group_memberships.status_enrolled.count).to eq 0
+      expect(experiment.treatment_group_memberships.status_evicted.pluck(:patient_id)).to contain_exactly(patient.id)
+    end
+
+    it "evicts patients whose notification has failed" do
+      patient = create(:patient)
+      appointment = create(:appointment, status: :scheduled, patient: patient)
+      experiment = Experimentation::NotificationsExperiment.find(create(:experiment).id)
+      treatment_group = create(:treatment_group, experiment: experiment)
+      create(:reminder_template, treatment_group: treatment_group, message: "hello.set01")
+      membership = treatment_group.enroll(patient, appointment_id: appointment.id, messages: {})
+
+      membership.messages["hello.set01"] = {result: :failed}
+      membership.save!
+
+      experiment.evict_patients
+
+      expect(experiment.treatment_group_memberships.status_enrolled.count).to eq 0
+      expect(experiment.treatment_group_memberships.status_evicted.pluck(:patient_id)).to contain_exactly(patient.id)
+    end
+
+    it "evicts patients who have been soft deleted" do
+      patient = create(:patient)
+      appointment = create(:appointment, status: :scheduled, patient: patient)
+      experiment = Experimentation::NotificationsExperiment.find(create(:experiment).id)
+      treatment_group = create(:treatment_group, experiment: experiment)
+      create(:reminder_template, treatment_group: treatment_group, message: "hello.set01")
+      _membership = treatment_group.enroll(patient, appointment_id: appointment.id, messages: {})
+      patient.discard
+
+      experiment.evict_patients
+
+      expect(experiment.treatment_group_memberships.status_enrolled.count).to eq 0
+      expect(experiment.treatment_group_memberships.status_evicted.pluck(:patient_id)).to contain_exactly(patient.id)
+    end
+
+    it "cancels all pending notifications for evicted patients" do
+      membership = create(:treatment_group_membership, status: :evicted)
+      patient = membership.patient
+      experiment = described_class.find(membership.experiment.id)
+
+      pending_notification = create(:notification, patient: patient, status: :pending, experiment: experiment)
+      scheduled_notification = create(:notification, patient: patient, status: :scheduled, experiment: experiment)
+      _non_experiment_notification = create(:notification, patient: patient, status: :scheduled)
+
+      experiment.evict_patients
+
+      expect(Notification.status_cancelled).to contain_exactly(pending_notification, scheduled_notification)
+    end
+  end
 end

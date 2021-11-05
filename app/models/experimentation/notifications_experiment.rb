@@ -56,14 +56,6 @@ module Experimentation
       evict_patients
     end
 
-    def schedule_notifications(date)
-      memberships_to_notify(date)
-        .select("reminder_templates.id reminder_template_id")
-        .select("reminder_templates.message message, treatment_group_memberships.*")
-        .in_batches(of: BATCH_SIZE)
-        .each_record { |membership| schedule_notification(membership, date) }
-    end
-
     def record_notification_results
       # TODO: Look at query performance
       treatment_group_memberships
@@ -79,9 +71,40 @@ module Experimentation
       end
     end
 
+    def evict_patients
+      treatment_group_memberships.status_enrolled
+        .joins(:appointment)
+        .where("appointments.status <> 'scheduled' or appointments.remind_on > expected_return_date")
+        .evict(reason: "appointment_moved")
+
+      treatment_group_memberships.status_enrolled
+        .joins(patient: :latest_scheduled_appointments)
+        .where("treatment_group_memberships.appointment_id <> appointments.id")
+        .evict(reason: "new_appointment_created_after_enrollment")
+
+      treatment_group_memberships.status_enrolled
+        .joins(treatment_group: :reminder_templates)
+        .where("messages -> reminder_templates.message ->> 'result' = 'failed'")
+        .evict(reason: "notification_failed")
+
+      treatment_group_memberships.status_enrolled
+        .where(patient_id: Patient.with_discarded.discarded)
+        .evict(reason: "patient_soft_deleted")
+
+      cancel_evicted_notifications
+    end
+
+    def schedule_notifications(date)
+      memberships_to_notify(date)
+        .select("reminder_templates.id reminder_template_id")
+        .select("reminder_templates.message message, treatment_group_memberships.*")
+        .in_batches(of: BATCH_SIZE)
+        .each_record { |membership| schedule_notification(membership, date) }
+    end
+
     def cancel
       ActiveRecord::Base.transaction do
-        notifications.where(status: %w[pending scheduled]).update_all(status: :cancelled)
+        notifications.cancel
         super
       end
     end
@@ -162,7 +185,10 @@ module Experimentation
     def mark_visits
     end
 
-    def evict_patients
+    def cancel_evicted_notifications
+      notifications
+        .where(patient_id: treatment_group_memberships.status_evicted.select(:patient_id))
+        .cancel
     end
 
     def schedule_notification(membership, date)
