@@ -4,6 +4,7 @@ FactoryBot.define do
     experiment_type { "current_patients" }
     start_time { 1.week.ago }
     end_time { 1.week.from_now }
+    max_patients_per_day { 10 }
   end
 
   trait :with_treatment_group do
