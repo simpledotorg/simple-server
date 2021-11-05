@@ -338,13 +338,29 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
   end
 
   describe "mark_visits" do
+    it "considers earliest BP created as a visit for enrolled patients" do
+      membership = create(:treatment_group_membership, status: :enrolled, experiment_inclusion_date: 10.days.ago)
+      experiment = described_class.find(membership.experiment.id)
 
-    it "considers BP creation as a visit for enrolled patients"
-    it "considers BS creation as a visit for enrolled patients"
-    it "considers prescription drug creation as a visit for enrolled patients"
-    it "considers the earliest record out of BP, BS and drug for visit details"
-    it "doesn't consider visits from earlier than the patient's inclusion date"
-    it ""
+      patient = membership.patient
+      _old_bp = create(:blood_pressure, recorded_at: 20.days.ago, patient: patient)
+      _old_bs = create(:blood_sugar, recorded_at: 20.days.ago, patient: patient)
+
+      bp_1 = create(:blood_pressure, recorded_at: 6.days.ago, patient: patient)
+      _bp_2 = create(:blood_pressure, recorded_at: 5.days.ago, patient: patient)
+
+      bs_1 = create(:blood_sugar, recorded_at: 6.days.ago, patient: patient)
+      _bs_2 = create(:blood_sugar, recorded_at: 5.days.ago, patient: patient)
+
+      _drug = create(:prescription_drug, device_created_at: 6.days.ago, patient: patient)
+
+      experiment.mark_visits
+      membership.reload
+
+      expect(membership.visit_blood_pressure_id).to eq(bp_1.id)
+      expect(membership.visit_blood_sugar_id).to eq(bs_1.id)
+      expect(membership.visit_prescription_drug_created).to eq(true)
+    end
   end
 
   describe "#evict_patients" do

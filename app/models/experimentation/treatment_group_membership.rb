@@ -36,8 +36,18 @@ module Experimentation
       save!
     end
 
-    def record_visit(visit_date, visit_facility)
+    def record_visit_details(blood_pressure:, blood_sugar:, prescription_drug:)
+      visits = [blood_pressure, blood_sugar, prescription_drug].compact
+      return if visits.blank?
+
+      earliest_visit = visits.min_by { |visit| recorded_or_device_created_at(visit) }
+      visit_date = recorded_or_device_created_at(earliest_visit)
+      visit_facility = earliest_visit.facility
+
       update!(
+        visit_blood_pressure_id: blood_pressure&.id,
+        visit_blood_sugar_id: blood_sugar&.id,
+        visit_prescription_drug_created: prescription_drug.present?,
         visit_date: visit_date,
         visit_facility_id: visit_facility.id,
         visit_facility_name: visit_facility.name,
@@ -47,11 +57,15 @@ module Experimentation
         visit_facility_state: visit_facility.state,
         status: :visited,
         status_reason: :visit_recorded,
-        days_to_visit: (visit_date - experiment_inclusion_date.to_date).to_i
+        days_to_visit: (visit_date.to_date - experiment_inclusion_date.to_date).to_i
       )
     end
 
     private
+
+    def recorded_or_device_created_at(visit)
+      visit.recorded_at.presence || visit.device_created_at
+    end
 
     def one_active_experiment_per_patient
       existing_memberships =

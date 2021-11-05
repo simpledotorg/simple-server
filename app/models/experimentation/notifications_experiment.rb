@@ -92,26 +92,17 @@ module Experimentation
 
     def mark_visits
       treatment_group_memberships.status_enrolled
+        .select("distinct on (treatment_group_memberships.patient_id) treatment_group_memberships.*, bp.id bp_id, bs.id bs_id, pd.id pd_id")
         .joins("left outer join blood_pressures bp on bp.patient_id = treatment_group_memberships.patient_id AND bp.recorded_at > experiment_inclusion_date")
         .joins("left outer join blood_sugars bs on bs.patient_id = treatment_group_memberships.patient_id AND bs.recorded_at > experiment_inclusion_date")
         .joins("left outer join prescription_drugs pd on pd.patient_id = treatment_group_memberships.patient_id AND pd.device_created_at > experiment_inclusion_date")
-        .select("DISTINCT ON (treatment_group_memberships.patient_id) treatment_group_memberships.*, bp.id bp_id, bs.id bs_id, pd.id pd_id")
-        .where("coalesce(bp.id, bs.id, pd.id) IS NOT NULL")
+        .where("coalesce(bp.id, bs.id, pd.id) is not null")
         .order("treatment_group_memberships.patient_id, bp.recorded_at, bs.recorded_at, pd.device_created_at")
         .each do |membership|
-        membership.update!(visit_blood_pressure_id: membership.bp_id,
-                           visit_blood_sugar_id: membership.bs_id,
-                           visit_prescription_drug_created: membership.pd_id.present?)
-
-        bp = BloodPressure.find(membership.bp_id) if membership.bp_id.present?
-        bs = BloodSugar.find(membership.bs_id) if membership.bs_id.present?
-        pd = PrescriptionDrug.find(membership.pd_id) if membership.pd_id.present?
-
-        earliest_visit = [bp, bs, pd].compact.min_by(&:device_created_at)
-
-        membership.record_visit(
-          (earliest_visit.recorded_at.presence || earliest_visit.device_created_at).to_date,
-          earliest_visit.facility
+        membership.record_visit_details(
+          blood_pressure: membership.bp_id && BloodPressure.find(membership.bp_id),
+          blood_sugar: membership.bs_id && BloodSugar.find(membership.bs_id),
+          prescription_drug: membership.pd_id && PrescriptionDrug.find(membership.pd_id)
         )
       end
     end
