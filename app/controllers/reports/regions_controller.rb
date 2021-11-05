@@ -10,12 +10,15 @@ class Reports::RegionsController < AdminController
   after_action :log_cache_metrics
   delegate :cache, to: Rails
 
+  INDEX_CACHE_KEY = "v3"
+
   def index
     accessible_facility_regions = authorize { current_admin.accessible_facility_regions(:view_reports) }
 
     cache_key = current_admin.regions_access_cache_key
-    cache_version = "#{accessible_facility_regions.cache_key} / v2"
-    @accessible_regions = cache.fetch(cache_key, version: cache_version, expires_in: 7.days) {
+    cache_version = "#{accessible_facility_regions.cache_key}/#{INDEX_CACHE_KEY}"
+
+    @accessible_regions = cache.fetch(cache_key, force: bust_cache?, version: cache_version, expires_in: 7.days) {
       accessible_facility_regions.each_with_object({}) { |facility, result|
         ancestors = facility.cached_ancestors.map { |facility| [facility.region_type, facility] }.to_h
         org, state, district, block = ancestors.values_at("organization", "state", "district", "block")
@@ -31,13 +34,13 @@ class Reports::RegionsController < AdminController
   def show
     start_period = @period.advance(months: -(Reports::MAX_MONTHS_OF_DATA - 1))
     range = Range.new(start_period, @period)
-    @repository = Reports::Repository.new(@region, periods: range, reporting_schema_v2: RequestStore[:reporting_schema_v2])
+    @repository = Reports::Repository.new(@region, periods: range)
     @presenter = Reports::RepositoryPresenter.new(@repository)
     @data = @presenter.call(@region)
     @with_ltfu = with_ltfu?
 
     @child_regions = @region.reportable_children
-    repo = Reports::Repository.new(@child_regions, periods: @period, reporting_schema_v2: RequestStore[:reporting_schema_v2])
+    repo = Reports::Repository.new(@child_regions, periods: @period)
 
     @children_data = @child_regions.map { |region|
       slug = region.slug
@@ -75,8 +78,8 @@ class Reports::RegionsController < AdminController
     else
       [@region, @region.facility_regions].flatten
     end
-    @repository = Reports::Repository.new(regions, periods: @period_range, reporting_schema_v2: RequestStore[:reporting_schema_v2])
-    chart_repo = Reports::Repository.new(@region, periods: chart_range, reporting_schema_v2: RequestStore[:reporting_schema_v2])
+    @repository = Reports::Repository.new(regions, periods: @period_range)
+    chart_repo = Reports::Repository.new(@region, periods: chart_range)
 
     @chart_data = {
       patient_breakdown: PatientBreakdownService.call(region: @region, period: @period),

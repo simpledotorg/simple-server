@@ -40,6 +40,10 @@ class Communication < ApplicationRecord
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
+  scope :with_delivery_detail, -> {
+    joins("inner join twilio_sms_delivery_details delivery_detail on delivery_detail.id = communications.detailable_id")
+  }
+
   def self.latest_by_type(communication_type)
     send(communication_type).order(device_created_at: :desc).first
   end

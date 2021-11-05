@@ -424,9 +424,7 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
         end
 
         def refresh_views
-          LatestBloodPressuresPerPatientPerMonth.refresh
-          LatestBloodPressuresPerPatientPerQuarter.refresh
-          PatientRegistrationsPerDayPerFacility.refresh
+          RefreshReportingViews.call
         end
 
         it "has the monthly_htn_control_last_period_patient_counts" do

@@ -18,17 +18,9 @@ module Reports
         notify "disabled via flipper - exiting"
         return
       end
-      RequestStore.store[:bust_cache] = false
+      RequestStore.store[:bust_cache] = true
 
-      Time.use_zone(Period::REPORTING_TIME_ZONE) do
-        Region::REGION_TYPES.reject { |t| t == "root" }.each do |region_type|
-          Region.public_send("#{region_type}_regions").find_in_batches do |batch|
-            warm_patient_breakdown_cache(batch)
-            warm_repository_caches(batch)
-            warm_cohort_caches(batch)
-          end
-        end
-      end
+      warm_caches
 
       notify "Finished all caching for #{name}"
     ensure
@@ -36,6 +28,18 @@ module Reports
     end
 
     private
+
+    def warm_caches
+      Time.use_zone(Period::REPORTING_TIME_ZONE) do
+        Region::REGION_TYPES.reject { |t| t == "root" }.each do |region_type|
+          Region.public_send("#{region_type}_regions").find_in_batches do |batch|
+            warm_patient_breakdown_caches(batch)
+            warm_repository_caches(batch)
+            warm_cohort_caches(batch)
+          end
+        end
+      end
+    end
 
     def warm_repository_caches(regions)
       region_type = regions.first.region_type
@@ -48,7 +52,7 @@ module Reports
       Statsd.instance.increment("region_cache_warmer.#{region_type}.warm_repository_cache.region_count", regions.count)
     end
 
-    def warm_patient_breakdown_cache(batch)
+    def warm_patient_breakdown_caches(batch)
       batch.each do |region|
         Statsd.instance.time("region_cache_warmer.patient_breakdown_service.time") do
           PatientBreakdownService.call(region: region, period: period)

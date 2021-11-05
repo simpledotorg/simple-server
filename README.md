@@ -94,11 +94,11 @@ set up the application step by step. You can do so as follows.
 First, you need to [install
 ruby](https://www.ruby-lang.org/en/documentation/installation). It is
 recommended to use [rbenv](https://github.com/rbenv/rbenv) to manage ruby
-versions. Note that we currently use Bundler version 1.17.3, so that is also hardcoded below.
+versions. Note that we currently use Bundler version 2.2.29, so that is also hardcoded below.
 
 ```bash
-gem install bundler -v 1.17.3
-bundle _1.17.3_ install
+gem install bundler -v 2.2.29
+bundle _2.2.29_ install
 rake yarn:install
 rails db:setup
 ```
@@ -187,6 +187,24 @@ X-Facility-ID: dcda7d9d-48f9-47d2-b1cc-93d90c94386e
 ```
 
 ### Review Apps
+
+Every pull request opened on the `simple-server` repo creates a [Heroku review app](https://devcenter.heroku.com/articles/github-integration-review-apps)
+with the branch's code deployed to it. The review app is hosted at the URL [https://simple-review-pr-<PR number>.herokuapp.com](#).
+This temporary environment can be used to test your changes in a production-like environment easily.
+
+If you need to test your changes with a mobile app build as well, you can generate a mobile app build that points to 
+your review app. To do so:
+
+* Navigate to the Github Actions page on the `simple-server` repository
+* Select the "Mobile Review App Build" action
+* Trigger a "workflow dispatch" at the top of the screen. You can keep the branch as `master` (it doesn't matter) and
+  enter your PR number in the required input
+* Once the Action is complete, its page will contain the APK as an artifact.
+  
+![trigger-mobile-review-app](https://user-images.githubusercontent.com/4241399/139230709-1604df1f-ad7d-4690-8bae-80d2a48cab37.gif)
+
+<img width="1557" alt="Screen Shot 2021-10-28 at 3 11 44 PM" src="https://user-images.githubusercontent.com/4241399/139230802-39a38e26-7a96-4e00-9599-c8f7ce48d62d.png">
+
 
 #### Testing messages
 

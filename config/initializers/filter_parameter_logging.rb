@@ -20,6 +20,7 @@ module ParameterFiltering
     report_scope
     status
     updated_at
+    v2
   ].freeze
 
   ALLOWED_REGEX = /(^|_)ids?|#{Regexp.union(ALLOWED_ATTRIBUTES)}/.freeze
