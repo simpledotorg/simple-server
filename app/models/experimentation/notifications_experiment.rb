@@ -87,6 +87,10 @@ module Experimentation
         .where("messages -> reminder_templates.message ->> 'result' = 'failed'")
         .evict(reason: "notification_failed")
 
+      treatment_group_memberships.status_enrolled
+        .where(patient_id: Patient.with_discarded.discarded)
+        .evict(reason: "patient_soft_deleted")
+
       cancel_evicted_notifications
     end
 

@@ -399,13 +399,43 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       expect(experiment.treatment_group_memberships.status_evicted.pluck(:patient_id)).to contain_exactly(patient.id)
     end
 
-    it "cancels all pending notifications for evicted patients" do
+    it "evicts patients whose notification has failed" do
       patient = create(:patient)
       appointment = create(:appointment, status: :scheduled, patient: patient)
       experiment = Experimentation::NotificationsExperiment.find(create(:experiment).id)
       treatment_group = create(:treatment_group, experiment: experiment)
-      treatment_group.enroll(patient, appointment_id: appointment.id)
-      appointment.update(status: :visited) # this patient will be evicted because their appointment is not scheduled anymore
+      create(:reminder_template, treatment_group: treatment_group, message: "hello.set01")
+      membership = treatment_group.enroll(patient, appointment_id: appointment.id, messages: {})
+
+      membership.messages["hello.set01"] = {result: :failed}
+      membership.save!
+
+      experiment.evict_patients
+
+      expect(experiment.treatment_group_memberships.status_enrolled.count).to eq 0
+      expect(experiment.treatment_group_memberships.status_evicted.pluck(:patient_id)).to contain_exactly(patient.id)
+    end
+
+    it "evicts patients who have been soft deleted" do
+      patient = create(:patient)
+      appointment = create(:appointment, status: :scheduled, patient: patient)
+      experiment = Experimentation::NotificationsExperiment.find(create(:experiment).id)
+      treatment_group = create(:treatment_group, experiment: experiment)
+      create(:reminder_template, treatment_group: treatment_group, message: "hello.set01")
+      membership = treatment_group.enroll(patient, appointment_id: appointment.id, messages: {})
+      patient.discard
+
+      experiment.evict_patients
+
+      expect(experiment.treatment_group_memberships.status_enrolled.count).to eq 0
+      expect(experiment.treatment_group_memberships.status_evicted.pluck(:patient_id)).to contain_exactly(patient.id)
+    end
+
+    it "cancels all pending notifications for evicted patients" do
+      membership = create(:treatment_group_membership, status: :evicted)
+      patient = membership.patient
+      experiment = described_class.find(membership.experiment.id)
+
       pending_notification = create(:notification, patient: patient, status: :pending, experiment: experiment)
       scheduled_notification = create(:notification, patient: patient, status: :scheduled, experiment: experiment)
       _non_experiment_notification = create(:notification, patient: patient, status: :scheduled)
