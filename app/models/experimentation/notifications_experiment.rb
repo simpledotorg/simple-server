@@ -206,7 +206,7 @@ module Experimentation
          result: :failed}
       else
         {notification_status: notification.status,
-         status_updated_at: notification.updated_at}
+         notification_status_updated_at: notification.updated_at}
       end
     end
 
