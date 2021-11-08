@@ -740,7 +740,6 @@ ActiveRecord::Schema.define(version: 2021_10_19_144905) do
   add_foreign_key "blood_sugars", "facilities"
   add_foreign_key "blood_sugars", "users"
   add_foreign_key "communications", "notifications"
-  add_foreign_key "drug_stocks", "facilities"
   add_foreign_key "drug_stocks", "protocol_drugs"
   add_foreign_key "drug_stocks", "users"
   add_foreign_key "encounters", "facilities"
@@ -1523,6 +1522,56 @@ ActiveRecord::Schema.define(version: 2021_10_19_144905) do
   SQL
   add_index "reporting_quarterly_facility_states", ["quarter_string", "facility_region_id"], name: "quarterly_facility_states_quarter_string_region_id", unique: true
 
+  create_view "reporting_patient_follow_ups", materialized: true, sql_definition: <<-SQL
+      WITH follow_up_blood_pressures AS (
+           SELECT DISTINCT ON (p.id, bp.facility_id, bp.user_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at)), 'YYYY-MM'::text))) p.id AS patient_id,
+              bp.facility_id,
+              bp.user_id,
+              to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at)), 'YYYY-MM'::text) AS month_string
+             FROM (patients p
+               JOIN blood_pressures bp ON (((p.id = bp.patient_id) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
+          ), follow_up_blood_sugars AS (
+           SELECT DISTINCT ON (p.id, bs.facility_id, bs.user_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)), 'YYYY-MM'::text))) p.id AS patient_id,
+              bs.facility_id,
+              bs.user_id,
+              to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)), 'YYYY-MM'::text) AS month_string
+             FROM (patients p
+               JOIN blood_sugars bs ON (((p.id = bs.patient_id) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
+          ), follow_up_prescription_drugs AS (
+           SELECT DISTINCT ON (p.id, pd.facility_id, pd.user_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at)), 'YYYY-MM'::text))) p.id AS patient_id,
+              pd.facility_id,
+              pd.user_id,
+              to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at)), 'YYYY-MM'::text) AS month_string
+             FROM (patients p
+               JOIN prescription_drugs pd ON (((p.id = pd.patient_id) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
+          ), follow_up_appointments AS (
+           SELECT DISTINCT ON (p.id, app.creation_facility_id, app.user_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at)), 'YYYY-MM'::text))) p.id AS patient_id,
+              app.creation_facility_id AS facility_id,
+              app.user_id,
+              to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at)), 'YYYY-MM'::text) AS month_string
+             FROM (patients p
+               JOIN appointments app ON (((p.id = app.patient_id) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
+          ), all_follow_ups AS (
+           SELECT follow_up_blood_pressures.patient_id,
+              follow_up_blood_pressures.facility_id,
+              follow_up_blood_pressures.user_id,
+              follow_up_blood_pressures.month_string
+             FROM follow_up_blood_pressures
+          )
+   SELECT all_follow_ups.patient_id,
+      all_follow_ups.facility_id,
+      all_follow_ups.user_id,
+      cal.month_date,
+      cal.month,
+      cal.quarter,
+      cal.year,
+      cal.month_string,
+      cal.quarter_string
+     FROM (all_follow_ups
+       LEFT JOIN reporting_months cal ON ((all_follow_ups.month_string = cal.month_string)));
+  SQL
+  add_index "reporting_patient_follow_ups", ["patient_id", "user_id", "facility_id", "month_date"], name: "reporting_patient_follow_ups_unique_index", unique: true
+
   create_view "patient_summaries", sql_definition: <<-SQL
       SELECT p.recorded_at,
       concat(date_part('year'::text, p.recorded_at), ' Q', date_part('quarter'::text, p.recorded_at)) AS registration_quarter,
@@ -1672,54 +1721,4 @@ ActiveRecord::Schema.define(version: 2021_10_19_144905) do
        LEFT JOIN facilities next_appointment_facility ON ((next_appointment_facility.id = next_appointment.facility_id)))
     WHERE (p.deleted_at IS NULL);
   SQL
-  create_view "reporting_patient_follow_ups", materialized: true, sql_definition: <<-SQL
-      WITH follow_up_blood_pressures AS (
-           SELECT DISTINCT ON (p.id, bp.facility_id, bp.user_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at)), 'YYYY-MM'::text))) p.id AS patient_id,
-              bp.facility_id,
-              bp.user_id,
-              to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at)), 'YYYY-MM'::text) AS month_string
-             FROM (patients p
-               JOIN blood_pressures bp ON (((p.id = bp.patient_id) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
-          ), follow_up_blood_sugars AS (
-           SELECT DISTINCT ON (p.id, bs.facility_id, bs.user_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)), 'YYYY-MM'::text))) p.id AS patient_id,
-              bs.facility_id,
-              bs.user_id,
-              to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)), 'YYYY-MM'::text) AS month_string
-             FROM (patients p
-               JOIN blood_sugars bs ON (((p.id = bs.patient_id) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
-          ), follow_up_prescription_drugs AS (
-           SELECT DISTINCT ON (p.id, pd.facility_id, pd.user_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at)), 'YYYY-MM'::text))) p.id AS patient_id,
-              pd.facility_id,
-              pd.user_id,
-              to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at)), 'YYYY-MM'::text) AS month_string
-             FROM (patients p
-               JOIN prescription_drugs pd ON (((p.id = pd.patient_id) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
-          ), follow_up_appointments AS (
-           SELECT DISTINCT ON (p.id, app.creation_facility_id, app.user_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at)), 'YYYY-MM'::text))) p.id AS patient_id,
-              app.creation_facility_id AS facility_id,
-              app.user_id,
-              to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at)), 'YYYY-MM'::text) AS month_string
-             FROM (patients p
-               JOIN appointments app ON (((p.id = app.patient_id) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
-          ), all_follow_ups AS (
-           SELECT follow_up_blood_pressures.patient_id,
-              follow_up_blood_pressures.facility_id,
-              follow_up_blood_pressures.user_id,
-              follow_up_blood_pressures.month_string
-             FROM follow_up_blood_pressures
-          )
-   SELECT all_follow_ups.patient_id,
-      all_follow_ups.facility_id,
-      all_follow_ups.user_id,
-      cal.month_date,
-      cal.month,
-      cal.quarter,
-      cal.year,
-      cal.month_string,
-      cal.quarter_string
-     FROM (all_follow_ups
-       LEFT JOIN reporting_months cal ON ((all_follow_ups.month_string = cal.month_string)));
-  SQL
-  add_index "reporting_patient_follow_ups", ["patient_id", "user_id", "facility_id", "month_date"], name: "reporting_patient_follow_ups_unique_index", unique: true
-
 end

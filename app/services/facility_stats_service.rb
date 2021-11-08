@@ -28,10 +28,15 @@ class FacilityStatsService
 
   def add_facility_stats(facility_data)
     size = facility_data[:facility_size]
+    # debugger
     add_size_section(size) unless stats_by_size[size]
     periods.each do |period|
       current_period = stats_by_size[size][:periods][period]
-      current_period[rate_numerator] += facility_data.dig(rate_numerator, period) || 0
+      # current_period[rate_numerator] += facility_data.dig(rate_numerator, period) || 0
+      current_period[:controlled_patients] += facility_data.dig(:controlled_patients, period) || 0
+      current_period[:uncontrolled_patients] += facility_data.dig(:uncontrolled_patients, period) || 0
+      current_period[:missed_visits] += facility_data.dig(:missed_visits, period) || 0
+      ######
       current_period[:adjusted_patient_counts] += facility_data[:adjusted_patient_counts][period]
       current_period[:cumulative_registrations] += facility_data[:cumulative_registrations][period]
       current_period[:cumulative_assigned_patients] += facility_data[:cumulative_assigned_patients][period]
@@ -42,8 +47,14 @@ class FacilityStatsService
     stats_by_size.values.each do |size_data|
       size_data[:periods].values.each do |period_stats|
         adjusted_patient_counts = period_stats[:adjusted_patient_counts]
-        next if adjusted_patient_counts == 0 || period_stats[rate_numerator] == 0
-        period_stats[rate_name] = (period_stats[rate_numerator].to_f / adjusted_patient_counts.to_f * 100).round
+        # numerator = period_stats[]
+        # debugger
+        next if adjusted_patient_counts == 0 #|| period_stats[rate_numerator] == 0
+        # period_stats[rate_name] = (period_stats[rate_numerator].to_f / adjusted_patient_counts.to_f * 100).round
+        period_stats[:controlled_patients_rate] = (period_stats[:controlled_patients].to_f / adjusted_patient_counts.to_f * 100).round
+        period_stats[:uncontrolled_patients_rate] = (period_stats[:uncontrolled_patients].to_f / adjusted_patient_counts.to_f * 100).round
+        period_stats[:missed_visits_rate] = (period_stats[:missed_visits].to_f / adjusted_patient_counts.to_f * 100).round
+        ######
       end
     end
   end
@@ -60,8 +71,16 @@ class FacilityStatsService
         :adjusted_patient_counts => 0,
         :cumulative_assigned_patients => 0,
         :cumulative_registrations => 0,
-        rate_name => 0,
-        rate_numerator => 0
+        # rate_name => 0,
+        # rate_numerator => 0
+        #######
+        :controlled_patients_rate => 0,
+        :controlled_patients => 0,
+        :uncontrolled_patients => 0,
+        :uncontrolled_patients_rate => 0,
+        :missed_visits => 0,
+        :missed_visits_rate => 0
+        ########
       }
     end
   end
