@@ -95,10 +95,20 @@ module Experimentation
 
     def mark_visits
       treatment_group_memberships.status_enrolled
-        .select("distinct on (treatment_group_memberships.patient_id) treatment_group_memberships.*, bp.id bp_id, bs.id bs_id, pd.id pd_id")
-        .joins("left outer join blood_pressures bp on bp.patient_id = treatment_group_memberships.patient_id AND bp.recorded_at > experiment_inclusion_date")
-        .joins("left outer join blood_sugars bs on bs.patient_id = treatment_group_memberships.patient_id AND bs.recorded_at > experiment_inclusion_date")
-        .joins("left outer join prescription_drugs pd on pd.patient_id = treatment_group_memberships.patient_id AND pd.device_created_at > experiment_inclusion_date")
+        .select("distinct on (treatment_group_memberships.patient_id) treatment_group_memberships.*,
+                 bp.id bp_id, bs.id bs_id, pd.id pd_id")
+        .joins("left outer join blood_pressures bp
+          on bp.patient_id = treatment_group_memberships.patient_id
+          and bp.recorded_at > experiment_inclusion_date
+          and bp.deleted_at is null")
+        .joins("left outer join blood_sugars bs
+          on bs.patient_id = treatment_group_memberships.patient_id
+          and bs.recorded_at > experiment_inclusion_date
+          and bs.deleted_at is null")
+        .joins("left outer join prescription_drugs pd
+          on pd.patient_id = treatment_group_memberships.patient_id
+          and pd.device_created_at > experiment_inclusion_date
+          and pd.deleted_at is null")
         .where("coalesce(bp.id, bs.id, pd.id) is not null")
         .order("treatment_group_memberships.patient_id, bp.recorded_at, bs.recorded_at, pd.device_created_at")
         .each do |membership|
