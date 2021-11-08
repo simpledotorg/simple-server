@@ -34,13 +34,13 @@ class Reports::RegionsController < AdminController
   def show
     start_period = @period.advance(months: -(Reports::MAX_MONTHS_OF_DATA - 1))
     range = Range.new(start_period, @period)
-    @repository = Reports::Repository.new(@region, periods: range, reporting_schema_v2: RequestStore[:reporting_schema_v2])
+    @repository = Reports::Repository.new(@region, periods: range)
     @presenter = Reports::RepositoryPresenter.new(@repository)
     @data = @presenter.call(@region)
     @with_ltfu = with_ltfu?
 
     @child_regions = @region.reportable_children
-    repo = Reports::Repository.new(@child_regions, periods: @period, reporting_schema_v2: RequestStore[:reporting_schema_v2])
+    repo = Reports::Repository.new(@child_regions, periods: @period)
 
     @children_data = @child_regions.map { |region|
       slug = region.slug
@@ -78,8 +78,8 @@ class Reports::RegionsController < AdminController
     else
       [@region, @region.facility_regions].flatten
     end
-    @repository = Reports::Repository.new(regions, periods: @period_range, reporting_schema_v2: RequestStore[:reporting_schema_v2])
-    chart_repo = Reports::Repository.new(@region, periods: chart_range, reporting_schema_v2: RequestStore[:reporting_schema_v2])
+    @repository = Reports::Repository.new(regions, periods: @period_range)
+    chart_repo = Reports::Repository.new(@region, periods: chart_range)
 
     @chart_data = {
       patient_breakdown: PatientBreakdownService.call(region: @region, period: @period),

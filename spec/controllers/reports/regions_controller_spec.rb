@@ -14,13 +14,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
       RefreshReportingViews.call
     end
 
-    around do |example|
-      original = Reports::Repository.use_schema_v2?
-      Reports::Repository.use_schema_v2 = v2_flag
-      example.run
-      Reports::Repository.use_schema_v2 = original
-    end
-
     describe "show" do
       render_views
 
