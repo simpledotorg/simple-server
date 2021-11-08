@@ -1087,6 +1087,9 @@ pp @stats_by_size  (v2)
 
 ###################################################################
 
+THIS FORMAT IS OBSELETE,
+aggregate[size]["facilities"] now includes all three rate types in each element
+
 pp aggregate_data
 {"medium"=>
   {"aggregate"=>
