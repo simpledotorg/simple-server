@@ -57,16 +57,31 @@ class BloodPressureExportService
         row << aggregate["Total assigned"]
         row << aggregate["Total registered"]
         aggregate[:controlled_patients_rate].each_pair do |key,value|
-          row << `#{key}:#{value}`
+          row << value
         end
         aggregate[:uncontrolled_patients_rate].each_pair do |key,value|
-          row << `#{key}:#{value}`
+          row << value
         end
         aggregate[:missed_visits_rate].each_pair do |key,value|
-          row << `#{key}:#{value}`
+          row << value
         end
 
         csv << row
+        facilities = data[size]["facilities"]
+        facilities.each do |facility|
+          facility_row = []
+          facility_row << facility["Facilities"]
+          facility_row << facility["Total assigned"]
+          facility_row << facility["Total registered"]
+          DATA_TYPES.each do |rate_type|
+            facility[rate_type].each_pair do |key, value|
+              facility_row << value
+            end
+          end
+          csv << facility_row
+        end
+
+
         # csv << data[size]["aggregate"].values_at(*headers)
         # data[size]["facilities"].each do |row_object|
         #   csv << row_object.values_at(*headers)
@@ -96,6 +111,7 @@ class BloodPressureExportService
     end
   end
 
+
 #  def set_csv_headers
 #     headers = ["Facilities", "Total assigned", "Total registered", "Six month change"]
 #     (@start_period..@end_period).each {|period| headers << period} # << "#{period}-ratio" }
@@ -118,18 +134,23 @@ class BloodPressureExportService
   def format_aggregate_facility_stats(size)
     aggregate_row = {}
     period_data = @stats_by_size[size][:periods]
-    #fill with data in the notes file, ideally. Give it a shot
+
     aggregate_row["Facilities"] = "All #{Facility.localized_facility_size(size, pluralize: true)}"
-    aggregate_row["Total assigned"] = number_or_zero_with_delimiter(period_data[end_period][:cumulative_assigned_patients])
-    aggregate_row["Total registered"] = number_or_zero_with_delimiter(period_data[end_period][:cumulative_registrations])
+
+    aggregate_assigned = number_or_zero_with_delimiter(period_data[end_period][:cumulative_assigned_patients])
+    aggregate_row["Total assigned"] = aggregate_assigned
+
+    aggregate_registered = number_or_zero_with_delimiter(period_data[end_period][:cumulative_registrations])
+    aggregate_row["Total registered"] = aggregate_registered
+
     DATA_TYPES.each do |rate_type|
       if !aggregate_row[rate_type]
         aggregate_row[rate_type] = {}
       end
       six_month_change = stats_by_size[size][:periods][end_period][rate_type] - stats_by_size[size][:periods][start_period][rate_type]
-      aggregate_row[rate_type]["6 month change"] = six_month_change
+      aggregate_row[rate_type]["6 month change"] = number_to_percentage(six_month_change || 0, precision: 0)
       (start_period..end_period).each do |period|
-        aggregate_row[rate_type][period] =  stats_by_size[size][:periods][period][rate_type]
+        aggregate_row[rate_type][period] =  number_to_percentage(stats_by_size[size][:periods][period][rate_type] || 0, precision: 0)
       end
     end
     aggregate_row
@@ -162,19 +183,50 @@ class BloodPressureExportService
   end
 
   def format_individual_facility_stats(facility_data)
-    facility_row_obj = {}
+    # facility_row_obj = {}
+    # facility = facility_data[:facility]
+    # six_month_rate_change = six_month_rate_change(facility, rate_key)
+    # facility_row_obj["Facilities"] = facility.name
+    # facility_row_obj["Total assigned"] = number_or_zero_with_delimiter(facility_data[:cumulative_assigned_patients].values.last)
+    # facility_row_obj["Total registered"] = number_or_zero_with_delimiter(facility_data[:cumulative_registrations].values.last)
+    # facility_row_obj["6 month change"] = number_to_percentage_with_symbol(six_month_rate_change, precision: 0)
+    # (@start_period..@end_period).each do |period|
+    #   data_type_rate = facility_data[rate_key][period]
+    #   facility_row_obj[period] = number_to_percentage(data_type_rate || 0, precision: 0)
+    # end
+    # facility_row_obj
+
+    #########
+    row = {}
     facility = facility_data[:facility]
-    six_month_rate_change = six_month_rate_change(facility, rate_key)
-    facility_row_obj["Facilities"] = facility.name
-    facility_row_obj["Total assigned"] = number_or_zero_with_delimiter(facility_data[:cumulative_assigned_patients].values.last)
-    facility_row_obj["Total registered"] = number_or_zero_with_delimiter(facility_data[:cumulative_registrations].values.last)
-    facility_row_obj["6 month change"] = number_to_percentage_with_symbol(six_month_rate_change, precision: 0)
-    (@start_period..@end_period).each do |period|
-      data_type_rate = facility_data[rate_key][period]
-      facility_row_obj[period] = number_to_percentage(data_type_rate || 0, precision: 0)
-      # facility_row_obj["#{period}-ratio"] = "#{facility_data[@data_type][period]} / #{facility_data["adjusted_patient_counts"][period]}"
+    row["Facilities"] = facility.name
+    
+    total_assigned = number_or_zero_with_delimiter(facility_data[:cumulative_assigned_patients].values.last)
+    row["Total assigned"] = total_assigned
+
+    total_registered = number_or_zero_with_delimiter(facility_data[:cumulative_registrations].values.last)
+    row["Total registered"] = total_registered
+
+    DATA_TYPES.each do |rate_type|
+      if !row[rate_type]
+        row[rate_type] = {}
+      end
+      six_month_rate_change = six_month_rate_change(facility, rate_type)
+      row[rate_type]["6 month change"] = number_to_percentage(six_month_rate_change || 0, precision: 0)
+      (@start_period..@end_period).each do |period|
+        data_type_rate = facility_data[rate_type][period]
+        row[rate_type][period] = number_to_percentage(data_type_rate || 0, precision: 0)
+      end
     end
-    facility_row_obj
+    row
+    # debugger
+
+
+    #   (start_period..end_period).each do |period|
+    #     row[rate_type][period] =  stats_by_size[size][:periods][period][rate_type]
+    #   end
+    # end
+    # row
   end
 
   # is the || 0 necessary?
