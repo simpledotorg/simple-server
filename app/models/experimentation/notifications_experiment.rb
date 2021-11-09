@@ -95,10 +95,20 @@ module Experimentation
 
     def mark_visits
       treatment_group_memberships.status_enrolled
-        .select("distinct on (treatment_group_memberships.patient_id) treatment_group_memberships.*, bp.id bp_id, bs.id bs_id, pd.id pd_id")
-        .joins("left outer join blood_pressures bp on bp.patient_id = treatment_group_memberships.patient_id AND bp.recorded_at > experiment_inclusion_date")
-        .joins("left outer join blood_sugars bs on bs.patient_id = treatment_group_memberships.patient_id AND bs.recorded_at > experiment_inclusion_date")
-        .joins("left outer join prescription_drugs pd on pd.patient_id = treatment_group_memberships.patient_id AND pd.device_created_at > experiment_inclusion_date")
+        .select("distinct on (treatment_group_memberships.patient_id) treatment_group_memberships.*,
+                 bp.id bp_id, bs.id bs_id, pd.id pd_id")
+        .joins("left outer join blood_pressures bp
+          on bp.patient_id = treatment_group_memberships.patient_id
+          and bp.recorded_at > experiment_inclusion_date
+          and bp.deleted_at is null")
+        .joins("left outer join blood_sugars bs
+          on bs.patient_id = treatment_group_memberships.patient_id
+          and bs.recorded_at > experiment_inclusion_date
+          and bs.deleted_at is null")
+        .joins("left outer join prescription_drugs pd
+          on pd.patient_id = treatment_group_memberships.patient_id
+          and pd.device_created_at > experiment_inclusion_date
+          and pd.deleted_at is null")
         .where("coalesce(bp.id, bs.id, pd.id) is not null")
         .order("treatment_group_memberships.patient_id, bp.recorded_at, bs.recorded_at, pd.device_created_at")
         .each do |membership|
@@ -176,27 +186,25 @@ module Experimentation
     end
 
     def notification_result(notification_id)
-      communications = Communication.where(notification_id: notification_id)
-      successful_delivery =
-        communications.with_delivery_detail.select("delivery_detail.result, communications.*").find_by(
-          delivery_detail: {result: [:read, :delivered, :sent]}
-        )
       notification = Notification.find(notification_id)
 
-      if successful_delivery.present?
-        {notification_status: notification.status,
-         notification_status_updated_at: notification.updated_at,
-         result: :success,
-         successful_communication_type: successful_delivery.communication_type,
-         successful_communication_created_at: successful_delivery.created_at.to_s,
-         successful_delivery_status: successful_delivery.result}
-      elsif communications.exists?
-        {notification_status: notification.status,
-         notification_status_updated_at: notification.updated_at,
-         result: :failed}
-      else
-        {notification_status: notification.status,
-         status_updated_at: notification.updated_at}
+      case notification.delivery_result
+        when :success
+          successful_delivery = notification.successful_deliveries.first
+
+          {notification_status: notification.status,
+           notification_status_updated_at: notification.updated_at,
+           result: :success,
+           successful_communication_type: successful_delivery.communication_type,
+           successful_communication_created_at: successful_delivery.created_at.to_s,
+           successful_delivery_status: successful_delivery.result}
+        when :failed
+          {notification_status: notification.status,
+           notification_status_updated_at: notification.updated_at,
+           result: :failed}
+        else
+          {notification_status: notification.status,
+           notification_status_updated_at: notification.updated_at}
       end
     end
 
