@@ -186,30 +186,25 @@ module Experimentation
     end
 
     def notification_result(notification_id)
-      communications = Communication.where(notification_id: notification_id)
-      successful_delivery =
-        communications.with_delivery_detail.select("delivery_detail.result, communications.*").find_by(
-          delivery_detail: {result: [:read, :delivered, :sent]}
-        )
-      queued_delivery = communications.with_delivery_detail.select("delivery_detail.result, communications.*").find_by(
-        delivery_detail: {result: [:queued]}
-      )
       notification = Notification.find(notification_id)
 
-      if successful_delivery.present?
-        {notification_status: notification.status,
-         notification_status_updated_at: notification.updated_at,
-         result: :success,
-         successful_communication_type: successful_delivery.communication_type,
-         successful_communication_created_at: successful_delivery.created_at.to_s,
-         successful_delivery_status: successful_delivery.result}
-      elsif communications.exists? && !queued_delivery.present?
-        {notification_status: notification.status,
-         notification_status_updated_at: notification.updated_at,
-         result: :failed}
-      else
-        {notification_status: notification.status,
-         notification_status_updated_at: notification.updated_at}
+      case notification.delivery_result
+        when :success
+          successful_delivery = notification.successful_deliveries.first
+
+          {notification_status: notification.status,
+           notification_status_updated_at: notification.updated_at,
+           result: :success,
+           successful_communication_type: successful_delivery.communication_type,
+           successful_communication_created_at: successful_delivery.created_at.to_s,
+           successful_delivery_status: successful_delivery.result}
+        when :failed
+          {notification_status: notification.status,
+           notification_status_updated_at: notification.updated_at,
+           result: :failed}
+        else
+          {notification_status: notification.status,
+           notification_status_updated_at: notification.updated_at}
       end
     end
 
