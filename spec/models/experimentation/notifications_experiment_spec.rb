@@ -317,7 +317,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
           notification_status: notification.status,
           notification_status_updated_at: notification.updated_at.iso8601(3)
         }.with_indifferent_access
-           )
+      )
     end
 
     it "records notification statuses for all memberships (not just enrolled)" do
