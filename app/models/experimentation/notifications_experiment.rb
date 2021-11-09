@@ -14,9 +14,9 @@ module Experimentation
     # The order of operations is important.
     # See https://docs.google.com/document/d/1IMXu_ca9xKU8Xox_3v403ZdvNGQzczLWljy7LQ6RQ6A for more details.
     def self.conduct_daily(date)
-      running.each { |experiment| experiment.enroll_patients(date) }
-      monitoring.each { |experiment| experiment.monitor }
-      notifying.each { |experiment| experiment.schedule_notifications(date) }
+      running.each { |experiment| time("#{experiment.experiment_type}.enroll_patients") { experiment.enroll_patients(date) } }
+      monitoring.each { |experiment| time("#{experiment.experiment_type}.monitor") { experiment.monitor } }
+      notifying.each { |experiment| time("#{experiment.experiment_type}.scheduled_notifications") { experiment.schedule_notifications(date) } }
     end
 
     # Returns patients who are eligible for enrollment. These should be
@@ -50,9 +50,9 @@ module Experimentation
     end
 
     def monitor
-      record_notification_results
-      mark_visits
-      evict_patients
+      time("#{experiment_type}.record_notification_results") { record_notification_results }
+      time("#{experiment_type}.mark_visits") { mark_visits }
+      time("#{experiment_type}.evict_patients") { evict_patients }
     end
 
     def record_notification_results
@@ -237,6 +237,14 @@ module Experimentation
           subject_id: membership.appointment_id,
           subject_type: "Appointment"
         ).then { |notification| membership.record_notification(notification) }
+    end
+  end
+
+  def time(method_name, &block)
+    raise ArgumentError, "You must supply a block" unless block
+
+    Statsd.instance.time(method_name) do
+      yield(block)
     end
   end
 end
