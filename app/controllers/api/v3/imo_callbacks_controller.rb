@@ -1,5 +1,4 @@
 class Api::V3::ImoCallbacksController < ApplicationController
-  http_basic_authenticate_with name: ENV["IMO_CALLBACK_USERNAME"], password: ENV["IMO_CALLBACK_PASSWORD"]
   skip_before_action :verify_authenticity_token
 
   class ImoCallbackError < StandardError; end
