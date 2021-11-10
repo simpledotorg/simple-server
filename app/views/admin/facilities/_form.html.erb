@@ -17,8 +17,8 @@
           {id: :facility_zone, include_blank: true, wrapper_class: "mb-0"},
           required: true %>
       <small class="form-text text-muted mb-3">
-        If you don't see a <%= t("facility_group_zone") %> in the list,
-        <%= link_to "add it to the #{t("facility_group")}", edit_admin_facility_group_path(@facility_group, anchor: "block-list"), target: :_blank %>
+        If you don't see a <%= t("region_type.block") %> in the list,
+        <%= link_to "add it to the #{t("region_type.district")}", edit_admin_facility_group_path(@facility_group, anchor: "block-list"), target: :_blank %>
         and refresh this page.
       </small>
       <%= form.text_field :district, id: :facility_district, required: true %>

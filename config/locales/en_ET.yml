@@ -1,6 +1,5 @@
 en_ET:
   facility_group: "zone"
-  facility_group_zone: "woreda"
   region_type:
     state: region
     district: zone
