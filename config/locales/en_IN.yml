@@ -1,6 +1,10 @@
 en_IN:
   facility_group: "district"
   facility_group_zone: "block"
+  region_type:
+    state: State
+    district: District
+    block: Block
   helpers:
     label:
       facility:

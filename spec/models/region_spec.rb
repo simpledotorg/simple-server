@@ -42,6 +42,31 @@ RSpec.describe Region, type: :model do
     end
   end
 
+  describe "localized_region_type" do
+    it "returns country specific names" do
+      state = build(:region, region_type: :state)
+      district = build(:region, region_type: :district)
+      block = build(:region, region_type: :block)
+      expect(district.district_region?).to be_truthy
+      I18n.with_locale(:en_IN) do
+        expect(state.localized_region_type).to eq("State")
+        expect(district.localized_region_type).to eq("District")
+        expect(block.localized_region_type).to eq("Block")
+      end
+      I18n.with_locale(:en_BD) do
+        expect(state.localized_region_type).to eq("Division")
+        expect(district.localized_region_type).to eq("District")
+        expect(block.localized_region_type).to eq("Upazila")
+      end
+      I18n.with_locale(:en_ET) do
+        expect(state.localized_region_type).to eq("Region")
+        expect(district.localized_region_type).to eq("Zone")
+        expect(block.localized_region_type).to eq("Woreda")
+      end
+      expect(district.localized_region_type).to eq("District")
+    end
+  end
+
   describe "region_type" do
     it "has question methods for determining type" do
       region_1 = Region.create!(name: "New York", region_type: "state", reparent_to: Region.root)

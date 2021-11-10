@@ -1,6 +1,10 @@
 en_ET:
   facility_group: "zone"
   facility_group_zone: "woreda"
+  region_type:
+    state: Region
+    district: Zone
+    block: Woreda
   helpers:
     label:
       facility:
