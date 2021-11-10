@@ -8,7 +8,7 @@ RSpec.describe Imo::InviteUnsubscribedPatients, type: :job do
       it "does nothing" do
         create(:patient)
         expect(Imo::InvitePatient).not_to receive(:perform_at)
-        described_class.perform_async
+        described_class.perform_async(Patient.count)
         described_class.drain
       end
     end
@@ -20,7 +20,7 @@ RSpec.describe Imo::InviteUnsubscribedPatients, type: :job do
         patient = create(:patient)
         Timecop.freeze(date) do
           expect(Imo::InvitePatient).to receive(:perform_at).with(date, patient.id)
-          described_class.perform_async
+          described_class.perform_async(Patient.count)
           described_class.drain
         end
       end
@@ -30,7 +30,7 @@ RSpec.describe Imo::InviteUnsubscribedPatients, type: :job do
         create(:imo_authorization, patient: patient, status: "invited", last_invited_at: date - 7.months)
         Timecop.freeze(date) do
           expect(Imo::InvitePatient).to receive(:perform_at).with(date, patient.id)
-          described_class.perform_async
+          described_class.perform_async(Patient.count)
           described_class.drain
         end
       end
@@ -39,7 +39,7 @@ RSpec.describe Imo::InviteUnsubscribedPatients, type: :job do
         patient = create(:patient)
         create(:imo_authorization, patient: patient, status: "invited", last_invited_at: 1.day.ago)
         expect(Imo::InvitePatient).not_to receive(:perform_at)
-        described_class.perform_async
+        described_class.perform_async(Patient.count)
         described_class.drain
       end
 
@@ -47,7 +47,7 @@ RSpec.describe Imo::InviteUnsubscribedPatients, type: :job do
         patient = create(:patient)
         create(:imo_authorization, patient: patient, status: "subscribed", last_invited_at: 1.year.ago)
         expect(Imo::InvitePatient).not_to receive(:perform_at)
-        described_class.perform_async
+        described_class.perform_async(Patient.count)
         described_class.drain
       end
 
@@ -56,15 +56,26 @@ RSpec.describe Imo::InviteUnsubscribedPatients, type: :job do
         phone = patient.phone_numbers.last
         phone.update!(phone_type: nil)
         expect(Imo::InvitePatient).not_to receive(:perform_at)
-        described_class.perform_async
+        described_class.perform_async(Patient.count)
         described_class.drain
       end
 
       it "excludes LTFU patients" do
         create(:patient, recorded_at: 2.years.ago)
         expect(Imo::InvitePatient).not_to receive(:perform_at)
-        described_class.perform_async
+        described_class.perform_async(Patient.count)
         described_class.drain
+      end
+
+      it "invites only the selected number of patients" do
+        patient_1 = create(:patient)
+        patient_2 = create(:patient)
+
+        Timecop.freeze(date) do
+          expect(Imo::InvitePatient).to receive(:perform_at).exactly(1).time
+          described_class.perform_async(1)
+          described_class.drain
+        end
       end
     end
   end
