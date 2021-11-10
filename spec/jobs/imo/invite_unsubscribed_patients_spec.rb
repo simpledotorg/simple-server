@@ -68,8 +68,8 @@ RSpec.describe Imo::InviteUnsubscribedPatients, type: :job do
       end
 
       it "invites only the selected number of patients" do
-        patient_1 = create(:patient)
-        patient_2 = create(:patient)
+        _patient_1 = create(:patient)
+        _patient_2 = create(:patient)
 
         Timecop.freeze(date) do
           expect(Imo::InvitePatient).to receive(:perform_at).exactly(1).time
