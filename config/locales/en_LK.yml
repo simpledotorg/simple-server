@@ -1,6 +1,10 @@
 en_LK:
   facility_group: "district"
   facility_group_zone: "town"
+  region_type:
+    state: province
+    district: district
+    block: town
   helpers:
     label:
       facility:
