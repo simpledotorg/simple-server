@@ -16,9 +16,9 @@ en:
         one: "1 error prohibited this %{resource} from being saved:"
         other: "%{count} errors prohibited this %{resource} from being saved:"
   region_type:
-    state: State
-    district: District
-    block: Block
+    state: state
+    district: district
+    block: block
   name: "Name"
   phone_number: "Phone Number"
   registration_approval_email:
