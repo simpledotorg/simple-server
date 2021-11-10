@@ -38,6 +38,18 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
     end
   end
 
+  describe ".conduct_daily" do
+    it "calls enroll, monitor and schedule notifications on experiments" do
+      create(:experiment, :with_treatment_group_and_template, :running, experiment_type: "current_patients")
+      experiment = Experimentation::CurrentPatientExperiment.first
+      expect_any_instance_of(experiment.class).to receive :enroll_patients
+      expect_any_instance_of(experiment.class).to receive :monitor
+      expect_any_instance_of(experiment.class).to receive :schedule_notifications
+
+      experiment.class.conduct_daily(Date.today)
+    end
+  end
+
   describe ".eligible_patients" do
     it "doesn't include patients from a running experiment" do
       experiment = create(:experiment, start_time: 1.day.ago, end_time: 1.day.from_now)
