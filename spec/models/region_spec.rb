@@ -47,23 +47,37 @@ RSpec.describe Region, type: :model do
       state = build(:region, region_type: :state)
       district = build(:region, region_type: :district)
       block = build(:region, region_type: :block)
-      expect(district.district_region?).to be_truthy
+      facility = build(:region, region_type: :facility)
       I18n.with_locale(:en_IN) do
-        expect(state.localized_region_type).to eq("State")
-        expect(district.localized_region_type).to eq("District")
-        expect(block.localized_region_type).to eq("Block")
+        expect(state.localized_region_type).to eq("state")
+        expect(district.localized_region_type).to eq("district")
+        expect(block.localized_region_type).to eq("block")
+        expect(facility.localized_region_type).to eq("facility")
       end
       I18n.with_locale(:en_BD) do
-        expect(state.localized_region_type).to eq("Division")
-        expect(district.localized_region_type).to eq("District")
-        expect(block.localized_region_type).to eq("Upazila")
+        expect(state.localized_region_type).to eq("division")
+        expect(district.localized_region_type).to eq("district")
+        expect(block.localized_region_type).to eq("upazila")
+        expect(facility.localized_region_type).to eq("facility")
       end
       I18n.with_locale(:en_ET) do
-        expect(state.localized_region_type).to eq("Region")
-        expect(district.localized_region_type).to eq("Zone")
-        expect(block.localized_region_type).to eq("Woreda")
+        expect(state.localized_region_type).to eq("region")
+        expect(district.localized_region_type).to eq("zone")
+        expect(block.localized_region_type).to eq("woreda")
+        expect(facility.localized_region_type).to eq("facility")
       end
-      expect(district.localized_region_type).to eq("District")
+    end
+
+    it "has a fallback for default locale (which is the same as the India region_types)" do
+      state = build(:region, region_type: :state)
+      district = build(:region, region_type: :district)
+      block = build(:region, region_type: :block)
+      facility = build(:region, region_type: :facility)
+      expect(I18n.locale).to eq(:en)
+      expect(state.localized_region_type).to eq("state")
+      expect(district.localized_region_type).to eq("district")
+      expect(block.localized_region_type).to eq("block")
+      expect(facility.localized_region_type).to eq("facility")
     end
   end
 
