@@ -12,13 +12,16 @@ class Api::V3::ImoCallbacksController < ApplicationController
 
   def subscribe
     unless params[:event] == "accept_invite"
+      Statsd.instance.increment("imo.callback.unknown_error")
       raise ImoCallbackError.new("unexpected Imo invitation event: #{params[:event]}")
     end
 
     patient = Patient.find(params[:patient_id])
     unless patient.imo_authorization
+      Statsd.instance.increment("imo.callback.missing_imo_auth_error")
       raise ImoCallbackError.new("patient #{patient.id} does not have an ImoAuthorization")
     end
+    Statsd.instance.increment("imo.callback.subscribed")
     patient.imo_authorization.status_subscribed!
     head :ok
   end
