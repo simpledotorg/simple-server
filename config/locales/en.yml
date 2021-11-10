@@ -19,6 +19,7 @@ en:
     state: state
     district: district
     block: block
+    facility: facility
   name: "Name"
   phone_number: "Phone Number"
   registration_approval_email:
