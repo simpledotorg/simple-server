@@ -209,7 +209,7 @@
 <%= render "treatment_outcomes_card" %>
 
 <% if @children_data.any? %>
-  <%= render "child_data_tables", data: @children_data, region_type: @child_regions.first.localized_region_type %>
+  <%= render "child_data_tables", data: @children_data, localized_region_type: @child_regions.first.localized_region_type %>
 <% end %>
 
 <%= render "overview_footnotes" %>
