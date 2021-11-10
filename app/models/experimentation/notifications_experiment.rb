@@ -41,89 +41,119 @@ module Experimentation
     end
 
     def enroll_patients(date, limit = max_patients_per_day)
-      eligible_patients(date)
-        .limit([remaining_enrollments_allowed(date), limit].min)
-        .includes(:assigned_facility, :registration_facility, :medical_history)
-        .includes(latest_scheduled_appointments: [:facility, :creation_facility])
-        .in_batches(of: BATCH_SIZE)
-        .each_record { |patient| random_treatment_group.enroll(patient, reporting_data(patient, date)) }
+      time(__method__) do
+        eligible_patients(date)
+          .limit([remaining_enrollments_allowed(date), limit].min)
+          .includes(:assigned_facility, :registration_facility, :medical_history)
+          .includes(latest_scheduled_appointments: [:facility, :creation_facility])
+          .in_batches(of: BATCH_SIZE)
+          .each_record { |patient| random_treatment_group.enroll(patient, reporting_data(patient, date)) }
+      end
     end
 
     def monitor
-      record_notification_results
-      mark_visits
-      evict_patients
+      time(__method__) do
+        record_notification_results
+        mark_visits
+        evict_patients
+      end
     end
 
     def record_notification_results
       # TODO: Look at query performance
-      treatment_group_memberships
-        .joins(treatment_group: :reminder_templates)
-        .where("messages -> reminder_templates.message ->> 'notification_status' = ?", :pending)
-        .select("messages -> reminder_templates.message ->> 'notification_id' AS notification_id")
-        .select("reminder_templates.message, treatment_group_memberships.*")
-        .in_batches(of: BATCH_SIZE).each_record do |membership|
-        membership.record_notification_result(
-          membership.message,
-          notification_result(membership.notification_id)
-        )
+      time(__method__) do
+        treatment_group_memberships
+          .joins(treatment_group: :reminder_templates)
+          .where("messages -> reminder_templates.message ->> 'notification_status' = ?", :pending)
+          .select("messages -> reminder_templates.message ->> 'notification_id' AS notification_id")
+          .select("reminder_templates.message, treatment_group_memberships.*")
+          .in_batches(of: BATCH_SIZE).each_record do |membership|
+          membership.record_notification_result(
+            membership.message,
+            notification_result(membership.notification_id)
+          )
+        end
       end
     end
 
     def evict_patients
-      treatment_group_memberships.status_enrolled
-        .joins(:appointment)
-        .where("appointments.status <> 'scheduled' or appointments.remind_on > expected_return_date")
-        .evict(reason: "appointment_moved")
+      time(__method__) do
+        treatment_group_memberships.status_enrolled
+          .joins(:appointment)
+          .where("appointments.status <> 'scheduled' or appointments.remind_on > expected_return_date")
+          .evict(reason: "appointment_moved")
 
-      treatment_group_memberships.status_enrolled
-        .joins(patient: :latest_scheduled_appointments)
-        .where("treatment_group_memberships.appointment_id <> appointments.id")
-        .evict(reason: "new_appointment_created_after_enrollment")
+        treatment_group_memberships.status_enrolled
+          .joins(patient: :latest_scheduled_appointments)
+          .where("treatment_group_memberships.appointment_id <> appointments.id")
+          .evict(reason: "new_appointment_created_after_enrollment")
 
-      treatment_group_memberships.status_enrolled
-        .joins(treatment_group: :reminder_templates)
-        .where("messages -> reminder_templates.message ->> 'result' = 'failed'")
-        .evict(reason: "notification_failed")
+        treatment_group_memberships.status_enrolled
+          .joins(treatment_group: :reminder_templates)
+          .where("messages -> reminder_templates.message ->> 'result' = 'failed'")
+          .evict(reason: "notification_failed")
 
-      treatment_group_memberships.status_enrolled
-        .where(patient_id: Patient.with_discarded.discarded)
-        .evict(reason: "patient_soft_deleted")
+        treatment_group_memberships.status_enrolled
+          .where(patient_id: Patient.with_discarded.discarded)
+          .evict(reason: "patient_soft_deleted")
 
-      cancel_evicted_notifications
+        cancel_evicted_notifications
+      end
     end
 
     def mark_visits
-      treatment_group_memberships.status_enrolled
-        .select("distinct on (treatment_group_memberships.patient_id) treatment_group_memberships.*, bp.id bp_id, bs.id bs_id, pd.id pd_id")
-        .joins("left outer join blood_pressures bp on bp.patient_id = treatment_group_memberships.patient_id AND bp.recorded_at > experiment_inclusion_date")
-        .joins("left outer join blood_sugars bs on bs.patient_id = treatment_group_memberships.patient_id AND bs.recorded_at > experiment_inclusion_date")
-        .joins("left outer join prescription_drugs pd on pd.patient_id = treatment_group_memberships.patient_id AND pd.device_created_at > experiment_inclusion_date")
-        .where("coalesce(bp.id, bs.id, pd.id) is not null")
-        .order("treatment_group_memberships.patient_id, bp.recorded_at, bs.recorded_at, pd.device_created_at")
-        .each do |membership|
-        membership.record_visit(
-          blood_pressure: membership.bp_id && BloodPressure.find(membership.bp_id),
-          blood_sugar: membership.bs_id && BloodSugar.find(membership.bs_id),
-          prescription_drug: membership.pd_id && PrescriptionDrug.find(membership.pd_id)
-        )
-      end
+      time(__method__) do
+        treatment_group_memberships.status_enrolled
+          .select("distinct on (treatment_group_memberships.patient_id) treatment_group_memberships.*,
+                 bp.id bp_id, bs.id bs_id, pd.id pd_id")
+          .joins("left outer join blood_pressures bp
+          on bp.patient_id = treatment_group_memberships.patient_id
+          and bp.recorded_at > experiment_inclusion_date
+          and bp.deleted_at is null")
+          .joins("left outer join blood_sugars bs
+          on bs.patient_id = treatment_group_memberships.patient_id
+          and bs.recorded_at > experiment_inclusion_date
+          and bs.deleted_at is null")
+          .joins("left outer join prescription_drugs pd
+          on pd.patient_id = treatment_group_memberships.patient_id
+          and pd.device_created_at > experiment_inclusion_date
+          and pd.deleted_at is null")
+          .where("coalesce(bp.id, bs.id, pd.id) is not null")
+          .order("treatment_group_memberships.patient_id, bp.recorded_at, bs.recorded_at, pd.device_created_at")
+          .each do |membership|
+          membership.record_visit(
+            blood_pressure: membership.bp_id && BloodPressure.find(membership.bp_id),
+            blood_sugar: membership.bs_id && BloodSugar.find(membership.bs_id),
+            prescription_drug: membership.pd_id && PrescriptionDrug.find(membership.pd_id)
+          )
+        end
 
-      cancel_visited_notifications
+        cancel_visited_notifications
+      end
     end
 
     def schedule_notifications(date)
-      memberships_to_notify(date)
-        .select("reminder_templates.id reminder_template_id")
-        .select("reminder_templates.message message, treatment_group_memberships.*")
-        .in_batches(of: BATCH_SIZE)
-        .each_record { |membership| schedule_notification(membership, date) }
+      time(__method__) do
+        memberships_to_notify(date)
+          .select("reminder_templates.id reminder_template_id")
+          .select("reminder_templates.message message, treatment_group_memberships.*")
+          .in_batches(of: BATCH_SIZE)
+          .each_record { |membership| schedule_notification(membership, date) }
+      end
     end
 
     def cancel
       ActiveRecord::Base.transaction do
         notifications.cancel
         super
+      end
+    end
+
+    def time(method_name, &block)
+      raise ArgumentError, "You must supply a block" unless block
+
+      Statsd.instance.time("#{experiment_type}.#{method_name}") do
+        yield(block)
       end
     end
 
@@ -176,27 +206,25 @@ module Experimentation
     end
 
     def notification_result(notification_id)
-      communications = Communication.where(notification_id: notification_id)
-      successful_delivery =
-        communications.with_delivery_detail.select("delivery_detail.result, communications.*").find_by(
-          delivery_detail: {result: [:read, :delivered, :sent]}
-        )
       notification = Notification.find(notification_id)
 
-      if successful_delivery.present?
-        {notification_status: notification.status,
-         notification_status_updated_at: notification.updated_at,
-         result: :success,
-         successful_communication_type: successful_delivery.communication_type,
-         successful_communication_created_at: successful_delivery.created_at.to_s,
-         successful_delivery_status: successful_delivery.result}
-      elsif communications.exists?
-        {notification_status: notification.status,
-         notification_status_updated_at: notification.updated_at,
-         result: :failed}
-      else
-        {notification_status: notification.status,
-         status_updated_at: notification.updated_at}
+      case notification.delivery_result
+        when :success
+          successful_delivery = notification.successful_deliveries.first
+
+          {notification_status: notification.status,
+           notification_status_updated_at: notification.updated_at,
+           result: :success,
+           successful_communication_type: successful_delivery.communication_type,
+           successful_communication_created_at: successful_delivery.created_at.to_s,
+           successful_delivery_status: successful_delivery.result}
+        when :failed
+          {notification_status: notification.status,
+           notification_status_updated_at: notification.updated_at,
+           result: :failed}
+        else
+          {notification_status: notification.status,
+           notification_status_updated_at: notification.updated_at}
       end
     end
 

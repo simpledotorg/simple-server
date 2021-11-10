@@ -38,6 +38,18 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
     end
   end
 
+  describe ".conduct_daily" do
+    it "calls enroll, monitor and schedule notifications on experiments" do
+      create(:experiment, :with_treatment_group_and_template, :running, experiment_type: "current_patients")
+      experiment = Experimentation::CurrentPatientExperiment.first
+      expect_any_instance_of(experiment.class).to receive :enroll_patients
+      expect_any_instance_of(experiment.class).to receive :monitor
+      expect_any_instance_of(experiment.class).to receive :schedule_notifications
+
+      experiment.class.conduct_daily(Date.today)
+    end
+  end
+
   describe ".eligible_patients" do
     it "doesn't include patients from a running experiment" do
       experiment = create(:experiment, start_time: 1.day.ago, end_time: 1.day.from_now)
@@ -297,6 +309,29 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       )
     end
 
+    it "doesn't record a result failure if no deliveries are present" do
+      patient = create(:patient)
+      experiment = described_class.find(create(:experiment).id)
+      treatment_group = create(:treatment_group, experiment: experiment)
+      reminder_template = create(:reminder_template, message: "hello.set01", treatment_group: treatment_group)
+      notification = create(:notification,
+        purpose: :experimental_appointment_reminder,
+        message: reminder_template.message,
+        patient: patient,
+        subject: nil)
+      membership = create(:treatment_group_membership, treatment_group: treatment_group, patient: patient)
+      membership.record_notification(notification)
+
+      experiment.record_notification_results
+
+      expect(membership.reload.messages[reminder_template.message]).to include(
+        {
+          notification_status: notification.status,
+          notification_status_updated_at: notification.updated_at.iso8601(3)
+        }.with_indifferent_access
+      )
+    end
+
     it "records notification statuses for all memberships (not just enrolled)" do
       patient = create(:patient)
       experiment = described_class.find(create(:experiment).id)
@@ -345,6 +380,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       _old_bp = create(:blood_pressure, recorded_at: 20.days.ago, patient: patient)
       _old_bs = create(:blood_sugar, recorded_at: 20.days.ago, patient: patient)
 
+      _discarded_bp = create(:blood_pressure, recorded_at: 10.days.ago, patient: patient, deleted_at: Time.current)
       bp_1 = create(:blood_pressure, recorded_at: 6.days.ago, patient: patient)
       _bp_2 = create(:blood_pressure, recorded_at: 5.days.ago, patient: patient)
 
