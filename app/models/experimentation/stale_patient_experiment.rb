@@ -8,24 +8,18 @@ module Experimentation
     # Eligible patients whose last visit was 35-365 days ago and
     # don't have an appointment in the future.
     def eligible_patients(date)
-      parameters = {
-        hypertension: "yes",
-        current_month: date.beginning_of_month,
-        last_visit_since: (date + PATIENT_VISITED_SINCE).beginning_of_day,
-        last_visit_until: (date + PATIENT_VISITED_UNTIL).end_of_day,
-        no_appointments_after: date.end_of_day
-      }
-      sql = GitHub::SQL.new(<<~SQL, parameters)
-        SELECT patient_id FROM reporting_patient_visits
-          WHERE month_date = :current_month
-          AND visited_at > :last_visit_since AND visited_at < :last_visit_until
-          AND NOT EXISTS
-          (SELECT 1 FROM appointments
-              WHERE appointments.patient_id = reporting_patient_visits.patient_id
-              AND appointments.scheduled_date >= :no_appointments_after)
-      SQL
+      current_month = date.beginning_of_month
+      last_visit_since = (date + PATIENT_VISITED_SINCE).beginning_of_day
+      last_visit_until = (date + PATIENT_VISITED_UNTIL).end_of_day
+      no_appointments_after = date.end_of_day
 
-      self.class.superclass.eligible_patients.where(id: sql.values)
+      self.class.superclass.eligible_patients
+        .joins("inner join reporting_patient_visits ON reporting_patient_visits.patient_id = patients.id")
+        .joins("left outer join appointments future_appointments on future_appointments.patient_id = patients.id
+                AND future_appointments.scheduled_date > '#{no_appointments_after}'")
+        .where(reporting_patient_visits: {month_date: current_month})
+        .where("visited_at > ? AND visited_at < ?", last_visit_since, last_visit_until)
+        .where("future_appointments.id IS NULL")
     end
 
     # Memberships where enrollment date falls on
