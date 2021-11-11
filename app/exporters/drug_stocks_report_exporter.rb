@@ -39,7 +39,7 @@ class DrugStocksReportExporter
   end
 
   def drug_names_header
-    ["Facilities", I18n.t("facility_group_zone").capitalize] +
+    ["Facilities", I18n.t("region_type.block").capitalize] +
       @drugs_by_category.flat_map do |_drug_category, drugs|
         drug_columns = drugs.map do |drug|
           "#{drug.name} #{drug.dosage}"

@@ -51,7 +51,7 @@ class DrugConsumptionReportExporter
         "#{protocol_drug_labels[category][:short]} base doses"
       end
 
-    ["Facilities", I18n.t("facility_group_zone").capitalize] + drug_name_cells + drug_category_name_cells
+    ["Facilities", I18n.t("region_type.block").capitalize] + drug_name_cells + drug_category_name_cells
   end
 
   def total_consumption_row

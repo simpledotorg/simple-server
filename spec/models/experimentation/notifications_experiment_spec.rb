@@ -38,6 +38,18 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
     end
   end
 
+  describe ".conduct_daily" do
+    it "calls enroll, monitor and schedule notifications on experiments" do
+      create(:experiment, :with_treatment_group_and_template, :running, experiment_type: "current_patients")
+      experiment = Experimentation::CurrentPatientExperiment.first
+      expect_any_instance_of(experiment.class).to receive :enroll_patients
+      expect_any_instance_of(experiment.class).to receive :monitor
+      expect_any_instance_of(experiment.class).to receive :schedule_notifications
+
+      experiment.class.conduct_daily(Date.today)
+    end
+  end
+
   describe ".eligible_patients" do
     it "doesn't include patients from a running experiment" do
       experiment = create(:experiment, start_time: 1.day.ago, end_time: 1.day.from_now)
@@ -192,10 +204,9 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
     it "enrolls max patients per day only even if called multiple times" do
       patients = create_list(:patient, 2, age: 18)
       patients.each { |patient| create(:appointment, scheduled_date: Date.today, patient: patient) }
-      experiment = create(:experiment, experiment_type: "current_patients")
+      experiment = create(:experiment, experiment_type: "current_patients", max_patients_per_day: 1)
       treatment_group = create(:treatment_group, experiment: experiment)
       create(:reminder_template, message: "1", treatment_group: treatment_group, remind_on_in_days: 0)
-      stub_const("#{Experimentation::NotificationsExperiment}::MAX_PATIENTS_PER_DAY", 1)
 
       expect(Experimentation::CurrentPatientExperiment.first.eligible_patients(Date.today).count).to eq(2)
       Experimentation::CurrentPatientExperiment.first.enroll_patients(Date.today, 1)
@@ -298,6 +309,29 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       )
     end
 
+    it "doesn't record a result failure if no deliveries are present" do
+      patient = create(:patient)
+      experiment = described_class.find(create(:experiment).id)
+      treatment_group = create(:treatment_group, experiment: experiment)
+      reminder_template = create(:reminder_template, message: "hello.set01", treatment_group: treatment_group)
+      notification = create(:notification,
+        purpose: :experimental_appointment_reminder,
+        message: reminder_template.message,
+        patient: patient,
+        subject: nil)
+      membership = create(:treatment_group_membership, treatment_group: treatment_group, patient: patient)
+      membership.record_notification(notification)
+
+      experiment.record_notification_results
+
+      expect(membership.reload.messages[reminder_template.message]).to include(
+        {
+          notification_status: notification.status,
+          notification_status_updated_at: notification.updated_at.iso8601(3)
+        }.with_indifferent_access
+      )
+    end
+
     it "records notification statuses for all memberships (not just enrolled)" do
       patient = create(:patient)
       experiment = described_class.find(create(:experiment).id)
@@ -334,6 +368,156 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       expect(pending_notification.reload.status).to eq("cancelled")
       expect(scheduled_notification.reload.status).to eq("cancelled")
       expect(sent_notification.reload.status).to eq("sent")
+    end
+  end
+
+  describe "mark_visits" do
+    it "considers earliest BP created as a visit for enrolled patients" do
+      membership = create(:treatment_group_membership, status: :enrolled, experiment_inclusion_date: 10.days.ago)
+      experiment = described_class.find(membership.experiment.id)
+
+      patient = membership.patient
+      _old_bp = create(:blood_pressure, recorded_at: 20.days.ago, patient: patient)
+      _old_bs = create(:blood_sugar, recorded_at: 20.days.ago, patient: patient)
+
+      _discarded_bp = create(:blood_pressure, recorded_at: 10.days.ago, patient: patient, deleted_at: Time.current)
+      bp_1 = create(:blood_pressure, recorded_at: 6.days.ago, patient: patient)
+      _bp_2 = create(:blood_pressure, recorded_at: 5.days.ago, patient: patient)
+
+      bs_1 = create(:blood_sugar, recorded_at: 6.days.ago, patient: patient)
+      _bs_2 = create(:blood_sugar, recorded_at: 5.days.ago, patient: patient)
+
+      _drug = create(:prescription_drug, device_created_at: 6.days.ago, patient: patient)
+
+      experiment.mark_visits
+      membership.reload
+
+      expect(membership.visit_blood_pressure_id).to eq(bp_1.id)
+      expect(membership.visit_blood_sugar_id).to eq(bs_1.id)
+      expect(membership.visit_prescription_drug_created).to eq(true)
+    end
+
+    it "cancels all pending notifications for evicted patients" do
+      membership = create(:treatment_group_membership, status: :visited)
+      patient = membership.patient
+      experiment = described_class.find(membership.experiment.id)
+
+      pending_notification = create(:notification, patient: patient, status: :pending, experiment: experiment)
+      scheduled_notification = create(:notification, patient: patient, status: :scheduled, experiment: experiment)
+      _non_experiment_notification = create(:notification, patient: patient, status: :scheduled)
+
+      experiment.mark_visits
+
+      expect(Notification.status_cancelled).to contain_exactly(pending_notification, scheduled_notification)
+    end
+  end
+
+  describe "#evict_patients" do
+    it "evicts patients who have another scheduled appointment created since enrollment" do
+      patient = create(:patient)
+      appointment = create(:appointment, status: :scheduled, patient: patient)
+      other_patient = create(:patient)
+      experiment = Experimentation::NotificationsExperiment.find(create(:experiment).id)
+      treatment_group = create(:treatment_group, experiment: experiment)
+      treatment_group.enroll(patient, appointment_id: appointment.id)
+      treatment_group.enroll(other_patient)
+      _new_scheduled_appointment = create(:appointment, status: :scheduled, patient: patient)
+
+      experiment.evict_patients
+
+      expect(experiment.treatment_group_memberships.status_enrolled.pluck(:patient_id)).to contain_exactly(other_patient.id)
+      expect(experiment.treatment_group_memberships.status_evicted.pluck(:patient_id)).to contain_exactly(patient.id)
+    end
+
+    it "evicts patients whose appointment is not scheduled anymore" do
+      patient = create(:patient)
+      appointment = create(:appointment, status: :scheduled, patient: patient)
+      experiment = Experimentation::NotificationsExperiment.find(create(:experiment).id)
+      treatment_group = create(:treatment_group, experiment: experiment)
+      treatment_group.enroll(patient, appointment_id: appointment.id)
+      appointment.update(status: :visited)
+
+      experiment.evict_patients
+
+      expect(experiment.treatment_group_memberships.status_enrolled.count).to eq 0
+      expect(experiment.treatment_group_memberships.status_evicted.pluck(:patient_id)).to contain_exactly(patient.id)
+    end
+
+    it "evicts patients whose appointment has been marked with a remind_on after the expected_return_date" do
+      patient = create(:patient)
+      appointment = create(:appointment, status: :scheduled, patient: patient)
+      experiment = Experimentation::NotificationsExperiment.find(create(:experiment).id)
+      treatment_group = create(:treatment_group, experiment: experiment)
+      treatment_group.enroll(patient, appointment_id: appointment.id, expected_return_date: 5.days.from_now)
+      appointment.update(remind_on: 10.days.from_now)
+
+      experiment.evict_patients
+
+      expect(experiment.treatment_group_memberships.status_enrolled.count).to eq 0
+      expect(experiment.treatment_group_memberships.status_evicted.pluck(:patient_id)).to contain_exactly(patient.id)
+    end
+
+    it "evicts patients whose notification has failed" do
+      patient = create(:patient)
+      appointment = create(:appointment, status: :scheduled, patient: patient)
+      experiment = Experimentation::NotificationsExperiment.find(create(:experiment).id)
+      treatment_group = create(:treatment_group, experiment: experiment)
+      create(:reminder_template, treatment_group: treatment_group, message: "hello.set01")
+      membership = treatment_group.enroll(patient, appointment_id: appointment.id, messages: {})
+
+      membership.messages["hello.set01"] = {result: :failed}
+      membership.save!
+
+      experiment.evict_patients
+
+      expect(experiment.treatment_group_memberships.status_enrolled.count).to eq 0
+      expect(experiment.treatment_group_memberships.status_evicted.pluck(:patient_id)).to contain_exactly(patient.id)
+    end
+
+    it "evicts patients whose notification has failed" do
+      patient = create(:patient)
+      appointment = create(:appointment, status: :scheduled, patient: patient)
+      experiment = Experimentation::NotificationsExperiment.find(create(:experiment).id)
+      treatment_group = create(:treatment_group, experiment: experiment)
+      create(:reminder_template, treatment_group: treatment_group, message: "hello.set01")
+      membership = treatment_group.enroll(patient, appointment_id: appointment.id, messages: {})
+
+      membership.messages["hello.set01"] = {result: :failed}
+      membership.save!
+
+      experiment.evict_patients
+
+      expect(experiment.treatment_group_memberships.status_enrolled.count).to eq 0
+      expect(experiment.treatment_group_memberships.status_evicted.pluck(:patient_id)).to contain_exactly(patient.id)
+    end
+
+    it "evicts patients who have been soft deleted" do
+      patient = create(:patient)
+      appointment = create(:appointment, status: :scheduled, patient: patient)
+      experiment = Experimentation::NotificationsExperiment.find(create(:experiment).id)
+      treatment_group = create(:treatment_group, experiment: experiment)
+      create(:reminder_template, treatment_group: treatment_group, message: "hello.set01")
+      _membership = treatment_group.enroll(patient, appointment_id: appointment.id, messages: {})
+      patient.discard
+
+      experiment.evict_patients
+
+      expect(experiment.treatment_group_memberships.status_enrolled.count).to eq 0
+      expect(experiment.treatment_group_memberships.status_evicted.pluck(:patient_id)).to contain_exactly(patient.id)
+    end
+
+    it "cancels all pending notifications for evicted patients" do
+      membership = create(:treatment_group_membership, status: :evicted)
+      patient = membership.patient
+      experiment = described_class.find(membership.experiment.id)
+
+      pending_notification = create(:notification, patient: patient, status: :pending, experiment: experiment)
+      scheduled_notification = create(:notification, patient: patient, status: :scheduled, experiment: experiment)
+      _non_experiment_notification = create(:notification, patient: patient, status: :scheduled)
+
+      experiment.evict_patients
+
+      expect(Notification.status_cancelled).to contain_exactly(pending_notification, scheduled_notification)
     end
   end
 end
