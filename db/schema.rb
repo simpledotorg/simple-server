@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_05_065243) do
+ActiveRecord::Schema.define(version: 2021_11_11_121905) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -1263,6 +1263,7 @@ ActiveRecord::Schema.define(version: 2021_11_05_065243) do
     ORDER BY p.id, p.month_date, (timezone('UTC'::text, timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at)))) DESC;
   SQL
   add_index "reporting_patient_visits", ["month_date", "patient_id"], name: "patient_visits_patient_id_month_date", unique: true
+  add_index "reporting_patient_visits", ["visited_at"], name: "index_visited_at_reporting_patient_visits"
 
   create_view "reporting_patient_states", materialized: true, sql_definition: <<-SQL
       SELECT DISTINCT ON (p.id, cal.month_date) p.id AS patient_id,
