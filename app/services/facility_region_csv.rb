@@ -12,8 +12,7 @@ class FacilityRegionCsv
 
   def self.localize_header(header)
     return header unless Region.region_types.include?(header)
-    header = header == :block ? :zone : header # our I18n keys still use zone for block region type
-    I18n.t("helpers.label.facility.#{header}", default: header.to_s).gsub(" *", "")
+    I18n.t("region_type.#{header}").capitalize
   end
 
   def self.headers

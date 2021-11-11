@@ -1,6 +1,9 @@
 en_BD:
   facility_group: "District"
-  facility_group_zone: "Upazila"
+  region_type:
+    state: division
+    district: district
+    block: upazila
   helpers:
     label:
       facility:

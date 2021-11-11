@@ -11,11 +11,7 @@
 
     <div class="modal-body">
       <div class="form-group">
-        <% if @region_type == "district" %>
-          <label> District warehouse: </label>
-        <% else %>
-          <label> Facility: </label>
-        <% end %>
+        <label> <%= drug_stock_region_label(@region) %>:</label>
         <span> <%= @region.name %> </span>
         <%= form.hidden_field :region_id, value: @region.id %>
         <%= form.hidden_field :region_type, value: @region_type %>
