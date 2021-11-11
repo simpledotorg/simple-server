@@ -53,9 +53,9 @@ class MyFacilitiesController < AdminController
 
   def csv_maker
     data_type = params[:type]
-    service = BloodPressureExportService.new(start_period: @start_period, end_period: @period, data_type: data_type, facilities: filter_facilities)
+    service = BloodPressureExportService.new(start_period: @start_period, end_period: @period,  facilities: filter_facilities) #---data_type: data_type,
     csv_data = service.as_csv
-    filename = "BP #{data_type.tr("_", " ").titleize} #{@selected_facility_group.name}.csv"
+    filename = "Blood Pressure Data #{@selected_facility_group.name}.csv"
     send_data csv_data, type: "text/csv", filename: filename
   end
 
@@ -93,6 +93,6 @@ class MyFacilitiesController < AdminController
       result[facility.name] = presenter.my_facilities_hash(facility.region)
     end
     @display_sizes = @facility_sizes.select { |size| sizes.include?(size) }
-    @stats_by_size = FacilityStatsService.call(facilities: @data_for_facility, period: @period, rate_numerator: type)
+    @stats_by_size = FacilityStatsService.call(facilities: @data_for_facility, period: @period)
   end
 end
