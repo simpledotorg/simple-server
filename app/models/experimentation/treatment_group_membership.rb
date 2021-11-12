@@ -60,7 +60,7 @@ module Experimentation
         status: :visited,
         status_updated_at: Time.current,
         status_reason: :visit_recorded,
-        days_to_visit: (visit_date.to_date - experiment_inclusion_date.to_date).to_i
+        days_to_visit: (visit_date.to_date - expected_return_date.to_date).to_i
       )
     end
 
