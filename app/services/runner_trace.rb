@@ -19,6 +19,7 @@ class RunnerTrace
 
   def sentry_debug_info
     {
+      sentry_env: Sentry.configuration.environment,
       sentry_initialized: Sentry.initialized?,
       sentry_background_threads: Sentry.configuration.background_worker_threads
     }
