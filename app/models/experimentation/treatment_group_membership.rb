@@ -58,6 +58,7 @@ module Experimentation
         visit_facility_district: visit_facility.district,
         visit_facility_state: visit_facility.state,
         status: :visited,
+        status_updated_at: Time.current,
         status_reason: :visit_recorded,
         days_to_visit: (visit_date.to_date - experiment_inclusion_date.to_date).to_i
       )
