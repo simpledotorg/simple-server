@@ -24,5 +24,4 @@ class RunnerTrace
       sentry_background_threads: Sentry.configuration.background_worker_threads
     }
   end
-
 end
