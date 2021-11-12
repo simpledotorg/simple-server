@@ -28,7 +28,7 @@ class DrugConsumptionReportExporter
   end
 
   def drug_categories_header
-    left_pad_size = 2
+    left_pad_size = 4
     left_padding_columns = [nil] * left_pad_size
 
     drug_category_cells = left_padding_columns + @drugs_by_category.flat_map do |category, drugs|
@@ -51,7 +51,7 @@ class DrugConsumptionReportExporter
         "#{protocol_drug_labels[category][:short]} base doses"
       end
 
-    ["Facilities", I18n.t("region_type.block").capitalize] + drug_name_cells + drug_category_name_cells
+    ["Facilities", "Facility type", "Facility size", I18n.t("region_type.block").capitalize] + drug_name_cells + drug_category_name_cells
   end
 
   def total_consumption_row
@@ -69,7 +69,7 @@ class DrugConsumptionReportExporter
         formatted_consumption_value(total)
       end
 
-    ["All", ""] + drug_consumption_cells + overall_consumption_cells
+    ["All", "", "", ""] + drug_consumption_cells + overall_consumption_cells
   end
 
   def district_warehouse_consumption_row
@@ -87,7 +87,7 @@ class DrugConsumptionReportExporter
         formatted_consumption_value(total)
       end
 
-    ["District Warehouse", ""] + drug_consumption_cells + overall_consumption_cells
+    ["District Warehouse", "", "", ""] + drug_consumption_cells + overall_consumption_cells
   end
 
   def facility_rows
@@ -111,7 +111,7 @@ class DrugConsumptionReportExporter
         formatted_consumption_value(total)
       end
 
-    [facility.name, facility.block_name] + drug_consumption_cells + overall_consumption_cells
+    [facility.name, facility.facility_type, facility.localized_facility_size, facility.block_name] + drug_consumption_cells + overall_consumption_cells
   end
 
   def formatted_consumption_value(consumption_value)
