@@ -45,6 +45,7 @@ module Experimentation
       earliest_visit = visits.min_by(&:recorded_at)
       visit_date = earliest_visit.recorded_at
       visit_facility = earliest_visit.facility
+      days_to_visit = (visit_date.to_date - expected_return_date.to_date).to_i if expected_return_date.present?
 
       update!(
         visit_blood_pressure_id: blood_pressure&.id,
@@ -60,7 +61,7 @@ module Experimentation
         status: :visited,
         status_updated_at: Time.current,
         status_reason: :visit_recorded,
-        days_to_visit: (visit_date.to_date - expected_return_date.to_date).to_i
+        days_to_visit: days_to_visit
       )
     end
 
