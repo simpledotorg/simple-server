@@ -116,7 +116,7 @@ RSpec.describe Experimentation::StalePatientExperiment do
 
       result = described_class.first.eligible_patients(Date.tomorrow)
 
-      expect(result).to contain_exactly(patient_without_future_remind_on)
+      expect(result).to contain_exactly(patient_with_past_remind_on, patient_without_future_remind_on)
     end
 
     it "does not include the same patient more than once" do
