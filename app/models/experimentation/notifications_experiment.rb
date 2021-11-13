@@ -1,6 +1,6 @@
 module Experimentation
   class NotificationsExperiment < Experiment
-    include Memery
+    include ActiveSupport::Benchmarkable
     BATCH_SIZE = 1000
 
     default_scope { where(experiment_type: %w[current_patients stale_patients]) }
@@ -152,9 +152,15 @@ module Experimentation
     def time(method_name, &block)
       raise ArgumentError, "You must supply a block" unless block
 
-      Statsd.instance.time("#{experiment_type}.#{method_name}") do
-        yield(block)
+      label = "#{experiment_type}.#{method_name}"
+
+      benchmark(label) do
+        Statsd.instance.time(label) do
+          yield(block)
+        end
       end
+
+      Statsd.flush # The metric is not sent to datadog until the buffer is full, hence we explicitly flush.
     end
 
     private
