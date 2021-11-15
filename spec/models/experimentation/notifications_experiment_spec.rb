@@ -275,6 +275,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
         {
           notification_status: "sent",
           result: "success",
+          successful_communication_id: successful_communication.id,
           successful_communication_type: successful_communication.communication_type,
           successful_communication_created_at: successful_communication.created_at.to_s,
           successful_delivery_status: "delivered"
