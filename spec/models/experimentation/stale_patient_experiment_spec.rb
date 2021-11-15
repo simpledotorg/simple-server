@@ -92,6 +92,33 @@ RSpec.describe Experimentation::StalePatientExperiment do
       expect(result).to contain_exactly(patient_with_past_appt)
     end
 
+    it "does not include any patients that have an appointment with remind_on in the future" do
+      create(:experiment, experiment_type: "stale_patients")
+      patient_with_past_remind_on = create(:patient, age: 80)
+      patient_with_future_remind_on = create(:patient, age: 80)
+      patient_without_future_remind_on = create(:patient, age: 80)
+
+      create(:appointment,
+        patient: patient_with_past_remind_on,
+        device_created_at: 70.days.ago,
+        scheduled_date: 40.days.ago,
+        remind_on: 10.days.ago)
+      create(:appointment,
+        patient: patient_with_future_remind_on,
+        device_created_at: 70.days.ago,
+        scheduled_date: 40.days.ago,
+        remind_on: 10.days.from_now)
+      create(:appointment,
+        patient: patient_without_future_remind_on,
+        device_created_at: 70.days.ago,
+        scheduled_date: 40.days.ago)
+      RefreshReportingViews.new.refresh_v2
+
+      result = described_class.first.eligible_patients(Date.tomorrow)
+
+      expect(result).to contain_exactly(patient_with_past_remind_on, patient_without_future_remind_on)
+    end
+
     it "does not include the same patient more than once" do
       create(:experiment, experiment_type: "stale_patients")
       patient = create(:patient, age: 80)
