@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_11_121905) do
+ActiveRecord::Schema.define(version: 2021_11_15_070346) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -661,7 +661,7 @@ ActiveRecord::Schema.define(version: 2021_11_11_121905) do
     t.string "registration_facility_block"
     t.string "registration_facility_district"
     t.string "registration_facility_state"
-    t.date "visit_date"
+    t.datetime "visited_at"
     t.uuid "visit_facility_id"
     t.string "visit_facility_name"
     t.string "visit_facility_type"

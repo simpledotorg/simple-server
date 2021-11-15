@@ -293,6 +293,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
         {
           notification_status: "sent",
           result: "success",
+          successful_communication_id: successful_communication.id,
           successful_communication_type: successful_communication.communication_type,
           successful_communication_created_at: successful_communication.created_at.to_s,
           successful_delivery_status: "delivered"
@@ -550,6 +551,15 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       experiment.evict_patients
 
       expect(Notification.status_cancelled).to contain_exactly(pending_notification, scheduled_notification)
+    end
+  end
+
+  describe "#time" do
+    it "calls statsd instance time" do
+      expect(Statsd.instance).to receive(:time).with("current_patients.monitor")
+
+      create(:experiment)
+      described_class.first.monitor
     end
   end
 end
