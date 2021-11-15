@@ -22,7 +22,7 @@ module Seed
           cascade = experiment.treatment_groups.create!(description: "cascade")
           cascade.reminder_templates.create!(message: "notifications.set01.basic", remind_on_in_days: -1)
           cascade.reminder_templates.create!(message: "notifications.set02.basic", remind_on_in_days: 0)
-          cascade.reminder_templates.create!(message: "notifications.set03.basic", remind_on_in_days: 2)
+          cascade.reminder_templates.create!(message: "notifications.set03.basic", remind_on_in_days: 3)
         end
       end
     end

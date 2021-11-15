@@ -43,14 +43,15 @@ module Experimentation
       return if visits.blank?
 
       earliest_visit = visits.min_by(&:recorded_at)
-      visit_date = earliest_visit.recorded_at
+      visited_at = earliest_visit.recorded_at
       visit_facility = earliest_visit.facility
+      days_to_visit = (visited_at.to_date - expected_return_date.to_date).to_i if expected_return_date.present?
 
       update!(
         visit_blood_pressure_id: blood_pressure&.id,
         visit_blood_sugar_id: blood_sugar&.id,
         visit_prescription_drug_created: prescription_drug.present?,
-        visit_date: visit_date,
+        visited_at: visited_at,
         visit_facility_id: visit_facility.id,
         visit_facility_name: visit_facility.name,
         visit_facility_type: visit_facility.facility_type,
@@ -58,8 +59,9 @@ module Experimentation
         visit_facility_district: visit_facility.district,
         visit_facility_state: visit_facility.state,
         status: :visited,
+        status_updated_at: Time.current,
         status_reason: :visit_recorded,
-        days_to_visit: (visit_date.to_date - experiment_inclusion_date.to_date).to_i
+        days_to_visit: days_to_visit
       )
     end
 
