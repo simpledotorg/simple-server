@@ -70,7 +70,7 @@ RSpec.describe Experimentation::TreatmentGroupMembership, type: :model do
       expect(membership.visit_blood_pressure_id).to eq(bp.id)
       expect(membership.visit_blood_sugar_id).to eq(bs.id)
       expect(membership.visit_prescription_drug_created).to eq(true)
-      expect(membership.visit_date).to eq(drug.device_created_at.to_date)
+      expect(membership.visited_at).to eq(drug.device_created_at)
       expect(membership.visit_facility_id).to eq(drug.facility_id)
       expect(membership.visit_facility_name).to eq(drug.facility.name)
       expect(membership.visit_facility_type).to eq(drug.facility.facility_type)
