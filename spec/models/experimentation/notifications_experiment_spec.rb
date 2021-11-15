@@ -15,7 +15,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
         expect(described_class.notifying.pluck(:id)).to be_empty
       end
 
-      it "is notifying while reminders for patients enrolled on the last day are being sent" do
+      it "is notifying only when notifications need to be sent" do
         create(:experiment, :with_treatment_group_and_template, :upcoming, name: "upcoming")
         create(:experiment, :with_treatment_group_and_template, :monitoring, name: "monitoring")
         create(:experiment, :with_treatment_group_and_template, :completed, name: "completed")
@@ -35,36 +35,39 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
 
         expect(described_class.notifying.pluck(:id)).to contain_exactly(notifying_experiment.id)
       end
+    end
+  end
 
-      it "is notifying after all the reminders have been sent out for patients enrolled on the last day" do
-        expectations = [
-          {remind_on_dates: [0, 1, 2], notifying_until_after_end_date: 2.days},
-          {remind_on_dates: [0, 3], notifying_until_after_end_date: 3.days},
-          {remind_on_dates: [1, 2], notifying_until_after_end_date: 1.days},
-          {remind_on_dates: [-1, 1], notifying_until_after_end_date: 2.days},
-          {remind_on_dates: [-1, 0, 2], notifying_until_after_end_date: 3.days}]
+  describe "#notifying?" do
+    it "is true from start date until after all the reminders have been sent out for patients enrolled on the last day" do
+      expectations = [
+        {remind_on_dates: [0, 1, 2], notifying_until_after_end_date: 2.days},
+        {remind_on_dates: [0, 3], notifying_until_after_end_date: 3.days},
+        {remind_on_dates: [1, 2], notifying_until_after_end_date: 1.days},
+        {remind_on_dates: [-1, 1], notifying_until_after_end_date: 2.days},
+        {remind_on_dates: [-1, 0, 2], notifying_until_after_end_date: 3.days}
+      ]
 
-        expectations.each do |expectation|
-          experiment = create(:experiment, start_time: Date.today, end_time: 2.days.from_now)
-          treatment_group = create(:treatment_group, experiment: experiment)
+      expectations.each do |expectation|
+        experiment = create(:experiment, start_time: Date.today, end_time: 2.days.from_now)
+        treatment_group = create(:treatment_group, experiment: experiment)
 
-          expectation[:remind_on_dates].each do |remind_on_date|
-            create(:reminder_template,
-              message: SecureRandom.uuid,
-              treatment_group: treatment_group,
-              remind_on_in_days: remind_on_date)
-          end
-
-          notifying_until_date = experiment.end_time + expectation[:notifying_until_after_end_date]
-
-          Timecop.freeze(experiment.start_time - 1.day) { expect(described_class.find(experiment.id).notifying?).to eq false }
-          Timecop.freeze(experiment.start_time) { expect(described_class.find(experiment.id).notifying?).to eq true }
-          Timecop.freeze(notifying_until_date - 1.day) { expect(described_class.find(experiment.id).notifying?).to eq true }
-          Timecop.freeze(notifying_until_date) { expect(described_class.find(experiment.id).notifying?).to eq true }
-          Timecop.freeze(notifying_until_date + 1.day) { expect(described_class.find(experiment.id).notifying?).to eq false }
-
-          experiment.cancel
+        expectation[:remind_on_dates].each do |remind_on_date|
+          create(:reminder_template,
+            message: SecureRandom.uuid,
+            treatment_group: treatment_group,
+            remind_on_in_days: remind_on_date)
         end
+
+        notifying_until_date = experiment.end_time + expectation[:notifying_until_after_end_date]
+
+        Timecop.freeze(experiment.start_time - 1.day) { expect(described_class.find(experiment.id).notifying?).to eq false }
+        Timecop.freeze(experiment.start_time) { expect(described_class.find(experiment.id).notifying?).to eq true }
+        Timecop.freeze(notifying_until_date - 1.day) { expect(described_class.find(experiment.id).notifying?).to eq true }
+        Timecop.freeze(notifying_until_date) { expect(described_class.find(experiment.id).notifying?).to eq true }
+        Timecop.freeze(notifying_until_date + 1.day) { expect(described_class.find(experiment.id).notifying?).to eq false }
+
+        experiment.cancel
       end
     end
   end
