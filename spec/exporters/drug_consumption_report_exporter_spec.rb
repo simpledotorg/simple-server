@@ -76,7 +76,7 @@ RSpec.describe DrugConsumptionReportExporter do
       allow(CountryConfig.current).to receive(:fetch).with(:custom_drug_category_order, []).and_return([])
 
       headers_row_1 = [
-        nil, nil,
+        nil, nil, nil, nil,
         "ARB Tablets", nil, nil,
         "CCB Tablets", nil,
         "Diuretic Tablets", nil,
@@ -85,6 +85,8 @@ RSpec.describe DrugConsumptionReportExporter do
 
       headers_row_2 = [
         "Facilities",
+        "Facility type",
+        "Facility size",
         "Block",
         "Losartan 50 mg",
         "Telmisartan 40 mg",
@@ -99,7 +101,7 @@ RSpec.describe DrugConsumptionReportExporter do
       ]
 
       totals_row = [
-        "All", "",
+        "All", "", "", "",
         2000, 0, -2000,
         0, -6000,
         "?", "?",
@@ -107,7 +109,7 @@ RSpec.describe DrugConsumptionReportExporter do
       ]
 
       district_warehouse_row = [
-        "District Warehouse", "",
+        "District Warehouse", "", "", "",
         1000, 0, -1000,
         0, -3000,
         "?", "?",
@@ -116,6 +118,8 @@ RSpec.describe DrugConsumptionReportExporter do
 
       facility_1_row =
         [facilities.first.name,
+          facilities.first.facility_type,
+          facilities.first.localized_facility_size,
           facilities.first.zone,
           1000, 0, -1000,
           0, -3000,
@@ -124,6 +128,8 @@ RSpec.describe DrugConsumptionReportExporter do
 
       facility_2_row =
         [facilities.second.name,
+          facilities.second.facility_type,
+          facilities.second.localized_facility_size,
           facilities.second.zone,
           "?", "?", "?", "?",
           "?", "?",
@@ -149,7 +155,7 @@ RSpec.describe DrugConsumptionReportExporter do
         .and_return(["hypertension_ccb", "hypertension_arb", "hypertension_diuretic"])
 
       headers_row_1 = [
-        nil, nil,
+        nil, nil, nil, nil,
         "CCB Tablets", nil,
         "ARB Tablets", nil, nil,
         "Diuretic Tablets", nil,
@@ -158,6 +164,8 @@ RSpec.describe DrugConsumptionReportExporter do
 
       headers_row_2 = [
         "Facilities",
+        "Facility type",
+        "Facility size",
         "Block",
         "Amlodipine 5 mg",
         "Amlodipine 10 mg",
@@ -172,7 +180,7 @@ RSpec.describe DrugConsumptionReportExporter do
       ]
 
       totals_row = [
-        "All", "",
+        "All", "", "", "",
         0, -6000,
         2000, 0, -2000,
         "?", "?",
@@ -180,7 +188,7 @@ RSpec.describe DrugConsumptionReportExporter do
       ]
 
       district_warehouse_row = [
-        "District Warehouse", "",
+        "District Warehouse", "", "", "",
         0, -3000,
         1000, 0, -1000,
         "?", "?",
@@ -189,6 +197,8 @@ RSpec.describe DrugConsumptionReportExporter do
 
       facility_1_row =
         [facilities.first.name,
+          facilities.first.facility_type,
+          facilities.first.localized_facility_size,
           facilities.first.zone,
           0, -3000,
           1000, 0, -1000,
@@ -197,6 +207,8 @@ RSpec.describe DrugConsumptionReportExporter do
 
       facility_2_row =
         [facilities.second.name,
+          facilities.second.facility_type,
+          facilities.first.localized_facility_size,
           facilities.second.zone,
           "?", "?", "?", "?",
           "?", "?",
