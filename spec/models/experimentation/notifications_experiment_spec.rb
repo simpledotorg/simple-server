@@ -248,6 +248,24 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       Experimentation::CurrentPatientExperiment.first.enroll_patients(Date.today, 1)
       expect(Experimentation::TreatmentGroupMembership.count).to eq(1)
     end
+
+    it "sets the expected_return_date to the expected appointment's remind_on if it is present" do
+      overdue_patient = create(:patient)
+      remind_on_patient = create(:patient)
+      create(:experiment, :with_treatment_group, experiment_type: "current_patients")
+      allow_any_instance_of(Experimentation::CurrentPatientExperiment).to receive(:eligible_patients).and_return(Patient.where(id: [overdue_patient, remind_on_patient].map(&:id)))
+
+      appointment_scheduled_date = 100.days.ago.to_date
+      remind_on_date = 70.days.ago.to_date
+      create(:appointment, status: :scheduled, scheduled_date: appointment_scheduled_date, patient: overdue_patient)
+      create(:appointment, status: :scheduled, scheduled_date: appointment_scheduled_date, remind_on: remind_on_date, patient: remind_on_patient)
+      Experimentation::CurrentPatientExperiment.first.enroll_patients(Date.today)
+      overdue_patient_membership = Experimentation::TreatmentGroupMembership.find_by(patient_id: overdue_patient.id)
+      remind_on_patient_membership = Experimentation::TreatmentGroupMembership.find_by(patient_id: remind_on_patient.id)
+
+      expect(overdue_patient_membership.expected_return_date).to eq(appointment_scheduled_date)
+      expect(remind_on_patient_membership.expected_return_date).to eq(remind_on_date)
+    end
   end
 
   describe "#schedule_notifications" do
@@ -309,6 +327,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
         {
           notification_status: "sent",
           result: "success",
+          successful_communication_id: successful_communication.id,
           successful_communication_type: successful_communication.communication_type,
           successful_communication_created_at: successful_communication.created_at.to_s,
           successful_delivery_status: "delivered"
@@ -491,6 +510,20 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       expect(experiment.treatment_group_memberships.status_evicted.pluck(:patient_id)).to contain_exactly(patient.id)
     end
 
+    it "does not evict patients who were enrolled with remind_on as the expected_return_date" do
+      patient = create(:patient)
+      remind_on_date = 70.days.ago
+      appointment = create(:appointment, status: :scheduled, scheduled_date: 100.days.ago, remind_on: remind_on_date, patient: patient)
+      experiment = Experimentation::NotificationsExperiment.find(create(:experiment).id)
+      treatment_group = create(:treatment_group, experiment: experiment)
+      treatment_group.enroll(patient, appointment_id: appointment.id, expected_return_date: remind_on_date)
+
+      experiment.evict_patients
+
+      expect(experiment.treatment_group_memberships.status_enrolled.pluck(:patient_id)).to contain_exactly(patient.id)
+      expect(experiment.treatment_group_memberships.status_evicted.count).to eq 0
+    end
+
     it "evicts patients whose notification has failed" do
       patient = create(:patient)
       appointment = create(:appointment, status: :scheduled, patient: patient)
@@ -552,6 +585,15 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       experiment.evict_patients
 
       expect(Notification.status_cancelled).to contain_exactly(pending_notification, scheduled_notification)
+    end
+  end
+
+  describe "#time" do
+    it "calls statsd instance time" do
+      expect(Statsd.instance).to receive(:time).with("current_patients.monitor")
+
+      create(:experiment)
+      described_class.first.monitor
     end
   end
 end

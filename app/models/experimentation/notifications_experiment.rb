@@ -1,6 +1,6 @@
 module Experimentation
   class NotificationsExperiment < Experiment
-    include Memery
+    include ActiveSupport::Benchmarkable
     BATCH_SIZE = 1000
 
     default_scope { where(experiment_type: %w[current_patients stale_patients]) }
@@ -158,9 +158,15 @@ module Experimentation
     def time(method_name, &block)
       raise ArgumentError, "You must supply a block" unless block
 
-      Statsd.instance.time("#{experiment_type}.#{method_name}") do
-        yield(block)
+      label = "#{experiment_type}.#{method_name}"
+
+      benchmark(label) do
+        Statsd.instance.time(label) do
+          yield(block)
+        end
       end
+
+      Statsd.instance.flush # The metric is not sent to datadog until the buffer is full, hence we explicitly flush.
     end
 
     def earliest_remind_on
@@ -189,7 +195,7 @@ module Experimentation
         risk_level: patient.risk_priority,
         diagnosed_htn: medical_history.hypertension,
         experiment_inclusion_date: date,
-        expected_return_date: latest_scheduled_appointment&.scheduled_date,
+        expected_return_date: latest_scheduled_appointment&.remind_on || latest_scheduled_appointment&.scheduled_date,
         expected_return_facility_id: latest_scheduled_appointment&.facility_id,
         expected_return_facility_type: latest_scheduled_appointment&.facility&.facility_type,
         expected_return_facility_name: latest_scheduled_appointment&.facility&.name,
@@ -229,6 +235,7 @@ module Experimentation
           {notification_status: notification.status,
            notification_status_updated_at: notification.updated_at,
            result: :success,
+           successful_communication_id: successful_delivery.id,
            successful_communication_type: successful_delivery.communication_type,
            successful_communication_created_at: successful_delivery.created_at.to_s,
            successful_delivery_status: successful_delivery.result}
