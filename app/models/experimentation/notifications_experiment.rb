@@ -6,8 +6,15 @@ module Experimentation
     default_scope { where(experiment_type: %w[current_patients stale_patients]) }
 
     scope :notifying, -> do
-      joins(treatment_groups: :reminder_templates)
-        .where("start_time <= ? AND end_time + make_interval(days := remind_on_in_days) > ? ", Time.current, Time.current)
+      joins("left join lateral (
+              select min(remind_on_in_days) earliest_remind_on
+              from reminder_templates
+              where reminder_templates.treatment_group_id = treatment_groups.id
+             ) min_remind_on on true")
+        .joins(treatment_groups: :reminder_templates)
+        .where("start_time <= ?", Date.current)
+        .where("end_time - make_interval(days := earliest_remind_on)
+                + make_interval(days := remind_on_in_days) > ? ", Date.current)
         .distinct
     end
 

@@ -15,7 +15,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
         expect(described_class.notifying.pluck(:id)).to be_empty
       end
 
-      it "is notifying after all the reminders have been sent out for patients enrolled on the last day" do
+      it "is notifying while reminders for patients enrolled on the last day are being sent" do
         create(:experiment, :with_treatment_group_and_template, :upcoming)
         create(:experiment, :with_treatment_group_and_template, :monitoring)
         create(:experiment, :with_treatment_group_and_template, :completed)
@@ -34,6 +34,19 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
         create(:reminder_template, message: "2", treatment_group: treatment_group_2, remind_on_in_days: 0)
 
         expect(described_class.notifying.pluck(:id)).to contain_exactly(notifying_experiment.id)
+      end
+
+      context "when remind_on_in_days is negative for a template"
+      it "is notifying after all the reminders have been sent out for patients enrolled on the last day" do
+        experiment = create(:experiment, start_time: 3.day.ago, end_time: 1.day.ago, experiment_type: "current_patients")
+
+        treatment_group = create(:treatment_group, experiment: experiment)
+        create(:reminder_template, message: "1", treatment_group: treatment_group, remind_on_in_days: -1)
+        create(:reminder_template, message: "2", treatment_group: treatment_group, remind_on_in_days: 0)
+        create(:reminder_template, message: "3", treatment_group: treatment_group, remind_on_in_days: 2)
+
+        Timecop.freeze(Date.current + 2.days) { expect(described_class.notifying.pluck(:id)).to contain_exactly(experiment.id) }
+        Timecop.freeze(Date.current + 3.days) { expect(described_class.notifying.pluck(:id)).to be_empty }
       end
     end
   end
