@@ -3,8 +3,8 @@ module Experimentation
     # RECENT_EXPERIMENT_MEMBERSHIP_BUFFER should be at least as big as
     # MONITORING_BUFFER otherwise patients who are being monitored
     # in an experiment can be considered eligible for an upcoming experiment.
-    MONITORING_BUFFER = 14.days.freeze
-    RECENT_EXPERIMENT_MEMBERSHIP_BUFFER = 14.days.freeze
+    MONITORING_BUFFER = 15.days.freeze
+    RECENT_EXPERIMENT_MEMBERSHIP_BUFFER = 15.days.freeze
 
     has_many :treatment_groups, dependent: :delete_all
     has_many :reminder_templates, through: :treatment_groups
