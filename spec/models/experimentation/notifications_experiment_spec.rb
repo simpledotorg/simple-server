@@ -521,4 +521,13 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       expect(Notification.status_cancelled).to contain_exactly(pending_notification, scheduled_notification)
     end
   end
+
+  describe "#time" do
+    it "calls statsd instance time" do
+      expect(Statsd.instance).to receive(:time).with("current_patients.monitor")
+
+      create(:experiment)
+      described_class.first.monitor
+    end
+  end
 end
