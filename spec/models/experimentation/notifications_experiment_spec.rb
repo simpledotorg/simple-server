@@ -57,21 +57,11 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
 
           notifying_until_date = experiment.end_time + expectation[:notifying_until_after_end_date]
 
-          Timecop.freeze(experiment.start_time) do
-            expect(described_class.find(experiment.id).notifying?).to eq true
-          end
-
-          Timecop.freeze(notifying_until_date - 1.day) do
-            expect(described_class.find(experiment.id).notifying?).to eq true
-          end
-          
-          Timecop.freeze(notifying_until_date) do
-            expect(described_class.find(experiment.id).notifying?).to eq true
-          end
-
-          Timecop.freeze(notifying_until_date + 1.day) do
-            expect(described_class.find(experiment.id).notifying?).to eq false
-          end
+          Timecop.freeze(experiment.start_time - 1.day) { expect(described_class.find(experiment.id).notifying?).to eq false }
+          Timecop.freeze(experiment.start_time) { expect(described_class.find(experiment.id).notifying?).to eq true }
+          Timecop.freeze(notifying_until_date - 1.day) { expect(described_class.find(experiment.id).notifying?).to eq true }
+          Timecop.freeze(notifying_until_date) { expect(described_class.find(experiment.id).notifying?).to eq true }
+          Timecop.freeze(notifying_until_date + 1.day) { expect(described_class.find(experiment.id).notifying?).to eq false }
 
           experiment.cancel
         end
