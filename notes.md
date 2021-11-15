@@ -1247,3 +1247,6 @@ pp aggregate_data
       @selected_facility_group is the first filter
       @selected_zones is second filter
       @selected_facility_sizes is third filter
+
+
+      style='color: #0075EB !important; border:1px solid #9db8d2 !important; background: #fff !important;' 
