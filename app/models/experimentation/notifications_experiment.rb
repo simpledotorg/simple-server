@@ -5,17 +5,14 @@ module Experimentation
 
     default_scope { where(experiment_type: %w[current_patients stale_patients]) }
 
-    scope :notifying, -> do
-      joins("left join lateral (
-              select min(remind_on_in_days) earliest_remind_on
-              from reminder_templates
-              where reminder_templates.treatment_group_id = treatment_groups.id
-             ) min_remind_on on true")
-        .joins(treatment_groups: :reminder_templates)
-        .where("start_time <= ?", Date.current)
-        .where("end_time - make_interval(days := earliest_remind_on)
-                + make_interval(days := remind_on_in_days) > ? ", Date.current)
-        .distinct
+    def self.notifying
+      all.select { |experiment| experiment.notifying? }
+    end
+
+    def notifying?
+      notification_buffer = (last_remind_on - earliest_remind_on).days
+      notify_until = (end_time + notification_buffer).to_date
+      start_time <= Date.current && notify_until >= Date.current
     end
 
     # The order of operations is important.
@@ -166,6 +163,10 @@ module Experimentation
 
     def earliest_remind_on
       reminder_templates.pluck(:remind_on_in_days).min || 0
+    end
+
+    def last_remind_on
+      reminder_templates.pluck(:remind_on_in_days).max || 0
     end
 
     private
