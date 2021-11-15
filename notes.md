@@ -1241,3 +1241,9 @@ pp aggregate_data
       <Period type:month value=2021-08-01>=>"0%",
       <Period type:month value=2021-09-01>=>"0%",
       <Period type:month value=2021-10-01>=>"0%"}]}}
+
+
+      located in MyFacilitiesFiltering
+      @selected_facility_group is the first filter
+      @selected_zones is second filter
+      @selected_facility_sizes is third filter

@@ -5,11 +5,6 @@ class MyFacilitiesController < AdminController
   include MyFacilitiesFiltering
   include CohortPeriodSelection
   include PeriodSelection
-  ###
-  # include ActionView::Helpers::NumberHelper
-  # include DashboardHelper
-  # require 'csv'
-  # include BloodPressureExportService
 
   PERIODS_TO_DISPLAY = {quarter: 3, month: 3, day: 14}.freeze
 
@@ -52,8 +47,9 @@ class MyFacilitiesController < AdminController
   end
 
   def csv_maker
-    data_type = params[:type]
-    service = BloodPressureExportService.new(start_period: @start_period, end_period: @period,  facilities: filter_facilities) #---data_type: data_type,
+    facilities = filter_facilities
+    # debugger
+    service = BloodPressureExportService.new(start_period: @start_period, end_period: @period,  facilities: facilities)
     csv_data = service.as_csv
     filename = "Blood Pressure Data #{@selected_facility_group.name}.csv"
     send_data csv_data, type: "text/csv", filename: filename
