@@ -164,6 +164,10 @@ module Experimentation
       end
     end
 
+    def earliest_remind_on
+      reminder_templates.pluck(:remind_on_in_days).min || 0
+    end
+
     private
 
     def remaining_enrollments_allowed(date)
