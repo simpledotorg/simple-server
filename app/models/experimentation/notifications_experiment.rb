@@ -10,6 +10,8 @@ module Experimentation
     end
 
     def notifying?
+      return false unless reminder_templates.exists?
+
       notification_buffer = (last_remind_on - earliest_remind_on).days
       notify_until = (end_time + notification_buffer).to_date
       start_time <= Date.current && notify_until >= Date.current
