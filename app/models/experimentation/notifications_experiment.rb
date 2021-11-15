@@ -215,6 +215,7 @@ module Experimentation
           {notification_status: notification.status,
            notification_status_updated_at: notification.updated_at,
            result: :success,
+           successful_communication_id: successful_delivery.id,
            successful_communication_type: successful_delivery.communication_type,
            successful_communication_created_at: successful_delivery.created_at.to_s,
            successful_delivery_status: successful_delivery.result}
