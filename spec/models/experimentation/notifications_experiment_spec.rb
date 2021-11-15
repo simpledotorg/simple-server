@@ -15,25 +15,59 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
         expect(described_class.notifying.pluck(:id)).to be_empty
       end
 
-      it "is notifying after all the reminders have been sent out for patients enrolled on the last day" do
-        create(:experiment, :with_treatment_group_and_template, :upcoming)
-        create(:experiment, :with_treatment_group_and_template, :monitoring)
-        create(:experiment, :with_treatment_group_and_template, :completed)
-        create(:experiment, :with_treatment_group_and_template, :cancelled, start_time: 5.months.ago, end_time: 4.months.ago)
-        notifying_experiment = create(:experiment, start_time: 3.day.ago, end_time: 1.day.ago, experiment_type: "current_patients")
+      it "is notifying only when notifications need to be sent" do
+        create(:experiment, :with_treatment_group_and_template, :upcoming, name: "upcoming")
+        create(:experiment, :with_treatment_group_and_template, :monitoring, name: "monitoring")
+        create(:experiment, :with_treatment_group_and_template, :completed, name: "completed")
+        create(:experiment, :with_treatment_group_and_template, :cancelled, start_time: 5.months.ago, end_time: 4.months.ago, name: "cancelled")
+        notifying_experiment = create(:experiment, start_time: 3.day.ago, end_time: 1.day.ago, experiment_type: "current_patients", name: "yesy")
 
         treatment_group_1 = create(:treatment_group, experiment: notifying_experiment)
         create(:reminder_template, message: "1", treatment_group: treatment_group_1, remind_on_in_days: 0)
         create(:reminder_template, message: "2", treatment_group: treatment_group_1, remind_on_in_days: 2)
         create(:reminder_template, message: "3", treatment_group: treatment_group_1, remind_on_in_days: 3)
 
-        not_notifying_experiment = create(:experiment, start_time: 3.day.ago, end_time: 1.day.ago, experiment_type: "stale_patients")
+        not_notifying_experiment = create(:experiment, start_time: 3.day.ago, end_time: 2.day.ago, experiment_type: "stale_patients", name: "no")
         treatment_group_2 = create(:treatment_group, experiment: not_notifying_experiment)
 
         create(:reminder_template, message: "1", treatment_group: treatment_group_2, remind_on_in_days: 1)
         create(:reminder_template, message: "2", treatment_group: treatment_group_2, remind_on_in_days: 0)
 
         expect(described_class.notifying.pluck(:id)).to contain_exactly(notifying_experiment.id)
+      end
+    end
+  end
+
+  describe "#notifying?" do
+    it "is true from start date until after all the reminders have been sent out for patients enrolled on the last day" do
+      expectations = [
+        {remind_on_dates: [0, 1, 2], notifying_until_after_end_date: 2.days},
+        {remind_on_dates: [0, 3], notifying_until_after_end_date: 3.days},
+        {remind_on_dates: [1, 2], notifying_until_after_end_date: 1.days},
+        {remind_on_dates: [-1, 1], notifying_until_after_end_date: 2.days},
+        {remind_on_dates: [-1, 0, 2], notifying_until_after_end_date: 3.days}
+      ]
+
+      expectations.each do |expectation|
+        experiment = create(:experiment, start_time: Date.today, end_time: 2.days.from_now)
+        treatment_group = create(:treatment_group, experiment: experiment)
+
+        expectation[:remind_on_dates].each do |remind_on_date|
+          create(:reminder_template,
+            message: SecureRandom.uuid,
+            treatment_group: treatment_group,
+            remind_on_in_days: remind_on_date)
+        end
+
+        notifying_until_date = experiment.end_time + expectation[:notifying_until_after_end_date]
+
+        Timecop.freeze(experiment.start_time - 1.day) { expect(described_class.find(experiment.id).notifying?).to eq false }
+        Timecop.freeze(experiment.start_time) { expect(described_class.find(experiment.id).notifying?).to eq true }
+        Timecop.freeze(notifying_until_date - 1.day) { expect(described_class.find(experiment.id).notifying?).to eq true }
+        Timecop.freeze(notifying_until_date) { expect(described_class.find(experiment.id).notifying?).to eq true }
+        Timecop.freeze(notifying_until_date + 1.day) { expect(described_class.find(experiment.id).notifying?).to eq false }
+
+        experiment.cancel
       end
     end
   end
@@ -214,6 +248,24 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       Experimentation::CurrentPatientExperiment.first.enroll_patients(Date.today, 1)
       expect(Experimentation::TreatmentGroupMembership.count).to eq(1)
     end
+
+    it "sets the expected_return_date to the expected appointment's remind_on if it is present" do
+      overdue_patient = create(:patient)
+      remind_on_patient = create(:patient)
+      create(:experiment, :with_treatment_group, experiment_type: "current_patients")
+      allow_any_instance_of(Experimentation::CurrentPatientExperiment).to receive(:eligible_patients).and_return(Patient.where(id: [overdue_patient, remind_on_patient].map(&:id)))
+
+      appointment_scheduled_date = 100.days.ago.to_date
+      remind_on_date = 70.days.ago.to_date
+      create(:appointment, status: :scheduled, scheduled_date: appointment_scheduled_date, patient: overdue_patient)
+      create(:appointment, status: :scheduled, scheduled_date: appointment_scheduled_date, remind_on: remind_on_date, patient: remind_on_patient)
+      Experimentation::CurrentPatientExperiment.first.enroll_patients(Date.today)
+      overdue_patient_membership = Experimentation::TreatmentGroupMembership.find_by(patient_id: overdue_patient.id)
+      remind_on_patient_membership = Experimentation::TreatmentGroupMembership.find_by(patient_id: remind_on_patient.id)
+
+      expect(overdue_patient_membership.expected_return_date).to eq(appointment_scheduled_date)
+      expect(remind_on_patient_membership.expected_return_date).to eq(remind_on_date)
+    end
   end
 
   describe "#schedule_notifications" do
@@ -275,6 +327,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
         {
           notification_status: "sent",
           result: "success",
+          successful_communication_id: successful_communication.id,
           successful_communication_type: successful_communication.communication_type,
           successful_communication_created_at: successful_communication.created_at.to_s,
           successful_delivery_status: "delivered"
@@ -457,6 +510,20 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       expect(experiment.treatment_group_memberships.status_evicted.pluck(:patient_id)).to contain_exactly(patient.id)
     end
 
+    it "does not evict patients who were enrolled with remind_on as the expected_return_date" do
+      patient = create(:patient)
+      remind_on_date = 70.days.ago
+      appointment = create(:appointment, status: :scheduled, scheduled_date: 100.days.ago, remind_on: remind_on_date, patient: patient)
+      experiment = Experimentation::NotificationsExperiment.find(create(:experiment).id)
+      treatment_group = create(:treatment_group, experiment: experiment)
+      treatment_group.enroll(patient, appointment_id: appointment.id, expected_return_date: remind_on_date)
+
+      experiment.evict_patients
+
+      expect(experiment.treatment_group_memberships.status_enrolled.pluck(:patient_id)).to contain_exactly(patient.id)
+      expect(experiment.treatment_group_memberships.status_evicted.count).to eq 0
+    end
+
     it "evicts patients whose notification has failed" do
       patient = create(:patient)
       appointment = create(:appointment, status: :scheduled, patient: patient)
@@ -518,6 +585,15 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       experiment.evict_patients
 
       expect(Notification.status_cancelled).to contain_exactly(pending_notification, scheduled_notification)
+    end
+  end
+
+  describe "#time" do
+    it "calls statsd instance time" do
+      expect(Statsd.instance).to receive(:time).with("current_patients.monitor")
+
+      create(:experiment)
+      described_class.first.monitor
     end
   end
 end
