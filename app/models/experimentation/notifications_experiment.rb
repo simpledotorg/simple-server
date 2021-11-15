@@ -5,10 +5,16 @@ module Experimentation
 
     default_scope { where(experiment_type: %w[current_patients stale_patients]) }
 
-    scope :notifying, -> do
-      joins(treatment_groups: :reminder_templates)
-        .where("start_time <= ? AND end_time + make_interval(days := remind_on_in_days) > ? ", Time.current, Time.current)
-        .distinct
+    def self.notifying
+      all.select { |experiment| experiment.notifying? }
+    end
+
+    def notifying?
+      return false unless reminder_templates.exists?
+
+      notification_buffer = (last_remind_on - earliest_remind_on).days
+      notify_until = (end_time + notification_buffer).to_date
+      start_time <= Date.current && notify_until >= Date.current
     end
 
     # The order of operations is important.
@@ -161,6 +167,14 @@ module Experimentation
       end
 
       Statsd.instance.flush # The metric is not sent to datadog until the buffer is full, hence we explicitly flush.
+    end
+
+    def earliest_remind_on
+      reminder_templates.pluck(:remind_on_in_days).min || 0
+    end
+
+    def last_remind_on
+      reminder_templates.pluck(:remind_on_in_days).max || 0
     end
 
     private
