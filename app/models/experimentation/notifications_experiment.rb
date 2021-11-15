@@ -160,7 +160,7 @@ module Experimentation
         end
       end
 
-      Statsd.flush # The metric is not sent to datadog until the buffer is full, hence we explicitly flush.
+      Statsd.instance.flush # The metric is not sent to datadog until the buffer is full, hence we explicitly flush.
     end
 
     private
