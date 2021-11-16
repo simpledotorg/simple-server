@@ -48,15 +48,20 @@ class CohortService
 
   def compute_v2(results)
     results.each_with_object([]) do |result, arry|
-       arry << {
-         controlled: result.cohort_controlled,
-         no_bp: result.cohort_missed_visit,
-         registration_period: result.period,
-         patients_registered: result.period.advance(months: -2).to_s(:mon_year),
-         registered: result.cohort_patients,
-         results_in: result.period.to_s(:cohort),
-         uncontrolled: result.cohort_uncontrolled
-       }.with_indifferent_access
+      registration_period = if quarterly?
+        result.period.previous
+      else
+        result.period.advance(months: -2)
+      end
+      arry << {
+        controlled: result.cohort_controlled,
+        no_bp: result.cohort_missed_visit,
+        period: result.period,
+        patients_registered: registration_period.to_s,
+        registered: result.cohort_patients,
+        results_in: result.period.to_s(:cohort),
+        uncontrolled: result.cohort_uncontrolled
+      }.with_indifferent_access
     end
   end
 
@@ -90,11 +95,12 @@ class CohortService
              registration_month: cohort_period.value.try(:month)}
       query = ControlRateCohortQuery.new(facilities: region.facilities, cohort_period: hsh)
       {
-        results_in: results_in,
-        patients_registered: cohort_period.to_s,
-        registered: query.cohort_patients.count,
         controlled: query.cohort_controlled_bps.count,
         no_bp: query.cohort_missed_visits_count,
+        patients_registered: cohort_period.to_s,
+        period: period,
+        registered: query.cohort_patients.count,
+        results_in: results_in,
         uncontrolled: query.cohort_uncontrolled_bps.count
       }.with_indifferent_access
     end
