@@ -84,7 +84,6 @@ RSpec.describe CohortService, type: :model do
         # - 3 controlled in Q2
         # - 1 uncontrolled in Q2
         # - 2 no BP in Q2
-
         q1_patients = [
           create(:patient, registration_facility: facility, registration_user: user, recorded_at: jan_5),
           create(:patient, registration_facility: facility, registration_user: user, recorded_at: jan_5 + 10.days),
@@ -106,7 +105,6 @@ RSpec.describe CohortService, type: :model do
         # - 4 controlled in Q3
         # - 3 uncontrolled in Q3
         # - 1 no BP in Q3
-
         q2_patients = [
           create(:patient, registration_facility: facility, registration_user: user, recorded_at: apr_5),
           create(:patient, registration_facility: facility, registration_user: user, recorded_at: apr_5 + 10.days),
@@ -129,7 +127,6 @@ RSpec.describe CohortService, type: :model do
         ]
 
         # Other facility data that shouldn't interfere
-
         other_patients = [
           create(:patient, recorded_at: jan_5, registration_user: user),
           create(:patient, recorded_at: apr_5, registration_user: user),
@@ -189,17 +186,12 @@ RSpec.describe CohortService, type: :model do
         ]
         _q2_patients = [
           create(:patient, registration_facility: facility_1, registration_user: user, recorded_at: apr_5)
-          # create(:patient, registration_facility: facility_2, registration_user: user, recorded_at: jan_5 + 10.days),
         ]
         refresh_views
 
-        quarters = [
-          Period.quarter(apr_5),
-          Period.quarter(jul_5)
-        ]
+        quarters = [Period.quarter(apr_5), Period.quarter(jul_5)]
         result = CohortService.new(region: facility_group, periods: quarters).call
-        q1 = result[0]
-        q2 = result[1]
+        q1, q2 = result[0], result[1]
         expect(q1).to eq({
           "controlled" => 2,
           "no_bp" => 0,

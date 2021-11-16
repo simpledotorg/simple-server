@@ -2,10 +2,19 @@ class CohortService
   include BustCache
   CACHE_VERSION = 3
   CACHE_TTL = 7.days
+
+  attr_reader :field_prefix
   attr_reader :periods
   attr_reader :region
   attr_reader :region_field
   attr_reader :reporting_schema_v2
+
+  COUNTS = %i[
+    cohort_controlled
+    cohort_missed_visit
+    cohort_patients
+    cohort_uncontrolled
+  ].freeze
 
   def initialize(region:, periods:, reporting_schema_v2: Reports.reporting_schema_v2?)
     @region = region.region
@@ -13,26 +22,15 @@ class CohortService
     @reporting_schema_v2 = reporting_schema_v2
     @region_field = "#{@region.region_type}_region_id"
     @quarterly = @periods.first.quarter?
+    @field_prefix = quarterly? ? "quarterly" : "monthly"
   end
 
   def quarterly?
     @quarterly
   end
 
-  COUNTS = %i[
-    cohort_controlled
-    cohort_missed_visit
-    cohort_patients
-    cohort_uncontrolled
-  ]
-  # SUMS = COUNTS.map { |field| Arel.sql("COALESCE(SUM(#{field}::int), 0) as #{field}") }
-
   def sums
-    @sums ||= if quarterly?
-      COUNTS.map { |field| Arel.sql("SUM(quarterly_#{field}::int) as #{field}") }
-    else
-      COUNTS.map { |field| Arel.sql("COALESCE(SUM(monthly_#{field}::int), 0) as #{field}") }
-    end
+    @sums ||= COUNTS.map { |field| Arel.sql("SUM(#{field_prefix}_#{field}::int) as #{field}") }
   end
 
   def call
