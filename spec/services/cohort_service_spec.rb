@@ -67,7 +67,7 @@ RSpec.describe CohortService, type: :model do
         periods = Period.month("April 1st 2020").downto(5)
         [facility, facility_group].each do |region|
           result = CohortService.new(region: region, periods: periods).call
-          jan_registered_results = result.find { |r| r["patients_registered"] == "Jan-2020" }
+          jan_registered_results = result.find { |r| r["patients_registered"] == "Jan-2020" }.except(:registration_period)
           expect(jan_registered_results).to eq({
             "controlled" => 1,
             "no_bp" => 0,
@@ -76,7 +76,7 @@ RSpec.describe CohortService, type: :model do
             "results_in" => "Feb/Mar",
             "uncontrolled" => 1
           })
-          feb_registered_results = result.find { |r| r["patients_registered"] == "Feb-2020" }
+          feb_registered_results = result.find { |r| r["patients_registered"] == "Feb-2020" }.except(:registration_period)
           expect(feb_registered_results).to eq({
             "controlled" => 1,
             "no_bp" => 1,

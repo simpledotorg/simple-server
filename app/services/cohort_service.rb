@@ -35,11 +35,8 @@ class CohortService
 
   def call
     if reporting_schema_v2
-      # For monthly cohorts, we have to select the month_string that results are gathered in -
-      # so we add two months onto the range for that case.
-      range = quarterly? ? periods : periods.map { |p| p.advance(months: 2) }
-      results = v2_query(range)
-      compute_v2(results, range)
+      results = v2_query(periods)
+      compute_v2(results)
     else
       periods.each_with_object([]) do |period, arry|
         arry << compute(period)
@@ -49,25 +46,17 @@ class CohortService
 
   private
 
-  def compute_v2(results, range)
-    range.each_with_object([]).with_index do |(period, arry), i|
-      stat = results[i]
-      next unless stat
-      if quarterly?
-        cohort_period = period.previous
-        results_in = period.to_s
-      else
-        cohort_period = period.advance(months: -2)
-        results_in = period.to_s(:cohort)
-      end
-      arry << {
-        controlled: stat.cohort_controlled,
-        no_bp: stat.cohort_missed_visit,
-        patients_registered: cohort_period.to_s,
-        registered: stat.cohort_patients,
-        results_in: results_in,
-        uncontrolled: stat.cohort_uncontrolled
-      }.with_indifferent_access
+  def compute_v2(results)
+    results.each_with_object([]) do |result, arry|
+       arry << {
+         controlled: result.cohort_controlled,
+         no_bp: result.cohort_missed_visit,
+         registration_period: result.period,
+         patients_registered: result.period.advance(months: -2).to_s(:mon_year),
+         registered: result.cohort_patients,
+         results_in: result.period.to_s(:cohort),
+         uncontrolled: result.cohort_uncontrolled
+       }.with_indifferent_access
     end
   end
 
@@ -75,10 +64,11 @@ class CohortService
     if quarterly?
       range = range.map { |p| p.to_s(:quarter_string) }
       Reports::QuarterlyFacilityState.where(facility: region.facilities, quarter_string: range)
-        .group(region_field, :quarter_string)
+        .group(region_field, :quarter_string, :month_date)
         .order("quarter_string desc")
-        .select(:quarter_string, region_field, sums)
+        .select(:month_date, region_field, sums)
     else
+      range = periods.map { |p| p.value }
       Reports::FacilityState.where(facility: region.facilities, month_date: range)
         .group(region_field, :month_date)
         .order("month_date desc")
