@@ -40,7 +40,7 @@ class Quarter
     case format
     when :dhis2
       "#{year}Q#{number}"
-    when :matview
+    when :quarter_string
       "#{year}-#{number}"
     else
       "Q#{number}-#{year}"
