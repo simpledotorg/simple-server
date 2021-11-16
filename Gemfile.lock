@@ -295,10 +295,9 @@ GEM
     kaminari-core (1.2.1)
     launchy (2.5.0)
       addressable (~> 2.7)
-    listen (3.1.5)
-      rb-fsevent (~> 0.9, >= 0.9.4)
-      rb-inotify (~> 0.9, >= 0.9.7)
-      ruby_dep (~> 1.2)
+    listen (3.7.0)
+      rb-fsevent (~> 0.10, >= 0.10.3)
+      rb-inotify (~> 0.9, >= 0.9.10)
     llhttp-ffi (0.4.0)
       ffi-compiler (~> 1.0)
       rake (~> 13.0)
@@ -506,7 +505,6 @@ GEM
       rexml
     ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.5)
-    ruby_dep (1.5.0)
     rubyzip (2.3.0)
     safe_yaml (1.0.5)
     sassc (2.3.0)
@@ -685,7 +683,7 @@ DEPENDENCIES
   jquery-rails
   kaminari
   launchy
-  listen (>= 3.0.5, < 3.2)
+  listen
   lodash-rails
   lograge
   memery
