@@ -1,5 +1,12 @@
 class AppointmentNotification::ScheduleExperimentReminders < ApplicationJob
   queue_as :high
+  class << self
+    prepend SentryHandler
+  end
+
+  def self.call
+    perform_now
+  end
 
   def logger
     @logger ||= Notification.logger(class: self.class.name)
