@@ -184,7 +184,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
   end
 
   context "monthly cohort outcomes" do
-    fit "computes totals for under care patients" do
+    it "computes totals for under care patients" do
       facility = create(:facility)
 
       patients_controlled = create_list(:patient, 2, assigned_facility: facility, recorded_at: june_2021[:under_3_months_ago])
