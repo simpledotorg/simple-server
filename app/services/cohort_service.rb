@@ -18,7 +18,7 @@ class CohortService
 
   def initialize(region:, periods:, reporting_schema_v2: Reports.reporting_schema_v2?)
     @region = region.region
-    @periods = periods
+    @periods = periods.sort.reverse
     @reporting_schema_v2 = reporting_schema_v2
     @region_field = "#{@region.region_type}_region_id"
     @quarterly = @periods.first.quarter?
@@ -51,6 +51,8 @@ class CohortService
 
   def compute_v2(results, range)
     range.each_with_object([]).with_index do |(period, arry), i|
+      stat = results[i]
+      next unless stat
       if quarterly?
         cohort_period = period.previous
         results_in = period.to_s
@@ -58,7 +60,6 @@ class CohortService
         cohort_period = period.advance(months: -2)
         results_in = period.to_s(:cohort)
       end
-      stat = results[i]
       arry << {
         controlled: stat.cohort_controlled,
         no_bp: stat.cohort_missed_visit,
@@ -75,10 +76,12 @@ class CohortService
       range = range.map { |p| p.to_s(:quarter_string) }
       Reports::QuarterlyFacilityState.where(facility: region.facilities, quarter_string: range)
         .group(region_field, :quarter_string)
+        .order("quarter_string desc")
         .select(:quarter_string, region_field, sums)
     else
       Reports::FacilityState.where(facility: region.facilities, month_date: range)
         .group(region_field, :month_date)
+        .order("month_date desc")
         .select(:month_date, region_field, sums)
     end
   end

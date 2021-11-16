@@ -34,6 +34,15 @@ RSpec.describe CohortService, type: :model do
         end
       end
 
+      it "sorts periods from most recent to earliest" do
+        month_periods = Period.month("April 1st 2020")..Period.month("July 1st 2020")
+        monthly_service = described_class.new(region: facility, periods: month_periods)
+        expect(monthly_service.periods.entries).to eq(month_periods.entries.reverse)
+        quarter_periods = Period.quarter("July 1st 2020")..Period.quarter("Feb 1st 2021")
+        quarter_service = described_class.new(region: facility, periods: quarter_periods)
+        expect(quarter_service.periods.entries).to eq(quarter_periods.entries.reverse)
+      end
+
       it "returns cohort numbers for month cohorts" do
         # 2 registered in Jan, 2 registered in Feb
         # 1 of the Jan cohort is controlled in, 1 is uncontrolled
@@ -54,7 +63,8 @@ RSpec.describe CohortService, type: :model do
 
         refresh_views
 
-        periods = Period.month("January 1st 2020")..Period.month("April 1st 2020")
+        # periods = Period.month("January 1st 2020")..Period.month("April 1st 2020")
+        periods = Period.month("April 1st 2020").downto(5)
         [facility, facility_group].each do |region|
           result = CohortService.new(region: region, periods: periods).call
           jan_registered_results = result.find { |r| r["patients_registered"] == "Jan-2020" }
@@ -150,20 +160,20 @@ RSpec.describe CohortService, type: :model do
           expect(cohort_service.call).to eq(
             [
               {
-                "controlled" => 3,
-                "no_bp" => 2,
-                "patients_registered" => "Q1-2020",
-                "registered" => 6,
-                "results_in" => "Q2-2020",
-                "uncontrolled" => 1
-              },
-              {
                 "controlled" => 4,
                 "no_bp" => 1,
                 "patients_registered" => "Q2-2020",
                 "registered" => 8,
                 "results_in" => "Q3-2020",
                 "uncontrolled" => 3
+              },
+              {
+                "controlled" => 3,
+                "no_bp" => 2,
+                "patients_registered" => "Q1-2020",
+                "registered" => 6,
+                "results_in" => "Q2-2020",
+                "uncontrolled" => 1
               }
             ]
           )
@@ -191,15 +201,7 @@ RSpec.describe CohortService, type: :model do
 
         quarters = [Period.quarter(apr_5), Period.quarter(jul_5)]
         result = CohortService.new(region: facility_group, periods: quarters).call
-        q1, q2 = result[0], result[1]
-        expect(q1).to eq({
-          "controlled" => 2,
-          "no_bp" => 0,
-          "patients_registered" => "Q1-2020",
-          "registered" => 3,
-          "results_in" => "Q2-2020",
-          "uncontrolled" => 1
-        })
+        q2, q1 = result[0], result[1]
         expect(q2).to eq({
           "controlled" => 0,
           "no_bp" => 1,
@@ -207,6 +209,14 @@ RSpec.describe CohortService, type: :model do
           "registered" => 1,
           "results_in" => "Q3-2020",
           "uncontrolled" => 0
+        })
+        expect(q1).to eq({
+          "controlled" => 2,
+          "no_bp" => 0,
+          "patients_registered" => "Q1-2020",
+          "registered" => 3,
+          "results_in" => "Q2-2020",
+          "uncontrolled" => 1
         })
       end
     end
