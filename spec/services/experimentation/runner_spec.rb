@@ -25,5 +25,14 @@ describe Experimentation::Runner, type: :model do
 
       described_class.call
     end
+
+    it "sends exceptions to Sentry and re-raises" do
+      exception = RuntimeError.new("bad things")
+      expect(Sentry).to receive(:capture_exception).with(exception)
+      expect(Experimentation::CurrentPatientExperiment).to receive(:conduct_daily).and_raise(exception)
+      expect {
+        described_class.call
+      }.to raise_error(exception)
+    end
   end
 end
