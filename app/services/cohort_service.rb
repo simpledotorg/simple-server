@@ -18,7 +18,7 @@ class CohortService
 
   def initialize(region:, periods:, reporting_schema_v2: Reports.reporting_schema_v2?)
     @region = region.region
-    @periods = periods.sort.reverse
+    @periods = periods.sort.reverse # Ensure we return data with most recent cohorts first
     @reporting_schema_v2 = reporting_schema_v2
     @region_field = "#{@region.region_type}_region_id"
     @quarterly = @periods.first.quarter?
