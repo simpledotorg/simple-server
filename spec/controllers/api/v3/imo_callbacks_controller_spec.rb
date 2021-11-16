@@ -2,7 +2,8 @@ require "rails_helper"
 
 RSpec.describe Api::V3::ImoCallbacksController, type: :controller do
   describe "#subscribe" do
-    it "returns 401 when authentication fails" do
+    # Skipping this since Imo callbacks aren't authenticated for now
+    xit "returns 401 when authentication fails" do
       post :subscribe, params: {patient_id: "does_not_matter", event: "accept_invite"}
       expect(response.status).to eq(401)
     end
@@ -55,7 +56,8 @@ RSpec.describe Api::V3::ImoCallbacksController, type: :controller do
   end
 
   describe "#read_receipt" do
-    it "returns 401 when authentication fails" do
+    # Skipping this since Imo callbacks aren't authenticated for now
+    xit "returns 401 when authentication fails" do
       post :read_receipt
       expect(response.status).to eq(401)
     end

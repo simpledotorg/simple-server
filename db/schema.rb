@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_19_144905) do
+ActiveRecord::Schema.define(version: 2021_11_15_070346) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -261,6 +261,7 @@ ActiveRecord::Schema.define(version: 2021_10_19_144905) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
+    t.integer "max_patients_per_day", default: 0
     t.index ["name"], name: "index_experiments_on_name", unique: true
   end
 
@@ -660,7 +661,7 @@ ActiveRecord::Schema.define(version: 2021_10_19_144905) do
     t.string "registration_facility_block"
     t.string "registration_facility_district"
     t.string "registration_facility_state"
-    t.date "visit_date"
+    t.datetime "visited_at"
     t.uuid "visit_facility_id"
     t.string "visit_facility_name"
     t.string "visit_facility_type"
@@ -678,6 +679,7 @@ ActiveRecord::Schema.define(version: 2021_10_19_144905) do
     t.datetime "deleted_at"
     t.index ["appointment_id"], name: "index_treatment_group_memberships_on_appointment_id"
     t.index ["experiment_id"], name: "index_treatment_group_memberships_on_experiment_id"
+    t.index ["patient_id", "experiment_id"], name: "index_tgm_patient_id_and_experiment_id", unique: true
     t.index ["patient_id"], name: "index_treatment_group_memberships_on_patient_id"
     t.index ["treatment_group_id"], name: "index_treatment_group_memberships_on_treatment_group_id"
   end
@@ -1260,6 +1262,7 @@ ActiveRecord::Schema.define(version: 2021_10_19_144905) do
     ORDER BY p.id, p.month_date, (timezone('UTC'::text, timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at)))) DESC;
   SQL
   add_index "reporting_patient_visits", ["month_date", "patient_id"], name: "patient_visits_patient_id_month_date", unique: true
+  add_index "reporting_patient_visits", ["visited_at"], name: "index_visited_at_reporting_patient_visits"
 
   create_view "reporting_patient_states", materialized: true, sql_definition: <<-SQL
       SELECT DISTINCT ON (p.id, cal.month_date) p.id AS patient_id,

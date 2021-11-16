@@ -12,15 +12,13 @@ module Experimentation
         .distinct
     end
 
+    # Memberships where the expected return date falls on
+    # one of the reminder template's remind_on days since `date`.
     def memberships_to_notify(date)
-      # Patients where `date` equals one of their reminder template's remind_on.
-      # To be implemented in a follow up PR.
-    end
-
-    private
-
-    def earliest_remind_on
-      reminder_templates.pluck(:remind_on_in_days).min || 0
+      treatment_group_memberships
+        .status_enrolled
+        .joins(treatment_group: :reminder_templates)
+        .where("expected_return_date::timestamp + make_interval(days := reminder_templates.remind_on_in_days) = ?", date)
     end
   end
 end

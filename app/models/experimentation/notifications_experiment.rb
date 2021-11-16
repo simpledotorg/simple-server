@@ -1,21 +1,28 @@
 module Experimentation
   class NotificationsExperiment < Experiment
-    include Memery
-    MAX_PATIENTS_PER_DAY = 2000
-    ENROLLMENT_BATCH_SIZE = 1000
+    include ActiveSupport::Benchmarkable
+    BATCH_SIZE = 1000
 
     default_scope { where(experiment_type: %w[current_patients stale_patients]) }
 
-    scope :notifying, -> do
-      joins(treatment_groups: :reminder_templates)
-        .where("start_time <= ? AND end_time + make_interval(days := remind_on_in_days) > ? ", Time.current, Time.current)
-        .distinct
+    def self.notifying
+      all.select { |experiment| experiment.notifying? }
     end
 
+    def notifying?
+      return false unless reminder_templates.exists?
+
+      notification_buffer = (last_remind_on - earliest_remind_on).days
+      notify_until = (end_time + notification_buffer).to_date
+      start_time <= Date.current && notify_until >= Date.current
+    end
+
+    # The order of operations is important.
+    # See https://docs.google.com/document/d/1IMXu_ca9xKU8Xox_3v403ZdvNGQzczLWljy7LQ6RQ6A for more details.
     def self.conduct_daily(date)
       running.each { |experiment| experiment.enroll_patients(date) }
-      monitoring.each { |experiment| experiment.monitor(date) }
-      notifying.each { |experiment| experiment.send_notifications(date) }
+      monitoring.each { |experiment| experiment.monitor }
+      notifying.each { |experiment| experiment.schedule_notifications(date) }
     end
 
     # Returns patients who are eligible for enrollment. These should be
@@ -39,32 +46,142 @@ module Experimentation
                                              .having("count(patient_id) > 1"))
     end
 
-    def enroll_patients(date)
-      eligible_patients(date)
-        .limit(MAX_PATIENTS_PER_DAY)
-        .includes(:assigned_facility, :registration_facility, :medical_history)
-        .includes(latest_scheduled_appointments: [:facility, :creation_facility])
-        .in_batches(of: ENROLLMENT_BATCH_SIZE)
-        .each_record { |patient| random_treatment_group.enroll(patient, reporting_data(patient, date)) }
+    def enroll_patients(date, limit = max_patients_per_day)
+      time(__method__) do
+        eligible_patients(date)
+          .limit([remaining_enrollments_allowed(date), limit].min)
+          .includes(:assigned_facility, :registration_facility, :medical_history)
+          .includes(latest_scheduled_appointments: [:facility, :creation_facility])
+          .in_batches(of: BATCH_SIZE)
+          .each_record { |patient| random_treatment_group.enroll(patient, reporting_data(patient, date)) }
+      end
     end
 
-    def monitor(date)
-      mark_visits
-      evict_patients
+    def monitor
+      time(__method__) do
+        record_notification_results
+        mark_visits
+        evict_patients
+      end
     end
 
-    def send_notifications(date)
-      # Send notifications to memberships_to_notify(date)
+    def record_notification_results
+      # TODO: Look at query performance
+      time(__method__) do
+        treatment_group_memberships
+          .joins(treatment_group: :reminder_templates)
+          .where("messages -> reminder_templates.message ->> 'notification_status' = ?", :pending)
+          .select("messages -> reminder_templates.message ->> 'notification_id' AS notification_id")
+          .select("reminder_templates.message, treatment_group_memberships.*")
+          .in_batches(of: BATCH_SIZE).each_record do |membership|
+          membership.record_notification_result(
+            membership.message,
+            notification_result(membership.notification_id)
+          )
+        end
+      end
+    end
+
+    def evict_patients
+      time(__method__) do
+        treatment_group_memberships.status_enrolled
+          .joins(:appointment)
+          .where("appointments.status <> 'scheduled' or appointments.remind_on > expected_return_date")
+          .evict(reason: "appointment_moved")
+
+        treatment_group_memberships.status_enrolled
+          .joins(patient: :latest_scheduled_appointments)
+          .where("treatment_group_memberships.appointment_id <> appointments.id")
+          .evict(reason: "new_appointment_created_after_enrollment")
+
+        treatment_group_memberships.status_enrolled
+          .joins(treatment_group: :reminder_templates)
+          .where("messages -> reminder_templates.message ->> 'result' = 'failed'")
+          .evict(reason: "notification_failed")
+
+        treatment_group_memberships.status_enrolled
+          .where(patient_id: Patient.with_discarded.discarded)
+          .evict(reason: "patient_soft_deleted")
+
+        cancel_evicted_notifications
+      end
+    end
+
+    def mark_visits
+      time(__method__) do
+        treatment_group_memberships.status_enrolled
+          .select("distinct on (treatment_group_memberships.patient_id) treatment_group_memberships.*,
+                 bp.id bp_id, bs.id bs_id, pd.id pd_id")
+          .joins("left outer join blood_pressures bp
+          on bp.patient_id = treatment_group_memberships.patient_id
+          and bp.recorded_at > experiment_inclusion_date
+          and bp.deleted_at is null")
+          .joins("left outer join blood_sugars bs
+          on bs.patient_id = treatment_group_memberships.patient_id
+          and bs.recorded_at > experiment_inclusion_date
+          and bs.deleted_at is null")
+          .joins("left outer join prescription_drugs pd
+          on pd.patient_id = treatment_group_memberships.patient_id
+          and pd.device_created_at > experiment_inclusion_date
+          and pd.deleted_at is null")
+          .where("coalesce(bp.id, bs.id, pd.id) is not null")
+          .order("treatment_group_memberships.patient_id, bp.recorded_at, bs.recorded_at, pd.device_created_at")
+          .each do |membership|
+          membership.record_visit(
+            blood_pressure: membership.bp_id && BloodPressure.find(membership.bp_id),
+            blood_sugar: membership.bs_id && BloodSugar.find(membership.bs_id),
+            prescription_drug: membership.pd_id && PrescriptionDrug.find(membership.pd_id)
+          )
+        end
+
+        cancel_visited_notifications
+      end
+    end
+
+    def schedule_notifications(date)
+      time(__method__) do
+        memberships_to_notify(date)
+          .select("reminder_templates.id reminder_template_id")
+          .select("reminder_templates.message message, treatment_group_memberships.*")
+          .in_batches(of: BATCH_SIZE)
+          .each_record { |membership| schedule_notification(membership, date) }
+      end
     end
 
     def cancel
       ActiveRecord::Base.transaction do
-        notifications.where(status: %w[pending scheduled]).update_all(status: :cancelled)
+        notifications.cancel
         super
       end
     end
 
+    def time(method_name, &block)
+      raise ArgumentError, "You must supply a block" unless block
+
+      label = "#{experiment_type}.#{method_name}"
+
+      benchmark(label) do
+        Statsd.instance.time(label) do
+          yield(block)
+        end
+      end
+
+      Statsd.instance.flush # The metric is not sent to datadog until the buffer is full, hence we explicitly flush.
+    end
+
+    def earliest_remind_on
+      reminder_templates.pluck(:remind_on_in_days).min || 0
+    end
+
+    def last_remind_on
+      reminder_templates.pluck(:remind_on_in_days).max || 0
+    end
+
     private
+
+    def remaining_enrollments_allowed(date)
+      max_patients_per_day - treatment_group_memberships.where(experiment_inclusion_date: date).count
+    end
 
     def reporting_data(patient, date)
       medical_history = patient.medical_history
@@ -78,7 +195,7 @@ module Experimentation
         risk_level: patient.risk_priority,
         diagnosed_htn: medical_history.hypertension,
         experiment_inclusion_date: date,
-        expected_return_date: latest_scheduled_appointment&.scheduled_date,
+        expected_return_date: latest_scheduled_appointment&.remind_on || latest_scheduled_appointment&.scheduled_date,
         expected_return_facility_id: latest_scheduled_appointment&.facility_id,
         expected_return_facility_type: latest_scheduled_appointment&.facility&.facility_type,
         expected_return_facility_name: latest_scheduled_appointment&.facility&.name,
@@ -107,11 +224,60 @@ module Experimentation
         registration_facility_state: registration_facility&.state
       }
     end
-  end
 
-  def mark_visits
-  end
+    def notification_result(notification_id)
+      notification = Notification.find(notification_id)
 
-  def evict_patients
+      case notification.delivery_result
+        when :success
+          successful_delivery = notification.successful_deliveries.first
+
+          {notification_status: notification.status,
+           notification_status_updated_at: notification.updated_at,
+           result: :success,
+           successful_communication_id: successful_delivery.id,
+           successful_communication_type: successful_delivery.communication_type,
+           successful_communication_created_at: successful_delivery.created_at.to_s,
+           successful_delivery_status: successful_delivery.result}
+        when :failed
+          {notification_status: notification.status,
+           notification_status_updated_at: notification.updated_at,
+           result: :failed}
+        else
+          {notification_status: notification.status,
+           notification_status_updated_at: notification.updated_at}
+      end
+    end
+
+    def cancel_evicted_notifications
+      notifications
+        .where(patient_id: treatment_group_memberships.status_evicted.select(:patient_id))
+        .cancel
+    end
+
+    def cancel_visited_notifications
+      notifications
+        .where(patient_id: treatment_group_memberships.status_visited.select(:patient_id))
+        .cancel
+    end
+
+    def schedule_notification(membership, date)
+      Notification.where(
+        experiment: self,
+        reminder_template_id: membership.reminder_template_id,
+        patient_id: membership.patient_id
+      ).exists? ||
+        Notification.create!(
+          experiment: self,
+          message: membership.message,
+          patient_id: membership.patient_id,
+          purpose: :experimental_appointment_reminder,
+          remind_on: date,
+          reminder_template_id: membership.reminder_template_id,
+          status: "pending",
+          subject_id: membership.appointment_id,
+          subject_type: "Appointment"
+        ).then { |notification| membership.record_notification(notification) }
+    end
   end
 end

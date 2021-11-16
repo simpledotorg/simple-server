@@ -5,7 +5,7 @@ class MonthlyDistrictDataService
     @period = period
     @months = period.downto(5).reverse
     regions = region.facility_regions.to_a << region
-    @repo = Reports::Repository.new(regions, periods: period)
+    @repo = Reports::Repository.new(regions, periods: @months)
     @dashboard_analytics = DistrictAnalyticsQuery.new(region, :month, 6, period.value, include_current_period: true).call
   end
 
@@ -101,7 +101,7 @@ class MonthlyDistrictDataService
   end
 
   def common_attributes(region, follow_ups_by_month)
-    complete_monthly_registrations = repo.complete_monthly_registrations.find { |k, _| k.slug == region.slug }.last
+    complete_monthly_registrations = repo.monthly_registrations[region.slug]
     registered_by_month = months.each_with_object({}) { |month, hsh|
       hsh["registrations_#{month.value}".to_sym] = (complete_monthly_registrations[month] || 0)
     }

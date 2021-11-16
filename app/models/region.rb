@@ -77,7 +77,7 @@ class Region < ApplicationRecord
   end
 
   def cached_ancestors
-    cache.fetch("#{cache_key}/ancestors", version: "#{cache_version}/#{path}/v3") do
+    cache.fetch("#{cache_key}/ancestors", version: "#{cache_version}/#{path}/v4") do
       ancestors.order(:path).all.to_a
     end
   end
@@ -177,6 +177,10 @@ class Region < ApplicationRecord
         raise NoMethodError, "undefined method #{region_type.pluralize} for region '#{name}' of type #{self.region_type}"
       end
     end
+  end
+
+  def localized_region_type
+    I18n.t("region_type.#{region_type}")
   end
 
   def log_payload

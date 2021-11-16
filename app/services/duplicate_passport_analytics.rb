@@ -1,5 +1,8 @@
 class DuplicatePassportAnalytics
   require "squid"
+  class << self
+    prepend SentryHandler
+  end
   include Memery
   include ApplicationHelper
 
@@ -12,7 +15,7 @@ class DuplicatePassportAnalytics
   }
 
   # for continuously reporting metrics in an automated way
-  def self.report
+  def self.call
     new.report
   end
 
