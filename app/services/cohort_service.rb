@@ -7,7 +7,7 @@ class CohortService
   attr_reader :region_field
   attr_reader :reporting_schema_v2
 
-  def initialize(region:, periods:, reporting_schema_v2: RequestStore.store[:reporting_schema_v2])
+  def initialize(region:, periods:, reporting_schema_v2: Reports.reporting_schema_v2?)
     @region = region.region
     @periods = periods
     @reporting_schema_v2 = reporting_schema_v2
