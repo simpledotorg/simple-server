@@ -8,11 +8,11 @@ RSpec.describe CohortService, type: :model do
   let(:organization) { common_org }
   let(:user) { create(:admin, :manager, :with_access, resource: organization, organization: organization) }
   let(:facility_group) { FactoryBot.create(:facility_group, name: "facility_group_1", organization: organization) }
+  let(:facility) { create(:facility, name: "Brooklyn CHC", facility_group: facility_group) }
 
   around do |ex|
     with_reporting_time_zone { ex.run }
   end
-
 
   [true, false].each do |v2_flag|
     context "with reporting_schema_v2=>#{v2_flag}" do
@@ -34,9 +34,7 @@ RSpec.describe CohortService, type: :model do
         end
       end
 
-      it "works for months" do
-        facility = create(:facility, name: "Brooklyn CHC")
-
+      it "returns cohort numbers for month cohorts" do
         # 2 registered in Jan, 2 registered in Feb
         # 1 of the Jan cohort is controlled in, 1 is uncontrolled
         # 1 of the Feb cohort is controlled, 1 never visits
@@ -57,30 +55,30 @@ RSpec.describe CohortService, type: :model do
         refresh_views
 
         periods = Period.month("January 1st 2020")..Period.month("April 1st 2020")
-        result = CohortService.new(region: facility, periods: periods).call
-        jan_registered_results = result.find { |r| r["patients_registered"] == "Jan-2020" }
-        expect(jan_registered_results).to eq({
-          "controlled" => 1,
-          "no_bp" => 0,
-          "patients_registered" => "Jan-2020",
-          "registered" => 2,
-          "results_in" => "Feb/Mar",
-          "uncontrolled" => 1
-        })
-        feb_registered_results = result.find { |r| r["patients_registered"] == "Feb-2020" }
-        expect(feb_registered_results).to eq({
-          "controlled" => 1,
-          "no_bp" => 1,
-          "patients_registered" => "Feb-2020",
-          "registered" => 2,
-          "results_in" => "Mar/Apr",
-          "uncontrolled" => 0
-        })
+        [facility, facility_group].each do |region|
+          result = CohortService.new(region: region, periods: periods).call
+          jan_registered_results = result.find { |r| r["patients_registered"] == "Jan-2020" }
+          expect(jan_registered_results).to eq({
+            "controlled" => 1,
+            "no_bp" => 0,
+            "patients_registered" => "Jan-2020",
+            "registered" => 2,
+            "results_in" => "Feb/Mar",
+            "uncontrolled" => 1
+          })
+          feb_registered_results = result.find { |r| r["patients_registered"] == "Feb-2020" }
+          expect(feb_registered_results).to eq({
+            "controlled" => 1,
+            "no_bp" => 1,
+            "patients_registered" => "Feb-2020",
+            "registered" => 2,
+            "results_in" => "Mar/Apr",
+            "uncontrolled" => 0
+          })
+        end
       end
 
-      it "returns cohort numbers for the selected quarters" do
-        facility = create(:facility)
-
+      it "returns cohort numbers for the quarter cohorts" do
         # Q1 patients
         # - 6 registered in Q1
         # - 3 controlled in Q2
@@ -149,28 +147,30 @@ RSpec.describe CohortService, type: :model do
           Period.quarter(apr_5),
           Period.quarter(jul_5)
         ]
-        cohort_service = CohortService.new(region: facility, periods: quarters)
+        [facility, facility_group].each do |region|
+          cohort_service = CohortService.new(region: region, periods: quarters)
 
-        expect(cohort_service.call).to eq(
-          [
-            {
-              "controlled" => 3,
-              "no_bp" => 2,
-              "patients_registered" => "Q1-2020",
-              "registered" => 6,
-              "results_in" => "Q2-2020",
-              "uncontrolled" => 1
-            },
-            {
-              "controlled" => 4,
-              "no_bp" => 1,
-              "patients_registered" => "Q2-2020",
-              "registered" => 8,
-              "results_in" => "Q3-2020",
-              "uncontrolled" => 3
-            }
-          ]
-        )
+          expect(cohort_service.call).to eq(
+            [
+              {
+                "controlled" => 3,
+                "no_bp" => 2,
+                "patients_registered" => "Q1-2020",
+                "registered" => 6,
+                "results_in" => "Q2-2020",
+                "uncontrolled" => 1
+              },
+              {
+                "controlled" => 4,
+                "no_bp" => 1,
+                "patients_registered" => "Q2-2020",
+                "registered" => 8,
+                "results_in" => "Q3-2020",
+                "uncontrolled" => 3
+              }
+            ]
+          )
+        end
       end
 
       it "returns cohort numbers for districts" do
