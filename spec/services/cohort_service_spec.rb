@@ -1,18 +1,18 @@
 require "rails_helper"
 
 RSpec.describe CohortService, type: :model do
-  around do |ex|
-    with_reporting_time_zone { ex.run }
-  end
-
   let(:jan_5) { Time.zone.parse("Jan 5th, 2020 00:00:00+00:00") }
   let(:feb_5) { Time.zone.parse("Feb 5th, 2020 00:00:00+00:00") }
   let(:apr_5) { Time.zone.parse("Apr 5th, 2020 00:00:00+00:00") }
   let(:jul_5) { Time.zone.parse("Jul 5th, 2020 00:00:00+00:00") }
-  let(:user) { create(:user) }
   let(:organization) { common_org }
   let(:user) { create(:admin, :manager, :with_access, resource: organization, organization: organization) }
   let(:facility_group) { FactoryBot.create(:facility_group, name: "facility_group_1", organization: organization) }
+
+  around do |ex|
+    with_reporting_time_zone { ex.run }
+  end
+
 
   [true, false].each do |v2_flag|
     context "with reporting_schema_v2=>#{v2_flag}" do
