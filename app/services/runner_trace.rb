@@ -1,4 +1,5 @@
 class RunnerTrace
+  prepend SentryHandler
   class Error < StandardError
   end
 
@@ -15,8 +16,6 @@ class RunnerTrace
     logger.info msg: "about to raise an error",
                 sentry_debug_info: sentry_debug_info
     raise Error, "Runner trace error"
-  rescue => e
-    Sentry.capture_exception(e)
   end
 
   def sentry_debug_info

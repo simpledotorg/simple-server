@@ -1,5 +1,7 @@
 module Reports
   class RegionCacheWarmer
+    prepend SentryHandler
+
     def self.call
       new.call
     end
