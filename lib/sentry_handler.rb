@@ -14,7 +14,7 @@ module SentryHandler
     super
   rescue => exception
     Rails.logger.error("captured exception #{e} in #{self.class.name}, reporting and reraising", exception: exception)
-    Sentry.capture_exception(e)
+    Sentry.capture_exception(exception)
     raise exception
   end
 end
