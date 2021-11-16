@@ -17,6 +17,7 @@
 # Reporting –
 # It reports inconsistencies to Sentry and Logs to standard logger
 class RegionsIntegrityCheck
+  prepend SentryHandler
   SENTRY_ERROR_TITLE = "Regions Integrity Failure"
 
   attr_reader :inconsistencies
@@ -35,7 +36,7 @@ class RegionsIntegrityCheck
     }
   end
 
-  def sweep
+  def call
     add_inconsistencies(:organizations, :missing_regions, organizations[:missing_regions])
     add_inconsistencies(:organizations, :duplicate_regions, organizations[:duplicate_regions])
 
@@ -54,6 +55,7 @@ class RegionsIntegrityCheck
     report_inconsistencies
     self
   end
+  alias_method :sweep, :call
 
   private
 

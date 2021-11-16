@@ -68,7 +68,7 @@ every 5.minutes, roles: [:cron] do
 end
 
 every 30.minutes, roles: [:cron] do
-  runner "RegionsIntegrityCheck.sweep"
+  runner "RegionsIntegrityCheck.call"
 end
 
 every 1.month, at: local("4:00 am"), roles: [:cron] do
