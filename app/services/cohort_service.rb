@@ -38,9 +38,15 @@ class CohortService
   def call
     if reporting_schema_v2
       periods.each_with_object([]) do |period, arry|
-        cohort_period = period.previous
+        if quarterly?
+          cohort_period = period.previous
+          results_in = period.to_s
+        else
+          cohort_period = period
+          period = period.advance(months: 2)
+          results_in = period.to_s(:cohort)
+        end
         stats = v2_query(period)
-        d stats
         stat = stats.all[0]
 
         arry << {
@@ -48,7 +54,7 @@ class CohortService
           no_bp: stat.cohort_missed_visit,
           patients_registered: cohort_period.to_s,
           registered: stat.cohort_patients,
-          results_in: period.to_s,
+          results_in: results_in,
           uncontrolled: stat.cohort_uncontrolled
         }.with_indifferent_access
       end
@@ -68,7 +74,6 @@ class CohortService
         .group(region_field, :quarter_string)
         .select(:quarter_string, region_field, sums)
     else
-      d period.to_s
       Reports::FacilityState.where(facility: region.facilities, month_date: period.value)
         .group(region_field, :month_date)
         .select(:month_date, region_field, sums)

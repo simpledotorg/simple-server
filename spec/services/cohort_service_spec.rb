@@ -6,6 +6,7 @@ RSpec.describe CohortService, type: :model do
   end
 
   let(:jan_5) { Time.zone.parse("Jan 5th, 2020 00:00:00+00:00") }
+  let(:feb_5) { Time.zone.parse("Feb 5th, 2020 00:00:00+00:00") }
   let(:apr_5) { Time.zone.parse("Apr 5th, 2020 00:00:00+00:00") }
   let(:jul_5) { Time.zone.parse("Jul 5th, 2020 00:00:00+00:00") }
   let(:user) { create(:user) }
@@ -33,35 +34,48 @@ RSpec.describe CohortService, type: :model do
         end
       end
 
-      fit "works for months" do
-        facility = create(:facility)
+      it "works for months" do
+        facility = create(:facility, name: "Brooklyn CHC")
 
-        # Q1 patients
-        # - 6 registered in Q1
-        # - 3 controlled in Q2
-        # - 1 uncontrolled in Q2
-        # - 2 no BP in Q2
-
-        q1_patients = [
+        # 2 registered in Jan, 2 registered in Feb
+        # 1 of the Jan cohort is controlled in, 1 is uncontrolled
+        # 1 of the Feb cohort is controlled, 1 never visits
+        jan_registered = [
           create(:patient, registration_facility: facility, registration_user: user, recorded_at: jan_5),
-          create(:patient, registration_facility: facility, registration_user: user, recorded_at: jan_5 + 10.days),
-          create(:patient, registration_facility: facility, registration_user: user, recorded_at: jan_5 + 20.days),
-          create(:patient, registration_facility: facility, registration_user: user, recorded_at: jan_5 + 30.days),
-          create(:patient, registration_facility: facility, registration_user: user, recorded_at: jan_5 + 45.days),
-          create(:patient, registration_facility: facility, registration_user: user, recorded_at: jan_5 + 60.days)
+          create(:patient, registration_facility: facility, registration_user: user, recorded_at: jan_5 + 10.days)
+        ]
+        feb_registered = [
+          create(:patient, registration_facility: facility, registration_user: user, recorded_at: feb_5),
+          create(:patient, registration_facility: facility, registration_user: user, recorded_at: feb_5 + 20.days)
         ]
 
-        _q1_bps = [
-          create(:bp_with_encounter, :under_control, recorded_at: apr_5, facility: facility, patient: q1_patients[0]),
-          create(:bp_with_encounter, :under_control, recorded_at: apr_5 + 10.days, facility: facility, patient: q1_patients[1]),
-          create(:bp_with_encounter, :under_control, recorded_at: apr_5 + 30.days, facility: facility, patient: q1_patients[2]),
-          create(:bp_with_encounter, :hypertensive, recorded_at: apr_5 + 60.days, facility: facility, patient: q1_patients[3])
-        ]
+        controlled = [jan_registered[0], feb_registered[0]]
+        uncontrolled = [jan_registered[1]]
+        controlled.each { |p| create(:bp_with_encounter, :under_control, recorded_at: "March 1st 2020 00:00:00 UTC", facility: facility, patient: p) }
+        uncontrolled.each { |p| create(:bp_with_encounter, :hypertensive, recorded_at: "March 1st 2020 00:00:00 UTC", facility: facility, patient: p) }
 
-        periods = Period.month(jul_5).advance(months: -3)..Period.month(jul_5)
-        d Reports::FacilityState.where(month_date: periods.first.value, facility_region_id: facility.region.id)
+        refresh_views
+
+        periods = Period.month("January 1st 2020")..Period.month("April 1st 2020")
         result = CohortService.new(region: facility, periods: periods).call
-        expect(result).to eq({})
+        jan_registered_results = result.find { |r| r["patients_registered"] == "Jan-2020" }
+        expect(jan_registered_results).to eq({
+          "controlled" => 1,
+          "no_bp" => 0,
+          "patients_registered" => "Jan-2020",
+          "registered" => 2,
+          "results_in" => "Feb/Mar",
+          "uncontrolled" => 1
+        })
+        feb_registered_results = result.find { |r| r["patients_registered"] == "Feb-2020" }
+        expect(feb_registered_results).to eq({
+          "controlled" => 1,
+          "no_bp" => 1,
+          "patients_registered" => "Feb-2020",
+          "registered" => 2,
+          "results_in" => "Mar/Apr",
+          "uncontrolled" => 0
+        })
       end
 
       it "returns cohort numbers for the selected quarters" do
@@ -165,7 +179,7 @@ RSpec.describe CohortService, type: :model do
         q1_patients = [
           create(:patient, registration_facility: facility_1, registration_user: user, recorded_at: jan_5),
           create(:patient, registration_facility: facility_1, registration_user: user, recorded_at: jan_5),
-          create(:patient, registration_facility: facility_2, registration_user: user, recorded_at: jan_5 + 10.days),
+          create(:patient, registration_facility: facility_2, registration_user: user, recorded_at: jan_5 + 10.days)
         ]
         _q1_bps = [
           create(:bp_with_encounter, :hypertensive, recorded_at: apr_5, facility: facility_1, patient: q1_patients[0]),
@@ -174,7 +188,7 @@ RSpec.describe CohortService, type: :model do
           create(:bp_with_encounter, :hypertensive, recorded_at: apr_5 + 10.days, facility: facility_2, patient: q1_patients[2])
         ]
         _q2_patients = [
-          create(:patient, registration_facility: facility_1, registration_user: user, recorded_at: apr_5),
+          create(:patient, registration_facility: facility_1, registration_user: user, recorded_at: apr_5)
           # create(:patient, registration_facility: facility_2, registration_user: user, recorded_at: jan_5 + 10.days),
         ]
         refresh_views
@@ -203,7 +217,6 @@ RSpec.describe CohortService, type: :model do
           "uncontrolled" => 0
         })
       end
-
     end
   end
 end
