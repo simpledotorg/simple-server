@@ -13,7 +13,7 @@ module SentryHandler
   def call
     super
   rescue => exception
-    Rails.logger.error("captured exception #{e} in #{self.class.name}, reporting and reraising", exception: exception)
+    Rails.logger.error("captured exception #{exception} in #{self.class.name}, reporting and reraising", exception: exception)
     Sentry.capture_exception(exception)
     raise exception
   end
