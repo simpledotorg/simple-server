@@ -66,6 +66,11 @@ RSpec.describe Quarter, type: :model do
     expect(quarter.to_s).to eq("Q1-2020")
   end
 
+  it "has matview specific db format" do
+    expect(q1_2019.to_s(:matview)).to eq("2019-1")
+    expect(q3_2020.to_s(:matview)).to eq("2020-3")
+  end
+
   it "can return previous and next quarter" do
     date = Time.parse("January 1st, 2020")
     quarter = Quarter.new(date: date)

@@ -67,8 +67,7 @@ class CohortService
 
   def v2_query(period)
     if quarterly?
-      quarter_string = "#{period.value.year}-#{period.value.number}"
-      Reports::QuarterlyFacilityState.where(facility: region.facilities, quarter_string: quarter_string)
+      Reports::QuarterlyFacilityState.where(facility: region.facilities, quarter_string: period.to_s(:matview))
         .group(region_field, :quarter_string)
         .select(:quarter_string, region_field, sums)
     else
