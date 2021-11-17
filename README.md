@@ -18,6 +18,7 @@ This is the backend for the Simple app to help track hypertensive patients acros
 
 With recent gem updates, all of our gems and dependencies now build ARM native on m1 macs. This means you do **not** need to use Rosetta to set up simple-server, and in fact using Rosetta is recommended against because it makes day to day dev more complicated and also will decrease performance.
 
+The setup instructions are now the same for Intel or M1 macs, as you can install homebrew normally and go from there.
 
 ### Dependencies
 
