@@ -111,7 +111,7 @@ end
 
 group :development do
   gem "guard-rspec", require: false
-  gem "listen", ">= 3.0.5", "< 3.2"
+  gem "listen"
   gem "rails-erd"
   gem "spring"
   gem "spring-commands-rspec"
