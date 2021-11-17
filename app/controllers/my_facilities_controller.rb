@@ -48,7 +48,6 @@ class MyFacilitiesController < AdminController
 
   def csv_maker
     facilities = filter_facilities
-    # debugger
     service = BloodPressureExportService.new(start_period: @start_period, end_period: @period, facilities: facilities)
     csv_data = service.as_csv
     filename = "Blood Pressure Data #{@selected_facility_group.name}.csv"

@@ -47,11 +47,11 @@ module MyFacilitiesFiltering
     end
 
     def set_selected_zones
-      @selected_zones = params[:zone].present? ? [params[:zone]].flatten : @zones ### [params[:zone]] : @zones Why were these in nested arrays???
+      @selected_zones = params[:zone].present? ? [params[:zone]].flatten : @zones
     end
 
     def set_selected_facility_sizes
-      @selected_facility_sizes = params[:size].present? ? [params[:size]].flatten : @facility_sizes ### params[:size] : @facility_sizes Why were these in nested arrays???
+      @selected_facility_sizes = params[:size].present? ? [params[:size]].flatten : @facility_sizes
     end
 
     def facilities_by_facility_group(facilities)
@@ -63,9 +63,6 @@ module MyFacilitiesFiltering
     end
 
     def facilities_by_size(facilities)
-      # debugger
-      # if a single size selected on @selected_facility_sizes filter, it will generate a string instead of an array needed for the subtraction below and causes error
-      # i can either add a condition to make it an array here if it is a string, or add .flatten methods to the set_selected_facility_sizes && set_selected_zones
       if (@facility_sizes - @selected_facility_sizes).empty?
         facilities
       else
