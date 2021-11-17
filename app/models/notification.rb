@@ -36,6 +36,8 @@ class Notification < ApplicationRecord
   scope :due_today, -> { where(remind_on: Date.current, status: [:pending]) }
 
   def localized_message
+    return unless patient
+
     case purpose
     when "covid_medication_reminder"
       I18n.t(
@@ -65,6 +67,32 @@ class Notification < ApplicationRecord
       "Test message sent by Simple.org to #{patient.full_name}"
     else
       raise ArgumentError, "No localized_message defined for notification of type #{purpose}"
+    end
+  end
+
+  def self.cancel
+    where(status: %w[pending scheduled]).update_all(status: :cancelled)
+  end
+
+  def successful_deliveries
+    communications.with_delivery_detail.select("delivery_detail.result, communications.*").where(
+      delivery_detail: {result: [:read, :delivered, :sent]}
+    )
+  end
+
+  def queued_deliveries
+    communications.with_delivery_detail.select("delivery_detail.result, communications.*").where(
+      delivery_detail: {result: [:queued]}
+    )
+  end
+
+  def delivery_result
+    if successful_deliveries.exists?
+      :success
+    elsif queued_deliveries.exists? || !communications.exists?
+      :queued
+    else
+      :failed
     end
   end
 

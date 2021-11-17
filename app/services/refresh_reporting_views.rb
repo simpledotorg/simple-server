@@ -1,4 +1,5 @@
 class RefreshReportingViews
+  prepend SentryHandler
   include ActiveSupport::Benchmarkable
   REPORTING_VIEW_REFRESH_TIME_KEY = "last_reporting_view_refresh_time".freeze
 

@@ -1,21 +1,21 @@
 require "rails_helper"
 
 RSpec.describe DrugStocksQuery do
-  let!(:state) { "Punjab" }
+  let(:state) { "Punjab" }
   let(:zone) { "Block A" }
-  let!(:protocol) { create(:protocol, :with_tracked_drugs) }
-  let!(:facility_group) { create(:facility_group, protocol: protocol) }
-  let!(:user) { create(:admin, :manager, :with_access, resource: facility_group) }
-  let!(:for_end_of_month) { Time.current.end_of_month }
-  let!(:drug_category) { "hypertension_ccb" }
-  let!(:stocks_by_rxnorm) {
+  let(:protocol) { create(:protocol, :with_tracked_drugs) }
+  let(:facility_group) { create(:facility_group, protocol: protocol) }
+  let(:user) { create(:admin, :manager, :with_access, resource: facility_group) }
+  let(:for_end_of_month) { Time.current.end_of_month }
+  let(:drug_category) { "hypertension_ccb" }
+  let(:stocks_by_rxnorm) {
     {"329528" => {in_stock: 10000, received: 2000, redistributed: 1000},
      "329526" => {in_stock: 20000, received: 2000, redistributed: 0},
      "316764" => {in_stock: 10000, received: 2000, redistributed: 0},
      "316765" => {in_stock: 20000, received: 2000, redistributed: 0},
      "979467" => {in_stock: 10000, received: 2000, redistributed: 0}}
   }
-  let!(:previous_month_stocks_by_rxnorm) {
+  let(:previous_month_stocks_by_rxnorm) {
     {
       "329528" => {in_stock: 8000, redistributed: 0},
       "329526" => {in_stock: 15000, redistributed: 0},
@@ -24,13 +24,17 @@ RSpec.describe DrugStocksQuery do
       "979467" => {in_stock: 9000, redistributed: 0}
     }
   }
-  let!(:punjab_drug_stock_config) {
+  let(:punjab_drug_stock_config) {
     {"load_coefficient" => 1,
      "drug_categories" =>
         {"hypertension_ccb" => {"new_patient_coefficient" => 1.4, "329528" => 1.2, "329526" => 2},
          "hypertension_arb" => {"new_patient_coefficient" => 0.37, "316764" => 1, "316765" => 2, "979467" => 1},
          "hypertension_diuretic" => {"new_patient_coefficient" => 0.06, "316049" => 1, "331132" => 1}}}.with_indifferent_access
   }
+
+  def refresh_views
+    RefreshReportingViews.new.refresh_v2
+  end
 
   context "drug stock report" do
     let!(:facilities) { create_list(:facility, 3, facility_group: facility_group, state: state, zone: zone) }
@@ -58,7 +62,6 @@ RSpec.describe DrugStocksQuery do
 
     before do
       allow_any_instance_of(Reports::DrugStockCalculation).to receive(:patient_days_coefficients).and_return(punjab_drug_stock_config)
-      RefreshReportingViews.call
     end
 
     it "computes the drug stock report totals" do
@@ -76,6 +79,7 @@ RSpec.describe DrugStocksQuery do
         for_end_of_month: for_end_of_month)
 
       other_facility_patients = create_list(:patient, 1, registration_facility: other_facility, registration_user: user)
+      refresh_views
 
       result = described_class.new(facilities: facilities,
                                    for_end_of_month: for_end_of_month).drug_stocks_report
@@ -114,6 +118,7 @@ RSpec.describe DrugStocksQuery do
         for_end_of_month: for_end_of_month)
 
       _other_facility_patients = create_list(:patient, 1, registration_facility: other_facility, registration_user: user)
+      refresh_views
 
       result = described_class.new(facilities: facilities,
                                    for_end_of_month: for_end_of_month).drug_stocks_report
@@ -138,6 +143,7 @@ RSpec.describe DrugStocksQuery do
     end
 
     it "computes the drug stock report facility wise numbers" do
+      refresh_views
       result = described_class.new(facilities: facilities,
                                    for_end_of_month: for_end_of_month).drug_stocks_report
       facility = facilities.first
@@ -166,6 +172,7 @@ RSpec.describe DrugStocksQuery do
         create(:facility, facility_group: facility_group, state: state, zone: "Block B")
       block_a = facilities.first.block_region
       block_b = facility_in_another_block.block_region
+      refresh_views
 
       result = described_class.new(facilities: facilities + [facility_in_another_block],
                                    for_end_of_month: for_end_of_month).drug_stocks_report
@@ -289,6 +296,7 @@ RSpec.describe DrugStocksQuery do
         for_end_of_month: for_end_of_month)
 
       other_facility_patients = create_list(:patient, 1, registration_facility: other_facility, registration_user: user)
+      refresh_views
 
       result = described_class.new(facilities: facilities,
                                    for_end_of_month: for_end_of_month).drug_consumption_report
@@ -322,6 +330,7 @@ RSpec.describe DrugStocksQuery do
         for_end_of_month: for_end_of_month)
 
       _other_facility_patients = create_list(:patient, 1, registration_facility: other_facility, registration_user: user)
+      refresh_views
 
       result = described_class.new(facilities: facilities,
                                    for_end_of_month: for_end_of_month).drug_consumption_report
@@ -341,6 +350,7 @@ RSpec.describe DrugStocksQuery do
     end
 
     it "computes the drug consumption report for facilities" do
+      refresh_views
       result = described_class.new(facilities: facilities,
                                    for_end_of_month: for_end_of_month).drug_consumption_report
       facility = facilities.first
@@ -370,6 +380,7 @@ RSpec.describe DrugStocksQuery do
         create(:facility, facility_group: facility_group, state: state, zone: "Block B")
       block_a = facilities.first.block_region
       block_b = facility_in_another_block.block_region
+      refresh_views
 
       result = described_class.new(facilities: facilities << facility_in_another_block,
                                    for_end_of_month: for_end_of_month).drug_consumption_report

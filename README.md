@@ -14,11 +14,11 @@ This is the backend for the Simple app to help track hypertensive patients acros
 * [Contributing](#contributing)
 
 ## Development
-### Caveat for Apple Silicon M1 macs
+### Note for Apple Silicon M1 Macs
 
-If you are installing on an M1 Mac, you should do all the below in Rosetta (ie `arch` returns i386 in a terminal). See [here](https://5balloons.info/correct-way-to-install-and-use-homebrew-on-m1-macs/) for how to create a Rosetta specific Terminal.
+With recent gem updates, all of our gems and dependencies now build ARM native on m1 macs. This means you do **not** need to use Rosetta to set up simple-server, and in fact using Rosetta will make things more complicated and confusing in day to dev dev experience, and also hurts performance.
 
-We have some rubygems that don't work under the native ARM architecture, so a fully ARM native setup does not work yet. For details you can follow [this issue](https://github.com/simpledotorg/simple-server/issues/1969).
+The setup instructions are now the same for Intel or M1 macs, as you can install homebrew normally and go from there.
 
 ### Dependencies
 
@@ -187,6 +187,24 @@ X-Facility-ID: dcda7d9d-48f9-47d2-b1cc-93d90c94386e
 ```
 
 ### Review Apps
+
+Every pull request opened on the `simple-server` repo creates a [Heroku review app](https://devcenter.heroku.com/articles/github-integration-review-apps)
+with the branch's code deployed to it. The review app is hosted at the URL [https://simple-review-pr-<PR number>.herokuapp.com](#).
+This temporary environment can be used to test your changes in a production-like environment easily.
+
+If you need to test your changes with a mobile app build as well, you can generate a mobile app build that points to
+your review app. To do so:
+
+* Navigate to the Github Actions page on the `simple-server` repository
+* Select the "Mobile Review App Build" action
+* Trigger a "workflow dispatch" at the top of the screen. You can keep the branch as `master` (it doesn't matter) and
+  enter your PR number in the required input
+* Once the Action is complete, its page will contain the APK as an artifact.
+
+![trigger-mobile-review-app](https://user-images.githubusercontent.com/4241399/139230709-1604df1f-ad7d-4690-8bae-80d2a48cab37.gif)
+
+<img width="1557" alt="Screen Shot 2021-10-28 at 3 11 44 PM" src="https://user-images.githubusercontent.com/4241399/139230802-39a38e26-7a96-4e00-9599-c8f7ce48d62d.png">
+
 
 #### Testing messages
 

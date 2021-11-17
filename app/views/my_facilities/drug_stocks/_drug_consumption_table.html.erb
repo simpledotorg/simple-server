@@ -84,7 +84,7 @@
     <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
         data-original-title='District: <%= "#{@report[:district_patient_count]} patients" %>'>
       <%= link_to(reports_region_path(@district_region, report_scope: "district")) do %>
-        District Warehouse
+        <%= drug_stock_region_label(@district_region).titleize %>
       <% end %>
     </td>
     <% @drugs_by_category.map do |drug_category, drugs| %>

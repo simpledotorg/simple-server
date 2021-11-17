@@ -1,6 +1,6 @@
 <div class="card mb-0">
   <h3 class="mb-16px c-black">
-    <%= @period %> <%= region_type %> performance
+    <%= @period %> <%= localized_region_type %> performance
   </h3>
   <div class="table-responsive">
     <table id="region-comparison-table" class="table-compact">
@@ -57,7 +57,7 @@
       </tr>
       <tr class="sorts" data-sort-method="thead">
         <th class="row-label sort-label sort-label-small ta-left" data-sort-default>
-          <%= region_type.capitalize %>
+          <%= localized_region_type.capitalize %>
         </th>
         <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
           Percent
@@ -144,7 +144,7 @@
         <% next if result.dig(:missed_visits_rate, @period).nil? %>
         <tr>
           <td class="ta-left">
-            <%= link_to(reports_region_path(child, report_scope: region_type)) do %>
+            <%= link_to(reports_region_path(child, report_scope: child.region_type)) do %>
               <%= child.name %>
             <% end %>
           </td>
