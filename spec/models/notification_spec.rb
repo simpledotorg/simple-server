@@ -122,4 +122,47 @@ describe Notification, type: :model do
       expect(notification.next_communication_type).to eq(nil)
     end
   end
+
+  describe "#delivery_result" do
+    it "is failed if no successful deliveries are present" do
+      notification = create(:notification)
+
+      unsuccessful_communication = create(:communication, notification: notification, user: nil, appointment: nil)
+      create(:twilio_sms_delivery_detail, :failed, communication: unsuccessful_communication)
+      notification.update(status: :sent)
+
+      expect(notification.delivery_result).to eq(:failed)
+    end
+
+    it "is success if at least one successful deliveries are present" do
+      notification = create(:notification)
+
+      unsuccessful_communication = create(:communication, notification: notification, user: nil, appointment: nil)
+      create(:twilio_sms_delivery_detail, :failed, communication: unsuccessful_communication)
+      notification.update(status: :sent)
+
+      successful_communication = create(:communication, notification: notification, user: nil, appointment: nil)
+      create(:twilio_sms_delivery_detail, :sent, communication: successful_communication)
+
+      expect(notification.delivery_result).to eq(:success)
+    end
+
+    it "is queued if no deliveries are present" do
+      notification = create(:notification)
+      expect(notification.delivery_result).to eq(:queued)
+    end
+
+    it "is queued if at least one queued deliveries are present" do
+      notification = create(:notification)
+
+      unsuccessful_communication = create(:communication, notification: notification, user: nil, appointment: nil)
+      create(:twilio_sms_delivery_detail, :failed, communication: unsuccessful_communication)
+      notification.update(status: :sent)
+
+      queued_communication = create(:communication, notification: notification, user: nil, appointment: nil)
+      create(:twilio_sms_delivery_detail, :queued, communication: queued_communication)
+
+      expect(notification.delivery_result).to eq(:queued)
+    end
+  end
 end

@@ -30,7 +30,7 @@ class DrugStocksReportExporter
   end
 
   def drug_categories_header
-    left_pad_size = 2
+    left_pad_size = 4
     left_padding_columns = [nil] * left_pad_size
 
     left_padding_columns + @drugs_by_category.flat_map do |category, drugs|
@@ -39,7 +39,7 @@ class DrugStocksReportExporter
   end
 
   def drug_names_header
-    ["Facilities", I18n.t("facility_group_zone").capitalize] +
+    ["Facilities", "Facility type", "Facility size", I18n.t("region_type.block").capitalize] +
       @drugs_by_category.flat_map do |_drug_category, drugs|
         drug_columns = drugs.map do |drug|
           "#{drug.name} #{drug.dosage}"
@@ -49,7 +49,7 @@ class DrugStocksReportExporter
   end
 
   def total_stock_row
-    ["All", ""] +
+    ["All", "", "", ""] +
       @drugs_by_category.flat_map do |drug_category, drugs|
         patient_days = @report.dig(:total_patient_days, drug_category, :patient_days)
 
@@ -60,7 +60,7 @@ class DrugStocksReportExporter
   end
 
   def district_warehouse_stock_row
-    ["District Warehouse", ""] +
+    ["District Warehouse", "", "", ""] +
       @drugs_by_category.flat_map do |drug_category, drugs|
         patient_days = @report.dig(:district_patient_days, drug_category, :patient_days)
 
@@ -77,7 +77,7 @@ class DrugStocksReportExporter
   end
 
   def facility_row(facility)
-    [facility.name, facility.block_name] +
+    [facility.name, facility.facility_type, facility.localized_facility_size, facility.block_name] +
       @drugs_by_category.flat_map do |drug_category, drugs|
         patient_days = @report[:patient_days_by_facility_id].dig(facility.id, drug_category, :patient_days)
 

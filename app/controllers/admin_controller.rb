@@ -3,6 +3,7 @@ class AdminController < ApplicationController
   include DatadogTagging
 
   before_action :authenticate_email_authentication!
+  before_action :current_admin
   before_action :set_bust_cache
   before_action :set_reporting_schema_v2
   before_action :set_datadog_tags
@@ -36,21 +37,24 @@ class AdminController < ApplicationController
 
   private
 
+  # We only want to set this via query string, as it now defaults to enabled globally
   def set_reporting_schema_v2
-    RequestStore[:reporting_schema_v2] = reporting_schema_via_param_or_feature_flag
-  end
-
-  # A query string provided feature flag (v2=1) will always override any other settings here.
-  def reporting_schema_via_param_or_feature_flag
-    param_flag = ActiveRecord::Type::Boolean.new.deserialize(params[:v2])
-    user_flag = current_admin.feature_enabled?(:reporting_schema_v2)
-    return param_flag unless param_flag.nil?
-    user_flag
+    if params.key?(:v2)
+      param_flag = ActiveRecord::Type::Boolean.new.deserialize(params[:v2])
+      Reports.reporting_schema_v2 = param_flag
+    end
   end
 
   def current_admin
     return @current_admin if defined?(@current_admin)
     admin = current_email_authentication.user
+
+    unless admin.present?
+      sign_out
+      redirect_to new_email_authentication_session_path, notice: "This account may be deactivated. Please try again or contact your administrator for assistance."
+      return
+    end
+
     admin.email_authentications.load
     @current_admin = admin
   end

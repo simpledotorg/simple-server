@@ -22,7 +22,7 @@
     <% if @region.district_region? && CountryConfig.current_country?("India") %>
       <%= link_to(reports_region_monthly_district_data_path(@region, report_scope: params[:report_scope], period: params.dig(:period, :value), format: :csv), class: "dropdown-item") do %>
         <i class="far fa-file w-16px ta-center mr-4px c-grey-medium"></i>
-        Monthly district data
+        Monthly <%= @region.localized_region_type %> data
       <% end %>
     <% end %>
 

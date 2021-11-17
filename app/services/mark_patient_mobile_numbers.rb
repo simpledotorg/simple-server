@@ -1,4 +1,6 @@
 class MarkPatientMobileNumbers
+  prepend SentryHandler
+
   def self.call
     new.call
   end

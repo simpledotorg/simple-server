@@ -32,7 +32,7 @@ every :day, at: local("01:00 am"), roles: [:cron] do
 end
 
 every :day, at: local("02:00 am"), roles: [:cron] do
-  runner "PatientDeduplication::Runner.new(PatientDeduplication::Strategies.identifier_and_full_name_match).perform"
+  runner "PatientDeduplication::Runner.new(PatientDeduplication::Strategies.identifier_and_full_name_match).call"
 end
 
 every :day, at: local("02:30 am"), roles: [:cron] do
@@ -44,7 +44,7 @@ every :day, at: local("04:00 am"), roles: [:cron] do
 end
 
 every :day, at: local("05:00 am"), roles: [:cron] do
-  runner "DuplicatePassportAnalytics.report"
+  runner "DuplicatePassportAnalytics.call"
 end
 
 every :monday, at: local("6:00 am"), roles: [:cron] do
@@ -53,9 +53,9 @@ every :monday, at: local("6:00 am"), roles: [:cron] do
   end
 end
 
-every :day, at: local("08:30 am"), roles: [:cron] do
+every :day, at: local("07:30 am"), roles: [:cron] do
   if CountryConfig.current_country?("India")
-    runner "AppointmentNotification::ScheduleExperimentReminders.perform_now"
+    runner "Experimentation::Runner.call;AppointmentNotification::ScheduleExperimentReminders.call"
   end
 end
 
@@ -63,8 +63,12 @@ every 2.minutes, roles: [:cron] do
   runner "TracerJob.perform_async(Time.current.iso8601, false)"
 end
 
+every 5.minutes, roles: [:cron] do
+  runner "RunnerTrace.new.call"
+end
+
 every 30.minutes, roles: [:cron] do
-  runner "RegionsIntegrityCheck.sweep"
+  runner "RegionsIntegrityCheck.call"
 end
 
 every 1.month, at: local("4:00 am"), roles: [:cron] do
