@@ -130,7 +130,7 @@ RSpec.describe MyFacilitiesController, type: :controller do
 
       Timecop.freeze("January 15th 2021") do
         refresh_views
-        get :csv_maker, params: { type: "controlled_patients" }
+        get :csv_maker, params: {type: "controlled_patients"}
       end
       expect(response).to be_successful
       csv = CSV.parse(response.body, headers: true)

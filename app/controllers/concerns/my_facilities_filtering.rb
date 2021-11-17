@@ -64,8 +64,8 @@ module MyFacilitiesFiltering
 
     def facilities_by_size(facilities)
       # debugger
-      #if a single size selected on @selected_facility_sizes filter, it will generate a string instead of an array needed for the subtraction below and causes error
-      #i can either add a condition to make it an array here if it is a string, or add .flatten methods to the set_selected_facility_sizes && set_selected_zones
+      # if a single size selected on @selected_facility_sizes filter, it will generate a string instead of an array needed for the subtraction below and causes error
+      # i can either add a condition to make it an array here if it is a string, or add .flatten methods to the set_selected_facility_sizes && set_selected_zones
       if (@facility_sizes - @selected_facility_sizes).empty?
         facilities
       else
