@@ -74,6 +74,28 @@ class Notification < ApplicationRecord
     where(status: %w[pending scheduled]).update_all(status: :cancelled)
   end
 
+  def successful_deliveries
+    communications.with_delivery_detail.select("delivery_detail.result, communications.*").where(
+      delivery_detail: {result: [:read, :delivered, :sent]}
+    )
+  end
+
+  def queued_deliveries
+    communications.with_delivery_detail.select("delivery_detail.result, communications.*").where(
+      delivery_detail: {result: [:queued]}
+    )
+  end
+
+  def delivery_result
+    if successful_deliveries.exists?
+      :success
+    elsif queued_deliveries.exists? || !communications.exists?
+      :queued
+    else
+      :failed
+    end
+  end
+
   def next_communication_type
     return nil if status_cancelled?
     if preferred_communication_method && !previously_communicated_by?(preferred_communication_method)

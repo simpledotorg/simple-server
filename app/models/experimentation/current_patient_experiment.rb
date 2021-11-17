@@ -20,11 +20,5 @@ module Experimentation
         .joins(treatment_group: :reminder_templates)
         .where("expected_return_date::timestamp + make_interval(days := reminder_templates.remind_on_in_days) = ?", date)
     end
-
-    private
-
-    def earliest_remind_on
-      reminder_templates.pluck(:remind_on_in_days).min || 0
-    end
   end
 end

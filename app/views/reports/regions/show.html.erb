@@ -58,6 +58,55 @@
     </div>
   </div>
   <div class="d-lg-flex w-lg-50 pl-lg-2">
+    <div id="cumulative-registrations"
+         data-period="<%= @period.to_s %>"
+         class="mt-8px mx-0px mb-16px pb-4px bg-white br-4px bs-small d-lg-flex fd-lg-column
+                justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
+      <div class="pt-20px px-20px">
+        <div class="d-flex mb-8px">
+          <div class="d-flex flex-1">
+            <h3 class="mb-0px mr-8px">
+              Registrations
+            </h3>
+            <%= render "definition_tooltip",
+                       definitions: { "Total registered patients" => t("registered_patients_copy.total_registered_patients", region_name: @region.name),
+                                      "Monthly registered patients" => t("registered_patients_copy.monthly_registered_patients", region_name: @region.name) } %>
+          </div>
+        </div>
+        <p class="c-grey-dark">
+          <%= t("registered_patients_copy.reports_card_subtitle", region_name: @region.name) %>
+        </p>
+        <div class="d-flex align-center mb-12px">
+          <div class="flex-1 d-lg-flex align-lg-center">
+            <p class="mb-0px fs-32px fw-bold mr-lg-12px c-purple"
+              data-total-patients="">
+            </p>
+            <div>
+              <p class="m-0px c-black c-print-black">
+                total <%= "registration".pluralize(@data.dig(:cumulative_registrations, @period)) %><br>till
+                <span data-registrations-period-end=""></span>
+              </p>
+            </div>
+          </div>
+          <div class="flex-1 d-lg-flex align-lg-center flex-lg-1">
+            <p class="mb-0px fs-32px fw-bold mr-lg-12px c-purple-medium"
+              data-monthly-registrations="">
+            </p>
+            <div>
+              <p class="m-0px c-black c-print-black">
+                new <%= "registration".pluralize(@data.dig(:registrations, @period)) %><br>in
+                <span data-registrations-month-end=""></span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="h-320px mr-13px mb-16px ml-13px pb-4px">
+        <canvas id="cumulativeRegistrationsTrend"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="d-lg-flex w-lg-50 pr-lg-2">
     <div id="bp-uncontrolled"
          data-period="<%= @period.to_s %>"
          class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column
@@ -107,7 +156,7 @@
       </div>
     </div>
   </div>
-  <div class="d-lg-flex w-lg-50 pr-lg-2">
+  <div class="d-lg-flex w-lg-50 pl-lg-2">
     <div id="missed-visits"
          data-period="<%= @period.to_s %>"
          class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column
@@ -155,61 +204,12 @@
       </div>
     </div>
   </div>
-  <div class="d-lg-flex w-lg-50 pl-lg-2">
-    <div id="cumulative-registrations"
-         data-period="<%= @period.to_s %>"
-         class="mt-8px mx-0px mb-16px pb-4px bg-white br-4px bs-small d-lg-flex fd-lg-column
-                justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
-      <div class="pt-20px px-20px">
-        <div class="d-flex mb-8px">
-          <div class="d-flex flex-1">
-            <h3 class="mb-0px mr-8px">
-              Registrations
-            </h3>
-            <%= render "definition_tooltip",
-                       definitions: { "Total registered patients" => t("registered_patients_copy.total_registered_patients", region_name: @region.name),
-                                      "Monthly registered patients" => t("registered_patients_copy.monthly_registered_patients", region_name: @region.name) } %>
-          </div>
-        </div>
-        <p class="c-grey-dark">
-          <%= t("registered_patients_copy.reports_card_subtitle", region_name: @region.name) %>
-        </p>
-        <div class="d-flex align-center mb-12px">
-          <div class="flex-1 d-lg-flex align-lg-center">
-            <p class="mb-0px fs-32px fw-bold mr-lg-12px c-purple"
-              data-total-patients="">
-            </p>
-            <div>
-              <p class="m-0px c-black c-print-black">
-                total <%= "registration".pluralize(@data.dig(:cumulative_registrations, @period)) %><br>till
-                <span data-registrations-period-end=""></span>
-              </p>
-            </div>
-          </div>
-          <div class="flex-1 d-lg-flex align-lg-center flex-lg-1">
-            <p class="mb-0px fs-32px fw-bold mr-lg-12px c-purple-medium"
-              data-monthly-registrations="">
-            </p>
-            <div>
-              <p class="m-0px c-black c-print-black">
-                new <%= "registration".pluralize(@data.dig(:registrations, @period)) %><br>in
-                <span data-registrations-month-end=""></span>
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="h-320px mr-13px mb-16px ml-13px pb-4px">
-        <canvas id="cumulativeRegistrationsTrend"></canvas>
-      </div>
-    </div>
-  </div>
 </div>
 
 <%= render "treatment_outcomes_card" %>
 
 <% if @children_data.any? %>
-  <%= render "child_data_tables", data: @children_data, region_type: @child_regions.first.region_type %>
+  <%= render "child_data_tables", data: @children_data, localized_region_type: @child_regions.first.localized_region_type %>
 <% end %>
 
 <%= render "overview_footnotes" %>

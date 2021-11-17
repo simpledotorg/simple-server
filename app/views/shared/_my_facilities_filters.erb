@@ -44,7 +44,7 @@
     <% if @selected_zones.size == 1 %>
       <%= @selected_zones.first.titleize %>
     <% else %>
-      All blocks
+      All <%= t("region_type.block").pluralize %>
     <% end %>
   </a>
   <div class="dropdown-menu mh-350px oy-scroll" aria-labelledby="dropdownMenuLink">
@@ -57,7 +57,7 @@
         form="query-filters"
         onclick="$('#selected-zone').remove()"
       >
-        All blocks
+        All <%= t("region_type.block").pluralize %>
       </button>
       <div class="dropdown-divider"></div>
       <% @zones.each do |zone| %>

@@ -1,5 +1,7 @@
 module PatientDeduplication
   class Runner
+    prepend SentryHandler
+
     def initialize(duplicate_patient_ids)
       @duplicate_patient_ids = duplicate_patient_ids
       @merge_failures = []
@@ -7,7 +9,7 @@ module PatientDeduplication
 
     attr_accessor :merge_failures, :duplicate_patient_ids
 
-    def perform
+    def call
       duplicate_patient_ids.each do |patient_ids|
         deduplicator = Deduplicator.new(Patient.where(id: patient_ids))
         deduplicator.merge
