@@ -252,7 +252,14 @@ Alternatively, you can start these services locally _without_ foreman by using t
 ### Running the tests
 
 ```bash
-RAILS_ENV=test bundle exec rspec
+bin/rspec
+```
+
+Run tests interactively quickly while developing:
+
+
+```
+bin/guard
 ```
 
 ### Code
