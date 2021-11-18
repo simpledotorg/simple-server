@@ -84,6 +84,8 @@ class AppointmentNotification::Worker
     end
   end
 
+  # This usually happens when the phone number is invalid.
+  # https://www.twilio.com/docs/errors/21211
   def handle_twilio_400(notification, &block)
     block.call
   rescue Twilio::REST::RestError => error
