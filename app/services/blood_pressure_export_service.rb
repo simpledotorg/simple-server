@@ -13,7 +13,7 @@ class BloodPressureExportService
     @end_period = end_period
     @facilities = facilities
 
-    presenter = Reports::RepositoryPresenter.create(facilities, period: @end_period, months: 6, reporting_schema_v2: RequestStore.store[:reporting_schema_v2])
+    presenter = Reports::RepositoryPresenter.create(facilities, period: @end_period, months: 6)
     @data_for_facility = facilities.each_with_object({}) do |facility, result|
       result[facility.name] = presenter.my_facilities_hash(facility.region)
     end
