@@ -4,7 +4,7 @@
 # Performance –
 # For a production-sized database as of 8-12-2020,
 #
-# benchmark { RegionsIntegrityCheck.sweep }
+# benchmark { RegionsIntegrityCheck.call }
 # I, [2020-12-08T14:48:08.348171 #45463]  INFO -- : Benchmarking (1012.2ms)
 # I, [2020-12-08T14:49:38.327484 #45463]  INFO -- : Benchmarking (1106.5ms)
 # I, [2020-12-08T14:49:45.556005 #45463]  INFO -- : Benchmarking (967.6ms)
@@ -22,8 +22,8 @@ class RegionsIntegrityCheck
 
   attr_reader :inconsistencies
 
-  def self.sweep
-    new.sweep
+  def self.call
+    new.call
   end
 
   def initialize
@@ -55,7 +55,6 @@ class RegionsIntegrityCheck
     report_inconsistencies
     self
   end
-  alias_method :sweep, :call
 
   private
 
