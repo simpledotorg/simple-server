@@ -74,6 +74,8 @@ module Experimentation
           .select("messages -> reminder_templates.message ->> 'notification_id' AS notification_id")
           .select("reminder_templates.message, treatment_group_memberships.*")
           .in_batches(of: BATCH_SIZE).each_record do |membership|
+          next if membership.patient.nil?
+
           membership.record_notification_result(
             membership.message,
             notification_result(membership.notification_id)

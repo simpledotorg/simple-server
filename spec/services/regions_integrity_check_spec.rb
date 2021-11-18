@@ -14,7 +14,7 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
       orgs = create_list(:organization, 2)
       orgs.each { |org| org.region.delete }
 
-      swept = RegionsIntegrityCheck.sweep
+      swept = RegionsIntegrityCheck.call
 
       expect(swept.inconsistencies.dig(:organizations, :missing_regions)).to match_array(orgs.pluck(:id))
     end
@@ -24,7 +24,7 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
       facilities_without_region = create_list(:facility, 2, state: missing_state, block: block_1.name, facility_group: facility_groups[0])
       facilities_without_region.each { |facility| facility.region.delete }
 
-      swept = RegionsIntegrityCheck.sweep
+      swept = RegionsIntegrityCheck.call
 
       expect(swept.inconsistencies.dig(:states, :missing_regions)).to match_array([[missing_state, organization.id]])
       expect(swept.inconsistencies.dig(:facilities, :missing_regions)).to match_array(facilities_without_region.map(&:id))
@@ -34,7 +34,7 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
       groups = create_list(:facility_group, 2, state: state.name)
       groups.each { |fg| fg.region.delete }
 
-      swept = RegionsIntegrityCheck.sweep
+      swept = RegionsIntegrityCheck.call
 
       expect(swept.inconsistencies.dig(:districts, :missing_regions)).to match_array(groups.pluck(:id))
     end
@@ -42,7 +42,7 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
     it "tracks missing blocks" do
       _remove_block_regions = Region.block_regions.delete_all
 
-      swept = RegionsIntegrityCheck.sweep
+      swept = RegionsIntegrityCheck.call
       expected = [[block_1.name, facility_groups[0].id], [block_2.name, facility_groups[1].id]]
 
       expect(swept.inconsistencies.dig(:blocks, :missing_regions)).to match_array(expected)
@@ -52,7 +52,7 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
       facilities_without_region = create_list(:facility, 2, state: state.name, block: block_1.name, facility_group: facility_groups[0])
       facilities_without_region.each { |facility| facility.region.delete }
 
-      swept = RegionsIntegrityCheck.sweep
+      swept = RegionsIntegrityCheck.call
 
       expect(swept.inconsistencies.dig(:facilities, :missing_regions)).to match_array(facilities_without_region.map(&:id))
     end
@@ -65,7 +65,7 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
           .yield_self { |orgs| orgs << organization.region }
           .map(&:id)
 
-      swept = RegionsIntegrityCheck.sweep
+      swept = RegionsIntegrityCheck.call
 
       expect(swept.inconsistencies.dig(:organizations, :duplicate_regions)).to match_array(duplicates)
     end
@@ -76,7 +76,7 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
           .yield_self { |states| states << state }
           .map(&:id)
 
-      swept = RegionsIntegrityCheck.sweep
+      swept = RegionsIntegrityCheck.call
 
       expect(swept.inconsistencies.dig(:states, :duplicate_regions)).to match_array(duplicates)
     end
@@ -87,7 +87,7 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
           .yield_self { |districts| districts << facility_groups[0].region }
           .map(&:id)
 
-      swept = RegionsIntegrityCheck.sweep
+      swept = RegionsIntegrityCheck.call
 
       expect(swept.inconsistencies.dig(:districts, :duplicate_regions)).to match_array(duplicates)
     end
@@ -98,7 +98,7 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
           .yield_self { |blocks| blocks << block_1 }
           .map(&:id)
 
-      swept = RegionsIntegrityCheck.sweep
+      swept = RegionsIntegrityCheck.call
 
       expect(swept.inconsistencies.dig(:blocks, :duplicate_regions)).to match_array(duplicates)
     end
@@ -108,7 +108,7 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
         .yield_self { |facilities| facilities << facility_1.region }
         .map(&:id)
 
-      swept = RegionsIntegrityCheck.sweep
+      swept = RegionsIntegrityCheck.call
 
       expect(swept.inconsistencies.dig(:facilities, :duplicate_regions)).to match_array(duplicates)
     end
@@ -129,13 +129,13 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
 
       expect(Rails.logger).to receive(:error).with(expected_log)
 
-      RegionsIntegrityCheck.sweep
+      RegionsIntegrityCheck.call
     end
 
     it "does not log errors where there are none" do
       expect(Rails.logger).to_not receive(:error)
 
-      RegionsIntegrityCheck.sweep
+      RegionsIntegrityCheck.call
     end
   end
 
@@ -160,13 +160,13 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
 
       expect(Sentry).to receive(:capture_message).with(*expected_msg)
 
-      RegionsIntegrityCheck.sweep
+      RegionsIntegrityCheck.call
     end
 
     it "does not report errors if there are none" do
       expect(Sentry).to_not receive(:capture_message)
 
-      RegionsIntegrityCheck.sweep
+      RegionsIntegrityCheck.call
     end
   end
 end
