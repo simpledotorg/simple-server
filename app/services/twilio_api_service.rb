@@ -19,18 +19,17 @@ class TwilioApiService
 
   TWILIO_TEST_SMS_NUMBER = "+15005550006"
   TWILIO_TEST_WHATSAPP_NUMBER = "+14155238886"
-  ERRORS = {
-    400 => :invalid_phone_number
-  }
 
   delegate :logger, to: Rails
 
   class Error < StandardError
+    STATUS_CODE_REASONS = {400 => :invalid_phone_number}
+
     attr_reader :message, :reason
 
     def initialize(message, status_code)
       @message = "Error while calling Twilio API: #{message}"
-      @reason = ERRORS[status_code]
+      @reason = STATUS_CODE_REASONS[status_code]
     end
   end
 
