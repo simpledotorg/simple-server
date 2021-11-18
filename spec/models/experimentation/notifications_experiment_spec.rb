@@ -607,7 +607,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
 
   describe "#time" do
     it "calls statsd instance time" do
-      expect(Statsd.instance).to receive(:time).with("current_patients.monitor")
+      expect(Statsd.instance).to receive(:time).with("Experimentation::NotificationsExperiment.monitor")
 
       create(:experiment)
       described_class.first.monitor

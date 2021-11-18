@@ -157,10 +157,10 @@ module Experimentation
       end
     end
 
-    def time(method_name, &block)
+    def self.time(method_name, &block)
       raise ArgumentError, "You must supply a block" unless block
 
-      label = "#{experiment_type}.#{method_name}"
+      label = "#{name}.#{method_name}"
 
       benchmark(label) do
         Statsd.instance.time(label) do
@@ -169,6 +169,10 @@ module Experimentation
       end
 
       Statsd.instance.flush # The metric is not sent to datadog until the buffer is full, hence we explicitly flush.
+    end
+
+    def time(method_name, &block)
+      self.class.time(method_name, &block)
     end
 
     def earliest_remind_on
