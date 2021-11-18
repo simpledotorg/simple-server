@@ -72,7 +72,7 @@ class AppointmentNotification::Worker
 
     # remove missed_visit_whatsapp_reminder and missed_visit_sms_reminder
     # https://app.clubhouse.io/simpledotorg/story/3585/backfill-notifications-from-communications
-    handle_twilio_400(notification) do
+    handle_twilio_error(notification) do
       case communication_type
       when "whatsapp", "missed_visit_whatsapp_reminder"
         service.send_whatsapp(args)
@@ -86,11 +86,12 @@ class AppointmentNotification::Worker
 
   # This usually happens when the phone number is invalid.
   # https://www.twilio.com/docs/errors/21211
-  def handle_twilio_400(notification, &block)
+  def handle_twilio_error(notification, &block)
     block.call
-  rescue Twilio::REST::RestError => error
-    if error.status_code == 400
+  rescue TwilioApiService::Error => error
+    if error.reason == :invalid_phone_number
       notification.status_cancelled!
+      false
     else
       raise error
     end

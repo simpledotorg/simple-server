@@ -85,7 +85,11 @@ RSpec.describe TwilioApiService do
 
     it "raises a custom error on twilio error" do
       stub_client
-      allow(twilio_client).to receive_message_chain("messages.create").and_raise(Twilio::REST::TwilioError)
+      response = double
+      allow(response).to receive(:body).and_return({})
+      allow(response).to receive(:status_code).and_return(200)
+
+      allow(twilio_client).to receive_message_chain("messages.create").and_raise(Twilio::REST::RestError.new("An error", response))
       expect {
         notification_service.send_sms(
           recipient_number: recipient_phone_number,
@@ -120,8 +124,11 @@ RSpec.describe TwilioApiService do
 
     it "raises a custom error on twilio error" do
       stub_client
-      allow(twilio_client).to receive_message_chain("messages.create").and_raise(Twilio::REST::TwilioError)
+      response = double
+      allow(response).to receive(:body).and_return({})
+      allow(response).to receive(:status_code).and_return(200)
 
+      allow(twilio_client).to receive_message_chain("messages.create").and_raise(Twilio::REST::RestError.new("An error", response))
       expect {
         notification_service.send_whatsapp(
           recipient_number: recipient_phone_number,
