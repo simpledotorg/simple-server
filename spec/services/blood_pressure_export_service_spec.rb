@@ -11,14 +11,6 @@ RSpec.describe BloodPressureExportService, type: :model do
   let(:period_range) { (start_period..end_period).to_a }
   let(:user) { create(:admin, :manager, :with_access, resource: organization, organization: organization) }
 
-  def refresh_views
-    ActiveRecord::Base.transaction do
-      LatestBloodPressuresPerPatientPerMonth.refresh
-      LatestBloodPressuresPerPatientPerQuarter.refresh
-      PatientRegistrationsPerDayPerFacility.refresh
-    end
-  end
-
   before :each do
     I18n.default_locale = :en_IN
   end
@@ -40,12 +32,17 @@ RSpec.describe BloodPressureExportService, type: :model do
 
         facilities = [small_facility1, small_facility2]
 
-        service = described_class.new(data_type: "controlled_patients", start_period: start_period, end_period: end_period, facilities: facilities)
+        refresh_views
+
+        service = described_class.new(start_period: start_period, end_period: end_period, facilities: facilities)
         csv = service.as_csv
         expect(csv).to_not be_nil
         rows = CSV.parse(csv, headers: true)
-        expect(rows[1]["Facilities"]).to eq("Small_1")
-        expect(rows[2]["Facilities"]).to eq("Small_2")
+        expect(rows[0]["BP controlled"]).to eq("6 month change") # We have two rows of headers, and the 6 mo change header is the 2nd header underneath the "BP Controlled" piece
+        expect(rows[1]["Facilities"]).to eq("All PHCs")
+        expect(rows[1]["Total registered"]).to eq("3")
+        expect(rows[2]["Facilities"]).to eq("Small_1")
+        expect(rows[3]["Facilities"]).to eq("Small_2")
       end
 
       it "processes results for medium sized facilities" do
