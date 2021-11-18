@@ -412,10 +412,10 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       treatment_group = create(:treatment_group, experiment: experiment)
       reminder_template = create(:reminder_template, message: "hello.set01", treatment_group: treatment_group)
       notification = create(:notification,
-                            purpose: :experimental_appointment_reminder,
-                            message: reminder_template.message,
-                            patient: patient,
-                            subject: nil)
+        purpose: :experimental_appointment_reminder,
+        message: reminder_template.message,
+        patient: patient,
+        subject: nil)
       membership = create(:treatment_group_membership, treatment_group: treatment_group, status: :evicted, patient: patient)
       membership.record_notification(notification)
       patient.discard_data
