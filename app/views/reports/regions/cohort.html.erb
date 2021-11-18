@@ -43,7 +43,7 @@
           <div class="col-lg-9 order-lg-2">
             <table class="split-bars">
               <tr>
-                <% if cohort["registered"] > 0 %>
+                <% if cohort["registered"] && cohort["registered"] > 0 %>
                   <%
                     controlled_percent = compute_percentage(cohort["controlled"], cohort["registered"])
                     uncontrolled_percent = compute_percentage(cohort["uncontrolled"], cohort["registered"])
