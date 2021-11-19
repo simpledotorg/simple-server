@@ -10,7 +10,7 @@ class FacilityStatsService
     @stats_by_size = {}
   end
 
-  def self.call(facilities:, period:, rate_numerator:)
+  def self.call(facilities:, period:, rate_numerator: nil)
     new(facilities: facilities, period: period, rate_numerator: rate_numerator).call
   end
 

@@ -88,6 +88,6 @@ class MyFacilitiesController < AdminController
       result[facility.name] = presenter.my_facilities_hash(facility.region)
     end
     @display_sizes = @facility_sizes.select { |size| sizes.include?(size) }
-    @stats_by_size = FacilityStatsService.call(facilities: @data_for_facility, period: @period)
+    @stats_by_size = FacilityStatsService.call(facilities: @data_for_facility, period: @period, rate_numerator: type)
   end
 end
