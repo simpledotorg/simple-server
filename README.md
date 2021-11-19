@@ -3,22 +3,22 @@
 [![Build Status](https://simple.semaphoreci.com/badges/simple-server/branches/master.svg)](https://simple.semaphoreci.com/projects/simple-server)
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/testdouble/standard)
 
+
 This is the backend for the Simple app to help track hypertensive patients across a population.
 
 ## Table of Contents
 
-- [Development](#development)
-- [Documentation](#documentation)
-- [Deployment](#deployment)
-- [Contributing](#contributing)
+* [Development](#development)
+* [Documentation](#documentation)
+* [Deployment](#deployment)
+* [Contributing](#contributing)
 
 ## Development
+### Note for Apple Silicon M1 Macs
 
-### Caveat for Apple Silicon M1 macs
+With recent gem updates, all of our gems and dependencies now build ARM native on m1 macs. This means you do **not** need to use Rosetta to set up simple-server, and in fact using Rosetta will make things more complicated and confusing in day to dev dev experience, and also hurts performance.
 
-If you are installing on an M1 Mac, you should do all the below in Rosetta (ie `arch` returns i386 in a terminal). See [here](https://5balloons.info/correct-way-to-install-and-use-homebrew-on-m1-macs/) for how to create a Rosetta specific Terminal.
-
-We have some rubygems that don't work under the native ARM architecture, so a fully ARM native setup does not work yet. For details you can follow [this issue](https://github.com/simpledotorg/simple-server/issues/1969).
+The setup instructions are now the same for Intel or M1 macs, as you can install homebrew normally and go from there.
 
 ### Dependencies
 
@@ -49,7 +49,6 @@ $ bin/setup
 ```
 
 Note: If you already have a previous dev environment you're trying to refresh, it's easiest to drop your database run setup again.
-
 ```
 $ rails db:drop
 $ rails parallel:drop
@@ -84,6 +83,8 @@ To remove the server and clear the volumes of database data, run the command:
 ```
 docker compose down --volumes
 ```
+
+
 
 #### Manual Setup
 
@@ -120,27 +121,22 @@ The output of the ngrok command is HTTP and HTTPS URLs that can be used to acces
 be used since HTTP traffic will not be supported by the emulator. Configure the following places with the HTTPS URL.
 
 In the `gradle.properties` file in the `simple-android` repository, set:
-
 ```
 manifestEndpoint=<HTTPS URL>/api/
 fallbackApiEndpoint=<HTTPS URL>/api/
 ```
 
 In the `.env.development.local` (you can create this file if it doesn't exist),
-
 ```
 SIMPLE_SERVER_HOST=<URL>  # i.e. without https://
 SIMPLE_SERVER_HOST_PROTOCOL=https
 ```
 
 Alternatively, you can make the change on the server side. In the server repo, open `app/views/api/manifests/show.json.jbuilder`. Change:
-
 ```
 json.endpoint "#{ENV["SIMPLE_SERVER_HOST_PROTOCOL"]}://#{ENV["SIMPLE_SERVER_HOST"]}/api/"
 ```
-
 to:
-
 ```
 json.endpoint "<HTTPS URL>/api/"
 ```
@@ -196,7 +192,7 @@ Every pull request opened on the `simple-server` repo creates a [Heroku review a
 with the branch's code deployed to it. The review app is hosted at the URL [https://simple-review-pr-<PR number>.herokuapp.com](#).
 This temporary environment can be used to test your changes in a production-like environment easily.
 
-If you need to test your changes with a mobile app build as well, you can generate a mobile app build that points to 
+If you need to test your changes with a mobile app build as well, you can generate a mobile app build that points to
 your review app. To do so:
 
 * Navigate to the Github Actions page on the `simple-server` repository
@@ -204,7 +200,7 @@ your review app. To do so:
 * Trigger a "workflow dispatch" at the top of the screen. You can keep the branch as `master` (it doesn't matter) and
   enter your PR number in the required input
 * Once the Action is complete, its page will contain the APK as an artifact.
-  
+
 ![trigger-mobile-review-app](https://user-images.githubusercontent.com/4241399/139230709-1604df1f-ad7d-4690-8bae-80d2a48cab37.gif)
 
 <img width="1557" alt="Screen Shot 2021-10-28 at 3 11 44 PM" src="https://user-images.githubusercontent.com/4241399/139230802-39a38e26-7a96-4e00-9599-c8f7ce48d62d.png">
@@ -250,8 +246,8 @@ configuration is valid, but will not actually schedule any cron jobs.
 
 Alternatively, you can start these services locally _without_ foreman by using the following commands individually.
 
-- Rails: `bundle exec rails server` or `bundle exec puma`
-- Sidekiq: `bundle exec sidekiq`
+* Rails: `bundle exec rails server` or `bundle exec puma`
+* Sidekiq: `bundle exec sidekiq`
 
 ### Running the tests
 
@@ -289,7 +285,7 @@ $ bin/rails db:seed_patients
 
 Need a larger dataset? Try adding the `SEED_TYPE` variable. (It takes longer to run, of course.) This works on all patient seeding commands:
 
-````bash
+```bash
   SEED_TYPE=medium bin/rails db:seed_patients
 # You also may want an entirely new large dataset, with more facilities and regions. You can do that with a full reset:
 SEED_TYPE=large bin/rails db:reset
@@ -300,7 +296,7 @@ To purge the generated patient data, run
 
 ```bash
 $ bin/rails db:purge_users_data
-````
+```
 
 You can also purge and re-seed by running:
 
@@ -311,7 +307,6 @@ $ bin/rails db:purge_and_reseed
 ### Creating an admin user
 
 Run the following command from the project root to create a new dashboard admin:
-
 ```bash
 $ bin/rails 'create_admin_user[<name>,<email>,<password>]'
 ```
@@ -357,10 +352,10 @@ These are not actively committed into the repository. But can be generated by ru
 
 Simple Server is continuously deployed from master to all environments via [Semaphore Workflows](https://docs.semaphoreci.com/essentials/modeling-complex-workflows/) as long as the build passes. We use a mixture of tools under the hood for deployments:
 
-- Ansible: Server management and configuration is done using Ansible. See the [deployment repository](https://github.com/simpledotorg/deployment/tree/master/ansible)
+* Ansible: Server management and configuration is done using Ansible. See the [deployment repository](https://github.com/simpledotorg/deployment/tree/master/ansible)
   for more information.
-- Capistrano: Application code is deployed to servers for a specific country and environment using Capistrano.
-- SemaphoreCI: Continuous deployment - all merges to master are auto-deployed to all environments.
+* Capistrano: Application code is deployed to servers for a specific country and environment using Capistrano.
+* SemaphoreCI: Continuous deployment - all merges to master are auto-deployed to all environments.
 
 If you need to make a manual production release, run the release script from master:
 
@@ -372,9 +367,9 @@ This will create a git release tag and automatically trigger a deployment to all
 
 ### Deployment to a specific environment
 
-- We use Capistrano [multi-config](https://github.com/railsware/capistrano-multiconfig) to do multi-country deploys.
-- All `cap` commands are namespaced with the country name. For eg: `bundle exec india:sandbox deploy`.
-- The available country names are listed under `config/deploy`. The subsequent envs, under the country directory, like
+* We use Capistrano [multi-config](https://github.com/railsware/capistrano-multiconfig) to do multi-country deploys.
+* All `cap` commands are namespaced with the country name. For eg: `bundle exec india:sandbox deploy`.
+* The available country names are listed under `config/deploy`. The subsequent envs, under the country directory, like
   `config/deploy/india/sandbox.rb`
 
 Simple Server can be deployed to a specific environment of a specific country with the following command.
@@ -400,7 +395,6 @@ When setting up a new environment to deploy Simple Server to, follow these steps
 Create a new file in `config/deploy/<env_name>.rb` for the new environment. It can be placed inside a subdirectory if
 desired. Populate the new config file with relevant IP address info. Use an existing file for reference. For example,
 the configuration for a deployment with two EC2 instances may look like:
-
 ```
 server "ec2-12-111-34-45.ap-south-1.compute.amazonaws.com", user: "deploy", roles: %w[web app db cron whitelist_phone_numbers seed_data]
 server "ec2-12-222-67-89.ap-south-1.compute.amazonaws.com", user: "deploy", roles: %w[web sidekiq]
