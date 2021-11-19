@@ -63,10 +63,6 @@ every 2.minutes, roles: [:cron] do
   runner "TracerJob.perform_async(Time.current.iso8601, false)"
 end
 
-every 5.minutes, roles: [:cron] do
-  runner "RunnerTrace.new.call"
-end
-
 every 30.minutes, roles: [:cron] do
   runner "RegionsIntegrityCheck.call"
 end
