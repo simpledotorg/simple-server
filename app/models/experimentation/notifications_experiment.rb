@@ -171,9 +171,7 @@ module Experimentation
       Statsd.instance.flush # The metric is not sent to datadog until the buffer is full, hence we explicitly flush.
     end
 
-    def time(method_name, &block)
-      self.class.time(method_name, &block)
-    end
+    delegate :time, to: self
 
     def earliest_remind_on
       reminder_templates.pluck(:remind_on_in_days).min || 0
