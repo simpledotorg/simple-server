@@ -63,7 +63,6 @@ RSpec.describe CohortService, type: :model do
 
         refresh_views
 
-        # periods = Period.month("January 1st 2020")..Period.month("April 1st 2020")
         periods = Period.month("April 1st 2020").downto(5)
         [facility, facility_group].each do |region|
           result = CohortService.new(region: region, periods: periods).call

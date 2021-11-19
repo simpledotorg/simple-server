@@ -38,7 +38,6 @@ module Reports
             Region.public_send("#{region_type}_regions").find_in_batches do |batch|
               warm_patient_breakdown_caches(batch)
               warm_repository_caches(batch)
-              warm_cohort_caches(batch)
             end
           end
         end
@@ -61,9 +60,6 @@ module Reports
           Statsd.instance.increment("patient_breakdown_service.#{region.region_type}.cache")
         end
       end
-    end
-
-    def warm_cohort_caches(regions)
     end
 
     private
