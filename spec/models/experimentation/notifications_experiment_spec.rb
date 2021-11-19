@@ -165,6 +165,17 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       expect(described_class.eligible_patients).not_to include(excluded_patient)
       expect(described_class.eligible_patients).to include(included_patient)
     end
+
+    it "doesn't include any patients whose assigned facility has been deleted" do
+      excluded_patient = create(:patient, age: 18)
+      excluded_patient.assigned_facility.discard
+
+      included_patient = create(:patient, age: 18)
+      create(:appointment, patient: included_patient, status: :scheduled)
+
+      expect(described_class.eligible_patients).not_to include(excluded_patient)
+      expect(described_class.eligible_patients).to include(included_patient)
+    end
   end
 
   describe "#enroll_patients" do
