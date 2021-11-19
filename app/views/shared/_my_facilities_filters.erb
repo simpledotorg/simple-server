@@ -146,8 +146,9 @@
   form="query-filters"
   hidden
 >
-
-<% if action_name.to_sym.in?([:bp_controlled, :bp_not_controlled, :missed_visits]) %>
-  <div style="padding: 0.25rem 0.5rem 0rem 0rem;">|</div>
-  <%= link_to "<button class='btn btn-sm btn-outline btn-secondary' style='color: #0075EB !important;background: #fff !important;' >Download data</button>".html_safe, my_facilities_csv_maker_path(type: type, facility_group: @selected_facility_group, zone: @selected_zones, size: @selected_facility_sizes), { method: :get} %>
+<% if Flipper.enabled?(:my_facilities_csv) %>
+  <% if action_name.to_sym.in?([:bp_controlled, :bp_not_controlled, :missed_visits]) %>
+    <div style="padding: 0.25rem 0.5rem 0rem 0rem;">|</div>
+    <%= link_to "<button class='btn btn-sm btn-outline btn-secondary' style='color: #0075EB !important;background: #fff !important;' >Download data</button>".html_safe, my_facilities_csv_maker_path(type: type, facility_group: @selected_facility_group, zone: @selected_zones, size: @selected_facility_sizes), { method: :get} %>
+  <% end %>
 <% end %>

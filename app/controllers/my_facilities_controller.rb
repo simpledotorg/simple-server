@@ -10,6 +10,7 @@ class MyFacilitiesController < AdminController
 
   around_action :set_reporting_time_zone
   before_action :set_period, except: [:index]
+  before_action :authorize_csv_maker, only: [:csv_maker]
   before_action :authorize_my_facilities
   before_action :set_selected_cohort_period, only: [:blood_pressure_control]
   before_action :set_selected_period, only: [:registrations, :missed_visits]
@@ -46,6 +47,7 @@ class MyFacilitiesController < AdminController
     process_facility_stats(:missed_visits)
   end
 
+  
   def csv_maker
     facilities = filter_facilities
     service = BloodPressureExportService.new(start_period: @start_period, end_period: @period, facilities: facilities)
@@ -64,6 +66,10 @@ class MyFacilitiesController < AdminController
       else
         last_updated_at.in_time_zone(Rails.application.config.country[:time_zone]).strftime("%d-%^b-%Y %I:%M%p")
       end
+  end
+
+  def authorize_csv_maker
+    authorize { current_admin.feature_enabled?(:my_facilities_csv)}
   end
 
   def authorize_my_facilities
