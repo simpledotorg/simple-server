@@ -390,8 +390,9 @@ RSpec.describe Reports::RegionsController, type: :controller do
           expect(data.size).to eq(6)
           q2_data = data[1]
           expect(q2_data["results_in"]).to eq("Q1-2020")
-          # expect(q2_data["registered"]).to eq(1)
-          # expect(q2_data["controlled"]).to eq(1)
+          expect(q2_data["period"]).to eq(Period.quarter("Q1-2020"))
+          expect(q2_data["registered"]).to eq(0)
+          expect(q2_data["controlled"]).to eq(0)
         end
       end
     end

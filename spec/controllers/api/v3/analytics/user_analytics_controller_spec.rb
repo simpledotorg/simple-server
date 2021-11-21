@@ -2,6 +2,7 @@ require "rails_helper"
 
 RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
   let!(:request_user) { create(:user) }
+  let(:jan_2020) { Time.parse("January 1 2020") }
 
   describe "#show" do
     let(:request_facility) { create(:facility, facility_group: request_user.facility.facility_group) }
@@ -16,16 +17,75 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
       end
 
       it "renders statistics for the facility as json" do
-        get :show, format: :json
-        response_body = JSON.parse(response.body, symbolize_names: true)
+        refresh_views
 
+        get :show, format: :json, params: {v2: "0"}
+
+        response_body = JSON.parse(response.body)
         expect(response.status).to eq(200)
-        expect(response_body.keys.map(&:to_sym))
-          .to include(:daily,
-            :monthly,
-            :all_time,
-            :trophies,
-            :metadata)
+        expect(response_body.keys.map(&:to_sym)) .to include(:daily, :monthly, :all_time, :trophies, :metadata)
+
+        get :show, format: :json, params: {v2: "1"}
+
+        response_body = JSON.parse(response.body)
+        expect(response.status).to eq(200)
+        expect(response_body.keys.map(&:to_sym)) .to include(:daily, :monthly, :all_time, :trophies, :metadata)
+      end
+
+      fit "renders cohort data" do
+        patient = create(:patient, registration_facility: request_facility, registration_user: request_user, recorded_at: jan_2020.advance(months: -2))
+        create(:bp_with_encounter, :under_control, recorded_at: jan_2020 + 1.day, patient: patient, facility: request_facility)
+
+        refresh_views
+
+        get :show, format: :json
+
+        response_body = JSON.parse(response.body)
+        d assigns(:user_analytics)
+        expect(response.status).to eq(200)
+        expect(response_body.keys.map(&:to_sym)) .to include(:daily, :monthly, :all_time, :trophies, :metadata)
+
+      end
+    end
+
+    context "html" do
+      render_views
+
+      before :each do
+        request.env["HTTP_X_USER_ID"] = request_user.id
+        request.env["HTTP_X_FACILITY_ID"] = request_facility.id
+        request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
+      end
+
+      it "renders statistics for the facility as json" do
+        refresh_views
+
+        get :show, format: :html, params: {v2: "0"}
+
+        response_body = JSON.parse(response.body)
+        expect(response.status).to eq(200)
+        expect(response_body.keys.map(&:to_sym)) .to include(:daily, :monthly, :all_time, :trophies, :metadata)
+
+        get :show, format: :html, params: {v2: "1"}
+
+        response_body = JSON.parse(response.body)
+        expect(response.status).to eq(200)
+        expect(response_body.keys.map(&:to_sym)) .to include(:daily, :monthly, :all_time, :trophies, :metadata)
+      end
+
+      fit "renders cohort data" do
+        patient = create(:patient, registration_facility: request_facility, registration_user: request_user, recorded_at: jan_2020.advance(months: -2))
+        create(:bp_with_encounter, :under_control, recorded_at: jan_2020 + 1.day, patient: patient, facility: request_facility)
+
+        refresh_views
+
+        get :show, format: :html
+
+        response_body = JSON.parse(response.body)
+        d assigns(:user_analytics)
+        expect(response.status).to eq(200)
+        expect(response_body.keys.map(&:to_sym)) .to include(:daily, :monthly, :all_time, :trophies, :metadata)
+
       end
     end
 
