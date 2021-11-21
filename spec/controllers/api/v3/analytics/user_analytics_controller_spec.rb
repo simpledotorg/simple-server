@@ -7,6 +7,8 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
     let(:request_facility) { create(:facility, facility_group: request_user.facility.facility_group) }
 
     context "json" do
+      render_views
+
       before :each do
         request.env["HTTP_X_USER_ID"] = request_user.id
         request.env["HTTP_X_FACILITY_ID"] = request_facility.id
@@ -17,6 +19,7 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
         get :show, format: :json
         response_body = JSON.parse(response.body, symbolize_names: true)
 
+        expect(response.status).to eq(200)
         expect(response_body.keys.map(&:to_sym))
           .to include(:daily,
             :monthly,

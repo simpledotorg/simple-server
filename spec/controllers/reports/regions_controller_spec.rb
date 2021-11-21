@@ -1,7 +1,6 @@
 require "rails_helper"
 
 RSpec.describe Reports::RegionsController, type: :controller do
-  [true, false].each do |v2_flag|
     let(:jan_2020) { Time.parse("January 1 2020") }
     let(:dec_2019_period) { Period.month(Date.parse("December 2019")) }
     let(:organization) { FactoryBot.create(:organization) }
@@ -376,6 +375,25 @@ RSpec.describe Reports::RegionsController, type: :controller do
           expect(q2_data["controlled"]).to eq(1)
         end
       end
+
+      it "can retrieve quarterly cohort data for a new facility with no data" do
+        refresh_views
+
+        Timecop.freeze("June 1 2020") do
+          sign_in(cvho.email_authentication)
+          get :cohort, params: {id: @facility.facility_group.slug, v2: "0", report_scope: "district", period: {type: "quarter", value: "Q2-2020"}}
+          expect(response).to be_successful
+
+          get :cohort, params: {id: @facility.facility_group.slug, report_scope: "district", period: {type: "quarter", value: "Q2-2020"}}
+          expect(response).to be_successful
+          data = assigns(:cohort_data)
+          expect(data.size).to eq(6)
+          q2_data = data[1]
+          expect(q2_data["results_in"]).to eq("Q1-2020")
+          # expect(q2_data["registered"]).to eq(1)
+          # expect(q2_data["controlled"]).to eq(1)
+        end
+      end
     end
 
     describe "download" do
@@ -504,4 +522,3 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
     end
   end
-end
