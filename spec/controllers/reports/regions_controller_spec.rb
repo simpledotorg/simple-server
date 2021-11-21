@@ -336,7 +336,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
 
     describe "cohort" do
-      render_views_on_ci
+      render_views
 
       before do
         @facility_group = create(:facility_group, organization: organization)
