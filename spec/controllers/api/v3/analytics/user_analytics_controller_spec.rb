@@ -23,13 +23,13 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
 
         response_body = JSON.parse(response.body)
         expect(response.status).to eq(200)
-        expect(response_body.keys.map(&:to_sym)) .to include(:daily, :monthly, :all_time, :trophies, :metadata)
+        expect(response_body.keys.map(&:to_sym)).to include(:daily, :monthly, :all_time, :trophies, :metadata)
 
         get :show, format: :json, params: {v2: "1"}
 
         response_body = JSON.parse(response.body)
         expect(response.status).to eq(200)
-        expect(response_body.keys.map(&:to_sym)) .to include(:daily, :monthly, :all_time, :trophies, :metadata)
+        expect(response_body.keys.map(&:to_sym)).to include(:daily, :monthly, :all_time, :trophies, :metadata)
       end
     end
 
