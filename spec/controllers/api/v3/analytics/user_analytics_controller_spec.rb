@@ -104,6 +104,7 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
 
       context "html" do
         render_views
+
         it "has the follow-ups card" do
           get :show, format: :html
 

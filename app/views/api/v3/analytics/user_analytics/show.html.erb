@@ -271,7 +271,7 @@
               <div style="font-size: 16px; margin: 8px 0 12px 0;">  <%= raw t("analytics.result_from_last_visit_in") %> <%= cohort[:results_in] %></div>
               <table class="cohort-bars">
                   <tr>
-                    <% if cohort[:registered].zero? %>
+                    <% if cohort[:registered]&.zero? %>
                       <td class="cohort-none"> <%= raw t("analytics.no_patients") %></td>
                     <% else %>
                       <td class="cohort-nobp" style="width: <%= @user_analytics.cohort_no_bp(cohort) %>;">
