@@ -31,21 +31,6 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
         expect(response.status).to eq(200)
         expect(response_body.keys.map(&:to_sym)) .to include(:daily, :monthly, :all_time, :trophies, :metadata)
       end
-
-      fit "renders cohort data" do
-        patient = create(:patient, registration_facility: request_facility, registration_user: request_user, recorded_at: jan_2020.advance(months: -2))
-        create(:bp_with_encounter, :under_control, recorded_at: jan_2020 + 1.day, patient: patient, facility: request_facility)
-
-        refresh_views
-
-        get :show, format: :json
-
-        response_body = JSON.parse(response.body)
-        d assigns(:user_analytics)
-        expect(response.status).to eq(200)
-        expect(response_body.keys.map(&:to_sym)) .to include(:daily, :monthly, :all_time, :trophies, :metadata)
-
-      end
     end
 
     context "html" do
@@ -57,35 +42,23 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
         request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
       end
 
-      it "renders statistics for the facility as json" do
-        refresh_views
+      it "returns cohort data" do
+        patients = create_list(:patient, 2, registration_facility: request_facility, registration_user: request_user, recorded_at: jan_2020.advance(months: -2))
+        create(:bp_with_encounter, :under_control, recorded_at: jan_2020 + 1.day, patient: patients[0], facility: request_facility)
+        create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020 + 1.day, patient: patients[1], facility: request_facility)
 
-        get :show, format: :html, params: {v2: "0"}
-
-        response_body = JSON.parse(response.body)
+        Timecop.freeze("April 15th 2020") do
+          refresh_views
+          get :show, format: :html
+        end
         expect(response.status).to eq(200)
-        expect(response_body.keys.map(&:to_sym)) .to include(:daily, :monthly, :all_time, :trophies, :metadata)
 
-        get :show, format: :html, params: {v2: "1"}
-
-        response_body = JSON.parse(response.body)
-        expect(response.status).to eq(200)
-        expect(response_body.keys.map(&:to_sym)) .to include(:daily, :monthly, :all_time, :trophies, :metadata)
-      end
-
-      fit "renders cohort data" do
-        patient = create(:patient, registration_facility: request_facility, registration_user: request_user, recorded_at: jan_2020.advance(months: -2))
-        create(:bp_with_encounter, :under_control, recorded_at: jan_2020 + 1.day, patient: patient, facility: request_facility)
-
-        refresh_views
-
-        get :show, format: :html
-
-        response_body = JSON.parse(response.body)
-        d assigns(:user_analytics)
-        expect(response.status).to eq(200)
-        expect(response_body.keys.map(&:to_sym)) .to include(:daily, :monthly, :all_time, :trophies, :metadata)
-
+        cohort_data = assigns(:user_analytics).statistics[:cohorts]
+        q1_2020 = cohort_data[0]
+        expect(q1_2020["period"]).to eq(Period.quarter("Q1-2020"))
+        expect(q1_2020["registered"]).to eq(2)
+        expect(q1_2020["controlled"]).to eq(1)
+        expect(q1_2020["uncontrolled"]).to eq(1)
       end
     end
 
