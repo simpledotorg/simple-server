@@ -1,0 +1,14 @@
+output_file='benchmark_results.csv'
+
+uname -a | tee ${output_file}
+system_profiler -detailLevel mini SPHardwareDataType | tail -n +2 | sed 's/ //' | tee ${output_file}
+
+script/benchmarker -c "bin/rails db:reset"
+
+bin/spring stop > /dev/null
+
+script/benchmarker -n 10 -c "bin/rspec spec/models/region_spec.rb"
+
+script/benchmarker -n 3 -c "bin/rspec spec/features/admin/facilities"
+
+script/benchmarker -c "SEED_TYPE=large bin/rails db:reset"
