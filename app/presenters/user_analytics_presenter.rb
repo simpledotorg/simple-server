@@ -372,7 +372,8 @@ class UserAnalyticsPresenter
   end
 
   def statistics_cache_key
-    "user_analytics/#{current_facility.id}/#{diabetes_enabled?}/#{CACHE_VERSION}"
+    v2 = Reports.reporting_schema_v2?
+    "user_analytics/#{current_facility.id}/dm=#{diabetes_enabled?}/v2=#{v2}/#{CACHE_VERSION}"
   end
 
   def sum_by_gender(data)
