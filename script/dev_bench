@@ -3,6 +3,10 @@ output_file='benchmark_results.csv'
 uname -a | tee ${output_file}
 system_profiler -detailLevel mini SPHardwareDataType | tail -n +2 | sed 's/ //' | tee ${output_file}
 
+# reset DB and PSQL to empty state
+rails db:drop:all db:create:all
+vacuumdb --full --all --analyze
+
 script/benchmarker -c "bin/rails db:reset"
 
 bin/spring stop > /dev/null
