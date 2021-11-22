@@ -20,9 +20,11 @@ module Experimentation
     # The order of operations is important.
     # See https://docs.google.com/document/d/1IMXu_ca9xKU8Xox_3v403ZdvNGQzczLWljy7LQ6RQ6A for more details.
     def self.conduct_daily(date)
-      running.each { |experiment| experiment.enroll_patients(date) }
-      monitoring.each { |experiment| experiment.monitor }
-      notifying.each { |experiment| experiment.schedule_notifications(date) }
+      time(__method__) do
+        running.each { |experiment| experiment.enroll_patients(date) }
+        monitoring.each { |experiment| experiment.monitor }
+        notifying.each { |experiment| experiment.schedule_notifications(date) }
+      end
     end
 
     # Returns patients who are eligible for enrollment. These should be
@@ -70,13 +72,11 @@ module Experimentation
       # TODO: Look at query performance
       time(__method__) do
         treatment_group_memberships
-          .joins(treatment_group: :reminder_templates)
+          .joins(:patient, treatment_group: :reminder_templates)
           .where("messages -> reminder_templates.message ->> 'notification_status' = ?", :pending)
           .select("messages -> reminder_templates.message ->> 'notification_id' AS notification_id")
           .select("reminder_templates.message, treatment_group_memberships.*")
           .in_batches(of: BATCH_SIZE).each_record do |membership|
-          next if membership.patient.nil?
-
           membership.record_notification_result(
             membership.message,
             notification_result(membership.notification_id)
@@ -158,10 +158,10 @@ module Experimentation
       end
     end
 
-    def time(method_name, &block)
+    def self.time(method_name, &block)
       raise ArgumentError, "You must supply a block" unless block
 
-      label = "#{experiment_type}.#{method_name}"
+      label = "#{name}.#{method_name}"
 
       benchmark(label) do
         Statsd.instance.time(label) do
@@ -171,6 +171,8 @@ module Experimentation
 
       Statsd.instance.flush # The metric is not sent to datadog until the buffer is full, hence we explicitly flush.
     end
+
+    delegate :time, to: self
 
     def earliest_remind_on
       reminder_templates.pluck(:remind_on_in_days).min || 0
