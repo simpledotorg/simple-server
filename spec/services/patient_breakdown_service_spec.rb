@@ -3,7 +3,6 @@ require "rails_helper"
 RSpec.describe PatientBreakdownService do
   before do
     memory_store = ActiveSupport::Cache.lookup_store(:memory_store)
-
     allow(Rails).to receive(:cache).and_return(memory_store)
     Rails.cache.clear
   end
