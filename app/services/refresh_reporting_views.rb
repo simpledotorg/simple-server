@@ -91,6 +91,7 @@ class RefreshReportingViews
       Statsd.instance.time(name) do
         yield
       end
+      Statsd.instance.flush
     end
   end
 end

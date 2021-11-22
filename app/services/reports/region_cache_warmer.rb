@@ -39,6 +39,7 @@ module Reports
               warm_patient_breakdown_caches(batch)
               warm_repository_caches(batch)
             end
+            Statsd.instance.flush
           end
         end
       end
