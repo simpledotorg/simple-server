@@ -16,9 +16,18 @@ This is the backend for the Simple app to help track hypertensive patients acros
 ## Development
 ### Note for Apple Silicon M1 Macs
 
-With recent gem updates, all of our gems and dependencies now build ARM native on m1 macs. This means you do **not** need to use Rosetta to set up simple-server, and in fact using Rosetta will make things more complicated and confusing in day to dev dev experience, and also hurts performance.
+With recent gem updates, all of our gems and dependencies now build ARM native on m1 macs. This means you do **not** need to use Rosetta to set up simple-server, and in fact using Rosetta will make things more complicated and confusing in day to day dev experience, and also hurts performance.
 
-The setup instructions are now the same for Intel or M1 macs, as you can install homebrew normally and go from there.
+There is one possible caveat to this -- if you see any problems with google-protobuf, run the following:
+
+```
+gem uninstall google-protobuf
+gem install google-protobuf -v 3.17.3 --platform=ruby
+```
+
+Then rerun bundler and everything will work. This is being tracked over in https://github.com/protocolbuffers/protobuf/issues/8682, hopefully there will be a better fix soon.
+
+Beyond that, tThe setup instructions are now the same for Intel or M1 macs, as you can install homebrew normally and go from there.
 
 ### Dependencies
 
