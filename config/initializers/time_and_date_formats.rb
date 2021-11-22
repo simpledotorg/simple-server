@@ -10,6 +10,9 @@ Time::DATE_FORMATS[:mon_year_multiline] = "%b\n%Y"
 Time::DATE_FORMATS[:month_year] = "%B %Y"
 Date::DATE_FORMATS[:month_year] = "%B %Y"
 
+Time::DATE_FORMATS[:cohort] = lambda { |value| "#{value.prev_month.strftime("%b")}/#{value.strftime("%b")}" }
+Date::DATE_FORMATS[:cohort] = lambda { |value| "#{value.prev_month.strftime("%b")}/#{value.strftime("%b")}" }
+
 Time::DATE_FORMATS[:day_mon_year] = "%-d-%b-%Y"
 Date::DATE_FORMATS[:day_mon_year] = "%-d-%b-%Y"
 

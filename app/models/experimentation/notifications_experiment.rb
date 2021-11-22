@@ -32,6 +32,7 @@ module Experimentation
     def self.eligible_patients
       Patient.with_hypertension
         .contactable
+        .joins(:assigned_facility)
         .where_current_age(">=", 18)
         .where("NOT EXISTS (:recent_experiment_memberships)",
           recent_experiment_memberships: Experimentation::TreatmentGroupMembership
