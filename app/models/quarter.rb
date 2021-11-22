@@ -37,8 +37,11 @@ class Quarter
   end
 
   def to_s(format = :default_period)
-    if format == :dhis2
+    case format
+    when :dhis2
       "#{year}Q#{number}"
+    when :quarter_string
+      "#{year}-#{number}"
     else
       "Q#{number}-#{year}"
     end
