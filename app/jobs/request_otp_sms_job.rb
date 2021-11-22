@@ -1,11 +1,13 @@
 class RequestOtpSmsJob < ApplicationJob
+  include PatientPhoneNumberHelper
+
   def perform(user)
     context = {
       calling_class: self.class.name,
       user_id: user.id,
       communication_type: :sms
     }
-    TwilioApiService.new.send_sms(recipient_number: user.localized_phone_number, message: otp_message(user), context: context)
+    TwilioApiService.new.send_sms(recipient_number: number_with_country_code(user.phone_number), message: otp_message(user), context: context)
   end
 
   private
