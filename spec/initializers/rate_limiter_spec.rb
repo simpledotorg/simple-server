@@ -161,7 +161,7 @@ describe "RateLimiter", type: :controller do
         end
       end
 
-      it "returns 429 when the number of requests is lower than the limit" do
+      it "returns 429 when the number of requests is higher than the limit" do
         (limit * 2).times do |i|
           post "/api/v4/users/find", phone_number: "1234567890"
           if i > limit

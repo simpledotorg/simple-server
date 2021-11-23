@@ -6,6 +6,13 @@ module RateLimit
     {limit: limit_proc, period: period_proc}
   end
 
+  def self.user_find_options
+    limit_proc = proc { |_req| 5 }
+    period_proc = proc { |_req| 30.minutes }
+
+    {limit: limit_proc, period: period_proc}
+  end
+
   def self.patient_lookup_api_options
     limit_proc = proc { |_req| 5 }
     period_proc = proc { |_req| 5.second }
@@ -37,7 +44,7 @@ class Rack::Attack
     end
   end
 
-  throttle("throttle_user_find", RateLimit.auth_api_options) do |req|
+  throttle("throttle_user_find", RateLimit.user_find_options) do |req|
     if req.post? && req.path.start_with?("/api/v4/users/find")
       req.ip
     end
