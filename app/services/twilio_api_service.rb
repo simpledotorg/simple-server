@@ -23,13 +23,15 @@ class TwilioApiService
   delegate :logger, to: Rails
 
   class Error < StandardError
-    STATUS_CODE_REASONS = {400 => :invalid_phone_number}
+    # https://www.twilio.com/docs/api/errors
+    ERROR_CODE_REASONS = {21211 => :invalid_phone_number,
+                          21614 => :invalid_phone_number}
 
     attr_reader :message, :reason
 
-    def initialize(message, status_code)
+    def initialize(message, error_code)
       @message = "Error while calling Twilio API: #{message}"
-      @reason = STATUS_CODE_REASONS[status_code]
+      @reason = ERROR_CODE_REASONS[error_code]
     end
   end
 
@@ -115,6 +117,6 @@ class TwilioApiService
     response
   rescue Twilio::REST::RestError => exception
     metrics.increment("#{communication_type}.errors")
-    raise Error.new(exception.message, exception.status_code)
+    raise Error.new(exception.message, exception.code)
   end
 end

@@ -211,8 +211,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
     end
 
     it "cancels the notification if twilio responds with invalid phone number error" do
-      allow_any_instance_of(TwilioApiService).to receive(:send_sms).and_raise(TwilioApiService::Error.new("An error", 400))
-
+      allow_any_instance_of(TwilioApiService).to receive(:send_sms).and_raise(TwilioApiService::Error.new("An error", 21211))
       expect {
         described_class.perform_async(notification.id)
         described_class.drain

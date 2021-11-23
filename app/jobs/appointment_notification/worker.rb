@@ -23,16 +23,13 @@ class AppointmentNotification::Worker
     Sentry.set_tags(patient_id: patient.id)
 
     return unless valid_notification?(notification)
-
-    communication_type = notification.next_communication_type
-    recipient_number = phone_number || patient.latest_mobile_number
-
-    send_message(notification, communication_type, recipient_number: recipient_number)
+    send_message(notification, phone_number || patient.latest_mobile_number)
   end
 
   private
 
-  def send_message(notification, communication_type, recipient_number:)
+  def send_message(notification, recipient_number)
+    communication_type = notification.next_communication_type
     logger.info "send_message for notification #{notification.id} communication_type=#{communication_type}"
     context = {
       calling_class: self.class.name,
@@ -84,8 +81,6 @@ class AppointmentNotification::Worker
     end
   end
 
-  # This usually happens when the phone number is invalid.
-  # https://www.twilio.com/docs/errors/21211
   def handle_twilio_error(notification, &block)
     block.call
   rescue TwilioApiService::Error => error
