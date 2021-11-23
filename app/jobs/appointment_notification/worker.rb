@@ -47,8 +47,8 @@ class AppointmentNotification::Worker
           notify_via_twilio(notification, communication_type, recipient_number, context)
       end
 
-    metrics.increment("sent.#{communication_type}")
     return unless response
+    metrics.increment("sent.#{communication_type}")
 
     ActiveRecord::Base.transaction do
       create_communication(notification, communication_type, response)
