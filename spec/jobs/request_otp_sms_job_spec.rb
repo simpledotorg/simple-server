@@ -17,7 +17,7 @@ RSpec.describe RequestOtpSmsJob, type: :job do
       communication_type: :sms
     }
     expect_any_instance_of(TwilioApiService).to receive(:send_sms).with(
-      recipient_number: user.number_with_country_code(user.phone_number), message: otp_message, context: context
+      recipient_number: user.localized_phone_number, message: otp_message, context: context
     )
 
     described_class.perform_now(user)

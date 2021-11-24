@@ -1,6 +1,8 @@
 class PatientPhoneNumber < ApplicationRecord
   include Mergeable
-  include PatientPhoneNumberHelper
+  include PhoneNumberLocalization
+
+  alias_attribute :phone_number, :number
 
   enum phone_type: {
     mobile: "mobile",

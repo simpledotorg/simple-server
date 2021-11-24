@@ -3,7 +3,7 @@ class Patient < ApplicationRecord
   include Mergeable
   include Hashable
   include PatientReportable
-  include PatientPhoneNumberHelper
+  include PhoneNumberLocalization
 
   GENDERS = Rails.application.config.country[:supported_genders].freeze
   STATUSES = %w[active dead migrated unresponsive inactive].freeze
@@ -150,9 +150,7 @@ class Patient < ApplicationRecord
   end
 
   def latest_mobile_number
-    unless phone_numbers.phone_type_mobile.last.nil?
-      number_with_country_code(phone_numbers.phone_type_mobile.last.number)
-    end
+    phone_numbers.phone_type_mobile.last&.localized_phone_number
   end
 
   def latest_bp_passport
