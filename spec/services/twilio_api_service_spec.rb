@@ -85,7 +85,11 @@ RSpec.describe TwilioApiService do
 
     it "raises a custom error on twilio error" do
       stub_client
-      allow(twilio_client).to receive_message_chain("messages.create").and_raise(Twilio::REST::TwilioError)
+      response = double
+      allow(response).to receive(:body).and_return({})
+      allow(response).to receive(:status_code).and_return(200)
+
+      allow(twilio_client).to receive_message_chain("messages.create").and_raise(Twilio::REST::RestError.new("An error", response))
       expect {
         notification_service.send_sms(
           recipient_number: recipient_phone_number,
@@ -118,9 +122,15 @@ RSpec.describe TwilioApiService do
       )
     end
 
-    it "raises a custom error on twilio error" do
+    it "raises an error with a reason on twilio error" do
       stub_client
-      allow(twilio_client).to receive_message_chain("messages.create").and_raise(Twilio::REST::TwilioError)
+      response = double
+      allow(response).to receive(:body).and_return({"code" => 21614})
+      allow(response).to receive(:status_code).and_return(200) # this is just to stub the exception, it breaks otherwise
+
+      allow(twilio_client).to receive_message_chain("messages.create").and_raise(
+        Twilio::REST::RestError.new("An error", response)
+      )
 
       expect {
         notification_service.send_whatsapp(
@@ -128,7 +138,30 @@ RSpec.describe TwilioApiService do
           message: "test sms message",
           callback_url: fake_callback_url
         )
-      }.to raise_error(TwilioApiService::Error)
+      }.to raise_error(an_instance_of(TwilioApiService::Error)) do |error|
+        expect(error.reason).to eq :invalid_phone_number
+      end
+    end
+
+    it "raises an error with a nil reason if the twilio error is not in our list" do
+      stub_client
+      response = double
+      allow(response).to receive(:body).and_return({"code" => 20000})
+      allow(response).to receive(:status_code).and_return(200) # this is just to stub the exception, it breaks otherwise
+
+      allow(twilio_client).to receive_message_chain("messages.create").and_raise(
+        Twilio::REST::RestError.new("An error", response)
+      )
+
+      expect {
+        notification_service.send_whatsapp(
+          recipient_number: recipient_phone_number,
+          message: "test sms message",
+          callback_url: fake_callback_url
+        )
+      }.to raise_error(an_instance_of(TwilioApiService::Error)) do |error|
+        expect(error.reason).to be_nil
+      end
     end
   end
 end
