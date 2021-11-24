@@ -15,11 +15,11 @@ class SeedDrugCleaupTables < ActiveRecord::Migration[5.2]
         table[:klass].create!(row.to_hash)
       end
     end
+  end
 
-    def down
-      TABLES_TO_IMPORT.each do |table|
-        table[:klass].destroy_all
-      end
+  def down
+    TABLES_TO_IMPORT.each do |table|
+      execute "TRUNCATE #{table[:klass].table_name}"
     end
   end
 end
