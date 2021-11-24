@@ -1,5 +1,5 @@
 class SeedDrugCleaupTables < ActiveRecord::Migration[5.2]
-  def tables_to_import
+  TABLES_TO_IMPORT =
     [
       {klass: PrescriptionDrugCleanup::CleanMedicineToDosage,
        filename: "#{Rails.root}/config/data/treatment-inertia/clean_medicine_to_dosage.csv"},
@@ -8,17 +8,16 @@ class SeedDrugCleaupTables < ActiveRecord::Migration[5.2]
       {klass: PrescriptionDrugCleanup::MedicinePurpose,
        filename: "#{Rails.root}/config/data/treatment-inertia/medicine_purpose.csv"}
     ]
-  end
 
   def up
-    tables_to_import.each do |table|
+    TABLES_TO_IMPORT.each do |table|
       CSV.foreach(table[:filename], headers: true) do |row|
         table[:klass].create!(row.to_hash)
       end
     end
 
     def down
-      tables_to_import.each do |table|
+      TABLES_TO_IMPORT.each do |table|
         table[:klass].destroy_all
       end
     end
