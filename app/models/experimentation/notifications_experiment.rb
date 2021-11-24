@@ -112,7 +112,8 @@ module Experimentation
 
     def mark_visits
       time(__method__) do
-        treatment_group_memberships.status_enrolled
+        treatment_group_memberships
+          .where("status = 'enrolled' OR (status = 'evicted' AND visited_at IS NULL)")
           .select("distinct on (treatment_group_memberships.patient_id) treatment_group_memberships.*,
                  bp.id bp_id, bs.id bs_id, pd.id pd_id")
           .joins("left outer join blood_pressures bp

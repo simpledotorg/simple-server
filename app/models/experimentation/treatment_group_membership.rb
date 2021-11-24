@@ -58,7 +58,7 @@ module Experimentation
         visit_facility_block: visit_facility.block,
         visit_facility_district: visit_facility.district,
         visit_facility_state: visit_facility.state,
-        status: :visited,
+        status: (status_evicted? ? :evicted : :visited),
         status_updated_at: Time.current,
         status_reason: :visit_recorded,
         days_to_visit: days_to_visit
