@@ -2,11 +2,11 @@ class SeedDrugCleaupTables < ActiveRecord::Migration[5.2]
   def tables_to_import
     [
       {klass: PrescriptionDrugCleanup::CleanMedicineToDosage,
-        filename: "#{Rails.root}/config/data/treatment-inertia/clean_medicine_to_dosage.csv"},
+       filename: "#{Rails.root}/config/data/treatment-inertia/clean_medicine_to_dosage.csv"},
       {klass: PrescriptionDrugCleanup::RawToCleanMedicine,
-        filename: "#{Rails.root}/config/data/treatment-inertia/raw_to_clean_medicine.csv"},
+       filename: "#{Rails.root}/config/data/treatment-inertia/raw_to_clean_medicine.csv"},
       {klass: PrescriptionDrugCleanup::MedicinePurpose,
-        filename: "#{Rails.root}/config/data/treatment-inertia/medicine_purpose.csv"}
+       filename: "#{Rails.root}/config/data/treatment-inertia/medicine_purpose.csv"}
     ]
   end
 
