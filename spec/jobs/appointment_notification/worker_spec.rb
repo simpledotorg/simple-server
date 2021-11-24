@@ -221,17 +221,6 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       expect(notification.reload.status).to eq("cancelled")
     end
 
-    it "does not create a communication or update notification status if an error is received from twilio" do
-      expect {
-        described_class.perform_async(notification.id)
-        begin
-          described_class.drain
-        rescue TwilioApiService::Error
-        end
-      }.not_to change { Communication.count }
-      expect(notification.reload.status).to eq("scheduled")
-    end
-
     it "raises an error if appointment notification is not found" do
       expect {
         described_class.perform_async("does-not-exist")
