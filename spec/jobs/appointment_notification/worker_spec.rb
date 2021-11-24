@@ -77,7 +77,9 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
     it "sends sms when notification's next_communication_type is imo" do
       mock_successful_delivery
       allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("imo")
+      allow_any_instance_of(ImoApiService).to receive(:send_notification).and_return({result: :sent, post_id: true})
 
+      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.attempts")
       expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.sent.imo")
       expect_any_instance_of(ImoApiService).to receive(:send_notification)
       described_class.perform_async(notification.id)
