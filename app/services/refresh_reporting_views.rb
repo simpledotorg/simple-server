@@ -61,6 +61,7 @@ class RefreshReportingViews
     Reports::FacilityState
     Reports::QuarterlyFacilityState
     Reports::PatientFollowUp
+    Reports::Prescriptions
   ].freeze
 
   # LatestBloodPressuresPerPatientPerMonth should be refreshed before
@@ -91,6 +92,7 @@ class RefreshReportingViews
       Statsd.instance.time(name) do
         yield
       end
+      Statsd.instance.flush
     end
   end
 end
