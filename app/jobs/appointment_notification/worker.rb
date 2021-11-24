@@ -86,6 +86,7 @@ class AppointmentNotification::Worker
   rescue TwilioApiService::Error => error
     if error.reason == :invalid_phone_number
       notification.status_cancelled!
+      logger.info("notification #{notification.id} cancelled because of an invalid phone number")
       false
     else
       raise error
