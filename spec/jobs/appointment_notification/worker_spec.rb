@@ -77,7 +77,9 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
     it "sends sms when notification's next_communication_type is imo" do
       mock_successful_delivery
       allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("imo")
+      allow_any_instance_of(ImoApiService).to receive(:send_notification).and_return({result: :sent, post_id: true})
 
+      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.attempts")
       expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.sent.imo")
       expect_any_instance_of(ImoApiService).to receive(:send_notification)
       described_class.perform_async(notification.id)
@@ -210,15 +212,13 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       expect(notification.reload.status).to eq("pending")
     end
 
-    it "does not create a communication or update notification status if an error is received from twilio" do
+    it "cancels the notification if twilio responds with invalid phone number error" do
+      allow_any_instance_of(TwilioApiService).to receive(:send_sms).and_raise(TwilioApiService::Error.new("An error", 21211))
       expect {
         described_class.perform_async(notification.id)
-        begin
-          described_class.drain
-        rescue TwilioApiService::Error
-        end
+        described_class.drain
       }.not_to change { Communication.count }
-      expect(notification.reload.status).to eq("scheduled")
+      expect(notification.reload.status).to eq("cancelled")
     end
 
     it "raises an error if appointment notification is not found" do
