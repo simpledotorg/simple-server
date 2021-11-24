@@ -138,7 +138,7 @@ ActiveRecord::Schema.define(version: 2021_11_23_060537) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "clean_medicine_to_dosage", id: false, force: :cascade do |t|
+  create_table "clean_medicine_to_dosages", id: false, force: :cascade do |t|
     t.bigint "rxcui", null: false
     t.string "medicine", null: false
     t.float "dosage", null: false
@@ -393,7 +393,7 @@ ActiveRecord::Schema.define(version: 2021_11_23_060537) do
     t.index ["patient_id"], name: "index_medical_histories_on_patient_id"
   end
 
-  create_table "medicine_purpose", id: false, force: :cascade do |t|
+  create_table "medicine_purposes", id: false, force: :cascade do |t|
     t.string "name", null: false
     t.boolean "hypertension", null: false
     t.boolean "diabetes", null: false
@@ -581,7 +581,7 @@ ActiveRecord::Schema.define(version: 2021_11_23_060537) do
     t.index ["updated_at"], name: "index_protocols_on_updated_at"
   end
 
-  create_table "raw_to_clean_medicine", id: false, force: :cascade do |t|
+  create_table "raw_to_clean_medicines", id: false, force: :cascade do |t|
     t.string "raw_name", null: false
     t.string "raw_dosage", null: false
     t.bigint "rxcui", null: false
@@ -1792,9 +1792,9 @@ ActiveRecord::Schema.define(version: 2021_11_23_060537) do
               purpose.hypertension AS medicine_purpose_hypertension,
               purpose.diabetes AS medicine_purpose_diabetes
              FROM (((prescription_drugs actual
-               LEFT JOIN raw_to_clean_medicine raw ON (((lower(regexp_replace((raw.raw_name)::text, '\s+'::text, ''::text, 'g'::text)) = lower(regexp_replace((actual.name)::text, '\s+'::text, ''::text, 'g'::text))) AND (lower(regexp_replace((raw.raw_dosage)::text, '\s+'::text, ''::text, 'g'::text)) = lower(regexp_replace((actual.dosage)::text, '\s+'::text, ''::text, 'g'::text))))))
-               LEFT JOIN clean_medicine_to_dosage clean ON ((clean.rxcui = raw.rxcui)))
-               LEFT JOIN medicine_purpose purpose ON (((clean.medicine)::text = (purpose.name)::text)))
+               LEFT JOIN raw_to_clean_medicines raw ON (((lower(regexp_replace((raw.raw_name)::text, '\s+'::text, ''::text, 'g'::text)) = lower(regexp_replace((actual.name)::text, '\s+'::text, ''::text, 'g'::text))) AND (lower(regexp_replace((raw.raw_dosage)::text, '\s+'::text, ''::text, 'g'::text)) = lower(regexp_replace((actual.dosage)::text, '\s+'::text, ''::text, 'g'::text))))))
+               LEFT JOIN clean_medicine_to_dosages clean ON ((clean.rxcui = raw.rxcui)))
+               LEFT JOIN medicine_purposes purpose ON (((clean.medicine)::text = (purpose.name)::text)))
             WHERE ((actual.patient_id = p.id) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, actual.device_created_at)), 'YYYY-MM'::text) <= p.month_string) AND (actual.deleted_at IS NULL) AND ((actual.is_deleted = false) OR ((actual.is_deleted = true) AND (actual.device_updated_at > p.month_date))))) prescriptions ON (true))
     GROUP BY p.id, p.month_date;
   SQL

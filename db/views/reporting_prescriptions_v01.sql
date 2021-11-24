@@ -26,14 +26,14 @@ LEFT JOIN LATERAL (
            purpose.hypertension as medicine_purpose_hypertension,
            purpose.diabetes     as medicine_purpose_diabetes
     FROM prescription_drugs actual
-             LEFT JOIN raw_to_clean_medicine raw
+             LEFT JOIN raw_to_clean_medicines raw
                        ON lower(regexp_replace(raw.raw_name, '\s+', '', 'g')) =
                           lower(regexp_replace(actual.name, '\s+', '', 'g'))
                            AND lower(regexp_replace(raw.raw_dosage, '\s+', '', 'g')) =
                                lower(regexp_replace(actual.dosage, '\s+', '', 'g'))
-             LEFT JOIN clean_medicine_to_dosage clean
+             LEFT JOIN clean_medicine_to_dosages clean
                        ON clean.rxcui = raw.rxcui
-             LEFT JOIN medicine_purpose purpose
+             LEFT JOIN medicine_purposes purpose
                        ON clean.medicine = purpose.name
     WHERE patient_id = p.id
       AND to_char(device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')), 'YYYY-MM') <= p.month_string
