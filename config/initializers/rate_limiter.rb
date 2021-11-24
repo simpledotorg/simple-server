@@ -51,7 +51,7 @@ class Rack::Attack
   end
 
   throttle("throttle_user_activate", RateLimit.user_api_options) do |req|
-    if req.post? && req.path.start_with?("/api/v4/users/activate")
+    if req.post? && req.path.start_with?("/api/v4/users/activate") && SimpleServer.env.production?
       req.ip
     end
   end
