@@ -37,18 +37,18 @@ module Experimentation
           .joins(:assigned_facility)
           .where_current_age(">=", 18)
           .where("NOT EXISTS (:recent_experiment_memberships)",
-          recent_experiment_memberships: Experimentation::TreatmentGroupMembership
-                                           .joins(treatment_group: :experiment)
-                                           .where("treatment_group_memberships.patient_id = patients.id")
-                                           .where("end_time > ?", RECENT_EXPERIMENT_MEMBERSHIP_BUFFER.ago)
-                                           .select(:patient_id))
+            recent_experiment_memberships: Experimentation::TreatmentGroupMembership
+                                             .joins(treatment_group: :experiment)
+                                             .where("treatment_group_memberships.patient_id = patients.id")
+                                             .where("end_time > ?", RECENT_EXPERIMENT_MEMBERSHIP_BUFFER.ago)
+                                             .select(:patient_id))
           .where("NOT EXISTS (:multiple_scheduled_appointments)",
-          multiple_scheduled_appointments: Appointment
-                                             .select(1)
-                                             .where("appointments.patient_id = patients.id")
-                                             .where(status: :scheduled)
-                                             .group(:patient_id)
-                                             .having("count(patient_id) > 1"))
+            multiple_scheduled_appointments: Appointment
+                                               .select(1)
+                                               .where("appointments.patient_id = patients.id")
+                                               .where(status: :scheduled)
+                                               .group(:patient_id)
+                                               .having("count(patient_id) > 1"))
 
       if SimpleServer.env.production? && CountryConfig.current_country?("Bangladesh")
         relation.where.not(assigned_facility: {block: EXCLUDED_BANGLADESH_BLOCKS})
