@@ -479,7 +479,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
     end
 
     it "considers earliest BP created as a visit for evicted patients and does not change status" do
-      membership = create(:treatment_group_membership, status: :evicted, experiment_inclusion_date: 10.days.ago)
+      membership = create(:treatment_group_membership, status: :evicted, status_reason: "evicted", experiment_inclusion_date: 10.days.ago)
       experiment = described_class.find(membership.experiment.id)
 
       patient = membership.patient
@@ -502,6 +502,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       expect(membership.visit_blood_sugar_id).to eq(bs_1.id)
       expect(membership.visit_prescription_drug_created).to eq(true)
       expect(membership.status).to eq("evicted")
+      expect(membership.status_reason).to eq("evicted")
     end
 
     it "cancels all pending notifications for visited patients" do

@@ -58,14 +58,22 @@ module Experimentation
         visit_facility_block: visit_facility.block,
         visit_facility_district: visit_facility.district,
         visit_facility_state: visit_facility.state,
-        status: (status_evicted? ? :evicted : :visited),
-        status_updated_at: Time.current,
-        status_reason: :visit_recorded,
-        days_to_visit: days_to_visit
+        days_to_visit: days_to_visit,
+        **visit_status_fields
       )
     end
 
     private
+
+    def visit_status_fields
+      if status_evicted?
+        {} # don't update status if a patient was already evicted
+      else
+        {status: :visited,
+         status_reason: :visit_recorded,
+         status_updated_at: Time.current}
+      end
+    end
 
     def one_active_experiment_per_patient
       existing_memberships =
