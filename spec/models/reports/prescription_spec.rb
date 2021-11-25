@@ -3,9 +3,11 @@ require "rails_helper"
 # Shorthand for adding prescription drugs, since we do it a lot in this spec
 def add_drug(patient, name, dosage, time, do_not_delete: false)
   # emulate deletion of existing drug like on mobile app
-  patient.prescription_drugs
-         .where(name: name, is_deleted: false)
-         .update(is_deleted: true, device_updated_at: time) unless do_not_delete
+  unless do_not_delete
+    patient.prescription_drugs
+      .where(name: name, is_deleted: false)
+      .update(is_deleted: true, device_updated_at: time)
+  end
 
   # create new drug
   FactoryBot.create(:prescription_drug,
