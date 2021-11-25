@@ -33,6 +33,16 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       }.not_to change { Communication.count }
     end
 
+    it "logs but creates nothing when patient doesn't have phone number" do
+      notification.patient.phone_numbers.update_all(phone_type: :invalid)
+      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.skipped.no_mobile_number")
+      expect {
+        described_class.perform_async(notification.id)
+        described_class.drain
+      }.not_to change { Communication.count }
+      expect(notification.reload.status).to eq("cancelled")
+    end
+
     it "creates communications when notifications is enabled" do
       mock_successful_delivery
 
