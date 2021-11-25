@@ -181,6 +181,7 @@ describe "RateLimiter", type: :controller do
       end
 
       it "does not change the request status when the number of requests is lower than the limit" do
+        stub_const("SIMPLE_SERVER_ENV", "production")
         user = create(:user, password: "1234")
 
         limit.times do
@@ -190,6 +191,7 @@ describe "RateLimiter", type: :controller do
       end
 
       it "returns 429 when the number of requests is higher than the limit" do
+        stub_const("SIMPLE_SERVER_ENV", "production")
         user = create(:user, password: "1234")
 
         (limit * 2).times do |i|
@@ -198,6 +200,19 @@ describe "RateLimiter", type: :controller do
             expect(i > limit).to eq(true)
             expect(last_response.status).to eq(429)
             expect(last_response.body).to eq("Too many requests. Please wait and try again later.\n")
+          end
+        end
+      end
+
+      it "does not rate limit in non production environments" do
+        stub_const("SIMPLE_SERVER_ENV", "sandbox")
+        user = create(:user, password: "1234")
+
+        (limit * 2).times do |i|
+          post "/api/v4/users/activate", {user: {id: user.id, password: "1234"}}
+          if i > limit
+            expect(i > limit).to eq(true)
+            expect(last_response.status).to eq(200)
           end
         end
       end

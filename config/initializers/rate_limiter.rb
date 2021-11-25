@@ -44,14 +44,14 @@ class Rack::Attack
     end
   end
 
-  throttle("throttle_user_find", RateLimit.user_api_options) do |req|
+  throttle("throttle_user_find", RateLimit.auth_api_options) do |req|
     if req.post? && req.path.start_with?("/api/v4/users/find")
       req.ip
     end
   end
 
   throttle("throttle_user_activate", RateLimit.user_api_options) do |req|
-    if req.post? && req.path.start_with?("/api/v4/users/activate")
+    if req.post? && req.path.start_with?("/api/v4/users/activate") && SimpleServer.env.production?
       req.ip
     end
   end
