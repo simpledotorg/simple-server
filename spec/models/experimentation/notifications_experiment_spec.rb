@@ -453,7 +453,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
   end
 
   describe "mark_visits" do
-    it "considers earliest BP created as a visit for enrolled patients" do
+    it "considers earliest BP, BS or drug created as a visit for enrolled patients" do
       membership = create(:treatment_group_membership, status: :enrolled, experiment_inclusion_date: 10.days.ago)
       experiment = described_class.find(membership.experiment.id)
 
@@ -478,7 +478,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       expect(membership.visit_prescription_drug_created).to eq(true)
     end
 
-    it "considers earliest BP created as a visit for evicted patients and does not change status" do
+    it "considers earliest BP, BS or drug created as a visit for evicted patients and does not change status" do
       membership = create(:treatment_group_membership, status: :evicted, status_reason: "evicted", experiment_inclusion_date: 10.days.ago)
       experiment = described_class.find(membership.experiment.id)
 
