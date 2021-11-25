@@ -66,13 +66,11 @@ module Experimentation
     private
 
     def visit_status_fields
-      if status_evicted?
-        {} # don't update status if a patient was already evicted
-      else
-        {status: :visited,
-         status_reason: :visit_recorded,
-         status_updated_at: Time.current}
-      end
+      return {} if status_evicted?
+
+      {status: :visited,
+       status_reason: :visit_recorded,
+       status_updated_at: Time.current}
     end
 
     def one_active_experiment_per_patient
