@@ -453,7 +453,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
   end
 
   describe "mark_visits" do
-    it "considers earliest BP created as a visit for enrolled patients" do
+    it "considers earliest BP, BS or drug created as a visit for enrolled patients" do
       membership = create(:treatment_group_membership, status: :enrolled, experiment_inclusion_date: 10.days.ago)
       experiment = described_class.find(membership.experiment.id)
 
@@ -478,7 +478,34 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       expect(membership.visit_prescription_drug_created).to eq(true)
     end
 
-    it "cancels all pending notifications for evicted patients" do
+    it "considers earliest BP, BS or drug created as a visit for evicted patients and does not change status" do
+      membership = create(:treatment_group_membership, status: :evicted, status_reason: "evicted", experiment_inclusion_date: 10.days.ago)
+      experiment = described_class.find(membership.experiment.id)
+
+      patient = membership.patient
+      _old_bp = create(:blood_pressure, recorded_at: 20.days.ago, patient: patient)
+      _old_bs = create(:blood_sugar, recorded_at: 20.days.ago, patient: patient)
+
+      _discarded_bp = create(:blood_pressure, recorded_at: 10.days.ago, patient: patient, deleted_at: Time.current)
+      bp_1 = create(:blood_pressure, recorded_at: 6.days.ago, patient: patient)
+      _bp_2 = create(:blood_pressure, recorded_at: 5.days.ago, patient: patient)
+
+      bs_1 = create(:blood_sugar, recorded_at: 6.days.ago, patient: patient)
+      _bs_2 = create(:blood_sugar, recorded_at: 5.days.ago, patient: patient)
+
+      _drug = create(:prescription_drug, device_created_at: 6.days.ago, patient: patient)
+
+      experiment.mark_visits
+      membership.reload
+
+      expect(membership.visit_blood_pressure_id).to eq(bp_1.id)
+      expect(membership.visit_blood_sugar_id).to eq(bs_1.id)
+      expect(membership.visit_prescription_drug_created).to eq(true)
+      expect(membership.status).to eq("evicted")
+      expect(membership.status_reason).to eq("evicted")
+    end
+
+    it "cancels all pending notifications for visited patients" do
       membership = create(:treatment_group_membership, status: :visited)
       patient = membership.patient
       experiment = described_class.find(membership.experiment.id)
