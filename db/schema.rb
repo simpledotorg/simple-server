@@ -1750,12 +1750,12 @@ ActiveRecord::Schema.define(version: 2021_11_25_072030) do
       p.month_date,
       COALESCE(sum(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Amlodipine'::text)), (0)::double precision) AS amlodipine,
       COALESCE(sum(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Telmisartan'::text)), (0)::double precision) AS telmisartan,
-      COALESCE(sum(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Losartan'::text)), (0)::double precision) AS losartan,
+      COALESCE(sum(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Losartan Potassium'::text)), (0)::double precision) AS losartan,
       COALESCE(sum(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Atenolol'::text)), (0)::double precision) AS atenolol,
       COALESCE(sum(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Enalapril'::text)), (0)::double precision) AS enalapril,
       COALESCE(sum(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Chlorthalidone'::text)), (0)::double precision) AS chlorthalidone,
       COALESCE(sum(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Hydrochlorothiazide'::text)), (0)::double precision) AS hydrochlorothiazide,
-      COALESCE(sum(prescriptions.clean_dosage) FILTER (WHERE (((prescriptions.clean_name)::text <> ALL (ARRAY[('Amlodipine'::character varying)::text, ('Telmisartan'::character varying)::text, ('Losartan'::character varying)::text, ('Atenolol'::character varying)::text, ('Enalapril'::character varying)::text, ('Chlorthalidone'::character varying)::text, ('Hydrochlorothiazide'::character varying)::text])) AND (prescriptions.medicine_purpose_hypertension = true))), (0)::double precision) AS other_bp_medications
+      COALESCE(sum(prescriptions.clean_dosage) FILTER (WHERE (((prescriptions.clean_name)::text <> ALL ((ARRAY['Amlodipine'::character varying, 'Telmisartan'::character varying, 'Losartan'::character varying, 'Atenolol'::character varying, 'Enalapril'::character varying, 'Chlorthalidone'::character varying, 'Hydrochlorothiazide'::character varying])::text[])) AND (prescriptions.medicine_purpose_hypertension = true))), (0)::double precision) AS other_bp_medications
      FROM (( SELECT p_1.id,
               p_1.full_name,
               p_1.age,
@@ -1786,7 +1786,8 @@ ActiveRecord::Schema.define(version: 2021_11_25_072030) do
               cal.month_string,
               cal.quarter_string
              FROM (patients p_1
-               LEFT JOIN reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p_1.recorded_at)), 'YYYY-MM'::text) <= cal.month_string)))) p
+               LEFT JOIN reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p_1.recorded_at)), 'YYYY-MM'::text) <= cal.month_string)))
+            WHERE (p_1.deleted_at IS NULL)) p
        LEFT JOIN LATERAL ( SELECT actual.name AS actual_name,
               actual.dosage AS actual_dosage,
               clean.medicine AS clean_name,
@@ -1794,7 +1795,7 @@ ActiveRecord::Schema.define(version: 2021_11_25_072030) do
               purpose.hypertension AS medicine_purpose_hypertension,
               purpose.diabetes AS medicine_purpose_diabetes
              FROM (((prescription_drugs actual
-               LEFT JOIN raw_to_clean_medicines raw ON (((lower(regexp_replace((raw.raw_name)::text, ' +'::text, ''::text, 'g'::text)) = lower(regexp_replace((actual.name)::text, ' +'::text, ''::text, 'g'::text))) AND (lower(regexp_replace((raw.raw_dosage)::text, ' +'::text, ''::text, 'g'::text)) = lower(regexp_replace((actual.dosage)::text, ' +'::text, ''::text, 'g'::text))))))
+               LEFT JOIN raw_to_clean_medicines raw ON (((lower(regexp_replace((raw.raw_name)::text, '\s+'::text, ''::text, 'g'::text)) = lower(regexp_replace((actual.name)::text, '\s+'::text, ''::text, 'g'::text))) AND (lower(regexp_replace((raw.raw_dosage)::text, '\s+'::text, ''::text, 'g'::text)) = lower(regexp_replace((actual.dosage)::text, '\s+'::text, ''::text, 'g'::text))))))
                LEFT JOIN clean_medicine_to_dosages clean ON ((clean.rxcui = raw.rxcui)))
                LEFT JOIN medicine_purposes purpose ON (((clean.medicine)::text = (purpose.name)::text)))
             WHERE ((actual.patient_id = p.id) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, actual.device_created_at)), 'YYYY-MM'::text) <= p.month_string) AND (actual.deleted_at IS NULL) AND ((actual.is_deleted = false) OR ((actual.is_deleted = true) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, actual.device_updated_at)), 'YYYY-MM'::text) > p.month_string))))) prescriptions ON (true))
