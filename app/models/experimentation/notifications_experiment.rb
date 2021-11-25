@@ -2,6 +2,7 @@ module Experimentation
   class NotificationsExperiment < Experiment
     include ActiveSupport::Benchmarkable
     BATCH_SIZE = 1000
+    BANGLADESH_EXCLUDED_BLOCKS = %w[Dewanganj Islampur Madarganj Melandaha Bakshiganj Sarishabari Madhabpur]
 
     default_scope { where(experiment_type: %w[current_patients stale_patients]) }
 
@@ -30,23 +31,30 @@ module Experimentation
     # Returns patients who are eligible for enrollment. These should be
     # filtered further by individual notification experiments based on their criteria.
     def self.eligible_patients
-      Patient.with_hypertension
-        .contactable
-        .joins(:assigned_facility)
-        .where_current_age(">=", 18)
-        .where("NOT EXISTS (:recent_experiment_memberships)",
+      relation =
+        Patient.with_hypertension
+          .contactable
+          .joins(:assigned_facility)
+          .where_current_age(">=", 18)
+          .where("NOT EXISTS (:recent_experiment_memberships)",
           recent_experiment_memberships: Experimentation::TreatmentGroupMembership
                                            .joins(treatment_group: :experiment)
                                            .where("treatment_group_memberships.patient_id = patients.id")
                                            .where("end_time > ?", RECENT_EXPERIMENT_MEMBERSHIP_BUFFER.ago)
                                            .select(:patient_id))
-        .where("NOT EXISTS (:multiple_scheduled_appointments)",
+          .where("NOT EXISTS (:multiple_scheduled_appointments)",
           multiple_scheduled_appointments: Appointment
                                              .select(1)
                                              .where("appointments.patient_id = patients.id")
                                              .where(status: :scheduled)
                                              .group(:patient_id)
                                              .having("count(patient_id) > 1"))
+
+      if SimpleServer.env.production? && CountryConfig.current_country?("Bangladesh")
+        relation.where.not(assigned_facility: {block: EXCLUDED_BANGLADESH_BLOCKS})
+      else
+        relation
+      end
     end
 
     def enroll_patients(date, limit = max_patients_per_day)
