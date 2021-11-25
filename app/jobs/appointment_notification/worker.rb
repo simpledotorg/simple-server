@@ -140,8 +140,9 @@ class AppointmentNotification::Worker
     end
 
     unless notification.patient.latest_mobile_number
-      logger.info "skipping notification #{notification.id}, patient #{patient.id} does not have a mobile number"
+      logger.info "skipping notification #{notification.id}, patient #{notification.patient_id} does not have a mobile number"
       metrics.increment("skipped.no_mobile_number")
+      notification.status_cancelled!
       return
     end
 
