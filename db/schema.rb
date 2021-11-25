@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_23_060537) do
+ActiveRecord::Schema.define(version: 2021_11_25_072030) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -142,6 +142,7 @@ ActiveRecord::Schema.define(version: 2021_11_23_060537) do
     t.bigint "rxcui", null: false
     t.string "medicine", null: false
     t.float "dosage", null: false
+    t.index ["medicine", "dosage", "rxcui"], name: "clean_medicine_to_dosages__unique_name_and_dosage", unique: true
   end
 
   create_table "communications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -397,6 +398,7 @@ ActiveRecord::Schema.define(version: 2021_11_23_060537) do
     t.string "name", null: false
     t.boolean "hypertension", null: false
     t.boolean "diabetes", null: false
+    t.index ["name"], name: "medicine_purposes_unique_name", unique: true
   end
 
   create_table "notifications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -585,6 +587,7 @@ ActiveRecord::Schema.define(version: 2021_11_23_060537) do
     t.string "raw_name", null: false
     t.string "raw_dosage", null: false
     t.bigint "rxcui", null: false
+    t.index ["raw_name", "raw_dosage"], name: "raw_to_clean_medicines_unique_name_and_dosage", unique: true
   end
 
   create_table "regions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -1281,7 +1284,6 @@ ActiveRecord::Schema.define(version: 2021_11_23_060537) do
     ORDER BY p.id, p.month_date, (timezone('UTC'::text, timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at)))) DESC;
   SQL
   add_index "reporting_patient_visits", ["month_date", "patient_id"], name: "patient_visits_patient_id_month_date", unique: true
-  add_index "reporting_patient_visits", ["visited_at"], name: "index_visited_at_reporting_patient_visits"
 
   create_view "reporting_patient_states", materialized: true, sql_definition: <<-SQL
       SELECT DISTINCT ON (p.id, cal.month_date) p.id AS patient_id,
@@ -1753,7 +1755,7 @@ ActiveRecord::Schema.define(version: 2021_11_23_060537) do
       COALESCE(sum(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Enalapril'::text)), (0)::double precision) AS enalapril,
       COALESCE(sum(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Chlorthalidone'::text)), (0)::double precision) AS chlorthalidone,
       COALESCE(sum(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Hydrochlorothiazide'::text)), (0)::double precision) AS hydrochlorothiazide,
-      COALESCE(sum(prescriptions.clean_dosage) FILTER (WHERE (((prescriptions.clean_name)::text <> ALL ((ARRAY['Amlodipine'::character varying, 'Telmisartan'::character varying, 'Losartan'::character varying, 'Atenolol'::character varying, 'Enalapril'::character varying, 'Chlorthalidone'::character varying, 'Hydrochlorothiazide'::character varying])::text[])) AND (prescriptions.medicine_purpose_hypertension = true))), (0)::double precision) AS other_bp_medications
+      COALESCE(sum(prescriptions.clean_dosage) FILTER (WHERE (((prescriptions.clean_name)::text <> ALL (ARRAY[('Amlodipine'::character varying)::text, ('Telmisartan'::character varying)::text, ('Losartan'::character varying)::text, ('Atenolol'::character varying)::text, ('Enalapril'::character varying)::text, ('Chlorthalidone'::character varying)::text, ('Hydrochlorothiazide'::character varying)::text])) AND (prescriptions.medicine_purpose_hypertension = true))), (0)::double precision) AS other_bp_medications
      FROM (( SELECT p_1.id,
               p_1.full_name,
               p_1.age,
@@ -1792,10 +1794,10 @@ ActiveRecord::Schema.define(version: 2021_11_23_060537) do
               purpose.hypertension AS medicine_purpose_hypertension,
               purpose.diabetes AS medicine_purpose_diabetes
              FROM (((prescription_drugs actual
-               LEFT JOIN raw_to_clean_medicines raw ON (((lower(regexp_replace((raw.raw_name)::text, '\s+'::text, ''::text, 'g'::text)) = lower(regexp_replace((actual.name)::text, '\s+'::text, ''::text, 'g'::text))) AND (lower(regexp_replace((raw.raw_dosage)::text, '\s+'::text, ''::text, 'g'::text)) = lower(regexp_replace((actual.dosage)::text, '\s+'::text, ''::text, 'g'::text))))))
+               LEFT JOIN raw_to_clean_medicines raw ON (((lower(regexp_replace((raw.raw_name)::text, ' +'::text, ''::text, 'g'::text)) = lower(regexp_replace((actual.name)::text, ' +'::text, ''::text, 'g'::text))) AND (lower(regexp_replace((raw.raw_dosage)::text, ' +'::text, ''::text, 'g'::text)) = lower(regexp_replace((actual.dosage)::text, ' +'::text, ''::text, 'g'::text))))))
                LEFT JOIN clean_medicine_to_dosages clean ON ((clean.rxcui = raw.rxcui)))
                LEFT JOIN medicine_purposes purpose ON (((clean.medicine)::text = (purpose.name)::text)))
-            WHERE ((actual.patient_id = p.id) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, actual.device_created_at)), 'YYYY-MM'::text) <= p.month_string) AND (actual.deleted_at IS NULL) AND ((actual.is_deleted = false) OR ((actual.is_deleted = true) AND (actual.device_updated_at > p.month_date))))) prescriptions ON (true))
+            WHERE ((actual.patient_id = p.id) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, actual.device_created_at)), 'YYYY-MM'::text) <= p.month_string) AND (actual.deleted_at IS NULL) AND ((actual.is_deleted = false) OR ((actual.is_deleted = true) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, actual.device_updated_at)), 'YYYY-MM'::text) > p.month_string))))) prescriptions ON (true))
     GROUP BY p.id, p.month_date;
   SQL
   add_index "reporting_prescriptions", ["patient_id", "month_date"], name: "reporting_prescriptions_patient_month_date", unique: true
