@@ -505,6 +505,26 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       expect(membership.status_reason).to eq("evicted")
     end
 
+    it "doesn't mark visits for discarded patients" do
+      membership = create(:treatment_group_membership, status: :enrolled, experiment_inclusion_date: 10.days.ago)
+      experiment = described_class.find(membership.experiment.id)
+
+      patient = membership.patient
+      _old_bp = create(:blood_pressure, recorded_at: 20.days.ago, patient: patient)
+      _old_bs = create(:blood_sugar, recorded_at: 20.days.ago, patient: patient)
+
+      create(:blood_pressure, recorded_at: 6.days.ago, patient: patient)
+      create(:blood_pressure, recorded_at: 5.days.ago, patient: patient)
+      patient.discard
+
+      experiment.mark_visits
+      membership.reload
+
+      expect(membership.visit_blood_pressure_id).to be_nil
+      expect(membership.visit_prescription_drug_created).to eq(nil)
+      expect(membership.status).to eq("enrolled")
+    end
+
     it "cancels all pending notifications for visited patients" do
       membership = create(:treatment_group_membership, status: :visited)
       patient = membership.patient

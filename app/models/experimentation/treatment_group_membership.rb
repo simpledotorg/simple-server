@@ -1,5 +1,5 @@
 module Experimentation
-  class TreatmentGroupMembership < ActiveRecord::Base
+  class TreatmentGroupMembership < ApplicationRecord
     belongs_to :treatment_group
     belongs_to :patient
     belongs_to :experiment
