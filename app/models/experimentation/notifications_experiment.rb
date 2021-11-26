@@ -114,7 +114,9 @@ module Experimentation
       time(__method__) do
         treatment_group_memberships
           .joins(:patient)
-          .where("status = 'enrolled' OR (status = 'evicted' AND visited_at IS NULL)")
+          .where("treatment_group_memberships.status = 'enrolled' OR
+                  (treatment_group_memberships.status = 'evicted' AND
+                   visited_at IS NULL)")
           .select("distinct on (treatment_group_memberships.patient_id) treatment_group_memberships.*,
                  bp.id bp_id, bs.id bs_id, pd.id pd_id")
           .joins("left outer join blood_pressures bp
