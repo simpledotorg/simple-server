@@ -3,7 +3,6 @@ class Patient < ApplicationRecord
   include Mergeable
   include Hashable
   include PatientReportable
-  include PhoneNumberLocalizable
 
   GENDERS = Rails.application.config.country[:supported_genders].freeze
   STATUSES = %w[active dead migrated unresponsive inactive].freeze

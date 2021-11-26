@@ -1,5 +1,4 @@
 require "rails_helper"
-require Rails.root.join "spec/models/concerns/phone_number_localizable_spec.rb"
 
 RSpec.describe PatientPhoneNumber, type: :model do
   describe "Associations" do
@@ -106,6 +105,6 @@ RSpec.describe PatientPhoneNumber, type: :model do
   end
 
   describe "localized_phone_number" do
-    it_behaves_like "phone_number_localizable"
+    include_examples "phone_number_localizable"
   end
 end

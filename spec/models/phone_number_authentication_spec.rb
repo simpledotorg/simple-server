@@ -1,5 +1,4 @@
 require "rails_helper"
-require Rails.root.join "spec/models/concerns/phone_number_localizable_spec.rb"
 
 RSpec.describe PhoneNumberAuthentication, type: :model do
   describe "Associations" do
