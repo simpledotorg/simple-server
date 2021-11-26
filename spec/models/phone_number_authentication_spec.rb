@@ -1,4 +1,5 @@
 require "rails_helper"
+require Rails.root.join "spec/models/concerns/phone_number_localizable_spec.rb"
 
 RSpec.describe PhoneNumberAuthentication, type: :model do
   describe "Associations" do
@@ -70,5 +71,9 @@ RSpec.describe PhoneNumberAuthentication, type: :model do
       authentication.invalidate_otp
       expect(authentication.otp_expires_at.to_i).to eq(0)
     end
+  end
+
+  describe "localized_phone_number" do
+    it_behaves_like "phone_number_localizable"
   end
 end

@@ -1,6 +1,6 @@
 class PatientPhoneNumber < ApplicationRecord
   include Mergeable
-  include PhoneNumberLocalization
+  include PhoneNumberLocalizable
 
   alias_attribute :phone_number, :number
 
