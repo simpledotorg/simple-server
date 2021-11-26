@@ -192,7 +192,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
     it "includes all patients if a country is not in the excluded blocks list" do
       eligible_patient = create(:patient, age: 18)
       stub_const("Experimentation::NotificationsExperiment::EXCLUDED_BLOCKS",
-                 YAML.load_file("spec/fixtures/files/blocks_excluded_from_experiments.yml"))
+        YAML.load_file("spec/fixtures/files/blocks_excluded_from_experiments.yml"))
       Rails.application.config.country[:abbreviation] = "BD"
 
       expect(described_class.eligible_patients).to include(eligible_patient)
