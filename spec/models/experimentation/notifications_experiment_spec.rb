@@ -176,6 +176,27 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       expect(described_class.eligible_patients).not_to include(excluded_patient)
       expect(described_class.eligible_patients).to include(included_patient)
     end
+
+    it "doesn't include patients who are assigned in the excluded blocks list" do
+      facility = create(:facility)
+      patient = create(:patient, age: 18, assigned_facility: facility)
+      eligible_patient = create(:patient, age: 18)
+      facility.block_region.update(id: "d6877901-1f73-4e24-bebc-4c837782dea1")
+      stub_const("Experimentation::NotificationsExperiment::EXCLUDED_BLOCKS",
+        YAML.load_file("spec/fixtures/files/blocks_excluded_from_experiments.yml"))
+
+      expect(described_class.eligible_patients).not_to include(patient)
+      expect(described_class.eligible_patients).to include(eligible_patient)
+    end
+
+    it "includes all patients if a country is not in the excluded blocks list" do
+      eligible_patient = create(:patient, age: 18)
+      stub_const("Experimentation::NotificationsExperiment::EXCLUDED_BLOCKS",
+                 YAML.load_file("spec/fixtures/files/blocks_excluded_from_experiments.yml"))
+      Rails.application.config.country[:abbreviation] = "BD"
+
+      expect(described_class.eligible_patients).to include(eligible_patient)
+    end
   end
 
   describe "#enroll_patients" do
@@ -253,7 +274,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       treatment_group = create(:treatment_group, experiment: experiment)
       create(:reminder_template, message: "1", treatment_group: treatment_group, remind_on_in_days: 0)
 
-      expect(Experimentation::CurrentPatientExperiment.first.eligible_patients(Date.today).count).to eq(2)
+      expect(Experimentation::CurrentPatientExperiment.first.eligible_patients(Date.today).size).to eq(2)
       Experimentation::CurrentPatientExperiment.first.enroll_patients(Date.today, 1)
       expect(Experimentation::TreatmentGroupMembership.count).to eq(1)
       Experimentation::CurrentPatientExperiment.first.enroll_patients(Date.today, 1)
