@@ -5,11 +5,11 @@ module Seed
     TABLES_TO_IMPORT =
       [
         {klass: DrugLookup::MedicinePurpose,
-          filename: "#{Rails.root}/config/data/drug-lookup/medicine_purpose.csv"},
+         filename: "#{Rails.root}/config/data/drug-lookup/medicine_purpose.csv"},
         {klass: DrugLookup::CleanMedicineToDosage,
-          filename: "#{Rails.root}/config/data/drug-lookup/clean_medicine_to_dosage.csv"},
+         filename: "#{Rails.root}/config/data/drug-lookup/clean_medicine_to_dosage.csv"},
         {klass: DrugLookup::RawToCleanMedicine,
-          filename: "#{Rails.root}/config/data/drug-lookup/raw_to_clean_medicine.csv"}
+         filename: "#{Rails.root}/config/data/drug-lookup/raw_to_clean_medicine.csv"}
       ]
 
     def self.truncate_and_import

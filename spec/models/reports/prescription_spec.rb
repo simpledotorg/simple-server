@@ -25,10 +25,7 @@ RSpec.describe Reports::Prescription, {type: :model, reporting_spec: true} do
   end
 
   around do |example|
-    Timecop.freeze("June 30 2021 5:30 UTC") do
-      # June 30th 23:00 IST time
-      example.run
-    end
+    freeze_time_for_reporting_specs(example)
   end
 
   describe "Cleanup and mapping" do
