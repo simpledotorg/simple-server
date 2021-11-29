@@ -161,13 +161,58 @@ describe "RateLimiter", type: :controller do
         end
       end
 
-      it "returns 429 when the number of requests is lower than the limit" do
+      it "returns 429 when the number of requests is higher than the limit" do
         (limit * 2).times do |i|
           post "/api/v4/users/find", phone_number: "1234567890"
           if i > limit
             expect(i > limit).to eq(true)
             expect(last_response.status).to eq(429)
             expect(last_response.body).to eq("Too many requests. Please wait and try again later.\n")
+          end
+        end
+      end
+    end
+
+    context "user activate / resending OTPs by IP address" do
+      let(:limit) { 5 }
+      before(:each, type: :controller) do
+        @request.remote_addr = "127.0.0.1"
+        allow(RequestOtpSmsJob).to receive_message_chain("set.perform_later")
+      end
+
+      it "does not change the request status when the number of requests is lower than the limit" do
+        stub_const("SIMPLE_SERVER_ENV", "production")
+        user = create(:user, password: "1234")
+
+        limit.times do
+          post "/api/v4/users/activate", {user: {id: user.id, password: "1234"}}
+          expect(last_response.status).to eq(200)
+        end
+      end
+
+      it "returns 429 when the number of requests is higher than the limit" do
+        stub_const("SIMPLE_SERVER_ENV", "production")
+        user = create(:user, password: "1234")
+
+        (limit * 2).times do |i|
+          post "/api/v4/users/activate", {user: {id: user.id, password: "1234"}}
+          if i > limit
+            expect(i > limit).to eq(true)
+            expect(last_response.status).to eq(429)
+            expect(last_response.body).to eq("Too many requests. Please wait and try again later.\n")
+          end
+        end
+      end
+
+      it "does not rate limit in non production environments" do
+        stub_const("SIMPLE_SERVER_ENV", "sandbox")
+        user = create(:user, password: "1234")
+
+        (limit * 2).times do |i|
+          post "/api/v4/users/activate", {user: {id: user.id, password: "1234"}}
+          if i > limit
+            expect(i > limit).to eq(true)
+            expect(last_response.status).to eq(200)
           end
         end
       end
