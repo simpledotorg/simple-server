@@ -131,7 +131,7 @@ RSpec.describe MyFacilitiesController, type: :controller do
       expect(response).to_not be_successful
     end
 
-    it "does work if feature flag is disabled" do
+    it "does work if feature flag is enabled" do
       Flipper.enable(:my_facilities_csv)
       Timecop.freeze("August 15th 2020") {
         patients = create(:patient, full_name: "controlled", recorded_at: 3.months.ago, assigned_facility: facility, registration_user: supervisor)
