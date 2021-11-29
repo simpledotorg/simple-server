@@ -100,15 +100,38 @@ module Reports
       }
     end
 
+    def follow_ups_v2?
+      true
+    end
+
     # Returns Follow ups per Region / Period. Takes an optional group_by clause (commonly used to group by `blood_pressures.user_id`)
     memoize def hypertension_follow_ups(group_by: nil)
-      items = regions.map { |region| RegionEntry.new(region, __method__, group_by: group_by, period_type: period_type) }
-      result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
-        follow_ups_query.hypertension(entry.region, period_type, group_by: group_by)
+      if follow_ups_v2?
+
+        counts = regions.each_with_object({}) do |region, results|
+          results[region] = Reports::PatientVisit.where(visited_facility_ids: region.facility_ids).group_by_period(:month, :visited_at, {format: Period.formatter(period_type)}).count
+        end
+        counts.each_with_object({}) do |(region, counts), results|
+          results[region.slug] = counts
+        end
+        # items = regions.map { |region| RegionEntry.new(region, __method__, follow_ups_v2: true, group_by: group_by, period_type: period_type) }
+        # result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
+        #   d Reports::PatientVisit.where(assigned_facility_id: entry.region.facility_ids)
+        #   Reports::PatientVisit.where(assigned_facility_id: entry.region.facility_ids).group_by_period(:month, :visited_at).count
+        # end
+        # d result
+        # result.each_with_object({}) { |(region_entry, counts), hsh|
+        #   hsh[region_entry.region.slug] = counts
+        # }
+      else
+        items = regions.map { |region| RegionEntry.new(region, __method__, group_by: group_by, period_type: period_type) }
+        result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
+          follow_ups_query.hypertension(entry.region, period_type, group_by: group_by)
+        end
+        result.each_with_object({}) { |(region_entry, counts), hsh|
+          hsh[region_entry.region.slug] = counts
+        }
       end
-      result.each_with_object({}) { |(region_entry, counts), hsh|
-        hsh[region_entry.region.slug] = counts
-      }
     end
 
     memoize def bp_measures_by_user

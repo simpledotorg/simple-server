@@ -360,7 +360,7 @@ RSpec.describe Reports::Repository, type: :model do
     end
   end
 
-  context "follow ups" do
+  fcontext "follow ups" do
     it "returns correct per region results with optional group_by" do
       facility_1, facility_2 = create_list(:facility, 2)
       regions = [facility_1.region, facility_2.region]
@@ -371,10 +371,12 @@ RSpec.describe Reports::Repository, type: :model do
         user_1 = create(:user)
         user_2 = create(:user)
 
+        d facility_1.id
         create(:bp_with_encounter, recorded_at: 3.months.ago, facility: facility_1, patient: patient_1, user: user_1)
         create(:bp_with_encounter, recorded_at: 3.months.ago, facility: facility_1, patient: patient_2, user: user_2)
         create(:bp_with_encounter, recorded_at: 2.months.ago, facility: facility_1, patient: patient_2, user: user_2)
         create(:bp_with_encounter, recorded_at: 1.month.ago, facility: facility_2, patient: patient_1)
+        refresh_views
 
         repo = Reports::Repository.new(regions, periods: periods)
         repo_2 = Reports::Repository.new(regions, periods: periods)
@@ -390,6 +392,7 @@ RSpec.describe Reports::Repository, type: :model do
           }
         }
 
+        d repo.hypertension_follow_ups
         expect(repo.hypertension_follow_ups[facility_1.region.slug]).to eq({
           Period.month("February 1st 2021") => 2, Period.month("March 1st 2021") => 1
         })
