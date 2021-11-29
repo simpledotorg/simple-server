@@ -1,4 +1,4 @@
-module PrescriptionDrugCleanup
+module DrugLookup
   class CleanMedicineToDosage < ActiveRecord::Base
   end
 end
