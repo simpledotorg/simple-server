@@ -762,6 +762,7 @@ ActiveRecord::Schema.define(version: 2021_11_25_072030) do
   add_foreign_key "appointments", "facilities"
   add_foreign_key "blood_sugars", "facilities"
   add_foreign_key "blood_sugars", "users"
+  add_foreign_key "clean_medicine_to_dosages", "medicine_purposes", column: "medicine", primary_key: "name"
   add_foreign_key "communications", "notifications"
   add_foreign_key "drug_stocks", "facilities"
   add_foreign_key "drug_stocks", "protocol_drugs"
