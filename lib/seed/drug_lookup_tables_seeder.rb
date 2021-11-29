@@ -12,12 +12,12 @@ module Seed
           filename: "#{Rails.root}/config/data/drug-lookup/raw_to_clean_medicine.csv"}
       ]
 
-    def self.drop_and_create
-      drop
-      create
+    def self.truncate_and_import
+      truncate
+      import
     end
 
-    def self.create
+    def self.import
       TABLES_TO_IMPORT.each do |table|
         CSV.foreach(table[:filename], headers: true) do |row|
           table[:klass].create!(row.to_hash)
@@ -25,7 +25,7 @@ module Seed
       end
     end
 
-    def self.drop
+    def self.truncate
       table_names = TABLES_TO_IMPORT.reverse.map { |table| table[:klass].table_name }.join(", ")
       ActiveRecord::Base.connection.execute "TRUNCATE #{table_names}"
     end

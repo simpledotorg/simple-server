@@ -1,9 +1,9 @@
 class SeedDrugLookupTables < ActiveRecord::Migration[5.2]
   def up
-    Seed::DrugLookupTablesSeeder.create
+    Seed::DrugLookupTablesSeeder.import
   end
 
   def down
-    Seed::DrugLookupTablesSeeder.drop
+    Seed::DrugLookupTablesSeeder.truncate
   end
 end
