@@ -125,7 +125,7 @@ RSpec.describe MyFacilitiesController, type: :controller do
     it "does not work if feature flag is disabled" do
       Flipper.disable(:my_facilities_csv)
       Timecop.freeze("August 15th 2020") {
-        patients = create(:patient, full_name: "controlled", recorded_at: 3.months.ago, assigned_facility: facility, registration_user: supervisor)
+        create(:patient, full_name: "controlled", recorded_at: 3.months.ago, assigned_facility: facility, registration_user: supervisor)
       }
       get :csv_maker, params: {type: "controlled_patients"}
       expect(response).to_not be_successful
@@ -134,7 +134,7 @@ RSpec.describe MyFacilitiesController, type: :controller do
     it "does work if feature flag is enabled" do
       Flipper.enable(:my_facilities_csv)
       Timecop.freeze("August 15th 2020") {
-        patients = create(:patient, full_name: "controlled", recorded_at: 3.months.ago, assigned_facility: facility, registration_user: supervisor)
+        create(:patient, full_name: "controlled", recorded_at: 3.months.ago, assigned_facility: facility, registration_user: supervisor)
       }
 
       Timecop.freeze("January 15th 2021") do

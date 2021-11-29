@@ -86,7 +86,7 @@ class FacilityStatsService
           missed_visits: 0,
           missed_visits_rate: 0
         })
-      else 
+      else
         hsh[period].merge!({
           rate_name => 0,
           rate_numerator => 0

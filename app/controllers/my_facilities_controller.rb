@@ -47,7 +47,6 @@ class MyFacilitiesController < AdminController
     process_facility_stats(:missed_visits)
   end
 
-  
   def csv_maker
     facilities = filter_facilities
     service = BloodPressureExportService.new(start_period: @start_period, end_period: @period, facilities: facilities)
@@ -69,7 +68,7 @@ class MyFacilitiesController < AdminController
   end
 
   def authorize_csv_maker
-    authorize { current_admin.feature_enabled?(:my_facilities_csv)}
+    authorize { current_admin.feature_enabled?(:my_facilities_csv) }
   end
 
   def authorize_my_facilities
