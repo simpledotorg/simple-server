@@ -193,7 +193,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       eligible_patient = create(:patient, age: 18)
       Rails.application.config.country[:name] = "Bangladesh"
       allow(ENV).to receive(:fetch).and_call_original
-      allow(ENV).to receive(:fetch).with("EXPERIMENT_EXCLUDED_BLOCKS", "").and_return(" ")
+      allow(ENV).to receive(:fetch).with("EXPERIMENT_EXCLUDED_BLOCKS", "").and_return("")
 
       expect(described_class.eligible_patients).to include(eligible_patient)
     end
