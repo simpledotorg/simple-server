@@ -116,8 +116,9 @@ module Reports
         end
         counts.each_with_object({}) do |(region, counts), results|
           if group_by
-            counts = counts.each_with_object({}) { |(groups, count), result| 
+            counts = counts.each_with_object({}) { |(groups, count), result|
               group, period = groups[0], groups[1]
+              d group
               result[period] = {}
               result[period][group] = count
             }
