@@ -380,23 +380,11 @@ RSpec.describe Reports::Repository, type: :model do
         repo = Reports::Repository.new(regions, periods: periods)
         repo_2 = Reports::Repository.new(regions, periods: periods)
 
-        expected_grouped_by_user = {
-          Period.month("February 1st 2021") => {
-            user_1.id => 1,
-            user_2.id => 1
-          },
-          Period.month("March 1st 2021") => {
-            user_1.id => 0,
-            user_2.id => 1
-          }
-        }
-
-        slug = facility_1.region.slug
-        d repo.hypertension_follow_ups[slug]
         expect(repo.hypertension_follow_ups[facility_1.region.slug]).to eq({
           Period.month("February 1st 2021") => 2, Period.month("March 1st 2021") => 1
         })
         expect(repo.hypertension_follow_ups[facility_2.region.slug]).to eq({Period.month("April 1st 2021") => 1})
+        expect(repo_2.hypertension_follow_ups[facility_2.region.slug]).to eq({Period.month("April 1st 2021") => 1})
       end
     end
 
