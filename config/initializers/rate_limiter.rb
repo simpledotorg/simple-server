@@ -1,4 +1,4 @@
-unless SimpleServer.env.sandbox? || SimpleServer.env.qa? || SimpleServer.env.android_review? || SimpleServer.env.review?
+if SimpleServer.env.production? || SimpleServer.env.demo?
   module RateLimit
     def self.auth_api_options
       limit_proc = proc { |_req| 5 }
