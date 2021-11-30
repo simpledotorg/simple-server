@@ -371,7 +371,6 @@ RSpec.describe Reports::Repository, type: :model do
         user_1 = create(:user)
         user_2 = create(:user)
 
-        d facility_1.id
         create(:bp_with_encounter, recorded_at: 3.months.ago, facility: facility_1, patient: patient_1, user: user_1)
         create(:bp_with_encounter, recorded_at: 3.months.ago, facility: facility_1, patient: patient_2, user: user_2)
         create(:bp_with_encounter, recorded_at: 2.months.ago, facility: facility_1, patient: patient_2, user: user_2)
@@ -392,7 +391,8 @@ RSpec.describe Reports::Repository, type: :model do
           }
         }
 
-        d repo.hypertension_follow_ups
+        slug = facility_1.region.slug
+        d repo.hypertension_follow_ups[slug]
         expect(repo.hypertension_follow_ups[facility_1.region.slug]).to eq({
           Period.month("February 1st 2021") => 2, Period.month("March 1st 2021") => 1
         })
