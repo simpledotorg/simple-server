@@ -19,7 +19,7 @@ RSpec.describe Experimentation::StalePatientExperiment do
       create(:bp_with_encounter, patient: old_patient, device_created_at: 100.days.ago)
       RefreshReportingViews.new.refresh_v2
 
-      result = described_class.first.eligible_patients(Date.tomorrow)
+      result = described_class.first.eligible_patients(Date.today)
 
       expect(result).to contain_exactly(old_patient)
     end
@@ -32,7 +32,7 @@ RSpec.describe Experimentation::StalePatientExperiment do
       create(:bp_with_encounter, patient: non_hypertensive, device_created_at: 100.days.ago)
       RefreshReportingViews.new.refresh_v2
 
-      result = described_class.first.eligible_patients(Date.tomorrow)
+      result = described_class.first.eligible_patients(Date.today)
 
       expect(result).to contain_exactly(hypertensive)
     end
@@ -48,7 +48,7 @@ RSpec.describe Experimentation::StalePatientExperiment do
       create(:bp_with_encounter, patient: patient_with_phone, device_created_at: 100.days.ago)
       RefreshReportingViews.new.refresh_v2
 
-      result = described_class.first.eligible_patients(Date.tomorrow)
+      result = described_class.first.eligible_patients(Date.today)
 
       expect(result).to contain_exactly(patient_with_phone)
     end
@@ -71,7 +71,7 @@ RSpec.describe Experimentation::StalePatientExperiment do
 
       RefreshReportingViews.new.refresh_v2
 
-      result = described_class.first.eligible_patients(Date.tomorrow)
+      result = described_class.first.eligible_patients(Date.today)
 
       expect(result).to contain_exactly(eligible_1, eligible_2)
     end
@@ -87,7 +87,7 @@ RSpec.describe Experimentation::StalePatientExperiment do
       create(:appointment, patient: patient_with_past_appt, device_created_at: 70.days.ago, scheduled_date: 40.days.ago)
       RefreshReportingViews.new.refresh_v2
 
-      result = described_class.first.eligible_patients(Date.tomorrow)
+      result = described_class.first.eligible_patients(Date.today)
 
       expect(result).to contain_exactly(patient_with_past_appt)
     end
@@ -114,7 +114,7 @@ RSpec.describe Experimentation::StalePatientExperiment do
         scheduled_date: 40.days.ago)
       RefreshReportingViews.new.refresh_v2
 
-      result = described_class.first.eligible_patients(Date.tomorrow)
+      result = described_class.first.eligible_patients(Date.today)
 
       expect(result).to contain_exactly(patient_with_past_remind_on, patient_without_future_remind_on)
     end
@@ -126,7 +126,7 @@ RSpec.describe Experimentation::StalePatientExperiment do
       create(:appointment, patient: patient, device_created_at: 120.days.ago, scheduled_date: 90.days.ago, status: "scheduled")
       RefreshReportingViews.new.refresh_v2
 
-      result = described_class.first.eligible_patients(Date.tomorrow)
+      result = described_class.first.eligible_patients(Date.today)
 
       expect(result).to contain_exactly(patient)
     end
