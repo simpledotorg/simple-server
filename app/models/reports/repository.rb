@@ -14,7 +14,7 @@ module Reports
     attr_reader :registered_patients_query
     attr_reader :schema
 
-    def initialize(regions, periods:, reporting_schema_v2: Reports.reporting_schema_v2?)
+    def initialize(regions, periods:, reporting_schema_v2: Reports.reporting_schema_v2?, follow_ups_v2: false)
       @regions = Array(regions).map(&:region)
       @periods = if periods.is_a?(Period)
         Range.new(periods, periods)
@@ -23,6 +23,7 @@ module Reports
       end
       @period_type = @periods.first.type
       @reporting_schema_v2 = reporting_schema_v2
+      @follow_ups_v2 = follow_ups_v2
       raise ArgumentError, "Quarter periods not supported" if @period_type != :month
       @schema = if reporting_schema_v2?
         SchemaV2.new(@regions, periods: @periods)
@@ -100,11 +101,7 @@ module Reports
       }
     end
 
-    def follow_ups_v2?
-      true
-    end
-
-    def follow_ups_v2(group_by: nil)
+    def follow_ups_v2_query(group_by: nil)
       regions.each_with_object({}) do |region, results|
         query = Reports::PatientFollowUp.where(facility_id: region.facility_ids)
         counts = if group_by&.match?("user_id")
@@ -124,7 +121,7 @@ module Reports
     # Returns Follow ups per Region / Period. Takes an optional group_by clause (commonly used to group by `blood_pressures.user_id`)
     memoize def hypertension_follow_ups(group_by: nil)
       if follow_ups_v2?
-        follow_ups_v2(group_by: group_by)
+        follow_ups_v2_query(group_by: group_by)
       else
         items = regions.map { |region| RegionEntry.new(region, __method__, group_by: group_by, period_type: period_type) }
         result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
@@ -134,6 +131,10 @@ module Reports
           hsh[region_entry.region.slug] = counts
         }
       end
+    end
+
+    def follow_ups_v2?
+      @follow_ups_v2
     end
 
     memoize def bp_measures_by_user
