@@ -24,7 +24,20 @@ module ReportingHelpers
       beginning_of_month: now, # Beginning of June 1 2021
       over_3_months_ago: timezone.local(2021, 3, 31, 0, 0, 0), # End of March 2021
       under_3_months_ago: timezone.local(2021, 4, 1, 0, 0, 0), # Beginning of April 2021
-      end_of_month: timezone.local(2021, 6, 30, 23, 59, 59) # End of June 30 2021
+      end_of_month: timezone.local(2021, 6, 30, 23, 59, 59), # End of June 30 2021
+      two_years_ago: now - 2.years,
+      twelve_months_ago: now - 12.months,
+      eleven_months_ago: now - 11.months,
+      ten_months_ago: now - 10.months,
+      nine_months_ago: now - 9.months,
+      eight_months_ago: now - 8.months,
+      seven_months_ago: now - 7.months,
+      six_months_ago: now - 6.months,
+      five_months_ago: now - 5.months,
+      four_months_ago: now - 4.months,
+      three_months_ago: now - 3.months,
+      two_months_ago: now - 2.months,
+      one_month_ago: now - 1.month
     }
   end
 end

@@ -71,4 +71,8 @@ RSpec.describe PhoneNumberAuthentication, type: :model do
       expect(authentication.otp_expires_at.to_i).to eq(0)
     end
   end
+
+  describe "localized_phone_number" do
+    it_behaves_like "phone_number_localizable"
+  end
 end
