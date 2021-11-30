@@ -79,34 +79,7 @@ describe Notification, type: :model do
       end
     end
 
-    context "when imo flag is on" do
-      before { Flipper.enable(:imo_messaging) }
-
-      it "returns sms if patient can't receive Imo notifications" do
-        create(:imo_authorization, status: "no_imo_account", patient: notification.patient)
-        expect(notification.next_communication_type).to eq("sms")
-      end
-
-      it "returns imo if it has no imo communications" do
-        create(:imo_authorization, status: "subscribed", patient: notification.patient)
-        expect(notification.next_communication_type).to eq("imo")
-      end
-
-      it "returns sms if it has a imo communication but no sms communication" do
-        create(:imo_authorization, status: "subscribed", patient: notification.patient)
-        create(:communication, communication_type: "imo", notification: notification)
-        expect(notification.next_communication_type).to eq("sms")
-      end
-
-      it "returns nil if it has both a imo and sms communication" do
-        create(:imo_authorization, status: "subscribed", patient: notification.patient)
-        create(:communication, communication_type: "imo", notification: notification)
-        create(:communication, communication_type: "sms", notification: notification)
-        expect(notification.next_communication_type).to eq(nil)
-      end
-    end
-
-    context "when WhatsApp and Imo flags are off" do
+    context "when WhatsApp flag is off" do
       it "returns sms if it has no sms communication" do
         expect(notification.next_communication_type).to eq("sms")
       end
