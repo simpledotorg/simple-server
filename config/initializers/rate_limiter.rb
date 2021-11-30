@@ -1,7 +1,11 @@
 module RateLimit
+  def self.fetch_int(name)
+    Integer(ENV.fetch(name))
+  end
+
   def self.auth_api_options
-    limit_proc = proc { |_req| 5 }
-    period_proc = proc { |_req| 1.minute }
+    limit_proc = proc { |_req| fetch_int("AUTH_API_RATE_LIMIT") }
+    period_proc = proc { |_req| fetch_int("AUTH_API_RATE_LIMIT_PERIOD_IN_MINUTES").minutes }
 
     {limit: limit_proc, period: period_proc}
   end
