@@ -165,6 +165,38 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       expect(described_class.eligible_patients).not_to include(excluded_patient)
       expect(described_class.eligible_patients).to include(included_patient)
     end
+
+    it "doesn't include any patients whose assigned facility has been deleted" do
+      excluded_patient = create(:patient, age: 18)
+      excluded_patient.assigned_facility.discard
+
+      included_patient = create(:patient, age: 18)
+      create(:appointment, patient: included_patient, status: :scheduled)
+
+      expect(described_class.eligible_patients).not_to include(excluded_patient)
+      expect(described_class.eligible_patients).to include(included_patient)
+    end
+
+    it "doesn't include patients who are assigned in the excluded blocks list" do
+      facility = create(:facility)
+      patient = create(:patient, age: 18, assigned_facility: facility)
+      eligible_patient = create(:patient, age: 18)
+      Rails.application.config.country[:name] = "Bangladesh"
+      allow(ENV).to receive(:fetch).and_call_original
+      allow(ENV).to receive(:fetch).with("EXPERIMENT_EXCLUDED_BLOCKS", "").and_return(facility.block_region.id)
+
+      expect(described_class.eligible_patients).not_to include(patient)
+      expect(described_class.eligible_patients).to include(eligible_patient)
+    end
+
+    it "includes all patients if a country is not in the excluded blocks list" do
+      eligible_patient = create(:patient, age: 18)
+      Rails.application.config.country[:name] = "Bangladesh"
+      allow(ENV).to receive(:fetch).and_call_original
+      allow(ENV).to receive(:fetch).with("EXPERIMENT_EXCLUDED_BLOCKS", "").and_return("")
+
+      expect(described_class.eligible_patients).to include(eligible_patient)
+    end
   end
 
   describe "#enroll_patients" do
@@ -242,7 +274,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       treatment_group = create(:treatment_group, experiment: experiment)
       create(:reminder_template, message: "1", treatment_group: treatment_group, remind_on_in_days: 0)
 
-      expect(Experimentation::CurrentPatientExperiment.first.eligible_patients(Date.today).count).to eq(2)
+      expect(Experimentation::CurrentPatientExperiment.first.eligible_patients(Date.today).size).to eq(2)
       Experimentation::CurrentPatientExperiment.first.enroll_patients(Date.today, 1)
       expect(Experimentation::TreatmentGroupMembership.count).to eq(1)
       Experimentation::CurrentPatientExperiment.first.enroll_patients(Date.today, 1)
@@ -442,7 +474,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
   end
 
   describe "mark_visits" do
-    it "considers earliest BP created as a visit for enrolled patients" do
+    it "considers earliest BP, BS or drug created as a visit for enrolled patients" do
       membership = create(:treatment_group_membership, status: :enrolled, experiment_inclusion_date: 10.days.ago)
       experiment = described_class.find(membership.experiment.id)
 
@@ -467,7 +499,54 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       expect(membership.visit_prescription_drug_created).to eq(true)
     end
 
-    it "cancels all pending notifications for evicted patients" do
+    it "considers earliest BP, BS or drug created as a visit for evicted patients and does not change status" do
+      membership = create(:treatment_group_membership, status: :evicted, status_reason: "evicted", experiment_inclusion_date: 10.days.ago)
+      experiment = described_class.find(membership.experiment.id)
+
+      patient = membership.patient
+      _old_bp = create(:blood_pressure, recorded_at: 20.days.ago, patient: patient)
+      _old_bs = create(:blood_sugar, recorded_at: 20.days.ago, patient: patient)
+
+      _discarded_bp = create(:blood_pressure, recorded_at: 10.days.ago, patient: patient, deleted_at: Time.current)
+      bp_1 = create(:blood_pressure, recorded_at: 6.days.ago, patient: patient)
+      _bp_2 = create(:blood_pressure, recorded_at: 5.days.ago, patient: patient)
+
+      bs_1 = create(:blood_sugar, recorded_at: 6.days.ago, patient: patient)
+      _bs_2 = create(:blood_sugar, recorded_at: 5.days.ago, patient: patient)
+
+      _drug = create(:prescription_drug, device_created_at: 6.days.ago, patient: patient)
+
+      experiment.mark_visits
+      membership.reload
+
+      expect(membership.visit_blood_pressure_id).to eq(bp_1.id)
+      expect(membership.visit_blood_sugar_id).to eq(bs_1.id)
+      expect(membership.visit_prescription_drug_created).to eq(true)
+      expect(membership.status).to eq("evicted")
+      expect(membership.status_reason).to eq("evicted")
+    end
+
+    it "doesn't mark visits for discarded patients" do
+      membership = create(:treatment_group_membership, status: :enrolled, experiment_inclusion_date: 10.days.ago)
+      experiment = described_class.find(membership.experiment.id)
+
+      patient = membership.patient
+      _old_bp = create(:blood_pressure, recorded_at: 20.days.ago, patient: patient)
+      _old_bs = create(:blood_sugar, recorded_at: 20.days.ago, patient: patient)
+
+      create(:blood_pressure, recorded_at: 6.days.ago, patient: patient)
+      create(:blood_pressure, recorded_at: 5.days.ago, patient: patient)
+      patient.discard
+
+      experiment.mark_visits
+      membership.reload
+
+      expect(membership.visit_blood_pressure_id).to be_nil
+      expect(membership.visit_prescription_drug_created).to eq(nil)
+      expect(membership.status).to eq("enrolled")
+    end
+
+    it "cancels all pending notifications for visited patients" do
       membership = create(:treatment_group_membership, status: :visited)
       patient = membership.patient
       experiment = described_class.find(membership.experiment.id)
@@ -607,7 +686,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
 
   describe "#time" do
     it "calls statsd instance time" do
-      expect(Statsd.instance).to receive(:time).with("current_patients.monitor")
+      expect(Statsd.instance).to receive(:time).with("Experimentation::NotificationsExperiment.monitor")
 
       create(:experiment)
       described_class.first.monitor

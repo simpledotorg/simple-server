@@ -20,9 +20,11 @@ module Experimentation
     # The order of operations is important.
     # See https://docs.google.com/document/d/1IMXu_ca9xKU8Xox_3v403ZdvNGQzczLWljy7LQ6RQ6A for more details.
     def self.conduct_daily(date)
-      running.each { |experiment| experiment.enroll_patients(date) }
-      monitoring.each { |experiment| experiment.monitor }
-      notifying.each { |experiment| experiment.schedule_notifications(date) }
+      time(__method__) do
+        running.each { |experiment| experiment.enroll_patients(date) }
+        monitoring.each { |experiment| experiment.monitor }
+        notifying.each { |experiment| experiment.schedule_notifications(date) }
+      end
     end
 
     # Returns patients who are eligible for enrollment. These should be
@@ -30,6 +32,7 @@ module Experimentation
     def self.eligible_patients
       Patient.with_hypertension
         .contactable
+        .joins(:assigned_facility)
         .where_current_age(">=", 18)
         .where("NOT EXISTS (:recent_experiment_memberships)",
           recent_experiment_memberships: Experimentation::TreatmentGroupMembership
@@ -44,6 +47,20 @@ module Experimentation
                                              .where(status: :scheduled)
                                              .group(:patient_id)
                                              .having("count(patient_id) > 1"))
+        .then { |patients| exclude_bangladesh_blocks(patients) }
+    end
+
+    def self.exclude_bangladesh_blocks(patients)
+      return patients unless CountryConfig.current_country?("Bangladesh")
+
+      patients
+        .merge(Facility.with_block_region_id)
+        .select("patients.*")
+        .where.not(block_region: {id: excluded_block_ids.presence})
+    end
+
+    def self.excluded_block_ids
+      ENV.fetch("EXPERIMENT_EXCLUDED_BLOCKS", "").split(",").map(&:strip)
     end
 
     def enroll_patients(date, limit = max_patients_per_day)
@@ -69,13 +86,11 @@ module Experimentation
       # TODO: Look at query performance
       time(__method__) do
         treatment_group_memberships
-          .joins(treatment_group: :reminder_templates)
+          .joins(:patient, treatment_group: :reminder_templates)
           .where("messages -> reminder_templates.message ->> 'notification_status' = ?", :pending)
           .select("messages -> reminder_templates.message ->> 'notification_id' AS notification_id")
           .select("reminder_templates.message, treatment_group_memberships.*")
           .in_batches(of: BATCH_SIZE).each_record do |membership|
-          next if membership.patient.nil?
-
           membership.record_notification_result(
             membership.message,
             notification_result(membership.notification_id)
@@ -111,7 +126,11 @@ module Experimentation
 
     def mark_visits
       time(__method__) do
-        treatment_group_memberships.status_enrolled
+        treatment_group_memberships
+          .joins(:patient)
+          .where("treatment_group_memberships.status = 'enrolled' OR
+                  (treatment_group_memberships.status = 'evicted' AND
+                   visited_at IS NULL)")
           .select("distinct on (treatment_group_memberships.patient_id) treatment_group_memberships.*,
                  bp.id bp_id, bs.id bs_id, pd.id pd_id")
           .joins("left outer join blood_pressures bp
@@ -157,10 +176,10 @@ module Experimentation
       end
     end
 
-    def time(method_name, &block)
+    def self.time(method_name, &block)
       raise ArgumentError, "You must supply a block" unless block
 
-      label = "#{experiment_type}.#{method_name}"
+      label = "#{name}.#{method_name}"
 
       benchmark(label) do
         Statsd.instance.time(label) do
@@ -170,6 +189,8 @@ module Experimentation
 
       Statsd.instance.flush # The metric is not sent to datadog until the buffer is full, hence we explicitly flush.
     end
+
+    delegate :time, to: self
 
     def earliest_remind_on
       reminder_templates.pluck(:remind_on_in_days).min || 0
