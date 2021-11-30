@@ -7,7 +7,7 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
-gem "dotenv-rails"
+gem "dotenv-rails", require: false
 gem "rails", "5.2.6"
 
 gem "active_hash", "~> 2.3.0"
