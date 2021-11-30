@@ -2,7 +2,6 @@ module Experimentation
   class NotificationsExperiment < Experiment
     include ActiveSupport::Benchmarkable
     BATCH_SIZE = 1000
-    EXCLUDED_BLOCKS = YAML.load_file("config/data/blocks_excluded_from_experiments.yml")
 
     default_scope { where(experiment_type: %w[current_patients stale_patients]) }
 
@@ -34,8 +33,6 @@ module Experimentation
       Patient.with_hypertension
         .contactable
         .joins(:assigned_facility)
-        .merge(Facility.with_block_region_id)
-        .select("patients.*")
         .where_current_age(">=", 18)
         .where("NOT EXISTS (:recent_experiment_memberships)",
           recent_experiment_memberships: Experimentation::TreatmentGroupMembership
@@ -50,7 +47,20 @@ module Experimentation
                                              .where(status: :scheduled)
                                              .group(:patient_id)
                                              .having("count(patient_id) > 1"))
-        .where.not(block_region: {id: EXCLUDED_BLOCKS[CountryConfig.current[:abbreviation]]})
+        .then { |patients| exclude_bangladesh_blocks(patients) }
+    end
+
+    def self.exclude_bangladesh_blocks(patients)
+      return patients unless CountryConfig.current_country?("Bangladesh")
+
+      patients
+        .merge(Facility.with_block_region_id)
+        .select("patients.*")
+        .where.not(block_region: {id: excluded_block_ids.presence})
+    end
+
+    def self.excluded_block_ids
+      ENV.fetch("EXPERIMENT_EXCLUDED_BLOCKS", "").split(",").map(&:strip)
     end
 
     def enroll_patients(date, limit = max_patients_per_day)

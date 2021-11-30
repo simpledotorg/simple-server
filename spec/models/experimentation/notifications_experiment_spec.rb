@@ -181,9 +181,9 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       facility = create(:facility)
       patient = create(:patient, age: 18, assigned_facility: facility)
       eligible_patient = create(:patient, age: 18)
-      facility.block_region.update(id: "d6877901-1f73-4e24-bebc-4c837782dea1")
-      stub_const("Experimentation::NotificationsExperiment::EXCLUDED_BLOCKS",
-        YAML.load_file("spec/fixtures/files/blocks_excluded_from_experiments.yml"))
+      Rails.application.config.country[:name] = "Bangladesh"
+      allow(ENV).to receive(:fetch).and_call_original
+      allow(ENV).to receive(:fetch).with("EXPERIMENT_EXCLUDED_BLOCKS", "").and_return(facility.block_region.id)
 
       expect(described_class.eligible_patients).not_to include(patient)
       expect(described_class.eligible_patients).to include(eligible_patient)
@@ -191,9 +191,9 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
 
     it "includes all patients if a country is not in the excluded blocks list" do
       eligible_patient = create(:patient, age: 18)
-      stub_const("Experimentation::NotificationsExperiment::EXCLUDED_BLOCKS",
-        YAML.load_file("spec/fixtures/files/blocks_excluded_from_experiments.yml"))
-      Rails.application.config.country[:abbreviation] = "BD"
+      Rails.application.config.country[:name] = "Bangladesh"
+      allow(ENV).to receive(:fetch).and_call_original
+      allow(ENV).to receive(:fetch).with("EXPERIMENT_EXCLUDED_BLOCKS", "").and_return(" ")
 
       expect(described_class.eligible_patients).to include(eligible_patient)
     end
