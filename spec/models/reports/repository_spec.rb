@@ -360,7 +360,7 @@ RSpec.describe Reports::Repository, type: :model do
     end
   end
 
-  context "follow ups" do
+  fcontext "follow ups" do
     it "returns counts of BPs taken per region" do
       facility_1, facility_2 = create_list(:facility, 2)
       regions = [facility_1.region, facility_2.region]
@@ -371,6 +371,9 @@ RSpec.describe Reports::Repository, type: :model do
         user_1 = create(:user)
         user_2 = create(:user)
 
+        # This BP is not a follow up, as it is recorded the same month as the patient registration
+        create(:bp_with_encounter, recorded_at: 10.months.ago, facility: facility_1, patient: patient_1, user: user_1)
+        # These are all valid follow ups
         create(:bp_with_encounter, recorded_at: 3.months.ago, facility: facility_1, patient: patient_1, user: user_1)
         create(:bp_with_encounter, recorded_at: 3.months.ago, facility: facility_1, patient: patient_2, user: user_2)
         create(:bp_with_encounter, recorded_at: 2.months.ago, facility: facility_1, patient: patient_2, user: user_2)
@@ -398,6 +401,9 @@ RSpec.describe Reports::Repository, type: :model do
         user_1 = create(:user)
         user_2 = create(:user)
 
+        # This BP is not a follow up, as it is recorded the same month as the patient registration
+        create(:bp_with_encounter, recorded_at: 10.months.ago, facility: facility_1, patient: patient_1, user: user_1)
+        # These are all valid follow ups
         create(:bp_with_encounter, recorded_at: 3.months.ago, facility: facility_1, patient: patient_1, user: user_1)
         create(:bp_with_encounter, recorded_at: 3.months.ago, facility: facility_1, patient: patient_2, user: user_2)
         create(:bp_with_encounter, recorded_at: 2.months.ago, facility: facility_1, patient: patient_2, user: user_2)
