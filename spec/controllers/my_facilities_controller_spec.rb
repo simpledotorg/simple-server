@@ -120,4 +120,50 @@ RSpec.describe MyFacilitiesController, type: :controller do
       expect(assigns(:display_sizes)).to eq(["small"])
     end
   end
+
+  describe "GET csv_maker" do
+    it "does not work if feature flag is disabled" do
+      Flipper.disable(:my_facilities_csv)
+      Timecop.freeze("August 15th 2020") {
+        create(:patient, full_name: "controlled", recorded_at: 3.months.ago, assigned_facility: facility, registration_user: supervisor)
+      }
+      get :csv_maker, params: {type: "controlled_patients"}
+      expect(response).to_not be_successful
+    end
+
+    it "does work if feature flag is enabled" do
+      Flipper.enable(:my_facilities_csv)
+      Timecop.freeze("August 15th 2020") {
+        create(:patient, full_name: "controlled", recorded_at: 3.months.ago, assigned_facility: facility, registration_user: supervisor)
+      }
+
+      Timecop.freeze("January 15th 2021") do
+        refresh_views
+        get :csv_maker, params: {type: "controlled_patients"}
+      end
+      expect(response).to be_successful
+    end
+
+    it "returns a CSV of controlled data" do
+      Flipper.enable(:my_facilities_csv)
+      Timecop.freeze("August 15th 2020") {
+        patients = create_list(:patient, 2, full_name: "controlled", recorded_at: 3.months.ago, assigned_facility: facility, registration_user: supervisor)
+        patients.each { |p| create(:bp_with_encounter, :under_control, facility: facility, patient: p) }
+      }
+
+      Timecop.freeze("January 15th 2021") do
+        refresh_views
+        get :csv_maker, params: {type: "controlled_patients"}
+      end
+      expect(response).to be_successful
+      csv = CSV.parse(response.body, headers: true, skip_lines: /^Facilities,/)
+      summary_row = csv[0]
+      facility_row = csv[1]
+      expect(summary_row[0]).to eq("All PHCs")
+      expect(summary_row["Oct-2020"]).to eq("100%")
+      expect(facility_row[0]).to eq(facility.name)
+      expect(facility_row["Jul-2020"]).to eq("0%")
+      expect(facility_row["Oct-2020"]).to eq("100%")
+    end
+  end
 end

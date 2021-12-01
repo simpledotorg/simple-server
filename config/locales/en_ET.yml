@@ -44,3 +44,8 @@ en_ET:
         small: "Health center"
         medium: "Primary hospital"
         large: "General/specialized hospital"
+      pluralized_facility_size:
+        community: "Health posts"
+        small: "Health centers"
+        medium: "Primary hospitals"
+        large: "General/specialized hospitals"

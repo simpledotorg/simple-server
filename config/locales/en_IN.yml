@@ -35,3 +35,8 @@ en_IN:
         small: "PHC"
         medium: "CHC"
         large: "SDH/DH"
+      pluralized_facility_size:
+        community: "HWC/SCs"
+        small: "PHCs"
+        medium: "CHCs"
+        large: "SDH/DHs"
