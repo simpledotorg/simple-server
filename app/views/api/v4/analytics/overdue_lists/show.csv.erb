@@ -1,6 +1,6 @@
 <% csv = CSV.generate do |csv| %>
   <% csv << [
-    "Overdue list downloaded at: #{Time.now.strftime("%d-%b-%Y %I:%M %p")}"
+    "Overdue list downloaded at: #{Time.current.strftime("%d-%b-%Y %I:%M %p")}"
   ] %>
   <% csv << [
     "Registration date",
