@@ -16,13 +16,7 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
     user = create(:user)
     facility = create(:facility)
 
-    create(
-      :blood_pressure,
-      patient: patient,
-      user: user,
-      facility: facility,
-      recorded_at: june_2021[:now]
-    )
+    create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: june_2021[:now])
 
     RefreshReportingViews.call
 
@@ -36,21 +30,8 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
     user = create(:user)
     facility = create(:facility)
 
-    create(
-      :blood_pressure,
-      patient: patient,
-      user: user,
-      facility: facility,
-      recorded_at: june_2021[:over_3_months_ago]
-    )
-
-    create(
-      :blood_pressure,
-      patient: patient,
-      user: user,
-      facility: facility,
-      recorded_at: june_2021[:under_3_months_ago]
-    )
+    create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: june_2021[:over_3_months_ago])
+    create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: june_2021[:under_3_months_ago])
 
     RefreshReportingViews.call
 
@@ -65,21 +46,8 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
     another_user = create(:user)
     facility = create(:facility)
 
-    create(
-      :blood_pressure,
-      patient: patient,
-      user: user,
-      facility: facility,
-      recorded_at: june_2021[:now]
-    )
-
-    create(
-      :blood_pressure,
-      patient: patient,
-      user: another_user,
-      facility: facility,
-      recorded_at: june_2021[:now]
-    )
+    create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: june_2021[:now])
+    create(:blood_pressure, patient: patient, user: another_user, facility: facility, recorded_at: june_2021[:now])
 
     RefreshReportingViews.call
 
@@ -94,21 +62,8 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
     facility = create(:facility)
     another_facility = create(:facility)
 
-    create(
-      :blood_pressure,
-      patient: patient,
-      user: user,
-      facility: facility,
-      recorded_at: june_2021[:now]
-    )
-
-    create(
-      :blood_pressure,
-      patient: patient,
-      user: user,
-      facility: another_facility,
-      recorded_at: june_2021[:now]
-    )
+    create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: june_2021[:now])
+    create(:blood_pressure, patient: patient, user: user, facility: another_facility, recorded_at: june_2021[:now])
 
     RefreshReportingViews.call
 
@@ -123,21 +78,8 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
     user = create(:user)
     facility = create(:facility)
 
-    create(
-      :blood_pressure,
-      patient: patient,
-      user: user,
-      facility: facility,
-      recorded_at: june_2021[:now]
-    )
-
-    create(
-      :blood_pressure,
-      patient: another_patient,
-      user: user,
-      facility: facility,
-      recorded_at: june_2021[:now]
-    )
+    create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: june_2021[:now])
+    create(:blood_pressure, patient: another_patient, user: user, facility: facility, recorded_at: june_2021[:now])
 
     RefreshReportingViews.call
 
@@ -151,13 +93,7 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
     user = create(:user)
     facility = create(:facility)
 
-    create(
-      :blood_pressure,
-      patient: patient,
-      user: user,
-      facility: facility,
-      recorded_at: june_2021[:end_of_month]
-    )
+    create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: june_2021[:end_of_month])
 
     RefreshReportingViews.call
 
@@ -169,21 +105,8 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
     user = create(:user)
     facility = create(:facility)
 
-    create(
-      :blood_pressure,
-      patient: patient,
-      user: user,
-      facility: facility,
-      recorded_at: june_2021[:beginning_of_month]
-    )
-
-    create(
-      :blood_pressure,
-      patient: patient,
-      user: user,
-      facility: facility,
-      recorded_at: june_2021[:end_of_month]
-    )
+    create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: june_2021[:beginning_of_month])
+    create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: june_2021[:end_of_month])
 
     RefreshReportingViews.call
 
@@ -197,13 +120,7 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
     user = create(:user)
     facility = create(:facility)
 
-    create(
-      :blood_pressure,
-      patient: patient,
-      user: user,
-      facility: facility,
-      recorded_at: june_2021[:under_12_months_ago]
-    )
+    create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: june_2021[:under_12_months_ago])
 
     RefreshReportingViews.call
 
