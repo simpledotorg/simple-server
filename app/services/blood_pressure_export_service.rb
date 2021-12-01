@@ -51,7 +51,7 @@ class BloodPressureExportService
 
         csv << row
         facilities = data[size]["facilities"]
-        facilities.each do |facility|
+        facilities.sort_by { |a| a["Facilities"] }.each do |facility|
           facility_row = []
           facility_row << facility["Facilities"]
           facility_row << facility["Total assigned"]
