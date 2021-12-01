@@ -51,7 +51,9 @@ class MyFacilitiesController < AdminController
     facilities = filter_facilities
     service = BloodPressureExportService.new(start_period: @start_period, end_period: @period, facilities: facilities)
     csv_data = service.as_csv
-    filename = "Blood Pressure Data #{@selected_facility_group.name}.csv"
+    zones = @selected_zones.size == 1 ? @selected_zones.first.titleize : "All #{t("region_type.block").pluralize}"
+    sizes = @selected_facility_sizes.size == 1 ? Facility.localized_facility_size(@selected_facility_sizes.first) : "All facility sizes"
+    filename = "Blood Pressure Data #{@selected_facility_group.name}, #{zones}, #{sizes}.csv"
     send_data csv_data, type: "text/csv", filename: filename
   end
 
