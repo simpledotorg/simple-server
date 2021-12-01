@@ -17,6 +17,7 @@ class MyFacilitiesController < AdminController
   before_action :set_last_updated_at
 
   def index
+
     @facilities = current_admin.accessible_facilities(:view_reports)
     users = current_admin.accessible_users(:manage)
 
