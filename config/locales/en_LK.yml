@@ -40,3 +40,8 @@ en_LK:
         small: "Divisional Hospital"
         medium: "Base Hospital"
         large: "District General Hospital"
+      pluralized_facility_size:
+        community: "Primary medical care units"
+        small: "Divisional Hospitals"
+        medium: "Base Hospitals"
+        large: "District General Hospitals"

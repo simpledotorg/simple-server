@@ -200,6 +200,7 @@ Rails.application.routes.draw do
   namespace :my_facilities do
     root to: "/my_facilities#index", as: "overview"
     get "blood_pressure_control", to: redirect("/my_facilities/bp_controlled")
+    get "csv_maker", to: "csv_maker" ##################### DO I KEEP THIS ROUTE I MADE
     get "bp_controlled", to: "bp_controlled"
     get "bp_not_controlled", to: "bp_not_controlled"
     get "registrations", to: redirect("/my_facilities/")
