@@ -31,15 +31,19 @@ class AdminController < ApplicationController
   end
 
   def set_bust_cache
-    RequestStore.store[:bust_cache] = true if params[:bust_cache].present?
+    RequestStore.store[:bust_cache] = true if safe_admin_params[:bust_cache].present?
   end
 
   helper_method :current_admin
 
   private
 
+  def safe_admin_params
+    params.permit(:bust_cache, f: [:follow_ups_v2])
+  end
+
   def set_feature_flags_from_params
-    flipper_params = params.permit(f: [:follow_ups_v2])[:f]
+    flipper_params = safe_admin_params[:f]
     if flipper_params && flipper_params[:follow_ups_v2]
       Flipper.enable(:follow_ups_v2)
     end

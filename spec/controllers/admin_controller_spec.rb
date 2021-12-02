@@ -1,6 +1,9 @@
 require "rails_helper"
 
 RSpec.describe AdminController, type: :controller do
+  before { ActionController::Parameters.action_on_unpermitted_parameters = :raise }
+  after { ActionController::Parameters.action_on_unpermitted_parameters = :log }
+
   controller do
     after_action :verify_authorization_attempted, only: [:not_authorized, :authorized, :authorization_not_attempted]
 
@@ -120,10 +123,6 @@ RSpec.describe AdminController, type: :controller do
   end
 
   context "flipper info" do
-    before do
-      ActionController::Parameters.action_on_unpermitted_parameters = :raise
-    end
-
     it "sends enabled features as datadog tag" do
       Flipper.enable(:enabled_1)
       Flipper.enable(:enabled_2)
