@@ -107,6 +107,14 @@ describe Notification, type: :model do
       expect(notification.delivery_result).to eq(:failed)
     end
 
+    it "is failed if notification is cancelled even if successful communications are present" do
+      notification = create(:notification, status: :cancelled)
+      successful_communication = create(:communication, notification: notification, user: nil, appointment: nil)
+      create(:twilio_sms_delivery_detail, :sent, communication: successful_communication)
+
+      expect(notification.delivery_result).to eq(:failed)
+    end
+
     it "is success if at least one successful deliveries are present" do
       notification = create(:notification)
 
