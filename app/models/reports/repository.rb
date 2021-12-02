@@ -118,7 +118,7 @@ module Reports
       end
     end
 
-    # Returns Follow ups per Region / Period. Takes an optional group_by clause (commonly used to group by `blood_pressures.user_id`)
+    # Returns Follow ups per Region / Period. Takes an optional group_by clause (commonly used to group by user_id)
     memoize def hypertension_follow_ups(group_by: nil)
       if follow_ups_v2?
         follow_ups_v2_query(group_by: group_by)
