@@ -5,7 +5,7 @@ WITH follow_up_blood_pressures AS (
     'BloodPressure' AS visit_type,
     bp.facility_id,
     bp.user_id,
-    bp.recorded_at AS visit_at,
+    bp.recorded_at AS visited_at,
     to_char(bp.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (
         SELECT current_setting('TIMEZONE')), 'YYYY-MM') AS month_string
   FROM patients p
@@ -21,7 +21,7 @@ follow_up_blood_sugars AS (
    'BloodSugar' AS visit_type,
     bs.facility_id,
     bs.user_id,
-    bs.recorded_at AS visit_at,
+    bs.recorded_at AS visited_at,
     to_char(bs.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (
         SELECT current_setting('TIMEZONE')), 'YYYY-MM') AS month_string
 FROM patients p 
@@ -36,7 +36,7 @@ follow_up_prescription_drugs AS (
     'PrescriptionDrug' AS visit_type,
     pd.facility_id,
     pd.user_id,
-    pd.device_created_at AS visit_at,
+    pd.device_created_at AS visited_at,
     to_char(pd.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (
         SELECT current_setting('TIMEZONE')), 'YYYY-MM') AS month_string
   FROM patients p
@@ -51,7 +51,7 @@ follow_up_appointments AS (
     'Appointment' AS visit_type,
     app.creation_facility_id AS facility_id,
     app.user_id,
-    app.device_created_at as visit_at,
+    app.device_created_at as visited_at,
     to_char(app.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (
         SELECT current_setting('TIMEZONE')), 'YYYY-MM') AS month_string
 FROM patients p
@@ -73,7 +73,7 @@ SELECT DISTINCT ON (cal.month_string, all_follow_ups.facility_id, all_follow_ups
   all_follow_ups.user_id,
   all_follow_ups.visit_id,
   all_follow_ups.visit_type,
-  all_follow_ups.visit_at,
+  all_follow_ups.visited_at,
   cal.*
 FROM
   all_follow_ups
