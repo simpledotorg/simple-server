@@ -33,7 +33,7 @@ class AppointmentsController < AdminController
     call_result = appointment_params[:call_result].to_sym
     search_filters = appointment_params[:search_filters]&.split || []
 
-    if set_appointment_status_from_call_result(@appointment, call_result)
+    if set_appointment_status_and_call_result(@appointment, call_result)
       appt_params = {facility_id: selected_facility_id, page: page, search_filters: search_filters}
       notice = %(Saved. #{@appointment.patient.full_name} marked as "#{call_result.to_s.humanize}")
       redirect_to appointments_url(params: appt_params), notice: notice
@@ -57,15 +57,15 @@ class AppointmentsController < AdminController
     params.require(:appointment).permit(:call_result, :search_filters)
   end
 
-  def set_appointment_status_from_call_result(appointment, call_result)
+  def set_appointment_status_and_call_result(appointment, call_result)
     if call_result == :agreed_to_visit
-      appointment.mark_patient_agreed_to_visit
-    elsif call_result == :patient_has_already_visited
-      appointment.mark_patient_already_visited
+      appointment.mark_patient_agreed_to_visit(current_admin)
+    elsif call_result == :already_visited
+      appointment.mark_patient_already_visited(current_admin)
     elsif call_result == :remind_to_call_later
-      appointment.mark_remind_to_call_later
+      appointment.mark_remind_to_call_later(current_admin)
     elsif Appointment.cancel_reasons.value? call_result.to_s
-      appointment.mark_appointment_cancelled(call_result)
+      appointment.mark_appointment_cancelled(current_admin, call_result)
     end
 
     appointment.save
