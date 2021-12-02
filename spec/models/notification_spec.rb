@@ -39,7 +39,7 @@ describe Notification, type: :model do
         notification.message,
         facility_name: notification.subject.facility.name,
         patient_name: notification.patient.full_name,
-        appointment_date: notification.subject.scheduled_date,
+        appointment_date: notification.subject.scheduled_date.strftime("%d-%m-%Y"),
         locale: "mr-IN"
       )
       expect(notification.localized_message).to eq(expected_message)

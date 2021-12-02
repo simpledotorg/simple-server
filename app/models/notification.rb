@@ -52,7 +52,7 @@ class Notification < ApplicationRecord
         message,
         facility_name: facility.name,
         patient_name: patient.full_name,
-        appointment_date: subject&.scheduled_date,
+        appointment_date: subject&.scheduled_date&.strftime("%d-%m-%Y"),
         locale: facility.locale
       )
     when "missed_visit_reminder"
@@ -60,7 +60,7 @@ class Notification < ApplicationRecord
         message,
         facility_name: subject.facility.name,
         patient_name: patient.full_name,
-        appointment_date: subject.scheduled_date,
+        appointment_date: subject.scheduled_date.strftime("%d-%m-%Y"),
         locale: subject.facility.locale
       )
     when "test_message"
