@@ -14,6 +14,17 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
     freeze_time_for_reporting_specs(example)
   end
 
+  it "does not contain discarded patients" do
+    patient = create(:patient, recorded_at: june_2021[:long_ago])
+    create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: june_2021[:now])
+    patient.discard
+
+    RefreshReportingViews.call
+
+    follow_up = described_class.find_by(patient: patient, user: user, facility: facility)
+    expect(follow_up).to be_nil
+  end
+
   it "contains records for patient BPs" do
     patient = create(:patient, recorded_at: june_2021[:long_ago])
     create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: june_2021[:now])

@@ -9,10 +9,11 @@ WITH follow_up_blood_pressures AS (
     to_char(bp.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (
         SELECT current_setting('TIMEZONE')), 'YYYY-MM') AS month_string
   FROM patients p
-    INNER JOIN blood_pressures bp 
+    INNER JOIN blood_pressures bp
       ON p.id = bp.patient_id
-      AND date_trunc('month', bp.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE'))) 
+      AND date_trunc('month', bp.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
         > date_trunc('month', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
+  WHERE p.deleted_at IS NULL
 ),
 follow_up_blood_sugars AS (
   SELECT DISTINCT ON (patient_id, facility_id, user_id, month_string)
@@ -24,10 +25,11 @@ follow_up_blood_sugars AS (
     bs.recorded_at AS visited_at,
     to_char(bs.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (
         SELECT current_setting('TIMEZONE')), 'YYYY-MM') AS month_string
-FROM patients p 
-INNER JOIN blood_sugars bs ON p.id = bs.patient_id
-    AND date_trunc('month', bs.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE'))) 
-      > date_trunc('month', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
+  FROM patients p
+  INNER JOIN blood_sugars bs ON p.id = bs.patient_id
+      AND date_trunc('month', bs.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
+        > date_trunc('month', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
+  WHERE p.deleted_at IS NULL
 ),
 follow_up_prescription_drugs AS (
   SELECT DISTINCT ON (patient_id, facility_id, user_id, month_string)
@@ -43,6 +45,7 @@ follow_up_prescription_drugs AS (
   INNER JOIN prescription_drugs pd ON p.id = pd.patient_id
     AND date_trunc('month', pd.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
       > date_trunc('month', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
+  WHERE p.deleted_at IS NULL
 ),
 follow_up_appointments AS (
   SELECT DISTINCT ON (patient_id, facility_id, user_id, month_string)
@@ -56,8 +59,9 @@ follow_up_appointments AS (
         SELECT current_setting('TIMEZONE')), 'YYYY-MM') AS month_string
 FROM patients p
   INNER JOIN appointments app ON p.id = app.patient_id
-    AND date_trunc('month', app.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE'))) 
+    AND date_trunc('month', app.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
       > date_trunc('month', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
+  WHERE p.deleted_at IS NULL
 ),
 all_follow_ups AS (
   SELECT *
