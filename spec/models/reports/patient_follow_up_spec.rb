@@ -8,6 +8,7 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
   end
 
   let(:user) { create(:user) }
+  let(:facility) { create(:facility) }
 
   around do |example|
     freeze_time_for_reporting_specs(example)
@@ -15,8 +16,6 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
 
   it "contains records for patient BPs" do
     patient = create(:patient, recorded_at: june_2021[:long_ago])
-    facility = create(:facility)
-
     create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: june_2021[:now])
 
     RefreshReportingViews.call
@@ -28,8 +27,17 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
 
   it "contains records for appointments" do
     patient = create(:patient, recorded_at: june_2021[:long_ago])
-    facility = create(:facility)
+    create(:appointment, patient: patient, user: user, facility: facility, recorded_at: june_2021[:now])
 
+    RefreshReportingViews.call
+
+    expect(described_class.count).to eq(1)
+    follow_up = described_class.find_by(patient: patient, user: user, facility: facility)
+    expect(follow_up.month_string).to eq(june_2021[:month_string])
+  end
+
+  it "contains records for appointments" do
+    patient = create(:patient, recorded_at: june_2021[:long_ago])
     create(:appointment, patient: patient, user: user, facility: facility, recorded_at: june_2021[:now])
 
     RefreshReportingViews.call
@@ -56,7 +64,6 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
   it "contains separate records for distinct users in the same month" do
     patient = create(:patient, recorded_at: june_2021[:long_ago])
     another_user = create(:user)
-    facility = create(:facility)
 
     create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: june_2021[:now])
     create(:blood_pressure, patient: patient, user: another_user, facility: facility, recorded_at: june_2021[:now])
@@ -70,7 +77,6 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
 
   it "contains separate records for distinct facilities" do
     patient = create(:patient, recorded_at: june_2021[:long_ago])
-    facility = create(:facility)
     another_facility = create(:facility)
 
     create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: june_2021[:now])
@@ -86,7 +92,6 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
   it "contains separate records for distinct patients" do
     patient = create(:patient, recorded_at: june_2021[:long_ago])
     another_patient = create(:patient, recorded_at: june_2021[:long_ago])
-    facility = create(:facility)
 
     create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: june_2021[:now])
     create(:blood_pressure, patient: another_patient, user: user, facility: facility, recorded_at: june_2021[:now])
@@ -100,8 +105,6 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
 
   it "does not count activity in the registration month" do
     patient = create(:patient, recorded_at: june_2021[:beginning_of_month])
-    facility = create(:facility)
-
     create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: june_2021[:end_of_month])
 
     RefreshReportingViews.call
@@ -111,7 +114,6 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
 
   it "does not count more than one visit per month for the same patient, facility, and user" do
     patient = create(:patient, recorded_at: june_2021[:long_ago])
-    facility = create(:facility)
 
     create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: june_2021[:beginning_of_month])
     create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: june_2021[:end_of_month])
@@ -128,8 +130,6 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
 
   it "identifies months in the reporting timezone" do
     patient = create(:patient, recorded_at: june_2021[:over_12_months_ago])
-    facility = create(:facility)
-
     create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: june_2021[:under_12_months_ago])
 
     RefreshReportingViews.call
