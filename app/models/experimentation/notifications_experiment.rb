@@ -87,7 +87,7 @@ module Experimentation
       time(__method__) do
         treatment_group_memberships
           .joins(:patient, treatment_group: :reminder_templates)
-          .where("messages -> reminder_templates.message ->> 'notification_status' IN (?)", :pending)
+          .where("messages -> reminder_templates.message ->> 'notification_status' = ?", :pending)
           .select("messages -> reminder_templates.message ->> 'notification_id' AS notification_id")
           .select("reminder_templates.message, treatment_group_memberships.*")
           .in_batches(of: BATCH_SIZE).each_record do |membership|
