@@ -13,7 +13,7 @@ module Reports
     attr_reader :registered_patients_query
     attr_reader :schema
 
-    def initialize(regions, periods:, reporting_schema_v2: Reports.reporting_schema_v2?, follow_ups_v2: false)
+    def initialize(regions, periods:, reporting_schema_v2: Reports.reporting_schema_v2?, follow_ups_v2: Flipper.enabled?(:follow_ups_v2))
       @regions = Array(regions).map(&:region)
       @periods = if periods.is_a?(Period)
         Range.new(periods, periods)

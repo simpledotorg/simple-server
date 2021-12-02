@@ -6,6 +6,7 @@ class AdminController < ApplicationController
   before_action :current_admin
   before_action :set_bust_cache
   before_action :set_reporting_schema_v2
+  before_action :set_feature_flags_from_params
   before_action :set_datadog_tags
 
   after_action :verify_authorization_attempted, except: [:root]
@@ -36,6 +37,13 @@ class AdminController < ApplicationController
   helper_method :current_admin
 
   private
+
+  def set_feature_flags_from_params
+    flipper_params = params.permit(f: [:follow_ups_v2])[:f]
+    if flipper_params && flipper_params[:follow_ups_v2]
+      Flipper.enable(:follow_ups_v2)
+    end
+  end
 
   # We only want to set this via query string, as it now defaults to enabled globally
   def set_reporting_schema_v2

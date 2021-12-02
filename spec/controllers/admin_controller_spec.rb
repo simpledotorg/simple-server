@@ -120,6 +120,10 @@ RSpec.describe AdminController, type: :controller do
   end
 
   context "flipper info" do
+    before do
+      ActionController::Parameters.action_on_unpermitted_parameters = :raise
+    end
+
     it "sends enabled features as datadog tag" do
       Flipper.enable(:enabled_1)
       Flipper.enable(:enabled_2)
@@ -132,6 +136,12 @@ RSpec.describe AdminController, type: :controller do
       expect(Datadog.tracer).to receive(:active_span).and_return(span_double)
       routes.draw { get "authorized" => "admin#authorized" }
       get :authorized
+    end
+
+    it "enables follow_ups_v2 if set" do
+      routes.draw { get "authorized" => "admin#authorized" }
+      get :authorized, params: {f: {follow_ups_v2: 1}}
+      expect(Flipper.enabled?(:follow_ups_v2)).to be_truthy
     end
   end
 
