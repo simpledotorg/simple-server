@@ -59,7 +59,7 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
     expect(follow_ups.map(&:month_string).sort).to eq(["2021-03", "2021-04"])
   end
 
-  it "contains separate records for distinct users" do
+  it "contains separate records for distinct users in the same month" do
     patient = create(:patient, recorded_at: june_2021[:long_ago])
     another_user = create(:user)
     facility = create(:facility)
@@ -115,12 +115,15 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
     expect(described_class.count).to eq(0)
   end
 
-  it "does not count more than one record per month for the same patient, facility, and user" do
+  it "does not count more than one visit per month for the same patient, facility, and user" do
     patient = create(:patient, recorded_at: june_2021[:long_ago])
     facility = create(:facility)
 
     create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: june_2021[:beginning_of_month])
     create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: june_2021[:end_of_month])
+    create(:blood_sugar, patient: patient, user: user, facility: facility, recorded_at: june_2021[:end_of_month])
+    create(:appointment, patient: patient, user: user, facility: facility, recorded_at: june_2021[:end_of_month])
+    create(:prescription_drug, patient: patient, user: user, facility: facility, recorded_at: june_2021[:end_of_month])
 
     RefreshReportingViews.call
 
