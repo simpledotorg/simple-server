@@ -39,12 +39,11 @@ class AdminController < ApplicationController
   private
 
   def safe_admin_params
-    params.permit(:v2, :bust_cache, f: [:follow_ups_v2])
+    params.permit(:v2, :bust_cache, :_follow_ups_v2)
   end
 
   def set_feature_flags_from_params
-    flipper_params = safe_admin_params[:f]
-    if flipper_params && flipper_params[:follow_ups_v2]
+    if safe_admin_params[:_follow_ups_v2]
       Flipper.enable(:follow_ups_v2)
     end
   end
