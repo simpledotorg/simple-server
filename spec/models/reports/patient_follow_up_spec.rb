@@ -13,6 +13,12 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
     freeze_time_for_reporting_specs(example)
   end
 
+  # without the distinct on 
+  #   -> facility 7519
+  #   -> all 1484532
+  # with distinct on 
+  #   -> first facility 7463
+  #   -> all 1459613
   it "contains records for patient BPs" do
     patient = create(:patient, recorded_at: june_2021[:long_ago])
     facility = create(:facility)
