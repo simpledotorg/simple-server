@@ -23,7 +23,6 @@ module Reports
       @period_type = @periods.first.type
       @reporting_schema_v2 = reporting_schema_v2
       @follow_ups_v2 = follow_ups_v2
-      d @follow_ups_v2
       raise ArgumentError, "Quarter periods not supported" if @period_type != :month
       @schema = if reporting_schema_v2?
         SchemaV2.new(@regions, periods: @periods)
