@@ -6,7 +6,7 @@ class AdminController < ApplicationController
   before_action :current_admin
   before_action :set_bust_cache
   before_action :set_reporting_schema_v2
-  before_action :set_feature_flags_from_params
+  around_action :set_feature_flags_from_params
   before_action :set_datadog_tags
 
   after_action :verify_authorization_attempted, except: [:root]
@@ -44,7 +44,15 @@ class AdminController < ApplicationController
 
   def set_feature_flags_from_params
     if safe_admin_params[:_follow_ups_v2]
+      original = Flipper.enabled?(:follow_ups_v2)
       Flipper.enable(:follow_ups_v2)
+    end
+    yield
+  ensure # reset the flag back to original state
+    if original
+      Flipper[:follow_ups_v2].enable
+    else
+      Flipper[:follow_ups_v2].disable
     end
   end
 

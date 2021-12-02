@@ -139,8 +139,9 @@ RSpec.describe AdminController, type: :controller do
 
     it "enables follow_ups_v2 if set" do
       routes.draw { get "authorized" => "admin#authorized" }
+      expect(Flipper[:follow_ups_v2]).to receive(:enable)
       get :authorized, params: {_follow_ups_v2: 1}
-      expect(Flipper.enabled?(:follow_ups_v2)).to be_truthy
+      expect(Flipper.enabled?(:follow_ups_v2)).to be_falsey
     end
   end
 
