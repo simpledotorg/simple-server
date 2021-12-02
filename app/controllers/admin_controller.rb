@@ -39,7 +39,7 @@ class AdminController < ApplicationController
   private
 
   def safe_admin_params
-    params.permit(:bust_cache, f: [:follow_ups_v2])
+    params.permit(:v2, :bust_cache, f: [:follow_ups_v2])
   end
 
   def set_feature_flags_from_params
@@ -52,7 +52,7 @@ class AdminController < ApplicationController
   # We only want to set this via query string, as it now defaults to enabled globally
   def set_reporting_schema_v2
     if params.key?(:v2)
-      param_flag = ActiveRecord::Type::Boolean.new.deserialize(params[:v2])
+      param_flag = ActiveRecord::Type::Boolean.new.deserialize(safe_admin_params[:v2])
       Reports.reporting_schema_v2 = param_flag
     end
   end
