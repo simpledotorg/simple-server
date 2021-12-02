@@ -7,7 +7,6 @@ module Reports
 
     attr_reader :bp_measures_query
     attr_reader :follow_ups_query
-    attr_reader :no_bp_measure_query
     attr_reader :period_type
     attr_reader :periods
     attr_reader :regions
@@ -33,7 +32,6 @@ module Reports
 
       @bp_measures_query = BPMeasuresQuery.new
       @follow_ups_query = FollowUpsQuery.new
-      @no_bp_measure_query = NoBPMeasureQuery.new
       @registered_patients_query = RegisteredPatientsQuery.new
     end
 
