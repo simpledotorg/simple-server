@@ -14,22 +14,6 @@ This is the backend for the Simple app to help track hypertensive patients acros
 * [Contributing](#contributing)
 
 ## Development
-### Note for Apple Silicon M1 Macs
-
-With recent gem updates, all of our gems and dependencies now build ARM native on m1 macs. This means you do **not** need to use Rosetta to set up simple-server, and in fact using Rosetta will make things more complicated and confusing in day to day dev experience, and also hurts performance.
-
-There is one possible caveat to this -- if you see any problems with google-protobuf, run the following:
-
-```
-gem uninstall google-protobuf
-gem install google-protobuf -v 3.17.3 --platform=ruby
-```
-
-Then rerun bundler and everything will work. This is being tracked over in https://github.com/protocolbuffers/protobuf/issues/8682, hopefully there will be a better fix soon.
-
-Beyond that, the setup instructions are now the same for Intel or M1 macs, as you can install homebrew normally and go from there.
-
-### Dependencies
 
 We have a `bin/setup` script that does most of the work of getting things setup, but you need a few things in place first.
 If you are on a Mac, install [homebrew](https://brew.sh) and then install rbenv, redis, postgres@10, and yarn:
@@ -37,8 +21,6 @@ If you are on a Mac, install [homebrew](https://brew.sh) and then install rbenv,
 ```
 brew install rbenv ruby-build redis yarn postgresql@10
 ```
-
-Follow the instructions for postgresql@10 to add the proper paths to your shell, otherwise the `pg` gem won't build.
 
 ### bin/setup
 
@@ -58,6 +40,21 @@ $ bin/setup
 ```
 
 If you encounter issues with this script, please open [a new issue with details](https://github.com/simpledotorg/simple-server/issues/new?title=Problems+with+bin/setup). Please include the entire log from bin/setup, as well as your computer / OS details.
+
+### Note for Apple Silicon M1 Macs
+
+With recent gem updates, all of our gems and dependencies now build ARM native on m1 macs. This means you do **not** need to use Rosetta to set up simple-server, and in fact using Rosetta will make things more complicated and confusing in day to day dev experience, and also hurts performance.
+
+There is one possible caveat to this -- if you see any problems with google-protobuf, run the following:
+
+```
+gem uninstall google-protobuf
+gem install google-protobuf -v 3.17.3 --platform=ruby
+```
+
+Then rerun bundler and everything will work. This is being tracked over in https://github.com/protocolbuffers/protobuf/issues/8682, hopefully there will be a better fix soon.
+
+Beyond that, the setup instructions are now the same for Intel or M1 macs, as you can install homebrew normally and go from there.
 
 #### Docker Compose
 
