@@ -110,7 +110,7 @@ module Reports
             result[period][group] = count
           }
         else
-          query.group_by_period(:month, :month_date, {format: Period.formatter(period_type)}).count
+          query.group_by_period(:month, :month_date, {format: Period.formatter(period_type)}).select(:patient_id).distinct.count
         end
         results[region.slug] = counts
       end
