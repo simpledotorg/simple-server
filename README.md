@@ -27,25 +27,18 @@ gem install google-protobuf -v 3.17.3 --platform=ruby
 
 Then rerun bundler and everything will work. This is being tracked over in https://github.com/protocolbuffers/protobuf/issues/8682, hopefully there will be a better fix soon.
 
-Beyond that, tThe setup instructions are now the same for Intel or M1 macs, as you can install homebrew normally and go from there.
+Beyond that, the setup instructions are now the same for Intel or M1 macs, as you can install homebrew normally and go from there.
 
 ### Dependencies
 
 We have a `bin/setup` script that does most of the work of getting things setup, but you need a few things in place first.
-If you are on a Mac, install [homebrew](https://brew.sh) and then install rbenv, redis, and yarn:
+If you are on a Mac, install [homebrew](https://brew.sh) and then install rbenv, redis, postgres@10, and yarn:
 
 ```
-brew install rbenv ruby-build redis yarn
+brew install rbenv ruby-build redis yarn postgresql@10
 ```
 
-You also need Postgres 10 - [Postgres.app](https://postgresapp.com) is a nice small GUI to manage PostgreSQL on a mac,
-though it isn't required. You can install it via brew:
-
-```
-brew cask install postgres
-```
-
-Then open Postgres.app and ensure you have a PostgreSQL 10 server initialized.
+Follow the instructions for postgresql@10 to add the proper paths to your shell, otherwise the `pg` gem won't build.
 
 ### bin/setup
 
