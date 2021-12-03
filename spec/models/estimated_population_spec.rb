@@ -43,5 +43,16 @@ RSpec.describe EstimatedPopulation, type: :model do
       expect(block_population).not_to be_valid
       expect(facility_population).not_to be_valid
     end
+
+    fit "sums all district populations for state" do
+      state_region = Region.create!(name: "State", region_type: "state", reparent_to: Region.root)
+      district_region_1 = Region.create!(name: "District 1", region_type: "district", reparent_to: state_region)
+      district_region_2 = Region.create!(name: "District 2", region_type: "district", reparent_to: state_region)
+      district_region_3 = Region.create!(name: "District 3", region_type: "district", reparent_to: state_region)
+
+      district_population_1 = EstimatedPopulation.new(population: 1000, diagnosis: "HTN", region_id: district_region_1.id)
+
+      # NEXT: Finish writing test to sum district populations for state
+    end
   end
 end
