@@ -627,10 +627,9 @@ RSpec.describe Reports::Repository, type: :model do
       with_reporting_time_zone do
         start_range = july_2020.advance(months: -24)
         range = (Period.month(start_range)..Period.month(july_2020))
-        repo_v2 = Reports::Repository.new(regions, periods: range)
-        expect(repo_v2.controlled[facility_1.slug]).to eq(repo_v1.controlled[facility_1.slug])
-        expect(repo_v2.uncontrolled[facility_1.slug]).to eq(repo_v1.uncontrolled[facility_1.slug])
-        result = repo_v2.controlled
+        repo = Reports::Repository.new(regions, periods: range)
+        expect(repo.uncontrolled[facility_1.slug]).to eq(repo_v1.uncontrolled[facility_1.slug])
+        result = repo.controlled
 
         facility_1_results = result[facility_1.slug]
 
