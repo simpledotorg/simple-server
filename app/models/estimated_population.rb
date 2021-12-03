@@ -6,4 +6,12 @@ class EstimatedPopulation < ApplicationRecord
   validates :diagnosis, presence: true
 
   enum diagnosis: { hypertension: "HTN", diabetes: "DM" }
+
+  validate :can_only_be_set_for_district_or_state
+
+  def can_only_be_set_for_district_or_state
+    unless region.region_type === "state" || region.region_type === "district"
+      errors.add(:region, "region type can only be district or state")
+    end
+  end
 end
