@@ -43,15 +43,15 @@ class AdminController < ApplicationController
 
   def set_feature_flags_from_params
     if safe_admin_params[:_follow_ups_v2]
-      original = Flipper.enabled?(:follow_ups_v2)
-      Flipper.enable(:follow_ups_v2)
+      original = current_admin.feature_enabled?(:follow_ups_v2)
+      current_admin.enable_feature(:follow_ups_v2)
     end
     yield
   ensure # reset the flag back to original state
     if original
-      Flipper[:follow_ups_v2].enable
+      current_admin.enable_feature(:follow_ups_v2)
     else
-      Flipper[:follow_ups_v2].disable
+      current_admin.disable_feature(:follow_ups_v2)
     end
   end
 
