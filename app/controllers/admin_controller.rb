@@ -42,16 +42,16 @@ class AdminController < ApplicationController
   end
 
   def set_feature_flags_from_params
-    if safe_admin_params[:_follow_ups_v2]
+    follow_ups_override = safe_admin_params[:_follow_ups_v2]
+    if follow_ups_override
+      override = ActiveModel::Type::Boolean.new.deserialize(safe_admin_params[:_follow_ups_v2])
       original = current_admin.feature_enabled?(:follow_ups_v2)
-      current_admin.enable_feature(:follow_ups_v2)
+      current_admin.set_feature(:follow_ups_v2, override)
     end
     yield
   ensure # reset the flag back to original state
-    if original
-      current_admin.enable_feature(:follow_ups_v2)
-    else
-      current_admin.disable_feature(:follow_ups_v2)
+    if follow_ups_override 
+      current_admin.set_feature(:follow_ups_v2, original)
     end
   end
 

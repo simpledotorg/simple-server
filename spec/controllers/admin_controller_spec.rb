@@ -147,8 +147,10 @@ RSpec.describe AdminController, type: :controller do
       expect(Flipper.enabled?(:follow_ups_v2, user)).to be_falsey
     end
 
-    it "returns state of flag to original for the admin" do
+    it "disables follow_ups_v2 if flag is 0" do
       Flipper.enable(:follow_ups_v2)
+      expect(Flipper).to receive(:disable).with(:follow_ups_v2, user)
+      expect(Flipper).to receive(:enable).with(:follow_ups_v2, user)
       get :authorized, params: {_follow_ups_v2: 0}
       expect(Flipper.enabled?(:follow_ups_v2, user)).to be_truthy
       expect(Flipper.enabled?(:follow_ups_v2)).to be_truthy
