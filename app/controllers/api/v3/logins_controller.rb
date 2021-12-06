@@ -21,13 +21,13 @@ class Api::V3::LoginsController < APIController
       render json: response, status: :ok
     else
       log_failure(result)
-      render json: get_error_response(result), status: :unauthorized
+      render json: error_response(result), status: :unauthorized
     end
   end
 
   private
 
-  def get_error_response(result)
+  def error_response(result)
     response = {
       errors: {
         user: [result.error_message]
