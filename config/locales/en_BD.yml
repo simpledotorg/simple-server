@@ -35,3 +35,8 @@ en_BD:
         small: "USC"
         medium: "UHC"
         large: "DH and larger"
+      pluralized_facility_size:
+        community: "CCs"
+        small: "USCs"
+        medium: "UHCs"
+        large: "DHs and larger"

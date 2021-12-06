@@ -56,6 +56,7 @@ module Seed
     def feature_flags_enabled_by_default
       [
         :drug_stocks,
+        :follow_ups_v2,
         :notifications,
         :reporting_schema_v2,
         (:auto_approve_users if SimpleServer.env.android_review?),
