@@ -4,8 +4,8 @@ class AdminController < ApplicationController
 
   before_action :authenticate_email_authentication!
   before_action :current_admin
-  before_action :set_bust_cache
   around_action :set_feature_flags_from_params
+  before_action :set_bust_cache
   before_action :set_datadog_tags
 
   after_action :verify_authorization_attempted, except: [:root]
