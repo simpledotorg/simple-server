@@ -1,6 +1,9 @@
 require "rails_helper"
 
 RSpec.describe AdminController, type: :controller do
+  before { ActionController::Parameters.action_on_unpermitted_parameters = :raise }
+  after { ActionController::Parameters.action_on_unpermitted_parameters = :log }
+
   controller do
     after_action :verify_authorization_attempted, only: [:not_authorized, :authorized, :authorization_not_attempted]
 
@@ -132,6 +135,13 @@ RSpec.describe AdminController, type: :controller do
       expect(Datadog.tracer).to receive(:active_span).and_return(span_double)
       routes.draw { get "authorized" => "admin#authorized" }
       get :authorized
+    end
+
+    it "enables follow_ups_v2 if set" do
+      routes.draw { get "authorized" => "admin#authorized" }
+      expect(Flipper[:follow_ups_v2]).to receive(:enable)
+      get :authorized, params: {_follow_ups_v2: 1}
+      expect(Flipper.enabled?(:follow_ups_v2)).to be_falsey
     end
   end
 
