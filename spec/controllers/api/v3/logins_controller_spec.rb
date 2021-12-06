@@ -65,7 +65,7 @@ RSpec.describe Api::V3::LoginsController, type: :controller do
         expect(JSON(response.body))
           .to eq("errors" => {
             "user" => ["Your account has been locked for the next 20 minutes. Please wait and try again."]
-          }, "remaining_lockout_duration_in_seconds" => 1200)
+          }, "lockout_duration" => 1200)
       end
     end
 
