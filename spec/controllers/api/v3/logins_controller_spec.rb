@@ -53,6 +53,20 @@ RSpec.describe Api::V3::LoginsController, type: :controller do
             "user" => [I18n.t("login.error_messages.invalid_password")]
           })
       end
+
+      it "responds with remaining lockout duration along with error message for invalid otp" do
+        phone_number_authentication = create(:phone_number_authentication, failed_attempts: 5, locked_at: Time.current)
+        user = create(:user, password: "4304", phone_number_authentications: [phone_number_authentication])
+        post :login_user, params: {user:
+                                       {phone_number: user.phone_number,
+                                        password: password,
+                                        otp: "invalid otp"}}
+        expect(response.status).to eq(401)
+        expect(JSON(response.body))
+          .to eq("errors" => {
+            "user" => ["Your account has been locked for the next 20 minutes. Please wait and try again."]
+          }, "lockout_duration" => 1200)
+      end
     end
 
     describe "audit logs for login" do
