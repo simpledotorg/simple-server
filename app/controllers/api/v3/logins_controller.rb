@@ -21,16 +21,24 @@ class Api::V3::LoginsController < APIController
       render json: response, status: :ok
     else
       log_failure(result)
-      response = {
-        errors: {
-          user: [result.error_message]
-        }
-      }
-      render json: response, status: :unauthorized
+      render json: get_error_response(result), status: :unauthorized
     end
   end
 
   private
+
+  def get_error_response(result)
+    response = {
+      errors: {
+        user: [result.error_message]
+      }
+    }
+    if result.authentication.locked_at
+      response.merge(remaining_lockout_duration_in_seconds: result.authentication.seconds_left_on_lockout)
+    else
+      response
+    end
+  end
 
   def user_to_response(user)
     Api::V3::UserTransformer.to_response(user)
