@@ -7,5 +7,4 @@ module Reports
   def self.default_period
     Period.month(Time.current.in_time_zone(Period::REPORTING_TIME_ZONE))
   end
-
 end
