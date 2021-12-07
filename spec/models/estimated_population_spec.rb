@@ -44,19 +44,42 @@ RSpec.describe EstimatedPopulation, type: :model do
       expect(facility_population).not_to be_valid
     end
 
-    fit "updates state population when district population changes" do
+    it "updates state population when district population is set/updated" do
+      state = Region.create!(name: "State", region_type: "state", reparent_to: Region.root)
+      district_1 = Region.create!(name: "District 1", region_type: "district", reparent_to: state)
+      district_2 = Region.create!(name: "District 2", region_type: "district", reparent_to: state)
+
+      expect(state.estimated_population).to be_nil
+      district_1_population = district_1.create_estimated_population!(population: 1000, diagnosis: "HTN")
+      expect(district_1.estimated_population).to eq(district_1_population)
+      expect(state.reload_estimated_population.population).to eq(1000)
+
+      district_1_population.population = 1500
+      district_1_population.save!
+
+      expect(district_1.estimated_population.population).to eq(1500)
+      expect(state.reload_estimated_population.population).to eq(1500)
+
+      district_2_population = district_2.create_estimated_population!(population: 1000, diagnosis: "HTN")
+      expect(state.reload_estimated_population.population).to eq(2500)
+    end
+
+    fit "updates state population when a district/facility group is deleted" do
       state = Region.create!(name: "State", region_type: "state", reparent_to: Region.root)
       district_1 = Region.create!(name: "District 1", region_type: "district", reparent_to: state)
       district_2 = Region.create!(name: "District 2", region_type: "district", reparent_to: state)
 
       district_1_population = EstimatedPopulation.create!(population: 1000, diagnosis: "HTN", region_id: district_1.id)
-      state_population = EstimatedPopulation.find_by(region_id: state.id)
-
-      expect(state_population.population).to eq(1000)
-
       district_2_population = EstimatedPopulation.create!(population: 1000, diagnosis: "HTN", region_id: district_2.id)
 
-      expect(state_population.population).to eq(2000)
+      expect(district_1.estimated_population.population).to eq(district_1_population.population)
+      expect(district_2.estimated_population.population).to eq(district_2_population.population)
+      expect(state.reload_estimated_population.population).to eq(district_1_population.population + district_2_population.population)
+
+      EstimatedPopulation.find(district_1_population.id).destroy
+
+      expect(district_1.reload_estimated_population).to be_nil
+      expect(state.reload_estimated_population.population).to eq(district_2.estimated_population.population)
     end
   end
 end

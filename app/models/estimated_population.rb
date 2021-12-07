@@ -1,38 +1,37 @@
 class EstimatedPopulation < ApplicationRecord
-  has_one :region
+  belongs_to :region
 
-  validates :population, presence: true
-  validates :region_id, presence: true
+  validates :population, presence: true, numericality: true
   validates :diagnosis, presence: true
 
-  enum diagnosis: { hypertension: "HTN", diabetes: "DM" }
+  enum diagnosis: { HTN: "HTN", DM: "DM" }
 
   validate :can_only_be_set_for_district_or_state
-  validate :update_state_population
+  after_commit :update_state_population
 
   def can_only_be_set_for_district_or_state
-    region_type = Region.find(self.region_id).region_type
+    region_type = region.region_type
 
-    unless region_type === "district" || region_type === "state"
+    unless region_type == "district" || region_type == "state"
       errors.add(:region, "can only set population for a district or a state")
     end
   end
 
+  def is_population_available_for_all_districts
+    # Check if all districts have population set
+  end
+
   def update_state_population
-    region = Region.find(self.region_id)
-    if region.region_type === "district"
-      state = Region.find(region.parent.id)
-      state_population = EstimatedPopulation.find_by(region_id: state.id)
-      if state_population
-        district_populations = self.population
-        state.children.each do |district|
-          unless district.id === self.region_id
-            district_populations += EstimatedPopulation.find_by(region_id: district.id).population
-          end
-        end
-        state_population.population = district_populations
+    if region.district_region?
+      state = region.state_region
+      new_total = state.district_regions.inject(0) {|sum, r| 
+        sum += r.reload_estimated_population&.population || 0
+      }
+      if state.estimated_population
+        state.estimated_population.population = new_total
+        state.estimated_population.save!
       else
-        EstimatedPopulation.create!(population: self.population, diagnosis: "HTN", region_id: state.id)
+        state.create_estimated_population(population: new_total)
       end
     end
   end
