@@ -47,7 +47,7 @@ RSpec.describe Reports::RegionCacheWarmer, type: :model do
     Timecop.freeze("September 1st 2020 00:04:00+00:00:00") do
       RefreshReportingViews.call
       described_class.call
-      repo = Reports::Repository.new(facility_1, periods: Period.current.downto(6), reporting_schema_v2: true)
+      repo = Reports::Repository.new(facility_1, periods: Period.current.downto(6))
       expect(repo.cumulative_assigned_patients[slug][Period.current]).to eq(1)
       expect(repo.uncontrolled[slug][Period.current]).to eq(0)
       expect(repo.controlled[slug][Period.current]).to eq(1)
@@ -57,7 +57,7 @@ RSpec.describe Reports::RegionCacheWarmer, type: :model do
       create(:bp_with_encounter, :hypertensive, facility: facility_1, patient: patient, user: user)
       RefreshReportingViews.call
       described_class.call
-      repo = Reports::Repository.new(facility_1, periods: Period.current.downto(6), reporting_schema_v2: true)
+      repo = Reports::Repository.new(facility_1, periods: Period.current.downto(6))
       expect(repo.cumulative_assigned_patients[slug][Period.current]).to eq(2)
       expect(repo.uncontrolled[slug][Period.current]).to eq(1)
       expect(repo.controlled[slug][Period.current]).to eq(0)
@@ -81,7 +81,7 @@ RSpec.describe Reports::RegionCacheWarmer, type: :model do
       RefreshReportingViews.call
 
       described_class.call
-      repo = Reports::Repository.new(facility_1, periods: Period.current, reporting_schema_v2: true)
+      repo = Reports::Repository.new(facility_1, periods: Period.current)
       expect(repo.schema).to receive(:controlled).never # ensure the cache is hit and we don't retrieve counts again for the rate calc
       repo.controlled_rates
       repo.controlled_rates(with_ltfu: true)
