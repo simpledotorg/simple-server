@@ -91,8 +91,8 @@ module Reports
 
     def follow_ups_v2_query(group_by: nil)
       group_field = case group_by
-        when /user_id/ then :user_id
-        when /gender/ then :patient_gender
+        when /user_id\z/ then :user_id
+        when /gender\z/ then :patient_gender
         when nil then nil
         else raise(ArgumentError, "unknown group for follow ups #{group_by}")
       end
