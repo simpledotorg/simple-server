@@ -50,7 +50,7 @@ class AdminController < ApplicationController
     end
     yield
   ensure # reset the flag back to original state
-    if follow_ups_override 
+    if follow_ups_override
       current_admin.set_feature(:follow_ups_v2, original)
     end
   end

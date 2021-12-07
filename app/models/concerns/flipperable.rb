@@ -23,4 +23,3 @@ module Flipperable
     end
   end
 end
-
