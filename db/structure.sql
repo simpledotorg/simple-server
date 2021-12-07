@@ -51,6 +51,17 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
 COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
 
 
+--
+-- Name: gender_enum; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.gender_enum AS ENUM (
+    'female',
+    'male',
+    'transgender'
+);
+
+
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -2524,6 +2535,7 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
 CREATE MATERIALIZED VIEW public.reporting_patient_follow_ups AS
  WITH follow_up_blood_pressures AS (
          SELECT DISTINCT ON (p.id, bp.facility_id, bp.user_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at)), 'YYYY-MM'::text))) p.id AS patient_id,
+            (p.gender)::public.gender_enum AS patient_gender,
             bp.id AS visit_id,
             'BloodPressure'::text AS visit_type,
             bp.facility_id,
@@ -2535,6 +2547,7 @@ CREATE MATERIALIZED VIEW public.reporting_patient_follow_ups AS
           WHERE (p.deleted_at IS NULL)
         ), follow_up_blood_sugars AS (
          SELECT DISTINCT ON (p.id, bs.facility_id, bs.user_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)), 'YYYY-MM'::text))) p.id AS patient_id,
+            (p.gender)::public.gender_enum AS patient_gender,
             bs.id AS visit_id,
             'BloodSugar'::text AS visit_type,
             bs.facility_id,
@@ -2546,6 +2559,7 @@ CREATE MATERIALIZED VIEW public.reporting_patient_follow_ups AS
           WHERE (p.deleted_at IS NULL)
         ), follow_up_prescription_drugs AS (
          SELECT DISTINCT ON (p.id, pd.facility_id, pd.user_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at)), 'YYYY-MM'::text))) p.id AS patient_id,
+            (p.gender)::public.gender_enum AS patient_gender,
             pd.id AS visit_id,
             'PrescriptionDrug'::text AS visit_type,
             pd.facility_id,
@@ -2557,6 +2571,7 @@ CREATE MATERIALIZED VIEW public.reporting_patient_follow_ups AS
           WHERE (p.deleted_at IS NULL)
         ), follow_up_appointments AS (
          SELECT DISTINCT ON (p.id, app.creation_facility_id, app.user_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at)), 'YYYY-MM'::text))) p.id AS patient_id,
+            (p.gender)::public.gender_enum AS patient_gender,
             app.id AS visit_id,
             'Appointment'::text AS visit_type,
             app.creation_facility_id AS facility_id,
@@ -2568,6 +2583,7 @@ CREATE MATERIALIZED VIEW public.reporting_patient_follow_ups AS
           WHERE (p.deleted_at IS NULL)
         ), all_follow_ups AS (
          SELECT follow_up_blood_pressures.patient_id,
+            follow_up_blood_pressures.patient_gender,
             follow_up_blood_pressures.visit_id,
             follow_up_blood_pressures.visit_type,
             follow_up_blood_pressures.facility_id,
@@ -2577,6 +2593,7 @@ CREATE MATERIALIZED VIEW public.reporting_patient_follow_ups AS
            FROM follow_up_blood_pressures
         UNION
          SELECT follow_up_blood_sugars.patient_id,
+            follow_up_blood_sugars.patient_gender,
             follow_up_blood_sugars.visit_id,
             follow_up_blood_sugars.visit_type,
             follow_up_blood_sugars.facility_id,
@@ -2586,6 +2603,7 @@ CREATE MATERIALIZED VIEW public.reporting_patient_follow_ups AS
            FROM follow_up_blood_sugars
         UNION
          SELECT follow_up_prescription_drugs.patient_id,
+            follow_up_prescription_drugs.patient_gender,
             follow_up_prescription_drugs.visit_id,
             follow_up_prescription_drugs.visit_type,
             follow_up_prescription_drugs.facility_id,
@@ -2595,6 +2613,7 @@ CREATE MATERIALIZED VIEW public.reporting_patient_follow_ups AS
            FROM follow_up_prescription_drugs
         UNION
          SELECT follow_up_appointments.patient_id,
+            follow_up_appointments.patient_gender,
             follow_up_appointments.visit_id,
             follow_up_appointments.visit_type,
             follow_up_appointments.facility_id,
@@ -2604,6 +2623,7 @@ CREATE MATERIALIZED VIEW public.reporting_patient_follow_ups AS
            FROM follow_up_appointments
         )
  SELECT DISTINCT ON (cal.month_string, all_follow_ups.facility_id, all_follow_ups.user_id, all_follow_ups.patient_id) all_follow_ups.patient_id,
+    all_follow_ups.patient_gender,
     all_follow_ups.facility_id,
     all_follow_ups.user_id,
     all_follow_ups.visit_id,
@@ -4743,6 +4763,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211123060537'),
 ('20211125062406'),
 ('20211125072030'),
-('20211201230130');
+('20211201230130'),
+('20211207043358'),
+('20211207043615');
 
 
