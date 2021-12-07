@@ -78,8 +78,8 @@ class Reports::RegionsController < AdminController
     else
       [@region, @region.facility_regions].flatten
     end
-    @repository = Reports::Repository.new(regions, periods: @period_range)
-    chart_repo = Reports::Repository.new(@region, periods: chart_range)
+    @repository = Reports::Repository.new(regions, periods: @period_range, follow_ups_v2: current_admin.feature_enabled?(:follow_ups_v2))
+    chart_repo = Reports::Repository.new(@region, periods: chart_range, follow_ups_v2: current_admin.feature_enabled?(:follow_ups_v2))
 
     @chart_data = {
       patient_breakdown: PatientBreakdownService.call(region: @region, period: @period),
