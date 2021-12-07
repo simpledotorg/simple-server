@@ -48,7 +48,6 @@ RSpec.configure do |config|
   end
 
   def refresh_views
-    ENV["REFRESH_MATVIEWS_CONCURRENTLY"] = "false"
     RefreshReportingViews.call
   end
 
