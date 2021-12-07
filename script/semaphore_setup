@@ -19,4 +19,5 @@ bundle config set path 'vendor/bundle'
 bundle install
 bundle exec rake db:setup
 bundle exec rake db:test:prepare
+rails db:refresh_matviews
 cache store
