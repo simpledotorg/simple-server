@@ -428,7 +428,7 @@ RSpec.describe Reports::Repository, type: :model do
             Period.month("February 1st 2021") => 3
           })
           expect(repo.hypertension_follow_ups(group_by: :patient_gender)[facility_1.region.slug]).to eq({
-            Period.month("February 1st 2021") => { "female" => 1, "male" => 1, "transgender" => 1}
+            Period.month("February 1st 2021") => {"female" => 1, "male" => 1, "transgender" => 1}
           })
         end
       end
