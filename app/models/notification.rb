@@ -87,7 +87,9 @@ class Notification < ApplicationRecord
   end
 
   def delivery_result
-    if successful_deliveries.exists?
+    if status_cancelled?
+      :failed
+    elsif successful_deliveries.exists?
       :success
     elsif queued_deliveries.exists? || !communications.exists?
       :queued
