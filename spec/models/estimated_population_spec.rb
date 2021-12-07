@@ -44,14 +44,19 @@ RSpec.describe EstimatedPopulation, type: :model do
       expect(facility_population).not_to be_valid
     end
 
-    it "updates region population if population already exists" do
-      state_region = Region.create!(name: "District", region_type: "state", reparent_to: Region.root)
-      district_region = Region.create!(name: "District", region_type: "district", reparent_to: state_region)
+    fit "updates state population when district population changes" do
+      state = Region.create!(name: "State", region_type: "state", reparent_to: Region.root)
+      district_1 = Region.create!(name: "District 1", region_type: "district", reparent_to: state)
+      district_2 = Region.create!(name: "District 2", region_type: "district", reparent_to: state)
 
-      population_1 = EstimatedPopulation.create!(population: 1000, diagnosis: "HTN", region_id: district_region.id)
-      population_2 = EstimatedPopulation.create!(population: 2000, diagnosis: "HTN", region_id: district_region.id)
+      district_1_population = EstimatedPopulation.create!(population: 1000, diagnosis: "HTN", region_id: district_1.id)
+      state_population = EstimatedPopulation.find_by(region_id: state.id)
 
-      puts district_region.estimated_population.population
+      expect(state_population.population).to eq(1000)
+
+      district_2_population = EstimatedPopulation.create!(population: 1000, diagnosis: "HTN", region_id: district_2.id)
+
+      expect(state_population.population).to eq(2000)
     end
   end
 end
