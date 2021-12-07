@@ -13,6 +13,8 @@
 # METABASE_DESTINATION_USERNAME=prabhanshu@nilenso.com
 # METABASE_DESTINATION_PASSWORD=password
 #
+# Hostnames shouldn't have the http:// or https:// prefix.
+#
 # 2. Run commands in a REPL
 # Metabase.new
 # instance.duplicate_question(90, 23, 2)
@@ -24,9 +26,6 @@
 require "net/http"
 
 class Metabase
-  include Memery
-
-  # hosts shouldn't have the http:// or https:// prefix. e.g metabase.simple.org
   def initialize(source_host = ENV["METABASE_SOURCE_HOST"],
     source_username = ENV["METABASE_SOURCE_USERNAME"],
     source_password = ENV["METABASE_SOURCE_PASSWORD"],
