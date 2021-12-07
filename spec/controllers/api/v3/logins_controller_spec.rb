@@ -55,17 +55,33 @@ RSpec.describe Api::V3::LoginsController, type: :controller do
       end
 
       it "responds with remaining lockout duration along with error message for invalid otp" do
-        phone_number_authentication = create(:phone_number_authentication, failed_attempts: 5, locked_at: Time.current)
-        user = create(:user, password: "4304", phone_number_authentications: [phone_number_authentication])
+        Timecop.freeze(Time.current) do
+          phone_number_authentication = create(:phone_number_authentication, failed_attempts: 5, locked_at: Time.current)
+          user = create(:user, password: "4304", phone_number_authentications: [phone_number_authentication])
+          post :login_user, params: {user:
+                                         {phone_number: user.phone_number,
+                                          password: password,
+                                          otp: "invalid otp"}}
+          expect(response.status).to eq(401)
+          expect(JSON(response.body))
+            .to eq("errors" => {
+              "user" => [I18n.t("login.error_messages.account_locked", minutes: "20")]
+            }, "lockout_duration" => 1200)
+        end
+      end
+
+      it "returns 401 and send error message when given an unknown phone number" do
+        user = create(:user, password: "4304")
+        PhoneNumberAuthentication.find_by_phone_number(user.phone_number).discard
         post :login_user, params: {user:
-                                       {phone_number: user.phone_number,
-                                        password: password,
-                                        otp: "invalid otp"}}
+                                     {phone_number: user.phone_number,
+                                      password: "bad",
+                                      otp: user.otp}}
         expect(response.status).to eq(401)
         expect(JSON(response.body))
           .to eq("errors" => {
-            "user" => ["Your account has been locked for the next 20 minutes. Please wait and try again."]
-          }, "lockout_duration" => 1200)
+            "user" => [I18n.t("login.error_messages.unknown_user")]
+          })
       end
     end
 

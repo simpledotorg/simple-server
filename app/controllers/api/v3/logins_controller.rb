@@ -33,7 +33,7 @@ class Api::V3::LoginsController < APIController
         user: [result.error_message]
       }
     }
-    if result.authentication.in_lockout_period?
+    if result.authentication&.in_lockout_period?
       response.merge(lockout_duration: result.authentication.seconds_left_on_lockout)
     else
       response
