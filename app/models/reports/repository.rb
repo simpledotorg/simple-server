@@ -89,11 +89,16 @@ module Reports
       }
     end
 
+    FOLLOW_UP_GROUPS = [:user_id, :patient_gender]
+
     def follow_ups_v2_query(group_by: nil)
+      if group_by
+        raise ArgumentError, "Invalid grouping #{group_by}" unless group_by.in?(FOLLOW_UP_GROUPS)
+      end
       regions.each_with_object({}) do |region, results|
         query = Reports::PatientFollowUp.where(facility_id: region.facility_ids)
-        counts = if group_by&.match?("user_id")
-          grouped_counts = query.group(:user_id).group_by_period(:month, :month_date, {format: Period.formatter(period_type)}).count
+        counts = if group_by
+          grouped_counts = query.group(group_by).group_by_period(:month, :month_date, {format: Period.formatter(period_type)}).count
           grouped_counts.each_with_object({}) { |(key, count), result|
             group, period = *key
             result[period] ||= {}

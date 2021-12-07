@@ -408,6 +408,31 @@ RSpec.describe Reports::Repository, type: :model do
         end
       end
 
+      it "can count by gender" do
+        skip("not supported for v1") if follow_ups_v2 == false
+        facility_1, facility_2 = create_list(:facility, 2)
+        Timecop.freeze("May 10th 2021") do
+          periods = (6.months.ago.to_period..1.month.ago.to_period)
+          patient_1 = create(:patient, :hypertension, recorded_at: 10.months.ago, gender: :male)
+          patient_2 = create(:patient, :hypertension, recorded_at: 10.months.ago, gender: :female)
+          patient_3 = create(:patient, :hypertension, recorded_at: 10.months.ago, gender: :transgender)
+
+          create(:bp_with_encounter, recorded_at: "February 10th 2021", facility: facility_1, patient: patient_1)
+          create(:bp_with_encounter, recorded_at: "February 11th 2021", facility: facility_1, patient: patient_2)
+          create(:bp_with_encounter, recorded_at: "February 12th 2021", facility: facility_1, patient: patient_3)
+          refresh_views
+
+          repo = described_class.new([facility_1, facility_2], periods: periods, follow_ups_v2: follow_ups_v2)
+
+          expect(repo.hypertension_follow_ups[facility_1.region.slug]).to eq({
+            Period.month("February 1st 2021") => 3
+          })
+          expect(repo.hypertension_follow_ups(group_by: :patient_gender)[facility_1.region.slug]).to eq({
+            Period.month("February 1st 2021") => { "female" => 1, "male" => 1, "transgender" => 1}
+          })
+        end
+      end
+
       it "returns counts of BPs taken per user per region" do
         facility_1, facility_2 = create_list(:facility, 2)
         Timecop.freeze("May 10th 2021") do
