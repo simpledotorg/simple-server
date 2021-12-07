@@ -19,10 +19,6 @@ RSpec.describe Reports::Repository, type: :model do
   let(:july_2018) { Time.parse("July 1st, 2018 00:00:00+00:00") }
   let(:july_2020) { Time.parse("July 1st, 2020 00:00:00+00:00") }
 
-  def refresh_views
-    RefreshReportingViews.call
-  end
-
   around do |example|
     with_reporting_time_zone { example.run }
   end
@@ -143,6 +139,7 @@ RSpec.describe Reports::Repository, type: :model do
 
     it "gets registration and assigned patient counts for brand new regions with no data" do
       facility_1 = FactoryBot.create(:facility, facility_group: facility_group_1)
+      refresh_views
       slug = facility_1.region.slug
       repo = Reports::Repository.new(facility_1.region, periods: july_2020_range)
       expect(repo.monthly_registrations).to eq({slug => {}})
@@ -526,6 +523,7 @@ RSpec.describe Reports::Repository, type: :model do
 
     it "creates cache keys" do
       repo = Reports::Repository.new(facility_1, periods: Period.month("June 1 2019")..Period.month("Jan 1 2020"))
+      refresh_views
       cache_keys = repo.schema.send(:cache_entries, :controlled_rates).map(&:cache_key)
       cache_keys.each do |key|
         expect(key).to include("controlled_rates")
