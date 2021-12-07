@@ -423,10 +423,6 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
           expect(data.dig(:monthly, :grouped_by_date_and_gender)).to eq(expected_output)
         end
 
-        def refresh_views
-          RefreshReportingViews.call
-        end
-
         it "has the monthly_htn_control_last_period_patient_counts" do
           Timecop.freeze(request_date + 2.month) do
             with_reporting_time_zone do
