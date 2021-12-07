@@ -41,7 +41,7 @@ module Reports::RegionsHelper
     if current_admin.feature_enabled?(:follow_ups_v2)
       :follow_up_patients_copy_v2
     else
-      :follow_up_patients
+      :follow_up_patients_copy
     end
   end
 end
