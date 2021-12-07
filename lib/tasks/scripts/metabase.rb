@@ -50,7 +50,7 @@ class Metabase
   end
 
   def duplicate_question(question_id, destination_collection_id, destination_database_id, destination_question_name: nil)
-    question = get_question_from_source(question_id)
+    question = get_question(@source_host, @source_token, question_id)
     raise "Non SQL questions aren't supported question ID: #{question_id}" unless sql_question?(question)
 
     duplicate_question_payload = question.deep_merge(
@@ -59,10 +59,10 @@ class Metabase
       "name" => destination_question_name || question["name"]
     )
 
-    response = post(@destination_host, @destination_token, "/api/card", duplicate_question_payload)
-    puts "Failed to duplicate question #{question_id}" unless response["creator"].present?
+    duplicate_question = create_question(@destination_host, @destination_token, duplicate_question_payload)
+    puts "Failed to duplicate question #{question_id}" unless duplicate_question["creator"].present?
 
-    puts "Question duplicated to https://#{@destination_host}/card/#{response["id"]}"
+    puts "Question duplicated to https://#{@destination_host}/card/#{duplicate_question["id"]}"
     puts "View collection at https://#{@destination_host}/collection/#{destination_collection_id}"
   end
 
@@ -73,9 +73,14 @@ class Metabase
     response["id"]
   end
 
-  def get_question_from_source(question_id)
+  def get_question(host, session_token, question_id)
     path = "/api/card/#{question_id}"
-    get(@source_host, @source_token, path)
+    get(host, session_token, path)
+  end
+
+  def create_question(host, session_token, payload)
+    path = "/api/card"
+    post(host, session_token, path, payload)
   end
 
   def get(host, session_token, path)
