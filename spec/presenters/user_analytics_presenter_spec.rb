@@ -1,6 +1,9 @@
 require "rails_helper"
 
 RSpec.describe UserAnalyticsPresenter, type: :model do
+  before(:all) do
+    refresh_views
+  end
   let(:current_user) { create(:user) }
   let(:request_date) { Time.zone.parse("January 1st 2018 12:00").to_date }
 
