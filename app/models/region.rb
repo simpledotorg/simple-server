@@ -17,6 +17,7 @@ class Region < ApplicationRecord
   auto_strip_attributes :name, squish: true, upcase_first: true
 
   has_many :drug_stocks
+  has_one :estimated_population
   # To set a new path for a Region, assign the parent region via `reparent_to`, and the before_validation
   # callback will assign the new path.
   attr_accessor :reparent_to
