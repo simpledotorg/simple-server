@@ -21,8 +21,6 @@ class Admin::FacilityGroupsController < AdminController
 
   def create
     @facility_group = FacilityGroup.new(facility_group_params)
-    d facility_group_params
-    puts "TEST #{facility_group_params}"
     authorize { current_admin.accessible_organizations(:manage).find(@facility_group.organization.id) }
 
     if create_facility_group

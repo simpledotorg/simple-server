@@ -22,6 +22,7 @@ class FacilityGroupRegionSync < SimpleDelegator
     if district_estimated_population
       population = region.estimated_population || region.build_estimated_population
       population.population = district_estimated_population
+      population.save!
     end
     region.save!
   end

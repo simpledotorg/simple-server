@@ -156,6 +156,35 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
       expect(facility_group.state).to eq("New York")
     end
 
+    it "can create new estimated population" do
+      valid_attributes[:district_estimated_population] = 2500
+      facility_group = create(:facility_group, valid_attributes)
+      expect(facility_group.district_estimated_population).to eq(2500)
+      new_attributes = {
+        district_estimated_population: 1500
+      }
+      put :update, params: {id: facility_group.to_param, facility_group: new_attributes, organization_id: organization.id}
+      expect(response).to be_redirect
+      expect(flash.notice).to eq("Facility group was successfully updated.")
+      facility_group.reload
+      expect(facility_group.region.reload_estimated_population.population).to eq(1500)
+    end
+
+    it "can update estimated population" do
+      attrs = valid_attributes
+      facility_group = create(:facility_group, valid_attributes)
+      expect(facility_group.district_estimated_population).to be_nil
+      new_attributes = {
+        district_estimated_population: 1500
+      }
+      put :update, params: {id: facility_group.to_param, facility_group: new_attributes, organization_id: organization.id}
+      expect(response).to be_redirect
+      expect(flash.notice).to eq("Facility group was successfully updated.")
+      facility_group.reload
+
+      expect(facility_group.district_estimated_population).to eq(1500)
+    end
+
     it "redirects to the facilities" do
       facility_group = create(:facility_group, valid_attributes)
       put :update, params: {id: facility_group.to_param, facility_group: valid_attributes, organization_id: organization.id}
