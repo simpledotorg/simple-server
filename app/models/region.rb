@@ -20,7 +20,7 @@ class Region < ApplicationRecord
   has_one :estimated_population
 
   after_discard do
-    estimated_population.discard
+    estimated_population&.discard
   end
 
   # To set a new path for a Region, assign the parent region via `reparent_to`, and the before_validation
