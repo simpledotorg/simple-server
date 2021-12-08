@@ -19,10 +19,6 @@ RSpec.describe Reports::Repository, type: :model do
   let(:july_2018) { Time.parse("July 1st, 2018 00:00:00+00:00") }
   let(:july_2020) { Time.parse("July 1st, 2020 00:00:00+00:00") }
 
-  def refresh_views
-    RefreshReportingViews.call
-  end
-
   around do |example|
     with_reporting_time_zone { example.run }
   end
@@ -143,6 +139,7 @@ RSpec.describe Reports::Repository, type: :model do
 
     it "gets registration and assigned patient counts for brand new regions with no data" do
       facility_1 = FactoryBot.create(:facility, facility_group: facility_group_1)
+      refresh_views
       slug = facility_1.region.slug
       repo = Reports::Repository.new(facility_1.region, periods: july_2020_range)
       expect(repo.monthly_registrations).to eq({slug => {}})
@@ -411,6 +408,31 @@ RSpec.describe Reports::Repository, type: :model do
         end
       end
 
+      it "can count by gender" do
+        skip("not supported for v1") if follow_ups_v2 == false
+        facility_1, facility_2 = create_list(:facility, 2)
+        Timecop.freeze("May 10th 2021") do
+          periods = (6.months.ago.to_period..1.month.ago.to_period)
+          patient_1 = create(:patient, :hypertension, recorded_at: 10.months.ago, gender: :male)
+          patient_2 = create(:patient, :hypertension, recorded_at: 10.months.ago, gender: :female)
+          patient_3 = create(:patient, :hypertension, recorded_at: 10.months.ago, gender: :transgender)
+
+          create(:bp_with_encounter, recorded_at: "February 10th 2021", facility: facility_1, patient: patient_1)
+          create(:bp_with_encounter, recorded_at: "February 11th 2021", facility: facility_1, patient: patient_2)
+          create(:bp_with_encounter, recorded_at: "February 12th 2021", facility: facility_1, patient: patient_3)
+          refresh_views
+
+          repo = described_class.new([facility_1, facility_2], periods: periods, follow_ups_v2: follow_ups_v2)
+
+          expect(repo.hypertension_follow_ups[facility_1.region.slug]).to eq({
+            Period.month("February 1st 2021") => 3
+          })
+          expect(repo.hypertension_follow_ups(group_by: :patient_gender)[facility_1.region.slug]).to eq({
+            Period.month("February 1st 2021") => {"female" => 1, "male" => 1, "transgender" => 1}
+          })
+        end
+      end
+
       it "returns counts of BPs taken per user per region" do
         facility_1, facility_2 = create_list(:facility, 2)
         Timecop.freeze("May 10th 2021") do
@@ -526,6 +548,7 @@ RSpec.describe Reports::Repository, type: :model do
 
     it "creates cache keys" do
       repo = Reports::Repository.new(facility_1, periods: Period.month("June 1 2019")..Period.month("Jan 1 2020"))
+      refresh_views
       cache_keys = repo.schema.send(:cache_entries, :controlled_rates).map(&:cache_key)
       cache_keys.each do |key|
         expect(key).to include("controlled_rates")

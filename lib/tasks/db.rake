@@ -28,5 +28,6 @@ namespace :db do
 end
 
 Rake::Task["db:seed"].enhance do
+  ENV["REFRESH_MATVIEWS_CONCURRENTLY"] = "false"
   Rake::Task["db:refresh_reporting_views"].invoke
 end
