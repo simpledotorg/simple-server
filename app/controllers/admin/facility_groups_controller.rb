@@ -12,7 +12,6 @@ class Admin::FacilityGroupsController < AdminController
 
   def new
     @facility_group = FacilityGroup.new
-    @estimated_population = EstimatedPopulation.new
     authorize { current_admin.accessible_organizations(:manage).any? }
   end
 
