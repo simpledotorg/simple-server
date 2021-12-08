@@ -38,7 +38,7 @@
       <% end %>
 
       <% if Flipper.enabled?(:estimated_population) %>
-        <%= form.number_field :estimated_population, id: :estimated_population, required: false, value: @estimated_population %>
+        <%= form.number_field :estimated_population, id: :estimated_population, required: false, label: "Estimated hypertensive population", value: @estimated_population %>
       <% end %>
 
       <div class="mt-3">
