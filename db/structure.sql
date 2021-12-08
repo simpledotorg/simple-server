@@ -453,6 +453,21 @@ CREATE TABLE public.encounters (
 
 
 --
+-- Name: estimated_populations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.estimated_populations (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    region_id uuid NOT NULL,
+    population integer NOT NULL,
+    diagnosis character varying DEFAULT 'HTN'::character varying NOT NULL,
+    created_by uuid,
+    updated_by uuid,
+    deleted_at timestamp without time zone
+);
+
+
+--
 -- Name: exotel_phone_number_details; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -3139,6 +3154,14 @@ ALTER TABLE ONLY public.encounters
 
 
 --
+-- Name: estimated_populations estimated_populations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.estimated_populations
+    ADD CONSTRAINT estimated_populations_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: exotel_phone_number_details exotel_phone_number_details_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3754,6 +3777,13 @@ CREATE INDEX index_encounters_on_patient_id ON public.encounters USING btree (pa
 --
 
 CREATE INDEX index_encounters_on_patient_id_and_updated_at ON public.encounters USING btree (patient_id, updated_at);
+
+
+--
+-- Name: index_estimated_populations_on_region_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_estimated_populations_on_region_id ON public.estimated_populations USING btree (region_id);
 
 
 --
@@ -4539,6 +4569,14 @@ ALTER TABLE ONLY public.drug_stocks
 
 
 --
+-- Name: estimated_populations fk_rails_58af12b1a9; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.estimated_populations
+    ADD CONSTRAINT fk_rails_58af12b1a9 FOREIGN KEY (region_id) REFERENCES public.regions(id);
+
+
+--
 -- Name: observations fk_rails_60d667a791; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4764,6 +4802,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211125062406'),
 ('20211125072030'),
 ('20211201230130'),
+('20211202183101'),
 ('20211207043358'),
 ('20211207043615');
 
