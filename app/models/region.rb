@@ -22,6 +22,7 @@ class Region < ApplicationRecord
   after_discard do
     estimated_population.discard
   end
+
   # To set a new path for a Region, assign the parent region via `reparent_to`, and the before_validation
   # callback will assign the new path.
   attr_accessor :reparent_to

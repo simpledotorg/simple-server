@@ -9,7 +9,6 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
       organization_id: organization.id,
       state: "New York",
       protocol_id: protocol.id,
-      estimated_population: 2000
     )
   end
 
@@ -60,6 +59,18 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
       expect {
         post :create, params: {facility_group: valid_attributes, organization_id: organization.id}
       }.to change(FacilityGroup, :count).by(1)
+    end
+
+    it "creates a new FacilityGroup with estimated population set on district Region" do
+      attrs = valid_attributes[:district_estimated_population] = 2500
+      expect {
+        post :create, params: {facility_group: valid_attributes, organization_id: organization.id}
+      }.to change(FacilityGroup, :count).by(1)
+        .and change(Region, :count).by(2) # creates district region and state region
+        .and change(EstimatedPopulation, :count).by(2) # population for district and state
+      fg = assigns(:facility_group)
+      expect(fg.region.estimated_population.population).to eq 2500
+      expect(fg.region.state_region.estimated_population.population).to eq 2500
     end
 
     it "redirects to the facilities" do

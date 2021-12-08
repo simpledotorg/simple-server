@@ -19,7 +19,7 @@ class FacilityGroup < ApplicationRecord
   has_many :medical_histories, through: :patients
   has_many :communications, through: :appointments
   has_many :protocol_drugs, through: :protocol
-  has_one :estimated_population, through: :region
+  has_one :estimated_population, through: :region, inverse_of: :region
 
   alias_method :registered_patients, :patients
 
@@ -35,6 +35,15 @@ class FacilityGroup < ApplicationRecord
   delegate :district_region?, :block_region?, :facility_region?, to: :region
   delegate :cache_key, :cache_version, to: :region
 
+  def district_estimated_population
+    estimated_population&.population || @district_estimated_population
+  end
+
+  def district_estimated_population=(val)
+    @district_estimated_population = val
+  end
+
+
   # FacilityGroups don't actually have a state
   # This virtual attr exists simply to simulate the State -> FG/District hierarchy for Regions.
   attr_writer :state
@@ -43,8 +52,6 @@ class FacilityGroup < ApplicationRecord
   attr_accessor :new_block_names
   attr_accessor :remove_block_ids
   attr_accessor :generating_seed_data
-
-  accepts_nested_attributes_for :estimated_population
 
   after_create { |record| FacilityGroupRegionSync.new(record).after_create }
   after_update { |record| FacilityGroupRegionSync.new(record).after_update }

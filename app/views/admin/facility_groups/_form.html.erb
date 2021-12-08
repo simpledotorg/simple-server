@@ -37,9 +37,7 @@
         <%= form.select(:protocol_id, protocols.order(:name).map { |protocol| [protocol.name, protocol.id] }) %>
       <% end %>
 
-      <%= form.fields_for :estimated_population do |f| %>
-        <%= f.number_field :population, placeholder: "0", label: "Estimated hypertensive population" %>
-      <% end %>
+      <%= form.number_field :district_estimated_population, placeholder: "0", label: "Estimated hypertensive population" %>
 
       <div class="mt-3">
         <label><%= I18n.t("region_type.block").pluralize.capitalize %></label>

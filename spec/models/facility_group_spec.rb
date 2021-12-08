@@ -209,6 +209,14 @@ RSpec.describe FacilityGroup, type: :model do
       it "creates the state region if it doesn't exist" do
         expect(facility_group.region.state_region.name).to eq "Punjab"
       end
+
+      it "sets district estimed population" do
+        facility_group = create(:facility_group, name: "FG", state: "Punjab", organization: org, district_estimated_population: 2500)
+        expect(facility_group.region).to be_present
+        expect(facility_group.region).to be_persisted
+        expect(facility_group.region.estimated_population).to be_present
+        expect(facility_group.region.estimated_population.population).to eq(2500)
+      end
     end
 
     context "after_update" do

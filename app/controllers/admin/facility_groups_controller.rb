@@ -21,6 +21,7 @@ class Admin::FacilityGroupsController < AdminController
 
   def create
     @facility_group = FacilityGroup.new(facility_group_params)
+    d facility_group_params
     puts "TEST #{facility_group_params}"
     authorize { current_admin.accessible_organizations(:manage).find(@facility_group.organization.id) }
 
@@ -107,9 +108,9 @@ class Admin::FacilityGroupsController < AdminController
       :description,
       :protocol_id,
       :enable_diabetes_management,
+      :district_estimated_population,
       new_block_names: [],
-      remove_block_ids: [],
-      estimated_population_attributes: [:population]
+      remove_block_ids: []
     )
   end
 end
