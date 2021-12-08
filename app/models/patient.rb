@@ -31,7 +31,7 @@ class Patient < ApplicationRecord
     other: "other"
   }
 
-  belongs_to :address, optional: true
+  belongs_to :address
   has_many :phone_numbers, class_name: "PatientPhoneNumber"
   has_many :business_identifiers, class_name: "PatientBusinessIdentifier"
   has_many :passport_authentications, through: :business_identifiers
