@@ -19,6 +19,7 @@ class FacilityGroup < ApplicationRecord
   has_many :medical_histories, through: :patients
   has_many :communications, through: :appointments
   has_many :protocol_drugs, through: :protocol
+  has_one :estimated_population, through: :region
 
   alias_method :registered_patients, :patients
 
@@ -42,6 +43,8 @@ class FacilityGroup < ApplicationRecord
   attr_accessor :new_block_names
   attr_accessor :remove_block_ids
   attr_accessor :generating_seed_data
+
+  accepts_nested_attributes_for :estimated_population
 
   after_create { |record| FacilityGroupRegionSync.new(record).after_create }
   after_update { |record| FacilityGroupRegionSync.new(record).after_update }

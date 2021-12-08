@@ -12,21 +12,16 @@ class Admin::FacilityGroupsController < AdminController
 
   def new
     @facility_group = FacilityGroup.new
+    @estimated_population = EstimatedPopulation.new
     authorize { current_admin.accessible_organizations(:manage).any? }
   end
 
   def edit
-    if Flipper.enabled?(:estimated_population)
-      @estimated_population = @facility_group.region.estimated_population&.population
-    end
   end
 
   def create
-    if Flipper.enabled?(:estimated_population)
-      @facility_group = FacilityGroup.new(facility_group_params.except(:estimated_population))
-    else
-      @facility_group = FacilityGroup.new(facility_group_params)
-    end
+    @facility_group = FacilityGroup.new(facility_group_params)
+    puts "TEST #{facility_group_params}"
     authorize { current_admin.accessible_organizations(:manage).find(@facility_group.organization.id) }
 
     if create_facility_group
@@ -65,9 +60,6 @@ class Admin::FacilityGroupsController < AdminController
       @facility_group.toggle_diabetes_management
       true
     end
-    if Flipper.enabled?(:estimated_population)
-      create_new_population
-    end
   rescue ActiveRecord::RecordInvalid => e
     Sentry.capture_exception(e)
   end
@@ -75,46 +67,14 @@ class Admin::FacilityGroupsController < AdminController
   # Do all the things for update inside a single transaction. Note that we explicitly return true if everything
   # succeeds so we don't need to rely on return values from the model layer.
   def update_facility_group
-    if Flipper.enabled?(:estimated_population)
-      ActiveRecord::Base.transaction do
-        @facility_group.update!(facility_group_params.except(:state, :estimated_population))
-        @facility_group.sync_block_regions
-        @facility_group.toggle_diabetes_management
-        true
-      end
-      estimated_population = EstimatedPopulation.find_by(region_id: @facility_group.region.id)
-      if estimated_population
-        update_population(estimated_population)
-      else
-        create_new_population
-      end
-    else
-      ActiveRecord::Base.transaction do
-        @facility_group.update!(facility_group_params.except(:state))
-        @facility_group.sync_block_regions
-        @facility_group.toggle_diabetes_management
-        true
-      end
+    ActiveRecord::Base.transaction do
+      @facility_group.update!(facility_group_params.except(:state))
+      @facility_group.sync_block_regions
+      @facility_group.toggle_diabetes_management
+      true
     end
-
   rescue ActiveRecord::RecordInvalid => e
     Sentry.capture_exception(e)
-  end
-
-  def create_new_population
-    EstimatedPopulation.create!(
-      created_by: current_admin.id,
-      population: facility_group_params[:estimated_population],
-      diagnosis: "HTN",
-      region_id: @facility_group.region.id
-    )
-  end
-
-  def update_population(estimated_population)
-    estimated_population.update(
-      updated_by: current_admin.id,
-      population: facility_group_params[:estimated_population],
-    )
   end
 
   def set_organizations
@@ -145,11 +105,11 @@ class Admin::FacilityGroupsController < AdminController
       :name,
       :state,
       :description,
-      :estimated_population,
       :protocol_id,
       :enable_diabetes_management,
       new_block_names: [],
-      remove_block_ids: []
+      remove_block_ids: [],
+      estimated_population_attributes: [:population]
     )
   end
 end

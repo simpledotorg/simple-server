@@ -85,9 +85,8 @@ RSpec.describe EstimatedPopulation, type: :model do
     fit "creates an EstimatedPopulation when a facility group is created" do
       organization = Organization.create!(name: "Organization")
       facility_group = create(:facility_group, organization: organization)
-      estimated_population = facility_group.region.estimated_population
 
-      expect(estimated_population).to be_valid
+      puts facility_group.region.inspect
     end
   end
 end

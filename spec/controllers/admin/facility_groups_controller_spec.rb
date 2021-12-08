@@ -8,7 +8,8 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
       :facility_group,
       organization_id: organization.id,
       state: "New York",
-      protocol_id: protocol.id
+      protocol_id: protocol.id,
+      estimated_population: 2000
     )
   end
 
@@ -17,7 +18,8 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
       :facility_group,
       name: nil,
       state: "An State",
-      organization_id: organization.id
+      organization_id: organization.id,
+      estimated_population: 0
     )
   end
 
