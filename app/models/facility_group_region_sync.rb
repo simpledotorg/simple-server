@@ -19,6 +19,10 @@ class FacilityGroupRegionSync < SimpleDelegator
   def after_update
     region.reparent_to = state_region
     region.name = name
+    if district_estimated_population
+      population = region.estimated_population || region.build_estimated_population
+      population.population = district_estimated_population
+    end
     region.save!
   end
 

@@ -210,7 +210,7 @@ RSpec.describe FacilityGroup, type: :model do
         expect(facility_group.region.state_region.name).to eq "Punjab"
       end
 
-      it "sets district estimed population" do
+      it "sets district estimed population if one is provided" do
         facility_group = create(:facility_group, name: "FG", state: "Punjab", organization: org, district_estimated_population: 2500)
         expect(facility_group.region).to be_present
         expect(facility_group.region).to be_persisted
@@ -234,6 +234,18 @@ RSpec.describe FacilityGroup, type: :model do
         facility_group.update(state: new_state.name)
         expect(facility_group.region.state_region.name).to eq "Maharashtra"
         expect(facility_group.region.path).to eq "india.ihci.maharashtra.fg"
+      end
+
+      it "updates district estimed population if one is provided" do
+        expect {
+          facility_group.update!(district_estimated_population: 1000)
+        }.to change(EstimatedPopulation, :count).by(2)
+        expect(facility_group.region.estimated_population).to be_present
+        expect(facility_group.region.estimated_population.population).to eq(1000)
+        expect {
+          facility_group.update!(district_estimated_population: 3333)
+        }.to change(EstimatedPopulation, :count).by(0)
+        expect(facility_group.region.estimated_population.population).to eq(3333)
       end
     end
   end
