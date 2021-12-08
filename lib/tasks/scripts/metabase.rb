@@ -47,7 +47,7 @@ class Metabase
     end
   end
 
-  def duplicate_question(question_id, destination_collection_id, destination_database_id, destination_question_name: nil)
+  def duplicate_question(question_id, destination_collection_id, destination_database_id, destination_question_name = nil)
     question = get_question(@source_host, @source_token, question_id)
     raise "Non SQL questions aren't supported question ID: #{question_id}" unless sql_question?(question)
 
