@@ -14,6 +14,7 @@
 #
 # 2. Run commands in a REPL. You'll need a source question and a collection
 # in the destination env where the question should be copied to.
+# load "lib/tasks/scripts/metabase.rb"
 # Metabase.new.duplicate_question(90, 23, 2)
 #
 # The database_id can be found from the URL when you choose
@@ -76,7 +77,7 @@ class Metabase
   end
 
   # These IDs can be passed to duplicate_questions
-  # to duplicate questions in a dashboard
+  # to help duplicate questions in a dashboard
   def get_question_ids_from_dashboard(host, session_token, dashboard_id)
     path = "/api/dashboard/#{dashboard_id}"
     get(host, session_token, path)["ordered_cards"].map { |a| a["card"]["id"] }.compact
