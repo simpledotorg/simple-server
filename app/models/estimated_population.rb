@@ -24,7 +24,7 @@ class EstimatedPopulation < ApplicationRecord
   def update_state_population
     if region.district_region?
       state = region.state_region
-      new_total = state.district_regions.inject(0) {|sum, r| 
+      new_total = state.district_regions.inject(0) { |sum, r| 
         sum += r.reload_estimated_population&.population || 0
       }
       if state.estimated_population

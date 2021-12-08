@@ -64,7 +64,7 @@ RSpec.describe EstimatedPopulation, type: :model do
       expect(state.reload_estimated_population.population).to eq(2500)
     end
 
-    fit "updates state population when a district/facility group is deleted" do
+    it "updates state population when a district is deleted" do
       state = Region.create!(name: "State", region_type: "state", reparent_to: Region.root)
       district_1 = Region.create!(name: "District 1", region_type: "district", reparent_to: state)
       district_2 = Region.create!(name: "District 2", region_type: "district", reparent_to: state)
@@ -80,6 +80,14 @@ RSpec.describe EstimatedPopulation, type: :model do
 
       expect(district_1.reload_estimated_population).to be_nil
       expect(state.reload_estimated_population.population).to eq(district_2.estimated_population.population)
+    end
+
+    fit "creates an EstimatedPopulation when a facility group is created" do
+      organization = Organization.create!(name: "Organization")
+      facility_group = create(:facility_group, organization: organization)
+      estimated_population = facility_group.region.estimated_population
+
+      expect(estimated_population).to be_valid
     end
   end
 end

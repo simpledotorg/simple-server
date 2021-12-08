@@ -37,7 +37,9 @@
         <%= form.select(:protocol_id, protocols.order(:name).map { |protocol| [protocol.name, protocol.id] }) %>
       <% end %>
 
-      <%= form.number_field :estimated_population, required: true  %>
+      <% if Flipper.enabled?(:estimated_population) %>
+        <%= form.number_field :estimated_population, id: :estimated_population, required: false, value: @estimated_population %>
+      <% end %>
 
       <div class="mt-3">
         <label><%= I18n.t("region_type.block").pluralize.capitalize %></label>
