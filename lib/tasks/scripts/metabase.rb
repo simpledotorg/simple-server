@@ -2,9 +2,6 @@
 # Since this uses the metabase API which can change over time, it's a good idea
 # to test run this before running against production.
 #
-# You'll need a source question, and a collection in the destination env
-# where the question should be copied to.
-#
 # 1. Set credentials in your local .env
 # METABASE_SOURCE_HOST=metabase-sandbox.simple.org
 # METABASE_SOURCE_USERNAME=prabhanshu@nilenso.com
@@ -15,10 +12,9 @@
 #
 # Hostnames shouldn't have the http:// or https:// prefix.
 #
-# 2. Run commands in a REPL
-# Metabase.new
-# instance.duplicate_question(90, 23, 2)
-# instance.duplicate_question(<question_id>, <destination_collection_id>, <destination_database_id>)
+# 2. Run commands in a REPL. You'll need a source question and a collection
+# in the destination env where the question should be copied to.
+# Metabase.new.duplicate_question(90, 23, 2)
 #
 # The database_id can be found from the URL when you choose
 # the DB from https://metabase-sandbox.simple.org/browse
@@ -26,17 +22,19 @@
 require "net/http"
 
 class Metabase
-  def initialize(source_host = ENV["METABASE_SOURCE_HOST"],
-    source_username = ENV["METABASE_SOURCE_USERNAME"],
-    source_password = ENV["METABASE_SOURCE_PASSWORD"],
-    destination_host = ENV["METABASE_DESTINATION_HOST"],
-    destination_username = ENV["METABASE_DESTINATION_USERNAME"],
-    destination_password = ENV["METABASE_DESTINATION_PASSWORD"])
-
-    @source_host = source_host
-    @destination_host = destination_host
-    @source_token = authentication_token(@source_host, source_username, source_password)
-    @destination_token = authentication_token(@destination_host, destination_username, destination_password)
+  def initialize
+    @source_host = ENV.fetch("METABASE_SOURCE_HOST")
+    @destination_host = ENV.fetch("METABASE_DESTINATION_HOST")
+    @source_token = authentication_token(
+      @source_host,
+      ENV.fetch("METABASE_SOURCE_USERNAME"),
+      ENV.fetch("METABASE_SOURCE_PASSWORD")
+    )
+    @destination_token = authentication_token(
+      @destination_host,
+      ENV.fetch("METABASE_DESTINATION_USERNAME"),
+      ENV.fetch("METABASE_DESTINATION_PASSWORD")
+    )
   end
 
   # Copies over a list of questions from a source env to a destination env.
