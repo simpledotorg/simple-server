@@ -82,11 +82,11 @@ RSpec.describe EstimatedPopulation, type: :model do
       expect(state.reload_estimated_population.population).to eq(district_2.estimated_population.population)
     end
 
-    fit "creates an EstimatedPopulation when a facility group is created" do
+    it "creates an EstimatedPopulation when a facility group is created" do
       organization = Organization.create!(name: "Organization")
-      facility_group = create(:facility_group, organization: organization)
-
-      puts facility_group.region.inspect
+      facility_group = create(:facility_group, organization: organization, district_estimated_population: 2000)
+      expect(facility_group.estimated_population).to be_present
+      expect(facility_group.estimated_population.population).to eq(2000)
     end
   end
 end
