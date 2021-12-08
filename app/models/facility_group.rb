@@ -39,10 +39,7 @@ class FacilityGroup < ApplicationRecord
     @district_estimated_population || estimated_population&.population
   end
 
-  def district_estimated_population=(val)
-    @district_estimated_population = val
-  end
-
+  attr_writer :district_estimated_population
 
   # FacilityGroups don't actually have a state
   # This virtual attr exists simply to simulate the State -> FG/District hierarchy for Regions.

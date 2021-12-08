@@ -8,7 +8,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
       :facility_group,
       organization_id: organization.id,
       state: "New York",
-      protocol_id: protocol.id,
+      protocol_id: protocol.id
     )
   end
 

@@ -4,7 +4,7 @@ class EstimatedPopulation < ApplicationRecord
   validates :population, presence: true, numericality: true
   validates :diagnosis, presence: true
 
-  enum diagnosis: { HTN: "HTN", DM: "DM" }
+  enum diagnosis: {HTN: "HTN", DM: "DM"}
 
   validate :can_only_be_set_for_district_or_state
   after_commit :update_state_population
@@ -24,7 +24,7 @@ class EstimatedPopulation < ApplicationRecord
   def update_state_population
     if region.district_region?
       state = region.state_region
-      new_total = state.district_regions.inject(0) { |sum, r| 
+      new_total = state.district_regions.inject(0) { |sum, r|
         sum += r.reload_estimated_population&.population || 0
       }
       if state.estimated_population
