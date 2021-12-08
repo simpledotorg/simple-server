@@ -37,19 +37,24 @@ class Metabase
     )
   end
 
+  attr_reader :source_host, :destination_host, :source_token, :destination_token
+
   # Copies over a list of questions from a source env to a destination env.
   # question_ids is a list of integer question IDs
   # destination_collection_id is an integer ID of the collection in the destination env
   # destination_database_id is an integer ID of the database in the destination env
   def duplicate_questions(question_ids, destination_collection_id, destination_database_id)
-    question_ids.map do |question_id|
+    question_ids.each do |question_id|
       duplicate_question(question_id, destination_collection_id, destination_database_id)
     end
   end
 
   def duplicate_question(question_id, destination_collection_id, destination_database_id, destination_question_name = nil)
-    question = get_question(@source_host, @source_token, question_id)
-    raise "Non SQL questions aren't supported question ID: #{question_id}" unless sql_question?(question)
+    question = get_question(source_host, source_token, question_id)
+    unless sql_question?(question)
+      puts "Non SQL questions aren't supported question ID: #{question_id}"
+      return
+    end
 
     duplicate_question_payload = question.deep_merge(
       "dataset_query" => {"database" => destination_database_id},
@@ -57,11 +62,10 @@ class Metabase
       "name" => destination_question_name || question["name"]
     )
 
-    duplicate_question = create_question(@destination_host, @destination_token, duplicate_question_payload)
+    duplicate_question = create_question(destination_host, destination_token, duplicate_question_payload)
     puts "Failed to duplicate question #{question_id}" unless duplicate_question["creator"].present?
 
-    puts "Question duplicated to https://#{@destination_host}/card/#{duplicate_question["id"]}"
-    puts "View collection at https://#{@destination_host}/collection/#{destination_collection_id}"
+    log_successful_duplication(question, duplicate_question, destination_collection_id)
   end
 
   def authentication_token(host, username, password)
@@ -69,6 +73,13 @@ class Metabase
     response = post(host, nil, path, {username: username, password: password})
     puts "Successfully authenticated to #{host}" if response["id"].present?
     response["id"]
+  end
+
+  # These IDs can be passed to duplicate_questions
+  # to duplicate questions in a dashboard
+  def get_question_ids_from_dashboard(host, session_token, dashboard_id)
+    path = "/api/dashboard/#{dashboard_id}"
+    get(host, session_token, path)["ordered_cards"].map { |a| a["card"]["id"] }.compact
   end
 
   def get_question(host, session_token, question_id)
@@ -100,5 +111,19 @@ class Metabase
 
   def sql_question?(question)
     question["dataset_query"]["native"].present?
+  end
+
+  def log_successful_duplication(question, duplicate_question, destination_collection_id)
+    result = {
+      question: duplicate_question["name"],
+      source_url: "https://#{source_host}/card/#{question["id"]}",
+      question_id: duplicate_question["id"],
+      question_url: "https://#{destination_host}/card/#{duplicate_question["id"]}",
+      collection_id: destination_collection_id,
+      collection_url: "https://#{destination_host}/collection/#{destination_collection_id}"
+    }
+
+    puts "\nQuestion duplicated:"
+    pp result
   end
 end
