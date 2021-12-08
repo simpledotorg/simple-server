@@ -47,7 +47,6 @@ class RefreshReportingViews
     LatestBloodPressuresPerPatient
     LatestBloodPressuresPerPatientPerQuarter
     BloodPressuresPerFacilityPerDay
-    PatientRegistrationsPerDayPerFacility
     MaterializedPatientSummary
   ].freeze
 

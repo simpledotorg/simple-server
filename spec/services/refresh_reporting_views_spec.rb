@@ -36,7 +36,6 @@ RSpec.describe RefreshReportingViews do
       .and change { LatestBloodPressuresPerPatient.count }.by(2)
       .and change { LatestBloodPressuresPerPatientPerQuarter.count }.by(2)
       .and change { BloodPressuresPerFacilityPerDay.count }.by(2)
-      .and change { PatientRegistrationsPerDayPerFacility.count }.by(2)
       .and change { RefreshReportingViews.last_updated_at }.from(nil).to(time)
   end
 
