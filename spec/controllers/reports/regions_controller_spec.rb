@@ -381,8 +381,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
       Timecop.freeze("June 1 2020") do
         sign_in(cvho.email_authentication)
-        get :cohort, params: {id: @facility.facility_group.slug, v2: "0", report_scope: "district", period: {type: "quarter", value: "Q2-2020"}}
-        expect(response).to be_successful
 
         get :cohort, params: {id: @facility.facility_group.slug, report_scope: "district", period: {type: "quarter", value: "Q2-2020"}}
         expect(response).to be_successful
@@ -391,8 +389,8 @@ RSpec.describe Reports::RegionsController, type: :controller do
         q2_data = data[1]
         expect(q2_data["results_in"]).to eq("Q1-2020")
         expect(q2_data["period"]).to eq(Period.quarter("Q1-2020"))
-        expect(q2_data["registered"]).to eq(0)
-        expect(q2_data["controlled"]).to eq(0)
+        expect(q2_data["registered"]).to be_nil
+        expect(q2_data["controlled"]).to be_nil
       end
     end
   end

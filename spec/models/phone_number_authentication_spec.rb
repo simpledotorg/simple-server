@@ -61,6 +61,14 @@ RSpec.describe PhoneNumberAuthentication, type: :model do
         expect(auth.minutes_left_on_lockout).to eq(5)
       end
     end
+
+    it "can calculate seconds left in lockout" do
+      Timecop.freeze do
+        auth = build(:phone_number_authentication, locked_at: 19.minutes.ago, failed_attempts: 5)
+        expect(auth).to be_in_lockout_period
+        expect(auth.seconds_left_on_lockout).to eq(60)
+      end
+    end
   end
 
   describe "invalidate_otp" do

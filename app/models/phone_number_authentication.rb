@@ -65,6 +65,11 @@ class PhoneNumberAuthentication < ApplicationRecord
     minutes_left.round
   end
 
+  def seconds_left_on_lockout
+    seconds_left = (lockout_time - (Time.current - locked_at)) / 1.second
+    seconds_left.round
+  end
+
   def otp_valid?
     otp_expires_at >= Time.current
   end
