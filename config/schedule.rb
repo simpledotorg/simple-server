@@ -54,9 +54,7 @@ every :monday, at: local("6:00 am"), roles: [:cron] do
 end
 
 every :day, at: local("07:30 am"), roles: [:cron] do
-  if CountryConfig.current_country?("India")
-    runner "Experimentation::Runner.call;AppointmentNotification::ScheduleExperimentReminders.call"
-  end
+  runner "Experimentation::Runner.call;AppointmentNotification::ScheduleExperimentReminders.call"
 end
 
 every 2.minutes, roles: [:cron] do
