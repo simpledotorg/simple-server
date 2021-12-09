@@ -21,11 +21,11 @@ class EstimatedPopulation < ApplicationRecord
     state = region.state_region
     is_population_available = false
     state&.district_regions.each do |district|
-      unless district.estimated_population&.population
+      if district.estimated_population&.population
+        is_population_available = true
+      else
         is_population_available = false
         break
-      else
-        is_population_available = true
       end
     end
     is_population_available
