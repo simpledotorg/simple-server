@@ -4,6 +4,11 @@ module Reports
     belongs_to :patient
     belongs_to :facility, class_name: "::Facility"
     belongs_to :user
+    enum patient_gender: {
+      female: "female",
+      male: "male",
+      transgender: "transgender"
+    }
 
     def self.materialized?
       true

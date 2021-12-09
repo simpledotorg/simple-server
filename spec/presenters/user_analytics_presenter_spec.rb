@@ -1,6 +1,9 @@
 require "rails_helper"
 
 RSpec.describe UserAnalyticsPresenter, type: :model do
+  before(:all) do
+    refresh_views
+  end
   let(:current_user) { create(:user) }
   let(:request_date) { Time.zone.parse("January 1st 2018 12:00").to_date }
 
@@ -421,10 +424,6 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
           }
 
           expect(data.dig(:monthly, :grouped_by_date_and_gender)).to eq(expected_output)
-        end
-
-        def refresh_views
-          RefreshReportingViews.call
         end
 
         it "has the monthly_htn_control_last_period_patient_counts" do

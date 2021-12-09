@@ -185,6 +185,10 @@ X-User-ID: 452b96c2-e0cf-49e7-ab73-c328acd3f1e5
 X-Facility-ID: dcda7d9d-48f9-47d2-b1cc-93d90c94386e
 ```
 
+Here are two Simple App pages you can test on your browser:
+* "Progress Tab": `http://localhost:3000/api/v3/analytics/user_analytics.html`
+* "Help Page": `http://localhost:3000/api/v3/help.html`
+
 ### Review Apps
 
 Every pull request opened on the `simple-server` repo creates a [Heroku review app](https://devcenter.heroku.com/articles/github-integration-review-apps)

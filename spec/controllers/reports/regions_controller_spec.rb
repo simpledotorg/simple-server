@@ -9,10 +9,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
   let(:facility_group_1) { FactoryBot.create(:facility_group, name: "facility_group_1", organization: organization) }
   let(:facility_1) { FactoryBot.create(:facility, name: "facility_1", facility_group: facility_group_1) }
 
-  def refresh_views
-    RefreshReportingViews.call
-  end
-
   describe "show" do
     render_views
 
