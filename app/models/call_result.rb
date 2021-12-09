@@ -4,6 +4,7 @@ class CallResult < ApplicationRecord
   belongs_to :user
   has_one :patient, through: :appointment
 
+  validate :remove_reason_present_if_removed_from_overdue_list
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
   validates :result_type, presence: true
@@ -25,4 +26,12 @@ class CallResult < ApplicationRecord
     dead: "dead",
     other: "other"
   }
+
+  private
+
+  def remove_reason_present_if_removed_from_overdue_list
+    if result_type == "removed_from_overdue_list" && !remove_reason.present?
+      errors.add(:remove_reason, "should be present if removed from overdue list")
+    end
+  end
 end
