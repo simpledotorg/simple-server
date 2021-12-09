@@ -103,7 +103,7 @@ rails db:setup
 ```
 
 We cleanup old migration files every once in a while and so running `db:migrate` would not work for the initial setup.
-While setting up a fresh DB you will need to load the schema first with `db:structure:load`. `db:setup` already takes care of this.
+When setting up a new database, `db:setup` wil take care of everything (it runs `db:structure:load` under the hood).
 
 #### Developing with the Android app
 
