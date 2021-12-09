@@ -5,7 +5,7 @@ SELECT DISTINCT ON (a.patient_id, cal.month_date)
     cal.month,
     cal.quarter,
     cal.year,
-    cr.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS call_result_created_at,
+    cr.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')) AS call_result_created_at,
     cr.id AS call_result_id,
     cr.user_id AS user_id,
     a.id AS appointment_id,

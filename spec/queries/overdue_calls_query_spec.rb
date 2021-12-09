@@ -32,13 +32,12 @@ RSpec.describe OverdueCallsQuery do
     create(:call_result, appointment: appointment_1, device_created_at: end_of_jan, user: user_1)
     create(:call_result, appointment: appointment_2, device_created_at: beg_of_feb, user: user_2)
 
+    RefreshReportingViews.new.refresh_v2
     with_reporting_time_zone do
       expected = {
         Period.month("January 2021") => 1,
         Period.month("February 2021") => 1
       }
-
-      RefreshReportingViews.new.refresh_v2
       expect(described_class.new.count(facility.region, :month)).to eq(expected)
     end
   end
@@ -52,7 +51,6 @@ RSpec.describe OverdueCallsQuery do
     appointment_3 = create(:appointment, facility: facility, device_created_at: 4.months.ago, user: user_2)
 
     Timecop.freeze("May 5th 2021") do
-      patient = create(:patient)
       create(:call_result, appointment: appointment_1, device_created_at: 4.months.ago, user: user_1)
       create(:call_result, appointment: appointment_2, device_created_at: 2.months.ago, user: user_2)
       create(:call_result, appointment: appointment_3, device_created_at: 2.months.ago, user: user_2)
