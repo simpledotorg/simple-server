@@ -79,7 +79,7 @@ class MonthlyStateDataService
         index: index + 1,
         parent_name: region.name,
         child_name: child.name
-      }.merge(region_data(region))
+      }.merge(region_data(child))
 
       row_data.values
     end
