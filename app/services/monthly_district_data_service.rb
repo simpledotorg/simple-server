@@ -11,7 +11,7 @@ class MonthlyDistrictDataService
 
   def report
     CSV.generate(headers: true) do |csv|
-      csv << ["Monthly District Data: #{region.name} #{period.to_date.strftime("%B %Y")}"]
+      csv << ["Monthly Facility Data: #{region.name} #{period.to_date.strftime("%B %Y")}"]
       csv << section_labels
       csv << header_row
       csv << district_row

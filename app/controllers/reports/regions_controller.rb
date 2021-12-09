@@ -127,7 +127,7 @@ class Reports::RegionsController < AdminController
     @period = Period.month(params[:period] || Date.current)
     csv = MonthlyDistrictDataService.new(@region, @period).report
     report_date = @period.to_s.downcase
-    filename = "monthly-district-data-#{@region.slug}-#{report_date}.csv"
+    filename = "monthly-facility-data-#{@region.slug}-#{report_date}.csv"
 
     respond_to do |format|
       format.csv do
@@ -141,7 +141,7 @@ class Reports::RegionsController < AdminController
     @period = Period.month(params[:period] || Date.current)
     csv = MonthlyStateDataService.new(@region, @period).report
     report_date = @period.to_s.downcase
-    filename = "monthly-state-data-#{@region.slug}-#{report_date}.csv"
+    filename = "monthly-district-data-#{@region.slug}-#{report_date}.csv"
 
     respond_to do |format|
       format.csv do
