@@ -7,7 +7,11 @@ RSpec.describe EstimatedPopulation, type: :model do
       estimated_population = EstimatedPopulation.new(diagnosis: "HTN", region_id: region.id)
 
       expect(estimated_population).to_not be_valid
+<<<<<<< HEAD
       expect(estimated_population.errors[:population]).to eq(["is not a number", "can't be blank"])
+=======
+      expect(estimated_population.errors[:population]).to include("can't be blank")
+>>>>>>> 479b9e5c8c91b9c4041c7371857330e27a0bf0bf
     end
 
     it "is not valid without a diagnosis" do
