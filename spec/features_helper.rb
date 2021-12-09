@@ -11,7 +11,7 @@ RSpec.configure do |config|
   config.before(:suite) do
     RefreshReportingViews.call
   end
-  
+
   config.around(:example, type: :feature) do |example|
     Rails.cache.clear
     example.run
