@@ -7,6 +7,7 @@ RSpec.describe EstimatedPopulation, type: :model do
       estimated_population = EstimatedPopulation.new(diagnosis: "HTN", region_id: region.id)
 
       expect(estimated_population).to_not be_valid
+      expect(estimated_population.errors[:population]).to eq(["is not a number", "can't be blank"])
     end
 
     it "is not valid without a diagnosis" do
@@ -14,6 +15,7 @@ RSpec.describe EstimatedPopulation, type: :model do
       estimated_population = EstimatedPopulation.new(population: 1, region_id: region.id, diagnosis: nil)
 
       expect(estimated_population).to_not be_valid
+      expect(estimated_population.errors[:diagnosis]).to eq(["can't be blank"])
     end
 
     it "is not valid if diagnosis is not enum" do
@@ -40,8 +42,10 @@ RSpec.describe EstimatedPopulation, type: :model do
 
       expect(state_population).to be_valid
       expect(district_population).to be_valid
-      expect(block_population).not_to be_valid
-      expect(facility_population).not_to be_valid
+      expect(block_population).to_not be_valid
+      expect(block_population.errors[:region]).to eq(["can only set population for a district or a state"])
+      expect(facility_population).to_not be_valid
+      expect(facility_population.errors[:region]).to eq(["can only set population for a district or a state"])
     end
 
     it "creates an EstimatedPopulation record when a facility group is created" do

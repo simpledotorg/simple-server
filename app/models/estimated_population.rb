@@ -1,7 +1,7 @@
 class EstimatedPopulation < ApplicationRecord
   belongs_to :region
 
-  validates :population, presence: true, numericality: true
+  validates :population, numericality: true, presence: true
   validates :diagnosis, presence: true
 
   enum diagnosis: {HTN: "HTN", DM: "DM"}
