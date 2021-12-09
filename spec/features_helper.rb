@@ -8,6 +8,10 @@ Dir[Rails.root.join("spec/pages/**/*.rb")].sort.each { |f| require f }
 RSpec.configure do |config|
   config.include Devise::Test::IntegrationHelpers, type: :feature
 
+  config.before(:suite) do
+    RefreshReportingViews.call
+  end
+  
   config.around(:example, type: :feature) do |example|
     Rails.cache.clear
     example.run
