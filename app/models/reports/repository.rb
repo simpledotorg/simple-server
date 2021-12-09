@@ -90,10 +90,16 @@ module Reports
     end
 
     def follow_ups_v2_query(group_by: nil)
+      group_field = case group_by
+        when /user_id\z/ then :user_id
+        when /gender\z/ then :patient_gender
+        when nil then nil
+        else raise(ArgumentError, "unknown group for follow ups #{group_by}")
+      end
       regions.each_with_object({}) do |region, results|
         query = Reports::PatientFollowUp.where(facility_id: region.facility_ids)
-        counts = if group_by&.match?("user_id")
-          grouped_counts = query.group(:user_id).group_by_period(:month, :month_date, {format: Period.formatter(period_type)}).count
+        counts = if group_field
+          grouped_counts = query.group(group_field).group_by_period(:month, :month_date, {format: Period.formatter(period_type)}).count
           grouped_counts.each_with_object({}) { |(key, count), result|
             group, period = *key
             result[period] ||= {}

@@ -1,4 +1,4 @@
 #! /bin/bash
 
-bundle exec rails db:schema:load:with_data
+# bundle exec rails db:structure:load:with_data
 bundle exec rails db:seed

@@ -7,7 +7,7 @@ source ~/.toolbox/toolbox
 # Temporarily turn on cache clear if Semaphore has weird bunlding issues
 # cache clear
 
-sem-version ruby 2.6.6
+sem-version ruby 2.7.4
 sem-service start postgres 10
 wget -O /tmp/libpng12.deb http://mirrors.kernel.org/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1_amd64.deb
 sudo dpkg -i /tmp/libpng12.deb
@@ -19,4 +19,5 @@ bundle config set path 'vendor/bundle'
 bundle install
 bundle exec rake db:setup
 bundle exec rake db:test:prepare
+RAILS_ENV="test" bundle exec rails db:refresh_matviews
 cache store

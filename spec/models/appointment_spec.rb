@@ -215,33 +215,39 @@ describe Appointment, type: :model do
 
   context "Result of follow-up" do
     describe "For each category in the follow-up options" do
-      it "correctly records agreed to visit" do
-        appointment.mark_patient_agreed_to_visit
+      let(:user) { create(:user) }
+      it "correctly records agreed to visit and creates a call_result" do
+        appointment.mark_patient_agreed_to_visit(user)
 
         expect(appointment.agreed_to_visit).to eq(true)
         expect(appointment.remind_on).to eq(30.days.from_now.to_date)
+        expect(appointment.call_results.agreed_to_visit).to be_present
       end
 
-      it "correctly records that the patient has already visited" do
-        appointment.mark_patient_already_visited
+      it "correctly records that the patient has already visited and creates a call_result" do
+        appointment.mark_patient_already_visited(user)
 
         expect(appointment.status).to eq("visited")
         expect(appointment.agreed_to_visit).to be nil
         expect(appointment.remind_on).to be nil
+        expect(appointment.call_results.removed_from_overdue_list.already_visited).to be_present
       end
 
-      it "correctly records remind to call" do
-        appointment.mark_remind_to_call_later
+      it "correctly records remind to call and creates a call_result" do
+        appointment.mark_remind_to_call_later(user)
 
         expect(appointment.remind_on).to eq(7.days.from_now.to_date)
+
+        expect(appointment.call_results.remind_to_call_later).to be_present
       end
 
       Appointment.cancel_reasons.values.each do |cancel_reason|
-        it "correctly records cancel reason: '#{cancel_reason}'" do
-          appointment.mark_appointment_cancelled(cancel_reason)
+        it "correctly records cancel reason: '#{cancel_reason}' and creates a call_result" do
+          appointment.mark_appointment_cancelled(user, cancel_reason)
 
           expect(appointment.cancel_reason).to eq(cancel_reason)
           expect(appointment.status).to eq("cancelled")
+          expect(appointment.call_results.removed_from_overdue_list.where(remove_reason: cancel_reason)).to be_present
         end
       end
     end

@@ -17,11 +17,11 @@ RSpec.describe Api::V4::CallResultsController, type: :controller do
     request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
   end
 
-  def create_record(options = {})
+  def create_record(options = {result_type: :agreed_to_visit})
     create(:call_result, options)
   end
 
-  def create_record_list(n, options = {})
+  def create_record_list(n, options = {result_type: :agreed_to_visit})
     create_list(:call_result, n, options)
   end
 
