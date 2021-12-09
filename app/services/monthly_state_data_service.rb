@@ -76,7 +76,7 @@ class MonthlyStateDataService
   def child_rows
     region.children.map.with_index do |child, index|
       row_data = {
-        index: index,
+        index: index + 1,
         parent_name: region.name,
         child_name: child.name
       }.merge(region_data(region))
@@ -103,7 +103,7 @@ class MonthlyStateDataService
 
     monthly_follow_ups = repo.hypertension_follow_ups[region.slug]
     follow_ups_by_month = months.each_with_object({}) { |month, hsh|
-      hsh["follow_ups_#{month.value}".to_sym] = monthly_follow_ups[month]
+      hsh["follow_ups_#{month.value}".to_sym] = monthly_follow_ups[month] || 0
     }
 
     {
