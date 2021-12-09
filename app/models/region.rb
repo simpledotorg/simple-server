@@ -119,10 +119,6 @@ class Region < ApplicationRecord
     facilities.pluck(:id)
   end
 
-  def users
-    User.non_admins.where(phone_number_authentications: {registration_facility_id: facilities})
-  end
-
   def cohort_analytics(period:, prev_periods:)
     CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods).call
   end
