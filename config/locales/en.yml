@@ -72,6 +72,7 @@ en:
   denominator_with_ltfu_copy: "Hypertension patients assigned to %{region_name}, registered before the last 3 months. Dead patients are excluded."
   ltfu_denominator_copy: "Hypertension patients assigned to %{region_name}. Dead patients are excluded."
   follow_up_patients_copy: "Hypertension patients with a BP measure taken during a month in %{region_name}."
+  follow_up_patients_copy_v2: "Hypertension patients with a BP measure taken, a blood sugar taken, an appointment scheduled, or their medications refilled during a month in %{region_name}."
   patients_under_care_copy: "Hypertension patients with a BP taken in the last 12 months."
   bp_measures_taken_copy: "All BP measures taken in a month by healthcare workers at %{region_name}."
   transferred_out_patients_copy: "Patients who have moved to another public facility or to a private practitioner"

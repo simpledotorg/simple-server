@@ -13,7 +13,7 @@ module Reports
     attr_reader :registered_patients_query
     attr_reader :schema
 
-    def initialize(regions, periods:, reporting_schema_v2: Reports.reporting_schema_v2?, follow_ups_v2: Flipper.enabled?(:follow_ups_v2))
+    def initialize(regions, periods:, follow_ups_v2: Flipper.enabled?(:follow_ups_v2))
       @regions = Array(regions).map(&:region)
       @periods = if periods.is_a?(Period)
         Range.new(periods, periods)
@@ -21,22 +21,12 @@ module Reports
         periods
       end
       @period_type = @periods.first.type
-      @reporting_schema_v2 = reporting_schema_v2
       @follow_ups_v2 = follow_ups_v2
       raise ArgumentError, "Quarter periods not supported" if @period_type != :month
-      @schema = if reporting_schema_v2?
-        SchemaV2.new(@regions, periods: @periods)
-      else
-        SchemaV1.new(@regions, periods: @periods)
-      end
-
+      @schema = SchemaV2.new(@regions, periods: @periods)
       @bp_measures_query = BPMeasuresQuery.new
       @follow_ups_query = FollowUpsQuery.new
       @registered_patients_query = RegisteredPatientsQuery.new
-    end
-
-    def reporting_schema_v2?
-      @reporting_schema_v2
     end
 
     delegate :cache, :logger, to: Rails
@@ -100,10 +90,16 @@ module Reports
     end
 
     def follow_ups_v2_query(group_by: nil)
+      group_field = case group_by
+        when /user_id\z/ then :user_id
+        when /gender\z/ then :patient_gender
+        when nil then nil
+        else raise(ArgumentError, "unknown group for follow ups #{group_by}")
+      end
       regions.each_with_object({}) do |region, results|
         query = Reports::PatientFollowUp.where(facility_id: region.facility_ids)
-        counts = if group_by&.match?("user_id")
-          grouped_counts = query.group(:user_id).group_by_period(:month, :month_date, {format: Period.formatter(period_type)}).count
+        counts = if group_field
+          grouped_counts = query.group(group_field).group_by_period(:month, :month_date, {format: Period.formatter(period_type)}).count
           grouped_counts.each_with_object({}) { |(key, count), result|
             group, period = *key
             result[period] ||= {}

@@ -4,9 +4,8 @@ class AdminController < ApplicationController
 
   before_action :authenticate_email_authentication!
   before_action :current_admin
-  before_action :set_bust_cache
-  before_action :set_reporting_schema_v2
   around_action :set_feature_flags_from_params
+  before_action :set_bust_cache
   before_action :set_datadog_tags
 
   after_action :verify_authorization_attempted, except: [:root]
@@ -39,28 +38,20 @@ class AdminController < ApplicationController
   private
 
   def safe_admin_params
-    params.permit(:v2, :bust_cache, :_follow_ups_v2)
+    params.permit(:bust_cache, :_follow_ups_v2)
   end
 
   def set_feature_flags_from_params
-    if safe_admin_params[:_follow_ups_v2]
-      original = Flipper.enabled?(:follow_ups_v2)
-      Flipper.enable(:follow_ups_v2)
+    follow_ups_override = safe_admin_params[:_follow_ups_v2]
+    if follow_ups_override
+      override = ActiveModel::Type::Boolean.new.deserialize(safe_admin_params[:_follow_ups_v2])
+      original = current_admin.feature_enabled?(:follow_ups_v2)
+      current_admin.set_feature(:follow_ups_v2, override)
     end
     yield
   ensure # reset the flag back to original state
-    if original
-      Flipper[:follow_ups_v2].enable
-    else
-      Flipper[:follow_ups_v2].disable
-    end
-  end
-
-  # We only want to set this via query string, as it now defaults to enabled globally
-  def set_reporting_schema_v2
-    if params.key?(:v2)
-      param_flag = ActiveRecord::Type::Boolean.new.deserialize(safe_admin_params[:v2])
-      Reports.reporting_schema_v2 = param_flag
+    if follow_ups_override
+      current_admin.set_feature(:follow_ups_v2, original)
     end
   end
 
