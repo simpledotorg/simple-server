@@ -4,8 +4,7 @@ class EstimatedPopulation < ActiveRecord::Migration[5.2]
       t.belongs_to :region, index: {unique: true}, foreign_key: true, type: :uuid, null: false
       t.integer :population, null: false
       t.string :diagnosis, null: false, default: "HTN"
-      t.uuid :created_by
-      t.uuid :updated_by
+      t.timestamps, null: false
       t.datetime :deleted_at
     end
   end
