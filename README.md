@@ -260,7 +260,6 @@ bin/rspec
 
 Run tests interactively quickly while developing:
 
-
 ```
 bin/guard
 ```
