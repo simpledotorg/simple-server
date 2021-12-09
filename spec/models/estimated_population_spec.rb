@@ -44,6 +44,15 @@ RSpec.describe EstimatedPopulation, type: :model do
       expect(facility_population).not_to be_valid
     end
 
+    it "creates an EstimatedPopulation record when a facility group is created" do
+      organization = Organization.create!(name: "Organization")
+      facility_group = create(:facility_group, organization: organization, district_estimated_population: 2000)
+      expect(facility_group.estimated_population).to be_present
+      expect(facility_group.estimated_population.population).to eq(2000)
+    end
+  end
+
+  describe "update_state_population" do
     it "updates state population when district population is set/updated" do
       state = Region.create!(name: "State", region_type: "state", reparent_to: Region.root)
       district_1 = Region.create!(name: "District 1", region_type: "district", reparent_to: state)
@@ -81,12 +90,32 @@ RSpec.describe EstimatedPopulation, type: :model do
       expect(district_1.reload_estimated_population).to be_nil
       expect(state.reload_estimated_population.population).to eq(district_2.estimated_population.population)
     end
+  end
 
-    it "creates an EstimatedPopulation when a facility group is created" do
-      organization = Organization.create!(name: "Organization")
-      facility_group = create(:facility_group, organization: organization, district_estimated_population: 2000)
-      expect(facility_group.estimated_population).to be_present
-      expect(facility_group.estimated_population.population).to eq(2000)
+  describe "is_population_available_for_all_districts" do
+    it "returns true when all districts have a population" do
+      state = Region.create!(name: "State", region_type: "state", reparent_to: Region.root)
+      district_1 = Region.create!(name: "District 1", region_type: "district", reparent_to: state)
+      district_2 = Region.create!(name: "District 2", region_type: "district", reparent_to: state)
+
+      district_1_population = EstimatedPopulation.create!(population: 1500, diagnosis: "HTN", region_id: district_1.id)
+      district_2_population = EstimatedPopulation.create!(population: 1500, diagnosis: "HTN", region_id: district_2.id)
+
+      expect(district_1_population.is_population_available_for_all_districts).to eq(true)
+      expect(district_2_population.is_population_available_for_all_districts).to eq(true)
+      expect(state.estimated_population.is_population_available_for_all_districts).to eq(true)
+    end
+
+    it "returns false when not all districts have a population" do
+      state = Region.create!(name: "State", region_type: "state", reparent_to: Region.root)
+      district_1 = Region.create!(name: "District 1", region_type: "district", reparent_to: state)
+      district_2 = Region.create!(name: "District 2", region_type: "district", reparent_to: state)
+
+      district_2_population = EstimatedPopulation.create!(population: 1500, diagnosis: "HTN", region_id: district_2.id)
+
+      expect(district_1.estimated_population).to be_nil
+      expect(district_2_population.is_population_available_for_all_districts).to eq(false)
+      expect(state.estimated_population.is_population_available_for_all_districts).to eq(false)
     end
   end
 end

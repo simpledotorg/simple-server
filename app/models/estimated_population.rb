@@ -18,7 +18,17 @@ class EstimatedPopulation < ApplicationRecord
   end
 
   def is_population_available_for_all_districts
-    # Check if all districts have population set
+    state = region.state_region
+    is_population_available = false
+    state&.district_regions.each do |district|
+      unless district.estimated_population&.population
+        is_population_available = false
+        break
+      else
+        is_population_available = true
+      end
+    end
+    is_population_available
   end
 
   def update_state_population
