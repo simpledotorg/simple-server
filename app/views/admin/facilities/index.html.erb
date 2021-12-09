@@ -29,6 +29,14 @@
         <div class="row">
           <div class="col-8">
             <h3><span class="heading-label"><%= t("facility_group").capitalize %></span><%= facility_group.name %></h3>
+            <p class="subtitle">
+              Estimated hypertensive population:
+              <% if facility_group.region.estimated_population %>
+                <%= number_with_delimiter(facility_group.region.estimated_population.population) %>
+              <% else %>
+                <%= link_to "+ Add population", edit_admin_facility_group_path(facility_group) %>
+              <% end %>
+            </p>
           </div>
 
           <% if current_admin.accessible_facility_groups(:manage).find_by_id(facility_group) %>
