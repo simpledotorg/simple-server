@@ -69,7 +69,7 @@ RSpec.describe EstimatedPopulation, type: :model do
       expect(district_1.estimated_population.population).to eq(1500)
       expect(state.reload_estimated_population.population).to eq(1500)
 
-      district_2_population = district_2.create_estimated_population!(population: 1000, diagnosis: "HTN")
+      district_2.create_estimated_population!(population: 1000, diagnosis: "HTN")
       expect(state.reload_estimated_population.population).to eq(2500)
     end
 

@@ -20,7 +20,7 @@ class EstimatedPopulation < ApplicationRecord
   def is_population_available_for_all_districts
     state = region.state_region
     is_population_available = false
-    state&.district_regions.each do |district|
+    state&.district_regions&.each do |district|
       if district.estimated_population&.population
         is_population_available = true
       else
@@ -34,14 +34,15 @@ class EstimatedPopulation < ApplicationRecord
   def update_state_population
     if region.district_region?
       state = region.state_region
-      new_total = state&.district_regions.inject(0) { |sum, r|
-        sum += r.reload_estimated_population&.population || 0
-      }
+      state_population = 0
+      state&.district_regions&.each do |district|
+        state_population += district.reload_estimated_population&.population || 0
+      end
       if state.estimated_population
-        state.estimated_population.population = new_total
+        state.estimated_population.population = state_population
         state.estimated_population.save!
       else
-        state.create_estimated_population(population: new_total)
+        state.create_estimated_population(population: state_population)
       end
     end
   end

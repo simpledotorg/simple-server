@@ -62,7 +62,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
     end
 
     it "creates a new FacilityGroup with estimated population set on district Region" do
-      attrs = valid_attributes[:district_estimated_population] = 2500
+      valid_attributes[:district_estimated_population] = 2500
       expect {
         post :create, params: {facility_group: valid_attributes, organization_id: organization.id}
       }.to change(FacilityGroup, :count).by(1)
@@ -171,7 +171,6 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
     end
 
     it "can update estimated population" do
-      attrs = valid_attributes
       facility_group = create(:facility_group, valid_attributes)
       expect(facility_group.district_estimated_population).to be_nil
       new_attributes = {
