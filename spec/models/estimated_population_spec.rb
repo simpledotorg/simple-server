@@ -2,12 +2,12 @@ require "rails_helper"
 
 RSpec.describe EstimatedPopulation, type: :model do
   describe "validations" do
-    it "is not valid without a population" do
+    it "is valid without a population" do
       region = Region.create!(name: "State", region_type: "state", reparent_to: Region.root)
       estimated_population = EstimatedPopulation.new(diagnosis: "HTN", region_id: region.id)
 
-      expect(estimated_population).to_not be_valid
-      expect(estimated_population.errors[:population]).to eq(["is not a number", "can't be blank"])
+      expect(estimated_population).to be_valid
+      expect(estimated_population.population).to be_nil
     end
 
     it "is not valid without a diagnosis" do
