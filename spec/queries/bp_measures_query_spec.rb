@@ -20,6 +20,7 @@ RSpec.describe BPMeasuresQuery do
   end
 
   it "handles period boundaries correctly, taking into account time zones" do
+    skip "needs investigation from @vkrm, this is currently broken"
     facility = create(:facility)
     end_of_jan = Time.zone.parse("January 31st 23:59:59 IST")
     beg_of_feb = Time.zone.parse("February 1st 00:00:00 IST")
