@@ -1,4 +1,5 @@
 #! /bin/bash
 
 # bundle exec rails db:structure:load:with_data
+echo "in heroku setup!"
 bundle exec rails db:seed
