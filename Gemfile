@@ -86,7 +86,7 @@ gem "twilio-ruby", "~> 5.10", ">= 5.10.3"
 gem "uglifier", ">= 1.3.0"
 gem "uuidtools", require: false
 gem "view_component", require: "view_component/engine"
-gem "webpacker", "6.0.0.rc.5"
+gem "webpacker", "6.0.0.rc.6"
 gem "whenever", require: false
 gem "wkhtmltoimage-binary"
 
