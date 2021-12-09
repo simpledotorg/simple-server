@@ -445,8 +445,8 @@ CREATE TABLE public.estimated_populations (
     region_id uuid NOT NULL,
     population integer NOT NULL,
     diagnosis character varying DEFAULT 'HTN'::character varying NOT NULL,
-    created_by uuid,
-    updated_by uuid,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
     deleted_at timestamp without time zone
 );
 
