@@ -7,7 +7,6 @@ class CohortService
   attr_reader :periods
   attr_reader :region
   attr_reader :region_field
-  attr_reader :reporting_schema_v2
 
   COUNTS = %i[
     cohort_controlled
@@ -16,10 +15,9 @@ class CohortService
     cohort_uncontrolled
   ].freeze
 
-  def initialize(region:, periods:, reporting_schema_v2: Reports.reporting_schema_v2?)
+  def initialize(region:, periods:)
     @region = region.region
     @periods = periods.sort.reverse # Ensure we return data with most recent cohorts first
-    @reporting_schema_v2 = reporting_schema_v2
     @region_field = "#{@region.region_type}_region_id"
     @quarterly = @periods.first.quarter?
     @field_prefix = quarterly? ? "quarterly" : "monthly"
@@ -34,19 +32,13 @@ class CohortService
   end
 
   def call
-    if reporting_schema_v2
-      results = v2_query(periods)
-      compute_v2(results)
-    else
-      periods.each_with_object([]) do |period, arry|
-        arry << compute(period)
-      end
-    end
+    results = query(periods)
+    compute(results)
   end
 
   private
 
-  def compute_v2(results)
+  def compute(results)
     results.each_with_object([]) do |result, arry|
       registration_period = if quarterly?
         result.period.previous
@@ -65,7 +57,7 @@ class CohortService
     end
   end
 
-  def v2_query(range)
+  def query(range)
     if quarterly?
       range = range.map { |p| p.to_s(:quarter_string) }
       Reports::QuarterlyFacilityState.where(facility: region.facilities, quarter_string: range)
@@ -79,35 +71,6 @@ class CohortService
         .order("month_date desc")
         .select(:month_date, region_field, sums)
     end
-  end
-
-  def compute(period)
-    Rails.cache.fetch(cache_key(period), version: cache_version, expires_in: CACHE_TTL, force: bust_cache?) do
-      cohort_period = period.previous
-      results_in = if period.quarter?
-        period.to_s
-      else
-        [period, period.next].map { |p| p.value.strftime("%b") }.join("/")
-      end
-      hsh = {cohort_period: cohort_period.type,
-             registration_quarter: cohort_period.value.try(:number),
-             registration_year: cohort_period.value.try(:year),
-             registration_month: cohort_period.value.try(:month)}
-      query = ControlRateCohortQuery.new(facilities: region.facilities, cohort_period: hsh)
-      {
-        controlled: query.cohort_controlled_bps.count,
-        no_bp: query.cohort_missed_visits_count,
-        patients_registered: cohort_period.to_s,
-        period: period,
-        registered: query.cohort_patients.count,
-        results_in: results_in,
-        uncontrolled: query.cohort_uncontrolled_bps.count
-      }.with_indifferent_access
-    end
-  end
-
-  def default_range
-    Quarter.new(date: Date.current).downto(3)
   end
 
   def cache_key(period)

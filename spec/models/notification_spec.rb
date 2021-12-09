@@ -39,7 +39,7 @@ describe Notification, type: :model do
         notification.message,
         facility_name: notification.subject.facility.name,
         patient_name: notification.patient.full_name,
-        appointment_date: notification.subject.scheduled_date,
+        appointment_date: notification.subject.scheduled_date.strftime("%d-%m-%Y"),
         locale: "mr-IN"
       )
       expect(notification.localized_message).to eq(expected_message)
@@ -103,6 +103,14 @@ describe Notification, type: :model do
       unsuccessful_communication = create(:communication, notification: notification, user: nil, appointment: nil)
       create(:twilio_sms_delivery_detail, :failed, communication: unsuccessful_communication)
       notification.update(status: :sent)
+
+      expect(notification.delivery_result).to eq(:failed)
+    end
+
+    it "is failed if notification is cancelled even if successful communications are present" do
+      notification = create(:notification, status: :cancelled)
+      successful_communication = create(:communication, notification: notification, user: nil, appointment: nil)
+      create(:twilio_sms_delivery_detail, :sent, communication: successful_communication)
 
       expect(notification.delivery_result).to eq(:failed)
     end

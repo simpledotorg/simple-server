@@ -19,10 +19,6 @@ RSpec.describe Reports::Repository, type: :model do
   let(:july_2018) { Time.parse("July 1st, 2018 00:00:00+00:00") }
   let(:july_2020) { Time.parse("July 1st, 2020 00:00:00+00:00") }
 
-  def refresh_views
-    RefreshReportingViews.call
-  end
-
   around do |example|
     with_reporting_time_zone { example.run }
   end
@@ -143,6 +139,7 @@ RSpec.describe Reports::Repository, type: :model do
 
     it "gets registration and assigned patient counts for brand new regions with no data" do
       facility_1 = FactoryBot.create(:facility, facility_group: facility_group_1)
+      refresh_views
       slug = facility_1.region.slug
       repo = Reports::Repository.new(facility_1.region, periods: july_2020_range)
       expect(repo.monthly_registrations).to eq({slug => {}})
@@ -360,42 +357,119 @@ RSpec.describe Reports::Repository, type: :model do
     end
   end
 
-  context "follow ups" do
-    it "returns correct per region results with optional group_by" do
-      facility_1, facility_2 = create_list(:facility, 2)
-      regions = [facility_1.region, facility_2.region]
+  [true, false].each do |follow_ups_v2|
+    context "follow_ups_v2 => #{follow_ups_v2}" do
+      it "returns counts of follow_ups taken per region" do
+        facility_1, facility_2 = create_list(:facility, 2)
+        Timecop.freeze("May 10th 2021") do
+          periods = (6.months.ago.to_period..1.month.ago.to_period)
+          patient_1, patient_2 = create_list(:patient, 2, :hypertension, recorded_at: 10.months.ago)
+          user_1 = create(:user)
+          user_2 = create(:user)
 
-      Timecop.freeze("May 10th 2021") do
-        periods = (6.months.ago.to_period..1.month.ago.to_period)
-        patient_1, patient_2 = create_list(:patient, 2, :hypertension, recorded_at: 10.months.ago)
-        user_1 = create(:user)
-        user_2 = create(:user)
+          # This BP is not a follow up, as it is recorded the same month as the patient registration
+          create(:bp_with_encounter, recorded_at: 10.months.ago, facility: facility_1, patient: patient_1, user: user_1)
+          # These are all valid follow ups
+          create(:bp_with_encounter, recorded_at: 3.months.ago, facility: facility_1, patient: patient_1, user: user_1)
+          create(:bp_with_encounter, recorded_at: 3.months.ago, facility: facility_1, patient: patient_2, user: user_2)
+          create(:bp_with_encounter, recorded_at: 2.months.ago, facility: facility_1, patient: patient_2, user: user_2)
+          create(:bp_with_encounter, recorded_at: 1.month.ago, facility: facility_2, patient: patient_1)
+          refresh_views
 
-        create(:bp_with_encounter, recorded_at: 3.months.ago, facility: facility_1, patient: patient_1, user: user_1)
-        create(:bp_with_encounter, recorded_at: 3.months.ago, facility: facility_1, patient: patient_2, user: user_2)
-        create(:bp_with_encounter, recorded_at: 2.months.ago, facility: facility_1, patient: patient_2, user: user_2)
-        create(:bp_with_encounter, recorded_at: 1.month.ago, facility: facility_2, patient: patient_1)
+          repo = described_class.new([facility_1, facility_2], periods: periods, follow_ups_v2: follow_ups_v2)
+          repo_2 = described_class.new([facility_1, facility_2], periods: periods, follow_ups_v2: follow_ups_v2)
 
-        repo = Reports::Repository.new(regions, periods: periods)
-        repo_2 = Reports::Repository.new(regions, periods: periods)
+          expect(repo.hypertension_follow_ups[facility_1.region.slug]).to eq({
+            Period.month("February 1st 2021") => 2, Period.month("March 1st 2021") => 1
+          })
+          expect(repo.hypertension_follow_ups[facility_2.region.slug]).to eq({Period.month("April 1st 2021") => 1})
+          expect(repo_2.hypertension_follow_ups[facility_2.region.slug]).to eq({Period.month("April 1st 2021") => 1})
+        end
+      end
 
-        expected_grouped_by_user = {
-          Period.month("February 1st 2021") => {
-            user_1.id => 1,
-            user_2.id => 1
-          },
-          Period.month("March 1st 2021") => {
-            user_1.id => 0,
-            user_2.id => 1
+      it "counts distinct follow ups per region / patient" do
+        facility_1, facility_2 = create_list(:facility, 2)
+        Timecop.freeze("May 10th 2021") do
+          periods = (6.months.ago.to_period..1.month.ago.to_period)
+          patient_1 = create(:patient, :hypertension, recorded_at: 10.months.ago)
+          user_1 = create(:user)
+          user_2 = create(:user)
+
+          create(:bp_with_encounter, recorded_at: "February 10th 2021", facility: facility_1, patient: patient_1, user: user_1)
+          create(:bp_with_encounter, recorded_at: "February 11th 2021", facility: facility_1, patient: patient_1, user: user_1)
+          create(:bp_with_encounter, recorded_at: "February 12th 2021", facility: facility_1, patient: patient_1, user: user_2)
+          refresh_views
+
+          repo = described_class.new([facility_1, facility_2], periods: periods, follow_ups_v2: follow_ups_v2)
+
+          expect(repo.hypertension_follow_ups[facility_1.region.slug]).to eq({
+            Period.month("February 1st 2021") => 1
+          })
+        end
+      end
+
+      it "can count by gender" do
+        skip("not supported for v1") if follow_ups_v2 == false
+        facility_1, facility_2 = create_list(:facility, 2)
+        Timecop.freeze("May 10th 2021") do
+          periods = (6.months.ago.to_period..1.month.ago.to_period)
+          patient_1 = create(:patient, :hypertension, recorded_at: 10.months.ago, gender: :male)
+          patient_2 = create(:patient, :hypertension, recorded_at: 10.months.ago, gender: :female)
+          patient_3 = create(:patient, :hypertension, recorded_at: 10.months.ago, gender: :transgender)
+
+          create(:bp_with_encounter, recorded_at: "February 10th 2021", facility: facility_1, patient: patient_1)
+          create(:bp_with_encounter, recorded_at: "February 11th 2021", facility: facility_1, patient: patient_2)
+          create(:bp_with_encounter, recorded_at: "February 12th 2021", facility: facility_1, patient: patient_3)
+          refresh_views
+
+          repo = described_class.new([facility_1, facility_2], periods: periods, follow_ups_v2: follow_ups_v2)
+
+          expect(repo.hypertension_follow_ups[facility_1.region.slug]).to eq({
+            Period.month("February 1st 2021") => 3
+          })
+          expect(repo.hypertension_follow_ups(group_by: :patient_gender)[facility_1.region.slug]).to eq({
+            Period.month("February 1st 2021") => {"female" => 1, "male" => 1, "transgender" => 1}
+          })
+        end
+      end
+
+      it "returns counts of BPs taken per user per region" do
+        facility_1, facility_2 = create_list(:facility, 2)
+        Timecop.freeze("May 10th 2021") do
+          periods = (6.months.ago.to_period..1.month.ago.to_period)
+          patient_1, patient_2 = create_list(:patient, 2, :hypertension, recorded_at: 10.months.ago)
+          user_1 = create(:user)
+          user_2 = create(:user)
+
+          # This BP is not a follow up, as it is recorded the same month as the patient registration
+          create(:bp_with_encounter, recorded_at: 10.months.ago, facility: facility_1, patient: patient_1, user: user_1)
+          # These are all valid follow ups
+          create(:bp_with_encounter, recorded_at: 3.months.ago, facility: facility_1, patient: patient_1, user: user_1)
+          create(:bp_with_encounter, recorded_at: 3.months.ago, facility: facility_1, patient: patient_2, user: user_2)
+          create(:bp_with_encounter, recorded_at: 2.months.ago, facility: facility_1, patient: patient_2, user: user_2)
+          # user_1 records two total follow ups 1 month ago, because they are summed at the patient level
+          create(:bp_with_encounter, recorded_at: 1.month.ago, facility: facility_2, patient: patient_1, user: user_1)
+          create(:bp_with_encounter, recorded_at: (1.month.ago + 1.day), facility: facility_2, patient: patient_1, user: user_1)
+          create(:bp_with_encounter, recorded_at: 1.month.ago, facility: facility_2, patient: patient_2, user: user_1)
+          refresh_views
+
+          repo = described_class.new([facility_1, facility_2], periods: periods, follow_ups_v2: follow_ups_v2)
+          facility_1_expected = {
+            Period.month("February 1st 2021") => {
+              user_1.id => 1,
+              user_2.id => 1
+            },
+            Period.month("March 1st 2021") => {
+              user_1.id => 0,
+              user_2.id => 1
+            }
           }
-        }
-
-        expect(repo.hypertension_follow_ups[facility_1.region.slug]).to eq({
-          Period.month("February 1st 2021") => 2, Period.month("March 1st 2021") => 1
-        })
-        expect(repo.hypertension_follow_ups[facility_2.region.slug]).to eq({Period.month("April 1st 2021") => 1})
-        expect(repo.hypertension_follow_ups(group_by: "blood_pressures.user_id")[facility_1.region.slug]).to eq(expected_grouped_by_user)
-        expect(repo_2.hypertension_follow_ups(group_by: "blood_pressures.user_id")[facility_1.region.slug]).to eq(expected_grouped_by_user)
+          facility_2_expected = {
+            Period.month("April 1st 2021") => {user_1.id => 2}
+          }
+          expect(repo.hypertension_follow_ups(group_by: "blood_pressures.user_id")[facility_1.region.slug]).to eq(facility_1_expected)
+          expect(repo.hypertension_follow_ups(group_by: "blood_pressures.user_id")[facility_2.region.slug]).to eq(facility_2_expected)
+        end
       end
     end
   end
@@ -474,6 +548,7 @@ RSpec.describe Reports::Repository, type: :model do
 
     it "creates cache keys" do
       repo = Reports::Repository.new(facility_1, periods: Period.month("June 1 2019")..Period.month("Jan 1 2020"))
+      refresh_views
       cache_keys = repo.schema.send(:cache_entries, :controlled_rates).map(&:cache_key)
       cache_keys.each do |key|
         expect(key).to include("controlled_rates")
@@ -529,63 +604,6 @@ RSpec.describe Reports::Repository, type: :model do
       # cumulative registrations returns all summed registrations for all months we have in reporting_months...
       # not sure who should be responsible for trimming the result set
       expect(repo.cumulative_registrations[facility_1.slug]).to eq({})
-    end
-  end
-
-  context "v2" do
-    it "gets correct controlled counts" do
-      facilities = FactoryBot.create_list(:facility, 3, facility_group: facility_group_1)
-      facility_1, facility_2, facility_3 = *facilities.take(3)
-      regions = facilities.map(&:region)
-
-      controlled_in_jan_and_june = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
-      uncontrolled_in_jan = create_list(:patient, 2, full_name: "uncontrolled", recorded_at: jan_2019, assigned_facility: facility_2, registration_user: user)
-      controlled_just_for_june = create(:patient, full_name: "just for june", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
-      patient_from_other_facility = create(:patient, full_name: "other facility", recorded_at: jan_2019, assigned_facility: create(:facility), registration_user: user)
-
-      Timecop.freeze(jan_2020) do
-        controlled_in_jan_and_june.map do |patient|
-          create(:bp_with_encounter, :hypertensive, facility: facility_1, patient: patient, recorded_at: 3.days.from_now, user: user)
-          create(:bp_with_encounter, :under_control, facility: facility_1, patient: patient, recorded_at: 4.days.from_now, user: user)
-        end
-        uncontrolled_in_jan.map { |patient| create(:bp_with_encounter, :hypertensive, facility: facility_2, patient: patient, recorded_at: 4.days.from_now) }
-        create(:bp_with_encounter, :under_control, facility: patient_from_other_facility.assigned_facility, patient: patient_from_other_facility, recorded_at: 4.days.from_now)
-      end
-
-      Timecop.freeze(june_1_2020) do
-        controlled_in_jan_and_june.map do |patient|
-          create(:bp_with_encounter, :under_control, facility: facility_1, patient: patient, recorded_at: 2.days.ago, user: user)
-          create(:bp_with_encounter, :hypertensive, facility: facility_1, patient: patient, recorded_at: 4.days.ago, user: user)
-          create(:bp_with_encounter, :hypertensive, facility: facility_1, patient: patient, recorded_at: 35.days.ago, user: user)
-        end
-
-        create(:bp_with_encounter, :under_control, facility: facility_3, patient: controlled_just_for_june, recorded_at: 4.days.ago, user: user)
-
-        uncontrolled_in_june = create_list(:patient, 5, recorded_at: 4.months.ago, assigned_facility: facility_1, registration_user: user)
-        uncontrolled_in_june.map do |patient|
-          create(:bp_with_encounter, :hypertensive, facility: facility_1, patient: patient, recorded_at: 1.days.ago, user: user)
-          create(:bp_with_encounter, :under_control, facility: facility_1, patient: patient, recorded_at: 2.days.ago, user: user)
-        end
-      end
-
-      Timecop.freeze(july_2020) do
-        refresh_views
-      end
-
-      with_reporting_time_zone do
-        start_range = july_2020.advance(months: -24)
-        range = (Period.month(start_range)..Period.month(july_2020))
-        repo_v1 = Reports::Repository.new(regions, periods: range, reporting_schema_v2: false)
-        repo_v2 = Reports::Repository.new(regions, periods: range, reporting_schema_v2: true)
-        expect(repo_v2.controlled[facility_1.slug]).to eq(repo_v1.controlled[facility_1.slug])
-        expect(repo_v2.uncontrolled[facility_1.slug]).to eq(repo_v1.uncontrolled[facility_1.slug])
-        result = repo_v2.controlled
-
-        facility_1_results = result[facility_1.slug]
-
-        expect(facility_1_results[Period.month(jan_2020)]).to eq(controlled_in_jan_and_june.size)
-        expect(facility_1_results[Period.month(june_1_2020)]).to eq(3)
-      end
     end
   end
 end

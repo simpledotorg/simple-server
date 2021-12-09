@@ -39,6 +39,7 @@ module SimpleServer
       g.helper false
     end
 
+    config.active_record.schema_format = :sql
     config.autoload_paths += %W[#{config.root}/lib]
 
     # Locale configuration
