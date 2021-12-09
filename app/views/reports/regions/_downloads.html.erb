@@ -26,6 +26,13 @@
       <% end %>
     <% end %>
 
+    <% if @region.state_region? && CountryConfig.current_country?("India") %>
+      <%= link_to(reports_region_monthly_state_data_path(@region, report_scope: params[:report_scope], period: params.dig(:period, :value), format: :csv), class: "dropdown-item") do %>
+        <i class="far fa-file w-16px ta-center mr-4px c-grey-medium"></i>
+        Monthly <%= @region.localized_region_type %> data
+      <% end %>
+    <% end %>
+
     <% if @region.region_type.in?(["district", "facility"]) %>
       <% if current_admin.can_access?(@region.source, :view_pii) %>
         <%= link_to(reports_patient_list_path(@region, report_scope: params[:report_scope]), class: "dropdown-item") do %>

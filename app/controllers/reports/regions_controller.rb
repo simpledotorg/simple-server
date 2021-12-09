@@ -136,6 +136,20 @@ class Reports::RegionsController < AdminController
     end
   end
 
+  def monthly_state_data_report
+    @region ||= authorize { current_admin.accessible_state_regions(:view_reports).find_by!(slug: report_params[:id]) }
+    @period = Period.month(params[:period] || Date.current)
+    csv = MonthlyStateDataService.new(@region, @period).report
+    report_date = @period.to_s.downcase
+    filename = "monthly-state-data-#{@region.slug}-#{report_date}.csv"
+
+    respond_to do |format|
+      format.csv do
+        send_data csv, filename: filename
+      end
+    end
+  end
+
   def whatsapp_graphics
     authorize { current_admin.accessible_facilities(:view_reports).any? }
 
