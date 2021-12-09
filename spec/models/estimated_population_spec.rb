@@ -48,7 +48,7 @@ RSpec.describe EstimatedPopulation, type: :model do
       expect(facility_population.errors[:region]).to eq(["can only set population for a district or a state"])
     end
 
-    it "creates an EstimatedPopulation record when a facility group is created" do
+    it "creates an EstimatedPopulation record when a population is set" do
       organization = Organization.create!(name: "Organization")
       facility_group = create(:facility_group, organization: organization, district_estimated_population: 2000)
       expect(facility_group.estimated_population).to be_present
