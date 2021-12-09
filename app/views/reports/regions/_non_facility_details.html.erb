@@ -110,3 +110,89 @@
     </table>
   </div>
 </div>
+
+<% if Flipper.enabled?(:show_call_results) %>
+  <div class="card mt-0 pr-0 pr-md-3 pb-inside-avoid">
+    <div class="d-flex flex-1 mb-8px">
+      <h3 class="mb-0px mr-8px">
+        Healthcare worker activity
+      </h3>
+      <%= render "definition_tooltip",
+                 definitions: { "Overdue patients contacted" => t("call_results_copy.monthly_overdue_calls_made", region_name: @region.name) } %>
+    </div>
+    <div class="table-responsive">
+      <table class="analytics-table table-compact">
+        <colgroup>
+          <col>
+          <col class="table-divider">
+          <col>
+          <col>
+          <col>
+          <col>
+          <col>
+        </colgroup>
+        <thead>
+        <tr>
+          <th></th>
+          <th colspan="6">
+            Overdue Patients Contacted
+          </th>
+        </tr>
+        <tr class="sorts" data-sort-method="thead">
+          <th class="row-label sort-label sort-label-small ta-center" data-sort-default>
+            Facilities
+          </th>
+          <% @period_range.each do |period| %>
+            <th class="row-label sort-label sort-label-small" data-sort-method="number">
+              <%= period %>
+            </th>
+          <% end %>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="row-title row-total" data-sort-method="none">
+          <td class="row-title row-total">
+            <%= @region.name %>
+          </td>
+          <% @period_range.each do |period| %>
+            <td class="row-total ta-center">
+              <%= number_or_dash_with_delimiter(@repository.monthly_overdue_calls[@region.slug][period]) %>
+            </td>
+          <% end %>
+        </tr>
+        <% if @region.state_region? %>
+          <% @region.district_regions.each do |resource| %>
+            <% slug = resource.region.slug %>
+            <% next unless @district_repository.earliest_patient_recorded_at[resource.slug] %>
+            <tr>
+              <td class="row-title">
+                <%= link_to resource.name, reports_region_district_path(resource.region) %>
+              </td>
+              <% @period_range.each do |period| %>
+                <td class="ta-center">
+                  <%= number_or_dash_with_delimiter @district_repository.monthly_overdue_calls[slug][period] %>
+                </td>
+              <% end %>
+            </tr>
+          <% end %>
+        <% else %>
+        <% @region.facility_regions.each do |resource| %>
+          <% slug = resource.region.slug %>
+          <% next unless @repository.earliest_patient_recorded_at[resource.slug] %>
+          <tr>
+            <td class="row-title">
+              <%= link_to resource.name, reports_region_facility_details_path(resource.region) %>
+            </td>
+            <% @period_range.each do |period| %>
+              <td class="ta-center">
+                <%= number_or_dash_with_delimiter @repository.monthly_overdue_calls[slug][period] %>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
+  <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+<% end %>
