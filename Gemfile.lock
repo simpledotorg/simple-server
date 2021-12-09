@@ -575,7 +575,7 @@ GEM
       net-ssh (>= 2.8.0)
     sshkit-interactive (0.3.0)
       sshkit (~> 1.12)
-    stackprof (0.2.15)
+    stackprof (0.2.17)
     standard (1.1.0)
       rubocop (= 1.13.0)
       rubocop-performance (= 1.11.1)
