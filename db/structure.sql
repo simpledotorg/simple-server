@@ -2688,17 +2688,18 @@ CREATE MATERIALIZED VIEW public.reporting_prescriptions AS
            FROM (public.patients p_1
              LEFT JOIN public.reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p_1.recorded_at)), 'YYYY-MM'::text) <= cal.month_string)))
           WHERE (p_1.deleted_at IS NULL)) p
-     LEFT JOIN LATERAL ( SELECT actual.name AS actual_name,
+     LEFT JOIN LATERAL ( SELECT DISTINCT ON (clean.medicine) actual.name AS actual_name,
             actual.dosage AS actual_dosage,
             clean.medicine AS clean_name,
             clean.dosage AS clean_dosage,
             purpose.hypertension AS medicine_purpose_hypertension,
             purpose.diabetes AS medicine_purpose_diabetes
            FROM (((public.prescription_drugs actual
-             LEFT JOIN public.raw_to_clean_medicines raw ON (((lower(regexp_replace((raw.raw_name)::text, ' +'::text, ''::text, 'g'::text)) = lower(regexp_replace((actual.name)::text, ' +'::text, ''::text, 'g'::text))) AND (lower(regexp_replace((raw.raw_dosage)::text, ' +'::text, ''::text, 'g'::text)) = lower(regexp_replace((actual.dosage)::text, ' +'::text, ''::text, 'g'::text))))))
+             LEFT JOIN public.raw_to_clean_medicines raw ON (((lower(regexp_replace((raw.raw_name)::text, '\s+'::text, ''::text, 'g'::text)) = lower(regexp_replace((actual.name)::text, '\s+'::text, ''::text, 'g'::text))) AND (lower(regexp_replace((raw.raw_dosage)::text, '\s+'::text, ''::text, 'g'::text)) = lower(regexp_replace((actual.dosage)::text, '\s+'::text, ''::text, 'g'::text))))))
              LEFT JOIN public.clean_medicine_to_dosages clean ON ((clean.rxcui = raw.rxcui)))
              LEFT JOIN public.medicine_purposes purpose ON (((clean.medicine)::text = (purpose.name)::text)))
-          WHERE ((actual.patient_id = p.id) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, actual.device_created_at)), 'YYYY-MM'::text) <= p.month_string) AND (actual.deleted_at IS NULL) AND ((actual.is_deleted = false) OR ((actual.is_deleted = true) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, actual.device_updated_at)), 'YYYY-MM'::text) > p.month_string))))) prescriptions ON (true))
+          WHERE ((actual.patient_id = p.id) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, actual.device_created_at)), 'YYYY-MM'::text) <= p.month_string) AND (actual.deleted_at IS NULL) AND ((actual.is_deleted = false) OR ((actual.is_deleted = true) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, actual.device_updated_at)), 'YYYY-MM'::text) > p.month_string))))
+          ORDER BY clean.medicine, actual.device_created_at DESC) prescriptions ON (true))
   GROUP BY p.id, p.month_date
   WITH NO DATA;
 
@@ -4765,6 +4766,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211125072030'),
 ('20211201230130'),
 ('20211207043358'),
-('20211207043615');
+('20211207043615'),
+('20211209103527');
 
 

@@ -72,7 +72,7 @@ RSpec.describe Reports::Prescription, {type: :model, reporting_spec: true} do
   end
 
   describe "Timeline" do
-    it "adds up dosages of drugs if there are more of one kind" do
+    it "picks up the latest dosage of drugs if there are more with the same name" do
       DrugLookup::MedicinePurpose.create(name: "Amlodipine", hypertension: true, diabetes: false)
       DrugLookup::RawToCleanMedicine.create({raw_name: "Amlo", raw_dosage: "5mg", rxcui: 111})
       DrugLookup::CleanMedicineToDosage.create({medicine: "Amlodipine", dosage: 5, rxcui: 111})
@@ -82,11 +82,11 @@ RSpec.describe Reports::Prescription, {type: :model, reporting_spec: true} do
 
       patient = FactoryBot.create(:patient, recorded_at: june_2021[:twelve_months_ago])
       add_drug(patient, "Amlo", "5mg", june_2021[:ten_months_ago])
-      add_drug(patient, "Amlo", "10mg", june_2021[:ten_months_ago], do_not_delete: true)
+      add_drug(patient, "Amlo", "10mg", june_2021[:ten_months_ago] + 1.minute, do_not_delete: true)
 
       described_class.refresh
 
-      expect(described_class.find_by(patient: patient, month_date: june_2021[:ten_months_ago]).amlodipine).to eq 15
+      expect(described_class.find_by(patient: patient, month_date: june_2021[:ten_months_ago]).amlodipine).to eq 10
     end
 
     it "creates a correct timeline of medications the patient has been on every month" do
