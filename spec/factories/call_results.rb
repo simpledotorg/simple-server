@@ -11,7 +11,7 @@ FactoryBot.define do
   end
 end
 
-def build_call_result_payload(call_result = FactoryBot.build(:call_result))
+def build_call_result_payload(call_result = FactoryBot.build(:call_result, result_type: :agreed_to_visit))
   call_result.attributes.with_payload_keys
 end
 
