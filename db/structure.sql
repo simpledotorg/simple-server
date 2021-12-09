@@ -50,6 +50,7 @@ CREATE TYPE public.gender_enum AS ENUM (
 
 SET default_tablespace = '';
 
+SET default_with_oids = false;
 --
 -- Name: accesses; Type: TABLE; Schema: public; Owner: -
 --
