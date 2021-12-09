@@ -10,6 +10,7 @@ rxcui,medicine,dosage
 597970,Atorvastatin,10
 597966,Atorvastatin,20
 315561,Captopril,25
+111111,Chlorthalidone,6.25
 331132,Chlorthalidone,12.5
 315655,Chlorthalidone,25
 329449,Clopidogrel,75
@@ -48,3 +49,7 @@ rxcui,medicine,dosage
 316764,Telmisartan,40
 316765,Telmisartan,80
 757711,Vildagliptin,50
+316156,Lisinopril,5MG
+316151,Lisinopril,10MG
+316153,Lisinopril,20MG
+316155,Lisinopril,40MG
