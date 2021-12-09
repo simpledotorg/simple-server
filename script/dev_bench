@@ -3,12 +3,20 @@ output_file='benchmark_results.csv'
 uname -a | tee ${output_file}
 system_profiler -detailLevel mini SPHardwareDataType | tail -n +2 | sed 's/ //' | tee ${output_file}
 
+# reset DB and PSQL to empty state
+rails db:drop:all db:create:all
+vacuumdb --full --all --analyze
+
 script/benchmarker -c "bin/rails db:reset"
 
 bin/spring stop > /dev/null
 
-script/benchmarker -n 10 -c "bin/rspec spec/models/region_spec.rb"
+script/benchmarker -n 3 -c "bin/rspec spec/models/region_spec.rb"
+
+script/benchmarker -n 3 -c "bin/rspec spec/controllers/reports/regions_controller_spec.rb"
 
 script/benchmarker -n 3 -c "bin/rspec spec/features/admin/facilities"
 
-script/benchmarker -c "SEED_TYPE=large bin/rails db:reset"
+# Only run this once, as it takes at least 10-20 mins for one run
+echo "Setting SEED_TYPE=large - next db:reset will take considerably longer..."
+SEED_TYPE=large script/benchmarker -n 1 -c "bin/rails db:reset"

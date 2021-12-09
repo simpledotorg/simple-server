@@ -223,7 +223,7 @@ RSpec.describe AppointmentsController, type: :controller do
       create(:appointment, patient: patient, facility: facility)
     end
 
-    it "remind_to_call_later updates remind_on" do
+    it "remind_to_call_later updates remind_on and creates a call_result" do
       new_remind_date = Date.current + 7.days
 
       put :update, params: {
@@ -236,10 +236,11 @@ RSpec.describe AppointmentsController, type: :controller do
       overdue_appointment.reload
 
       expect(overdue_appointment.remind_on).to eq(new_remind_date)
+      expect(overdue_appointment.call_results.remind_to_call_later).to be_present
       expect(response).to redirect_to(appointments_path)
     end
 
-    it "agreed_to_visit updates agreed_to_visit and remind_on" do
+    it "agreed_to_visit updates agreed_to_visit and remind_on and creates a call_result" do
       new_remind_date = Date.current + 30.days
 
       put :update, params: {
@@ -253,14 +254,15 @@ RSpec.describe AppointmentsController, type: :controller do
 
       expect(overdue_appointment.agreed_to_visit).to eq(true)
       expect(overdue_appointment.remind_on).to eq(new_remind_date)
+      expect(overdue_appointment.call_results.agreed_to_visit).to be_present
       expect(response).to redirect_to(appointments_path)
     end
 
-    it "patient_has_already_visited updates appointment status to visited" do
+    it "already_visited updates appointment status to visited" do
       put :update, params: {
         id: overdue_appointment.id,
         appointment: {
-          call_result: "patient_has_already_visited"
+          call_result: "already_visited"
         }
       }
 
@@ -270,11 +272,11 @@ RSpec.describe AppointmentsController, type: :controller do
       expect(response).to redirect_to(appointments_path)
     end
 
-    it "patient_has_already_visited updates agreed_to_visit and remind_on to nil" do
+    it "already_visited updates agreed_to_visit and remind_on to nil and creates a call_result" do
       put :update, params: {
         id: overdue_appointment.id,
         appointment: {
-          call_result: "patient_has_already_visited"
+          call_result: "already_visited"
         }
       }
 
@@ -282,25 +284,30 @@ RSpec.describe AppointmentsController, type: :controller do
 
       expect(overdue_appointment.agreed_to_visit).to be nil
       expect(overdue_appointment.remind_on).to be nil
+      expect(overdue_appointment.call_results.removed_from_overdue_list.already_visited).to be_present
       expect(response).to redirect_to(appointments_path)
     end
 
-    it "marking the appointment as cancelled updates the relevant fields" do
+    describe "marking the appointment as cancelled updates the relevant fields and creates a call_result" do
       Appointment.cancel_reasons.values.each do |cancel_reason|
-        put :update, params: {
-          id: overdue_appointment.id,
-          appointment: {
-            call_result: cancel_reason
+        it "marked the appointment cancelled: #{cancel_reason}" do
+          put :update, params: {
+            id: overdue_appointment.id,
+            appointment: {
+              call_result: cancel_reason
+            }
           }
-        }
 
-        overdue_appointment.reload
+          overdue_appointment.reload
 
-        expect(overdue_appointment.agreed_to_visit).to be false
-        expect(overdue_appointment.remind_on).to be nil
-        expect(overdue_appointment.cancel_reason).to eq cancel_reason
-        expect(overdue_appointment.status).to eq "cancelled"
-        expect(response).to redirect_to(appointments_path)
+          expect(overdue_appointment.agreed_to_visit).to be_falsey
+          expect(overdue_appointment.remind_on).to be nil
+          expect(overdue_appointment.cancel_reason).to eq cancel_reason
+          expect(overdue_appointment.status).to eq "cancelled"
+          expect(overdue_appointment.call_results.removed_from_overdue_list).to be_present
+          expect(overdue_appointment.call_results.removed_from_overdue_list.first.remove_reason).to eq cancel_reason
+          expect(response).to redirect_to(appointments_path)
+        end
       end
     end
 
