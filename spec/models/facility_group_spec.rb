@@ -203,6 +203,7 @@ RSpec.describe FacilityGroup, type: :model do
       state = facility_group.region.state_region
       expect(state.estimated_population.population).to eq(300)
       facility_group.discard
+      state.recalculate_state_population!
       expect(facility_group).to be_discarded
       expect(state.reload_estimated_population.population).to eq(0)
     end

@@ -20,7 +20,6 @@ class Region < ApplicationRecord
   has_one :estimated_population
 
   after_discard do
-    state_region.recalculate_state_population! if district_region
     estimated_population&.discard
   end
 
@@ -177,7 +176,7 @@ class Region < ApplicationRecord
       if self_and_descendant_types(region_type).include?(self.region_type)
         self_and_ancestors.find_by(region_type: region_type)
       else
-        raise NoMethodError, "undefined method #{region_type} for region '#{name}' of type #{self.region_type}"
+        raise NoMethodError, "undefined method #{region_type}_region for region '#{name}' of type #{self.region_type}"
       end
     end
 
@@ -188,7 +187,7 @@ class Region < ApplicationRecord
       if self_and_ancestor_types(region_type).include?(self.region_type)
         self_and_descendants.where(region_type: region_type)
       else
-        raise NoMethodError, "undefined method #{region_type.pluralize} for region '#{name}' of type #{self.region_type}"
+        raise NoMethodError, "undefined method #{region_type.pluralize}_regions for region '#{name}' of type #{self.region_type}"
       end
     end
   end
