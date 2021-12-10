@@ -45,7 +45,7 @@
           </div>
           <% if current_admin.accessible_facility_groups(:manage).find_by_id(facility_group) %>
             <div class="col-4 text-right">
-              <strong><%= link_to "Edit #{t("facility_group")}", edit_admin_facility_group_path(facility_group), class: "spec-edit-button btn btn-sm btn-outline-primary" %></strong>
+              <strong><%= link_to "Edit #{t("facility_group")}", edit_admin_facility_group_path(facility_group), class: "spec-edit-#{facility_group.name}-button btn btn-sm btn-outline-primary" %></strong>
             </div>
           <% end %>
         </div>
