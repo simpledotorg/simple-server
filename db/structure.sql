@@ -10,10 +10,31 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: -
+-- Name: ltree; Type: EXTENSION; Schema: -; Owner: -
 --
 
-COMMENT ON SCHEMA public IS 'standard public schema';
+CREATE EXTENSION IF NOT EXISTS ltree WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION ltree; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION ltree IS 'data type for hierarchical tree-like structures';
+
+
+--
+-- Name: pgcrypto; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION pgcrypto; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
 
 
 --
