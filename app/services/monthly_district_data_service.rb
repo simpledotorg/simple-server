@@ -11,7 +11,7 @@ class MonthlyDistrictDataService
 
   def report
     CSV.generate(headers: true) do |csv|
-      csv << ["Monthly District Data: #{region.name} #{period.to_date.strftime("%B %Y")}"]
+      csv << ["Monthly Facility Data: #{region.name} #{period.to_date.strftime("%B %Y")}"]
       csv << section_labels
       csv << header_row
       csv << district_row
@@ -82,7 +82,7 @@ class MonthlyDistrictDataService
   end
 
   def facility_rows
-    region.facility_regions.map.with_index do |facility, index|
+    region.facility_regions.sort_by(&:name).map.with_index do |facility, index|
       follow_ups_by_month = months.each_with_object({}) { |month, hsh|
         monthly_count = dashboard_analytics.dig(facility.source.id, :follow_up_patients_by_period, month.value) || 0
         hsh["follow_ups_#{month.value}".to_sym] = monthly_count
