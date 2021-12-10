@@ -555,7 +555,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
         expect(response.status).to eq(200)
         expect(response.body).to include("Monthly District Data: #{region.name} #{Date.current.strftime("%B %Y")}")
         report_date = Date.current.strftime("%b-%Y").downcase
-        expected_filename = "monthly-facility-data-#{region.slug}-#{report_date}.csv"
+        expected_filename = "monthly-district-data-#{region.slug}-#{report_date}.csv"
         expect(response.headers["Content-Disposition"]).to include(%(filename="#{expected_filename}"))
       end
     end
