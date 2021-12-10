@@ -29,7 +29,8 @@ class EstimatedPopulation < ApplicationRecord
   end
 
   def update_state_population
-    if region.district_region?
+    return if region.discarded?
+    if region.district_region? 
       state = region.state_region
       state_population = 0
       state&.district_regions&.each do |district|

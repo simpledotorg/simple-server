@@ -192,6 +192,20 @@ RSpec.describe FacilityGroup, type: :model do
         expect(facility_group.discardable?).to be true
       end
     end
+
+    it "can be discarded" do
+      facility_group.discard
+      expect(facility_group).to be_discarded
+    end
+
+    it "can be discarded and updates state population after discard" do
+      facility_group = create(:facility_group, name: "district-with-population", organization: org, district_estimated_population: 300)
+      state = facility_group.region.state_region
+      expect(state.estimated_population.population).to eq(300)
+      facility_group.discard
+      expect(facility_group).to be_discarded
+      expect(state.reload_estimated_population.population).to eq(0)
+    end
   end
 
   describe "Callbacks" do
