@@ -51,6 +51,7 @@ RSpec.describe EstimatedPopulation, type: :model do
     it "creates an EstimatedPopulation record when a population is set" do
       organization = Organization.create!(name: "Organization")
       facility_group = create(:facility_group, organization: organization, district_estimated_population: 2000)
+
       expect(facility_group.estimated_population).to be_present
       expect(facility_group.estimated_population.population).to eq(2000)
     end
