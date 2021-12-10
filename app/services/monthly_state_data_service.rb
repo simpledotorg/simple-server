@@ -74,7 +74,7 @@ class MonthlyStateDataService
   end
 
   def child_rows
-    region.children.map.with_index do |child, index|
+    region.children.sort_by(&:name).map.with_index do |child, index|
       row_data = {
         index: index + 1,
         parent_name: region.name,
