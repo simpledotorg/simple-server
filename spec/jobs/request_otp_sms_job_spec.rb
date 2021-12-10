@@ -22,4 +22,9 @@ RSpec.describe RequestOtpSmsJob, type: :job do
 
     described_class.perform_now(user)
   end
+
+  it "does not raise an exception if twilio responds with invalid phone number error" do
+    allow_any_instance_of(TwilioApiService).to receive(:send_sms).and_raise(TwilioApiService::Error.new("An error", 21211))
+    described_class.perform_now(user)
+  end
 end

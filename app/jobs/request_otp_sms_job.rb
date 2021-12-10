@@ -5,7 +5,10 @@ class RequestOtpSmsJob < ApplicationJob
       user_id: user.id,
       communication_type: :sms
     }
-    TwilioApiService.new.send_sms(recipient_number: user.localized_phone_number, message: otp_message(user), context: context)
+
+    handle_twilio_errors(user) do
+      TwilioApiService.new.send_sms(recipient_number: user.localized_phone_number, message: otp_message(user), context: context)
+    end
   end
 
   private
@@ -13,5 +16,17 @@ class RequestOtpSmsJob < ApplicationJob
   def otp_message(user)
     app_signature = ENV["SIMPLE_APP_SIGNATURE"]
     I18n.t("communications.request_otp", otp: user.otp, app_signature: app_signature)
+  end
+
+  def handle_twilio_errors(user, &block)
+    block.call
+  rescue TwilioApiService::Error => error
+    if error.reason == :invalid_phone_number
+      logger.info("OTP to #{user.id} failed because of an invalid phone number")
+      Statsd.instance.increment("twilio.errors.invalid_phone_number")
+      false
+    else
+      raise error
+    end
   end
 end
