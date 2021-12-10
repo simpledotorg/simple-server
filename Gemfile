@@ -15,7 +15,7 @@ gem "active_record_union"
 gem "activerecord-import"
 gem "amazing_print"
 gem "auto_strip_attributes"
-gem "bcrypt", "~> 3.1", ">= 3.1.11"
+gem "bcrypt", "~> 3.1"
 gem "bootsnap", require: false
 gem "bootstrap_form", ">= 4.5.0"
 gem "bootstrap-datepicker-rails", "~> 1.9"
