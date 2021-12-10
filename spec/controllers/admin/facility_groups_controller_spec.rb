@@ -72,7 +72,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
       expect(fg.region.estimated_population.population).to eq 2500
       expect(fg.region.state_region.estimated_population.population).to eq 2500
     end
-    
+
     it "does not create population for blank values" do
       valid_attributes[:district_estimated_population] = ""
       expect {
