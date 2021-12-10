@@ -56,8 +56,8 @@ RSpec.describe EstimatedPopulation, type: :model do
     end
   end
 
-  describe "update_state_population" do
-    it "updates state population when district population is set/updated" do
+  describe "recalculate_state_population!" do
+    it "updates state population to total of all districts" do
       state = Region.create!(name: "State", region_type: "state", reparent_to: Region.root)
       district_1 = Region.create!(name: "District 1", region_type: "district", reparent_to: state)
       district_2 = Region.create!(name: "District 2", region_type: "district", reparent_to: state)
@@ -65,15 +65,19 @@ RSpec.describe EstimatedPopulation, type: :model do
       expect(state.estimated_population).to be_nil
       district_1_population = district_1.create_estimated_population!(population: 1000, diagnosis: "HTN")
       expect(district_1.estimated_population).to eq(district_1_population)
+
+      state.recalculate_state_population!
       expect(state.reload_estimated_population.population).to eq(1000)
 
       district_1_population.population = 1500
       district_1_population.save!
 
+      state.recalculate_state_population!
       expect(district_1.estimated_population.population).to eq(1500)
       expect(state.reload_estimated_population.population).to eq(1500)
 
       district_2.create_estimated_population!(population: 1000, diagnosis: "HTN")
+      state.recalculate_state_population!
       expect(state.reload_estimated_population.population).to eq(2500)
     end
 
@@ -87,9 +91,11 @@ RSpec.describe EstimatedPopulation, type: :model do
 
       expect(district_1.estimated_population.population).to eq(district_1_population.population)
       expect(district_2.estimated_population.population).to eq(district_2_population.population)
+      state.recalculate_state_population!
       expect(state.reload_estimated_population.population).to eq(district_1_population.population + district_2_population.population)
 
       EstimatedPopulation.find(district_1_population.id).destroy
+      state.recalculate_state_population!
 
       expect(district_1.reload_estimated_population).to be_nil
       expect(state.reload_estimated_population.population).to eq(district_2.estimated_population.population)
@@ -104,6 +110,7 @@ RSpec.describe EstimatedPopulation, type: :model do
 
       district_1_population = EstimatedPopulation.create!(population: 1500, diagnosis: "HTN", region_id: district_1.id)
       district_2_population = EstimatedPopulation.create!(population: 1500, diagnosis: "HTN", region_id: district_2.id)
+      state.recalculate_state_population!
 
       expect(district_1_population.is_population_available_for_all_districts).to eq(true)
       expect(district_2_population.is_population_available_for_all_districts).to eq(true)
@@ -116,6 +123,7 @@ RSpec.describe EstimatedPopulation, type: :model do
       district_2 = Region.create!(name: "District 2", region_type: "district", reparent_to: state)
 
       district_2_population = EstimatedPopulation.create!(population: 1500, diagnosis: "HTN", region_id: district_2.id)
+      state.recalculate_state_population!
 
       expect(district_1.estimated_population).to be_nil
       expect(district_2_population.is_population_available_for_all_districts).to eq(false)

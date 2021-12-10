@@ -14,6 +14,7 @@ class FacilityGroupRegionSync < SimpleDelegator
     )
     region.build_estimated_population(population: district_estimated_population) if district_estimated_population.present?
     region.save!
+    state_region.recalculate_state_population! if district_estimated_population.present?
   end
 
   def after_update
@@ -23,6 +24,7 @@ class FacilityGroupRegionSync < SimpleDelegator
       population = region.estimated_population || region.build_estimated_population
       population.population = district_estimated_population
       population.save!
+      state_region.recalculate_state_population!
     end
     region.save!
   end

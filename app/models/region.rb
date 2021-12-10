@@ -20,6 +20,7 @@ class Region < ApplicationRecord
   has_one :estimated_population
 
   after_discard do
+    state_region.recalculate_state_population! if district_region
     estimated_population&.discard
   end
 
@@ -135,6 +136,13 @@ class Region < ApplicationRecord
     else
       DistrictAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period).call
     end
+  end
+
+  # Keep the state population in sync with districts -- this is primarily used from FacilityGroupRegionSync
+  def recalculate_state_population!
+    new_total = district_regions.includes(:estimated_population).sum(:population)
+    population = estimated_population || build_estimated_population
+    population.update! population: new_total
   end
 
   def syncable_patients
