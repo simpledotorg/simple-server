@@ -72,6 +72,16 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
       expect(fg.region.estimated_population.population).to eq 2500
       expect(fg.region.state_region.estimated_population.population).to eq 2500
     end
+    
+    it "does not create population for blank values" do
+      valid_attributes[:district_estimated_population] = ""
+      expect {
+        post :create, params: {facility_group: valid_attributes, organization_id: organization.id}
+      }.to change(FacilityGroup, :count).by(1)
+        .and change(EstimatedPopulation, :count).by(0) # population for district and state
+      fg = assigns(:facility_group)
+      expect(fg.region.estimated_population).to be_nil
+    end
 
     it "redirects to the facilities" do
       post :create, params: {facility_group: valid_attributes, organization_id: organization.id}

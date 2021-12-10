@@ -12,7 +12,7 @@ class FacilityGroupRegionSync < SimpleDelegator
       reparent_to: state_region,
       region_type: Region.region_types[:district]
     )
-    region.build_estimated_population(population: district_estimated_population) if district_estimated_population
+    region.build_estimated_population(population: district_estimated_population) if district_estimated_population.present?
     region.save!
   end
 

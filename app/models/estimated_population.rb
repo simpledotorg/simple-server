@@ -1,7 +1,6 @@
 class EstimatedPopulation < ApplicationRecord
   belongs_to :region
 
-  validates :population, numericality: true, presence: true
   validates :diagnosis, presence: true
 
   enum diagnosis: {HTN: "HTN", DM: "DM"}
@@ -30,7 +29,8 @@ class EstimatedPopulation < ApplicationRecord
   end
 
   def update_state_population
-    if region.district_region?
+    return if region.discarded?
+    if region.district_region? 
       state = region.state_region
       state_population = 0
       state&.district_regions&.each do |district|
