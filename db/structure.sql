@@ -436,7 +436,7 @@ CREATE TABLE public.encounters (
 CREATE TABLE public.estimated_populations (
     id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     region_id uuid NOT NULL,
-    population integer NOT NULL,
+    population integer,
     diagnosis character varying DEFAULT 'HTN'::character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
@@ -4783,6 +4783,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211202183101'),
 ('20211207043358'),
 ('20211207043615'),
-('20211209103527');
+('20211209103527'),
+('20211210152751');
 
 
