@@ -499,9 +499,9 @@ RSpec.describe Reports::RegionsController, type: :controller do
         expect_any_instance_of(MonthlyDistrictDataService).to receive(:report).and_call_original
         get :monthly_district_data_report, params: {id: region.slug, report_scope: "district", format: "csv"}
         expect(response.status).to eq(200)
-        expect(response.body).to include("Monthly District Data: #{region.name} #{Date.current.strftime("%B %Y")}")
+        expect(response.body).to include("Monthly Facility Data: #{region.name} #{Date.current.strftime("%B %Y")}")
         report_date = Date.current.strftime("%b-%Y").downcase
-        expected_filename = "monthly-district-data-#{region.slug}-#{report_date}.csv"
+        expected_filename = "monthly-facility-data-#{region.slug}-#{report_date}.csv"
         expect(response.headers["Content-Disposition"]).to include(%(filename="#{expected_filename}"))
       end
     end
@@ -514,6 +514,60 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect(MonthlyDistrictDataService).to receive(:new).with(region, period).and_call_original
       get :monthly_district_data_report,
         params: {id: region.slug, report_scope: "district", format: "csv", period: period.value}
+    end
+  end
+
+  describe "#monthly_state_data_report" do
+    let(:facility_group) { create(:facility_group, organization: organization) }
+    let(:facility) { create(:facility, facility_group: facility_group) }
+    let(:region) { facility.region.state_region }
+
+    it "returns 401 when user is not authorized" do
+      facility
+
+      get :monthly_state_data_report, params: {id: region.slug, report_scope: "state", format: "csv"}
+      expect(response.status).to eq(401)
+    end
+
+    it "returns 302 found with invalid region" do
+      facility
+      sign_in(cvho.email_authentication)
+
+      get :monthly_state_data_report, params: {id: "not-found", report_scope: "state", format: "csv"}
+      expect(response.status).to eq(302)
+    end
+
+    it "returns 302 if region is not state" do
+      facility
+      sign_in(cvho.email_authentication)
+
+      get :monthly_state_data_report, params: {id: facility.slug, report_scope: "state", format: "csv"}
+      expect(response.status).to eq(302)
+    end
+
+    it "calls csv service and returns 200 with csv data" do
+      Timecop.freeze("June 15th 2020") do
+        facility
+        sign_in(cvho.email_authentication)
+
+        expect_any_instance_of(MonthlyStateDataService).to receive(:report).and_call_original
+        get :monthly_state_data_report, params: {id: region.slug, report_scope: "state", format: "csv"}
+        expect(response.status).to eq(200)
+        expect(response.body).to include("Monthly Facility Data: #{region.name} #{Date.current.strftime("%B %Y")}")
+        report_date = Date.current.strftime("%b-%Y").downcase
+        expected_filename = "monthly-facility-data-#{region.slug}-#{report_date}.csv"
+        expect(response.headers["Content-Disposition"]).to include(%(filename="#{expected_filename}"))
+      end
+    end
+
+    it "passes the provided period to the csv service" do
+      facility
+      sign_in(cvho.email_authentication)
+
+      period = Period.month("July 2018")
+      expect(MonthlyStateDataService).to receive(:new).with(region, period).and_call_original
+      get :monthly_state_data_report,
+        params: {id: region.slug, report_scope: "state", format: "csv", period: period.value}
     end
   end
 end
