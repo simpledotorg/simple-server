@@ -29,7 +29,9 @@
         <div class="row">
           <div class="col-8">
             <h3>
-              <span class="heading-label"><%= t("facility_group").capitalize %></span>
+              <span class="heading-label">
+                <%= t("facility_group").capitalize %>
+              </span>
               <%= facility_group.name %>
             </h3>
             <p class="subtitle">
@@ -43,7 +45,7 @@
           </div>
           <% if current_admin.accessible_facility_groups(:manage).find_by_id(facility_group) %>
             <div class="col-4 text-right">
-              <strong><%= link_to "Edit #{t("facility_group")}", edit_admin_facility_group_path(facility_group), class: "btn btn-sm btn-outline-primary" %></strong>
+              <strong><%= link_to "Edit #{t("facility_group")}", edit_admin_facility_group_path(facility_group), class: "spec-edit-button btn btn-sm btn-outline-primary" %></strong>
             </div>
           <% end %>
         </div>
