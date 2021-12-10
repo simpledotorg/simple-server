@@ -53,7 +53,7 @@ GEM
       public_suffix (>= 2.0.2, < 5.0)
     airbrussh (1.4.0)
       sshkit (>= 1.6.1, != 1.7.0)
-    amazing_print (1.2.1)
+    amazing_print (1.4.0)
     arel (9.0.0)
     ast (2.4.2)
     auto_strip_attributes (2.6.0)
