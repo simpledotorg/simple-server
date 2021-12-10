@@ -4377,6 +4377,13 @@ CREATE UNIQUE INDEX medicine_purposes_unique_name ON public.medicine_purposes US
 
 
 --
+-- Name: overdue_calls_month_date_patient_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX overdue_calls_month_date_patient_id ON public.reporting_overdue_calls USING btree (month_date, patient_id);
+
+
+--
 -- Name: patient_blood_pressures_patient_id_month_date; Type: INDEX; Schema: public; Owner: -
 --
 
