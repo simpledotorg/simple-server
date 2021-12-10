@@ -8,7 +8,7 @@ def is_running_migration?
   Rake.application.top_level_tasks.include?("db:migrate")
 end
 
-Rake::Task['db:schema:load'].clear
-task 'db:schema:load' do
-  Rake::Task['db:structure:load'].invoke
+Rake::Task["db:schema:load"].clear
+task "db:schema:load" do
+  Rake::Task["db:structure:load"].invoke
 end
