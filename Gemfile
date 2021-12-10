@@ -66,7 +66,7 @@ gem "request_store-sidekiq"
 gem "request_store"
 gem "roo", "~> 2.8.0"
 gem "rspec-rails", "~> 4.0.1"
-gem "rswag", "~> 1.6.0"
+gem "rswag", "~> 2.4.0"
 gem "ruby-progressbar", require: false
 gem "rubyzip"
 gem "sassc-rails"
@@ -86,7 +86,7 @@ gem "twilio-ruby", "~> 5.10", ">= 5.10.3"
 gem "uglifier", ">= 1.3.0"
 gem "uuidtools", require: false
 gem "view_component", require: "view_component/engine"
-gem "webpacker", "6.0.0.rc.5"
+gem "webpacker", "6.0.0.rc.6"
 gem "whenever", require: false
 gem "wkhtmltoimage-binary"
 
@@ -105,7 +105,7 @@ group :development, :test do
   gem "parallel_tests", group: %i[development test]
   gem "rails-controller-testing"
   gem "rb-readline"
-  gem "shoulda-matchers", "~> 4.1.2"
+  gem "shoulda-matchers", "~> 5.0.0"
   gem "standard", "1.1.0", require: false
 end
 
