@@ -66,7 +66,7 @@ gem "request_store-sidekiq"
 gem "request_store"
 gem "roo", "~> 2.8.0"
 gem "rspec-rails", "~> 4.0.1"
-gem "rswag", "~> 1.6.0"
+gem "rswag", "~> 2.4.0"
 gem "ruby-progressbar", require: false
 gem "rubyzip"
 gem "sassc-rails"
