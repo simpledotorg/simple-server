@@ -507,7 +507,7 @@ GEM
       rexml
     ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.5)
-    rubyzip (2.3.0)
+    rubyzip (2.3.2)
     safe_yaml (1.0.5)
     sassc (2.3.0)
       ffi (~> 1.9)
