@@ -4,8 +4,8 @@ set -ex
 # See https://github.com/semaphoreci/toolbox for more details on the "sem-" commands
 source ~/.toolbox/toolbox
 
-# Temporarily turn on cache clear if Semaphore has weird bunlding issues
-cache clear
+# Temporarily turn on cache clear if Semaphore has weird bundling issues
+# cache clear
 
 sem-version ruby 2.7.4
 sem-service start postgres 10
