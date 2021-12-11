@@ -377,7 +377,7 @@ This will create a git release tag and automatically trigger a deployment to all
 ### Deployment to a specific environment
 
 * We use Capistrano [multi-config](https://github.com/railsware/capistrano-multiconfig) to do multi-country deploys.
-* All `cap` commands are namespaced with the country name. For eg: `bundle exec india:sandbox deploy`.
+* All `cap` commands are namespaced with the country name. For eg: `bundle exec cap sandbox deploy` to deploy to sandbox.
 * The available country names are listed under `config/deploy`. The subsequent envs, under the country directory, like
   `config/deploy/india/sandbox.rb`
 
