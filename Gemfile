@@ -113,7 +113,7 @@ group :development do
   gem "guard-rspec", require: false
   gem "listen"
   gem "rails-erd"
-  gem "spring"
+  gem "spring", "3.1.1"
   gem "spring-commands-rspec"
   gem "web-console", ">= 3.3.0"
   gem "memory_profiler"
