@@ -3,7 +3,6 @@
 [![Build Status](https://simple.semaphoreci.com/badges/simple-server/branches/master.svg)](https://simple.semaphoreci.com/projects/simple-server)
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/testdouble/standard)
 
-
 This is the backend for the Simple app to help track hypertensive patients across a population.
 
 ## Table of Contents

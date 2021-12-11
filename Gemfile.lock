@@ -240,7 +240,7 @@ GEM
       activerecord (>= 3.2)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
-    google-protobuf (3.17.3)
+    google-protobuf (3.19.1)
     groupdate (5.0.0)
       activesupport (>= 5)
     guard (2.18.0)
@@ -675,7 +675,7 @@ DEPENDENCIES
   friendly_id (~> 5.2.4)
   generator_spec
   github-ds
-  google-protobuf (~> 3.0)
+  google-protobuf (~> 3.19)
   groupdate
   guard-rspec
   http
