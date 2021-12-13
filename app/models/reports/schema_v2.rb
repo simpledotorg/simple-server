@@ -119,6 +119,10 @@ module Reports
       end
     end
 
+    memoize def monthly_overdue_calls
+      values_at("monthly_overdue_calls")
+    end
+
     alias_method :missed_visits_rate, :missed_visits_rates
     alias_method :missed_visits_without_ltfu, :missed_visits
     alias_method :missed_visits_without_ltfu_rates, :missed_visits_rates
