@@ -57,6 +57,10 @@ class MyFacilitiesController < AdminController
     send_data csv_data, type: "text/csv", filename: filename
   end
 
+  def my_facilities_mail
+    MyFacilitiesDownloadJob.perform_now
+  end
+
   private
 
   def set_last_updated_at
