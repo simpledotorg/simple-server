@@ -1,48 +1,51 @@
 <div class="d-lg-flex flex-lg-wrap">
   <div class="d-lg-flex w-lg-50 pr-lg-2">
-    <div id="patient-breakdown" data-period="<%= @period.to_s %>" class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
-      <div class="pt-20px px-20px">
-        <div class="d-flex flex-1 mb-8px">
-          <h3 class="mb-0px mr-8px">
-            Hypertension patients
-          </h3>
-          <%= render "definition_tooltip",
-                     definitions: { "Patients under care" => t("patients_under_care_copy"),
-                                    "Lost to follow-up" => t("lost_to_follow_up_copy.reports_card_subtitle"),
-                                    "Transferred out" => t("transferred_out_patients_copy")} %>
-        </div>
-        <p class="mb-0px c-grey-dark mr-lg-12px">
-          Hypertension patients who have died, been lost to follow-up, or transferred out
-        </p>
+    <div id="patient-breakdown" data-period="<%= @period.to_s %>" class="mt-8px mx-0px mb-16px p-20px bg-white br-4px bs-small w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
+      <div class="d-flex flex-1 mb-8px">
+        <h3 class="mb-0px mr-8px">
+          Hypertension patients
+        </h3>
+        <%= render "definition_tooltip",
+                    definitions: { "Patients under care" => t("patients_under_care_copy"),
+                                  "Lost to follow-up" => t("lost_to_follow_up_copy.reports_card_subtitle"),
+                                  "Transferred out" => t("transferred_out_patients_copy")} %>
       </div>
-      <div class="p-relative mb-16px d-lg-flex">
-        <div class="w-360px h-360px">
-          <canvas id="patientBreakdownCanvas"></canvas>
+      <p class="mb-16px c-grey-dark mr-lg-12px">
+        Hypertension patient coverage and breakdown in <%= @region.name %>
+      </p>
+      <div>
+        <div class="d-flex ai-center jc-between">
+          <p class="mb-8px">
+            Total registered patients
+          </p>
+          <p class="mb-8px fw-bold">
+            <%= @chart_data[:patient_breakdown][:total_patients] %>
+          </p>
+        </div><div class="d-flex ai-center jc-between">
+          <p class="mb-8px">
+            Patients under care
+          </p>
+          <p class="mb-8px fw-bold">
+            <%= @chart_data[:patient_breakdown][:not_ltfu_patients] %>
+          </p>
         </div>
-        <div class="d-flex fd-column justify-center">
-          <div class="mr-16px mb-12px">
-            <p class="mb-1">
-              <span class="legend-label bg-green"></span>
-              Patients under care
-            </p>
-            <p class="mb-1">
-              <span class="legend-label bg-blue-dark"></span>
-              Lost to follow-up
-            </p>
-            <p class="mb-1">
-              <span class="legend-label bg-red-medium"></span>
-              Died
-            </p>
-          </div>
+        <div class="d-flex ai-center jc-between">
+          <p class="mb-8px">
+            Lost to follow-up
+          </p>
+          <p class="mb-8px fw-bold">
+            <%= @chart_data[:patient_breakdown][:ltfu_patients] %>
+          </p>
         </div>
-        <div class="p-absolute t-0 l-0 pe-none d-flex align-center justify-center w-100pt h-100pt">
-          <% if @chart_data[:patient_breakdown][:total_patients] == 0 %>
-            <p class="c-grey-medium">
-              No data available
-            </p>
-          <% end %>
+        <div class="d-flex ai-center jc-between">
+          <p class="mb-8px">
+            Dead patients
+          </p>
+          <p class="mb-8px fw-bold">
+            <%= @chart_data[:patient_breakdown][:dead_patients] %>
+          </p>
         </div>
-      </div>
+      </div> 
     </div>
   </div>
   <div class="d-lg-flex w-lg-50 pl-lg-2">
@@ -108,7 +111,7 @@
       </div>
     <div>
       <div class="p-relative mb-16px">
-        <div class="h-320px mr-16px mb-12px ml-13px">
+        <div class="h-250px mr-16px mb-12px ml-13px">
           <canvas id="ltfuPatients"></canvas>
         </div>
         <div class="p-absolute t-0 l-0 pe-none d-flex align-center justify-center w-100pt h-100pt">
