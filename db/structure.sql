@@ -10,13 +10,6 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-
-
---
 -- Name: ltree; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -24,10 +17,24 @@ CREATE EXTENSION IF NOT EXISTS ltree WITH SCHEMA public;
 
 
 --
+-- Name: EXTENSION ltree; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION ltree IS 'data type for hierarchical tree-like structures';
+
+
+--
 -- Name: pgcrypto; Type: EXTENSION; Schema: -; Owner: -
 --
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION pgcrypto; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
 
 
 --
@@ -438,8 +445,8 @@ CREATE TABLE public.estimated_populations (
     region_id uuid NOT NULL,
     population integer,
     diagnosis character varying DEFAULT 'HTN'::character varying NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_by uuid,
+    updated_by uuid,
     deleted_at timestamp without time zone
 );
 
@@ -4837,4 +4844,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211207043615'),
 ('20211209103527'),
 ('20211209104346'),
-('20211209110618');
+('20211209110618'),
+('20211210152751');
+
+
