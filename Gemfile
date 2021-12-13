@@ -36,7 +36,7 @@ gem "faker", require: false
 gem "flipper-active_record"
 gem "flipper-ui"
 gem "flipper"
-gem "friendly_id", "~> 5.2.4"
+gem "friendly_id", "~> 5.4.2"
 gem "github-ds"
 gem "google-protobuf", "~> 3.19"
 gem "groupdate"
