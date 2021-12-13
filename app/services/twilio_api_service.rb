@@ -7,7 +7,7 @@
 #
 # ERROR HANDLING: This service raises any errors related to the Twilio API as an exception.
 # This is to allow background jobs to retry in case of network/limit errors.
-# The error object contains the reason of failure if the error has a twilio error code.
+# The error object contains the reason of failure if it was due to a known twilio error.
 # The users of this service should use it to handle known errors properly.
 
 class TwilioApiService
