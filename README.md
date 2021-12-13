@@ -3,7 +3,6 @@
 [![Build Status](https://simple.semaphoreci.com/badges/simple-server/branches/master.svg)](https://simple.semaphoreci.com/projects/simple-server)
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/testdouble/standard)
 
-
 This is the backend for the Simple app to help track hypertensive patients across a population.
 
 ## Table of Contents
@@ -377,9 +376,9 @@ This will create a git release tag and automatically trigger a deployment to all
 ### Deployment to a specific environment
 
 * We use Capistrano [multi-config](https://github.com/railsware/capistrano-multiconfig) to do multi-country deploys.
-* All `cap` commands are namespaced with the country name. For eg: `bundle exec india:sandbox deploy`.
+* Most `cap` commands are namespaced with the country name. For eg: `bundle exec cap india:staging deploy` to deploy to India staging. Note that some (like sandbox) are do not have a country, so the command would be `bundle exec cap sandbox deploy`.
 * The available country names are listed under `config/deploy`. The subsequent envs, under the country directory, like
-  `config/deploy/india/sandbox.rb`
+  `config/deploy/india/staging.rb`
 
 Simple Server can be deployed to a specific environment of a specific country with the following command.
 

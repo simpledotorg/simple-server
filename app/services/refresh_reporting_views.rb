@@ -55,6 +55,7 @@ class RefreshReportingViews
     Reports::Month
     Reports::Facility
     Reports::PatientBloodPressure
+    Reports::OverdueCalls
     Reports::PatientVisit
     Reports::PatientState
     Reports::FacilityState

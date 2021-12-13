@@ -15,7 +15,7 @@ gem "active_record_union"
 gem "activerecord-import"
 gem "amazing_print"
 gem "auto_strip_attributes"
-gem "bcrypt", "~> 3.1", ">= 3.1.11"
+gem "bcrypt", "~> 3.1"
 gem "bootsnap", require: false
 gem "bootstrap_form", ">= 4.5.0"
 gem "bootstrap-datepicker-rails", "~> 1.9"
@@ -38,7 +38,7 @@ gem "flipper-ui"
 gem "flipper"
 gem "friendly_id", "~> 5.2.4"
 gem "github-ds"
-gem "google-protobuf", "~> 3.0"
+gem "google-protobuf", "~> 3.19"
 gem "groupdate"
 gem "http_accept_language"
 gem "http"
@@ -93,7 +93,7 @@ gem "wkhtmltoimage-binary"
 group :development, :test do
   gem "active_record_query_trace", require: false
   gem "byebug", platforms: [:mri, :mingw, :x64_mingw]
-  gem "capistrano", "3.11.0"
+  gem "capistrano", "3.16.0"
   gem "capistrano-db-tasks", require: false
   gem "capistrano-multiconfig", require: true
   gem "capistrano-passenger", "0.2.1"
@@ -113,7 +113,7 @@ group :development do
   gem "guard-rspec", require: false
   gem "listen"
   gem "rails-erd"
-  gem "spring"
+  gem "spring", "3.1.1"
   gem "spring-commands-rspec"
   gem "web-console", ">= 3.3.0"
   gem "memory_profiler"
