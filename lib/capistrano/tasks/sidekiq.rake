@@ -1,17 +1,6 @@
 set :sidekiq_service_name, "sidekiq"
 
 namespace :sidekiq do
-  desc "Install sidekiq systemd files"
-  task :install do
-    on roles :sidekiq do
-      execute "mkdir -p .config/systemd/user"
-      template "sidekiq@.service", "~/.config/systemd/user/sidekiq@.service"
-      template "sidekiq.service", "~/.config/systemd/user/sidekiq.service"
-
-      execute :systemctl, :enable, fetch(:sidekiq_service_name), "--user"
-    end
-  end
-
   desc "Restart sidekiq service"
   task :restart do
     on roles :sidekiq do
@@ -30,16 +19,6 @@ namespace :sidekiq do
   task :stop do
     on roles :sidekiq do
       execute :systemctl, "--user", "stop", fetch(:sidekiq_service_name)
-    end
-  end
-
-  desc "Uninstall sidekiq service"
-  task :uninstall do
-    on roles :sidekiq do
-      execute :systemctl, :disable, fetch(:sidekiq_service_name), "--user"
-
-      execute :rm, "~/.config/systemd/user/sidekiq@.service"
-      execute :rm, "~/.config/systemd/user/sidekiq.service"
     end
   end
 
