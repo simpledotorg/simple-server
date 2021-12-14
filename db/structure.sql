@@ -445,8 +445,8 @@ CREATE TABLE public.estimated_populations (
     region_id uuid NOT NULL,
     population integer,
     diagnosis character varying DEFAULT 'HTN'::character varying NOT NULL,
-    created_by uuid,
-    updated_by uuid,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
     deleted_at timestamp without time zone
 );
 
@@ -4857,6 +4857,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211209103527'),
 ('20211209104346'),
 ('20211209110618'),
-('20211210152751');
+('20211210152751'),
 ('20211214014913'),
 ('20211214055613');
+
+
