@@ -27,7 +27,7 @@ RSpec.describe Reports::ProgressController, type: :controller do
       expect(response).to be_redirect
     end
 
-    fit "renders successfully if report viewer has access to region" do
+    it "renders successfully if report viewer has access to region" do
       other_fg = create(:facility_group, name: "other facility group", organization: organization)
       facility = create(:facility, name: "other facility", facility_group: other_fg)
       user = create(:admin, :viewer_reports_only, :with_access, resource: other_fg)

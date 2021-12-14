@@ -70,6 +70,32 @@ module Reports
       values_at("cumulative_registrations")
     end
 
+    memoize def follow_ups(group_by: nil) 
+      if group_by.nil?
+        values_at("monthly_follow_ups")
+      else
+        group_field = case group_by
+          when /user_id\z/ then :user_id
+          when /gender\z/ then :patient_gender
+          when nil then nil
+          else raise(ArgumentError, "unknown group for follow ups #{group_by}")
+        end
+        regions.each_with_object({}) do |region, results|
+          query = Reports::PatientFollowUp.with_hypertension.where(facility_id: region.facility_ids)
+          counts = if group_field
+            grouped_counts = query.group(group_field).group_by_period(:month, :month_date, {format: Period.formatter(:month)}).count
+            d grouped_counts
+            grouped_counts.each_with_object({}) { |(key, count), result|
+              group, period = *key
+              result[period] ||= {}
+              result[period][group] = count
+            }
+          end
+          results[region.slug] = counts
+        end
+      end
+    end
+
     memoize def ltfu
       values_at("lost_to_follow_up")
     end

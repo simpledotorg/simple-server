@@ -54,13 +54,13 @@ class RefreshReportingViews
   V2_REPORTING_VIEWS = %w[
     Reports::Month
     Reports::Facility
+    Reports::PatientFollowUp
     Reports::PatientBloodPressure
     Reports::OverdueCalls
     Reports::PatientVisit
     Reports::PatientState
     Reports::FacilityState
     Reports::QuarterlyFacilityState
-    Reports::PatientFollowUp
     Reports::Prescriptions
   ].freeze
 
