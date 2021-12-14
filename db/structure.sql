@@ -2543,6 +2543,13 @@ COMMENT ON COLUMN public.reporting_patient_states.htn_treatment_outcome_in_quart
 
 
 --
+-- Name: COLUMN reporting_patient_states.titrated; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_patient_states.titrated IS 'True, if the patient had an increase in dosage of any hypertension drug in a visit this month.';
+
+
+--
 -- Name: reporting_facility_states; Type: MATERIALIZED VIEW; Schema: public; Owner: -
 --
 
@@ -4880,6 +4887,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211209110618'),
 ('20211210152751'),
 ('20211210152752'),
+('20211214014913'),
 ('20211215192748');
 
 
