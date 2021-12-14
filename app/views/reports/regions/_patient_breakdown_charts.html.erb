@@ -13,111 +13,42 @@
       <p class="mb-16px c-grey-dark mr-lg-12px">
         Hypertension patient coverage and breakdown in <%= @region.name %>
       </p>
-      <div>
-        <% if @region.district_region? || @region.state_region? %>
-          <div class="d-flex ai-center jc-between">
-            <p class="mb-8px">
-              Hypertension patient coverage
-            </p>
-            <p class="mb-8px fw-bold">
-              <% if @region.district_region? %>
-                <% if @region.estimated_population.population %>
-                  <span class="c-green-dark">
-                    <%= hypertension_patient_coverage = number_to_percentage(@chart_data[:patient_breakdown][:total_patients]/@region.estimated_population.population, precision: 0) %>
-                  </span>
-                <% else %>
-                  ???
-                <% end %>
-              <% elsif @region.state_region? %>
-                <% if @region.estimated_population.is_population_available_for_all_districts %>
-                  <span class="c-green-dark">
-                    <%= number_to_percentage(@chart_data[:patient_breakdown][:total_patients]/@region.estimated_population.population, precision: 0) %>
-                  </span>
-                <% else %>
-                  ???
-                <% end %>
-              <% end %>
-            </p>
-          </div>
-          <div class="d-flex h-8px mb-8px">
-            <div class="br-tl-4px br-bl-4px <% if hypertension_patient_coverage == "0%" || !hypertension_patient_coverage %>bg-grey-light<% else %>bg-green-dark<% end %>" style="width: <% if hypertension_patient_coverage == "0%" || !hypertension_patient_coverage %>5%<% else %><%= hypertension_patient_coverage %><% end %>;"></div>
-            <div class="flex-1 br-tr-4px br-br-4px bg-grey-light"></div>
-          </div>
-          <div class="d-flex ai-center jc-between ml-16px">
-            <p class="mb-8px c-grey-medium">
-              Total registered patients
-            </p>
-            <p class="mb-8px fw-bold c-grey-medium">
-              <%= number_with_delimiter(@chart_data[:patient_breakdown][:total_patients]) %>
-            </p>
-          </div>
-          <div class="d-flex ai-center jc-between ml-16px">
-            <p class="mb-8px c-grey-medium">
-              Total estimated hypertensive population
-            </p>
-            <p class="mb-8px">
-              <% if @region.district_region? %>
-                <% if @region.estimated_population.population %>
-                  <span class="fw-bold c-grey-medium">
-                    <%= number_with_delimiter(@region.estimated_population.population) %>
-                  </span>
-                <% else %>
-                  <% if current_admin.power_user? || current_admin.accessible_facilities(:manage).any? %>
-                    <%= link_to "+ Add population", edit_admin_facility_group_path(@region) %>
-                  <% else %>
-                    ???
-                  <% end %>
-                <% end %>
-              <% elsif @region.state_region? %>
-                <% if @region.estimated_population.is_population_available_for_all_districts %>
-                  <span class="fw-bold">
-                    <%= number_with_delimiter(@region.estimated_population.population) %>
-                  </span>
-                <% else %>
-                  <% if current_admin.power_user? || current_admin.accessible_facilities(:manage).any? %>
-                    <%= link_to "+ Add district populations", "/admin/facilities" %>
-                  <% else %>
-                    ???
-                  <% end %>
-                <% end %>
-              <% end %>
-            </p>
-          </div>
-        <% else %>
-          <div class="d-flex ai-center jc-between">
-            <p class="mb-8px">
-              Total registered patients
-            </p>
-            <p class="mb-8px fw-bold">
-              <%= number_with_delimiter(@chart_data[:patient_breakdown][:total_patients]) %>
-            </p>
-          </div>
-        <% end %>
+      <% if @region.district_region? || @region.state_region? %>
+        <%= render "reports/regions/hypertension_patient_coverage" %>
+      <% else %>
         <div class="d-flex ai-center jc-between">
           <p class="mb-8px">
-            Patients under care
+            Total registered patients
           </p>
           <p class="mb-8px fw-bold">
-            <%= number_with_delimiter(@chart_data[:patient_breakdown][:not_ltfu_patients]) %>
+            <%= number_with_delimiter(@chart_data[:patient_breakdown][:total_patients]) %>
           </p>
         </div>
-        <div class="d-flex ai-center jc-between">
-          <p class="mb-8px">
-            Lost to follow-up
-          </p>
-          <p class="mb-8px fw-bold">
-            <%= number_with_delimiter(@chart_data[:patient_breakdown][:ltfu_patients]) %>
-          </p>
-        </div>
-        <div class="d-flex ai-center jc-between">
-          <p class="mb-8px">
-            Dead patients
-          </p>
-          <p class="mb-8px fw-bold">
-            <%= number_with_delimiter(@chart_data[:patient_breakdown][:dead_patients]) %>
-          </p>
-        </div>
-      </div> 
+      <% end %>
+      <div class="d-flex ai-center jc-between">
+        <p class="mb-8px">
+          Patients under care
+        </p>
+        <p class="mb-8px fw-bold">
+          <%= number_with_delimiter(@chart_data[:patient_breakdown][:not_ltfu_patients]) %>
+        </p>
+      </div>
+      <div class="d-flex ai-center jc-between">
+        <p class="mb-8px">
+          Lost to follow-up
+        </p>
+        <p class="mb-8px fw-bold">
+          <%= number_with_delimiter(@chart_data[:patient_breakdown][:ltfu_patients]) %>
+        </p>
+      </div>
+      <div class="d-flex ai-center jc-between">
+        <p class="mb-8px">
+          Dead patients
+        </p>
+        <p class="mb-8px fw-bold">
+          <%= number_with_delimiter(@chart_data[:patient_breakdown][:dead_patients]) %>
+        </p>
+      </div>
     </div>
   </div>
   <div class="d-lg-flex w-lg-50 pl-lg-2">

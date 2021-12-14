@@ -100,6 +100,10 @@ class Reports::RegionsController < AdminController
         @region.source.blood_pressures.for_recent_bp_log.includes(:patient, :facility)
       )
     end
+
+    @population = @region.estimated_population.population
+    @is_population_available_for_all_districts = @region.estimated_population.is_population_available_for_all_districts
+    @hypertension_patient_coverage = @chart_data[:patient_breakdown][:total_patients]/@population
   end
 
   def cohort
