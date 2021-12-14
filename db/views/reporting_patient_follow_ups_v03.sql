@@ -78,8 +78,6 @@ all_follow_ups AS (
 SELECT DISTINCT ON (cal.month_string, all_follow_ups.facility_id, all_follow_ups.user_id, all_follow_ups.patient_id)
   all_follow_ups.patient_id,
   all_follow_ups.patient_gender,
-  mh.diabetes,
-  mh.hypertension,
   all_follow_ups.facility_id,
   all_follow_ups.user_id,
   all_follow_ups.visit_id,
@@ -88,7 +86,5 @@ SELECT DISTINCT ON (cal.month_string, all_follow_ups.facility_id, all_follow_ups
   cal.*
 FROM
   all_follow_ups
-  INNER JOIN medical_histories mh
-    ON all_follow_ups.patient_id = mh.patient_id
   LEFT OUTER JOIN reporting_months cal ON all_follow_ups.month_string = cal.month_string
 ORDER BY cal.month_string desc
