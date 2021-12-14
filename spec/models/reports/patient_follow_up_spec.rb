@@ -25,6 +25,24 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
     expect(follow_up).to be_nil
   end
 
+  it "can be filtered by diagnosis" do
+    patient_1 = create(:patient, :hypertension, recorded_at: june_2021[:long_ago])
+    # below fixture needs to be assigned a MH w/ both diagnosis
+    patient_2 = create(:patient, :hypertension, :diabetes, recorded_at: june_2021[:long_ago])
+    patient_3 = create(:patient, :diabetes, recorded_at: june_2021[:long_ago])
+    patient_4 = create(:patient, :without_medical_history, recorded_at: june_2021[:long_ago])
+    create(:blood_pressure, patient: patient_1, user: user, facility: facility, recorded_at: june_2021[:now])
+    create(:blood_pressure, patient: patient_2, user: user, facility: facility, recorded_at: june_2021[:now])
+    create(:blood_pressure, patient: patient_3, user: user, facility: facility, recorded_at: june_2021[:now])
+    create(:blood_pressure, patient: patient_4, user: user, facility: facility, recorded_at: june_2021[:now])
+
+    RefreshReportingViews.call
+    follow_up = described_class.where(facility: facility)
+    expect(follow_up.with_hypertension.count).to eq(2)
+    expect(follow_up.with_diabetes.count).to eq(2)
+    expect(follow_up.month_string).to eq(june_2021[:month_string])
+  end
+
   it "contains records for patient BPs" do
     patient = create(:patient, recorded_at: june_2021[:long_ago])
     create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: june_2021[:now])
