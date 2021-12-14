@@ -1,19 +1,14 @@
+# This emulates what progress tab shows in the API, but does it within our dashboard.
+# The main purpose currently is to make it easier to develop on progress tab in dev.
 class Reports::ProgressController < AdminController
   layout false
   before_action :set_period
   before_action :find_region
 
   def show
-    d @region
     @user_analytics = UserAnalyticsPresenter.new(@region)
     @current_facility = @region
-    d @user_analytics
     render "api/v3/analytics/user_analytics/show"
-    # respond_to do |format|
-    #   format.html { render "api/v3/analytics/user_analytics/show" }
-      # format.json { render json: stats }
-    # end
-
   end
 
   helper_method :current_facility, :current_user, :current_facility_group
@@ -33,7 +28,6 @@ class Reports::ProgressController < AdminController
   end
 
   def find_region
-    d report_params[:id]
     @region ||= authorize {
       current_admin.accessible_facility_regions(:view_reports).find_by!(slug: report_params[:id])
     }
