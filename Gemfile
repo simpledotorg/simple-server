@@ -25,7 +25,7 @@ gem "connection_pool"
 gem "data_migrate"
 gem "data-anonymization", require: false
 gem "ddtrace", "~> 0.51"
-gem "devise_invitable", "~> 1.7.0"
+gem "devise_invitable", "~> 2.0.5"
 gem "devise", ">= 4.7.1"
 gem "dhis2", require: false
 gem "diffy" # This gem is only needed for Admin::FixZoneDataController, it should be removed with the controller
