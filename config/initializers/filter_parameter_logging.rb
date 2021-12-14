@@ -12,6 +12,7 @@ module ParameterFiltering
     controller
     created_at
     deleted_at
+    district_estimated_population
     for_end_of_month
     limit
     metadata_version
