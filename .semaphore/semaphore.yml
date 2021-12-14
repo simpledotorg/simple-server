@@ -40,7 +40,10 @@ blocks:
         - name: StandardRB
           commands:
             - checkout
-            - script/semaphore_setup
+            - cache restore
+            - bundle config set deployment 'true'
+            - bundle config set path 'vendor/bundle'
+            - bundle install
             - "bundle exec standardrb"
         - name: RSpec
           parallelism: 7
