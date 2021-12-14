@@ -53,7 +53,7 @@ module Seed
           assigning_facility_id: facility.id,
           assigning_user_id: user_id
         }))
-      medical_history = FactoryBot.build(:medical_history, :hypertension_yes, default_attrs.merge(user_id: user_id))
+      medical_history = FactoryBot.build(:medical_history, weighted_medical_histories, default_attrs.merge(user_id: user_id))
       address = FactoryBot.build(:address, default_attrs.except(:patient))
       phone_number = FactoryBot.build(:patient_phone_number, default_attrs)
       FactoryBot.build(:patient, default_attrs.except(:patient).merge({
@@ -65,6 +65,18 @@ module Seed
         registration_user_id: user_id,
         registration_facility: facility
       }))
+    end
+
+    # around 33% of patients are diagnosed with DM, and we want to ensure we keep all patients in seed set diagnosed with HTN
+    def self.medical_history_rates
+      {
+        diabetes_yes: 0.20,
+        hypertension_yes: 0.80
+      }
+    end
+
+    def weighted_medical_histories
+      self.class.medical_history_rates.max_by { |_, weight| rand**(1.0 / weight) }.first
     end
 
     # Return weights of patient statuses that are reasonably close to actual - the vast majority
