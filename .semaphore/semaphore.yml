@@ -43,7 +43,7 @@ blocks:
             - script/semaphore_setup
             - "bundle exec standardrb"
         - name: RSpec
-          parallelism: 8
+          parallelism: 7
           commands:
             - checkout
             - script/semaphore_setup
