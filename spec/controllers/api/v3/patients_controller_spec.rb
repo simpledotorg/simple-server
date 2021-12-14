@@ -480,8 +480,8 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
           context "when process_token is block_id (this can happen if we switch from block sync to FG sync)" do
             it "force resyncs facility_group records" do
               process_token = make_process_token(sync_region_id: request_facility.region.block_region.id,
-                                                 current_facility_processed_since: Time.current,
-                                                 other_facilities_processed_since: Time.current)
+                current_facility_processed_since: Time.current,
+                other_facilities_processed_since: Time.current)
               Timecop.travel(15.minutes.ago) { create_record_list(5) }
 
               get :sync_to_user, params: {process_token: process_token}
@@ -528,8 +528,8 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
           context "when process_token's sync_region_id is current_facility_group_id" do
             it "force resyncs block records" do
               process_token = make_process_token(sync_region_id: request_facility_group.id,
-                                                 current_facility_processed_since: Time.current,
-                                                 other_facilities_processed_since: Time.current)
+                current_facility_processed_since: Time.current,
+                other_facilities_processed_since: Time.current)
               block_records = Timecop.travel(15.minutes.ago) {
                 create_list(:patient, 5, registration_facility: facility_in_same_block)
               }

@@ -19,13 +19,13 @@ class Webview::DrugStocksController < ApplicationController
 
   def create
     DrugStocksCreator.call(user: current_user,
-                           region: @current_facility.region,
-                           for_end_of_month: @for_end_of_month,
-                           drug_stocks_params: drug_stocks_params)
+      region: @current_facility.region,
+      for_end_of_month: @for_end_of_month,
+      drug_stocks_params: drug_stocks_params)
     redirect_to webview_drug_stocks_url(for_end_of_month: @for_end_of_month.to_s(:mon_year),
-                                        facility_id: current_facility.id,
-                                        user_id: current_user.id,
-                                        access_token: current_user.access_token)
+      facility_id: current_facility.id,
+      user_id: current_user.id,
+      access_token: current_user.access_token)
   rescue ActiveRecord::RecordInvalid => e
     logger.error "could not create DrugStocks - record invalid", errors: e.message
     render json: {status: "invalid", errors: e.message}, status: 422
@@ -35,7 +35,7 @@ class Webview::DrugStocksController < ApplicationController
     @protocol_drugs = current_facility.protocol.protocol_drugs.where(stock_tracked: true).sort_by(&:sort_key)
     @drug_stocks = DrugStock.latest_for_facilities_grouped_by_protocol_drug(current_facility, @for_end_of_month)
     @query = DrugStocksQuery.new(facilities: [current_facility],
-                                 for_end_of_month: @for_end_of_month)
+      for_end_of_month: @for_end_of_month)
     @drugs_by_category = @query.protocol_drugs_by_category
   end
 

@@ -54,7 +54,7 @@ RSpec.describe MoveFacilityData do
       patients_at_source_facility.each do |patient|
         patient.reload
         expect(patient.business_identifiers.first.metadata).to eq("assigning_user_id" => user.id,
-                                                                  "assigning_facility_id" => destination_facility.id)
+          "assigning_facility_id" => destination_facility.id)
       end
     end
   end

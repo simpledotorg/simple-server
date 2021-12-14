@@ -139,7 +139,7 @@ RSpec.describe Api::V3::FacilitiesController, type: :controller do
             # When the app switches from unauthenticated to authenticated requests, the
             # X_SYNC_REGION_ID changes. We don't want to resync facilities in that case.
             process_token = make_process_token(sync_region_id: "a-sync-region-uuid",
-                                               other_facilities_processed_since: Time.current)
+              other_facilities_processed_since: Time.current)
             facility_records = Timecop.travel(15.minutes.ago) { create_list(:facility, 5) }
 
             get :sync_to_user, params: {process_token: process_token}
