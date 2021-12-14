@@ -45,6 +45,7 @@ blocks:
         - name: RSpec
           parallelism: 8
           commands:
+            - checkout
             - script/semaphore_setup
             - rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT
 promotions:
