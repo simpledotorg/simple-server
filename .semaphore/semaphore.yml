@@ -15,10 +15,12 @@ blocks:
           commands:
             - sem-version ruby 2.7.4
             - checkout
+            - cache clear
             - cache restore
             - bundle config set deployment 'true'
             - bundle config set path 'vendor/bundle'
             - bundle install
+            - yarn install
             - cache store
   - name: Tests
     task:
