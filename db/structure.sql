@@ -2679,7 +2679,7 @@ CREATE MATERIALIZED VIEW public.reporting_prescriptions AS
     COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Enalapril'::text)), (0)::double precision) AS enalapril,
     COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Chlorthalidone'::text)), (0)::double precision) AS chlorthalidone,
     COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Hydrochlorothiazide'::text)), (0)::double precision) AS hydrochlorothiazide,
-    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE (((prescriptions.clean_name)::text <> ALL ((ARRAY['Amlodipine'::character varying, 'Telmisartan'::character varying, 'Losartan'::character varying, 'Atenolol'::character varying, 'Enalapril'::character varying, 'Chlorthalidone'::character varying, 'Hydrochlorothiazide'::character varying])::text[])) AND (prescriptions.medicine_purpose_hypertension = true))), (0)::double precision) AS other_bp_medications
+    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE (((prescriptions.clean_name)::text <> ALL (ARRAY[('Amlodipine'::character varying)::text, ('Telmisartan'::character varying)::text, ('Losartan'::character varying)::text, ('Atenolol'::character varying)::text, ('Enalapril'::character varying)::text, ('Chlorthalidone'::character varying)::text, ('Hydrochlorothiazide'::character varying)::text])) AND (prescriptions.medicine_purpose_hypertension = true))), (0)::double precision) AS other_bp_medications
    FROM (( SELECT p_1.id,
             p_1.full_name,
             p_1.age,
@@ -4800,4 +4800,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211207043615'),
 ('20211209103527'),
 ('20211209104346'),
-('20211209110618');
+('20211209110618'),
+('20211214014913');
+
+
