@@ -20,5 +20,4 @@ yarn install
 bundle config set deployment 'true'
 bundle config set path 'vendor/bundle'
 bundle install
-cache store
 BRANCH=$SEMAPHORE_GIT_SHA bundle exec cap "$deploy_target" deploy
