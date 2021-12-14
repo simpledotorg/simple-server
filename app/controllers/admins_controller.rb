@@ -36,13 +36,13 @@ class AdminsController < AdminController
     end
 
     render partial: access_tree[:render_partial],
-           locals: {
-             tree: access_tree[:data],
-             root: access_tree[:root],
-             user_being_edited: user_being_edited,
-             tree_depth: 0,
-             page: page_for_access_tree
-           }
+      locals: {
+        tree: access_tree[:data],
+        root: access_tree[:root],
+        user_being_edited: user_being_edited,
+        tree_depth: 0,
+        page: page_for_access_tree
+      }
   end
 
   def show

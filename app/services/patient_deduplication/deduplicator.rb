@@ -168,7 +168,7 @@ module PatientDeduplication
         new_encounter = existing_encounter || Encounter.create!(
           copyable_attributes(encounter)
             .merge(id: encounter_id,
-                   patient_id: patient.id)
+              patient_id: patient.id)
         )
         track(Encounter, encounter, new_encounter) unless existing_encounter.present?
 

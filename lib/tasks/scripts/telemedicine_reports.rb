@@ -71,9 +71,9 @@ class TelemedicineReports
   def email_report
     TelemedReportMailer
       .email_report(period_start: @period_start.strftime("%d_%b"),
-                    period_end: @period_end.strftime("%d_%b"),
-                    report_filename: @filename,
-                    report_csv: make_csv)
+        period_end: @period_end.strftime("%d_%b"),
+        report_filename: @filename,
+        report_csv: make_csv)
       .deliver_later
   end
 

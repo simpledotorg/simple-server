@@ -41,11 +41,11 @@ RSpec.describe ExotelCallDetailsJob, type: :job do
       "caller_phone_number",
       "start_time",
       "end_time")).to eq("result" => stubbed_call_result,
-                         "duration" => stubbed_call_duration,
-                         "callee_phone_number" => callee_phone_number,
-                         "caller_phone_number" => user_phone_number,
-                         "start_time" => Time.zone.parse(stubbed_call_start_time),
-                         "end_time" => Time.zone.parse(stubbed_call_end_time))
+        "duration" => stubbed_call_duration,
+        "callee_phone_number" => callee_phone_number,
+        "caller_phone_number" => user_phone_number,
+        "start_time" => Time.zone.parse(stubbed_call_start_time),
+        "end_time" => Time.zone.parse(stubbed_call_end_time))
   end
 
   it "should not populate a call log if exotel api is unable to return call details" do
