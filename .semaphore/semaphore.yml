@@ -8,6 +8,18 @@ auto_cancel:
   running:
     when: "true"
 blocks:
+  - name: Cache dependencies
+    task:
+      jobs:
+        - name: Cache gems
+          commands:
+            - sem-version ruby 2.7.4
+            - checkout
+            - cache restore
+            - bundle config set deployment 'true'
+            - bundle config set path 'vendor/bundle'
+            - bundle install
+            - cache store
   - name: Tests
     task:
       env_vars:
