@@ -11,7 +11,7 @@ blocks:
   - name: Cache dependencies
     task:
       jobs:
-        - name: Cache gems
+        - name: Cache everything
           commands:
             - sem-version ruby 2.7.4
             - checkout
@@ -45,7 +45,6 @@ blocks:
         - name: RSpec
           parallelism: 8
           commands:
-            - checkout
             - script/semaphore_setup
             - rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT
 promotions:
