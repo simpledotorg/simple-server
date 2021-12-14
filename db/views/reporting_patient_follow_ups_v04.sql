@@ -52,7 +52,7 @@ follow_up_prescription_drugs AS (
 ),
 follow_up_appointments AS (
   SELECT DISTINCT ON (patient_id, facility_id, user_id, month_string)
-    p.id AS patient_id,
+  p.id AS patient_id,
     p.gender::gender_enum as patient_gender,
     app.id as visit_id,
     'Appointment' AS visit_type,
