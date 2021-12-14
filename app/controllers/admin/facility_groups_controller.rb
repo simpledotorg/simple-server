@@ -39,7 +39,7 @@ class Admin::FacilityGroupsController < AdminController
 
   def destroy
     if @facility_group.discardable?
-      @facility_group.discard
+      discard_facility_group
       redirect_to admin_facilities_url, notice: "FacilityGroup was successfully deleted."
     else
       redirect_to admin_facilities_url, alert: "FacilityGroup cannot be deleted, please move patient data and try again."
@@ -47,6 +47,14 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   private
+
+  def discard_facility_group
+    state_region = @facility_group.region.state_region
+    ActiveRecord::Base.transaction do
+      @facility_group.discard
+      state_region.recalculate_state_population!
+    end
+  end
 
   # Do all the things for create inside a single transaction. Note that we explicitly return true if everything
   # succeeds so we don't need to rely on return values from the model layer.
@@ -105,6 +113,7 @@ class Admin::FacilityGroupsController < AdminController
       :description,
       :protocol_id,
       :enable_diabetes_management,
+      :district_estimated_population,
       new_block_names: [],
       remove_block_ids: []
     )
