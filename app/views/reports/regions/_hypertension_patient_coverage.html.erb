@@ -50,6 +50,21 @@
 <div class="d-flex ai-center jc-between ml-16px">
   <p class="mb-8px">
     Total estimated hypertensive population
+    <span class="p-relative t-1px">
+      <i
+        class="fas fa-question-circle fs-14px c-grey-dark"
+        data-toggle="tooltip"
+        data-placement="right"
+        data-trigger="hover click"
+        data-html="true"
+        <% if @region.district_region? %>
+          title="<%= t('total_estimated_hypertensive_population.district_copy', region_name: @region.name) %>"
+        <% elsif @region.state_region? %>
+          title="<%= t('total_estimated_hypertensive_population.state_copy', region_name: @region.name) %>"
+        <% end %>
+      >
+      </i>
+    </span>
   </p>
   <p class="mb-8px">
     <% if @region.district_region? && @population ||
