@@ -25,6 +25,19 @@ namespace :db do
 
     RefreshReportingViews.call
   end
+
+  namespace :structure do
+    desc "Clean structure.sql - commenting out COMMENT ON EXTENSION"
+    task :clean do
+      structure = IO.read("db/structure.sql")
+      structure.gsub!(/^(COMMENT ON EXTENSION)/, '-- \1')
+      File.write("db/structure.sql", structure)
+    end
+  end
+end
+
+Rake::Task["db:structure:dump"].enhance do
+  Rake::Task["db:structure:clean"].invoke
 end
 
 Rake::Task["db:seed"].enhance do
