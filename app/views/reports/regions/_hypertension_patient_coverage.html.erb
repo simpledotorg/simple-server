@@ -1,6 +1,17 @@
 <div class="d-flex ai-center jc-between">
   <p class="mb-8px">
     Hypertension patient coverage
+    <span class="p-relative t-1px">
+      <i
+        class="fas fa-question-circle fs-14px c-grey-dark"
+        data-toggle="tooltip"
+        data-placement="right"
+        data-trigger="hover click"
+        data-html="true"
+        title="<%= t('hypertension_patient_coverage_copy') %>"
+      >
+      </i>
+    </span>
   </p>
   <p class="mb-8px fw-bold">
     <% if @region.district_region? && @population ||
@@ -18,21 +29,32 @@
   <div class="flex-1 br-tr-4px br-br-4px bg-grey-light"></div>
 </div>
 <div class="d-flex ai-center jc-between ml-16px">
-  <p class="mb-8px c-grey-medium">
+  <p class="mb-8px">
     Total registered patients
+    <span class="p-relative t-1px">
+      <i
+        class="fas fa-question-circle fs-14px c-grey-dark"
+        data-toggle="tooltip"
+        data-placement="right"
+        data-trigger="hover click"
+        data-html="true"
+        title="<%= t('registered_patients_copy.total_registered_patients', region_name: @region.name) %>"
+      >
+      </i>
+    </span>
   </p>
-  <p class="mb-8px fw-bold c-grey-medium">
+  <p class="mb-8px fw-bold">
     <%= number_with_delimiter(@chart_data[:patient_breakdown][:total_patients]) %>
   </p>
 </div>
 <div class="d-flex ai-center jc-between ml-16px">
-  <p class="mb-8px c-grey-medium">
+  <p class="mb-8px">
     Total estimated hypertensive population
   </p>
   <p class="mb-8px">
     <% if @region.district_region? && @population ||
       @region.state_region? && @is_population_available_for_all_districts %>
-      <span class="fw-bold c-grey-medium">
+      <span class="fw-bold">
         <%= number_with_delimiter(@region.estimated_population.population) %>
       </span>
     <% elsif current_admin.power_user? || current_admin.accessible_facilities(:manage).any? %>
