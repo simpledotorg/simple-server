@@ -20,7 +20,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 -- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
 --
 
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+-- COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 --
@@ -34,7 +34,7 @@ CREATE EXTENSION IF NOT EXISTS ltree WITH SCHEMA public;
 -- Name: EXTENSION ltree; Type: COMMENT; Schema: -; Owner: -
 --
 
-COMMENT ON EXTENSION ltree IS 'data type for hierarchical tree-like structures';
+-- COMMENT ON EXTENSION ltree IS 'data type for hierarchical tree-like structures';
 
 
 --
@@ -48,7 +48,7 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
 -- Name: EXTENSION pgcrypto; Type: COMMENT; Schema: -; Owner: -
 --
 
-COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
+-- COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
 
 
 --
