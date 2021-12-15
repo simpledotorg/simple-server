@@ -27,7 +27,7 @@ namespace :db do
   end
 
   namespace :structure do
-    desc "Clean structure.sql - commenting out COMMENT ON EXTENSION"
+    desc "Clean structure.sql - commenting out COMMENT ON EXTENSION commands. See https://app.shortcut.com/simpledotorg/story/6333 for details"
     task :clean do
       structure = IO.read("db/structure.sql")
       structure.gsub!(/^(COMMENT ON EXTENSION)/, '-- \1')
