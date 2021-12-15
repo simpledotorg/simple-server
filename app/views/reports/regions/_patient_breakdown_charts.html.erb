@@ -5,10 +5,6 @@
         <h3 class="mb-0px mr-8px">
           Hypertension patients
         </h3>
-        <%= render "definition_tooltip",
-                    definitions: { "Patients under care" => t("patients_under_care_copy"),
-                                  "Lost to follow-up" => t("lost_to_follow_up_copy.reports_card_subtitle"),
-                                  "Transferred out" => t("transferred_out_patients_copy")} %>
       </div>
       <p class="mb-16px c-grey-dark mr-lg-12px">
         Hypertension patient coverage and breakdown in <%= @region.name %>
@@ -19,6 +15,17 @@
         <div class="d-flex ai-center jc-between">
           <p class="mb-8px">
             Total registered patients
+            <span class="p-relative t-1px">
+              <i
+                class="fas fa-question-circle fs-14px c-grey-dark"
+                data-toggle="tooltip"
+                data-placement="right"
+                data-trigger="hover click"
+                data-html="true"
+                title="<%= t('registered_patients_copy.total_registered_patients', region_name: @region.name) %>"
+              >
+              </i>
+            </span>
           </p>
           <p class="mb-8px fw-bold">
             <%= number_with_delimiter(@chart_data[:patient_breakdown][:total_patients]) %>
@@ -28,6 +35,17 @@
       <div class="d-flex ai-center jc-between">
         <p class="mb-8px">
           Patients under care
+          <span class="p-relative t-1px">
+            <i
+              class="fas fa-question-circle fs-14px c-grey-dark"
+              data-toggle="tooltip"
+              data-placement="right"
+              data-trigger="hover click"
+              data-html="true"
+              title="<%= t('patients_under_care_copy') %>"
+            >
+            </i>
+          </span>
         </p>
         <p class="mb-8px fw-bold">
           <%= number_with_delimiter(@chart_data[:patient_breakdown][:not_ltfu_patients]) %>
@@ -36,6 +54,17 @@
       <div class="d-flex ai-center jc-between">
         <p class="mb-8px">
           Lost to follow-up
+          <span class="p-relative t-1px">
+            <i
+              class="fas fa-question-circle fs-14px c-grey-dark"
+              data-toggle="tooltip"
+              data-placement="right"
+              data-trigger="hover click"
+              data-html="true"
+              title="<%= t('lost_to_follow_up_copy.reports_card_subtitle') %>"
+            >
+            </i>
+          </span>
         </p>
         <p class="mb-8px fw-bold">
           <%= number_with_delimiter(@chart_data[:patient_breakdown][:ltfu_patients]) %>

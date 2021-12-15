@@ -101,9 +101,11 @@ class Reports::RegionsController < AdminController
       )
     end
 
-    @population = @region.estimated_population.population
-    @is_population_available_for_all_districts = @region.estimated_population.is_population_available_for_all_districts
-    @hypertension_patient_coverage = @chart_data[:patient_breakdown][:total_patients]/@population
+    @population = @region.estimated_population&.population
+    @is_population_available_for_all_districts = @region.estimated_population&.is_population_available_for_all_districts
+    if @population
+      @hypertension_patient_coverage = @chart_data[:patient_breakdown][:total_patients]/@population
+    end
   end
 
   def cohort

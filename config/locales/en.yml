@@ -78,6 +78,7 @@ en:
   patients_under_care_copy: "Hypertension patients with a BP taken in the last 12 months."
   bp_measures_taken_copy: "All BP measures taken in a month by healthcare workers at %{region_name}."
   transferred_out_patients_copy: "Patients who have moved to another public facility or to a private practitioner"
+  hypertension_patient_coverage_copy: "Total registered patients diagnosed with hypertensiondivided by the region's estimated hypertensive population"
 
   admin:
     reset_otp_alert: 'Are you sure you want to reset the OTP? This will invalidate the previous OTP and a SMS will be sent to the user with the new OTP'
