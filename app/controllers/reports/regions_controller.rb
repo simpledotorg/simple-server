@@ -101,10 +101,10 @@ class Reports::RegionsController < AdminController
       )
     end
 
-    @population = @region.estimated_population&.population
+    @population = @region.estimated_population&.population.to_f
     @is_population_available_for_all_districts = @region.estimated_population&.is_population_available_for_all_districts
     if @population
-      @hypertension_patient_coverage = @chart_data[:patient_breakdown][:total_patients]/@population
+      @hypertension_patient_coverage = (@chart_data[:patient_breakdown][:total_patients].to_f/@population)*100
     end
   end
 
