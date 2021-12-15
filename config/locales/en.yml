@@ -80,7 +80,7 @@ en:
   transferred_out_patients_copy: "Patients who have moved to another public facility or to a private practitioner"
   hypertension_patient_coverage_copy: "Total registered patients diagnosed with hypertension divided by the region's estimated hypertensive population"
   total_estimated_hypertensive_population:
-    district_copy: "The number of people in %{region_name} estimated to be diagnosed with hypertension"
+    district_copy: "The approximate number of people in %{region_name} with hypertension"
     state_copy: "The sum of %{region_name}'s district populations entered on the Dashboard. <strong>Note: this number is only displayed if all districts have a population.</strong>"
 
   admin:
