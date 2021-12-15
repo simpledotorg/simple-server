@@ -65,7 +65,7 @@ en:
   registered_patients_copy:
     reports_card_subtitle: "Monthly and total hypertension patients registered in %{region_name}"
     monthly_registered_patients: "Hypertension patients registered during a month in %{region_name}."
-    total_registered_patients: "Total hypertension patients registered in %{region_name}"
+    total_registered_patients: "Total hypertension patients registered in %{region_name}."
   assigned_patients_copy:
     total_assigned_patients: "Hypertension patients assigned to %{region_name}. Dead patients are excluded."
   call_results_copy:
