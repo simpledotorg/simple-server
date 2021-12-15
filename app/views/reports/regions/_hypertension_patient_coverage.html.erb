@@ -70,7 +70,7 @@
     <% if @region.district_region? && @population ||
       @region.state_region? && @is_population_available_for_all_districts %>
       <span class="fw-bold">
-        <%= number_with_delimiter(@region.estimated_population.population) %>
+        <%= number_with_delimiter(@region.estimated_population&.population) %>
       </span>
     <% elsif current_admin.power_user? || current_admin.accessible_facilities(:manage).any? %>
       <% if @region.district_region? %>
