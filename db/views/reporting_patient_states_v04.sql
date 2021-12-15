@@ -169,10 +169,10 @@ LEFT OUTER JOIN reporting_patient_visits visits
 LEFT OUTER JOIN medical_histories mh
     ON p.id = mh.patient_id
     AND mh.deleted_at IS NULL
-INNER JOIN reporting_prescriptions current_meds
+LEFT OUTER JOIN reporting_prescriptions current_meds
     ON current_meds.patient_id = p.id
     AND cal.month_date = current_meds.month_date
-INNER JOIN reporting_prescriptions past_meds
+LEFT OUTER JOIN reporting_prescriptions past_meds
     ON past_meds.patient_id = p.id
     AND cal.month_date = (past_meds.month_date + '1 month'::interval)
 INNER JOIN reporting_facilities registration_facility
