@@ -16,7 +16,7 @@ class Api::V3::EncountersController < Api::V3::SyncController
     render plain: Encounter.generate_id(params[:facility_id].strip,
       params[:patient_id].strip,
       params[:encountered_on].strip),
-           status: :ok
+      status: :ok
   end
 
   private

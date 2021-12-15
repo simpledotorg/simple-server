@@ -39,8 +39,8 @@ describe ExotelAPIService, type: :model do
 
     it "should return call details for a session id in json when status is 200" do
       stub_request(:get, request_url).with(headers: request_headers).to_return(status: 200,
-                                                                               body: call_details_200,
-                                                                               headers: {})
+        body: call_details_200,
+        headers: {})
       response = described_class.new(sid, token).call_details(call_sid)
 
       expect(response[:Call][:From]).to eq("09663127355")
@@ -68,8 +68,8 @@ describe ExotelAPIService, type: :model do
 
     it "should not return a response for a session that does not exist" do
       stub_request(:get, request_url).with(headers: request_headers).to_return(status: 400,
-                                                                               body: call_details_400,
-                                                                               headers: {})
+        body: call_details_400,
+        headers: {})
 
       expected_call_details_response = described_class.new(sid, token).call_details(call_sid)
 
@@ -78,7 +78,7 @@ describe ExotelAPIService, type: :model do
 
     it "should not return a response when the api returns a 500" do
       stub_request(:get, request_url).with(headers: request_headers).to_return(status: 500,
-                                                                               headers: {})
+        headers: {})
 
       expected_call_details_response = described_class.new(sid, token).call_details(call_sid)
 
@@ -184,9 +184,9 @@ describe ExotelAPIService, type: :model do
       Timecop.freeze do
         expect(service.phone_number_details(phone_number))
           .to eq(dnd_status: true,
-                 phone_type: :mobile,
-                 whitelist_status: :whitelist,
-                 whitelist_status_valid_until: Time.current + 3600.seconds)
+            phone_type: :mobile,
+            whitelist_status: :whitelist,
+            whitelist_status_valid_until: Time.current + 3600.seconds)
       end
     end
   end

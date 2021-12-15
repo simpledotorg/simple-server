@@ -44,9 +44,9 @@ class MyFacilities::DrugStocksController < AdminController
 
   def create
     DrugStocksCreator.call(user: current_admin,
-                           for_end_of_month: @for_end_of_month,
-                           drug_stocks_params: drug_stocks_params[:drug_stocks],
-                           region: @region)
+      for_end_of_month: @for_end_of_month,
+      drug_stocks_params: drug_stocks_params[:drug_stocks],
+      region: @region)
     redirect_to redirect_url, notice: "Saved drug stocks"
   rescue ActiveRecord::RecordInvalid
     redirect_to redirect_url, alert: "Something went wrong, Drug Stocks were not saved."
@@ -58,7 +58,7 @@ class MyFacilities::DrugStocksController < AdminController
     @facilities = drug_stock_enabled_facilities
     @for_end_of_month_display = @for_end_of_month.strftime("%b-%Y")
     @query = DrugStocksQuery.new(facilities: @facilities,
-                                 for_end_of_month: @for_end_of_month)
+      for_end_of_month: @for_end_of_month)
     @blocks = blocks_to_display
     @district_region = @query.facility_group.region
     @drugs_by_category = @query.protocol_drugs_by_category

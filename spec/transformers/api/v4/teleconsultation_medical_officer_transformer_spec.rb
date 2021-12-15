@@ -7,8 +7,8 @@ RSpec.describe Api::V4::TeleconsultationMedicalOfficerTransformer do
     it "includes user attributes" do
       response = described_class.to_response(medical_officer)
       expect(response).to eq("id" => medical_officer.id,
-                             "full_name" => medical_officer.full_name,
-                             "teleconsultation_phone_number" => medical_officer.full_teleconsultation_phone_number)
+        "full_name" => medical_officer.full_name,
+        "teleconsultation_phone_number" => medical_officer.full_teleconsultation_phone_number)
     end
   end
 end

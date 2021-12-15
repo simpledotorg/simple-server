@@ -8,8 +8,8 @@ class Api::V3::LoginsController < APIController
 
   def login_user
     result = PhoneNumberAuthentication::Authenticate.call(otp: login_params[:otp],
-                                                          password: login_params[:password],
-                                                          phone_number: login_params[:phone_number])
+      password: login_params[:password],
+      phone_number: login_params[:phone_number])
 
     if result.success?
       user = result.user
