@@ -10,12 +10,7 @@ blocks:
         - name: Deploy to Bangladesh Demo
           commands:
             - checkout
-            - sem-version ruby 2.7.4
-            - cache restore
-            - yarn install
-            - bundle install --deployment --path vendor/bundle
-            - cache store
-            - 'BRANCH=$SEMAPHORE_GIT_SHA bundle exec cap bangladesh:demo deploy'
+            - deploy_target=bangladesh:demo script/semaphore_deploy
       prologue:
         commands:
           - chmod 600 ~/.ssh/semaphore_id_rsa

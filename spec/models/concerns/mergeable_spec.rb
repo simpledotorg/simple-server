@@ -12,7 +12,7 @@ describe Mergeable do
   it "does not update a discarded record" do
     discarded_patient = FactoryBot.create(:patient, deleted_at: Time.now)
     update_attributes = discarded_patient.attributes.merge(age: discarded_patient.current_age + 3,
-                                                           updated_at: 3.years.from_now)
+      updated_at: 3.years.from_now)
 
     expect(Patient.merge(update_attributes).attributes.with_int_timestamps)
       .to eq(discarded_patient.attributes.with_int_timestamps)

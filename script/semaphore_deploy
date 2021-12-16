@@ -1,0 +1,25 @@
+#!/bin/bash -v
+set -e
+
+if [[ -z "$deploy_target" ]]; then
+  echo "Must provide a $deploy_target to deploy to"
+  exit 1
+fi
+
+if [[ -z "$SEMAPHORE_GIT_SHA" ]]; then
+  echo "$SEMAPHORE_GIT_SHA is required so capistrano knows what ref to deploy!"
+  exit 1
+fi
+
+echo "Beginning deploy of $SEMAPHORE_GIT_SHA to $deploy_target..."
+
+# See https://github.com/semaphoreci/toolbox for more details on the "sem-" commands
+source ~/.toolbox/toolbox
+
+sem-version ruby 2.7.4
+cache restore
+yarn install
+bundle config set deployment 'true'
+bundle config set path 'vendor/bundle'
+bundle install
+BRANCH=$SEMAPHORE_GIT_SHA bundle exec cap "$deploy_target" deploy

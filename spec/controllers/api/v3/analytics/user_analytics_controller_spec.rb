@@ -42,6 +42,18 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
         request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
       end
 
+      it "does not render drug stock form if feature flag is disabled" do
+        Flipper.disable(:drug_stocks, request_facility.facility_group.region)
+        get :show, format: :html
+        expect(response.body).to_not include("Submit Drug Stock")
+      end
+
+      it "renders drug stock form if feature flag is enabled" do
+        Flipper.enable(:drug_stocks, request_facility.facility_group.region)
+        get :show, format: :html
+        expect(response.body).to include("Submit Drug Stock")
+      end
+
       it "returns cohort data" do
         patients = create_list(:patient, 2, registration_facility: request_facility, registration_user: request_user, recorded_at: jan_2020.advance(months: -2))
         create(:bp_with_encounter, :under_control, recorded_at: jan_2020 + 1.day, patient: patients[0], facility: request_facility)

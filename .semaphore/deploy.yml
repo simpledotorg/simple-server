@@ -10,12 +10,7 @@ blocks:
         - name: Deploy to Sandbox
           commands:
             - checkout
-            - sem-version ruby 2.7.4
-            - cache restore
-            - yarn install
-            - bundle install --deployment --path vendor/bundle
-            - cache store
-            - BRANCH=$SEMAPHORE_GIT_SHA bundle exec cap sandbox deploy
+            - deploy_target=sandbox script/semaphore_deploy
       prologue:
         commands:
           - chmod 600 ~/.ssh/semaphore_id_rsa
@@ -35,12 +30,7 @@ blocks:
         - name: Deploy to QA
           commands:
             - checkout
-            - sem-version ruby 2.7.4
-            - cache restore
-            - yarn install
-            - bundle install --deployment --path vendor/bundle
-            - cache store
-            - BRANCH=$SEMAPHORE_GIT_SHA bundle exec cap qa deploy
+            - deploy_target=qa script/semaphore_deploy
 queue:
   name: Deployment queue
   scope: project
