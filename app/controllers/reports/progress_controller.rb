@@ -31,7 +31,7 @@ class Reports::ProgressController < AdminController
   def require_feature_flag
     if !current_admin.feature_enabled?(:dashboard_progress_report)
       user_not_authorized
-      return
+      nil
     end
   end
 
@@ -49,5 +49,4 @@ class Reports::ProgressController < AdminController
     period_params = report_params[:period].presence || Reports.default_period.attributes
     @period = Period.new(period_params)
   end
-
 end

@@ -21,7 +21,7 @@ RSpec.describe Reports::ProgressController, type: :controller do
     it "restricts access if feature flag is not enabled" do
       sign_in(cvho.email_authentication)
 
-      get :show, params: {id: facility_1.slug }
+      get :show, params: {id: facility_1.slug}
       expect(response).to be_redirect
       expect(response).to redirect_to(root_url)
     end
@@ -30,7 +30,7 @@ RSpec.describe Reports::ProgressController, type: :controller do
       district_official = create(:admin, :viewer_reports_only, :with_access, resource: @facility_group)
       sign_in(district_official.email_authentication)
 
-      get :show, params: {id: facility_1.slug }
+      get :show, params: {id: facility_1.slug}
       expect(flash[:alert]).to eq("You are not authorized to perform this action.")
       expect(response).to be_redirect
     end
@@ -44,6 +44,5 @@ RSpec.describe Reports::ProgressController, type: :controller do
       get :show, params: {id: facility.region.slug}
       expect(response).to be_successful
     end
-
   end
 end
