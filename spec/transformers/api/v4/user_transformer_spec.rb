@@ -7,9 +7,9 @@ RSpec.describe Api::V4::UserTransformer do
       user
         .attributes
         .merge("otp" => "123456",
-               "otp_expires_at" => Time.current,
-               "access_token" => "access token string",
-               "logged_in_at" => Time.current)
+          "otp_expires_at" => Time.current,
+          "access_token" => "access token string",
+          "logged_in_at" => Time.current)
     end
 
     subject(:response) { described_class.to_response(user) }
@@ -22,10 +22,10 @@ RSpec.describe Api::V4::UserTransformer do
 
     it "includes user attributes" do
       expect(response).to include("id" => user.id,
-                                  "full_name" => user.full_name,
-                                  "sync_approval_status" => user.sync_approval_status,
-                                  "sync_approval_status_reason" => user.sync_approval_status_reason,
-                                  "teleconsultation_phone_number" => user.full_teleconsultation_phone_number)
+        "full_name" => user.full_name,
+        "sync_approval_status" => user.sync_approval_status,
+        "sync_approval_status_reason" => user.sync_approval_status_reason,
+        "teleconsultation_phone_number" => user.full_teleconsultation_phone_number)
     end
 
     it "includes time stamps" do
@@ -36,9 +36,9 @@ RSpec.describe Api::V4::UserTransformer do
 
     it "includes associated params" do
       expect(response).to include("registration_facility_id" => user.registration_facility.id,
-                                  "phone_number" => user.phone_number,
-                                  "password_digest" => user.phone_number_authentication.password_digest,
-                                  "capabilities" => {can_teleconsult: "yes"})
+        "phone_number" => user.phone_number,
+        "password_digest" => user.phone_number_authentication.password_digest,
+        "capabilities" => {can_teleconsult: "yes"})
     end
 
     it "excludes sensitive params" do

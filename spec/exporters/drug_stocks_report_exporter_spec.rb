@@ -15,7 +15,7 @@ RSpec.describe DrugStocksReportExporter do
     let(:facilities) { create_list(:facility, 2, facility_group: facility_group) }
     let(:query) {
       DrugStocksQuery.new(facilities: facilities,
-                          for_end_of_month: Date.current.end_of_month)
+        for_end_of_month: Date.current.end_of_month)
     }
 
     let(:stocks_by_rxnorm) {

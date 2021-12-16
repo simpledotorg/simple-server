@@ -28,6 +28,10 @@ RSpec.configure do |config|
   config.include Devise::Test::IntegrationHelpers, type: :feature
   config.include Warden::Test::Helpers
 
+  config.before(:suite) do
+    RefreshReportingViews.call
+  end
+
   config.before(:all) do
     # create a root region and persist across all tests (the root region is effectively a singleton)
     Region.root || Region.create!(name: "India", region_type: Region.region_types[:root], path: "india")

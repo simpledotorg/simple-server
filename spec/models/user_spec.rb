@@ -68,10 +68,10 @@ RSpec.describe User, type: :model do
         define_enum_for(:access_level)
           .with_suffix(:access)
           .with_values(call_center: "call_center",
-                       viewer_reports_only: "viewer_reports_only",
-                       viewer_all: "viewer_all",
-                       manager: "manager",
-                       power_user: "power_user")
+            viewer_reports_only: "viewer_reports_only",
+            viewer_all: "viewer_all",
+            manager: "manager",
+            power_user: "power_user")
           .backed_by_column_of_type(:string)
       )
     }

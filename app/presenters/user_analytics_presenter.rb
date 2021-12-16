@@ -7,7 +7,7 @@ class UserAnalyticsPresenter
   include BustCache
 
   def initialize(current_facility)
-    @current_facility = current_facility
+    @current_facility = current_facility.source
   end
 
   attr_reader :current_facility

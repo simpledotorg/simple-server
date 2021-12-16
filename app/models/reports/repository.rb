@@ -27,6 +27,7 @@ module Reports
       @bp_measures_query = BPMeasuresQuery.new
       @follow_ups_query = FollowUpsQuery.new
       @registered_patients_query = RegisteredPatientsQuery.new
+      @overdue_calls_query = OverdueCallsQuery.new
     end
 
     delegate :cache, :logger, to: Rails
@@ -58,6 +59,7 @@ module Reports
       monthly_registrations
       uncontrolled
       visited_without_bp_taken
+      monthly_overdue_calls
     ]
 
     def warm_cache
@@ -135,6 +137,16 @@ module Reports
       items = regions.map { |region| RegionEntry.new(region, __method__, group_by: :user_id, period_type: period_type) }
       result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
         bp_measures_query.count(entry.region, period_type, group_by: :user_id)
+      end
+      result.each_with_object({}) { |(region_entry, counts), hsh|
+        hsh[region_entry.region.slug] = counts
+      }
+    end
+
+    memoize def overdue_calls_by_user
+      items = regions.map { |region| RegionEntry.new(region, __method__, group_by: :user_id, period_type: period_type) }
+      result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
+        @overdue_calls_query.count(entry.region, period_type, group_by: :user_id)
       end
       result.each_with_object({}) { |(region_entry, counts), hsh|
         hsh[region_entry.region.slug] = counts

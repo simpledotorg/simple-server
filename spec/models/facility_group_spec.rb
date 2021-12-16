@@ -192,6 +192,21 @@ RSpec.describe FacilityGroup, type: :model do
         expect(facility_group.discardable?).to be true
       end
     end
+
+    it "can be discarded" do
+      facility_group.discard
+      expect(facility_group).to be_discarded
+    end
+
+    it "can be discarded and updates state population after discard" do
+      facility_group = create(:facility_group, name: "district-with-population", organization: org, district_estimated_population: 300)
+      state = facility_group.region.state_region
+      expect(state.estimated_population.population).to eq(300)
+      facility_group.discard
+      state.recalculate_state_population!
+      expect(facility_group).to be_discarded
+      expect(state.reload_estimated_population.population).to eq(0)
+    end
   end
 
   describe "Callbacks" do
@@ -208,6 +223,14 @@ RSpec.describe FacilityGroup, type: :model do
 
       it "creates the state region if it doesn't exist" do
         expect(facility_group.region.state_region.name).to eq "Punjab"
+      end
+
+      it "sets district estimed population if one is provided" do
+        facility_group = create(:facility_group, name: "FG", state: "Punjab", organization: org, district_estimated_population: 2500)
+        expect(facility_group.region).to be_present
+        expect(facility_group.region).to be_persisted
+        expect(facility_group.region.estimated_population).to be_present
+        expect(facility_group.region.estimated_population.population).to eq(2500)
       end
     end
 
@@ -226,6 +249,18 @@ RSpec.describe FacilityGroup, type: :model do
         facility_group.update(state: new_state.name)
         expect(facility_group.region.state_region.name).to eq "Maharashtra"
         expect(facility_group.region.path).to eq "india.ihci.maharashtra.fg"
+      end
+
+      it "updates district estimed population if one is provided" do
+        expect {
+          facility_group.update!(district_estimated_population: 1000)
+        }.to change(EstimatedPopulation, :count).by(2)
+        expect(facility_group.region.estimated_population).to be_present
+        expect(facility_group.region.estimated_population.population).to eq(1000)
+        expect {
+          facility_group.update!(district_estimated_population: 3333)
+        }.to change(EstimatedPopulation, :count).by(0)
+        expect(facility_group.region.estimated_population.population).to eq(3333)
       end
     end
   end

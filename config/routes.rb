@@ -185,11 +185,14 @@ Rails.application.routes.draw do
 
   namespace :reports do
     resources :patient_lists, only: [:show]
+    resources :progress, only: [:show]
     resources :regions, only: [:index]
     get "regions/:report_scope/:id", to: "regions#show", as: :region
     get "regions/:report_scope/:id/details", to: "regions#details", as: :region_details
     get "regions/:report_scope/:id/cohort", to: "regions#cohort", as: :region_cohort
     get "regions/:report_scope/:id/download", to: "regions#download", as: :region_download
+    get "regions/:report_scope/:id/monthly_state_data_report",
+      to: "regions#monthly_state_data_report", as: :region_monthly_state_data
     get "regions/:report_scope/:id/monthly_district_data_report",
       to: "regions#monthly_district_data_report", as: :region_monthly_district_data
     get "regions/:report_scope/:id/graphics", to: "regions#whatsapp_graphics", as: :graphics

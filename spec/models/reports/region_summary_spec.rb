@@ -22,6 +22,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
 
   context "API contract" do
     it "regions with no patient data an empty hash" do
+      refresh_views
       result = described_class.call(facility_group_1)
       expect(result).to eq("facility_group_1" => {})
       expect(result["facility_group_1"][jan_2020.to_period]).to be_nil
@@ -80,6 +81,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
         lost_to_follow_up
         monthly_registrations
         month_date
+        monthly_overdue_calls
       ].map(&:to_s)
       (3.months.ago.to_period..now.to_period).each do |period|
         expect(results["facility-1"][period].keys).to match_array(expected_keys)

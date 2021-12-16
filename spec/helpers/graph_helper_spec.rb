@@ -14,9 +14,9 @@ describe GraphHelper, type: :helper do
     it "selects the latest n months from the provided graph data" do
       expect(helper.latest_months(graph_data, number_of_months))
         .to eq("Jun" => 0,
-               "May" => 0,
-               "Apr" => 0,
-               "Mar" => 0)
+          "May" => 0,
+          "Apr" => 0,
+          "Mar" => 0)
     end
   end
 end

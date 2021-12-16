@@ -10,12 +10,7 @@ blocks:
         - name: Deploy to India Production
           commands:
             - checkout
-            - sem-version ruby 2.6.6
-            - cache restore
-            - yarn install
-            - bundle install --deployment --path vendor/bundle
-            - cache store
-            - 'BRANCH=$SEMAPHORE_GIT_SHA bundle exec cap india:production deploy'
+            - deploy_target=india:production script/semaphore_deploy
       prologue:
         commands:
           - chmod 600 ~/.ssh/semaphore_id_rsa
