@@ -175,4 +175,43 @@ RSpec.describe EstimatedPopulation, type: :model do
       expect(facility_group_2.region.estimated_population.hypertension_patient_coverage_rate).to eq(100.0)
     end
   end
+
+  describe "show_coverage" do
+    it "returns true if a district has a coverage rate" do
+      organization = create(:organization)
+      facility_group = create(:facility_group, name: "Brooklyn", organization: organization)
+      facility = create(:facility, facility_group: facility_group)
+
+      facility_group_population = EstimatedPopulation.create!(population: 100, diagnosis: "HTN", region_id: facility_group.region.id)
+
+      user = create(:admin, :manager, :with_access, resource: organization, organization: organization)
+
+      create_list(:patient, 15, :hypertension, registration_facility: facility, registration_user: user)
+      create_list(:patient, 5, :diabetes, registration_facility: facility, registration_user: user)
+
+      expect(facility_group.region.estimated_population.show_coverage).to eq(true)
+    end
+
+    fit "returns true if a state has populations for all child districts" do
+      organization = create(:organization)
+      state = Region.create!(name: "New York", region_type: "state", reparent_to: Region.root)
+      facility_group = create(:facility_group, state: state)
+      # TASK: Fix `ActiveRecord::RecordInvalid: Validation failed: Path can't be blank` error
+      # facility = create(:facility, facility_group: facility_group)
+
+      # facility_group_population = EstimatedPopulation.create!(population: 100, diagnosis: "HTN", region_id: facility_group.region.id)
+
+      # user = create(:admin, :manager, :with_access, resource: organization, organization: organization)
+
+      # create_list(:patient, 15, :hypertension, registration_facility: facility, registration_user: user)
+      # create_list(:patient, 5, :diabetes, registration_facility: facility, registration_user: user)
+      # state.recalculate_state_population!
+
+      # pp state.estimated_population.population
+      # expect(state.estimated_population.show_coverage).to eq(true)
+    end
+
+    it "returns false if the region is not a state or district" do
+    end
+  end
 end
