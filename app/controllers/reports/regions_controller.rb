@@ -100,13 +100,6 @@ class Reports::RegionsController < AdminController
         @region.source.blood_pressures.for_recent_bp_log.includes(:patient, :facility)
       )
     end
-
-    @population = @region.estimated_population&.population.to_f
-    @is_population_available_for_all_districts = @region.estimated_population&.is_population_available_for_all_districts
-    if @population > 0
-      @hypertension_patient_coverage = (@chart_data[:patient_breakdown][:total_patients].to_f / @population) * 100
-    end
-    @show_coverage = @region.district_region? && @hypertension_patient_coverage || @region.state_region? && @is_population_available_for_all_districts
   end
 
   def cohort

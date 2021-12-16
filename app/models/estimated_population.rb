@@ -26,4 +26,23 @@ class EstimatedPopulation < ApplicationRecord
     end
     is_population_available
   end
+
+  def hypertension_patient_coverage
+    population = region.estimated_population.population.to_f
+    if population > 100
+      return "100%"
+    elsif population > 0
+      return number_to_percentage((region.registered_patients.count.to_f / population) * 100, precision: 0)
+    end
+  end
+
+  def show_coverage
+    if region.district_region? && region.estimated_population.hypertension_patient_coverage
+      return true
+    elsif region.state_region? && region.estimated_population.is_population_available_for_all_districts
+      return true
+    else
+      return false
+    end
+  end
 end
