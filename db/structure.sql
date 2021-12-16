@@ -2742,6 +2742,8 @@ CREATE MATERIALIZED VIEW public.reporting_patient_follow_ups AS
  SELECT DISTINCT ON (cal.month_string, all_follow_ups.facility_id, all_follow_ups.user_id, all_follow_ups.patient_id) all_follow_ups.patient_id,
     all_follow_ups.patient_gender,
     all_follow_ups.facility_id,
+    mh.diabetes,
+    mh.hypertension,
     all_follow_ups.user_id,
     all_follow_ups.visit_id,
     all_follow_ups.visit_type,
@@ -2752,7 +2754,8 @@ CREATE MATERIALIZED VIEW public.reporting_patient_follow_ups AS
     cal.year,
     cal.month_string,
     cal.quarter_string
-   FROM (all_follow_ups
+   FROM ((all_follow_ups
+     JOIN public.medical_histories mh ON ((all_follow_ups.patient_id = mh.patient_id)))
      LEFT JOIN public.reporting_months cal ON ((all_follow_ups.month_string = cal.month_string)))
   ORDER BY cal.month_string DESC
   WITH NO DATA;
@@ -4871,6 +4874,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211209110618'),
 ('20211210152751'),
 ('20211210152752'),
-('20211215192748');
+('20211214014913'),
+('20211215192748'),
+('20211216144440');
 
 
