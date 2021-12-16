@@ -82,11 +82,11 @@
 
     <% registrations_table_name = 'registrations' %>
 
-    <%= render partial: 'gender_filter',
+    <%= render partial: 'api/v3/analytics/user_analytics/gender_filter',
                locals: { data_table_name: registrations_table_name,
                          is_diabetes_enabled: @user_analytics.diabetes_enabled? } %>
 
-    <%= render partial: 'monthly_gender_table',
+    <%= render partial: 'api/v3/analytics/user_analytics/monthly_gender_table',
                locals: { stat: :registrations,
                          user_analytics: @user_analytics,
                          data_table_name: registrations_table_name } %>
@@ -99,18 +99,18 @@
 
     <% follow_ups_table_name = 'follow_ups' %>
 
-    <%= render partial: 'gender_filter',
+    <%= render partial: 'api/v3/analytics/user_analytics/gender_filter',
                locals: { data_table_name: follow_ups_table_name,
                          is_diabetes_enabled: @user_analytics.diabetes_enabled? } %>
 
-    <%= render partial: 'monthly_gender_table',
+    <%= render partial: 'api/v3/analytics/user_analytics/monthly_gender_table',
                locals: { stat: :follow_ups,
                          user_analytics: @user_analytics,
                          data_table_name: follow_ups_table_name } %>
   </div>
 
   <!-- drug stock -->
-  <% if current_facility_group.region.feature_enabled?(:drug_stocks) %>
+  <% if current_facility_group.region.feature_enabled?(:drug_stocks) && controller == "user_analytics" %>
     <div class="card">
         <h3>Drug stock report</h3>
         <p style="text-align: left; padding: 6px 0;">Please submit your monthly hypertension drug stock report for end of <%= @for_end_of_month.to_s(:mon_year) %></p>
