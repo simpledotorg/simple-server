@@ -438,6 +438,7 @@ RSpec.describe Reports::Repository, type: :model do
       it "counts distinct follow ups per region / patient" do
         facility_1, facility_2 = create_list(:facility, 2)
         Timecop.freeze("May 10th 2021") do
+          other_patient = create(:patient, registration_facility: facility_1, recorded_at: 6.months.ago)
           periods = (6.months.ago.to_period..1.month.ago.to_period)
           patient_1 = create(:patient, :hypertension, recorded_at: 10.months.ago)
           user_1 = create(:user)
@@ -450,7 +451,7 @@ RSpec.describe Reports::Repository, type: :model do
 
           repo = described_class.new([facility_1, facility_2], periods: periods, follow_ups_v2: follow_ups_v2)
 
-          expect(repo.hypertension_follow_ups[facility_1.region.slug]).to eq({
+          expect(repo.hypertension_follow_ups[facility_1.region.slug]).to include({
             Period.month("February 1st 2021") => 1
           })
         end
