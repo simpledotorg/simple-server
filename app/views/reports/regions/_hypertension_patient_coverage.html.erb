@@ -16,17 +16,17 @@
   <p class="mb-8px fw-bold">
     <% if @region.estimated_population&.show_coverage %>
       <span class="c-green-dark">
-        <%= @region.estimated_population.hypertension_patient_coverage %>
+        <%= number_to_percentage(@region.estimated_population.hypertension_patient_coverage_rate, precision: 0) %>
       </span>
     <% else %>
       N/A
     <% end %>
   </p>
 </div>
-<div class="d-flex h-8px mb-16px o-hidden <% if @region.estimated_population&.hypertension_patient_coverage == "100%" %>br-4px<% end %>">
+<div class="d-flex h-8px mb-16px o-hidden <% if @region.estimated_population&.hypertension_patient_coverage_rate == 100.0 %>br-4px<% end %>">
   <div
     class="br-tl-4px br-bl-4px <% if @region.estimated_population&.show_coverage %>bg-green-dark<% else %>bg-grey-light<% end %>"
-    style="width: <% if @region.estimated_population&.show_coverage %><%= @region.estimated_population.hypertension_patient_coverage %><% else %>5%<% end %>;"
+    style="width: <% if @region.estimated_population&.show_coverage %><%= number_to_percentage(@region.estimated_population.hypertension_patient_coverage_rate, precision: 0) %><% else %>5%<% end %>;"
   ></div>
   <div class="flex-1 br-tr-4px br-br-4px bg-grey-light"></div>
 </div>

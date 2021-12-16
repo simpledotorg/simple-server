@@ -131,4 +131,48 @@ RSpec.describe EstimatedPopulation, type: :model do
       expect(state.estimated_population.is_population_available_for_all_districts).to eq(false)
     end
   end
+
+  describe "hypertension_patient_coverage" do
+    it "returns a percentage value when a region's population is > 0" do
+      organization = create(:organization)
+      facility_group_1 = create(:facility_group, name: "Brooklyn", organization: organization)
+      facility_group_2 = create(:facility_group, name: "Manhattan", organization: organization)
+      facility_1 = create(:facility, facility_group: facility_group_1)
+      facility_2 = create(:facility, facility_group: facility_group_2)
+
+      facility_group_1_population = EstimatedPopulation.create!(population: 100, diagnosis: "HTN", region_id: facility_group_1.region.id)
+      facility_group_2_population = EstimatedPopulation.create!(population: 60, diagnosis: "HTN", region_id: facility_group_2.region.id)
+
+      user = create(:admin, :manager, :with_access, resource: organization, organization: organization)
+
+      create_list(:patient, 15, :hypertension, registration_facility: facility_1, registration_user: user)
+      create_list(:patient, 5, :diabetes, registration_facility: facility_1, registration_user: user)
+      create_list(:patient, 30, :hypertension, registration_facility: facility_2, registration_user: user)
+      create_list(:patient, 3, :diabetes, registration_facility: facility_2, registration_user: user)
+
+      expect(facility_group_1.region.estimated_population.hypertension_patient_coverage_rate).to eq(15.0)
+      expect(facility_group_2.region.estimated_population.hypertension_patient_coverage_rate).to eq(50.0)
+    end
+
+    it "returns 100.0 when a region's hypertensive registered patients is > the region's estimated population" do
+      organization = create(:organization)
+      facility_group_1 = create(:facility_group, name: "Brooklyn", organization: organization)
+      facility_group_2 = create(:facility_group, name: "Manhattan", organization: organization)
+      facility_1 = create(:facility, facility_group: facility_group_1)
+      facility_2 = create(:facility, facility_group: facility_group_2)
+
+      facility_group_1_population = EstimatedPopulation.create!(population: 10, diagnosis: "HTN", region_id: facility_group_1.region.id)
+      facility_group_2_population = EstimatedPopulation.create!(population: 25, diagnosis: "HTN", region_id: facility_group_2.region.id)
+
+      user = create(:admin, :manager, :with_access, resource: organization, organization: organization)
+
+      create_list(:patient, 15, :hypertension, registration_facility: facility_1, registration_user: user)
+      create_list(:patient, 5, :diabetes, registration_facility: facility_1, registration_user: user)
+      create_list(:patient, 30, :hypertension, registration_facility: facility_2, registration_user: user)
+      create_list(:patient, 3, :diabetes, registration_facility: facility_2, registration_user: user)
+
+      expect(facility_group_1.region.estimated_population.hypertension_patient_coverage_rate).to eq(100.0)
+      expect(facility_group_2.region.estimated_population.hypertension_patient_coverage_rate).to eq(100.0)
+    end
+  end
 end
