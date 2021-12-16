@@ -82,6 +82,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
         monthly_registrations
         month_date
         monthly_overdue_calls
+        monthly_follow_ups
       ].map(&:to_s)
       (3.months.ago.to_period..now.to_period).each do |period|
         expect(results["facility-1"][period].keys).to match_array(expected_keys)
