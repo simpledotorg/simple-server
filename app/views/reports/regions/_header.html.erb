@@ -41,7 +41,7 @@
       <p class="mr-lg-24px mb-0px pb-8px fs-20px fw-bold <%= params[:action] == "cohort" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
         <%= link_to_unless_current "Cohort reports", reports_region_cohort_path(@region, report_scope: params[:report_scope]), :class => "c-grey-dark td-none" %>
       </p>
-      <% if current_admin.feature_enabled?(:dashboard_progress_reports) %>
+      <% if @region.facility_region? && current_admin.feature_enabled?(:dashboard_progress_reports) %>
         <p class="mr-lg-24px mb-0px pb-8px fs-20px fw-bold <%= params[:action] == "cohort" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
           <%= link_to "Progress reports", reports_progress_path(@region), :class => "c-grey-dark td-none" %>
         </p>
