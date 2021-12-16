@@ -382,8 +382,18 @@ RSpec.describe Reports::Repository, type: :model do
         end
 
         refresh_views
-
-        expected_facility_1_follow_ups = {
+        # We get different results for v1 compared v2 here, and that is okay because:
+        #   v1 only tracks BPs, not visits, as follow ups
+        #   v1 does not correctly filter based on the range provided, which is a bug and will be fixed in v2
+        expected_v1 = {
+          "September 1st 2019" => 2,
+          "October 1st 2019" => 2,
+          "November 1st 2019" => 2,
+          "December 1st 2019" => 2,
+          "January 1st 2020" => 2, 
+          "February 1st 2020" => 2,
+        }.transform_keys!(&:to_period)
+        expected_v2 = {
           "October 1st 2019" => 2,
           "November 1st 2019" => 2,
           "December 1st 2019" => 2,
@@ -391,8 +401,9 @@ RSpec.describe Reports::Repository, type: :model do
           "February 1st 2020" => 2,
           "March 1st 2020" => 2
         }.transform_keys!(&:to_period)
+        expected = follow_ups_v2 ? expected_v2 : expected_v1
         repo = described_class.new(facility_1, periods: range, follow_ups_v2: follow_ups_v2)
-        expect(repo.hypertension_follow_ups["facility-1"]).to eq(expected_facility_1_follow_ups)
+        expect(repo.hypertension_follow_ups["facility-1"]).to eq(expected)
       end
 
       it "returns counts of follow_ups taken per region" do
