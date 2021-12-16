@@ -119,7 +119,7 @@ RSpec.describe Period, type: :model do
   it "cannot compare period with other classes" do
     expect {
       q1_2019_period > "January 1 2019"
-    }.to raise_error(ArgumentError, %{you are trying to compare "January 1 2019", a String, with a Period})
+    }.to raise_error(ArgumentError, %(you are trying to compare "January 1 2019", a String, with a Period))
   end
 
   it "month and quarter periods are never equal" do
