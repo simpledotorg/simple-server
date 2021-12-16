@@ -29,7 +29,7 @@ class Reports::ProgressController < AdminController
   end
 
   def require_feature_flag
-    if !current_admin.feature_enabled?(:dashboard_progress_report)
+    if !current_admin.feature_enabled?(:dashboard_progress_reports)
       user_not_authorized
       nil
     end

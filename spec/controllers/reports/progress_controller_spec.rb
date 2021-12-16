@@ -39,7 +39,7 @@ RSpec.describe Reports::ProgressController, type: :controller do
       other_fg = create(:facility_group, name: "other facility group", organization: organization)
       facility = create(:facility, name: "other facility", facility_group: other_fg)
       user = create(:admin, :viewer_reports_only, :with_access, resource: other_fg)
-      user.enable_feature(:dashboard_progress_report)
+      user.enable_feature(:dashboard_progress_reports)
       sign_in(user.email_authentication)
       get :show, params: {id: facility.region.slug}
       expect(response).to be_successful
