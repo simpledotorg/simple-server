@@ -22,7 +22,7 @@ class RequestOtpSmsJob < ApplicationJob
     block.call
   rescue TwilioApiService::Error => error
     if error.reason == :invalid_phone_number
-      logger.info("OTP to #{user.id} failed because of an invalid phone number")
+      logger.warn("OTP to #{user.id} failed because of an invalid phone number")
       Statsd.instance.increment("twilio.errors.invalid_phone_number")
       false
     else
