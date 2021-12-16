@@ -5,6 +5,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
 
   let(:organization) { create(:organization, name: "org-1") }
   let(:user) { create(:admin, :manager, :with_access, resource: organization, organization: organization) }
+  let(:user_2) { create(:admin, :manager, :with_access, resource: organization, organization: organization) }
   let(:facility_group_1) { FactoryBot.create(:facility_group, name: "facility_group_1", organization: organization) }
   let(:facility_1) { create(:facility, name: "facility-1", facility_group: facility_group_1) }
   let(:facility_2) { create(:facility, name: "facility-2", facility_group: facility_group_1) }
@@ -148,6 +149,62 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
     expect(block_data["block-1"]["December 2020".to_period]).to include("adjusted_controlled_under_care" => 0)
     expect(block_data["block-1"]["January 2020".to_period]).to include("adjusted_controlled_under_care" => 3)
     expect(block_data["block-2"]["January 2020".to_period]).to be_nil
+  end
+
+  it "returns follow ups" do
+    facility_1, facility_2 = *FactoryBot.create_list(:facility, 2, block: "block-1", facility_group: facility_group_1).sort_by(&:slug)
+    htn_patients_with_one_follow_up_every_month = create_list(:patient, 2, full_name: "facility 1 patient with HTN", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
+    htn_patients_with_many_follow_ups_in_one_month = create_list(:patient, 2, full_name: "facility 2 patient with HTN", recorded_at: jan_2019, assigned_facility: facility_2, registration_user: user)
+    diabetes_patients = create_list(:patient, 2, :diabetes, full_name: "patient with diabetes", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
+
+    range = ("October 1st 2019".to_period.."March 1st 2020".to_period)
+
+    range.each do |period|
+      diabetes_patients.each { |p| create(:blood_sugar, facility: facility_1, patient: p, recorded_at: period.to_date, user: user) }
+      htn_patients_with_one_follow_up_every_month.each { |p| create(:bp_with_encounter, :under_control, facility: facility_1, patient: p, recorded_at: period.to_date, user: user) }
+    end
+    htn_patients_with_many_follow_ups_in_one_month.each do |p| # all the below should count as _one_ follow up for the month
+      create(:appointment, recorded_at: jan_2020, patient: p, facility: facility_1, user: user)
+      create(:appointment, recorded_at: jan_2020, patient: p, facility: facility_1, user: user_2)
+      create(:blood_sugar_with_encounter, recorded_at: jan_2020.advance(days: 15), patient: p, facility: facility_1, user: user)
+      create(:bp_with_encounter, recorded_at: jan_2020.advance(days: 13), patient: p, facility: facility_2, user: user)
+      create(:prescription_drug, recorded_at: jan_2020.advance(days: 10), patient: p, facility: facility_1, user: user)
+    end
+
+    refresh_views
+
+    expected_facility_1_follow_ups = {
+      "October 1st 2019" => { "monthly_follow_ups" => 2},
+      "November 1st 2019" => { "monthly_follow_ups" => 2},
+      "December 1st 2019" => { "monthly_follow_ups" => 2},
+      "January 1st 2020" => { "monthly_follow_ups" => 4},
+      "February 1st 2020" => { "monthly_follow_ups" => 2},
+      "March 1st 2020" => { "monthly_follow_ups" => 2},
+    }.transform_keys!(&:to_period)
+    facility_1_results = described_class.call(facility_1, range: range)["facility-1"].transform_values { |values| values.slice("monthly_follow_ups") }
+    expect(facility_1_results).to eq(expected_facility_1_follow_ups)
+
+    expected_facility_2_follow_ups = {
+      "October 1st 2019" => { "monthly_follow_ups" => 0},
+      "November 1st 2019" => { "monthly_follow_ups" => 0},
+      "December 1st 2019" => { "monthly_follow_ups" => 0},
+      "January 1st 2020" => { "monthly_follow_ups" => 2},
+      "February 1st 2020" => { "monthly_follow_ups" => 0},
+      "March 1st 2020" => { "monthly_follow_ups" => 0},
+    }.transform_keys!(&:to_period)
+    facility_2_results = described_class.call([facility_2, facility_1], range: range)["facility-2"].transform_values { |values| values.slice("monthly_follow_ups") }
+    expect(facility_2_results).to eq(expected_facility_2_follow_ups)
+
+    district_results = described_class.call(facility_group_1, range: range)[facility_group_1.region.slug].transform_values {|values| values.slice("monthly_follow_ups")}
+    expected_district_follow_ups = {
+      "October 1st 2019" => { "monthly_follow_ups" => 2},
+      "November 1st 2019" => { "monthly_follow_ups" => 2},
+      "December 1st 2019" => { "monthly_follow_ups" => 2},
+      "January 1st 2020" => { "monthly_follow_ups" => 6},
+      "February 1st 2020" => { "monthly_follow_ups" => 2},
+      "March 1st 2020" => { "monthly_follow_ups" => 2},
+    }.transform_keys!(&:to_period)
+    expect(district_results).to eq(expected_district_follow_ups)
   end
 
   it "sums LTFU and under care counts for missed visits and visited no BP" do
