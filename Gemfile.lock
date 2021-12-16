@@ -326,7 +326,7 @@ GEM
     mime-types-data (3.2021.0225)
     mini_mime (1.1.2)
     mini_portile2 (2.6.1)
-    minitest (5.14.4)
+    minitest (5.15.0)
     mock_redis (0.29.0)
       ruby2_keywords
     msgpack (1.4.2)
@@ -518,7 +518,7 @@ GEM
       sprockets (> 3.0)
       sprockets-rails
       tilt
-    scenic (1.5.2)
+    scenic (1.5.5)
       activerecord (>= 4.0.0)
       railties (>= 4.0.0)
     scientist (1.6.0)
