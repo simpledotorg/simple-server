@@ -84,7 +84,6 @@ module Reports
           query = Reports::PatientFollowUp.with_hypertension.where(facility_id: region.facility_ids)
           counts = if group_field
             grouped_counts = query.group(group_field).group_by_period(:month, :month_date, {format: Period.formatter(:month)}).count
-            d grouped_counts
             grouped_counts.each_with_object({}) { |(key, count), result|
               group, period = *key
               result[period] ||= {}
