@@ -4,11 +4,11 @@
 # Instead, they build mocked TO/FROM numbers into the gem. So by using different TO/FROM
 # numbers you can force different response types. To have a fully functional sandbox environment
 # with its own logging, you would need to set up a different Twilio account and use those credentials.
-# ERROR HANDLING: this class is primarily used by background jobs. We raise an error on
-# twilio errors without error codes because network errors do not have error codes
-# and we want to force a retry on network errors. If a twilio error has a code,
-# we log the error but do not want to retry because the errors listed in their docs
-# are idempotent and retries would yield the same errors.
+#
+# ERROR HANDLING: This service raises any errors related to the Twilio API as an exception.
+# This is to allow background jobs to retry in case of network/limit errors.
+# The error object contains the reason of failure if it was due to a known twilio error.
+# The users of this service should use it to handle known errors properly.
 
 class TwilioApiService
   attr_accessor :communication_type
