@@ -2,6 +2,7 @@
 # The main purpose currently is to make it easier to develop on progress tab in dev.
 class Reports::ProgressController < AdminController
   layout false
+  before_action :require_feature_flag
   before_action :set_period
   before_action :find_region
 
@@ -25,6 +26,13 @@ class Reports::ProgressController < AdminController
 
   def current_facility_group
     current_facility.facility_group
+  end
+
+  def require_feature_flag
+    if !current_admin.feature_enabled?(:dashboard_progress_report)
+      user_not_authorized
+      return
+    end
   end
 
   def find_region
