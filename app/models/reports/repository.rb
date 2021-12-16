@@ -96,14 +96,18 @@ module Reports
       if follow_ups_v2?
         schema.hypertension_follow_ups(group_by: group_by)
       else
-        items = regions.map { |region| RegionEntry.new(region, __method__, group_by: group_by, period_type: period_type) }
-        result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
-          follow_ups_query.hypertension(entry.region, period_type, group_by: group_by)
-        end
-        result.each_with_object({}) { |(region_entry, counts), hsh|
-          hsh[region_entry.region.slug] = counts
-        }
+        follow_ups_v1(group_by: group_by)
       end
+    end
+
+    memoize def follow_ups_v1(group_by: nil)
+      items = regions.map { |region| RegionEntry.new(region, __method__, group_by: group_by, period_type: period_type) }
+      result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
+        follow_ups_query.hypertension(entry.region, period_type, group_by: group_by)
+      end
+      result.each_with_object({}) { |(region_entry, counts), hsh|
+        hsh[region_entry.region.slug] = counts
+      }
     end
 
     def follow_ups_v2?
