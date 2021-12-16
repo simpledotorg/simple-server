@@ -185,6 +185,7 @@ Rails.application.routes.draw do
 
   namespace :reports do
     resources :patient_lists, only: [:show]
+    resources :progress, only: [:show]
     resources :regions, only: [:index]
     get "regions/:report_scope/:id", to: "regions#show", as: :region
     get "regions/:report_scope/:id/details", to: "regions#details", as: :region_details
