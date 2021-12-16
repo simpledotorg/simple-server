@@ -5,19 +5,20 @@ RSpec.describe Reports::Repository, type: :model do
 
   let(:organization) { create(:organization, name: "org-1") }
   let(:user) { create(:admin, :manager, :with_access, resource: organization, organization: organization) }
+  let(:user_2) { create(:admin, :manager, :with_access, resource: organization, organization: organization) }
   let(:facility_group_1) { FactoryBot.create(:facility_group, name: "facility_group_1", organization: organization) }
 
   let(:july_2020_range) { (Period.month(july_2020.advance(months: -24))..Period.month(july_2020)) }
 
-  let(:june_1_2018) { Time.parse("June 1, 2018 00:00:00+00:00") }
-  let(:june_1_2020) { Time.parse("June 1, 2020 00:00:00+00:00") }
-  let(:june_30_2020) { Time.parse("June 30, 2020 00:00:00+00:00") }
-  let(:july_2020) { Time.parse("July 15, 2020 00:00:00+00:00") }
-  let(:jan_2019) { Time.parse("January 1st, 2019 00:00:00+00:00") }
-  let(:jan_2020) { Time.parse("January 1st, 2020 00:00:00+00:00") }
+  let(:june_1_2018) { Time.zone.parse("June 1, 2018 00:00:00+00:00") }
+  let(:june_1_2020) { Time.zone.parse("June 1, 2020 00:00:00+00:00") }
+  let(:june_30_2020) { Time.zone.parse("June 30, 2020 00:00:00+00:00") }
+  let(:july_2020) { Time.zone.parse("July 15, 2020 00:00:00+00:00") }
+  let(:jan_2019) { Time.zone.parse("January 1st, 2019 00:00:00+00:00") }
+  let(:jan_2020) { Time.zone.parse("January 1st, 2020 00:00:00+00:00") }
   let(:jan_2020_period) { jan_2020.to_period }
-  let(:july_2018) { Time.parse("July 1st, 2018 00:00:00+00:00") }
-  let(:july_2020) { Time.parse("July 1st, 2020 00:00:00+00:00") }
+  let(:july_2018) { Time.zone.parse("July 1st, 2018 00:00:00+00:00") }
+  let(:july_2020) { Time.zone.parse("July 1st, 2020 00:00:00+00:00") }
 
   around do |example|
     with_reporting_time_zone { example.run }
@@ -126,7 +127,7 @@ RSpec.describe Reports::Repository, type: :model do
       jan_1_2018 = Period.month("January 1 2018")
       _facility_1_registered_before_repository_range = create_list(:patient, 2, default_attrs.merge(recorded_at: jan_1_2018.value))
       _facility_1_registered_in_jan_2019 = create_list(:patient, 2, default_attrs.merge(recorded_at: jan_2019))
-      _facility_1_registered_in_august_2018 = create_list(:patient, 2, default_attrs.merge(recorded_at: Time.parse("August 10th 2018")))
+      _facility_1_registered_in_august_2018 = create_list(:patient, 2, default_attrs.merge(recorded_at: Time.zone.parse("August 10th 2018")))
       _user_2_registered = create(:patient, full_name: "other user", recorded_at: jan_2019, registration_facility: facility_1, registration_user: user_2)
 
       refresh_views
@@ -359,11 +360,46 @@ RSpec.describe Reports::Repository, type: :model do
 
   [true, false].each do |follow_ups_v2|
     context "follow_ups_v2 => #{follow_ups_v2}" do
+      it "gets follow ups per facility" do
+        facility_1 = FactoryBot.create(:facility, name: "Facility 1", block: "block-1", facility_group: facility_group_1)
+        facility_2 = FactoryBot.create(:facility, name: "Facility 2", block: "block-1", facility_group: facility_group_1)
+        htn_patients_with_one_follow_up_every_month = create_list(:patient, 2, full_name: "facility 1 patient with HTN", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
+        htn_patients_with_many_follow_ups_in_one_month = create_list(:patient, 2, full_name: "facility 2 patient with HTN", recorded_at: jan_2019, assigned_facility: facility_2, registration_user: user)
+        diabetes_patients = create_list(:patient, 2, :diabetes, full_name: "patient with diabetes", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
+
+        range = ("October 1st 2019".to_period.."March 1st 2020".to_period)
+
+        range.each do |period|
+          diabetes_patients.each { |p| create(:blood_sugar, facility: facility_1, patient: p, recorded_at: period.to_date, user: user) }
+          htn_patients_with_one_follow_up_every_month.each { |p| create(:bp_with_encounter, :under_control, facility: facility_1, patient: p, recorded_at: period.to_date, user: user) }
+        end
+        htn_patients_with_many_follow_ups_in_one_month.each do |p| # all the below should count as _one_ follow up for the month per facility
+          create(:appointment, recorded_at: jan_2020, patient: p, facility: facility_1, user: user)
+          create(:appointment, recorded_at: jan_2020, patient: p, facility: facility_1, user: user_2)
+          create(:blood_sugar_with_encounter, recorded_at: jan_2020.advance(days: 15), patient: p, facility: facility_1, user: user)
+          create(:bp_with_encounter, recorded_at: jan_2020.advance(days: 13), patient: p, facility: facility_2, user: user)
+          create(:prescription_drug, recorded_at: jan_2020.advance(days: 10), patient: p, facility: facility_1, user: user)
+        end
+
+        refresh_views
+
+        expected_facility_1_follow_ups = {
+          "October 1st 2019" => 2,
+          "November 1st 2019" => 2,
+          "December 1st 2019" => 2,
+          "January 1st 2020" => 4,
+          "February 1st 2020" => 2,
+          "March 1st 2020" => 2
+        }.transform_keys!(&:to_period)
+        repo = described_class.new(facility_1, periods: range, follow_ups_v2: follow_ups_v2)
+        expect(repo.hypertension_follow_ups["facility-1"]).to eq(expected_facility_1_follow_ups)
+      end
+
       it "returns counts of follow_ups taken per region" do
         facility_1, facility_2 = create_list(:facility, 2)
         Timecop.freeze("May 10th 2021") do
           periods = (6.months.ago.to_period..1.month.ago.to_period)
-          patient_1, patient_2 = create_list(:patient, 2, :hypertension, recorded_at: 10.months.ago)
+          patient_1, patient_2 = create_list(:patient, 2, recorded_at: 10.months.ago)
           user_1 = create(:user)
           user_2 = create(:user)
 
