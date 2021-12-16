@@ -44,5 +44,11 @@ RSpec.describe Reports::ProgressController, type: :controller do
       get :show, params: {id: facility.region.slug}
       expect(response).to be_successful
     end
+
+    it "does not render drug stock form (regardless of feature flag)" do
+      Flipper.enable(:drug_stocks, facility_1.facility_group.region)
+      get :show, params: {id: facility_1.slug}
+      expect(response.body).to_not include("Submit Drug Stock")
+    end
   end
 end

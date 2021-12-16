@@ -110,7 +110,7 @@
   </div>
 
   <!-- drug stock -->
-  <% if current_facility_group.region.feature_enabled?(:drug_stocks) && controller == "user_analytics" %>
+  <% if current_facility_group.region.feature_enabled?(:drug_stocks) && controller_name == "user_analytics" %>
     <div class="card">
         <h3>Drug stock report</h3>
         <p style="text-align: left; padding: 6px 0;">Please submit your monthly hypertension drug stock report for end of <%= @for_end_of_month.to_s(:mon_year) %></p>
