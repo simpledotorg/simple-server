@@ -390,8 +390,8 @@ RSpec.describe Reports::Repository, type: :model do
           "October 1st 2019" => 2,
           "November 1st 2019" => 2,
           "December 1st 2019" => 2,
-          "January 1st 2020" => 2, 
-          "February 1st 2020" => 2,
+          "January 1st 2020" => 2,
+          "February 1st 2020" => 2
         }.transform_keys!(&:to_period)
         expected_v2 = {
           "October 1st 2019" => 2,

@@ -174,35 +174,35 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
     refresh_views
 
     expected_facility_1_follow_ups = {
-      "October 1st 2019" => { "monthly_follow_ups" => 2},
-      "November 1st 2019" => { "monthly_follow_ups" => 2},
-      "December 1st 2019" => { "monthly_follow_ups" => 2},
-      "January 1st 2020" => { "monthly_follow_ups" => 4},
-      "February 1st 2020" => { "monthly_follow_ups" => 2},
-      "March 1st 2020" => { "monthly_follow_ups" => 2},
+      "October 1st 2019" => {"monthly_follow_ups" => 2},
+      "November 1st 2019" => {"monthly_follow_ups" => 2},
+      "December 1st 2019" => {"monthly_follow_ups" => 2},
+      "January 1st 2020" => {"monthly_follow_ups" => 4},
+      "February 1st 2020" => {"monthly_follow_ups" => 2},
+      "March 1st 2020" => {"monthly_follow_ups" => 2}
     }.transform_keys!(&:to_period)
     facility_1_results = described_class.call(facility_1, range: range)["facility-1"].transform_values { |values| values.slice("monthly_follow_ups") }
     expect(facility_1_results).to eq(expected_facility_1_follow_ups)
 
     expected_facility_2_follow_ups = {
-      "October 1st 2019" => { "monthly_follow_ups" => 0},
-      "November 1st 2019" => { "monthly_follow_ups" => 0},
-      "December 1st 2019" => { "monthly_follow_ups" => 0},
-      "January 1st 2020" => { "monthly_follow_ups" => 2},
-      "February 1st 2020" => { "monthly_follow_ups" => 0},
-      "March 1st 2020" => { "monthly_follow_ups" => 0},
+      "October 1st 2019" => {"monthly_follow_ups" => 0},
+      "November 1st 2019" => {"monthly_follow_ups" => 0},
+      "December 1st 2019" => {"monthly_follow_ups" => 0},
+      "January 1st 2020" => {"monthly_follow_ups" => 2},
+      "February 1st 2020" => {"monthly_follow_ups" => 0},
+      "March 1st 2020" => {"monthly_follow_ups" => 0}
     }.transform_keys!(&:to_period)
     facility_2_results = described_class.call([facility_2, facility_1], range: range)["facility-2"].transform_values { |values| values.slice("monthly_follow_ups") }
     expect(facility_2_results).to eq(expected_facility_2_follow_ups)
 
-    district_results = described_class.call(facility_group_1, range: range)[facility_group_1.region.slug].transform_values {|values| values.slice("monthly_follow_ups")}
+    district_results = described_class.call(facility_group_1, range: range)[facility_group_1.region.slug].transform_values { |values| values.slice("monthly_follow_ups") }
     expected_district_follow_ups = {
-      "October 1st 2019" => { "monthly_follow_ups" => 2},
-      "November 1st 2019" => { "monthly_follow_ups" => 2},
-      "December 1st 2019" => { "monthly_follow_ups" => 2},
-      "January 1st 2020" => { "monthly_follow_ups" => 6},
-      "February 1st 2020" => { "monthly_follow_ups" => 2},
-      "March 1st 2020" => { "monthly_follow_ups" => 2},
+      "October 1st 2019" => {"monthly_follow_ups" => 2},
+      "November 1st 2019" => {"monthly_follow_ups" => 2},
+      "December 1st 2019" => {"monthly_follow_ups" => 2},
+      "January 1st 2020" => {"monthly_follow_ups" => 6},
+      "February 1st 2020" => {"monthly_follow_ups" => 2},
+      "March 1st 2020" => {"monthly_follow_ups" => 2}
     }.transform_keys!(&:to_period)
     expect(district_results).to eq(expected_district_follow_ups)
   end
