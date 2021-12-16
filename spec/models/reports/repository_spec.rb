@@ -408,6 +408,8 @@ RSpec.describe Reports::Repository, type: :model do
 
       it "returns counts of follow_ups taken per region" do
         facility_1, facility_2 = create_list(:facility, 2)
+        create(:patient, registration_facility: facility_1, recorded_at: "February 1st 2021", registration_user: user)
+        create(:patient, registration_facility: facility_2, recorded_at: "February 1st 2021", registration_user: user)
         Timecop.freeze("May 10th 2021") do
           periods = (6.months.ago.to_period..1.month.ago.to_period)
           patient_1, patient_2 = create_list(:patient, 2, recorded_at: 10.months.ago)
@@ -428,10 +430,14 @@ RSpec.describe Reports::Repository, type: :model do
           repo_2 = described_class.new([facility_1, facility_2], periods: periods, follow_ups_v2: follow_ups_v2)
 
           expect(repo.hypertension_follow_ups[facility_1.region.slug]).to eq({
-            Period.month("February 1st 2021") => 2, Period.month("March 1st 2021") => 1
+            Period.month("February 1st 2021") => 2, Period.month("March 1st 2021") => 1, Period.month("April 1st 2021") => 0
           })
-          expect(repo.hypertension_follow_ups[facility_2.region.slug]).to eq({Period.month("April 1st 2021") => 1})
-          expect(repo_2.hypertension_follow_ups[facility_2.region.slug]).to eq({Period.month("April 1st 2021") => 1})
+          expect(repo.hypertension_follow_ups[facility_2.region.slug]).to eq({
+            Period.month("February 1st 2021") => 0, Period.month("March 1st 2021") => 0, Period.month("April 1st 2021") => 1
+          })
+          expect(repo_2.hypertension_follow_ups[facility_2.region.slug]).to eq({
+            Period.month("February 1st 2021") => 0, Period.month("March 1st 2021") => 0, Period.month("April 1st 2021") => 1
+          })
         end
       end
 
