@@ -1,5 +1,5 @@
-#!/bin/bash
-set -ex
+#!/bin/bash -v
+set -e
 
 if [[ -z "$deploy_target" ]]; then
   echo "Must provide a $deploy_target to deploy to"
