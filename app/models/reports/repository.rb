@@ -99,7 +99,7 @@ module Reports
         else raise(ArgumentError, "unknown group for follow ups #{group_by}")
       end
       regions.each_with_object({}) do |region, results|
-        query = Reports::PatientFollowUp.where(facility_id: region.facility_ids)
+        query = Reports::PatientFollowUp.with_hypertension.where(facility_id: region.facility_ids)
         counts = if group_field
           grouped_counts = query.group(group_field).group_by_period(:month, :month_date, {format: Period.formatter(period_type)}).count
           grouped_counts.each_with_object({}) { |(key, count), result|

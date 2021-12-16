@@ -410,6 +410,7 @@ RSpec.describe Reports::Repository, type: :model do
           create(:bp_with_encounter, recorded_at: 3.months.ago, facility: facility_1, patient: patient_2, user: user_2)
           create(:bp_with_encounter, recorded_at: 2.months.ago, facility: facility_1, patient: patient_2, user: user_2)
           create(:bp_with_encounter, recorded_at: 1.month.ago, facility: facility_2, patient: patient_1)
+          create(:appointment, recorded_at: 1.month.ago, facility: facility_2, patient: patient_1)
           refresh_views
 
           repo = described_class.new([facility_1, facility_2], periods: periods, follow_ups_v2: follow_ups_v2)
