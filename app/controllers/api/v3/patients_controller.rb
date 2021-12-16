@@ -67,9 +67,9 @@ class Api::V3::PatientsController < Api::V3::SyncController
     # This is to investigate large number of identical records being synced by the app.
     # Remove once we figure it out.
     logger.info(event: "identical patient record synced",
-                user_id: current_user.id,
-                patient_id: patient.id,
-                sync_region_id: current_sync_region.id)
+      user_id: current_user.id,
+      patient_id: patient.id,
+      sync_region_id: current_sync_region.id)
   end
 
   def transform_to_response(patient)

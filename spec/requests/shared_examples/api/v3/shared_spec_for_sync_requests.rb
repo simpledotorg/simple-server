@@ -90,7 +90,7 @@ RSpec.shared_examples "v3 API sync requests" do
     let(:headers_with_resync_token) { headers.merge("HTTP_X_RESYNC_TOKEN" => resync_token) }
     let(:process_token_without_resync) do
       make_process_token(current_facility_processed_since: Time.current,
-                         other_facilities_processed_since: Time.current)
+        other_facilities_processed_since: Time.current)
     end
 
     before do
@@ -108,8 +108,8 @@ RSpec.shared_examples "v3 API sync requests" do
     it "syncs all records from beginning if resync_token in headers is different from the one in process_token" do
       get sync_route,
         params: {process_token: make_process_token(current_facility_processed_since: Time.current,
-                                                   other_facilities_processed_since: Time.current,
-                                                   resync_token: "2")},
+          other_facilities_processed_since: Time.current,
+          resync_token: "2")},
         headers: headers_with_resync_token
       response_body = JSON(response.body)
 
@@ -140,7 +140,7 @@ RSpec.shared_examples "v3 API sync requests" do
   context "resync_token in request headers is not present" do
     let(:process_token_without_resync) do
       make_process_token(current_facility_processed_since: 1.year.ago,
-                         other_facilities_processed_since: 1.year.ago)
+        other_facilities_processed_since: 1.year.ago)
     end
 
     before do

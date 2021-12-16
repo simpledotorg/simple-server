@@ -1,5 +1,5 @@
-#!/bin/bash
-set -ex
+#!/bin/bash -v
+set -e
 
 # See https://github.com/semaphoreci/toolbox for more details on the "sem-" commands
 source ~/.toolbox/toolbox

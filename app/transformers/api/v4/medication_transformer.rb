@@ -4,10 +4,10 @@ class Api::V4::MedicationTransformer < Api::V4::Transformer
       medication
         .as_json["attributes"]
         .merge("protocol" => "no",
-               "common" => "yes",
-               "created_at" => medication.created_at,
-               "updated_at" => medication.updated_at,
-               "deleted_at" => medication.deleted_at)
+          "common" => "yes",
+          "created_at" => medication.created_at,
+          "updated_at" => medication.updated_at,
+          "deleted_at" => medication.deleted_at)
         .except("deleted")
     end
   end

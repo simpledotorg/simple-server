@@ -63,10 +63,10 @@ describe Communication, type: :model do
         notification = create(:notification, subject: appt, patient: patient)
         expect {
           Communication.create_with_twilio_details!(appointment: notification.subject,
-                                                    twilio_sid: SecureRandom.uuid,
-                                                    twilio_msg_status: "sent",
-                                                    communication_type: :sms,
-                                                    notification: notification)
+            twilio_sid: SecureRandom.uuid,
+            twilio_msg_status: "sent",
+            communication_type: :sms,
+            notification: notification)
         }.to change { Communication.count }.by(1)
           .and change { TwilioSmsDeliveryDetail.count }.by(1)
       end
@@ -75,10 +75,10 @@ describe Communication, type: :model do
         notification = create(:notification)
         expect {
           Communication.create_with_twilio_details!(appointment: nil,
-                                                    twilio_sid: SecureRandom.uuid,
-                                                    twilio_msg_status: "sent",
-                                                    communication_type: :sms,
-                                                    notification: notification)
+            twilio_sid: SecureRandom.uuid,
+            twilio_msg_status: "sent",
+            communication_type: :sms,
+            notification: notification)
         }.to change { Communication.count }.by(1)
           .and change { TwilioSmsDeliveryDetail.count }.by(1)
       end

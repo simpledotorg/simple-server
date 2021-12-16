@@ -3,7 +3,7 @@
 module SidekiqMiddleware
   class FlushMetrics
     def call(_worker, _job, _queue)
-        yield
+      yield
     ensure
       Statsd.instance.flush(sync: true)
     end
