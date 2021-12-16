@@ -25,6 +25,32 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
     expect(follow_up).to be_nil
   end
 
+  it "patients without a medical history are not included" do
+    patient = create(:patient, :without_medical_history, recorded_at: june_2021[:long_ago], registration_user: user, registration_facility: facility)
+    create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: june_2021[:now])
+    RefreshReportingViews.call
+    expect(described_class.count).to eq(0)
+  end
+
+  it "can be filtered by diagnosis" do
+    patient_1 = create(:patient, :hypertension, recorded_at: june_2021[:long_ago], registration_user: user, registration_facility: facility)
+    mh = build(:medical_history, hypertension: MedicalHistory::MEDICAL_HISTORY_ANSWERS[:yes], diabetes: MedicalHistory::MEDICAL_HISTORY_ANSWERS[:yes])
+    patient_2 = create(:patient, medical_history: mh, recorded_at: june_2021[:long_ago], registration_user: user, registration_facility: facility)
+    patient_3 = create(:patient, :diabetes, recorded_at: june_2021[:long_ago], registration_user: user, registration_facility: facility)
+    create(:blood_pressure, patient: patient_1, user: user, facility: facility, recorded_at: june_2021[:now])
+    create(:blood_pressure, patient: patient_2, user: user, facility: facility, recorded_at: june_2021[:now])
+    create(:blood_pressure, patient: patient_3, user: user, facility: facility, recorded_at: june_2021[:now])
+
+    RefreshReportingViews.call
+    follow_ups = described_class.where(facility: facility)
+    expect(follow_ups.count).to eq(3)
+    expect(follow_ups.with_hypertension.count).to eq(2)
+    expect(follow_ups.with_diabetes.count).to eq(2)
+    follow_ups.each do |follow_up|
+      expect(follow_up.month_date).to eq(june_2021[:now].to_date)
+    end
+  end
+
   it "contains records for patient BPs" do
     patient = create(:patient, recorded_at: june_2021[:long_ago])
     create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: june_2021[:now])
