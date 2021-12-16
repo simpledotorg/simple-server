@@ -11,6 +11,7 @@ RSpec.describe Reports::ProgressController, type: :controller do
 
     context "access denied" do
       it "restricts access if feature flag is not enabled" do
+        Flipper.disable(:dashboard_progress_reports)
         sign_in(cvho.email_authentication)
 
         get :show, params: {id: facility_1.slug}
