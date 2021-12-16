@@ -24,7 +24,10 @@
   </p>
 </div>
 <div class="d-flex h-8px mb-16px">
-  <div class="br-tl-4px br-bl-4px <% if @show_coverage %>bg-green-dark<% else %>bg-grey-light<% end %>" style="width: <% if @show_coverage %><%= number_to_percentage(@hypertension_patient_coverage, precision: 0) %><% else %>5%<% end %>;"></div>
+  <div
+    class="br-tl-4px br-bl-4px <% if @show_coverage %>bg-green-dark<% else %>bg-grey-light<% end %>"
+    style="width: <% if @show_coverage %><%= number_to_percentage(@hypertension_patient_coverage, precision: 0) %><% else %>5%<% end %>;"
+  ></div>
   <div class="flex-1 br-tr-4px br-br-4px bg-grey-light"></div>
 </div>
 <div class="d-flex ai-center jc-between">

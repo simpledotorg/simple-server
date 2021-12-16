@@ -9,7 +9,7 @@
       <p class="mb-16px c-grey-dark mr-lg-12px">
         Follow-up and registration progress of hypertensive patients in <%= @region.name %>
       </p>
-      <% if @region.district_region? || @region.state_region? %>
+      <% if @region.supports_htn_population_coverage %>
         <%= render "reports/regions/hypertension_patient_coverage" %>
       <% else %>
         <div class="d-flex ai-center jc-between">

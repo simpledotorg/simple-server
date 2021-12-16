@@ -81,7 +81,7 @@
       </div>
     </div>
   <% end %>
-  <% if @region.district_region? || @region.state_region? %>
+  <% if @region.supports_htn_population_coverage %>
     <div class="mb-24px">
       <p class="mb-8px fs-16px fw-bold c-grey-dark">
         Hypertension patient coverage

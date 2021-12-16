@@ -216,6 +216,10 @@ class Region < ApplicationRecord
     updated_at.utc.to_s(:usec)
   end
 
+  def supports_htn_population_coverage
+    return true if region.district_region? || region.state_region?
+  end
+
   private
 
   def _set_path_for_seeds
