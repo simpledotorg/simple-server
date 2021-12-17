@@ -91,42 +91,23 @@ module Reports
       }
     end
 
-    def follow_ups_v2_query(group_by: nil)
-      group_field = case group_by
-        when /user_id\z/ then :user_id
-        when /gender\z/ then :patient_gender
-        when nil then nil
-        else raise(ArgumentError, "unknown group for follow ups #{group_by}")
-      end
-      regions.each_with_object({}) do |region, results|
-        query = Reports::PatientFollowUp.where(facility_id: region.facility_ids)
-        counts = if group_field
-          grouped_counts = query.group(group_field).group_by_period(:month, :month_date, {format: Period.formatter(period_type)}).count
-          grouped_counts.each_with_object({}) { |(key, count), result|
-            group, period = *key
-            result[period] ||= {}
-            result[period][group] = count
-          }
-        else
-          query.group_by_period(:month, :month_date, {format: Period.formatter(period_type)}).select(:patient_id).distinct.count
-        end
-        results[region.slug] = counts
-      end
-    end
-
     # Returns Follow ups per Region / Period. Takes an optional group_by clause (commonly used to group by user_id)
     memoize def hypertension_follow_ups(group_by: nil)
       if follow_ups_v2?
-        follow_ups_v2_query(group_by: group_by)
+        schema.hypertension_follow_ups(group_by: group_by)
       else
-        items = regions.map { |region| RegionEntry.new(region, __method__, group_by: group_by, period_type: period_type) }
-        result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
-          follow_ups_query.hypertension(entry.region, period_type, group_by: group_by)
-        end
-        result.each_with_object({}) { |(region_entry, counts), hsh|
-          hsh[region_entry.region.slug] = counts
-        }
+        follow_ups_v1(group_by: group_by)
       end
+    end
+
+    memoize def follow_ups_v1(group_by: nil)
+      items = regions.map { |region| RegionEntry.new(region, __method__, group_by: group_by, period_type: period_type) }
+      result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
+        follow_ups_query.hypertension(entry.region, period_type, group_by: group_by)
+      end
+      result.each_with_object({}) { |(region_entry, counts), hsh|
+        hsh[region_entry.region.slug] = counts
+      }
     end
 
     def follow_ups_v2?
