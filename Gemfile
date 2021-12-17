@@ -1,5 +1,6 @@
 source "https://rubygems.org"
 plugin "bootboot", "~> 0.1.1"
+Bundler.settings.set_local("bootboot_env_prefix", "RAILS")
 
 ruby "2.7.4"
 
