@@ -468,9 +468,9 @@ RSpec.describe Reports::Repository, type: :model do
         facility_1, facility_2 = create_list(:facility, 2)
         Timecop.freeze("May 10th 2021") do
           periods = (6.months.ago.to_period..1.month.ago.to_period)
-          patient_1 = create(:patient, :hypertension, recorded_at: 10.months.ago, gender: :male)
-          patient_2 = create(:patient, :hypertension, recorded_at: 10.months.ago, gender: :female)
-          patient_3 = create(:patient, :hypertension, recorded_at: 10.months.ago, gender: :transgender)
+          patient_1 = create(:patient, :hypertension, recorded_at: 10.months.ago, gender: :male, registration_facility: facility_1)
+          patient_2 = create(:patient, :hypertension, recorded_at: 10.months.ago, gender: :female, registration_facility: facility_2)
+          patient_3 = create(:patient, :hypertension, recorded_at: 10.months.ago, gender: :transgender, registration_facility: facility_2)
 
           create(:bp_with_encounter, recorded_at: "February 10th 2021", facility: facility_1, patient: patient_1)
           create(:bp_with_encounter, recorded_at: "February 11th 2021", facility: facility_1, patient: patient_2)
@@ -479,8 +479,12 @@ RSpec.describe Reports::Repository, type: :model do
 
           repo = described_class.new([facility_1, facility_2], periods: periods, follow_ups_v2: follow_ups_v2)
 
-          expect(repo.hypertension_follow_ups[facility_1.region.slug]).to eq({
-            Period.month("February 1st 2021") => 3
+          expect(repo.hypertension_follow_ups[facility_1.region.slug]).to include({
+            "November 1st 2020".to_period => 0,
+            "December 1st 2020".to_period => 0,
+            "January 1st 2021".to_period => 0,
+            "February 1st 2021".to_period => 3,
+            "March 1st 2021".to_period => 0
           })
           expect(repo.hypertension_follow_ups(group_by: :patient_gender)[facility_1.region.slug]).to eq({
             Period.month("February 1st 2021") => {"female" => 1, "male" => 1, "transgender" => 1}
