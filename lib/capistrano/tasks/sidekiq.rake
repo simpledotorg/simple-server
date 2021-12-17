@@ -11,7 +11,7 @@ namespace :sidekiq do
   desc "Quiet sidekiq (stop fetching new tasks from Redis)"
   task :quiet do
     on roles :sidekiq do
-      execute :systemctl, :reload, fetch(:sidekiq_service_name), "--user", raise_on_non_zero_exit: false
+      execute :systemctl, "--user", "kill -s TSTP", fetch(:sidekiq_service_name)
     end
   end
 
