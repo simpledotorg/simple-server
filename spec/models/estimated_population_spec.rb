@@ -242,6 +242,7 @@ RSpec.describe EstimatedPopulation, type: :model do
     it "returns false if a state does not have all child district populations" do
       state = Region.create!(name: "State", region_type: "state", reparent_to: Region.root)
       district_1 = Region.create!(name: "District 1", region_type: "district", reparent_to: state)
+      Region.create!(name: "District 2", region_type: "district", reparent_to: state)
 
       district_1_population = EstimatedPopulation.create!(population: 1500, diagnosis: "HTN", region_id: district_1.id)
       state.recalculate_state_population!
