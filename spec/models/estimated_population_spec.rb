@@ -174,10 +174,34 @@ RSpec.describe EstimatedPopulation, type: :model do
       expect(facility_group_1.region.estimated_population.hypertension_patient_coverage_rate).to eq(100.0)
       expect(facility_group_2.region.estimated_population.hypertension_patient_coverage_rate).to eq(100.0)
     end
+
+    it "returns nil if a district doesn't have registered patients" do
+      organization = create(:organization)
+      facility_group = create(:facility_group, name: "Brooklyn", organization: organization)
+
+      facility_group_population = EstimatedPopulation.create!(population: 100, diagnosis: "HTN", region_id: facility_group.region.id)
+
+      expect(facility_group.region.estimated_population.hypertension_patient_coverage_rate).to be_nil
+    end
+
+    it "returns nil if a district's hypertensive population is 0" do
+      organization = create(:organization)
+      facility_group = create(:facility_group, name: "Brooklyn", organization: organization)
+      facility = create(:facility, facility_group: facility_group)
+
+      facility_group_population = EstimatedPopulation.create!(population: 0, diagnosis: "HTN", region_id: facility_group.region.id)
+
+      user = create(:admin, :manager, :with_access, resource: organization, organization: organization)
+
+      create_list(:patient, 15, :hypertension, registration_facility: facility, registration_user: user)
+      create_list(:patient, 5, :diabetes, registration_facility: facility, registration_user: user)
+      
+      expect(facility_group.region.estimated_population.hypertension_patient_coverage_rate).to be_nil
+    end
   end
 
   describe "show_coverage" do
-    it "returns true if a district has a coverage rate" do
+    it "returns true if a district has a hypertension patient coverage rate" do
       organization = create(:organization)
       facility_group = create(:facility_group, name: "Brooklyn", organization: organization)
       facility = create(:facility, facility_group: facility_group)
@@ -192,26 +216,40 @@ RSpec.describe EstimatedPopulation, type: :model do
       expect(facility_group.region.estimated_population.show_coverage).to eq(true)
     end
 
-    fit "returns true if a state has populations for all child districts" do
-      organization = create(:organization)
-      state = Region.create!(name: "New York", region_type: "state", reparent_to: Region.root)
-      facility_group = create(:facility_group, state: state)
-      # TASK: Fix `ActiveRecord::RecordInvalid: Validation failed: Path can't be blank` error
-      # facility = create(:facility, facility_group: facility_group)
+    it "returns true if a state has populations for all child districts" do
+      state = Region.create!(name: "State", region_type: "state", reparent_to: Region.root)
+      district_1 = Region.create!(name: "District 1", region_type: "district", reparent_to: state)
+      district_2 = Region.create!(name: "District 2", region_type: "district", reparent_to: state)
 
-      # facility_group_population = EstimatedPopulation.create!(population: 100, diagnosis: "HTN", region_id: facility_group.region.id)
+      district_1_population = EstimatedPopulation.create!(population: 1500, diagnosis: "HTN", region_id: district_1.id)
+      district_2_population = EstimatedPopulation.create!(population: 1500, diagnosis: "HTN", region_id: district_2.id)
+      state.recalculate_state_population!
 
-      # user = create(:admin, :manager, :with_access, resource: organization, organization: organization)
-
-      # create_list(:patient, 15, :hypertension, registration_facility: facility, registration_user: user)
-      # create_list(:patient, 5, :diabetes, registration_facility: facility, registration_user: user)
-      # state.recalculate_state_population!
-
-      # pp state.estimated_population.population
-      # expect(state.estimated_population.show_coverage).to eq(true)
+      expect(district_1_population.is_population_available_for_all_districts).to eq(true)
+      expect(district_2_population.is_population_available_for_all_districts).to eq(true)
+      expect(state.estimated_population.show_coverage).to eq(true)
     end
 
-    it "returns false if the region is not a state or district" do
+    it "returns false if a district doesn't have a hypertension patient coverage rate" do
+      organization = create(:organization)
+      state = Region.create!(name: "State", region_type: "state", reparent_to: Region.root)
+      district = Region.create!(name: "District", region_type: "district", reparent_to: state)
+
+      district_population = EstimatedPopulation.create!(population: 100, diagnosis: "HTN", region_id: district.id)
+
+      expect(district.estimated_population.show_coverage).to eq(false)
+    end
+
+    it "returns false if a state does not have all child district populations" do
+      state = Region.create!(name: "State", region_type: "state", reparent_to: Region.root)
+      district_1 = Region.create!(name: "District 1", region_type: "district", reparent_to: state)
+      district_2 = Region.create!(name: "District 2", region_type: "district", reparent_to: state)
+
+      district_1_population = EstimatedPopulation.create!(population: 1500, diagnosis: "HTN", region_id: district_1.id)
+      state.recalculate_state_population!
+
+      expect(district_1_population.is_population_available_for_all_districts).to eq(false)
+      expect(state.estimated_population.show_coverage).to eq(false)
     end
   end
 end
