@@ -30,18 +30,20 @@ class EstimatedPopulation < ApplicationRecord
   def hypertension_patient_coverage_rate
     population = region.estimated_population.population.to_f
     rate = (region.registered_patients.with_hypertension.count.to_f / population) * 100
-    return nil if rate.infinite?
+    return nil if rate.infinity?
     return 100.0 if rate > 100.0
     return rate if rate > 0.0
   end
 
   def show_coverage
+    show_coverage = false
+
     if region.district_region? && region.estimated_population&.hypertension_patient_coverage_rate
-      return true
+      show_coverage = true
     elsif region.state_region? && region.estimated_population&.is_population_available_for_all_districts
-      return true
-    else
-      return false
+      show_coverage = true
     end
+
+    show_coverage
   end
 end
