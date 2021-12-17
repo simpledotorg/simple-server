@@ -133,10 +133,10 @@ group :test do
   gem "webdrivers"
   gem "webmock"
 end
-Plugin.send(:load_plugin, 'bootboot') if Plugin.installed?('bootboot')
+Plugin.send(:load_plugin, "bootboot") if Plugin.installed?("bootboot")
 
-if ENV['DEPENDENCIES_NEXT']
-  enable_dual_booting if Plugin.installed?('bootboot')
+if ENV["DEPENDENCIES_NEXT"]
+  enable_dual_booting if Plugin.installed?("bootboot")
 
   # Add any gem you want here, they will be loaded only when running
   # bundler command prefixed with `DEPENDENCIES_NEXT=1`.
