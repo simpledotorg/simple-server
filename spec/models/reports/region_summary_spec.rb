@@ -154,7 +154,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
   end
 
   it "returns follow ups" do
-    facility_1, facility_2 = *FactoryBot.create_list(:facility, 2, block: "block-1", facility_group: facility_group_1).sort_by(&:slug)
+    facility_1 = FactoryBot.create(:facility, name: "facility 1", block: "block-1", facility_group: facility_group_1)
+    facility_2 = FactoryBot.create(:facility, name: "facility 2", block: "block-1", facility_group: facility_group_1)
     htn_patients_with_one_follow_up_every_month = create_list(:patient, 2, full_name: "facility 1 patient with HTN", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
     htn_patients_with_many_follow_ups_in_one_month = create_list(:patient, 2, full_name: "facility 2 patient with HTN", recorded_at: jan_2019, assigned_facility: facility_2, registration_user: user)
     diabetes_patients = create_list(:patient, 2, :diabetes, full_name: "patient with diabetes", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
