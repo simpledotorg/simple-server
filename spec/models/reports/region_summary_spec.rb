@@ -14,7 +14,9 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
   let(:mar_2020) { Time.zone.parse("March 1st, 2020 00:00:00+00:00") }
 
   around do |example|
+    Flipper.enable(:follow_ups_v2)
     with_reporting_time_zone { example.run }
+    Flipper.disable(:follow_ups_v2)
   end
 
   def refresh_views
