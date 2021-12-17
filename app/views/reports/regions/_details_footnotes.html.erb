@@ -81,26 +81,28 @@
       </div>
     </div>
   <% end %>
-  <% if @region.supports_htn_population_coverage %>
-    <div class="mb-24px">
+  <% if Flipper.enabled?(:estimated_population) %>
+    <% if @region.supports_htn_population_coverage %>
+      <div class="mb-24px">
+        <p class="mb-8px fs-16px fw-bold c-grey-dark">
+          Hypertension patient coverage
+        </p>
+        <div class="pl-16px">
+          <p class="mb-8px fs-14px c-grey-dark">
+            <%= t("hypertension_patient_coverage_copy") %>
+          </p>
+        </div>
+      </div>
+    <% end %>
+    <div class="mb-0px">
       <p class="mb-8px fs-16px fw-bold c-grey-dark">
-        Hypertension patient coverage
+        Total estimated hypertensive population
       </p>
       <div class="pl-16px">
         <p class="mb-8px fs-14px c-grey-dark">
-          <%= t("hypertension_patient_coverage_copy") %>
+          <%= total_estimated_hypertensive_population_copy(@region) %>
         </p>
       </div>
     </div>
   <% end %>
-  <div class="mb-0px">
-    <p class="mb-8px fs-16px fw-bold c-grey-dark">
-      Total estimated hypertensive population
-    </p>
-    <div class="pl-16px">
-      <p class="mb-8px fs-14px c-grey-dark">
-        <%= total_estimated_hypertensive_population_copy(@region) %>
-      </p>
-    </div>
-  </div>
 </div>
