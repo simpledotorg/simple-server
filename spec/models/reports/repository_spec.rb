@@ -429,15 +429,11 @@ RSpec.describe Reports::Repository, type: :model do
           repo = described_class.new([facility_1, facility_2], periods: periods, follow_ups_v2: follow_ups_v2)
           repo_2 = described_class.new([facility_1, facility_2], periods: periods, follow_ups_v2: follow_ups_v2)
 
-          expect(repo.hypertension_follow_ups[facility_1.region.slug]).to eq({
-            Period.month("February 1st 2021") => 2, Period.month("March 1st 2021") => 1, Period.month("April 1st 2021") => 0
+          expect(repo.hypertension_follow_ups[facility_1.region.slug]).to include({
+            Period.month("February 1st 2021") => 2, Period.month("March 1st 2021") => 1
           })
-          expect(repo.hypertension_follow_ups[facility_2.region.slug]).to eq({
-            Period.month("February 1st 2021") => 0, Period.month("March 1st 2021") => 0, Period.month("April 1st 2021") => 1
-          })
-          expect(repo_2.hypertension_follow_ups[facility_2.region.slug]).to eq({
-            Period.month("February 1st 2021") => 0, Period.month("March 1st 2021") => 0, Period.month("April 1st 2021") => 1
-          })
+          expect(repo.hypertension_follow_ups[facility_2.region.slug]).to include({Period.month("April 1st 2021") => 1})
+          expect(repo_2.hypertension_follow_ups[facility_2.region.slug]).to include({Period.month("April 1st 2021") => 1})
         end
       end
 
