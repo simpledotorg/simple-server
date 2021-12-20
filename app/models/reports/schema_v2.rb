@@ -119,7 +119,7 @@ module Reports
       end
     end
 
-    def hypertension_follow_ups(group_by: nil)
+    memoize def hypertension_follow_ups(group_by: nil)
       if group_by.nil?
         values_at("monthly_follow_ups")
       else
