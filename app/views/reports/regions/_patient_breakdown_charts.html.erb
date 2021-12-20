@@ -9,30 +9,28 @@
       <p class="mb-16px c-grey-dark mr-lg-12px">
         Registration progress and follow-up status of patients registered in <%= @region.name %>
       </p>
-      <% if current_admin.feature_enabled?(:estimated_population) %>
-        <% if @region.supports_htn_population_coverage %>
-          <%= render "reports/regions/hypertension_patient_coverage" %>
-        <% else %>
-          <div class="d-flex ai-center jc-between">
-            <p class="mb-8px">
-              Total registered patients
-              <span class="p-relative t-1px">
-                <i
-                  class="fas fa-question-circle fs-14px c-grey-dark"
-                  data-toggle="tooltip"
-                  data-placement="right"
-                  data-trigger="hover click"
-                  data-html="true"
-                  title="<%= t('registered_patients_copy.total_registered_patients', region_name: @region.name) %>"
-                >
-                </i>
-              </span>
-            </p>
-            <p class="mb-8px fw-bold">
-              <%= number_with_delimiter(@chart_data[:patient_breakdown][:total_patients]) %>
-            </p>
-          </div>
-        <% end %>
+      <% if current_admin.feature_enabled?(:estimated_population) && @region.supports_htn_population_coverage %>
+        <%= render "reports/regions/hypertension_patient_coverage" %>
+      <% else %>
+        <div class="d-flex ai-center jc-between">
+          <p class="mb-8px">
+            Total registered patients
+            <span class="p-relative t-1px">
+              <i
+                class="fas fa-question-circle fs-14px c-grey-dark"
+                data-toggle="tooltip"
+                data-placement="right"
+                data-trigger="hover click"
+                data-html="true"
+                title="<%= t('registered_patients_copy.total_registered_patients', region_name: @region.name) %>"
+              >
+              </i>
+            </span>
+          </p>
+          <p class="mb-8px fw-bold">
+            <%= number_with_delimiter(@chart_data[:patient_breakdown][:total_patients]) %>
+          </p>
+        </div>
       <% end %>
       <div class="d-flex ai-center jc-between">
         <p class="mb-8px">
