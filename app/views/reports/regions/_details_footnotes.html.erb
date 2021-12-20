@@ -81,7 +81,7 @@
       </div>
     </div>
   <% end %>
-  <% if Flipper.enabled?(:estimated_population) %>
+  <% if current_admin.feature_enabled?(:estimated_population) %>
     <% if @region.supports_htn_population_coverage %>
       <div class="mb-24px">
         <p class="mb-8px fs-16px fw-bold c-grey-dark">

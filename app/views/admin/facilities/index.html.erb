@@ -34,7 +34,7 @@
               </span>
               <%= facility_group.name %>
             </h3>
-            <% if Flipper.enabled?(:estimated_population) %>
+            <% if current_admin.feature_enabled?(:estimated_population) %>
               <p class="subtitle">
                 Estimated hypertensive population:
                 <% if facility_group.region.estimated_population&.population %>

@@ -37,7 +37,7 @@
         <%= form.select(:protocol_id, protocols.order(:name).map { |protocol| [protocol.name, protocol.id] }) %>
       <% end %>
 
-      <% if Flipper.enabled?(:estimated_population) %>
+      <% if current_admin.feature_enabled?(:estimated_population) %>
         <%= form.number_field :district_estimated_population, label: "Estimated hypertensive population", autocomplete: "off", 
           help: "Leave blank if unknown" %>
       <% end %>

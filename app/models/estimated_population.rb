@@ -36,14 +36,12 @@ class EstimatedPopulation < ApplicationRecord
   end
 
   def show_coverage
-    show_coverage = false
-
-    if region.district_region? && region.estimated_population&.hypertension_patient_coverage_rate
-      show_coverage = true
+    if region.district_region?
+      region.estimated_population&.hypertension_patient_coverage_rate
     elsif region.state_region? && region.estimated_population&.is_population_available_for_all_districts
-      show_coverage = true
+      region.estimated_population&.is_population_available
+    else
+      false
     end
-
-    show_coverage
   end
 end

@@ -9,7 +9,7 @@
       <p class="mb-16px c-grey-dark mr-lg-12px">
         Registered patients who are under care, lost to follow-up, or dead
       </p>
-      <% if Flipper.enabled?(:estimated_population) %>
+      <% if current_admin.feature_enabled?(:estimated_population) %>
         <% if @region.supports_htn_population_coverage %>
           <%= render "reports/regions/hypertension_patient_coverage" %>
         <% end %>
