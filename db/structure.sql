@@ -10,6 +10,20 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
+--
+
+-- COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+--
 -- Name: ltree; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -49,6 +63,8 @@ CREATE TYPE public.gender_enum AS ENUM (
 
 
 SET default_tablespace = '';
+
+SET default_with_oids = false;
 
 --
 -- Name: accesses; Type: TABLE; Schema: public; Owner: -
@@ -1984,14 +2000,14 @@ CREATE MATERIALIZED VIEW public.reporting_patient_visits AS
 CREATE MATERIALIZED VIEW public.reporting_prescriptions AS
  SELECT p.id AS patient_id,
     p.month_date,
-    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Amlodipine'::text)), (0)::double precision) AS amlodipine,
-    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Telmisartan'::text)), (0)::double precision) AS telmisartan,
-    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Losartan Potassium'::text)), (0)::double precision) AS losartan,
-    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Atenolol'::text)), (0)::double precision) AS atenolol,
-    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Enalapril'::text)), (0)::double precision) AS enalapril,
-    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Chlorthalidone'::text)), (0)::double precision) AS chlorthalidone,
-    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Hydrochlorothiazide'::text)), (0)::double precision) AS hydrochlorothiazide,
-    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE (((prescriptions.clean_name)::text <> ALL (ARRAY[('Amlodipine'::character varying)::text, ('Telmisartan'::character varying)::text, ('Losartan'::character varying)::text, ('Atenolol'::character varying)::text, ('Enalapril'::character varying)::text, ('Chlorthalidone'::character varying)::text, ('Hydrochlorothiazide'::character varying)::text])) AND (prescriptions.medicine_purpose_hypertension = true))), (0)::double precision) AS other_bp_medications
+    COALESCE(sum(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Amlodipine'::text)), (0)::double precision) AS amlodipine,
+    COALESCE(sum(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Telmisartan'::text)), (0)::double precision) AS telmisartan,
+    COALESCE(sum(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Losartan Potassium'::text)), (0)::double precision) AS losartan,
+    COALESCE(sum(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Atenolol'::text)), (0)::double precision) AS atenolol,
+    COALESCE(sum(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Enalapril'::text)), (0)::double precision) AS enalapril,
+    COALESCE(sum(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Chlorthalidone'::text)), (0)::double precision) AS chlorthalidone,
+    COALESCE(sum(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Hydrochlorothiazide'::text)), (0)::double precision) AS hydrochlorothiazide,
+    COALESCE(sum(prescriptions.clean_dosage) FILTER (WHERE (((prescriptions.clean_name)::text <> ALL (ARRAY[('Amlodipine'::character varying)::text, ('Telmisartan'::character varying)::text, ('Losartan'::character varying)::text, ('Atenolol'::character varying)::text, ('Enalapril'::character varying)::text, ('Chlorthalidone'::character varying)::text, ('Hydrochlorothiazide'::character varying)::text])) AND (prescriptions.medicine_purpose_hypertension = true))), (0)::double precision) AS other_bp_medications
    FROM (( SELECT p_1.id,
             p_1.full_name,
             p_1.age,
@@ -4883,6 +4899,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211209110618'),
 ('20211210152751'),
 ('20211210152752'),
+('20211214014913'),
 ('20211215192748'),
 ('20211216144440'),
 ('20211216154413');
