@@ -13,6 +13,7 @@ class PatientPhoneNumber < ApplicationRecord
   belongs_to :patient
 
   validates :device_created_at, presence: true
+
   validates :device_updated_at, presence: true
 
   has_one :exotel_phone_number_detail

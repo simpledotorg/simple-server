@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe UpdatePhoneNumberDetailsWorker, type: :job do
   include ActiveJob::TestHelper
 
-  let!(:patient_phone_number) { create(:patient_phone_number, phone_type: "landline") }
+  let(:patient_phone_number) { create(:patient_phone_number, phone_type: "landline") }
   let(:phone_number) { patient_phone_number.number }
   let(:account_sid) { Faker::Internet.user_name }
   let(:token) { SecureRandom.base64 }
