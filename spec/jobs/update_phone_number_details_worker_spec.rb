@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe UpdatePhoneNumberDetailsWorker, type: :job do
   include ActiveJob::TestHelper
 
-  let!(:patient_phone_number) { create(:patient_phone_number, phone_type: "landline") }
+  let(:patient_phone_number) { create(:patient_phone_number, phone_type: "landline") }
   let(:phone_number) { patient_phone_number.number }
   let(:account_sid) { Faker::Internet.user_name }
   let(:token) { SecureRandom.base64 }
@@ -62,6 +62,12 @@ RSpec.describe UpdatePhoneNumberDetailsWorker, type: :job do
   end
 
   describe "#perform" do
+    it "skips the update if the phone number is missing a patient" do
+      patient_phone_number.patient.discard!
+      UpdatePhoneNumberDetailsWorker.perform_async(patient_phone_number.id, account_sid, token)
+      expect { UpdatePhoneNumberDetailsWorker.drain }.to not_change { patient_phone_number }
+    end
+
     it "updates the patient phone number details with the values return from exotel apis" do
       UpdatePhoneNumberDetailsWorker.perform_async(patient_phone_number.id, account_sid, token)
       time = Time.current
