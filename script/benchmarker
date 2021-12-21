@@ -41,8 +41,7 @@ run_tests() {
 
       echo -ne ${l}' ('${p}'%) \r'
   done;
-  echo "== Done ======" >> $output_file;
-  echo >> $output_file
+  echo "== Done ======" >> $output_file
 }
 
 # Option parsing
