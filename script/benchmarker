@@ -1,6 +1,8 @@
 #!/bin/bash
 # Simple time based benchmark - credit to https://gist.github.com/peterjmit/3864743 that this is modified from
 #
+# Note: this requires the GNU version of time installed. On mac you can `brew install gnu-time` to install it.
+#
 # Examples
 #   bench -c "bin/rails db:reset"
 #   bench -c "bin/rspec"
