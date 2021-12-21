@@ -1,4 +1,5 @@
 class EstimatedPopulation < ApplicationRecord
+  include Memery
   belongs_to :region
 
   validates :diagnosis, presence: true
@@ -13,20 +14,6 @@ class EstimatedPopulation < ApplicationRecord
     end
   end
 
-  def is_population_available_for_all_districts
-    state = region.state_region
-    is_population_available = false
-    state&.district_regions&.each do |district|
-      if district.estimated_population&.population
-        is_population_available = true
-      else
-        is_population_available = false
-        break
-      end
-    end
-    is_population_available
-  end
-
   def hypertension_patient_coverage_rate
     population = region.estimated_population.population.to_f
     rate = (region.registered_patients.with_hypertension.count.to_f / population) * 100
@@ -35,13 +22,18 @@ class EstimatedPopulation < ApplicationRecord
     return rate if rate > 0.0
   end
 
-  def show_coverage
+  memoize def show_coverage
     if region.district_region?
       !!region.estimated_population&.hypertension_patient_coverage_rate
     elsif region.state_region?
-      region.estimated_population&.is_population_available_for_all_districts
+      region.estimated_population&.population_available_for_all_districts?
     else
       false
     end
+  end
+
+  def population_available_for_all_districts?
+    state = region.state_region
+    state.district_regions.includes(:estimated_population).all? { |d| d.estimated_population }
   end
 end

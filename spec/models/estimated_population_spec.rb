@@ -103,7 +103,7 @@ RSpec.describe EstimatedPopulation, type: :model do
     end
   end
 
-  describe "is_population_available_for_all_districts" do
+  describe "population_available_for_all_districts?" do
     it "returns true when all districts have a population" do
       state = Region.create!(name: "State", region_type: "state", reparent_to: Region.root)
       district_1 = Region.create!(name: "District 1", region_type: "district", reparent_to: state)
@@ -113,9 +113,9 @@ RSpec.describe EstimatedPopulation, type: :model do
       district_2_population = EstimatedPopulation.create!(population: 1500, diagnosis: "HTN", region_id: district_2.id)
       state.recalculate_state_population!
 
-      expect(district_1_population.is_population_available_for_all_districts).to eq(true)
-      expect(district_2_population.is_population_available_for_all_districts).to eq(true)
-      expect(state.estimated_population.is_population_available_for_all_districts).to eq(true)
+      expect(district_1_population.population_available_for_all_districts?).to eq(true)
+      expect(district_2_population.population_available_for_all_districts?).to eq(true)
+      expect(state.estimated_population.population_available_for_all_districts?).to eq(true)
     end
 
     it "returns false when not all districts have a population" do
@@ -127,8 +127,8 @@ RSpec.describe EstimatedPopulation, type: :model do
       state.recalculate_state_population!
 
       expect(district_1.estimated_population).to be_nil
-      expect(district_2_population.is_population_available_for_all_districts).to eq(false)
-      expect(state.estimated_population.is_population_available_for_all_districts).to eq(false)
+      expect(district_2_population.population_available_for_all_districts?).to eq(false)
+      expect(state.estimated_population.population_available_for_all_districts?).to eq(false)
     end
   end
 
@@ -225,8 +225,8 @@ RSpec.describe EstimatedPopulation, type: :model do
       district_2_population = EstimatedPopulation.create!(population: 1500, diagnosis: "HTN", region_id: district_2.id)
       state.recalculate_state_population!
 
-      expect(district_1_population.is_population_available_for_all_districts).to eq(true)
-      expect(district_2_population.is_population_available_for_all_districts).to eq(true)
+      expect(district_1_population.population_available_for_all_districts?).to eq(true)
+      expect(district_2_population.population_available_for_all_districts?).to eq(true)
       expect(state.estimated_population.show_coverage).to eq(true)
     end
 
@@ -247,7 +247,7 @@ RSpec.describe EstimatedPopulation, type: :model do
       district_1_population = EstimatedPopulation.create!(population: 1500, diagnosis: "HTN", region_id: district_1.id)
       state.recalculate_state_population!
 
-      expect(district_1_population.is_population_available_for_all_districts).to eq(false)
+      expect(district_1_population.population_available_for_all_districts?).to eq(false)
       expect(state.estimated_population.show_coverage).to eq(false)
     end
   end
