@@ -3,6 +3,7 @@ class EstimatedPopulation < ApplicationRecord
   belongs_to :region
 
   validates :diagnosis, presence: true
+  validates :population, presence: true
 
   enum diagnosis: {HTN: "HTN", DM: "DM"}
 
@@ -34,6 +35,6 @@ class EstimatedPopulation < ApplicationRecord
 
   def population_available_for_all_districts?
     state = region.state_region
-    state.district_regions.includes(:estimated_population).all? { |d| d.estimated_population&.population }
+    state.district_regions.includes(:estimated_population).all? { |district| district.estimated_population }
   end
 end

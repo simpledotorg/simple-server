@@ -36,7 +36,7 @@ class FacilityGroup < ApplicationRecord
   delegate :cache_key, :cache_version, to: :region
 
   def district_estimated_population
-    @district_estimated_population || estimated_population&.population
+    @district_estimated_population
   end
 
   attr_writer :district_estimated_population

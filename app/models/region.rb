@@ -17,7 +17,7 @@ class Region < ApplicationRecord
   auto_strip_attributes :name, squish: true, upcase_first: true
 
   has_many :drug_stocks
-  has_one :estimated_population
+  has_one :estimated_population, autosave: true
 
   after_discard do
     estimated_population&.discard

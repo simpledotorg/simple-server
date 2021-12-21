@@ -38,7 +38,7 @@
       <% end %>
 
       <% if current_admin.feature_enabled?(:estimated_population) %>
-        <%= form.number_field :district_estimated_population, label: "Estimated hypertensive population", autocomplete: "off", 
+        <%= form.number_field :district_estimated_population, value: @facility_group&.estimated_population&.population, label: "Estimated hypertensive population", autocomplete: "off", 
           help: "Leave blank if unknown" %>
       <% end %>
 

@@ -2,25 +2,24 @@ require "rails_helper"
 
 RSpec.describe EstimatedPopulation, type: :model do
   describe "validations" do
-    it "is valid without a population" do
-      region = Region.create!(name: "State", region_type: "state", reparent_to: Region.root)
-      estimated_population = EstimatedPopulation.new(diagnosis: "HTN", region_id: region.id)
+    let(:state_region) { Region.new(region_type: :state)}
 
-      expect(estimated_population).to be_valid
-      expect(estimated_population.population).to be_nil
+    it "is now valid without a population" do
+      estimated_population = EstimatedPopulation.new(diagnosis: "HTN", region: state_region)
+
+      expect(estimated_population).to_not be_valid
+      expect(estimated_population.errors[:population]).to eq(["can't be blank"])
     end
 
     it "is not valid without a diagnosis" do
-      region = Region.create!(name: "State", region_type: "state", reparent_to: Region.root)
-      estimated_population = EstimatedPopulation.new(population: 1, region_id: region.id, diagnosis: nil)
+      estimated_population = EstimatedPopulation.new(population: 1, region: state_region, diagnosis: nil)
 
       expect(estimated_population).to_not be_valid
       expect(estimated_population.errors[:diagnosis]).to eq(["can't be blank"])
     end
 
     it "is not valid if diagnosis is not enum" do
-      region = Region.create!(name: "State", region_type: "state", reparent_to: Region.root)
-      estimated_population = EstimatedPopulation.new(population: 1, region_id: region.id)
+      estimated_population = EstimatedPopulation.new(population: 1, region: state_region)
 
       # Valid diagnosis values
       estimated_population.diagnosis = "HTN"
