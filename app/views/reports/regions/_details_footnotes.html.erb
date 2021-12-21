@@ -81,19 +81,17 @@
       </div>
     </div>
   <% end %>
-  <% if current_admin.feature_enabled?(:estimated_population) %>
-    <% if @region.supports_htn_population_coverage %>
-      <div class="mb-24px">
-        <p class="mb-8px fs-16px fw-bold c-grey-dark">
-          Hypertension patient coverage
+  <% if current_admin.feature_enabled?(:estimated_population) && @region.supports_htn_population_coverage %>
+    <div class="mb-24px">
+      <p class="mb-8px fs-16px fw-bold c-grey-dark">
+        Hypertension patient coverage
+      </p>
+      <div class="pl-16px">
+        <p class="mb-8px fs-14px c-grey-dark">
+          <%= t("hypertension_patient_coverage_copy") %>
         </p>
-        <div class="pl-16px">
-          <p class="mb-8px fs-14px c-grey-dark">
-            <%= t("hypertension_patient_coverage_copy") %>
-          </p>
-        </div>
       </div>
-    <% end %>
+    </div>
     <div class="mb-0px">
       <p class="mb-8px fs-16px fw-bold c-grey-dark">
         Total estimated hypertensive population

@@ -15,7 +15,7 @@
   </p>
   <p class="mb-8px fw-bold">
     <% if @region.estimated_population&.show_coverage %>
-      <span class="c-green-dark">
+      <span class="c-green-dark" id="<%= @region.estimated_population.show_coverage %>">
         <%= number_to_percentage(@region.estimated_population.hypertension_patient_coverage_rate, precision: 0) %>
       </span>
     <% else %>
