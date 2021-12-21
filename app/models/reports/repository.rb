@@ -92,7 +92,7 @@ module Reports
     end
 
     # Returns Follow ups per Region / Period. Takes an optional group_by clause (commonly used to group by user_id)
-    def hypertension_follow_ups(group_by: nil)
+    memoize def hypertension_follow_ups(group_by: nil)
       if follow_ups_v2?
         schema.hypertension_follow_ups(group_by: group_by)
       else
