@@ -7,14 +7,5 @@ module Reports
     def self.materialized?
       true
     end
-
-    def self.for_region(region_or_source)
-      region = region_or_source.region
-      where(region_id_field(region) => region.id)
-    end
-
-    def self.region_id_field(region)
-      "#{region.region_type}_region_id"
-    end
   end
 end
