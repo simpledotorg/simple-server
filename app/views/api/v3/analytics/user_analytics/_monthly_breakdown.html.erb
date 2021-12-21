@@ -4,7 +4,7 @@
     <tr class="total">
       <td class="row-label"><%= raw t("analytics.all_time") %></td>
       <td>
-        <%= @repo.cumulative_registrations[current_facility.slug].values.last %>
+        <%= @query.sum(:monthly_registrations_all) %>
       </td>
     </tr>
     <% @range.reverse_each do |period| %>
