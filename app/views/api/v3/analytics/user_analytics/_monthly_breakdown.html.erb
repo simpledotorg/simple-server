@@ -1,93 +1,23 @@
 <% data_table_name = "registrations" %>
+
 <% if current_facility.diabetes_enabled? %>
-  <table class="progress-table <%= data_table_name %> all">
-    <tr class="total">
-      <td class="row-label"><%= raw t("analytics.all_time") %></td>
-      <td>
-        <%= @query.sum(:monthly_registrations_all) %>
-      </td>
-    </tr>
-    <% @range.reverse_each do |period| %>
-      <tr>
-        <td class="row-label no-padding"><%= period.to_s(:month_name) %></td>
-        <td>
-          <%= @query.find_by(month_date: period).monthly_registrations_all %>
-        </td>
-      </tr>
-    <% end %>
-  </table>
+  <%= render(Reports::MonthlyProgressComponent.new(facility: current_facility, 
+    diagnosis: :all, 
+    metric: :registrations,
+    query: @query,
+    range: @range,
+    gender_groups: false)) %>
 
-  <!-- diabetes-only -->
-  <!-- the "all genders" table -->
-  <table class="progress-table <%= data_table_name %> diabetes:all" style="display: none">
-    <tr class="total">
-      <td class="row-label"><%= raw t("analytics.all_time") %></td>
-      <td><%= @query.sum(:monthly_registrations_dm_all) %></td>
-    </tr>
-    <% @range.reverse_each do |period| %>
-      <tr>
-        <td class="row-label no-padding"><%= period.to_s(:month_name) %></td>
-        <td>
-          <%= @query.find_by(month_date: period).monthly_registrations_dm_all %>
-        </td>
-      </tr>
-    <% end %>
-  </table>
+  <%= render(Reports::MonthlyProgressComponent.new(facility: current_facility, 
+    diagnosis: :diabetes, 
+    metric: :registrations,
+    query: @query,
+    range: @range)) %>
 
-  <% Patient::GENDERS.each do |gender| %>
-    <!-- gender-wise tables -->
-    <% attr = "monthly_registrations_dm_#{gender}" %>
-    <table class="progress-table <%= data_table_name %> diabetes:<%= gender %>" style="display: none">
-      <tr class="total">
-        <td class="row-label"><%= raw t("analytics.all_time") %></td>
-        <td><%= @query.sum(attr) %></td>
-      </tr>
-      <% @range.reverse_each do |period| %>
-        <tr>
-          <td class="row-label no-padding"><%= period.to_s(:month_name) %></td>
-          <td>
-            <%= @query.find_by(month_date: period).public_send(attr) %>
-          </td>
-        </tr>
-      <% end %>
-    </table>
-  <% end %>
 <% end %>
 
-<table class="progress-table <%= data_table_name %> hypertension:all"
-       style="<%= current_facility.diabetes_enabled? ? 'display: none' : '' %>">
-
-  <tr class="total">
-    <td class="row-label"><%= raw t("analytics.all_time") %></td>
-    <td>
-      <%= @repo.cumulative_registrations[current_facility.slug].values.last %>
-    </td>
-  </tr>
-  <% @range.reverse_each do |period| %>
-    <tr>
-      <td class="row-label no-padding"><%= period.to_s(:month_name) %></td>
-      <td>
-        <%= @query.find_by(month_date: period).monthly_registrations_htn_all %>
-      </td>
-    </tr>
-  <% end %>
-</table>
-
-<% Patient::GENDERS.each do |gender| %>
-  <!-- gender-wise tables -->
-  <% attr = "monthly_registrations_htn_#{gender}" %>
-  <table class="progress-table <%= data_table_name %> hypertension:<%= gender %>" style="display: none">
-    <tr class="total">
-      <td class="row-label"><%= raw t("analytics.all_time") %></td>
-      <td><%= @query.sum(attr) %></td>
-    </tr>
-    <% @range.reverse_each do |period| %>
-      <tr>
-        <td class="row-label no-padding"><%= period.to_s(:month_name) %></td>
-        <td>
-          <%= @query.find_by(month_date: period).public_send(attr) %>
-        </td>
-      </tr>
-    <% end %>
-  </table>
-<% end %>
+<%= render(Reports::MonthlyProgressComponent.new(facility: current_facility, 
+  diagnosis: :hypertension, 
+  metric: :registrations,
+  query: @query,
+  range: @range)) %>
