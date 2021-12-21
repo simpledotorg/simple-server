@@ -86,10 +86,14 @@
                locals: { data_table_name: registrations_table_name,
                          is_diabetes_enabled: @user_analytics.diabetes_enabled? } %>
 
-    <%= render partial: 'api/v3/analytics/user_analytics/monthly_gender_table',
-               locals: { stat: :registrations,
-                         user_analytics: @user_analytics,
-                         data_table_name: registrations_table_name } %>
+    <% if current_user.feature_enabled?(:follow_ups_v2) %>
+      <%= render partial: 'api/v3/analytics/user_analytics/monthly_breakdown' %>
+    <% else %>
+      <%= render partial: 'api/v3/analytics/user_analytics/monthly_gender_table',
+                locals: { stat: :registrations,
+                          user_analytics: @user_analytics,
+                          data_table_name: registrations_table_name } %>
+    <% end %>
   </div>
 
   <!-- monthly follow-up patients view -->

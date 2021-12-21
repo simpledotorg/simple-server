@@ -7,8 +7,11 @@ class Reports::ProgressController < AdminController
   before_action :find_region
 
   def show
-    @user_analytics = UserAnalyticsPresenter.new(@region)
     @current_facility = @region
+    @user_analytics = UserAnalyticsPresenter.new(@region)
+    @range = Range.new(@period.advance(months: -5), @period)
+    @repo = Reports::Repository.new(current_facility, periods: @range, follow_ups_v2: current_user.feature_enabled?(:follow_ups_v2))
+    @query = Reports::FacilityStateGroup.where(facility_region_id: current_facility.region.id)
     render "api/v3/analytics/user_analytics/show"
   end
 
