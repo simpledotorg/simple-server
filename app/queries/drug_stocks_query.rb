@@ -174,7 +174,7 @@ class DrugStocksQuery
 
   memoize def drugs_in_stock_by_block_id
     selected_month_drug_stocks
-      .group("block_region_id", "protocol_drugs.rxnorm_code")
+      .group("block_regions.id", "protocol_drugs.rxnorm_code")
       .sum(:in_stock)
   end
 
