@@ -35,11 +35,7 @@ class FacilityGroup < ApplicationRecord
   delegate :district_region?, :block_region?, :facility_region?, to: :region
   delegate :cache_key, :cache_version, to: :region
 
-  def district_estimated_population
-    @district_estimated_population
-  end
-
-  attr_writer :district_estimated_population
+  attr_accessor :district_estimated_population
 
   # FacilityGroups don't actually have a state
   # This virtual attr exists simply to simulate the State -> FG/District hierarchy for Regions.

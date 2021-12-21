@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe EstimatedPopulation, type: :model do
   describe "validations" do
-    let(:state_region) { Region.new(region_type: :state)}
+    let(:state_region) { Region.new(region_type: :state) }
 
     it "is now valid without a population" do
       estimated_population = EstimatedPopulation.new(diagnosis: "HTN", region: state_region)
