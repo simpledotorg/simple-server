@@ -21,9 +21,12 @@ class FacilityGroupRegionSync < SimpleDelegator
     region.reparent_to = state_region
     region.name = name
     if district_estimated_population
-      population = region.estimated_population || region.build_estimated_population
-      population.population = district_estimated_population
-      population.save!
+      if district_estimated_population.blank?
+        region.estimated_population.mark_for_destruction
+      else
+        population = region.estimated_population || region.build_estimated_population
+        population.population = district_estimated_population
+      end
       state_region.recalculate_state_population!
     end
     region.save!
