@@ -1,4 +1,4 @@
-<div class="d-flex mb-16px o-hidden <% if @region.estimated_population&.hypertension_patient_coverage_rate == 100.0 %>br-4px<% end %>" style="height: 24px;">
+<div class="d-flex h-24px mb-16px o-hidden <% if @region.estimated_population&.hypertension_patient_coverage_rate == 100.0 %>br-4px<% end %>">
   <div
     class="br-tl-4px br-bl-4px <% if @region.estimated_population&.show_coverage %>bg-green-dark<% else %>bg-grey-light<% end %>"
     style="width: <% if @region.estimated_population&.show_coverage %><%= number_to_percentage(@region.estimated_population.hypertension_patient_coverage_rate, precision: 0) %><% else %>5%<% end %>;"
