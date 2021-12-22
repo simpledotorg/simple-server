@@ -19,26 +19,20 @@ module MonthlyIHCIReport
     end
 
     def header_rows
-      [[
+      [[ # row 1
         "Blocks",
         "Total registrations",
         "Total assigned patients",
         "Total patients under care",
         "Total patients lost to followup",
-        "Treatment outcome",
-        *Array.new(3, nil),
-        "Total registered patients",
-        *Array.new(5, nil),
-        "Patients under care",
-        *Array.new(5, nil),
-        "New registered patients",
-        *Array.new(5, nil),
-        "Patient follow-ups",
-        *Array.new(5, nil),
-        "BP controlled rate",
-        *Array.new(5, nil)
+        "Treatment outcome", *Array.new(3, nil),
+        "Total registered patients", *Array.new(5, nil),
+        "Patients under care", *Array.new(5, nil),
+        "New registered patients", *Array.new(5, nil),
+        "Patient follow-ups", *Array.new(5, nil),
+        "BP controlled rate", *Array.new(5, nil)
       ],
-        [
+        [ # row 2
           nil, # "Blocks"
           nil, # "Total registrations"
           nil, # "Total assigned patients"
@@ -48,16 +42,11 @@ module MonthlyIHCIReport
           "% BP uncontrolled",
           "% Missed Visits",
           "% Visits, no BP taken",
-          # "Total registered patients"
-          *last_6_months.map(&:to_s),
-          # "Patients under care"
-          *last_6_months.map(&:to_s),
-          # "New registered patients"
-          *last_6_months.map(&:to_s),
-          # "Patient follow-ups"
-          *last_6_months.map(&:to_s),
-          # "BP controlled rate"
-          *last_6_months.map(&:to_s)
+          *last_6_months.map(&:to_s), # "Total registered patients"
+          *last_6_months.map(&:to_s), # "Patients under care"
+          *last_6_months.map(&:to_s), # "New registered patients"
+          *last_6_months.map(&:to_s), # "Patient follow-ups"
+          *last_6_months.map(&:to_s) # "BP controlled rate"
         ]]
     end
 
@@ -74,16 +63,11 @@ module MonthlyIHCIReport
         "% BP uncontrolled" => repo.uncontrolled_rates[block.slug][report_month],
         "% Missed Visits" => repo.missed_visits_rate[block.slug][report_month],
         "% Visits, no BP taken" => repo.visited_without_bp_taken_rates[block.slug][report_month],
-        # "Total registered patients"
-        **last_6_months_data(repo.cumulative_registrations, block),
-        # "Patients under care"
-        **last_6_months_data(repo.under_care, block),
-        # "New registered patients"
-        **last_6_months_data(repo.monthly_registrations, block),
-        # "Patient follow-ups"
-        **last_6_months_data(repo.hypertension_follow_ups, block),
-        # "BP controlled rate"
-        **last_6_months_data(repo.controlled_rates, block)
+        **last_6_months_data(repo.cumulative_registrations, block), # "Total registered patients"
+        **last_6_months_data(repo.under_care, block), # "Patients under care"
+        **last_6_months_data(repo.monthly_registrations, block), # "New registered patients"
+        **last_6_months_data(repo.hypertension_follow_ups, block), # "Patient follow-ups"
+        **last_6_months_data(repo.controlled_rates, block) # "BP controlled rate"
       }
     end
 
