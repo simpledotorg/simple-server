@@ -74,6 +74,10 @@ module Reports
       values_at("lost_to_follow_up")
     end
 
+    memoize def under_care
+      values_at("under_care")
+    end
+
     memoize def controlled
       values_at("adjusted_controlled_under_care")
     end
