@@ -18,6 +18,8 @@ class Region < ApplicationRecord
 
   has_many :drug_stocks
   has_one :estimated_population
+  has_many :assn_children, -> (object) {
+    where("? @> path AND nlevel(path) = NLEVEL(?) + 1", object.ltree_path, object.ltree_path) }, class_name: "Region"
 
   after_discard do
     estimated_population&.discard
@@ -47,6 +49,21 @@ class Region < ApplicationRecord
   def child_region_type
     current_index = REGION_TYPES.find_index { |type| type == region_type }
     REGION_TYPES[current_index + 1]
+  end
+  
+  def get_parent_path
+    p = path.split(".")
+    p.pop
+    p.join(".")
+  end
+
+  def preloaded_children
+    @children
+  end
+
+  def add_child(child)
+    @children ||= []
+    @children << child
   end
 
   def reportable_region?

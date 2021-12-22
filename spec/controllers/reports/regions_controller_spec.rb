@@ -231,9 +231,17 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect(response).to be_successful
     end
 
-    it "only loads districts the user has access to" do
+    fit "only loads districts the user has access to" do
       sign_in(cvho.email_authentication)
       get :index
+      tree = assigns(:tree)
+      org = tree[organization.region.path]
+      children = organization.region.children.to_a
+      logger.info "grabbing org children RJS"
+      expect(org.preloaded_children).to eq(children)
+      logger.info "done RJS"
+
+
       expect(response).to be_successful
       facility_regions = [@facility_1.region, @facility_2.region]
       org_region = organization.region

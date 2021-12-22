@@ -12,11 +12,46 @@ class Reports::RegionsController < AdminController
 
   INDEX_CACHE_KEY = "v3"
 
+  class Node
+    attr_reader :region
+    attr_reader :children
+    def initialize(region)
+      @region = region
+      @children = []
+    end
+  end
+
+  def build_tree(regions, tree, parent: nil)
+    d regions
+    if tree.empty?
+      root = regions.shift
+      tree[root.path] = root
+      build_tree(regions, tree, parent: root)
+    else
+      region = regions.shift
+      parent = tree[region.get_parent_path]
+      parent.add_child region
+      d "found parent #{parent}"
+      tree[region.path] = region
+      build_tree(regions, tree) if regions.any?
+    end
+    tree
+  end
+
   def index
     accessible_facility_regions = authorize { current_admin.accessible_facility_regions(:view_reports) }
 
     cache_key = current_admin.regions_access_cache_key
     cache_version = "#{accessible_facility_regions.cache_key}/#{INDEX_CACHE_KEY}"
+
+    all_regions = Region.root.descendents.includes(:children).order(:path).to_a
+    @tree = build_tree(all_regions, {})
+    
+    # .each_with_object({}) { |region, tree|
+    #   tree[region] ||= {}
+    #   tree[region] = build_tree(regions)
+    #   tree[]
+    # }
 
     @accessible_regions = cache.fetch(cache_key, force: bust_cache?, version: cache_version, expires_in: 7.days) {
       accessible_facility_regions.each_with_object({}) { |facility, result|
