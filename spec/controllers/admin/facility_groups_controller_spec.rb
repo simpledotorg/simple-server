@@ -189,9 +189,22 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
       put :update, params: {id: facility_group.to_param, facility_group: new_attributes, organization_id: organization.id}
       expect(response).to be_redirect
       expect(flash.notice).to eq("Facility group was successfully updated.")
-      facility_group.reload
+      expect(facility_group.estimated_population.population).to eq(1500)
+    end
 
-      expect(facility_group.district_estimated_population).to eq(1500)
+    it "destroys the estimated population if its blank" do
+      valid_attributes[:district_estimated_population] = 100
+      facility_group = create(:facility_group, valid_attributes)
+      expect(facility_group.district_estimated_population).to eq(100)
+      new_attributes = {
+        district_estimated_population: ""
+      }
+      expect {
+        put :update, params: {id: facility_group.to_param, facility_group: new_attributes, organization_id: organization.id}
+      }.to change { EstimatedPopulation.count }.by(-1)
+      expect(response).to be_redirect
+      expect(flash.notice).to eq("Facility group was successfully updated.")
+      expect(facility_group.estimated_population).to be_nil
     end
 
     it "redirects to the facilities" do
