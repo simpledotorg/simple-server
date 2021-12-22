@@ -95,6 +95,11 @@ MonthlyMedicationsDistribution = function () {
       }
     }
 
+    medicationsGraphConfig.options.tooltips = {
+      enabled: false
+
+    }
+
     const medicationsGraphCanvas = document.getElementById("monthlyMedicationsDistribution");
     if (medicationsGraphCanvas) {
       new Chart(medicationsGraphCanvas.getContext("2d"), medicationsGraphConfig);
