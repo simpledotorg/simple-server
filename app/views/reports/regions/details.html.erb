@@ -5,6 +5,7 @@
 <%= render "header", period_selector: false %>
 
 <%= render "reports/regions/patient_breakdown_charts" %>
+<%= render "reports/regions/monthly_medications_distribution" %>
 
 <% if @region.facility_region? %>
   <%= render "facility_details" %>
