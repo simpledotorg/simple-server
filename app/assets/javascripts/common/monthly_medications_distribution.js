@@ -14,6 +14,8 @@ MonthlyMedicationsDistribution = function () {
   this.initializeMedicationsGraph = () => {
     // const data = this.getMedicationsGraphData();
     const medicationsGraphConfig = reports.createBaseGraphConfig();
+
+    medicationsGraphConfig.plugins = [ChartDataLabels];
     medicationsGraphConfig.type = 'bar';
     medicationsGraphConfig.data = {
       labels: ["January", "February", "March"],
@@ -84,7 +86,14 @@ MonthlyMedicationsDistribution = function () {
       }]
     };
 
-    console.log(medicationsGraphConfig);
+    medicationsGraphConfig.options.plugins = {
+      datalabels: {
+        align: 'end',
+        color: 'black',
+        anchor: 'end',
+        offset: 3
+      }
+    }
 
     const medicationsGraphCanvas = document.getElementById("monthlyMedicationsDistribution");
     if (medicationsGraphCanvas) {
