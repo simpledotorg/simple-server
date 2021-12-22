@@ -8,7 +8,7 @@ module MonthlyIHCIReport
       @repo = Reports::Repository.new(district.facility_regions, periods: period_month)
     end
 
-    def rows
+    def content_rows
       district
         .facility_regions
         .joins("INNER JOIN reporting_facilities on reporting_facilities.facility_id = regions.source_id")
@@ -17,6 +17,19 @@ module MonthlyIHCIReport
         .map.with_index do |facility_region, index|
         row_data(facility_region, index)
       end
+    end
+
+    def header_rows
+      [[
+        "Sl.No",
+        "Facility size",
+        "Name of facility",
+        "Name of block",
+        "Total registrations",
+        "Patients under care",
+        "Registrations this month",
+        "BP control % of all patients registered before 3 months"
+      ]]
     end
 
     private
