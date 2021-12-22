@@ -1,0 +1,90 @@
+module MonthlyIHCIReport
+  class BlockData
+    attr_reader :repo, :district, :report_month, :last_6_months
+
+    def initialize(district, period_month)
+      @district = district
+      @report_month = period_month
+      @last_6_months = Range.new(@report_month.advance(months: -5), @report_month)
+      @repo = Reports::Repository.new(district.block_regions, periods: @last_6_months)
+    end
+
+    def rows
+      district
+        .block_regions
+        .order(:block_name)
+        .map do |block|
+        row_data(block)
+      end
+    end
+
+    private
+
+    def header
+      [[
+        "Blocks",
+        "Total registrations",
+        "Total assigned patients",
+        "Total patients under care",
+        "Total patients lost to followup",
+        "Treatment outcome",
+        **Array.new(3, nil),
+        "Total registered patients",
+        **Array.new(5, nil),
+        "Patients under care",
+        **Array.new(5, nil),
+        "New registered patients",
+        **Array.new(5, nil),
+        "Patient follow-ups",
+        **Array.new(5, nil),
+        "BP controlled rate",
+        **Array.new(5, nil)
+      ],
+        [
+          nil, #"Blocks"
+          nil, #"Total registrations"
+          nil, #"Total assigned patients"
+          nil, #"Total patients under care"
+          nil, #"Total patients lost to followup"
+          "% BP controlled",
+          "% BP uncontrolled",
+          "% Missed Visits",
+          "% Visits, no BP taken",
+          # "Total registered patients"
+          **last_6_months.map(&:to_s),
+          # "Patients under care"
+          **last_6_months.map(&:to_s),
+          # "New registered patients"
+          **last_6_months.map(&:to_s),
+          # "Patient follow-ups"
+          **last_6_months.map(&:to_s),
+          # "BP controlled rate"
+          **last_6_months.map(&:to_s),
+        ]]
+    end
+
+    def row_data(block)
+      {
+        "Blocks" => block.name,
+        "Total registrations" => repo.cumulative_registrations[block.slug][report_month],
+        "Total assigned patients" => repo.assigned_patients[block.slug][report_month],
+        "Total patients under care" => repo.under_care[block.slug][report_month],
+        "Total patients lost to followup" => repo.ltfu[block.slug][report_month],
+        "% BP controlled" => repo.controlled_rates[block.slug][report_month],
+        "% BP uncontrolled" => repo.uncontrolled_rates[block.slug][report_month],
+        "% Missed Visits" => repo.missed_visits_rate[block.slug][report_month],
+        "% Visits, no BP taken" => repo.visited_without_bp_taken_rates[block.slug][report_month],
+        # "Total registered patients"
+        **last_6_months.map{|month| repo.cumulative_registrations[block.slug][month]},
+        # "Patients under care"
+        **last_6_months.map{|month| repo.under_care[block.slug][month]},
+        # "New registered patients"
+        **last_6_months.map{|month| repo.monthly_registrations[block.slug][month]},
+        # "Patient follow-ups"
+        **last_6_months.map{|month| repo.hypertension_follow_ups[block.slug][month]},
+        # "BP controlled rate"
+        **last_6_months.map{|month| repo.controlled_rates[block.slug][month]},
+      }
+    end
+  end
+end
