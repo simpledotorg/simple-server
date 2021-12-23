@@ -60,7 +60,7 @@ MonthlyMedicationsDistribution = function () {
           fontColor: reports.darkGreyColor,
           fontSize: 12,
           fontFamily: "Roboto Condensed",
-          padding: 8,
+          padding: 0,
           min: 0,
           beginAtZero: true,
         },
