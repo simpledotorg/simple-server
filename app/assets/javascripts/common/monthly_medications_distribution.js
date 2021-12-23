@@ -96,8 +96,17 @@ MonthlyMedicationsDistribution = function () {
     }
 
     medicationsGraphConfig.options.tooltips = {
-      enabled: false
-
+      displayColors: false,
+      xAlign: 'center',
+      yAlign: 'bottom',
+      callbacks: {
+        title: function(tooltipItem) {
+          return ""
+        },
+        label: function(tooltipItem) {
+          return tooltipItem.yLabel + " of X patients";
+        },
+      }
     }
 
     const medicationsGraphCanvas = document.getElementById("monthlyMedicationsDistribution");
