@@ -16,7 +16,6 @@ module Seed
           end_time: end_time,
           max_patients_per_day: max_patients_per_day
         ).tap do |experiment|
-
           _control_group = experiment.treatment_groups.create!(description: "control")
 
           # One cascade group per reminder.

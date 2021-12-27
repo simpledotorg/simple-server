@@ -37,12 +37,12 @@ RSpec.describe Seed::Experiment2Seeder do
       expect(experiment.max_patients_per_day).to eq(10)
       expect(experiment.treatment_groups.count).to eq(8)
       expect(experiment.reminder_templates.pluck(:message)).to match_array(%w[notifications.set03.basic
-                                                                                     notifications.set03.gratitude
-                                                                                     notifications.set03.free
-                                                                                     notifications.set03.alarm
-                                                                                     notifications.set03.emotional_relatives
-                                                                                     notifications.set03.emotional_guilt
-                                                                                     notifications.set03.professional_request])
+        notifications.set03.gratitude
+        notifications.set03.free
+        notifications.set03.alarm
+        notifications.set03.emotional_relatives
+        notifications.set03.emotional_guilt
+        notifications.set03.professional_request])
       expect(experiment.reminder_templates.pluck(:remind_on_in_days)).to be_all 0
     end
   end
