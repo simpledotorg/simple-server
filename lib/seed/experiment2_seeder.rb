@@ -18,7 +18,6 @@ module Seed
         ).tap do |experiment|
           _control_group = experiment.treatment_groups.create!(description: "control")
 
-          # One cascade group per reminder.
           REMINDERS.each do |reminder|
             group = experiment.treatment_groups.create!(description: "#{reminder}_cascade")
             group.reminder_templates.create!(message: "notifications.set01.#{reminder}", remind_on_in_days: -1)
@@ -39,7 +38,6 @@ module Seed
         ).tap do |experiment|
           _control_group = experiment.treatment_groups.create!(description: "control")
 
-          # One single notification group per reminder.
           REMINDERS.each do |reminder|
             group = experiment.treatment_groups.create!(description: "#{reminder}_single_notification")
             group.reminder_templates.create!(message: "notifications.set03.#{reminder}", remind_on_in_days: 0)
