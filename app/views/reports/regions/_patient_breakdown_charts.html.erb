@@ -1,17 +1,25 @@
 <div class="d-lg-flex flex-lg-wrap">
   <div class="d-lg-flex w-lg-50 pr-lg-2">
     <div id="patient-breakdown" data-period="<%= @period.to_s %>" class="mt-8px mx-0px mb-16px p-20px bg-white br-4px bs-small w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
-      <div class="d-flex flex-1 mb-8px">
-        <h3 class="mb-0px mr-8px">
-          Hypertension patients
-        </h3>
-      </div>
-      <p class="mb-24px c-grey-dark mr-lg-12px">
-        All hypertensive individuals and patients in <%= @region.name %>
-      </p>
       <% if current_admin.feature_enabled?(:estimated_population) && @region.supports_htn_population_coverage %>
+        <div class="d-flex flex-1 mb-8px">
+          <h3 class="mb-0px mr-8px">
+            Hypertension coverage
+          </h3>
+        </div>
+        <p class="mb-24px c-grey-dark mr-lg-12px">
+          All hypertensive individuals and patients in <%= @region.name %>
+        </p>
         <%= render "reports/regions/hypertension_patient_coverage" %>
       <% else %>
+        <div class="d-flex flex-1 mb-8px">
+          <h3 class="mb-0px mr-8px">
+            Hypertension patients 
+          </h3>
+        </div>
+        <p class="mb-24px c-grey-dark mr-lg-12px">
+          All hypertensive patients in <%= @region.name %>
+        </p>
         <div class="d-flex ai-center jc-between">
           <p class="mb-8px">
             Total registered patients
