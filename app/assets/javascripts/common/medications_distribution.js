@@ -1,4 +1,4 @@
-MonthlyMedicationsDistribution = function () {
+MedicationsDistribution = function () {
   const reports = new Reports();
 
   this.listen = () => {
@@ -109,7 +109,7 @@ MonthlyMedicationsDistribution = function () {
       }
     }
 
-    const medicationsGraphCanvas = document.getElementById("monthlyMedicationsDistribution");
+    const medicationsGraphCanvas = document.getElementById("MedicationsDistribution");
     if (medicationsGraphCanvas) {
       new Chart(medicationsGraphCanvas.getContext("2d"), medicationsGraphConfig);
     }
