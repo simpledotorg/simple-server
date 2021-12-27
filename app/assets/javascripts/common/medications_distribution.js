@@ -1,4 +1,4 @@
-MedicationsDistribution = function () {
+MedicationsDispensationGraph = function () {
   const reports = new Reports();
 
   this.listen = () => {
@@ -6,45 +6,35 @@ MedicationsDistribution = function () {
   }
 
   this.getMedicationsGraphData = () => {
-    const jsonData = {};
+    return JSON.parse(reports.getChartDataNode().textContent)["medications_dispensation"];
+  }
 
-    return jsonData;
+  this.getMedicationsGraphPeriods = () => {
+    return JSON.parse(reports.getChartDataNode().textContent)["medications_dispensation_months"];
   }
 
   this.initializeMedicationsGraph = () => {
-    // const data = this.getMedicationsGraphData();
+    const graphData = this.getMedicationsGraphData();
     const medicationsGraphConfig = reports.createBaseGraphConfig();
+    console.log(graphData)
+
+    let colors = ["#BD3838", "#E77D27", "#729C26", "#007AA6"]
+    let datasets = Object.keys(graphData).map(function(bucket, index){
+      return {
+        label: bucket,
+        data: Object.values(graphData[bucket]["percentage"]),
+        borderColor: colors[index],
+        backgroundColor: colors[index]
+      }
+    })
 
     medicationsGraphConfig.plugins = [ChartDataLabels];
     medicationsGraphConfig.type = 'bar';
+
+    console.log(this.getMedicationsGraphPeriods())
     medicationsGraphConfig.data = {
-      labels: ["January", "February", "March"],
-      datasets: [
-        {
-          label: 'Dataset 1',
-          data: [10, 25, 30],
-          borderColor: "#BD3838",
-          backgroundColor: "#BD3838"
-        },
-        {
-          label: 'Dataset 2',
-          data: [23, 33, 44],
-          borderColor: "#E77D27",
-          backgroundColor: "#E77D27"
-        },
-        {
-          label: 'Dataset 3',
-          data: [33, 24, 35],
-          borderColor: "#729C26",
-          backgroundColor: "#729C26"
-        },
-        {
-          label: 'Dataset 4',
-          data: [44, 46, 56],
-          borderColor: "#007AA6",
-          backgroundColor: "#007AA6"
-        }
-      ]
+      labels: this.getMedicationsGraphPeriods(),
+      datasets: datasets
     };
 
     medicationsGraphConfig.options.scales = {

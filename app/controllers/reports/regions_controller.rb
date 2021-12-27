@@ -73,6 +73,9 @@ class Reports::RegionsController < AdminController
     chart_range = (@period.advance(months: months)..@period)
     @period_range = Range.new(@period.advance(months: -5), @period)
 
+    medications_dispensation_months = -2
+    @medications_dispensation_range = (@period.advance(months: medications_dispensation_months)..@period)
+
     regions = if @region.facility_region?
       [@region]
     else
@@ -92,7 +95,9 @@ class Reports::RegionsController < AdminController
 
     @chart_data = {
       patient_breakdown: PatientBreakdownService.call(region: @region, period: @period),
-      ltfu_trend: ltfu_chart_data(chart_repo, chart_range)
+      ltfu_trend: ltfu_chart_data(chart_repo, chart_range),
+      medications_dispensation: MedicationsDispensationQuery.new.distribution_by_days_v2,
+      medications_dispensation_months: @medications_dispensation_range.map(&:to_s)
     }
 
     if @region.facility_region?
