@@ -7,17 +7,29 @@ class FacilityGroupRegionSync < SimpleDelegator
   def after_create
     return if region&.persisted?
 
-    create_region!(
+    region = build_region(
       name: name,
       reparent_to: state_region,
       region_type: Region.region_types[:district]
     )
+    region.build_estimated_population(population: district_estimated_population) if district_estimated_population.present?
+    region.save!
+    state_region.recalculate_state_population! if district_estimated_population.present?
   end
 
   def after_update
     region.reparent_to = state_region
     region.name = name
+    if district_estimated_population
+      if district_estimated_population.blank?
+        region.estimated_population.mark_for_destruction
+      else
+        population = region.estimated_population || region.build_estimated_population
+        population.population = district_estimated_population
+      end
+    end
     region.save!
+    state_region.recalculate_state_population!
   end
 
   def sync_block_regions

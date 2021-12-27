@@ -20,7 +20,7 @@ RSpec.describe Api::V3::ProtocolsController, type: :controller do
 
       it "avoids resyncing when X_SYNC_REGION_ID doesn't match process token's sync_region_id" do
         process_token = make_process_token(sync_region_id: "a-sync-region-uuid",
-                                           other_facilities_processed_since: Time.current)
+          other_facilities_processed_since: Time.current)
         protocol_records = Timecop.travel(15.minutes.ago) { create_list(:protocol, 5) }
 
         get :sync_to_user, params: {process_token: process_token}

@@ -8,9 +8,9 @@ class ApprovalNotifierMailer < ApplicationMailer
         full_name: @user.full_name,
         org_name: @user.facility_group.organization.name)
       mail(subject: subject,
-           to: supervisor_emails,
-           cc: organization_owner_emails,
-           bcc: owner_emails)
+        to: supervisor_emails,
+        cc: organization_owner_emails,
+        bcc: owner_emails)
     else
       Rails.logger.info "Non-production environment: skipped sending registration_approval_email"
     end
@@ -20,9 +20,9 @@ class ApprovalNotifierMailer < ApplicationMailer
     @user = User.find(user_id)
     subject = I18n.t("reset_password_approval_email.subject", full_name: @user.full_name)
     mail(subject: subject,
-         to: supervisor_emails,
-         cc: organization_owner_emails,
-         bcc: owner_emails)
+      to: supervisor_emails,
+      cc: organization_owner_emails,
+      bcc: owner_emails)
   end
 
   private

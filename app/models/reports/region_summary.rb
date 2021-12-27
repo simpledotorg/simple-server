@@ -18,6 +18,8 @@ module Reports
       cumulative_registrations
       lost_to_follow_up
       monthly_registrations
+      monthly_overdue_calls
+      monthly_follow_ups
     ].sort.freeze
 
     UNDER_CARE_WITH_LTFU = %i[

@@ -151,17 +151,17 @@
   </div>
 </nav>
 
-<redoc scroll-y-offset="body > nav" spec-url="<%= url_for(rswag_api: nil) + 'v3/swagger.json' %>"></redoc>
+<redoc scroll-y-offset="body > nav"></redoc>
 <script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"></script>
 <script>
     var apis = [
         {
-            name: 'V4',
-            url: "<%= url_for(rswag_api: nil) + 'v4/swagger.json' %>"
+            name: "V4",
+            url: "v4/swagger.json"
         },
         {
-            name: 'V3',
-            url: "<%= url_for(rswag_api: nil) + 'v3/swagger.json' %>"
+            name: "V3",
+            url: "v3/swagger.json"
         }
     ];
     // initially render first API

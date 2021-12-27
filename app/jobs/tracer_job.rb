@@ -8,7 +8,7 @@ class TracerJob
       raise Admin::ErrorTracesController::Boom, "Error trace triggered via sidekiq!"
     end
     Rails.logger.info class: self.class.name,
-                      msg: "tracer job completed successfully, was submitted at #{submitted_at}",
-                      submitted_at: submitted_at
+      msg: "tracer job completed successfully, was submitted at #{submitted_at}",
+      submitted_at: submitted_at
   end
 end

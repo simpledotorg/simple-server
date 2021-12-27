@@ -53,17 +53,17 @@ class Communication < ApplicationRecord
     now = DateTime.current
     transaction do
       sms_delivery_details = TwilioSmsDeliveryDetail.create!(session_id: twilio_sid,
-                                                             result: twilio_msg_status,
-                                                             callee_phone_number: patient.latest_mobile_number)
+        result: twilio_msg_status,
+        callee_phone_number: patient.latest_mobile_number)
       communication = create!(communication_type: communication_type,
-                              detailable: sms_delivery_details,
-                              appointment: appointment,
-                              notification: notification,
-                              device_created_at: now,
-                              device_updated_at: now)
+        detailable: sms_delivery_details,
+        appointment: appointment,
+        notification: notification,
+        device_created_at: now,
+        device_updated_at: now)
       logger.info(class: self.class.name, msg: __method__.to_s, communication_id: communication.id,
-                  communication_type: communication_type, appointment_id: appointment&.id, result: twilio_msg_status,
-                  notification_id: notification&.id)
+        communication_type: communication_type, appointment_id: appointment&.id, result: twilio_msg_status,
+        notification_id: notification&.id)
     end
   end
 
@@ -73,11 +73,11 @@ class Communication < ApplicationRecord
     transaction do
       detailable = ImoDeliveryDetail.create!(callee_phone_number: patient.latest_mobile_number, result: result, post_id: post_id)
       communication = create!(communication_type: :imo,
-                              detailable: detailable,
-                              appointment: notification.subject,
-                              notification: notification,
-                              device_created_at: now,
-                              device_updated_at: now)
+        detailable: detailable,
+        appointment: notification.subject,
+        notification: notification,
+        device_created_at: now,
+        device_updated_at: now)
 
       if detailable.unsubscribed_or_missing?
         patient = notification.patient
@@ -85,7 +85,7 @@ class Communication < ApplicationRecord
       end
 
       logger.info(class: self.class.name, msg: __method__.to_s, communication_id: communication.id,
-                  communication_type: "imo", appointment_id: notification.subject&.id, notification_id: notification&.id)
+        communication_type: "imo", appointment_id: notification.subject&.id, notification_id: notification&.id)
     end
   end
 

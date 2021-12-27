@@ -173,9 +173,9 @@ class Appointment < ApplicationRecord
 
   def create_call_result(user, result_type, remove_reason = nil)
     call_results.create(user: user,
-                        result_type: result_type,
-                        remove_reason: remove_reason,
-                        device_created_at: Time.current,
-                        device_updated_at: Time.current)
+      result_type: result_type,
+      remove_reason: remove_reason,
+      device_created_at: Time.current,
+      device_updated_at: Time.current)
   end
 end

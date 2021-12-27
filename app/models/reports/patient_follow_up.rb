@@ -9,6 +9,8 @@ module Reports
       male: "male",
       transgender: "transgender"
     }
+    scope :with_diabetes, -> { where(diabetes: MedicalHistory::MEDICAL_HISTORY_ANSWERS[:yes]) }
+    scope :with_hypertension, -> { where(hypertension: MedicalHistory::MEDICAL_HISTORY_ANSWERS[:yes]) }
 
     def self.materialized?
       true

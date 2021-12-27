@@ -37,6 +37,11 @@
         <%= form.select(:protocol_id, protocols.order(:name).map { |protocol| [protocol.name, protocol.id] }) %>
       <% end %>
 
+      <% if current_admin.feature_enabled?(:estimated_population) %>
+        <%= form.number_field :district_estimated_population, value: @facility_group&.estimated_population&.population, label: "Estimated hypertensive population", autocomplete: "off", 
+          help: "Leave blank if unknown" %>
+      <% end %>
+
       <div class="mt-3">
         <label><%= I18n.t("region_type.block").pluralize.capitalize %></label>
         <div class="input-group mb-2">

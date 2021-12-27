@@ -4,7 +4,7 @@ FactoryBot.define do
     association :user
     association :appointment
     remove_reason { nil }
-    result_type { CallResult.result_types.keys.sample }
+    result_type { CallResult.result_types.except(:removed_from_overdue_list).keys.sample }
     device_created_at { Time.current }
     device_updated_at { Time.current }
     deleted_at { nil }
