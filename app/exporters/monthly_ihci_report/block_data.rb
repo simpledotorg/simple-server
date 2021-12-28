@@ -63,11 +63,11 @@ module MonthlyIHCIReport
         "% BP uncontrolled" => repo.uncontrolled_rates[block.slug][report_month],
         "% Missed Visits" => repo.missed_visits_rate[block.slug][report_month],
         "% Visits, no BP taken" => repo.visited_without_bp_taken_rates[block.slug][report_month],
-        **last_6_months_data(repo.cumulative_registrations, block), # "Total registered patients"
-        **last_6_months_data(repo.under_care, block), # "Patients under care"
-        **last_6_months_data(repo.monthly_registrations, block), # "New registered patients"
-        **last_6_months_data(repo.hypertension_follow_ups, block), # "Patient follow-ups"
-        **last_6_months_data(repo.controlled_rates, block) # "BP controlled rate"
+        "Total registered patients" => last_6_months_data(repo.cumulative_registrations, block),
+        "Patients under care" => last_6_months_data(repo.under_care, block),
+        "New registered patients" => last_6_months_data(repo.monthly_registrations, block),
+        "Patient follow-ups" => last_6_months_data(repo.hypertension_follow_ups, block),
+        "BP controlled rate" => last_6_months_data(repo.controlled_rates, block)
       }
     end
 
