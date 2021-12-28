@@ -14,6 +14,7 @@ RSpec.describe Facility, type: :model do
     it { is_expected.to have_many(:registered_patients).class_name("Patient").with_foreign_key("registration_facility_id") }
     it { is_expected.to have_many(:assigned_patients).class_name("Patient").with_foreign_key("assigned_facility_id") }
     it { is_expected.to have_many(:assigned_hypertension_patients).class_name("Patient").with_foreign_key("assigned_facility_id") }
+    it { is_expected.to have_many(:facility_states).class_name("Reports::FacilityState") }
 
     context "slugs" do
       it "generates slug on creation and avoids conflicts via appending a UUID" do
