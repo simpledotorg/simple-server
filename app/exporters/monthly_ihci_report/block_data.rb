@@ -63,17 +63,17 @@ module MonthlyIHCIReport
         "% BP uncontrolled" => repo.uncontrolled_rates[block.slug][report_month],
         "% Missed Visits" => repo.missed_visits_rate[block.slug][report_month],
         "% Visits, no BP taken" => repo.visited_without_bp_taken_rates[block.slug][report_month],
-        "Total registered patients" => last_6_months_data(repo.cumulative_registrations, block),
-        "Patients under care" => last_6_months_data(repo.under_care, block),
-        "New registered patients" => last_6_months_data(repo.monthly_registrations, block),
-        "Patient follow-ups" => last_6_months_data(repo.hypertension_follow_ups, block),
-        "BP controlled rate" => last_6_months_data(repo.controlled_rates, block)
+        **last_6_months_data(repo.cumulative_registrations, block, :cumulative_registrations),
+        **last_6_months_data(repo.under_care, block, :under_care),
+        **last_6_months_data(repo.monthly_registrations, block, :monthly_registrations),
+        **last_6_months_data(repo.hypertension_follow_ups, block, :hypertension_follow_ups),
+        **last_6_months_data(repo.controlled_rates, block, :controlled_rates)
       }
     end
 
-    def last_6_months_data(data, block)
+    def last_6_months_data(data, block, indicator)
       last_6_months.each_with_object({}) do |month, hsh|
-        hsh[month.to_s] = data[block.slug][month]
+        hsh["#{indicator} - #{month.to_s}"] = data[block.slug][month]
       end
     end
   end
