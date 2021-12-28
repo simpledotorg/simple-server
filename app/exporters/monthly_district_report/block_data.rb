@@ -1,4 +1,4 @@
-module MonthlyIHCIReport
+module MonthlyDistrictReport
   class BlockData
     attr_reader :repo, :district, :report_month, :last_6_months
 

@@ -33,7 +33,7 @@ def mock_repo(district, month)
   })
 end
 
-describe MonthlyIHCIReport::FacilityData do
+describe MonthlyDistrictReport::FacilityData do
   around(:example) do |example|
     previous_locale = I18n.locale
     I18n.locale = :en_IN

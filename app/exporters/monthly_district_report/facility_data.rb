@@ -1,4 +1,4 @@
-module MonthlyIHCIReport
+module MonthlyDistrictReport
   class FacilityData
     attr_reader :repo, :district, :month
 

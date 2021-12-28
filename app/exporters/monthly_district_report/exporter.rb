@@ -1,4 +1,4 @@
-module MonthlyIHCIReport
+module MonthlyDistrictReport
   class Exporter
     attr_reader :repo, :district, :month
 
