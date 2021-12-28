@@ -96,7 +96,7 @@ class Reports::RegionsController < AdminController
     @chart_data = {
       patient_breakdown: PatientBreakdownService.call(region: @region, period: @period),
       ltfu_trend: ltfu_chart_data(chart_repo, chart_range),
-      medications_dispensation: MedicationsDispensationQuery.new.distribution_by_days_v2,
+      medications_dispensation: MedicationsDispensationQuery.new(region: @region).distribution_by_days,
       medications_dispensation_months: @medications_dispensation_range.map(&:to_s)
     }
 
