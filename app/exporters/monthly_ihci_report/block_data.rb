@@ -73,7 +73,7 @@ module MonthlyIHCIReport
 
     def last_6_months_data(data, block, indicator)
       last_6_months.each_with_object({}) do |month, hsh|
-        hsh["#{indicator} - #{month.to_s}"] = data[block.slug][month]
+        hsh["#{indicator} - #{month}"] = data[block.slug][month]
       end
     end
   end

@@ -16,7 +16,6 @@ def setup_district
 end
 
 def mock_repo(repo, district, month)
-
   allow(repo).to receive(:cumulative_registrations).and_return({
     district[:block_1].slug => periods(month).zip([2, 10, 11, 24, 22, 42]).to_h,
     district[:block_2].slug => periods(month).zip([5, 14, 13, 21, 15, 23]).to_h
@@ -62,7 +61,6 @@ def mock_repo(repo, district, month)
     district[:block_2].slug => periods(month).zip([12, 98, 11, 77, 12, 11]).to_h
   })
 
-
   allow(repo).to receive(:hypertension_follow_ups).and_return({
     district[:block_1].slug => periods(month).zip([5, 12, 21, 21, 41, 11]).to_h,
     district[:block_2].slug => periods(month).zip([3, 11, 14, 72, 12, 18]).to_h
@@ -82,7 +80,7 @@ describe MonthlyIHCIReport::BlockData do
       district = setup_district
       month = Period.month("2021-09-01".to_date)
       repo_double = instance_double(Reports::Repository)
-      mock_repo(repo_double ,district, month)
+      mock_repo(repo_double, district, month)
       allow(Reports::Repository).to receive(:new).and_return(repo_double)
       rows = described_class.new(district[:region], month).content_rows
 
@@ -97,11 +95,11 @@ describe MonthlyIHCIReport::BlockData do
       expect(rows[0]["% BP uncontrolled"]).to eq 20
       expect(rows[0]["% Missed Visits"]).to eq 30
       expect(rows[0]["% Visits, no BP taken"]).to eq 10
-      expect(periods(month).map{|period| rows[0]["cumulative_registrations - #{period.to_s}"]}).to eq [2, 10, 11, 24, 22, 42]
-      expect(periods(month).map{|period| rows[0]["under_care - #{period.to_s}"]}).to eq [2, 11, 15, 22, 25, 12]
-      expect(periods(month).map{|period| rows[0]["monthly_registrations - #{period.to_s}"]}).to eq [23, 23, 42, 53, 1, 51]
-      expect(periods(month).map{|period| rows[0]["hypertension_follow_ups - #{period.to_s}"]}).to eq [5, 12, 21, 21, 41, 11]
-      expect(periods(month).map{|period| rows[0]["controlled_rates - #{period.to_s}"]}).to eq [2, 10, 21, 24, 22, 40]
+      expect(periods(month).map { |period| rows[0]["cumulative_registrations - #{period}"] }).to eq [2, 10, 11, 24, 22, 42]
+      expect(periods(month).map { |period| rows[0]["under_care - #{period}"] }).to eq [2, 11, 15, 22, 25, 12]
+      expect(periods(month).map { |period| rows[0]["monthly_registrations - #{period}"] }).to eq [23, 23, 42, 53, 1, 51]
+      expect(periods(month).map { |period| rows[0]["hypertension_follow_ups - #{period}"] }).to eq [5, 12, 21, 21, 41, 11]
+      expect(periods(month).map { |period| rows[0]["controlled_rates - #{period}"] }).to eq [2, 10, 21, 24, 22, 40]
 
       expect(rows[1]["Blocks"]).to eq "Test Export Block 2"
       expect(rows[1]["Total registrations"]).to eq 23
@@ -112,11 +110,11 @@ describe MonthlyIHCIReport::BlockData do
       expect(rows[1]["% BP uncontrolled"]).to eq 15
       expect(rows[1]["% Missed Visits"]).to eq 40
       expect(rows[1]["% Visits, no BP taken"]).to eq 10
-      expect(periods(month).map{|period| rows[1]["cumulative_registrations - #{period.to_s}"]}).to eq [5, 14, 13, 21, 15, 23]
-      expect(periods(month).map{|period| rows[1]["under_care - #{period.to_s}"]}).to eq [4, 12, 11, 23, 14, 24]
-      expect(periods(month).map{|period| rows[1]["controlled_rates - #{period.to_s}"]}).to eq [5, 14, 13, 21, 15, 35]
-      expect(periods(month).map{|period| rows[1]["monthly_registrations - #{period.to_s}"]}).to eq [12, 98, 11, 77, 12, 11]
-      expect(periods(month).map{|period| rows[1]["hypertension_follow_ups - #{period.to_s}"]}).to eq [3, 11, 14, 72, 12, 18]
+      expect(periods(month).map { |period| rows[1]["cumulative_registrations - #{period}"] }).to eq [5, 14, 13, 21, 15, 23]
+      expect(periods(month).map { |period| rows[1]["under_care - #{period}"] }).to eq [4, 12, 11, 23, 14, 24]
+      expect(periods(month).map { |period| rows[1]["controlled_rates - #{period}"] }).to eq [5, 14, 13, 21, 15, 35]
+      expect(periods(month).map { |period| rows[1]["monthly_registrations - #{period}"] }).to eq [12, 98, 11, 77, 12, 11]
+      expect(periods(month).map { |period| rows[1]["hypertension_follow_ups - #{period}"] }).to eq [3, 11, 14, 72, 12, 18]
     end
 
     it "orders the rows by block names" do
