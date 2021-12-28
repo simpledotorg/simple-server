@@ -1,4 +1,4 @@
-**Story card:** [chXXXX](URL)
+**Story card:** [sc-XXXX](URL)
 
 ## Because
 
