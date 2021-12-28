@@ -452,4 +452,14 @@ RSpec.describe Facility, type: :model do
       expect(facility.locale).to eq "en"
     end
   end
+
+  describe "#localized_facility_size" do
+    it "picks up the correct translation of the facility size" do
+      previous_locale = I18n.locale
+      I18n.locale = :en_IN
+      expect(create(:facility, facility_size: "community").localized_facility_size).to eq "HWC/SC"
+      expect(create(:facility, facility_size: "large").localized_facility_size).to eq "SDH/DH"
+      I18n.locale = previous_locale
+    end
+  end
 end

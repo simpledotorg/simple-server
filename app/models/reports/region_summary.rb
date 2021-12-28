@@ -17,6 +17,7 @@ module Reports
       cumulative_assigned_patients
       cumulative_registrations
       lost_to_follow_up
+      under_care
       monthly_registrations
       monthly_overdue_calls
       monthly_follow_ups
