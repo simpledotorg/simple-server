@@ -126,9 +126,9 @@ class MyFacilities::DrugStocksController < AdminController
     # Filtered list of facilities that match user selected filters,
     # and have stock tracking enabled and at least one registered or assigned patient
     active_facility_ids = filter_facilities
-                          .joins("INNER JOIN reporting_facility_states on reporting_facility_states.facility_id = facilities.id")
-                          .where("cumulative_registrations > 0 OR cumulative_assigned_patients > 0")
-                          .pluck("facilities.id")
+      .joins("INNER JOIN reporting_facility_states on reporting_facility_states.facility_id = facilities.id")
+      .where("cumulative_registrations > 0 OR cumulative_assigned_patients > 0")
+      .pluck("facilities.id")
 
     filter_facilities
       .eager_load(facility_group: :protocol_drugs)

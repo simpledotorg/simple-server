@@ -71,7 +71,7 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
         sign_in(report_viewer.email_authentication)
         get :drug_stocks, params: {}
 
-        expect(assigns(:facilities)).to contain_exactly(*[facilities_with_stock_tracked.first, facilities_with_stock_tracked.second])
+        expect(assigns(:facilities)).to contain_exactly(facilities_with_stock_tracked.first, facilities_with_stock_tracked.second)
       end
     end
 
