@@ -10,20 +10,14 @@ module MonthlyDistrictReport
     end
 
     def content_rows
-      district
-        .block_regions
-        .order(:name)
-        .map do |block|
-        row_data(block)
-      end
+      row_data
     end
 
     def header_rows
       [[ # row 1
         "District",
         "Facilities implementing IHCI",
-        "Total DHs",
-        "Total SDHs",
+        "Total DHs/SDHs",
         "Total CHCs",
         "Total PHCs",
         "Total HWCs / SCs",
@@ -38,17 +32,17 @@ module MonthlyDistrictReport
         "New registrations (HWC/SC)", *Array.new(5, nil),
         "Patient follow-ups", *Array.new(5, nil),
         "BP controlled rate", *Array.new(5, nil),
+        "BP controlled count", *Array.new(5, nil),
         "Cumulative registrations at HWCs", *Array.new(2, nil),
         "Cumulative patients under care at HWCs", *Array.new(2, nil),
         "% of assigned patients at HWCs / SCs (as against district)", *Array.new(2, nil),
         "% of patients followed up at HWCs / SCs", *Array.new(2, nil),
-        "Cumulative assigned patients to HWCs" * Array.new(2, nil)
+        "Cumulative assigned patients to HWCs", * Array.new(2, nil)
       ],
         [ # row 2
           nil, # "District",
           nil, # "Facilities implementing IHCI",
-          nil, # "Total DHs",
-          nil, # "Total SDHs",
+          nil, # "Total DHs/SDHs",
           nil, # "Total CHCs",
           nil, # "Total PHCs",
           nil, # "Total HWCs / SCs",
@@ -66,6 +60,7 @@ module MonthlyDistrictReport
           *last_6_months.map(&:to_s), # "New registrations (HWC/SC)",
           *last_6_months.map(&:to_s), # "Patient follow-ups",
           *last_6_months.map(&:to_s), # "BP controlled rate"
+          *last_6_months.map(&:to_s), # "BP controlled count"
 
           *last_6_months.drop(3).map(&:to_s), # "Cumulative registrations at HWCs"
           *last_6_months.drop(3).map(&:to_s), # "Cumulative patients under care at HWCs"
@@ -77,7 +72,7 @@ module MonthlyDistrictReport
 
     private
 
-    def row_data(district)
+    def row_data
       facility_counts_by_size = district.facilities.group(:facility_size).count
       {
         "District" => district.name,
@@ -93,26 +88,26 @@ module MonthlyDistrictReport
         "% BP uncontrolled" => repo.uncontrolled_rates[district.slug][report_month],
         "% Missed Visits" => repo.missed_visits_rate[district.slug][report_month],
         "% Visits, no BP taken" => repo.visited_without_bp_taken_rates[district.slug][report_month],
-        **last_6_months_data(repo.cumulative_registrations, district, :cumulative_registrations), # "Total registered patients",
-        **last_6_months_data(repo.under_care, district, :under_care), # "Patients under care",
-        # TODO: **last_6_months_data(repo.monthly_registrations, district, :monthly_registrations), # "New registrations (DH/SDH/CHC)",
-        # TODO: **last_6_months_data(repo.monthly_registrations, district, :monthly_registrations), # "New registrations (PHC)",
-        # TODO: **last_6_months_data(repo.monthly_registrations, district, :monthly_registrations), # "New registrations (HWC/SC)",
-        **last_6_months_data(repo.hypertension_follow_ups, district, :hypertension_follow_ups), # "Patient follow-ups",
-        **last_6_months_data(repo.controlled_rates, district, :controlled_rates) # "BP controlled rate"
+        **last_6_months_data(repo.cumulative_registrations, :cumulative_registrations), # "Total registered patients",
+        **last_6_months_data(repo.under_care, :under_care), # "Patients under care",
+        **last_6_months_data({}, :something_1), # TODO: **last_6_months_data(repo.monthly_registrations, district, :monthly_registrations), # "New registrations (DH/SDH/CHC)",
+        **last_6_months_data({}, :something_2), # TODO: **last_6_months_data(repo.monthly_registrations, district, :monthly_registrations), # "New registrations (PHC)",
+        **last_6_months_data({}, :something_3), # TODO: **last_6_months_data(repo.monthly_registrations, district, :monthly_registrations), # "New registrations (HWC/SC)",
+        **last_6_months_data(repo.hypertension_follow_ups, :hypertension_follow_ups), # "Patient follow-ups",
+        **last_6_months_data(repo.controlled_rates, :controlled_rates), # "BP controlled rate"
+        **last_6_months_data(repo.controlled, :controlled), # "BP controlled count"
 
-        # TODO: *last_6_months.drop(3).map(&:to_s), # "Cumulative registrations at HWCs"
-        # TODO: *last_6_months.drop(3).map(&:to_s), # "Cumulative patients under care at HWCs"
-        # TODO: *last_6_months.drop(3).map(&:to_s), # "% of assigned patients at HWCs / SCs (as against district)"
-        # TODO: *last_6_months.drop(3).map(&:to_s), # "% of patients followed up at HWCs / SCs"
-        # TODO: *last_6_months.drop(3).map(&:to_s), # "Cumulative assigned patients to HWCs"
-
+        **last_6_months_data({}, :something_4).drop(3).to_h, # TODO: *last_6_months.drop(3).map(&:to_s), # "Cumulative registrations at HWCs"
+        **last_6_months_data({}, :something_5).drop(3).to_h, # TODO: *last_6_months.drop(3).map(&:to_s), # "Cumulative patients under care at HWCs"
+        **last_6_months_data({}, :something_6).drop(3).to_h, # TODO: *last_6_months.drop(3).map(&:to_s), # "% of assigned patients at HWCs / SCs (as against district)"
+        **last_6_months_data({}, :something_7).drop(3).to_h, # TODO: *last_6_months.drop(3).map(&:to_s), # "% of patients followed up at HWCs / SCs"
+        **last_6_months_data({}, :something_8).drop(3).to_h # TODO: *last_6_months.drop(3).map(&:to_s), # "Cumulative assigned patients to HWCs"
       }
     end
 
-    def last_6_months_data(data, district, indicator)
+    def last_6_months_data(data, indicator)
       last_6_months.each_with_object({}) do |month, hsh|
-        hsh["#{indicator} - #{month}"] = data[district.slug][month]
+        hsh["#{indicator} - #{month}"] = data.dig(district.slug, month)
       end
     end
   end

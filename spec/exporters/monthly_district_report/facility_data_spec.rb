@@ -11,23 +11,23 @@ def setup_district
   }
 end
 
-def mock_repo(district, month)
-  allow_any_instance_of(Reports::Repository).to receive(:cumulative_registrations).and_return({
+def mock_repo(repo, district, month)
+  allow(repo).to receive(:cumulative_registrations).and_return({
     district[:facility_1].slug => {month => 42},
     district[:facility_2].slug => {month => 23}
   })
 
-  allow_any_instance_of(Reports::Repository).to receive(:under_care).and_return({
+  allow(repo).to receive(:under_care).and_return({
     district[:facility_1].slug => {month => 12},
     district[:facility_2].slug => {month => 24}
   })
 
-  allow_any_instance_of(Reports::Repository).to receive(:monthly_registrations).and_return({
+  allow(repo).to receive(:monthly_registrations).and_return({
     district[:facility_1].slug => {month => 1},
     district[:facility_2].slug => {month => 2}
   })
 
-  allow_any_instance_of(Reports::Repository).to receive(:controlled_rates).and_return({
+  allow(repo).to receive(:controlled_rates).and_return({
     district[:facility_1].slug => {month => 30},
     district[:facility_2].slug => {month => 40}
   })
@@ -41,12 +41,23 @@ describe MonthlyDistrictReport::FacilityData do
     I18n.locale = previous_locale
   end
 
+  context "#header_rows" do
+    it "returns a list of header rows with the correct number of columns" do
+      district = setup_district
+      month = Period.month("2021-09-01".to_date)
+      header_rows = described_class.new(district[:region], month).header_rows
+      expect(header_rows[0].count).to eq 8
+    end
+  end
+
   context "#rows" do
     it "returns a hash with the required keys and values" do
       district = setup_district
       month = Period.month("2021-09-01".to_date)
 
-      mock_repo(district, month)
+      repo_double = instance_double(Reports::Repository)
+      mock_repo(repo_double, district, month)
+      allow(Reports::Repository).to receive(:new).and_return(repo_double)
 
       rows = described_class.new(district[:region], month).content_rows
 
