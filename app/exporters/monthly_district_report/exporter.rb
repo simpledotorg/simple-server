@@ -8,7 +8,7 @@ module MonthlyDistrictReport
       @repo = Reports::Repository.new(district.facility_regions, periods: period_month)
     end
 
-    def export_file
+    def export
       facility_data = FacilityData.new(district, month)
       facility_csv = to_csv(facility_data.header_rows, facility_data.content_rows)
 
@@ -19,8 +19,6 @@ module MonthlyDistrictReport
       district_csv = to_csv(district_data.header_rows, district_data.content_rows)
 
       zip(facility_csv, block_csv, district_csv)
-      # File.binwrite("monthly_district_report_#{district.name}_#{month}.zip", zip_file)
-      # TODO: move to controller send_data , filename: "monthly_district_report_#{district.name}_#{month}.zip"
     end
 
     def zip(facility_csv, block_csv, district_csv)
