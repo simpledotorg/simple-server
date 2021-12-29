@@ -9,15 +9,31 @@ module MonthlyDistrictReport
     end
 
     def export_file
-      # https://gist.github.com/aquajach/7fde54aa9bc1ac03740feb154e53eb7d
-      # TODO: collate all 3 sheets into a zip file or excel sheet
-      # facility_data = FacilityData.new(district, month)
-      # facility_csv = to_csv(facility_data.header_rows, facility_data.content_rows)
-      # File.write("facility.csv", facility_csv)
+      facility_data = FacilityData.new(district, month)
+      facility_csv = to_csv(facility_data.header_rows, facility_data.content_rows)
 
-      # block_data = BlockData.new(district, month)
-      # block_csv = to_csv(block_data.header_rows, block_data.content_rows)
-      # File.write("block.csv", block_csv)
+      block_data = BlockData.new(district, month)
+      block_csv = to_csv(block_data.header_rows, block_data.content_rows)
+
+      district_data = DistrictData.new(district, month)
+      district_csv = to_csv(district_data.header_rows, district_data.content_rows)
+
+      zip(facility_csv, block_csv, district_csv)
+      # File.binwrite("monthly_district_report_#{district.name}_#{month}.zip", zip_file)
+      # TODO: move to controller send_data , filename: "monthly_district_report_#{district.name}_#{month}.zip"
+    end
+
+    def zip(facility_csv, block_csv, district_csv)
+      compressed_filestream = Zip::OutputStream.write_buffer(::StringIO.new('')) do |zos|
+        zos.put_next_entry "facility_data.csv"
+        zos.print facility_csv
+        zos.put_next_entry "block_data.csv"
+        zos.print block_csv
+        zos.put_next_entry "district_data.csv"
+        zos.print district_csv
+      end
+      compressed_filestream.rewind
+      compressed_filestream.read
     end
 
     def to_csv(header_rows, content_rows)
