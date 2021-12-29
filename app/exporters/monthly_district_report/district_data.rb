@@ -10,7 +10,7 @@ module MonthlyDistrictReport
     end
 
     def content_rows
-      row_data
+      [row_data]
     end
 
     def header_rows
@@ -20,7 +20,7 @@ module MonthlyDistrictReport
         "Total DHs/SDHs",
         "Total CHCs",
         "Total PHCs",
-        "Total HWCs / SCs",
+        "Total HWCs/SCs",
         "Total registrations",
         "Total assigned patients",
         "Total patients under care",
@@ -45,7 +45,7 @@ module MonthlyDistrictReport
           nil, # "Total DHs/SDHs",
           nil, # "Total CHCs",
           nil, # "Total PHCs",
-          nil, # "Total HWCs / SCs",
+          nil, # "Total HWCs/SCs",
           nil, # "Total registrations",
           nil, # "Total assigned patients",
           nil, # "Total patients under care",
@@ -77,10 +77,10 @@ module MonthlyDistrictReport
       {
         "District" => district.name,
         "Facilities implementing IHCI" => district.facilities.count,
-        "Total DHs/SDHs" => facility_counts_by_size["large"],
-        "Total CHCs" => facility_counts_by_size["medium"],
-        "Total PHCs" => facility_counts_by_size["small"],
-        "Total HWCs/SCs" => facility_counts_by_size["community"],
+        "Total DHs/SDHs" => facility_counts_by_size.fetch("large", 0),
+        "Total CHCs" => facility_counts_by_size.fetch("medium", 0),
+        "Total PHCs" => facility_counts_by_size.fetch("small", 0),
+        "Total HWCs/SCs" => facility_counts_by_size.fetch("community", 0),
         "Total registrations" => repo.cumulative_registrations[district.slug][report_month],
         "Total assigned patients" => repo.cumulative_assigned_patients[district.slug][report_month],
         "Total patients under care" => repo.under_care[district.slug][report_month],
