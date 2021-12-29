@@ -24,16 +24,18 @@ module Reports
        patient_days: patient_days_calculation}
     rescue => e
       # drug is not in formula, or other configuration error
-      Sentry.capture_message("Patient Days Calculation Error",
-        extra: {
-          coefficients: @coefficients,
-          drug_category: @drug_category,
-          in_stock_by_rxnorm_code: in_stock_by_rxnorm_code,
-          patient_count: @patient_count,
-          protocol: @protocol,
-          exception: e
-        },
-        tags: {type: "reports"})
+      error_info = {
+        coefficients: @coefficients,
+        drug_category: @drug_category,
+        in_stock_by_rxnorm_code: in_stock_by_rxnorm_code,
+        patient_count: @patient_count,
+        protocol: @protocol,
+        exception: e
+      }
+
+      span = Datadog.tracer.active_span
+      error_info.each { |tag, value| span.set_tag(tag.to_s, value.to_s) }
+
       {patient_days: "error"}
     end
 
@@ -50,17 +52,19 @@ module Reports
       drug_consumption
     rescue => e
       # drug is not in formula, or other configuration error
-      Sentry.capture_message("Consumption Calculation Error",
-        extra: {
-          coefficients: @coefficients,
-          drug_category: @drug_category,
-          in_stock_by_rxnorm_code: in_stock_by_rxnorm_code,
-          previous_month_in_stock_by_rxnorm_code: previous_month_in_stock_by_rxnorm_code,
-          patient_count: @patient_count,
-          protocol: @protocol,
-          exception: e
-        },
-        tags: {type: "reports"})
+      error_info = {
+        coefficients: @coefficients,
+        drug_category: @drug_category,
+        in_stock_by_rxnorm_code: in_stock_by_rxnorm_code,
+        previous_month_in_stock_by_rxnorm_code: previous_month_in_stock_by_rxnorm_code,
+        patient_count: @patient_count,
+        protocol: @protocol,
+        exception: e
+      }
+
+      span = Datadog.tracer.active_span
+      error_info.each { |tag, value| span.set_tag(tag.to_s, value.to_s) }
+
       {consumption: "error"}
     end
 
@@ -100,16 +104,18 @@ module Reports
         consumed: opening_balance + (received || 0) - (redistributed || 0) - closing_balance
       }
     rescue => e
-      Sentry.capture_message("Consumption Calculation Error",
-        extra: {
-          protocol: @protocol,
-          opening_balance: opening_balance,
-          received: received,
-          redistributed: redistributed,
-          closing_balance: closing_balance,
-          exception: e
-        },
-        tags: {type: "reports"})
+      error_info = {
+        protocol: @protocol,
+        opening_balance: opening_balance,
+        received: received,
+        redistributed: redistributed,
+        closing_balance: closing_balance,
+        exception: e
+      }
+
+      span = Datadog.tracer.active_span
+      error_info.each { |tag, value| span.set_tag(tag.to_s, value.to_s) }
+
       {consumed: "error"}
     end
 
