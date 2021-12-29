@@ -24,7 +24,7 @@ module MonthlyDistrictReport
     end
 
     def zip(facility_csv, block_csv, district_csv)
-      compressed_filestream = Zip::OutputStream.write_buffer(::StringIO.new('')) do |zos|
+      compressed_filestream = Zip::OutputStream.write_buffer(::StringIO.new("")) do |zos|
         zos.put_next_entry "facility_data.csv"
         zos.print facility_csv
         zos.put_next_entry "block_data.csv"
