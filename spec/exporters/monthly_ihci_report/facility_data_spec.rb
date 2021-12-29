@@ -48,7 +48,7 @@ describe MonthlyIHCIReport::FacilityData do
 
       mock_repo(district, month)
 
-      rows = described_class.new(district[:region], month).rows
+      rows = described_class.new(district[:region], month).content_rows
 
       expect(rows[0].count).to eq 8
 
@@ -74,7 +74,7 @@ describe MonthlyIHCIReport::FacilityData do
     it "orders the rows by block, and then facility names" do
       district = setup_district
       month = Period.month("2021-09-01".to_date)
-      rows = described_class.new(district[:region], month).rows
+      rows = described_class.new(district[:region], month).content_rows
       expect(rows.map { |row| row["Name of facility"] }).to match_array ["Test Export Facility 1", "Test Export Facility 2"]
     end
   end
