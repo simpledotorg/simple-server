@@ -33,8 +33,9 @@ module Reports
         exception: e
       }
 
-      span = Datadog.tracer.active_span
-      error_info.each { |tag, value| span.set_tag(tag.to_s, value.to_s) }
+      Datadog.tracer.trace("patient_days", resource: "Reports::DrugStockCalculation#patient_days") do |span|
+        error_info.each { |tag, value| span.set_tag(tag.to_s, value.to_s) }
+      end
 
       {patient_days: "error"}
     end
@@ -62,8 +63,9 @@ module Reports
         exception: e
       }
 
-      span = Datadog.tracer.active_span
-      error_info.each { |tag, value| span.set_tag(tag.to_s, value.to_s) }
+      Datadog.tracer.trace("patient_days", resource: "Reports::DrugStockCalculation#patient_days") do |span|
+        error_info.each { |tag, value| span.set_tag(tag.to_s, value.to_s) }
+      end
 
       {consumption: "error"}
     end
@@ -113,8 +115,9 @@ module Reports
         exception: e
       }
 
-      span = Datadog.tracer.active_span
-      error_info.each { |tag, value| span.set_tag(tag.to_s, value.to_s) }
+      Datadog.tracer.trace("patient_days", resource: "Reports::DrugStockCalculation#patient_days") do |span|
+        error_info.each { |tag, value| span.set_tag(tag.to_s, value.to_s) }
+      end
 
       {consumed: "error"}
     end
