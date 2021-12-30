@@ -52,6 +52,7 @@ module Reports
       cumulative_registrations
       earliest_patient_recorded_at
       earliest_patient_recorded_at_period
+      under_care
       ltfu
       missed_visits
       missed_visits_with_ltfu
