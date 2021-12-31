@@ -2814,8 +2814,10 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
     monthly_cohort_outcomes.visited_no_bp AS monthly_cohort_visited_no_bp,
     monthly_cohort_outcomes.patients AS monthly_cohort_patients,
     monthly_overdue_calls.call_results AS monthly_overdue_calls,
-    monthly_follow_ups.follow_ups AS monthly_follow_ups
-   FROM (((((((public.reporting_facilities rf
+    monthly_follow_ups.follow_ups AS monthly_follow_ups,
+    reporting_appointment_scheduled_days_distributions.appointments_by_range,
+    reporting_appointment_scheduled_days_distributions.total_appointments_in_month
+   FROM ((((((((public.reporting_facilities rf
      JOIN public.reporting_months cal ON (true))
      LEFT JOIN registered_patients ON (((registered_patients.month_date = cal.month_date) AND (registered_patients.region_id = rf.facility_region_id))))
      LEFT JOIN assigned_patients ON (((assigned_patients.month_date = cal.month_date) AND (assigned_patients.region_id = rf.facility_region_id))))
@@ -2823,6 +2825,7 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
      LEFT JOIN monthly_cohort_outcomes ON (((monthly_cohort_outcomes.month_date = cal.month_date) AND (monthly_cohort_outcomes.region_id = rf.facility_region_id))))
      LEFT JOIN monthly_overdue_calls ON (((monthly_overdue_calls.month_date = cal.month_date) AND (monthly_overdue_calls.region_id = rf.facility_region_id))))
      LEFT JOIN monthly_follow_ups ON (((monthly_follow_ups.month_date = cal.month_date) AND (monthly_follow_ups.facility_id = rf.facility_id))))
+     LEFT JOIN public.reporting_appointment_scheduled_days_distributions ON (((reporting_appointment_scheduled_days_distributions.month_date = cal.month_date) AND (reporting_appointment_scheduled_days_distributions.facility_id = rf.facility_id))))
   WITH NO DATA;
 
 
@@ -4943,6 +4946,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211215192748'),
 ('20211216144440'),
 ('20211216154413'),
-('20211231084747');
+('20211231084747'),
+('20211231110314');
 
 
