@@ -1415,10 +1415,10 @@ CREATE TABLE public.reminder_templates (
 
 
 --
--- Name: reporting_appointment_scheduled_days_distributions; Type: VIEW; Schema: public; Owner: -
+-- Name: reporting_appointment_scheduled_days_distributions; Type: MATERIALIZED VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.reporting_appointment_scheduled_days_distributions AS
+CREATE MATERIALIZED VIEW public.reporting_appointment_scheduled_days_distributions AS
  WITH scheduled_days_distribution AS (
          SELECT (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, appointments.device_created_at)), 'YYYY-MM-01'::text))::date AS month_date,
             width_bucket((date_part('days'::text, ((appointments.scheduled_date)::timestamp without time zone - appointments.device_created_at)))::integer, ARRAY[0, 15, 30, 60]) AS bucket,
@@ -1436,7 +1436,8 @@ CREATE VIEW public.reporting_appointment_scheduled_days_distributions AS
     (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 4)))::integer AS appt_scheduled_more_than_60_days,
     (sum(scheduled_days_distribution.number_of_appointments))::integer AS total_scheduled_appointments_in_month
    FROM scheduled_days_distribution
-  GROUP BY scheduled_days_distribution.facility_id, scheduled_days_distribution.month_date;
+  GROUP BY scheduled_days_distribution.facility_id, scheduled_days_distribution.month_date
+  WITH NO DATA;
 
 
 --
