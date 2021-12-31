@@ -82,6 +82,26 @@ module Reports
       values_at("adjusted_uncontrolled_under_care")
     end
 
+    memoize def total_scheduled_appointments_in_month
+      values_at("total_scheduled_appointments_in_month")
+    end
+
+    memoize def appt_scheduled_0_to_14_days
+      values_at("appt_scheduled_0_to_14_days")
+    end
+
+    memoize def appt_scheduled_15_to_30_days
+      values_at("appt_scheduled_15_to_30_days")
+    end
+
+    memoize def appt_scheduled_31_to_60_days
+      values_at("appt_scheduled_31_to_60_days")
+    end
+
+    memoize def appt_scheduled_more_than_60_days
+      values_at("appt_scheduled_more_than_60_days")
+    end
+
     memoize def ltfu_rates
       region_period_cached_query(__method__) do |entry|
         slug, period = entry.slug, entry.period
