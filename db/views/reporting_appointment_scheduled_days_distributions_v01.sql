@@ -1,29 +1,20 @@
-WITH appointments_with_scheduled_days AS (
-  SELECT creation_facility_id,
-         extract('days' FROM (scheduled_date - device_created_at))::integer scheduled_days,
-         to_char(device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')), 'YYYY-MM-01')::date month_date
+WITH scheduled_days_distribution AS (
+  SELECT to_char(device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')), 'YYYY-MM-01')::date month_date,
+         width_bucket(extract('days' FROM (scheduled_date - device_created_at))::integer, array[0, 15, 30, 60]) bucket,
+         COUNT(*) number_of_appointments,
+         creation_facility_id facility_id
   FROM appointments
   WHERE extract('days' FROM (scheduled_date - device_created_at))::integer >= 0
-  AND device_created_at >= DATE_TRUNC('month', (now() AT TIME ZONE 'UTC') - INTERVAL '3 months')
-),
-
-scheduled_days_distribution AS (
-  SELECT month_date,
-         (CASE width_bucket(scheduled_days, array[0, 15, 30, 60])
-            WHEN 1 THEN '0-14 days'
-            WHEN 2 THEN '15-30 days'
-            WHEN 3 THEN '31-60 days'
-            WHEN 4 THEN '60+ days'
-           END)   bucket_label,
-         COUNT(*) number_of_appointments,
-         creation_facility_id
-  FROM appointments_with_scheduled_days
-  GROUP BY bucket_label, creation_facility_id, month_date
+  AND device_created_at >= DATE_TRUNC('month', (now() AT TIME ZONE 'UTC') - INTERVAL '6 months')
+  GROUP BY bucket, creation_facility_id, month_date
 )
 
-SELECT creation_facility_id facility_id,
+SELECT facility_id,
   month_date,
-  jsonb_object_agg(bucket_label, number_of_appointments) appointments_by_range,
-  SUM(number_of_appointments)::integer total_appointments_in_month
+  (SUM(number_of_appointments) FILTER (WHERE bucket = 1))::integer AS appt_scheduled_0_to_14_days,
+  (SUM(number_of_appointments) FILTER (WHERE bucket = 2))::integer AS appt_scheduled_15_to_30_days,
+  (SUM(number_of_appointments) FILTER (WHERE bucket = 3))::integer AS appt_scheduled_31_to_60_days,
+  (SUM(number_of_appointments) FILTER (WHERE bucket = 4))::integer AS appt_scheduled_more_than_60_days,
+  SUM(number_of_appointments)::integer total_scheduled_appointments_in_month
 FROM scheduled_days_distribution
 GROUP BY facility_id, month_date

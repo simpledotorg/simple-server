@@ -1419,39 +1419,24 @@ CREATE TABLE public.reminder_templates (
 --
 
 CREATE VIEW public.reporting_appointment_scheduled_days_distributions AS
- WITH appointments_with_scheduled_days AS (
-         SELECT appointments.creation_facility_id,
-            (date_part('days'::text, ((appointments.scheduled_date)::timestamp without time zone - appointments.device_created_at)))::integer AS scheduled_days,
-            (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, appointments.device_created_at)), 'YYYY-MM-01'::text))::date AS month_date
-           FROM public.appointments
-          WHERE (((date_part('days'::text, ((appointments.scheduled_date)::timestamp without time zone - appointments.device_created_at)))::integer >= 0) AND (appointments.device_created_at >= date_trunc('month'::text, (timezone('UTC'::text, now()) - '3 mons'::interval))))
-        ), scheduled_days_distribution AS (
-         SELECT appointments_with_scheduled_days.month_date,
-                CASE width_bucket(appointments_with_scheduled_days.scheduled_days, ARRAY[0, 15, 30, 60])
-                    WHEN 1 THEN '0-14 days'::text
-                    WHEN 2 THEN '15-30 days'::text
-                    WHEN 3 THEN '31-60 days'::text
-                    WHEN 4 THEN '60+ days'::text
-                    ELSE NULL::text
-                END AS bucket_label,
+ WITH scheduled_days_distribution AS (
+         SELECT (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, appointments.device_created_at)), 'YYYY-MM-01'::text))::date AS month_date,
+            width_bucket((date_part('days'::text, ((appointments.scheduled_date)::timestamp without time zone - appointments.device_created_at)))::integer, ARRAY[0, 15, 30, 60]) AS bucket,
             count(*) AS number_of_appointments,
-            appointments_with_scheduled_days.creation_facility_id
-           FROM appointments_with_scheduled_days
-          GROUP BY
-                CASE width_bucket(appointments_with_scheduled_days.scheduled_days, ARRAY[0, 15, 30, 60])
-                    WHEN 1 THEN '0-14 days'::text
-                    WHEN 2 THEN '15-30 days'::text
-                    WHEN 3 THEN '31-60 days'::text
-                    WHEN 4 THEN '60+ days'::text
-                    ELSE NULL::text
-                END, appointments_with_scheduled_days.creation_facility_id, appointments_with_scheduled_days.month_date
+            appointments.creation_facility_id AS facility_id
+           FROM public.appointments
+          WHERE (((date_part('days'::text, ((appointments.scheduled_date)::timestamp without time zone - appointments.device_created_at)))::integer >= 0) AND (appointments.device_created_at >= date_trunc('month'::text, (timezone('UTC'::text, now()) - '6 mons'::interval))))
+          GROUP BY (width_bucket((date_part('days'::text, ((appointments.scheduled_date)::timestamp without time zone - appointments.device_created_at)))::integer, ARRAY[0, 15, 30, 60])), appointments.creation_facility_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, appointments.device_created_at)), 'YYYY-MM-01'::text))::date
         )
- SELECT scheduled_days_distribution.creation_facility_id AS facility_id,
+ SELECT scheduled_days_distribution.facility_id,
     scheduled_days_distribution.month_date,
-    jsonb_object_agg(scheduled_days_distribution.bucket_label, scheduled_days_distribution.number_of_appointments) AS appointments_by_range,
-    (sum(scheduled_days_distribution.number_of_appointments))::integer AS total_appointments_in_month
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 1)))::integer AS appt_scheduled_0_to_14_days,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 2)))::integer AS appt_scheduled_15_to_30_days,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 3)))::integer AS appt_scheduled_31_to_60_days,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 4)))::integer AS appt_scheduled_more_than_60_days,
+    (sum(scheduled_days_distribution.number_of_appointments))::integer AS total_scheduled_appointments_in_month
    FROM scheduled_days_distribution
-  GROUP BY scheduled_days_distribution.creation_facility_id, scheduled_days_distribution.month_date;
+  GROUP BY scheduled_days_distribution.facility_id, scheduled_days_distribution.month_date;
 
 
 --
@@ -2815,8 +2800,11 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
     monthly_cohort_outcomes.patients AS monthly_cohort_patients,
     monthly_overdue_calls.call_results AS monthly_overdue_calls,
     monthly_follow_ups.follow_ups AS monthly_follow_ups,
-    reporting_appointment_scheduled_days_distributions.appointments_by_range,
-    reporting_appointment_scheduled_days_distributions.total_appointments_in_month
+    reporting_appointment_scheduled_days_distributions.total_scheduled_appointments_in_month,
+    reporting_appointment_scheduled_days_distributions.appt_scheduled_0_to_14_days,
+    reporting_appointment_scheduled_days_distributions.appt_scheduled_15_to_30_days,
+    reporting_appointment_scheduled_days_distributions.appt_scheduled_31_to_60_days,
+    reporting_appointment_scheduled_days_distributions.appt_scheduled_more_than_60_days
    FROM ((((((((public.reporting_facilities rf
      JOIN public.reporting_months cal ON (true))
      LEFT JOIN registered_patients ON (((registered_patients.month_date = cal.month_date) AND (registered_patients.region_id = rf.facility_region_id))))
