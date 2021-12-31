@@ -119,7 +119,7 @@ class Patient < ApplicationRecord
 
   def current_age
     if date_of_birth.present?
-      ((Time.zone.now - date_of_birth.to_time) / 1.year).floor
+      ((Time.zone.now.beginning_of_day - date_of_birth.beginning_of_day) / 1.year).floor
     elsif age.present?
       years_since_update = (Time.current - age_updated_at) / 1.year
       (age + years_since_update).floor
