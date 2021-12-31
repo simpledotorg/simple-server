@@ -1415,6 +1415,46 @@ CREATE TABLE public.reminder_templates (
 
 
 --
+-- Name: reporting_appointment_scheduled_days_distributions; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.reporting_appointment_scheduled_days_distributions AS
+ WITH appointments_with_scheduled_days AS (
+         SELECT appointments.creation_facility_id,
+            (date_part('days'::text, ((appointments.scheduled_date)::timestamp without time zone - appointments.device_created_at)))::integer AS scheduled_days,
+            (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, appointments.device_created_at)), 'YYYY-MM-01'::text))::date AS month_date
+           FROM public.appointments
+          WHERE (((date_part('days'::text, ((appointments.scheduled_date)::timestamp without time zone - appointments.device_created_at)))::integer >= 0) AND (appointments.device_created_at >= date_trunc('month'::text, (timezone('UTC'::text, now()) - '3 mons'::interval))))
+        ), scheduled_days_distribution AS (
+         SELECT appointments_with_scheduled_days.month_date,
+                CASE width_bucket(appointments_with_scheduled_days.scheduled_days, ARRAY[0, 15, 30, 60])
+                    WHEN 1 THEN '0-14 days'::text
+                    WHEN 2 THEN '15-30 days'::text
+                    WHEN 3 THEN '31-60 days'::text
+                    WHEN 4 THEN '60+ days'::text
+                    ELSE NULL::text
+                END AS bucket_label,
+            count(*) AS number_of_appointments,
+            appointments_with_scheduled_days.creation_facility_id
+           FROM appointments_with_scheduled_days
+          GROUP BY
+                CASE width_bucket(appointments_with_scheduled_days.scheduled_days, ARRAY[0, 15, 30, 60])
+                    WHEN 1 THEN '0-14 days'::text
+                    WHEN 2 THEN '15-30 days'::text
+                    WHEN 3 THEN '31-60 days'::text
+                    WHEN 4 THEN '60+ days'::text
+                    ELSE NULL::text
+                END, appointments_with_scheduled_days.creation_facility_id, appointments_with_scheduled_days.month_date
+        )
+ SELECT scheduled_days_distribution.creation_facility_id AS facility_id,
+    scheduled_days_distribution.month_date,
+    jsonb_object_agg(scheduled_days_distribution.bucket_label, scheduled_days_distribution.number_of_appointments) AS appointments_by_range,
+    (sum(scheduled_days_distribution.number_of_appointments))::integer AS total_appointments_in_month
+   FROM scheduled_days_distribution
+  GROUP BY scheduled_days_distribution.creation_facility_id, scheduled_days_distribution.month_date;
+
+
+--
 -- Name: reporting_facilities; Type: VIEW; Schema: public; Owner: -
 --
 
@@ -4902,6 +4942,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211214014913'),
 ('20211215192748'),
 ('20211216144440'),
-('20211216154413');
+('20211216154413'),
+('20211231084747');
 
 
