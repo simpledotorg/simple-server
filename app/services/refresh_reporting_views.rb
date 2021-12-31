@@ -60,9 +60,9 @@ class RefreshReportingViews
     Reports::Prescriptions
     Reports::PatientFollowUp
     Reports::PatientState
+    Reports::AppointmentScheduledDaysDistribution
     Reports::FacilityState
     Reports::QuarterlyFacilityState
-    Reports::AppointmentScheduledDaysDistribution
   ].freeze
 
   def refresh_v1
