@@ -360,6 +360,27 @@ RSpec.describe Reports::Repository, type: :model do
 
   [true, false].each do |follow_ups_v2|
     context "follow_ups_v2 => #{follow_ups_v2}" do
+      it "returns data for facilities who have no registered / assigned patients" do
+        range = ("October 1st 2019".to_period.."January 1st 2020".to_period)
+        facility_1 = FactoryBot.create(:facility, name: "Facility 1", block: "block-1", facility_group: facility_group_1)
+        facility_2 = FactoryBot.create(:facility, name: "Facility 2", block: "block-1", facility_group: facility_group_1)
+        Time.use_zone("UTC") do # ensure we set recorded_at to proper UTC times
+          htn_patients = create_list(:patient, 2, full_name: "patient with HTN", recorded_at: jan_2019, assigned_facility: facility_2, registration_user: user)
+          range.each do |period|
+            htn_patients.each { |p| create(:bp_with_encounter, :under_control, facility: facility_1, patient: p, recorded_at: period.to_date, user: user) }
+          end
+        end
+        refresh_views
+        repo = described_class.new(facility_1, periods: range, follow_ups_v2: follow_ups_v2)
+        expected = {
+          "October 1st 2019" => 2,
+          "November 1st 2019" => 2,
+          "December 1st 2019" => 2,
+          "January 1st, 2020" => 2
+        }.transform_keys!(&:to_period)
+        expect(repo.hypertension_follow_ups["facility-1"]).to eq(expected)
+      end
+
       it "gets follow ups per facility" do
         facility_1 = FactoryBot.create(:facility, name: "Facility 1", block: "block-1", facility_group: facility_group_1)
         facility_2 = FactoryBot.create(:facility, name: "Facility 2", block: "block-1", facility_group: facility_group_1)
