@@ -620,7 +620,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
 
             expect(patient_states(patient, to: twelve_months_ago).pluck(:htn_care_state)).to all(eq("under_care"))
             expect(patient_states(patient, from: twelve_months_ago, to: ten_months_ago).pluck(:htn_care_state)).to all(eq("lost_to_follow_up"))
-            expect(patient_states(patient, from: ten_months_ago).pluck(:htn_care_state)).to all(eq("under_care"))
+            expect(patient_states(patient, from: ten_months_ago, to: now).pluck(:htn_care_state)).to all(eq("under_care"))
 
             expect(patient_states(patient, to: ten_months_ago).pluck(:htn_treatment_outcome_in_last_3_months)).to all(eq("missed_visit"))
             expect(patient_states(patient, from: ten_months_ago, to: seven_months_ago).pluck(:htn_treatment_outcome_in_last_3_months)).to all(eq("controlled"))
