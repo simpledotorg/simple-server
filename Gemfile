@@ -32,7 +32,7 @@ gem "dhis2", require: false
 gem "diffy" # This gem is only needed for Admin::FixZoneDataController, it should be removed with the controller
 gem "discard", "~> 1.0"
 gem "dogstatsd-ruby", "~> 5.2"
-gem 'ed25519', '~> 1.2'
+gem "ed25519", "~> 1.2"
 gem "factory_bot_rails", "~> 6.1", require: false
 gem "faker", require: false
 gem "flipper-active_record"
