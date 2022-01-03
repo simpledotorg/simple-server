@@ -187,8 +187,10 @@ RSpec.describe Reports::DrugStockCalculation, type: :model do
       expect(result).to eq(patient_days: "error")
     end
 
-    it "reports error to sentry" do
-      allow(Sentry).to receive(:capture_message)
+    it "reports error to datadog" do
+      allow_any_instance_of(Datadog::Tracer).to receive(:trace)
+      expect_any_instance_of(Datadog::Tracer).to receive(:trace)
+
       result = described_class.new(
         state: state,
         protocol_drugs: protocol_drugs,
@@ -197,7 +199,6 @@ RSpec.describe Reports::DrugStockCalculation, type: :model do
         patient_count: 0
       ).patient_days
       expect(result).to eq(patient_days: "error")
-      expect(Sentry).to have_received(:capture_message)
     end
   end
 

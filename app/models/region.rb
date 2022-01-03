@@ -17,9 +17,7 @@ class Region < ApplicationRecord
   auto_strip_attributes :name, squish: true, upcase_first: true
 
   has_many :drug_stocks
-  has_one :estimated_population
-  has_many :assn_children, -> (object) {
-    where("? @> path AND nlevel(path) = NLEVEL(?) + 1", object.ltree_path, object.ltree_path) }, class_name: "Region"
+  has_one :estimated_population, autosave: true
 
   after_discard do
     estimated_population&.discard
@@ -231,6 +229,10 @@ class Region < ApplicationRecord
 
   def cache_version
     updated_at.utc.to_s(:usec)
+  end
+
+  def supports_htn_population_coverage
+    return true if region.district_region? || region.state_region?
   end
 
   private
