@@ -25,23 +25,25 @@ RSpec.describe Reports::Repository, type: :model do
   end
 
   context "earliest patient record" do
-    it "returns the earliest between both assigned and registered if both exist" do
-      facility_1, facility_2 = FactoryBot.create_list(:facility, 2, facility_group: facility_group_1)
+    it "returns the earliest between assigned, registered, and follow up" do
+      facility_1, facility_2, facility_3 = FactoryBot.create_list(:facility, 3, facility_group: facility_group_1)
       district_region = facility_group_1.region
       other_facility = create(:facility)
+      region_with_no_patients = create(:facility).region
+
       _patient_1 = create(:patient, recorded_at: july_2018, assigned_facility: facility_2)
       _patient_2 = create(:patient, recorded_at: june_1_2018, assigned_facility: other_facility, registration_facility: facility_1)
-      facility_3 = create(:facility)
-
-      region_with_no_patients = facility_3.region
+      follow_up_patient = create(:patient, recorded_at: july_2018, assigned_facility: other_facility)
+      create(:blood_pressure, patient: follow_up_patient, facility: facility_3, recorded_at: june_30_2020)
 
       refresh_views
 
-      regions = [district_region, region_with_no_patients, facility_1.region]
+      regions = [district_region, region_with_no_patients, facility_1.region, facility_3.region]
       repo = Reports::Repository.new(regions, periods: jan_2019.to_period)
       expect(repo.earliest_patient_recorded_at[district_region.slug]).to eq(june_1_2018.to_date)
       expect(repo.earliest_patient_recorded_at[facility_1.region.slug]).to eq(june_1_2018.to_date)
       expect(repo.earliest_patient_recorded_at[region_with_no_patients.slug]).to be_nil
+      expect(repo.earliest_patient_recorded_at[facility_3.slug]).to eq(june_30_2020.to_period.to_date)
     end
   end
 
