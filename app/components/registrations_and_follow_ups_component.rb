@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class RegistrationsAndFollowUpsComponent < ViewComponent::Base
-  include DashboardHelper
   attr_reader :region
   attr_reader :repository
   attr_reader :current_admin
@@ -24,18 +23,23 @@ class RegistrationsAndFollowUpsComponent < ViewComponent::Base
     end
   end
 
+  def number_or_dash_with_delimiter(value, options = {})
+    return "-" if value.blank? || value.zero?
+    number_with_delimiter(value, options)
+  end
+
   def reports_region_facility_details_path(facility, options = {})
-    options.with_defaults! report_scope: "facility"
+    options.with_defaults! report_scope: :facility
     reports_region_details_path(facility, options)
   end
 
   def reports_region_facility_path(facility, options = {})
-    options.with_defaults! report_scope: "facility"
+    options.with_defaults! report_scope: :facility
     reports_region_path(facility, options)
   end
 
   def reports_region_district_path(district, options = {})
-    options.with_defaults! report_scope: "district"
+    options.with_defaults! report_scope: :district
     reports_region_path(district, options)
   end
 end

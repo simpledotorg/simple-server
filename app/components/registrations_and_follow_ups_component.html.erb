@@ -83,7 +83,6 @@
         </tr>
         <% region.facility_regions.each do |resource| %>
           <% slug = resource.region.slug %>
-          <% next unless repository.earliest_patient_recorded_at[resource.slug] %>
           <tr>
             <td class="row-title">
               <%= link_to resource.name, reports_region_details_path(resource.region, report_scope: :facility) %>
