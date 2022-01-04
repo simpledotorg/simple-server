@@ -68,7 +68,7 @@ module Reports
     def for_regions
       FacilityState
         .where(id_field => regions.map(&:id))
-        .where("cumulative_registrations IS NOT NULL OR cumulative_assigned_patients IS NOT NULL")
+        .where("cumulative_registrations IS NOT NULL OR cumulative_assigned_patients IS NOT NULL OR monthly_follow_ups IS NOT NULL")
     end
   end
 end

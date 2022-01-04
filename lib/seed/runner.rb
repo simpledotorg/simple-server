@@ -100,7 +100,7 @@ module Seed
     def parallel_options(progress)
       parallel_options = {
         finish: lambda do |facility, i, result|
-          progress.log("Finished facility: [#{facility.slug}, #{facility.facility_size}] counts: #{result}")
+          progress.log("Finished facility: [#{facility.slug}, #{facility.facility_size}] counts: #{result.except(:facility)}")
           progress.increment
         end
       }
