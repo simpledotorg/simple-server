@@ -435,6 +435,34 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
   end
 
+  describe "monthly_district_report" do
+    before do
+      @facility_group = create(:facility_group, organization: organization)
+      @facility = create(:facility, facility_group: @facility_group)
+    end
+
+    it "retrieves the monthly district report" do
+      district = @facility_group.region
+      refresh_views
+
+      files = []
+      Timecop.freeze("June 1 2020") do
+        sign_in(cvho.email_authentication)
+        get :monthly_district_report, params: {id: district.slug, report_scope: "district", format: "zip"}
+      end
+      expect(response).to be_successful
+
+      Zip::File.open_buffer(response.body) do |zip|
+        zip.map do |entry|
+          files << entry.name
+        end
+      end
+
+      expect(files).to match_array(%w[facility_data.csv block_data.csv district_data.csv])
+      expect(response.headers["Content-Disposition"]).to include("filename=\"monthly-district-report-#{district.slug}-jun-2020.zip\"")
+    end
+  end
+
   describe "#whatsapp_graphics" do
     render_views
 
