@@ -86,24 +86,24 @@ module Reports
       values_at("adjusted_uncontrolled_under_care")
     end
 
-    memoize def total_scheduled_appointments_in_month
-      values_at("total_scheduled_appointments_in_month")
+    memoize def total_appts_scheduled
+      values_at("total_appts_scheduled")
     end
 
-    memoize def appt_scheduled_0_to_14_days
-      values_at("appt_scheduled_0_to_14_days")
+    memoize def appts_scheduled_0_to_14_days
+      values_at("appts_scheduled_0_to_14_days")
     end
 
-    memoize def appt_scheduled_15_to_30_days
-      values_at("appt_scheduled_15_to_30_days")
+    memoize def appts_scheduled_15_to_30_days
+      values_at("appts_scheduled_15_to_30_days")
     end
 
-    memoize def appt_scheduled_31_to_60_days
-      values_at("appt_scheduled_31_to_60_days")
+    memoize def appts_scheduled_31_to_60_days
+      values_at("appts_scheduled_31_to_60_days")
     end
 
-    memoize def appt_scheduled_more_than_60_days
-      values_at("appt_scheduled_more_than_60_days")
+    memoize def appts_scheduled_more_than_60_days
+      values_at("appts_scheduled_more_than_60_days")
     end
 
     memoize def ltfu_rates
