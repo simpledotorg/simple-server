@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class RegistrationsAndFollowUpsComponent < ViewComponent::Base
   attr_reader :region
   attr_reader :repository
