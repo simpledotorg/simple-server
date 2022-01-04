@@ -1,6 +1,4 @@
 class Reports::RegionTreeComponent < ViewComponent::Base
-  include Reports::RegionsUrlHelper
-
   attr_reader :parent, :children
 
   def initialize(parent:, children:)
