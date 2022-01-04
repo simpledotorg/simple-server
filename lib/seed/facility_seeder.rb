@@ -33,7 +33,9 @@ module Seed
     attr_reader :logger
 
     delegate :scale_factor, :stdout, to: :config
-    delegate :number_of_blocks_per_facility_group, to: :config
+    delegate :number_of_facility_groups,
+      :number_of_states,
+      :number_of_blocks_per_facility_group, to: :config
 
     def call
       Region.root || Region.create!(name: "India", region_type: Region.region_types[:root], path: "india")
@@ -54,14 +56,6 @@ module Seed
       create_block_regions(district_region_results)
       facility_results = create_facilities(facility_group_results)
       create_facility_regions(facility_results)
-    end
-
-    def number_of_facility_groups
-      config.number_of_facility_groups
-    end
-
-    def number_of_states
-      config.number_of_states
     end
 
     def number_of_facilities_per_facility_group
