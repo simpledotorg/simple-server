@@ -81,15 +81,15 @@ describe MonthlyDistrictReport::DistrictData do
       expect(rows[0]["Total registrations"]).to eq 23
       expect(rows[0]["Total assigned patients"]).to eq 12
       expect(rows[0]["Total patients under care"]).to eq 24
-      expect(rows[0]["% BP controlled"]).to eq 35
-      expect(rows[0]["% BP uncontrolled"]).to eq 15
-      expect(rows[0]["% Missed Visits"]).to eq 40
-      expect(rows[0]["% Visits, no BP taken"]).to eq 10
+      expect(rows[0]["% BP controlled"]).to eq "35%"
+      expect(rows[0]["% BP uncontrolled"]).to eq "15%"
+      expect(rows[0]["% Missed Visits"]).to eq "40%"
+      expect(rows[0]["% Visits, no BP taken"]).to eq "10%"
 
       expect(periods.map { |period| rows[0]["cumulative_registrations - #{period}"] }).to eq [5, 14, 13, 21, 15, 23]
       expect(periods.map { |period| rows[0]["under_care - #{period}"] }).to eq [4, 12, 11, 23, 14, 24]
       expect(periods.map { |period| rows[0]["hypertension_follow_ups - #{period}"] }).to eq [3, 11, 14, 72, 12, 18]
-      expect(periods.map { |period| rows[0]["controlled_rates - #{period}"] }).to eq [5, 14, 13, 21, 15, 35]
+      expect(periods.map { |period| rows[0]["controlled_rates - #{period}"] }).to eq %w[5% 14% 13% 21% 15% 35%]
       expect(periods.map { |period| rows[0]["controlled - #{period}"] }).to eq [50, 140, 130, 210, 150, 350]
     end
   end

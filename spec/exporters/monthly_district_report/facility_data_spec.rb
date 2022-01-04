@@ -59,7 +59,7 @@ describe MonthlyDistrictReport::FacilityData do
       expect(rows[0]["Total registrations"]).to eq 42
       expect(rows[0]["Patients under care"]).to eq 12
       expect(rows[0]["Registrations this month"]).to eq 1
-      expect(rows[0]["BP control % of all patients registered before 3 months"]).to eq 30
+      expect(rows[0]["BP control % of all patients registered before 3 months"]).to eq "30%"
 
       expect(rows[1]["Sl.No"]).to eq 2
       expect(rows[1]["Facility size"]).to eq "PHC"
@@ -68,7 +68,7 @@ describe MonthlyDistrictReport::FacilityData do
       expect(rows[1]["Total registrations"]).to eq 23
       expect(rows[1]["Patients under care"]).to eq 24
       expect(rows[1]["Registrations this month"]).to eq 2
-      expect(rows[1]["BP control % of all patients registered before 3 months"]).to eq 40
+      expect(rows[1]["BP control % of all patients registered before 3 months"]).to eq "40%"
     end
 
     it "orders the rows by block, and then facility names" do

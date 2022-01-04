@@ -83,29 +83,29 @@ describe MonthlyDistrictReport::BlockData do
       expect(rows[0]["Total assigned patients"]).to eq 32
       expect(rows[0]["Total patients under care"]).to eq 12
       expect(rows[0]["Total patients lost to followup"]).to eq 3
-      expect(rows[0]["% BP controlled"]).to eq 40
-      expect(rows[0]["% BP uncontrolled"]).to eq 20
-      expect(rows[0]["% Missed Visits"]).to eq 30
-      expect(rows[0]["% Visits, no BP taken"]).to eq 10
+      expect(rows[0]["% BP controlled"]).to eq "40%"
+      expect(rows[0]["% BP uncontrolled"]).to eq "20%"
+      expect(rows[0]["% Missed Visits"]).to eq "30%"
+      expect(rows[0]["% Visits, no BP taken"]).to eq "10%"
 
       expect(periods.map { |period| rows[0]["cumulative_registrations - #{period}"] }).to eq [2, 10, 11, 24, 22, 42]
       expect(periods.map { |period| rows[0]["under_care - #{period}"] }).to eq [2, 11, 15, 22, 25, 12]
       expect(periods.map { |period| rows[0]["monthly_registrations - #{period}"] }).to eq [23, 23, 42, 53, 1, 51]
       expect(periods.map { |period| rows[0]["hypertension_follow_ups - #{period}"] }).to eq [5, 12, 21, 21, 41, 11]
-      expect(periods.map { |period| rows[0]["controlled_rates - #{period}"] }).to eq [2, 10, 21, 24, 22, 40]
+      expect(periods.map { |period| rows[0]["controlled_rates - #{period}"] }).to eq %w[2% 10% 21% 24% 22% 40%]
 
       expect(rows[1]["Blocks"]).to eq "Test Block 2"
       expect(rows[1]["Total registrations"]).to eq 23
       expect(rows[1]["Total assigned patients"]).to eq 12
       expect(rows[1]["Total patients under care"]).to eq 24
       expect(rows[1]["Total patients lost to followup"]).to eq 4
-      expect(rows[1]["% BP controlled"]).to eq 35
-      expect(rows[1]["% BP uncontrolled"]).to eq 15
-      expect(rows[1]["% Missed Visits"]).to eq 40
-      expect(rows[1]["% Visits, no BP taken"]).to eq 10
+      expect(rows[1]["% BP controlled"]).to eq "35%"
+      expect(rows[1]["% BP uncontrolled"]).to eq "15%"
+      expect(rows[1]["% Missed Visits"]).to eq "40%"
+      expect(rows[1]["% Visits, no BP taken"]).to eq "10%"
       expect(periods.map { |period| rows[1]["cumulative_registrations - #{period}"] }).to eq [5, 14, 13, 21, 15, 23]
       expect(periods.map { |period| rows[1]["under_care - #{period}"] }).to eq [4, 12, 11, 23, 14, 24]
-      expect(periods.map { |period| rows[1]["controlled_rates - #{period}"] }).to eq [5, 14, 13, 21, 15, 35]
+      expect(periods.map { |period| rows[1]["controlled_rates - #{period}"] }).to eq %w[5% 14% 13% 21% 15% 35%]
       expect(periods.map { |period| rows[1]["monthly_registrations - #{period}"] }).to eq [12, 98, 11, 77, 12, 11]
       expect(periods.map { |period| rows[1]["hypertension_follow_ups - #{period}"] }).to eq [3, 11, 14, 72, 12, 18]
     end
