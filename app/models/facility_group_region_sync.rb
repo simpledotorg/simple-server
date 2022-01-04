@@ -27,9 +27,9 @@ class FacilityGroupRegionSync < SimpleDelegator
         population = region.estimated_population || region.build_estimated_population
         population.population = district_estimated_population
       end
-      state_region.recalculate_state_population!
     end
     region.save!
+    state_region.recalculate_state_population!
   end
 
   def sync_block_regions
