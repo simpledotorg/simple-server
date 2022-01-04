@@ -38,5 +38,4 @@ class RegistrationsAndFollowUpsComponent < ViewComponent::Base
     options.with_defaults! report_scope: "district"
     reports_region_path(district, options)
   end
-
 end

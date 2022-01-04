@@ -73,8 +73,7 @@ module Seed
     end
 
     def number_of_blocks_per_facility_group
-      val = ENV.fetch("NUMBER_OF_BLOCKS_PER_FACILITY_GROUP") { 2 }
-      Integer(val)
+      Integer(ENV.fetch("NUMBER_OF_BLOCKS_PER_FACILITY_GROUP", 2))
     end
 
     def max_number_of_facilities_per_facility_group
@@ -82,8 +81,7 @@ module Seed
     end
 
     def min_number_of_facilities_per_facility_group
-      val = ENV.fetch("MIN_NUMBER_OF_FACILITIES_PER_FACILITY_GROUP") { 1 }
-      Integer(val)
+      Integer(ENV.fetch("MIN_NUMBER_OF_FACILITIES_PER_FACILITY_GROUP", 1))
     end
 
     def max_patients_to_create
