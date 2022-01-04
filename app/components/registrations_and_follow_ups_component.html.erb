@@ -95,7 +95,7 @@
             </td>
             <% range.each do |period| %>
               <td class="ta-center">
-                <%= number_or_dash_with_delimiter repository.monthly_registrations[slug][period] %>
+                <%= number_or_dash_with_delimiter(repository.monthly_registrations[slug][period]) %>
               </td>
             <% end %>
             <% range.each do |period| %>
