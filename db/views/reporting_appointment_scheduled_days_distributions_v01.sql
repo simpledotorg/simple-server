@@ -11,10 +11,10 @@ WITH scheduled_days_distribution AS (
 
 SELECT facility_id,
   month_date,
-  (SUM(number_of_appointments) FILTER (WHERE bucket = 1))::integer AS appt_scheduled_0_to_14_days,
-  (SUM(number_of_appointments) FILTER (WHERE bucket = 2))::integer AS appt_scheduled_15_to_30_days,
-  (SUM(number_of_appointments) FILTER (WHERE bucket = 3))::integer AS appt_scheduled_31_to_60_days,
-  (SUM(number_of_appointments) FILTER (WHERE bucket = 4))::integer AS appt_scheduled_more_than_60_days,
-  SUM(number_of_appointments)::integer total_scheduled_appointments_in_month
+  (SUM(number_of_appointments) FILTER (WHERE bucket = 1))::integer AS appts_scheduled_0_to_14_days,
+  (SUM(number_of_appointments) FILTER (WHERE bucket = 2))::integer AS appts_scheduled_15_to_30_days,
+  (SUM(number_of_appointments) FILTER (WHERE bucket = 3))::integer AS appts_scheduled_31_to_60_days,
+  (SUM(number_of_appointments) FILTER (WHERE bucket = 4))::integer AS appts_scheduled_more_than_60_days,
+  SUM(number_of_appointments)::integer total_appts_scheduled
 FROM scheduled_days_distribution
 GROUP BY facility_id, month_date

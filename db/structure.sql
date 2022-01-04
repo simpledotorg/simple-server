@@ -1414,11 +1414,11 @@ CREATE MATERIALIZED VIEW public.reporting_appointment_scheduled_days_distributio
         )
  SELECT scheduled_days_distribution.facility_id,
     scheduled_days_distribution.month_date,
-    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 1)))::integer AS appt_scheduled_0_to_14_days,
-    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 2)))::integer AS appt_scheduled_15_to_30_days,
-    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 3)))::integer AS appt_scheduled_31_to_60_days,
-    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 4)))::integer AS appt_scheduled_more_than_60_days,
-    (sum(scheduled_days_distribution.number_of_appointments))::integer AS total_scheduled_appointments_in_month
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 1)))::integer AS appts_scheduled_0_to_14_days,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 2)))::integer AS appts_scheduled_15_to_30_days,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 3)))::integer AS appts_scheduled_31_to_60_days,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 4)))::integer AS appts_scheduled_more_than_60_days,
+    (sum(scheduled_days_distribution.number_of_appointments))::integer AS total_appts_scheduled
    FROM scheduled_days_distribution
   GROUP BY scheduled_days_distribution.facility_id, scheduled_days_distribution.month_date
   WITH NO DATA;
@@ -2785,11 +2785,11 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
     monthly_cohort_outcomes.patients AS monthly_cohort_patients,
     monthly_overdue_calls.call_results AS monthly_overdue_calls,
     monthly_follow_ups.follow_ups AS monthly_follow_ups,
-    reporting_appointment_scheduled_days_distributions.total_scheduled_appointments_in_month,
-    reporting_appointment_scheduled_days_distributions.appt_scheduled_0_to_14_days,
-    reporting_appointment_scheduled_days_distributions.appt_scheduled_15_to_30_days,
-    reporting_appointment_scheduled_days_distributions.appt_scheduled_31_to_60_days,
-    reporting_appointment_scheduled_days_distributions.appt_scheduled_more_than_60_days
+    reporting_appointment_scheduled_days_distributions.total_appts_scheduled,
+    reporting_appointment_scheduled_days_distributions.appts_scheduled_0_to_14_days,
+    reporting_appointment_scheduled_days_distributions.appts_scheduled_15_to_30_days,
+    reporting_appointment_scheduled_days_distributions.appts_scheduled_31_to_60_days,
+    reporting_appointment_scheduled_days_distributions.appts_scheduled_more_than_60_days
    FROM ((((((((public.reporting_facilities rf
      JOIN public.reporting_months cal ON (true))
      LEFT JOIN registered_patients ON (((registered_patients.month_date = cal.month_date) AND (registered_patients.region_id = rf.facility_region_id))))
@@ -4330,6 +4330,13 @@ CREATE UNIQUE INDEX index_regions_on_unique_path ON public.regions USING btree (
 --
 
 CREATE INDEX index_reminder_templates_on_treatment_group_id ON public.reminder_templates USING btree (treatment_group_id);
+
+
+--
+-- Name: index_reporting_appointment_scheduled_days_distributions; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_reporting_appointment_scheduled_days_distributions ON public.reporting_appointment_scheduled_days_distributions USING btree (month_date, facility_id);
 
 
 --
