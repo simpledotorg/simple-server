@@ -111,10 +111,10 @@
 </div>
 
 <% if current_admin.feature_enabled?(:show_call_results) %>
-  <div class="card mt-0 pr-0 pr-md-3 pb-inside-avoid">
+  <div class="card w-100pt mt-0 pr-0 pr-md-3 pb-inside-avoid">
     <div class="d-flex flex-1 mb-8px">
       <h3 class="mb-0px mr-8px">
-        Healthcare worker activity
+        Overdue patients contacted
       </h3>
       <%= render "definition_tooltip",
                  definitions: { "Overdue patients contacted" => t("call_results_copy.monthly_overdue_calls_made", region_name: region.name) } %>
