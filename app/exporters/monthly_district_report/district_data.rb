@@ -107,10 +107,10 @@ module MonthlyDistrictReport
 
     def last_6_months_data(data, indicator, rate = nil)
       last_6_months.each_with_object({}) do |month, hsh|
-        if rate
-          hsh["#{indicator} - #{month}"] = percentage_string(data.dig(district.slug, month))
+        hsh["#{indicator} - #{month}"] = if rate
+          percentage_string(data.dig(district.slug, month))
         else
-          hsh["#{indicator} - #{month}"] = data.dig(district.slug, month)
+          data.dig(district.slug, month)
         end
       end
     end

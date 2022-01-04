@@ -73,10 +73,10 @@ module MonthlyDistrictReport
 
     def last_6_months_data(data, block, indicator, rate = nil)
       last_6_months.each_with_object({}) do |month, hsh|
-        if rate
-          hsh["#{indicator} - #{month}"] = percentage_string(data[block.slug][month])
+        hsh["#{indicator} - #{month}"] = if rate
+          percentage_string(data[block.slug][month])
         else
-          hsh["#{indicator} - #{month}"] = data[block.slug][month]
+          data[block.slug][month]
         end
       end
     end
