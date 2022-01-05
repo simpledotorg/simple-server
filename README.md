@@ -14,14 +14,6 @@ This is the backend for the Simple app to help track hypertensive patients acros
 
 ## Development
 
-### Note for Apple Silicon M1 Macs
-
-With recent gem updates, all of our gems and dependencies now build ARM native on m1 macs. This means you do **not** need to use Rosetta to set up simple-server, and in fact using Rosetta will make things more complicated and confusing in day to dev dev experience, and also hurts performance.
-
-The setup instructions are now the same for Intel or M1 macs, as you can install homebrew normally and go from there.
-
-### Dependencies
-
 We have a `bin/setup` script that does most of the work of getting things setup, but you need a few things in place first.
 If you are on a Mac, install [homebrew](https://brew.sh) and then install rbenv, redis, postgres@10, and yarn:
 
@@ -89,6 +81,8 @@ To remove the server and clear the volumes of database data, run the command:
 ```
 docker compose down --volumes
 ```
+
+
 
 #### Manual Setup
 
