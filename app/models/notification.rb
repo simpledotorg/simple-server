@@ -52,7 +52,7 @@ class Notification < ApplicationRecord
         message,
         facility_name: facility.name,
         patient_name: patient.full_name,
-        appointment_date: subject&.scheduled_date,
+        appointment_date: subject&.scheduled_date&.strftime("%d-%m-%Y"),
         locale: facility.locale
       )
     when "missed_visit_reminder"
@@ -60,7 +60,7 @@ class Notification < ApplicationRecord
         message,
         facility_name: subject.facility.name,
         patient_name: patient.full_name,
-        appointment_date: subject.scheduled_date,
+        appointment_date: subject.scheduled_date.strftime("%d-%m-%Y"),
         locale: subject.facility.locale
       )
     when "test_message"
@@ -87,7 +87,9 @@ class Notification < ApplicationRecord
   end
 
   def delivery_result
-    if successful_deliveries.exists?
+    if status_cancelled?
+      :failed
+    elsif successful_deliveries.exists?
       :success
     elsif queued_deliveries.exists? || !communications.exists?
       :queued
@@ -113,7 +115,6 @@ class Notification < ApplicationRecord
 
   def preferred_communication_method
     return "whatsapp" if Flipper.enabled?(:whatsapp_appointment_reminders)
-    return "imo" if Flipper.enabled?(:imo_messaging) && patient.imo_authorization&.status_subscribed?
     nil
   end
 

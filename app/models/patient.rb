@@ -119,7 +119,7 @@ class Patient < ApplicationRecord
 
   def current_age
     if date_of_birth.present?
-      ((Time.zone.now - date_of_birth.to_time) / 1.year).floor
+      ((Time.zone.now.beginning_of_day - date_of_birth.beginning_of_day) / 1.year).floor
     elsif age.present?
       years_since_update = (Time.current - age_updated_at) / 1.year
       (age + years_since_update).floor
@@ -149,7 +149,7 @@ class Patient < ApplicationRecord
   end
 
   def latest_mobile_number
-    phone_numbers.phone_type_mobile.last&.number_with_country_code
+    phone_numbers.phone_type_mobile.last&.localized_phone_number
   end
 
   def latest_bp_passport
@@ -222,17 +222,19 @@ class Patient < ApplicationRecord
   end
 
   def discard_data
-    address&.discard
-    appointments.discard_all
-    blood_pressures.discard_all
-    blood_sugars.discard_all
-    business_identifiers.discard_all
-    observations.discard_all
-    encounters.discard_all
-    medical_history&.discard
-    phone_numbers.discard_all
-    prescription_drugs.discard_all
-    teleconsultations.discard_all
-    discard
+    ActiveRecord::Base.transaction do
+      address&.discard
+      appointments.discard_all
+      blood_pressures.discard_all
+      blood_sugars.discard_all
+      business_identifiers.discard_all
+      observations.discard_all
+      encounters.discard_all
+      medical_history&.discard
+      phone_numbers.discard_all
+      prescription_drugs.discard_all
+      teleconsultations.discard_all
+      discard
+    end
   end
 end

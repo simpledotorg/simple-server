@@ -55,7 +55,7 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
             session_id: session_id,
             result: "queued")
           params = base_callback_params.merge("MessageSid" => session_id,
-                                              "MessageStatus" => "sent")
+            "MessageStatus" => "sent")
 
           set_twilio_signature_header(callback_url, params)
           post :create, params: params
@@ -71,7 +71,7 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
             session_id: session_id,
             result: "sent")
           params = base_callback_params.merge("MessageSid" => session_id,
-                                              "MessageStatus" => "delivered")
+            "MessageStatus" => "delivered")
 
           set_twilio_signature_header(callback_url, params)
           post :create, params: params
@@ -103,7 +103,7 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
             session_id: session_id,
             result: "queued")
           params = base_callback_params.merge("MessageSid" => session_id,
-                                              "MessageStatus" => "read")
+            "MessageStatus" => "read")
 
           set_twilio_signature_header(callback_url, params)
           post :create, params: params

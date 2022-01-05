@@ -47,11 +47,11 @@ module MyFacilitiesFiltering
     end
 
     def set_selected_zones
-      @selected_zones = params[:zone].present? ? [params[:zone]] : @zones
+      @selected_zones = params[:zone].present? ? [params[:zone]].flatten : @zones
     end
 
     def set_selected_facility_sizes
-      @selected_facility_sizes = params[:size].present? ? [params[:size]] : @facility_sizes
+      @selected_facility_sizes = params[:size].present? ? [params[:size]].flatten : @facility_sizes
     end
 
     def facilities_by_facility_group(facilities)
@@ -76,7 +76,7 @@ module MyFacilitiesFiltering
     end
 
     def accessible_facility_groups
-      FacilityGroup.where(id: @accessible_facilities.map(&:facility_group_id).uniq).order(:name)
+      FacilityGroup.where(id: @accessible_facilities.pluck(:facility_group_id).uniq).order(:name)
     end
 
     def drug_stock_facility_groups

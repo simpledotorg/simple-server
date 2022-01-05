@@ -39,7 +39,7 @@ describe Notification, type: :model do
         notification.message,
         facility_name: notification.subject.facility.name,
         patient_name: notification.patient.full_name,
-        appointment_date: notification.subject.scheduled_date,
+        appointment_date: notification.subject.scheduled_date.strftime("%d-%m-%Y"),
         locale: "mr-IN"
       )
       expect(notification.localized_message).to eq(expected_message)
@@ -79,34 +79,7 @@ describe Notification, type: :model do
       end
     end
 
-    context "when imo flag is on" do
-      before { Flipper.enable(:imo_messaging) }
-
-      it "returns sms if patient can't receive Imo notifications" do
-        create(:imo_authorization, status: "no_imo_account", patient: notification.patient)
-        expect(notification.next_communication_type).to eq("sms")
-      end
-
-      it "returns imo if it has no imo communications" do
-        create(:imo_authorization, status: "subscribed", patient: notification.patient)
-        expect(notification.next_communication_type).to eq("imo")
-      end
-
-      it "returns sms if it has a imo communication but no sms communication" do
-        create(:imo_authorization, status: "subscribed", patient: notification.patient)
-        create(:communication, communication_type: "imo", notification: notification)
-        expect(notification.next_communication_type).to eq("sms")
-      end
-
-      it "returns nil if it has both a imo and sms communication" do
-        create(:imo_authorization, status: "subscribed", patient: notification.patient)
-        create(:communication, communication_type: "imo", notification: notification)
-        create(:communication, communication_type: "sms", notification: notification)
-        expect(notification.next_communication_type).to eq(nil)
-      end
-    end
-
-    context "when WhatsApp and Imo flags are off" do
+    context "when WhatsApp flag is off" do
       it "returns sms if it has no sms communication" do
         expect(notification.next_communication_type).to eq("sms")
       end
@@ -130,6 +103,14 @@ describe Notification, type: :model do
       unsuccessful_communication = create(:communication, notification: notification, user: nil, appointment: nil)
       create(:twilio_sms_delivery_detail, :failed, communication: unsuccessful_communication)
       notification.update(status: :sent)
+
+      expect(notification.delivery_result).to eq(:failed)
+    end
+
+    it "is failed if notification is cancelled even if successful communications are present" do
+      notification = create(:notification, status: :cancelled)
+      successful_communication = create(:communication, notification: notification, user: nil, appointment: nil)
+      create(:twilio_sms_delivery_detail, :sent, communication: successful_communication)
 
       expect(notification.delivery_result).to eq(:failed)
     end

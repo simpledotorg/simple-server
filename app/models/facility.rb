@@ -50,6 +50,8 @@ class Facility < ApplicationRecord
     class_name: "Patient",
     foreign_key: "assigned_facility_id"
 
+  has_many :facility_states, class_name: "Reports::FacilityState"
+
   pg_search_scope :search_by_name, against: {name: "A", slug: "B"}, using: {tsearch: {prefix: true}}
   scope :with_block_region_id, -> {
     joins("INNER JOIN regions facility_regions ON facility_regions.source_id = facilities.id")
@@ -247,9 +249,10 @@ class Facility < ApplicationRecord
     registered_patients.with_discarded
   end
 
-  def self.localized_facility_size(facility_size)
+  def self.localized_facility_size(facility_size, pluralize: false)
     return unless facility_size
-    I18n.t("activerecord.facility.facility_size.#{facility_size}", default: facility_size.capitalize)
+    sizes_key = pluralize ? "pluralized_facility_size" : "facility_size"
+    I18n.t("activerecord.facility.#{sizes_key}.#{facility_size}", default: facility_size.capitalize)
   end
 
   def localized_facility_size

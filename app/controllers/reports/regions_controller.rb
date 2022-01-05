@@ -78,8 +78,17 @@ class Reports::RegionsController < AdminController
     else
       [@region, @region.facility_regions].flatten
     end
-    @repository = Reports::Repository.new(regions, periods: @period_range)
-    chart_repo = Reports::Repository.new(@region, periods: chart_range)
+
+    @repository = Reports::Repository.new(regions, periods: @period_range, follow_ups_v2: current_admin.feature_enabled?(:follow_ups_v2))
+    chart_repo = Reports::Repository.new(@region, periods: chart_range, follow_ups_v2: current_admin.feature_enabled?(:follow_ups_v2))
+
+    district_regions = if @region.state_region?
+      [@region, @region.district_regions].flatten
+    end
+
+    if @region.state_region?
+      @district_repository = Reports::Repository.new(district_regions, periods: @period_range, follow_ups_v2: current_admin.feature_enabled?(:follow_ups_v2))
+    end
 
     @chart_data = {
       patient_breakdown: PatientBreakdownService.call(region: @region, period: @period),
@@ -126,6 +135,20 @@ class Reports::RegionsController < AdminController
     @region ||= authorize { current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id]) }
     @period = Period.month(params[:period] || Date.current)
     csv = MonthlyDistrictDataService.new(@region, @period).report
+    report_date = @period.to_s.downcase
+    filename = "monthly-facility-data-#{@region.slug}-#{report_date}.csv"
+
+    respond_to do |format|
+      format.csv do
+        send_data csv, filename: filename
+      end
+    end
+  end
+
+  def monthly_state_data_report
+    @region ||= authorize { current_admin.accessible_state_regions(:view_reports).find_by!(slug: report_params[:id]) }
+    @period = Period.month(params[:period] || Date.current)
+    csv = MonthlyStateDataService.new(@region, @period).report
     report_date = @period.to_s.downcase
     filename = "monthly-district-data-#{@region.slug}-#{report_date}.csv"
 

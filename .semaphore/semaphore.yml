@@ -8,6 +8,20 @@ auto_cancel:
   running:
     when: "true"
 blocks:
+  - name: Cache dependencies
+    task:
+      jobs:
+        - name: Cache everything
+          commands:
+            - sem-version ruby 2.7.4
+            - checkout
+            # - cache clear
+            - cache restore
+            - bundle config set deployment 'true'
+            - bundle config set path 'vendor/bundle'
+            - bundle install
+            - yarn install
+            - cache store
   - name: Tests
     task:
       env_vars:
@@ -26,7 +40,10 @@ blocks:
         - name: StandardRB
           commands:
             - checkout
-            - script/semaphore_setup
+            - cache restore
+            - bundle config set deployment 'true'
+            - bundle config set path 'vendor/bundle'
+            - bundle install
             - "bundle exec standardrb"
         - name: RSpec
           parallelism: 8

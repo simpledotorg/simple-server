@@ -56,8 +56,8 @@ module Seed
     def feature_flags_enabled_by_default
       [
         :drug_stocks,
+        :follow_ups_v2,
         :notifications,
-        :reporting_schema_v2,
         (:auto_approve_users if SimpleServer.env.android_review?),
         (:fixed_otp if SimpleServer.env.android_review?)
       ].compact
@@ -100,7 +100,7 @@ module Seed
     def parallel_options(progress)
       parallel_options = {
         finish: lambda do |facility, i, result|
-          progress.log("Finished facility: [#{facility.slug}, #{facility.facility_size}] counts: #{result}")
+          progress.log("Finished facility: [#{facility.slug}, #{facility.facility_size}] counts: #{result.except(:facility)}")
           progress.increment
         end
       }

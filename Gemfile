@@ -15,7 +15,8 @@ gem "active_record_union"
 gem "activerecord-import"
 gem "amazing_print"
 gem "auto_strip_attributes"
-gem "bcrypt", "~> 3.1", ">= 3.1.11"
+gem "bcrypt", "~> 3.1"
+gem "bcrypt_pbkdf", "~> 1.1"
 gem "bootsnap", require: false
 gem "bootstrap_form", ">= 4.5.0"
 gem "bootstrap-datepicker-rails", "~> 1.9"
@@ -31,14 +32,15 @@ gem "dhis2", require: false
 gem "diffy" # This gem is only needed for Admin::FixZoneDataController, it should be removed with the controller
 gem "discard", "~> 1.0"
 gem "dogstatsd-ruby", "~> 5.2"
+gem "ed25519", "~> 1.2"
 gem "factory_bot_rails", "~> 6.1", require: false
 gem "faker", require: false
 gem "flipper-active_record"
 gem "flipper-ui"
 gem "flipper"
-gem "friendly_id", "~> 5.2.4"
+gem "friendly_id", "~> 5.4.2"
 gem "github-ds"
-gem "google-protobuf", "~> 3.0"
+gem "google-protobuf", "~> 3.19"
 gem "groupdate"
 gem "http_accept_language"
 gem "http"
@@ -66,7 +68,7 @@ gem "request_store-sidekiq"
 gem "request_store"
 gem "roo", "~> 2.8.0"
 gem "rspec-rails", "~> 4.0.1"
-gem "rswag", "~> 1.6.0"
+gem "rswag", "~> 2.4.0"
 gem "ruby-progressbar", require: false
 gem "rubyzip"
 gem "sassc-rails"
@@ -85,15 +87,15 @@ gem "timecop", "~> 0.9.0", require: false
 gem "twilio-ruby", "~> 5.10", ">= 5.10.3"
 gem "uglifier", ">= 1.3.0"
 gem "uuidtools", require: false
-gem "view_component", require: "view_component/engine"
-gem "webpacker", "6.0.0.rc.5"
+gem "view_component"
+gem "webpacker", "6.0.0.rc.6"
 gem "whenever", require: false
 gem "wkhtmltoimage-binary"
 
 group :development, :test do
   gem "active_record_query_trace", require: false
   gem "byebug", platforms: [:mri, :mingw, :x64_mingw]
-  gem "capistrano", "3.11.0"
+  gem "capistrano", "3.16.0"
   gem "capistrano-db-tasks", require: false
   gem "capistrano-multiconfig", require: true
   gem "capistrano-passenger", "0.2.1"
@@ -105,18 +107,22 @@ group :development, :test do
   gem "parallel_tests", group: %i[development test]
   gem "rails-controller-testing"
   gem "rb-readline"
-  gem "shoulda-matchers", "~> 4.1.2"
-  gem "standard", "1.1.0", require: false
+  gem "shoulda-matchers", "~> 5.0.0"
+  gem "standard", "1.5.0", require: false
+end
+
+group :development, :test, :profiling do
+  gem "derailed_benchmarks"
+  gem "memory_profiler", require: false
 end
 
 group :development do
   gem "guard-rspec", require: false
   gem "listen"
   gem "rails-erd"
-  gem "spring"
+  gem "spring", "3.1.1"
   gem "spring-commands-rspec"
   gem "web-console", ">= 3.3.0"
-  gem "memory_profiler"
   gem "flamegraph"
 end
 

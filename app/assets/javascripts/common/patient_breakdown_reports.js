@@ -16,13 +16,8 @@ PatientBreakdownReports = function () {
     }
   }
 
-  this.getPatientBreakdownData = () => {
-    return JSON.parse(reports.getChartDataNode().textContent)["patient_breakdown"];
-  }
-
   this.initializeCharts = () => {
     this.initializeLtfuChart();
-    this.initializePatientBreakdownChart();
   }
 
   this.initializeLtfuChart = () => {
@@ -116,85 +111,6 @@ PatientBreakdownReports = function () {
     const ltfuGraphCanvas = document.getElementById("ltfuPatients");
     if (ltfuGraphCanvas) {
       new Chart(ltfuGraphCanvas.getContext("2d"), ltfuGraphConfig);
-    }
-  }
-
-  this.initializePatientBreakdownChart = () => {
-    const data = this.getPatientBreakdownData();
-
-    const chartSegments = {
-      "ltfu_patients": { "description" : "Lost to follow-up", color: reports.darkBlueColor},
-      "not_ltfu_patients": { "description": "Patients under care", color: reports.mediumGreenColor},
-      "dead_patients": {"description": "Died", color: reports.mediumRedColor}
-    }
-
-    const chartLabels = Object.keys(chartSegments).filter(el => data[el] !== 0)
-    const chartData = chartLabels.map(el => data[el])
-    const transferredPatients = {
-      ltfu_patients: data["ltfu_transferred_patients"],
-      not_ltfu_patients: data["not_ltfu_transferred_patients"],
-    }
-
-    const breakdownChartConfig = reports.createBaseGraphConfig();
-    breakdownChartConfig.type = "outlabeledPie";
-    breakdownChartConfig.data = {
-      labels: chartLabels,
-      datasets: [{
-        borderColor: this.whiteColor,
-        borderWidth: 1,
-        data: chartData,
-        backgroundColor: chartLabels.map(label => chartSegments[label]["color"])
-      }]
-    };
-    breakdownChartConfig.options.layout.padding.left = 30;
-    breakdownChartConfig.options.layout.padding.right = 30;
-    breakdownChartConfig.options.zoomOutPercentage = 7;
-    breakdownChartConfig.options.tooltips = {
-      caretSize: 0,
-      backgroundColor: "rgba(0,0,0,0.6)",
-      xPadding: 10,
-      yPadding: 10,
-      displayColors: false,
-      titleFontSize: 15,
-      titleFontFamily: "Roboto Condensed",
-      bodyFontSize: 14,
-      bodyFontFamily: "Roboto Condensed",
-      callbacks: {
-        title: ([tooltipItem], tooltipData) => {
-          const label = tooltipData.labels[tooltipItem.index];
-          return chartSegments[label]["description"];
-        },
-        label: (tooltipItem, tooltipData) => {
-          const label = tooltipData.labels[tooltipItem.index];
-          let tooltipBody = [`Total: ${reports.formatNumberWithCommas(data[label])}`];
-          if (transferredPatients[label] !== undefined) {
-            tooltipBody.push(`Transferred out: ${transferredPatients[label]}`)
-          }
-          return tooltipBody;
-        },
-      }
-    }
-    breakdownChartConfig.options.plugins = {
-      outlabels: {
-        text: '%p',
-        backgroundColor: "rgba(255, 255, 255, 1)",
-        color: "black",
-        stretch: 15,
-        lineColor: "#ADB2B8",
-        padding: 1,
-        lineWidth: 1,
-        font: {
-          family: "Roboto Condensed",
-          resizable: true,
-          minSize: 13,
-          maxSize: 18
-        }
-      }
-    }
-
-    const breakdownChartCanvas = document.getElementById("patientBreakdownCanvas");
-    if (breakdownChartCanvas) {
-      new Chart(breakdownChartCanvas.getContext("2d"), breakdownChartConfig);
     }
   }
 }

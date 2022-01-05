@@ -2333,11 +2333,11 @@
           ],
           "enum": [
             "not_responding",
-            "moved",
-            "dead",
             "invalid_phone_number",
             "public_hospital_transfer",
             "moved_to_private",
+            "moved",
+            "dead",
             "other",
             null
           ]

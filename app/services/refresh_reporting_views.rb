@@ -42,12 +42,11 @@ class RefreshReportingViews
     Rails.application.config.country[:time_zone]
   end
 
+  # Keep the views below in the order as defined, as they have dependencies on earlier matviews in the lists
   V1_REPORTING_VIEWS = %w[
     LatestBloodPressuresPerPatientPerMonth
     LatestBloodPressuresPerPatient
-    LatestBloodPressuresPerPatientPerQuarter
     BloodPressuresPerFacilityPerDay
-    PatientRegistrationsPerDayPerFacility
     MaterializedPatientSummary
   ].freeze
 
@@ -56,15 +55,15 @@ class RefreshReportingViews
     Reports::Month
     Reports::Facility
     Reports::PatientBloodPressure
+    Reports::OverdueCalls
     Reports::PatientVisit
+    Reports::Prescriptions
+    Reports::PatientFollowUp
     Reports::PatientState
     Reports::FacilityState
     Reports::QuarterlyFacilityState
-    Reports::PatientFollowUp
   ].freeze
 
-  # LatestBloodPressuresPerPatientPerMonth should be refreshed before
-  # LatestBloodPressuresPerPatientPerQuarter and LatestBloodPressuresPerPatient
   def refresh_v1
     V1_REPORTING_VIEWS.each do |name|
       benchmark_and_statsd(name) do
@@ -91,6 +90,7 @@ class RefreshReportingViews
       Statsd.instance.time(name) do
         yield
       end
+      Statsd.instance.flush
     end
   end
 end

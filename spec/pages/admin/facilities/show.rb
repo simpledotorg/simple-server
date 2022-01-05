@@ -17,15 +17,11 @@ module AdminPage
       end
 
       def is_edit_button_present_for_facilitygroup(name)
-        within(:xpath, "//h3[text()='#{name}']/../..") do
-          page.has_link?("Edit")
-        end
+        present?({css: "a.spec-edit-#{name}-button"})
       end
 
       def click_edit_button_present_for_facilitygroup(name)
-        within(:xpath, "//h3[text()='#{name}']/../..") do
-          find(:css, "a.btn-outline-primary").click
-        end
+        find(:css, "a.spec-edit-#{name}-button").click
       end
     end
   end

@@ -146,3 +146,11 @@
   form="query-filters"
   hidden
 >
+<% if current_admin.feature_enabled?(:my_facilities_csv) %>
+  <% if action_name.to_sym.in?([:bp_controlled, :bp_not_controlled, :missed_visits]) %>
+    <div class="mb-8px mr-8px d-flex flex-grow-1 justify-content-sm-end">
+      <%= link_to "<button class='btn btn-sm btn-outline-primary' >Download data</button>".html_safe, my_facilities_csv_maker_path(type: type, facility_group: @selected_facility_group, zone: @selected_zones, size: @selected_facility_sizes), { method: :get} %>
+    </div>
+  <% end %>
+<% end %>
+

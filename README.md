@@ -3,7 +3,6 @@
 [![Build Status](https://simple.semaphoreci.com/badges/simple-server/branches/master.svg)](https://simple.semaphoreci.com/projects/simple-server)
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/testdouble/standard)
 
-
 This is the backend for the Simple app to help track hypertensive patients across a population.
 
 ## Table of Contents
@@ -24,20 +23,11 @@ The setup instructions are now the same for Intel or M1 macs, as you can install
 ### Dependencies
 
 We have a `bin/setup` script that does most of the work of getting things setup, but you need a few things in place first.
-If you are on a Mac, install [homebrew](https://brew.sh) and then install rbenv, redis, and yarn:
+If you are on a Mac, install [homebrew](https://brew.sh) and then install rbenv, redis, postgres@10, and yarn:
 
 ```
-brew install rbenv ruby-build redis yarn
+brew install rbenv ruby-build redis yarn postgresql@10
 ```
-
-You also need Postgres 10 - [Postgres.app](https://postgresapp.com) is a nice small GUI to manage PostgreSQL on a mac,
-though it isn't required. You can install it via brew:
-
-```
-brew cask install postgres
-```
-
-Then open Postgres.app and ensure you have a PostgreSQL 10 server initialized.
 
 ### bin/setup
 
@@ -57,6 +47,21 @@ $ bin/setup
 ```
 
 If you encounter issues with this script, please open [a new issue with details](https://github.com/simpledotorg/simple-server/issues/new?title=Problems+with+bin/setup). Please include the entire log from bin/setup, as well as your computer / OS details.
+
+### Note for Apple Silicon M1 Macs
+
+With recent gem updates, all of our gems and dependencies now build ARM native on m1 macs. This means you do **not** need to use Rosetta to set up simple-server, and in fact using Rosetta will make things more complicated and confusing in day to day dev experience, and also hurts performance.
+
+There is one possible caveat to this -- if you see any problems with google-protobuf, run the following:
+
+```
+gem uninstall google-protobuf
+gem install google-protobuf -v 3.17.3 --platform=ruby
+```
+
+Then rerun bundler and everything will work. This is being tracked over in https://github.com/protocolbuffers/protobuf/issues/8682, hopefully there will be a better fix soon.
+
+Beyond that, the setup instructions are now the same for Intel or M1 macs, as you can install homebrew normally and go from there.
 
 #### Docker Compose
 
@@ -103,7 +108,7 @@ rails db:setup
 ```
 
 We cleanup old migration files every once in a while and so running `db:migrate` would not work for the initial setup.
-While setting up a fresh DB you will need to load the schema first with `db:schema:load`. `db:setup` already takes care of this.
+When setting up a new database, `db:setup` will take care of everything (it runs `db:structure:load` under the hood).
 
 #### Developing with the Android app
 
@@ -185,6 +190,10 @@ X-User-ID: 452b96c2-e0cf-49e7-ab73-c328acd3f1e5
 X-Facility-ID: dcda7d9d-48f9-47d2-b1cc-93d90c94386e
 ```
 
+Here are two Simple App pages you can test on your browser:
+* "Progress Tab": `http://localhost:3000/api/v3/analytics/user_analytics.html`
+* "Help Page": `http://localhost:3000/api/v3/help.html`
+
 ### Review Apps
 
 Every pull request opened on the `simple-server` repo creates a [Heroku review app](https://devcenter.heroku.com/articles/github-integration-review-apps)
@@ -255,7 +264,6 @@ bin/rspec
 ```
 
 Run tests interactively quickly while developing:
-
 
 ```
 bin/guard
@@ -374,9 +382,9 @@ This will create a git release tag and automatically trigger a deployment to all
 ### Deployment to a specific environment
 
 * We use Capistrano [multi-config](https://github.com/railsware/capistrano-multiconfig) to do multi-country deploys.
-* All `cap` commands are namespaced with the country name. For eg: `bundle exec india:sandbox deploy`.
+* Most `cap` commands are namespaced with the country name. For eg: `bundle exec cap india:staging deploy` to deploy to India staging. Note that some (like sandbox) are do not have a country, so the command would be `bundle exec cap sandbox deploy`.
 * The available country names are listed under `config/deploy`. The subsequent envs, under the country directory, like
-  `config/deploy/india/sandbox.rb`
+  `config/deploy/india/staging.rb`
 
 Simple Server can be deployed to a specific environment of a specific country with the following command.
 

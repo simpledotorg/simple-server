@@ -17,7 +17,10 @@ module Reports
       cumulative_assigned_patients
       cumulative_registrations
       lost_to_follow_up
+      under_care
       monthly_registrations
+      monthly_overdue_calls
+      monthly_follow_ups
     ].sort.freeze
 
     UNDER_CARE_WITH_LTFU = %i[
@@ -65,7 +68,7 @@ module Reports
     def for_regions
       FacilityState
         .where(id_field => regions.map(&:id))
-        .where("cumulative_registrations IS NOT NULL OR cumulative_assigned_patients IS NOT NULL")
+        .where("cumulative_registrations IS NOT NULL OR cumulative_assigned_patients IS NOT NULL OR monthly_follow_ups IS NOT NULL")
     end
   end
 end

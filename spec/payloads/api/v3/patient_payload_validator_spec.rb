@@ -15,26 +15,26 @@ describe Api::V3::PatientPayloadValidator, type: :model do
   describe "Validations" do
     it "Validates that either age or date of birth is present" do
       expect(new_patient_payload("address" => nil,
-                                 "phone_numbers" => nil,
-                                 "age" => nil,
-                                 "date_of_birth" => 20.years.ago)).to be_valid
+        "phone_numbers" => nil,
+        "age" => nil,
+        "date_of_birth" => 20.years.ago)).to be_valid
 
       expect(new_patient_payload("address" => nil,
-                                 "phone_numbers" => nil,
-                                 "age" => rand(18..100),
-                                 "age_updated_at" => Time.current,
-                                 "date_of_birth" => nil).valid?).to be true
+        "phone_numbers" => nil,
+        "age" => rand(18..100),
+        "age_updated_at" => Time.current,
+        "date_of_birth" => nil).valid?).to be true
 
       expect(new_patient_payload("address" => nil,
-                                 "phone_numbers" => nil,
-                                 "age" => rand(18..100),
-                                 "age_updated_at" => nil,
-                                 "date_of_birth" => nil).valid?).to be false
+        "phone_numbers" => nil,
+        "age" => rand(18..100),
+        "age_updated_at" => nil,
+        "date_of_birth" => nil).valid?).to be false
 
       expect(new_patient_payload("address" => nil,
-                                 "phone_numbers" => nil,
-                                 "age" => nil,
-                                 "date_of_birth" => nil).valid?).to be false
+        "phone_numbers" => nil,
+        "age" => nil,
+        "date_of_birth" => nil).valid?).to be false
     end
 
     it "validates patient date_of_birth is less than today" do

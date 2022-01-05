@@ -3,10 +3,18 @@
     Patient list
   </h2>
   <% call_result_options = {
-    'Patient responded' => [['Agreed to visit', 'agreed_to_visit'], ['Patient has already visited', 'patient_has_already_visited']],
-    'No response' => [['Remind to call later', 'remind_to_call_later']],
-    'Remove from overdue list' => Appointment.cancel_reasons.map { |key, value| [key.humanize, value] }
-  } %>
+    'Agreed to visit' => [['Agreed to visit', 'agreed_to_visit']],
+    'Remind to call later' => [['Remind to call later', 'remind_to_call_later']],
+    'Remove from overdue list' => [['Patient has already visited', 'already_visited'],
+                                   ['Patient is not responding', 'not_responding'],
+                                   ['Phone number does not work', 'invalid_phone_number'],
+                                   ['Transferred to another public health facility', 'public_hospital_transfer'],
+                                   ['Moved to private practitioner', 'moved_to_private'],
+                                   ['Moved', 'moved'],
+                                   ['Died', 'dead'],
+                                   ['Other reason','other']]
+  }
+  %>
   <% @patient_summaries.each do |patient_summary| %>
     <%= render('overdue_patient_card',
                patient_summary: patient_summary,

@@ -10,7 +10,6 @@ require "action_mailer/railtie"
 require "action_view/railtie"
 require "action_cable/engine"
 require "sprockets/railtie"
-require "view_component/engine"
 
 require_relative "../lib/extensions/logging_extensions"
 
@@ -39,6 +38,7 @@ module SimpleServer
       g.helper false
     end
 
+    config.active_record.schema_format = :sql
     config.autoload_paths += %W[#{config.root}/lib]
 
     # Locale configuration

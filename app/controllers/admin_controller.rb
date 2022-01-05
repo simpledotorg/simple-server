@@ -4,8 +4,8 @@ class AdminController < ApplicationController
 
   before_action :authenticate_email_authentication!
   before_action :current_admin
+  around_action :set_feature_flags_from_params
   before_action :set_bust_cache
-  before_action :set_reporting_schema_v2
   before_action :set_datadog_tags
 
   after_action :verify_authorization_attempted, except: [:root]
@@ -30,18 +30,28 @@ class AdminController < ApplicationController
   end
 
   def set_bust_cache
-    RequestStore.store[:bust_cache] = true if params[:bust_cache].present?
+    RequestStore.store[:bust_cache] = true if safe_admin_params[:bust_cache].present?
   end
 
   helper_method :current_admin
 
   private
 
-  # We only want to set this via query string, as it now defaults to enabled globally
-  def set_reporting_schema_v2
-    if params.key?(:v2)
-      param_flag = ActiveRecord::Type::Boolean.new.deserialize(params[:v2])
-      Reports.reporting_schema_v2 = param_flag
+  def safe_admin_params
+    params.permit(:bust_cache, :_follow_ups_v2)
+  end
+
+  def set_feature_flags_from_params
+    follow_ups_override = safe_admin_params[:_follow_ups_v2]
+    if follow_ups_override
+      override = ActiveModel::Type::Boolean.new.deserialize(safe_admin_params[:_follow_ups_v2])
+      original = current_admin.feature_enabled?(:follow_ups_v2)
+      current_admin.set_feature(:follow_ups_v2, override)
+    end
+    yield
+  ensure # reset the flag back to original state
+    if follow_ups_override
+      current_admin.set_feature(:follow_ups_v2, original)
     end
   end
 

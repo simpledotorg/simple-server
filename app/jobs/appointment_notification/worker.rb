@@ -16,50 +16,21 @@ class AppointmentNotification::Worker
   end
 
   def perform(notification_id, phone_number = nil)
-    metrics.increment("attempts")
-    unless Flipper.enabled?(:notifications) || Flipper.enabled?(:experiment)
-      logger.warn "notifications or experiment feature flag are disabled"
-      metrics.increment("skipped.feature_disabled")
-      return
-    end
+    return unless flipper_enabled?
 
     notification = Notification.includes(:subject, :patient).find(notification_id)
     patient = notification.patient
     Sentry.set_tags(patient_id: patient.id)
 
-    communication_type = notification.next_communication_type
-    unless communication_type
-      logger.info "skipping notification #{notification_id}, no next communication type"
-      metrics.increment("skipped.no_next_communication_type")
-      return
-    end
-
-    unless notification.status_scheduled?
-      logger.info "skipping notification #{notification_id}, scheduled already"
-      metrics.increment("skipped.not_scheduled")
-      return
-    end
-
-    unless notification.patient.latest_mobile_number
-      logger.info "skipping notification #{notification_id}, patient #{patient.id} does not have a mobile number"
-      metrics.increment("skipped.no_mobile_number")
-      return
-    end
-
-    logger.info "send_message for notification #{notification_id} communication_type=#{communication_type}"
-    recipient_number = phone_number || notification.patient.latest_mobile_number
-    send_message(notification, communication_type, recipient_number: recipient_number)
+    return unless valid_notification?(notification)
+    send_message(notification, phone_number || patient.latest_mobile_number)
   end
 
   private
 
-  def send_message(notification, communication_type, recipient_number:)
-    notification_service = if communication_type == "imo"
-      ImoApiService.new
-    else
-      TwilioApiService.new(sms_sender: medication_reminder_sms_sender)
-    end
-
+  def send_message(notification, recipient_number)
+    communication_type = notification.next_communication_type
+    logger.info "send_message for notification #{notification.id} communication_type=#{communication_type}"
     context = {
       calling_class: self.class.name,
       notification_id: notification.id,
@@ -68,31 +39,16 @@ class AppointmentNotification::Worker
     }
     Sentry.set_tags(context)
 
-    # remove missed_visit_whatsapp_reminder and missed_visit_sms_reminder
-    # https://app.clubhouse.io/simpledotorg/story/3585/backfill-notifications-from-communications
-    response = case communication_type
-    when "whatsapp", "missed_visit_whatsapp_reminder"
-      notification_service.send_whatsapp(
-        recipient_number: recipient_number,
-        message: notification.localized_message,
-        callback_url: callback_url,
-        context: context
-      )
-    when "sms", "missed_visit_sms_reminder"
-      notification_service.send_sms(
-        recipient_number: recipient_number,
-        message: notification.localized_message,
-        callback_url: callback_url,
-        context: context
-      )
-    when "imo"
-      notification_service.send_notification(notification, recipient_number)
-    else
-      raise UnknownCommunicationType, "#{self.class.name} is not configured to handle communication type #{communication_type}"
-    end
+    response =
+      case communication_type
+        when "imo"
+          ImoApiService.new.send_notification(notification, recipient_number)
+        else
+          notify_via_twilio(notification, communication_type, recipient_number, context)
+      end
 
-    metrics.increment("sent.#{communication_type}")
     return unless response
+    metrics.increment("sent.#{communication_type}")
 
     ActiveRecord::Base.transaction do
       create_communication(notification, communication_type, response)
@@ -100,6 +56,42 @@ class AppointmentNotification::Worker
     end
     logger.info("notification #{notification.id} communication_type=#{communication_type} sent")
     response
+  end
+
+  def notify_via_twilio(notification, communication_type, recipient_number, context)
+    service = TwilioApiService.new(sms_sender: medication_reminder_sms_sender)
+    args = {
+      recipient_number: recipient_number,
+      message: notification.localized_message,
+      callback_url: callback_url,
+      context: context
+    }
+
+    # remove missed_visit_whatsapp_reminder and missed_visit_sms_reminder
+    # https://app.clubhouse.io/simpledotorg/story/3585/backfill-notifications-from-communications
+    handle_twilio_error(notification) do
+      case communication_type
+      when "whatsapp", "missed_visit_whatsapp_reminder"
+        service.send_whatsapp(args)
+      when "sms", "missed_visit_sms_reminder"
+        service.send_sms(args)
+      else
+        raise UnknownCommunicationType, "#{self.class.name} is not configured to handle communication type #{communication_type}"
+      end
+    end
+  end
+
+  def handle_twilio_error(notification, &block)
+    block.call
+  rescue TwilioApiService::Error => error
+    if error.reason == :invalid_phone_number
+      notification.status_cancelled!
+      logger.warn("notification #{notification.id} cancelled because of an invalid phone number")
+      Statsd.instance.increment("twilio.errors.invalid_phone_number")
+      false
+    else
+      raise error
+    end
   end
 
   def create_communication(notification, communication_type, response)
@@ -133,5 +125,37 @@ class AppointmentNotification::Worker
 
   def medication_reminder_sms_senders
     ENV.fetch("TWILIO_COVID_REMINDER_NUMBERS", "").split(",").map(&:strip)
+  end
+
+  def valid_notification?(notification)
+    unless notification.next_communication_type
+      logger.info "skipping notification #{notification.id}, no next communication type"
+      metrics.increment("skipped.no_next_communication_type")
+      return
+    end
+
+    unless notification.status_scheduled?
+      logger.info "skipping notification #{notification.id}, scheduled already"
+      metrics.increment("skipped.not_scheduled")
+      return
+    end
+
+    unless notification.patient.latest_mobile_number
+      logger.info "skipping notification #{notification.id}, patient #{notification.patient_id} does not have a mobile number"
+      metrics.increment("skipped.no_mobile_number")
+      notification.status_cancelled!
+      return
+    end
+
+    true
+  end
+
+  def flipper_enabled?
+    metrics.increment("attempts")
+    return true if Flipper.enabled?(:notifications) || Flipper.enabled?(:experiment)
+
+    logger.warn "notifications or experiment feature flag are disabled"
+    metrics.increment("skipped.feature_disabled")
+    false
   end
 end

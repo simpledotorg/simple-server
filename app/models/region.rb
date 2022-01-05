@@ -17,6 +17,12 @@ class Region < ApplicationRecord
   auto_strip_attributes :name, squish: true, upcase_first: true
 
   has_many :drug_stocks
+  has_one :estimated_population, autosave: true
+
+  after_discard do
+    estimated_population&.discard
+  end
+
   # To set a new path for a Region, assign the parent region via `reparent_to`, and the before_validation
   # callback will assign the new path.
   attr_accessor :reparent_to
@@ -131,6 +137,13 @@ class Region < ApplicationRecord
     end
   end
 
+  # Keep the state population in sync with districts -- this is primarily used from FacilityGroupRegionSync
+  def recalculate_state_population!
+    new_total = district_regions.includes(:estimated_population).sum(:population)
+    population = estimated_population || build_estimated_population
+    population.update! population: new_total
+  end
+
   def syncable_patients
     case region_type
       when "block"
@@ -163,7 +176,7 @@ class Region < ApplicationRecord
       if self_and_descendant_types(region_type).include?(self.region_type)
         self_and_ancestors.find_by(region_type: region_type)
       else
-        raise NoMethodError, "undefined method #{region_type} for region '#{name}' of type #{self.region_type}"
+        raise NoMethodError, "undefined method #{region_type}_region for region '#{name}' of type #{self.region_type}"
       end
     end
 
@@ -174,7 +187,7 @@ class Region < ApplicationRecord
       if self_and_ancestor_types(region_type).include?(self.region_type)
         self_and_descendants.where(region_type: region_type)
       else
-        raise NoMethodError, "undefined method #{region_type.pluralize} for region '#{name}' of type #{self.region_type}"
+        raise NoMethodError, "undefined method #{region_type.pluralize}_regions for region '#{name}' of type #{self.region_type}"
       end
     end
   end
@@ -201,6 +214,10 @@ class Region < ApplicationRecord
 
   def cache_version
     updated_at.utc.to_s(:usec)
+  end
+
+  def supports_htn_population_coverage
+    return true if region.district_region? || region.state_region?
   end
 
   private

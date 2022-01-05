@@ -20,7 +20,7 @@
         </p>
       </div>
       <div class="d-flex fw-wrap mb-16px ph-16px">
-        <%= render "shared/my_facilities_filters" %>
+        <%= render "shared/my_facilities_filters", type: "controlled_patients" %>
       </div>
       <%= render "shared/facility_size_overview",
             rate_name: :controlled_patients_rate,

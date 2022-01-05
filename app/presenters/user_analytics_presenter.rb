@@ -7,7 +7,7 @@ class UserAnalyticsPresenter
   include BustCache
 
   def initialize(current_facility)
-    @current_facility = current_facility
+    @current_facility = current_facility.source
   end
 
   attr_reader :current_facility
@@ -372,8 +372,7 @@ class UserAnalyticsPresenter
   end
 
   def statistics_cache_key
-    v2 = Reports.reporting_schema_v2?
-    "user_analytics/#{current_facility.id}/dm=#{diabetes_enabled?}/v2=#{v2}/#{CACHE_VERSION}"
+    "user_analytics/#{current_facility.id}/dm=#{diabetes_enabled?}/#{CACHE_VERSION}"
   end
 
   def sum_by_gender(data)

@@ -39,6 +39,7 @@ module Reports
               warm_patient_breakdown_caches(batch)
               warm_repository_caches(batch)
             end
+            Statsd.instance.flush
           end
         end
       end
@@ -48,7 +49,7 @@ module Reports
       region_type = regions.first.region_type
       notify "Starting warming cache for repository cache for batch of #{region_type} regions"
       range = (period.advance(months: -23)..period)
-      repo = Repository.new(regions, periods: range, reporting_schema_v2: true)
+      repo = Repository.new(regions, periods: range)
       repo.warm_cache
       Statsd.instance.increment("region_cache_warmer.#{region_type}.warm_repository_cache.region_count", regions.count)
     end

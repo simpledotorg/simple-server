@@ -1032,11 +1032,11 @@
           ],
           "enum": [
             "not_responding",
-            "moved",
-            "dead",
             "invalid_phone_number",
             "public_hospital_transfer",
             "moved_to_private",
+            "moved",
+            "dead",
             "other",
             null
           ]
@@ -1227,12 +1227,13 @@
             "null"
           ],
           "enum": [
+            "already_visited",
             "not_responding",
-            "moved",
-            "dead",
             "invalid_phone_number",
             "public_hospital_transfer",
             "moved_to_private",
+            "moved",
+            "dead",
             "other",
             null
           ]
@@ -1241,8 +1242,8 @@
           "type": "string",
           "enum": [
             "agreed_to_visit",
-            "removed_from_overdue_list",
-            "remind_to_call_later"
+            "remind_to_call_later",
+            "removed_from_overdue_list"
           ]
         },
         "deleted_at": {

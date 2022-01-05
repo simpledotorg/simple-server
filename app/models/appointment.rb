@@ -23,7 +23,7 @@ class Appointment < ApplicationRecord
     visited: "visited"
   }, _prefix: true
 
-  enum cancel_reason: CallResult.remove_reasons
+  enum cancel_reason: CallResult.remove_reasons.except(:already_visited)
 
   enum appointment_type: {
     manual: "manual",
@@ -101,26 +101,30 @@ class Appointment < ApplicationRecord
     scheduled? && scheduled_date > 30.days.ago
   end
 
-  def mark_remind_to_call_later
+  def mark_remind_to_call_later(user)
     self.remind_on = 7.days.from_now
+    create_call_result(user, :remind_to_call_later)
   end
 
-  def mark_patient_agreed_to_visit
+  def mark_patient_agreed_to_visit(user)
     self.agreed_to_visit = true
     self.remind_on = 30.days.from_now
+    create_call_result(user, :agreed_to_visit)
   end
 
-  def mark_appointment_cancelled(cancel_reason)
+  def mark_appointment_cancelled(user, cancel_reason)
     self.agreed_to_visit = false
     self.remind_on = nil
     self.cancel_reason = cancel_reason
     self.status = :cancelled
+    create_call_result(user, :removed_from_overdue_list, cancel_reason)
   end
 
-  def mark_patient_already_visited
+  def mark_patient_already_visited(user)
     self.status = :visited
     self.agreed_to_visit = nil
     self.remind_on = nil
+    create_call_result(user, :removed_from_overdue_list, :already_visited)
   end
 
   def update_patient_status
@@ -165,5 +169,13 @@ class Appointment < ApplicationRecord
     if status == :cancelled && !cancel_reason.present?
       errors.add(:cancel_reason, "should be present for cancelled appointments")
     end
+  end
+
+  def create_call_result(user, result_type, remove_reason = nil)
+    call_results.create(user: user,
+      result_type: result_type,
+      remove_reason: remove_reason,
+      device_created_at: Time.current,
+      device_updated_at: Time.current)
   end
 end

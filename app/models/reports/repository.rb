@@ -7,14 +7,13 @@ module Reports
 
     attr_reader :bp_measures_query
     attr_reader :follow_ups_query
-    attr_reader :no_bp_measure_query
     attr_reader :period_type
     attr_reader :periods
     attr_reader :regions
     attr_reader :registered_patients_query
     attr_reader :schema
 
-    def initialize(regions, periods:, reporting_schema_v2: Reports.reporting_schema_v2?)
+    def initialize(regions, periods:, follow_ups_v2: Flipper.enabled?(:follow_ups_v2))
       @regions = Array(regions).map(&:region)
       @periods = if periods.is_a?(Period)
         Range.new(periods, periods)
@@ -22,22 +21,13 @@ module Reports
         periods
       end
       @period_type = @periods.first.type
-      @reporting_schema_v2 = reporting_schema_v2
+      @follow_ups_v2 = follow_ups_v2
       raise ArgumentError, "Quarter periods not supported" if @period_type != :month
-      @schema = if reporting_schema_v2?
-        SchemaV2.new(@regions, periods: @periods)
-      else
-        SchemaV1.new(@regions, periods: @periods)
-      end
-
+      @schema = SchemaV2.new(@regions, periods: @periods)
       @bp_measures_query = BPMeasuresQuery.new
       @follow_ups_query = FollowUpsQuery.new
-      @no_bp_measure_query = NoBPMeasureQuery.new
       @registered_patients_query = RegisteredPatientsQuery.new
-    end
-
-    def reporting_schema_v2?
-      @reporting_schema_v2
+      @overdue_calls_query = OverdueCallsQuery.new
     end
 
     delegate :cache, :logger, to: Rails
@@ -62,6 +52,7 @@ module Reports
       cumulative_registrations
       earliest_patient_recorded_at
       earliest_patient_recorded_at_period
+      under_care
       ltfu
       missed_visits
       missed_visits_with_ltfu
@@ -69,6 +60,7 @@ module Reports
       monthly_registrations
       uncontrolled
       visited_without_bp_taken
+      monthly_overdue_calls
     ]
 
     def warm_cache
@@ -100,8 +92,16 @@ module Reports
       }
     end
 
-    # Returns Follow ups per Region / Period. Takes an optional group_by clause (commonly used to group by `blood_pressures.user_id`)
+    # Returns Follow ups per Region / Period. Takes an optional group_by clause (commonly used to group by user_id)
     memoize def hypertension_follow_ups(group_by: nil)
+      if follow_ups_v2?
+        schema.hypertension_follow_ups(group_by: group_by)
+      else
+        follow_ups_v1(group_by: group_by)
+      end
+    end
+
+    memoize def follow_ups_v1(group_by: nil)
       items = regions.map { |region| RegionEntry.new(region, __method__, group_by: group_by, period_type: period_type) }
       result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
         follow_ups_query.hypertension(entry.region, period_type, group_by: group_by)
@@ -111,10 +111,24 @@ module Reports
       }
     end
 
+    def follow_ups_v2?
+      @follow_ups_v2
+    end
+
     memoize def bp_measures_by_user
       items = regions.map { |region| RegionEntry.new(region, __method__, group_by: :user_id, period_type: period_type) }
       result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
         bp_measures_query.count(entry.region, period_type, group_by: :user_id)
+      end
+      result.each_with_object({}) { |(region_entry, counts), hsh|
+        hsh[region_entry.region.slug] = counts
+      }
+    end
+
+    memoize def overdue_calls_by_user
+      items = regions.map { |region| RegionEntry.new(region, __method__, group_by: :user_id, period_type: period_type) }
+      result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
+        @overdue_calls_query.count(entry.region, period_type, group_by: :user_id)
       end
       result.each_with_object({}) { |(region_entry, counts), hsh|
         hsh[region_entry.region.slug] = counts

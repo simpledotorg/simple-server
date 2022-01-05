@@ -74,6 +74,10 @@ module Reports
       values_at("lost_to_follow_up")
     end
 
+    memoize def under_care
+      values_at("under_care")
+    end
+
     memoize def controlled
       values_at("adjusted_controlled_under_care")
     end
@@ -117,6 +121,37 @@ module Reports
         total = denominator(entry.region, period, with_ltfu: with_ltfu)
         percentage(numerator, total)
       end
+    end
+
+    memoize def hypertension_follow_ups(group_by: nil)
+      if group_by.nil?
+        values_at("monthly_follow_ups")
+      else
+        group_field = case group_by
+          when /user_id\z/ then :user_id
+          when /gender\z/ then :patient_gender
+          when nil then nil
+          else raise(ArgumentError, "unknown group for follow ups #{group_by}")
+        end
+        regions.each_with_object({}) do |region, results|
+          query = Reports::PatientFollowUp.with_hypertension.where(facility_id: region.facility_ids)
+          counts = if group_field
+            grouped_counts = query.group(group_field).group_by_period(:month, :month_date, {format: Period.formatter(:month)}).count
+            grouped_counts.each_with_object({}) { |(key, count), result|
+              group, period = *key
+              result[period] ||= {}
+              result[period][group] = count
+            }
+          else
+            query.group_by_period(:month, :month_date, {format: Period.formatter(:month)}).select(:patient_id).distinct.count
+          end
+          results[region.slug] = counts
+        end
+      end
+    end
+
+    memoize def monthly_overdue_calls
+      values_at("monthly_overdue_calls")
     end
 
     alias_method :missed_visits_rate, :missed_visits_rates
@@ -163,7 +198,7 @@ module Reports
 
     memoize def earliest_patient_data_query_v2(region)
       FacilityState.for_region(region)
-        .where("cumulative_registrations > 0 OR cumulative_assigned_patients > 0")
+        .where("cumulative_registrations > 0 OR cumulative_assigned_patients > 0 OR monthly_follow_ups > 0")
         .minimum(:month_date)
     end
 

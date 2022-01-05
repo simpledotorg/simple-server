@@ -30,3 +30,6 @@ $(function () {
   // initialize bootstrap file input
   bsCustomFileInput.init();
 });
+
+// Disable including scripts using jquery from external websites
+$.getScript = function (){}

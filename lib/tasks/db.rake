@@ -25,8 +25,22 @@ namespace :db do
 
     RefreshReportingViews.call
   end
+
+  namespace :structure do
+    desc "Clean structure.sql - commenting out COMMENT ON EXTENSION commands. See https://app.shortcut.com/simpledotorg/story/6333 for details"
+    task :clean do
+      structure = IO.read("db/structure.sql")
+      structure.gsub!(/^(COMMENT ON EXTENSION)/, '-- \1')
+      File.write("db/structure.sql", structure)
+    end
+  end
+end
+
+Rake::Task["db:structure:dump"].enhance do
+  Rake::Task["db:structure:clean"].invoke
 end
 
 Rake::Task["db:seed"].enhance do
+  ENV["REFRESH_MATVIEWS_CONCURRENTLY"] = "false"
   Rake::Task["db:refresh_reporting_views"].invoke
 end

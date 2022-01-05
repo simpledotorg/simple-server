@@ -1,0 +1,22 @@
+name,hypertension,diabetes
+Amlodipine,TRUE,FALSE
+Aspirin,FALSE,FALSE
+Atenolol,TRUE,FALSE
+Atorvastatin,FALSE,FALSE
+Captopril,TRUE,FALSE
+Chlorthalidone,TRUE,FALSE
+Clopidogrel,FALSE,FALSE
+Enalapril,TRUE,FALSE
+Glibenclamide,FALSE,TRUE
+Glimeperide,FALSE,TRUE
+Glipizide,FALSE,TRUE
+Hydrochlorothiazide,TRUE,FALSE
+Losartan Potassium,TRUE,FALSE
+Metoprolol,TRUE,FALSE
+Metformin,FALSE,TRUE
+Rosuvastatin,FALSE,FALSE
+Sitagliptin,FALSE,TRUE
+Spironolactone,TRUE,FALSE
+Telmisartan,TRUE,FALSE
+Vildagliptin,FALSE,TRUE
+Lisinopril,TRUE,FALSE

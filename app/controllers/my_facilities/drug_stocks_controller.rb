@@ -14,8 +14,13 @@ class MyFacilities::DrugStocksController < AdminController
   before_action :redirect_unless_drug_stocks_enabled
 
   def drug_stocks
-    create_drug_report
-    @report = @query.drug_stocks_report
+    @facilities = drug_stock_enabled_facilities
+    @for_end_of_month_display = @for_end_of_month.strftime("%b-%Y")
+
+    if @facilities.present?
+      create_drug_report
+      @report = @query.drug_stocks_report
+    end
 
     respond_to do |format|
       format.html { render :drug_stocks }
@@ -26,9 +31,13 @@ class MyFacilities::DrugStocksController < AdminController
   end
 
   def drug_consumption
-    create_drug_report
-    @report = @query.drug_consumption_report
+    @facilities = drug_stock_enabled_facilities
+    @for_end_of_month_display = @for_end_of_month.strftime("%b-%Y")
 
+    if @facilities.present?
+      create_drug_report
+      @report = @query.drug_consumption_report
+    end
     respond_to do |format|
       format.html { render :drug_consumption }
       format.csv do
@@ -44,9 +53,9 @@ class MyFacilities::DrugStocksController < AdminController
 
   def create
     DrugStocksCreator.call(user: current_admin,
-                           for_end_of_month: @for_end_of_month,
-                           drug_stocks_params: drug_stocks_params[:drug_stocks],
-                           region: @region)
+      for_end_of_month: @for_end_of_month,
+      drug_stocks_params: drug_stocks_params[:drug_stocks],
+      region: @region)
     redirect_to redirect_url, notice: "Saved drug stocks"
   rescue ActiveRecord::RecordInvalid
     redirect_to redirect_url, alert: "Something went wrong, Drug Stocks were not saved."
@@ -55,10 +64,8 @@ class MyFacilities::DrugStocksController < AdminController
   private
 
   def create_drug_report
-    @facilities = drug_stock_enabled_facilities
-    @for_end_of_month_display = @for_end_of_month.strftime("%b-%Y")
     @query = DrugStocksQuery.new(facilities: @facilities,
-                                 for_end_of_month: @for_end_of_month)
+      for_end_of_month: @for_end_of_month)
     @blocks = blocks_to_display
     @district_region = @query.facility_group.region
     @drugs_by_category = @query.protocol_drugs_by_category
@@ -116,8 +123,16 @@ class MyFacilities::DrugStocksController < AdminController
   end
 
   def drug_stock_enabled_facilities
+    # Filtered list of facilities that match user selected filters,
+    # and have stock tracking enabled and at least one registered or assigned patient
+    active_facility_ids = filter_facilities
+      .joins("INNER JOIN reporting_facility_states on reporting_facility_states.facility_id = facilities.id")
+      .where("cumulative_registrations > 0 OR cumulative_assigned_patients > 0")
+      .pluck("facilities.id")
+
     filter_facilities
-      .includes(facility_group: :protocol_drugs)
-      .where(protocol_drugs: {stock_tracked: true})
+      .eager_load(facility_group: :protocol_drugs)
+      .where(protocol_drugs: {stock_tracked: true}, id: active_facility_ids)
+      .distinct("facilities.id")
   end
 end

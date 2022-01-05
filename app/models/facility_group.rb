@@ -19,6 +19,7 @@ class FacilityGroup < ApplicationRecord
   has_many :medical_histories, through: :patients
   has_many :communications, through: :appointments
   has_many :protocol_drugs, through: :protocol
+  has_one :estimated_population, through: :region, inverse_of: :region
 
   alias_method :registered_patients, :patients
 
@@ -33,6 +34,8 @@ class FacilityGroup < ApplicationRecord
   # For Regions compatibility
   delegate :district_region?, :block_region?, :facility_region?, to: :region
   delegate :cache_key, :cache_version, to: :region
+
+  attr_accessor :district_estimated_population
 
   # FacilityGroups don't actually have a state
   # This virtual attr exists simply to simulate the State -> FG/District hierarchy for Regions.
