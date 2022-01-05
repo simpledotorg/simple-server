@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# The path to hit will depend upon your local seed data.
+export PATH_TO_HIT=/reports/regions/state/diamond-islands/details
+export TEST_COUNT=10
+export USE_AUTH=true
+
+# See https://github.com/zombocom/derailed_benchmarks#running-derailed-exec for 
+# detailed docs on all the tools derailed provides.
+RAILS_ENV=profiling bundle exec derailed exec perf:test
