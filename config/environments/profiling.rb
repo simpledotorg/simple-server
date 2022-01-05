@@ -1,10 +1,10 @@
 Rails.application.configure do
-  # NOTE: for profiling purposes, you may wish to change both the below values to _true_ if you are
+  # NOTE: for profiling purposes, you want below values to _true_ if you are
   # running scripted benchmarks and would like more reliable results.  However, if you are analyzing lower level
   # performance (with flamegraphs for example), and want to see the results of changes interactively, you'll
-  # probably want to keep them both to false. Otherwise any code changes require a full restart of yoru server.
-  config.cache_classes = false
-  config.eager_load = false
+  # probably want them both to be false. Otherwise any code changes require a full restart of yoru server.
+  config.cache_classes = true
+  config.eager_load = true
 
   # Full error reports are disabled and caching is turned on.
   config.consider_all_requests_local = false
