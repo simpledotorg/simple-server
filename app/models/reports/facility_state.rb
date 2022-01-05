@@ -18,7 +18,7 @@ module Reports
     end
 
     def period
-      @period ||= Period.month(month_date)
+      Period.month(month_date)
     end
   end
 end
