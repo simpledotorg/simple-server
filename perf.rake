@@ -1,13 +1,13 @@
-require 'bundler'
+require "bundler"
 Bundler.setup
 
-require 'derailed_benchmarks'
-require 'derailed_benchmarks/tasks'
+require "derailed_benchmarks"
+require "derailed_benchmarks/tasks"
 
 class DerailedAuth < DerailedBenchmarks::AuthHelper
   def setup
-    require 'devise'
-    require 'warden'
+    require "devise"
+    require "warden"
     extend ::Warden::Test::Helpers
     extend ::Devise::TestHelpers
     Warden.test_mode!
