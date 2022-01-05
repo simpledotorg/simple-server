@@ -16,6 +16,7 @@ gem "activerecord-import"
 gem "amazing_print"
 gem "auto_strip_attributes"
 gem "bcrypt", "~> 3.1"
+gem "bcrypt_pbkdf", "~> 1.1"
 gem "bootsnap", require: false
 gem "bootstrap_form", ">= 4.5.0"
 gem "bootstrap-datepicker-rails", "~> 1.9"
@@ -31,6 +32,7 @@ gem "dhis2", require: false
 gem "diffy" # This gem is only needed for Admin::FixZoneDataController, it should be removed with the controller
 gem "discard", "~> 1.0"
 gem "dogstatsd-ruby", "~> 5.2"
+gem "ed25519", "~> 1.2"
 gem "factory_bot_rails", "~> 6.1", require: false
 gem "faker", require: false
 gem "flipper-active_record"
@@ -109,6 +111,11 @@ group :development, :test do
   gem "standard", "1.5.0", require: false
 end
 
+group :development, :test, :profiling do
+  gem "derailed_benchmarks"
+  gem "memory_profiler", require: false
+end
+
 group :development do
   gem "guard-rspec", require: false
   gem "listen"
@@ -116,7 +123,6 @@ group :development do
   gem "spring", "3.1.1"
   gem "spring-commands-rspec"
   gem "web-console", ">= 3.3.0"
-  gem "memory_profiler"
   gem "flamegraph"
 end
 
