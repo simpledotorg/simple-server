@@ -1,9 +1,13 @@
 #!/bin/bash
 
 # The path to hit will depend upon your local seed data.
-export PATH_TO_HIT=/reports/regions/state/diamond-islands/details
-export TEST_COUNT=10
-export USE_AUTH=true
+: "${PATH_TO_HIT=/reports/regions/state/diamond-islands/details}"
+: "${TEST_COUNT=10}"
+: "${USE_AUTH=true}"
+
+export PATH_TO_HIT
+export TEST_COUNT
+export USE_AUTH
 
 # See https://github.com/zombocom/derailed_benchmarks#running-derailed-exec for 
 # detailed docs on all the tools derailed provides.
