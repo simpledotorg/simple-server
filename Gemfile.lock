@@ -61,6 +61,7 @@ GEM
     autoprefixer-rails (9.7.6)
       execjs
     bcrypt (3.1.16)
+    bcrypt_pbkdf (1.1.0)
     benchmark-ips (2.9.2)
     bindex (0.8.1)
     bootsnap (1.7.2)
@@ -202,6 +203,7 @@ GEM
       dry-equalizer (~> 0.2)
       dry-logic (~> 0.4, >= 0.4.0)
       dry-types (~> 0.12.0)
+    ed25519 (1.2.4)
     erubi (1.10.0)
     execjs (2.7.0)
     factory_bot (6.1.0)
@@ -664,6 +666,7 @@ DEPENDENCIES
   amazing_print
   auto_strip_attributes
   bcrypt (~> 3.1)
+  bcrypt_pbkdf (~> 1.1)
   bootsnap
   bootstrap (~> 4.5.0)
   bootstrap-datepicker-rails (~> 1.9)
@@ -692,6 +695,7 @@ DEPENDENCIES
   discard (~> 1.0)
   dogstatsd-ruby (~> 5.2)
   dotenv-rails
+  ed25519 (~> 1.2)
   factory_bot_rails (~> 6.1)
   faker
   flamegraph
