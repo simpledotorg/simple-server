@@ -3,7 +3,7 @@
 # Note that the vars below will be overridden by preexisting values.
 # The path to hit will depend upon your local seed data.
 : "${PATH_TO_HIT=/reports/regions/state/diamond-islands/details}"
-: "${TEST_COUNT=10}"
+: "${TEST_COUNT=25}"
 : "${USE_AUTH=true}"
 # See https://github.com/zombocom/derailed_benchmarks#running-derailed-exec for 
 # detailed docs on all the tasks derailed provides.
