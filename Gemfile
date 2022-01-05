@@ -111,6 +111,11 @@ group :development, :test do
   gem "standard", "1.5.0", require: false
 end
 
+group :development, :test, :profiling do
+  gem "derailed_benchmarks"
+  gem "memory_profiler", require: false
+end
+
 group :development do
   gem "guard-rspec", require: false
   gem "listen"
@@ -118,7 +123,6 @@ group :development do
   gem "spring", "3.1.1"
   gem "spring-commands-rspec"
   gem "web-console", ">= 3.3.0"
-  gem "memory_profiler"
   gem "flamegraph"
 end
 
