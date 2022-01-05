@@ -5,11 +5,13 @@
 : "${PATH_TO_HIT=/reports/regions/state/diamond-islands/details}"
 : "${TEST_COUNT=10}"
 : "${USE_AUTH=true}"
+# See https://github.com/zombocom/derailed_benchmarks#running-derailed-exec for 
+# detailed docs on all the tasks derailed provides.
+: "${DR_TASK=perf:test}"
 
 export PATH_TO_HIT
 export TEST_COUNT
 export USE_AUTH
+export DR_TASK
 
-# See https://github.com/zombocom/derailed_benchmarks#running-derailed-exec for 
-# detailed docs on all the tools derailed provides.
-RAILS_ENV=profiling bundle exec derailed exec perf:test
+RAILS_ENV=profiling bundle exec derailed exec $DR_TASK
