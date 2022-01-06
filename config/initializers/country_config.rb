@@ -13,18 +13,7 @@ class CountryConfig
       sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+91",
       supported_genders: %w[male female transgender],
       patient_line_list_show_zone: false,
-      custom_drug_category_order: %w[hypertension_ccb hypertension_arb hypertension_diuretic],
-      dhis2_data_elements: {
-        cumulative_assigned: "Mx9MWScfIto",
-        cumulative_assigned_adjusted: "njezGZZhAHE",
-        controlled: "elWGoiZbYCa",
-        uncontrolled: "Di8ckAcPyUT",
-        missed_visits: "krLrdM8K91W",
-        ltfu: "EPF0BKHxFm3",
-        dead: "O4nEQtNS325",
-        cumulative_registrations: "oR5QO3WZ7CV",
-        monthly_registrations: "sURvoNwsSnT"
-      }
+      custom_drug_category_order: %w[hypertension_ccb hypertension_arb hypertension_diuretic]
     },
     BD: {
       abbreviation: "BD",
