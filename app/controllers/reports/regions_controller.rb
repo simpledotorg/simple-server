@@ -155,6 +155,22 @@ class Reports::RegionsController < AdminController
     end
   end
 
+  def monthly_district_report
+    return unless current_admin.feature_enabled?(:monthly_district_report)
+
+    @region ||= authorize { current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id]) }
+    @period = Period.month(params[:period] || Date.current)
+    zip = MonthlyDistrictReport::Exporter.new(@region, @period).export
+    report_date = @period.to_s.downcase
+    filename = "monthly-district-report-#{@region.slug}-#{report_date}.zip"
+
+    respond_to do |format|
+      format.zip do
+        send_data zip, filename: filename
+      end
+    end
+  end
+
   def whatsapp_graphics
     authorize { current_admin.accessible_facilities(:view_reports).any? }
 

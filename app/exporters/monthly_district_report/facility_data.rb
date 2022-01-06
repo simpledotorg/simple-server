@@ -1,5 +1,6 @@
-module MonthlyIHCIReport
+module MonthlyDistrictReport
   class FacilityData
+    include Utils
     attr_reader :repo, :district, :month
 
     def initialize(district, period_month)
@@ -44,7 +45,7 @@ module MonthlyIHCIReport
         "Total registrations" => repo.cumulative_registrations[facility_region.slug][month],
         "Patients under care" => repo.under_care[facility_region.slug][month],
         "Registrations this month" => repo.monthly_registrations[facility_region.slug][month],
-        "BP control % of all patients registered before 3 months" => repo.controlled_rates[facility_region.slug][month]
+        "BP control % of all patients registered before 3 months" => percentage_string(repo.controlled_rates[facility_region.slug][month])
       }
     end
   end
