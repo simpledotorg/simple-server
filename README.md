@@ -16,7 +16,7 @@ brew install rbenv ruby-build redis yarn postgresql@10
 
 After this is done, it is highly recommended to tune your local PostgreSQL installation, otherwise your server will get bogged down when doing things like refreshing materialized views.
 You can use [PGTune](https://pgtune.leopard.in.ua) to do this, it takes about 2 minutes. You can find your local postgresql.conf file at `/opt/homebrew/var/postgresql@10/postgresql.conf` on M1 Macs,
-and `/usr/local/var/postgres/postgresql.conf` on Intel Macs.
+and `/usr/local/var/postgresql@10/postgresql.conf` on Intel Macs.
 
 ### bin/setup
 
