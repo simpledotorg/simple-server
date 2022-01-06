@@ -1,6 +1,6 @@
 require "rails_helper"
 
-def mock_repo(repo, district, month)
+def mock_facility_repo(repo, district, month)
   allow(repo).to receive(:cumulative_registrations).and_return({
     district[:facility_1].slug => {month => 42},
     district[:facility_2].slug => {month => 23}
@@ -45,7 +45,7 @@ describe MonthlyDistrictReport::FacilityData do
       month = Period.month("2021-09-01".to_date)
 
       repo_double = instance_double(Reports::Repository)
-      mock_repo(repo_double, district, month)
+      mock_facility_repo(repo_double, district, month)
       allow(Reports::Repository).to receive(:new).and_return(repo_double)
 
       rows = described_class.new(district[:region], month).content_rows

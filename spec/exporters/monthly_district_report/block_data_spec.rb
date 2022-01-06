@@ -1,6 +1,6 @@
 require "rails_helper"
 
-def mock_repo(repo, district, month)
+def mock_block_repo(repo, district, month)
   periods = Range.new(month.advance(months: -5), month)
 
   allow(repo).to receive(:cumulative_registrations).and_return({
@@ -72,7 +72,7 @@ describe MonthlyDistrictReport::BlockData do
       periods = Range.new(month.advance(months: -5), month)
 
       repo_double = instance_double(Reports::Repository)
-      mock_repo(repo_double, district, month)
+      mock_block_repo(repo_double, district, month)
       allow(Reports::Repository).to receive(:new).and_return(repo_double)
       rows = described_class.new(district[:region], month).content_rows
 
