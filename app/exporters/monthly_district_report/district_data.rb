@@ -1,5 +1,6 @@
 module MonthlyDistrictReport
   class DistrictData
+    include Utils
     attr_reader :repo, :district, :report_month, :last_6_months
 
     def initialize(district, period_month)
@@ -105,22 +106,11 @@ module MonthlyDistrictReport
       }
     end
 
-    def last_6_months_data(data, indicator, rate = nil)
+    def last_6_months_data(data, indicator, show_as_rate = false)
       last_6_months.each_with_object({}) do |month, hsh|
-        hsh["#{indicator} - #{month}"] = if rate
-          percentage_string(data.dig(district.slug, month))
-        else
-          data.dig(district.slug, month)
-        end
+        value = data.dig(district.slug, month)
+        hsh["#{indicator} - #{month}"] = indicator_string(value, show_as_rate)
       end
-    end
-
-    def percentage_string(rate)
-      rate.to_s + "%"
-    end
-
-    def format_period(period)
-      period.value.strftime("%b'%y")
     end
   end
 end
