@@ -132,8 +132,6 @@ class Reports::RegionsController < AdminController
   end
 
   def monthly_district_data_report
-    return unless current_admin.feature_enabled?(:monthly_district_report)
-
     @region ||= authorize { current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id]) }
     @period = Period.month(params[:period] || Date.current)
     csv = MonthlyDistrictDataService.new(@region, @period).report
@@ -162,6 +160,8 @@ class Reports::RegionsController < AdminController
   end
 
   def monthly_district_report
+    return unless current_admin.feature_enabled?(:monthly_district_report)
+
     @region ||= authorize { current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id]) }
     @period = Period.month(params[:period] || Date.current)
     zip = MonthlyDistrictReport::Exporter.new(@region, @period).export

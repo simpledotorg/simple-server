@@ -442,6 +442,8 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
 
     it "retrieves the monthly district report" do
+      Flipper.enable(:monthly_district_report)
+
       district = @facility_group.region
       refresh_views
 
