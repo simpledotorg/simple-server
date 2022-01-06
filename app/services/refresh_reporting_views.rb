@@ -3,7 +3,7 @@
 class RefreshReportingViews
   prepend SentryHandler
   include ActiveSupport::Benchmarkable
-  REPORTING_VIEW_REFRESH_TIME_KEY = "last_reporting_view_refresh_time".freeze
+  REPORTING_VIEW_REFRESH_TIME_KEY = "last_reporting_view_refresh_time"
 
   def self.last_updated_at
     Rails.cache.fetch(REPORTING_VIEW_REFRESH_TIME_KEY)

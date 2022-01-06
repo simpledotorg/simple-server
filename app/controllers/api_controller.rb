@@ -8,7 +8,7 @@ class APIController < ApplicationController
   before_action :validate_facility
   before_action :validate_current_facility_belongs_to_users_facility_group
 
-  TIME_WITHOUT_TIMEZONE_FORMAT = "%FT%T.%3NZ".freeze
+  TIME_WITHOUT_TIMEZONE_FORMAT = "%FT%T.%3NZ"
 
   skip_before_action :verify_authenticity_token
 

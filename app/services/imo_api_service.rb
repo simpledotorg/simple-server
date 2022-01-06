@@ -7,10 +7,10 @@ class ImoApiService
 
   IMO_USERNAME = ENV["IMO_USERNAME"]
   IMO_PASSWORD = ENV["IMO_PASSWORD"]
-  IMO_BASE_URL = "https://sgp.imo.im/api/simple/".freeze
+  IMO_BASE_URL = "https://sgp.imo.im/api/simple/"
   # this is where the patient is redirected to when they click on the invitation card details section
-  PATIENT_REDIRECT_URL = "https://www.nhf.org.bd".freeze
-  SUPPORTED_LOCALES = ["bn-BD", "en"].freeze
+  PATIENT_REDIRECT_URL = "https://www.nhf.org.bd"
+  SUPPORTED_LOCALES = ["bn-BD", "en"]
 
   class Error < StandardError
     attr_reader :details
