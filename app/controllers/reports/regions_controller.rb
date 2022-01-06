@@ -79,16 +79,12 @@ class Reports::RegionsController < AdminController
       [@region, @region.facility_regions].flatten
     end
 
+    if current_admin.feature_enabled?(:show_call_results) && @region.state_region?
+      regions.concat(@region.district_regions)
+    end
+
     @repository = Reports::Repository.new(regions, periods: @period_range, follow_ups_v2: current_admin.feature_enabled?(:follow_ups_v2))
     chart_repo = Reports::Repository.new(@region, periods: chart_range, follow_ups_v2: current_admin.feature_enabled?(:follow_ups_v2))
-
-    district_regions = if @region.state_region?
-      [@region, @region.district_regions].flatten
-    end
-
-    if @region.state_region?
-      @district_repository = Reports::Repository.new(district_regions, periods: @period_range, follow_ups_v2: current_admin.feature_enabled?(:follow_ups_v2))
-    end
 
     @chart_data = {
       patient_breakdown: PatientBreakdownService.call(region: @region, period: @period),
