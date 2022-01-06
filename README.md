@@ -271,7 +271,7 @@ To check all the offenses throughout the codebase:
 $ bundle exec standardrb
 ```
 
-To automatically fix all offenses,
+To fix any offenses that standard can autofix, run
 
 ```bash
 $ bundle exec standardrb --fix
@@ -280,19 +280,19 @@ $ bundle exec standardrb --fix
 ### Generating seed data
 
 NOTE: Its highly recommended to tune your local PostgreSQL before generating new seed data, especially large seed data sets. See the docs for that under [Development](#development).
-To generate a full set of seed data, including facilities, users, patients with BPs, etc, execute the following command from the project root
+To generate a full set of seed data, including facilities, users, patients with BPs, etc, run the following:
 
 ```bash
 bin/rails db:seed
 ```
 
-You can always do a full reset to back to a working dataset locally - note that reset will run `db:seed` for you to get back to a working dataset.
+You can always do a full reset to get back to a working dataset locally - note that reset clears all DBs, recreates them, runs seed, and refreshes matviews.
 
 ```bash
 bin/rails db:reset
 ```
 
-Need a larger dataset? Try adding the `SEED_TYPE` variable. Available sizes are `small`, `medium`, and `large`, and `profiling`. Large and profiling take a long time to run (20 mins to an hour), but they are very helpful for performance testing.
+Need a larger dataset? Try adding the `SEED_TYPE` ENV variable. Available sizes are `small`, `medium`, and `large`, and `profiling`. Large and profiling take a long time to run (20 mins to an hour), but they are very helpful for performance testing.
 
 ```bash
 SEED_TYPE=medium bin/rails db:reset
@@ -300,7 +300,7 @@ SEED_TYPE=medium bin/rails db:reset
 SEED_TYPE=large bin/rails db:reset
 ```
 
-To purge the generated patient data _only_, run the following. Note that you usually don't want this, and a full `db:reset` is safer in terms of generating a full valid data set.
+To purge the generated patient data _only_, run the following. Note that you usually don't want this, and a full `db:reset` is safer in terms of generating a valid data set.
 
 ```bash
 $ bin/rails db:purge_users_data
