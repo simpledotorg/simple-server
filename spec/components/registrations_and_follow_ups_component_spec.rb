@@ -13,6 +13,6 @@ RSpec.describe RegistrationsAndFollowUpsComponent, type: :component do
     create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: facility)
 
     repo = Reports::Repository.new(facility, periods: jan_2020.to_period)
-    component = described_class.new(facility, current_admin: cvho, repository: repo, current_period: jan_2020.to_period)
+    described_class.new(facility, current_admin: cvho, repository: repo, current_period: jan_2020.to_period)
   end
 end
