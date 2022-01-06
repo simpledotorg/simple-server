@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Reports
   # Handles the task of returning summed values from Reports::FacilityState for an array of
   # regions. Must be called with regions all having the same region_type.

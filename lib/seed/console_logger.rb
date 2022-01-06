@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Seed
   module ConsoleLogger
     def announce(msg)

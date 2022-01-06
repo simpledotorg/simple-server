@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V3::LoginsController < APIController
   skip_before_action :current_user_present?, only: [:login_user]
   skip_before_action :validate_sync_approval_status_allowed, only: [:login_user]

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V3::FacilitiesController < Api::V3::SyncController
   include Api::V3::PublicApi
   include Memery

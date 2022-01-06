@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module NavHelper
   def active_controller?(*controllers)
     "active" if controllers.include?(params[:controller])

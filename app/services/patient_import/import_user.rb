@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PatientImport::ImportUser
   IMPORT_USER_PHONE_NUMBER = "0000000001"
 

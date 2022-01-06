@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module EthiopiaCalendarUtilities
   def self.ethiopian_to_gregorian(e_year, e_month, e_days)
     year = e_year + 8

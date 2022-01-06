@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class EmailAuthentications::PasswordValidationsController < ApplicationController
   def create
     auth = EmailAuthentication.new(password: params[:password])

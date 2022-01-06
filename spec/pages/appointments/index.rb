@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module AppointmentsPage
   class Index < ApplicationPage
     INFORMATION = {css: "p.info"}.freeze

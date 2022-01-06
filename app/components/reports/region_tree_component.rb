@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Reports::RegionTreeComponent < ViewComponent::Base
   attr_reader :parent, :children
 

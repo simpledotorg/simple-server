@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MergeTeleconsultationService
   def self.merge(*args)
     new(*args).merge

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TelemedReportMailer < ApplicationMailer
   def email_report(period_start:, period_end:, report_filename:, report_csv:)
     @period_start = period_start

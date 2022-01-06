@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Csv::FacilitiesParser
   CSV::Converters[:strip_whitespace] = ->(value) {
     begin

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V3::PatientPhoneNumberTransformer
   class << self
     def to_response(phone_number)

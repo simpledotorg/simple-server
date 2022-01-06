@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Qa::PurgesController < APIController
   require "tasks/scripts/purge_users_data"
 

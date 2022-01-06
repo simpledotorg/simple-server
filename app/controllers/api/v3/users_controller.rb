@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V3::UsersController < APIController
   skip_before_action :current_user_present?, only: [:register, :find, :request_otp]
   skip_before_action :validate_sync_approval_status_allowed, only: [:register, :find, :request_otp]

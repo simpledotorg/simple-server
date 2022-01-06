@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module AdminPage
   module Organizations
     class New < ApplicationPage

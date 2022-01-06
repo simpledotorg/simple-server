@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AppointmentNotificationService
   def self.send_after_missed_visit(*args)
     new(*args).send_after_missed_visit

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DrugStocksCreator
   def self.call(*args)
     new(*args).call

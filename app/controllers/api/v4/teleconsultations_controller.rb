@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V4::TeleconsultationsController < Api::V4::SyncController
   def sync_from_user
     __sync_from_user__(teleconsultation_params)

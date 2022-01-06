@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PatientImport::Validator
   attr_reader :params, :errors
 

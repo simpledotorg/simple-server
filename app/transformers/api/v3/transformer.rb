@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V3::Transformer
   class << self
     def redirect_to_deduped_patient(attributes)

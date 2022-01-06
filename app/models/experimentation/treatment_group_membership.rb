@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Experimentation
   class TreatmentGroupMembership < ApplicationRecord
     belongs_to :treatment_group

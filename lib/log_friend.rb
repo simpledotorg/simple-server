@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # LogFriend makes it easy to do quick, easy logging in dev/test with output that includes
 # the name of object being logged.
 # For example:

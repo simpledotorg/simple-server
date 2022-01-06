@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V3::EncountersController < Api::V3::SyncController
   before_action :stub_syncing_from_user, only: [:sync_from_user]
   before_action :stub_syncing_to_user, only: [:sync_to_user]

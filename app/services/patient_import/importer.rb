@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PatientImport::Importer
   include Api::V3::SyncEncounterObservation
   include Api::V3::RetroactiveDataEntry

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PatientListDownloadJob < ApplicationJob
   def perform(recipient_email, model_type, params, with_medication_history: false)
     case model_type

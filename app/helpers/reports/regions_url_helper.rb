@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Reports::RegionsUrlHelper
   def reports_region_facility_details_path(facility, options = {})
     options.with_defaults! report_scope: :facility

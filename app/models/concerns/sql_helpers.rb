@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SQLHelpers
   #
   # This is useful for breaking up the recording time in various time-periods in SQL.

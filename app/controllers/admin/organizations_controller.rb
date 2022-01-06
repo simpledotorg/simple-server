@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Admin::OrganizationsController < AdminController
   before_action :set_organization, only: [:edit, :update, :destroy]
 

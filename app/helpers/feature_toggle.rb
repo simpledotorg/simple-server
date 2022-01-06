@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module FeatureToggle
   def self.enabled?(feature_name)
     toggle_name = "ENABLE_#{feature_name}"

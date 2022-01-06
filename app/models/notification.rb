@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Notification < ApplicationRecord
   belongs_to :subject, optional: true, polymorphic: true
   belongs_to :patient

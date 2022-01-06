@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V4::UserTransformer
   class << self
     def to_response(user)

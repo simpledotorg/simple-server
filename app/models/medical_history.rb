@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MedicalHistory < ApplicationRecord
   include Mergeable
   belongs_to :patient, optional: true

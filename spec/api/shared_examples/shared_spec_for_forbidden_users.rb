@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 RSpec.shared_examples "returns 403 for post requests for forbidden users" do |request_key|

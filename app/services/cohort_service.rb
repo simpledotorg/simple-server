@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CohortService
   include BustCache
   CACHE_VERSION = 3

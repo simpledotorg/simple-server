@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class FacilityAnalyticsQuery
   include BustCache
   include DashboardHelper

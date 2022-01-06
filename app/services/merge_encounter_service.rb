@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MergeEncounterService
   OBSERVATION_NAMES = [:blood_pressures, :blood_sugars].freeze
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class BloodPressure < ApplicationRecord
   include Mergeable
   include Hashable

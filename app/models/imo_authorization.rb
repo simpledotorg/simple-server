@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ImoAuthorization < ApplicationRecord
   belongs_to :patient
   validates :last_invited_at, presence: true

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class FacilityStatsService
   attr_reader :stats_by_size
 

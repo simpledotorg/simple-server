@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :passport_authentication do
     otp { rand(100_000..999_999).to_s }

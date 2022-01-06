@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TracerJob
   include Sidekiq::Worker
   sidekiq_options retry: false # job will be discarded if it fails

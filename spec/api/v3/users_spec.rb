@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "swagger_helper"
 
 describe "Users v3 API", swagger_doc: "v3/swagger.json" do

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ProtocolDrug < ApplicationRecord
   belongs_to :protocol
   has_many :drug_stocks

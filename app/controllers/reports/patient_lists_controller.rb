@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Reports::PatientListsController < AdminController
   def show
     scope = if region_class == "facility_group"

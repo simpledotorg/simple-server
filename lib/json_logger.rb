@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class JsonLogger < Ougai::Logger
   include ActiveSupport::LoggerThreadSafeLevel
   include LoggerSilence

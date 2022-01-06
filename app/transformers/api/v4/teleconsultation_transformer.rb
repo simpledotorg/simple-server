@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V4::TeleconsultationTransformer
   class << self
     def from_request(teleconsultation)

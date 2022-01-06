@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "features_helper"
 
 RSpec.feature "Owner Login as Admin", type: :feature do

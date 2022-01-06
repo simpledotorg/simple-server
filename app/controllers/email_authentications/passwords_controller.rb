@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class EmailAuthentications::PasswordsController < Devise::PasswordsController
   def edit
     users_email_authentication = resource_class.with_reset_password_token(params["reset_password_token"])

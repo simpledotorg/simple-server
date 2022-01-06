@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ActivityService
   def initialize(region, diagnosis: :hypertension, period: :month, include_current_period: true, group: nil, last: nil)
     @region = region

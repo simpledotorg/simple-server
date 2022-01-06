@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Navigations
   class DashboardPageNavigation < ApplicationPage
     LOGOUT_BUTTON = "#nav-more-logout"

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 json.v1 @countries.each do |country|
   country_config = CountryConfig.for(country)
 

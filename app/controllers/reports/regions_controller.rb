@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Reports::RegionsController < AdminController
   include Pagination
   include GraphicsDownload

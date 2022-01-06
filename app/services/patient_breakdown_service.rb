@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PatientBreakdownService
   include BustCache
   CACHE_VERSION = 1

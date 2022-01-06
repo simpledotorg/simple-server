@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 namespace :dell_demo do
   desc 'Take a batch of patients from Simple Server
         and push them to the Dell NCD staging server through the Enrollment API'

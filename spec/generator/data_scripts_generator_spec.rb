@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 require_relative "../../lib/generators/data_script/data_script_generator"
 

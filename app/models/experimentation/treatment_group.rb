@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Experimentation
   class TreatmentGroup < ActiveRecord::Base
     belongs_to :experiment

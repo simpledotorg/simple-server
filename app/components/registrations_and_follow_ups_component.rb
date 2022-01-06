@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RegistrationsAndFollowUpsComponent < ViewComponent::Base
   include Reports::RegionsUrlHelper
   attr_reader :region

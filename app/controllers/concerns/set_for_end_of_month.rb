@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SetForEndOfMonth
   def set_for_end_of_month
     # Defaults to current month if it's the last week of the month.

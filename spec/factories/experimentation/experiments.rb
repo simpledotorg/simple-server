@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :experiment, class: Experimentation::Experiment do
     name { Faker::Lorem.unique.word }

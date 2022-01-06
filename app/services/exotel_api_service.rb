@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ExotelAPIService
   BASE_PATH = "https://api.exotel.com/v1/Accounts/"
   RESPONSE_FORMAT = ".json"

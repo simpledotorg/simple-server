@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ApprovalNotifierMailer < ApplicationMailer
   attr_reader :user
 

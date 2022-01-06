@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V3::AppointmentTransformer
   class << self
     def creation_facility_id(payload)

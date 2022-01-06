@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :exotel_phone_number_detail, class: "ExotelPhoneNumberDetail" do
     transient do

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V3::PatientsController < Api::V3::SyncController
   def sync_from_user
     __sync_from_user__(patients_params)

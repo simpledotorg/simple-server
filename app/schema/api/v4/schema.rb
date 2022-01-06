@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V4::Schema
   class << self
     def process_token

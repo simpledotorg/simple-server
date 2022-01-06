@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CallSession
   EXPIRE_CALL_SESSION_IN_SECONDS = 1.day.seconds.to_i
 

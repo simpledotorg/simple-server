@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module AssetsHelper
   def inline_file(asset_name)
     if (asset = Rails.application.assets&.find_asset(asset_name))

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Admin::ProtocolDrugsController < AdminController
   before_action :set_protocol
   before_action :set_protocol_drug, only: [:show, :edit, :update, :destroy]

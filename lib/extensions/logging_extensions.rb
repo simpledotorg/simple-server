@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module LoggingExtensions
   # Create our default log formatter so that we can use it everywhere, and keep formats consistent.
   def self.default_log_formatter

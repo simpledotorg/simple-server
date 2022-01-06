@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AppointmentNotification::MissedVisitJob < ApplicationJob
   queue_as :high
 

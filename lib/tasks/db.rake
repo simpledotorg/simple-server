@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 namespace :db do
   desc "Refresh reporting views for dashboards"
   task refresh_reporting_views: :environment do

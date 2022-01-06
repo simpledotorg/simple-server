@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PatientPhoneNumber < ApplicationRecord
   include Mergeable
   include PhoneNumberLocalizable

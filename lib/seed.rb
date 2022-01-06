@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Seed
   module Helpers
     extend ActionView::Helpers::DateHelper

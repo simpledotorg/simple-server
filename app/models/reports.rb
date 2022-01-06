@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Reports
   REGISTRATION_BUFFER_IN_MONTHS = 3
   MAX_MONTHS_OF_DATA = 24

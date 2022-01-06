@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module TwilioSMSDeliveryHelper
   def set_twilio_signature_header(url, params)
     request.headers["X-Twilio-Signature"] =

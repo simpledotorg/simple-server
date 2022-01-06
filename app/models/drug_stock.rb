@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DrugStock < ApplicationRecord
   belongs_to :facility, optional: true
   belongs_to :region

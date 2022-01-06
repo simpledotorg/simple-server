@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V3::PayloadValidator
   include ActiveModel::Model
 

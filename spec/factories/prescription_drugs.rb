@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :prescription_drug do
     id { SecureRandom.uuid }

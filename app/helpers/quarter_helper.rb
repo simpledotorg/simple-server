@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # NOTE: The Quarter value object is preferred over these static methods, consider using
 # that object for a more object oriented apporach if you need to iterate over quarters or
 # get previous / next quarters.

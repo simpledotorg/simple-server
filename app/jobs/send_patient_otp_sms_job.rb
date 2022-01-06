@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SendPatientOtpSmsJob < ApplicationJob
   def perform(passport_authentication)
     phone_number = passport_authentication.patient&.latest_mobile_number

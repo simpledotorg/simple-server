@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Experimentation
   class StalePatientExperiment < NotificationsExperiment
     PATIENT_VISITED_SINCE = -365.days.freeze

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DataScript
   attr_reader :logger
 

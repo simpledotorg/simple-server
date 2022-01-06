@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module MonthlyDistrictReport
   module Utils
     def percentage_string(rate)

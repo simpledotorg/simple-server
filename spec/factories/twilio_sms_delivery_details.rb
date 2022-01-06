@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :twilio_sms_delivery_detail do
     session_id { SecureRandom.uuid }

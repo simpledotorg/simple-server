@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 require "./spec/support/twilio_sms_delivery_helper"
 

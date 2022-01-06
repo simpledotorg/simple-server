@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :call_log do
     id { Faker::Number.unique.number }

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 desc "Create an admin user"
 task :create_admin_user, [:name, :email, :password] => :environment do |_t, args|
   require "tasks/scripts/create_admin_user"

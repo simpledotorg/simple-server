@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PatientReportableMatview
   extend ActiveSupport::Concern
   include PatientReportable

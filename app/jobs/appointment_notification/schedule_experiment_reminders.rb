@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AppointmentNotification::ScheduleExperimentReminders < ApplicationJob
   queue_as :high
   class << self

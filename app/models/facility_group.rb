@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class FacilityGroup < ApplicationRecord
   extend FriendlyId
   extend RegionSource

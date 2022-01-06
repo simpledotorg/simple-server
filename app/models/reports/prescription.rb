@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Reports
   class Prescription < Reports::View
     self.table_name = "reporting_prescriptions"

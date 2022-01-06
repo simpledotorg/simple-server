@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 # Shorthand for adding prescription drugs, since we do it a lot in this spec

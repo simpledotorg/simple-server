@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module DrugStockHelper
   def drug_stock_region_label(region)
     if region.district_region?

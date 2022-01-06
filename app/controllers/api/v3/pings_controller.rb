@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V3::PingsController < APIController
   skip_before_action :authenticate, only: [:show]
   skip_before_action :validate_facility, only: [:show]

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V3::EncounterTransformer
   class << self
     def from_nested_request(payload_attributes)

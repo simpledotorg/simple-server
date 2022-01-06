@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MyFacilities::DrugStocksController < AdminController
   include Pagination
   include MyFacilitiesFiltering

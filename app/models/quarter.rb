@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Quarter
   include Comparable
   PARSE_REGEX = /\AQ(\d)-(\d{4})\z/

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Reports
   module Refreshable
     # Refresh a materialized view.

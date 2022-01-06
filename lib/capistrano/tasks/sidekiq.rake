@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 set :sidekiq_service_name, "sidekiq"
 
 namespace :sidekiq do

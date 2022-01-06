@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Period
   REPORTING_TIME_ZONE = CountryConfig.current[:time_zone] || "Asia/Kolkata"
 

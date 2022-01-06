@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Reports
   class PatientFollowUp < Reports::View
     self.table_name = "reporting_patient_follow_ups"

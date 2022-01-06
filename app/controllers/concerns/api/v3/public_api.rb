@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api::V3::PublicApi
   extend ActiveSupport::Concern
   included do

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module AdminPage
   module Protocols
     class Show < ApplicationPage

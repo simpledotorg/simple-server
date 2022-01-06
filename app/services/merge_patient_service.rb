@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MergePatientService
   def initialize(payload, request_metadata:)
     @payload = payload

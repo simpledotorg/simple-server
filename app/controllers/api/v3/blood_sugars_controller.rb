@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V3::BloodSugarsController < Api::V3::SyncController
   include Api::V3::SyncEncounterObservation
   include Api::V3::RetroactiveDataEntry

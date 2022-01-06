@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 namespace :exotel_tasks do
   desc "Get phone number details from exotel"
   task update_all_patients_phone_number_details: :environment do

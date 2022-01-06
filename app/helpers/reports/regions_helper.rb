@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Reports::RegionsHelper
   def sum_registration_counts(repository, *keys)
     slug, user_id = keys

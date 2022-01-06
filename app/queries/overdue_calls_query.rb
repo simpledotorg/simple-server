@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class OverdueCallsQuery
   def count(region, period_type, group_by: nil)
     query = Reports::OverdueCalls

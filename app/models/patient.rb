@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Patient < ApplicationRecord
   include ApplicationHelper
   include Mergeable

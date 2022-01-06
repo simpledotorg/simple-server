@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # See https://www.twilio.com/docs/iam/test-credentials#test-sms-messages-parameters-From
 # https://www.twilio.com/docs/whatsapp/sandbox#what-is-the-twilio-sandbox-for-whatsapp
 # Twilio does not offer a true sandbox environment that separates logs from production.

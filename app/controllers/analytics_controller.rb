@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AnalyticsController < AdminController
   around_action :set_reporting_time_zone
   before_action :set_quarter, only: [:whatsapp_graphics]

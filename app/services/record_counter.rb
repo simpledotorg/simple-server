@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RecordCounter
   MODELS_TO_COUNT = [
     Appointment,

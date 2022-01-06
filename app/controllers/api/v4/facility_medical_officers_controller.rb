@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V4::FacilityMedicalOfficersController < APIController
   def sync_to_user
     medical_officers = current_facility_group.facilities

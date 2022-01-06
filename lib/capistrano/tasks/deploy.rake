@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 namespace :deploy do
   before :starting, :check_sidekiq_hooks do
     invoke "sidekiq:add_default_hooks"

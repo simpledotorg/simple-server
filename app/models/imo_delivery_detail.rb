@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ImoDeliveryDetail < ApplicationRecord
   has_one :communication, as: :detailable
 

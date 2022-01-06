@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RunnerTrace
   prepend SentryHandler
   class Error < StandardError

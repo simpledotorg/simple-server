@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Admin::ErrorTracesController < AdminController
   before_action :require_power_user
 

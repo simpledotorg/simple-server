@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PatientImport
   class SpreadsheetTransformer
     attr_reader :data, :facility

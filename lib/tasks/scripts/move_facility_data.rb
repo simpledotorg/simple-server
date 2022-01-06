@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MoveFacilityData
   attr_reader :user, :source_facility, :destination_facility
 

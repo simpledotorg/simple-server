@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Reports
   class SchemaV2
     include BustCache

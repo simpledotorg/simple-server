@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Seed
   class Config
     # By default the fast seed config will be used for dev. You can override this via the ENV var SEED_TYPE

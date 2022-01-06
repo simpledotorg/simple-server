@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TwilioSmsDeliveryDetail < ApplicationRecord
   has_one :communication, as: :detailable
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Flipperable
   def flipper_id
     "#{self.class.name};#{id}"

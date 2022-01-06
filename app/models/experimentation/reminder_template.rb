@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Experimentation
   class ReminderTemplate < ActiveRecord::Base
     belongs_to :treatment_group

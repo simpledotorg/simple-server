@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :treatment_group_membership, class: Experimentation::TreatmentGroupMembership do
     association :patient, factory: :patient

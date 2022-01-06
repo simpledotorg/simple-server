@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V3::PrescriptionDrugTransformer
   class << self
     def to_response(prescription_drug)

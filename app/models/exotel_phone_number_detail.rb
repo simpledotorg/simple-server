@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ExotelPhoneNumberDetail < ApplicationRecord
   belongs_to :patient_phone_number
 

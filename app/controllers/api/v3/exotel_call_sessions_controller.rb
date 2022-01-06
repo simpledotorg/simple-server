@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V3::ExotelCallSessionsController < ApplicationController
   SCHEDULE_CALL_LOG_JOB_AFTER = 30.minutes
 

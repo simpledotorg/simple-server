@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module DayHelper
   def last_n_days(n:, inclusive: false)
     range = inclusive ? (0..(n - 1)) : (1..n)

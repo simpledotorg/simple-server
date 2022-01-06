@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MessagePatients
   def self.call(*args)
     new(*args).call

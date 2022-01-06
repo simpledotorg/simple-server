@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This is a medium-term temporary class that periodically sweeps to check if regions are in a consistent state
 # It can be removed after good progress has been made around Regions work and we're confident of our work overall.
 #

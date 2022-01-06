@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This object keeps Facility Group in sync with related regions
 #
 # These callbacks are medium-term temporary.

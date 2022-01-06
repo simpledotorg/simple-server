@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Ensure that metrics are flushed to Datadog after the execution of jobs.
 # See https://github.com/DataDog/dogstatsd-ruby/blob/master/examples/sidekiq_example.rb for more details.
 module SidekiqMiddleware

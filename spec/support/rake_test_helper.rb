@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module RakeTestHelper
   def task_name
     self.class.top_level_description

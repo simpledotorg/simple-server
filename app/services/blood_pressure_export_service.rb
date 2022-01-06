@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class BloodPressureExportService
   require "csv"
   include ActionView::Helpers::NumberHelper

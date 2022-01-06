@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MonthlyStateDataService
   attr_reader :region, :period, :months, :repo, :dashboard_analytics
   def initialize(region, period)

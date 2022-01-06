@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :imo_delivery_detail do
     post_id { "imo_post_id" }

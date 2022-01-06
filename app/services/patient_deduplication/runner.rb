@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PatientDeduplication
   class Runner
     prepend SentryHandler

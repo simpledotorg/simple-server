@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Reports
   module RegionCaching
     # Generate all necessary cache keys for a calculation, then yield to the block for every entry.

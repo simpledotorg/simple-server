@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SimpleServerEnvHelper
   CUSTOMIZED_ENVS = %w[development demo qa sandbox production].freeze
   ENV_ABBREVIATIONS = {development: "DEV", demo: "DEMO", test: "TEST", qa: "QA", sandbox: "SBX"}.freeze

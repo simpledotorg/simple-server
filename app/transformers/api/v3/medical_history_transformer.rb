@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V3::MedicalHistoryTransformer
   class << self
     def to_response(medical_history)

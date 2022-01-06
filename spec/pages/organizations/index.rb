@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module OrganizationsPage
   class Index < ApplicationPage
     ORGANIZATIONS = {css: "div.card"}.freeze

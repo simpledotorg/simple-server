@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Seed
   class PatientSeeder
     include ActiveSupport::Benchmarkable

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module MonthlyDistrictReport
   class DistrictData
     include Utils

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PatientLookupAuditLogJob
   include Sidekiq::Worker
 

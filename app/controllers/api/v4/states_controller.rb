@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V4::StatesController < APIController
   skip_before_action :current_user_present?, only: [:index]
   skip_before_action :validate_sync_approval_status_allowed, only: [:index]

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Imo::InviteUnsubscribedPatients
   include Sidekiq::Worker
 

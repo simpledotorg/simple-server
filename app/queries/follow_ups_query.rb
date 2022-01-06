@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class FollowUpsQuery
   def hypertension(region, period_type, group_by: nil)
     query = with(BloodPressure, period_type, at_region: region, format: Period.formatter(period_type)).with_hypertension

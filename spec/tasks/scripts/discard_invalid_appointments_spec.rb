@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 require "tasks/scripts/discard_invalid_appointments"
 

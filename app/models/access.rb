@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Access < ApplicationRecord
   ALLOWED_RESOURCES = %w[Organization FacilityGroup Facility].freeze
 

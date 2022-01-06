@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "tasks/scripts/move_facility_data"
 require "tasks/scripts/discard_invalid_appointments"
 

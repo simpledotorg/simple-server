@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DHIS2Exporter
   require "dhis2"
 

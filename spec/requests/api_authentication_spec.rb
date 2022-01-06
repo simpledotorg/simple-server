@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 RSpec.describe "Api authentication", type: :request, skip_request_store_clear: true do

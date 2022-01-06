@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "features_helper"
 
 RSpec.feature "Organization management", type: :feature do

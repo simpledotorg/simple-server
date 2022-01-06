@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PatientDeduplication
   module Stats
     class << self

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class BPMeasuresQuery
   def count(region, period_type, diagnosis: :hypertension, group_by: nil)
     query = BloodPressure

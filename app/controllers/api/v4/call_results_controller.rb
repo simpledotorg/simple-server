@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V4::CallResultsController < Api::V4::SyncController
   def sync_from_user
     __sync_from_user__(call_result_params)

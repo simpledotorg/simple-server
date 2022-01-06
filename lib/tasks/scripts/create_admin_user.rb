@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module CreateAdminUser
   def self.create_owner(name, email, password)
     user = User.create!(full_name: name,

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V3::BloodPressureTransformer < Api::V3::Transformer
   class << self
     def recorded_at(blood_pressure_payload)

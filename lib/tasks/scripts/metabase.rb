@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This script is based on https://github.com/itmi-id/metabase-migration
 # Since this uses the metabase API which can change over time, it's a good idea
 # to test run this before running against production.

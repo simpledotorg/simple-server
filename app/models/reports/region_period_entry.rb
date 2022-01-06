@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Reports
   class RegionPeriodEntry
     attr_reader :namespace, :region, :period, :calculation

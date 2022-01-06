@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class EstimatedPopulation < ApplicationRecord
   include Memery
   belongs_to :region

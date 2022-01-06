@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "swagger_helper"
 
 describe "Patient Lookup v4 API", swagger_doc: "v4/swagger.json" do

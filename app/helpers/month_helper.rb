@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module MonthHelper
   def month_start(year, month)
     Time.new(year, month)

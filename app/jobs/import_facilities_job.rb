@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ImportFacilitiesJob < ApplicationJob
   def perform(facilities)
     import_facilities = []

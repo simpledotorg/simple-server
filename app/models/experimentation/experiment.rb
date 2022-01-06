@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Experimentation
   class Experiment < ApplicationRecord
     # RECENT_EXPERIMENT_MEMBERSHIP_BUFFER should be at least as big as

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PatientReportable
   extend ActiveSupport::Concern
   LTFU_TIME = 12.months

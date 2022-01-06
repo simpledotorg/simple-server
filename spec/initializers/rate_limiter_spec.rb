@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 # Since Rate limiting is a controller middleware concern, we mark this test as a "controller"

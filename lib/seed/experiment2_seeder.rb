@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Seed
   class Experiment2Seeder
     include ActiveSupport::Benchmarkable

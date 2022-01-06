@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class LatestBloodPressuresPerPatientPerMonth < ApplicationRecord
   extend Reports::Refreshable
   include BloodPressureable

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AdminsController < AdminController
   include Pagination
   include SearchHelper

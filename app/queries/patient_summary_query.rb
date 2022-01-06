@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PatientSummaryQuery
   FILTERS = {
     "only_less_than_year_overdue" => "<365 days overdue",

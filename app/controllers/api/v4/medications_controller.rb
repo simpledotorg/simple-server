@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V4::MedicationsController < Api::V4::SyncController
   include Api::V3::PublicApi
 

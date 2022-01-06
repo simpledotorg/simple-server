@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DiscardInvalidAppointments
   def initialize(patient:, dry_run: true)
     @patient = patient

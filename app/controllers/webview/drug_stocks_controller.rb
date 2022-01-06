@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This controller is meant to be used from webviews from the Android app _only_,
 # hence we handle authentication ourselves from params passed from the client.
 class Webview::DrugStocksController < ApplicationController

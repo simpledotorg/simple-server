@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V4::PatientsController < APIController
   RETENTION_TYPES = {temporary: "temporary", permanent: "permanent"}
 

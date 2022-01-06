@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V3::BloodSugarTransformer < Api::V3::Transformer
   class << self
     def to_response(blood_sugar)

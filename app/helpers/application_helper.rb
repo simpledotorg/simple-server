@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ApplicationHelper
   DEFAULT_PROGRAM_INCEPTION_DATE = Time.new(2018, 0o1, 0o1)
   STANDARD_DATE_DISPLAY_FORMAT = "%d-%^b-%Y"

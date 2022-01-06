@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SearchHelper
   def search_query
     params[:search_query]

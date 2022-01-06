@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Metrics
   def self.with_object(object)
     prefix = object.class.name.underscore.tr("/", ".")

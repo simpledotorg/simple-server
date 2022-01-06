@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :treatment_group, class: Experimentation::TreatmentGroup do
     description { Faker::Lorem.unique.word }

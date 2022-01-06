@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MarkTransferredPatient
   TRANSFER_CANCEL_REASONS = %w[moved_to_private public_hospital_transfer]
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Admin::FacilitiesController < AdminController
   include FileUploadable
   include Pagination

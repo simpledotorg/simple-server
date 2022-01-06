@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :phone_number_authentication do
     phone_number { Faker::PhoneNumber.phone_number }

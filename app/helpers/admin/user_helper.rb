@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Admin::UserHelper
   def facility_search_options
     current_admin.accessible_facilities(:manage) \

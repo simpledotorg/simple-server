@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This emulates what progress tab shows in the API, but does it within our dashboard.
 # The main purpose currently is to make it easier to develop on progress tab in dev.
 class Reports::ProgressController < AdminController

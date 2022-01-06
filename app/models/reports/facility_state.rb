@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Reports
   class FacilityState < Reports::View
     self.table_name = "reporting_facility_states"

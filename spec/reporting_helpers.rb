@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ReportingHelpers
   def freeze_time_for_reporting_specs(example)
     # We need to enforce a known time for these tests, otherwise we will have intermittent failures. For example,

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PhoneNumberAuthentication
   class Authenticate
     class Result < Struct.new(:authentication, :success, :error_message)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PatientSummary < ActiveRecord::Base
   self.primary_key = :id
 

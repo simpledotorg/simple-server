@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api::V3::RetroactiveDataEntry
   extend ActiveSupport::Concern
   included do

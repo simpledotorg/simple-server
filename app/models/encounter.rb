@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Encounter < ApplicationRecord
   include Mergeable
   extend SQLHelpers

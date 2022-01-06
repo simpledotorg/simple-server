@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This is the materialized version of the PatientSummary view
 # It is maintained separately so that the PatientSummary view can be slowly deprecated over time in favor of this
 class MaterializedPatientSummary < ActiveRecord::Base

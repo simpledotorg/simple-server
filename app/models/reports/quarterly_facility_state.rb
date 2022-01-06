@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Reports
   class QuarterlyFacilityState < Reports::View
     self.table_name = "reporting_quarterly_facility_states"

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class FacilityBusinessIdentifier < ApplicationRecord
   belongs_to :facility
 

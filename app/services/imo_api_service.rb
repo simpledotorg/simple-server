@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # API Documentation: https://docs.google.com/document/d/1zaTouxdfGg4IqrkCk59KAP905vwynON5Up2ckUax8Mg/edit
 
 class ImoApiService

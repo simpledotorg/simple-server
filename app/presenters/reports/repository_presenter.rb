@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Reports
   class RepositoryPresenter < SimpleDelegator
     def self.create(regions, period:, months: Reports::MAX_MONTHS_OF_DATA, follow_ups_v2: false)

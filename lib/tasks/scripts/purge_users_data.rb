@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PurgeUsersData
   def self.perform
     abort "Can't run this task in #{ENV["SIMPLE_SERVER_ENV"]}!'" if ENV["SIMPLE_SERVER_ENV"] == "production"

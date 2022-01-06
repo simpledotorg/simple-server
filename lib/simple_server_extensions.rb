@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SimpleServerExtensions
   # We first check for the REVISION file that Capistrano deploys for us, otherwise we fall
   # back to using git to grab it from the live repo (for dev/test environments)

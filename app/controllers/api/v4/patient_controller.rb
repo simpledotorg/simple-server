@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V4::PatientController < PatientAPIController
   skip_before_action :validate_current_patient, only: [:activate, :login]
   skip_before_action :authenticate, only: [:activate, :login]

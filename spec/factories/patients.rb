@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :patient do
     common_names = {female: %w[Anjali Divya Ishita Priya Priyanka Riya Shreya Tanvi Tanya Vani],

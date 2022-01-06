@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 json.patient do
   json.id @current_patient.id
   json.full_name @current_patient.full_name

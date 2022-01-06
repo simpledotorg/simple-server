@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class LiberalEnumType < ActiveRecord::Enum::EnumType
   # suppress ArgumentError
   # returns a value to be able to use +inclusion+ validation

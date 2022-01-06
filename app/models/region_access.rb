@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RegionAccess
   include Memery
   attr_reader :user_access

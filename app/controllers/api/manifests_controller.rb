@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::ManifestsController < ApplicationController
   def show
     if ENV["SIMPLE_SERVER_ENV"].in?(%w[development profiling review android_review])

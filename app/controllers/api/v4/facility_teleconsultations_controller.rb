@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V4::FacilityTeleconsultationsController < APIController
   before_action :set_facility
   before_action :validate_teleconsultation_facility_belongs_to_users_facility_group

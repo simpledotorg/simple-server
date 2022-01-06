@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Seed
   module Gender
     def self.random_gender

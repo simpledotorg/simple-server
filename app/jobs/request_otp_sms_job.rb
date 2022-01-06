@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RequestOtpSmsJob < ApplicationJob
   def perform(user)
     context = {

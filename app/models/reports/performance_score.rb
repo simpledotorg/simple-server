@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Reports
   class PerformanceScore
     IDEAL_CONTROL_RATE = 0.7

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Admin::FacilityGroupsController < AdminController
   before_action :set_facility_group, only: [:show, :edit, :update, :destroy]
   before_action :set_organizations, only: [:new, :edit, :update, :create]

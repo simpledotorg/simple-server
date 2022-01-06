@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V4::MedicationTransformer < Api::V4::Transformer
   class << self
     def to_response(medication)

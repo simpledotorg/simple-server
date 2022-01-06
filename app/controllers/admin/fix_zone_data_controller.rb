@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Admin::FixZoneDataController < AdminController
   # This cleanup is only being done for IHCI at the moment
   CANONICAL_ZONES_FILES = {"IHCI" => "config/data/india/ihci/canonical_zones.yml"}

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ExotelCallDetailsJob < ApplicationJob
   DEFAULT_RETRY_TIMES = 5
   DEFAULT_RETRY_SECONDS = 10.minutes.seconds.to_i

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Csv::FacilitiesValidator
   def self.validate(facilities)
     new(facilities).validate

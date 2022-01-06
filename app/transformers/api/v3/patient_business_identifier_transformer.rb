@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V3::PatientBusinessIdentifierTransformer
   class << self
     def to_response(business_identifier)

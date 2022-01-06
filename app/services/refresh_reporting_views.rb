@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RefreshReportingViews
   prepend SentryHandler
   include ActiveSupport::Benchmarkable

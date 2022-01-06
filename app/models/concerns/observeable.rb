@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # This concern is different from the association `Observable` or the Rails `Observable` pattern
 # Hence, it is named `Observeable` to avoid conflicts

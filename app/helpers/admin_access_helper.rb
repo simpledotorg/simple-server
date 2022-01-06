@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module AdminAccessHelper
   def access_facility_count(available)
     "#{available} #{"facility".pluralize(available)}"

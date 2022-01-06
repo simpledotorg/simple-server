@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module DashboardHelper
   def number_or_dash_with_delimiter(value, options = {})
     return "-" if value.blank? || value.zero?

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RegionsSearchController < AdminController
   include ActiveSupport::Benchmarkable
   delegate :cache, to: Rails

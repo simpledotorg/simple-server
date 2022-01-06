@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CallResult < ApplicationRecord
   include Mergeable
   belongs_to :appointment, optional: true

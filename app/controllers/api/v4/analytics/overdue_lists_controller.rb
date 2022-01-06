@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V4::Analytics::OverdueListsController < Api::V4::AnalyticsController
   def show
     respond_to do |format|

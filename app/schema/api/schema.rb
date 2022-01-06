@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::Schema
   class << self
     def swagger_info(version)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Admin::ProtocolsController < AdminController
   before_action :set_protocol, only: [:show, :edit, :update, :destroy]
 

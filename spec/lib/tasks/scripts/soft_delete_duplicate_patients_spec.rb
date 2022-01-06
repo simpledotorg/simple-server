@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 require "tasks/scripts/soft_delete_duplicate_patients"
 

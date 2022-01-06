@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :blood_pressure do
     id { SecureRandom.uuid }

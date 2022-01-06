@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Useful for reporting to Sentry from cron scheduled `runner` tasks - other contexts already have Sentry
 # middlewares setup that do this for us.
 #

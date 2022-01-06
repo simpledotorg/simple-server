@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Preview all emails at http://localhost:3000/rails/mailers/approval_notifier
 class ApprovalNotifierPreview < ActionMailer::Preview
   def registration_approval_email

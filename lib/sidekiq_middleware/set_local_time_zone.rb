@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SidekiqMiddleware
   class SetLocalTimeZone
     def call(_worker, _job, _queue)

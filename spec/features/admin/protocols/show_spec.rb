@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "features_helper"
 
 RSpec.feature "test medication list detail page functionality", type: :feature do

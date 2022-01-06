@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AppointmentNotification::Worker
   include Rails.application.routes.url_helpers
   include Sidekiq::Worker

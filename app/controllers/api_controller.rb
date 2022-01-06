@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class APIController < ApplicationController
   before_action :current_user_present?
   before_action :validate_sync_approval_status_allowed
