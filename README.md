@@ -5,13 +5,6 @@
 
 This is the backend for the Simple app to help track hypertensive patients across a population.
 
-## Table of Contents
-
-* [Development](#development)
-* [Documentation](#documentation)
-* [Deployment](#deployment)
-* [Contributing](#contributing)
-
 ## Development
 
 We have a `bin/setup` script that does most of the work of getting things setup, but you need a few things in place first.
@@ -22,7 +15,8 @@ brew install rbenv ruby-build redis yarn postgresql@10
 ```
 
 After this is done, it is highly recommended to tune your local PostgreSQL installation, otherwise your server will get bogged down when doing things like refreshing materialized views.
-You can use [PGTune](https://pgtune.leopard.in.ua) to do this, it takes about 5 minutes.
+You can use [PGTune](https://pgtune.leopard.in.ua) to do this, it takes about 2 minutes. You can find your local postgresql.conf file at `/opt/homebrew/var/postgresql@10/postgresql.conf` on M1 Macs,
+and `/usr/local/var/postgres/postgresql.conf` on Intel Macs.
 
 ### bin/setup
 
@@ -90,10 +84,7 @@ docker compose down --volumes
 If the included `bin/setup` script fails for some reason, you can also manually
 set up the application step by step. You can do so as follows.
 
-First, you need to [install
-ruby](https://www.ruby-lang.org/en/documentation/installation). It is
-recommended to use [rbenv](https://github.com/rbenv/rbenv) to manage ruby
-versions. Note that we currently use Bundler version 2.2.29, so that is also hardcoded below.
+First, you need to [install ruby](https://www.ruby-lang.org/en/documentation/installation). It is recommended to use [rbenv](https://github.com/rbenv/rbenv) to manage ruby versions. Note that we currently use Bundler version 2.2.29, so that is also hardcoded below.
 
 ```bash
 gem install bundler -v 2.2.29
@@ -142,7 +133,7 @@ json.endpoint "<HTTPS URL>/api/"
 
 #### Workers
 
-We use [sidekiq](https://github.com/mperham/sidekiq) to run async tasks. To run, first make sure you've done the normal dev setup, then start redis:
+We use [sidekiq](https://github.com/mperham/sidekiq) to run async tasks. To run them locally you need to start redis:
 
 ```bash
 redis-server -v
