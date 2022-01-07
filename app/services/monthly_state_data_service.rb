@@ -22,44 +22,70 @@ class MonthlyStateDataService
 
   private
 
-  def section_row
-    [
-      # These just add empty spacer columns
-      Array.new(9, nil),
-      "New Registrations",
-      Array.new(5, nil),
-      "Follow-up patients",
-      Array.new(5, nil),
-      "Treatment outcomes of patients under care",
-      Array.new(4, nil),
-      "Drug availability",
-      Array.new(2, nil)
-    ].flatten
-  end
-
-  def header_row
-    month_labels = months.map { |month| month.value.strftime("%b-%Y") }
-
+  def region_headers
     [
       "#",
       "State",
-      "District",
+      "District"
+    ]
+  end
+
+  def summary_headers
+    [
       "Estimated hypertensive population",
       "Total registrations",
       "Total assigned patients",
       "Lost to follow-up patients",
       "Dead patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})",
-      "Patients under care as of #{period.end.strftime("%e-%b-%Y")}",
-      month_labels,
-      month_labels,
+      "Patients under care as of #{period.end.strftime("%e-%b-%Y")}"
+    ]
+  end
+
+  def month_headers
+    months.map { |month| month.value.strftime("%b-%Y") }
+  end
+
+  def outcome_headers
+    [
       "Patients under care as of #{period.adjusted_period.end.strftime("%e-%b-%Y")}",
       "Patients with BP controlled",
       "Patients with BP not controlled",
       "Patients with a missed visit",
-      "Patients with a visit but no BP taken",
+      "Patients with a visit but no BP taken"
+    ]
+  end
+
+  def drug_headers
+    [
       "Amlodipine",
       "ARBs/ACE Inhibitors",
       "Diuretic"
+    ]
+  end
+
+  def section_row
+    [
+      # These just add empty spacer columns
+      Array.new(region_headers.size + summary_headers.size, nil),
+      "New Registrations",
+      Array.new(month_headers.size - 1, nil),
+      "Follow-up patients",
+      Array.new(month_headers.size - 1, nil),
+      "Treatment outcomes of patients under care",
+      Array.new(outcome_headers.size - 1, nil),
+      "Drug availability",
+      Array.new(drug_headers.size - 1, nil)
+    ].flatten
+  end
+
+  def header_row
+    [
+      region_headers,
+      summary_headers,
+      month_headers,
+      month_headers,
+      outcome_headers,
+      drug_headers
     ].flatten
   end
 
