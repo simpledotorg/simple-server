@@ -180,6 +180,10 @@ module Reports
       end
     end
 
+    memoize def summaries_for(region_slug)
+      region_summaries[region_slug]
+    end
+
     private
 
     memoize def denominator(region, period, with_ltfu: false)

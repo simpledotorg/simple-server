@@ -18,6 +18,33 @@ describe Reports::SchemaV2, type: :model do
     RefreshReportingViews.new.refresh_v2
   end
 
+  it "summaries_for" do
+    facility_1, facility_2 = *FactoryBot.create_list(:facility, 2, block: "block-1", facility_group: facility_group_1).sort_by(&:slug)
+    facility_3 = FactoryBot.create(:facility, block: "block-2", facility_group: facility_group_1)
+    facilities = [facility_1, facility_2, facility_3]
+
+    facility_1_controlled = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
+    facility_1_uncontrolled = create_list(:patient, 2, full_name: "uncontrolled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
+    facility_2_controlled = create(:patient, full_name: "other facility", recorded_at: jan_2019, assigned_facility: facility_2, registration_user: user)
+
+    Timecop.freeze(jan_2020) do
+      (facility_1_controlled << facility_2_controlled).map do |patient|
+        create(:bp_with_encounter, :under_control, facility: facility_1, patient: patient, recorded_at: 15.days.ago, user: user)
+      end
+      facility_1_uncontrolled.map do |patient|
+        create(:bp_with_encounter, :hypertensive, facility: facility_1, patient: patient, recorded_at: 15.days.ago)
+      end
+    end
+
+    refresh_views
+
+    regions = [facility_group_1.region].concat(facilities.map(&:region))
+    july_2021 = Period.month("July 1st 2021")
+    range = (july_2021.advance(months: -24)..july_2021)
+    schema = described_class.new(regions, periods: range)
+    schema.summaries_for(facility_1.slug)
+  end
+
   it "returns data correctly grouped when passed mixed region types" do
     facility_1, facility_2 = *FactoryBot.create_list(:facility, 2, block: "block-1", facility_group: facility_group_1).sort_by(&:slug)
     facility_3 = FactoryBot.create(:facility, block: "block-2", facility_group: facility_group_1)
@@ -41,8 +68,11 @@ describe Reports::SchemaV2, type: :model do
     regions = [facility_group_1.region].concat(facilities.map(&:region))
     july_2021 = Period.month("July 1st 2021")
     range = (july_2021.advance(months: -24)..july_2021)
-    result = described_class.new(regions, periods: range).send(:region_summaries)
+    schema = described_class.new(regions, periods: range)
+    result = schema.send(:region_summaries)
 
+    d result
+    d schema.cumulative_assigned_patients
     expect(result[facility_group_1.slug][jan_2020.to_period]).to include("cumulative_assigned_patients" => 5)
     expect(result[facility_group_1.slug][jan_2020.to_period]).to include("adjusted_controlled_under_care" => 3)
     expect(result[facility_1.slug][jan_2020.to_period]).to include("adjusted_controlled_under_care" => 2)

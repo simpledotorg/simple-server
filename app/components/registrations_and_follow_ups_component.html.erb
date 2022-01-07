@@ -63,44 +63,46 @@
         <tr class="row-title row-total" data-sort-method="none">
           <td class="row-title row-total">
             <%= region.name %>
+            <% top_level_summaries = repository.summaries_for(region.slug) %>
           </td>
           <td class="row-total ta-center">
-            <%= number_or_dash_with_delimiter(repository.cumulative_assigned_patients[region.slug][current_period]) %>
+            <%= number_or_dash_with_delimiter(top_level_summaries.dig(current_period, "cumulative_assigned_patients")) %>
           </td>
           <td class="row-total ta-center">
-            <%= number_or_dash_with_delimiter(repository.cumulative_registrations[region.slug][current_period]) %>
+            <%= number_or_dash_with_delimiter(top_level_summaries.dig(current_period, "cumulative_registrations")) %>
           </td>
           <% range.each do |period| %>
             <td class="row-total ta-center">
-              <%= number_or_dash_with_delimiter(repository.monthly_registrations[region.slug][period]) %>
+              <%= number_or_dash_with_delimiter(top_level_summaries.dig(period, "monthly_registrations")) %>
             </td>
           <% end %>
           <% range.each do |period| %>
             <td class="row-total ta-center">
-              <%= number_or_dash_with_delimiter(repository.hypertension_follow_ups[region.slug][period]) %>
+              <%= number_or_dash_with_delimiter(top_level_summaries.dig(period, "monthly_follow_ups")) %>
             </td>
           <% end %>
         </tr>
         <% region.facility_regions.each do |resource| %>
           <% slug = resource.region.slug %>
+          <% summaries = repository.summaries_for(slug) %>
           <tr>
             <td class="row-title">
               <%= link_to resource.name, reports_region_details_path(resource.region, report_scope: :facility) %>
             </td>
             <td class="ta-center">
-              <%= number_or_dash_with_delimiter(repository.cumulative_assigned_patients[slug][current_period]) %>
+              <%= number_or_dash_with_delimiter(summaries.dig(current_period, "cumulative_assigned_patients")) %>
             </td>
             <td class="ta-center">
-              <%= number_or_dash_with_delimiter(repository.cumulative_registrations[slug][current_period]) %>
+              <%= number_or_dash_with_delimiter(summaries.dig(current_period, "cumulative_registrations")) %>
             </td>
             <% range.each do |period| %>
               <td class="ta-center">
-                <%= number_or_dash_with_delimiter(repository.monthly_registrations[slug][period]) %>
+                <%= number_or_dash_with_delimiter(summaries.dig(period, "monthly_registrations")) %>
               </td>
             <% end %>
             <% range.each do |period| %>
               <td class="ta-center">
-                <%= number_or_dash_with_delimiter(repository.hypertension_follow_ups[slug][period]) %>
+                <%= number_or_dash_with_delimiter(summaries.dig(period, "monthly_follow_ups")) %>
               </td>
             <% end %>
           </tr>

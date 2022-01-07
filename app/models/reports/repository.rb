@@ -61,6 +61,7 @@ module Reports
       uncontrolled
       visited_without_bp_taken
       monthly_overdue_calls
+      summaries_for
     ]
 
     def warm_cache
