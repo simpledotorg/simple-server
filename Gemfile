@@ -84,7 +84,7 @@ gem "slack-notifier"
 gem "squid"
 gem "stackprof", require: false
 gem "timecop", "~> 0.9.0", require: false
-gem "twilio-ruby", "~> 5.10", ">= 5.10.3"
+gem "twilio-ruby", "~> 5.62"
 gem "uglifier", ">= 1.3.0"
 gem "uuidtools", require: false
 gem "view_component"
