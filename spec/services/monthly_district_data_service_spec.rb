@@ -65,7 +65,7 @@ RSpec.describe MonthlyDistrictDataService do
       expect(follow_ups).to eq(%w[0 0 0 1 0 0])
       expect(find_in_csv(csv, region_row_index, "Patients with BP controlled")).to eq("1")
       expect(find_in_csv(csv, region_row_index, "Patients with BP not controlled")).to eq("0")
-      # expect(find_in_csv(csv, region_row_index, "Patients with a missed visit")).to eq("1")
+      expect(find_in_csv(csv, region_row_index, "Patients with a missed visit")).to eq("0")
       expect(find_in_csv(csv, region_row_index, "Patients with a visit but no BP taken")).to eq("1")
       expect(find_in_csv(csv, region_row_index, "Patients under care as of #{period.end.strftime("%e-%b-%Y")}")).to eq("2")
       expect(csv[region_row_index][30..32].uniq).to eq([nil])
