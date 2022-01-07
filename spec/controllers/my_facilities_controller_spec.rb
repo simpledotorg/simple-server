@@ -146,11 +146,10 @@ RSpec.describe MyFacilitiesController, type: :controller do
 
     it "returns a CSV of controlled data" do
       Flipper.enable(:my_facilities_csv)
-      Timecop.freeze("August 15th 2020") {
-        patients = create_list(:patient, 2, full_name: "controlled", recorded_at: 3.months.ago, assigned_facility: facility, registration_user: supervisor)
-        patients.each { |p| create(:bp_with_encounter, :under_control, facility: facility, patient: p) }
-      }
-
+      Timecop.freeze("August 15th 2020") do
+        patients = create_list(:patient, 2, full_name: "controlled", recorded_at: 4.months.ago, assigned_facility: facility, registration_user: supervisor)
+        patients.each { |p| bp = create(:bp_with_encounter, :under_control, facility: facility, patient: p) }
+      end
       Timecop.freeze("January 15th 2021") do
         refresh_views
         get :csv_maker, params: {type: "controlled_patients"}
