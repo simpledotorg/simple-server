@@ -110,14 +110,12 @@ class BloodPressureExportService
     aggregate_row["Total registered"] = aggregate_registered
 
     DATA_TYPES.each do |rate_type|
-      if !aggregate_row[rate_type]
-        aggregate_row[rate_type] = {}
-      end
-      six_month_change = stats_by_size[size][:periods][end_period][rate_type] - stats_by_size[size][:periods][start_period][rate_type]
-      aggregate_row[rate_type]["6 month change"] = number_to_percentage(six_month_change || 0, precision: 0)
+      aggregate_row[rate_type] = {} unless aggregate_row.key?(rate_type)
       (start_period..end_period).each do |period|
         aggregate_row[rate_type][period] = number_to_percentage(stats_by_size[size][:periods][period][rate_type] || 0, precision: 0)
       end
+      six_month_change = stats_by_size[size][:periods][end_period][rate_type] - stats_by_size[size][:periods][start_period][rate_type]
+      aggregate_row[rate_type]["6 month change"] = number_to_percentage(six_month_change || 0, precision: 0)
     end
     aggregate_row
   end
@@ -144,15 +142,13 @@ class BloodPressureExportService
     row["Total registered"] = total_registered
 
     DATA_TYPES.each do |rate_type|
-      if !row[rate_type]
-        row[rate_type] = {}
-      end
-      six_month_rate_change = six_month_rate_change(facility, rate_type)
-      row[rate_type]["6 month change"] = number_to_percentage(six_month_rate_change || 0, precision: 0)
-      (@start_period..@end_period).each do |period|
+      row[rate_type] = {} unless row.key?(rate_type)
+      (start_period..end_period).each do |period|
         data_type_rate = facility_data[rate_type][period]
         row[rate_type][period] = number_to_percentage(data_type_rate || 0, precision: 0)
       end
+      six_month_rate_change = six_month_rate_change(facility, rate_type)
+      row[rate_type]["6 month change"] = number_to_percentage(six_month_rate_change || 0, precision: 0)
     end
     row
   end
