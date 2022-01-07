@@ -61,11 +61,8 @@ module Reports
       uncontrolled
       visited_without_bp_taken
       monthly_overdue_calls
+      summaries_for
     ]
-
-    memoize def summaries_for(region_slug)
-      schema.summaries_for(region_slug)
-    end
 
     def warm_cache
       DELEGATED_RATES.each do |method|

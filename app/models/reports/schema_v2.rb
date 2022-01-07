@@ -180,8 +180,7 @@ module Reports
       end
     end
 
-    # This is memoized in the repository
-    def summaries_for(region_slug)
+    memoize def summaries_for(region_slug)
       region_summaries[region_slug]
     end
 
