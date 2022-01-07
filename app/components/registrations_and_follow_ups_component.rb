@@ -22,6 +22,11 @@ class RegistrationsAndFollowUpsComponent < ViewComponent::Base
     end
   end
 
+  def get_value(region, period, attribute)
+    summaries = repository.summaries_for(region.slug)
+    number_or_dash_with_delimiter(summaries.dig(period, attribute.to_s))
+  end
+
   def number_or_dash_with_delimiter(value, options = {})
     return "-" if value.blank? || value.zero?
     number_with_delimiter(value, options)
