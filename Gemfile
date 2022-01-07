@@ -25,7 +25,7 @@ gem "bootstrap", "~> 4.5.0"
 gem "connection_pool"
 gem "data_migrate"
 gem "data-anonymization", require: false
-gem "ddtrace", "~> 0.51"
+gem "ddtrace", "~> 0.54"
 gem "devise_invitable", "~> 1.7.0"
 gem "devise", ">= 4.7.1"
 gem "dhis2", require: false
