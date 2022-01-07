@@ -90,7 +90,7 @@ class MonthlyDistrictDataService
         block: facility.block_region.name,
         facility: facility.name,
         facility_type: facility.source.facility_type,
-        facility_size: facility.source.facility_size.capitalize,
+        facility_size: facility.source.facility_size.capitalize
       }.merge(region_data(facility))
 
       row_data.values
