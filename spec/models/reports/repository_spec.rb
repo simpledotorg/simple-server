@@ -25,23 +25,25 @@ RSpec.describe Reports::Repository, type: :model do
   end
 
   context "earliest patient record" do
-    it "returns the earliest between both assigned and registered if both exist" do
-      facility_1, facility_2 = FactoryBot.create_list(:facility, 2, facility_group: facility_group_1)
+    it "returns the earliest between assigned, registered, and follow up" do
+      facility_1, facility_2, facility_3 = FactoryBot.create_list(:facility, 3, facility_group: facility_group_1)
       district_region = facility_group_1.region
       other_facility = create(:facility)
+      region_with_no_patients = create(:facility).region
+
       _patient_1 = create(:patient, recorded_at: july_2018, assigned_facility: facility_2)
       _patient_2 = create(:patient, recorded_at: june_1_2018, assigned_facility: other_facility, registration_facility: facility_1)
-      facility_3 = create(:facility)
-
-      region_with_no_patients = facility_3.region
+      follow_up_patient = create(:patient, recorded_at: july_2018, assigned_facility: other_facility)
+      create(:blood_pressure, patient: follow_up_patient, facility: facility_3, recorded_at: june_30_2020)
 
       refresh_views
 
-      regions = [district_region, region_with_no_patients, facility_1.region]
+      regions = [district_region, region_with_no_patients, facility_1.region, facility_3.region]
       repo = Reports::Repository.new(regions, periods: jan_2019.to_period)
       expect(repo.earliest_patient_recorded_at[district_region.slug]).to eq(june_1_2018.to_date)
       expect(repo.earliest_patient_recorded_at[facility_1.region.slug]).to eq(june_1_2018.to_date)
       expect(repo.earliest_patient_recorded_at[region_with_no_patients.slug]).to be_nil
+      expect(repo.earliest_patient_recorded_at[facility_3.slug]).to eq(june_30_2020.to_period.to_date)
     end
   end
 
@@ -360,6 +362,27 @@ RSpec.describe Reports::Repository, type: :model do
 
   [true, false].each do |follow_ups_v2|
     context "follow_ups_v2 => #{follow_ups_v2}" do
+      it "returns data for facilities who have no registered / assigned patients" do
+        range = ("October 1st 2019".to_period.."January 1st 2020".to_period)
+        facility_1 = FactoryBot.create(:facility, name: "Facility 1", block: "block-1", facility_group: facility_group_1)
+        facility_2 = FactoryBot.create(:facility, name: "Facility 2", block: "block-1", facility_group: facility_group_1)
+        Time.use_zone("UTC") do # ensure we set recorded_at to proper UTC times
+          htn_patients = create_list(:patient, 2, full_name: "patient with HTN", recorded_at: jan_2019, assigned_facility: facility_2, registration_user: user)
+          range.each do |period|
+            htn_patients.each { |p| create(:bp_with_encounter, :under_control, facility: facility_1, patient: p, recorded_at: period.to_date, user: user) }
+          end
+        end
+        refresh_views
+        repo = described_class.new(facility_1, periods: range, follow_ups_v2: follow_ups_v2)
+        expected = {
+          "October 1st 2019" => 2,
+          "November 1st 2019" => 2,
+          "December 1st 2019" => 2,
+          "January 1st, 2020" => 2
+        }.transform_keys!(&:to_period)
+        expect(repo.hypertension_follow_ups["facility-1"]).to eq(expected)
+      end
+
       it "gets follow ups per facility" do
         facility_1 = FactoryBot.create(:facility, name: "Facility 1", block: "block-1", facility_group: facility_group_1)
         facility_2 = FactoryBot.create(:facility, name: "Facility 2", block: "block-1", facility_group: facility_group_1)

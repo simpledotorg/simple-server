@@ -9,8 +9,9 @@ class DrugStock < ApplicationRecord
   validates :for_end_of_month, presence: true
 
   scope :with_region_information, -> {
-    joins("INNER JOIN reporting_facilities on drug_stocks.facility_id = reporting_facilities.facility_id")
-      .select("reporting_facilities.*, drug_stocks.*")
+    select("block_regions.name AS block_region_name, block_regions.id AS block_region_id, drug_stocks.*")
+      .joins("INNER JOIN regions AS facility_regions ON drug_stocks.facility_id = facility_regions.source_id
+           INNER JOIN regions AS block_regions ON block_regions.path = subpath(facility_regions.path, 0, - 1)")
   }
 
   def self.latest_for_facilities_grouped_by_protocol_drug(facilities, end_of_month)
