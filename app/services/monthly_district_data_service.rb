@@ -14,6 +14,13 @@ class MonthlyDistrictDataService
       csv << section_row
       csv << header_row
       csv << district_row
+
+      csv << [] # Empty row
+      facility_size_rows.each do |row|
+        csv << row
+      end
+
+      csv << [] # Empty row
       facility_rows.each do |row|
         csv << row
       end
@@ -25,8 +32,6 @@ class MonthlyDistrictDataService
   def region_headers
     [
       "#",
-      "State",
-      "District",
       "Block",
       "Facility",
       "Facility type",
@@ -95,24 +100,45 @@ class MonthlyDistrictDataService
 
   def district_row
     row_data = {
-      index: "All",
-      state: region.parent.name,
-      district: region.name,
+      index: "All facilities",
       block: nil,
       facility: nil,
       facility_type: nil,
-      facility_size: nil
+      facility_size: "All"
     }.merge(region_data(region))
 
     row_data.values
+  end
+
+  def facility_size_rows
+    size_data = Hash.new { |hash, key| hash[key] = {} }
+
+    region.facility_regions.sort_by { |f| [f.block_region.name, f.name] }.map.with_index do |facility, index|
+      facility_data = region_data(facility)
+
+      # Sum each data key for all facilities in this size
+      size_data[facility.source.facility_size].update(facility_data) do |key, old_value, new_value|
+        old_value.nil? ? new_value : old_value + new_value
+      end
+    end
+
+    size_data.sort.map do |size, summed_data|
+      row_data = {
+        index: "#{size.capitalize} facilities",
+        block: nil,
+        facility: nil,
+        facility_type: nil,
+        facility_size: size.capitalize
+      }.merge(summed_data)
+
+      row_data.values
+    end
   end
 
   def facility_rows
     region.facility_regions.sort_by { |f| [f.block_region.name, f.name] }.map.with_index do |facility, index|
       row_data = {
         index: index + 1,
-        state: facility.state_region.name,
-        district: facility.district_region.name,
         block: facility.block_region.name,
         facility: facility.name,
         facility_type: facility.source.facility_type,
