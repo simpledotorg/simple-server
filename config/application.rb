@@ -20,7 +20,7 @@ Bundler.require(*Rails.groups)
 module SimpleServer
   class Application < Rails::Application
     # Set our "app environment" as early as possible here
-    Object.const_set("SIMPLE_SERVER_ENV", ENV["SIMPLE_SERVER_ENV"])
+    Object.const_set(:SIMPLE_SERVER_ENV, ENV["SIMPLE_SERVER_ENV"])
 
     console do
       # Colors don't work right in console with our logging, so turn them off
