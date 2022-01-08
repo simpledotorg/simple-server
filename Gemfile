@@ -1,5 +1,5 @@
 plugin "bootboot", "~> 0.1.1"
-Plugin.send(:load_plugin, 'bootboot') if Plugin.installed?('bootboot')
+Plugin.send(:load_plugin, "bootboot") if Plugin.installed?("bootboot")
 
 source "https://rubygems.org"
 
@@ -11,8 +11,8 @@ git_source(:github) do |repo_name|
 end
 
 gem "dotenv-rails"
-if ENV['RAILS_NEXT']
-  enable_dual_booting if Plugin.installed?('bootboot')
+if ENV["RAILS_NEXT"]
+  enable_dual_booting if Plugin.installed?("bootboot")
 
   # Add any gem you want here, they will be loaded only when running
   # bundler command prefixed with `RAILS_NEXT=1`.
@@ -148,4 +148,3 @@ group :test do
   gem "webdrivers"
   gem "webmock"
 end
-
