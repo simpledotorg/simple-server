@@ -6,9 +6,11 @@
           <h3>
             Drug stock on hand: end of <%= @for_end_of_month_display %>
           </h3>
-          <p class="c-grey-dark">
-            Last updated: <%= @report&.fetch(:last_updated_at) %>
-          </p>
+          <% if @facilities.present? %>
+            <p class="c-grey-dark">
+              Last updated: <%= @report&.fetch(:last_updated_at) %>
+            </p>
+          <% end %>
         </div>
 
         <p class="mb-4">
@@ -36,11 +38,13 @@
             <% end %>
           </div>
         </div>
-        <div class="mb-8px mr-8px d-flex flex-grow-1 justify-content-sm-end">
-          <%= link_to "Download Report",
+        <% if @facilities.present? %>
+          <div class="mb-8px mr-8px d-flex flex-grow-1 justify-content-sm-end">
+            <%= link_to "Download Report",
                       my_facilities_drug_stocks_path(format: :csv, **request.query_parameters.symbolize_keys),
                       class: "btn btn-sm btn-outline-primary" %>
-        </div>
+          </div>
+        <% end %>
       </div>
       <% if @facilities.present? %>
         <%= render "drug_stocks_table" %>

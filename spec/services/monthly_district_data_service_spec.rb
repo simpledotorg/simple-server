@@ -3,8 +3,8 @@ require "rails_helper"
 RSpec.describe MonthlyDistrictDataService do
   let(:organization) { FactoryBot.create(:organization) }
   let(:facility_group) { create(:facility_group, organization: organization) }
-  let(:facility1) { create(:facility, facility_group: facility_group) }
-  let(:facility2) { create(:facility, facility_group: facility_group) }
+  let(:facility1) { create(:facility, facility_group: facility_group, facility_size: :community) }
+  let(:facility2) { create(:facility, facility_group: facility_group, facility_size: :community) }
   let(:region) { facility1.region.district_region }
   let(:period) { Period.month(Date.today) }
   let(:service) { described_class.new(region, period) }
@@ -47,30 +47,64 @@ RSpec.describe MonthlyDistrictDataService do
 
       result = service.report
       csv = CSV.parse(result)
-      region_row_index = 3
+      row_index = 3
 
-      expect(find_in_csv(csv, region_row_index, "#")).to eq("All")
-      expect(find_in_csv(csv, region_row_index, "District")).to eq(region.name)
-      expect(csv[region_row_index][2..6].uniq).to eq([nil])
-      expect(find_in_csv(csv, region_row_index, "Total registrations")).to eq("3")
-      expect(find_in_csv(csv, region_row_index, "Total assigned patients")).to eq("3")
-      expect(find_in_csv(csv, region_row_index, "Lost to follow-up patients")).to eq("1")
-      dead = find_in_csv(csv, region_row_index, "Dead patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})")
+      expect(find_in_csv(csv, row_index, "#")).to eq("All facilities")
+      expect(csv[row_index][1..3].uniq).to eq([nil])
+      expect(find_in_csv(csv, row_index, "Facility size")).to eq("All")
+      expect(find_in_csv(csv, row_index, "Estimated hypertensive population")).to eq(nil)
+      expect(find_in_csv(csv, row_index, "Total registrations")).to eq("3")
+      expect(find_in_csv(csv, row_index, "Total assigned patients")).to eq("3")
+      expect(find_in_csv(csv, row_index, "Lost to follow-up patients")).to eq("1")
+      dead = find_in_csv(csv, row_index, "Dead patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})")
       expect(dead).to eq("0")
-      expect(find_in_csv(csv, region_row_index, "Patients under care as of #{period.adjusted_period.end.strftime("%e-%b-%Y")}")).to eq("2")
-      new_registrations = csv[region_row_index][12..17]
+      expect(find_in_csv(csv, row_index, "Patients under care as of #{period.adjusted_period.end.strftime("%e-%b-%Y")}")).to eq("2")
+      new_registrations = csv[row_index][11..16]
       expect(new_registrations).to eq(%w[0 0 2 0 0 0])
-      follow_ups = csv[region_row_index][18..23]
+      follow_ups = csv[row_index][17..22]
       expect(follow_ups).to eq(%w[0 0 0 1 0 0])
-      expect(find_in_csv(csv, region_row_index, "Patients with BP controlled")).to eq("1")
-      expect(find_in_csv(csv, region_row_index, "Patients with BP not controlled")).to eq("0")
-      # expect(find_in_csv(csv, region_row_index, "Patients with a missed visit")).to eq("1")
-      expect(find_in_csv(csv, region_row_index, "Patients with a visit but no BP taken")).to eq("1")
-      expect(find_in_csv(csv, region_row_index, "Patients under care as of #{period.end.strftime("%e-%b-%Y")}")).to eq("2")
-      expect(csv[region_row_index][29..31].uniq).to eq([nil])
+      expect(find_in_csv(csv, row_index, "Patients with BP controlled")).to eq("1")
+      expect(find_in_csv(csv, row_index, "Patients with BP not controlled")).to eq("0")
+      expect(find_in_csv(csv, row_index, "Patients with a missed visit")).to eq("0")
+      expect(find_in_csv(csv, row_index, "Patients with a visit but no BP taken")).to eq("1")
+      expect(find_in_csv(csv, row_index, "Patients under care as of #{period.end.strftime("%e-%b-%Y")}")).to eq("2")
+      expect(csv[row_index][28..30].uniq).to eq([nil])
     end
 
-    it "provides accurate numbers for the facilities" do
+    it "provides accurate numbers for facility sizes" do
+      missed_visit_patient
+      follow_up_patient
+      patient_without_hypertension
+      ltfu_patient
+      RefreshReportingViews.new.refresh_v2
+
+      result = service.report
+      csv = CSV.parse(result)
+      row_index = 5
+
+      expect(find_in_csv(csv, row_index, "#")).to eq("Community facilities")
+      expect(csv[row_index][1..3].uniq).to eq([nil])
+      expect(find_in_csv(csv, row_index, "Facility size")).to eq("Community")
+      expect(find_in_csv(csv, row_index, "Estimated hypertensive population")).to eq(nil)
+      expect(find_in_csv(csv, row_index, "Total registrations")).to eq("3")
+      expect(find_in_csv(csv, row_index, "Total assigned patients")).to eq("3")
+      expect(find_in_csv(csv, row_index, "Lost to follow-up patients")).to eq("1")
+      dead = find_in_csv(csv, row_index, "Dead patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})")
+      expect(dead).to eq("0")
+      expect(find_in_csv(csv, row_index, "Patients under care as of #{period.adjusted_period.end.strftime("%e-%b-%Y")}")).to eq("2")
+      new_registrations = csv[row_index][11..16]
+      expect(new_registrations).to eq(%w[0 0 2 0 0 0])
+      follow_ups = csv[row_index][17..22]
+      expect(follow_ups).to eq(%w[0 0 0 1 0 0])
+      expect(find_in_csv(csv, row_index, "Patients with BP controlled")).to eq("1")
+      expect(find_in_csv(csv, row_index, "Patients with BP not controlled")).to eq("0")
+      expect(find_in_csv(csv, row_index, "Patients with a missed visit")).to eq("0")
+      expect(find_in_csv(csv, row_index, "Patients with a visit but no BP taken")).to eq("1")
+      expect(find_in_csv(csv, row_index, "Patients under care as of #{period.end.strftime("%e-%b-%Y")}")).to eq("2")
+      expect(csv[row_index][28..30].uniq).to eq([nil])
+    end
+
+    it "provides accurate numbers for individual facilities" do
       missed_visit_patient
       patient_without_hypertension
       ltfu_patient
@@ -78,32 +112,31 @@ RSpec.describe MonthlyDistrictDataService do
 
       result = service.report
       csv = CSV.parse(result)
-      facility_row_index = 4
+      row_index = 7
 
-      expect(find_in_csv(csv, facility_row_index, "#")).to eq("1")
-      expect(find_in_csv(csv, facility_row_index, "District")).to eq(region.name)
-      expect(find_in_csv(csv, facility_row_index, "Facility")).to eq(facility1.name)
-      expect(find_in_csv(csv, facility_row_index, "Block")).to eq(facility1.block)
-      expect(find_in_csv(csv, facility_row_index, "Active/Inactive (Inactive facilities have 0 BP measures taken)"))
-        .to eq("Inactive")
-      expect(find_in_csv(csv, facility_row_index, "Estimated hypertensive population")).to eq(nil)
-      expect(find_in_csv(csv, facility_row_index, "Total registrations")).to eq("2")
-      expect(find_in_csv(csv, facility_row_index, "Total assigned patients")).to eq("2")
-      expect(find_in_csv(csv, facility_row_index, "Lost to follow-up patients")).to eq("1")
-      dead = find_in_csv(csv, facility_row_index, "Dead patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})")
+      expect(find_in_csv(csv, row_index, "#")).to eq("1")
+      expect(find_in_csv(csv, row_index, "Block")).to eq(facility1.block)
+      expect(find_in_csv(csv, row_index, "Facility")).to eq(facility1.name)
+      expect(find_in_csv(csv, row_index, "Facility type")).to eq(facility1.source.facility_type)
+      expect(find_in_csv(csv, row_index, "Facility size")).to eq(facility1.source.facility_size.capitalize)
+      expect(find_in_csv(csv, row_index, "Estimated hypertensive population")).to eq(nil)
+      expect(find_in_csv(csv, row_index, "Total registrations")).to eq("2")
+      expect(find_in_csv(csv, row_index, "Total assigned patients")).to eq("2")
+      expect(find_in_csv(csv, row_index, "Lost to follow-up patients")).to eq("1")
+      dead = find_in_csv(csv, row_index, "Dead patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})")
       expect(dead).to eq("0")
-      expect(find_in_csv(csv, facility_row_index, "Patients under care as of #{period.adjusted_period.end.strftime("%e-%b-%Y")}")).to eq("1")
-      new_registrations = csv[facility_row_index][12..17]
+      expect(find_in_csv(csv, row_index, "Patients under care as of #{period.adjusted_period.end.strftime("%e-%b-%Y")}")).to eq("1")
+      new_registrations = csv[row_index][11..16]
       expect(new_registrations).to eq(%w[0 0 1 0 0 0])
-      follow_ups = csv[facility_row_index][18..23]
+      follow_ups = csv[row_index][17..22]
       expect(follow_ups).to eq(%w[0 0 0 0 0 0])
-      expect(find_in_csv(csv, facility_row_index, "Patients with BP controlled")).to eq("0")
-      expect(find_in_csv(csv, facility_row_index, "Patients with BP not controlled")).to eq("0")
-      expect(find_in_csv(csv, facility_row_index, "Patients with a missed visit")).to eq("0")
-      expect(find_in_csv(csv, facility_row_index, "Patients with a visit but no BP taken")).to eq("1")
-      expect(find_in_csv(csv, facility_row_index, "Patients with a visit but no BP taken")).to eq("1")
-      expect(find_in_csv(csv, facility_row_index, "Patients under care as of #{period.end.strftime("%e-%b-%Y")}")).to eq("1")
-      expect(csv[facility_row_index][29..31].uniq).to eq([nil])
+      expect(find_in_csv(csv, row_index, "Patients with BP controlled")).to eq("0")
+      expect(find_in_csv(csv, row_index, "Patients with BP not controlled")).to eq("0")
+      expect(find_in_csv(csv, row_index, "Patients with a missed visit")).to eq("0")
+      expect(find_in_csv(csv, row_index, "Patients with a visit but no BP taken")).to eq("1")
+      expect(find_in_csv(csv, row_index, "Patients with a visit but no BP taken")).to eq("1")
+      expect(find_in_csv(csv, row_index, "Patients under care as of #{period.end.strftime("%e-%b-%Y")}")).to eq("1")
+      expect(csv[row_index][28..30].uniq).to eq([nil])
     end
 
     it "scopes the report to the provided period" do
@@ -111,8 +144,8 @@ RSpec.describe MonthlyDistrictDataService do
       result = described_class.new(region, old_period).report
       csv = CSV.parse(result)
       column_headers = csv[2]
-      first_month_index = 12
-      last_month_index = 17
+      first_month_index = 11
+      last_month_index = 16
       expect(column_headers[first_month_index]).to eq("Feb-2018")
       expect(column_headers[last_month_index]).to eq("Jul-2018")
     end

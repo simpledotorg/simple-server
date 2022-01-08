@@ -1,6 +1,8 @@
 #!/bin/bash
 # Simple time based benchmark - credit to https://gist.github.com/peterjmit/3864743 that this is modified from
 #
+# Note: this requires the GNU version of time installed. On mac you can `brew install gnu-time` to install it.
+#
 # Examples
 #   bench -c "bin/rails db:reset"
 #   bench -c "bin/rspec"
@@ -19,7 +21,7 @@ run_tests() {
   echo 'Benchmarking '$command_to_run '...'
 
   # Indicate the command we just run in the csv file
-  echo '======' $command_to_run '======' >> $output_file;
+  echo '==' $command_to_run '======' >> $output_file;
 
   # Run the given command [repeats] times
   for (( i = 1; i <= $repeats ; i++ ))
@@ -29,20 +31,17 @@ run_tests() {
       # indicator of progress
       l=$(seq -s "+" $i | sed 's/[0-9]//g')
 
-      # runs time function for the called script, output in a comma seperated
-      # format output file specified with -o command and -a specifies append
-      /usr/bin/time -h -o ${output_file} -a ${command_to_run} > /dev/null
+      # Runs time function for the called script, output in a comma seperated
+      # format. Output file specified with -o command and -a specifies appending to the file.
+      # output format is real (wall clock) time, user time, and system time
+      gtime -f "%C,%E,%U,%S" -o ${output_file} -a ${command_to_run} > /dev/null
 
       # Clear the HDD cache (I hope?)
       # sync && echo 3 > /proc/sys/vm/drop_caches
 
       echo -ne ${l}' ('${p}'%) \r'
   done;
-
-  echo -ne '\n'
-
-  # Convenience seperator for file
-  echo '--------------------------' >> $output_file
+  echo "== Done ======" >> $output_file
 }
 
 # Option parsing

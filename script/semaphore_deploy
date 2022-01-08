@@ -16,6 +16,7 @@ echo "Beginning deploy of $SEMAPHORE_GIT_SHA to $deploy_target..."
 # See https://github.com/semaphoreci/toolbox for more details on the "sem-" commands
 source ~/.toolbox/toolbox
 
+export DD_PROFILING_NO_EXTENSION=true
 sem-version ruby 2.7.4
 cache restore
 yarn install

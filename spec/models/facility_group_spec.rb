@@ -251,7 +251,7 @@ RSpec.describe FacilityGroup, type: :model do
         expect(facility_group.region.path).to eq "india.ihci.maharashtra.fg"
       end
 
-      it "updates district estimed population if one is provided" do
+      it "updates district estimated population if one is provided" do
         expect {
           facility_group.update!(district_estimated_population: 1000)
         }.to change(EstimatedPopulation, :count).by(2)
@@ -261,6 +261,13 @@ RSpec.describe FacilityGroup, type: :model do
           facility_group.update!(district_estimated_population: 3333)
         }.to change(EstimatedPopulation, :count).by(0)
         expect(facility_group.region.estimated_population.population).to eq(3333)
+      end
+
+      it "updates state estimated population if a district population is updated" do
+        facility_group.update!(district_estimated_population: 1000)
+        expect(facility_group.state_region.estimated_population.population).to be(1000)
+        facility_group.update!(district_estimated_population: 5000)
+        expect(facility_group.state_region.estimated_population.population).to be(5000)
       end
     end
   end

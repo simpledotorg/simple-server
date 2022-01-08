@@ -18,6 +18,7 @@ gem "activerecord-import"
 gem "amazing_print"
 gem "auto_strip_attributes"
 gem "bcrypt", "~> 3.1"
+gem "bcrypt_pbkdf", "~> 1.1"
 gem "bootsnap", require: false
 gem "bootstrap_form", ">= 4.5.0"
 gem "bootstrap-datepicker-rails", "~> 1.9"
@@ -26,13 +27,14 @@ gem "bootstrap", "~> 4.5.0"
 gem "connection_pool"
 gem "data_migrate"
 gem "data-anonymization", require: false
-gem "ddtrace", "~> 0.51"
-gem "devise_invitable", "~> 1.7.0"
+gem "ddtrace", "~> 0.54"
+gem "devise_invitable", "~> 2.0.6"
 gem "devise", ">= 4.7.1"
 gem "dhis2", require: false
 gem "diffy" # This gem is only needed for Admin::FixZoneDataController, it should be removed with the controller
 gem "discard", "~> 1.0"
 gem "dogstatsd-ruby", "~> 5.2"
+gem "ed25519", "~> 1.2"
 gem "factory_bot_rails", "~> 6.1", require: false
 gem "faker", require: false
 gem "flipper-active_record"
@@ -84,10 +86,10 @@ gem "slack-notifier"
 gem "squid"
 gem "stackprof", require: false
 gem "timecop", "~> 0.9.0", require: false
-gem "twilio-ruby", "~> 5.10", ">= 5.10.3"
+gem "twilio-ruby", "~> 5.62"
 gem "uglifier", ">= 1.3.0"
 gem "uuidtools", require: false
-gem "view_component", require: "view_component/engine"
+gem "view_component"
 gem "webpacker", "6.0.0.rc.6"
 gem "whenever", require: false
 gem "wkhtmltoimage-binary"
@@ -108,7 +110,12 @@ group :development, :test do
   gem "rails-controller-testing"
   gem "rb-readline"
   gem "shoulda-matchers", "~> 5.0.0"
-  gem "standard", "1.5.0", require: false
+  gem "standard", "1.6.0", require: false
+end
+
+group :development, :test, :profiling do
+  gem "derailed_benchmarks"
+  gem "memory_profiler", require: false
 end
 
 group :development do
@@ -118,7 +125,6 @@ group :development do
   gem "spring", "3.1.1"
   gem "spring-commands-rspec"
   gem "web-console", ">= 3.3.0"
-  gem "memory_profiler"
   gem "flamegraph"
 end
 

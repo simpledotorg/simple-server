@@ -2,25 +2,24 @@ require "rails_helper"
 
 RSpec.describe EstimatedPopulation, type: :model do
   describe "validations" do
-    it "is valid without a population" do
-      region = Region.create!(name: "State", region_type: "state", reparent_to: Region.root)
-      estimated_population = EstimatedPopulation.new(diagnosis: "HTN", region_id: region.id)
+    let(:state_region) { Region.new(region_type: :state) }
 
-      expect(estimated_population).to be_valid
-      expect(estimated_population.population).to be_nil
+    it "is now valid without a population" do
+      estimated_population = EstimatedPopulation.new(diagnosis: "HTN", region: state_region)
+
+      expect(estimated_population).to_not be_valid
+      expect(estimated_population.errors[:population]).to eq(["can't be blank"])
     end
 
     it "is not valid without a diagnosis" do
-      region = Region.create!(name: "State", region_type: "state", reparent_to: Region.root)
-      estimated_population = EstimatedPopulation.new(population: 1, region_id: region.id, diagnosis: nil)
+      estimated_population = EstimatedPopulation.new(population: 1, region: state_region, diagnosis: nil)
 
       expect(estimated_population).to_not be_valid
       expect(estimated_population.errors[:diagnosis]).to eq(["can't be blank"])
     end
 
     it "is not valid if diagnosis is not enum" do
-      region = Region.create!(name: "State", region_type: "state", reparent_to: Region.root)
-      estimated_population = EstimatedPopulation.new(population: 1, region_id: region.id)
+      estimated_population = EstimatedPopulation.new(population: 1, region: state_region)
 
       # Valid diagnosis values
       estimated_population.diagnosis = "HTN"
@@ -103,7 +102,7 @@ RSpec.describe EstimatedPopulation, type: :model do
     end
   end
 
-  describe "is_population_available_for_all_districts" do
+  describe "population_available_for_all_districts?" do
     it "returns true when all districts have a population" do
       state = Region.create!(name: "State", region_type: "state", reparent_to: Region.root)
       district_1 = Region.create!(name: "District 1", region_type: "district", reparent_to: state)
@@ -113,9 +112,9 @@ RSpec.describe EstimatedPopulation, type: :model do
       district_2_population = EstimatedPopulation.create!(population: 1500, diagnosis: "HTN", region_id: district_2.id)
       state.recalculate_state_population!
 
-      expect(district_1_population.is_population_available_for_all_districts).to eq(true)
-      expect(district_2_population.is_population_available_for_all_districts).to eq(true)
-      expect(state.estimated_population.is_population_available_for_all_districts).to eq(true)
+      expect(district_1_population.population_available_for_all_districts?).to eq(true)
+      expect(district_2_population.population_available_for_all_districts?).to eq(true)
+      expect(state.estimated_population.population_available_for_all_districts?).to eq(true)
     end
 
     it "returns false when not all districts have a population" do
@@ -127,8 +126,128 @@ RSpec.describe EstimatedPopulation, type: :model do
       state.recalculate_state_population!
 
       expect(district_1.estimated_population).to be_nil
-      expect(district_2_population.is_population_available_for_all_districts).to eq(false)
-      expect(state.estimated_population.is_population_available_for_all_districts).to eq(false)
+      expect(district_2_population.population_available_for_all_districts?).to eq(false)
+      expect(state.estimated_population.population_available_for_all_districts?).to eq(false)
+    end
+  end
+
+  describe "hypertension_patient_coverage" do
+    it "returns a percentage value when a region's population is > 0" do
+      organization = create(:organization)
+      facility_group_1 = create(:facility_group, name: "Brooklyn", organization: organization)
+      facility_group_2 = create(:facility_group, name: "Manhattan", organization: organization)
+      facility_1 = create(:facility, facility_group: facility_group_1)
+      facility_2 = create(:facility, facility_group: facility_group_2)
+
+      EstimatedPopulation.create!(population: 100, diagnosis: "HTN", region_id: facility_group_1.region.id)
+      EstimatedPopulation.create!(population: 60, diagnosis: "HTN", region_id: facility_group_2.region.id)
+
+      user = create(:admin, :manager, :with_access, resource: organization, organization: organization)
+
+      create_list(:patient, 15, :hypertension, registration_facility: facility_1, registration_user: user)
+      create_list(:patient, 5, :diabetes, registration_facility: facility_1, registration_user: user)
+      create_list(:patient, 30, :hypertension, registration_facility: facility_2, registration_user: user)
+      create_list(:patient, 3, :diabetes, registration_facility: facility_2, registration_user: user)
+
+      expect(facility_group_1.region.estimated_population.hypertension_patient_coverage_rate).to eq(15.0)
+      expect(facility_group_2.region.estimated_population.hypertension_patient_coverage_rate).to eq(50.0)
+    end
+
+    it "returns 100.0 when a region's hypertensive registered patients is > the region's estimated population" do
+      organization = create(:organization)
+      facility_group_1 = create(:facility_group, name: "Brooklyn", organization: organization)
+      facility_group_2 = create(:facility_group, name: "Manhattan", organization: organization)
+      facility_1 = create(:facility, facility_group: facility_group_1)
+      facility_2 = create(:facility, facility_group: facility_group_2)
+
+      EstimatedPopulation.create!(population: 10, diagnosis: "HTN", region_id: facility_group_1.region.id)
+      EstimatedPopulation.create!(population: 25, diagnosis: "HTN", region_id: facility_group_2.region.id)
+
+      user = create(:admin, :manager, :with_access, resource: organization, organization: organization)
+
+      create_list(:patient, 15, :hypertension, registration_facility: facility_1, registration_user: user)
+      create_list(:patient, 5, :diabetes, registration_facility: facility_1, registration_user: user)
+      create_list(:patient, 30, :hypertension, registration_facility: facility_2, registration_user: user)
+      create_list(:patient, 3, :diabetes, registration_facility: facility_2, registration_user: user)
+
+      expect(facility_group_1.region.estimated_population.hypertension_patient_coverage_rate).to eq(100.0)
+      expect(facility_group_2.region.estimated_population.hypertension_patient_coverage_rate).to eq(100.0)
+    end
+
+    it "returns nil if a district doesn't have registered patients" do
+      organization = create(:organization)
+      facility_group = create(:facility_group, name: "Brooklyn", organization: organization)
+
+      EstimatedPopulation.create!(population: 100, diagnosis: "HTN", region_id: facility_group.region.id)
+
+      expect(facility_group.region.estimated_population.hypertension_patient_coverage_rate).to be_nil
+    end
+
+    it "returns nil if a district's hypertensive population is 0" do
+      organization = create(:organization)
+      facility_group = create(:facility_group, name: "Brooklyn", organization: organization)
+      facility = create(:facility, facility_group: facility_group)
+
+      EstimatedPopulation.create!(population: 0, diagnosis: "HTN", region_id: facility_group.region.id)
+
+      user = create(:admin, :manager, :with_access, resource: organization, organization: organization)
+
+      create_list(:patient, 15, :hypertension, registration_facility: facility, registration_user: user)
+      create_list(:patient, 5, :diabetes, registration_facility: facility, registration_user: user)
+
+      expect(facility_group.region.estimated_population.hypertension_patient_coverage_rate).to be_nil
+    end
+  end
+
+  describe "show_coverage" do
+    it "returns true if a district has a hypertension patient coverage rate" do
+      organization = create(:organization)
+      facility_group = create(:facility_group, name: "Brooklyn", organization: organization)
+      facility = create(:facility, facility_group: facility_group)
+
+      EstimatedPopulation.create!(population: 100, diagnosis: "HTN", region_id: facility_group.region.id)
+
+      user = create(:admin, :manager, :with_access, resource: organization, organization: organization)
+
+      create_list(:patient, 15, :hypertension, registration_facility: facility, registration_user: user)
+      create_list(:patient, 5, :diabetes, registration_facility: facility, registration_user: user)
+
+      expect(facility_group.region.estimated_population.show_coverage).to eq(true)
+    end
+
+    it "returns true if a state has populations for all child districts" do
+      state = Region.create!(name: "State", region_type: "state", reparent_to: Region.root)
+      district_1 = Region.create!(name: "District 1", region_type: "district", reparent_to: state)
+      district_2 = Region.create!(name: "District 2", region_type: "district", reparent_to: state)
+
+      district_1_population = EstimatedPopulation.create!(population: 1500, diagnosis: "HTN", region_id: district_1.id)
+      district_2_population = EstimatedPopulation.create!(population: 1500, diagnosis: "HTN", region_id: district_2.id)
+      state.recalculate_state_population!
+
+      expect(district_1_population.population_available_for_all_districts?).to eq(true)
+      expect(district_2_population.population_available_for_all_districts?).to eq(true)
+      expect(state.estimated_population.show_coverage).to eq(true)
+    end
+
+    it "returns false if a district doesn't have a hypertension patient coverage rate" do
+      state = Region.create!(name: "State", region_type: "state", reparent_to: Region.root)
+      district = Region.create!(name: "District", region_type: "district", reparent_to: state)
+
+      EstimatedPopulation.create!(population: 100, diagnosis: "HTN", region_id: district.id)
+
+      expect(district.estimated_population.show_coverage).to eq(false)
+    end
+
+    it "returns false if a state does not have all child district populations" do
+      state = Region.create!(name: "State", region_type: "state", reparent_to: Region.root)
+      district_1 = Region.create!(name: "District 1", region_type: "district", reparent_to: state)
+      Region.create!(name: "District 2", region_type: "district", reparent_to: state)
+
+      district_1_population = EstimatedPopulation.create!(population: 1500, diagnosis: "HTN", region_id: district_1.id)
+      state.recalculate_state_population!
+
+      expect(district_1_population.population_available_for_all_districts?).to eq(false)
+      expect(state.estimated_population.show_coverage).to eq(false)
     end
   end
 end

@@ -74,6 +74,10 @@ module Reports
       values_at("lost_to_follow_up")
     end
 
+    memoize def under_care
+      values_at("under_care")
+    end
+
     memoize def controlled
       values_at("adjusted_controlled_under_care")
     end
@@ -119,7 +123,7 @@ module Reports
       end
     end
 
-    def hypertension_follow_ups(group_by: nil)
+    memoize def hypertension_follow_ups(group_by: nil)
       if group_by.nil?
         values_at("monthly_follow_ups")
       else
@@ -194,7 +198,7 @@ module Reports
 
     memoize def earliest_patient_data_query_v2(region)
       FacilityState.for_region(region)
-        .where("cumulative_registrations > 0 OR cumulative_assigned_patients > 0")
+        .where("cumulative_registrations > 0 OR cumulative_assigned_patients > 0 OR monthly_follow_ups > 0")
         .minimum(:month_date)
     end
 
