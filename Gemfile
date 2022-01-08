@@ -108,7 +108,7 @@ group :development, :test do
   gem "rails-controller-testing"
   gem "rb-readline"
   gem "shoulda-matchers", "~> 5.0.0"
-  gem "standard", "1.5.0", require: false
+  gem "standard", "1.6.0", require: false
 end
 
 group :development, :test, :profiling do
