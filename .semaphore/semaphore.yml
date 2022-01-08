@@ -12,7 +12,7 @@ blocks:
     task:
       env_vars:
         - name: DD_PROFILING_NO_EXTENSION
-          value: true
+          value: "true"
       jobs:
         - name: Cache everything
           commands:
