@@ -104,7 +104,7 @@ class MonthlyDistrictDataService
       block: nil,
       facility: nil,
       facility_type: nil,
-      facility_size: "All",
+      facility_size: "All"
     }.merge(region_data(region))
 
     row_data.values
