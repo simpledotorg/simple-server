@@ -1,3 +1,4 @@
+plugin "bootboot", "~> 0.1.1"
 source "https://rubygems.org"
 
 ruby "2.7.4"
@@ -136,4 +137,12 @@ group :test do
   gem "simplecov", require: false
   gem "webdrivers"
   gem "webmock"
+end
+Plugin.send(:load_plugin, 'bootboot') if Plugin.installed?('bootboot')
+
+if ENV['RAILS_NEXT']
+  enable_dual_booting if Plugin.installed?('bootboot')
+
+  # Add any gem you want here, they will be loaded only when running
+  # bundler command prefixed with `RAILS_NEXT=1`.
 end
