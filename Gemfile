@@ -25,7 +25,7 @@ gem "bootstrap", "~> 4.5.0"
 gem "connection_pool"
 gem "data_migrate"
 gem "data-anonymization", require: false
-gem "ddtrace", "~> 0.51"
+gem "ddtrace", "~> 0.54"
 gem "devise_invitable", "~> 1.7.0"
 gem "devise", ">= 4.7.1"
 gem "dhis2", require: false
@@ -84,7 +84,7 @@ gem "slack-notifier"
 gem "squid"
 gem "stackprof", require: false
 gem "timecop", "~> 0.9.0", require: false
-gem "twilio-ruby", "~> 5.10", ">= 5.10.3"
+gem "twilio-ruby", "~> 5.62"
 gem "uglifier", ">= 1.3.0"
 gem "uuidtools", require: false
 gem "view_component"

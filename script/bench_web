@@ -1,17 +1,19 @@
 #!/bin/bash
 
 # Note that the vars below will be overridden by preexisting values.
+
+# See https://github.com/zombocom/derailed_benchmarks#running-derailed-exec for 
+# detailed docs on all the tasks derailed provides.
+: "${DR_TASK=perf:ips}"
+
 # The path to hit will depend upon your local seed data.
 : "${PATH_TO_HIT=/reports/regions/state/diamond-islands/details}"
 : "${TEST_COUNT=25}"
 : "${USE_AUTH=true}"
-# See https://github.com/zombocom/derailed_benchmarks#running-derailed-exec for 
-# detailed docs on all the tasks derailed provides.
-: "${DR_TASK=perf:test}"
 
+export DR_TASK
 export PATH_TO_HIT
 export TEST_COUNT
 export USE_AUTH
-export DR_TASK
 
 RAILS_ENV=profiling bundle exec derailed exec $DR_TASK

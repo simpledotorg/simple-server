@@ -31,4 +31,12 @@ class EmailAuthentication < ApplicationRecord
     number = SecureRandom.random_number(1).to_s
     SecureRandom.base64(16) + lower + upper + number
   end
+
+  def invalidate_all_sessions!
+    update_attribute(:session_token, SecureRandom.hex)
+  end
+
+  def authenticatable_salt
+    "#{super}#{session_token}"
+  end
 end
