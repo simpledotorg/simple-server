@@ -31,8 +31,8 @@ run_tests() {
       # indicator of progress
       l=$(seq -s "+" $i | sed 's/[0-9]//g')
 
-      # runs time function for the called script, output in a comma seperated
-      # format output file specified with -o command and -a specifies appendo
+      # Runs time function for the called script, output in a comma seperated
+      # format. Output file specified with -o command and -a specifies appending to the file.
       # output format is real (wall clock) time, user time, and system time
       gtime -f "%C,%E,%U,%S" -o ${output_file} -a ${command_to_run} > /dev/null
 
