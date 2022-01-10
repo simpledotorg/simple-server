@@ -148,7 +148,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
       expect(facility_group.state).to eq("New York")
     end
 
-    fit "updates when population is blank and no population exists" do
+    it "updates when population is blank and no population exists" do
       facility_group = create(:facility_group, valid_attributes)
       new_attributes = {
         name: "New Name",
@@ -158,6 +158,10 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
 
       }
       put :update, params: {id: facility_group.to_param, facility_group: new_attributes, organization_id: organization.id}
+      facility_group.reload
+      expect(facility_group.name).to eq("New Name")
+      expect(facility_group.description).to eq("New Description")
+      expect(facility_group.state).to eq("New York")
     end
 
     it "can turn on diabetes management for all facilities inside a facility group" do
