@@ -177,7 +177,7 @@ GEM
     dhis2 (3.3.1)
       dry-validation (= 0.11.1)
       rest-client
-    diff-lcs (1.4.4)
+    diff-lcs (1.5.0)
     diffy (3.4.0)
     discard (1.2.0)
       activerecord (>= 4.2, < 7)
@@ -514,14 +514,10 @@ GEM
       rspec-expectations (~> 3.9)
       rspec-mocks (~> 3.9)
       rspec-support (~> 3.9)
-    rspec-sidekiq (3.0.3)
+    rspec-sidekiq (3.1.0)
       rspec-core (~> 3.0, >= 3.0.0)
       sidekiq (>= 2.4.0)
     rspec-support (3.9.4)
-    rswag (2.4.0)
-      rswag-api (= 2.4.0)
-      rswag-specs (= 2.4.0)
-      rswag-ui (= 2.4.0)
     rswag-api (2.4.0)
       railties (>= 3.1, < 7.0)
     rswag-specs (2.4.0)
@@ -764,9 +760,11 @@ DEPENDENCIES
   request_store
   request_store-sidekiq
   roo (~> 2.8.0)
-  rspec-rails (~> 4.0.1)
+  rspec-rails (~> 4)
   rspec-sidekiq
-  rswag (~> 2.4.0)
+  rswag-api
+  rswag-specs
+  rswag-ui
   ruby-progressbar
   rubyzip
   sassc-rails
