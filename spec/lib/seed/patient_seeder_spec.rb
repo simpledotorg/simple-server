@@ -31,4 +31,12 @@ RSpec.describe Seed::PatientSeeder do
     # This is a loose expectation because we introduce randomness into our patient statuses
     expect(facility.assigned_patients.with_hypertension.where(status: "active").count).to be >= 2
   end
+
+  it "creates patients with diabetes if facility has diabetes enabled" do
+    facility = create(:facility, enable_diabetes_management: true)
+    create(:user, registration_facility: facility)
+
+    _result, _patient_results = Seed::PatientSeeder.call(facility, user_ids: facility.user_ids, config: Seed::Config.new, logger: logger)
+    expect(facility.assigned_patients.with_diabetes.count).to be > 0
+  end
 end
