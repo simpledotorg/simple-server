@@ -164,7 +164,7 @@ GEM
     dhis2 (3.3.1)
       dry-validation (= 0.11.1)
       rest-client
-    diff-lcs (1.4.4)
+    diff-lcs (1.5.0)
     diffy (3.4.0)
     discard (1.2.0)
       activerecord (>= 4.2, < 7)
@@ -499,7 +499,7 @@ GEM
       rspec-expectations (~> 3.9)
       rspec-mocks (~> 3.9)
       rspec-support (~> 3.9)
-    rspec-sidekiq (3.0.3)
+    rspec-sidekiq (3.1.0)
       rspec-core (~> 3.0, >= 3.0.0)
       sidekiq (>= 2.4.0)
     rspec-support (3.9.4)
