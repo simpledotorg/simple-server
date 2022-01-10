@@ -14,7 +14,8 @@ class Period
   end
 
   def self.month(date)
-    new(type: :month, value: date.to_date)
+    @months ||= Hash.new { |hash, key| hash[key.to_date] = new(type: :month, value: key) }
+    @months[date]
   end
 
   def self.quarter(value)
@@ -130,7 +131,7 @@ class Period
     if quarter?
       Period.new(type: type, value: value.succ)
     else
-      Period.new(type: type, value: value.advance(months: 1))
+      Period.month(value >> 1)
     end
   end
 

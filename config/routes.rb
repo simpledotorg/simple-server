@@ -162,7 +162,8 @@ Rails.application.routes.draw do
     path: "email_authentications",
     controllers: {
       invitations: "email_authentications/invitations",
-      passwords: "email_authentications/passwords"
+      passwords: "email_authentications/passwords",
+      sessions: "email_authentications/sessions"
     }
 
   post "email_authentications/validate", to: "email_authentications/password_validations#create"
@@ -191,6 +192,8 @@ Rails.application.routes.draw do
     get "regions/:report_scope/:id/download", to: "regions#download", as: :region_download
     get "regions/:report_scope/:id/monthly_state_data_report",
       to: "regions#monthly_state_data_report", as: :region_monthly_state_data
+    get "regions/:report_scope/:id/monthly_district_report",
+      to: "regions#monthly_district_report", as: :region_monthly_district_report
     get "regions/:report_scope/:id/monthly_district_data_report",
       to: "regions#monthly_district_data_report", as: :region_monthly_district_data
     get "regions/:report_scope/:id/graphics", to: "regions#whatsapp_graphics", as: :graphics

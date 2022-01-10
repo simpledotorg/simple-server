@@ -1,3 +1,6 @@
+plugin "bootboot", "~> 0.1.1"
+Plugin.send(:load_plugin, "bootboot") if Plugin.installed?("bootboot")
+
 source "https://rubygems.org"
 
 ruby "2.7.4"
@@ -8,7 +11,15 @@ git_source(:github) do |repo_name|
 end
 
 gem "dotenv-rails"
-gem "rails", "5.2.6"
+if ENV["RAILS_NEXT"]
+  enable_dual_booting if Plugin.installed?("bootboot")
+
+  # Add any gem you want here, they will be loaded only when running
+  # bundler command prefixed with `RAILS_NEXT=1`.
+  gem "rails", "~> 6"
+else
+  gem "rails", "5.2.6"
+end
 
 gem "active_hash", "~> 2.3.0"
 gem "active_record_union"
@@ -25,8 +36,8 @@ gem "bootstrap", "~> 4.5.0"
 gem "connection_pool"
 gem "data_migrate"
 gem "data-anonymization", require: false
-gem "ddtrace", "~> 0.51"
-gem "devise_invitable", "~> 1.7.0"
+gem "ddtrace", "~> 0.54"
+gem "devise_invitable", "~> 2.0.6"
 gem "devise", ">= 4.7.1"
 gem "dhis2", require: false
 gem "diffy" # This gem is only needed for Admin::FixZoneDataController, it should be removed with the controller
@@ -84,7 +95,7 @@ gem "slack-notifier"
 gem "squid"
 gem "stackprof", require: false
 gem "timecop", "~> 0.9.0", require: false
-gem "twilio-ruby", "~> 5.10", ">= 5.10.3"
+gem "twilio-ruby", "~> 5.62"
 gem "uglifier", ">= 1.3.0"
 gem "uuidtools", require: false
 gem "view_component"
@@ -108,7 +119,7 @@ group :development, :test do
   gem "rails-controller-testing"
   gem "rb-readline"
   gem "shoulda-matchers", "~> 5.0.0"
-  gem "standard", "1.5.0", require: false
+  gem "standard", "1.6.0", require: false
 end
 
 group :development, :test, :profiling do

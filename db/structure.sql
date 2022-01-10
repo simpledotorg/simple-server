@@ -412,7 +412,8 @@ CREATE TABLE public.email_authentications (
     invitations_count integer DEFAULT 0,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    deleted_at timestamp without time zone
+    deleted_at timestamp without time zone,
+    session_token character varying
 );
 
 
@@ -4883,9 +4884,9 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211209110618'),
 ('20211210152751'),
 ('20211210152752'),
-('20211214014913'),
 ('20211215192748'),
 ('20211216144440'),
-('20211216154413');
+('20211216154413'),
+('20220106075216');
 
 
