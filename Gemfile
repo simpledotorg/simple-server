@@ -78,7 +78,8 @@ gem "render_async"
 gem "request_store-sidekiq"
 gem "request_store"
 gem "roo", "~> 2.8.0"
-gem "rswag", "~> 2.4.0"
+gem "rswag-api"
+gem "rswag-ui"
 gem "ruby-progressbar", require: false
 gem "rubyzip"
 gem "sassc-rails"
@@ -118,6 +119,8 @@ group :development, :test do
   gem "rails-controller-testing"
   gem "rb-readline"
   gem "rspec-rails", "~> 4"
+  gem "rswag-specs"
+
   gem "shoulda-matchers", "~> 5.0.0"
   gem "standard", "1.6.0", require: false
 end
