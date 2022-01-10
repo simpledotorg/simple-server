@@ -53,7 +53,8 @@ module Seed
           assigning_facility_id: facility.id,
           assigning_user_id: user_id
         }))
-      medical_history = FactoryBot.build(:medical_history, :hypertension_yes, default_attrs.merge(user_id: user_id))
+      diabetes_trait = weighted_random_diabetes_trait
+      medical_history = FactoryBot.build(:medical_history, :hypertension_yes, diabetes_trait, default_attrs.merge(user_id: user_id))
       address = FactoryBot.build(:address, default_attrs.except(:patient))
       phone_number = FactoryBot.build(:patient_phone_number, default_attrs)
       FactoryBot.build(:patient, default_attrs.except(:patient).merge({
@@ -67,16 +68,28 @@ module Seed
       }))
     end
 
+    def self.weighted_diabetes_traits
+      {
+        :diabetes_yes => 0.30,
+        :diabetes_no => 0.70
+      }
+    end
+
     # Return weights of patient statuses that are reasonably close to actual - the vast majority
     # of our patients are active
     def self.weighted_patient_statuses
       {
-        "active" => 0.96,
-        "dead" => 0.02,
-        "migrated" => 0.01,
-        "unresponsive" => 0.005,
-        "inactive" => 0.005
+        active: 0.96,
+        dead: 0.02,
+        migrated: 0.01,
+        unresponsive: 0.005,
+        inactive: 0.005
       }
+    end
+
+    def weighted_random_diabetes_trait
+      return :diabetes_yes if config.test_mode? # make sure we get DM patients in test mode for deterministic specs
+      self.class.weighted_diabetes_traits.max_by { |_, weight| rand**(1.0 / weight) }.first
     end
 
     def weighted_random_patient_status

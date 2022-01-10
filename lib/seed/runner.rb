@@ -76,9 +76,11 @@ module Seed
           raise "No facility users found to use for registration" if registration_user_ids.blank?
           result, patient_info = PatientSeeder.call(facility, user_ids: registration_user_ids, config: config, logger: logger)
 
+          d result
           bp_result = BloodPressureSeeder.call(config: config, facility: facility, user_ids: registration_user_ids)
-          result.merge! bp_result
-
+          sum_results(result, bp_result)
+          blood_sugar_result = BloodSugarSeeder.call(config: config, facility: facility, user_ids: registration_user_ids)
+          sum_results(result, blood_sugar_result)
           appt_result = create_appts(patient_info, facility: facility, user_ids: registration_user_ids)
           result[:appointment] = appt_result.ids.size
           result
@@ -86,6 +88,14 @@ module Seed
         results.concat batch_result
       end
       results
+    end
+
+    def sum_results(totals, subtotal)
+      subtotal.each do |name, count|
+        totals[name] ||= 0
+        totals[name] += count
+      end
+      totals
     end
 
     def seed_drug_stocks

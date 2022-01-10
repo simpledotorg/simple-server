@@ -147,9 +147,11 @@ module Seed
           size = weighted_facility_size_sample
           type = SIZES_TO_TYPE.fetch(size).sample
           created_at = Faker::Time.between(from: 3.years.ago, to: 1.day.ago)
+          diabetes_enabled = rand <= config.percentage_of_facilities_with_diabetes_enabled
           attrs = {
             created_at: created_at,
             district: facility_group_name,
+            enable_diabetes_management: diabetes_enabled,
             facility_group_id: facility_group_id,
             facility_size: size,
             facility_type: type,
