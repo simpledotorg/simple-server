@@ -43,6 +43,4 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
     field = "monthly_#{metric}_#{@diagnosis_code}_#{gender}"
     @query.sum(field)
   end
-
-
 end
