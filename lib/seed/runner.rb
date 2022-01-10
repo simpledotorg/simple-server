@@ -28,7 +28,8 @@ module Seed
       @config = config
       @logger = Rails.logger.child(class: self.class.name)
       @start_time = Time.current
-      announce "Starting #{self.class} with #{config.type} configuration"
+      @bar = "=" * 80
+      announce "Starting #{self.class} with #{config.type} configuration\n#{@bar}\n"
     end
 
     def call

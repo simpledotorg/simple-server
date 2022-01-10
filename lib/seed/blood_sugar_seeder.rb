@@ -21,12 +21,7 @@ module Seed
     end
 
     def blood_sugars_to_create
-      if config.test_mode?
-        config.max_blood_sugars_to_create
-      else
-        adjusted_max_bps = (config.max_blood_sugars_to_create * scale_factor).to_int
-        Random.new.rand(0..adjusted_max_bps)
-      end
+      config.rand_or_max(0..config.max_blood_sugars_to_create, scale: true).to_i
     end
 
     def call

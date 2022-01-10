@@ -20,7 +20,7 @@ module Seed
     delegate :stdout, to: :config
 
     def call
-      announce "Creating #{protocol_name} with drugs..."
+      logger.debug { "Creating #{protocol_name} with drugs..." }
       FactoryBot.create(:protocol, :with_tracked_drugs, name: protocol_name, follow_up_days: 28)
     end
 
