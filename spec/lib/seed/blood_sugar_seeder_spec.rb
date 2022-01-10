@@ -6,7 +6,7 @@ RSpec.describe Seed::BloodSugarSeeder do
   it "does nothing if the facility does not have DM enabled" do
     facility = create(:facility, enable_diabetes_management: false)
     _user = create(:user, registration_facility: facility)
-    patients = create_list(:patient, 2, assigned_facility: facility)
+    create_list(:patient, 2, assigned_facility: facility)
 
     expect {
       result = described_class.call(facility: facility, user_ids: facility.user_ids, config: config)

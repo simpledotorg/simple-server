@@ -70,8 +70,8 @@ module Seed
 
     def self.weighted_diabetes_traits
       {
-        :diabetes_yes => 0.30,
-        :diabetes_no => 0.70
+        diabetes_yes: 0.30,
+        diabetes_no: 0.70
       }
     end
 
