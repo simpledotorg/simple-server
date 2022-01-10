@@ -7,7 +7,7 @@ module Seed
     attr_reader :config
     attr_reader :counts
     attr_reader :facility
-    attr_reader :patient_info
+    attr_reader :logger
     attr_reader :user_ids
     delegate :scale_factor, to: :config
 
@@ -17,7 +17,6 @@ module Seed
       @config = config
       @facility = facility
       @user_ids = user_ids
-      @patient_info = @facility.assigned_patients.pluck(:id, :recorded_at)
       @logger.debug "Starting #{self.class} with #{config.type} configuration"
     end
 
@@ -31,6 +30,10 @@ module Seed
     end
 
     def call
+      if !facility.diabetes_enabled?
+        logger.debug { "Skipping seeding blood sugars, facility #{facility.slug} does not have diabetes enabled" }
+        return {}
+      end
       blood_sugars = []
       patient_info.each_with_object([]) do |(patient_id, recorded_at)|
         blood_sugars_to_create.times do
@@ -85,6 +88,10 @@ module Seed
       counts[:encounter] = encounter_result.ids.size
       counts[:observation] = observation_result.ids.size
       counts
+    end
+
+    def patient_info
+      @patient_info ||= @facility.assigned_patients.pluck(:id, :recorded_at)
     end
   end
 end

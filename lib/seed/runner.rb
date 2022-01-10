@@ -74,13 +74,12 @@ module Seed
         batch_result = Parallel.map(facilities, options) { |facility|
           registration_user_ids = facility.users.pluck(:id)
           raise "No facility users found to use for registration" if registration_user_ids.blank?
-          result, patient_info = PatientSeeder.call(facility, user_ids: registration_user_ids, config: config, logger: logger)
 
-          d result
+          result, patient_info = PatientSeeder.call(facility, user_ids: registration_user_ids, config: config, logger: logger)
           bp_result = BloodPressureSeeder.call(config: config, facility: facility, user_ids: registration_user_ids)
-          sum_results(result, bp_result)
+          result.merge!(bp_result) { |key, count1, count2| count1 + count2 }
           blood_sugar_result = BloodSugarSeeder.call(config: config, facility: facility, user_ids: registration_user_ids)
-          sum_results(result, blood_sugar_result)
+          result.merge!(blood_sugar_result) { |key, count1, count2| count1 + count2 }
           appt_result = create_appts(patient_info, facility: facility, user_ids: registration_user_ids)
           result[:appointment] = appt_result.ids.size
           result
@@ -88,14 +87,6 @@ module Seed
         results.concat batch_result
       end
       results
-    end
-
-    def sum_results(totals, subtotal)
-      subtotal.each do |name, count|
-        totals[name] ||= 0
-        totals[name] += count
-      end
-      totals
     end
 
     def seed_drug_stocks
@@ -110,7 +101,7 @@ module Seed
     def parallel_options(progress)
       parallel_options = {
         finish: lambda do |facility, i, result|
-          progress.log("Finished facility: [#{facility.slug}, #{facility.facility_size}] counts: #{result.except(:facility)}")
+          progress.log("[#{facility.slug}, #{facility.facility_size}] counts: #{result.except(:facility)}")
           progress.increment
         end
       }

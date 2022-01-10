@@ -4,7 +4,7 @@ RSpec.describe Seed::Runner do
   let(:config) { Seed::Config.new }
 
   it "creates expected number of valid records from fast seed config" do
-    facilities = create_list(:facility, 2, facility_size: "community")
+    facilities = create_list(:facility, 2, facility_size: "community", enable_diabetes_management: true)
     facilities.each do |f|
       create(:user, registration_facility: f, role: ENV["SEED_GENERATED_ACTIVE_USER_ROLE"])
     end
@@ -38,7 +38,7 @@ RSpec.describe Seed::Runner do
   end
 
   it "returns how many records are created per facility and total" do
-    facilities = create_list(:facility, 2, facility_size: "community")
+    facilities = create_list(:facility, 2, facility_size: "community", enable_diabetes_management: true)
     facilities.each do |f|
       create(:user, registration_facility: f, role: ENV["SEED_GENERATED_ACTIVE_USER_ROLE"])
     end
