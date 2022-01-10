@@ -98,10 +98,6 @@ class Reports::RegionsController < AdminController
       @district_repository = Reports::Repository.new(district_regions, periods: @period_range, follow_ups_v2: current_admin.feature_enabled?(:follow_ups_v2))
     end
 
-    # medication_dispensation { total: total_appts_scheduled
-    # days: {}
-    # percentage: {}}
-    #
     @chart_data = {
       patient_breakdown: PatientBreakdownService.call(region: @region, period: @period),
       ltfu_trend: ltfu_chart_data(chart_repo, chart_range),
