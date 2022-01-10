@@ -1,3 +1,6 @@
+plugin "bootboot", "~> 0.1.1"
+Plugin.send(:load_plugin, "bootboot") if Plugin.installed?("bootboot")
+
 source "https://rubygems.org"
 
 ruby "2.7.4"
@@ -8,7 +11,15 @@ git_source(:github) do |repo_name|
 end
 
 gem "dotenv-rails"
-gem "rails", "5.2.6"
+if ENV["RAILS_NEXT"]
+  enable_dual_booting if Plugin.installed?("bootboot")
+
+  # Add any gem you want here, they will be loaded only when running
+  # bundler command prefixed with `RAILS_NEXT=1`.
+  gem "rails", "~> 6"
+else
+  gem "rails", "5.2.6"
+end
 
 gem "active_hash", "~> 2.3.0"
 gem "active_record_union"
@@ -108,7 +119,7 @@ group :development, :test do
   gem "rails-controller-testing"
   gem "rb-readline"
   gem "shoulda-matchers", "~> 5.0.0"
-  gem "standard", "1.5.0", require: false
+  gem "standard", "1.6.0", require: false
 end
 
 group :development, :test, :profiling do
