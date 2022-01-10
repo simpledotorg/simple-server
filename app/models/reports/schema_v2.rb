@@ -200,6 +200,39 @@ module Reports
       end
     end
 
+    memoize def appts_scheduled_0_to_14_days_rates
+      region_period_cached_query(__method__) do |entry|
+        pp [entry.region.slug, entry.period]
+        numerator = appts_scheduled_0_to_14_days[entry.region.slug][entry.period]
+        total = total_appts_scheduled[entry.region.slug][entry.period]
+        percentage(numerator, total)
+      end
+    end
+
+    memoize def appts_scheduled_15_to_30_days_rates
+      region_period_cached_query(__method__) do |entry|
+        numerator = appts_scheduled_15_to_30_days[entry.region.slug][entry.period]
+        total = total_appts_scheduled[entry.region.slug][entry.period]
+        percentage(numerator, total)
+      end
+    end
+
+    memoize def appts_scheduled_31_to_60_days_rates
+      region_period_cached_query(__method__) do |entry|
+        numerator = appts_scheduled_31_to_60_days[entry.region.slug][entry.period]
+        total = total_appts_scheduled[entry.region.slug][entry.period]
+        percentage(numerator, total)
+      end
+    end
+
+    memoize def appts_scheduled_more_than_60_days_rates
+      region_period_cached_query(__method__) do |entry|
+        numerator = appts_scheduled_more_than_60_days[entry.region.slug][entry.period]
+        total = total_appts_scheduled[entry.region.slug][entry.period]
+        percentage(numerator, total)
+      end
+    end
+
     private
 
     memoize def denominator(region, period, with_ltfu: false)

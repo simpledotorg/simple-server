@@ -17,14 +17,13 @@ MedicationsDispensationGraph = function () {
     const graphData = this.getMedicationsGraphData();
     const medicationsGraphConfig = reports.createBaseGraphConfig();
     console.log(graphData)
-
-    let colors = ["#BD3838", "#E77D27", "#729C26", "#007AA6"]
     let datasets = Object.keys(graphData).map(function(bucket, index){
       return {
         label: bucket,
-        data: Object.values(graphData[bucket]["percentage"]),
-        borderColor: colors[index],
-        backgroundColor: colors[index]
+        data: Object.values(graphData[bucket]["percentages"]),
+        borderColor: graphData[bucket]["color"],
+        backgroundColor: graphData[bucket]["color"],
+          numerator: "Numerator"
       }
     })
 
@@ -93,8 +92,9 @@ MedicationsDispensationGraph = function () {
         title: function(tooltipItem) {
           return ""
         },
-        label: function(tooltipItem) {
-          return tooltipItem.yLabel + " of X patients";
+        label: function(tooltipItem, data) {
+            console.log(data)
+          return tooltipItem.y + " follow-up patients";
         },
       }
     }

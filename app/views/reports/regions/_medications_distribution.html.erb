@@ -21,14 +21,10 @@
           <div class="p-absolute t-0 l-0 pe-none d-flex align-center justify-center w-100pt h-100pt">
           </div>
           <div class="px-20px">
-            <span class="legend-label bg-blue-dark" style="background-color: #BD3838"></span>
-            <span class="mr-3">0 - 14 days</span>
-            <span class="legend-label bg-blue-dark" style="background-color: #E77D27"></span>
-            <span class="mr-3">15 - 30 days</span>
-            <span class="legend-label bg-blue-dark" style="background-color: #729C26"></span>
-            <span class="mr-3">31 - 60 days</span>
-            <span class="legend-label bg-blue-dark" style="background-color: #007AA6"></span>
-            <span class="mr-3">60+ days</span>
+            <% @chart_data[:medications_dispensation].each do |bucket, data| %>
+              <span class="legend-label bg-blue-dark" style="background-color: <%= data[:color] %>"></span>
+              <span class="mr-3"><%= bucket %></span>
+            <% end %>
           </div>
         </div>
       </div>
