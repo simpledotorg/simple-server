@@ -20,7 +20,6 @@ class DrugStocksReportExporter
       csv << total_stock_row
       csv << district_warehouse_stock_row
       facility_rows.each { |row| csv << row }
-
       csv
     end
   end

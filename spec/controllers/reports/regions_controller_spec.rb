@@ -435,6 +435,36 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
   end
 
+  describe "monthly_district_report" do
+    before do
+      @facility_group = create(:facility_group, organization: organization)
+      @facility = create(:facility, facility_group: @facility_group)
+    end
+
+    it "retrieves the monthly district report" do
+      Flipper.enable(:monthly_district_report)
+
+      district = @facility_group.region
+      refresh_views
+
+      files = []
+      Timecop.freeze("June 1 2020") do
+        sign_in(cvho.email_authentication)
+        get :monthly_district_report, params: {id: district.slug, report_scope: "district", format: "zip"}
+      end
+      expect(response).to be_successful
+
+      Zip::File.open_buffer(response.body) do |zip|
+        zip.map do |entry|
+          files << entry.name
+        end
+      end
+
+      expect(files).to match_array(%w[facility_data.csv block_data.csv district_data.csv])
+      expect(response.headers["Content-Disposition"]).to include("filename=\"monthly-district-report-#{district.slug}-jun-2020.zip\"")
+    end
+  end
+
   describe "#whatsapp_graphics" do
     render_views
 
@@ -499,7 +529,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
         expect_any_instance_of(MonthlyDistrictDataService).to receive(:report).and_call_original
         get :monthly_district_data_report, params: {id: region.slug, report_scope: "district", format: "csv"}
         expect(response.status).to eq(200)
-        expect(response.body).to include("Monthly Facility Data: #{region.name} #{Date.current.strftime("%B %Y")}")
+        expect(response.body).to include("Monthly facility data for #{region.name} #{Date.current.strftime("%B %Y")}")
         report_date = Date.current.strftime("%b-%Y").downcase
         expected_filename = "monthly-facility-data-#{region.slug}-#{report_date}.csv"
         expect(response.headers["Content-Disposition"]).to include(%(filename="#{expected_filename}"))
@@ -553,7 +583,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
         expect_any_instance_of(MonthlyStateDataService).to receive(:report).and_call_original
         get :monthly_state_data_report, params: {id: region.slug, report_scope: "state", format: "csv"}
         expect(response.status).to eq(200)
-        expect(response.body).to include("Monthly District Data: #{region.name} #{Date.current.strftime("%B %Y")}")
+        expect(response.body).to include("Monthly district data for #{region.name} #{Date.current.strftime("%B %Y")}")
         report_date = Date.current.strftime("%b-%Y").downcase
         expected_filename = "monthly-district-data-#{region.slug}-#{report_date}.csv"
         expect(response.headers["Content-Disposition"]).to include(%(filename="#{expected_filename}"))

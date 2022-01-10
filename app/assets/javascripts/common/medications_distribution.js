@@ -16,21 +16,19 @@ MedicationsDispensationGraph = function () {
   this.initializeMedicationsGraph = () => {
     const graphData = this.getMedicationsGraphData();
     const medicationsGraphConfig = reports.createBaseGraphConfig();
-    console.log(graphData)
     let datasets = Object.keys(graphData).map(function(bucket, index){
       return {
         label: bucket,
         data: Object.values(graphData[bucket]["percentages"]),
+        counts :  graphData[bucket]["counts"],
+        totals : graphData[bucket]["totals"],
         borderColor: graphData[bucket]["color"],
-        backgroundColor: graphData[bucket]["color"],
-          numerator: "Numerator"
+        backgroundColor: graphData[bucket]["color"]
       }
     })
 
     medicationsGraphConfig.plugins = [ChartDataLabels];
     medicationsGraphConfig.type = 'bar';
-
-    console.log(this.getMedicationsGraphPeriods())
     medicationsGraphConfig.data = {
       labels: this.getMedicationsGraphPeriods(),
       datasets: datasets
@@ -80,7 +78,10 @@ MedicationsDispensationGraph = function () {
         align: 'end',
         color: 'black',
         anchor: 'end',
-        offset: 3
+        offset: 3,
+        formatter: function(value) {
+            return value + '%';
+        }
       }
     }
 
@@ -89,12 +90,13 @@ MedicationsDispensationGraph = function () {
       xAlign: 'center',
       yAlign: 'bottom',
       callbacks: {
-        title: function(tooltipItem) {
+        title: function() {
           return ""
         },
         label: function(tooltipItem, data) {
-            console.log(data)
-          return tooltipItem.y + " follow-up patients";
+            let counts = Object.values(data.datasets[tooltipItem.datasetIndex].counts)
+            let totals = Object.values(data.datasets[tooltipItem.datasetIndex].totals)
+          return counts[tooltipItem.index] + " of "  + totals[tooltipItem.index] + " follow-up patients";
         },
       }
     }

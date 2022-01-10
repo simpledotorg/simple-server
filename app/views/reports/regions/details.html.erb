@@ -13,7 +13,10 @@
 <% if @region.facility_region? %>
   <%= render "facility_details" %>
 <% else %>
-  <%= render "non_facility_details" %>
+  <%= render(RegistrationsAndFollowUpsComponent.new(@region, 
+    current_admin: current_admin, 
+    repository: @repository, 
+    current_period: @period)) %>
 <% end %>
 
 <%= render "details_footnotes" %>

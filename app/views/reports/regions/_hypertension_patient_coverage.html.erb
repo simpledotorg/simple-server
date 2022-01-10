@@ -69,16 +69,16 @@
       <span class="fw-bold">
         <%= number_with_delimiter(@region.estimated_population&.population) %>
       </span>
-    <% elsif accessible_region?(@region, :manage) %>
-      <% if @region.district_region? %>
-        <%= link_to "+ Add population", edit_admin_facility_group_path(@region) %>
-      <% elsif @region.state_region? %>
-        <%= link_to "+ Add district populations", "/admin/facilities" %>
-      <% end %>
     <% else %>
-      <span class="fw-bold">
-        N/A
-      </span>
+      <% if @region.district_region? && accessible_region?(@region, :manage) %>
+        <%= link_to "+ Add population", edit_admin_facility_group_path(@region) %>
+      <% elsif @region.state_region? && accessible_region?(@region, :view_reports) %>
+        <%= link_to "+ Add district populations", "/admin/facilities" %>
+      <% else %>
+        <span class="fw-bold">
+          N/A
+        </span>
+      <% end %>
     <% end %>
   </p>
 </div>
