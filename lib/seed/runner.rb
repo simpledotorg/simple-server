@@ -37,7 +37,6 @@ module Seed
       result = FacilitySeeder.call(config: config)
       total_counts[:facility] = result&.ids&.size || 0
       UserSeeder.call(config: config)
-      announce "Seeding drug stocks..."
       seed_drug_stocks
 
       announce "Starting to seed patient data for #{Facility.count} facilities..."
@@ -49,7 +48,10 @@ module Seed
       hsh = sum_facility_totals
       total_counts.merge!(hsh)
 
-      announce "⭐️  Seed complete! Elasped time #{distance_of_time_in_words(start_time, Time.current, include_seconds: true)} ⭐️"
+      announce <<-EOL
+\n⭐️ Seed complete! Created #{Patient.count} patients, #{BloodPressure.count} BPs, #{BloodSugar.count} blood sugars, and #{Appointment.count} appointments across #{Facility.count} facilities in #{Region.district_regions.count} districts.\n
+⭐️ Elapsed time #{distance_of_time_in_words(start_time, Time.current, include_seconds: true)} ⭐️\n
+      EOL
       [counts, total_counts]
     end
 

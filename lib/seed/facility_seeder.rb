@@ -26,7 +26,6 @@ module Seed
       @counts = {}
       @config = config
       @logger = Rails.logger.child(class: self.class.name)
-      announce "Starting #{self.class} with #{config.type} configuration"
     end
 
     attr_reader :config
@@ -45,10 +44,9 @@ module Seed
         return
       end
 
-      announce "Creating protocol and protocol drugs..."
       protocol = Seed::ProtocolSeeder.call(config: config)
 
-      announce "Creating #{number_of_facility_groups} FacilityGroups..."
+      logger.debug { "Creating #{number_of_facility_groups} FacilityGroups..." }
 
       state_results = create_state_regions
       facility_group_results = create_facility_groups(protocol)
