@@ -49,9 +49,9 @@ module Seed
       hsh = sum_facility_totals
       total_counts.merge!(hsh)
 
-      announce <<-EOL
-\n⭐️ Seed complete! Created #{Patient.count} patients, #{BloodPressure.count} BPs, #{BloodSugar.count} blood sugars, and #{Appointment.count} appointments across #{Facility.count} facilities in #{Region.district_regions.count} districts.\n
-⭐️ Elapsed time #{distance_of_time_in_words(start_time, Time.current, include_seconds: true)} ⭐️\n
+      announce <<~EOL
+        \n⭐️ Seed complete! Created #{Patient.count} patients, #{BloodPressure.count} BPs, #{BloodSugar.count} blood sugars, and #{Appointment.count} appointments across #{Facility.count} facilities in #{Region.district_regions.count} districts.\n
+        ⭐️ Elapsed time #{distance_of_time_in_words(start_time, Time.current, include_seconds: true)} ⭐️\n
       EOL
       [counts, total_counts]
     end
