@@ -78,7 +78,7 @@ gem "render_async"
 gem "request_store-sidekiq"
 gem "request_store"
 gem "roo", "~> 2.8.0"
-gem "rspec-rails", "~> 4.0.1"
+gem "rspec-rails", "~> 5.0.2"
 gem "rswag", "~> 2.4.0"
 gem "ruby-progressbar", require: false
 gem "rubyzip"
