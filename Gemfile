@@ -117,7 +117,7 @@ group :development, :test do
   gem "parallel_tests", group: %i[development test]
   gem "rails-controller-testing"
   gem "rb-readline"
-  gem "rspec-rails", "~> 4.0.1"
+  gem "rspec-rails", "~> 4"
   gem "shoulda-matchers", "~> 5.0.0"
   gem "standard", "1.6.0", require: false
 end
