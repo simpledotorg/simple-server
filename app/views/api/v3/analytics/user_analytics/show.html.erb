@@ -87,7 +87,7 @@
                          is_diabetes_enabled: @user_analytics.diabetes_enabled? } %>
 
     <% if current_user.feature_enabled?(:follow_ups_v2) %>
-      <%= render partial: 'api/v3/analytics/user_analytics/monthly_breakdown' %>
+      <%= render partial: 'api/v3/analytics/user_analytics/monthly_breakdown', locals: { metric: :registrations } %>
     <% else %>
       <%= render partial: 'api/v3/analytics/user_analytics/monthly_gender_table',
                 locals: { stat: :registrations,
