@@ -1,5 +1,5 @@
 <%# total across all groups %>
-<table class="progress-table registrations <%= diagnosis %>">
+<%= table(:all) do %>
   <tr class="total">
     <td class="row-label"><%= raw t("analytics.all_time") %></td>
     <td class="row-value">
@@ -14,13 +14,12 @@
       </td>
     </tr>
   <% end %>
-</table>
-
+<% end %>
 
 <% if gender_groups %>
   <% Patient::GENDERS.each do |gender| %>
     <!-- gender-wise tables -->
-    <table class="progress-table registrations <%= diagnosis %>:<%= gender %>" style="display:none">
+    <table class="progress-table registrations <%= diagnosis_group_class(gender) %>" style="display:none">
       <tr class="total">
         <td class="row-label"><%= raw t("analytics.all_time") %></td>
         <td><%= total_count_by_gender(gender) %></td>
