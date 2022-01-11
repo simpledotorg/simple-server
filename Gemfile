@@ -118,8 +118,7 @@ group :development, :test do
   gem "rb-readline"
   gem "rspec-rails", "~> 4"
   gem "rswag-specs"
-
-  gem "shoulda-matchers", "~> 5.0.0"
+  gem "shoulda-matchers", "~> 5.1.0"
   gem "standard", "1.6.0", require: false
 end
 
@@ -129,13 +128,13 @@ group :development, :test, :profiling do
 end
 
 group :development do
+  gem "flamegraph"
   gem "guard-rspec", require: false
   gem "listen"
   gem "rails-erd"
-  gem "spring", "3.1.1"
   gem "spring-commands-rspec"
+  gem "spring", "3.1.1"
   gem "web-console", ">= 3.3.0"
-  gem "flamegraph"
 end
 
 group :test do
