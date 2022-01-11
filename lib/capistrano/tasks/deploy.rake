@@ -24,6 +24,17 @@ namespace :deploy do
     end
   end
 
+  desc "Run tmp:clear on all machines"
+  task clear_tmp: [:set_rails_env] do
+    on release_roles(:all) do
+      within current_path do
+        with rails_env: fetch(:rails_env) do
+          execute :rake, "tmp:clear"
+        end
+      end
+    end
+  end
+
   desc "Runs any runner task, example: cap deploy:runner task='RegionBackfill.call'"
   task runner: [:set_rails_env] do
     on release_roles([:app]) do
