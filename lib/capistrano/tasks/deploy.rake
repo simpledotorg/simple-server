@@ -11,7 +11,6 @@ namespace :deploy do
   task :fix_bundler_plugin_path do
     on release_roles([:all]) do
       within shared_path do
-        # sed -i 's#/home/deploy/apps/simple-server/releases/[0-9]\+/.bundle/#/home/deploy/apps/simple-server/shared/.bundle/#g' plugin/index
         execute "sed", "-i", '"s#/home/deploy/apps/simple-server/releases/[0-9]\+/#/home/deploy/apps/simple-server/shared/#g"', ".bundle/plugin/index"
       end
     end
