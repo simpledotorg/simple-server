@@ -1,21 +1,10 @@
-namespace :bundler do
-  before :install, :fix_bundler_plugin_path do
-    on release_roles do
-      within release_path do
-        # sed -i 's#/home/deploy/apps/simple-server/releases/[0-9]\+/.bundle/#/home/deploy/apps/simple-server/shared/.bundle/#g' plugin/index
-        execute "sed", "i", "s#/home/deploy/apps/simple-server/releases/[0-9]\+/.bundle/#/home/deploy/apps/simple-server/shared/.bundle/#g", ".bundle/plugin/index"
-      end
-    end
-  end
-end
-
 namespace :deploy do
   before :starting, :check_sidekiq_hooks do
     invoke "sidekiq:add_default_hooks"
   end
 
   desc "Fix Bundler plugin path so it points to the shared path instead of a release path"
-  after :updated, :fix_bundler_plugin_path do
+  task :fix_bundler_plugin_path do
     on release_roles do
       within release_path do
         # sed -i 's#/home/deploy/apps/simple-server/releases/[0-9]\+/.bundle/#/home/deploy/apps/simple-server/shared/.bundle/#g' plugin/index
