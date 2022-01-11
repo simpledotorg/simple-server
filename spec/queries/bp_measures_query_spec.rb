@@ -21,8 +21,8 @@ RSpec.describe BPMeasuresQuery do
 
   it "handles period boundaries correctly, taking into account time zones" do
     facility = create(:facility)
-    end_of_jan = Time.zone.parse("January 31st 23:59:59 IST")
-    beg_of_feb = Time.zone.parse("February 1st 00:00:00 IST")
+    end_of_jan = Time.zone.parse("January 31st 2021 23:59:59 IST")
+    beg_of_feb = Time.zone.parse("February 1st 2021 00:00:00 IST")
 
     create(:blood_pressure, facility: facility, recorded_at: end_of_jan, user: user_1)
     create(:blood_pressure, facility: facility, recorded_at: beg_of_feb, user: user_2)

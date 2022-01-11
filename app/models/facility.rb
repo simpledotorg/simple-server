@@ -50,6 +50,8 @@ class Facility < ApplicationRecord
     class_name: "Patient",
     foreign_key: "assigned_facility_id"
 
+  has_many :facility_states, class_name: "Reports::FacilityState"
+
   pg_search_scope :search_by_name, against: {name: "A", slug: "B"}, using: {tsearch: {prefix: true}}
   scope :with_block_region_id, -> {
     joins("INNER JOIN regions facility_regions ON facility_regions.source_id = facilities.id")

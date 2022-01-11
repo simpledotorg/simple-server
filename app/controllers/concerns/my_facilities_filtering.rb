@@ -76,7 +76,7 @@ module MyFacilitiesFiltering
     end
 
     def accessible_facility_groups
-      FacilityGroup.where(id: @accessible_facilities.map(&:facility_group_id).uniq).order(:name)
+      FacilityGroup.where(id: @accessible_facilities.pluck(:facility_group_id).uniq).order(:name)
     end
 
     def drug_stock_facility_groups

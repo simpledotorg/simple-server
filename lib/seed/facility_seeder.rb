@@ -26,13 +26,15 @@ module Seed
       @counts = {}
       @config = config
       @logger = Rails.logger.child(class: self.class.name)
-      announce "Starting #{self.class} with #{config.type} configuration"
     end
 
     attr_reader :config
     attr_reader :logger
 
     delegate :scale_factor, :stdout, to: :config
+    delegate :number_of_facility_groups,
+      :number_of_states,
+      :number_of_blocks_per_facility_group, to: :config
 
     def call
       Region.root || Region.create!(name: "India", region_type: Region.region_types[:root], path: "india")
@@ -42,10 +44,9 @@ module Seed
         return
       end
 
-      announce "Creating protocol and protocol drugs..."
       protocol = Seed::ProtocolSeeder.call(config: config)
 
-      announce "Creating #{number_of_facility_groups} FacilityGroups..."
+      logger.debug { "Creating #{number_of_facility_groups} FacilityGroups..." }
 
       state_results = create_state_regions
       facility_group_results = create_facility_groups(protocol)
@@ -55,24 +56,14 @@ module Seed
       create_facility_regions(facility_results)
     end
 
-    def number_of_facility_groups
-      config.number_of_facility_groups
-    end
-
-    def number_of_states
-      config.number_of_states
-    end
-
     def number_of_facilities_per_facility_group
-      config.rand_or_max(1..config.max_number_of_facilities_per_facility_group)
+      min = config.min_number_of_facilities_per_facility_group
+      max = config.max_number_of_facilities_per_facility_group
+      config.rand_or_max(min..max)
     end
 
     def weighted_facility_size_sample
       FACILITY_SIZE_WEIGHTS.max_by { |_, weight| rand**(1.0 / weight) }.first
-    end
-
-    def max_number_of_blocks_per_facility_group
-      2
     end
 
     def organization
@@ -120,14 +111,14 @@ module Seed
 
     def create_block_regions(district_region_results)
       # Eagerly fetch block names to avoid duplicates
-      block_count = district_region_results.ids.size * max_number_of_blocks_per_facility_group
+      block_count = district_region_results.ids.size * number_of_blocks_per_facility_group
       block_names = Seed::FakeNames.instance.blocks.sample(block_count)
 
       block_counter = 0
       block_regions = district_region_results.results.flat_map { |row|
         _id, _name, path = *row
 
-        max_number_of_blocks_per_facility_group.times.map {
+        number_of_blocks_per_facility_group.times.map {
           attrs = {
             id: nil,
             name: block_names[block_counter],
@@ -154,9 +145,11 @@ module Seed
           size = weighted_facility_size_sample
           type = SIZES_TO_TYPE.fetch(size).sample
           created_at = Faker::Time.between(from: 3.years.ago, to: 1.day.ago)
+          diabetes_enabled = rand <= config.percentage_of_facilities_with_diabetes_enabled
           attrs = {
             created_at: created_at,
             district: facility_group_name,
+            enable_diabetes_management: diabetes_enabled,
             facility_group_id: facility_group_id,
             facility_size: size,
             facility_type: type,
