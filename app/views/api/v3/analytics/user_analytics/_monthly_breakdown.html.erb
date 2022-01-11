@@ -1,5 +1,3 @@
-<% data_table_name = "registrations" %>
-
 <% if current_facility.diabetes_enabled? %>
   <%= render(Reports::MonthlyProgressComponent.new(facility: current_facility, 
     diagnosis: :all, 
