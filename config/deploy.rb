@@ -27,7 +27,7 @@ set :sentry_repo, "simpledotorg/simple-server"
 # Fire off release notifications to Sentry after successful deploys
 before "deploy:starting", "sentry:validate_config"
 after "deploy:published", "sentry:notice_deployment"
-before "deploy:bundle", "deploy:fix_bundler_plugin_path"
+before "deploy:updated", "deploy:fix_bundler_plugin_path"
 
 append :linked_dirs, ".bundle"
 append :linked_files, ".env.production"
