@@ -43,7 +43,7 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
     tag.table(options, &block)
   end
 
-  # The defaut diagnosis is the one we display at the top level for the first display of progress tab
+  # The default diagnosis is the one we display at the top level for the first display of progress tab
   def default_diagnosis
     if facility.diabetes_enabled?
       :all
