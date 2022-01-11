@@ -31,12 +31,16 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
   end
 
   def monthly_count(period)
-    @query.find_by(month_date: period).attributes[@total_field]
+    if (facility_state_group = @query.find_by(month_date: period))
+      facility_state_group.attributes[@total_field]
+    end
   end
 
   def monthly_count_by_gender(period, gender)
     field = "monthly_#{metric}_#{@diagnosis_code}_#{gender}"
-    @query.find_by(month_date: period).attributes[field]
+    if (facility_state_group = @query.find_by(month_date: period))
+      facility_state_group.attributes[field]
+    end
   end
 
   def total_count_by_gender(gender)

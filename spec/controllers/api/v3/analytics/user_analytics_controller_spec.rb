@@ -54,6 +54,30 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
         expect(response.body).to include("Submit Drug Stock")
       end
 
+      it "renders successfully for follow_ups_v2 with no data" do
+        Flipper.enable(:follow_ups_v2)
+        refresh_views
+
+        get :show, format: :html
+        expect(response.status).to eq(200)
+      end
+
+      it "renders successfully for follow_ups_v2 with data" do
+        Flipper.enable(:follow_ups_v2)
+        Timecop.freeze(1.month.ago) do
+          create_list(:patient, 2, registration_facility: request_facility)
+        end
+        refresh_views
+
+        get :show, format: :html
+
+        expect(response.status).to eq(200)
+        # This is a brittle assertion but enough to verify we are getting real output back from the v2 code
+        page = Capybara::Node::Simple.new(response.body)
+        total_td = page.find("table.registrations.progress-table.hypertension").find("tr.total").find("td.row-value")
+        expect(total_td).to have_content(2)
+      end
+
       it "returns cohort data" do
         patients = create_list(:patient, 2, registration_facility: request_facility, registration_user: request_user, recorded_at: jan_2020.advance(months: -2))
         create(:bp_with_encounter, :under_control, recorded_at: jan_2020 + 1.day, patient: patients[0], facility: request_facility)
