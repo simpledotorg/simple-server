@@ -29,7 +29,7 @@ gem "bootsnap", require: false
 gem "bootstrap_form", ">= 4.5.0"
 gem "bootstrap-datepicker-rails", "~> 1.9"
 gem "bootstrap-select-rails"
-gem "bootstrap", "~> 4.5.0"
+gem "bootstrap", "~> 5.1.3"
 gem "connection_pool"
 gem "data_migrate"
 gem "data-anonymization", require: false
