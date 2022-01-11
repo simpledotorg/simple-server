@@ -3,7 +3,11 @@ namespace :deploy do
     invoke "sidekiq:add_default_hooks"
   end
 
-  desc "Fix Bundler plugin path so it points to the shared path instead of a release path"
+  desc <<-EOL
+  Fix Bundler plugin path so it points to the shared path instead of a release path -- this fixes a deep, painful issue between Rubygems,
+  Bundler plugins, and bootboot. See https://github.com/simpledotorg/simple-server/pull/3268 for some related issues here and to see
+  if there are better fixes that happen upstream so we don't need this hack anymore.
+  EOL
   task :fix_bundler_plugin_path do
     on release_roles([:all]) do
       within shared_path do
