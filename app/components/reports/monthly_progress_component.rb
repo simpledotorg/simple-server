@@ -27,7 +27,7 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
   end
 
   def total_count
-    @query.sum(@total_field)
+    @query.sum(@total_field).truncate
   end
 
   def monthly_count(period)
@@ -41,6 +41,6 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
 
   def total_count_by_gender(gender)
     field = "monthly_#{metric}_#{@diagnosis_code}_#{gender}"
-    @query.sum(field)
+    @query.sum(field).truncate
   end
 end
