@@ -36,8 +36,8 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
   end
 
   def table(grouping, &block)
-    options = { class: ["progress-table", metric, diagnosis_group_class(grouping)] }
-    unless (diagnosis == default_diagnosis && grouping == :all)
+    options = {class: ["progress-table", metric, diagnosis_group_class(grouping)]}
+    unless diagnosis == default_diagnosis && grouping == :all
       options[:style] = "display:none"
     end
     tag.table(options, &block)

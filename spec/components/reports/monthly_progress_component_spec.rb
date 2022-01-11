@@ -17,5 +17,4 @@ RSpec.describe Reports::MonthlyProgressComponent, type: :component do
     expect(component.diagnosis_group_class("male")).to eq("hypertension:male")
     expect(component.diagnosis_group_class("female")).to eq("hypertension:female")
   end
-
 end
