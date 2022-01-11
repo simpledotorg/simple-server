@@ -1,5 +1,5 @@
 #! /bin/bash
 
-sed -i “s|$(pwd)|/app|“ .bundle/plugin/index
+sed -i "s|$(pwd)|/app|" .bundle/plugin/index
 bundle exec rails db:structure:load:with_data
 bundle exec rails db:seed
