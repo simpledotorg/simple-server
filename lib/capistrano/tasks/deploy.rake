@@ -3,6 +3,16 @@ namespace :deploy do
     invoke "sidekiq:add_default_hooks"
   end
 
+  desc "Fix Bundler plugin path so it points to the shared path instead of a release path"
+  after :updated, :fix_bundler_plugin_path do
+    on release_roles do
+      within release_path do
+        # sed -i 's#/home/deploy/apps/simple-server/releases/[0-9]\+/.bundle/#/home/deploy/apps/simple-server/shared/.bundle/#g' plugin/index
+        execute "sed", "i", "s#/home/deploy/apps/simple-server/releases/[0-9]\+/.bundle/#/home/deploy/apps/simple-server/shared/.bundle/#g", ".bundle/plugin/index"
+      end
+    end
+  end
+
   desc "Runs any rake task, example: cap deploy:rake task=db:seed"
   task rake: [:set_rails_env] do
     on release_roles([:db]) do
