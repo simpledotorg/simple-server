@@ -119,7 +119,7 @@ group :development, :test do
   gem "rspec-rails", "~> 4"
   gem "rswag-specs"
 
-  gem "shoulda-matchers", "~> 5.0.0"
+  gem "shoulda-matchers", "~> 5.1.0"
   gem "standard", "1.6.0", require: false
 end
 
