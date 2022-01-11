@@ -76,4 +76,11 @@ RSpec.describe Seed::FacilitySeeder do
       expect(facility_group.region.block_regions.count).to be > 1
     end
   end
+
+  it "creates facilities with diabetes enabled" do
+    seeder = Seed::FacilitySeeder.new(config: Seed::Config.new)
+    seeder.call
+    half_all_facilities = Facility.count / 2
+    expect(Facility.where(enable_diabetes_management: true).count).to be >= half_all_facilities
+  end
 end

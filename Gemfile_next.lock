@@ -177,7 +177,7 @@ GEM
     dhis2 (3.3.1)
       dry-validation (= 0.11.1)
       rest-client
-    diff-lcs (1.4.4)
+    diff-lcs (1.5.0)
     diffy (3.4.0)
     discard (1.2.0)
       activerecord (>= 4.2, < 7)
@@ -250,7 +250,7 @@ GEM
     faraday-patron (1.0.0)
     faraday-rack (1.0.0)
     faraday-retry (1.0.3)
-    ffi (1.15.4)
+    ffi (1.15.5)
     ffi-compiler (1.0.1)
       ffi (>= 1.0.0)
       rake
@@ -340,7 +340,7 @@ GEM
     llhttp-ffi (0.4.0)
       ffi-compiler (~> 1.0)
       rake (~> 13.0)
-    lodash-rails (4.17.15)
+    lodash-rails (4.17.21)
       railties (>= 3.1)
     lograge (0.11.2)
       actionpack (>= 4)
@@ -451,7 +451,7 @@ GEM
     rails-dom-testing (2.0.3)
       activesupport (>= 4.2.0)
       nokogiri (>= 1.6)
-    rails-erd (1.6.0)
+    rails-erd (1.6.1)
       activerecord (>= 4.2)
       activesupport (>= 4.2)
       choice (~> 0.2.0)
@@ -514,14 +514,10 @@ GEM
       rspec-expectations (~> 3.9)
       rspec-mocks (~> 3.9)
       rspec-support (~> 3.9)
-    rspec-sidekiq (3.0.3)
+    rspec-sidekiq (3.1.0)
       rspec-core (~> 3.0, >= 3.0.0)
       sidekiq (>= 2.4.0)
     rspec-support (3.9.4)
-    rswag (2.4.0)
-      rswag-api (= 2.4.0)
-      rswag-specs (= 2.4.0)
-      rswag-ui (= 2.4.0)
     rswag-api (2.4.0)
       railties (>= 3.1, < 7.0)
     rswag-specs (2.4.0)
@@ -583,7 +579,7 @@ GEM
       sentry-ruby-core (~> 4.8.3)
       sidekiq (>= 3.0)
     shellany (0.0.1)
-    shoulda-matchers (5.0.0)
+    shoulda-matchers (5.1.0)
       activesupport (>= 5.2.0)
     sidekiq (6.3.1)
       connection_pool (>= 2.2.2)
@@ -734,6 +730,7 @@ DEPENDENCIES
   imgkit
   jbuilder (~> 2.5)
   jquery-rails
+  json-schema
   kaminari
   launchy
   listen
@@ -764,9 +761,11 @@ DEPENDENCIES
   request_store
   request_store-sidekiq
   roo (~> 2.8.0)
-  rspec-rails (~> 4.0.1)
+  rspec-rails (~> 4)
   rspec-sidekiq
-  rswag (~> 2.4.0)
+  rswag-api
+  rswag-specs
+  rswag-ui
   ruby-progressbar
   rubyzip
   sassc-rails
@@ -775,7 +774,7 @@ DEPENDENCIES
   sentry-rails
   sentry-ruby
   sentry-sidekiq
-  shoulda-matchers (~> 5.0.0)
+  shoulda-matchers (~> 5.1.0)
   sidekiq
   sidekiq-statsd
   sidekiq-throttled

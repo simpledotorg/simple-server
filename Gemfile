@@ -1,9 +1,9 @@
-plugin "bootboot", "~> 0.1.1"
-Plugin.send(:load_plugin, "bootboot") if Plugin.installed?("bootboot")
-
 source "https://rubygems.org"
-
 ruby "2.7.4"
+
+plugin "bootboot", "~> 0.1.1"
+Bundler.settings.set_local("bootboot_env_prefix", "RAILS")
+Plugin.send(:load_plugin, "bootboot") if Plugin.installed?("bootboot")
 
 git_source(:github) do |repo_name|
   repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
@@ -11,6 +11,7 @@ git_source(:github) do |repo_name|
 end
 
 gem "dotenv-rails"
+
 if ENV["RAILS_NEXT"]
   enable_dual_booting if Plugin.installed?("bootboot")
 
@@ -58,6 +59,7 @@ gem "http"
 gem "imgkit"
 gem "jbuilder", "~> 2.5"
 gem "jquery-rails"
+gem "json-schema"
 gem "kaminari"
 gem "lodash-rails"
 gem "lograge"
@@ -78,8 +80,8 @@ gem "render_async"
 gem "request_store-sidekiq"
 gem "request_store"
 gem "roo", "~> 2.8.0"
-gem "rspec-rails", "~> 4.0.1"
-gem "rswag", "~> 2.4.0"
+gem "rswag-api"
+gem "rswag-ui"
 gem "ruby-progressbar", require: false
 gem "rubyzip"
 gem "sassc-rails"
@@ -118,7 +120,9 @@ group :development, :test do
   gem "parallel_tests", group: %i[development test]
   gem "rails-controller-testing"
   gem "rb-readline"
-  gem "shoulda-matchers", "~> 5.0.0"
+  gem "rspec-rails", "~> 4"
+  gem "rswag-specs"
+  gem "shoulda-matchers", "~> 5.1.0"
   gem "standard", "1.6.0", require: false
 end
 
@@ -128,13 +132,13 @@ group :development, :test, :profiling do
 end
 
 group :development do
+  gem "flamegraph"
   gem "guard-rspec", require: false
   gem "listen"
   gem "rails-erd"
-  gem "spring", "3.1.1"
   gem "spring-commands-rspec"
+  gem "spring", "3.1.1"
   gem "web-console", ">= 3.3.0"
-  gem "flamegraph"
 end
 
 group :test do

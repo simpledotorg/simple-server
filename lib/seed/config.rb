@@ -42,6 +42,7 @@ module Seed
     end
     alias_method :test_mode?, :test_mode
 
+    # Return a random number from a range, or just return the max end of the range in test mode.
     def rand_or_max(range, scale: false)
       return range.end if test_mode?
       if scale
@@ -50,6 +51,10 @@ module Seed
       else
         rand(range)
       end
+    end
+
+    def percentage_of_facilities_with_diabetes_enabled
+      Float(ENV.fetch("PERCENTAGE_OF_FACILITIES_WITH_DIABETES_ENABLED", 0.6))
     end
 
     def admin_password
@@ -95,6 +100,10 @@ module Seed
 
     def max_bps_to_create
       Integer(ENV["MAX_BPS_TO_CREATE"])
+    end
+
+    def max_blood_sugars_to_create
+      Integer(ENV["MAX_BLOOD_SUGARS_TO_CREATE"])
     end
   end
 end
