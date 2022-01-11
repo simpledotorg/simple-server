@@ -94,7 +94,6 @@ class Facility < ApplicationRecord
     inclusion: {
       in: facility_sizes.values,
       message: "not in #{facility_sizes.values.join(", ")}",
-      allow_blank: true
     }
   validates :enable_teleconsultation, inclusion: {in: [true, false]}
   validates :teleconsultation_medical_officers,
