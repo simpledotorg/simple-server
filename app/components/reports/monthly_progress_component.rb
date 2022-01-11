@@ -33,6 +33,8 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
   def monthly_count(period)
     if (facility_state_group = @query.find_by(month_date: period))
       facility_state_group.attributes[@total_field]
+    else
+      0
     end
   end
 
@@ -40,6 +42,8 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
     field = "monthly_#{metric}_#{@diagnosis_code}_#{gender}"
     if (facility_state_group = @query.find_by(month_date: period))
       facility_state_group.attributes[field]
+    else
+      0
     end
   end
 
