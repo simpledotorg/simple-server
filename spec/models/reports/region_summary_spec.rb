@@ -87,6 +87,11 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
         month_date
         monthly_overdue_calls
         monthly_follow_ups
+        total_appts_scheduled
+        appts_scheduled_0_to_14_days
+        appts_scheduled_15_to_30_days
+        appts_scheduled_31_to_60_days
+        appts_scheduled_more_than_60_days
       ].map(&:to_s)
       (3.months.ago.to_period..now.to_period).each do |period|
         expect(results["facility-1"][period].keys).to match_array(expected_keys)
