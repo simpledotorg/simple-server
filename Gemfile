@@ -128,13 +128,13 @@ group :development, :test, :profiling do
 end
 
 group :development do
+  gem "flamegraph"
   gem "guard-rspec", require: false
   gem "listen"
   gem "rails-erd"
-  gem "spring", "3.1.1"
   gem "spring-commands-rspec"
+  gem "spring", "3.1.1"
   gem "web-console", ">= 3.3.0"
-  gem "flamegraph"
 end
 
 group :test do
