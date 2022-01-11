@@ -8,7 +8,7 @@ namespace :deploy do
     on release_roles([:all]) do
       within shared_path do
         # sed -i 's#/home/deploy/apps/simple-server/releases/[0-9]\+/.bundle/#/home/deploy/apps/simple-server/shared/.bundle/#g' plugin/index
-        execute "sed", "-i", "--follow-symlinks", "--debug", 's#/home/deploy/apps/simple-server/releases/[0-9]\+/.bundle/#/home/deploy/apps/simple-server/shared/.bundle/#g', ".bundle/plugin/index"
+        execute "sed", "-i", "--follow-symlinks", "--debug", 's#/home/deploy/apps/simple-server/releases/[0-9]+/#/home/deploy/apps/simple-server/shared/#g', ".bundle/plugin/index"
       end
     end
   end
