@@ -118,7 +118,6 @@ group :development, :test do
   gem "rb-readline"
   gem "rspec-rails", "~> 4"
   gem "rswag-specs"
-
   gem "shoulda-matchers", "~> 5.1.0"
   gem "standard", "1.6.0", require: false
 end
@@ -140,7 +139,6 @@ end
 
 group :test do
   gem "capybara"
-  gem "generator_spec"
   gem "launchy"
   gem "mock_redis", require: false
   gem "puma"

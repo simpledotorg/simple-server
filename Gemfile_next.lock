@@ -267,9 +267,6 @@ GEM
     formatador (0.3.0)
     friendly_id (5.4.2)
       activerecord (>= 4.0.0)
-    generator_spec (0.9.4)
-      activesupport (>= 3.0.0)
-      railties (>= 3.0.0)
     get_process_mem (0.2.7)
       ffi (~> 1.0)
     github-ds (0.5.0)
@@ -579,7 +576,7 @@ GEM
       sentry-ruby-core (~> 4.8.3)
       sidekiq (>= 3.0)
     shellany (0.0.1)
-    shoulda-matchers (5.0.0)
+    shoulda-matchers (5.1.0)
       activesupport (>= 5.2.0)
     sidekiq (6.3.1)
       connection_pool (>= 2.2.2)
@@ -720,7 +717,6 @@ DEPENDENCIES
   flipper-active_record
   flipper-ui
   friendly_id (~> 5.4.2)
-  generator_spec
   github-ds
   google-protobuf (~> 3.19)
   groupdate
@@ -774,7 +770,7 @@ DEPENDENCIES
   sentry-rails
   sentry-ruby
   sentry-sidekiq
-  shoulda-matchers (~> 5.0.0)
+  shoulda-matchers (~> 5.1.0)
   sidekiq
   sidekiq-statsd
   sidekiq-throttled
