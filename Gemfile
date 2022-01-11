@@ -1,6 +1,3 @@
-plugin "bootboot", "~> 0.1.1"
-Plugin.send(:load_plugin, "bootboot") if Plugin.installed?("bootboot")
-
 source "https://rubygems.org"
 
 ruby "2.7.4"
