@@ -254,6 +254,9 @@ GEM
     formatador (0.3.0)
     friendly_id (5.4.2)
       activerecord (>= 4.0.0)
+    generator_spec (0.9.4)
+      activesupport (>= 3.0.0)
+      railties (>= 3.0.0)
     get_process_mem (0.2.7)
       ffi (~> 1.0)
     github-ds (0.5.0)
@@ -701,6 +704,7 @@ DEPENDENCIES
   flipper-active_record
   flipper-ui
   friendly_id (~> 5.4.2)
+  generator_spec
   github-ds
   google-protobuf (~> 3.19)
   groupdate
