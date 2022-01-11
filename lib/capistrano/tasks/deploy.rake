@@ -5,21 +5,10 @@ namespace :deploy do
 
   desc "Fix Bundler plugin path so it points to the shared path instead of a release path"
   task :fix_bundler_plugin_path do
-    on release_roles(:all) do
-      within release_path do
+    on release_roles([:all]) do
+      within current_path do
         # sed -i 's#/home/deploy/apps/simple-server/releases/[0-9]\+/.bundle/#/home/deploy/apps/simple-server/shared/.bundle/#g' plugin/index
         execute "sed", "-i", "'s#/home/deploy/apps/simple-server/releases/[0-9]\+/.bundle/#/home/deploy/apps/simple-server/shared/.bundle/#g'", ".bundle/plugin/index"
-      end
-    end
-  end
-
-  desc "Runs any rake task, example: cap deploy:rake task=db:seed"
-  task rake: [:set_rails_env] do
-    on release_roles([:db]) do
-      within release_path do
-        with rails_env: fetch(:rails_env) do
-          execute :rake, ENV["task"]
-        end
       end
     end
   end
@@ -30,6 +19,17 @@ namespace :deploy do
       within current_path do
         with rails_env: fetch(:rails_env) do
           execute :rake, "tmp:clear"
+        end
+      end
+    end
+  end
+
+  desc "Runs any rake task, example: cap deploy:rake task=db:seed"
+  task rake: [:set_rails_env] do
+    on release_roles([:db]) do
+      within release_path do
+        with rails_env: fetch(:rails_env) do
+          execute :rake, ENV["task"]
         end
       end
     end
