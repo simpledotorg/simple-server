@@ -2,3 +2,4 @@
 
 bundle exec rails db:structure:load:with_data
 bundle exec rails db:seed
+sed -i “s|$(pwd)|/app|“ .bundle/plugin/index
