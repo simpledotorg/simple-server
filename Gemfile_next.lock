@@ -730,6 +730,7 @@ DEPENDENCIES
   imgkit
   jbuilder (~> 2.5)
   jquery-rails
+  json-schema
   kaminari
   launchy
   listen
