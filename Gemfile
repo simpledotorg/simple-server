@@ -1,6 +1,9 @@
 source "https://rubygems.org"
-
 ruby "2.7.4"
+
+plugin "bootboot", "~> 0.1.1"
+Bundler.settings.set_local("bootboot_env_prefix", "RAILS")
+Plugin.send(:load_plugin, "bootboot") if Plugin.installed?("bootboot")
 
 git_source(:github) do |repo_name|
   repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
@@ -8,6 +11,7 @@ git_source(:github) do |repo_name|
 end
 
 gem "dotenv-rails"
+
 if ENV["RAILS_NEXT"]
   enable_dual_booting if Plugin.installed?("bootboot")
 
