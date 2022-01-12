@@ -94,16 +94,13 @@ class Region < ApplicationRecord
 
   def fast_ancestors
     ancestors_map = self.class.fast_ancestors_map
-    puts "done... #{ancestors_map.size}"
     my_path = path
     elements = path.split(".")
     elements.pop
-    puts "starting: path: #{path}, elements: #{elements}"
     result = []
     while (!elements.empty?) do
       result.push ancestors_map[elements.join(".")]
       elements.pop
-      puts "elements: #{elements}, result: #{result}"
     end
     result
   end
