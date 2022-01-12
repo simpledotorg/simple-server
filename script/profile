@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+# Run a rails commmand in profiling RAILS_ENV with Spring disabled
+RAILS_ENV=profiling DISABLE_SPRING=1 bin/rails "$1"
