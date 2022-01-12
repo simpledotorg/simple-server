@@ -235,6 +235,9 @@ RSpec.describe Facility, type: :model do
     it { is_expected.to validate_presence_of(:country) }
     it { is_expected.to validate_numericality_of(:pin) }
 
+    valid_sizes = Facility.facility_sizes.values
+    it { is_expected.to validate_inclusion_of(:facility_size).in_array(valid_sizes).with_message("not in #{valid_sizes.join(", ")}") }
+
     describe "valid_block" do
       let!(:organization) { create(:organization, name: "OrgTwo") }
       let!(:facility_group) { create(:facility_group, name: "FGThree", organization_id: organization.id) }
