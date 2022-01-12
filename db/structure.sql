@@ -165,7 +165,7 @@ CREATE TABLE public.facilities (
     slug character varying,
     zone character varying,
     enable_diabetes_management boolean DEFAULT false NOT NULL,
-    facility_size character varying,
+    facility_size character varying NOT NULL,
     monthly_estimated_opd_load integer,
     enable_teleconsultation boolean DEFAULT false NOT NULL
 );
@@ -4884,9 +4884,11 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211209110618'),
 ('20211210152751'),
 ('20211210152752'),
+('20211214014913'),
 ('20211215192748'),
 ('20211216144440'),
 ('20211216154413'),
-('20220106075216');
+('20220106075216'),
+('20220112142707');
 
 
