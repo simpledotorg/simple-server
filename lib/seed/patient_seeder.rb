@@ -68,6 +68,15 @@ module Seed
       }))
     end
 
+    def self.weighted_medical_history_traits
+      {
+        diabetes_yes: 0.06,
+        hypertension_yes_diabetes_yes: 0.30,
+        hypertension_no: 0.02,
+        hypertension_yes: 0.60,
+      }
+    end
+
     def self.weighted_diabetes_traits
       {
         diabetes_yes: 0.30,

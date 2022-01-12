@@ -37,6 +37,11 @@ FactoryBot.define do
       hypertension { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:unknown] }
     end
 
+    trait :hypertension_yes_diabetes_yes do
+      hypertension { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:yes] }
+      diabetes { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:yes] }
+    end
+
     trait :diabetes_yes do
       diabetes { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:yes] }
     end
