@@ -42,7 +42,7 @@ gem "devise_invitable", "~> 2.0.6"
 gem "devise", ">= 4.7.1"
 gem "dhis2", require: false
 gem "diffy" # This gem is only needed for Admin::FixZoneDataController, it should be removed with the controller
-gem "discard", "~> 1.0"
+gem "discard", "~> 1.2"
 gem "dogstatsd-ruby", "~> 5.2"
 gem "ed25519", "~> 1.2"
 gem "factory_bot_rails", "~> 6.1", require: false

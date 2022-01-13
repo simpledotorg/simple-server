@@ -43,9 +43,19 @@ RSpec.describe AutomaticPhoneNumberWhitelistingWorker, type: :job do
 
   describe "perform" do
     it "calls the exotel whitelist api in batches for all phone numbers that require whitelisting" do
+      Flipper.enable(:exotel_whitelist_api)
+
       AutomaticPhoneNumberWhitelistingWorker.perform_async(phones_numbers_need_whitelisting.map(&:id), virtual_number, account_sid, token)
       AutomaticPhoneNumberWhitelistingWorker.drain
       expect(stub).to have_been_requested
+
+      Flipper.disable(:exotel_whitelist_api)
+    end
+
+    it "does not call the exotel whitelist api when feature flag is disabled" do
+      AutomaticPhoneNumberWhitelistingWorker.perform_async(phones_numbers_need_whitelisting.map(&:id), virtual_number, account_sid, token)
+      AutomaticPhoneNumberWhitelistingWorker.drain
+      expect(stub).not_to have_been_requested
     end
 
     it "updates the whitelist_requested_at for all the patient phone numbers" do
