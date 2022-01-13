@@ -11,8 +11,9 @@
           <%= render "search" %>
         <div>
       <% end %>
-
       <div id="facility-access">
+
+
         <% @accessible_regions.each do |org, children| %>
           <div class="card organization show region-index">
             <div class="access-tree__section-header">
@@ -23,7 +24,7 @@
               <% end %>
             </div>
 
-            <%= render Reports::RegionTreeComponent.new(parent: org, children: children) %>
+            <%= render Reports::FastRegionTreeComponent.new(parent: org, children: children) %>
           </div>
         <% end %>
       </div>
