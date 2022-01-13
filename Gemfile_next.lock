@@ -179,8 +179,8 @@ GEM
       rest-client
     diff-lcs (1.5.0)
     diffy (3.4.0)
-    discard (1.2.0)
-      activerecord (>= 4.2, < 7)
+    discard (1.2.1)
+      activerecord (>= 4.2, < 8)
     docile (1.4.0)
     dogstatsd-ruby (5.3.2)
     domain_name (0.5.20190701)
@@ -709,7 +709,7 @@ DEPENDENCIES
   devise_invitable (~> 2.0.6)
   dhis2
   diffy
-  discard (~> 1.0)
+  discard (~> 1.2)
   dogstatsd-ruby (~> 5.2)
   dotenv-rails
   ed25519 (~> 1.2)
