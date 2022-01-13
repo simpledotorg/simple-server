@@ -6,8 +6,10 @@ require "ruby-progressbar"
 module Seed
   class Runner
     include ActiveSupport::Benchmarkable
+    include ActionView::Helpers::NumberHelper
     include ConsoleLogger
     SIZES = Facility.facility_sizes
+    SUMMARY_COUNTS = [:patient, :blood_pressure, :blood_sugar, :appointment, :facility, :facility_group]
 
     attr_reader :config
     attr_reader :logger
@@ -49,15 +51,24 @@ module Seed
       hsh = sum_facility_totals
       total_counts.merge!(hsh)
 
+      print_summary
+      [counts, total_counts]
+    end
+
+    def print_summary
+      totals = SUMMARY_COUNTS.each_with_object({}) {|model, hsh|
+        hsh[model] = number_with_delimiter(model.to_s.classify.constantize.count)
+      }
       announce <<~EOL
-        \n⭐️ Seed complete! Created #{Patient.count} patients, #{BloodPressure.count} BPs, #{BloodSugar.count} blood sugars, and #{Appointment.count} appointments across #{Facility.count} facilities in #{Region.district_regions.count} districts.\n
+        \n⭐️ Seed complete! Created #{totals[:patient]} patients, #{totals[:blood_pressure]} BPs, #{totals[:blood_sugar]} blood sugars, and #{totals[:appointment]} appointments across #{totals[:facility]} facilities in #{totals[:facility_group]} districts.\n
         ⭐️ Elapsed time #{distance_of_time_in_words(start_time, Time.current, include_seconds: true)} ⭐️\n
       EOL
-      [counts, total_counts]
+
     end
 
     def feature_flags_enabled_by_default
       [
+        :dashboard_progress_reports,
         :drug_stocks,
         :follow_ups_v2,
         :follow_ups_v2_progress_tab,
