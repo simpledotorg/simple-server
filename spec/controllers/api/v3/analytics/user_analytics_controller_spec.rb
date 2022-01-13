@@ -55,7 +55,7 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
       end
 
       it "renders successfully for follow_ups_v2 with no data" do
-        Flipper.enable(:follow_ups_v2)
+        Flipper.enable(:follow_ups_v2_progress_tab)
         refresh_views
 
         get :show, format: :html
@@ -63,7 +63,7 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
       end
 
       it "renders successfully for follow_ups_v2 with data" do
-        Flipper.enable(:follow_ups_v2)
+        Flipper.enable(:follow_ups_v2_progress_tab)
         Timecop.freeze(1.month.ago) do
           create_list(:patient, 2, registration_facility: request_facility)
         end
