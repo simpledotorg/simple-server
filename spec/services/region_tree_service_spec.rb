@@ -19,14 +19,14 @@ RSpec.describe RegionTreeService, type: :model do
       p name, values[:sql]
       # FIXME: this seems bad. we should probably have a better way to indicate
       # the query was cached
-      unless 'CACHE' == values[:name]
+      unless "CACHE" == values[:name]
         self.class.query_count += 1 unless IGNORED_SQL.any? { |r| values[:sql] =~ r }
       end
     end
   end
 
   before do
-    ActiveSupport::Notifications.subscribe('sql.active_record', SQLCounter.new)
+    ActiveSupport::Notifications.subscribe("sql.active_record", SQLCounter.new)
   end
 
   it "loads the same children as built in LTREE methods" do
@@ -47,5 +47,4 @@ RSpec.describe RegionTreeService, type: :model do
     expect(tree.fast_children(block_1).size).to be > 0
     expect(SQLCounter.query_count).to eq(0)
   end
-
 end

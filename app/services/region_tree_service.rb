@@ -13,6 +13,6 @@ class RegionTreeService
   end
 
   def fast_children(region)
-    tree_map.keys.grep(/^#{region.path}\.[^\.]+$/).map { |path| tree_map[path] }
+    tree_map.keys.grep(/^#{region.path}\.[^.]+$/).map { |path| tree_map[path] }
   end
 end
