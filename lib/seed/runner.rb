@@ -56,14 +56,13 @@ module Seed
     end
 
     def print_summary
-      totals = SUMMARY_COUNTS.each_with_object({}) {|model, hsh|
+      totals = SUMMARY_COUNTS.each_with_object({}) { |model, hsh|
         hsh[model] = number_with_delimiter(model.to_s.classify.constantize.count)
       }
       announce <<~EOL
         \n⭐️ Seed complete! Created #{totals[:patient]} patients, #{totals[:blood_pressure]} BPs, #{totals[:blood_sugar]} blood sugars, and #{totals[:appointment]} appointments across #{totals[:facility]} facilities in #{totals[:facility_group]} districts.\n
         ⭐️ Elapsed time #{distance_of_time_in_words(start_time, Time.current, include_seconds: true)} ⭐️\n
       EOL
-
     end
 
     def feature_flags_enabled_by_default
