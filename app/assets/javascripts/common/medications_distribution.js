@@ -14,81 +14,7 @@ MedicationsDispensationGraph = function () {
   }
 
   this.initializeMedicationsGraph = () => {
-    // const graphData = this.getMedicationsGraphData();
-    const graphData = {
-        "0 - 14 days": {
-            "color": "#BD3838",
-            "counts": {
-                "Nov-2021": 2,
-                "Dec-2021": 134,
-                "Jan-2022": 1
-            },
-            "totals": {
-                "Nov-2021": 150,
-                "Dec-2021": 451,
-                "Jan-2022": 1
-            },
-            "percentages": {
-                "Nov-2021": 1,
-                "Dec-2021": 30,
-                "Jan-2022": 100
-            }
-        },
-        "15 - 30 days": {
-            "color": "#E77D27",
-            "counts": {
-                "Nov-2021": 10,
-                "Dec-2021": 170,
-                "Jan-2022": 0
-            },
-            "totals": {
-                "Nov-2021": 100,
-                "Dec-2021": 451,
-                "Jan-2022": 1
-            },
-            "percentages": {
-                "Nov-2021": 10,
-                "Dec-2021": 38,
-                "Jan-2022": 0
-            }
-        },
-        "31 - 60 days": {
-            "color": "#729C26",
-            "counts": {
-                "Nov-2021": 4,
-                "Dec-2021": 147,
-                "Jan-2022": 0
-            },
-            "totals": {
-                "Nov-2021": 20,
-                "Dec-2021": 451,
-                "Jan-2022": 1
-            },
-            "percentages": {
-                "Nov-2021": 20,
-                "Dec-2021": 33,
-                "Jan-2022": 0
-            }
-        },
-        "60+ days": {
-            "color": "#007AA6",
-            "counts": {
-                "Nov-2021": 49,
-                "Dec-2021": 0,
-                "Jan-2022": 0
-            },
-            "totals": {
-                "Nov-2021": 70 ,
-                "Dec-2021": 451,
-                "Jan-2022": 1
-            },
-            "percentages": {
-                "Nov-2021": 70,
-                "Dec-2021": 0,
-                "Jan-2022": 0
-            }
-        }
-    };
+    const graphData = this.getMedicationsGraphData();
     const medicationsGraphConfig = reports.createBaseGraphConfig();
     let datasets = Object.keys(graphData).map(function(bucket, index){
       return {
@@ -187,5 +113,5 @@ MedicationsDispensationGraph = function () {
     if (medicationsGraphCanvas) {
       new Chart(medicationsGraphCanvas.getContext("2d"), medicationsGraphConfig);
     }
-  }
+    }
 }
