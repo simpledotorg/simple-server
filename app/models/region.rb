@@ -89,16 +89,17 @@ class Region < ApplicationRecord
   end
 
   def self.fast_ancestors_map
-    Region.all.inject({}) {|memo, region| memo[region.path] = region; memo }
+    Region.all.each_with_object({}) do |region, memo|
+      memo[region.path] = region
+    end
   end
 
   def fast_ancestors
     ancestors_map = self.class.fast_ancestors_map
-    my_path = path
     elements = path.split(".")
     elements.pop
     result = []
-    while (!elements.empty?) do
+    until elements.empty?
       result.push ancestors_map[elements.join(".")]
       elements.pop
     end
