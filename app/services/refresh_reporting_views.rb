@@ -62,6 +62,7 @@ class RefreshReportingViews
     Reports::PatientState
     Reports::FacilityState
     Reports::QuarterlyFacilityState
+    Reports::FacilityStateGroup
   ].freeze
 
   def refresh_v1
