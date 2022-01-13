@@ -80,8 +80,8 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
 
       it "returns cohort data" do
         patients = create_list(:patient, 2, registration_facility: request_facility, registration_user: request_user, recorded_at: jan_2020.advance(months: -2))
-        create(:bp_with_encounter, :under_control, recorded_at: jan_2020 + 1.day, patient: patients[0], facility: request_facility)
-        create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020 + 1.day, patient: patients[1], facility: request_facility)
+        create(:bp_with_encounter, :under_control, recorded_at: jan_2020 + 1.day, patient: patients[0], facility: request_facility, user: request_user)
+        create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020 + 1.day, patient: patients[1], facility: request_facility, user: request_user)
 
         Timecop.freeze("April 15th 2020") do
           refresh_views
