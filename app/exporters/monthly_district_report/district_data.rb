@@ -91,25 +91,43 @@ module MonthlyDistrictReport
         "% Visits, no BP taken" => percentage_string(repo.visited_without_bp_taken_rates[district.slug][report_month]),
         **last_6_months_data(repo.cumulative_registrations, :cumulative_registrations), # "Total registered patients",
         **last_6_months_data(repo.under_care, :under_care), # "Patients under care",
-        **last_6_months_data({}, :something_1), # TODO: **last_6_months_data(repo.monthly_registrations, district, :monthly_registrations), # "New registrations (DH/SDH/CHC)",
-        **last_6_months_data({}, :something_2), # TODO: **last_6_months_data(repo.monthly_registrations, district, :monthly_registrations), # "New registrations (PHC)",
-        **last_6_months_data({}, :something_3), # TODO: **last_6_months_data(repo.monthly_registrations, district, :monthly_registrations), # "New registrations (HWC/SC)",
+        **last_6_months_data(indicator_by_facility_size([:large, :medium], :monthly_registrations), :monthly_registrations_large_medium),
+        **last_6_months_data(indicator_by_facility_size([:small], :monthly_registrations), :monthly_registrations_small),
+        **last_6_months_data(indicator_by_facility_size([:community], :monthly_registrations), :monthly_registrations_community),
         **last_6_months_data(repo.hypertension_follow_ups, :hypertension_follow_ups), # "Patient follow-ups",
         **last_6_months_data(repo.controlled_rates, :controlled_rates, true), # "BP controlled rate"
         **last_6_months_data(repo.controlled, :controlled), # "BP controlled count"
 
-        **last_6_months_data({}, :something_4).drop(3).to_h, # TODO: *last_6_months.drop(3).map(&:to_s), # "Cumulative registrations at HWCs"
-        **last_6_months_data({}, :something_5).drop(3).to_h, # TODO: *last_6_months.drop(3).map(&:to_s), # "Cumulative patients under care at HWCs"
-        **last_6_months_data({}, :something_6).drop(3).to_h, # TODO: *last_6_months.drop(3).map(&:to_s), # "% of assigned patients at HWCs / SCs (as against district)"
-        **last_6_months_data({}, :something_7).drop(3).to_h, # TODO: *last_6_months.drop(3).map(&:to_s), # "% of patients followed up at HWCs / SCs"
-        **last_6_months_data({}, :something_8).drop(3).to_h # TODO: *last_6_months.drop(3).map(&:to_s), # "Cumulative assigned patients to HWCs"
+        **last_6_months_data(indicator_by_facility_size([:community], :cumulative_registrations, last_6_months), :cumulative_registrations_community).drop(3).to_h,
+        **last_6_months_data(indicator_by_facility_size([:community], :under_care, last_6_months), :cumulative_under_care_community).drop(3).to_h,
+        **last_6_months_percentage(indicator_by_facility_size([:community], :cumulative_assigned_patients, last_6_months.drop(3)), repo.cumulative_assigned_patients, :cumulative_assigned_patients_community_percentage).drop(3).to_h, # TODO: *last_6_months.map(&:to_s), # "% of assigned patients at HWCs / SCs (as against district)"
+        **last_6_months_data({}, :something), # "% of patients followed up at HWCs / SCs"
+        **last_6_months_data(indicator_by_facility_size([:community], :cumulative_assigned_patients, last_6_months), :cumulative_assigned_patients_community).drop(3).to_h
+      }
+    end
+
+    def indicator_by_facility_size(facility_sizes, indicator, periods = last_6_months)
+      {
+        district.slug => Reports::FacilityState
+        .where(district_region_id: district.id, month_date: periods, facility_size: facility_sizes)
+        .group(:month_date)
+        .sum(indicator)
+        .map {|k, v| [Period.month(k), v.to_i]}
+        .to_h
       }
     end
 
     def last_6_months_data(data, indicator, show_as_rate = false)
       last_6_months.each_with_object({}) do |month, hsh|
-        value = data.dig(district.slug, month)
+        value = data.dig(district.slug, month) || 0
         hsh["#{indicator} - #{month}"] = indicator_string(value, show_as_rate)
+      end
+    end
+
+    def last_6_months_percentage(numerators, denominators, indicator)
+      last_6_months.each_with_object({}) do |month, hsh|
+        value = percentage(numerators.dig(district.slug, month), denominators.dig(district.slug, month))
+        hsh["#{indicator} - #{month}"] = indicator_string(value, true)
       end
     end
   end
