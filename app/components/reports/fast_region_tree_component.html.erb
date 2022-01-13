@@ -19,7 +19,7 @@
       <div class="access-item__padding"></div>
     </div>
 
-    <%= render Reports::FastRegionTreeComponent.new(parent: child, children: child.children) %>
+    <%= render Reports::FastRegionTreeComponent.new(region_tree: region_tree, parent: child, children: region_tree.fast_children(child)) %>
   </li>
   <% end %>
 </ul>

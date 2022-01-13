@@ -1,7 +1,8 @@
 class Reports::FastRegionTreeComponent < ViewComponent::Base
-  attr_reader :parent, :children
+  attr_reader :region_tree, :parent, :children
 
-  def initialize(parent:, children:)
+  def initialize(region_tree:, parent:, children:)
+    @region_tree = region_tree
     @children = children
     @parent = parent
   end

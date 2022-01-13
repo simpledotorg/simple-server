@@ -20,7 +20,7 @@
                 <%= @org.name %>
               <% end %>
             </div>
-            <%= render Reports::FastRegionTreeComponent.new(parent: @org, children: @org.children) %>
+            <%= render Reports::FastRegionTreeComponent.new(region_tree: @region_tree, parent: @org, children: @region_tree.fast_children(@org)) %>
           </div>
 
       </div>

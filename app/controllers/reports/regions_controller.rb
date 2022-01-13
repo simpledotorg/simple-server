@@ -35,6 +35,7 @@ class Reports::RegionsController < AdminController
     _accessible_facility_regions = authorize { current_admin.accessible_facility_regions(:view_reports) }
 
     @org = Region.organization_regions.first
+    @region_tree = RegionTreeService.new(@org)
   end
 
   def show
