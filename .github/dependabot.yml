@@ -10,3 +10,7 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+      time: "23:30" # check for updates at 23:30 UTC / 5 AM IST to avoid main working hours
+    # Only create pull requests to update lockfiles. Ignore any new versions that would require package manifest changes.
+    versioning-strategy: "lockfile-only"
+
