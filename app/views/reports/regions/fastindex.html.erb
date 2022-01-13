@@ -12,21 +12,17 @@
         <div>
       <% end %>
       <div id="facility-access">
-
-
-        <% @accessible_regions.each do |org, children| %>
           <div class="card organization show region-index">
             <div class="access-tree__section-header">
               <% if current_admin.feature_enabled?(:organization_reports) %>
-                <%= link_to(org.name, reports_region_path(org.source.slug, report_scope: org.region_type)) %>
+                <%= link_to(@org.name, reports_region_path(@org.source.slug, report_scope: @org.region_type)) %>
               <% else %>
-                <%= org.name %>
+                <%= @org.name %>
               <% end %>
             </div>
-
-            <%= render Reports::FastRegionTreeComponent.new(parent: org, children: children) %>
+            <%= render Reports::FastRegionTreeComponent.new(parent: @org, children: @org.children) %>
           </div>
-        <% end %>
+
       </div>
 
       <script>

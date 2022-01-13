@@ -1,25 +1,25 @@
 <ul class="access-item-wrapper">
-  <% children.sort_by { |parent, children| parent.name }.each do |parent, children| %>
+  <% children.sort_by { |child| child.name }.each do |child| %>
   <li>
-    <div class="access-item collapsed <%= parent.region_type %>">
-      <% depth(parent).times do %>
+    <div class="access-item collapsed <%= child.region_type %>">
+      <% depth(child).times do %>
         <span class="spacer"></span>
       <% end %>
 
-      <% if parent.child_region_type %>
+      <% if child.child_region_type %>
       <div class="access-item__dropdown">
         <i class="fas fa-caret-down c-grey-dark"></i>
       </div>
       <% end %>
 
       <div class="form-check show">
-        <%= link_to_if(accessible_region?(parent, :view_reports), parent.name, reports_region_path(parent, report_scope: parent.region_type)) %>
+        <%= link_to_if(accessible_region?(child, :view_reports), child.name, reports_region_path(child, report_scope: child.region_type)) %>
       </div>
 
       <div class="access-item__padding"></div>
     </div>
 
-    <%= render Reports::FastRegionTreeComponent.new(parent: parent, children: children) %>
+    <%= render Reports::FastRegionTreeComponent.new(parent: child, children: child.children) %>
   </li>
   <% end %>
 </ul>
