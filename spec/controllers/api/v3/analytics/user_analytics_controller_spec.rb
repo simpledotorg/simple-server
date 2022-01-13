@@ -62,19 +62,23 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
         expect(response.status).to eq(200)
       end
 
-      it "renders successfully for follow_ups_v2 with data" do
+      it "renders successfully for follow_ups_v2 for facility with DM disabled" do
+        facility = create(:facility, enable_diabetes_management: false, facility_group: request_user.facility.facility_group)
         Flipper.enable(:follow_ups_v2_progress_tab)
         Timecop.freeze(1.month.ago) do
-          create_list(:patient, 2, registration_facility: request_facility)
+          create_list(:patient, 2, registration_facility: facility)
         end
         refresh_views
 
+        request.env["HTTP_X_USER_ID"] = request_user.id
+        request.env["HTTP_X_FACILITY_ID"] = facility.id
+        request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
         get :show, format: :html
 
         expect(response.status).to eq(200)
         # This is a brittle assertion but enough to verify we are getting real output back from the v2 code
         page = Capybara::Node::Simple.new(response.body)
-        total_td = page.find("table.registrations.progress-table.hypertension").find("tr.total").find("td.row-value")
+        total_td = page.find(:css, ".progress-table.registrations").find("tr.total").find("td.row-value")
         expect(total_td).to have_content(2)
       end
 
