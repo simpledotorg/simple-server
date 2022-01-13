@@ -259,7 +259,7 @@ GEM
       railties (>= 3.0.0)
     get_process_mem (0.2.7)
       ffi (~> 1.0)
-    github-ds (0.5.0)
+    github-ds (0.5.2)
       activerecord (>= 3.2)
     globalid (1.0.0)
       activesupport (>= 5.0)
@@ -573,7 +573,7 @@ GEM
     sidekiq-statsd (2.1.0)
       activesupport
       sidekiq (>= 3.3.1)
-    sidekiq-throttled (0.14.1)
+    sidekiq-throttled (0.15.0)
       concurrent-ruby
       redis-prescription
       sidekiq
