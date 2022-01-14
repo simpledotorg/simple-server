@@ -19,4 +19,11 @@ RSpec.describe Seed::FakeNames do
     expect(org_names).to include(fake_names.seed_org_name)
     expect(org_names.first).to eq(fake_names.seed_org_name)
   end
+
+  it "can get lots of block names" do
+    inst = described_class.instance
+    200.times do |n|
+      p inst.blocks.sample(3)
+    end
+  end
 end
