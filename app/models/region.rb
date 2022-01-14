@@ -88,24 +88,6 @@ class Region < ApplicationRecord
     end
   end
 
-  def self.fast_ancestors_map
-    Region.all.each_with_object({}) do |region, memo|
-      memo[region.path] = region
-    end
-  end
-
-  def fast_ancestors
-    ancestors_map = self.class.fast_ancestors_map
-    elements = path.split(".")
-    elements.pop
-    result = []
-    until elements.empty?
-      result.push ancestors_map[elements.join(".")]
-      elements.pop
-    end
-    result
-  end
-
   def self.root
     Region.find_by(region_type: :root)
   end

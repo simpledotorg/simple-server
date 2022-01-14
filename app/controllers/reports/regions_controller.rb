@@ -32,10 +32,10 @@ class Reports::RegionsController < AdminController
   end
 
   def fastindex
-    _accessible_facility_regions = authorize { current_admin.accessible_facility_regions(:view_reports) }
+    accessible_facility_regions = authorize { current_admin.accessible_facility_regions(:view_reports) }
 
     @org = Region.organization_regions.first
-    @region_tree = RegionTreeService.new(@org)
+    @region_tree = RegionTreeService.new(@org).with_facilities!(accessible_facility_regions)
   end
 
   def show
