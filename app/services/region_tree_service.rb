@@ -4,7 +4,6 @@ class RegionTreeService
   def initialize(org)
     @org = org
     @tree_map = preload_regions
-    @ancestors = {}
   end
 
   def preload_regions
@@ -22,19 +21,21 @@ class RegionTreeService
   end
 
   def self_and_all_ancestors_hash(regions)
-    regions.each_with_object({}) do |region, memo|
-      memo.merge!(self_and_ancestors_hash(region))
+    all_ancestors = {}
+    regions.each do |region|
+      all_ancestors.merge!(self_and_ancestors_hash(region))
     end
+    all_ancestors
   end
 
   def self_and_ancestors_hash(region)
     current = region.path.split(".") # "org.state.district.block.facility" -> ["org", "state", "district", "block", "facility"]
-    @ancestors = {}
+    ancestors = {}
     until current.empty?
-      @ancestors[current.join(".")] = true
+      ancestors[current.join(".")] = true
       current.pop
     end
-    @ancestors
+    ancestors
   end
 
   def fast_children(region)
