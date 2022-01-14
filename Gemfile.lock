@@ -264,7 +264,7 @@ GEM
     globalid (1.0.0)
       activesupport (>= 5.0)
     google-protobuf (3.19.2)
-    groupdate (5.0.0)
+    groupdate (5.2.4)
       activesupport (>= 5)
     guard (2.18.0)
       formatador (>= 0.2.4)
