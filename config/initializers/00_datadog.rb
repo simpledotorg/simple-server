@@ -1,6 +1,7 @@
 require "simple_server_extensions"
 require "ddtrace"
 require "datadog/statsd"
+require "00_datadog_extensions"
 
 # Allow running via an ENV var (for development usage, for example) ...otherwise
 # exclude some envs by default
