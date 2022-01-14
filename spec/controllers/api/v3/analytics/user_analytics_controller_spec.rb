@@ -54,10 +54,38 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
         expect(response.body).to include("Submit Drug Stock")
       end
 
+      it "renders successfully for follow_ups_v2 with no data" do
+        Flipper.enable(:follow_ups_v2_progress_tab)
+        refresh_views
+
+        get :show, format: :html
+        expect(response.status).to eq(200)
+      end
+
+      it "renders successfully for follow_ups_v2 for facility with DM disabled" do
+        facility = create(:facility, enable_diabetes_management: false, facility_group: request_user.facility.facility_group)
+        Flipper.enable(:follow_ups_v2_progress_tab)
+        Timecop.freeze(1.month.ago) do
+          create_list(:patient, 2, registration_facility: facility)
+        end
+        refresh_views
+
+        request.env["HTTP_X_USER_ID"] = request_user.id
+        request.env["HTTP_X_FACILITY_ID"] = facility.id
+        request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
+        get :show, format: :html
+
+        expect(response.status).to eq(200)
+        # This is a brittle assertion but enough to verify we are getting real output back from the v2 code
+        page = Capybara::Node::Simple.new(response.body)
+        total_td = page.find(:css, ".progress-table.registrations").find("tr.total").find("td.row-value")
+        expect(total_td).to have_content(2)
+      end
+
       it "returns cohort data" do
         patients = create_list(:patient, 2, registration_facility: request_facility, registration_user: request_user, recorded_at: jan_2020.advance(months: -2))
-        create(:bp_with_encounter, :under_control, recorded_at: jan_2020 + 1.day, patient: patients[0], facility: request_facility)
-        create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020 + 1.day, patient: patients[1], facility: request_facility)
+        create(:bp_with_encounter, :under_control, recorded_at: jan_2020 + 1.day, patient: patients[0], facility: request_facility, user: request_user)
+        create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020 + 1.day, patient: patients[1], facility: request_facility, user: request_user)
 
         Timecop.freeze("April 15th 2020") do
           refresh_views
