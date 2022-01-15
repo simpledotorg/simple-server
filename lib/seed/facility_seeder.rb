@@ -119,11 +119,13 @@ module Seed
         logger.info { "creating #{number} block regions for #{row}" }
 
         number.times.map { |i|
+          block_name = Faker::Address.community
+          block_slug = "#{block_name.parameterize}-#{SecureRandom.uuid[0..7]}"
           idx = SecureRandom.uuid
-          name = "#{Faker::Address.community} #{idx}"
           attrs = {
             id: nil,
-            name: name,
+            name: block_name,
+            slug: block_slug,
             parent_path: path,
             region_type: "block"
           }
