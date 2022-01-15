@@ -133,6 +133,7 @@ module Seed
 
     def create_facilities(facility_group_results)
       facility_attrs = []
+      logger.info { "Building Facility attributes for #{facility_group_results.results.count} districts" }
       facility_group_results.results.each do |row|
         facility_group_id, facility_group_name = *row
         facility_group_region = Region.find_by!(source_id: facility_group_id)
@@ -151,6 +152,7 @@ module Seed
             facility_group_id: facility_group_id,
             facility_size: size,
             facility_type: type,
+            generating_seed_data: true,
             state: state.name,
             updated_at: created_at,
             zone: blocks.sample
@@ -159,10 +161,12 @@ module Seed
         }
       end
 
+      logger.info { "Importing Facilities" }
       Facility.import(facility_attrs, returning: [:id, :name, :zone], on_duplicate_key_ignore: true)
     end
 
     def create_facility_regions(facility_results)
+      logger.info { "Building Facility Region attributes for #{facility_results.results.count} facilities" }
       facility_regions = facility_results.results.map { |row|
         id, name, block_name = *row
         block = Region.find_by!(name: block_name)
@@ -176,6 +180,7 @@ module Seed
         }
         FactoryBot.build(:region, attrs)
       }
+      logger.info { "Importing Facility regions"}
       Region.import(facility_regions, on_duplicate_key_ignore: true)
     end
   end
