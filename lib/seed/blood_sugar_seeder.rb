@@ -31,7 +31,7 @@ module Seed
       end
       if config.skip_encounters
         logger.warn { "Skipping seeding blood sugars, SKIP_ENCOUNTERS is true" }
-        return {]
+        return {}
       end
 
       return {} if config.skip_encounters

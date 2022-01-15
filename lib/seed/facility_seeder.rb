@@ -146,6 +146,7 @@ module Seed
           created_at = Faker::Time.between(from: 3.years.ago, to: 1.day.ago)
           diabetes_enabled = rand <= config.percentage_of_facilities_with_diabetes_enabled
           attrs = {
+            id: nil,
             created_at: created_at,
             district: facility_group_name,
             enable_diabetes_management: diabetes_enabled,
@@ -157,11 +158,11 @@ module Seed
             updated_at: created_at,
             zone: blocks.sample
           }
-          facility_attrs << FactoryBot.build(:facility, :seed, attrs)
+          facility_attrs << FactoryBot.build(:facility, :seed, :without_parent_region, attrs)
         }
       end
 
-      logger.info { "Importing Facilities" }
+      logger.info { "Importing #{facility_attrs.count} Facilities" }
       Facility.import(facility_attrs, returning: [:id, :name, :zone], on_duplicate_key_ignore: true)
     end
 
@@ -180,7 +181,7 @@ module Seed
         }
         FactoryBot.build(:region, attrs)
       }
-      logger.info { "Importing Facility regions"}
+      logger.info { "Importing #{facility_regions.count} Facility regions"}
       Region.import(facility_regions, on_duplicate_key_ignore: true)
     end
   end
