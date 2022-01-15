@@ -105,5 +105,9 @@ module Seed
     def max_blood_sugars_to_create
       Integer(ENV["MAX_BLOOD_SUGARS_TO_CREATE"])
     end
+
+    def skip_encounters
+      ENV.fetch("SKIP_ENCOUNTERS", false)
+    end
   end
 end

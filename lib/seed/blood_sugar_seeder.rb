@@ -29,6 +29,12 @@ module Seed
         logger.debug { "Skipping seeding blood sugars, facility #{facility.slug} does not have diabetes enabled" }
         return {}
       end
+      if config.skip_encounters
+        logger.warn { "Skipping seeding blood sugars, SKIP_ENCOUNTERS is true" }
+        return {]
+      end
+
+      return {} if config.skip_encounters
       blood_sugars = []
       patient_info.each_with_object([]) do |(patient_id, recorded_at)|
         blood_sugars_to_create.times do

@@ -58,6 +58,10 @@ module Seed
     end
 
     def call
+      if config.skip_encounters
+        logger.warn { "Skipping seeding blood pressures, SKIP_ENCOUNTERS is true" }
+        return {}
+      end
       bps = []
       patient_info.each_with_object([]) do |(patient_id, recorded_at)|
         blood_pressures_to_create(performance_rank).times do
