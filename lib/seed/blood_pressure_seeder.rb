@@ -19,7 +19,7 @@ module Seed
       @facility = facility
       @user_ids = user_ids
       @patient_info = @facility.assigned_patients.pluck(:id, :recorded_at)
-      @logger.debug "Starting #{self.class} with #{config.type} configuration"
+      @logger.info "Starting #{self.class} with #{config.type} configuration"
     end
 
     PERFORMANCE_WEIGHTS = {

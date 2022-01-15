@@ -26,6 +26,7 @@ module Seed
       @counts = {}
       @config = config
       @logger = Rails.logger.child(class: self.class.name)
+      @logger.info "Starting #{self.class} with #{config.type} configuration"
     end
 
     attr_reader :config
@@ -112,11 +113,15 @@ module Seed
     def create_block_regions(district_region_results)
       block_regions = district_region_results.results.flat_map { |row|
         _id, _name, path = *row
+        number = number_of_blocks_per_facility_group
+        logger.info { "creating #{number} block regions for #{row}"}
 
-        number_of_blocks_per_facility_group.times.map {
+        number.times.map { |i|
+          idx = SecureRandom.uuid
+          name = "#{Faker::Address.community} #{idx}"
           attrs = {
             id: nil,
-            name: Faker::Address.community,
+            name: name,
             parent_path: path,
             region_type: "block"
           }

@@ -13,6 +13,7 @@ module Seed
       @logger = Rails.logger.child(class: self.class.name)
       @number_of_users_per_facility = config.max_number_of_users_per_facility
       @organization = Seed.seed_org
+      @logger.info { "Starting #{self.class} with #{config.type} configuration" }
     end
 
     attr_reader :config
@@ -113,6 +114,7 @@ module Seed
       users, auths = [], []
       facility_ids.each do |facility_id|
         number_of_users_per_facility.times do
+          logger.info { "building attributes for Users and UserAuthentications" }
           auths << {
             phone_number: Faker::PhoneNumber.phone_number,
             otp: rand(100_000..999_999).to_s,
