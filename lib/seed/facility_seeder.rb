@@ -33,10 +33,11 @@ module Seed
     attr_reader :config
     attr_reader :logger
 
-    delegate :scale_factor, :stdout, to: :config
-    delegate :number_of_facility_groups,
+    delegate :number_of_blocks_per_facility_group,
+      :number_of_facility_groups,
       :number_of_states,
-      :number_of_blocks_per_facility_group, to: :config
+      :stdout, 
+    :scale_factor, to: :config
 
     def call
       Region.root || Region.create!(name: "India", region_type: Region.region_types[:root], path: "india")
