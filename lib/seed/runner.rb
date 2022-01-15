@@ -94,8 +94,10 @@ module Seed
           result.merge!(bp_result) { |key, count1, count2| count1 + count2 }
           blood_sugar_result = BloodSugarSeeder.call(config: config, facility: facility, user_ids: registration_user_ids)
           result.merge!(blood_sugar_result) { |key, count1, count2| count1 + count2 }
-          appt_result = create_appts(patient_info, facility: facility, user_ids: registration_user_ids)
-          result[:appointment] = appt_result.ids.size
+          unless config.skip_encounters
+            appt_result = create_appts(patient_info, facility: facility, user_ids: registration_user_ids)
+            result[:appointment] = appt_result.ids.size
+          end
           result
         }
         results.concat batch_result
@@ -104,12 +106,18 @@ module Seed
     end
 
     def seed_drug_stocks
-      Facility.all.each do |facility|
+      ds_attrs = Facility.find_each.with_object([]).each do |facility, attrs|
+        logger.info { "Seeding drug stocks for #{facility.id}" }
         user = facility.users.first
         facility.protocol.protocol_drugs.where(stock_tracked: true).each do |protocol_drug|
-          FactoryBot.create(:drug_stock, facility: facility, user: user, protocol_drug: protocol_drug)
+          attrs << FactoryBot.attributes_for(:drug_stock,
+            facility_id: facility.id,
+            user_id: user.id,
+            protocol_drug_id: protocol_drug.id,
+            region_id: facility.region.id)
         end
       end
+      DrugStock.import(ds_attrs)
     end
 
     def parallel_options(progress)
