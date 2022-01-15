@@ -27,7 +27,7 @@ module Seed
       @counts = {}
       @config = config
       @logger = Rails.logger.child(class: self.class.name)
-      @logger.info "Starting #{self.class} with #{config.type} configuration"
+      @logger.info { "Starting #{self.class} with #{config.type} configuration" }
     end
 
     attr_reader :config

@@ -17,7 +17,7 @@ module Seed
       @config = config
       @facility = facility
       @user_ids = user_ids
-      @logger.info "Starting #{self.class} with #{config.type} configuration"
+      @logger.info { "Starting #{self.class} with #{config.type} configuration" }
     end
 
     def blood_sugars_to_create
