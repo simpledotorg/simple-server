@@ -121,7 +121,6 @@ module Seed
         number.times.map { |i|
           block_name = Faker::Address.community
           block_slug = "#{block_name.parameterize}-#{SecureRandom.uuid[0..7]}"
-          idx = SecureRandom.uuid
           attrs = {
             id: nil,
             name: block_name,
