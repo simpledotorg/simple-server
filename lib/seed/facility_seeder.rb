@@ -3,6 +3,7 @@ require_dependency "seed/config"
 module Seed
   class FacilitySeeder
     include ConsoleLogger
+    include Memery
 
     FACILITY_SIZE_WEIGHTS = {
       community: 0.50,
@@ -131,12 +132,16 @@ module Seed
       Region.import(block_regions, returning: [:id, :name, :path])
     end
 
+    memoize def find_region_by_source_id(id)
+      Region.find_by!(source_id: id)
+    end
+
     def create_facilities(facility_group_results)
       facility_attrs = []
       logger.info { "Building Facility attributes for #{facility_group_results.results.count} districts" }
       facility_group_results.results.each do |row|
         facility_group_id, facility_group_name = *row
-        facility_group_region = Region.find_by!(source_id: facility_group_id)
+        facility_group_region = find_region_by_source_id(facility_group_id)
         number_facilities = number_of_facilities_per_facility_group
         state = facility_group_region.state_region
         blocks = facility_group_region.block_regions.pluck(:name)

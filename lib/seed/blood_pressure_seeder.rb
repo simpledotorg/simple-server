@@ -8,7 +8,6 @@ module Seed
     attr_reader :counts
     attr_reader :facility
     attr_reader :logger
-    attr_reader :patient_info
     attr_reader :user_ids
     delegate :scale_factor, to: :config
 
@@ -19,8 +18,11 @@ module Seed
       @config = config
       @facility = facility
       @user_ids = user_ids
-      @patient_info = @facility.assigned_patients.pluck(:id, :recorded_at)
       @logger.info "Starting #{self.class} with #{config.type} configuration"
+    end
+
+    def patient_info
+      @patient_info ||= @facility.assigned_patients.pluck(:id, :recorded_at)
     end
 
     PERFORMANCE_WEIGHTS = {
