@@ -110,23 +110,16 @@ module Seed
     end
 
     def create_block_regions(district_region_results)
-      # Eagerly fetch block names to avoid duplicates
-      block_count = district_region_results.ids.size * number_of_blocks_per_facility_group
-      block_names = Seed::FakeNames.instance.blocks.sample(block_count)
-
-      block_counter = 0
       block_regions = district_region_results.results.flat_map { |row|
         _id, _name, path = *row
 
         number_of_blocks_per_facility_group.times.map {
           attrs = {
             id: nil,
-            name: block_names[block_counter],
+            name: Faker::Address.community,
             parent_path: path,
             region_type: "block"
           }
-
-          block_counter += 1
           FactoryBot.build(:region, attrs)
         }
       }
