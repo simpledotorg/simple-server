@@ -94,8 +94,10 @@ module Seed
           result.merge!(bp_result) { |key, count1, count2| count1 + count2 }
           blood_sugar_result = BloodSugarSeeder.call(config: config, facility: facility, user_ids: registration_user_ids)
           result.merge!(blood_sugar_result) { |key, count1, count2| count1 + count2 }
-          appt_result = create_appts(patient_info, facility: facility, user_ids: registration_user_ids)
-          result[:appointment] = appt_result.ids.size
+          unless config.skip_encounters
+            appt_result = create_appts(patient_info, facility: facility, user_ids: registration_user_ids)
+            result[:appointment] = appt_result.ids.size
+          end
           result
         }
         results.concat batch_result
