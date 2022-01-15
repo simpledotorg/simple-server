@@ -1,4 +1,10 @@
+#!/usr/bin/env bash
+
 output_file='benchmark_results.csv'
+ref=$(git rev-parse HEAD)
+
+echo "Benchmarking simple-server ${ref} $(date)" | tee ${output_file}
+echo | tee ${output_file}
 
 uname -a | tee ${output_file}
 system_profiler -detailLevel mini SPHardwareDataType | tail -n +2 | sed 's/ //' | tee ${output_file}
