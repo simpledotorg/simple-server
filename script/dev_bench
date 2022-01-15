@@ -3,11 +3,11 @@
 output_file='benchmark_results.csv'
 ref=$(git rev-parse HEAD)
 
-echo "Benchmarking simple-server ${ref} $(date)" | tee ${output_file}
-echo | tee ${output_file}
+echo "Benchmarking simple-server ${ref} $(date)" | tee -a ${output_file}
+echo >> ${output_file}
 
-uname -a | tee ${output_file}
-system_profiler -detailLevel mini SPHardwareDataType | tail -n +2 | sed 's/ //' | tee ${output_file}
+uname -a | tee -a ${output_file}
+system_profiler -detailLevel mini SPHardwareDataType | tail -n +2 | sed 's/ //' | tee -a ${output_file}
 
 # reset DB and PSQL to empty state
 rails db:drop:all db:create:all
