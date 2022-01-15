@@ -26,7 +26,7 @@ Rails.application.configure do
   config.assets.compile = true
 
   # Set this to :info to truly match production; debug will show each SQL statement in logs
-  config.log_level = :debug
+  config.log_level = :info
 
   # Use a different cache store in production.
   config.cache_store = if ENV["RAILS_CACHE_REDIS_URL"].present?
