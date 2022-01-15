@@ -36,8 +36,8 @@ module Seed
     delegate :number_of_blocks_per_facility_group,
       :number_of_facility_groups,
       :number_of_states,
-      :stdout, 
-    :scale_factor, to: :config
+      :stdout,
+      :scale_factor, to: :config
 
     def call
       Region.root || Region.create!(name: "India", region_type: Region.region_types[:root], path: "india")
