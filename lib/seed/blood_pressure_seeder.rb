@@ -7,6 +7,7 @@ module Seed
     attr_reader :config
     attr_reader :counts
     attr_reader :facility
+    attr_reader :logger
     attr_reader :patient_info
     attr_reader :user_ids
     delegate :scale_factor, to: :config
