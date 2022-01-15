@@ -168,7 +168,7 @@ module Seed
         }
       end
 
-      logger.info { "Importing #{facility_attrs.count} Facilities" }
+      announce "Importing #{facility_attrs.count} Facilities"
       Facility.import(facility_attrs, returning: [:id, :name, :zone], on_duplicate_key_ignore: true)
     end
 
