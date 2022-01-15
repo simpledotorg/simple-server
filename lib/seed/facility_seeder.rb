@@ -115,7 +115,7 @@ module Seed
       block_regions = district_region_results.results.flat_map { |row|
         _id, _name, path = *row
         number = number_of_blocks_per_facility_group
-        logger.info { "creating #{number} block regions for #{row}"}
+        logger.info { "creating #{number} block regions for #{row}" }
 
         number.times.map { |i|
           idx = SecureRandom.uuid
@@ -186,7 +186,7 @@ module Seed
         }
         FactoryBot.build(:region, attrs)
       }
-      logger.info { "Importing #{facility_regions.count} Facility regions"}
+      logger.info { "Importing #{facility_regions.count} Facility regions" }
       Region.import(facility_regions, on_duplicate_key_ignore: true)
     end
   end

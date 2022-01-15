@@ -22,9 +22,8 @@ RSpec.describe Seed::FakeNames do
 
   it "can get a large number of block names" do
     inst = described_class.instance
-    names = 200.times.inject([]) do |sum, n|
+    names = 200.times.each_with_object([]) do |n, sum|
       sum.concat(inst.blocks.sample(3))
-      sum
     end
     expect(names.size).to eq(600)
   end
