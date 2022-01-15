@@ -112,6 +112,8 @@ module Seed
       time = 30.minutes.from_now
       device_created_at = 3.months.ago
       users, auths = [], []
+      role = config.seed_generated_active_user_role
+      approval_stauts = User.sync_approval_statuses[:allowed]
       facility_ids.each do |facility_id|
         number_of_users_per_facility.times do
           logger.info { "building attributes for Users and UserAuthentications" }
@@ -128,9 +130,9 @@ module Seed
             organization_id: organization.id,
             device_created_at: device_created_at,
             device_updated_at: device_created_at,
-            sync_approval_status: User.sync_approval_statuses[:allowed],
+            sync_approval_status: approval_stauts,
             sync_approval_status_reason: "User is allowed",
-            role: config.seed_generated_active_user_role
+            role: role
           }
         end
       end

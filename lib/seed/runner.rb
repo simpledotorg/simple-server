@@ -105,6 +105,7 @@ module Seed
 
     def seed_drug_stocks
       Facility.all.each do |facility|
+        logger.info { "Seeding drug stocks for #{facility.id}" }
         user = facility.users.first
         facility.protocol.protocol_drugs.where(stock_tracked: true).each do |protocol_drug|
           FactoryBot.create(:drug_stock, facility: facility, user: user, protocol_drug: protocol_drug)
