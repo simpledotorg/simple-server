@@ -31,6 +31,12 @@ RSpec.describe Api::V3::EncountersController, type: :controller do
     encounters
   end
 
+  around do |example|
+    Flipper.enable(:sync_encounters)
+    example.run
+    Flipper.disable(:sync_encounters)
+  end
+
   it_behaves_like "a sync controller that authenticates user requests"
   it_behaves_like "a sync controller that audits the data access"
 

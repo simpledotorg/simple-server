@@ -125,12 +125,11 @@ describe Api::V3::PatientPayloadValidator, type: :model do
     end
 
     context "when schema validations are disabled" do
-      before do
-        @original_env_var = ENV["ENABLE_SKIP_API_VALIDATION"]
-        ENV["ENABLE_SKIP_API_VALIDATION"] = "true"
+      around do |example|
+        Flipper.enable(:skip_api_validation)
+        example.run
+        Flipper.disable(:skip_api_validation)
       end
-
-      after { ENV["ENABLE_SKIP_API_VALIDATION"] = @original_env_var }
 
       it "does not validate schema" do
         validator = new_patient_payload

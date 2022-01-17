@@ -51,7 +51,7 @@ class CountryConfig
       patient_line_list_show_zone: false,
       dhis2_data_elements: {
         cumulative_assigned: "nrK3Yj6ELl0",
-        cumulative_assigned_adjusted: "DxHkdQjTpXC",
+        cumulative_assigned_adjusted: "YKsRrnjBiVE",
         controlled: "ZCkeHFQETzb",
         uncontrolled: "z4mVPviB8OH",
         missed_visits: "tNRBsYt0ZOK",
