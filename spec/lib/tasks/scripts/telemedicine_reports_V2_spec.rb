@@ -1,5 +1,5 @@
 require "rails_helper"
-require "tasks/scripts/telemedicine_reports"
+require "tasks/scripts/telemedicine_reports_v2"
 
 RSpec.describe TelemedicineReportsV2 do
   let!(:period_start) { Date.parse("2020-08-03").beginning_of_day }
@@ -58,7 +58,7 @@ RSpec.describe TelemedicineReportsV2 do
       expect(CSV).to receive(:generate).and_call_original
       expect(TelemedReportMailer).to receive(:email_report).and_call_original
 
-      report = TelemedicineReports.new(period_start, period_end)
+      report = TelemedicineReportsV2.new(period_start, period_end)
       report.generate
 
       expect(report.report_array).to match_array(report_data)

@@ -39,23 +39,23 @@ RSpec.describe TelemedicineReports do
   context ".generate" do
     it "emails a report file" do
       report_data = [["", "", "", "", "", "", "", "Between #{period_start.strftime("%d-%b-%Y")} and #{period_end.strftime("%d-%b-%Y")}", "", "", "", "", "", "", "", ""],
-                     ["State", "District", "Facility", "Facilities with telemedicine", "HWCs & SCs with telemedicine", "Users of telemedicine", "", "Patients who visited", "Patients with High BP", "Patients with High Blood Sugar", "Patients with High BP or Sugar", "Teleconsult - Total Button Clicks", "Teleconsult - Requests", "Teleconsult - Records logged by MOs", "Teleconsult - Requests marked completed", "Teleconsult - Requests marked incomplete", "Teleconsult - Requests marked waiting", "Teleconsult - Requests not marked (no completion status set)", "Teleconsult requests percentage"],
-                     [facility_1.state, "", "", 2, 1, 1, "", 2, 2, 0, 2, 10, 9, 1, 3, 3, 2, 1, "500%"],
-                     ["", facility_1.district, "", 2, 1, 1, "", 2, 2, 0, 2, 10, 9, 1, 3, 3, 2, 1, "500%"],
-                     [],
-                     [],
-                     ["", "", "", "", "", "", "", "Between #{period_start.strftime("%d-%b-%Y")} and #{period_end.strftime("%d-%b-%Y")}", "", "", "", "", "", "", "", ""],
-                     ["State", "District", "Facility", "Facilities with telemedicine", "HWCs & SCs with telemedicine", "Users of telemedicine", "", "Patients who visited", "Patients with High BP", "Patients with High Blood Sugar", "Patients with High BP or Sugar", "Teleconsult - Total Button Clicks", "Teleconsult - Requests", "Teleconsult - Records logged by MOs", "Teleconsult - Requests marked completed", "Teleconsult - Requests marked incomplete", "Teleconsult - Requests marked waiting", "Teleconsult - Requests not marked (no completion status set)", "Teleconsult requests percentage"],
-                     [facility_1.state, "", "", 2, 1, 1, "", 2, 2, 0, 2, 10, 9, 1, 3, 3, 2, 1, "500%"],
-                     ["", facility_1.district, "", 2, 1, 1, "", 2, 2, 0, 2, 10, 9, 1, 3, 3, 2, 1, "500%"],
-                     ["", "", facility_1.name, "", "", 1, "", 2, 2, 0, 2, "", 9, 1, 3, 3, 2, 1, ""],
-                     [],
-                     [],
-                     ["Date", "Unique users", "Total TC requests"],
-                     ["04-Aug-2020", 2, 6],
-                     ["06-Aug-2020", 1, 1],
-                     ["07-Aug-2020", 1, 2],
-                     ["08-Aug-2020", 1, 1]]
+        ["State", "District", "Facility", "Facilities with telemedicine", "HWCs & SCs with telemedicine", "Users of telemedicine", "", "Patients who visited", "Patients with High BP", "Patients with High Blood Sugar", "Patients with High BP or Sugar", "Teleconsult - Total Button Clicks", "Teleconsult - Requests", "Teleconsult - Records logged by MOs", "Teleconsult - Requests marked completed", "Teleconsult - Requests marked incomplete", "Teleconsult - Requests marked waiting", "Teleconsult - Requests not marked (no completion status set)", "Teleconsult requests percentage"],
+        [facility_1.state, "", "", 2, 1, 1, "", 2, 2, 0, 2, 10, 9, 1, 3, 3, 2, 1, "500%"],
+        ["", facility_1.district, "", 2, 1, 1, "", 2, 2, 0, 2, 10, 9, 1, 3, 3, 2, 1, "500%"],
+        [],
+        [],
+        ["", "", "", "", "", "", "", "Between #{period_start.strftime("%d-%b-%Y")} and #{period_end.strftime("%d-%b-%Y")}", "", "", "", "", "", "", "", ""],
+        ["State", "District", "Facility", "Facilities with telemedicine", "HWCs & SCs with telemedicine", "Users of telemedicine", "", "Patients who visited", "Patients with High BP", "Patients with High Blood Sugar", "Patients with High BP or Sugar", "Teleconsult - Total Button Clicks", "Teleconsult - Requests", "Teleconsult - Records logged by MOs", "Teleconsult - Requests marked completed", "Teleconsult - Requests marked incomplete", "Teleconsult - Requests marked waiting", "Teleconsult - Requests not marked (no completion status set)", "Teleconsult requests percentage"],
+        [facility_1.state, "", "", 2, 1, 1, "", 2, 2, 0, 2, 10, 9, 1, 3, 3, 2, 1, "500%"],
+        ["", facility_1.district, "", 2, 1, 1, "", 2, 2, 0, 2, 10, 9, 1, 3, 3, 2, 1, "500%"],
+        ["", "", facility_1.name, "", "", 1, "", 2, 2, 0, 2, "", 9, 1, 3, 3, 2, 1, ""],
+        [],
+        [],
+        ["Date", "Unique users", "Total TC requests"],
+        ["04-Aug-2020", 2, 6],
+        ["06-Aug-2020", 1, 1],
+        ["07-Aug-2020", 1, 2],
+        ["08-Aug-2020", 1, 1]]
 
       expect(CSV).to receive(:generate).and_call_original
       expect(TelemedReportMailer).to receive(:email_report).and_call_original

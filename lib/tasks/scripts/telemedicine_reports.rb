@@ -33,7 +33,7 @@ class TelemedicineReports
     url = URI.parse("https://mixpanel.com/api/2.0/jql")
 
     response = HTTP.basic_auth(user: ENV.fetch("MIXPANEL_API_SECRET"), pass: nil)
-                   .post(url, json: {format: "csv", script: @query})
+      .post(url, json: {format: "csv", script: @query})
 
     response.body.to_s
   end
@@ -71,9 +71,9 @@ class TelemedicineReports
   def email_report
     TelemedReportMailer
       .email_report(period_start: @period_start.strftime("%d_%b"),
-                    period_end: @period_end.strftime("%d_%b"),
-                    report_filename: @filename,
-                    report_csv: make_csv)
+        period_end: @period_end.strftime("%d_%b"),
+        report_filename: @filename,
+        report_csv: make_csv)
       .deliver_later
   end
 
@@ -359,8 +359,8 @@ class TelemedicineReports
           telemed_data: calculate_aggregates(district_facilities),
           users: sum_values(district_facilities, :users),
           facilities: district_facilities
-                        .select { |facility| %w[HWC SC].include? facility[:type] }
-                        .sort_by { |facility| facility[:name] }}
+            .select { |facility| %w[HWC SC].include? facility[:type] }
+            .sort_by { |facility| facility[:name] }}
        }.sort_by { |district| district[:district] }}
     }.sort_by { |state| state[:state] }
   end
@@ -382,11 +382,11 @@ class TelemedicineReports
     high_bps = high_bps(bps)
     high_sugars = high_sugars(sugars)
     teleconsult_requests = facility
-                             .teleconsultations
-                             .where("device_created_at >= ? AND device_created_at <= ?", p_start, p_end)
-                             .select("DISTINCT ON (patient_id) patient_id, requester_completion_status, recorded_at")
-                             .order(Arel.sql("patient_id, array_position(array['yes', 'no', 'waiting']::varchar[], requester_completion_status)"))
-                             .to_a
+      .teleconsultations
+      .where("device_created_at >= ? AND device_created_at <= ?", p_start, p_end)
+      .select("DISTINCT ON (patient_id) patient_id, requester_completion_status, recorded_at")
+      .order(Arel.sql("patient_id, array_position(array['yes', 'no', 'waiting']::varchar[], requester_completion_status)"))
+      .to_a
     teleconsult_records = teleconsult_requests.reject { |request| request.recorded_at.nil? }
     teleconsult_marked_completed = teleconsult_requests.select { |request| request.requester_completion_status == "yes" }
     teleconsult_marked_incomplete = teleconsult_requests.select { |request| request.requester_completion_status == "no" }
