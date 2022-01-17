@@ -1,7 +1,7 @@
 require "rails_helper"
 require "tasks/scripts/telemedicine_reports"
 
-RSpec.describe TelemedicineReports do
+RSpec.describe TelemedicineReportsV2 do
   let!(:period_start) { Date.parse("2020-08-03").beginning_of_day }
   let!(:period_end) { Date.parse("2020-08-09").end_of_day }
 
