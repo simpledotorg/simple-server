@@ -20,8 +20,8 @@ MedicationsDispensationGraph = function () {
       return {
         label: bucket,
         data: Object.values(graphData[bucket]["percentages"]),
-        counts :  graphData[bucket]["counts"],
-        totals : graphData[bucket]["totals"],
+        numerators: graphData[bucket]["counts"],
+        denominators: graphData[bucket]["totals"],
         borderColor: graphData[bucket]["color"],
         backgroundColor: graphData[bucket]["color"]
       }
@@ -102,9 +102,9 @@ MedicationsDispensationGraph = function () {
           return ""
         },
         label: function(tooltipItem, data) {
-            let counts = Object.values(data.datasets[tooltipItem.datasetIndex].counts)
-            let totals = Object.values(data.datasets[tooltipItem.datasetIndex].totals)
-          return counts[tooltipItem.index] + " of "  + totals[tooltipItem.index] + " follow-up patients";
+            let numerators = Object.values(data.datasets[tooltipItem.datasetIndex].numerators)
+            let denominators = Object.values(data.datasets[tooltipItem.datasetIndex].denominators)
+          return numerators[tooltipItem.index] + " of "  + denominators[tooltipItem.index] + " follow-up patients";
         },
       }
     }
