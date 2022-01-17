@@ -54,6 +54,8 @@ RSpec.describe Api::ManifestsController, type: :controller do
           expect(response).to be_ok
 
           parsed_body = JSON.parse(response.body)
+          pp env
+          pp parsed_body
           expect(parsed_body["v1"]).to eq(v1_response)
           expect(parsed_body["v2"]).to eq(v2_response)
         end
