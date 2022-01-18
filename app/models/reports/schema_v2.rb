@@ -200,16 +200,6 @@ module Reports
       end
     end
 
-    memoize def appts_scheduled_rates(entry)
-      total = total_appts_scheduled[entry.region.slug][entry.period]
-      rounded_percentages({
-        appts_scheduled_0_to_14_days: percentage(appts_scheduled_0_to_14_days[entry.region.slug][entry.period], total, with_rounding: false),
-        appts_scheduled_15_to_30_days: percentage(appts_scheduled_15_to_30_days[entry.region.slug][entry.period], total, with_rounding: false),
-        appts_scheduled_31_to_60_days: percentage(appts_scheduled_31_to_60_days[entry.region.slug][entry.period], total, with_rounding: false),
-        appts_scheduled_more_than_60_days: percentage(appts_scheduled_more_than_60_days[entry.region.slug][entry.period], total, with_rounding: false)
-      })
-    end
-
     memoize def appts_scheduled_0_to_14_days_rates
       region_period_cached_query(__method__) do |entry|
         appts_scheduled_rates(entry)[:appts_scheduled_0_to_14_days]
@@ -234,6 +224,17 @@ module Reports
       end
     end
 
+    def rounded_percentages(hsh)
+      sorted_hsh = hsh.sort_by { |_, value| value.floor - value }.to_h
+      rounded_down_percentages = sorted_hsh.map { |_, value| value.floor }
+      difference_from_100 = 100 - rounded_down_percentages.reduce(:+)
+      if difference_from_100 == 0 || difference_from_100 == 100
+        sorted_hsh
+      else
+        sorted_hsh.each_with_index.map { |(key, value), index| [key, index < difference_from_100 ? value.floor + 1 : value.floor] }.to_h
+      end
+    end
+
     private
 
     memoize def denominator(region, period, with_ltfu: false)
@@ -254,15 +255,14 @@ module Reports
       end
     end
 
-    def rounded_percentages(hsh)
-      sorted_hsh = hsh.sort_by { |_, value| value.floor - value }.to_h
-      rounded_down_percentages = sorted_hsh.map { |_, value| value.floor }
-      difference_from_100 = 100 - rounded_down_percentages.reduce(:+)
-      if difference_from_100 == 0 || difference_from_100 == 100
-        sorted_hsh
-      else
-        sorted_hsh.each_with_index.map { |(key, value), index| [key, index < difference_from_100 ? value.floor + 1 : value.floor] }.to_h
-      end
+    memoize def appts_scheduled_rates(entry)
+      total = total_appts_scheduled[entry.region.slug][entry.period]
+      rounded_percentages({
+        appts_scheduled_0_to_14_days: percentage(appts_scheduled_0_to_14_days[entry.region.slug][entry.period], total, with_rounding: false),
+        appts_scheduled_15_to_30_days: percentage(appts_scheduled_15_to_30_days[entry.region.slug][entry.period], total, with_rounding: false),
+        appts_scheduled_31_to_60_days: percentage(appts_scheduled_31_to_60_days[entry.region.slug][entry.period], total, with_rounding: false),
+        appts_scheduled_more_than_60_days: percentage(appts_scheduled_more_than_60_days[entry.region.slug][entry.period], total, with_rounding: false)
+      })
     end
 
     memoize def earliest_patient_data_query_v2(region)
