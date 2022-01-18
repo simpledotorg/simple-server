@@ -7,7 +7,7 @@ module Seed
     attr_reader :config
     attr_reader :counts
     attr_reader :facility
-    attr_reader :patient_info
+    attr_reader :logger
     attr_reader :user_ids
     delegate :scale_factor, to: :config
 
@@ -18,8 +18,11 @@ module Seed
       @config = config
       @facility = facility
       @user_ids = user_ids
-      @patient_info = @facility.assigned_patients.pluck(:id, :recorded_at)
-      @logger.debug "Starting #{self.class} with #{config.type} configuration"
+      @logger.info "Starting #{self.class} with #{config.type} configuration"
+    end
+
+    def patient_info
+      @patient_info ||= @facility.assigned_patients.pluck(:id, :recorded_at)
     end
 
     PERFORMANCE_WEIGHTS = {
@@ -58,6 +61,10 @@ module Seed
     end
 
     def call
+      if config.skip_encounters
+        logger.warn { "Skipping seeding blood pressures, SKIP_ENCOUNTERS is true" }
+        return {}
+      end
       bps = []
       patient_info.each_with_object([]) do |(patient_id, recorded_at)|
         blood_pressures_to_create(performance_rank).times do
