@@ -14,7 +14,7 @@ RSpec.describe Reports::FacilityStateGroup, {type: :model, reporting_spec: true}
     create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: six_months_ago)
     patient.discard
     RefreshReportingViews.call
-    result= described_class.find_by(facility: facility, month_date: six_months_ago.to_date)
+    result = described_class.find_by(facility: facility, month_date: six_months_ago.to_date)
     expect(result.monthly_registrations_all).to be_nil
     expect(result.monthly_follow_ups_all).to be_nil
   end
@@ -24,7 +24,7 @@ RSpec.describe Reports::FacilityStateGroup, {type: :model, reporting_spec: true}
     patient = create(:patient, :without_medical_history, recorded_at: six_months_ago)
     create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: six_months_ago)
     RefreshReportingViews.call
-    result= described_class.find_by(facility: facility, month_date: six_months_ago.to_date)
+    result = described_class.find_by(facility: facility, month_date: six_months_ago.to_date)
     expect(result.monthly_registrations_all).to be_nil
     expect(result.monthly_follow_ups_all).to be_nil
   end
