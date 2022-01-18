@@ -82,6 +82,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
         cumulative_registrations
         facility_region_slug
         lost_to_follow_up
+        under_care
         monthly_registrations
         month_date
         monthly_overdue_calls

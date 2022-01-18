@@ -50,6 +50,8 @@ class Facility < ApplicationRecord
     class_name: "Patient",
     foreign_key: "assigned_facility_id"
 
+  has_many :facility_states, class_name: "Reports::FacilityState"
+
   pg_search_scope :search_by_name, against: {name: "A", slug: "B"}, using: {tsearch: {prefix: true}}
   scope :with_block_region_id, -> {
     joins("INNER JOIN regions facility_regions ON facility_regions.source_id = facilities.id")
@@ -91,8 +93,7 @@ class Facility < ApplicationRecord
   validates :facility_size,
     inclusion: {
       in: facility_sizes.values,
-      message: "not in #{facility_sizes.values.join(", ")}",
-      allow_blank: true
+      message: "not in #{facility_sizes.values.join(", ")}"
     }
   validates :enable_teleconsultation, inclusion: {in: [true, false]}
   validates :teleconsultation_medical_officers,
@@ -101,13 +102,15 @@ class Facility < ApplicationRecord
       message: "must be added to enable teleconsultation"
     }
   validates :enable_diabetes_management, inclusion: {in: [true, false]}
-  validate :valid_block, if: -> { facility_group.present? }
+  validate :valid_block, if: -> { !generating_seed_data && facility_group.present? }
 
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, :organization_id, to: :facility_group, allow_nil: true
   delegate :follow_ups_by_period, to: :patients, prefix: :patient
   delegate :district_region?, :block_region?, :facility_region?, :region_type, to: :region
   delegate :cache_key, :cache_version, to: :region
+
+  attr_accessor :generating_seed_data
 
   def self.parse_facilities_from_file(file_contents)
     Csv::FacilitiesParser.parse(file_contents)

@@ -26,7 +26,7 @@ class Api::V3::PatientPayloadValidator < Api::V3::PayloadValidator
 
   attr_writer :request_user_id
 
-  validate :validate_schema, unless: -> { FeatureToggle.enabled?("SKIP_API_VALIDATION") }
+  validate :validate_schema, unless: -> { Flipper.enabled?("skip_api_validation") }
   validate :presence_of_age
   validate :past_date_of_birth
   validate :authorized_assigned_facility, unless: :skip_facility_authorization

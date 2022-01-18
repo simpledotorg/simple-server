@@ -251,7 +251,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       it "provides a sender if available" do
         mock_successful_delivery
         allow(ENV).to receive(:fetch).and_call_original
-        allow(ENV).to receive(:fetch).with("TWILIO_COVID_REMINDER_NUMBERS", "").and_return("+testnumber111,+testnumber222,+testnumber333")
+        allow(ENV).to receive(:fetch).with("TWILIO_APPOINTMENT_REMINDER_NUMBERS", "").and_return("+testnumber111,+testnumber222,+testnumber333")
         experiment = create(:experiment)
         allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("sms")
         allow_any_instance_of(Notification).to receive(:experiment).and_return(experiment)
@@ -265,7 +265,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       it "provides a nil sender if unavailable" do
         mock_successful_delivery
         allow(ENV).to receive(:fetch).and_call_original
-        allow(ENV).to receive(:fetch).with("TWILIO_COVID_REMINDER_NUMBERS", "").and_return("")
+        allow(ENV).to receive(:fetch).with("TWILIO_APPOINTMENT_REMINDER_NUMBERS", "").and_return("")
         experiment = create(:experiment, experiment_type: "medication_reminder")
         allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("sms")
         allow_any_instance_of(Notification).to receive(:experiment).and_return(experiment)

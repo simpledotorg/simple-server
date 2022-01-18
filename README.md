@@ -5,13 +5,6 @@
 
 This is the backend for the Simple app to help track hypertensive patients across a population.
 
-## Table of Contents
-
-* [Development](#development)
-* [Documentation](#documentation)
-* [Deployment](#deployment)
-* [Contributing](#contributing)
-
 ## Development
 
 We have a `bin/setup` script that does most of the work of getting things setup, but you need a few things in place first.
@@ -20,6 +13,10 @@ If you are on a Mac, install [homebrew](https://brew.sh) and then install rbenv,
 ```
 brew install rbenv ruby-build redis yarn postgresql@10
 ```
+
+After this is done, it is highly recommended to tune your local PostgreSQL installation, otherwise your server will get bogged down when doing things like refreshing materialized views.
+You can use [PGTune](https://pgtune.leopard.in.ua) to do this, it takes about 2 minutes. You can find your local postgresql.conf file at `/opt/homebrew/var/postgresql@10/postgresql.conf` on M1 Macs,
+and `/usr/local/var/postgresql@10/postgresql.conf` on Intel Macs.
 
 ### bin/setup
 
@@ -82,17 +79,12 @@ To remove the server and clear the volumes of database data, run the command:
 docker compose down --volumes
 ```
 
-
-
 #### Manual Setup
 
 If the included `bin/setup` script fails for some reason, you can also manually
 set up the application step by step. You can do so as follows.
 
-First, you need to [install
-ruby](https://www.ruby-lang.org/en/documentation/installation). It is
-recommended to use [rbenv](https://github.com/rbenv/rbenv) to manage ruby
-versions. Note that we currently use Bundler version 2.2.29, so that is also hardcoded below.
+First, you need to [install ruby](https://www.ruby-lang.org/en/documentation/installation). It is recommended to use [rbenv](https://github.com/rbenv/rbenv) to manage ruby versions. Note that we currently use Bundler version 2.2.29, so that is also hardcoded below.
 
 ```bash
 gem install bundler -v 2.2.29
@@ -141,12 +133,9 @@ json.endpoint "<HTTPS URL>/api/"
 
 #### Workers
 
-We use [sidekiq](https://github.com/mperham/sidekiq) to run async tasks. To run, first make sure that redis (>4) is installed:
+We use [sidekiq](https://github.com/mperham/sidekiq) to run async tasks. To run them locally you need to start redis:
 
 ```bash
-brew install redis
-
-# after installing ensure your redis version is >4
 redis-server -v
 ```
 
@@ -270,56 +259,56 @@ We use the [standard](https://github.com/testdouble/standard#how-do-i-run-standa
 To check all the offenses throughout the codebase:
 
 ```bash
-$ bin/rails standard
+$ bundle exec standardrb
 ```
 
-To automatically fix all offenses,
+To fix any offenses that standard can autofix, run
 
 ```bash
 $ bundle exec standardrb --fix
 ```
 
-**Note**: Some files have been temporarily ignored under a `.standard_todo.yml`. As we fix these files, remove them from the `yml` file so that they can be picked up by `standard` again for future offenses. Refer to [usage](https://github.com/testdouble/standard#usage) on how to generate todo files.
-
-**Note**: Some files are permanently ignored under `.standard.yml` and do not require linting.
-
 ### Generating seed data
 
-To generate seed (fake patients) data, execute the following command from the project root
+NOTE: Its highly recommended to tune your local PostgreSQL before generating new seed data, especially large seed data sets. See the docs for that under [Development](#development).
+To generate a full set of seed data, including facilities, users, patients with BPs, etc, run the following:
 
 ```bash
-$ bin/rails db:seed_patients
+bin/rails db:seed
 ```
 
-Need a larger dataset? Try adding the `SEED_TYPE` variable. (It takes longer to run, of course.) This works on all patient seeding commands:
+You can always do a full reset to get back to a working dataset locally - note that reset clears all DBs, recreates them, runs seed, and refreshes matviews.
 
 ```bash
-  SEED_TYPE=medium bin/rails db:seed_patients
-# You also may want an entirely new large dataset, with more facilities and regions. You can do that with a full reset:
+bin/rails db:reset
+```
+
+Need a larger dataset? Try adding the `SEED_TYPE` ENV variable. Available sizes are `small`, `medium`, and `large`, and `profiling`. Large and profiling take a long time to run (20 mins to an hour), but they are very helpful for performance testing.
+
+```bash
+SEED_TYPE=medium bin/rails db:reset
+# You also may want an entirely new large dataset, with more facilities and regions, and more patients per facility.
 SEED_TYPE=large bin/rails db:reset
+```
 
-Available sizes are `small`, `medium`, and `large`. (Large takes a LONG time to run. You probably don't need it.)
-
-To purge the generated patient data, run
+To purge the generated patient data _only_, run the following. Note that you usually don't want this, and a full `db:reset` is safer in terms of generating a valid data set.
 
 ```bash
 $ bin/rails db:purge_users_data
 ```
 
-You can also purge and re-seed by running:
-
-```bash
-$ bin/rails db:purge_and_reseed
-```
-
 ### Creating an admin user
 
-Run the following command from the project root to create a new dashboard admin:
+If you need new admin users, you can run the following command from the project root. Note that the standard seed process already creates various admins for you, so you probably don't need this for typical dev.
+
 ```bash
 $ bin/rails 'create_admin_user[<name>,<email>,<password>]'
 ```
 
 ### View Sandbox data in your local environment
+
+NOTE: generating seed data locally is the recommended way to get data in your env. Sandbox data is actually just generated via `db:seed`, so the below 
+process really just adds SCP overhead to the process.
 
 1. Follow the steps in the "How to add an SSH key..." section [here](https://github.com/simpledotorg/deployment) to add your SSH key to the deployment repo
 2. Ask someone from the Simple team to add you as an admin to Sandbox

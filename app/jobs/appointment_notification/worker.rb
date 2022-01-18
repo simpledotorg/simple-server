@@ -124,7 +124,7 @@ class AppointmentNotification::Worker
   end
 
   def medication_reminder_sms_senders
-    ENV.fetch("TWILIO_COVID_REMINDER_NUMBERS", "").split(",").map(&:strip)
+    ENV.fetch("TWILIO_APPOINTMENT_REMINDER_NUMBERS", "").split(",").map(&:strip)
   end
 
   def valid_notification?(notification)

@@ -19,4 +19,12 @@ RSpec.describe Seed::FakeNames do
     expect(org_names).to include(fake_names.seed_org_name)
     expect(org_names.first).to eq(fake_names.seed_org_name)
   end
+
+  it "can get a large number of block names" do
+    inst = described_class.instance
+    names = 200.times.each_with_object([]) do |n, sum|
+      sum.concat(inst.blocks.sample(3))
+    end
+    expect(names.size).to eq(600)
+  end
 end

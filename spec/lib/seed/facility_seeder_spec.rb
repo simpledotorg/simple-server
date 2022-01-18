@@ -11,7 +11,7 @@ RSpec.describe Seed::FacilitySeeder do
     expect {
       Seed::FacilitySeeder.call(config: Seed::Config.new)
     }.to change { FacilityGroup.count }.by(2)
-      .and change { Facility.count }.by_at_least(7)
+      .and change { Facility.count }.by(8)
   end
 
   it "creates facility groups and facilities with regions" do
@@ -75,5 +75,12 @@ RSpec.describe Seed::FacilitySeeder do
     Facility.all.map(&:facility_group).uniq.each do |facility_group|
       expect(facility_group.region.block_regions.count).to be > 1
     end
+  end
+
+  it "creates facilities with diabetes enabled" do
+    seeder = Seed::FacilitySeeder.new(config: Seed::Config.new)
+    seeder.call
+    half_all_facilities = Facility.count / 2
+    expect(Facility.where(enable_diabetes_management: true).count).to be >= half_all_facilities
   end
 end

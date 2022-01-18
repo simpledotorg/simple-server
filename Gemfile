@@ -1,6 +1,9 @@
 source "https://rubygems.org"
-
 ruby "2.7.4"
+
+plugin "bootboot", "~> 0.1.1"
+Bundler.settings.set_local("bootboot_env_prefix", "RAILS")
+Plugin.send(:load_plugin, "bootboot") if Plugin.installed?("bootboot")
 
 git_source(:github) do |repo_name|
   repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
@@ -8,7 +11,16 @@ git_source(:github) do |repo_name|
 end
 
 gem "dotenv-rails"
-gem "rails", "5.2.6"
+
+if ENV["RAILS_NEXT"]
+  enable_dual_booting if Plugin.installed?("bootboot")
+
+  # Add any gem you want here, they will be loaded only when running
+  # bundler command prefixed with `RAILS_NEXT=1`.
+  gem "rails", "~> 6"
+else
+  gem "rails", "5.2.6"
+end
 
 gem "active_hash", "~> 2.3.0"
 gem "active_record_union"
@@ -16,6 +28,7 @@ gem "activerecord-import"
 gem "amazing_print"
 gem "auto_strip_attributes"
 gem "bcrypt", "~> 3.1"
+gem "bcrypt_pbkdf", "~> 1.1"
 gem "bootsnap", require: false
 gem "bootstrap_form", ">= 4.5.0"
 gem "bootstrap-datepicker-rails", "~> 1.9"
@@ -24,13 +37,14 @@ gem "bootstrap", "~> 4.5.0"
 gem "connection_pool"
 gem "data_migrate"
 gem "data-anonymization", require: false
-gem "ddtrace", "~> 0.51"
-gem "devise_invitable", "~> 1.7.0"
+gem "ddtrace"
+gem "devise_invitable", "~> 2.0.6"
 gem "devise", ">= 4.7.1"
 gem "dhis2", require: false
 gem "diffy" # This gem is only needed for Admin::FixZoneDataController, it should be removed with the controller
-gem "discard", "~> 1.0"
+gem "discard", "~> 1.2"
 gem "dogstatsd-ruby", "~> 5.2"
+gem "ed25519", "~> 1.2"
 gem "factory_bot_rails", "~> 6.1", require: false
 gem "faker", require: false
 gem "flipper-active_record"
@@ -45,6 +59,7 @@ gem "http"
 gem "imgkit"
 gem "jbuilder", "~> 2.5"
 gem "jquery-rails"
+gem "json-schema"
 gem "kaminari"
 gem "lodash-rails"
 gem "lograge"
@@ -65,8 +80,8 @@ gem "render_async"
 gem "request_store-sidekiq"
 gem "request_store"
 gem "roo", "~> 2.8.0"
-gem "rspec-rails", "~> 4.0.1"
-gem "rswag", "~> 2.4.0"
+gem "rswag-api"
+gem "rswag-ui"
 gem "ruby-progressbar", require: false
 gem "rubyzip"
 gem "sassc-rails"
@@ -82,10 +97,10 @@ gem "slack-notifier"
 gem "squid"
 gem "stackprof", require: false
 gem "timecop", "~> 0.9.0", require: false
-gem "twilio-ruby", "~> 5.10", ">= 5.10.3"
+gem "twilio-ruby", "~> 5.62"
 gem "uglifier", ">= 1.3.0"
 gem "uuidtools", require: false
-gem "view_component", require: "view_component/engine"
+gem "view_component"
 gem "webpacker", "6.0.0.rc.6"
 gem "whenever", require: false
 gem "wkhtmltoimage-binary"
@@ -105,19 +120,25 @@ group :development, :test do
   gem "parallel_tests", group: %i[development test]
   gem "rails-controller-testing"
   gem "rb-readline"
-  gem "shoulda-matchers", "~> 5.0.0"
-  gem "standard", "1.5.0", require: false
+  gem "rspec-rails", "~> 4"
+  gem "rswag-specs"
+  gem "shoulda-matchers", "~> 5.1.0"
+  gem "standard", "1.6.0", require: false
+end
+
+group :development, :test, :profiling do
+  gem "derailed_benchmarks"
+  gem "memory_profiler", require: false
 end
 
 group :development do
+  gem "flamegraph"
   gem "guard-rspec", require: false
   gem "listen"
   gem "rails-erd"
-  gem "spring", "3.1.1"
   gem "spring-commands-rspec"
+  gem "spring", "3.1.1"
   gem "web-console", ">= 3.3.0"
-  gem "memory_profiler"
-  gem "flamegraph"
 end
 
 group :test do
