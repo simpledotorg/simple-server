@@ -11,7 +11,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
 
   context "registrations" do
     describe "cumulative_registrations" do
-      it "has the total registrations from beginning of reporting_months (2018) until current month for every facility" do
+      fit "has the total registrations from beginning of reporting_months (2018) until current month for every facility" do
         facility = create(:facility)
         two_years_ago = june_2021[:now] - 2.years
         create_list(:patient, 6, registration_facility: facility, recorded_at: two_years_ago)

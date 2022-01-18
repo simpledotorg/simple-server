@@ -1,6 +1,16 @@
-WITH registered_patients AS
+WITH monthly_registration_patient_states AS 
+  (SELECT 
+    registration_facility_id AS facility_id, 
+    month_date,
+    gender,
+    hypertension,
+    diabetes
+  FROM reporting_patient_states
+  WHERE months_since_registration = 0
+),
+registered_patients AS
   (SELECT
-    registration_facility_region_id AS facility_region_id, 
+    facility_id, 
     month_date,
     
     count(*) AS monthly_registrations_all,
@@ -12,13 +22,13 @@ WITH registered_patients AS
     count(*) FILTER (WHERE diabetes = 'yes' and gender = 'female') AS monthly_registrations_dm_female,
     count(*) FILTER (WHERE diabetes = 'yes' and gender = 'male') AS monthly_registrations_dm_male,
     count(*) FILTER (WHERE diabetes = 'yes' and gender = 'transgender') AS monthly_registrations_dm_transgender
-  FROM reporting_patient_states 
-  WHERE months_since_registration = 0
-  GROUP BY
-    facility_region_id, month_date
+  FROM monthly_registration_patient_states 
+  GROUP BY facility_id, month_date
   ),
 follow_ups AS
-  (SELECT facility_id, month_date,
+  (SELECT 
+    facility_id, 
+    month_date,
   
     count(*) AS monthly_follow_ups_all,
     count(*) FILTER (WHERE hypertension = 'yes') AS monthly_follow_ups_htn_all,
@@ -62,11 +72,12 @@ SELECT
   follow_ups.monthly_follow_ups_dm_transgender
 FROM reporting_facilities rf
 INNER JOIN reporting_months cal
+-- ensure a row for every facility and month combination
     ON TRUE
 LEFT OUTER JOIN registered_patients
-  ON registered_patients.month_date = cal.month_date
-  AND registered_patients.facility_region_id = rf.facility_region_id
+    ON registered_patients.month_date = cal.month_date
+    AND registered_patients.facility_id = rf.facility_id
 LEFT OUTER JOIN follow_ups
-  ON follow_ups.month_date = cal.month_date
-  AND follow_ups.facility_id = rf.facility_id
+    ON follow_ups.month_date = cal.month_date
+    AND follow_ups.facility_id = rf.facility_id
 ORDER BY cal.month_date desc

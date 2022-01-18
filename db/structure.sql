@@ -2634,21 +2634,28 @@ COMMENT ON COLUMN public.reporting_patient_states.titrated IS 'True, if the pati
 --
 
 CREATE MATERIALIZED VIEW public.reporting_facility_state_groups AS
- WITH registered_patients AS (
-         SELECT reporting_patient_states.registration_facility_region_id AS facility_region_id,
+ WITH monthly_registration_patient_states AS (
+         SELECT reporting_patient_states.registration_facility_id AS facility_id,
             reporting_patient_states.month_date,
-            count(*) AS monthly_registrations_all,
-            count(*) FILTER (WHERE (reporting_patient_states.hypertension = 'yes'::text)) AS monthly_registrations_htn_all,
-            count(*) FILTER (WHERE ((reporting_patient_states.hypertension = 'yes'::text) AND ((reporting_patient_states.gender)::text = 'female'::text))) AS monthly_registrations_htn_female,
-            count(*) FILTER (WHERE ((reporting_patient_states.hypertension = 'yes'::text) AND ((reporting_patient_states.gender)::text = 'male'::text))) AS monthly_registrations_htn_male,
-            count(*) FILTER (WHERE ((reporting_patient_states.hypertension = 'yes'::text) AND ((reporting_patient_states.gender)::text = 'transgender'::text))) AS monthly_registrations_htn_transgender,
-            count(*) FILTER (WHERE (reporting_patient_states.diabetes = 'yes'::text)) AS monthly_registrations_dm_all,
-            count(*) FILTER (WHERE ((reporting_patient_states.diabetes = 'yes'::text) AND ((reporting_patient_states.gender)::text = 'female'::text))) AS monthly_registrations_dm_female,
-            count(*) FILTER (WHERE ((reporting_patient_states.diabetes = 'yes'::text) AND ((reporting_patient_states.gender)::text = 'male'::text))) AS monthly_registrations_dm_male,
-            count(*) FILTER (WHERE ((reporting_patient_states.diabetes = 'yes'::text) AND ((reporting_patient_states.gender)::text = 'transgender'::text))) AS monthly_registrations_dm_transgender
+            reporting_patient_states.gender,
+            reporting_patient_states.hypertension,
+            reporting_patient_states.diabetes
            FROM public.reporting_patient_states
           WHERE (reporting_patient_states.months_since_registration = (0)::double precision)
-          GROUP BY reporting_patient_states.registration_facility_region_id, reporting_patient_states.month_date
+        ), registered_patients AS (
+         SELECT monthly_registration_patient_states.facility_id,
+            monthly_registration_patient_states.month_date,
+            count(*) AS monthly_registrations_all,
+            count(*) FILTER (WHERE (monthly_registration_patient_states.hypertension = 'yes'::text)) AS monthly_registrations_htn_all,
+            count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'female'::text))) AS monthly_registrations_htn_female,
+            count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'male'::text))) AS monthly_registrations_htn_male,
+            count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'transgender'::text))) AS monthly_registrations_htn_transgender,
+            count(*) FILTER (WHERE (monthly_registration_patient_states.diabetes = 'yes'::text)) AS monthly_registrations_dm_all,
+            count(*) FILTER (WHERE ((monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'female'::text))) AS monthly_registrations_dm_female,
+            count(*) FILTER (WHERE ((monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'male'::text))) AS monthly_registrations_dm_male,
+            count(*) FILTER (WHERE ((monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'transgender'::text))) AS monthly_registrations_dm_transgender
+           FROM monthly_registration_patient_states
+          GROUP BY monthly_registration_patient_states.facility_id, monthly_registration_patient_states.month_date
         ), follow_ups AS (
          SELECT reporting_patient_follow_ups.facility_id,
             reporting_patient_follow_ups.month_date,
@@ -2690,7 +2697,7 @@ CREATE MATERIALIZED VIEW public.reporting_facility_state_groups AS
     follow_ups.monthly_follow_ups_dm_transgender
    FROM (((public.reporting_facilities rf
      JOIN public.reporting_months cal ON (true))
-     LEFT JOIN registered_patients ON (((registered_patients.month_date = cal.month_date) AND (registered_patients.facility_region_id = rf.facility_region_id))))
+     LEFT JOIN registered_patients ON (((registered_patients.month_date = cal.month_date) AND (registered_patients.facility_id = rf.facility_id))))
      LEFT JOIN follow_ups ON (((follow_ups.month_date = cal.month_date) AND (follow_ups.facility_id = rf.facility_id))))
   ORDER BY cal.month_date DESC
   WITH NO DATA;
@@ -3542,13 +3549,6 @@ ALTER TABLE ONLY public.users
 --
 
 CREATE UNIQUE INDEX clean_medicine_to_dosages__unique_name_and_dosage ON public.clean_medicine_to_dosages USING btree (medicine, dosage, rxcui);
-
-
---
--- Name: facility_state_groups_month_date_region_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX facility_state_groups_month_date_region_id ON public.reporting_facility_state_groups USING btree (month_date, facility_region_id);
 
 
 --
