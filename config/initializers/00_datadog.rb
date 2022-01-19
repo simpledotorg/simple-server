@@ -13,7 +13,7 @@ Datadog.configure do |c|
   c.use :rack, headers: {request: %w[X-USER-ID X-FACILITY-ID X-SYNC-REGION-ID X-APP-VERSION], response: %w[Content-Type X-Request-ID]}
   c.use :rake
   c.use :rails, analytics_enabled: true
-  c.use :sidekiq, analytics_enabled: true
+  c.use :sidekiq, analytics_enabled: true, analytics_sample_rate: 0.005
 end
 
 require "statsd"

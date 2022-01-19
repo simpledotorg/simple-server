@@ -31,10 +31,10 @@ RSpec.describe Reports::Repository, type: :model do
       other_facility = create(:facility)
       region_with_no_patients = create(:facility).region
 
-      _patient_1 = create(:patient, recorded_at: july_2018, assigned_facility: facility_2)
-      _patient_2 = create(:patient, recorded_at: june_1_2018, assigned_facility: other_facility, registration_facility: facility_1)
-      follow_up_patient = create(:patient, recorded_at: july_2018, assigned_facility: other_facility)
-      create(:blood_pressure, patient: follow_up_patient, facility: facility_3, recorded_at: june_30_2020)
+      _patient_1 = create(:patient, recorded_at: july_2018, assigned_facility: facility_2, registration_user: user)
+      _patient_2 = create(:patient, recorded_at: june_1_2018, assigned_facility: other_facility, registration_facility: facility_1, registration_user: user)
+      follow_up_patient = create(:patient, recorded_at: july_2018, assigned_facility: other_facility, registration_user: user)
+      create(:blood_pressure, patient: follow_up_patient, facility: facility_3, recorded_at: june_30_2020, user: user)
 
       refresh_views
 

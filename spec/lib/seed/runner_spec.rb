@@ -65,6 +65,14 @@ RSpec.describe Seed::Runner do
     expect(total_results[:encounter]).to eq(expected_encounters_per_facility * 2)
   end
 
+  it "creates drug stocks" do
+    seeder = Seed::Runner.new
+    expect {
+      seeder.call
+    }.to change { DrugStock.count }.by(56) # 8 facilities * 7 drugs in the protocol
+    Facility.all.each { |f| expect(f.drug_stocks.size).to eq(7) }
+  end
+
   it "can create a small data set quickly" do
     skip if ENV["CI"]
 

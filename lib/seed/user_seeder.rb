@@ -13,6 +13,7 @@ module Seed
       @logger = Rails.logger.child(class: self.class.name)
       @number_of_users_per_facility = config.max_number_of_users_per_facility
       @organization = Seed.seed_org
+      @logger.info { "Starting #{self.class} with #{config.type} configuration" }
     end
 
     attr_reader :config
@@ -111,8 +112,11 @@ module Seed
       time = 30.minutes.from_now
       device_created_at = 3.months.ago
       users, auths = [], []
+      role = config.seed_generated_active_user_role
+      approval_stauts = User.sync_approval_statuses[:allowed]
       facility_ids.each do |facility_id|
         number_of_users_per_facility.times do
+          logger.info { "building attributes for Users and UserAuthentications" }
           auths << {
             phone_number: Faker::PhoneNumber.phone_number,
             otp: rand(100_000..999_999).to_s,
@@ -126,9 +130,9 @@ module Seed
             organization_id: organization.id,
             device_created_at: device_created_at,
             device_updated_at: device_created_at,
-            sync_approval_status: User.sync_approval_statuses[:allowed],
+            sync_approval_status: approval_stauts,
             sync_approval_status_reason: "User is allowed",
-            role: config.seed_generated_active_user_role
+            role: role
           }
         end
       end
