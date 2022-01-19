@@ -73,6 +73,10 @@ describe MonthlyDistrictReport::DistrictData do
       periods.each do |period|
         district[:region].facilities.each do |facility|
           create(:patient, registration_facility: facility, registration_user: user, recorded_at: period.value)
+          patient = Patient.where(registration_facility: facility).order(:recorded_at).first
+          if patient
+            create(:blood_pressure, patient: patient, facility: facility, user: user, recorded_at: period.value)
+          end
         end
       end
 
@@ -107,7 +111,8 @@ describe MonthlyDistrictReport::DistrictData do
       expect(periods.drop(3).map { |period| rows[0]["cumulative_registrations_community - #{period}"] }).to eq [4, 5, 6]
       expect(periods.drop(3).map { |period| rows[0]["cumulative_under_care_community - #{period}"] }).to eq [4, 5, 6]
       expect(periods.drop(3).map { |period| rows[0]["cumulative_assigned_patients_community_percentage - #{period}"] }).to eq %w[40% 45% 50%]
-      expect(periods.drop(3).map { |period| rows[0]["cumulative_assigned_patients_community - #{period}"] }).to eq [4, 5, 6]
+      expect(periods.drop(3).map { |period| rows[0]["monthly_follow_ups_community_percentage - #{period}"] }).to eq %w[40% 45% 50%]
+      expect(periods.drop(3).map { |period| rows[0]["cumulative_assigned_patients_community - #{period}"] }).to eq %w[25% 25% 25%]
     end
   end
 end
