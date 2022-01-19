@@ -76,4 +76,15 @@ module DashboardHelper
     region_copy = "#{region.region_type}_copy"
     t("total_estimated_hypertensive_population.#{region_copy}", region_name: region.name)
   end
+
+  def rounded_percentages(hsh)
+    sorted_hsh = hsh.sort_by { |_, value| value.floor - value }.to_h
+    rounded_down_percentages = sorted_hsh.map { |_, value| value.floor }
+    difference_from_100 = 100 - rounded_down_percentages.reduce(:+)
+    if difference_from_100 == 0 || difference_from_100 == 100
+      sorted_hsh
+    else
+      sorted_hsh.each_with_index.map { |(key, value), index| [key, index < difference_from_100 ? value.floor + 1 : value.floor] }.to_h
+    end
+  end
 end

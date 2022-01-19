@@ -3,6 +3,7 @@ module Reports
     include BustCache
     include Memery
     include RegionCaching
+    include DashboardHelper
 
     attr_reader :periods
     attr_reader :period_hash
@@ -221,17 +222,6 @@ module Reports
     memoize def appts_scheduled_more_than_60_days_rates
       region_period_cached_query(__method__) do |entry|
         appts_scheduled_rates(entry)[:appts_scheduled_more_than_60_days]
-      end
-    end
-
-    def rounded_percentages(hsh)
-      sorted_hsh = hsh.sort_by { |_, value| value.floor - value }.to_h
-      rounded_down_percentages = sorted_hsh.map { |_, value| value.floor }
-      difference_from_100 = 100 - rounded_down_percentages.reduce(:+)
-      if difference_from_100 == 0 || difference_from_100 == 100
-        sorted_hsh
-      else
-        sorted_hsh.each_with_index.map { |(key, value), index| [key, index < difference_from_100 ? value.floor + 1 : value.floor] }.to_h
       end
     end
 
