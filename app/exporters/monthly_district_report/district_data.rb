@@ -98,22 +98,23 @@ module MonthlyDistrictReport
         **last_6_months_data(repo.controlled_rates, :controlled_rates, true), # "BP controlled rate"
         **last_6_months_data(repo.controlled, :controlled), # "BP controlled count"
 
+        # last 3 months of data, at community facilities
         **last_6_months_data(indicator_by_facility_size([:community], :cumulative_registrations, last_6_months), :cumulative_registrations_community).drop(3).to_h,
         **last_6_months_data(indicator_by_facility_size([:community], :under_care, last_6_months), :cumulative_under_care_community).drop(3).to_h,
         **last_6_months_percentage(indicator_by_facility_size([:community], :cumulative_assigned_patients, last_6_months.drop(3)), repo.cumulative_assigned_patients, :cumulative_assigned_patients_community_percentage).drop(3).to_h, # TODO: *last_6_months.map(&:to_s), # "% of assigned patients at HWCs / SCs (as against district)"
-        **last_6_months_data({}, :something), # "% of patients followed up at HWCs / SCs"
-        **last_6_months_data(indicator_by_facility_size([:community], :cumulative_assigned_patients, last_6_months), :cumulative_assigned_patients_community).drop(3).to_h
+        **last_6_months_data({}, :something).drop(3).to_h, # "% of patients followed up at HWCs / SCs"
+        **last_6_months_data(indicator_by_facility_size([:community], :cumulative_assigned_patients, last_6_months.drop(3)), :cumulative_assigned_patients_community).drop(3).to_h
       }
     end
 
     def indicator_by_facility_size(facility_sizes, indicator, periods = last_6_months)
       {
         district.slug => Reports::FacilityState
-        .where(district_region_id: district.id, month_date: periods, facility_size: facility_sizes)
-        .group(:month_date)
-        .sum(indicator)
-        .map {|k, v| [Period.month(k), v.to_i]}
-        .to_h
+          .where(district_region_id: district.id, month_date: periods, facility_size: facility_sizes)
+          .group(:month_date)
+          .sum(indicator)
+          .map { |k, v| [Period.month(k), v.to_i] }
+          .to_h
       }
     end
 
