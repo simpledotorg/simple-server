@@ -703,7 +703,7 @@ DEPENDENCIES
   connection_pool
   data-anonymization
   data_migrate
-  ddtrace (~> 0.54)
+  ddtrace
   derailed_benchmarks
   devise (>= 4.7.1)
   devise_invitable (~> 2.0.6)

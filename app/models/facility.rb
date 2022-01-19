@@ -102,13 +102,15 @@ class Facility < ApplicationRecord
       message: "must be added to enable teleconsultation"
     }
   validates :enable_diabetes_management, inclusion: {in: [true, false]}
-  validate :valid_block, if: -> { facility_group.present? }
+  validate :valid_block, if: -> { !generating_seed_data && facility_group.present? }
 
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, :organization_id, to: :facility_group, allow_nil: true
   delegate :follow_ups_by_period, to: :patients, prefix: :patient
   delegate :district_region?, :block_region?, :facility_region?, :region_type, to: :region
   delegate :cache_key, :cache_version, to: :region
+
+  attr_accessor :generating_seed_data
 
   def self.parse_facilities_from_file(file_contents)
     Csv::FacilitiesParser.parse(file_contents)

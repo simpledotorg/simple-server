@@ -1,5 +1,6 @@
-enable_query_trace = ENV["QUERY_TRACE"]
-if (Rails.env.development? || Rails.env.test?) && enable_query_trace
+# This is pretty expensive and adds a _lot_ of noise to the logs, so mostly recommended
+# for local dev
+if ENV["QUERY_TRACE"]
   # See https://github.com/brunofacca/active-record-query-trace for docs
   require "active_record_query_trace"
   ActiveRecordQueryTrace.enabled = true

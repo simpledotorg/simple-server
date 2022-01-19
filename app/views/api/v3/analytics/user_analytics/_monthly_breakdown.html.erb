@@ -1,0 +1,21 @@
+<% if current_facility.diabetes_enabled? %>
+  <%= render(Reports::MonthlyProgressComponent.new(facility: current_facility, 
+    diagnosis: :all, 
+    metric: metric,
+    query: @query,
+    range: @range,
+    gender_groups: false)) %>
+
+  <%= render(Reports::MonthlyProgressComponent.new(facility: current_facility, 
+    diagnosis: :diabetes, 
+    metric: metric,
+    query: @query,
+    range: @range)) %>
+
+<% end %>
+
+<%= render(Reports::MonthlyProgressComponent.new(facility: current_facility, 
+  diagnosis: :hypertension, 
+  metric: metric,
+  query: @query,
+  range: @range)) %>

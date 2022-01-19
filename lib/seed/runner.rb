@@ -6,8 +6,10 @@ require "ruby-progressbar"
 module Seed
   class Runner
     include ActiveSupport::Benchmarkable
+    include ActionView::Helpers::NumberHelper
     include ConsoleLogger
     SIZES = Facility.facility_sizes
+    SUMMARY_COUNTS = [:patient, :blood_pressure, :blood_sugar, :appointment, :facility, :facility_group]
 
     attr_reader :config
     attr_reader :logger
@@ -49,17 +51,26 @@ module Seed
       hsh = sum_facility_totals
       total_counts.merge!(hsh)
 
+      print_summary
+      [counts, total_counts]
+    end
+
+    def print_summary
+      totals = SUMMARY_COUNTS.each_with_object({}) { |model, hsh|
+        hsh[model] = number_with_delimiter(model.to_s.classify.constantize.count)
+      }
       announce <<~EOL
-        \n⭐️ Seed complete! Created #{Patient.count} patients, #{BloodPressure.count} BPs, #{BloodSugar.count} blood sugars, and #{Appointment.count} appointments across #{Facility.count} facilities in #{Region.district_regions.count} districts.\n
+        \n⭐️ Seed complete! Created #{totals[:patient]} patients, #{totals[:blood_pressure]} BPs, #{totals[:blood_sugar]} blood sugars, and #{totals[:appointment]} appointments across #{totals[:facility]} facilities in #{totals[:facility_group]} districts.\n
         ⭐️ Elapsed time #{distance_of_time_in_words(start_time, Time.current, include_seconds: true)} ⭐️\n
       EOL
-      [counts, total_counts]
     end
 
     def feature_flags_enabled_by_default
       [
+        :dashboard_progress_reports,
         :drug_stocks,
         :follow_ups_v2,
+        :follow_ups_v2_progress_tab,
         :notifications,
         (:auto_approve_users if SimpleServer.env.android_review?),
         (:fixed_otp if SimpleServer.env.android_review?)
@@ -83,8 +94,10 @@ module Seed
           result.merge!(bp_result) { |key, count1, count2| count1 + count2 }
           blood_sugar_result = BloodSugarSeeder.call(config: config, facility: facility, user_ids: registration_user_ids)
           result.merge!(blood_sugar_result) { |key, count1, count2| count1 + count2 }
-          appt_result = create_appts(patient_info, facility: facility, user_ids: registration_user_ids)
-          result[:appointment] = appt_result.ids.size
+          unless config.skip_encounters
+            appt_result = create_appts(patient_info, facility: facility, user_ids: registration_user_ids)
+            result[:appointment] = appt_result.ids.size
+          end
           result
         }
         results.concat batch_result
@@ -93,12 +106,18 @@ module Seed
     end
 
     def seed_drug_stocks
-      Facility.all.each do |facility|
+      ds_attrs = Facility.find_each.with_object([]).each do |facility, attrs|
+        logger.info { "Seeding drug stocks for #{facility.id}" }
         user = facility.users.first
         facility.protocol.protocol_drugs.where(stock_tracked: true).each do |protocol_drug|
-          FactoryBot.create(:drug_stock, facility: facility, user: user, protocol_drug: protocol_drug)
+          attrs << FactoryBot.attributes_for(:drug_stock,
+            facility_id: facility.id,
+            user_id: user.id,
+            protocol_drug_id: protocol_drug.id,
+            region_id: facility.region.id)
         end
       end
+      DrugStock.import(ds_attrs)
     end
 
     def parallel_options(progress)

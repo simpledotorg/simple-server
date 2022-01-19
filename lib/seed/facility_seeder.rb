@@ -3,6 +3,7 @@ require_dependency "seed/config"
 module Seed
   class FacilitySeeder
     include ConsoleLogger
+    include Memery
 
     FACILITY_SIZE_WEIGHTS = {
       community: 0.50,
@@ -26,15 +27,17 @@ module Seed
       @counts = {}
       @config = config
       @logger = Rails.logger.child(class: self.class.name)
+      @logger.info { "Starting #{self.class} with #{config.type} configuration" }
     end
 
     attr_reader :config
     attr_reader :logger
 
-    delegate :scale_factor, :stdout, to: :config
-    delegate :number_of_facility_groups,
+    delegate :number_of_blocks_per_facility_group,
+      :number_of_facility_groups,
       :number_of_states,
-      :number_of_blocks_per_facility_group, to: :config
+      :stdout,
+      :scale_factor, to: :config
 
     def call
       Region.root || Region.create!(name: "India", region_type: Region.region_types[:root], path: "india")
@@ -110,34 +113,37 @@ module Seed
     end
 
     def create_block_regions(district_region_results)
-      # Eagerly fetch block names to avoid duplicates
-      block_count = district_region_results.ids.size * number_of_blocks_per_facility_group
-      block_names = Seed::FakeNames.instance.blocks.sample(block_count)
-
-      block_counter = 0
       block_regions = district_region_results.results.flat_map { |row|
         _id, _name, path = *row
+        number = number_of_blocks_per_facility_group
+        logger.info { "creating #{number} block regions for #{row}" }
 
-        number_of_blocks_per_facility_group.times.map {
+        number.times.map { |i|
+          block_name = Faker::Address.community
+          block_slug = "#{block_name.parameterize}-#{SecureRandom.uuid[0..7]}"
           attrs = {
             id: nil,
-            name: block_names[block_counter],
+            name: block_name,
+            slug: block_slug,
             parent_path: path,
             region_type: "block"
           }
-
-          block_counter += 1
           FactoryBot.build(:region, attrs)
         }
       }
       Region.import(block_regions, returning: [:id, :name, :path])
     end
 
+    memoize def find_region_by_source_id(id)
+      Region.find_by!(source_id: id)
+    end
+
     def create_facilities(facility_group_results)
       facility_attrs = []
+      logger.info { "Building Facility attributes for #{facility_group_results.results.count} districts" }
       facility_group_results.results.each do |row|
         facility_group_id, facility_group_name = *row
-        facility_group_region = Region.find_by!(source_id: facility_group_id)
+        facility_group_region = find_region_by_source_id(facility_group_id)
         number_facilities = number_of_facilities_per_facility_group
         state = facility_group_region.state_region
         blocks = facility_group_region.block_regions.pluck(:name)
@@ -147,24 +153,28 @@ module Seed
           created_at = Faker::Time.between(from: 3.years.ago, to: 1.day.ago)
           diabetes_enabled = rand <= config.percentage_of_facilities_with_diabetes_enabled
           attrs = {
+            id: nil,
             created_at: created_at,
             district: facility_group_name,
             enable_diabetes_management: diabetes_enabled,
             facility_group_id: facility_group_id,
             facility_size: size,
             facility_type: type,
+            generating_seed_data: true,
             state: state.name,
             updated_at: created_at,
             zone: blocks.sample
           }
-          facility_attrs << FactoryBot.build(:facility, :seed, attrs)
+          facility_attrs << FactoryBot.build(:facility, :seed, :without_parent_region, attrs)
         }
       end
 
+      announce "Importing #{facility_attrs.count} Facilities"
       Facility.import(facility_attrs, returning: [:id, :name, :zone], on_duplicate_key_ignore: true)
     end
 
     def create_facility_regions(facility_results)
+      logger.info { "Building Facility Region attributes for #{facility_results.results.count} facilities" }
       facility_regions = facility_results.results.map { |row|
         id, name, block_name = *row
         block = Region.find_by!(name: block_name)
@@ -178,6 +188,7 @@ module Seed
         }
         FactoryBot.build(:region, attrs)
       }
+      logger.info { "Importing #{facility_regions.count} Facility regions" }
       Region.import(facility_regions, on_duplicate_key_ignore: true)
     end
   end
