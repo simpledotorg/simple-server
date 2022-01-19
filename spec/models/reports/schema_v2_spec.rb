@@ -12,7 +12,6 @@ describe Reports::SchemaV2, type: :model do
   let(:jan_2020) { Time.zone.parse("January 1st, 2020 00:00:00+00:00") }
   let(:july_2018) { Period.month("July 1 2018") }
   let(:june_2020) { Period.month("June 1 2020") }
-  let(:jan_2020) { Time.zone.parse("January 1st, 2020 00:00:00+00:00") }
 
   def refresh_views
     RefreshReportingViews.new.refresh_v2
@@ -69,6 +68,40 @@ describe Reports::SchemaV2, type: :model do
       expect(entry.to_s).to include("schema_v2")
       expect(entry.to_s).to include(facility.region.id)
       expect(entry.to_s).to include(schema.cache_version)
+    end
+  end
+
+  context "can return the percentages of appointments scheduled" do
+    it "across months in a given range" do
+      facility = create(:facility)
+      create(:patient, assigned_facility: facility)
+      range = Period.month(2.month.ago)..Period.current
+      _appointment_scheduled_0_to_14_days = create(:appointment, facility: facility, scheduled_date: 10.days.from_now, device_created_at: Date.today)
+
+      refresh_views
+
+      schema = described_class.new(Region.where(id: facility.region), periods: range)
+      expect(schema.appts_scheduled_0_to_14_days_rates[facility.slug][range.first]).to eq(0)
+      expect(schema.appts_scheduled_0_to_14_days_rates[facility.slug][range.to_a.second]).to eq(0)
+      expect(schema.appts_scheduled_0_to_14_days_rates[facility.slug][range.last]).to eq(100)
+    end
+
+    it "in a month" do
+      facility = create(:facility)
+      create(:patient, assigned_facility: facility)
+      range = Period.month(2.month.ago)..Period.current
+      _appointment_scheduled_0_to_14_days = create(:appointment, facility: facility, scheduled_date: 10.days.from_now, device_created_at: Date.today)
+      _appointment_scheduled_15_to_30_days = create(:appointment, facility: facility, scheduled_date: 16.days.from_now, device_created_at: Date.today)
+      _appointment_scheduled_31_to_60_days = create(:appointment, facility: facility, scheduled_date: 36.days.from_now, device_created_at: Date.today)
+      _appointment_scheduled_more_than_60_days = create(:appointment, facility: facility, scheduled_date: 70.days.from_now, device_created_at: Date.today)
+
+      refresh_views
+
+      schema = described_class.new(Region.where(id: facility.region), periods: range)
+      expect(schema.appts_scheduled_0_to_14_days_rates[facility.slug][range.last]).to eq(25)
+      expect(schema.appts_scheduled_15_to_30_days_rates[facility.slug][range.last]).to eq(25)
+      expect(schema.appts_scheduled_31_to_60_days_rates[facility.slug][range.last]).to eq(25)
+      expect(schema.appts_scheduled_more_than_60_days_rates[facility.slug][range.last]).to eq(25)
     end
   end
 end
