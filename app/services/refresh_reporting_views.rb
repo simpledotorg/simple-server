@@ -63,6 +63,7 @@ class RefreshReportingViews
     Reports::AppointmentScheduledDaysDistribution
     Reports::FacilityState
     Reports::QuarterlyFacilityState
+    Reports::FacilityStateGroup
   ].freeze
 
   def refresh_v1

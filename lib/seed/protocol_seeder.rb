@@ -12,7 +12,6 @@ module Seed
     def initialize(config:)
       @config = config
       @logger = Rails.logger.child(class: self.class.name)
-      announce "Starting #{self.class} with #{config.type} configuration"
     end
 
     attr_reader :config
@@ -21,7 +20,7 @@ module Seed
     delegate :stdout, to: :config
 
     def call
-      announce "Creating #{protocol_name} with drugs..."
+      logger.info { "Creating #{protocol_name} with drugs..." }
       FactoryBot.create(:protocol, :with_tracked_drugs, name: protocol_name, follow_up_days: 28)
     end
 

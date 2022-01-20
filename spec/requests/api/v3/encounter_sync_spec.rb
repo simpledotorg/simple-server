@@ -21,5 +21,11 @@ RSpec.describe "Encounters sync", type: :request do
     Api::V3::EncounterTransformer.to_response(encounter)
   end
 
+  around do |example|
+    Flipper.enable(:sync_encounters)
+    example.run
+    Flipper.disable(:sync_encounters)
+  end
+
   include_examples "v3 API sync requests"
 end
