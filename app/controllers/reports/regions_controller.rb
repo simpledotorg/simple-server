@@ -13,30 +13,36 @@ class Reports::RegionsController < AdminController
   INDEX_CACHE_KEY = "v3"
 
   def index
-    accessible_facility_regions = authorize { current_admin.accessible_facility_regions(:view_reports) }
+    if current_user.feature_enabled?(:regions_fast_index)
+      render action: :fastindex
+    else
+      accessible_facility_regions = authorize { current_admin.accessible_facility_regions(:view_reports) }
 
-    cache_key = current_admin.regions_access_cache_key
-    cache_version = "#{accessible_facility_regions.cache_key}/#{INDEX_CACHE_KEY}"
+      cache_key = current_admin.regions_access_cache_key
+      cache_version = "#{accessible_facility_regions.cache_key}/#{INDEX_CACHE_KEY}"
 
-    @accessible_regions = cache.fetch(cache_key, force: bust_cache?, version: cache_version, expires_in: 7.days) {
-      accessible_facility_regions.each_with_object({}) { |facility, result|
-        ancestors = facility.cached_ancestors.map { |facility| [facility.region_type, facility] }.to_h
-        org, state, district, block = ancestors.values_at("organization", "state", "district", "block")
-        result[org] ||= {}
-        result[org][state] ||= {}
-        result[org][state][district] ||= {}
-        result[org][state][district][block] ||= []
-        result[org][state][district][block] << facility
+      @accessible_regions = cache.fetch(cache_key, force: bust_cache?, version: cache_version, expires_in: 7.days) {
+        accessible_facility_regions.each_with_object({}) { |facility, result|
+          ancestors = facility.cached_ancestors.map { |facility| [facility.region_type, facility] }.to_h
+          org, state, district, block = ancestors.values_at("organization", "state", "district", "block")
+          result[org] ||= {}
+          result[org][state] ||= {}
+          result[org][state][district] ||= {}
+          result[org][state][district][block] ||= []
+          result[org][state][district][block] << facility
+        }
       }
-    }
-    logger.info { "Current admin has #{accessible_facility_regions.size} facility regions" }
+      logger.info { "Current admin has #{accessible_facility_regions.size} facility regions" }
+    end
   end
 
   def fastindex
+    logger.info("regions#fastindex action called")
     accessible_facility_regions = authorize { current_admin.accessible_facility_regions(:view_reports) }
 
     @org = Region.organization_regions.first
     @region_tree = RegionTreeService.new(@org).with_facilities!(accessible_facility_regions)
+    logger.info { "Current admin has #{accessible_facility_regions.size} facility regions" }
   end
 
   def show
