@@ -13,7 +13,8 @@ class Reports::RegionsController < AdminController
   INDEX_CACHE_KEY = "v3"
 
   def index
-    if current_user.feature_enabled?(:regions_fast_index)
+    if current_admin.feature_enabled?(:regions_fast_index)
+      fastindex
       render action: :fastindex
     else
       accessible_facility_regions = authorize { current_admin.accessible_facility_regions(:view_reports) }
