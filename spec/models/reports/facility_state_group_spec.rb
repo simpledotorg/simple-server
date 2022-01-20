@@ -45,7 +45,7 @@ RSpec.describe Reports::FacilityStateGroup, {type: :model, reporting_spec: true}
       month_date: two_years_ago.to_date,
       monthly_registrations_all: 2,
       monthly_registrations_htn_all: 2,
-      monthly_registrations_htn_male: 1, 
+      monthly_registrations_htn_male: 1,
       monthly_registrations_htn_female: 1,
       monthly_registrations_htn_transgender: 0,
       monthly_registrations_dm_all: 0,
