@@ -42,15 +42,4 @@ RSpec.describe DashboardHelper, type: :helper do
       end
     end
   end
-
-  describe "#rounded_percentages" do
-    it "returns hash of percentages after rounding when given a hash of percentages without rounding" do
-      expect(rounded_percentages({a: 0, b: 0, c: 0})).to eq({a: 0, b: 0, c: 0})
-      expect(rounded_percentages({a: 0, b: 80, c: 20})).to eq({a: 0, b: 80, c: 20})
-      expect(rounded_percentages({a: 33.333, b: 33.333, c: 33.333})).to eq({a: 34, b: 33, c: 33})
-      expect(rounded_percentages({a: 42.857, b: 28.571, c: 28.571})).to eq({a: 43, b: 29, c: 28})
-      expect(rounded_percentages({a: 0, b: 6.501707128047701, c: 80.72721472499585, d: 10.985525877598509, e: 1.7855522693579489})).to eq({a: 0, b: 6, c: 81, d: 11, e: 2})
-      expect(rounded_percentages({a: 18.562874251497007, b: 20.958083832335326, c: 18.562874251497007, d: 19.161676646706585, e: 22.75449101796407})).to eq({a: 19, b: 21, c: 18, d: 19, e: 23})
-    end
-  end
 end
