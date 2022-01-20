@@ -48,7 +48,29 @@ RSpec.describe Reports::AppointmentScheduledDaysDistribution, {type: :model, rep
     expect(described_class.find_by(month_date: Period.month(2.month.ago), facility: facility).appts_scheduled_more_than_60_days).to eq 1
   end
 
-  it "considers only last 6 months of appointments"
+  it "considers only last 6 months of appointments" do
+    facility = create(:facility)
+    patient = create(:patient, assigned_facility: facility)
+    _appointment_created_today = create(:appointment, facility: facility, patient: patient, scheduled_date: 11.days.from_now, device_created_at: Date.today)
+    _appointment_created_6_month_ago = create(:appointment, facility: facility, patient: patient, scheduled_date: Date.today, device_created_at: 6.month.ago)
+    _appointment_created_2_month_ago = create(:appointment, facility: facility, patient: patient, scheduled_date: Date.today, device_created_at: 7.month.ago)
 
-  it "includes only appointments where scheduled date is after creation date"
+    RefreshReportingViews.new.refresh_v2
+
+    expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_0_to_14_days).to eq 1
+    expect(described_class.find_by(month_date: Period.month(6.month.ago), facility: facility).appts_scheduled_more_than_60_days).to eq 1
+    expect(described_class.find_by(month_date: Period.month(7.month.ago), facility: facility)).to be_nil
+  end
+
+  it "includes only appointments where scheduled date is after creation date" do
+    facility = create(:facility)
+    patient = create(:patient, assigned_facility: facility)
+    _appointment_created_today = create(:appointment, facility: facility, patient: patient, scheduled_date: Date.yesterday, device_created_at: Date.today)
+    _appointment_created_1_month_ago = create(:appointment, facility: facility, patient: patient, scheduled_date: Date.today, device_created_at: 1.month.ago)
+
+    RefreshReportingViews.new.refresh_v2
+
+    expect(described_class.find_by(month_date: Period.current, facility: facility)).to be_nil
+    expect(described_class.find_by(month_date: Period.month(1.month.ago), facility: facility).appts_scheduled_31_to_60_days).to eq 1
+  end
 end
