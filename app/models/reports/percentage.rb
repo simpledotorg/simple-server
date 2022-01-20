@@ -2,7 +2,7 @@ module Reports::Percentage
   def percentage(numerator, denominator, with_rounding: true)
     return 0 if numerator.nil? || denominator.nil? || denominator == 0 || numerator == 0
     if with_rounding
-      ((numerator.to_f / denominator) * 100).round(PERCENTAGE_PRECISION)
+      ((numerator.to_f / denominator) * 100).round(Reports::PERCENTAGE_PRECISION)
     else
       ((numerator.to_f / denominator) * 100)
     end
