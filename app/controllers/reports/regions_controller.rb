@@ -29,6 +29,7 @@ class Reports::RegionsController < AdminController
         result[org][state][district][block] << facility
       }
     }
+    logger.info { "Current admin has #{accessible_facility_regions.size} facility regions" }
   end
 
   def show
