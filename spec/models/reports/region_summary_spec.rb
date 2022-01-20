@@ -254,4 +254,9 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       expect(facility_results[period]["lost_to_follow_up"]).to eq(1)
     end
   end
+
+  describe "#for_regions" do
+    it "excludes facilities where registrations, assigned patients and follow ups are all zero" do
+    end
+  end
 end
