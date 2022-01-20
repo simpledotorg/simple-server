@@ -369,11 +369,10 @@ This will create a git release tag and automatically trigger a deployment to all
 * The available country names are listed under `config/deploy`. The subsequent envs, under the country directory, like
   `config/deploy/india/staging.rb`
 
-Simple Server can be deployed to a specific environment and/or specific country with the following command. 
+Simple Server can be deployed to a specific environment and/or specific country via `bundle exec cap <country>:<enviroment> deploy`.
 Note that Sandbox does _not_ have a country prefix:
 
 ```bash
-bundle exec cap <country_name>:<enviroment> deploy
 # Sandbox (deploys master)
 bundle exec cap sandbox deploy
 # Sandbox from a specific branch
