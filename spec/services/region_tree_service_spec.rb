@@ -1,5 +1,20 @@
 require "rails_helper"
 
+class SQLCounter
+  cattr_accessor :query_count do
+    0
+  end
+
+  IGNORED_SQL = [/^PRAGMA (?!(table_info))/, /^SELECT currval/, /^SELECT CAST/, /^SELECT @@IDENTITY/, /^SELECT @@ROWCOUNT/, /^SAVEPOINT/, /^ROLLBACK TO SAVEPOINT/, /^RELEASE SAVEPOINT/, /^SHOW max_identifier_length/]
+
+  def call(name, start, finish, message_id, values)
+    # FIXME: this seems bad. we should probably have a better way to indicate the query was cached
+    unless "CACHE" == values[:name]
+      self.class.query_count += 1 unless IGNORED_SQL.any? { |r| values[:sql] =~ r }
+    end
+  end
+end
+
 RSpec.describe RegionTreeService, type: :model do
   let!(:organization) { create(:organization, name: "my-org") }
   let!(:state) { create(:region, :state, reparent_to: organization.region) }
@@ -7,23 +22,6 @@ RSpec.describe RegionTreeService, type: :model do
   let!(:block_1) { create(:region, :block, name: "B1", reparent_to: facility_groups[0].region) }
   let!(:block_2) { create(:region, :block, name: "B2", reparent_to: facility_groups[1].region) }
   let!(:facility_1) { create(:facility, state: state.name, block: block_1.name, facility_group: facility_groups[0]) }
-
-  class SQLCounter
-    cattr_accessor :query_count do
-      0
-    end
-
-    IGNORED_SQL = [/^PRAGMA (?!(table_info))/, /^SELECT currval/, /^SELECT CAST/, /^SELECT @@IDENTITY/, /^SELECT @@ROWCOUNT/, /^SAVEPOINT/, /^ROLLBACK TO SAVEPOINT/, /^RELEASE SAVEPOINT/, /^SHOW max_identifier_length/]
-
-    def call(name, start, finish, message_id, values)
-      p name, values[:sql]
-      # FIXME: this seems bad. we should probably have a better way to indicate
-      # the query was cached
-      unless "CACHE" == values[:name]
-        self.class.query_count += 1 unless IGNORED_SQL.any? { |r| values[:sql] =~ r }
-      end
-    end
-  end
 
   before do
     ActiveSupport::Notifications.subscribe("sql.active_record", SQLCounter.new)
