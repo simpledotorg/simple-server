@@ -33,14 +33,19 @@ RSpec.describe Reports::FacilityStateGroup, {type: :model, reporting_spec: true}
     two_years_ago, six_months_ago = june_2021.values_at(:two_years_ago, :six_months_ago)
     patient_1 = create(:patient, :hypertension, recorded_at: two_years_ago, gender: "female", registration_user: user, registration_facility: facility)
     create(:blood_pressure, patient: patient_1, user: user, facility: facility, recorded_at: six_months_ago)
+    create(:blood_pressure, patient: patient_1, user: user, facility: facility, recorded_at: six_months_ago.advance(days: 3))
+    create(:appointment, patient: patient_1, user: user, facility: facility, recorded_at: six_months_ago)
+
+    patient_2 = create(:patient, :hypertension, recorded_at: two_years_ago, gender: "male", registration_user: user, registration_facility: facility)
+    create(:blood_pressure, patient: patient_2, user: user, facility: facility, recorded_at: six_months_ago)
 
     RefreshReportingViews.call
 
     two_years_ago_expected = {
       month_date: two_years_ago.to_date,
-      monthly_registrations_all: 1,
-      monthly_registrations_htn_all: 1,
-      monthly_registrations_htn_male: 0,
+      monthly_registrations_all: 2,
+      monthly_registrations_htn_all: 2,
+      monthly_registrations_htn_male: 1, 
       monthly_registrations_htn_female: 1,
       monthly_registrations_htn_transgender: 0,
       monthly_registrations_dm_all: 0,
@@ -56,6 +61,8 @@ RSpec.describe Reports::FacilityStateGroup, {type: :model, reporting_spec: true}
       monthly_follow_ups_dm_male: nil,
       monthly_follow_ups_dm_transgender: nil
     }
+    two_years_ago = described_class.find_by(facility: facility, month_date: two_years_ago.to_date)
+    expect(two_years_ago.attributes.symbolize_keys).to include(two_years_ago_expected)
 
     six_months_ago_expected = {
       month_date: "Tue, 01 Dec 2020".to_date,
@@ -68,18 +75,15 @@ RSpec.describe Reports::FacilityStateGroup, {type: :model, reporting_spec: true}
       monthly_registrations_dm_male: nil,
       monthly_registrations_dm_female: nil,
       monthly_registrations_dm_transgender: nil,
-      monthly_follow_ups_all: 1,
+      monthly_follow_ups_all: 2,
       monthly_follow_ups_htn_female: 1,
-      monthly_follow_ups_htn_male: 0,
+      monthly_follow_ups_htn_male: 1,
       monthly_follow_ups_htn_transgender: 0,
       monthly_follow_ups_dm_all: 0,
       monthly_follow_ups_dm_female: 0,
       monthly_follow_ups_dm_male: 0,
       monthly_follow_ups_dm_transgender: 0
     }
-
-    two_years_ago = described_class.find_by(facility: facility, month_date: two_years_ago.to_date)
-    expect(two_years_ago.attributes.symbolize_keys).to include(two_years_ago_expected)
 
     six_months_ago = described_class.find_by(facility: facility, month_date: six_months_ago.to_date)
     expect(six_months_ago.attributes.symbolize_keys).to include(six_months_ago_expected)
