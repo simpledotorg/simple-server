@@ -1,12 +1,13 @@
-# HOWTO Run DataDog locally
+# How to Run DataDog locally
 
 We depend on Datadog for much of our performance and health metrics of simple-server, as well as some increased usage to monitor performance of simple-android. It can be very useful to run Datadog locally with your local server if you are working on fine-tuning configuration or setting up more advanced instrumentation of traces. This is pretty easy to do, here's how:
 
-1. Install the datadog-agent locally - make sure you are logged into our Datadog account, and follow the instructions here (for Mac)
+1. Log in to your Datadog account at https://app.datadoghq.com.
+1. Install the datadog-agent locally - and follow the instructions here (for Mac)
 
 https://app.datadoghq.com/account/settings#agent/mac
  
-As long as you are logged in, that will install an agent on Mac already configured with our API key. Pay attention to the docs about the agent running at login -- you probably don't want that, as it would be constantly sending your dev metrics to DD. You can disable that with the system tray agent DD installs, and then manually start/stop via 
+As long as you are logged in, the script that page gives you will install an agent on Mac already configured with our API key. Pay attention to the docs about the agent running at login -- you probably don't want that, as it would be constantly sending your dev metrics to DD. You can disable that with the system tray agent DD installs, and then manually start/stop via 
 
 ```
 datadog-agent start
@@ -32,7 +33,14 @@ env: development
 
 This yaml file would also be where you would tweak DD agent settings to verify their impact on global tracing, sampling, etc, before making changes in  our deployment repo to make those changes for the servers for real.
 
-3. Now start your services with `DATADOG_ENABLED=1`:
+1. Restart the datadog agent to make sure you the `env` flag change is picked up.
+
+```
+datadog-agent stop
+datadog-agent start
+```
+
+1. Now start your services with `DATADOG_ENABLED=1`:
 
 ```
 DATADOG_ENABLED=1 rails server
