@@ -76,40 +76,68 @@ module MonthlyDistrictReport
     def row_data
       facility_counts_by_size = district.facilities.group(:facility_size).count
       {
-        "District" => district.name,
-        "Facilities implementing IHCI" => district.facilities.count,
-        "Total DHs/SDHs" => facility_counts_by_size.fetch("large", 0),
-        "Total CHCs" => facility_counts_by_size.fetch("medium", 0),
-        "Total PHCs" => facility_counts_by_size.fetch("small", 0),
-        "Total HWCs/SCs" => facility_counts_by_size.fetch("community", 0),
-        "Total registrations" => repo.cumulative_registrations[district.slug][report_month],
-        "Total assigned patients" => repo.cumulative_assigned_patients[district.slug][report_month],
-        "Total patients under care" => repo.under_care[district.slug][report_month],
-        "% BP controlled" => percentage_string(repo.controlled_rates[district.slug][report_month]),
-        "% BP uncontrolled" => percentage_string(repo.uncontrolled_rates[district.slug][report_month]),
-        "% Missed Visits" => percentage_string(repo.missed_visits_rate[district.slug][report_month]),
-        "% Visits, no BP taken" => percentage_string(repo.visited_without_bp_taken_rates[district.slug][report_month]),
+        "District" => district.name, # "District"
+        "Facilities implementing IHCI" => district.facilities.count, # "Facilities implementing IHCI"
+        "Total DHs/SDHs" => facility_counts_by_size.fetch("large", 0), # "Total DHs/SDHs"
+        "Total CHCs" => facility_counts_by_size.fetch("medium", 0), # "Total CHCs"
+        "Total PHCs" => facility_counts_by_size.fetch("small", 0), # "Total PHCs"
+        "Total HWCs/SCs" => facility_counts_by_size.fetch("community", 0), # "Total HWCs/SCs"
+        "Total registrations" => repo.cumulative_registrations[district.slug][report_month], # "Total registrations"
+        "Total assigned patients" => repo.cumulative_assigned_patients[district.slug][report_month], # "Total assigned patients"
+        "Total patients under care" => repo.under_care[district.slug][report_month], # "Total patients under care"
+        "% BP controlled" => percentage_string(repo.controlled_rates[district.slug][report_month]), # "% BP controlled",
+        "% BP uncontrolled" => percentage_string(repo.uncontrolled_rates[district.slug][report_month]), # "% BP uncontrolled",
+        "% Missed Visits" => percentage_string(repo.missed_visits_rate[district.slug][report_month]), # "% Missed Visits",
+        "% Visits, no BP taken" => percentage_string(repo.visited_without_bp_taken_rates[district.slug][report_month]), # "% Visits, no BP taken",
         **last_6_months_data(repo.cumulative_registrations, :cumulative_registrations), # "Total registered patients",
         **last_6_months_data(repo.under_care, :under_care), # "Patients under care",
-        **last_6_months_data({}, :something_1), # TODO: **last_6_months_data(repo.monthly_registrations, district, :monthly_registrations), # "New registrations (DH/SDH/CHC)",
-        **last_6_months_data({}, :something_2), # TODO: **last_6_months_data(repo.monthly_registrations, district, :monthly_registrations), # "New registrations (PHC)",
-        **last_6_months_data({}, :something_3), # TODO: **last_6_months_data(repo.monthly_registrations, district, :monthly_registrations), # "New registrations (HWC/SC)",
+        **last_6_months_data(indicator_by_facility_size([:large, :medium], :monthly_registrations), :monthly_registrations_large_medium), # "New registrations (DH/SDH/CHC)"
+        **last_6_months_data(indicator_by_facility_size([:small], :monthly_registrations), :monthly_registrations_small), # "New registrations (PHC)"
+        **last_6_months_data(indicator_by_facility_size([:community], :monthly_registrations), :monthly_registrations_community), # "New registrations (HWC/SC)"
         **last_6_months_data(repo.hypertension_follow_ups, :hypertension_follow_ups), # "Patient follow-ups",
         **last_6_months_data(repo.controlled_rates, :controlled_rates, true), # "BP controlled rate"
         **last_6_months_data(repo.controlled, :controlled), # "BP controlled count"
 
-        **last_6_months_data({}, :something_4).drop(3).to_h, # TODO: *last_6_months.drop(3).map(&:to_s), # "Cumulative registrations at HWCs"
-        **last_6_months_data({}, :something_5).drop(3).to_h, # TODO: *last_6_months.drop(3).map(&:to_s), # "Cumulative patients under care at HWCs"
-        **last_6_months_data({}, :something_6).drop(3).to_h, # TODO: *last_6_months.drop(3).map(&:to_s), # "% of assigned patients at HWCs / SCs (as against district)"
-        **last_6_months_data({}, :something_7).drop(3).to_h, # TODO: *last_6_months.drop(3).map(&:to_s), # "% of patients followed up at HWCs / SCs"
-        **last_6_months_data({}, :something_8).drop(3).to_h # TODO: *last_6_months.drop(3).map(&:to_s), # "Cumulative assigned patients to HWCs"
+        # last 3 months of data, at community facilities
+        **last_6_months_data(indicator_by_facility_size([:community], :cumulative_registrations, last_6_months),
+          :cumulative_registrations_community).drop(3).to_h, # "Cumulative registrations at HWCs"
+        **last_6_months_data(indicator_by_facility_size([:community], :under_care, last_6_months),
+          :cumulative_under_care_community).drop(3).to_h, # "Cumulative patients under care at HWCs"
+        **last_6_months_percentage(indicator_by_facility_size([:community], :cumulative_assigned_patients, last_6_months.drop(3)),
+          repo.cumulative_assigned_patients,
+          :cumulative_assigned_patients_community_percentage)
+          .drop(3).to_h, # "% of assigned patients at HWCs / SCs (as against district)"
+        **last_6_months_percentage(indicator_by_facility_size([:community], :monthly_follow_ups, last_6_months.drop(3)),
+          indicator_by_facility_size([:community, :small, :medium, :large], :monthly_follow_ups, last_6_months.drop(3)),
+          :monthly_follow_ups_community_percentage)
+          .drop(3).to_h, # "% of patients followed up at HWCs / SCs"
+        **last_6_months_data(indicator_by_facility_size([:community], :cumulative_assigned_patients, last_6_months.drop(3)),
+          :cumulative_assigned_patients_community).drop(3).to_h # "Cumulative assigned patients to HWCs"
+      }
+    end
+
+    def indicator_by_facility_size(facility_sizes, indicator, periods = last_6_months)
+      {
+        district.slug => Reports::FacilityState
+          .where(district_region_id: district.id, month_date: periods, facility_size: facility_sizes)
+          .group(:month_date)
+          .sum(indicator)
+          .map { |k, v| [Period.month(k), v.to_i] }
+          .to_h
       }
     end
 
     def last_6_months_data(data, indicator, show_as_rate = false)
       last_6_months.each_with_object({}) do |month, hsh|
-        value = data.dig(district.slug, month)
+        value = data.dig(district.slug, month) || 0
         hsh["#{indicator} - #{month}"] = indicator_string(value, show_as_rate)
+      end
+    end
+
+    def last_6_months_percentage(numerators, denominators, indicator)
+      last_6_months.each_with_object({}) do |month, hsh|
+        value = percentage(numerators.dig(district.slug, month), denominators.dig(district.slug, month))
+        hsh["#{indicator} - #{month}"] = indicator_string(value, true)
       end
     end
   end
