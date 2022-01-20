@@ -72,7 +72,7 @@
     <% else %>
       <% if @region.district_region? && accessible_region?(@region, :manage) %>
         <%= link_to "+ Add population", edit_admin_facility_group_path(@region.source) %>
-      <% elsif @region.state_region? && accessible_region?(@region, :manage) %>
+      <% elsif @region.state_region? && accessible_region?(@region, :view_reports) %>
         <%= link_to "+ Add district populations", "/admin/facilities" %>
       <% else %>
         <span class="fw-bold">
