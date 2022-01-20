@@ -17,6 +17,7 @@ class Reports::RegionsController < AdminController
       fastindex
       render action: :fastindex
     else
+      logger.info("regions#index: action called")
       accessible_facility_regions = authorize { current_admin.accessible_facility_regions(:view_reports) }
 
       cache_key = current_admin.regions_access_cache_key
@@ -33,17 +34,17 @@ class Reports::RegionsController < AdminController
           result[org][state][district][block] << facility
         }
       }
-      logger.info { "Current admin has #{accessible_facility_regions.size} facility regions" }
+      logger.info { "regions#index: Current admin has #{accessible_facility_regions.size} facility regions" }
     end
   end
 
   def fastindex
-    logger.info("regions#fastindex action called")
+    logger.info("regions#fastindex: action called")
     accessible_facility_regions = authorize { current_admin.accessible_facility_regions(:view_reports) }
 
     @org = Region.organization_regions.first
     @region_tree = RegionTreeService.new(@org).with_facilities!(accessible_facility_regions)
-    logger.info { "Current admin has #{accessible_facility_regions.size} facility regions" }
+    logger.info { "regions#fastindex: Current admin has #{accessible_facility_regions.size} facility regions" }
   end
 
   def show
