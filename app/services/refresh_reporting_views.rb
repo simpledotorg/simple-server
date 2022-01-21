@@ -60,6 +60,7 @@ class RefreshReportingViews
     Reports::Prescriptions
     Reports::PatientFollowUp
     Reports::PatientState
+    Reports::AppointmentScheduledDaysDistribution
     Reports::FacilityState
     Reports::QuarterlyFacilityState
     Reports::FacilityStateGroup
