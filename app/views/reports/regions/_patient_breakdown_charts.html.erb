@@ -1,7 +1,7 @@
 <div class="d-lg-flex flex-lg-wrap">
   <div class="d-lg-flex w-lg-50 pr-lg-2">
     <div id="patient-breakdown" data-period="<%= @period.to_s %>" class="mt-8px mx-0px mb-16px p-20px bg-white br-4px bs-small w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
-      <% if current_admin.feature_enabled?(:estimated_population) && @region.supports_htn_population_coverage %>
+      <% if @region.supports_htn_population_coverage %>
         <div class="d-flex flex-1 mb-8px">
           <h3 class="mb-0px mr-8px">
             Hypertension coverage
