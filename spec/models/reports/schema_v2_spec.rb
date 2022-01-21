@@ -71,8 +71,8 @@ describe Reports::SchemaV2, type: :model do
     end
   end
 
-  context "can return the percentages of appointments scheduled" do
-    it "across months in a given range" do
+  describe "appointment scheduled days percentages" do
+    it "returns percentages of appointments scheduled across months in a given range" do
       facility = create(:facility)
       create(:patient, assigned_facility: facility)
       range = Period.month(2.month.ago)..Period.current
@@ -86,7 +86,7 @@ describe Reports::SchemaV2, type: :model do
       expect(schema.appts_scheduled_0_to_14_days_rates[facility.slug][range.last]).to eq(100)
     end
 
-    it "in a month" do
+    it "returns percentages of appointments scheduled in a month in the given range" do
       facility = create(:facility)
       create(:patient, assigned_facility: facility)
       range = Period.month(2.month.ago)..Period.current

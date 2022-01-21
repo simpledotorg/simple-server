@@ -65,8 +65,8 @@ RSpec.describe Reports::AppointmentScheduledDaysDistribution, {type: :model, rep
   it "includes only appointments where scheduled date is after creation date" do
     facility = create(:facility)
     patient = create(:patient, assigned_facility: facility)
-    _appointment_created_today = create(:appointment, facility: facility, patient: patient, scheduled_date: Date.yesterday, device_created_at: Date.today)
-    _appointment_created_1_month_ago = create(:appointment, facility: facility, patient: patient, scheduled_date: Date.today, device_created_at: 1.month.ago)
+    _scheduled_before_creation_appointment = create(:appointment, facility: facility, patient: patient, scheduled_date: Date.yesterday, device_created_at: Date.today)
+    _scheduled_after_creation_appointment = create(:appointment, facility: facility, patient: patient, scheduled_date: Date.today, device_created_at: 1.month.ago)
 
     RefreshReportingViews.new.refresh_v2
 
