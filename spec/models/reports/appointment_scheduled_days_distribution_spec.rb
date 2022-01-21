@@ -2,8 +2,6 @@ require "rails_helper"
 
 RSpec.describe Reports::AppointmentScheduledDaysDistribution, {type: :model, reporting_spec: true} do
   it "buckets and counts appointments by the number of days between creation date and scheduled date" do
-    # Need to create and assert these specs in the last six months,
-    # since the materialized view skips any data older than six months (relative to db time)
     facility = create(:facility)
     _appointment_scheduled_0_to_14_days = create(:appointment, facility: facility, scheduled_date: 10.days.from_now, device_created_at: Date.today)
     _appointment_scheduled_15_to_30_days = create(:appointment, facility: facility, scheduled_date: 16.days.from_now, device_created_at: Date.today)
