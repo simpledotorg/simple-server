@@ -226,4 +226,10 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       end
     end
   end
+
+  context "medication dispensed in last 3 months" do
+    it "totals the latest appointment scheduled in a month"
+
+    it "counts the latest appointment scheduled in a bucket(range of days)"
+  end
 end
