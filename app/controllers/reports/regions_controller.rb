@@ -89,9 +89,6 @@ class Reports::RegionsController < AdminController
     chart_range = (@period.advance(months: months)..@period)
     @period_range = Range.new(@period.advance(months: -5), @period)
 
-    medications_dispensation_months = -2
-    @medications_dispensation_range = (@period.advance(months: medications_dispensation_months)..@period)
-
     regions = if @region.facility_region?
       [@region]
     else
@@ -104,7 +101,7 @@ class Reports::RegionsController < AdminController
 
     @repository = Reports::Repository.new(regions, periods: @period_range, follow_ups_v2: current_admin.feature_enabled?(:follow_ups_v2))
     chart_repo = Reports::Repository.new(@region, periods: chart_range, follow_ups_v2: current_admin.feature_enabled?(:follow_ups_v2))
-    medications_dispensation_repo = Reports::Repository.new(@region, periods: @medications_dispensation_range)
+    medications_dispensation_service = MedicationDispensationService.new(region: @region, period: @period)
 
     district_regions = if @region.state_region?
       [@region, @region.district_regions].flatten
@@ -117,25 +114,8 @@ class Reports::RegionsController < AdminController
     @chart_data = {
       patient_breakdown: PatientBreakdownService.call(region: @region, period: @period),
       ltfu_trend: ltfu_chart_data(chart_repo, chart_range),
-      medications_dispensation: {
-        "0 - 14 days" => {color: "#BD3838",
-                          counts: medications_dispensation_repo.appts_scheduled_0_to_14_days[@region.slug],
-                          totals: medications_dispensation_repo.total_appts_scheduled[@region.slug],
-                          percentages: medications_dispensation_repo.appts_scheduled_0_to_14_days_rates[@region.slug]},
-        "15 - 30 days" => {color: "#E77D27",
-                           counts: medications_dispensation_repo.appts_scheduled_15_to_30_days[@region.slug],
-                           totals: medications_dispensation_repo.total_appts_scheduled[@region.slug],
-                           percentages: medications_dispensation_repo.appts_scheduled_15_to_30_days_rates[@region.slug]},
-        "31 - 60 days" => {color: "#729C26",
-                           counts: medications_dispensation_repo.appts_scheduled_31_to_60_days[@region.slug],
-                           totals: medications_dispensation_repo.total_appts_scheduled[@region.slug],
-                           percentages: medications_dispensation_repo.appts_scheduled_31_to_60_days_rates[@region.slug]},
-        "60+ days" => {color: "#007AA6",
-                       counts: medications_dispensation_repo.appts_scheduled_more_than_60_days[@region.slug],
-                       totals: medications_dispensation_repo.total_appts_scheduled[@region.slug],
-                       percentages: medications_dispensation_repo.appts_scheduled_more_than_60_days_rates[@region.slug]}
-      },
-      medications_dispensation_months: @medications_dispensation_range.map(&:to_s)
+      medications_dispensation: medications_dispensation_service.distribution,
+      medications_dispensation_months: medications_dispensation_service.months
     }
 
     if @region.facility_region?
