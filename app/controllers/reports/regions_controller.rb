@@ -5,7 +5,7 @@ class Reports::RegionsController < AdminController
   before_action :set_period, only: [:show, :cohort]
   before_action :set_page, only: [:details]
   before_action :set_per_page, only: [:details]
-  before_action :find_region, except: [:index, :monthly_district_data_report]
+  before_action :find_region, except: [:index, :fastindex, :monthly_district_data_report]
   around_action :set_reporting_time_zone
   after_action :log_cache_metrics
   delegate :cache, to: Rails
@@ -13,22 +13,38 @@ class Reports::RegionsController < AdminController
   INDEX_CACHE_KEY = "v3"
 
   def index
+    if current_admin.feature_enabled?(:regions_fast_index)
+      fastindex
+      render action: :fastindex
+    else
+      logger.info("regions#index: action called")
+      accessible_facility_regions = authorize { current_admin.accessible_facility_regions(:view_reports) }
+
+      cache_key = current_admin.regions_access_cache_key
+      cache_version = "#{accessible_facility_regions.cache_key}/#{INDEX_CACHE_KEY}"
+
+      @accessible_regions = cache.fetch(cache_key, force: bust_cache?, version: cache_version, expires_in: 7.days) {
+        accessible_facility_regions.each_with_object({}) { |facility, result|
+          ancestors = facility.cached_ancestors.map { |facility| [facility.region_type, facility] }.to_h
+          org, state, district, block = ancestors.values_at("organization", "state", "district", "block")
+          result[org] ||= {}
+          result[org][state] ||= {}
+          result[org][state][district] ||= {}
+          result[org][state][district][block] ||= []
+          result[org][state][district][block] << facility
+        }
+      }
+      logger.info { "regions#index: Current admin has #{accessible_facility_regions.size} facility regions" }
+    end
+  end
+
+  def fastindex
+    logger.info("regions#fastindex: action called")
     accessible_facility_regions = authorize { current_admin.accessible_facility_regions(:view_reports) }
 
-    cache_key = current_admin.regions_access_cache_key
-    cache_version = "#{accessible_facility_regions.cache_key}/#{INDEX_CACHE_KEY}"
-
-    @accessible_regions = cache.fetch(cache_key, force: bust_cache?, version: cache_version, expires_in: 7.days) {
-      accessible_facility_regions.each_with_object({}) { |facility, result|
-        ancestors = facility.cached_ancestors.map { |facility| [facility.region_type, facility] }.to_h
-        org, state, district, block = ancestors.values_at("organization", "state", "district", "block")
-        result[org] ||= {}
-        result[org][state] ||= {}
-        result[org][state][district] ||= {}
-        result[org][state][district][block] ||= []
-        result[org][state][district][block] << facility
-      }
-    }
+    @org = Region.organization_regions.first
+    @region_tree = RegionTreeService.new(@org).with_facilities!(accessible_facility_regions)
+    logger.info { "regions#fastindex: Current admin has #{accessible_facility_regions.size} facility regions" }
   end
 
   def show

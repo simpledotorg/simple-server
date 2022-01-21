@@ -369,12 +369,16 @@ This will create a git release tag and automatically trigger a deployment to all
 * The available country names are listed under `config/deploy`. The subsequent envs, under the country directory, like
   `config/deploy/india/staging.rb`
 
-Simple Server can be deployed to a specific environment of a specific country with the following command.
+Simple Server can be deployed to a specific environment and/or specific country via `bundle exec cap <country>:<enviroment> deploy`.
+Note that Sandbox does _not_ have a country prefix:
 
 ```bash
-bundle exec cap <country_name>:<enviroment> deploy
-# eg: bundle exec cap india:staging deploy
-# or, bundle exec cap bangladesh:production deploy
+# Sandbox (deploys master)
+bundle exec cap sandbox deploy
+# Sandbox from a specific branch
+BRANCH=my-branch-name bundle exec cap sandbox deploy
+# Bangladesh demo
+bundle exec cap bangladesh:demo deploy
 ```
 
 Rake tasks can be run on the deployed server using Capistrano as well. For example,
