@@ -27,8 +27,7 @@ RSpec.describe MedicationDispensationService, type: :model do
     RefreshReportingViews.new.refresh_v2
 
     medications_dispensation_service = MedicationDispensationService.new(region: region, period: period)
-    # TODO find out how to find the last 3 month string
-    last_3_months = ["Nov-2021", "Dec-2021", "Jan-2022"]
-    expected(medications_dispensation_service.months).to eq(last_3_months)
+    last_3_months = (Period.month(2.months.ago)..Period.current).map(&:to_s)
+    expect(medications_dispensation_service.months).to eq(last_3_months)
   end
 end
