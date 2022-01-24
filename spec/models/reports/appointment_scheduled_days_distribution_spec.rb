@@ -35,9 +35,10 @@ RSpec.describe Reports::AppointmentScheduledDaysDistribution, {type: :model, rep
   it "considers only the latest appointment of a patient in a month" do
     facility = create(:facility)
     patient = create(:patient, assigned_facility: facility)
-    _appointment_created_today = create(:appointment, facility: facility, patient: patient, scheduled_date: 11.days.from_now, device_created_at: Date.today)
-    _appointment_created_tomorrow = create(:appointment, facility: facility, patient: patient, scheduled_date: 10.days.from_now, device_created_at: Date.today.next_day)
-    _appointment_created_day_after_tomorrow = create(:appointment, facility: facility, patient: patient, scheduled_date: 20.days.from_now, device_created_at: Date.today.next_day.next_day)
+    today = Time.current.beginning_of_month.to_date
+    _appointment_created_today = create(:appointment, facility: facility, patient: patient, scheduled_date: today + 10.days, device_created_at: today)
+    _appointment_created_tomorrow = create(:appointment, facility: facility, patient: patient, scheduled_date: today + 20.days, device_created_at: today.next_day)
+    _appointment_created_day_after_tomorrow = create(:appointment, facility: facility, patient: patient, scheduled_date: today + 30.days, device_created_at: today.next_day.next_day)
     _appointment_created_1_month_ago = create(:appointment, facility: facility, patient: patient, scheduled_date: Date.today, device_created_at: 1.month.ago)
     _appointment_created_2_month_ago = create(:appointment, facility: facility, patient: patient, scheduled_date: Date.today, device_created_at: 2.month.ago)
 

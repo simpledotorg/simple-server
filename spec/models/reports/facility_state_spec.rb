@@ -228,8 +228,38 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
   end
 
   context "medication dispensed in last 3 months" do
-    it "totals the latest appointment scheduled in a month"
+    it "totals the latest appointment scheduled in a month" do
+      Timecop.return do
+        facility = create(:facility)
+        patient = create(:patient, assigned_facility: facility)
+        today = Time.current.beginning_of_month.to_date
+        _appointment_created_today = create(:appointment, facility: facility, patient: patient, scheduled_date: today + 10.days, device_created_at: today)
+        _appointment_created_tomorrow = create(:appointment, facility: facility, patient: patient, scheduled_date: today + 20.days, device_created_at: today.next_day)
+        _appointment_created_day_after_tomorrow = create(:appointment, facility: facility, patient: patient, scheduled_date: today + 30.days, device_created_at: today.next_day.next_day)
 
-    it "counts the latest appointment scheduled in a bucket(range of days)"
+        RefreshReportingViews.new.refresh_v2
+
+        expect(described_class.find_by(month_date: Period.current, facility: facility).total_appts_scheduled).to eq 1
+      end
+    end
+
+    it "counts the latest appointment scheduled in a bucket(range of days)" do
+      Timecop.return do
+        facility = create(:facility)
+        patient_1 = create(:patient, assigned_facility: facility)
+        patient_2 = create(:patient, assigned_facility: facility)
+        _appointment_schdeuled_after_10_days = create(:appointment, facility: facility, patient: patient_1, scheduled_date: 10.days.from_now, device_created_at: Date.today)
+        _appointment_schdeuled_after_20_days = create(:appointment, facility: facility, patient: patient_2, scheduled_date: 20.days.from_now, device_created_at: Date.today)
+        _appointment_schdeuled_after_31_days = create(:appointment, facility: facility, patient: patient_1, scheduled_date: Date.today, device_created_at: 1.month.ago)
+        _appointment_schdeuled_after_61_days = create(:appointment, facility: facility, patient: patient_1, scheduled_date: Date.today, device_created_at: 2.month.ago)
+
+        RefreshReportingViews.new.refresh_v2
+
+        expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_0_to_14_days).to eq 1
+        expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_15_to_30_days).to eq 1
+        expect(described_class.find_by(month_date: Period.month(1.month.ago), facility: facility).appts_scheduled_31_to_60_days).to eq 1
+        expect(described_class.find_by(month_date: Period.month(2.month.ago), facility: facility).appts_scheduled_more_than_60_days).to eq 1
+      end
+    end
   end
 end
