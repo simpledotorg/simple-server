@@ -26,14 +26,14 @@
       <% end %>
     <% end %>
 
-    <% if @region.district_region? && CountryConfig.current_country?("India") %>
+    <% if @region.district_region? && current_admin.feature_enabled?(:monthly_district_data_download) %>
       <%= link_to(reports_region_monthly_district_data_path(@region, report_scope: params[:report_scope], period: params.dig(:period, :value), format: :csv), class: "dropdown-item") do %>
         <i class="far fa-file w-16px ta-center mr-4px c-grey-medium"></i>
         Monthly <%= I18n.t("region_type.facility") %> data
       <% end %>
     <% end %>
 
-    <% if @region.state_region? && CountryConfig.current_country?("India") %>
+    <% if @region.state_region? && current_admin.feature_enabled?(:monthly_state_data_download) %>
       <%= link_to(reports_region_monthly_state_data_path(@region, report_scope: params[:report_scope], period: params.dig(:period, :value), format: :csv), class: "dropdown-item") do %>
         <i class="far fa-file w-16px ta-center mr-4px c-grey-medium"></i>
         Monthly <%= I18n.t("region_type.#{@region.child_region_type}") %> data
