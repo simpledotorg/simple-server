@@ -2,6 +2,7 @@ require "rails_helper"
 
 RSpec.describe Reports::FacilityStateGroup, {type: :model, reporting_spec: true} do
   let(:user) { create(:user) }
+  let(:user_2) { create(:user) }
   let(:facility) { create(:facility) }
 
   around do |example|
@@ -33,11 +34,12 @@ RSpec.describe Reports::FacilityStateGroup, {type: :model, reporting_spec: true}
     two_years_ago, six_months_ago = june_2021.values_at(:two_years_ago, :six_months_ago)
     patient_1 = create(:patient, :hypertension, recorded_at: two_years_ago, gender: "female", registration_user: user, registration_facility: facility)
     create(:blood_pressure, patient: patient_1, user: user, facility: facility, recorded_at: six_months_ago)
-    create(:blood_pressure, patient: patient_1, user: user, facility: facility, recorded_at: six_months_ago.advance(days: 3))
+    create(:blood_pressure, patient: patient_1, user: user_2, facility: facility, recorded_at: six_months_ago.advance(days: 3))
     create(:appointment, patient: patient_1, user: user, facility: facility, recorded_at: six_months_ago)
 
     patient_2 = create(:patient, :hypertension, recorded_at: two_years_ago, gender: "male", registration_user: user, registration_facility: facility)
     create(:blood_pressure, patient: patient_2, user: user, facility: facility, recorded_at: six_months_ago)
+    create(:blood_pressure, patient: patient_2, user: user_2, facility: facility, recorded_at: six_months_ago)
 
     RefreshReportingViews.call
 
