@@ -1,9 +1,10 @@
 class MedicationDispensationService
+  MONTHS = -2
+
   def initialize(region:, period:)
     @region = region
     @period = period
-    medications_dispensation_months = -2
-    @medications_dispensation_range = (@period.advance(months: medications_dispensation_months)..@period)
+    @medications_dispensation_range = (@period.advance(months: MONTHS)..@period)
   end
 
   def distribution
