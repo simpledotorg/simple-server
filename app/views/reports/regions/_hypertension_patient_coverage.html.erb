@@ -1,4 +1,4 @@
-<% if @region.estimated_population&.show_coverage %>
+<% if @region.estimated_population&.show_coverage && accessible_region?(@region, :manage) %>
   <div class="mb-8px d-lg-flex align-lg-center">
     <p class="mb-0px fs-32px fw-bold c-green-dark mr-lg-12px" id="<%= @region.estimated_population&.show_coverage %>">
       <%= number_to_percentage(@region.estimated_population.hypertension_patient_coverage_rate, precision: 0) %>
@@ -25,6 +25,18 @@
       style="width: <% if @region.estimated_population&.show_coverage %><%= number_to_percentage(@region.estimated_population.hypertension_patient_coverage_rate, precision: 0) %><% else %>5%<% end %>;"
     ></div>
     <div class="flex-1 br-tr-4px br-br-4px bg-grey-light"></div>
+  </div>
+<% elsif !(@region.estimated_population&.show_coverage) && !(accessible_region?(@region, :manage)) %>
+  <div class="mb-16px p-12px br-4px bg-yellow-light">
+    <% if @region.district_region? %>
+      <p class="m-0px fs-14px c-black">
+        Ask a Dashboard admin to add the est. hypertensive population for <%= @region.name %> to see the hypertension coverage rate.
+      </p>
+    <% elsif @region.state_region? %>
+      <p class="m-0px fs-14px c-black">
+        Ask a Dashboard admin to add the est. hypertensive population for all districts ine<%= @region.name %> to see the hypertension coverage rate.
+      </p>
+    <% end %>
   </div>
 <% else %>
   <div class="mb-16px p-12px br-4px bg-blue-light">
