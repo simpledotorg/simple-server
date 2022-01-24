@@ -107,10 +107,14 @@
                locals: { data_table_name: follow_ups_table_name,
                          is_diabetes_enabled: @user_analytics.diabetes_enabled? } %>
 
-    <%= render partial: 'api/v3/analytics/user_analytics/monthly_gender_table',
-               locals: { stat: :follow_ups,
-                         user_analytics: @user_analytics,
-                         data_table_name: follow_ups_table_name } %>
+    <% if current_user.feature_enabled?(:follow_ups_v2_progress_tab) %>
+      <%= render partial: 'api/v3/analytics/user_analytics/monthly_breakdown', locals: { metric: :follow_ups } %>
+    <% else %>
+      <%= render partial: 'api/v3/analytics/user_analytics/monthly_gender_table',
+                locals: { stat: :follow_ups,
+                          user_analytics: @user_analytics,
+                          data_table_name: follow_ups_table_name } %>
+      <% end %>
   </div>
 
   <!-- drug stock -->
