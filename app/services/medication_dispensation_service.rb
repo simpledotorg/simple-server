@@ -28,8 +28,4 @@ class MedicationDispensationService
                      percentages: medications_dispensation_repo.appts_scheduled_more_than_60_days_rates[@region.slug]}
     }
   end
-
-  def months
-    @medications_dispensation_range.map(&:to_s)
-  end
 end

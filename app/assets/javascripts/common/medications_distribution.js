@@ -10,10 +10,11 @@ MedicationsDispensationGraph = function () {
   }
 
   this.getMedicationsGraphPeriods = () => {
-    return JSON.parse(reports.getChartDataNode().textContent)["medications_dispensation_months"];
+    return Object.keys(this.getMedicationsGraphData()["0 - 14 days"]["counts"]);
   }
 
   this.initializeMedicationsGraph = () => {
+      console.log();
     const graphData = this.getMedicationsGraphData();
     const medicationsGraphConfig = reports.createBaseGraphConfig();
     let datasets = Object.keys(graphData).map(function(bucket, index){

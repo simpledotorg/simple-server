@@ -17,17 +17,4 @@ RSpec.describe MedicationDispensationService, type: :model do
       expect(bucket_data.keys).to match_array([:color, :counts, :totals, :percentages])
     }
   end
-
-  it "returns the range of months for which medication dispensation distribution is calculated" do
-    region = create(:facility)
-    period = Period.current
-    _patient = create(:patient, assigned_facility: region)
-    _appointment_created_today = create(:appointment, facility: region, scheduled_date: 10.days.from_now, device_created_at: Date.today)
-
-    RefreshReportingViews.new.refresh_v2
-
-    medications_dispensation_service = MedicationDispensationService.new(region: region, period: period)
-    last_3_months = (Period.month(2.months.ago)..Period.current).map(&:to_s)
-    expect(medications_dispensation_service.months).to eq(last_3_months)
-  end
 end
