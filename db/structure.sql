@@ -2688,6 +2688,7 @@ CREATE MATERIALIZED VIEW public.reporting_facility_state_groups AS
     registered_patients.monthly_registrations_dm_female,
     registered_patients.monthly_registrations_dm_transgender,
     follow_ups.monthly_follow_ups_all,
+    follow_ups.monthly_follow_ups_htn_all,
     follow_ups.monthly_follow_ups_htn_female,
     follow_ups.monthly_follow_ups_htn_male,
     follow_ups.monthly_follow_ups_htn_transgender,
@@ -4981,6 +4982,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211220230913'),
 ('20220106075216'),
 ('20220112142707'),
-('20220118190607');
+('20220118190607'),
+('20220124212048');
 
 
