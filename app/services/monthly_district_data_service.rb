@@ -10,7 +10,7 @@ class MonthlyDistrictDataService
 
   def report
     CSV.generate(headers: true) do |csv|
-      csv << ["Monthly facility data for #{region.name} #{period.to_date.strftime("%B %Y")}"]
+      csv << ["Monthly #{localized_facility} data for #{region.name} #{period.to_date.strftime("%B %Y")}"]
       csv << section_row
       csv << header_row
       csv << district_row
@@ -29,13 +29,25 @@ class MonthlyDistrictDataService
 
   private
 
+  def localized_district
+     I18n.t("region_type.district")
+  end
+
+  def localized_block
+     I18n.t("region_type.block")
+  end
+
+  def localized_facility
+     I18n.t("region_type.facility")
+  end
+
   def region_headers
     [
       "#",
-      "Block",
-      "Facility",
-      "Facility type",
-      "Facility size"
+      localized_block.capitalize,
+      localized_facility.capitalize,
+      "#{localized_facility.capitalize} type",
+      "#{localized_facility.capitalize} size"
     ]
   end
 
@@ -100,7 +112,7 @@ class MonthlyDistrictDataService
 
   def district_row
     row_data = {
-      index: "All facilities",
+      index: "All #{localized_facility.pluralize}",
       block: nil,
       facility: nil,
       facility_type: nil,
@@ -124,7 +136,7 @@ class MonthlyDistrictDataService
 
     size_data.sort.map do |size, summed_data|
       row_data = {
-        index: "#{size.capitalize} facilities",
+        index: "#{size.capitalize} #{localized_facility.pluralize}",
         block: nil,
         facility: nil,
         facility_type: nil,

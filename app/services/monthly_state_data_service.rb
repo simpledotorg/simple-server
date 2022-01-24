@@ -22,11 +22,19 @@ class MonthlyStateDataService
 
   private
 
+  def localized_state
+     I18n.t("region_type.state")
+  end
+
+  def localized_district
+     I18n.t("region_type.district")
+  end
+
   def region_headers
     [
       "#",
-      "State",
-      "District"
+      localized_state.capitalize,
+      localized_district.capitalize
     ]
   end
 
@@ -91,7 +99,7 @@ class MonthlyStateDataService
 
   def state_row
     row_data = {
-      index: "All",
+      index: "All #{localized_district.pluralize}",
       state: region.name,
       district: nil
     }.merge(region_data(region))
