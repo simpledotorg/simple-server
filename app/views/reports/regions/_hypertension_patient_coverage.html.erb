@@ -1,13 +1,9 @@
-<div class="mb-8px d-lg-flex align-lg-center">
-  <p class="mb-0px fs-32px fw-bold <% if @region.estimated_population&.show_coverage %>c-green-dark<% else %>c-black<% end %> mr-lg-12px" id="<%= @region.estimated_population&.show_coverage %>">
-    <% if @region.estimated_population&.show_coverage %>
+<% if @region.estimated_population&.show_coverage %>
+  <div class="mb-8px d-lg-flex align-lg-center">
+    <p class="mb-0px fs-32px fw-bold c-green-dark mr-lg-12px" id="<%= @region.estimated_population&.show_coverage %>">
       <%= number_to_percentage(@region.estimated_population.hypertension_patient_coverage_rate, precision: 0) %>
-    <% else %>
-      N/A
-    <% end %>
-  </p>
-  <div>
-    <% if @region.estimated_population&.show_coverage %>
+    </p>
+    <div>
       <p class="m-0px c-black">
         <span>
           <%= number_with_delimiter(@chart_data[:patient_breakdown][:total_patients]) %>
@@ -21,16 +17,30 @@
         </span>
         estimated hypertensive people in <%= @region.name %>
       </p>
+    </div>
+  </div>
+  <div class="d-flex h-24px mb-16px o-hidden <% if @region.estimated_population&.hypertension_patient_coverage_rate == 100.0 %>br-4px<% end %>">
+    <div
+      class="br-tl-4px br-bl-4px <% if @region.estimated_population&.show_coverage %>bg-green-dark<% else %>bg-grey-light<% end %>"
+      style="width: <% if @region.estimated_population&.show_coverage %><%= number_to_percentage(@region.estimated_population.hypertension_patient_coverage_rate, precision: 0) %><% else %>5%<% end %>;"
+    ></div>
+    <div class="flex-1 br-tr-4px br-br-4px bg-grey-light"></div>
+  </div>
+<% else %>
+  <div class="mb-16px p-12px br-4px bg-blue-light">
+    <% if @region.district_region? %>
+      <p class="m-0px fs-14px c-black">
+        Add the est. hypertensive population to see the coverage rate.
+      </p>
+      <%= link_to "+ Add population", edit_admin_facility_group_path(@region.source), :class => "fs-14px" %>
+    <% elsif @region.state_region? %>
+      <p class="m-0px fs-14px c-black">
+        Add the est. hypertensive population for all districts to see the coverage rate.
+      </p>
+      <%= link_to "+ Add district populations", "/admin/facilities", :class => "fs-14px" %>
     <% end %>
   </div>
-</div>
-<div class="d-flex h-24px mb-16px o-hidden <% if @region.estimated_population&.hypertension_patient_coverage_rate == 100.0 %>br-4px<% end %>">
-  <div
-    class="br-tl-4px br-bl-4px <% if @region.estimated_population&.show_coverage %>bg-green-dark<% else %>bg-grey-light<% end %>"
-    style="width: <% if @region.estimated_population&.show_coverage %><%= number_to_percentage(@region.estimated_population.hypertension_patient_coverage_rate, precision: 0) %><% else %>5%<% end %>;"
-  ></div>
-  <div class="flex-1 br-tr-4px br-br-4px bg-grey-light"></div>
-</div>
+<% end %>
 <div class="d-flex ai-center jc-between">
   <p class="mb-8px">
     Total registered patients
@@ -71,15 +81,9 @@
         <%= number_with_delimiter(@region.estimated_population&.population) %>
       </span>
     <% else %>
-      <% if @region.district_region? && accessible_region?(@region, :manage) %>
-        <%= link_to "+ Add population", edit_admin_facility_group_path(@region.source) %>
-      <% elsif @region.state_region? %>
-        <%= link_to "+ Add district populations", "/admin/facilities" %>
-      <% else %>
-        <span class="fw-bold">
-          N/A
-        </span>
-      <% end %>
+      <span class="fw-bold">
+        N/A
+      </span>
     <% end %>
   </p>
 </div>
