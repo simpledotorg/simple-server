@@ -53,6 +53,7 @@ RSpec.describe Reports::FacilityStateGroup, {type: :model, reporting_spec: true}
       monthly_registrations_dm_female: 0,
       monthly_registrations_dm_transgender: 0,
       monthly_follow_ups_all: nil,
+      monthly_follow_ups_htn_all: nil,
       monthly_follow_ups_htn_female: nil,
       monthly_follow_ups_htn_male: nil,
       monthly_follow_ups_htn_transgender: nil,
@@ -62,7 +63,8 @@ RSpec.describe Reports::FacilityStateGroup, {type: :model, reporting_spec: true}
       monthly_follow_ups_dm_transgender: nil
     }
     two_years_ago = described_class.find_by(facility: facility, month_date: two_years_ago.to_date)
-    expect(two_years_ago.attributes.symbolize_keys).to include(two_years_ago_expected)
+    region_keys = [:block_region_id, :district_region_id, :facility_id, :facility_region_id, :facility_region_slug, :state_region_id]
+    expect(two_years_ago.attributes.symbolize_keys.except(*region_keys)).to eq(two_years_ago_expected)
 
     six_months_ago_expected = {
       month_date: "Tue, 01 Dec 2020".to_date,
@@ -76,6 +78,7 @@ RSpec.describe Reports::FacilityStateGroup, {type: :model, reporting_spec: true}
       monthly_registrations_dm_female: nil,
       monthly_registrations_dm_transgender: nil,
       monthly_follow_ups_all: 2,
+      monthly_follow_ups_htn_all: 2,
       monthly_follow_ups_htn_female: 1,
       monthly_follow_ups_htn_male: 1,
       monthly_follow_ups_htn_transgender: 0,
@@ -86,6 +89,6 @@ RSpec.describe Reports::FacilityStateGroup, {type: :model, reporting_spec: true}
     }
 
     six_months_ago = described_class.find_by(facility: facility, month_date: six_months_ago.to_date)
-    expect(six_months_ago.attributes.symbolize_keys).to include(six_months_ago_expected)
+    expect(six_months_ago.attributes.symbolize_keys.except(*region_keys)).to eq(six_months_ago_expected)
   end
 end
