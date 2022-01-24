@@ -23,11 +23,11 @@ class MonthlyStateDataService
   private
 
   def localized_state
-     I18n.t("region_type.state")
+    I18n.t("region_type.state")
   end
 
   def localized_district
-     I18n.t("region_type.district")
+    I18n.t("region_type.district")
   end
 
   def region_headers
