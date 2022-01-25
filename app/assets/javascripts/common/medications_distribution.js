@@ -14,7 +14,6 @@ MedicationsDispensationGraph = function () {
   }
 
   this.initializeMedicationsGraph = () => {
-      console.log();
     const graphData = this.getMedicationsGraphData();
     const medicationsGraphConfig = reports.createBaseGraphConfig();
     let datasets = Object.keys(graphData).map(function(bucket, index){
