@@ -2,8 +2,14 @@ require "rails_helper"
 
 RSpec.describe Reports::Percentage, type: :helper do
   describe "#percentage" do
-    context "when with_rounding is true (default option)" do
+    context "when with_rounding is true" do
       it "returns percentage after rounding to zero precision" do
+        expect(percentage(1, 3, with_rounding: true)).to eq(33)
+      end
+    end
+
+    context "when with_rounding is not provided" do
+      it "defaults to true" do
         expect(percentage(1, 3)).to eq(33)
       end
     end
