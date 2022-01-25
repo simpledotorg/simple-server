@@ -196,6 +196,11 @@ class Region < ApplicationRecord
     I18n.t("region_type.#{region_type}")
   end
 
+  def localized_child_region_type
+    return nil if child_region_type.nil?
+    I18n.t("region_type.#{child_region_type}")
+  end
+
   def log_payload
     attrs = attributes.slice("name", "slug", "path")
     attrs["id"] = id.presence
