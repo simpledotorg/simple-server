@@ -13,23 +13,26 @@ RSpec.describe MedicationDispensationService, type: :model do
 
     medications_dispensation_service = MedicationDispensationService.new(region: facility, period: period)
     last_3_months = (Period.month(2.months.ago)..Period.current).to_a
+    current_month = last_3_months.last
+    one_month_ago = last_3_months.second
+    two_months_ago = last_3_months.first
     expected_data_structure = {
       "0 - 14 days" => {color: "#BD3838",
-                        counts: {last_3_months[0] => 0, last_3_months[1] => 0, last_3_months[2] => 1},
-                        totals: {last_3_months[0] => 1, last_3_months[1] => 1, last_3_months[2] => 1},
-                        percentages: {last_3_months[0] => 0, last_3_months[1] => 0, last_3_months[2] => 100}},
+                        counts: {two_months_ago => 0, one_month_ago => 0, current_month => 1},
+                        totals: {two_months_ago => 1, one_month_ago => 1, current_month => 1},
+                        percentages: {two_months_ago => 0, one_month_ago => 0, current_month => 100}},
       "15 - 30 days" => {color: "#E77D27",
-                         counts: {last_3_months[0] => 0, last_3_months[1] => 0, last_3_months[2] => 0},
-                         totals: {last_3_months[0] => 1, last_3_months[1] => 1, last_3_months[2] => 1},
-                         percentages: {last_3_months[0] => 0, last_3_months[1] => 0, last_3_months[2] => 0}},
+                         counts: {two_months_ago => 0, one_month_ago => 0, current_month => 0},
+                         totals: {two_months_ago => 1, one_month_ago => 1, current_month => 1},
+                         percentages: {two_months_ago => 0, one_month_ago => 0, current_month => 0}},
       "31 - 60 days" => {color: "#729C26",
-                         counts: {last_3_months[0] => 0, last_3_months[1] => 1, last_3_months[2] => 0},
-                         totals: {last_3_months[0] => 1, last_3_months[1] => 1, last_3_months[2] => 1},
-                         percentages: {last_3_months[0] => 0, last_3_months[1] => 100, last_3_months[2] => 0}},
+                         counts: {two_months_ago => 0, one_month_ago => 1, current_month => 0},
+                         totals: {two_months_ago => 1, one_month_ago => 1, current_month => 1},
+                         percentages: {two_months_ago => 0, one_month_ago => 100, current_month => 0}},
       "60+ days" => {color: "#007AA6",
-                     counts: {last_3_months[0] => 1, last_3_months[1] => 0, last_3_months[2] => 0},
-                     totals: {last_3_months[0] => 1, last_3_months[1] => 1, last_3_months[2] => 1},
-                     percentages: {last_3_months[0] => 100, last_3_months[1] => 0, last_3_months[2] => 0}}
+                     counts: {two_months_ago => 1, one_month_ago => 0, current_month => 0},
+                     totals: {two_months_ago => 1, one_month_ago => 1, current_month => 1},
+                     percentages: {two_months_ago => 100, one_month_ago => 0, current_month => 0}}
     }
     expect(medications_dispensation_service.distribution).to eq(expected_data_structure)
   end
