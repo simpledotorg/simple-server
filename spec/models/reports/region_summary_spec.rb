@@ -257,13 +257,14 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
 
   describe "#for_regions" do
     it "excludes facilities where registrations, assigned patients and follow ups are all zero" do
-      facility = create(:facility)
-      range = Period.month(2.month.ago)..Period.current
-      _appointment_without_any_patient = create(:appointment, facility: facility, scheduled_date: 10.days.from_now, device_created_at: Date.today)
+      facility = create(:facility, created_at: 1.year.ago)
+      range = Period.month(2.years.ago)..Period.current
+      create(:patient, assigned_facility: facility, recorded_at: Date.today)
 
       RefreshReportingViews.new.refresh_v2
 
-      expect(described_class.new(facility, range: range).for_regions).to be_empty
+      expect(described_class.new(facility, range: range).for_regions.where("month_date < ?", Period.current.to_date)).to be_empty
+      expect(described_class.new(facility, range: range).for_regions.where("month_date = ?", Period.current.to_date)).not_to be_empty
     end
   end
 end
