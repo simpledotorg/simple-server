@@ -101,7 +101,6 @@ class Reports::RegionsController < AdminController
 
     @repository = Reports::Repository.new(regions, periods: @period_range, follow_ups_v2: current_admin.feature_enabled?(:follow_ups_v2))
     chart_repo = Reports::Repository.new(@region, periods: chart_range, follow_ups_v2: current_admin.feature_enabled?(:follow_ups_v2))
-    medications_dispensation_service = MedicationDispensationService.new(region: @region, period: @period)
 
     district_regions = if @region.state_region?
       [@region, @region.district_regions].flatten
@@ -114,7 +113,7 @@ class Reports::RegionsController < AdminController
     @chart_data = {
       patient_breakdown: PatientBreakdownService.call(region: @region, period: @period),
       ltfu_trend: ltfu_chart_data(chart_repo, chart_range),
-      medications_dispensation: medications_dispensation_service.distribution
+      medications_dispensation: MedicationDispensationService.new(region: @region, period: @period).distribution
     }
 
     if @region.facility_region?
