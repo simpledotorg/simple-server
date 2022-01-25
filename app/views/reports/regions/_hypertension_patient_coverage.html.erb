@@ -28,7 +28,7 @@
   </div>
 <% elsif !(@region.estimated_population&.show_coverage) %>
     <% if @region.district_region? %>
-      <% if (accessible_region?(@region, :manage)) %>
+      <% if accessible_region?(@region, :manage) %>
         <div class="mb-16px p-12px br-4px bg-blue-light">
           <p class="m-0px fs-14px c-black">
             Add the est. hypertensive population to see the coverage rate.
@@ -43,7 +43,7 @@
         </div>
       <% end %>
     <% elsif @region.state_region? %>
-      <% if @region.district_regions.all? { |district_region| accessible_region?(district_region, :manage) } %>
+      <% if current_admin.accessible_district_regions(:manage).to_set.superset?(@region.district_regions.to_set) %>
         <div class="mb-16px p-12px br-4px bg-blue-light">
           <p class="m-0px fs-14px c-black">
             Add the est. hypertensive population for all districts to see the coverage rate.
