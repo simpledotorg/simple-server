@@ -2,6 +2,27 @@ require "rails_helper"
 
 RSpec.describe Reports::Percentage, type: :helper do
   describe "#percentage" do
+    context "when with_rounding is true (default option)" do
+      it "returns percentage after rounding to zero precision" do
+        expect(percentage(1, 3)).to eq(33)
+      end
+    end
+
+    context "when with_rounding is false" do
+      it "returns percentage without rounding" do
+        expect(percentage(1, 3, with_rounding: false)).to eq(33.33333333333333)
+      end
+    end
+
+    it "returns zero when numerator or denominator is nil" do
+      expect(percentage(nil, 3, with_rounding: false)).to eq(0)
+      expect(percentage(1, nil, with_rounding: false)).to eq(0)
+    end
+
+    it "returns zero when numerator or denominator is zero" do
+      expect(percentage(0, 3, with_rounding: false)).to eq(0)
+      expect(percentage(1, 0, with_rounding: false)).to eq(0)
+    end
   end
 
   describe "#rounded_percentages" do
