@@ -102,14 +102,6 @@ class Reports::RegionsController < AdminController
     @repository = Reports::Repository.new(regions, periods: @period_range, follow_ups_v2: current_admin.feature_enabled?(:follow_ups_v2))
     chart_repo = Reports::Repository.new(@region, periods: chart_range, follow_ups_v2: current_admin.feature_enabled?(:follow_ups_v2))
 
-    district_regions = if @region.state_region?
-      [@region, @region.district_regions].flatten
-    end
-
-    if @region.state_region?
-      @district_repository = Reports::Repository.new(district_regions, periods: @period_range, follow_ups_v2: current_admin.feature_enabled?(:follow_ups_v2))
-    end
-
     @chart_data = {
       patient_breakdown: PatientBreakdownService.call(region: @region, period: @period),
       ltfu_trend: ltfu_chart_data(chart_repo, chart_range),
