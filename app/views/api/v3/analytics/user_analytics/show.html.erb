@@ -124,6 +124,7 @@
                               user_analytics: @user_analytics,
                               data_table_name: follow_ups_table_name } %>
         </div>
+        <% if current_facility_group.region.feature_enabled?(:drug_stocks) && controller_name == "user_analytics" %>
           <div class="mb-16px p-16px bgc-white br-4px bs-card">
             <div class="d-flex ai-flex-start jc-space-between mb-16px">
               <div class="f-1">
@@ -145,6 +146,7 @@
               class: "d-block p-16px ta-center fs-16px tt-uppercase ls-1_25px c-blue b-none bb-blue-mid br-2px bgc-blue-light bs-secondary-button"
             %>
           </div>
+        <% end %>
         <div class="card">
           <a
             href="#"
