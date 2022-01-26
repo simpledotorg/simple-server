@@ -3553,6 +3553,13 @@ CREATE UNIQUE INDEX clean_medicine_to_dosages__unique_name_and_dosage ON public.
 
 
 --
+-- Name: facility_state_groups_month_date_region_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX facility_state_groups_month_date_region_id ON public.reporting_facility_state_groups USING btree (month_date, facility_region_id);
+
+
+--
 -- Name: facility_states_month_date_region_id; Type: INDEX; Schema: public; Owner: -
 --
 
