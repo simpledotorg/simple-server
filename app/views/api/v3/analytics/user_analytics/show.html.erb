@@ -124,7 +124,6 @@
                               user_analytics: @user_analytics,
                               data_table_name: follow_ups_table_name } %>
         </div>
-        <% if current_facility_group.region.feature_enabled?(:drug_stocks) && controller_name == "user_analytics" %>
           <div class="mb-16px p-16px bgc-white br-4px bs-card">
             <div class="d-flex ai-flex-start jc-space-between mb-16px">
               <div class="f-1">
@@ -132,7 +131,7 @@
                   Drug stock report
                 </h3>
                 <p class="m-0px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-                  Submit <%= current_facility.name %> drug stock report for end of <%= @for_end_of_month.to_s(:mon_year) %>
+                  Submit <%= current_facility.name %>'s drug stock report for end of <%= @period.to_s(:mon_year) %>
                 </p>
               </div>
               <div>
@@ -142,11 +141,10 @@
             <%= link_to "Enter drug stock", new_webview_drug_stock_url(user_id: current_user.id,
               access_token: current_user.access_token,
               facility_id: current_facility.id),
-              style: "font-weight: 700; border-bottom: 2px solid #9DCBF9;",
+              style: "font-weight: 700;",
               class: "d-block p-16px ta-center fs-16px tt-uppercase ls-1_25px c-blue b-none bb-blue-mid br-2px bgc-blue-light bs-secondary-button"
             %>
           </div>
-        <% end %>
         <div class="card">
           <a
             href="#"
