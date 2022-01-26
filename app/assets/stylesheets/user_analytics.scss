@@ -1,5 +1,6 @@
 @import "partials/variables";
 @import "partials/webview";
+@import "partials/spacing";
 
 body#progress {
     font-size: 18px;
@@ -805,3 +806,34 @@ select.form-control, input.form-control {
   width: 100px;
   margin-bottom: 20px;
 }
+
+/* FLEX */
+.d-flex { display: flex; }
+.ai-flex-start { align-items: flex-start; }
+.jc-space-between { justify-content: space-between; }
+.f-1 { flex: 1; }
+/* LAYOUT */
+.d-block { display: block; }
+/* TYPOGRAPHY */
+.ta-center { text-align: center; }
+.ta-left { text-align: left; }
+.fw-bold { font-weight: 700; } 
+.fs-16px { font-size: 16px; }
+.fs-24px { font-size: 24px; }
+.tt-uppercase { text-transform: uppercase; }
+.lh-150 { line-height: 150%; }
+.ls-1_25px { letter-spacing: 1.25px; }
+.c-blue { color: $blue; }
+.c-grey-dark { color: $grey-dark; }
+.c-black { color: $black; }
+/* BACKGROUND */
+.b-none { border: none; }
+.bgc-white { background-color: $white; }
+.bgc-blue-light { background-color: $blue-light; }
+.bs-card { box-shadow: 0px 2px 4px $transparent-black-10; }
+.bs-secondary-button {
+  box-shadow: 0px 4px 4px $transparent-black-5, 0px 4px 2px $transparent-black-16;
+}
+.bb-blue-mid { border-bottom: 2px solid $blue-mid; }
+.br-2px { border-radius: 2px; }
+.br-4px { border-radius: 4px; }
