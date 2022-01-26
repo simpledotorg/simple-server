@@ -8,6 +8,24 @@ module Reports
       true
     end
 
+    # Returns the total counts for a facility of either registrations or follow ups
+    # 
+    # monthly_registrations_all
+    # monthly_registrations_dm_all
+    # monthly_registrations_htn_all
+    # monthly_follow_ups_all
+    # monthly_follow_ups_dm_all
+    # monthly_follow_ups_htn_all
+    def self.total(facility, metric, diagnosis)
+      diagnosis_code = if diagnosis == :all
+        nil
+      else
+        diagnosis
+      end
+      field = ["monthly", metric, diagnosis_code, "all"].compact.join("_")
+      where(facility: facility).sum(field).to_i
+    end
+
     def self.total_registrations(facility, diagnosis, gender)
       field = "monthly_registrations_#{diagnosis}_#{gender}"
       where(facility: facility).sum(field).to_i
@@ -16,6 +34,10 @@ module Reports
     def self.total_follow_ups(facility, diagnosis, gender)
       field = "monthly_follow_ups_#{diagnosis}_#{gender}"
       where(facility: facility).sum(field).to_i
+    end
+
+    def period
+      Period.month(month_date)
     end
   end
 end

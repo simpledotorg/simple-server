@@ -7,13 +7,14 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
   attr_reader :gender_groups
   attr_reader :metric
   attr_reader :range
+  attr_reader :results
 
-  def initialize(facility:, diagnosis:, metric:, query:, range:, gender_groups: true)
+  def initialize(facility:, diagnosis:, metric:, results:, range:, gender_groups: true)
     @facility = facility
     @diagnosis = diagnosis
     @diagnosis_code = @diagnosis == :hypertension ? "htn" : "dm"
     @metric = metric
-    @query = query
+    @results = results
     @range = range
     @total_field = ["monthly", metric, diagnosis_code, "all"].compact.join("_")
     @gender_groups = gender_groups
@@ -53,28 +54,32 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
   end
 
   def total_count
-    @query.sum(@total_field).truncate
+    Reports::FacilityStateGroup.total(facility, metric, diagnosis_code)
+  end
+
+  def results_by_period
+    @results_by_period ||= results.each_with_object({}) do |result, hsh| 
+      hsh[result.period] = result
+    end
   end
 
   def monthly_count(period)
-    if (facility_state_group = @query.find_by(month_date: period))
-      facility_state_group.attributes[@total_field]
-    else
-      0
-    end
+    # d results_by_period
+    field = "monthly_#{metric}_#{diagnosis_code}_all"
+    results_by_period[period].send(@total_field)
   end
 
   def monthly_count_by_gender(period, gender)
-    field = "monthly_#{metric}_#{@diagnosis_code}_#{gender}"
-    if (facility_state_group = @query.find_by(month_date: period))
-      facility_state_group.attributes[field]
-    else
-      0
-    end
+    field = "monthly_#{metric}_#{diagnosis_code}_#{gender}"
+    result = results_by_period[period].attributes[field]
+    d field
+    d result
+    result
   end
 
   def total_count_by_gender(gender)
+    return 22
     field = "monthly_#{metric}_#{@diagnosis_code}_#{gender}"
-    @query.sum(field).truncate
+    results.sum(field).truncate
   end
 end

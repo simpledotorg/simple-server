@@ -2,14 +2,14 @@
   <%= render(Reports::MonthlyProgressComponent.new(facility: current_facility, 
     diagnosis: :all, 
     metric: metric,
-    query: @query,
     range: @range,
+    results: @results,
     gender_groups: false)) %>
 
   <%= render(Reports::MonthlyProgressComponent.new(facility: current_facility, 
     diagnosis: :diabetes, 
     metric: metric,
-    query: @query,
+    results: @results,
     range: @range)) %>
 
 <% end %>
@@ -17,5 +17,5 @@
 <%= render(Reports::MonthlyProgressComponent.new(facility: current_facility, 
   diagnosis: :hypertension, 
   metric: metric,
-  query: @query,
+  results: @results,
   range: @range)) %>
