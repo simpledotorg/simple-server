@@ -16,23 +16,13 @@ module Reports
     # monthly_follow_ups_all
     # monthly_follow_ups_dm_all
     # monthly_follow_ups_htn_all
-    def self.total(facility, metric, diagnosis)
+    def self.total(facility, metric, diagnosis, gender: "all")
       diagnosis_code = if diagnosis == :all
         nil
       else
         diagnosis
       end
-      field = ["monthly", metric, diagnosis_code, "all"].compact.join("_")
-      where(facility: facility).sum(field).to_i
-    end
-
-    def self.total_registrations(facility, diagnosis, gender)
-      field = "monthly_registrations_#{diagnosis}_#{gender}"
-      where(facility: facility).sum(field).to_i
-    end
-
-    def self.total_follow_ups(facility, diagnosis, gender)
-      field = "monthly_follow_ups_#{diagnosis}_#{gender}"
+      field = ["monthly", metric, diagnosis_code, gender].compact.join("_")
       where(facility: facility).sum(field).to_i
     end
 

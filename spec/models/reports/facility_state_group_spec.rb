@@ -35,10 +35,10 @@ RSpec.describe Reports::FacilityStateGroup, {type: :model, reporting_spec: true}
     create_list(:patient, 2, :hypertension, recorded_at: two_years_ago, gender: "female", registration_user: user, registration_facility: facility)
     create_list(:patient, 2, :hypertension, recorded_at: six_months_ago, gender: "female", registration_user: user, registration_facility: facility)
     create_list(:patient, 3, :hypertension, recorded_at: two_years_ago, gender: "male", registration_user: user, registration_facility: facility)
-    RefreshReportingViews.call
-    expect(described_class.total_registrations(facility, :htn, :male)).to eq(3)
-    expect(described_class.total_registrations(facility, :htn, :female)).to eq(4)
-    expect(described_class.total_registrations(facility, :htn, :all)).to eq(7)
+    refresh_views
+    expect(described_class.total(facility, :registrations, :htn, gender: :male)).to eq(3)
+    expect(described_class.total(facility, :registrations, :htn, gender: :female)).to eq(4)
+    expect(described_class.total(facility, :registrations, :htn, gender: :all)).to eq(7)
   end
 
   it "can sum follow_ups by gender" do
@@ -51,30 +51,10 @@ RSpec.describe Reports::FacilityStateGroup, {type: :model, reporting_spec: true}
     create(:blood_pressure, patient: patient_2, user: user, facility: facility, recorded_at: six_months_ago)
     create(:blood_pressure, patient: patient_2, user: user_2, facility: facility, recorded_at: six_months_ago.advance(days: 3))
     create(:blood_pressure, patient: patient_3, user: user_2, facility: facility, recorded_at: six_months_ago.advance(days: 3))
-    RefreshReportingViews.call
-    expect(described_class.total_follow_ups(facility, :htn, :all)).to eq(3)
-    expect(described_class.total_follow_ups(facility, :htn, :female)).to eq(2)
-    expect(described_class.total_follow_ups(facility, :htn, :male)).to eq(1)
-  end
-
-  it "can return totals" do
-    two_years_ago, six_months_ago = june_2021.values_at(:two_years_ago, :six_months_ago)
-    patient_1 = create(:patient, :hypertension, recorded_at: two_years_ago, gender: :female, registration_user: user, registration_facility: facility)
-    patient_2 = create(:patient, :hypertension, recorded_at: two_years_ago, gender: :female, registration_user: user, registration_facility: facility)
-    patient_3 = create(:patient, :hypertension, recorded_at: two_years_ago, gender: :male, registration_user: user, registration_facility: facility)
-    patient_4 = create(:patient, :diabetes, recorded_at: two_years_ago, gender: :male, registration_user: user, registration_facility: facility)
-
-    create(:appointment, patient: patient_1, user: user, facility: facility, recorded_at: six_months_ago)
-    create(:blood_pressure, patient: patient_2, user: user, facility: facility, recorded_at: six_months_ago)
-    create(:blood_pressure, patient: patient_2, user: user_2, facility: facility, recorded_at: six_months_ago.advance(days: 3))
-    create(:blood_pressure, patient: patient_3, user: user_2, facility: facility, recorded_at: six_months_ago.advance(days: 3))
-    create(:prescription_drug, patient: patient_4, user: user_2, facility: facility, recorded_at: six_months_ago.advance(days: 3))
     refresh_views
-    expect(described_class.total(facility, :follow_ups, :htn)).to eq(3)
-    expect(described_class.total(facility, :follow_ups, :dm)).to eq(1)
-    expect(described_class.total(facility, :registrations, :all)).to eq(4)
-    expect(described_class.total(facility, :registrations, :htn)).to eq(3)
-    expect(described_class.total(facility, :registrations, :dm)).to eq(1)
+    expect(described_class.total(facility, :follow_ups, :htn, gender: :all)).to eq(3)
+    expect(described_class.total(facility, :follow_ups, :htn, gender: :female)).to eq(2)
+    expect(described_class.total(facility, :follow_ups, :htn, gender: :male)).to eq(1)
   end
 
   it "returns registrations and follow up counts filtered by diagnosis" do
