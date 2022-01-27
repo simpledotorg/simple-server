@@ -105,7 +105,7 @@ class Reports::RegionsController < AdminController
     @chart_data = {
       patient_breakdown: PatientBreakdownService.call(region: @region, period: @period),
       ltfu_trend: ltfu_chart_data(chart_repo, chart_range),
-      medications_dispensation: MedicationDispensationService.new(region: @region, period: @period).distribution
+      medications_dispensation: MedicationDispensationService.call(region: @region, period: @period)
     }
 
     if @region.facility_region?

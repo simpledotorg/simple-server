@@ -1,13 +1,17 @@
 class MedicationDispensationService
   MONTHS = -2
 
+  def self.call(*args)
+    new(*args).call
+  end
+
   def initialize(region:, period:)
     @region = region
     @period = period
     @medications_dispensation_range = (@period.advance(months: MONTHS)..@period)
   end
 
-  def distribution
+  def call
     medications_dispensation_repo = Reports::Repository.new(@region, periods: @medications_dispensation_range)
     {
       "0 - 14 days" => {color: "#BD3838",
