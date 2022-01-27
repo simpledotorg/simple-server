@@ -51,7 +51,7 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
       it "renders drug stock form if feature flag is enabled" do
         Flipper.enable(:drug_stocks, request_facility.facility_group.region)
         get :show, format: :html
-        expect(response.body).to include("Submit Drug Stock")
+        expect(response.body).to include("Enter drug stock")
       end
 
       it "renders successfully for follow_ups_v2 with no data" do
