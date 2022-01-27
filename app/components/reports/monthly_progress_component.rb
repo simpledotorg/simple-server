@@ -78,7 +78,7 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
   end
 
   def total_count_by_gender(gender)
-    return 22
+    return "TODO"
     field = "monthly_#{metric}_#{@diagnosis_code}_#{gender}"
     results.sum(field).truncate
   end
