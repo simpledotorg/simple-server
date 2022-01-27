@@ -109,11 +109,11 @@ monthly_overdue_calls.call_results AS monthly_overdue_calls,
 monthly_follow_ups.follow_ups AS monthly_follow_ups,
 
 -- appointment scheduled days distribution
-reporting_appointment_scheduled_days_distributions.total_appts_scheduled AS total_appts_scheduled,
-reporting_appointment_scheduled_days_distributions.appts_scheduled_0_to_14_days AS appts_scheduled_0_to_14_days,
-reporting_appointment_scheduled_days_distributions.appts_scheduled_15_to_30_days AS appts_scheduled_15_to_30_days,
-reporting_appointment_scheduled_days_distributions.appts_scheduled_31_to_60_days AS appts_scheduled_31_to_60_days,
-reporting_appointment_scheduled_days_distributions.appts_scheduled_more_than_60_days AS appts_scheduled_more_than_60_days
+reporting_facility_appointment_scheduled_days.total_appts_scheduled AS total_appts_scheduled,
+reporting_facility_appointment_scheduled_days.appts_scheduled_0_to_14_days AS appts_scheduled_0_to_14_days,
+reporting_facility_appointment_scheduled_days.appts_scheduled_15_to_30_days AS appts_scheduled_15_to_30_days,
+reporting_facility_appointment_scheduled_days.appts_scheduled_31_to_60_days AS appts_scheduled_31_to_60_days,
+reporting_facility_appointment_scheduled_days.appts_scheduled_more_than_60_days AS appts_scheduled_more_than_60_days
 
 FROM reporting_facilities rf
 INNER JOIN reporting_months cal
@@ -137,6 +137,6 @@ LEFT OUTER JOIN monthly_overdue_calls
 LEFT OUTER JOIN monthly_follow_ups
     ON monthly_follow_ups.month_date = cal.month_date
     AND monthly_follow_ups.facility_id = rf.facility_id
-LEFT OUTER JOIN reporting_appointment_scheduled_days_distributions
-    ON reporting_appointment_scheduled_days_distributions.month_date = cal.month_date
-    AND reporting_appointment_scheduled_days_distributions.facility_id = rf.facility_id
+LEFT OUTER JOIN reporting_facility_appointment_scheduled_days
+    ON reporting_facility_appointment_scheduled_days.month_date = cal.month_date
+    AND reporting_facility_appointment_scheduled_days.facility_id = rf.facility_id

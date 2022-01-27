@@ -1416,10 +1416,10 @@ CREATE TABLE public.reminder_templates (
 
 
 --
--- Name: reporting_appointment_scheduled_days_distributions; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+-- Name: reporting_facility_appointment_scheduled_days; Type: MATERIALIZED VIEW; Schema: public; Owner: -
 --
 
-CREATE MATERIALIZED VIEW public.reporting_appointment_scheduled_days_distributions AS
+CREATE MATERIALIZED VIEW public.reporting_facility_appointment_scheduled_days AS
  WITH latest_appointments_per_patient_per_month AS (
          SELECT DISTINCT ON (appointments.patient_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, appointments.device_created_at)), 'YYYY-MM-01'::text))::date) appointments.id,
             appointments.patient_id,
@@ -2897,11 +2897,11 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
     monthly_cohort_outcomes.patients AS monthly_cohort_patients,
     monthly_overdue_calls.call_results AS monthly_overdue_calls,
     monthly_follow_ups.follow_ups AS monthly_follow_ups,
-    reporting_appointment_scheduled_days_distributions.total_appts_scheduled,
-    reporting_appointment_scheduled_days_distributions.appts_scheduled_0_to_14_days,
-    reporting_appointment_scheduled_days_distributions.appts_scheduled_15_to_30_days,
-    reporting_appointment_scheduled_days_distributions.appts_scheduled_31_to_60_days,
-    reporting_appointment_scheduled_days_distributions.appts_scheduled_more_than_60_days
+    reporting_facility_appointment_scheduled_days.total_appts_scheduled,
+    reporting_facility_appointment_scheduled_days.appts_scheduled_0_to_14_days,
+    reporting_facility_appointment_scheduled_days.appts_scheduled_15_to_30_days,
+    reporting_facility_appointment_scheduled_days.appts_scheduled_31_to_60_days,
+    reporting_facility_appointment_scheduled_days.appts_scheduled_more_than_60_days
    FROM ((((((((public.reporting_facilities rf
      JOIN public.reporting_months cal ON (true))
      LEFT JOIN registered_patients ON (((registered_patients.month_date = cal.month_date) AND (registered_patients.region_id = rf.facility_region_id))))
@@ -2910,7 +2910,7 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
      LEFT JOIN monthly_cohort_outcomes ON (((monthly_cohort_outcomes.month_date = cal.month_date) AND (monthly_cohort_outcomes.region_id = rf.facility_region_id))))
      LEFT JOIN monthly_overdue_calls ON (((monthly_overdue_calls.month_date = cal.month_date) AND (monthly_overdue_calls.region_id = rf.facility_region_id))))
      LEFT JOIN monthly_follow_ups ON (((monthly_follow_ups.month_date = cal.month_date) AND (monthly_follow_ups.facility_id = rf.facility_id))))
-     LEFT JOIN public.reporting_appointment_scheduled_days_distributions ON (((reporting_appointment_scheduled_days_distributions.month_date = cal.month_date) AND (reporting_appointment_scheduled_days_distributions.facility_id = rf.facility_id))))
+     LEFT JOIN public.reporting_facility_appointment_scheduled_days ON (((reporting_facility_appointment_scheduled_days.month_date = cal.month_date) AND (reporting_facility_appointment_scheduled_days.facility_id = rf.facility_id))))
   WITH NO DATA;
 
 
@@ -4445,10 +4445,10 @@ CREATE INDEX index_reminder_templates_on_treatment_group_id ON public.reminder_t
 
 
 --
--- Name: index_reporting_appointment_scheduled_days_distributions; Type: INDEX; Schema: public; Owner: -
+-- Name: index_reporting_facility_appointment_scheduled_days; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_reporting_appointment_scheduled_days_distributions ON public.reporting_appointment_scheduled_days_distributions USING btree (month_date, facility_id);
+CREATE UNIQUE INDEX index_reporting_facility_appointment_scheduled_days ON public.reporting_facility_appointment_scheduled_days USING btree (month_date, facility_id);
 
 
 --
