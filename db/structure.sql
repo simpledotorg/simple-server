@@ -1416,52 +1416,6 @@ CREATE TABLE public.reminder_templates (
 
 
 --
--- Name: reporting_facility_appointment_scheduled_days; Type: MATERIALIZED VIEW; Schema: public; Owner: -
---
-
-CREATE MATERIALIZED VIEW public.reporting_facility_appointment_scheduled_days AS
- WITH latest_appointments_per_patient_per_month AS (
-         SELECT DISTINCT ON (appointments.patient_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, appointments.device_created_at)), 'YYYY-MM-01'::text))::date) appointments.id,
-            appointments.patient_id,
-            appointments.facility_id,
-            appointments.scheduled_date,
-            appointments.status,
-            appointments.cancel_reason,
-            appointments.device_created_at,
-            appointments.device_updated_at,
-            appointments.created_at,
-            appointments.updated_at,
-            appointments.remind_on,
-            appointments.agreed_to_visit,
-            appointments.deleted_at,
-            appointments.appointment_type,
-            appointments.user_id,
-            appointments.creation_facility_id,
-            (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, appointments.device_created_at)), 'YYYY-MM-01'::text))::date AS month_date
-           FROM public.appointments
-          WHERE (((date_part('days'::text, ((appointments.scheduled_date)::timestamp without time zone - appointments.device_created_at)))::integer >= 0) AND (appointments.device_created_at >= date_trunc('month'::text, (timezone('UTC'::text, now()) - '6 mons'::interval))))
-          ORDER BY appointments.patient_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, appointments.device_created_at)), 'YYYY-MM-01'::text))::date DESC
-        ), scheduled_days_distribution AS (
-         SELECT latest_appointments_per_patient_per_month.month_date,
-            width_bucket((date_part('days'::text, ((latest_appointments_per_patient_per_month.scheduled_date)::timestamp without time zone - latest_appointments_per_patient_per_month.device_created_at)))::integer, ARRAY[0, 15, 30, 60]) AS bucket,
-            count(*) AS number_of_appointments,
-            latest_appointments_per_patient_per_month.creation_facility_id AS facility_id
-           FROM latest_appointments_per_patient_per_month
-          GROUP BY (width_bucket((date_part('days'::text, ((latest_appointments_per_patient_per_month.scheduled_date)::timestamp without time zone - latest_appointments_per_patient_per_month.device_created_at)))::integer, ARRAY[0, 15, 30, 60])), latest_appointments_per_patient_per_month.creation_facility_id, latest_appointments_per_patient_per_month.month_date
-        )
- SELECT scheduled_days_distribution.facility_id,
-    scheduled_days_distribution.month_date,
-    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 1)))::integer AS appts_scheduled_0_to_14_days,
-    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 2)))::integer AS appts_scheduled_15_to_30_days,
-    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 3)))::integer AS appts_scheduled_31_to_60_days,
-    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 4)))::integer AS appts_scheduled_more_than_60_days,
-    (sum(scheduled_days_distribution.number_of_appointments))::integer AS total_appts_scheduled
-   FROM scheduled_days_distribution
-  GROUP BY scheduled_days_distribution.facility_id, scheduled_days_distribution.month_date
-  WITH NO DATA;
-
-
---
 -- Name: reporting_facilities; Type: VIEW; Schema: public; Owner: -
 --
 
@@ -1648,6 +1602,52 @@ COMMENT ON COLUMN public.reporting_facilities.organization_name IS 'Name of the 
 --
 
 COMMENT ON COLUMN public.reporting_facilities.organization_slug IS 'Human readable ID of the organization region that the facility is in';
+
+
+--
+-- Name: reporting_facility_appointment_scheduled_days; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+--
+
+CREATE MATERIALIZED VIEW public.reporting_facility_appointment_scheduled_days AS
+ WITH latest_appointments_per_patient_per_month AS (
+         SELECT DISTINCT ON (appointments.patient_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, appointments.device_created_at)), 'YYYY-MM-01'::text))::date) appointments.id,
+            appointments.patient_id,
+            appointments.facility_id,
+            appointments.scheduled_date,
+            appointments.status,
+            appointments.cancel_reason,
+            appointments.device_created_at,
+            appointments.device_updated_at,
+            appointments.created_at,
+            appointments.updated_at,
+            appointments.remind_on,
+            appointments.agreed_to_visit,
+            appointments.deleted_at,
+            appointments.appointment_type,
+            appointments.user_id,
+            appointments.creation_facility_id,
+            (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, appointments.device_created_at)), 'YYYY-MM-01'::text))::date AS month_date
+           FROM public.appointments
+          WHERE (((date_part('days'::text, ((appointments.scheduled_date)::timestamp without time zone - appointments.device_created_at)))::integer >= 0) AND (appointments.device_created_at >= date_trunc('month'::text, (timezone('UTC'::text, now()) - '6 mons'::interval))))
+          ORDER BY appointments.patient_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, appointments.device_created_at)), 'YYYY-MM-01'::text))::date DESC
+        ), scheduled_days_distribution AS (
+         SELECT latest_appointments_per_patient_per_month.month_date,
+            width_bucket((date_part('days'::text, ((latest_appointments_per_patient_per_month.scheduled_date)::timestamp without time zone - latest_appointments_per_patient_per_month.device_created_at)))::integer, ARRAY[0, 15, 30, 60]) AS bucket,
+            count(*) AS number_of_appointments,
+            latest_appointments_per_patient_per_month.creation_facility_id AS facility_id
+           FROM latest_appointments_per_patient_per_month
+          GROUP BY (width_bucket((date_part('days'::text, ((latest_appointments_per_patient_per_month.scheduled_date)::timestamp without time zone - latest_appointments_per_patient_per_month.device_created_at)))::integer, ARRAY[0, 15, 30, 60])), latest_appointments_per_patient_per_month.creation_facility_id, latest_appointments_per_patient_per_month.month_date
+        )
+ SELECT scheduled_days_distribution.facility_id,
+    scheduled_days_distribution.month_date,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 1)))::integer AS appts_scheduled_0_to_14_days,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 2)))::integer AS appts_scheduled_15_to_30_days,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 3)))::integer AS appts_scheduled_31_to_60_days,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 4)))::integer AS appts_scheduled_more_than_60_days,
+    (sum(scheduled_days_distribution.number_of_appointments))::integer AS total_appts_scheduled
+   FROM scheduled_days_distribution
+  GROUP BY scheduled_days_distribution.facility_id, scheduled_days_distribution.month_date
+  WITH NO DATA;
 
 
 --
