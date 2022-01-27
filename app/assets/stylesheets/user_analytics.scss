@@ -809,11 +809,13 @@ select.form-control, input.form-control {
 
 /* FLEX */
 .d-flex { display: flex; }
+.ai-center { align-items: center; }
 .ai-flex-start { align-items: flex-start; }
 .jc-space-between { justify-content: space-between; }
 .f-1 { flex: 1; }
 /* LAYOUT */
 .d-block { display: block; }
+.d-inline-block { display: inline-block; }
 /* TYPOGRAPHY */
 .ta-center { text-align: center; }
 .ta-left { text-align: left; }
