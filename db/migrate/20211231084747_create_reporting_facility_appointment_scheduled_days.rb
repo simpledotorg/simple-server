@@ -1,4 +1,4 @@
-class CreateReportingFacilityAppointmentScheduledDayss < ActiveRecord::Migration[5.2]
+class CreateReportingFacilityAppointmentScheduledDays < ActiveRecord::Migration[5.2]
   def change
     create_view :reporting_facility_appointment_scheduled_days, materialized: true
 
