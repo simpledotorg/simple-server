@@ -43,104 +43,8 @@ RSpec.describe Api::ManifestsController, type: :controller do
     context "in non-production environments" do
       environments = %w[development review android_review]
 
-
       environments.each do |env|
         it "returns a dynamic manifest for #{env}" do
-          v1_response =
-            [
-              {
-                "country_code" => "IN",
-                "display_name" => "India",
-                "endpoint" => "https://simple.example.com/api/",
-                "isd_code" => "91"
-              },
-              {
-                "country_code" => "BD",
-                "display_name" => "Bangladesh",
-                "endpoint" => "https://simple.example.com/api/",
-                "isd_code" => "880"
-              },
-              {
-                "country_code" => "ET",
-                "display_name" => "Ethiopia",
-                "endpoint" => "https://simple.example.com/api/",
-                "isd_code" => "251"
-              },
-              {
-                "country_code" => "US",
-                "display_name" => "United States",
-                "endpoint" => "https://simple.example.com/api/",
-                "isd_code" => "1"
-              },
-              {
-                "country_code" => "UK",
-                "display_name" => "United Kingdom",
-                "endpoint" => "https://simple.example.com/api/",
-                "isd_code" => "44"
-              }
-            ]
-
-          v2_response =
-            {
-              "countries" => [
-                {
-                  "country_code" => "IN",
-                  "display_name" => "India",
-                  "isd_code" => "91",
-                  "deployments" => [
-                    {
-                      "display_name" => "India",
-                      "endpoint" => "https://simple.example.com/api/"
-                    }
-                  ]
-                },
-                {
-                  "country_code" => "BD",
-                  "display_name" => "Bangladesh",
-                  "isd_code" => "880",
-                  "deployments" => [
-                    {
-                      "display_name" => "Bangladesh",
-                      "endpoint" => "https://simple.example.com/api/"
-                    }
-                  ]
-                },
-                {
-                  "country_code" => "ET",
-                  "display_name" => "Ethiopia",
-                  "isd_code" => "251",
-                  "deployments" => [
-                    {
-                      "display_name" => "Ethiopia",
-                      "endpoint" => "https://simple.example.com/api/"
-                    }
-                  ]
-                },
-                {
-                  "country_code" => "US",
-                  "display_name" => "United States",
-                  "isd_code" => "1",
-                  "deployments" => [
-                    {
-                      "display_name" => "United States",
-                      "endpoint" => "https://simple.example.com/api/"
-                    }
-                  ]
-                },
-                {
-                  "country_code" => "UK",
-                  "display_name" => "United Kingdom",
-                  "isd_code" => "44",
-                  "deployments" => [
-                    {
-                      "display_name" => "United Kingdom",
-                      "endpoint" => "https://simple.example.com/api/"
-                    }
-                  ]
-                }
-              ]
-            }
-
           original_env = ENV["SIMPLE_SERVER_ENV"]
 
           allow(ENV).to receive(:[]).with("SIMPLE_SERVER_ENV").and_return(env)
@@ -156,6 +60,103 @@ RSpec.describe Api::ManifestsController, type: :controller do
           expect(parsed_body["v2"]).to eq(v2_response)
 
           allow(ENV).to receive(:[]).with("SIMPLE_SERVER_ENV").and_return(original_env)
+        end
+
+        let(:v1_response) do
+          [
+            {
+              "country_code" => "IN",
+              "display_name" => "India",
+              "endpoint" => "https://simple.example.com/api/",
+              "isd_code" => "91"
+            },
+            {
+              "country_code" => "BD",
+              "display_name" => "Bangladesh",
+              "endpoint" => "https://simple.example.com/api/",
+              "isd_code" => "880"
+            },
+            {
+              "country_code" => "ET",
+              "display_name" => "Ethiopia",
+              "endpoint" => "https://simple.example.com/api/",
+              "isd_code" => "251"
+            },
+            {
+              "country_code" => "US",
+              "display_name" => "United States",
+              "endpoint" => "https://simple.example.com/api/",
+              "isd_code" => "1"
+            },
+            {
+              "country_code" => "UK",
+              "display_name" => "United Kingdom",
+              "endpoint" => "https://simple.example.com/api/",
+              "isd_code" => "44"
+            }
+          ]
+        end
+
+        let(:v2_response) do
+          {
+            "countries" => [
+              {
+                "country_code" => "IN",
+                "display_name" => "India",
+                "isd_code" => "91",
+                "deployments" => [
+                  {
+                    "display_name" => "India",
+                    "endpoint" => "https://simple.example.com/api/"
+                  }
+                ]
+              },
+              {
+                "country_code" => "BD",
+                "display_name" => "Bangladesh",
+                "isd_code" => "880",
+                "deployments" => [
+                  {
+                    "display_name" => "Bangladesh",
+                    "endpoint" => "https://simple.example.com/api/"
+                  }
+                ]
+              },
+              {
+                "country_code" => "ET",
+                "display_name" => "Ethiopia",
+                "isd_code" => "251",
+                "deployments" => [
+                  {
+                    "display_name" => "Ethiopia",
+                    "endpoint" => "https://simple.example.com/api/"
+                  }
+                ]
+              },
+              {
+                "country_code" => "US",
+                "display_name" => "United States",
+                "isd_code" => "1",
+                "deployments" => [
+                  {
+                    "display_name" => "United States",
+                    "endpoint" => "https://simple.example.com/api/"
+                  }
+                ]
+              },
+              {
+                "country_code" => "UK",
+                "display_name" => "United Kingdom",
+                "isd_code" => "44",
+                "deployments" => [
+                  {
+                    "display_name" => "United Kingdom",
+                    "endpoint" => "https://simple.example.com/api/"
+                  }
+                ]
+              }
+            ]
+          }
         end
       end
     end
