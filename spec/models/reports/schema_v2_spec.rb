@@ -103,5 +103,13 @@ describe Reports::SchemaV2, type: :model do
       expect(schema.appts_scheduled_31_to_60_days_rates[facility.slug][range.last]).to eq(25)
       expect(schema.appts_scheduled_more_than_60_days_rates[facility.slug][range.last]).to eq(25)
     end
+
+    it "returns zeros when there is no appointment data in the month" do
+
+    end
+
+    it "returns empty hashes when there is no registered patients, assigned patients or follow ups" do
+
+    end
   end
 end
