@@ -5,7 +5,7 @@ RSpec.describe Reports::FacilityAppointmentScheduledDays, {type: :model, reporti
     # This is in the style of ReportingHelpers::freeze_time_for_reporting_specs.
     # Since this view only keeps the last 6 months of data, the date cannot be a
     # fixed point in time like the spec helper.
-    Timecop.freeze("#{Date.today.end_of_month.to_s} 23:00 IST") do
+    Timecop.freeze("#{Date.today.end_of_month} 23:00 IST") do
       example.run
     end
   end
@@ -47,20 +47,20 @@ RSpec.describe Reports::FacilityAppointmentScheduledDays, {type: :model, reporti
     second_appointment_date = 11.days.ago
     third_appointment_date = 10.days.ago
     create(:appointment,
-           facility: facility,
-           patient: patient,
-           scheduled_date: first_appointment_date + scheduled_days,
-           device_created_at: first_appointment_date)
+      facility: facility,
+      patient: patient,
+      scheduled_date: first_appointment_date + scheduled_days,
+      device_created_at: first_appointment_date)
     create(:appointment,
-           facility: facility,
-           patient: patient,
-           scheduled_date: second_appointment_date + scheduled_days,
-           device_created_at: second_appointment_date)
+      facility: facility,
+      patient: patient,
+      scheduled_date: second_appointment_date + scheduled_days,
+      device_created_at: second_appointment_date)
     create(:appointment,
-           facility: facility,
-           patient: patient,
-           scheduled_date: third_appointment_date + scheduled_days,
-           device_created_at: third_appointment_date)
+      facility: facility,
+      patient: patient,
+      scheduled_date: third_appointment_date + scheduled_days,
+      device_created_at: third_appointment_date)
     create(:appointment, facility: facility, patient: patient, scheduled_date: Date.today, device_created_at: 1.month.ago)
 
     RefreshReportingViews.new.refresh_v2
