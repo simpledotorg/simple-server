@@ -34,6 +34,6 @@ RSpec.describe MedicationDispensationService, type: :model do
                      totals: {two_months_ago => 1, one_month_ago => 1, current_month => 1},
                      percentages: {two_months_ago => 100, one_month_ago => 0, current_month => 0}}
     }
-    expect(medications_dispensation_service.distribution).to eq(expected_data_structure)
+    expect(medications_dispensation_service.call).to eq(expected_data_structure)
   end
 end
