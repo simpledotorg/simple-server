@@ -54,7 +54,7 @@
             </p>
           </div>
         </div>
-        <div class="p-16px bgc-white bs-card">
+        <div class="p-16px pb-64px bgc-white bs-card">
           <%= bootstrap_form_with(url: webview_drug_stocks_url(format: :json), method: :post, autocomplete: "off", label_errors: true) do |form| %>
             <%= form.hidden_field :facility_id, value: current_facility.id %>
             <%= form.hidden_field :user_id, value: current_user.id %>
@@ -87,11 +87,9 @@
               <% end %>
             <% end %>
             <div class="redistribution-question">
-              <div class="redistribution-switch-label">
-                <label for="redistribution-fields-toggle">
-                  Did your facility issue drugs to other facilities this month?
-                </label>
-              </div>
+              <p class="m-0px p-0px ta-left fw-regular fs-16px c-black" for="redistribution-fields-toggle">
+                Did your facility issue drugs to other facilities this month?
+              </p>
               <div class="redistribution-switch-wrapper">
                 <input type="checkbox" id="redistribution-fields-toggle" class="switch" <%= "checked" if @drug_stocks.values.map(&:redistributed).any? %> />
               </div>
@@ -100,17 +98,19 @@
               <% @protocol_drugs.each_with_index do |protocol_drug, index| %>
                 <%= form.fields_for "drug_stocks[#{index}]", DrugStock.new do |drug_stock_form| %>
                   <%= drug_stock_form.hidden_field :protocol_drug_id, value: protocol_drug.id %>
-
-                  <div class="form-group">
-                    <label><%= "#{protocol_drug.name} #{protocol_drug.dosage}"%> tablets</label>
-                    <div class="form-row">
-                      <div style="width: 95%">
-                        <%= drug_stock_form.number_field :redistributed,
-                            class: :redistributed,
-                            value: @drug_stocks[protocol_drug.id].try(&:redistributed),
-                            hide_label: true,
-                            help: "Stock issued to other facilities" %>
-                      </div>
+                  <p class="mb-0px mb-8px p-0px ta-left fw-medium fs-14px c-black">
+                    <%= "#{protocol_drug.name} #{protocol_drug.dosage}"%> tablets
+                  </p>
+                  <div class="d-flex mb-24px">
+                    <div class="w-95">
+                      <%= drug_stock_form.number_field :redistributed,
+                          class: "bs-border-box w-100 mb-4px p-12px fw-regular fs-16px c-black b-grey-mid br-4px",
+                          value: @drug_stocks[protocol_drug.id].try(&:redistributed),
+                          skip_label: true
+                      %>
+                      <p class="m-0px p-0px ta-left fw-regular fs-12px c-grey-dark">
+                        Stock issued to other facilities
+                      </p>
                     </div>
                   </div>
                 <% end %>

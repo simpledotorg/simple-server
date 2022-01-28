@@ -686,7 +686,7 @@ footer p {
 
 .button-fixed-bottom {
   z-index: 10000000000;
-  background: $grey-lightest;
+  background: $white;
   position: fixed;
   bottom: 0;
   left: 0;
@@ -772,6 +772,7 @@ footer p {
 .d-inline-block { display: inline-block; }
 .d-hidden { display: hidden; }
 /* WIDTH & HEIGHT */
+.w-95 { width: 95%; }
 .w-100 { width: 100%; }
 /* TYPOGRAPHY */
 .ta-center { text-align: center; }
@@ -790,6 +791,8 @@ footer p {
 .c-blue { color: $blue; }
 .c-grey-dark { color: $grey-dark; }
 .c-black { color: $black; }
+/* SPACING */
+.pb-64px { padding-bottom: 64px; }
 /* BACKGROUND */
 .bgc-white { background-color: $white; }
 .bgc-blue-light { background-color: $blue-light; }
