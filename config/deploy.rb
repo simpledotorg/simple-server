@@ -24,7 +24,9 @@ set :disallow_pushing, true
 set :sentry_api_token, ENV["SENTRY_AUTH_TOKEN"]
 set :sentry_organization, "resolve-to-save-lives"
 set :sentry_repo, "simpledotorg/simple-server"
-# Fire off release notifications to Sentry after successful deploys
+
+set :migration_command, "db:migrate:with_data"
+
 before "deploy:starting", "sentry:validate_config"
 after "deploy:published", "sentry:notice_deployment"
 after "deploy:symlink:linked_dirs", "deploy:fix_bundler_plugin_path"
