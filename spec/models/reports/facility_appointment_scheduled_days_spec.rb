@@ -113,9 +113,9 @@ RSpec.describe Reports::FacilityAppointmentScheduledDays, {type: :model, reporti
 
     _deleted_appointment =
       create(:appointment,
-             facility: facility,
-             patient: create(:patient, recorded_at: 2.months.ago),
-             deleted_at: Time.current)
+        facility: facility,
+        patient: create(:patient, recorded_at: 2.months.ago),
+        deleted_at: Time.current)
 
     RefreshReportingViews.new.refresh_v2
 
