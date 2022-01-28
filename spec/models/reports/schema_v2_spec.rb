@@ -105,11 +105,43 @@ describe Reports::SchemaV2, type: :model do
     end
 
     it "returns zeros when there is no appointment data in the month" do
+      facility = create(:facility)
+      create(:patient, assigned_facility: facility)
+      period = Period.current
 
+      refresh_views
+
+      schema = described_class.new(Region.where(id: facility.region), periods: range)
+
+      expect(schema.appts_scheduled_0_to_14_days[facility.slug][period]).to eq(0)
+      expect(schema.appts_scheduled_15_to_30_days[facility.slug][period]).to eq(0)
+      expect(schema.appts_scheduled_31_to_60_days[facility.slug][period]).to eq(0)
+      expect(schema.appts_scheduled_more_than_60_days[facility.slug][period]).to eq(0)
+      expect(schema.total_appts_scheduled[facility.slug][period]).to eq(0)
+
+      expect(schema.appts_scheduled_0_to_14_days_rates[facility.slug][period]).to eq(0)
+      expect(schema.appts_scheduled_15_to_30_days_rates[facility.slug][period]).to eq(0)
+      expect(schema.appts_scheduled_31_to_60_days_rates[facility.slug][period]).to eq(0)
+      expect(schema.appts_scheduled_more_than_60_days_rates[facility.slug][period]).to eq(0)
     end
 
     it "returns empty hashes when there is no registered patients, assigned patients or follow ups" do
+      facility = create(:facility)
 
+      refresh_views
+
+      schema = described_class.new(Region.where(id: facility.region), periods: range)
+
+      expect(schema.appts_scheduled_0_to_14_days[facility.slug]).to eq({})
+      expect(schema.appts_scheduled_15_to_30_days[facility.slug]).to eq({})
+      expect(schema.appts_scheduled_31_to_60_days[facility.slug]).to eq({})
+      expect(schema.appts_scheduled_more_than_60_days[facility.slug]).to eq({})
+      expect(schema.total_appts_scheduled[facility.slug]).to eq({})
+
+      expect(schema.appts_scheduled_0_to_14_days_rates[facility.slug]).to eq({})
+      expect(schema.appts_scheduled_15_to_30_days_rates[facility.slug]).to eq({})
+      expect(schema.appts_scheduled_31_to_60_days_rates[facility.slug]).to eq({})
+      expect(schema.appts_scheduled_more_than_60_days_rates[facility.slug]).to eq({})
     end
   end
 end
