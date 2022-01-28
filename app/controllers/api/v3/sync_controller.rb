@@ -71,6 +71,9 @@ class Api::V3::SyncController < APIController
     return unless errors.present?
 
     Rails.logger.info(
+      msg: "validation_error",
+      controller: self.class.name,
+      action: action_name,
       params_with_errors: params_with_errors(params, errors),
       errors: errors
     )
