@@ -12,7 +12,7 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
   def initialize(facility:, diagnosis:, metric:, results:, range:, gender_groups: true)
     @facility = facility
     @diagnosis = diagnosis
-    @diagnosis_code = @diagnosis == :hypertension ? "htn" : "dm"
+    # @diagnosis_code = @diagnosis == :hypertension ? "htn" : "dm"
     @metric = metric
     @results = results
     @range = range
@@ -29,8 +29,17 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
 
   def diagnosis_code
     case diagnosis
-    when :hypertension then "htn"
-    when :diabetes then "dm"
+    when :hypertension then :htn
+    when :diabetes then :dm
+    when :all then :all
+    else raise ArgumentError, "invalid diagnosis #{diagnosis}"
+    end
+  end
+
+  def diagnosis_code_for_non_gender_breakdowns
+    case diagnosis
+    when :hypertension then :htn
+    when :diabetes then :dm
     when :all then nil
     else raise ArgumentError, "invalid diagnosis #{diagnosis}"
     end
@@ -54,7 +63,7 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
   end
 
   def total_count
-    Reports::FacilityStateGroup.total(facility, metric, diagnosis_code)
+    Reports::FacilityStateGroup.total(facility, metric, diagnosis)
   end
 
   def results_by_period
@@ -64,16 +73,15 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
   end
 
   def monthly_count(period)
-    # d results_by_period
-    field = "monthly_#{metric}_#{diagnosis_code}_all"
-    results_by_period[period].send(@total_field)
+    field = ["monthly", metric, diagnosis_code_for_non_gender_breakdowns, "all"].compact.join("_")
+    results_by_period[period].attributes[field]
   end
 
   def monthly_count_by_gender(period, gender)
     field = "monthly_#{metric}_#{diagnosis_code}_#{gender}"
     result = results_by_period[period].attributes[field]
-    d field
-    d result
+    # d field
+    # d result
     result
   end
 

@@ -1,14 +1,17 @@
 require "rails_helper"
 
 RSpec.describe Reports::MonthlyProgressComponent, type: :component do
+  using StringToPeriod
+
+  let(:november_2021_period) { Period.month("November 1st 2021") }
+  let(:december_2021_period) { Period.month("December 1st 2021") }
+  let(:jan_2022) { Time.zone.parse("January 1st, 2022 00:00:00+00:00") }
+
   let(:facility) { create(:facility) }
   let(:user) { create(:user) }
-  let(:query) { Reports::FacilityStateGroup.where(facility_region_id: facility.region.id) }
-  let(:current_period) { Period.month("December 2021") }
-  let(:range) { Range.new(current_period.advance(months: -5), current_period) }
-  let(:results) { Reports::FacilityStateGroup.where(facility_region_id: facility.region.id, month_date: @range).to_a }
-
-  let(:jan_2022) { Time.zone.parse("January 1st, 2022 00:00:00+00:00") }
+  let(:range) { Range.new(Period.month("June 1st 2021"), Period.month("December 1st 2021")) }
+  let(:date_range) { range.map(&:to_date) }
+  let(:results) { Reports::FacilityStateGroup.where(facility_region_id: facility.region.id, month_date: date_range).to_a }
 
   it "returns totals based on metric / diagnosis" do
     patient_1 = create(:patient, :hypertension, recorded_at: 2.years.ago, registration_user: user, registration_facility: facility)
@@ -18,15 +21,35 @@ RSpec.describe Reports::MonthlyProgressComponent, type: :component do
     expect(component.total_count).to eq(1)
   end
 
-  it "returns the monthly count for a period and a gender" do
-    Timecop.freeze("December 1st 2021 10:00:00 IST") do
-      patient_1 = create(:patient, :hypertension, recorded_at: Time.current, registration_user: user, registration_facility: facility)
-      refresh_views
+  it "returns the total and monthly counts for :all diagnosis" do
+    Timecop.freeze("November 1st 2021 10:00:00 IST") do
+      patient_1 = create(:patient, :hypertension, gender: :female, recorded_at: Time.current, registration_user: user, registration_facility: facility)
     end
     Timecop.freeze(jan_2022) do
+      refresh_views
+      results = Reports::FacilityStateGroup.where(facility_region_id: facility.region.id, month_date: date_range)
+
       component = described_class.new(facility: facility, diagnosis: :all, metric: :registrations, results: results, range: range)
+
       expect(component.total_count).to eq(1)
-      expect(component.monthly_count(jan_2022)).to eq(1)
+      expect(component.monthly_count(november_2021_period)).to eq(1)
+    end
+  end
+
+  it "returns the monthly counts by gender for :hypertension" do
+    Timecop.freeze("November 1st 2021 10:00:00 IST") do
+      patient_1 = create(:patient, :hypertension, gender: :female, recorded_at: Time.current, registration_user: user, registration_facility: facility)
+    end
+    Timecop.freeze(jan_2022) do
+      refresh_views
+      results = Reports::FacilityStateGroup.where(facility_region_id: facility.region.id, month_date: date_range)
+
+      component = described_class.new(facility: facility, diagnosis: :hypertension, metric: :registrations, results: results, range: range)
+      expect(component.monthly_count_by_gender(november_2021_period, :female)).to eq(1)
+      expect(component.monthly_count_by_gender(november_2021_period, :male)).to eq(0)
+
+      expect(component.monthly_count_by_gender(december_2021_period, :female)).to be_nil
+      expect(component.monthly_count_by_gender(december_2021_period, :male)).to be_nil
     end
   end
 
