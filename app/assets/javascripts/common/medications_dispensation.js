@@ -10,7 +10,8 @@ MedicationsDispensationGraph = function () {
   }
 
   this.getMedicationsGraphPeriods = () => {
-    return Object.keys(this.getMedicationsGraphData()["0 - 14 days"]["counts"]);
+    let firstBucketData = Object.values(this.getMedicationsGraphData())[0];
+    return Object.keys(firstBucketData["counts"]);
   }
 
   this.initializeMedicationsGraph = () => {
