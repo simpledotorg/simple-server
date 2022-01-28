@@ -46,7 +46,7 @@ unless SimpleServer.env.sandbox? || SimpleServer.env.qa? || SimpleServer.env.and
 
     throttle("throttle_user_activate", RateLimit.auth_api_options) do |req|
       if req.post? && req.path.start_with?("/api/v4/users/activate") && SimpleServer.env.production?
-        req.params['user']['id']
+        req.params["user"]["id"]
       end
     end
 
