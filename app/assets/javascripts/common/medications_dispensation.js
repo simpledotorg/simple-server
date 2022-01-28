@@ -55,6 +55,7 @@ MedicationsDispensationGraph = function () {
       yAxes: [{
         stacked: false,
         display: true,
+        minBarLength: 4,
         gridLines: {
           display: true,
           drawBorder: false,
