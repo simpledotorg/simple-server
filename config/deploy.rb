@@ -40,6 +40,8 @@ set :whenever_roles, [:cron, :whitelist_phone_numbers]
 set :enable_confirmation, ENV["CONFIRM"] || "true"
 set :envs_for_confirmation_step, ["production", "staging"]
 
+set :passenger_restart_with_sudo, true
+
 Capistrano::DSL.stages.each do |stage|
   # For each stage that requires confirmation load the `deploy:confirmation` task
   # Use the `envs_for_confirmation_step` var to set the appropriate stages
