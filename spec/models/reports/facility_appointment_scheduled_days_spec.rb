@@ -10,10 +10,17 @@ RSpec.describe Reports::FacilityAppointmentScheduledDays, {type: :model, reporti
     end
   end
 
-  # it "includes only follow-up appointments i.e which happened in a month after patient registration" do
-  #   facility = create(:facility)
-  #   patient = create(:patient, assigned_facility: facility)
-  # end
+  it "includes only follow-up appointments i.e which happened in a month after patient registration" do
+    facility = create(:facility)
+    follow_up_patient = create(:patient, recorded_at: 1.month.ago, assigned_facility: facility)
+    registered_patient = create(:patient, recorded_at: Time.current, assigned_facility: facility)
+    create(:appointment, patient: follow_up_patient, facility: facility, scheduled_date: 10.days.from_now, device_created_at: Time.current)
+    create(:appointment, patient: registered_patient, facility: facility, scheduled_date: 10.days.from_now, device_created_at: Time.current)
+
+    RefreshReportingViews.new.refresh_v2
+
+    expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_0_to_14_days).to eq 1
+  end
 
   it "buckets and counts appointments by the number of days between creation date and scheduled date" do
     facility = create(:facility)
@@ -100,6 +107,18 @@ RSpec.describe Reports::FacilityAppointmentScheduledDays, {type: :model, reporti
   end
 
   it "does not include soft-deleted patients or appointments" do
+    facility = create(:facility)
+    deleted_patient = create(:patient, recorded_at: 2.months.ago, assigned_facility: facility, deleted_at: Time.current)
+    create(:appointment, facility: facility, patient: deleted_patient)
 
+    _deleted_appointment =
+      create(:appointment,
+             facility: facility,
+             patient: create(:patient, recorded_at: 2.months.ago),
+             deleted_at: Time.current)
+
+    RefreshReportingViews.new.refresh_v2
+
+    expect(described_class.find_by(month_date: Period.current, facility: facility)).to be_nil
   end
 end
