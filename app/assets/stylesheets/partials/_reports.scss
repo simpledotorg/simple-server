@@ -46,9 +46,11 @@
 .mw-100pt { max-width: 100%; }
 .minw-32px { min-width: 32px; }
 // Height
+.h-8px { height: 8px; }
 .h-12px { height: 12px; }
 .h-10pt { height: 10%; }
 .h-20px { height: 20px; }
+.h-24px { height: 24px; }
 .h-100px { height: 100px; }
 .h-100pt { height: 100%; }
 .h-200px { height: 200px; }
@@ -72,6 +74,7 @@
 .mr-4px { margin-right: 4px; }
 .mr-6px { margin-right: 6px; }
 .mr-8px { margin-right: 8px; }
+.p-12px { padding: 12px; }
 .pb-8px { padding-bottom: 8px; }
 .pb-16px { padding-bottom: 16px; }
 .pl-16px { padding-left: 16px; }
@@ -95,6 +98,7 @@
 .lh-1 { line-height: 1; }
 .lh-18px { line-height: 18px; }
 .ls-145 { letter-spacing: 1.45; }
+.ls-2px { letter-spacing: 2px; }
 .ta-left { text-align: left; }
 .ta-center { text-align: center; }
 .c-grey-dark { color: $grey-dark; }
@@ -132,6 +136,10 @@
 .bt-purple-dark { border-top-color: $purple; }
 .bl-grey-medium { border-left-color: $grey-mid; }
 // Border radius
+.br-tl-4px { border-top-left-radius: 4px; }
+.br-bl-4px { border-bottom-left-radius: 4px; }
+.br-tr-4px { border-top-right-radius: 4px; }
+.br-br-4px { border-bottom-right-radius: 4px; }
 .br-2px { border-radius: 2px; }
 .br-4px { border-radius: 4px; }
 .br-6px { border-radius: 6px; }
@@ -140,6 +148,7 @@
 .bg-green { background-color: $green }
 .bg-green-dark { background-color: $green-dark; }
 .bg-green-medium { background-color: $green-mid; }
+.bg-blue-light { background-color: $blue-light; }
 .bg-purple-medium { background-color: $purple-mid; }
 .bg-purple-light { background-color: $purple-light; }
 .bg-yellow-light { background-color: $yellow-light; }

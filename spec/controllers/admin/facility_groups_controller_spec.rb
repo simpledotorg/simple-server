@@ -148,6 +148,22 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
       expect(facility_group.state).to eq("New York")
     end
 
+    it "updates when population is blank and no population exists" do
+      facility_group = create(:facility_group, valid_attributes)
+      new_attributes = {
+        name: "New Name",
+        district_estimated_population: "",
+        description: "New Description",
+        state: "New York"
+
+      }
+      put :update, params: {id: facility_group.to_param, facility_group: new_attributes, organization_id: organization.id}
+      facility_group.reload
+      expect(facility_group.name).to eq("New Name")
+      expect(facility_group.description).to eq("New Description")
+      expect(facility_group.state).to eq("New York")
+    end
+
     it "can turn on diabetes management for all facilities inside a facility group" do
       facility_group = create(:facility_group, valid_attributes)
       facilities = create_list(:facility, 2, facility_group: facility_group, enable_diabetes_management: false)
@@ -189,9 +205,22 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
       put :update, params: {id: facility_group.to_param, facility_group: new_attributes, organization_id: organization.id}
       expect(response).to be_redirect
       expect(flash.notice).to eq("Facility group was successfully updated.")
-      facility_group.reload
+      expect(facility_group.estimated_population.population).to eq(1500)
+    end
 
-      expect(facility_group.district_estimated_population).to eq(1500)
+    it "destroys the estimated population if its blank" do
+      valid_attributes[:district_estimated_population] = 100
+      facility_group = create(:facility_group, valid_attributes)
+      expect(facility_group.district_estimated_population).to eq(100)
+      new_attributes = {
+        district_estimated_population: ""
+      }
+      expect {
+        put :update, params: {id: facility_group.to_param, facility_group: new_attributes, organization_id: organization.id}
+      }.to change { EstimatedPopulation.count }.by(-1)
+      expect(response).to be_redirect
+      expect(flash.notice).to eq("Facility group was successfully updated.")
+      expect(facility_group.estimated_population).to be_nil
     end
 
     it "redirects to the facilities" do

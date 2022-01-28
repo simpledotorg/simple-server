@@ -50,7 +50,7 @@ RSpec.describe MonthlyStateDataService do
       csv = CSV.parse(result)
       region_row_index = 3
 
-      expect(find_in_csv(csv, region_row_index, "#")).to eq("All")
+      expect(find_in_csv(csv, region_row_index, "#")).to eq("All districts")
       expect(find_in_csv(csv, region_row_index, "State")).to eq(state.name)
       expect(csv[region_row_index][2..3].uniq).to eq([nil])
       expect(find_in_csv(csv, region_row_index, "Total registrations")).to eq("3")

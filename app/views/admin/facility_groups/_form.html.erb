@@ -37,7 +37,7 @@
         <%= form.select(:protocol_id, protocols.order(:name).map { |protocol| [protocol.name, protocol.id] }) %>
       <% end %>
 
-      <%= form.number_field :district_estimated_population, label: "Estimated hypertensive population", autocomplete: "off", 
+      <%= form.number_field :district_estimated_population, value: @facility_group&.estimated_population&.population, label: "Estimated hypertensive population", autocomplete: "off", 
         help: "Leave blank if unknown" %>
 
       <div class="mt-3">

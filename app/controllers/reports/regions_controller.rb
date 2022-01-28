@@ -5,7 +5,7 @@ class Reports::RegionsController < AdminController
   before_action :set_period, only: [:show, :cohort]
   before_action :set_page, only: [:details]
   before_action :set_per_page, only: [:details]
-  before_action :find_region, except: [:index, :monthly_district_data_report]
+  before_action :find_region, except: [:index, :fastindex, :monthly_district_data_report]
   around_action :set_reporting_time_zone
   after_action :log_cache_metrics
   delegate :cache, to: Rails
@@ -13,22 +13,38 @@ class Reports::RegionsController < AdminController
   INDEX_CACHE_KEY = "v3"
 
   def index
+    if current_admin.feature_enabled?(:regions_fast_index)
+      fastindex
+      render action: :fastindex
+    else
+      logger.info("regions#index: action called")
+      accessible_facility_regions = authorize { current_admin.accessible_facility_regions(:view_reports) }
+
+      cache_key = current_admin.regions_access_cache_key
+      cache_version = "#{accessible_facility_regions.cache_key}/#{INDEX_CACHE_KEY}"
+
+      @accessible_regions = cache.fetch(cache_key, force: bust_cache?, version: cache_version, expires_in: 7.days) {
+        accessible_facility_regions.each_with_object({}) { |facility, result|
+          ancestors = facility.cached_ancestors.map { |facility| [facility.region_type, facility] }.to_h
+          org, state, district, block = ancestors.values_at("organization", "state", "district", "block")
+          result[org] ||= {}
+          result[org][state] ||= {}
+          result[org][state][district] ||= {}
+          result[org][state][district][block] ||= []
+          result[org][state][district][block] << facility
+        }
+      }
+      logger.info { "regions#index: Current admin has #{accessible_facility_regions.size} facility regions" }
+    end
+  end
+
+  def fastindex
+    logger.info("regions#fastindex: action called")
     accessible_facility_regions = authorize { current_admin.accessible_facility_regions(:view_reports) }
 
-    cache_key = current_admin.regions_access_cache_key
-    cache_version = "#{accessible_facility_regions.cache_key}/#{INDEX_CACHE_KEY}"
-
-    @accessible_regions = cache.fetch(cache_key, force: bust_cache?, version: cache_version, expires_in: 7.days) {
-      accessible_facility_regions.each_with_object({}) { |facility, result|
-        ancestors = facility.cached_ancestors.map { |facility| [facility.region_type, facility] }.to_h
-        org, state, district, block = ancestors.values_at("organization", "state", "district", "block")
-        result[org] ||= {}
-        result[org][state] ||= {}
-        result[org][state][district] ||= {}
-        result[org][state][district][block] ||= []
-        result[org][state][district][block] << facility
-      }
-    }
+    @org = Region.organization_regions.first
+    @region_tree = RegionTreeService.new(@org).with_facilities!(accessible_facility_regions)
+    logger.info { "regions#fastindex: Current admin has #{accessible_facility_regions.size} facility regions" }
   end
 
   def show
@@ -79,16 +95,12 @@ class Reports::RegionsController < AdminController
       [@region, @region.facility_regions].flatten
     end
 
+    if current_admin.feature_enabled?(:show_call_results) && @region.state_region?
+      regions.concat(@region.district_regions)
+    end
+
     @repository = Reports::Repository.new(regions, periods: @period_range, follow_ups_v2: current_admin.feature_enabled?(:follow_ups_v2))
     chart_repo = Reports::Repository.new(@region, periods: chart_range, follow_ups_v2: current_admin.feature_enabled?(:follow_ups_v2))
-
-    district_regions = if @region.state_region?
-      [@region, @region.district_regions].flatten
-    end
-
-    if @region.state_region?
-      @district_repository = Reports::Repository.new(district_regions, periods: @period_range, follow_ups_v2: current_admin.feature_enabled?(:follow_ups_v2))
-    end
 
     @chart_data = {
       patient_breakdown: PatientBreakdownService.call(region: @region, period: @period),
@@ -155,6 +167,22 @@ class Reports::RegionsController < AdminController
     respond_to do |format|
       format.csv do
         send_data csv, filename: filename
+      end
+    end
+  end
+
+  def monthly_district_report
+    return unless current_admin.feature_enabled?(:monthly_district_report)
+
+    @region ||= authorize { current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id]) }
+    @period = Period.month(params[:period] || Date.current)
+    zip = MonthlyDistrictReport::Exporter.new(@region, @period).export
+    report_date = @period.to_s.downcase
+    filename = "monthly-district-report-#{@region.slug}-#{report_date}.zip"
+
+    respond_to do |format|
+      format.zip do
+        send_data zip, filename: filename
       end
     end
   end

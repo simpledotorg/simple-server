@@ -339,7 +339,7 @@ footer {
         box-shadow: 0 0 0 10px rgba(0,0,0,0.5);
       }
     }
-    
+
     .sub-nav {
       margin: -16px -16px 0 -16px !important;
       line-height: 1.4;
@@ -635,16 +635,16 @@ span.inactive {
 }
 
 .password-toggle-button {
-	color: $blue;
-	bottom: 10px;
-	font-size: 14px;
-	height: 24px;
-	left: 425px;
-	line-height: 0;
-	padding: 0px;
-	position: absolute;
-	width: 47px;
-	z-index: 10;
+  color: $blue;
+  bottom: 10px;
+  font-size: 14px;
+  height: 20px;
+  right: 9px;
+  line-height: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+  position: absolute;
+  z-index: 10;
 }
 
 .password-form {
@@ -653,11 +653,6 @@ span.inactive {
 	.form-group {
 		margin-bottom: 7px
 	}
-}
-
-.password-input {
-	height: 44px;
-	width: 480px;
 }
 
 .error-message {
@@ -753,6 +748,5 @@ span.inactive {
     }
 }
 
-.subtitle {
-  color: $grey-dark;
-}
+.subtitle { color: $grey-dark; }
+.w-full { width: 100%; }

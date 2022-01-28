@@ -81,8 +81,8 @@ RSpec.describe DrugStocksQuery do
       other_facility_patients = create_list(:patient, 1, registration_facility: other_facility, registration_user: user)
       refresh_views
 
-      result = described_class.new(facilities: facilities,
-        for_end_of_month: for_end_of_month).drug_stocks_report
+      instance = described_class.new(facilities: facilities, for_end_of_month: for_end_of_month)
+      result = instance.drug_stocks_report
 
       expect(result[:total_patient_count]).to eq(9 + other_facility_patients.count)
       expect(result[:total_patient_days]["hypertension_ccb"][:patient_days]).to eq(12000)
@@ -100,6 +100,8 @@ RSpec.describe DrugStocksQuery do
           expected_total_stock = stocks_by_rxnorm[rxnorm_code][:in_stock] * (rxnorm_code == "329528" ? facilities.count + 1 : facilities.count)
           expect(result[:total_drugs_in_stock][rxnorm_code]).to eq(expected_total_stock)
         end
+
+        expect(Rails.cache.fetch(instance.drug_stocks_cache_key)).to eq(result)
       end
     end
 
@@ -298,8 +300,8 @@ RSpec.describe DrugStocksQuery do
       other_facility_patients = create_list(:patient, 1, registration_facility: other_facility, registration_user: user)
       refresh_views
 
-      result = described_class.new(facilities: facilities,
-        for_end_of_month: for_end_of_month).drug_consumption_report
+      instance = described_class.new(facilities: facilities, for_end_of_month: for_end_of_month)
+      result = instance.drug_consumption_report
 
       expect(result[:total_patient_count]).to eq(patients.count + other_facility_patients.count)
       expect(result[:total_drug_consumption]["hypertension_ccb"][:base_doses][:total]).to eq(4800)
@@ -313,6 +315,8 @@ RSpec.describe DrugStocksQuery do
         expect(result[:total_drug_consumption][drug_category][:base_doses][:drugs].first[:consumed]).not_to be_nil
         expect(result[:total_drug_consumption][drug_category][:base_doses][:drugs].first[:coefficient]).not_to be_nil
       end
+
+      expect(Rails.cache.fetch(instance.drug_consumption_cache_key)).to eq(result)
     end
 
     it "computes the drug consumption report facility totals" do

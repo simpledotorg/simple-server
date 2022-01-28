@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe MyFacilities::DrugStocksController, type: :controller do
   let(:facility_group_with_stock_tracked) { create(:facility_group) }
-  let!(:facilities_with_stock_tracked) { create_list(:facility, 3, facility_group: facility_group_with_stock_tracked, facility_size: :small) }
+  let!(:facilities_with_stock_tracked) { create_list(:facility, 4, facility_group: facility_group_with_stock_tracked, facility_size: :small) }
 
   let(:allowed_facility_for_manager) { facilities_with_stock_tracked.first }
   let(:disallowed_facility_for_manager) { facilities_with_stock_tracked.second }
@@ -30,23 +30,33 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
   describe "GET #drug_stocks" do
     context "as power_user" do
       it "returns a success response" do
-        sign_in(power_user.email_authentication)
+        create(:patient, registration_facility: facilities_with_stock_tracked.first)
+        RefreshReportingViews.new.refresh_v2
 
+        sign_in(power_user.email_authentication)
         get :drug_stocks, params: {}
+
         expect(response).to be_successful
       end
 
-      it "only include facilities with tracked protocol drugs" do
+      it "only include facilities with tracked protocol drugs and registered patients or assigned patients or follow ups" do
+        patient = create(:patient, :hypertension, recorded_at: 2.months.ago, registration_facility: facilities_with_stock_tracked.first, assigned_facility: facilities_with_stock_tracked.second)
+        create(:blood_pressure, patient: patient, recorded_at: 1.month.ago, facility: facilities_with_stock_tracked.third)
+        RefreshReportingViews.new.refresh_v2
+
         sign_in(power_user.email_authentication)
         get :drug_stocks, params: {facility_group: facility_group_with_stock_tracked.slug}
 
-        expect(assigns(:facilities)).to contain_exactly(*facilities_with_stock_tracked)
-        expect(assigns(:facilities)).not_to include(*facility_group.facilities)
+        expect(assigns(:facilities)).to contain_exactly(facilities_with_stock_tracked.first, facilities_with_stock_tracked.second, facilities_with_stock_tracked.third)
+        expect(assigns(:facilities)).not_to include(*facility_group.facilities, facilities_with_stock_tracked.fourth)
       end
     end
 
     context "as manager" do
-      it "only include facilities with tracked protocol drugs, and manager has access" do
+      it "only include facilities with tracked protocol drugs and patients, and manager has access" do
+        create(:patient, registration_facility: allowed_facility_for_manager)
+        RefreshReportingViews.new.refresh_v2
+
         sign_in(manager.email_authentication)
         get :drug_stocks, params: {}
 
@@ -55,16 +65,20 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
     end
 
     context "as viewer_reports_only" do
-      it "only include facilities with tracked protocol drugs, and viewer has access" do
+      it "only include facilities with tracked protocol drugs and patients, and viewer has access" do
+        create(:patient, registration_facility: facilities_with_stock_tracked.first)
+        create(:patient, registration_facility: facilities_with_stock_tracked.second)
+        RefreshReportingViews.new.refresh_v2
         sign_in(report_viewer.email_authentication)
         get :drug_stocks, params: {}
 
-        expect(assigns(:facilities)).to contain_exactly(*facilities_with_stock_tracked)
+        expect(assigns(:facilities)).to contain_exactly(facilities_with_stock_tracked.first, facilities_with_stock_tracked.second)
       end
     end
 
     context "uses the period reporting time zone to set display month" do
       before { sign_in(report_viewer.email_authentication) }
+
       it "sets previous month if not in last week of month" do
         Timecop.freeze("5 July 2021") do
           get :drug_stocks, params: {}

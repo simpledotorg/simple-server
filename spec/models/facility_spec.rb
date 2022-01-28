@@ -14,6 +14,7 @@ RSpec.describe Facility, type: :model do
     it { is_expected.to have_many(:registered_patients).class_name("Patient").with_foreign_key("registration_facility_id") }
     it { is_expected.to have_many(:assigned_patients).class_name("Patient").with_foreign_key("assigned_facility_id") }
     it { is_expected.to have_many(:assigned_hypertension_patients).class_name("Patient").with_foreign_key("assigned_facility_id") }
+    it { is_expected.to have_many(:facility_states).class_name("Reports::FacilityState") }
 
     context "slugs" do
       it "generates slug on creation and avoids conflicts via appending a UUID" do
@@ -234,6 +235,9 @@ RSpec.describe Facility, type: :model do
     it { is_expected.to validate_presence_of(:country) }
     it { is_expected.to validate_numericality_of(:pin) }
 
+    valid_sizes = Facility.facility_sizes.values
+    it { is_expected.to validate_inclusion_of(:facility_size).in_array(valid_sizes).with_message("not in #{valid_sizes.join(", ")}") }
+
     describe "valid_block" do
       let!(:organization) { create(:organization, name: "OrgTwo") }
       let!(:facility_group) { create(:facility_group, name: "FGThree", organization_id: organization.id) }
@@ -450,6 +454,16 @@ RSpec.describe Facility, type: :model do
     it "defaults to English if the country is not found" do
       facility = create(:facility, country: "Pakistan")
       expect(facility.locale).to eq "en"
+    end
+  end
+
+  describe "#localized_facility_size" do
+    it "picks up the correct translation of the facility size" do
+      previous_locale = I18n.locale
+      I18n.locale = :en_IN
+      expect(create(:facility, facility_size: "community").localized_facility_size).to eq "HWC/SC"
+      expect(create(:facility, facility_size: "large").localized_facility_size).to eq "SDH/DH"
+      I18n.locale = previous_locale
     end
   end
 end

@@ -1,33 +1,43 @@
-<h1><%= t("devise.password_creation.reset_header") %></h1>
+<div class="col-md-6 mx-auto">
+  <div class="card">
+    <h1><%= t("devise.password_creation.reset_header") %></h1>
 
-<div class="row">
-  <div class="col-md-8">
-    <%= bootstrap_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }, inline_errors: false) do |f| %>
-      <%= f.hidden_field :reset_password_token, readonly: true %>
-        <div class="password-form">
-          <%= f.password_field :password, type: "password", id: "password-input", class: "password-input", autofocus: true, autocomplete: "off" %>
-          <input id="toggle-password" type="button" class="btn btn-light password-toggle-button" value="Show">
+    <div class="row">
+      <div class="col">
+        <%= bootstrap_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }, inline_errors: false) do |f| %>
+          <%= f.hidden_field :reset_password_token, readonly: true %>
+          <div class="password-form">
+            <%= f.password_field :password, type: "password", id: "password-input", autofocus: true, autocomplete: "off" %>
+            <input id="toggle-password" type="button" class="btn btn-light password-toggle-button" value="Show">
+          </div>
+          <% if resource.errors[:password].any? %>
+            <div class="error-message"><%= t("devise.password_creation.submission_error") %></div>
+          <% end %>
+          <div id="validation-error-message" class="error-message hidden">
+            <%= t("devise.password_creation.validation_error") %>
+          </div>
+          <p class="password-prompt"><%= t("devise.password_creation.prompt") %></p>
+          <ul class="password-validation-checklist">
+            <li id="too_short"><i class="fas fa-check-circle"></i><%= t("devise.password_creation.too_short") %></li>
+            <li id="needs_number"><i class="fas fa-check-circle"></i><%= t("devise.password_creation.needs_number") %></li>
+            <li id="needs_lower"><i class="fas fa-check-circle"></i><%= t("devise.password_creation.needs_lower_case") %></li>
+            <li id="needs_upper"><i class="fas fa-check-circle"></i><%= t("devise.password_creation.needs_upper_case") %></li>
+          </ul>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="row">
+        <div class="col text-right">
+          <%= f.primary t("devise.password_creation.reset_button"), id: "password-submit", disabled: true %>
         </div>
-        <% if resource.errors[:password].any? %>
-          <div class="error-message"><%= t("devise.password_creation.submission_error") %></div>
-        <% end %>
-        <div id="validation-error-message" class="error-message hidden">
-          <%= t("devise.password_creation.validation_error") %>
-        </div>
-        <p class="password-prompt"><%= t("devise.password_creation.prompt") %></p>
-        <ul class="password-validation-checklist">
-          <li id="too_short"><i class="fas fa-check-circle"></i><%= t("devise.password_creation.too_short") %></li>
-          <li id="needs_number"><i class="fas fa-check-circle"></i><%= t("devise.password_creation.needs_number") %></li>
-          <li id="needs_lower"><i class="fas fa-check-circle"></i><%= t("devise.password_creation.needs_lower_case") %></li>
-          <li id="needs_upper"><i class="fas fa-check-circle"></i><%= t("devise.password_creation.needs_upper_case") %></li>
-        </ul>
-      <%= f.primary t("devise.password_creation.reset_button"), id: "password-submit", disabled: true %>
+      </div>
+    </div>
     <% end %>
   </div>
-</div>
 
-<div class="actions mt-4">
-  <%= render "email_authentications/shared/links" %>
+  <div class="actions mt-4">
+    <%= render "email_authentications/shared/links" %>
+  </div>
 </div>
 
 <script>

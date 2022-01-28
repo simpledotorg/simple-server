@@ -86,7 +86,8 @@ class AppointmentNotification::Worker
   rescue TwilioApiService::Error => error
     if error.reason == :invalid_phone_number
       notification.status_cancelled!
-      logger.info("notification #{notification.id} cancelled because of an invalid phone number")
+      logger.warn("notification #{notification.id} cancelled because of an invalid phone number")
+      Statsd.instance.increment("twilio.errors.invalid_phone_number")
       false
     else
       raise error
@@ -123,7 +124,7 @@ class AppointmentNotification::Worker
   end
 
   def medication_reminder_sms_senders
-    ENV.fetch("TWILIO_COVID_REMINDER_NUMBERS", "").split(",").map(&:strip)
+    ENV.fetch("TWILIO_APPOINTMENT_REMINDER_NUMBERS", "").split(",").map(&:strip)
   end
 
   def valid_notification?(notification)

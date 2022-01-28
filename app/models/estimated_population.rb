@@ -1,7 +1,9 @@
 class EstimatedPopulation < ApplicationRecord
+  include Memery
   belongs_to :region
 
   validates :diagnosis, presence: true
+  validates :population, presence: true
 
   enum diagnosis: {HTN: "HTN", DM: "DM"}
 
@@ -13,17 +15,26 @@ class EstimatedPopulation < ApplicationRecord
     end
   end
 
-  def is_population_available_for_all_districts
-    state = region.state_region
-    is_population_available = false
-    state&.district_regions&.each do |district|
-      if district.estimated_population&.population
-        is_population_available = true
-      else
-        is_population_available = false
-        break
-      end
+  def hypertension_patient_coverage_rate
+    population = region.estimated_population.population.to_f
+    rate = (region.registered_patients.with_hypertension.count.to_f / population) * 100
+    return nil if rate.infinite?
+    return 100.0 if rate > 100.0
+    return rate if rate > 0.0
+  end
+
+  memoize def show_coverage
+    if region.district_region?
+      !!region.estimated_population&.hypertension_patient_coverage_rate
+    elsif region.state_region?
+      region.estimated_population&.population_available_for_all_districts?
+    else
+      false
     end
-    is_population_available
+  end
+
+  def population_available_for_all_districts?
+    state = region.state_region
+    state.district_regions.includes(:estimated_population).all? { |district| district.estimated_population }
   end
 end

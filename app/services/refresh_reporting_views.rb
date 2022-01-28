@@ -58,10 +58,11 @@ class RefreshReportingViews
     Reports::OverdueCalls
     Reports::PatientVisit
     Reports::Prescriptions
+    Reports::PatientFollowUp
     Reports::PatientState
     Reports::FacilityState
     Reports::QuarterlyFacilityState
-    Reports::PatientFollowUp
+    Reports::FacilityStateGroup
   ].freeze
 
   def refresh_v1

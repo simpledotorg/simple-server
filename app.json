@@ -54,18 +54,6 @@
     "EMAIL_SUBJECT_PREFIX": {
       "value": "[REVIEW]"
     },
-    "ENABLE_EXOTEL_WHITELIST_API": {
-      "value": "false"
-    },
-    "ENABLE_GENERATE_ENCOUNTER_ID_ENDPOINT": {
-      "value": "true"
-    },
-    "ENABLE_PURGE_ENDPOINT_FOR_QA": {
-      "value": "false"
-    },
-    "ENABLE_SYNC_ENCOUNTERS": {
-      "value": "false"
-    },
     "EXOTEL_API_RATE_LIMIT_PER_MINUTE": {
       "value": "250"
     },
@@ -201,6 +189,9 @@
     },
     {
       "url": "heroku/ruby"
+    },
+    {
+      "url": "https://github.com/weibeld/heroku-buildpack-run"
     }
   ]
 }

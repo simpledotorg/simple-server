@@ -17,7 +17,7 @@ class Region < ApplicationRecord
   auto_strip_attributes :name, squish: true, upcase_first: true
 
   has_many :drug_stocks
-  has_one :estimated_population
+  has_one :estimated_population, autosave: true
 
   after_discard do
     estimated_population&.discard
@@ -196,6 +196,11 @@ class Region < ApplicationRecord
     I18n.t("region_type.#{region_type}")
   end
 
+  def localized_child_region_type
+    return nil if child_region_type.nil?
+    I18n.t("region_type.#{child_region_type}")
+  end
+
   def log_payload
     attrs = attributes.slice("name", "slug", "path")
     attrs["id"] = id.presence
@@ -214,6 +219,10 @@ class Region < ApplicationRecord
 
   def cache_version
     updated_at.utc.to_s(:usec)
+  end
+
+  def supports_htn_population_coverage
+    return true if region.district_region? || region.state_region?
   end
 
   private

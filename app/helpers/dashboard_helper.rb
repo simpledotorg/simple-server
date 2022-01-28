@@ -71,4 +71,9 @@ module DashboardHelper
   def facility_size_six_month_rate_change(facility_size_data, rate_name)
     facility_size_data[@period][rate_name] - facility_size_data[@start_period][rate_name] || 0
   end
+
+  def total_estimated_hypertensive_population_copy(region)
+    region_copy = "#{region.region_type}_copy"
+    t("total_estimated_hypertensive_population.#{region_copy}", region_name: region.name)
+  end
 end
