@@ -2,21 +2,21 @@ MedicationsDispensationGraph = function () {
   const reports = new Reports();
 
   this.listen = () => {
-    this.initializeMedicationsGraph();
+    this.initializeGraph();
   }
 
-  this.getMedicationsGraphData = () => {
+  this.getGraphData = () => {
     return JSON.parse(reports.getChartDataNode().textContent)["medications_dispensation"];
   }
 
-  this.getMedicationsGraphPeriods = () => {
-    let firstBucketData = Object.values(this.getMedicationsGraphData())[0];
+  this.getGraphPeriods = () => {
+    let firstBucketData = Object.values(this.getGraphData())[0];
     return Object.keys(firstBucketData["counts"]);
   }
 
-  this.initializeMedicationsGraph = () => {
-    const graphData = this.getMedicationsGraphData();
-    const medicationsGraphConfig = reports.createBaseGraphConfig();
+  this.initializeGraph = () => {
+    const graphData = this.getGraphData();
+    const graphConfig = reports.createBaseGraphConfig();
     let datasets = Object.keys(graphData).map(function(bucket, index){
       return {
         label: bucket,
@@ -28,14 +28,14 @@ MedicationsDispensationGraph = function () {
       }
     })
 
-    medicationsGraphConfig.plugins = [ChartDataLabels];
-    medicationsGraphConfig.type = 'bar';
-    medicationsGraphConfig.data = {
-      labels: this.getMedicationsGraphPeriods(),
+    graphConfig.plugins = [ChartDataLabels];
+    graphConfig.type = 'bar';
+    graphConfig.data = {
+      labels: this.getGraphPeriods(),
       datasets: datasets
     };
 
-    medicationsGraphConfig.options.scales = {
+    graphConfig.options.scales = {
       xAxes: [{
         stacked: false,
         display: true,
@@ -75,7 +75,7 @@ MedicationsDispensationGraph = function () {
       }]
     };
 
-    medicationsGraphConfig.options.plugins = {
+    graphConfig.options.plugins = {
       datalabels: {
         align: 'end',
         color: 'black',
@@ -91,7 +91,7 @@ MedicationsDispensationGraph = function () {
       }
     }
 
-    medicationsGraphConfig.options.tooltips = {
+    graphConfig.options.tooltips = {
       displayColors: false,
       xAlign: 'center',
       yAlign: 'top',
@@ -111,9 +111,9 @@ MedicationsDispensationGraph = function () {
       }
     }
 
-    const medicationsGraphCanvas = document.getElementById("MedicationsDistribution");
-    if (medicationsGraphCanvas) {
-      new Chart(medicationsGraphCanvas.getContext("2d"), medicationsGraphConfig);
+    const graphCanvas = document.getElementById("MedicationsDispensation");
+    if (graphCanvas) {
+      new Chart(graphCanvas.getContext("2d"), graphConfig);
     }
-    }
+  }
 }
