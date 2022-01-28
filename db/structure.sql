@@ -1610,26 +1610,27 @@ COMMENT ON COLUMN public.reporting_facilities.organization_slug IS 'Human readab
 
 CREATE MATERIALIZED VIEW public.reporting_facility_appointment_scheduled_days AS
  WITH latest_appointments_per_patient_per_month AS (
-         SELECT DISTINCT ON (appointments.patient_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, appointments.device_created_at)), 'YYYY-MM-01'::text))::date) appointments.id,
-            appointments.patient_id,
-            appointments.facility_id,
-            appointments.scheduled_date,
-            appointments.status,
-            appointments.cancel_reason,
-            appointments.device_created_at,
-            appointments.device_updated_at,
-            appointments.created_at,
-            appointments.updated_at,
-            appointments.remind_on,
-            appointments.agreed_to_visit,
-            appointments.deleted_at,
-            appointments.appointment_type,
-            appointments.user_id,
-            appointments.creation_facility_id,
-            (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, appointments.device_created_at)), 'YYYY-MM-01'::text))::date AS month_date
-           FROM public.appointments
-          WHERE (((date_part('days'::text, ((appointments.scheduled_date)::timestamp without time zone - appointments.device_created_at)))::integer >= 0) AND (appointments.device_created_at >= date_trunc('month'::text, (timezone('UTC'::text, now()) - '6 mons'::interval))))
-          ORDER BY appointments.patient_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, appointments.device_created_at)), 'YYYY-MM-01'::text))::date DESC
+         SELECT DISTINCT ON (a.patient_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, a.device_created_at)), 'YYYY-MM-01'::text))::date) a.id,
+            a.patient_id,
+            a.facility_id,
+            a.scheduled_date,
+            a.status,
+            a.cancel_reason,
+            a.device_created_at,
+            a.device_updated_at,
+            a.created_at,
+            a.updated_at,
+            a.remind_on,
+            a.agreed_to_visit,
+            a.deleted_at,
+            a.appointment_type,
+            a.user_id,
+            a.creation_facility_id,
+            (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, a.device_created_at)), 'YYYY-MM-01'::text))::date AS month_date
+           FROM (public.appointments a
+             JOIN public.patients p ON ((p.id = a.patient_id)))
+          WHERE (((date_part('days'::text, ((a.scheduled_date)::timestamp without time zone - a.device_created_at)))::integer >= 0) AND (a.device_created_at >= date_trunc('month'::text, (timezone('UTC'::text, now()) - '6 mons'::interval))) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, a.device_created_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) AND (p.deleted_at IS NULL) AND (a.deleted_at IS NULL))
+          ORDER BY a.patient_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, a.device_created_at)), 'YYYY-MM-01'::text))::date, a.device_created_at DESC
         ), scheduled_days_distribution AS (
          SELECT latest_appointments_per_patient_per_month.month_date,
             width_bucket((date_part('days'::text, ((latest_appointments_per_patient_per_month.scheduled_date)::timestamp without time zone - latest_appointments_per_patient_per_month.device_created_at)))::integer, ARRAY[0, 15, 30, 60]) AS bucket,

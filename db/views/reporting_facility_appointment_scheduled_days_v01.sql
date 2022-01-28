@@ -1,10 +1,14 @@
 WITH latest_appointments_per_patient_per_month AS (
-    SELECT DISTINCT ON (patient_id, month_date) *,
-        to_char(device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')), 'YYYY-MM-01')::date month_date
-    FROM appointments
-    WHERE extract('days' FROM (scheduled_date - device_created_at))::integer >= 0
-      AND device_created_at >= DATE_TRUNC('month', (now() AT TIME ZONE 'UTC') - INTERVAL '6 months')
-    ORDER BY patient_id, month_date desc
+    SELECT DISTINCT ON (patient_id, month_date) a.*,
+        to_char(a.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')), 'YYYY-MM-01')::date month_date
+    FROM appointments a
+    INNER JOIN patients p ON p.id = a.patient_id
+    WHERE extract('days' FROM (a.scheduled_date - a.device_created_at))::integer >= 0
+      AND a.device_created_at >= DATE_TRUNC('month', (now() AT TIME ZONE 'UTC') - INTERVAL '6 months')
+      AND date_trunc('month', a.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
+          > date_trunc('month', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
+      AND p.deleted_at IS NULL and a.deleted_at IS NULL
+    ORDER BY a.patient_id, month_date, a.device_created_at desc
 ),
  scheduled_days_distribution AS (
      SELECT month_date,
