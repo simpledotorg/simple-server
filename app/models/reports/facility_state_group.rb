@@ -18,6 +18,7 @@ module Reports
       state_region_id
     ]
 
+    # Returns the all time totals for a facility as a single FacilityStateGroup record
     def self.totals(facility)
       count_columns = column_names - NON_COUNT_FIELDS.map(&:to_s)
       calculations = count_columns.map { |c| "sum(#{c}) as #{c}" }
