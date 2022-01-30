@@ -63,7 +63,7 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
   end
 
   def total_count
-    Reports::FacilityStateGroup.total(facility, metric, diagnosis)
+    Reports::FacilityStateGroup.total(facility, metric, diagnosis_code)
   end
 
   def results_by_period

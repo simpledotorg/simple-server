@@ -8,6 +8,22 @@ module Reports
       true
     end
 
+    NON_COUNT_FIELDS = %i[
+      block_region_id
+      district_region_id
+      facility_id
+      facility_region_id
+      facility_region_slug
+      month_date
+      state_region_id
+    ]
+
+    def self.totals(facility)
+      count_columns = column_names - (NON_COUNT_FIELDS)
+      calculations = count_columns.map { |c| "sum(#{c} as c "}
+      where(facility: facility).select(calculations)
+    end
+
     # Returns the total counts for a facility of either registrations or follow ups
     #
     # monthly_registrations_all
