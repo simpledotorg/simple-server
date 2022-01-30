@@ -19,9 +19,9 @@ module Reports
     ]
 
     def self.totals(facility)
-      count_columns = column_names - (NON_COUNT_FIELDS)
-      calculations = count_columns.map { |c| "sum(#{c} as c "}
-      where(facility: facility).select(calculations)
+      count_columns = column_names - NON_COUNT_FIELDS.map(&:to_s)
+      calculations = count_columns.map { |c| "sum(#{c}) as #{c}" }
+      where(facility: facility).select(calculations).to_a.first
     end
 
     # Returns the total counts for a facility of either registrations or follow ups
