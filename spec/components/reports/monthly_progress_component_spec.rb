@@ -14,7 +14,7 @@ RSpec.describe Reports::MonthlyProgressComponent, type: :component do
   let(:results) { Reports::FacilityStateGroup.where(facility_region_id: facility.region.id, month_date: date_range).to_a }
 
   it "returns totals based on metric / diagnosis" do
-    patient_1 = create(:patient, :hypertension, recorded_at: 2.years.ago, registration_user: user, registration_facility: facility)
+    create(:patient, :hypertension, recorded_at: 2.years.ago, registration_user: user, registration_facility: facility)
     refresh_views
 
     component = described_class.new(facility: facility, diagnosis: :all, metric: :registrations, results: results, range: range)
@@ -23,7 +23,7 @@ RSpec.describe Reports::MonthlyProgressComponent, type: :component do
 
   it "returns the total and monthly counts for :all diagnosis" do
     Timecop.freeze("November 1st 2021 10:00:00 IST") do
-      patient_1 = create(:patient, :hypertension, gender: :female, recorded_at: Time.current, registration_user: user, registration_facility: facility)
+      create(:patient, :hypertension, gender: :female, recorded_at: Time.current, registration_user: user, registration_facility: facility)
     end
     Timecop.freeze(jan_2022) do
       refresh_views
@@ -38,7 +38,7 @@ RSpec.describe Reports::MonthlyProgressComponent, type: :component do
 
   it "returns the monthly counts by gender for :hypertension" do
     Timecop.freeze("November 1st 2021 10:00:00 IST") do
-      patient_1 = create(:patient, :hypertension, gender: :female, recorded_at: Time.current, registration_user: user, registration_facility: facility)
+      create(:patient, :hypertension, gender: :female, recorded_at: Time.current, registration_user: user, registration_facility: facility)
     end
     Timecop.freeze(jan_2022) do
       refresh_views

@@ -9,7 +9,7 @@ module Reports
     end
 
     # Returns the total counts for a facility of either registrations or follow ups
-    # 
+    #
     # monthly_registrations_all
     # monthly_registrations_dm_all
     # monthly_registrations_htn_all

@@ -67,7 +67,7 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
   end
 
   def results_by_period
-    @results_by_period ||= results.each_with_object({}) do |result, hsh| 
+    @results_by_period ||= results.each_with_object({}) do |result, hsh|
       hsh[result.period] = result
     end
   end
@@ -79,10 +79,9 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
 
   def monthly_count_by_gender(period, gender)
     field = "monthly_#{metric}_#{diagnosis_code}_#{gender}"
-    result = results_by_period[period].attributes[field]
+    results_by_period[period].attributes[field]
     # d field
     # d result
-    result
   end
 
   def total_count_by_gender(gender)
