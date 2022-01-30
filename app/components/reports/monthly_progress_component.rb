@@ -7,15 +7,15 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
   attr_reader :gender_groups
   attr_reader :metric
   attr_reader :range
-  attr_reader :results
+  attr_reader :counts
 
-  def initialize(facility:, diagnosis:, metric:, results:, range:, gender_groups: true)
+  def initialize(facility:, diagnosis:, metric:, counts:, total_counts:, range:, gender_groups: true)
     @facility = facility
     @diagnosis = diagnosis
-    # @diagnosis_code = @diagnosis == :hypertension ? "htn" : "dm"
     @metric = metric
-    @results = results
+    @counts = counts
     @range = range
+    @total_counts = total_counts
     @total_field = ["monthly", metric, diagnosis_code, "all"].compact.join("_")
     @gender_groups = gender_groups
   end
@@ -62,31 +62,30 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
     end
   end
 
-  def total_count
-    Reports::FacilityStateGroup.total(facility, metric, diagnosis_code)
+  def total_count(gender: :all)
+    field = ["monthly", metric, diagnosis_code_for_non_gender_breakdowns, "all"].compact.join("_")
+    @total_counts.attributes[field]
   end
 
-  def results_by_period
-    @results_by_period ||= results.each_with_object({}) do |result, hsh|
+  def counts_by_period
+    @counts_by_period ||= counts.each_with_object({}) do |result, hsh|
       hsh[result.period] = result
     end
   end
 
   def monthly_count(period)
     field = ["monthly", metric, diagnosis_code_for_non_gender_breakdowns, "all"].compact.join("_")
-    results_by_period[period].attributes[field]
+    counts_by_period[period].attributes[field]
   end
 
   def monthly_count_by_gender(period, gender)
     field = "monthly_#{metric}_#{diagnosis_code}_#{gender}"
-    results_by_period[period].attributes[field]
-    # d field
-    # d result
+    counts_by_period[period].attributes[field]
   end
 
   def total_count_by_gender(gender)
     return "TODO"
     field = "monthly_#{metric}_#{@diagnosis_code}_#{gender}"
-    results.sum(field).truncate
+    counts.sum(field).truncate
   end
 end
