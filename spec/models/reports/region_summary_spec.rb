@@ -87,6 +87,11 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
         month_date
         monthly_overdue_calls
         monthly_follow_ups
+        total_appts_scheduled
+        appts_scheduled_0_to_14_days
+        appts_scheduled_15_to_30_days
+        appts_scheduled_31_to_60_days
+        appts_scheduled_more_than_60_days
       ].map(&:to_s)
       (3.months.ago.to_period..now.to_period).each do |period|
         expect(results["facility-1"][period].keys).to match_array(expected_keys)
@@ -247,6 +252,19 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       expect(facility_results[period]["adjusted_missed_visit_under_care_with_lost_to_follow_up"]).to eq(1)
       expect(facility_results[period]["adjusted_visited_no_bp_lost_to_follow_up"]).to eq(0)
       expect(facility_results[period]["lost_to_follow_up"]).to eq(1)
+    end
+  end
+
+  describe "#for_regions" do
+    it "excludes facilities where registrations, assigned patients and follow ups are all zero" do
+      facility = create(:facility, created_at: 1.year.ago)
+      range = Period.month(2.years.ago)..Period.current
+      create(:patient, assigned_facility: facility, recorded_at: Date.today)
+
+      RefreshReportingViews.new.refresh_v2
+
+      expect(described_class.new(facility, range: range).for_regions.where("month_date < ?", Period.current.to_date)).to be_empty
+      expect(described_class.new(facility, range: range).for_regions.where("month_date = ?", Period.current.to_date)).not_to be_empty
     end
   end
 end
