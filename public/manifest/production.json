@@ -26,7 +26,7 @@
     },
     {
       "country_code": "DEMO",
-      "endpoint": "https://api-sandbox.simple.org/api/",
+      "endpoint": "https://api-demo.simple.org/api/",
       "display_name": "Demo Country",
       "isd_code": "91"
     }    
@@ -84,7 +84,7 @@
         "deployments": [
           {
             "display_name": "Demo Country",
-            "endpoint": "https://api-sandbox.simple.org/api/"
+            "endpoint": "https://api-demo.simple.org/api/",
           }
         ]
       }
