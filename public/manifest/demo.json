@@ -23,6 +23,12 @@
       "endpoint": "https://api-demo.lk.simple.org/api/",
       "display_name": "Sri Lanka",
       "isd_code": "94"
+    },
+    {
+      "country_code": "IN",
+      "endpoint": "https://api-sandbox.simple.org/api/",
+      "display_name": "Sandbox",
+      "isd_code": "91"
     }
   ],
   "v2": {
@@ -68,6 +74,17 @@
           {
             "display_name": "Sri Lanka",
             "endpoint": "https://api-demo.lk.simple.org/api/"
+          }
+        ]
+      },
+      {
+        "country_code": "DEMO",
+        "display_name": "Demo Country",
+        "isd_code": "91",
+        "deployments": [
+          {
+            "display_name": "Demo Country",
+            "endpoint": "https://api-sandbox.simple.org/api/"
           }
         ]
       }
