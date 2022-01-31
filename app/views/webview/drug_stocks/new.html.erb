@@ -31,7 +31,7 @@
           </p>
           <div class="d-flex ai-center mb-8px">
             <div class="d-inline-block mr-12px">
-              <%= inline_file("check-mark.svg") %>
+              <%= inline_file("check-mark-small.svg") %>
             </div>
             <p class="m-0px p-0px ta-left fw-regular fs-16px c-grey-dark">
               Enter the number of tablets for each drug
@@ -39,7 +39,7 @@
           </div>
           <div class="d-flex ai-center mb-8px">
             <div class="mr-12px">
-              <%= inline_file("check-mark.svg") %>
+              <%= inline_file("check-mark-small.svg") %>
             </div>
             <p class="m-0px p-0px ta-left fw-regular fs-16px c-grey-dark">
               Leave black if you don't know an amount
@@ -47,7 +47,7 @@
           </div>
           <div class="d-flex ai-center">
             <div class="mr-12px">
-              <%= inline_file("check-mark.svg") %>
+              <%= inline_file("check-mark-small.svg") %>
             </div>
             <p class="m-0px p-0px ta-left fw-regular fs-16px c-grey-dark">
               Enter "0" if a drug's stock is out
@@ -116,8 +116,8 @@
                 <% end %>
               <% end %>
             </div>
-            <div class="button-fixed-bottom">
-              <%= form.button "SAVE", class: "button" %>
+            <div class="p-fixed b-0 l-0 zi-100 w-100 p-8px bgc-blue-light bs-border-box bs-fixed-card" style="padding-bottom: 12px;">
+              <%= form.button "SAVE", class: "d-block w-100 p-16px ta-center bgc-blue tt-uppercase ls-1_25px br-4px fs-16px b-none bs-primary-button bs-border-box", style: "font-weight: 700; color: #ffffff;" %>
             </div>
           <% end %>
         </div>
