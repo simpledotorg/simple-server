@@ -74,9 +74,9 @@ describe Reports::SchemaV2, type: :model do
   describe "appointment scheduled days percentages" do
     it "returns percentages of appointments scheduled across months in a given range" do
       facility = create(:facility)
-      create(:patient, assigned_facility: facility)
+      patient = create(:patient, assigned_facility: facility, recorded_at: 1.month.ago)
       range = Period.month(2.month.ago)..Period.current
-      _appointment_scheduled_0_to_14_days = create(:appointment, facility: facility, scheduled_date: 10.days.from_now, device_created_at: Date.today)
+      _appointment_scheduled_0_to_14_days = create(:appointment, patient: patient, facility: facility, scheduled_date: 10.days.from_now, device_created_at: Date.today)
 
       refresh_views
 
@@ -88,20 +88,18 @@ describe Reports::SchemaV2, type: :model do
 
     it "returns percentages of appointments scheduled in a month in the given range" do
       facility = create(:facility)
-      create(:patient, assigned_facility: facility)
+      patient = create(:patient, assigned_facility: facility, recorded_at: 4.month.ago)
       range = Period.month(2.month.ago)..Period.current
-      _appointment_scheduled_0_to_14_days = create(:appointment, facility: facility, scheduled_date: 10.days.from_now, device_created_at: Date.today)
-      _appointment_scheduled_15_to_30_days = create(:appointment, facility: facility, scheduled_date: 16.days.from_now, device_created_at: Date.today)
-      _appointment_scheduled_31_to_60_days = create(:appointment, facility: facility, scheduled_date: 36.days.from_now, device_created_at: Date.today)
-      _appointment_scheduled_more_than_60_days = create(:appointment, facility: facility, scheduled_date: 70.days.from_now, device_created_at: Date.today)
+      _appointment_scheduled_0_to_14_days = create(:appointment, patient: patient, facility: facility, scheduled_date: 10.days.from_now, device_created_at: Date.today)
+      _appointment_scheduled_15_to_30_days = create(:appointment, patient: patient, facility: facility, scheduled_date: 1.month.ago + 16.days, device_created_at: 1.month.ago)
+      _appointment_scheduled_more_than_60_days = create(:appointment, patient: patient, facility: facility, scheduled_date: 2.month.ago + 70.days, device_created_at: 2.month.ago)
 
       refresh_views
 
       schema = described_class.new(Region.where(id: facility.region), periods: range)
-      expect(schema.appts_scheduled_0_to_14_days_rates[facility.slug][range.last]).to eq(25)
-      expect(schema.appts_scheduled_15_to_30_days_rates[facility.slug][range.last]).to eq(25)
-      expect(schema.appts_scheduled_31_to_60_days_rates[facility.slug][range.last]).to eq(25)
-      expect(schema.appts_scheduled_more_than_60_days_rates[facility.slug][range.last]).to eq(25)
+      expect(schema.appts_scheduled_0_to_14_days_rates[facility.slug][range.last]).to eq(100)
+      expect(schema.appts_scheduled_15_to_30_days_rates[facility.slug][range.to_a.second]).to eq(100)
+      expect(schema.appts_scheduled_more_than_60_days_rates[facility.slug][range.first]).to eq(100)
     end
 
     it "returns zeros when there is no appointment data in the month" do
