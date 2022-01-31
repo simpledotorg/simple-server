@@ -462,8 +462,8 @@ CREATE TABLE public.estimated_populations (
     region_id uuid NOT NULL,
     population integer,
     diagnosis character varying DEFAULT 'HTN'::character varying NOT NULL,
-    created_by uuid,
-    updated_by uuid,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
     deleted_at timestamp without time zone
 );
 
@@ -1605,6 +1605,53 @@ COMMENT ON COLUMN public.reporting_facilities.organization_slug IS 'Human readab
 
 
 --
+-- Name: reporting_facility_appointment_scheduled_days; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+--
+
+CREATE MATERIALIZED VIEW public.reporting_facility_appointment_scheduled_days AS
+ WITH latest_appointments_per_patient_per_month AS (
+         SELECT DISTINCT ON (a.patient_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, a.device_created_at)), 'YYYY-MM-01'::text))::date) a.id,
+            a.patient_id,
+            a.facility_id,
+            a.scheduled_date,
+            a.status,
+            a.cancel_reason,
+            a.device_created_at,
+            a.device_updated_at,
+            a.created_at,
+            a.updated_at,
+            a.remind_on,
+            a.agreed_to_visit,
+            a.deleted_at,
+            a.appointment_type,
+            a.user_id,
+            a.creation_facility_id,
+            (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, a.device_created_at)), 'YYYY-MM-01'::text))::date AS month_date
+           FROM (public.appointments a
+             JOIN public.patients p ON ((p.id = a.patient_id)))
+          WHERE (((date_part('days'::text, ((a.scheduled_date)::timestamp without time zone - a.device_created_at)))::integer >= 0) AND (a.device_created_at >= date_trunc('month'::text, (timezone('UTC'::text, now()) - '6 mons'::interval))) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, a.device_created_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) AND (p.deleted_at IS NULL) AND (a.deleted_at IS NULL))
+          ORDER BY a.patient_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, a.device_created_at)), 'YYYY-MM-01'::text))::date, a.device_created_at DESC
+        ), scheduled_days_distribution AS (
+         SELECT latest_appointments_per_patient_per_month.month_date,
+            width_bucket((date_part('days'::text, ((latest_appointments_per_patient_per_month.scheduled_date)::timestamp without time zone - latest_appointments_per_patient_per_month.device_created_at)))::integer, ARRAY[0, 15, 30, 60]) AS bucket,
+            count(*) AS number_of_appointments,
+            latest_appointments_per_patient_per_month.creation_facility_id AS facility_id
+           FROM latest_appointments_per_patient_per_month
+          GROUP BY (width_bucket((date_part('days'::text, ((latest_appointments_per_patient_per_month.scheduled_date)::timestamp without time zone - latest_appointments_per_patient_per_month.device_created_at)))::integer, ARRAY[0, 15, 30, 60])), latest_appointments_per_patient_per_month.creation_facility_id, latest_appointments_per_patient_per_month.month_date
+        )
+ SELECT scheduled_days_distribution.facility_id,
+    scheduled_days_distribution.month_date,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 1)))::integer AS appts_scheduled_0_to_14_days,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 2)))::integer AS appts_scheduled_15_to_30_days,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 3)))::integer AS appts_scheduled_31_to_60_days,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 4)))::integer AS appts_scheduled_more_than_60_days,
+    (sum(scheduled_days_distribution.number_of_appointments))::integer AS total_appts_scheduled
+   FROM scheduled_days_distribution
+  GROUP BY scheduled_days_distribution.facility_id, scheduled_days_distribution.month_date
+  WITH NO DATA;
+
+
+--
 -- Name: reporting_months; Type: VIEW; Schema: public; Owner: -
 --
 
@@ -1964,14 +2011,14 @@ CREATE MATERIALIZED VIEW public.reporting_patient_visits AS
 CREATE MATERIALIZED VIEW public.reporting_prescriptions AS
  SELECT p.id AS patient_id,
     p.month_date,
-    COALESCE(sum(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Amlodipine'::text)), (0)::double precision) AS amlodipine,
-    COALESCE(sum(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Telmisartan'::text)), (0)::double precision) AS telmisartan,
-    COALESCE(sum(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Losartan Potassium'::text)), (0)::double precision) AS losartan,
-    COALESCE(sum(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Atenolol'::text)), (0)::double precision) AS atenolol,
-    COALESCE(sum(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Enalapril'::text)), (0)::double precision) AS enalapril,
-    COALESCE(sum(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Chlorthalidone'::text)), (0)::double precision) AS chlorthalidone,
-    COALESCE(sum(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Hydrochlorothiazide'::text)), (0)::double precision) AS hydrochlorothiazide,
-    COALESCE(sum(prescriptions.clean_dosage) FILTER (WHERE (((prescriptions.clean_name)::text <> ALL (ARRAY[('Amlodipine'::character varying)::text, ('Telmisartan'::character varying)::text, ('Losartan'::character varying)::text, ('Atenolol'::character varying)::text, ('Enalapril'::character varying)::text, ('Chlorthalidone'::character varying)::text, ('Hydrochlorothiazide'::character varying)::text])) AND (prescriptions.medicine_purpose_hypertension = true))), (0)::double precision) AS other_bp_medications
+    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Amlodipine'::text)), (0)::double precision) AS amlodipine,
+    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Telmisartan'::text)), (0)::double precision) AS telmisartan,
+    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Losartan Potassium'::text)), (0)::double precision) AS losartan,
+    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Atenolol'::text)), (0)::double precision) AS atenolol,
+    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Enalapril'::text)), (0)::double precision) AS enalapril,
+    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Chlorthalidone'::text)), (0)::double precision) AS chlorthalidone,
+    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Hydrochlorothiazide'::text)), (0)::double precision) AS hydrochlorothiazide,
+    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE (((prescriptions.clean_name)::text <> ALL (ARRAY[('Amlodipine'::character varying)::text, ('Telmisartan'::character varying)::text, ('Losartan'::character varying)::text, ('Atenolol'::character varying)::text, ('Enalapril'::character varying)::text, ('Chlorthalidone'::character varying)::text, ('Hydrochlorothiazide'::character varying)::text])) AND (prescriptions.medicine_purpose_hypertension = true))), (0)::double precision) AS other_bp_medications
    FROM (( SELECT p_1.id,
             p_1.full_name,
             p_1.age,
@@ -2659,15 +2706,15 @@ CREATE MATERIALIZED VIEW public.reporting_facility_state_groups AS
         ), follow_ups AS (
          SELECT reporting_patient_follow_ups.facility_id,
             reporting_patient_follow_ups.month_date,
-            count(*) AS monthly_follow_ups_all,
-            count(*) FILTER (WHERE (reporting_patient_follow_ups.hypertension = 'yes'::text)) AS monthly_follow_ups_htn_all,
-            count(*) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'female'::public.gender_enum))) AS monthly_follow_ups_htn_female,
-            count(*) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'male'::public.gender_enum))) AS monthly_follow_ups_htn_male,
-            count(*) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'transgender'::public.gender_enum))) AS monthly_follow_ups_htn_transgender,
-            count(*) FILTER (WHERE (reporting_patient_follow_ups.diabetes = 'yes'::text)) AS monthly_follow_ups_dm_all,
-            count(*) FILTER (WHERE ((reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'female'::public.gender_enum))) AS monthly_follow_ups_dm_female,
-            count(*) FILTER (WHERE ((reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'male'::public.gender_enum))) AS monthly_follow_ups_dm_male,
-            count(*) FILTER (WHERE ((reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'transgender'::public.gender_enum))) AS monthly_follow_ups_dm_transgender
+            count(DISTINCT reporting_patient_follow_ups.patient_id) AS monthly_follow_ups_all,
+            count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE (reporting_patient_follow_ups.hypertension = 'yes'::text)) AS monthly_follow_ups_htn_all,
+            count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'female'::public.gender_enum))) AS monthly_follow_ups_htn_female,
+            count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'male'::public.gender_enum))) AS monthly_follow_ups_htn_male,
+            count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'transgender'::public.gender_enum))) AS monthly_follow_ups_htn_transgender,
+            count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE (reporting_patient_follow_ups.diabetes = 'yes'::text)) AS monthly_follow_ups_dm_all,
+            count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'female'::public.gender_enum))) AS monthly_follow_ups_dm_female,
+            count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'male'::public.gender_enum))) AS monthly_follow_ups_dm_male,
+            count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'transgender'::public.gender_enum))) AS monthly_follow_ups_dm_transgender
            FROM public.reporting_patient_follow_ups
           GROUP BY reporting_patient_follow_ups.facility_id, reporting_patient_follow_ups.month_date
         )
@@ -2850,8 +2897,13 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
     monthly_cohort_outcomes.visited_no_bp AS monthly_cohort_visited_no_bp,
     monthly_cohort_outcomes.patients AS monthly_cohort_patients,
     monthly_overdue_calls.call_results AS monthly_overdue_calls,
-    monthly_follow_ups.follow_ups AS monthly_follow_ups
-   FROM (((((((public.reporting_facilities rf
+    monthly_follow_ups.follow_ups AS monthly_follow_ups,
+    reporting_facility_appointment_scheduled_days.total_appts_scheduled,
+    reporting_facility_appointment_scheduled_days.appts_scheduled_0_to_14_days,
+    reporting_facility_appointment_scheduled_days.appts_scheduled_15_to_30_days,
+    reporting_facility_appointment_scheduled_days.appts_scheduled_31_to_60_days,
+    reporting_facility_appointment_scheduled_days.appts_scheduled_more_than_60_days
+   FROM ((((((((public.reporting_facilities rf
      JOIN public.reporting_months cal ON (true))
      LEFT JOIN registered_patients ON (((registered_patients.month_date = cal.month_date) AND (registered_patients.region_id = rf.facility_region_id))))
      LEFT JOIN assigned_patients ON (((assigned_patients.month_date = cal.month_date) AND (assigned_patients.region_id = rf.facility_region_id))))
@@ -2859,6 +2911,7 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
      LEFT JOIN monthly_cohort_outcomes ON (((monthly_cohort_outcomes.month_date = cal.month_date) AND (monthly_cohort_outcomes.region_id = rf.facility_region_id))))
      LEFT JOIN monthly_overdue_calls ON (((monthly_overdue_calls.month_date = cal.month_date) AND (monthly_overdue_calls.region_id = rf.facility_region_id))))
      LEFT JOIN monthly_follow_ups ON (((monthly_follow_ups.month_date = cal.month_date) AND (monthly_follow_ups.facility_id = rf.facility_id))))
+     LEFT JOIN public.reporting_facility_appointment_scheduled_days ON (((reporting_facility_appointment_scheduled_days.month_date = cal.month_date) AND (reporting_facility_appointment_scheduled_days.facility_id = rf.facility_id))))
   WITH NO DATA;
 
 
@@ -3550,6 +3603,13 @@ ALTER TABLE ONLY public.users
 --
 
 CREATE UNIQUE INDEX clean_medicine_to_dosages__unique_name_and_dosage ON public.clean_medicine_to_dosages USING btree (medicine, dosage, rxcui);
+
+
+--
+-- Name: facility_state_groups_month_date_region_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX facility_state_groups_month_date_region_id ON public.reporting_facility_state_groups USING btree (month_date, facility_region_id);
 
 
 --
@@ -4393,6 +4453,13 @@ CREATE INDEX index_reminder_templates_on_treatment_group_id ON public.reminder_t
 
 
 --
+-- Name: index_reporting_facility_appointment_scheduled_days; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_reporting_facility_appointment_scheduled_days ON public.reporting_facility_appointment_scheduled_days USING btree (month_date, facility_id);
+
+
+--
 -- Name: index_teleconsultations_on_facility_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4980,9 +5047,12 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211216144440'),
 ('20211216154413'),
 ('20211220230913'),
+('20211231084747'),
+('20211231110314'),
 ('20220106075216'),
 ('20220112142707'),
 ('20220118190607'),
-('20220124212048');
+('20220124212048'),
+('20220124215220');
 
 
