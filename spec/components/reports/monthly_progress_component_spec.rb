@@ -45,7 +45,7 @@ RSpec.describe Reports::MonthlyProgressComponent, type: :component do
       refresh_views
       counts = Reports::FacilityStateGroup.where(facility_region_id: facility.region.id, month_date: date_range)
 
-      component = described_class.new(facility: facility, diagnosis: :all, metric: :registrations, counts: counts, total_counts: total_counts, range: range)
+      component = described_class.new(facility: facility, diagnosis: :hypertension, metric: :registrations, counts: counts, total_counts: total_counts, range: range)
       expect(component.monthly_count_by_gender(november_2021_period, :female)).to eq(1)
       expect(component.monthly_count_by_gender(november_2021_period, :male)).to eq(0)
 
