@@ -3,14 +3,14 @@
     diagnosis: :all, 
     metric: metric,
     range: @range,
-    results: @results,
+    counts: @counts,
     total_counts: @total_counts,
     gender_groups: false)) %>
 
   <%= render(Reports::MonthlyProgressComponent.new(facility: current_facility, 
     diagnosis: :diabetes, 
     metric: metric,
-    results: @results,
+    counts: @counts,
     total_counts: @total_counts,
     range: @range)) %>
 
@@ -19,6 +19,6 @@
 <%= render(Reports::MonthlyProgressComponent.new(facility: current_facility, 
   diagnosis: :hypertension, 
   metric: metric,
-  results: @results,
+  counts: @counts,
   total_counts: @total_counts,
   range: @range)) %>
