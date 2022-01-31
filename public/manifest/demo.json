@@ -78,12 +78,12 @@
         ]
       },
       {
-        "country_code": "IN",
-        "display_name": "Sandbox",
+        "country_code": "DEMO",
+        "display_name": "Demo Country",
         "isd_code": "91",
         "deployments": [
           {
-            "display_name": "Sandbox",
+            "display_name": "Demo Country",
             "endpoint": "https://api-sandbox.simple.org/api/"
           }
         ]
