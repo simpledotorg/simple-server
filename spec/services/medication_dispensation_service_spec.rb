@@ -4,10 +4,10 @@ RSpec.describe MedicationDispensationService, type: :model do
   it "returns bucketed days of medications data" do
     facility = create(:facility)
     period = Period.current
-    _patient = create(:patient, assigned_facility: facility, recorded_at: 1.year.ago)
-    _appointment_created_today = create(:appointment, facility: facility, scheduled_date: 10.days.from_now, device_created_at: Date.today)
-    _appointment_created_1_month_ago = create(:appointment, facility: facility, scheduled_date: Date.today, device_created_at: 1.month.ago)
-    _appointment_created_2_month_ago = create(:appointment, facility: facility, scheduled_date: Date.today, device_created_at: 2.month.ago)
+    patient = create(:patient, recorded_at: 1.year.ago)
+    _appointment_created_today = create(:appointment, patient: patient, facility: facility, scheduled_date: 10.days.from_now, device_created_at: Date.today)
+    _appointment_created_1_month_ago = create(:appointment, patient: patient, facility: facility, scheduled_date: Date.today, device_created_at: 1.month.ago)
+    _appointment_created_2_month_ago = create(:appointment, patient: patient, facility: facility, scheduled_date: Date.today, device_created_at: 2.month.ago)
 
     RefreshReportingViews.new.refresh_v2
 
