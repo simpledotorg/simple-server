@@ -25,9 +25,9 @@
       "isd_code": "94"
     },
     {
-      "country_code": "IN",
+      "country_code": "DEMO",
       "endpoint": "https://api-sandbox.simple.org/api/",
-      "display_name": "Sandbox",
+      "display_name": "Demo Country",
       "isd_code": "91"
     }
   ],
