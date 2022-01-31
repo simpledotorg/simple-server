@@ -81,7 +81,6 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
 
   def monthly_count(period)
     field = ["monthly", metric, diagnosis_code_for_non_gender_breakdowns, "all"].compact.join("_")
-    d field
     counts_by_period[period]&.attributes[field]
   end
 
