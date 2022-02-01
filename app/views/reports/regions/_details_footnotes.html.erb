@@ -103,7 +103,8 @@
       </div>
     </div>
   <% end %>
-  <div class="mb-0px">
+  <% if current_admin.feature_enabled?(:medications_dispensation) %>
+    <div class="mb-0px">
     <p class="mb-8px fs-16px fw-bold c-grey-dark">
       Days of medications handed to follow-up patients
     </p>
@@ -116,4 +117,5 @@
       </p>
     </div>
   </div>
+  <% end %>
 </div>

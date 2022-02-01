@@ -84,7 +84,7 @@
         "deployments": [
           {
             "display_name": "Demo Country",
-            "endpoint": "https://api-demo.simple.org/api/",
+            "endpoint": "https://api-demo.simple.org/api/"
           }
         ]
       }
