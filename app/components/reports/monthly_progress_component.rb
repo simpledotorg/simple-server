@@ -55,15 +55,12 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
 
   # The default diagnosis is the one we display at the top level for the first display of progress tab
   def default_diagnosis
-    if facility.diabetes_enabled?
-      :all
-    else
-      :hypertension
-    end
+    :all
   end
 
   def total_count(gender: :all)
     field = ["monthly", metric, diagnosis_code_for_non_gender_breakdowns, "all"].compact.join("_")
+    d field
     @total_counts.attributes[field]
   end
 

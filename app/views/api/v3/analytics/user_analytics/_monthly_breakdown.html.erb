@@ -1,20 +1,49 @@
-<% if current_facility.diabetes_enabled? %>
-  <%= render(Reports::MonthlyProgressComponent.new(facility: current_facility, 
-    diagnosis: :all, 
-    metric: metric,
-    range: @range,
-    counts: @counts,
-    total_counts: @total_counts,
-    gender_groups: false)) %>
+<%= render(Reports::MonthlyProgressV2Component.new(current_facility, range: @range)) %>
 
-  <%= render(Reports::MonthlyProgressComponent.new(facility: current_facility, 
-    diagnosis: :diabetes, 
-    metric: metric,
-    counts: @counts,
-    total_counts: @total_counts,
-    range: @range)) %>
-
+<%= tag.table(class: "progress-table registrations") do %>
+  <tr class="total">
+    <td class="row-label"><%= raw t("analytics.all_time") %></td>
+    <td class="row-value">
+      <%= @total_counts.attributes[:monthly_registrations_all] %>
+    </td>
+  </tr>
+  <% @range.reverse_each do |period| %>
+    <tr>
+      <td class="row-label no-padding"><%= period.to_s(:month_name) %></td>
+      <td><%= @counts.find { |c| c.period == period }[:monthly_registrations_all] %></td>
+    </tr>
+  <% end %>
 <% end %>
+
+<%= tag.table(class: "progress-table registrations") do %>
+  <tr class="total">
+    <td class="row-label"><%= raw t("analytics.all_time") %></td>
+    <td class="row-value">
+      <%= @total_counts.attributes[:monthly_registrations_htn_all] %>
+    </td>
+  </tr>
+  <% @range.reverse_each do |period| %>
+    <tr>
+      <td class="row-label no-padding"><%= period.to_s(:month_name) %></td>
+      <td><%= @counts.find { |c| c.period == period }[:monthly_registrations_htn_all] %></td>
+    </tr>
+  <% end %>
+<% end %>
+
+<%= render(Reports::MonthlyProgressComponent.new(facility: current_facility, 
+  diagnosis: :all, 
+  metric: metric,
+  range: @range,
+  counts: @counts,
+  total_counts: @total_counts,
+  gender_groups: false)) %>
+
+<%= render(Reports::MonthlyProgressComponent.new(facility: current_facility, 
+  diagnosis: :diabetes, 
+  metric: metric,
+  counts: @counts,
+  total_counts: @total_counts,
+  range: @range)) %>
 
 <%= render(Reports::MonthlyProgressComponent.new(facility: current_facility, 
   diagnosis: :hypertension, 
