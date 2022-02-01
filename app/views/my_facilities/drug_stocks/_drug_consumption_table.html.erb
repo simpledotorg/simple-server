@@ -1,4 +1,5 @@
-<table class="mt-3 table table-compact table-responsive-md table-hover analytics-table">
+<div class="table-responsive">
+  <table class="mt-4 table table-compact table-hover analytics-table">
   <colgroup>
     <col>
     <% @drugs_by_category.map do |_drug_category, drugs| %>
@@ -83,7 +84,7 @@
     <% report = @report[:district_drug_consumption] %>
     <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
         data-original-title='District: <%= "#{@report[:district_patient_count]} patients" %>'>
-      <%= link_to(reports_region_path(@district_region, report_scope: "district")) do %>
+      <%= link_to(reports_region_path(@district_region, report_scope: "district"), class: "allow-wrap") do %>
         <%= drug_stock_region_label(@district_region).titleize %>
       <% end %>
     </td>
@@ -123,7 +124,7 @@
       <% block_report = @report[:drug_consumption_by_block_id][block.id] %>
       <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title=""
           data-original-title='<%= "#{block.name}: #{@report[:patient_count_by_block_id][block.id]} patients" %>'>
-        <%= link_to(reports_region_path(block, report_scope: "block")) do %>
+        <%= link_to(reports_region_path(block, report_scope: "block"), class: "allow-wrap") do %>
           <%= block.name %>
         <% end %>
       </td>
@@ -197,7 +198,7 @@
       <% facility_report = @report[:drug_consumption_by_facility_id][facility.id] %>
       <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title=""
           data-original-title='<%= "#{facility.name}: #{@report[:patient_count_by_facility_id][facility.id]} patients" %>'>
-        <%= link_to(reports_region_path(facility, report_scope: "facility")) do %>
+        <%= link_to(reports_region_path(facility, report_scope: "facility"), class: "allow-wrap") do %>
           <%= facility.name %>
         <% end %>
       </td>
@@ -234,3 +235,4 @@
   <% end %>
   </tbody>
 </table>
+</div>
