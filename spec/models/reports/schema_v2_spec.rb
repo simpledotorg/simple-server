@@ -12,7 +12,6 @@ describe Reports::SchemaV2, type: :model do
   let(:jan_2020) { Time.zone.parse("January 1st, 2020 00:00:00+00:00") }
   let(:july_2018) { Period.month("July 1 2018") }
   let(:june_2020) { Period.month("June 1 2020") }
-  let(:jan_2020) { Time.zone.parse("January 1st, 2020 00:00:00+00:00") }
 
   def refresh_views
     RefreshReportingViews.new.refresh_v2
@@ -69,6 +68,78 @@ describe Reports::SchemaV2, type: :model do
       expect(entry.to_s).to include("schema_v2")
       expect(entry.to_s).to include(facility.region.id)
       expect(entry.to_s).to include(schema.cache_version)
+    end
+  end
+
+  describe "appointment scheduled days percentages" do
+    it "returns percentages of appointments scheduled across months in a given range" do
+      facility = create(:facility)
+      patient = create(:patient, assigned_facility: facility, recorded_at: 1.month.ago)
+      range = Period.month(2.month.ago)..Period.current
+      _appointment_scheduled_0_to_14_days = create(:appointment, patient: patient, facility: facility, scheduled_date: 10.days.from_now, device_created_at: Date.today)
+
+      refresh_views
+
+      schema = described_class.new(Region.where(id: facility.region), periods: range)
+      expect(schema.appts_scheduled_0_to_14_days_rates[facility.slug][range.first]).to eq(0)
+      expect(schema.appts_scheduled_0_to_14_days_rates[facility.slug][range.to_a.second]).to eq(0)
+      expect(schema.appts_scheduled_0_to_14_days_rates[facility.slug][range.last]).to eq(100)
+    end
+
+    it "returns percentages of appointments scheduled in a month in the given range" do
+      facility = create(:facility)
+      patient = create(:patient, assigned_facility: facility, recorded_at: 4.month.ago)
+      range = Period.month(2.month.ago)..Period.current
+      _appointment_scheduled_0_to_14_days = create(:appointment, patient: patient, facility: facility, scheduled_date: 10.days.from_now, device_created_at: Date.today)
+      _appointment_scheduled_15_to_30_days = create(:appointment, patient: patient, facility: facility, scheduled_date: 1.month.ago + 16.days, device_created_at: 1.month.ago)
+      _appointment_scheduled_more_than_60_days = create(:appointment, patient: patient, facility: facility, scheduled_date: 2.month.ago + 70.days, device_created_at: 2.month.ago)
+
+      refresh_views
+
+      schema = described_class.new(Region.where(id: facility.region), periods: range)
+      expect(schema.appts_scheduled_0_to_14_days_rates[facility.slug][range.last]).to eq(100)
+      expect(schema.appts_scheduled_15_to_30_days_rates[facility.slug][range.to_a.second]).to eq(100)
+      expect(schema.appts_scheduled_more_than_60_days_rates[facility.slug][range.first]).to eq(100)
+    end
+
+    it "returns zeros when there is no appointment data in the month" do
+      facility = create(:facility)
+      create(:patient, assigned_facility: facility)
+      period = Period.current
+
+      refresh_views
+
+      schema = described_class.new(Region.where(id: facility.region), periods: range)
+
+      expect(schema.appts_scheduled_0_to_14_days[facility.slug][period]).to eq(0)
+      expect(schema.appts_scheduled_15_to_30_days[facility.slug][period]).to eq(0)
+      expect(schema.appts_scheduled_31_to_60_days[facility.slug][period]).to eq(0)
+      expect(schema.appts_scheduled_more_than_60_days[facility.slug][period]).to eq(0)
+      expect(schema.total_appts_scheduled[facility.slug][period]).to eq(0)
+
+      expect(schema.appts_scheduled_0_to_14_days_rates[facility.slug][period]).to eq(0)
+      expect(schema.appts_scheduled_15_to_30_days_rates[facility.slug][period]).to eq(0)
+      expect(schema.appts_scheduled_31_to_60_days_rates[facility.slug][period]).to eq(0)
+      expect(schema.appts_scheduled_more_than_60_days_rates[facility.slug][period]).to eq(0)
+    end
+
+    it "returns empty hashes when there is no registered patients, assigned patients or follow ups" do
+      facility = create(:facility)
+
+      refresh_views
+
+      schema = described_class.new(Region.where(id: facility.region), periods: range)
+
+      expect(schema.appts_scheduled_0_to_14_days[facility.slug]).to eq({})
+      expect(schema.appts_scheduled_15_to_30_days[facility.slug]).to eq({})
+      expect(schema.appts_scheduled_31_to_60_days[facility.slug]).to eq({})
+      expect(schema.appts_scheduled_more_than_60_days[facility.slug]).to eq({})
+      expect(schema.total_appts_scheduled[facility.slug]).to eq({})
+
+      expect(schema.appts_scheduled_0_to_14_days_rates[facility.slug]).to eq({})
+      expect(schema.appts_scheduled_15_to_30_days_rates[facility.slug]).to eq({})
+      expect(schema.appts_scheduled_31_to_60_days_rates[facility.slug]).to eq({})
+      expect(schema.appts_scheduled_more_than_60_days_rates[facility.slug]).to eq({})
     end
   end
 end
