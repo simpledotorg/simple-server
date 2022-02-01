@@ -1,0 +1,48 @@
+<div class="d-lg-flex flex-lg-wrap">
+  <div class="d-lg-flex w-lg-50 pr-lg-2">
+    <div id="medications-dispensation" class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm pb-1">
+      <div class="pt-20px px-20px">
+        <div class="mb-8px">
+          <h3 class="mb-0px mr-8px d-inline">
+            Days of medications dispensed to follow-up patients
+          </h3>
+          <%= render "definition_tooltip", definitions: { "Numerator" => t("medications_dispensation_copy.numerator"),
+                                                          "Denominator" => t("medications_dispensation_copy.denominator") } %>
+        </div>
+        <p class="c-grey-dark">
+          Number of days till a patient’s next scheduled appointment
+        </p>
+      </div>
+      <div>
+        <div class="p-relative mb-16px">
+          <div class="h-250px mr-16px mb-12px ml-13px">
+            <canvas id="MedicationsDispensation"></canvas>
+          </div>
+          <div class="p-absolute t-0 l-0 pe-none d-flex align-center justify-center w-100pt h-100pt">
+          </div>
+          <div class="px-20px">
+            <div class="row ml-2 mr-2">
+            <% @chart_data[:medications_dispensation].each do |bucket, data| %>
+              <div class="col-6 col-sm-3 p-0">
+                <span class="legend-label bg-blue-dark" style="background-color: <%= data[:color] %>"></span>
+                <span><%= bucket %></span>
+              </div>
+            <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="data-json" style="display: none;">
+  <%= raw @chart_data.to_json %>
+</div>
+
+<script>
+  window.addEventListener("DOMContentLoaded", () => {
+    new MedicationsDispensationGraph().listen();
+  })
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@1"></script>

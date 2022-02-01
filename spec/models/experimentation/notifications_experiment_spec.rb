@@ -181,7 +181,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       facility = create(:facility)
       patient = create(:patient, age: 18, assigned_facility: facility)
       eligible_patient = create(:patient, age: 18)
-      Rails.application.config.country[:name] = "Bangladesh"
+      allow(Rails.application.config.country).to receive(:[]).with(:name).and_return("Bangladesh")
       allow(ENV).to receive(:fetch).and_call_original
       allow(ENV).to receive(:fetch).with("EXPERIMENT_EXCLUDED_BLOCKS", "").and_return(facility.block_region.id)
 
@@ -191,7 +191,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
 
     it "includes all patients if a country is not in the excluded blocks list" do
       eligible_patient = create(:patient, age: 18)
-      Rails.application.config.country[:name] = "Bangladesh"
+      allow(Rails.application.config.country).to receive(:[]).with(:name).and_return("Bangladesh")
       allow(ENV).to receive(:fetch).and_call_original
       allow(ENV).to receive(:fetch).with("EXPERIMENT_EXCLUDED_BLOCKS", "").and_return("")
 

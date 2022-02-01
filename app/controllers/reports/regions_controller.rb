@@ -104,7 +104,8 @@ class Reports::RegionsController < AdminController
 
     @chart_data = {
       patient_breakdown: PatientBreakdownService.call(region: @region, period: @period),
-      ltfu_trend: ltfu_chart_data(chart_repo, chart_range)
+      ltfu_trend: ltfu_chart_data(chart_repo, chart_range),
+      **medications_dispensation_data
     }
 
     if @region.facility_region?
@@ -213,6 +214,14 @@ class Reports::RegionsController < AdminController
       ltfu_patients_rate: repo.ltfu_rates[@region.slug],
       period_info: range.each_with_object({}) { |period, hsh| hsh[period] = period.to_hash }
     }
+  end
+
+  def medications_dispensation_data
+    if current_admin.feature_enabled?(:medications_dispensation)
+      {medications_dispensation: MedicationDispensationService.call(region: @region, period: @period)}
+    else
+      {}
+    end
   end
 
   def accessible_region?(region, action)
