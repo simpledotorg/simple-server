@@ -15,7 +15,7 @@ RSpec.describe MyFacilitiesHelper, type: :helper do
     end
 
     it "is yellow for 60 to < 90" do
-      expect(patient_days_css_class(66)).to eq("bg-yellow")
+      expect(patient_days_css_class(66)).to eq("bg-yellow-dark")
     end
 
     it "is green for more than 90" do
