@@ -11,7 +11,7 @@ RSpec.describe Seed::FacilitySeeder do
     expect {
       Seed::FacilitySeeder.call(config: Seed::Config.new)
     }.to change { FacilityGroup.count }.by(2)
-      .and change { Facility.count }.by(8)
+      .and change { Facility.count }.by_at_most(8)
   end
 
   it "creates facility groups and facilities with regions" do
