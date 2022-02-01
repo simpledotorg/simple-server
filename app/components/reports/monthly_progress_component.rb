@@ -1,7 +1,18 @@
 # frozen_string_literal: true
 
 class Reports::MonthlyProgressComponent < ViewComponent::Base
-  attr_reader :diabetes_enabled
+  # maybe we dont need:
+  # facility
+  #
+  # definitely need:
+  # range
+  # total counts
+  # monthly counts
+  # metric (or indicator?)
+  # diagnosis
+  # gender
+
+ attr_reader :diabetes_enabled
   attr_reader :diagnosis
   attr_reader :facility
   attr_reader :gender_groups
