@@ -5,12 +5,11 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
   # facility
   #
   # definitely need:
+  #
   # range
   # total counts
   # monthly counts
-  # metric (or indicator?)
-  # diagnosis
-  # gender
+  # FacilityProgressDimension
 
   attr_reader :diabetes_enabled
   attr_reader :diagnosis
