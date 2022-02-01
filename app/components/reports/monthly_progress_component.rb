@@ -12,7 +12,7 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
   # diagnosis
   # gender
 
- attr_reader :diabetes_enabled
+  attr_reader :diabetes_enabled
   attr_reader :diagnosis
   attr_reader :facility
   attr_reader :gender_groups
