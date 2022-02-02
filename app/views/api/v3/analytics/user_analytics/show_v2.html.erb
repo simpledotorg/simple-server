@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,shrink-to-fit=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>
+      <%= raw t("analytics.page_title") %>
+    </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <%= inline_stylesheet("user_analytics.css") %>
+  </head>
+  <body>
+    <div class="mb-8px p-16px bgc-white bs-card">
+      <h1 class="m-0px mb-4px fw-bold fs-24px c-black">
+        Reports
+      </h1>
+      <p class="m-0px mb-16px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+        <%= raw t("analytics.updated", time: @user_analytics.last_updated_at) %>
+      </p>
+      <div class="d-flex ai-center jc-space-between">
+        <a class="f-1 d-flex fd-column ai-center jc-center td-none mr-10px p-12px bgc-blue-green-light br-4px">
+          <div class="p-relative d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px o-hidden">
+            <div class="p-absolute t-0 l-0 w-100 h-6px bgc-blue-green"></div>
+            <p class="m-0px mt-6px p-0px ta-center fw-bold fs-14px c-blue-green">
+              <%= Date.today.strftime("%d") %> 
+            </p>
+          </div>
+          <p class="m-0px p-0px ta-center fw-medium fs-16px c-blue-green">
+            Daily
+          </p>
+        </a>
+        <a class="f-1 d-flex fd-column ai-center jc-center td-none mr-4px ml-4px p-12px bgc-blue-light br-4px">
+          <div class="p-relative d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px o-hidden">
+            <div class="p-absolute t-0 l-0 w-100 h-6px bgc-blue"></div>
+            <p class="m-0px mt-6px p-0px ta-center tt-uppercase fw-bold ls-0_4px fs-12px c-blue">
+              <%= Date.today.strftime("%b") %> 
+            </p>
+          </div>
+          <p class="m-0px p-0px ta-center fw-medium fs-16px c-blue">
+            Monthly
+          </p>
+        </a>
+        <a class="f-1 d-flex fd-column ai-center jc-center td-none ml-10px p-12px bgc-navy-light br-4px">
+          <div class="p-relative d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px o-hidden">
+            <div class="p-absolute t-0 l-0 w-100 h-6px bgc-navy"></div>
+            <p class="m-0px mt-6px p-0px ta-center fw-bold fs-10px c-navy">
+              <%= Date.today.strftime("%Y") %> 
+            </p>
+          </div>
+          <p class="m-0px p-0px ta-center fw-medium fs-16px c-navy">
+            Yearly
+          </p>
+        </a>
+      </div>
+    </div>
+  </body>
+</html>

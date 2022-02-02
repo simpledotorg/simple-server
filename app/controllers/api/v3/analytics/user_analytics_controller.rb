@@ -23,7 +23,11 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
 
   def respond_to_html_or_json(stats)
     respond_to do |format|
-      format.html { render :show }
+      if Flipper.enabled?(:new_progress_tab)
+        format.html { render :show_v2 }
+      else
+        format.html { render :show }
+      end
       format.json { render json: stats }
     end
   end

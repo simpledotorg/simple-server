@@ -771,7 +771,10 @@ footer p {
 .jc-center { justify-content: center; }
 .f-1 { flex: 1; }
 /* POSITION */
+.p-absolute { position: absolute; } 
 .p-fixed { position: fixed; }
+.p-relative { position: relative; }
+.t-0 { top: 0; }
 .b-0 { bottom: 0; }
 .l-0 { left: 0; }
 /* LAYOUT */
@@ -779,14 +782,22 @@ footer p {
 .d-inline-block { display: inline-block; }
 .d-hidden { display: hidden; }
 .zi-100 { z-index: 100; }
+.o-hidden { overflow: hidden; }
 /* WIDTH & HEIGHT */
+.w-32px { width: 32px; }
 .w-96px { width: 96px; }
 .w-95 { width: 95%; }
 .w-100 { width: 100%; }
 .h-1px { height: 1px; }
+.h-6px { height: 6px; }
+.h-32px { height: 32px; }
 .h-96px { height: 96px; }
 /* SPACING */
+.mt-6px { margin-top: 6px; }
+.mr-10px { margin-right: 10px; }
+.ml-10px { margin-left: 10px; }
 .mb-2px { margin-bottom: 2px; }
+.mb-4px { margin-bottom: 4px; }
 .mb-32px { margin-bottom: 32px; }
 .pb-12px { padding-bottom: 12px; }
 .pb-64px { padding-bottom: 64px; }
@@ -795,9 +806,11 @@ footer p {
 .ta-right { text-align: right; }
 .ta-center { text-align: center; }
 .ta-left { text-align: left; }
+.td-none { text-decoration: none; }
 .fw-bold { font-weight: 700; } 
 .fw-medium { font-weight: 500; }
 .fw-regular { font-weight: 400; }
+.fs-10px { font-size: 10px; }
 .fs-12px { font-size: 12px; }
 .fs-14px { font-size: 14px; }
 .fs-16px { font-size: 16px; }
@@ -805,8 +818,11 @@ footer p {
 .fs-24px { font-size: 24px; }
 .tt-uppercase { text-transform: uppercase; }
 .lh-150 { line-height: 150%; }
+.ls-0_4px { letter-spacing: 0.4px }
 .ls-1_25px { letter-spacing: 1.25px; }
 .c-blue { color: $blue; }
+.c-navy { color: $navy; }
+.c-blue-green { color: $blue-green; }
 .c-green { color: $green; }
 .c-yellow { color: $yellow; }
 .c-red { color: $red; }
@@ -820,6 +836,12 @@ footer p {
 .bgc-blue-light { background-color: $blue-light; }
 .bgc-blue { background-color: $blue; }
 .bgc-green-light { background-color: $green-light; }
+.bgc-blue-green { background-color: $blue-green; }
+.bgc-blue-green-light { background-color: $blue-green-light; }
+.bgc-navy-light { background-color: $navy-light; }
+.bgc-navy { background-color: $navy; }
+.bgc-red-light { background-color: $red-light; }
+.bgc-red { background-color: $red; }
 .b-none { border: none; }
 .b-grey-mid { border: 1px solid $grey-mid; }
 .bb-blue-mid { border-bottom: 2px solid $blue-mid; }
@@ -842,14 +864,3 @@ footer p {
 }
 /* SCROLL */
 .sb-auto { scroll-behavior: auto; }
-.text-yellow {
-  color: $yellow-dark;
-}
-
-.text-orange {
-  color: $orange;
-}
-
-.text-red {
-  color: $red;
-}
