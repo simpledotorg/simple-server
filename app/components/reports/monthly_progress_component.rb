@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class Reports::MonthlyProgressComponent < ViewComponent::Base
+  include DashboardHelper
   attr_reader :dimension
   attr_reader :range
   attr_reader :monthly_counts
