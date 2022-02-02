@@ -41,6 +41,10 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
     @total_counts.attributes[dimension.field]
   end
 
+  def monthly_count(period)
+    counts_by_period[period].attributes[dimension.field]
+  end
+
   NULL_COUNTS = Struct.new(:attributes) do
     def attributes
       Hash.new(0)
@@ -53,7 +57,4 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
     end
   end
 
-  def monthly_count(period)
-    counts_by_period[period]&.attributes[dimension.field]
-  end
 end
