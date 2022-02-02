@@ -7,9 +7,9 @@ module Reports
     attr_reader :indicator, :diagnosis, :gender
 
     def initialize(indicator, diagnosis:, gender:)
-      raise ArgumentError unless indicator.in?(INDICATORS)
-      raise ArgumentError unless diagnosis.in?(DIAGNOSIS)
-      raise ArgumentError unless gender.in?(GENDERS)
+      raise ArgumentError, "invalid indicator: #{indicator}" unless indicator.in?(INDICATORS)
+      raise ArgumentError, "invalid diagnosis: #{diagnosis}" unless diagnosis.in?(DIAGNOSIS)
+      raise ArgumentError, "invalid gender: #{gender}" unless gender.in?(GENDERS)
       if diagnosis == :all && gender != :all
         raise ArgumentError, "Cannot specify a gender and an 'all' diagnosis"
       end
