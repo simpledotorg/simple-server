@@ -1,57 +1,69 @@
 <!DOCTYPE html>
 <html lang="en" style="scroll-behavior: auto;">
-<head>
-  <meta charset="utf-8">
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,shrink-to-fit=no"/>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <title><%= raw t("analytics.page_title") %></title>
-
-  <%= inline_stylesheet("user_analytics.css") %>
-</head>
-
-<body id="progress">
-  <div class="button-fixed-bottom">
-    <a href="simple://progress-tab" class="button">
-      DONE
-    </a>
-  </div>
-  <div id="progress-start" class="progress-body">
-    <div class="progress-contents">
-
-      <div class="card" style="margin: 8px 0 40px 0;">
-        <div style="height: 140px; background: transparent url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMyIiBoZWlnaHQ9IjEzMiIgdmlld0JveD0iMCAwIDEzMiAxMzIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxjaXJjbGUgY3g9IjY2IiBjeT0iNjYiIHI9IjY2IiBmaWxsPSIjRTBGRkVEIi8+CjxwYXRoIGQ9Ik01My4xMTE3IDg0Ljc5MTdMMzguMDc1IDY5Ljc1NUMzNy4yNjU0IDY4Ljk0MzYgMzYuMTY2MyA2OC40ODc1IDM1LjAyIDY4LjQ4NzVDMzMuODczOCA2OC40ODc1IDMyLjc3NDYgNjguOTQzNiAzMS45NjUgNjkuNzU1QzMwLjI3NSA3MS40NDUgMzAuMjc1IDc0LjE3NSAzMS45NjUgNzUuODY1TDUwLjA3ODMgOTMuOTc4M0M1MS43NjgzIDk1LjY2ODMgNTQuNDk4MyA5NS42NjgzIDU2LjE4ODMgOTMuOTc4M0wxMDIuMDM1IDQ4LjEzMTZDMTAzLjcyNSA0Ni40NDE2IDEwMy43MjUgNDMuNzExNiAxMDIuMDM1IDQyLjAyMTZDMTAxLjIyNSA0MS4yMTAyIDEwMC4xMjYgNDAuNzU0MiA5OC45OCA0MC43NTQyQzk3LjgzMzggNDAuNzU0MiA5Ni43MzQ2IDQxLjIxMDIgOTUuOTI1IDQyLjAyMTZMNTMuMTExNyA4NC43OTE3WiIgZmlsbD0iIzAwQjg0OSIvPgo8L3N2Zz4K) 50% 50% no-repeat; background-size: 120px;">
-        </div>
-
-        <h2 style="text-align: center; margin-bottom: 0.2em;">Complete!</h2>
-        <p>See stock in estimated patient days below</p>
-      </div>
-
-      <div class="title-caps">Report for end of <%= @for_end_of_month.to_s(:mon_year) %></div>
-      <% @drugs_by_category.each do |category, drugs| %>
-        <% patient_days = @query.patient_days_by_facility_id.dig(@current_facility.id, category, :patient_days) || 0 %>
-
-        <div class="card">
-          <h3 style="margin-bottom: 8px;"><%= protocol_drug_labels[category][:full] %></h3>
-          <span class="<%= patient_days_css_class(patient_days, prefix: "text") %>"><%= patient_days %> days of drug stock</span>
-
-          <% drugs.each do |drug| %>
-            <% drug_stock = @query.drugs_in_stock_by_facility_id.dig([@current_facility.id, drug.rxnorm_code]) %>
-
-            <div class="card-row">
-              <% if drug_stock.present? %>
-                <span class="dark float-right"><%= drug_stock %> tablets</span>
-              <% else %>
-                <span class="dark float-right">&#8212;</span>
-              <% end %>
-                <h6><%= drug.name %> <%= drug.dosage %> </h6>
-            </div>
-
-          <% end %>
-
-        </div>
-      <% end %>
+  <head>
+    <meta charset="utf-8">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,shrink-to-fit=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>
+      <%= raw t("analytics.page_title") %>
+    </title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <%= inline_stylesheet("user_analytics.css") %>
+  </head>
+  <body id="progress">
+    <div class="p-fixed b-0 l-0 zi-100 w-100 p-8px bgc-blue-light bs-border-box bs-fixed-card" style="padding-bottom: 12px;">
+      <a href="simple://progress-tab" class="d-block w-100 p-16px ta-center bgc-blue tt-uppercase ls-1_25px br-4px fs-16px b-none bs-primary-button bs-border-box" style="font-weight: 700; color: #ffffff;">
+        Done
+      </a>
     </div>
-  </div>
-</body>
+    <div id="progress-start">
+      <div class="pb-96px">
+        <div class="d-flex fd-column ai-center jc-center mb-32px p-16px bgc-white bs-card">
+          <div class="d-flex ai-center jc-center w-96px h-96px mb-16px bgc-green-light br-100">
+            <%= inline_file("check-mark-large.svg") %>
+          </div>
+          <h2 class="m-0px mb-8px ta-center fw-bold fs-20px c-black">
+            Complete!
+          </h2>
+          <p class="m-0px p-0px ta-center fw-regular fs-16px lh-150 c-grey-dark">
+            See stock in estimated patient days below
+          </p>
+        </div>
+        <h3 class="m-0px p-0px pl-16px pb-12px ta-left fw-medium fs-18px c-grey" style="color: #82878F;">
+          Report for end of <%= @for_end_of_month.to_s(:mon_year) %>
+        </h3>
+        <% @drugs_by_category.each do |category, drugs| %>
+          <% patient_days = @query.patient_days_by_facility_id.dig(@current_facility.id, category, :patient_days) || 0 %>
+          <div class="mb-8px p-16px bgc-white bs-card">
+            <h3 class="m-0px mb-2px p-0px ta-left fw-medium fs-20px c-black">
+              <%= protocol_drug_labels[category][:full] %>
+            </h3>
+            <p class="m-0px mb-16px p-0px ta-left fw-regular fs-16px lh-150 <%= patient_days_css_class(patient_days, prefix: "c") %>">
+              <%= patient_days %> days of drug stock
+            </p>
+            <% drugs.each_with_index do |drug, index| %>
+              <% drug_stock = @query.drugs_in_stock_by_facility_id.dig([@current_facility.id, drug.rxnorm_code]) %>
+              <div class="d-flex ai-center jc-space-between">
+                <p class="m-0px p-0px ta-left fw-regular fs-16px c-black">
+                  <%= drug.name %> <%= drug.dosage %>
+                </p>
+                <p class="m-0px p-0px ta-left fw-regular fs-16px c-black">
+                  <% if drug_stock.present? %>
+                    <%= drug_stock %> tablets
+                  <% else %>
+                    &#8212;
+                  <% end %>
+                </p>
+              </div>
+              <% unless drugs.length == index + 1 %>
+                <div class="h-1px mt-8px mb-8px bgc-grey-light"></div>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </body>
+</html>
