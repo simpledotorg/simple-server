@@ -14,11 +14,16 @@ RSpec.describe Reports::MonthlyProgressComponent, type: :component do
   let(:counts) { Reports::FacilityStateGroup.where(facility_region_id: facility.region.id, month_date: date_range).to_a }
   let(:total_counts) { Reports::FacilityStateGroup.totals(facility) }
 
-  it "returns totals based on metric / diagnosis" do
-    create(:patient, :hypertension, recorded_at: 2.years.ago, registration_user: user, registration_facility: facility)
+  it "returns totals based the dimension" do
+    create(:patient, :hypertension, recorded_at: 2.years.ago, gender: :male, registration_user: user, registration_facility: facility)
+    create(:patient, :hypertension, recorded_at: 2.years.ago, gender: :female, registration_user: user, registration_facility: facility)
     refresh_views
 
-    component = described_class.new(facility: facility, diagnosis: :all, metric: :registrations, counts: counts, total_counts: total_counts, range: range)
+    dimension = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :all, gender: :all)
+    component = described_class.new(dimension, monthly_counts: counts, total_counts: total_counts, range: range)
+    expect(component.total_count).to eq(2)
+    dimension = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :hypertension, gender: :female)
+    component = described_class.new(dimension, monthly_counts: counts, total_counts: total_counts, range: range)
     expect(component.total_count).to eq(1)
   end
 
@@ -28,9 +33,10 @@ RSpec.describe Reports::MonthlyProgressComponent, type: :component do
     end
     Timecop.freeze(jan_2022) do
       refresh_views
+      dimension = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :all, gender: :all)
       counts = Reports::FacilityStateGroup.where(facility_region_id: facility.region.id, month_date: date_range)
 
-      component = described_class.new(facility: facility, diagnosis: :all, metric: :registrations, counts: counts, total_counts: total_counts, range: range)
+      component = described_class.new(dimension, monthly_counts: counts, total_counts: total_counts, range: range)
 
       expect(component.total_count).to eq(1)
       expect(component.monthly_count(november_2021_period)).to eq(1)

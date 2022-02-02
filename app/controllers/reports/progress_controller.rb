@@ -11,7 +11,7 @@ class Reports::ProgressController < AdminController
     @user_analytics = UserAnalyticsPresenter.new(@region)
     @range = Range.new(@period.advance(months: -5), @period)
     @total_counts = Reports::FacilityStateGroup.totals(current_facility)
-    @counts = Reports::FacilityStateGroup.where(facility_region_id: current_facility.region.id, month_date: @range).to_a
+    @monthly_counts = Reports::FacilityStateGroup.where(facility_region_id: current_facility.region.id, month_date: @range).to_a
     render "api/v3/analytics/user_analytics/show"
   end
 

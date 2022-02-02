@@ -12,28 +12,23 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
   # FacilityProgressDimension
 
   attr_reader :diabetes_enabled
-  attr_reader :diagnosis
-  attr_reader :facility
-  attr_reader :gender_groups
-  attr_reader :metric
+  attr_reader :dimension
   attr_reader :range
-  attr_reader :counts
+  attr_reader :monthly_counts
+  attr_reader :total_counts
 
-  def initialize(facility:, diagnosis:, metric:, counts:, total_counts:, range:, gender_groups: true)
-    @facility = facility
-    @diagnosis = diagnosis
-    @metric = metric
-    @counts = counts
-    @range = range
+# <% render(Reports::MonthlyProgressComponent.new(dimension, range: @range, total_counts: @total_counts, monthly_counts: monthly_counts)
+  def initialize(dimension, range:, total_counts:, monthly_counts:)
+    @dimension = dimension
+    @monthly_counts = monthly_counts
     @total_counts = total_counts
-    @total_field = ["monthly", metric, diagnosis_code, "all"].compact.join("_")
-    @gender_groups = gender_groups
+    @range = range
   end
 
-  def diagnosis_group_class(gender)
+  def diagnosis_group_class
     classes = []
-    classes << diagnosis unless diagnosis == :all
-    classes << gender
+    classes << dimension.diagnosis unless dimension.diagnosis == :all
+    classes << dimension.gender
     classes.compact.join(":")
   end
 
@@ -55,9 +50,13 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
     end
   end
 
-  def table(grouping, &block)
-    options = {class: ["progress-table", metric, diagnosis_group_class(grouping)]}
-    unless diagnosis == default_diagnosis && grouping == :all
+  def display?
+    dimension.diagnosis == :all && dimension.gender == :all
+  end
+
+  def table(&block)
+    options = {class: ["progress-table", dimension.indicator, diagnosis_group_class]}
+    if !display?
       options[:style] = "display:none"
     end
     tag.table(options, &block)
@@ -68,10 +67,9 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
     :all
   end
 
-  def total_count(gender: :all)
-    field = ["monthly", metric, diagnosis_code_for_non_gender_breakdowns, "all"].compact.join("_")
-    d field
-    @total_counts.attributes[field]
+  def total_count
+    d dimension.field
+    @total_counts.attributes[dimension.field]
   end
 
   NULL_COUNTS = Struct.new(:attributes) do
@@ -82,17 +80,15 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
 
   def counts_by_period
     @counts_by_period ||= range.each_with_object({}) do |period, hsh|
-      hsh[period] = counts.find { |c| c.period == period } || NULL_COUNTS.new
+      hsh[period] = @monthly_counts.find { |c| c.period == period } || NULL_COUNTS.new
     end
   end
 
   def monthly_count(period)
-    field = ["monthly", metric, diagnosis_code_for_non_gender_breakdowns, "all"].compact.join("_")
-    counts_by_period[period]&.attributes[field]
+    counts_by_period[period]&.attributes[dimension.field]
   end
 
-  def monthly_count_by_gender(period, gender)
-    field = "monthly_#{metric}_#{diagnosis_code}_#{gender}"
-    counts_by_period[period].attributes[field]
+  def monthly_count_by_gender(period)
+    counts_by_period[period].attributes[dimension.field]
   end
 end

@@ -6,7 +6,7 @@ module Reports
 
     attr_reader :indicator, :diagnosis, :gender
 
-    def initialize(indicator:, diagnosis:, gender:)
+    def initialize(indicator, diagnosis:, gender:)
       raise ArgumentError unless indicator.in?(INDICATORS)
       raise ArgumentError unless diagnosis.in?(DIAGNOSIS)
       raise ArgumentError unless gender.in?(GENDERS)
