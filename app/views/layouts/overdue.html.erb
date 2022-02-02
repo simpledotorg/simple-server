@@ -33,7 +33,7 @@
       </label>
     <% end %>
   </section>
-  <% if @selected_facility && @patient_summaries.present? && current_admin.accessible_facilities(:manage_overdue_list).include?(@selected_facility) %>
+  <% if @selected_facility && current_admin.accessible_facilities(:manage_overdue_list).include?(@selected_facility) %>
     <section class="mb-5">
       <h4>
         Download
