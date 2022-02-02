@@ -24,19 +24,24 @@ RSpec.describe Reports::FacilityAppointmentScheduledDays, {type: :model, reporti
 
   it "buckets and counts appointments by the number of days between creation date and scheduled date" do
     facility = create(:facility)
-    patients = create_list(:patient, 4, recorded_at: 1.month.ago)
-    _appointment_scheduled_0_to_14_days = create(:appointment, patient: patients.first, facility: facility, scheduled_date: 10.days.from_now, device_created_at: Time.current)
-    _appointment_scheduled_15_to_30_days = create(:appointment, patient: patients.second, facility: facility, scheduled_date: 16.days.from_now, device_created_at: Time.current)
-    _appointment_scheduled_31_to_60_days = create(:appointment, patient: patients.third, facility: facility, scheduled_date: 36.days.from_now, device_created_at: Time.current)
-    _appointment_scheduled_more_than_60_days = create(:appointment, patient: patients.fourth, facility: facility, scheduled_date: 70.days.from_now, device_created_at: Time.current)
+    patients = create_list(:patient, 9, recorded_at: 1.month.ago)
+    create(:appointment, patient: patients[0], facility: facility, scheduled_date: -1.days.from_now, device_created_at: Time.current)
+    create(:appointment, patient: patients[1], facility: facility, scheduled_date: 0.days.from_now, device_created_at: Time.current)
+    create(:appointment, patient: patients[2], facility: facility, scheduled_date: 14.days.from_now, device_created_at: Time.current)
+    create(:appointment, patient: patients[3], facility: facility, scheduled_date: 15.days.from_now, device_created_at: Time.current)
+    create(:appointment, patient: patients[4], facility: facility, scheduled_date: 30.days.from_now, device_created_at: Time.current)
+    create(:appointment, patient: patients[5], facility: facility, scheduled_date: 31.days.from_now, device_created_at: Time.current)
+    create(:appointment, patient: patients[6], facility: facility, scheduled_date: 60.days.from_now, device_created_at: Time.current)
+    create(:appointment, patient: patients[7], facility: facility, scheduled_date: 61.days.from_now, device_created_at: Time.current)
+    create(:appointment, patient: patients[8], facility: facility, scheduled_date: 100.days.from_now, device_created_at: Time.current)
 
     RefreshReportingViews.new.refresh_v2
 
-    expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_0_to_14_days).to eq 1
-    expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_15_to_30_days).to eq 1
-    expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_31_to_60_days).to eq 1
-    expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_more_than_60_days).to eq 1
-    expect(described_class.find_by(month_date: Period.current, facility: facility).total_appts_scheduled).to eq 4
+    expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_0_to_14_days).to eq 2
+    expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_15_to_30_days).to eq 2
+    expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_31_to_60_days).to eq 2
+    expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_more_than_60_days).to eq 2
+    expect(described_class.find_by(month_date: Period.current, facility: facility).total_appts_scheduled).to eq 8
   end
 
   it "buckets and counts appointments by the number of days between creation date and scheduled date at a facility per month" do
