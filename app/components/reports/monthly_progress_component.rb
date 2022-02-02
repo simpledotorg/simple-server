@@ -1,23 +1,11 @@
 # frozen_string_literal: true
 
 class Reports::MonthlyProgressComponent < ViewComponent::Base
-  # maybe we dont need:
-  # facility
-  #
-  # definitely need:
-  #
-  # range
-  # total counts
-  # monthly counts
-  # FacilityProgressDimension
-
-  attr_reader :diabetes_enabled
   attr_reader :dimension
   attr_reader :range
   attr_reader :monthly_counts
   attr_reader :total_counts
 
-# <% render(Reports::MonthlyProgressComponent.new(dimension, range: @range, total_counts: @total_counts, monthly_counts: monthly_counts)
   def initialize(dimension, range:, total_counts:, monthly_counts:)
     @dimension = dimension
     @monthly_counts = monthly_counts
@@ -32,24 +20,6 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
     classes.compact.join(":")
   end
 
-  def diagnosis_code
-    case diagnosis
-    when :hypertension then :htn
-    when :diabetes then :dm
-    when :all then :all
-    else raise ArgumentError, "invalid diagnosis #{diagnosis}"
-    end
-  end
-
-  def diagnosis_code_for_non_gender_breakdowns
-    case diagnosis
-    when :hypertension then :htn
-    when :diabetes then :dm
-    when :all then nil
-    else raise ArgumentError, "invalid diagnosis #{diagnosis}"
-    end
-  end
-
   def display?
     dimension.diagnosis == :all && dimension.gender == :all
   end
@@ -62,13 +32,12 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
     tag.table(options, &block)
   end
 
-  # The default diagnosis is the one we display at the top level for the first display of progress tab
+  # The default diagnosis is the one we display at the top level on initial page load
   def default_diagnosis
     :all
   end
 
   def total_count
-    d dimension.field
     @total_counts.attributes[dimension.field]
   end
 
@@ -86,9 +55,5 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
 
   def monthly_count(period)
     counts_by_period[period]&.attributes[dimension.field]
-  end
-
-  def monthly_count_by_gender(period)
-    counts_by_period[period].attributes[dimension.field]
   end
 end
