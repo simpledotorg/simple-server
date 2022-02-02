@@ -101,10 +101,10 @@ RSpec.describe Reports::FacilityAppointmentScheduledDays, {type: :model, reporti
   it "does not include appointments where scheduled date is before creation date" do
     facility = create(:facility)
     create(:appointment,
-           facility: facility,
-           patient: create(:patient, recorded_at: 1.month.ago),
-           scheduled_date: Date.yesterday,
-           device_created_at: Time.current)
+      facility: facility,
+      patient: create(:patient, recorded_at: 1.month.ago),
+      scheduled_date: Date.yesterday,
+      device_created_at: Time.current)
 
     RefreshReportingViews.new.refresh_v2
 
@@ -114,20 +114,20 @@ RSpec.describe Reports::FacilityAppointmentScheduledDays, {type: :model, reporti
   it "includes only appointments where scheduled date is on or after creation date " do
     facility = create(:facility)
     create(:appointment,
-           facility: facility,
-           patient: create(:patient, recorded_at: 1.month.ago),
-           scheduled_date: Date.yesterday,
-           device_created_at: Time.current)
+      facility: facility,
+      patient: create(:patient, recorded_at: 1.month.ago),
+      scheduled_date: Date.yesterday,
+      device_created_at: Time.current)
     create(:appointment,
-           facility: facility,
-           patient: create(:patient, recorded_at: 1.month.ago),
-           scheduled_date: Date.today,
-           device_created_at: Time.current)
+      facility: facility,
+      patient: create(:patient, recorded_at: 1.month.ago),
+      scheduled_date: Date.today,
+      device_created_at: Time.current)
     create(:appointment,
-           facility: facility,
-           patient: create(:patient, recorded_at: 1.month.ago),
-           scheduled_date: Date.tomorrow,
-           device_created_at: Time.current)
+      facility: facility,
+      patient: create(:patient, recorded_at: 1.month.ago),
+      scheduled_date: Date.tomorrow,
+      device_created_at: Time.current)
 
     RefreshReportingViews.new.refresh_v2
 
