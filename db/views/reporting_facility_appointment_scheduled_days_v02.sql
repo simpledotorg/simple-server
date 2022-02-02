@@ -28,6 +28,3 @@ SELECT facility_id,
        SUM(number_of_appointments)::integer total_appts_scheduled
 FROM scheduled_days_distribution
 GROUP BY facility_id, month_date
-
-
-
