@@ -56,5 +56,4 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
       hsh[period] = @monthly_counts.find { |c| c.period == period } || NULL_COUNTS.new
     end
   end
-
 end
