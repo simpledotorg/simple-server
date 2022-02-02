@@ -826,6 +826,7 @@ footer p {
 .c-green { color: $green; }
 .c-yellow { color: $yellow; }
 .c-red { color: $red; }
+.c-purple { color: $purple; }
 .c-grey { color: $grey; }
 .c-grey-dark { color: $grey-dark; }
 .c-white { color: $white; }
@@ -842,6 +843,7 @@ footer p {
 .bgc-navy { background-color: $navy; }
 .bgc-red-light { background-color: $red-light; }
 .bgc-red { background-color: $red; }
+.bgc-purple-light { background-color: $purple-light; }
 .b-none { border: none; }
 .b-grey-mid { border: 1px solid $grey-mid; }
 .bb-blue-mid { border-bottom: 2px solid $blue-mid; }
@@ -864,3 +866,6 @@ footer p {
 }
 /* SCROLL */
 .sb-auto { scroll-behavior: auto; }
+.ws-nowrap { white-space: nowrap; }
+.oy-hidden { overflow-y: hidden; }
+.ox-auto { overflow-x: auto; }
