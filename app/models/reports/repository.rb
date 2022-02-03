@@ -23,7 +23,7 @@ module Reports
       @period_type = @periods.first.type
       @follow_ups_v2 = follow_ups_v2
       raise ArgumentError, "Quarter periods not supported" if @period_type != :month
-      @schema = SchemaV2.new(@regions, periods: @periods)
+      @schema = RegionSummarySchema.new(@regions, periods: @periods)
       @bp_measures_query = BPMeasuresQuery.new
       @follow_ups_query = FollowUpsQuery.new
       @registered_patients_query = RegisteredPatientsQuery.new
