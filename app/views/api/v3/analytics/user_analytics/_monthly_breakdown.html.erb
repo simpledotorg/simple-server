@@ -11,6 +11,6 @@ combinations.each_with_object([]) do |c|
 end
 %>
 <% dimensions.each do |dimension| %>
-  <%= render(Reports::MonthlyProgressComponent.new(dimension, range: @range, total_counts: @total_counts, monthly_counts: @monthly_counts)) %>
+  <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service)) %>
 <% end %>
 
