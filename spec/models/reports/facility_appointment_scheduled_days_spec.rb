@@ -157,12 +157,12 @@ RSpec.describe Reports::FacilityAppointmentScheduledDays, {type: :model, reporti
   it "counts only appointments of hypertensive patients" do
     facility = create(:facility)
     [create(:patient, recorded_at: 1.month.ago),
-     create(:patient, :without_hypertension, recorded_at: 1.month.ago)].each do |patient|
+      create(:patient, :without_hypertension, recorded_at: 1.month.ago)].each do |patient|
       create(:appointment,
-             facility: facility,
-             patient: patient,
-             scheduled_date: 10.days.from_now,
-             device_created_at: Time.current)
+        facility: facility,
+        patient: patient,
+        scheduled_date: 10.days.from_now,
+        device_created_at: Time.current)
     end
 
     RefreshReportingViews.new.refresh_v2
