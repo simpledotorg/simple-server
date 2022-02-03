@@ -48,7 +48,6 @@ RSpec.describe Reports::MonthlyProgressComponent, type: :component do
     end
     Timecop.freeze(jan_2022) do
       refresh_views
-      counts = Reports::FacilityStateGroup.where(facility_region_id: facility.region.id, month_date: date_range)
       male = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :hypertension, gender: :male)
       male_component = described_class.new(male, service: service)
       expect(male_component.monthly_count(november_2021_period)).to eq(0)

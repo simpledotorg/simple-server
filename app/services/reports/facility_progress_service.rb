@@ -1,6 +1,5 @@
 module Reports
   class FacilityProgressService
-
     attr_reader :facility
     attr_reader :range
 

@@ -9,7 +9,7 @@ class Reports::ProgressController < AdminController
   def show
     @current_facility = @region
     @user_analytics = UserAnalyticsPresenter.new(@region)
-    @service = FacilityProgressService.new(current_facility, @period)
+    @service = Reports::FacilityProgressService.new(current_facility, @period)
     @range = Range.new(@period.advance(months: -5), @period)
     render "api/v3/analytics/user_analytics/show"
   end
