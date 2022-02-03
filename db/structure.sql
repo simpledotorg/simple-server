@@ -1633,18 +1633,18 @@ CREATE MATERIALIZED VIEW public.reporting_facility_appointment_scheduled_days AS
           ORDER BY a.patient_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, a.device_created_at)), 'YYYY-MM-01'::text))::date, a.device_created_at DESC
         ), scheduled_days_distribution AS (
          SELECT latest_appointments_per_patient_per_month.month_date,
-            width_bucket((date_part('days'::text, ((latest_appointments_per_patient_per_month.scheduled_date)::timestamp without time zone - date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_appointments_per_patient_per_month.device_created_at))))))::integer, ARRAY[0, 15, 31, 61]) AS bucket,
+            width_bucket((date_part('days'::text, ((latest_appointments_per_patient_per_month.scheduled_date)::timestamp without time zone - date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_appointments_per_patient_per_month.device_created_at))))))::integer, ARRAY[0, 15, 32, 62]) AS bucket,
             count(*) AS number_of_appointments,
             latest_appointments_per_patient_per_month.creation_facility_id AS facility_id
            FROM latest_appointments_per_patient_per_month
-          GROUP BY (width_bucket((date_part('days'::text, ((latest_appointments_per_patient_per_month.scheduled_date)::timestamp without time zone - date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_appointments_per_patient_per_month.device_created_at))))))::integer, ARRAY[0, 15, 31, 61])), latest_appointments_per_patient_per_month.creation_facility_id, latest_appointments_per_patient_per_month.month_date
+          GROUP BY (width_bucket((date_part('days'::text, ((latest_appointments_per_patient_per_month.scheduled_date)::timestamp without time zone - date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_appointments_per_patient_per_month.device_created_at))))))::integer, ARRAY[0, 15, 32, 62])), latest_appointments_per_patient_per_month.creation_facility_id, latest_appointments_per_patient_per_month.month_date
         )
  SELECT scheduled_days_distribution.facility_id,
     scheduled_days_distribution.month_date,
     (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 1)))::integer AS appts_scheduled_0_to_14_days,
-    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 2)))::integer AS appts_scheduled_15_to_30_days,
-    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 3)))::integer AS appts_scheduled_31_to_60_days,
-    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 4)))::integer AS appts_scheduled_more_than_60_days,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 2)))::integer AS appts_scheduled_15_to_31_days,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 3)))::integer AS appts_scheduled_32_to_62_days,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 4)))::integer AS appts_scheduled_more_than_62_days,
     (sum(scheduled_days_distribution.number_of_appointments))::integer AS total_appts_scheduled
    FROM scheduled_days_distribution
   GROUP BY scheduled_days_distribution.facility_id, scheduled_days_distribution.month_date
@@ -2900,9 +2900,9 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
     monthly_follow_ups.follow_ups AS monthly_follow_ups,
     reporting_facility_appointment_scheduled_days.total_appts_scheduled,
     reporting_facility_appointment_scheduled_days.appts_scheduled_0_to_14_days,
-    reporting_facility_appointment_scheduled_days.appts_scheduled_15_to_30_days,
-    reporting_facility_appointment_scheduled_days.appts_scheduled_31_to_60_days,
-    reporting_facility_appointment_scheduled_days.appts_scheduled_more_than_60_days
+    reporting_facility_appointment_scheduled_days.appts_scheduled_15_to_31_days,
+    reporting_facility_appointment_scheduled_days.appts_scheduled_32_to_62_days,
+    reporting_facility_appointment_scheduled_days.appts_scheduled_more_than_62_days
    FROM ((((((((public.reporting_facilities rf
      JOIN public.reporting_months cal ON (true))
      LEFT JOIN registered_patients ON (((registered_patients.month_date = cal.month_date) AND (registered_patients.region_id = rf.facility_region_id))))
@@ -5054,6 +5054,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220118190607'),
 ('20220124212048'),
 ('20220124215220'),
-('20220202091240');
+('20220202091240'),
+('20220203073617');
 
 
