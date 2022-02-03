@@ -24,19 +24,27 @@ RSpec.describe Reports::FacilityAppointmentScheduledDays, {type: :model, reporti
 
   it "buckets and counts appointments by the number of days between creation date and scheduled date" do
     facility = create(:facility)
-    patients = create_list(:patient, 4, recorded_at: 1.month.ago)
-    _appointment_scheduled_0_to_14_days = create(:appointment, patient: patients.first, facility: facility, scheduled_date: 10.days.from_now, device_created_at: Time.current)
-    _appointment_scheduled_15_to_30_days = create(:appointment, patient: patients.second, facility: facility, scheduled_date: 16.days.from_now, device_created_at: Time.current)
-    _appointment_scheduled_31_to_60_days = create(:appointment, patient: patients.third, facility: facility, scheduled_date: 36.days.from_now, device_created_at: Time.current)
-    _appointment_scheduled_more_than_60_days = create(:appointment, patient: patients.fourth, facility: facility, scheduled_date: 70.days.from_now, device_created_at: Time.current)
+    scheduled_dates = [-1.days.from_now,
+      0.days.from_now, 14.days.from_now,
+      15.days.from_now, 30.days.from_now,
+      31.days.from_now, 60.days.from_now,
+      61.days.from_now, 100.days.from_now]
+
+    scheduled_dates.each do |date|
+      create(:appointment,
+        scheduled_date: date,
+        device_created_at: Time.current,
+        facility: facility,
+        patient: create(:patient, recorded_at: 1.month.ago))
+    end
 
     RefreshReportingViews.new.refresh_v2
 
-    expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_0_to_14_days).to eq 1
-    expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_15_to_30_days).to eq 1
-    expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_31_to_60_days).to eq 1
-    expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_more_than_60_days).to eq 1
-    expect(described_class.find_by(month_date: Period.current, facility: facility).total_appts_scheduled).to eq 4
+    expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_0_to_14_days).to eq 2
+    expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_15_to_30_days).to eq 2
+    expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_31_to_60_days).to eq 2
+    expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_more_than_60_days).to eq 2
+    expect(described_class.find_by(month_date: Period.current, facility: facility).total_appts_scheduled).to eq 8
   end
 
   it "buckets and counts appointments by the number of days between creation date and scheduled date at a facility per month" do
@@ -94,16 +102,40 @@ RSpec.describe Reports::FacilityAppointmentScheduledDays, {type: :model, reporti
     expect(described_class.find_by(month_date: Period.month(7.month.ago), facility: facility)).to be_nil
   end
 
-  it "includes only appointments where scheduled date is after creation date" do
+  it "does not include appointments where scheduled date is before creation date" do
     facility = create(:facility)
-    patient = create(:patient, recorded_at: 2.months.ago, assigned_facility: facility)
-    _appointment_created_today = create(:appointment, facility: facility, patient: patient, scheduled_date: Date.yesterday, device_created_at: Time.current)
-    _appointment_created_1_month_ago = create(:appointment, facility: facility, patient: patient, scheduled_date: Date.today, device_created_at: 1.month.ago)
+    create(:appointment,
+      facility: facility,
+      patient: create(:patient, recorded_at: 1.month.ago),
+      scheduled_date: Date.yesterday,
+      device_created_at: Time.current)
 
     RefreshReportingViews.new.refresh_v2
 
     expect(described_class.find_by(month_date: Period.current, facility: facility)).to be_nil
-    expect(described_class.find_by(month_date: Period.month(1.month.ago), facility: facility).appts_scheduled_31_to_60_days).to eq 1
+  end
+
+  it "includes only appointments where scheduled date is on or after creation date " do
+    facility = create(:facility)
+    create(:appointment,
+      facility: facility,
+      patient: create(:patient, recorded_at: 1.month.ago),
+      scheduled_date: Date.yesterday,
+      device_created_at: Time.current)
+    create(:appointment,
+      facility: facility,
+      patient: create(:patient, recorded_at: 1.month.ago),
+      scheduled_date: Date.today,
+      device_created_at: Time.current)
+    create(:appointment,
+      facility: facility,
+      patient: create(:patient, recorded_at: 1.month.ago),
+      scheduled_date: Date.tomorrow,
+      device_created_at: Time.current)
+
+    RefreshReportingViews.new.refresh_v2
+
+    expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_0_to_14_days).to eq 2
   end
 
   it "does not include soft-deleted patients or appointments" do
