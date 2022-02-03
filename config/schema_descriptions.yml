@@ -1,5 +1,6 @@
 reporting_facility_states:
   description: "Monthly summary of a facility's indicators. This table has one row per facility, per month, from the month of the facility's first registration."
+  columns:
     month_date: "The reporting month for this row, represented as the date at the beginning of the month"
     month: "Month (1-12) of year"
     quarter: "Quarter (1-4) of year"
