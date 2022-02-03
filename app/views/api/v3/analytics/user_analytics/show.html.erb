@@ -94,7 +94,7 @@
                     locals: { data_table_name: registrations_table_name,
                               is_diabetes_enabled: @user_analytics.diabetes_enabled? } %>
           <% if current_user.feature_enabled?(:follow_ups_v2_progress_tab) %>
-            <%= render partial: 'api/v3/analytics/user_analytics/monthly_breakdown', locals: { metric: :registrations } %>
+            <%= render partial: 'api/v3/analytics/user_analytics/monthly_breakdown', locals: { indicator: :registrations } %>
           <% else %>
             <%= render partial: 'api/v3/analytics/user_analytics/monthly_gender_table',
                       locals: { stat: :registrations,
@@ -119,10 +119,14 @@
           <%= render partial: 'api/v3/analytics/user_analytics/gender_filter',
                     locals: { data_table_name: follow_ups_table_name,
                               is_diabetes_enabled: @user_analytics.diabetes_enabled? } %>
-          <%= render partial: 'api/v3/analytics/user_analytics/monthly_gender_table',
-                    locals: { stat: :follow_ups,
-                              user_analytics: @user_analytics,
-                              data_table_name: follow_ups_table_name } %>
+          <% if current_user.feature_enabled?(:follow_ups_v2_progress_tab) %>
+            <%= render partial: 'api/v3/analytics/user_analytics/monthly_breakdown', locals: { indicator: :follow_ups } %>
+          <% else %>
+            <%= render partial: 'api/v3/analytics/user_analytics/monthly_gender_table',
+                      locals: { stat: :follow_ups,
+                                user_analytics: @user_analytics,
+                                data_table_name: follow_ups_table_name } %>
+          <% end %>
         </div>
         <% if current_facility_group.region.feature_enabled?(:drug_stocks) && controller_name == "user_analytics" %>
           <div class="mb-16px p-16px bgc-white br-4px bs-card">

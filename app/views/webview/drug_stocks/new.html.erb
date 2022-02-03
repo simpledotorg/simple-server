@@ -1,131 +1,148 @@
 <!DOCTYPE html>
-<html lang="en" style="scroll-behavior: auto;">
-<head>
-  <meta charset="utf-8">
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,shrink-to-fit=no"/>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <title><%= raw t("analytics.page_title") %></title>
-
-  <%= inline_stylesheet("user_analytics.css") %>
-</head>
-
-<body id="progress">
-  <div id="progress-start" class="progress-body">
-    <div class="progress-contents">
-
+<html lang="en" class="sb-auto">
+  <head>
+    <meta charset="utf-8">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,shrink-to-fit=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>
+      <%= raw t("analytics.page_title") %>
+    </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <%= inline_stylesheet("user_analytics.css") %>
+  </head>
+  <body id="progress">
+    <div id="progress-start">
       <div id="drug-stock-form">
-
-        <style>
-          label.sr-only {display:none;}
-          .form-group {padding-left:0;padding-top:4px;padding-bottom:32px;}
-        </style>
-
-        <div class="progress-contents">
-          <a href="simple://progress-tab" title="Go Back" class="help-back">
-            <%= inline_svg('icon_back.svg') %>
+        <div class="mb-8px p-16px bgc-white bs-card">
+          <a href="simple://progress-tab" title="Go back to progress" class="d-block mb-24px">
+            <div class="d-inline-block">
+              <%= inline_file("chevron-left.svg") %>
+            </div>
           </a>
-          <h2 style="padding-top: 80px;">Tablets in stock</h2>
-          <div>Enter your drug stock report at the end of every month.</div>
-          <ul style="padding-bottom: 1em;">
-            <li class="check">Enter number of tablets for each drug</li>
-            <li class="check">Leave blank if you don't know an amount</li>
-            <li class="check">Enter "0" if stock is out</li>
-          </ul>
-
+          <h2 class="m-0px mb-8px fw-bold c-black">
+            Drug stock report
+          </h2>
+          <p class="m-0px mb-8px p-0px ta-left fw-regular fs-16px lh-150 c-grey-dark">
+            Enter the tablets in stock at the end of a month
+          </p>
+          <div class="d-flex ai-center mb-8px">
+            <div class="d-inline-block mr-12px">
+              <%= inline_file("check-mark-small.svg") %>
+            </div>
+            <p class="m-0px p-0px ta-left fw-regular fs-16px c-grey-dark">
+              Enter the number of tablets for each drug
+            </p>
+          </div>
+          <div class="d-flex ai-center mb-8px">
+            <div class="mr-12px">
+              <%= inline_file("check-mark-small.svg") %>
+            </div>
+            <p class="m-0px p-0px ta-left fw-regular fs-16px c-grey-dark">
+              Leave black if you don't know an amount
+            </p>
+          </div>
+          <div class="d-flex ai-center">
+            <div class="mr-12px">
+              <%= inline_file("check-mark-small.svg") %>
+            </div>
+            <p class="m-0px p-0px ta-left fw-regular fs-16px c-grey-dark">
+              Enter "0" if a drug's stock is out
+            </p>
+          </div>
+        </div>
+        <div class="p-16px pb-64px bgc-white bs-card">
           <%= bootstrap_form_with(url: webview_drug_stocks_url(format: :json), method: :post, autocomplete: "off", label_errors: true) do |form| %>
             <%= form.hidden_field :facility_id, value: current_facility.id %>
             <%= form.hidden_field :user_id, value: current_user.id %>
             <%= form.hidden_field :access_token, value: current_user.access_token %>
-
-          <div class="form-group">
-            <div class="form-row">
+            <div class="mb-24px">
               <% choices = last_n_months(n: 6, inclusive: @show_current_month).map { |d| [d.to_date.to_s(:mon_year), d.to_date.to_s(:mon_year)] }
               %>
-              <%= form.select :for_end_of_month, choices, { selected: @for_end_of_month.to_date.to_s(:mon_year) }, { id: "for_end_of_month", class: "card-dropdown" } %>
+              <%= form.select :for_end_of_month, choices, { label_class: "d-block mb-8px fw-medium fs-18px c-black", selected: @for_end_of_month.to_date.to_s(:mon_year) }, { id: "for_end_of_month", class: "w-100 p-12px fw-medium fs-18px c-blue bgc-blue-light b-none br-4px bs-secondary-button o-none a-none chevron-down-icon" } %>
             </div>
-          </div>
-
-          <% @protocol_drugs.each_with_index do |protocol_drug, index| %>
-            <%= form.fields_for "drug_stocks[#{index}]", DrugStock.new do |drug_stock_form| %>
-              <%= drug_stock_form.hidden_field :protocol_drug_id, value: protocol_drug.id %>
-
-              <div class="form-group">
-                  <label><%= "#{protocol_drug.name} #{protocol_drug.dosage}"%> tablets</label>
-                  <div class="form-row">
-                    <div class="col">
-                      <%= drug_stock_form.number_field :received, class: :received, value: @drug_stocks[protocol_drug.id].try(&:received), hide_label: true, help: "Received this month" %>
-                    </div>
-                    <div class="col">
-                      <%= drug_stock_form.number_field :in_stock, class: :in_stock, value: @drug_stocks[protocol_drug.id].try(&:in_stock), hide_label: true, help: "Stock on hand" %>
-                    </div>
-                  </div>
-              </div>
-            <% end %>
-          <% end %>
-            <div class="redistribution-question">
-              <div class="redistribution-switch-label">
-                <label for="redistribution-fields-toggle">Did your facility issue drugs to other facilities this
-                  month?</label>
-              </div>
-              <div class="redistribution-switch-wrapper">
-                <input type="checkbox" id="redistribution-fields-toggle" class="switch" <%= "checked" if @drug_stocks.values.map(&:redistributed).any? %> />
-              </div>
-            </div>
-
-            <div id="redistribution-fields">
             <% @protocol_drugs.each_with_index do |protocol_drug, index| %>
               <%= form.fields_for "drug_stocks[#{index}]", DrugStock.new do |drug_stock_form| %>
                 <%= drug_stock_form.hidden_field :protocol_drug_id, value: protocol_drug.id %>
-
-                <div class="form-group">
-                  <label><%= "#{protocol_drug.name} #{protocol_drug.dosage}"%> tablets</label>
-                  <div class="form-row">
-                    <div style="width: 95%">
-                      <%= drug_stock_form.number_field :redistributed,
-                          class: :redistributed,
-                          value: @drug_stocks[protocol_drug.id].try(&:redistributed),
-                          hide_label: true,
-                          help: "Stock issued to other facilities" %>
-                    </div>
+                <p class="mb-0px mb-8px p-0px ta-left fw-medium fs-14px c-black">
+                  <%= "#{protocol_drug.name} #{protocol_drug.dosage}"%> tablets
+                </p>
+                <div class="d-flex mb-24px">
+                  <div class="f-1 mr-12px">
+                    <%= drug_stock_form.number_field :received, value: @drug_stocks[protocol_drug.id].try(&:received),  class: "bs-border-box w-100 mb-4px p-12px fw-regular fs-16px c-black b-grey-mid br-4px", skip_label: true %>
+                    <p class="m-0px p-0px ta-left fw-regular fs-12px c-grey-dark">
+                      Received this month
+                    </p>
+                  </div>
+                  <div class="f-1">
+                    <%= drug_stock_form.number_field :in_stock, class: :in_stock, value: @drug_stocks[protocol_drug.id].try(&:in_stock), class: "bs-border-box w-100 mb-4px p-12px fw-regular fs-16px c-black b-grey-mid br-4px", skip_label: true %>
+                    <p class="m-0px p-0px ta-left fw-regular fs-12px c-grey-dark">
+                      Stock on hand
+                    </p>
                   </div>
                 </div>
               <% end %>
             <% end %>
-          </div>
-
-          <div class="button-fixed-bottom">
-            <%= form.button "SAVE", class: "button" %>
-            <%# <button onclick="openWindow('drug-stock-submitted', 'drug-stock-form'); return false" class="button">SAVE</button> %>
-          </div>
+            <div class="redistribution-question">
+              <p class="m-0px p-0px ta-left fw-regular fs-16px c-black" for="redistribution-fields-toggle">
+                Did your facility issue drugs to other facilities this month?
+              </p>
+              <div class="redistribution-switch-wrapper">
+                <input type="checkbox" id="redistribution-fields-toggle" class="switch" <%= "checked" if @drug_stocks.values.map(&:redistributed).any? %> />
+              </div>
+            </div>
+            <div id="redistribution-fields">
+              <% @protocol_drugs.each_with_index do |protocol_drug, index| %>
+                <%= form.fields_for "drug_stocks[#{index}]", DrugStock.new do |drug_stock_form| %>
+                  <%= drug_stock_form.hidden_field :protocol_drug_id, value: protocol_drug.id %>
+                  <p class="mb-0px mb-8px p-0px ta-left fw-medium fs-14px c-black">
+                    <%= "#{protocol_drug.name} #{protocol_drug.dosage}"%> tablets
+                  </p>
+                  <div class="d-flex mb-24px">
+                    <div class="w-95">
+                      <%= drug_stock_form.number_field :redistributed,
+                          class: "bs-border-box w-100 mb-4px p-12px fw-regular fs-16px c-black b-grey-mid br-4px",
+                          value: @drug_stocks[protocol_drug.id].try(&:redistributed),
+                          skip_label: true
+                      %>
+                      <p class="m-0px p-0px ta-left fw-regular fs-12px c-grey-dark">
+                        Stock issued to other facilities
+                      </p>
+                    </div>
+                  </div>
+                <% end %>
+              <% end %>
+            </div>
+            <div class="p-fixed b-0 l-0 zi-100 w-100 p-8px bgc-blue-light bs-border-box bs-fixed-card" style="padding-bottom: 12px;">
+              <%= form.button "SAVE", class: "d-block w-100 p-16px ta-center bgc-blue tt-uppercase ls-1_25px br-4px fs-16px b-none bs-primary-button bs-border-box", style: "font-weight: 700; color: #ffffff;" %>
+            </div>
           <% end %>
         </div>
       </div>
     </div>
-  </div>
-
   </body>
+  <script type="text/javascript" charset="utf-8">
+    window.addEventListener("load", function() {
+      let monthSelect = document.getElementById("for_end_of_month");
+      monthSelect.addEventListener("change", function(e) {
+        window.location.href = location.origin + location.pathname + location.search + "&for_end_of_month=" + encodeURIComponent(monthSelect.value);
+      });
 
-<script type="text/javascript" charset="utf-8">
-  window.addEventListener("load", function() {
-    let monthSelect = document.getElementById("for_end_of_month");
-    monthSelect.addEventListener("change", function(e) {
-      window.location.href = location.origin + location.pathname + location.search + "&for_end_of_month=" + encodeURIComponent(monthSelect.value);
-    });
+      let redistributionFieldsToggle = document.getElementById("redistribution-fields-toggle")
+      let redistributionFields = document.getElementById("redistribution-fields")
 
-    let redistributionFieldsToggle = document.getElementById("redistribution-fields-toggle")
-    let redistributionFields = document.getElementById("redistribution-fields")
+      function showRedistributionFields(show) {
+        redistributionFields.style.display = show ? "block" : "none";
+      }
 
-    function showRedistributionFields(show) {
-      redistributionFields.style.display = show ? "block" : "none";
-    }
+      redistributionFieldsToggle.onchange = function(e) {
+        showRedistributionFields(e.target.checked);
+      }
 
-    redistributionFieldsToggle.onchange = function(e) {
-      showRedistributionFields(e.target.checked);
-    }
-
-    showRedistributionFields(redistributionFieldsToggle.checked);
-  })
-</script>
+      showRedistributionFields(redistributionFieldsToggle.checked);
+    })
+  </script>
 </html>
