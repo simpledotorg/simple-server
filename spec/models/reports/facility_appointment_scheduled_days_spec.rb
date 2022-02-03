@@ -24,15 +24,19 @@ RSpec.describe Reports::FacilityAppointmentScheduledDays, {type: :model, reporti
 
   it "buckets and counts appointments by the number of days between creation date and scheduled date" do
     facility = create(:facility)
-    create(:appointment, scheduled_date: -1.days.from_now, device_created_at: Time.current, facility: facility, patient: create(:patient, recorded_at: 1.month.ago))
-    create(:appointment, scheduled_date: 0.days.from_now, device_created_at: Time.current, facility: facility, patient: create(:patient, recorded_at: 1.month.ago))
-    create(:appointment, scheduled_date: 14.days.from_now, device_created_at: Time.current, facility: facility, patient: create(:patient, recorded_at: 1.month.ago))
-    create(:appointment, scheduled_date: 15.days.from_now, device_created_at: Time.current, facility: facility, patient: create(:patient, recorded_at: 1.month.ago))
-    create(:appointment, scheduled_date: 30.days.from_now, device_created_at: Time.current, facility: facility, patient: create(:patient, recorded_at: 1.month.ago))
-    create(:appointment, scheduled_date: 31.days.from_now, device_created_at: Time.current, facility: facility, patient: create(:patient, recorded_at: 1.month.ago))
-    create(:appointment, scheduled_date: 60.days.from_now, device_created_at: Time.current, facility: facility, patient: create(:patient, recorded_at: 1.month.ago))
-    create(:appointment, scheduled_date: 61.days.from_now, device_created_at: Time.current, facility: facility, patient: create(:patient, recorded_at: 1.month.ago))
-    create(:appointment, scheduled_date: 100.days.from_now, device_created_at: Time.current, facility: facility, patient: create(:patient, recorded_at: 1.month.ago))
+    scheduled_dates = [-1.days.from_now,
+                       0.days.from_now, 14.days.from_now,
+                       15.days.from_now, 30.days.from_now,
+                       31.days.from_now, 60.days.from_now,
+                       61.days.from_now, 100.days.from_now]
+
+    scheduled_dates.each do |date|
+      create(:appointment,
+             scheduled_date: date,
+             device_created_at: Time.current,
+             facility: facility,
+             patient: create(:patient, recorded_at: 1.month.ago))
+    end
 
     RefreshReportingViews.new.refresh_v2
 
