@@ -14,7 +14,7 @@ WITH latest_appointments_per_patient_per_month AS (
      SELECT month_date,
             width_bucket(
               extract('days' FROM (scheduled_date - date_trunc('day', device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))))::integer,
-              array[0, 15, 32, 62]
+              array[0, 15, 32, 63]
             ) bucket,
             COUNT(*) number_of_appointments,
             creation_facility_id facility_id

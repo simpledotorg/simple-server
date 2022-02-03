@@ -1633,11 +1633,11 @@ CREATE MATERIALIZED VIEW public.reporting_facility_appointment_scheduled_days AS
           ORDER BY a.patient_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, a.device_created_at)), 'YYYY-MM-01'::text))::date, a.device_created_at DESC
         ), scheduled_days_distribution AS (
          SELECT latest_appointments_per_patient_per_month.month_date,
-            width_bucket((date_part('days'::text, ((latest_appointments_per_patient_per_month.scheduled_date)::timestamp without time zone - date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_appointments_per_patient_per_month.device_created_at))))))::integer, ARRAY[0, 15, 32, 62]) AS bucket,
+            width_bucket((date_part('days'::text, ((latest_appointments_per_patient_per_month.scheduled_date)::timestamp without time zone - date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_appointments_per_patient_per_month.device_created_at))))))::integer, ARRAY[0, 15, 32, 63]) AS bucket,
             count(*) AS number_of_appointments,
             latest_appointments_per_patient_per_month.creation_facility_id AS facility_id
            FROM latest_appointments_per_patient_per_month
-          GROUP BY (width_bucket((date_part('days'::text, ((latest_appointments_per_patient_per_month.scheduled_date)::timestamp without time zone - date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_appointments_per_patient_per_month.device_created_at))))))::integer, ARRAY[0, 15, 32, 62])), latest_appointments_per_patient_per_month.creation_facility_id, latest_appointments_per_patient_per_month.month_date
+          GROUP BY (width_bucket((date_part('days'::text, ((latest_appointments_per_patient_per_month.scheduled_date)::timestamp without time zone - date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_appointments_per_patient_per_month.device_created_at))))))::integer, ARRAY[0, 15, 32, 63])), latest_appointments_per_patient_per_month.creation_facility_id, latest_appointments_per_patient_per_month.month_date
         )
  SELECT scheduled_days_distribution.facility_id,
     scheduled_days_distribution.month_date,
