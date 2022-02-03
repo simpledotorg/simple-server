@@ -23,7 +23,7 @@ module Reports
       @period_type = @periods.first.type
       @follow_ups_v2 = follow_ups_v2
       raise ArgumentError, "Quarter periods not supported" if @period_type != :month
-      @schema = SchemaV2.new(@regions, periods: @periods)
+      @schema = RegionSummarySchema.new(@regions, periods: @periods)
       @bp_measures_query = BPMeasuresQuery.new
       @follow_ups_query = FollowUpsQuery.new
       @registered_patients_query = RegisteredPatientsQuery.new
@@ -40,6 +40,10 @@ module Reports
       missed_visits_without_ltfu_rates
       uncontrolled_rates
       visited_without_bp_taken_rates
+      appts_scheduled_0_to_14_days_rates
+      appts_scheduled_15_to_30_days_rates
+      appts_scheduled_31_to_60_days_rates
+      appts_scheduled_more_than_60_days_rates
     ]
 
     DELEGATED_COUNTS = %i[
@@ -61,6 +65,11 @@ module Reports
       uncontrolled
       visited_without_bp_taken
       monthly_overdue_calls
+      total_appts_scheduled
+      appts_scheduled_0_to_14_days
+      appts_scheduled_15_to_30_days
+      appts_scheduled_31_to_60_days
+      appts_scheduled_more_than_60_days
     ]
 
     def warm_cache

@@ -1,5 +1,5 @@
 <form>
-  <select class="card-dropdown <%= data_table_name %>" onchange='filterDataByGender("<%= data_table_name %>")'>
+  <select class="card-dropdown select <%= data_table_name %>" onchange='filterDataByGender("<%= data_table_name %>")'>
     <% if is_diabetes_enabled %>
       <option value="all"><%= raw t("analytics.all_hypertension_and_diabetes") %></option>
     <% end %>

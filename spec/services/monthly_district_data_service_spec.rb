@@ -1,6 +1,10 @@
 require "rails_helper"
 
-RSpec.describe MonthlyDistrictDataService do
+RSpec.describe MonthlyDistrictDataService, reporting_spec: true do
+  around do |example|
+    freeze_time_for_reporting_specs(example)
+  end
+
   let(:organization) { FactoryBot.create(:organization) }
   let(:facility_group) { create(:facility_group, organization: organization) }
   let(:facility1) { create(:facility, facility_group: facility_group, facility_size: :community) }
