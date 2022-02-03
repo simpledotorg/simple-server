@@ -235,8 +235,8 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         patient_2 = create(:patient, recorded_at: 3.months.ago, assigned_facility: facility)
         _patient_1_appointment = create(:appointment, facility: facility, patient: patient_1, scheduled_date: 10.days.from_now, device_created_at: Time.current)
         _patient_2_appointment = create(:appointment, facility: facility, patient: patient_2, scheduled_date: 10.days.from_now, device_created_at: Time.current)
-        _appointment_1_month_ago = create(:appointment, facility: facility, patient: patient_1, scheduled_date: Date.today, device_created_at: 1.month.ago)
-        _appointment_2_month_ago = create(:appointment, facility: facility, patient: patient_1, scheduled_date: Date.today, device_created_at: 2.month.ago)
+        _appointment_1_month_ago = create(:appointment, facility: facility, patient: patient_1, scheduled_date: Date.today, device_created_at: 32.days.ago)
+        _appointment_2_month_ago = create(:appointment, facility: facility, patient: patient_1, scheduled_date: Date.today, device_created_at: 63.days.ago)
 
         RefreshReportingViews.new.refresh_v2
 

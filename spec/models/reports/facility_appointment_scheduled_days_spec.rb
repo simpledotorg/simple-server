@@ -25,17 +25,17 @@ RSpec.describe Reports::FacilityAppointmentScheduledDays, {type: :model, reporti
   it "buckets and counts appointments by the number of days between creation date and scheduled date" do
     facility = create(:facility)
     scheduled_dates = [-1.days.from_now,
-                       0.days.from_now, 14.days.from_now,
-                       15.days.from_now, 31.days.from_now,
-                       32.days.from_now, 62.days.from_now,
-                       63.days.from_now, 100.days.from_now]
+      0.days.from_now, 14.days.from_now,
+      15.days.from_now, 31.days.from_now,
+      32.days.from_now, 62.days.from_now,
+      63.days.from_now, 100.days.from_now]
 
     scheduled_dates.each do |date|
       create(:appointment,
-             scheduled_date: date,
-             device_created_at: Time.current,
-             facility: facility,
-             patient: create(:patient, recorded_at: 1.month.ago))
+        scheduled_date: date,
+        device_created_at: Time.current,
+        facility: facility,
+        patient: create(:patient, recorded_at: 1.month.ago))
     end
 
     RefreshReportingViews.new.refresh_v2
