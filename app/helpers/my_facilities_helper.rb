@@ -24,7 +24,7 @@ module MyFacilitiesHelper
     color = if patient_days == "error" then :red
     elsif patient_days < 30 then :red
     elsif patient_days < 60 then :orange
-    elsif patient_days < 90 then :yellow
+    elsif patient_days < 90 then "yellow-dark"
     else
       :green
     end
