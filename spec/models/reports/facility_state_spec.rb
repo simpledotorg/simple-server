@@ -236,7 +236,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         patient_2 = create(:patient, recorded_at: 3.months.ago, assigned_facility: facility)
         _patient_1_appointment = create(:appointment, facility: facility, patient: patient_1, scheduled_date: 10.days.from_now, device_created_at: Time.current)
         _patient_2_appointment = create(:appointment, facility: facility, patient: patient_2, scheduled_date: 10.days.from_now, device_created_at: Time.current)
-        # was able to get appointment_1 to be in the 31_to_60 days bucket by setting device_created_at to 32.days.ago 
+        # was able to get appointment_1 to be in the 31_to_60 days bucket by setting device_created_at to 32.days.ago
         # but there seems to be some boundary condition that is isn't quite accounted for here yet
         _appointment_1_month_ago = create(:appointment, facility: facility, patient: patient_1, scheduled_date: Date.today, device_created_at: 1.month.ago)
         _appointment_2_month_ago = create(:appointment, facility: facility, patient: patient_1, scheduled_date: Date.today, device_created_at: 2.month.ago)
