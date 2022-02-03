@@ -173,21 +173,6 @@ a.help-back {
   color: $grey-dark;
 }
 
-.text-green {
-  color: $green;
-}
-
-.text-yellow {
-  color: $yellow-dark;
-}
-
-.text-orange {
-  color: $orange;
-}
-
-.text-red {
-  color: $red;
-}
 
 .day {
     visibility: hidden;
@@ -241,7 +226,7 @@ sup {
   padding-left: 2px;
 }
 
-#progress select {
+#progress .select {
   width: 100%;
   display: block;
   border: 1px solid $blue;
@@ -671,23 +656,6 @@ footer p {
   min-height: 250px;
 }
 
-.form-group {
-  padding: 10px 0 16px 0 !important;
-  width: 100%;
-
-  label {
-    display: block;
-    font-weight: bold;
-    margin: 0;
-  }
-  small {
-    display: block;
-    font-size: 14px;
-    margin: 6px 0 0 0;
-    opacity: 0.8;
-  }
-}
-
 .form-row {
   display: flex;
 }
@@ -700,19 +668,6 @@ footer p {
 
 .col:first-child {
   margin-left: 0;
-}
-
-select.form-control, input.form-control {
-  font-size: 24px;
-  padding: 8px;
-  border-radius: 6px;
-  width: 100%;
-  border: 1px solid white;
-  
-  &:focus {
-    outline: none;
-    border: 1px solid $blue;
-  }
 }
 
 .button {
@@ -732,7 +687,7 @@ select.form-control, input.form-control {
 
 .button-fixed-bottom {
   z-index: 10000000000;
-  background: $grey-lightest;
+  background: $white;
   position: fixed;
   bottom: 0;
   left: 0;
@@ -809,31 +764,92 @@ select.form-control, input.form-control {
 
 /* FLEX */
 .d-flex { display: flex; }
+.fd-column { flex-direction: column; }
+.ai-center { align-items: center; }
 .ai-flex-start { align-items: flex-start; }
 .jc-space-between { justify-content: space-between; }
+.jc-center { justify-content: center; }
 .f-1 { flex: 1; }
+/* POSITION */
+.p-fixed { position: fixed; }
+.b-0 { bottom: 0; }
+.l-0 { left: 0; }
 /* LAYOUT */
 .d-block { display: block; }
+.d-inline-block { display: inline-block; }
+.d-hidden { display: hidden; }
+.zi-100 { z-index: 100; }
+/* WIDTH & HEIGHT */
+.w-96px { width: 96px; }
+.w-95 { width: 95%; }
+.w-100 { width: 100%; }
+.h-1px { height: 1px; }
+.h-96px { height: 96px; }
+/* SPACING */
+.mb-2px { margin-bottom: 2px; }
+.mb-32px { margin-bottom: 32px; }
+.pb-12px { padding-bottom: 12px; }
+.pb-64px { padding-bottom: 64px; }
+.pb-96px { padding-bottom: 96px; }
 /* TYPOGRAPHY */
+.ta-right { text-align: right; }
 .ta-center { text-align: center; }
 .ta-left { text-align: left; }
 .fw-bold { font-weight: 700; } 
+.fw-medium { font-weight: 500; }
+.fw-regular { font-weight: 400; }
+.fs-12px { font-size: 12px; }
+.fs-14px { font-size: 14px; }
 .fs-16px { font-size: 16px; }
+.fs-18px { font-size: 18px; }
 .fs-24px { font-size: 24px; }
 .tt-uppercase { text-transform: uppercase; }
 .lh-150 { line-height: 150%; }
 .ls-1_25px { letter-spacing: 1.25px; }
 .c-blue { color: $blue; }
+.c-green { color: $green; }
+.c-yellow { color: $yellow; }
+.c-red { color: $red; }
+.c-grey { color: $grey; }
 .c-grey-dark { color: $grey-dark; }
+.c-white { color: $white; }
 .c-black { color: $black; }
 /* BACKGROUND */
-.b-none { border: none; }
+.bgc-grey-light { background: $grey-light; }
 .bgc-white { background-color: $white; }
 .bgc-blue-light { background-color: $blue-light; }
-.bs-card { box-shadow: 0px 2px 4px $transparent-black-10; }
-.bs-secondary-button {
-  box-shadow: 0px 4px 4px $transparent-black-5, 0px 4px 2px $transparent-black-16;
-}
+.bgc-blue { background-color: $blue; }
+.bgc-green-light { background-color: $green-light; }
+.b-none { border: none; }
+.b-grey-mid { border: 1px solid $grey-mid; }
 .bb-blue-mid { border-bottom: 2px solid $blue-mid; }
 .br-2px { border-radius: 2px; }
 .br-4px { border-radius: 4px; }
+.br-8px { border-radius: 8px; }
+.br-100 { border-radius: 100%; }
+.bs-card { box-shadow: 0px 2px 4px $transparent-black-10; }
+.bs-fixed-card { box-shadow: 0px -2px 8px $transparent-black-10; }
+.bs-primary-button { box-shadow: 0px 4px 0px $blue-dark; }
+.bs-secondary-button { box-shadow: 0px 4px 0px $blue-mid; }
+/* FORM FIELDS */
+.bs-border-box { box-sizing: border-box; }
+.o-none:focus { outline: none; }
+.chevron-down-icon { background: $blue-light url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTQgNkw4IDEwTDEyIDYiIHN0cm9rZT0iIzAwNzVFQiIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+Cg==) no-repeat 97% 52% }
+.a-none {
+  -moz-appearance: none;;
+  -webkit-appearance: none;
+  appearance: none;
+}
+/* SCROLL */
+.sb-auto { scroll-behavior: auto; }
+.text-yellow {
+  color: $yellow-dark;
+}
+
+.text-orange {
+  color: $orange;
+}
+
+.text-red {
+  color: $red;
+}

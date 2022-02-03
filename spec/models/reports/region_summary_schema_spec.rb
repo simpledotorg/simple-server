@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe Reports::SchemaV2, type: :model do
+describe Reports::RegionSummarySchema, type: :model do
   let(:organization) { create(:organization, name: "org-1") }
   let(:user) { create(:admin, :manager, :with_access, resource: organization, organization: organization) }
 
@@ -65,7 +65,7 @@ describe Reports::SchemaV2, type: :model do
     schema = described_class.new([facility.region], periods: range)
     entries = schema.cache_entries(:earliest_patient_recorded_at)
     entries.each do |entry|
-      expect(entry.to_s).to include("schema_v2")
+      expect(entry.to_s).to include("region_summary_schema")
       expect(entry.to_s).to include(facility.region.id)
       expect(entry.to_s).to include(schema.cache_version)
     end

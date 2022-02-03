@@ -1,5 +1,5 @@
 module Reports
-  class SchemaV2
+  class RegionSummarySchema
     include BustCache
     include Memery
     include RegionCaching
