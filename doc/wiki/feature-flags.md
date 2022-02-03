@@ -23,7 +23,6 @@ to facility the launch of a new feature, and may reference the Simple team's int
 | imo_messaging | Yes | When enabled, patient reminder messages will be attempted via Imo first, before falling back to SMS. |
 | notifications | Yes | When enabled, Simple Server will send patient reminder messages. |
 | organization_reports | Yes | When enabled, the Simple Dashboard will allow users to view a top-level report for the whole organization. |
-| reporting_schema_v2 | Yes | Feature flag to launch [Reporting Pipeline](https://app.shortcut.com/simpledotorg/epic/2422/reporting-pipeline-etl) |
 | skip_api_validation | Yes | When enabled, Simple Server will not perform JSON validation of incoming API requests. This makes the API endpoints much more performant, but should only be enabled if all API clients are trusted (Simple app only). |
 | sync_encounters | Yes | When enabled, encounters can be synced between app and server like any other standard sync resource. |
 | weekly_telemed_report | Yes | When enabled, a weekly report on telemedicine activity in Simple will be sent via email to the configured recipients. |

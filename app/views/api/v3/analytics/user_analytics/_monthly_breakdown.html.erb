@@ -1,21 +1,16 @@
-<% if current_facility.diabetes_enabled? %>
-  <%= render(Reports::MonthlyProgressComponent.new(facility: current_facility, 
-    diagnosis: :all, 
-    metric: metric,
-    query: @query,
-    range: @range,
-    gender_groups: false)) %>
 
-  <%= render(Reports::MonthlyProgressComponent.new(facility: current_facility, 
-    diagnosis: :diabetes, 
-    metric: metric,
-    query: @query,
-    range: @range)) %>
-
+<% 
+# handle the special case of any diagnosis and all genders first
+dimensions = [Reports::FacilityProgressDimension.new(indicator, diagnosis: :all, gender: :all)]
+# then do all the combinations
+combinations = [indicator].product([:diabetes, :hypertension]).product([:all, :male, :female, :transgender])
+combinations.each_with_object([]) do |c|
+  indicator, diagnosis = *c.first
+  gender = c.last
+  dimensions << Reports::FacilityProgressDimension.new(indicator, diagnosis: diagnosis, gender: gender)
+end
+%>
+<% dimensions.each do |dimension| %>
+  <%= render(Reports::MonthlyProgressComponent.new(dimension, range: @range, total_counts: @total_counts, monthly_counts: @monthly_counts)) %>
 <% end %>
 
-<%= render(Reports::MonthlyProgressComponent.new(facility: current_facility, 
-  diagnosis: :hypertension, 
-  metric: metric,
-  query: @query,
-  range: @range)) %>

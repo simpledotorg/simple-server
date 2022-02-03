@@ -2,6 +2,7 @@ require "rails_helper"
 
 RSpec.describe Reports::FacilityStateGroup, {type: :model, reporting_spec: true} do
   let(:user) { create(:user) }
+  let(:user_2) { create(:user) }
   let(:facility) { create(:facility) }
 
   around do |example|
@@ -29,15 +30,50 @@ RSpec.describe Reports::FacilityStateGroup, {type: :model, reporting_spec: true}
     expect(result.monthly_follow_ups_all).to be_nil
   end
 
+  context "totals" do
+    it "can sum registrations for all the count fields for all time totals" do
+      two_years_ago, six_months_ago = june_2021.values_at(:two_years_ago, :six_months_ago)
+      create_list(:patient, 2, :hypertension, recorded_at: two_years_ago, gender: :female, registration_user: user, registration_facility: facility)
+      create_list(:patient, 2, :hypertension, recorded_at: six_months_ago, gender: :female, registration_user: user, registration_facility: facility)
+      create_list(:patient, 3, :hypertension, recorded_at: two_years_ago, gender: :male, registration_user: user, registration_facility: facility)
+      create_list(:patient, 1, :hypertension, recorded_at: two_years_ago, gender: :transgender, registration_user: user, registration_facility: facility)
+      refresh_views
+      total = described_class.totals(facility)
+      expect(total.monthly_registrations_all).to eq(8)
+      expect(total.monthly_registrations_htn_all).to eq(8)
+      expect(total.monthly_registrations_htn_male).to eq(3)
+      expect(total.monthly_registrations_htn_female).to eq(4)
+      expect(total.monthly_registrations_htn_transgender).to eq(1)
+    end
+
+    it "can sum follow_ups for all count fields for all time totals" do
+      two_years_ago, six_months_ago = june_2021.values_at(:two_years_ago, :six_months_ago)
+      patient_1 = create(:patient, :hypertension, recorded_at: two_years_ago, gender: :female, registration_user: user, registration_facility: facility)
+      patient_2 = create(:patient, :hypertension, recorded_at: two_years_ago, gender: :female, registration_user: user, registration_facility: facility)
+      patient_3 = create(:patient, :hypertension, recorded_at: two_years_ago, gender: :male, registration_user: user, registration_facility: facility)
+
+      create(:appointment, patient: patient_1, user: user, facility: facility, recorded_at: six_months_ago)
+      create(:blood_pressure, patient: patient_2, user: user, facility: facility, recorded_at: six_months_ago)
+      create(:blood_pressure, patient: patient_2, user: user_2, facility: facility, recorded_at: six_months_ago.advance(days: 3))
+      create(:blood_pressure, patient: patient_3, user: user_2, facility: facility, recorded_at: six_months_ago.advance(days: 3))
+      refresh_views
+      total = described_class.totals(facility)
+      expect(total.monthly_follow_ups_all).to eq(3)
+      expect(total.monthly_follow_ups_htn_male).to eq(1)
+      expect(total.monthly_follow_ups_htn_female).to eq(2)
+    end
+  end
+
   it "returns registrations and follow up counts filtered by diagnosis" do
     two_years_ago, six_months_ago = june_2021.values_at(:two_years_ago, :six_months_ago)
     patient_1 = create(:patient, :hypertension, recorded_at: two_years_ago, gender: "female", registration_user: user, registration_facility: facility)
     create(:blood_pressure, patient: patient_1, user: user, facility: facility, recorded_at: six_months_ago)
-    create(:blood_pressure, patient: patient_1, user: user, facility: facility, recorded_at: six_months_ago.advance(days: 3))
+    create(:blood_pressure, patient: patient_1, user: user_2, facility: facility, recorded_at: six_months_ago.advance(days: 3))
     create(:appointment, patient: patient_1, user: user, facility: facility, recorded_at: six_months_ago)
 
     patient_2 = create(:patient, :hypertension, recorded_at: two_years_ago, gender: "male", registration_user: user, registration_facility: facility)
     create(:blood_pressure, patient: patient_2, user: user, facility: facility, recorded_at: six_months_ago)
+    create(:blood_pressure, patient: patient_2, user: user_2, facility: facility, recorded_at: six_months_ago)
 
     RefreshReportingViews.call
 
