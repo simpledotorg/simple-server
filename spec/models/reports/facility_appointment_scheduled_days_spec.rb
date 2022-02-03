@@ -153,4 +153,20 @@ RSpec.describe Reports::FacilityAppointmentScheduledDays, {type: :model, reporti
 
     expect(described_class.find_by(month_date: Period.current, facility: facility)).to be_nil
   end
+
+  it "counts only appointments of hypertensive patients" do
+    facility = create(:facility)
+    [create(:patient, recorded_at: 1.month.ago),
+     create(:patient, :without_hypertension, recorded_at: 1.month.ago)].each do |patient|
+      create(:appointment,
+             facility: facility,
+             patient: patient,
+             scheduled_date: 10.days.from_now,
+             device_created_at: Time.current)
+    end
+
+    RefreshReportingViews.new.refresh_v2
+
+    expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_0_to_14_days).to eq 1
+  end
 end

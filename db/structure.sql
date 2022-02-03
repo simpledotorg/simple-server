@@ -1627,9 +1627,10 @@ CREATE MATERIALIZED VIEW public.reporting_facility_appointment_scheduled_days AS
             a.user_id,
             a.creation_facility_id,
             (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, a.device_created_at)), 'YYYY-MM-01'::text))::date AS month_date
-           FROM (public.appointments a
+           FROM ((public.appointments a
              JOIN public.patients p ON ((p.id = a.patient_id)))
-          WHERE ((a.scheduled_date >= date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, a.device_created_at)))) AND (a.device_created_at >= date_trunc('month'::text, (timezone('UTC'::text, now()) - '6 mons'::interval))) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, a.device_created_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) AND (p.deleted_at IS NULL) AND (a.deleted_at IS NULL))
+             JOIN public.medical_histories mh ON ((mh.patient_id = a.patient_id)))
+          WHERE ((a.scheduled_date >= date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, a.device_created_at)))) AND (a.device_created_at >= date_trunc('month'::text, (timezone('UTC'::text, now()) - '6 mons'::interval))) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, a.device_created_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) AND (p.deleted_at IS NULL) AND (a.deleted_at IS NULL) AND (mh.hypertension = 'yes'::text))
           ORDER BY a.patient_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, a.device_created_at)), 'YYYY-MM-01'::text))::date, a.device_created_at DESC
         ), scheduled_days_distribution AS (
          SELECT latest_appointments_per_patient_per_month.month_date,
