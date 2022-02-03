@@ -9,6 +9,14 @@ module Reports
       @range = Range.new(@period.advance(months: -5), @period)
     end
 
+    def total_counts
+      @total_counts ||= Reports::FacilityStateGroup.totals(facility)
+    end
+
+    def monthly_counts
+      @monthly_counts ||= Reports::FacilityStateGroup.where(facility_region_id: facility.region.id, month_date: @range).to_a
+    end
+
     # Returns all possible combinations of FacilityProgressDimensions for displaying 
     # the different slices of progress data.
     def dimension_combinations_for(indicator)
@@ -22,16 +30,11 @@ module Reports
       dimensions
     end
 
+    private
+
     def create_dimension(*args)
       Reports::FacilityProgressDimension.new(*args)
     end
 
-    def total_counts
-      @total_counts ||= Reports::FacilityStateGroup.totals(facility)
-    end
-
-    def monthly_counts
-      @monthly_counts ||= Reports::FacilityStateGroup.where(facility_region_id: facility.region.id, month_date: @range).to_a
-    end
   end
 end

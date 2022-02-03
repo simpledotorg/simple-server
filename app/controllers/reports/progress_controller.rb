@@ -10,7 +10,6 @@ class Reports::ProgressController < AdminController
     @current_facility = @region
     @user_analytics = UserAnalyticsPresenter.new(@region)
     @service = Reports::FacilityProgressService.new(current_facility, @period)
-    @range = Range.new(@period.advance(months: -5), @period)
     render "api/v3/analytics/user_analytics/show"
   end
 
