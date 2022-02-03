@@ -98,8 +98,8 @@ describe Reports::SchemaV2, type: :model do
 
       schema = described_class.new(Region.where(id: facility.region), periods: range)
       expect(schema.appts_scheduled_0_to_14_days_rates[facility.slug][range.last]).to eq(100)
-      expect(schema.appts_scheduled_15_to_30_days_rates[facility.slug][range.to_a.second]).to eq(100)
-      expect(schema.appts_scheduled_more_than_60_days_rates[facility.slug][range.first]).to eq(100)
+      expect(schema.appts_scheduled_15_to_31_days_rates[facility.slug][range.to_a.second]).to eq(100)
+      expect(schema.appts_scheduled_more_than_62_days_rates[facility.slug][range.first]).to eq(100)
     end
 
     it "returns zeros when there is no appointment data in the month" do
@@ -112,15 +112,15 @@ describe Reports::SchemaV2, type: :model do
       schema = described_class.new(Region.where(id: facility.region), periods: range)
 
       expect(schema.appts_scheduled_0_to_14_days[facility.slug][period]).to eq(0)
-      expect(schema.appts_scheduled_15_to_30_days[facility.slug][period]).to eq(0)
-      expect(schema.appts_scheduled_31_to_60_days[facility.slug][period]).to eq(0)
-      expect(schema.appts_scheduled_more_than_60_days[facility.slug][period]).to eq(0)
+      expect(schema.appts_scheduled_15_to_31_days[facility.slug][period]).to eq(0)
+      expect(schema.appts_scheduled_32_to_62_days[facility.slug][period]).to eq(0)
+      expect(schema.appts_scheduled_more_than_62_days[facility.slug][period]).to eq(0)
       expect(schema.total_appts_scheduled[facility.slug][period]).to eq(0)
 
       expect(schema.appts_scheduled_0_to_14_days_rates[facility.slug][period]).to eq(0)
-      expect(schema.appts_scheduled_15_to_30_days_rates[facility.slug][period]).to eq(0)
-      expect(schema.appts_scheduled_31_to_60_days_rates[facility.slug][period]).to eq(0)
-      expect(schema.appts_scheduled_more_than_60_days_rates[facility.slug][period]).to eq(0)
+      expect(schema.appts_scheduled_15_to_31_days_rates[facility.slug][period]).to eq(0)
+      expect(schema.appts_scheduled_32_to_62_days_rates[facility.slug][period]).to eq(0)
+      expect(schema.appts_scheduled_more_than_62_days_rates[facility.slug][period]).to eq(0)
     end
 
     it "returns empty hashes when there is no registered patients, assigned patients or follow ups" do
@@ -131,15 +131,15 @@ describe Reports::SchemaV2, type: :model do
       schema = described_class.new(Region.where(id: facility.region), periods: range)
 
       expect(schema.appts_scheduled_0_to_14_days[facility.slug]).to eq({})
-      expect(schema.appts_scheduled_15_to_30_days[facility.slug]).to eq({})
-      expect(schema.appts_scheduled_31_to_60_days[facility.slug]).to eq({})
-      expect(schema.appts_scheduled_more_than_60_days[facility.slug]).to eq({})
+      expect(schema.appts_scheduled_15_to_31_days[facility.slug]).to eq({})
+      expect(schema.appts_scheduled_32_to_62_days[facility.slug]).to eq({})
+      expect(schema.appts_scheduled_more_than_62_days[facility.slug]).to eq({})
       expect(schema.total_appts_scheduled[facility.slug]).to eq({})
 
       expect(schema.appts_scheduled_0_to_14_days_rates[facility.slug]).to eq({})
-      expect(schema.appts_scheduled_15_to_30_days_rates[facility.slug]).to eq({})
-      expect(schema.appts_scheduled_31_to_60_days_rates[facility.slug]).to eq({})
-      expect(schema.appts_scheduled_more_than_60_days_rates[facility.slug]).to eq({})
+      expect(schema.appts_scheduled_15_to_31_days_rates[facility.slug]).to eq({})
+      expect(schema.appts_scheduled_32_to_62_days_rates[facility.slug]).to eq({})
+      expect(schema.appts_scheduled_more_than_62_days_rates[facility.slug]).to eq({})
     end
   end
 end
