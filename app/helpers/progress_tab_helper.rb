@@ -1,7 +1,7 @@
 module ProgressTabHelper
   def create_badge_array(current_value)
     # Badge goals: 25, 50, 100, 250, 500, 1000, 2500...
-    goal_multipliers = [2,2,2.5]
+    goal_multipliers = [2, 2, 2.5]
     starting_goal = 25
     current_goal = starting_goal
     multiplier_index = 0
