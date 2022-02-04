@@ -764,6 +764,7 @@ footer p {
 
 /* FLEX */
 .d-flex { display: flex; }
+.d-inline-flex { display: inline-flex; }
 .fd-column { flex-direction: column; }
 .ai-center { align-items: center; }
 .ai-flex-start { align-items: flex-start; }
@@ -893,3 +894,4 @@ footer p {
 .ws-nowrap { white-space: nowrap; }
 .oy-visible { overflow-y: visible; }
 .ox-scroll { overflow-x: scroll; }
+.d-none-scrollbar::-webkit-scrollbar { display: none; }

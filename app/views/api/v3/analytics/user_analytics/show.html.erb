@@ -16,7 +16,7 @@
     <%= inline_stylesheet("user_analytics.css") %>
   </head>
   <body>
-    <div class="mb-8px p-16px bgc-white bs-card">
+    <div class="mb-16px p-16px bgc-white bs-card">
       <h1 class="m-0px mb-4px fw-bold fs-24px c-black">
         Reports
       </h1>
@@ -107,10 +107,10 @@
       </div>
       <div class="mb-24px">
         <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
-          <span class="fw-bold">401</span> follow-up visits recorded
+          <span class="fw-bold">7,051</span> follow-up visits recorded
         </p>
-        <div class="d-flex ws-nowrap ox-scroll pt-4px pr-16px pb-4px pl-16px">
-          <% follow_up_badge_goals = create_badge_array(401) %>
+        <div class="ws-nowrap ox-scroll pt-4px pb-4px pl-16px d-none-scrollbar">
+          <% follow_up_badge_goals = create_badge_array(7051) %>
           <% follow_up_badge_goals.each do |badge| %>
             <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
               locals: { value: badge["goal_value"],
@@ -126,7 +126,7 @@
         <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
           <span class="fw-bold">2,501</span> calls to overdue patients
         </p>
-        <div class="d-flex ws-nowrap ox-scroll pt-4px pr-16px pb-4px pl-16px">
+        <div class="ws-nowrap ox-scroll pt-4px pb-4px pl-16px d-none-scrollbar">
           <% overdue_call_badge_goals = create_badge_array(2501) %>
           <% overdue_call_badge_goals.each do |badge| %>
             <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
@@ -139,11 +139,11 @@
           <% end %>
         </div>
       </div>
-      <div class="mb-24px">
+      <div>
         <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
           <span class="fw-bold">1,512</span> registered patients
         </p>
-        <div class="d-flex ws-nowrap ox-scroll pt-4px pr-16px pb-4px pl-16px">
+        <div class="ws-nowrap ox-scroll pt-4px pb-4px pl-16px d-none-scrollbar">
           <% registered_patients_badge_goals = create_badge_array(1512) %>
           <% registered_patients_badge_goals.each do |badge| %>
             <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
