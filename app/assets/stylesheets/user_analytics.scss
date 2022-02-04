@@ -774,6 +774,7 @@ footer p {
 .p-absolute { position: absolute; } 
 .p-fixed { position: fixed; }
 .p-relative { position: relative; }
+.t--3px { top: -3px; }
 .t-0 { top: 0; }
 .b-0 { bottom: 0; }
 .l-0 { left: 0; }
@@ -799,11 +800,14 @@ footer p {
 /* SPACING */
 .mt-6px { margin-top: 6px; }
 .mr-10px { margin-right: 10px; }
+.mr-16px { margin-right: 16px; }
 .ml-10px { margin-left: 10px; }
 .mb-2px { margin-bottom: 2px; }
 .mb-4px { margin-bottom: 4px; }
 .mb-32px { margin-bottom: 32px; }
+.pt-16px { padding-top: 16px; }
 .pb-12px { padding-bottom: 12px; }
+.pb-16px { padding-bottom: 16px; }
 .pb-64px { padding-bottom: 64px; }
 .pb-96px { padding-bottom: 96px; }
 /* TYPOGRAPHY */
@@ -836,6 +840,7 @@ footer p {
 .c-red { color: $red; }
 .c-lavander { color: $lavander; }
 .c-purple { color: $purple; }
+.c-grey-mid { color: $grey-mid; }
 .c-grey { color: $grey; }
 .c-grey-dark { color: $grey-dark; }
 .c-white { color: $white; }
@@ -879,5 +884,5 @@ footer p {
 /* SCROLL */
 .sb-auto { scroll-behavior: auto; }
 .ws-nowrap { white-space: nowrap; }
-.oy-hidden { overflow-y: hidden; }
-.ox-auto { overflow-x: auto; }
+.oy-visible { overflow-y: visible; }
+.ox-scroll { overflow-x: scroll; }

@@ -96,19 +96,28 @@
         class: "d-block p-16px ta-center fs-16px tt-uppercase ls-1_25px c-blue b-none bb-blue-mid br-2px bgc-blue-light bs-secondary-button"
       %>
     </div>
-    <div class="mb-16px p-16px bgc-white br-4px bs-card">
-      <h1 class="m-0px mb-8px fw-bold fs-24px">
-        Achievements
-      </h1>
-      <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-        <%= current_facility.name %>'s all-time progress
-      </p>
-      <div class="mb-32px">
-        <p class="m-0px p-0px ta-left fw-normal fs-16px c-black">
-          <span class="fw-bold">4,124</span> follow-up visits recorded
+    <div class="mb-16px pt-16px pb-16px bgc-white br-4px bs-card">
+      <div class="pr-16px pl-16px">
+        <h1 class="m-0px mb-8px fw-bold fs-24px">
+          Achievements
+        </h1>
+        <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+          <%= current_facility.name %>'s all-time progress
         </p>
-        <div class="oy-hidden ox-auto ws-nowrap">
-          <%= render partial: "api/v3/analytics/user_analytics/follow_up_badge_completed" %>
+      </div>
+      <div class="mb-32px">
+        <p class="m-0px mb-12px p-0px pl-16px ta-left fw-normal fs-16px c-black">
+          <span class="fw-bold">401</span> follow-up visits recorded
+        </p>
+        <div class="d-flex ws-nowrap ox-scroll" style="padding-top: 4px; padding-bottom: 4px; padding-right: 16px; padding-left: 16px;">
+          <% follow_up_badge_goals = create_badge_array(401) %>
+          <% follow_up_badge_goals.each do |badge| %>
+            <% if badge["is_goal_completed"] %>
+              <%= render partial: "api/v3/analytics/user_analytics/follow_up_badge_completed", locals: { value: badge["goal_value"] } %>
+            <% else %>
+              <%= render partial: "api/v3/analytics/user_analytics/follow_up_badge_goal", locals: { value: badge["goal_value"] } %>
+            <% end %>
+          <% end %>
         </div>
       </div>
     </div>
