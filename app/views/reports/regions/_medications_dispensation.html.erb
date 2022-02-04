@@ -21,15 +21,12 @@
           <div class="p-absolute t-0 l-0 pe-none d-flex align-center justify-center w-100pt h-100pt">
           </div>
           <div class="px-20px">
-            <div class="row ml-2 mr-2">
             <% @chart_data[:medications_dispensation].each do |bucket, data| %>
-              <div class="col-6 col-sm-3 p-0">
-                <span class="legend-label bg-blue-dark" style="background-color: <%= data[:color] %>"></span>
-                <span><%= bucket %></span>
-              </div>
+              <span class="mb-1 mr-2 text-nowrap">
+                <span class="legend-label" style="background-color: <%= data[:color] %>"></span><%= bucket %>
+              </span>
             <% end %>
             </div>
-          </div>
         </div>
       </div>
     </div>
