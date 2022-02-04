@@ -29,7 +29,7 @@ en:
       patients_called_for_followup: "Follow-up patients"
   analytics:
     page_title: "User Analytics"
-    updated: "Data last updated on %{time}"
+    updated: "Updated: %{time}"
     tap_sync: "Tap \"Sync\" on the home screen for new data."
     registered: "Registered"
     follow_up: "Follow-up"
