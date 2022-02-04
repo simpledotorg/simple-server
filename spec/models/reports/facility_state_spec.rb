@@ -252,8 +252,8 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
 
           expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_0_to_14_days).to eq 2
           expect(described_class.find_by(month_date: Period.current, facility: facility).total_appts_scheduled).to eq 2
-          expect(described_class.find_by(month_date: Period.month(1.month.ago), facility: facility).appts_scheduled_32_to_62_days).to eq 1
-          expect(described_class.find_by(month_date: Period.month(2.month.ago), facility: facility).appts_scheduled_more_than_62_days).to eq 1
+          expect(described_class.find_by(month_date: Period.month(32.days.ago), facility: facility).appts_scheduled_32_to_62_days).to eq 1
+          expect(described_class.find_by(month_date: Period.month(63.days.ago), facility: facility).appts_scheduled_more_than_62_days).to eq 1
         end
       end
     end
