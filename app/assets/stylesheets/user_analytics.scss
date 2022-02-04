@@ -805,11 +805,15 @@ footer p {
 .mb-2px { margin-bottom: 2px; }
 .mb-4px { margin-bottom: 4px; }
 .mb-32px { margin-bottom: 32px; }
+.pt-4px { padding-top: 4px; }
 .pt-16px { padding-top: 16px; }
+.pr-16px { padding-right: 16px; }
+.pb-4px { padding-bottom: 4px; }
 .pb-12px { padding-bottom: 12px; }
 .pb-16px { padding-bottom: 16px; }
 .pb-64px { padding-bottom: 64px; }
 .pb-96px { padding-bottom: 96px; }
+.pl-16px { padding-left: 16px; }
 /* TYPOGRAPHY */
 .ta-right { text-align: right; }
 .ta-center { text-align: center; }
@@ -831,7 +835,6 @@ footer p {
 .ls-0_4px { letter-spacing: 0.4px }
 .ls-1_25px { letter-spacing: 1.25px; }
 .c-baby-blue { color: $baby-blue; }
-.c-copper { color: $copper; }
 .c-blue { color: $blue; }
 .c-navy { color: $navy; }
 .c-blue-green { color: $blue-green; }
@@ -850,6 +853,8 @@ footer p {
 .bgc-white { background-color: $white; }
 .bgc-blue-light { background-color: $blue-light; }
 .bgc-blue { background-color: $blue; }
+.bgc-baby-blue-light { background-color: $baby-blue-light; }
+.bgc-baby-blue { background-color: $baby-blue; }
 .bgc-green-light { background-color: $green-light; }
 .bgc-blue-green { background-color: $blue-green; }
 .bgc-blue-green-light { background-color: $blue-green-light; }
@@ -860,6 +865,8 @@ footer p {
 .bgc-purple-light { background-color: $purple-light; }
 .bgc-lavander-light { background-color: $lavander-light; } 
 .bgc-lavander { background-color: $lavander; }
+.bgc-yellow { background-color: $yellow; }
+.bgc-yellow-light { background-color: $yellow-light; }
 .b-none { border: none; }
 .b-grey-mid { border: 1px solid $grey-mid; }
 .bb-blue-mid { border-bottom: 2px solid $blue-mid; }

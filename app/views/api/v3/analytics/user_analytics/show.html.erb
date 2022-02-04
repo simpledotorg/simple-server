@@ -105,18 +105,54 @@
           <%= current_facility.name %>'s all-time progress
         </p>
       </div>
-      <div class="mb-32px">
-        <p class="m-0px mb-12px p-0px pl-16px ta-left fw-normal fs-16px c-black">
+      <div class="mb-24px">
+        <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
           <span class="fw-bold">401</span> follow-up visits recorded
         </p>
-        <div class="d-flex ws-nowrap ox-scroll" style="padding-top: 4px; padding-bottom: 4px; padding-right: 16px; padding-left: 16px;">
+        <div class="d-flex ws-nowrap ox-scroll pt-4px pr-16px pb-4px pl-16px">
           <% follow_up_badge_goals = create_badge_array(401) %>
           <% follow_up_badge_goals.each do |badge| %>
-            <% if badge["is_goal_completed"] %>
-              <%= render partial: "api/v3/analytics/user_analytics/follow_up_badge_completed", locals: { value: badge["goal_value"] } %>
-            <% else %>
-              <%= render partial: "api/v3/analytics/user_analytics/follow_up_badge_goal", locals: { value: badge["goal_value"] } %>
-            <% end %>
+            <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
+              locals: { value: badge["goal_value"],
+                        is_goal_completed: badge["is_goal_completed"],
+                        badge_color: "lavander",
+                        icon_completed: "refresh-arrow-white.svg",
+                        icon_goal: "refresh-arrow-grey.svg"
+            } %>
+          <% end %>
+        </div>
+      </div>
+      <div class="mb-24px">
+        <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
+          <span class="fw-bold">2,501</span> calls to overdue patients
+        </p>
+        <div class="d-flex ws-nowrap ox-scroll pt-4px pr-16px pb-4px pl-16px">
+          <% overdue_call_badge_goals = create_badge_array(2501) %>
+          <% overdue_call_badge_goals.each do |badge| %>
+            <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
+              locals: { value: badge["goal_value"],
+                        is_goal_completed: badge["is_goal_completed"],
+                        badge_color: "baby-blue",
+                        icon_completed: "phone-white.svg",
+                        icon_goal: "phone-grey.svg"
+            } %>
+          <% end %>
+        </div>
+      </div>
+      <div class="mb-24px">
+        <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
+          <span class="fw-bold">1,512</span> registered patients
+        </p>
+        <div class="d-flex ws-nowrap ox-scroll pt-4px pr-16px pb-4px pl-16px">
+          <% registered_patients_badge_goals = create_badge_array(1512) %>
+          <% registered_patients_badge_goals.each do |badge| %>
+            <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
+              locals: { value: badge["goal_value"],
+                        is_goal_completed: badge["is_goal_completed"],
+                        badge_color: "yellow",
+                        icon_completed: "face-yellow-darkest.svg",
+                        icon_goal: "face-grey.svg"
+            } %>
           <% end %>
         </div>
       </div>
