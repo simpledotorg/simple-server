@@ -95,16 +95,16 @@ module Reports
       values_at("appts_scheduled_0_to_14_days")
     end
 
-    memoize def appts_scheduled_15_to_30_days
-      values_at("appts_scheduled_15_to_30_days")
+    memoize def appts_scheduled_15_to_31_days
+      values_at("appts_scheduled_15_to_31_days")
     end
 
-    memoize def appts_scheduled_31_to_60_days
-      values_at("appts_scheduled_31_to_60_days")
+    memoize def appts_scheduled_32_to_62_days
+      values_at("appts_scheduled_32_to_62_days")
     end
 
-    memoize def appts_scheduled_more_than_60_days
-      values_at("appts_scheduled_more_than_60_days")
+    memoize def appts_scheduled_more_than_62_days
+      values_at("appts_scheduled_more_than_62_days")
     end
 
     memoize def ltfu_rates
@@ -207,19 +207,19 @@ module Reports
       end
     end
 
-    memoize def appts_scheduled_15_to_30_days_rates
+    memoize def appts_scheduled_15_to_31_days_rates
       region_period_cached_query(__method__) do |entry|
         appts_scheduled_rates(entry)[__method__]
       end
     end
 
-    memoize def appts_scheduled_31_to_60_days_rates
+    memoize def appts_scheduled_32_to_62_days_rates
       region_period_cached_query(__method__) do |entry|
         appts_scheduled_rates(entry)[__method__]
       end
     end
 
-    memoize def appts_scheduled_more_than_60_days_rates
+    memoize def appts_scheduled_more_than_62_days_rates
       region_period_cached_query(__method__) do |entry|
         appts_scheduled_rates(entry)[__method__]
       end
@@ -239,9 +239,9 @@ module Reports
     memoize def appts_scheduled_rates(entry)
       rounded_percentages({
         appts_scheduled_0_to_14_days_rates: appts_scheduled_0_to_14_days[entry.region.slug][entry.period],
-        appts_scheduled_15_to_30_days_rates: appts_scheduled_15_to_30_days[entry.region.slug][entry.period],
-        appts_scheduled_31_to_60_days_rates: appts_scheduled_31_to_60_days[entry.region.slug][entry.period],
-        appts_scheduled_more_than_60_days_rates: appts_scheduled_more_than_60_days[entry.region.slug][entry.period]
+        appts_scheduled_15_to_31_days_rates: appts_scheduled_15_to_31_days[entry.region.slug][entry.period],
+        appts_scheduled_32_to_62_days_rates: appts_scheduled_32_to_62_days[entry.region.slug][entry.period],
+        appts_scheduled_more_than_62_days_rates: appts_scheduled_more_than_62_days[entry.region.slug][entry.period]
       })
     end
 
