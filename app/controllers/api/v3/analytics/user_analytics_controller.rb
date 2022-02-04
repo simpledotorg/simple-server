@@ -15,23 +15,19 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
       @monthly_counts = Reports::FacilityStateGroup.where(facility_region_id: current_facility.region.id, month_date: @range).to_a
     end
 
-    respond_to_html_or_json(@user_analytics.statistics)
-  end
-
-  helper_method :current_facility, :current_user, :current_facility_group
-
-  private
-
-  def respond_to_html_or_json(stats)
     respond_to do |format|
       if Flipper.enabled?(:new_progress_tab)
         format.html { render :show_v2 }
       else
         format.html { render :show }
       end
-      format.json { render json: stats }
+      format.json { render json: @user_analytics.statistics }
     end
   end
+
+  helper_method :current_facility, :current_user, :current_facility_group
+
+  private
 
   def set_bust_cache
     RequestStore.store[:bust_cache] = true if params[:bust_cache].present?

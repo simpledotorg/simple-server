@@ -105,7 +105,7 @@ Rails.application.routes.draw do
       resource :help, only: [:show], controller: "help"
 
       namespace :analytics do
-        resource :user_analytics, only: [:show]
+        resource :user_analytics, only: [:show, :show_v2]
       end
     end
 
