@@ -231,12 +231,21 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
     it "counts the latest appointments scheduled per patient by days scheduled by bucket" do
       Timecop.return do
         facility = create(:facility)
-        patient_1 = create(:patient, recorded_at: 3.months.ago, assigned_facility: facility)
-        patient_2 = create(:patient, recorded_at: 3.months.ago, assigned_facility: facility)
-        _patient_1_appointment = create(:appointment, facility: facility, patient: patient_1, scheduled_date: 10.days.from_now, device_created_at: Time.current)
-        _patient_2_appointment = create(:appointment, facility: facility, patient: patient_2, scheduled_date: 10.days.from_now, device_created_at: Time.current)
-        _appointment_1_month_ago = create(:appointment, facility: facility, patient: patient_1, scheduled_date: Date.today, device_created_at: 32.days.ago)
-        _appointment_2_month_ago = create(:appointment, facility: facility, patient: patient_1, scheduled_date: Date.today, device_created_at: 63.days.ago)
+        patients = create_list(:patient, 2, recorded_at: 3.months.ago, assigned_facility: facility)
+        _current_month_appointments = patients.each do |patient|
+          create(:appointment, facility: facility, patient: patient, scheduled_date: 10.days.from_now, device_created_at: Time.current)
+        end
+
+        _appointment_1_month_ago = create(:appointment,
+          facility: facility,
+          patient: patients.first,
+          scheduled_date: Date.today,
+          device_created_at: 32.days.ago)
+        _appointment_2_month_ago = create(:appointment,
+          facility: facility,
+          patient: patients.first,
+          scheduled_date: Date.today,
+          device_created_at: 63.days.ago)
 
         RefreshReportingViews.new.refresh_v2
 
