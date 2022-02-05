@@ -30,7 +30,7 @@ RSpec.describe Reports::DailyFollowUp, {type: :model, reporting_spec: true} do
   it "patients without a medical history are not included" do
     patient = create(:patient, :without_medical_history, recorded_at: june_2021[:long_ago], registration_user: user, registration_facility: facility)
     create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: june_2021[:now])
-    
+
     described_class.refresh
 
     expect(described_class.count).to eq(0)

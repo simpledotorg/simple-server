@@ -17,6 +17,5 @@ module Reports
     def self.materialized?
       true
     end
-
   end
 end
