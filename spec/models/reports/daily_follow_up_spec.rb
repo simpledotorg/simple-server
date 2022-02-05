@@ -78,8 +78,6 @@ RSpec.describe Reports::DailyFollowUp, {type: :model, reporting_spec: true} do
     described_class.refresh
 
     expect(described_class.count).to eq(1)
-    follow_up = described_class.find_by(patient: patient, facility: facility)
-    # expect(follow_up.month_string).to eq(june_2021[:month_string])
   end
 
   it "contains separate records for distinct days" do
