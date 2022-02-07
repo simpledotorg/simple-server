@@ -4097,7 +4097,7 @@ CREATE UNIQUE INDEX clean_medicine_to_dosages__unique_name_and_dosage ON public.
 -- Name: daily_follow_ups_day_patient_facility; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX daily_follow_ups_day_patient_facility ON public.reporting_daily_follow_ups USING btree (day_of_year, facility_id, patient_id);
+CREATE UNIQUE INDEX daily_follow_ups_day_patient_facility ON public.reporting_daily_follow_ups USING btree (patient_id, facility_id, day_of_year);
 
 
 --
