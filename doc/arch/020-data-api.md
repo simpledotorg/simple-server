@@ -26,7 +26,7 @@ term. Metabase is being used for many one-off reports by a small set
 of people, however it cannot be self-served to all the dashboard users
 without the access control layer that the dashboard has.
 
-Here is the list of downloads we provide on the dashboard:
+Here is the list of bespoke downloads we provide on the dashboard:
 - Patient lists
     - [Patient list](https://api-sandbox.simple.org/reports/patient_lists/ch-cascabel-village?report_scope=facility)
     - [Patient list with med history](https://api-sandbox.simple.org/reports/patient_lists/ch-cascabel-village?medication_history=true&report_scope=facility)
@@ -79,13 +79,29 @@ decides access to:
 - APIs
 - Regions
 
+### Documentation
 We will have a translation layer that renames the columns to keys in
 the API appropriately. And all the APIs will be documented in detail,
 and source the documentation from the same YAML file used to define
-the columns in the database.
+the columns in the database. The documentation will be available in
+the downlaods page on the dashboard.
 
+### Performance considerations
+Reading and downloading large swaths of data can be slow. Here are few
+considerations to keep in mind to explore while building this:
+- Email vs direct downloads: we currently email the patient line lists
+- Restricting periods and regions for performance: a drop with last
+  1/3/6 months perhaps? Disallow state level downloads?
+- Using the read replica for downloads: so that transactions aren't
+  impacted by this
+- Uplaoding CSVs to S3, or storing them locally to avoid repeated
+  computation on the same requests.
+
+### Release
 Following the release of these APIs, we will deprecate the downloads
-on all other pages, and begin suggesting users to use this new interface instead.
+on all other pages, and begin suggesting users to use this new
+interface instead. Once the users have built custom reports from the
+standard downloads, we can begin to remove them.
 
 ## Consequences
 - If we decide to expose the data API without the dashboard, the
