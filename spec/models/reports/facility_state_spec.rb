@@ -229,24 +229,31 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
 
   context "medication dispensed in last 3 months" do
     it "counts the latest appointments scheduled per patient by days scheduled by bucket" do
-      skip "failing February 3rd 2022 in the afternoon US time"
+      skip "failing Feb 4th 2022 afternoon time US"
       Timecop.return do
         facility = create(:facility)
-        patient_1 = create(:patient, recorded_at: 3.months.ago, assigned_facility: facility)
-        patient_2 = create(:patient, recorded_at: 3.months.ago, assigned_facility: facility)
-        _patient_1_appointment = create(:appointment, facility: facility, patient: patient_1, scheduled_date: 10.days.from_now, device_created_at: Time.current)
-        _patient_2_appointment = create(:appointment, facility: facility, patient: patient_2, scheduled_date: 10.days.from_now, device_created_at: Time.current)
-        # was able to get appointment_1 to be in the 31_to_60 days bucket by setting device_created_at to 32.days.ago
-        # but there seems to be some boundary condition that is isn't quite accounted for here yet
-        _appointment_1_month_ago = create(:appointment, facility: facility, patient: patient_1, scheduled_date: Date.today, device_created_at: 1.month.ago)
-        _appointment_2_month_ago = create(:appointment, facility: facility, patient: patient_1, scheduled_date: Date.today, device_created_at: 2.month.ago)
+        patients = create_list(:patient, 2, recorded_at: 3.months.ago, assigned_facility: facility)
+        _current_month_appointments = patients.each do |patient|
+          create(:appointment, facility: facility, patient: patient, scheduled_date: 10.days.from_now, device_created_at: Time.current)
+        end
+
+        _appointment_1_month_ago = create(:appointment,
+          facility: facility,
+          patient: patients.first,
+          scheduled_date: Date.today,
+          device_created_at: 32.days.ago)
+        _appointment_2_month_ago = create(:appointment,
+          facility: facility,
+          patient: patients.first,
+          scheduled_date: Date.today,
+          device_created_at: 63.days.ago)
 
         RefreshReportingViews.new.refresh_v2
 
         expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_0_to_14_days).to eq 2
         expect(described_class.find_by(month_date: Period.current, facility: facility).total_appts_scheduled).to eq 2
-        expect(described_class.find_by(month_date: Period.month(1.month.ago), facility: facility).appts_scheduled_31_to_60_days).to eq 1
-        expect(described_class.find_by(month_date: Period.month(2.month.ago), facility: facility).appts_scheduled_more_than_60_days).to eq 1
+        expect(described_class.find_by(month_date: Period.month(1.month.ago), facility: facility).appts_scheduled_32_to_62_days).to eq 1
+        expect(described_class.find_by(month_date: Period.month(2.month.ago), facility: facility).appts_scheduled_more_than_62_days).to eq 1
       end
     end
   end

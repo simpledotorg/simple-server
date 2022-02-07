@@ -54,6 +54,7 @@ class RefreshReportingViews
   V2_REPORTING_VIEWS = %w[
     Reports::Month
     Reports::Facility
+    Reports::DailyFollowUp
     Reports::PatientBloodPressure
     Reports::OverdueCalls
     Reports::PatientVisit
