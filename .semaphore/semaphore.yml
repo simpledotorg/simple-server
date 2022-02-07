@@ -53,7 +53,11 @@ blocks:
           commands:
             - checkout
             - script/semaphore_setup
-            - rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT
+            - rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT --format RspecJunitFormatter --out junit.xml --format documentation
+        epilogue:
+          always:
+            commands:
+              - test-results publish junit.xml
 promotions:
   - name: Deploy
     pipeline_file: deploy.yml
