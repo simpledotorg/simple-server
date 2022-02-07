@@ -13,6 +13,7 @@ RSpec.describe Reports::MonthlyProgressComponent, type: :component do
   let(:date_range) { range.map(&:to_date) }
   let(:counts) { Reports::FacilityStateGroup.where(facility_region_id: facility.region.id, month_date: date_range).to_a }
   let(:total_counts) { Reports::FacilityStateGroup.totals(facility) }
+  let(:service) { Reports::FacilityProgressService.new(facility, december_2021_period) }
 
   it "returns totals based the dimension" do
     create(:patient, :hypertension, recorded_at: 2.years.ago, gender: :male, registration_user: user, registration_facility: facility)
@@ -20,10 +21,10 @@ RSpec.describe Reports::MonthlyProgressComponent, type: :component do
     refresh_views
 
     dimension = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :all, gender: :all)
-    component = described_class.new(dimension, monthly_counts: counts, total_counts: total_counts, range: range)
+    component = described_class.new(dimension, service: service)
     expect(component.total_count).to eq(2)
     dimension = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :hypertension, gender: :female)
-    component = described_class.new(dimension, monthly_counts: counts, total_counts: total_counts, range: range)
+    component = described_class.new(dimension, service: service)
     expect(component.total_count).to eq(1)
   end
 
@@ -34,9 +35,7 @@ RSpec.describe Reports::MonthlyProgressComponent, type: :component do
     Timecop.freeze(jan_2022) do
       refresh_views
       dimension = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :all, gender: :all)
-      counts = Reports::FacilityStateGroup.where(facility_region_id: facility.region.id, month_date: date_range)
-
-      component = described_class.new(dimension, monthly_counts: counts, total_counts: total_counts, range: range)
+      component = described_class.new(dimension, service: service)
 
       expect(component.total_count).to eq(1)
       expect(component.monthly_count(november_2021_period)).to eq(1)
@@ -49,14 +48,13 @@ RSpec.describe Reports::MonthlyProgressComponent, type: :component do
     end
     Timecop.freeze(jan_2022) do
       refresh_views
-      counts = Reports::FacilityStateGroup.where(facility_region_id: facility.region.id, month_date: date_range)
       male = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :hypertension, gender: :male)
-      male_component = described_class.new(male, monthly_counts: counts, total_counts: total_counts, range: range)
+      male_component = described_class.new(male, service: service)
       expect(male_component.monthly_count(november_2021_period)).to eq(0)
       expect(male_component.monthly_count(december_2021_period)).to be_nil
 
       female = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :hypertension, gender: :female)
-      female_component = described_class.new(female, monthly_counts: counts, total_counts: total_counts, range: range)
+      female_component = described_class.new(female, service: service)
       expect(female_component.monthly_count(november_2021_period)).to eq(1)
       expect(female_component.monthly_count(december_2021_period)).to be_nil
     end
@@ -64,11 +62,11 @@ RSpec.describe Reports::MonthlyProgressComponent, type: :component do
 
   it "returns valid diagnosis gender classes" do
     dimension = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :hypertension, gender: :male)
-    component = described_class.new(dimension, monthly_counts: counts, total_counts: total_counts, range: range)
+    component = described_class.new(dimension, service: service)
     expect(component.diagnosis_group_class).to eq("hypertension:male")
 
     dimension = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :diabetes, gender: :all)
-    component = described_class.new(dimension, monthly_counts: counts, total_counts: total_counts, range: range)
+    component = described_class.new(dimension, service: service)
     expect(component.diagnosis_group_class).to eq("diabetes:all")
   end
 end
