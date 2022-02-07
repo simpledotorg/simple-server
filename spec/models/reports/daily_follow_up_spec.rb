@@ -131,6 +131,7 @@ RSpec.describe Reports::DailyFollowUp, {type: :model, reporting_spec: true} do
       expect(described_class.where(patient: patient, facility: facility).count).to eq(1)
       follow_up = described_class.find_by(patient: patient, facility: facility)
       expect(follow_up).to be_present
+      expect(follow_up.day_of_year).to eq(now.yday)
     end
   end
 end
