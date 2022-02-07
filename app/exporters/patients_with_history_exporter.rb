@@ -1,8 +1,11 @@
 require "csv"
 
 class PatientsWithHistoryExporter < PatientsExporter
-  DISPLAY_BLOOD_PRESSURES = 3
-  DISPLAY_MEDICATION_COLUMNS = 5
+  def csv(patients, display_blood_pressures = 3, display_medication_columns = 5)
+    @display_blood_pressures = display_blood_pressures
+    @display_medication_columns = display_medication_columns
+    super(patients)
+  end
 
   def load_batch(batch)
     super(batch)
@@ -40,7 +43,7 @@ class PatientsWithHistoryExporter < PatientsExporter
       "Diagnosed with Diabetes",
       "Risk Level",
       "Days Overdue For Next Follow-up",
-      (1..DISPLAY_BLOOD_PRESSURES).map do |i|
+      (1..@display_blood_pressures).map do |i|
         [
           "BP #{i} Date",
           "BP #{i} Quarter",
@@ -76,7 +79,7 @@ class PatientsWithHistoryExporter < PatientsExporter
   def csv_fields(patient_summary)
     latest_bps = patient_summary
       .latest_blood_pressures
-      .first(DISPLAY_BLOOD_PRESSURES + 1)
+      .first(@display_blood_pressures + 1)
 
     all_medications = fetch_medication_history(patient_summary, latest_bps.map(&:recorded_at))
     zone_column_index = csv_headers.index(zone_column)
@@ -111,7 +114,7 @@ class PatientsWithHistoryExporter < PatientsExporter
       patient_summary.diabetes,
       ("High" if patient_summary.risk_level > 0),
       patient_summary.days_overdue.to_i,
-      (1..DISPLAY_BLOOD_PRESSURES).map do |i|
+      (1..@display_blood_pressures).map do |i|
         bp = latest_bps[i - 1]
         previous_bp = latest_bps[i]
         appointment = appointment_created_on(patient_appointments, bp&.recorded_at)
@@ -164,10 +167,10 @@ class PatientsWithHistoryExporter < PatientsExporter
     medications = medications_on(all_medications, date)
 
     initial_medications =
-      (0...DISPLAY_MEDICATION_COLUMNS).flat_map { |i| [medications[i]&.name, medications[i]&.dosage] }
+      (0...@display_medication_columns).flat_map { |i| [medications[i]&.name, medications[i]&.dosage] }
 
     other_medications =
-      medications[DISPLAY_MEDICATION_COLUMNS..medications.length]
+      medications[@display_medication_columns..medications.length]
         &.map { |medication| "#{medication.name}-#{medication.dosage}" }
         &.join(", ")
 
