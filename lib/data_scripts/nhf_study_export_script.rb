@@ -13,7 +13,7 @@ class NhfStudyExportScript < DataScript
   end
 
   def call
-    patients = Patient.where("full_name ILIKE ? OR full_name ILIKE ?", "%XYZ", "%XYX")
+    patients = Patient.where("full_name ILIKE ? OR full_name ILIKE ?", "%XYZ%", "%XYX%")
 
     csv = PatientsWithHistoryExporter.csv(patients, display_blood_pressures: 12)
 
