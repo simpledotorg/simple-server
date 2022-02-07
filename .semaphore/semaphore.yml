@@ -61,6 +61,13 @@ blocks:
           commands:
             - "[[ -f junit.xml ]] && test-results publish junit.xml"
 
+after_pipeline:
+  task:
+    jobs:
+      - name: Publish Results
+        commands:
+          - test-results gen-pipeline-report
+
 promotions:
   - name: Deploy
     pipeline_file: deploy.yml
