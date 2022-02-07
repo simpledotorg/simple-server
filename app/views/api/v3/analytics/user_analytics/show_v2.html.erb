@@ -16,144 +16,147 @@
     <%= inline_stylesheet("user_analytics.css") %>
   </head>
   <body>
-    <div class="mb-16px p-16px bgc-white bs-card">
-      <h1 class="m-0px mb-4px fw-bold fs-24px c-black">
-        Reports
-      </h1>
-      <p class="m-0px mb-16px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-        Data last updated on <%= DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P") %>
-      </p>
-      <div class="d-flex ai-center jc-space-between mb-16px">
-        <a class="f-1 d-flex fd-column ai-center jc-center td-none mr-10px p-12px bgc-blue-green-light br-8px">
-          <div class="p-relative d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px o-hidden">
-            <div class="p-absolute t-0 l-0 w-100 h-6px bgc-blue-green"></div>
-            <p class="m-0px mt-6px p-0px ta-center fw-bold fs-14px c-blue-green">
-              <%= Date.today.strftime("%d") %> 
+    <%= render partial: "api/v3/analytics/user_analytics/period_report" %>
+    <div style="display: none;">
+      <div class="mb-16px p-16px bgc-white bs-card">
+        <h1 class="m-0px mb-4px fw-bold fs-24px c-black">
+          Reports
+        </h1>
+        <p class="m-0px mb-16px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+          Data last updated on <%= DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P") %>
+        </p>
+        <div class="d-flex ai-center jc-space-between mb-16px">
+          <a class="f-1 d-flex fd-column ai-center jc-center td-none mr-10px p-12px bgc-blue-green-light br-8px">
+            <div class="p-relative d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px o-hidden">
+              <div class="p-absolute t-0 l-0 w-100 h-6px bgc-blue-green"></div>
+              <p class="m-0px mt-6px p-0px ta-center fw-bold fs-14px c-blue-green">
+                <%= Date.today.strftime("%d") %> 
+              </p>
+            </div>
+            <p class="m-0px p-0px ta-center fw-medium fs-16px c-blue-green">
+              Daily
             </p>
+          </a>
+          <a class="f-1 d-flex fd-column ai-center jc-center td-none mr-4px ml-4px p-12px bgc-blue-light br-8px">
+            <div class="p-relative d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px o-hidden">
+              <div class="p-absolute t-0 l-0 w-100 h-6px bgc-blue"></div>
+              <p class="m-0px mt-6px p-0px ta-center tt-uppercase fw-bold ls-0_4px fs-12px c-blue">
+                <%= Date.today.strftime("%b") %> 
+              </p>
+            </div>
+            <p class="m-0px p-0px ta-center fw-medium fs-16px c-blue">
+              Monthly
+            </p>
+          </a>
+          <a class="f-1 d-flex fd-column ai-center jc-center td-none ml-10px p-12px bgc-navy-light br-8px">
+            <div class="p-relative d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px o-hidden">
+              <div class="p-absolute t-0 l-0 w-100 h-6px bgc-navy"></div>
+              <p class="m-0px mt-6px p-0px ta-center fw-bold fs-10px c-navy">
+                <%= Date.today.strftime("%Y") %> 
+              </p>
+            </div>
+            <p class="m-0px p-0px ta-center fw-medium fs-16px c-navy">
+              Yearly
+            </p>
+          </a>
+        </div>
+        <a class="d-flex ai-center mb-16px p-12px td-none bgc-red-light br-8px">
+          <div class="d-flex ai-center jc-center w-32px h-32px mr-12px bgc-white br-8px">
+            <%= inline_file("graph-red.svg") %>
           </div>
-          <p class="m-0px p-0px ta-center fw-medium fs-16px c-blue-green">
-            Daily
+          <p class="m-0px p-0px ta-left fw-medium fs-16px c-red">
+            Hypertension
           </p>
         </a>
-        <a class="f-1 d-flex fd-column ai-center jc-center td-none mr-4px ml-4px p-12px bgc-blue-light br-8px">
-          <div class="p-relative d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px o-hidden">
-            <div class="p-absolute t-0 l-0 w-100 h-6px bgc-blue"></div>
-            <p class="m-0px mt-6px p-0px ta-center tt-uppercase fw-bold ls-0_4px fs-12px c-blue">
-              <%= Date.today.strftime("%b") %> 
-            </p>
+        <a class="d-flex ai-center p-12px td-none bgc-purple-light br-8px">
+          <div class="d-flex ai-center jc-center w-32px h-32px mr-12px bgc-white br-8px">
+            <%= inline_file("graph-purple.svg") %>
           </div>
-          <p class="m-0px p-0px ta-center fw-medium fs-16px c-blue">
-            Monthly
-          </p>
-        </a>
-        <a class="f-1 d-flex fd-column ai-center jc-center td-none ml-10px p-12px bgc-navy-light br-8px">
-          <div class="p-relative d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px o-hidden">
-            <div class="p-absolute t-0 l-0 w-100 h-6px bgc-navy"></div>
-            <p class="m-0px mt-6px p-0px ta-center fw-bold fs-10px c-navy">
-              <%= Date.today.strftime("%Y") %> 
-            </p>
-          </div>
-          <p class="m-0px p-0px ta-center fw-medium fs-16px c-navy">
-            Yearly
+          <p class="m-0px p-0px ta-left fw-medium fs-16px c-purple">
+            Diabetes
           </p>
         </a>
       </div>
-      <a class="d-flex ai-center mb-16px p-12px td-none bgc-red-light br-8px">
-        <div class="d-flex ai-center jc-center w-32px h-32px mr-12px bgc-white br-8px">
-          <%= inline_file("graph-red.svg") %>
+      <div class="mb-16px p-16px bgc-white br-4px bs-card">
+        <div class="d-flex ai-flex-start jc-space-between mb-16px">
+          <div class="f-1">
+            <h1 class="m-0px mb-8px fw-bold fs-24px">
+              Drug stock report
+            </h1>
+            <p class="m-0px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+              Submit <%= current_facility.name %>'s drug stock report for end of <%= @period.to_s(:mon_year) %>
+            </p>
+          </div>
+          <div>
+            <%= inline_svg("drug-stock.svg") %>
+          </div>
         </div>
-        <p class="m-0px p-0px ta-left fw-medium fs-16px c-red">
-          Hypertension
-        </p>
-      </a>
-      <a class="d-flex ai-center p-12px td-none bgc-purple-light br-8px">
-        <div class="d-flex ai-center jc-center w-32px h-32px mr-12px bgc-white br-8px">
-          <%= inline_file("graph-purple.svg") %>
-        </div>
-        <p class="m-0px p-0px ta-left fw-medium fs-16px c-purple">
-          Diabetes
-        </p>
-      </a>
-    </div>
-    <div class="mb-16px p-16px bgc-white br-4px bs-card">
-      <div class="d-flex ai-flex-start jc-space-between mb-16px">
-        <div class="f-1">
+        <%= link_to "Enter drug stock", new_webview_drug_stock_url(user_id: current_user.id,
+          access_token: current_user.access_token,
+          facility_id: current_facility.id),
+          style: "font-weight: 700;",
+          class: "d-block p-16px ta-center fs-16px tt-uppercase ls-1_25px c-blue b-none bb-blue-mid br-2px bgc-blue-light bs-secondary-button"
+        %>
+      </div>
+      <div class="mb-16px pt-16px pb-16px bgc-white br-4px bs-card">
+        <div class="pr-16px pl-16px">
           <h1 class="m-0px mb-8px fw-bold fs-24px">
-            Drug stock report
+            Achievements
           </h1>
-          <p class="m-0px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-            Submit <%= current_facility.name %>'s drug stock report for end of <%= @period.to_s(:mon_year) %>
+          <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+            <%= current_facility.name %>'s all-time progress
           </p>
+        </div>
+        <div class="mb-24px">
+          <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
+            <span class="fw-bold">7,051</span> follow-up visits recorded
+          </p>
+          <div class="ws-nowrap ox-scroll pt-4px pb-4px pl-16px d-none-scrollbar">
+            <% follow_up_badge_goals = create_badge_array(7051) %>
+            <% follow_up_badge_goals.each do |badge| %>
+              <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
+                locals: { value: badge["goal_value"],
+                          is_goal_completed: badge["is_goal_completed"],
+                          badge_color: "lavander",
+                          icon_completed: "refresh-arrow-white.svg",
+                          icon_goal: "refresh-arrow-grey.svg"
+              } %>
+            <% end %>
+          </div>
+        </div>
+        <div class="mb-24px">
+          <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
+            <span class="fw-bold">2,501</span> calls to overdue patients
+          </p>
+          <div class="ws-nowrap ox-scroll pt-4px pb-4px pl-16px d-none-scrollbar">
+            <% overdue_call_badge_goals = create_badge_array(2501) %>
+            <% overdue_call_badge_goals.each do |badge| %>
+              <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
+                locals: { value: badge["goal_value"],
+                          is_goal_completed: badge["is_goal_completed"],
+                          badge_color: "baby-blue",
+                          icon_completed: "phone-white.svg",
+                          icon_goal: "phone-grey.svg"
+              } %>
+            <% end %>
+          </div>
         </div>
         <div>
-          <%= inline_svg("drug-stock.svg") %>
-        </div>
-      </div>
-      <%= link_to "Enter drug stock", new_webview_drug_stock_url(user_id: current_user.id,
-        access_token: current_user.access_token,
-        facility_id: current_facility.id),
-        style: "font-weight: 700;",
-        class: "d-block p-16px ta-center fs-16px tt-uppercase ls-1_25px c-blue b-none bb-blue-mid br-2px bgc-blue-light bs-secondary-button"
-      %>
-    </div>
-    <div class="mb-16px pt-16px pb-16px bgc-white br-4px bs-card">
-      <div class="pr-16px pl-16px">
-        <h1 class="m-0px mb-8px fw-bold fs-24px">
-          Achievements
-        </h1>
-        <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-          <%= current_facility.name %>'s all-time progress
-        </p>
-      </div>
-      <div class="mb-24px">
-        <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
-          <span class="fw-bold">7,051</span> follow-up visits recorded
-        </p>
-        <div class="ws-nowrap ox-scroll pt-4px pb-4px pl-16px d-none-scrollbar">
-          <% follow_up_badge_goals = create_badge_array(7051) %>
-          <% follow_up_badge_goals.each do |badge| %>
-            <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
-              locals: { value: badge["goal_value"],
-                        is_goal_completed: badge["is_goal_completed"],
-                        badge_color: "lavander",
-                        icon_completed: "refresh-arrow-white.svg",
-                        icon_goal: "refresh-arrow-grey.svg"
-            } %>
-          <% end %>
-        </div>
-      </div>
-      <div class="mb-24px">
-        <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
-          <span class="fw-bold">2,501</span> calls to overdue patients
-        </p>
-        <div class="ws-nowrap ox-scroll pt-4px pb-4px pl-16px d-none-scrollbar">
-          <% overdue_call_badge_goals = create_badge_array(2501) %>
-          <% overdue_call_badge_goals.each do |badge| %>
-            <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
-              locals: { value: badge["goal_value"],
-                        is_goal_completed: badge["is_goal_completed"],
-                        badge_color: "baby-blue",
-                        icon_completed: "phone-white.svg",
-                        icon_goal: "phone-grey.svg"
-            } %>
-          <% end %>
-        </div>
-      </div>
-      <div>
-        <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
-          <span class="fw-bold">1,512</span> registered patients
-        </p>
-        <div class="ws-nowrap ox-scroll pt-4px pb-4px pl-16px d-none-scrollbar">
-          <% registered_patients_badge_goals = create_badge_array(1512) %>
-          <% registered_patients_badge_goals.each do |badge| %>
-            <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
-              locals: { value: badge["goal_value"],
-                        is_goal_completed: badge["is_goal_completed"],
-                        badge_color: "yellow",
-                        icon_completed: "face-yellow-darkest.svg",
-                        icon_goal: "face-grey.svg"
-            } %>
-          <% end %>
+          <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
+            <span class="fw-bold">1,512</span> registered patients
+          </p>
+          <div class="ws-nowrap ox-scroll pt-4px pb-4px pl-16px d-none-scrollbar">
+            <% registered_patients_badge_goals = create_badge_array(1512) %>
+            <% registered_patients_badge_goals.each do |badge| %>
+              <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
+                locals: { value: badge["goal_value"],
+                          is_goal_completed: badge["is_goal_completed"],
+                          badge_color: "yellow",
+                          icon_completed: "face-yellow-darkest.svg",
+                          icon_goal: "face-grey.svg"
+              } %>
+            <% end %>
+          </div>
         </div>
       </div>
     </div>

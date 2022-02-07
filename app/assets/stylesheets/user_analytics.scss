@@ -777,7 +777,9 @@ footer p {
 .p-relative { position: relative; }
 .t--3px { top: -3px; }
 .t-0 { top: 0; }
+.t-8px { top: 8px; }
 .b-0 { bottom: 0; }
+.r-8px { right: 8px; }
 .l-0 { left: 0; }
 /* LAYOUT */
 .d-block { display: block; }
@@ -809,6 +811,7 @@ footer p {
 .pt-4px { padding-top: 4px; }
 .pt-16px { padding-top: 16px; }
 .pr-16px { padding-right: 16px; }
+.pb-3px { padding-bottom: 3px; }
 .pb-4px { padding-bottom: 4px; }
 .pb-12px { padding-bottom: 12px; }
 .pb-16px { padding-bottom: 16px; }
@@ -820,6 +823,7 @@ footer p {
 .ta-center { text-align: center; }
 .ta-left { text-align: left; }
 .td-none { text-decoration: none; }
+.td-underline { text-decoration: underline; }
 .ff-roboto { font-family: "Roboto", sans-serif; }
 .ff-fredoka-one { font-family: "Fredoka One", cursive; }
 .fw-bold { font-weight: 700; } 
@@ -832,7 +836,9 @@ footer p {
 .fs-18px { font-size: 18px; }
 .fs-24px { font-size: 24px; }
 .tt-uppercase { text-transform: uppercase; }
+.lh-135 { line-height: 135%; }
 .lh-150 { line-height: 150%; }
+.lh-165 { line-height: 165%; }
 .ls-0_4px { letter-spacing: 0.4px }
 .ls-1_25px { letter-spacing: 1.25px; }
 .c-baby-blue { color: $baby-blue; }
@@ -847,6 +853,7 @@ footer p {
 .c-grey-mid { color: $grey-mid; }
 .c-grey { color: $grey; }
 .c-grey-dark { color: $grey-dark; }
+.c-grey-darkest { color: $grey-darkest; }
 .c-white { color: $white; }
 .c-black { color: $black; }
 /* BACKGROUND */
@@ -866,11 +873,13 @@ footer p {
 .bgc-purple-light { background-color: $purple-light; }
 .bgc-lavander-light { background-color: $lavander-light; } 
 .bgc-lavander { background-color: $lavander; }
-.bgc-yellow { background-color: $yellow; }
+.bgc-yellow-lightest { background-color: $yellow-lightest; }
 .bgc-yellow-light { background-color: $yellow-light; }
+.bgc-yellow { background-color: $yellow; }
 .b-none { border: none; }
 .b-grey-mid { border: 1px solid $grey-mid; }
 .bb-blue-mid { border-bottom: 2px solid $blue-mid; }
+.bb-grey-mid { border-bottom: 1px solid $grey-mid; }
 .br-2px { border-radius: 2px; }
 .br-4px { border-radius: 4px; }
 .br-8px { border-radius: 8px; }
