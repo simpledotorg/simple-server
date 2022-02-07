@@ -35,7 +35,9 @@ blocks:
         - name: TB_RSPEC_OPTIONS
           value: "--profile"
         - name: TB_RSPEC_FORMATTER
-          value: progress
+          value: RspecJunitFormatter
+        - name: REPORT_PATH
+          value: junit.xml
       secrets:
         - name: sentry-release-auth-token
         - name: semaphore-deploy-key
@@ -53,7 +55,7 @@ blocks:
           commands:
             - checkout
             - script/semaphore_setup
-            - rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT --format RspecJunitFormatter --out junit.xml --format documentation
+            - rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT
       epilogue:
         always:
           commands:
