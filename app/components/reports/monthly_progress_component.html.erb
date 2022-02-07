@@ -1,37 +1,16 @@
-<%# total across all groups %>
-<%= table(:all) do %>
+<%= table do %>
   <tr class="total">
     <td class="row-label"><%= raw t("analytics.all_time") %></td>
     <td class="row-value">
-      <%= total_count %>
+      <%= number_or_zero_with_delimiter total_count %>
     </td>
   </tr>
   <% range.reverse_each do |period| %>
     <tr>
       <td class="row-label no-padding"><%= period.to_s(:month_name) %></td>
       <td>
-        <%= monthly_count(period) %>
+        <%= number_or_zero_with_delimiter monthly_count(period) %>
       </td>
     </tr>
-  <% end %>
-<% end %>
-
-<% if gender_groups %>
-  <% Patient::GENDERS.each do |gender| %>
-    <!-- gender-wise tables -->
-    <table class="progress-table registrations <%= diagnosis_group_class(gender) %>" style="display:none">
-      <tr class="total">
-        <td class="row-label"><%= raw t("analytics.all_time") %></td>
-        <td><%= total_count_by_gender(gender) %></td>
-      </tr>
-      <% range.reverse_each do |period| %>
-        <tr>
-          <td class="row-label no-padding"><%= period.to_s(:month_name) %></td>
-          <td>
-            <%= monthly_count_by_gender(period, gender) %>
-          </td>
-        </tr>
-      <% end %>
-    </table>
   <% end %>
 <% end %>

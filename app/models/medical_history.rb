@@ -34,6 +34,6 @@ class MedicalHistory < ApplicationRecord
   scope :for_sync, -> { with_discarded }
 
   def indicates_hypertension_risk?
-    prior_heart_attack_boolean || prior_stroke_boolean
+    prior_heart_attack_yes? || prior_stroke_yes?
   end
 end

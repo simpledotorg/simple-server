@@ -10,11 +10,7 @@ RSpec.describe Api::ManifestsController, type: :controller do
     end
 
     context "in production environments" do
-      environments = Dir
-        .glob("config/deploy/*.rb")
-        .map { |file| Pathname.new(file).basename(".rb").to_s }
-
-      environments.each do |env|
+      %i[demo production].each do |env|
         it "return 200 for #{env}" do
           allow(ENV).to receive(:[]).with("SIMPLE_SERVER_ENV").and_return(env)
           allow(File).to receive(:read).with("public/manifest/#{env}.json").and_call_original
@@ -23,6 +19,7 @@ RSpec.describe Api::ManifestsController, type: :controller do
 
           get :show
 
+          JSON.parse(response.body)
           expect(response).to be_ok
           expect(response.body).to eq(File.read("public/manifest/#{env}.json"))
         end
@@ -45,6 +42,8 @@ RSpec.describe Api::ManifestsController, type: :controller do
 
       environments.each do |env|
         it "returns a dynamic manifest for #{env}" do
+          original_env = ENV["SIMPLE_SERVER_ENV"]
+
           allow(ENV).to receive(:[]).with("SIMPLE_SERVER_ENV").and_return(env)
           allow(ENV).to receive(:[]).with("SIMPLE_SERVER_HOST").and_return("simple.example.com")
           allow(ENV).to receive(:[]).with("SIMPLE_SERVER_HOST_PROTOCOL").and_return("https")
@@ -56,6 +55,8 @@ RSpec.describe Api::ManifestsController, type: :controller do
           parsed_body = JSON.parse(response.body)
           expect(parsed_body["v1"]).to eq(v1_response)
           expect(parsed_body["v2"]).to eq(v2_response)
+
+          allow(ENV).to receive(:[]).with("SIMPLE_SERVER_ENV").and_return(original_env)
         end
 
         let(:v1_response) do

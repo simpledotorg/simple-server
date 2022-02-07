@@ -1,0 +1,36 @@
+<% content_for :title do %>
+ Reports
+<% end %>
+
+<div class="container">
+  <!-- this is the fastindex view -->
+  <div class="row">
+    <div class="col-sm-5 col-lg-7">
+
+      <%= form_tag regions_search_url(format: :json), id: "search-form", method: :get do %>
+        <div class="mo-search">
+          <%= render "search" %>
+        <div>
+      <% end %>
+      <div id="facility-access">
+          <div class="card organization show region-index">
+            <div class="access-tree__section-header">
+              <% if current_admin.feature_enabled?(:organization_reports) %>
+                <%= link_to(@org.name, reports_region_path(@org.source.slug, report_scope: @org.region_type)) %>
+              <% else %>
+                <%= @org.name %>
+              <% end %>
+            </div>
+            <%= render Reports::FastRegionTreeComponent.new(region_tree: @region_tree, parent: @org, children: @region_tree.fast_children(@org)) %>
+          </div>
+
+      </div>
+
+      <script>
+        const async = false;
+        new AdminAccess("facility-access").initialize(async);
+      </script>
+
+    </div>
+  </div>
+</div>

@@ -338,9 +338,9 @@ class TelemedicineReports
       {state: state,
        clicks: sum_values(districts, :clicks),
        districts: districts.group_by { |row| row[:district] }.map { |district, users|
-                    {district: district,
-                     clicks: sum_values(users, :clicks)}
-                  }}
+         {district: district,
+          clicks: sum_values(users, :clicks)}
+       }}
     }
   end
 
@@ -352,16 +352,16 @@ class TelemedicineReports
        telemed_data: calculate_aggregates(state_facilities),
        users: sum_values(state_facilities, :users),
        districts: state_facilities.group_by { |facility| facility[:district] }.map { |district, district_facilities|
-                    {district: district,
-                     state: state,
-                     count: district_facilities.count,
-                     hwc_and_sc_count: hwc_and_sc_count(district_facilities),
-                     telemed_data: calculate_aggregates(district_facilities),
-                     users: sum_values(district_facilities, :users),
-                     facilities: district_facilities
-                       .select { |facility| %w[HWC SC].include? facility[:type] }
-                       .sort_by { |facility| facility[:name] }}
-                  }.sort_by { |district| district[:district] }}
+         {district: district,
+          state: state,
+          count: district_facilities.count,
+          hwc_and_sc_count: hwc_and_sc_count(district_facilities),
+          telemed_data: calculate_aggregates(district_facilities),
+          users: sum_values(district_facilities, :users),
+          facilities: district_facilities
+            .select { |facility| %w[HWC SC].include? facility[:type] }
+            .sort_by { |facility| facility[:name] }}
+       }.sort_by { |district| district[:district] }}
     }.sort_by { |state| state[:state] }
   end
 

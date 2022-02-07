@@ -10,7 +10,6 @@ require "capistrano/rails"
 require "capistrano/passenger"
 require "capistrano/capistrano_plugin_template"
 require "capistrano-db-tasks"
-require "capistrano/data_migrate"
 require "capistrano/sentry"
 
 require "whenever/capistrano"

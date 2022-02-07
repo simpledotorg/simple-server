@@ -81,6 +81,45 @@ RSpec.describe Region, type: :model do
     end
   end
 
+  describe "localized_child_region_type" do
+    it "returns country specific names" do
+      state = build(:region, region_type: :state)
+      district = build(:region, region_type: :district)
+      block = build(:region, region_type: :block)
+      facility = build(:region, region_type: :facility)
+      I18n.with_locale(:en_IN) do
+        expect(state.localized_child_region_type).to eq("district")
+        expect(district.localized_child_region_type).to eq("block")
+        expect(block.localized_child_region_type).to eq("facility")
+        expect(facility.localized_child_region_type).to be_nil
+      end
+      I18n.with_locale(:en_BD) do
+        expect(state.localized_child_region_type).to eq("district")
+        expect(district.localized_child_region_type).to eq("upazila")
+        expect(block.localized_child_region_type).to eq("facility")
+        expect(facility.localized_child_region_type).to be_nil
+      end
+      I18n.with_locale(:en_ET) do
+        expect(state.localized_child_region_type).to eq("zone")
+        expect(district.localized_child_region_type).to eq("woreda")
+        expect(block.localized_child_region_type).to eq("facility")
+        expect(facility.localized_child_region_type).to be_nil
+      end
+    end
+
+    it "has a fallback for default locale (which is the same as the India region_types)" do
+      state = build(:region, region_type: :state)
+      district = build(:region, region_type: :district)
+      block = build(:region, region_type: :block)
+      facility = build(:region, region_type: :facility)
+      expect(I18n.locale).to eq(:en)
+      expect(state.localized_child_region_type).to eq("district")
+      expect(district.localized_child_region_type).to eq("block")
+      expect(block.localized_child_region_type).to eq("facility")
+      expect(facility.localized_child_region_type).to be_nil
+    end
+  end
+
   describe "region_type" do
     it "has question methods for determining type" do
       region_1 = Region.create!(name: "New York", region_type: "state", reparent_to: Region.root)

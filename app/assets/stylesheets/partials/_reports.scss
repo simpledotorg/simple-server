@@ -2,6 +2,7 @@
 .p-relative { position: relative; }
 .p-absolute { position: absolute; }
 .t--1px { top: -1px; }
+.t--2px { top: -2px; }
 .t-0 { top: 0; }
 .t-1px { top: 1px; }
 .l-0 { left: 0; }
@@ -74,6 +75,7 @@
 .mr-4px { margin-right: 4px; }
 .mr-6px { margin-right: 6px; }
 .mr-8px { margin-right: 8px; }
+.p-12px { padding: 12px; }
 .pb-8px { padding-bottom: 8px; }
 .pb-16px { padding-bottom: 16px; }
 .pl-16px { padding-left: 16px; }
@@ -147,6 +149,7 @@
 .bg-green { background-color: $green }
 .bg-green-dark { background-color: $green-dark; }
 .bg-green-medium { background-color: $green-mid; }
+.bg-blue-light { background-color: $blue-light; }
 .bg-purple-medium { background-color: $purple-mid; }
 .bg-purple-light { background-color: $purple-light; }
 .bg-yellow-light { background-color: $yellow-light; }

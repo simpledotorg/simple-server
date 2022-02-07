@@ -1,308 +1,417 @@
 <!DOCTYPE html>
 <html lang="en" style="scroll-behavior: auto;">
-<head>
-  <meta charset="utf-8">
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,shrink-to-fit=no"/>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <title><%= raw t("analytics.page_title") %></title>
-
-  <%= inline_stylesheet("user_analytics.css") %>
-</head>
-
-<body id="progress">
-<div id="progress-start" class="progress-body">
-  <div class="progress-contents">
-
-  <p class="updated-date">
-    <span>
-      <%= raw t("analytics.updated", time: @user_analytics.last_updated_at) %>
-    </span>
-  </p>
-
-  <div class="card" style="min-height: 210px;">
-    <!-- daily card switcher -->
-    <div class="next-prev">
-      <button onclick="nextSlide(+1)" class="button-next">
-        <span><%= inline_svg('icon_arrow_back.svg') %></span>
-      </button>
-      <button onclick="nextSlide(-1)" class="button-prev">
-        <span><%= inline_svg('icon_arrow_forward.svg') %></span>
-      </button>
-    </div>
-
-    <!-- dump all statistics in a hidden div so that we can parse it in JS -->
-    <%= content_tag :div,
-                    id: "statistics",
-                    data: { statistics: @user_analytics.statistics },
-                    style: "display: none" do %>
-    <% end %>
-
-    <!-- daily stats view -->
-    <div id="daily-stats-card">
-      <div class="day count-empty" style="display: none">
-        <h3 class="stat-day"></h3>
-        <%= inline_svg('icon_sync_cloud.svg') %>
-        <p><%= raw t("analytics.tap_sync") %></p>
-      </div>
-
-      <% @user_analytics.daily_period_list.each do |day_date| %>
-        <div class="day">
-          <h3 class="stat-day">
-            <span class="num"><%= display_date(day_date) %></span>
-          </h3>
-
-          <div class="counts">
-            <div class="count count-1">
-              <strong><%= raw t("analytics.registered") %></strong>
-              <div class="big-number">
-                <%= @user_analytics.daily_stats_by_date(:registrations, day_date) %>
-              </div>
-              <%= raw t("analytics.patient", count: @user_analytics.daily_stats_by_date(:registrations, day_date)) %>
+  <head>
+    <meta charset="utf-8">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,shrink-to-fit=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>
+      <%= raw t("analytics.page_title") %>
+    </title>
+    <%= inline_stylesheet("user_analytics.css") %>
+  </head>
+  <body id="progress">
+    <div id="progress-start" class="progress-body">
+      <div class="progress-contents">
+        <p class="updated-date">
+          <span>
+            <%= raw t("analytics.updated", time: @user_analytics.last_updated_at) %>
+          </span>
+        </p>
+        <div class="card" style="min-height: 210px;">
+          <div class="next-prev">
+            <button onclick="nextSlide(+1)" class="button-next">
+              <span>
+                <%= inline_svg('icon_arrow_back.svg') %>
+              </span>
+            </button>
+            <button onclick="nextSlide(-1)" class="button-prev">
+              <span>
+                <%= inline_svg('icon_arrow_forward.svg') %>
+              </span>
+            </button>
+          </div>
+          <%= content_tag :div,
+                          id: "statistics",
+                          data: { statistics: @user_analytics.statistics },
+                          style: "display: none" do %>
+          <% end %>
+          <div id="daily-stats-card">
+            <div class="day count-empty" style="display: none">
+              <h3 class="stat-day"></h3>
+              <%= inline_svg('icon_sync_cloud.svg') %>
+              <p>
+                <%= raw t("analytics.tap_sync") %>
+              </p>
             </div>
-
-            <div class="count count-2">
-              <strong><%= raw t("analytics.follow_up") %></strong>
-              <div class="big-number">
-                <%= @user_analytics.daily_stats_by_date(:follow_ups, day_date) %>
+            <% @user_analytics.daily_period_list.each do |day_date| %>
+              <div class="day">
+                <h3 class="stat-day">
+                  <span class="num">
+                    <%= display_date(day_date) %>
+                  </span>
+                </h3>
+                <div class="counts">
+                  <div class="count count-1">
+                    <strong>
+                      <%= raw t("analytics.registered") %>
+                    </strong>
+                    <div class="big-number">
+                      <%= @user_analytics.daily_stats_by_date(:registrations, day_date) %>
+                    </div>
+                    <%= raw t("analytics.patient", count: @user_analytics.daily_stats_by_date(:registrations, day_date)) %>
+                  </div>
+                  <div class="count count-2">
+                    <strong>
+                      <%= raw t("analytics.follow_up") %>
+                    </strong>
+                    <div class="big-number">
+                      <%= @user_analytics.daily_stats_by_date(:follow_ups, day_date) %>
+                    </div>
+                    <%= raw t("analytics.patient", count: @user_analytics.daily_stats_by_date(:follow_ups, day_date)) %>
+                  </div>
+                </div>
               </div>
-              <%= raw t("analytics.patient", count: @user_analytics.daily_stats_by_date(:follow_ups, day_date)) %>
-            </div>
+            <% end %>
           </div>
         </div>
-      <% end %>
-    </div>
-  </div>
-
-  <!-- monthly registered patients view -->
-  <div class="card">
-    <a href="#"  onclick="openWindow('progress-help-registered', 'progress-start'); return false" class="info"><span>?</span></a>
-    <h3><%= raw t("analytics.registered_patients") %></h3>
-
-    <% registrations_table_name = 'registrations' %>
-
-    <%= render partial: 'api/v3/analytics/user_analytics/gender_filter',
-               locals: { data_table_name: registrations_table_name,
-                         is_diabetes_enabled: @user_analytics.diabetes_enabled? } %>
-
-    <% if current_user.feature_enabled?(:follow_ups_v2_progress_tab) %>
-      <%= render partial: 'api/v3/analytics/user_analytics/monthly_breakdown', locals: { metric: :registrations } %>
-    <% else %>
-      <%= render partial: 'api/v3/analytics/user_analytics/monthly_gender_table',
-                locals: { stat: :registrations,
-                          user_analytics: @user_analytics,
-                          data_table_name: registrations_table_name } %>
-    <% end %>
-  </div>
-
-  <!-- monthly follow-up patients view -->
-  <div class="card">
-    <a href="#"  onclick="openWindow('progress-help-followup', 'progress-start'); return false" class="info"><span>?</span></a>
-    <h3><%= raw t("analytics.follow_up_patients") %></h3>
-
-    <% follow_ups_table_name = 'follow_ups' %>
-
-    <%= render partial: 'api/v3/analytics/user_analytics/gender_filter',
-               locals: { data_table_name: follow_ups_table_name,
-                         is_diabetes_enabled: @user_analytics.diabetes_enabled? } %>
-
-    <%= render partial: 'api/v3/analytics/user_analytics/monthly_gender_table',
-               locals: { stat: :follow_ups,
-                         user_analytics: @user_analytics,
-                         data_table_name: follow_ups_table_name } %>
-  </div>
-
-  <!-- drug stock -->
-  <% if current_facility_group.region.feature_enabled?(:drug_stocks) && controller_name == "user_analytics" %>
-    <div class="card">
-        <h3>Drug stock report</h3>
-        <p style="text-align: left; padding: 6px 0;">Please submit your monthly hypertension drug stock report for end of <%= @for_end_of_month.to_s(:mon_year) %></p>
-        <%= link_to "Submit Drug Stock", new_webview_drug_stock_url(user_id: current_user.id,
-          access_token: current_user.access_token,
-          facility_id: current_facility.id), class: "button" %>
-    </div>
-  <% end %>
-
-  <!-- monthly hypertension control view -->
-  <div class="card">
-    <a href="#"  onclick="openWindow('progress-help-controlled', 'progress-start'); return false" class="info"><span>?</span></a>
-    <h3><%= raw t("analytics.hypertension_controlled") %></h3>
-    <p class="desc">
-      <%= raw t("analytics.hypertension_control_desc") %>
-    </p>
-
-    <p class="desc control-desc">
-        <strong><%= @user_analytics.monthly_htn_control_last_period %></strong>
-        <br><%= @user_analytics.monthly_htn_control_last_period_patient_counts %>
-        <br><strong class="green"><%= @user_analytics.monthly_htn_control_last_control_rate %>%</strong>
-    </p>
-
-    <table class="bar-chart">
-        <tbody>
-            <tr>
+        <div class="card">
+          <a
+            href="#"
+            onclick="openWindow('progress-help-registered', 'progress-start'); return false"
+            class="info"
+          >
+            <span>
+              ?
+            </span>
+          </a>
+          <h3>
+            <%= raw t("analytics.registered_patients") %>
+          </h3>
+          <% registrations_table_name = 'registrations' %>
+          <%= render partial: 'api/v3/analytics/user_analytics/gender_filter',
+                    locals: { data_table_name: registrations_table_name,
+                              is_diabetes_enabled: @user_analytics.diabetes_enabled? } %>
+          <% if current_user.feature_enabled?(:follow_ups_v2_progress_tab) %>
+            <%= render partial: 'api/v3/analytics/user_analytics/monthly_breakdown', locals: { indicator: :registrations } %>
+          <% else %>
+            <%= render partial: 'api/v3/analytics/user_analytics/monthly_gender_table',
+                      locals: { stat: :registrations,
+                                user_analytics: @user_analytics,
+                                data_table_name: registrations_table_name } %>
+          <% end %>
+        </div>
+        <div class="card">
+          <a
+            href="#"
+            onclick="openWindow('progress-help-followup', 'progress-start'); return false"
+            class="info"
+          >
+            <span>
+              ?
+            </span>
+          </a>
+          <h3>
+            <%= raw t("analytics.follow_up_patients") %>
+          </h3>
+          <% follow_ups_table_name = 'follow_ups' %>
+          <%= render partial: 'api/v3/analytics/user_analytics/gender_filter',
+                    locals: { data_table_name: follow_ups_table_name,
+                              is_diabetes_enabled: @user_analytics.diabetes_enabled? } %>
+          <% if current_user.feature_enabled?(:follow_ups_v2_progress_tab) %>
+            <%= render partial: 'api/v3/analytics/user_analytics/monthly_breakdown', locals: { indicator: :follow_ups } %>
+          <% else %>
+            <%= render partial: 'api/v3/analytics/user_analytics/monthly_gender_table',
+                      locals: { stat: :follow_ups,
+                                user_analytics: @user_analytics,
+                                data_table_name: follow_ups_table_name } %>
+          <% end %>
+        </div>
+        <% if current_facility_group.region.feature_enabled?(:drug_stocks) && controller_name == "user_analytics" %>
+          <div class="mb-16px p-16px bgc-white br-4px bs-card">
+            <div class="d-flex ai-flex-start jc-space-between mb-16px">
+              <div class="f-1">
+                <h3 class="m-0px mb-8px fw-bold fs-24px">
+                  Drug stock report
+                </h3>
+                <p class="m-0px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+                  Submit <%= current_facility.name %>'s drug stock report for end of <%= @period.to_s(:mon_year) %>
+                </p>
+              </div>
+              <div>
+                <%= inline_svg("drug-stock.svg") %>
+              </div>
+            </div>
+            <%= link_to "Enter drug stock", new_webview_drug_stock_url(user_id: current_user.id,
+              access_token: current_user.access_token,
+              facility_id: current_facility.id),
+              style: "font-weight: 700;",
+              class: "d-block p-16px ta-center fs-16px tt-uppercase ls-1_25px c-blue b-none bb-blue-mid br-2px bgc-blue-light bs-secondary-button"
+            %>
+          </div>
+        <% end %>
+        <div class="card">
+          <a
+            href="#"
+            onclick="openWindow('progress-help-controlled', 'progress-start'); return false"
+            class="info"
+          >
+            <span>
+              ?
+            </span>
+          </a>
+          <h3>
+            <%= raw t("analytics.hypertension_controlled") %>
+          </h3>
+          <p class="desc">
+            <%= raw t("analytics.hypertension_control_desc") %>
+          </p>
+          <p class="desc control-desc">
+            <strong>
+              <%= @user_analytics.monthly_htn_control_last_period %>
+            </strong>
+            <br>
+            <%= @user_analytics.monthly_htn_control_last_period_patient_counts %>
+            <br>
+            <strong class="green">
+              <%= @user_analytics.monthly_htn_control_last_control_rate %>%
+            </strong>
+          </p>
+          <table class="bar-chart">
+            <tbody>
+              <tr>
                 <% @user_analytics.htn_control_monthly_period_list.each do |month_date| %>
                   <% control_rate = @user_analytics.monthly_htn_control_rate(month_date) %>
                   <td class="bar-row">
-                    <div class="bar-value"><span><b class="tip"><%= month_date.strftime('%b-%Y') %></b> <%= control_rate %>%</span></div>
-                    <div style="height: <%= control_rate * 2 %>px;" class="bar"><span></span></div>
+                    <div class="bar-value">
+                      <span>
+                        <b class="tip">
+                          <%= month_date.strftime('%b-%Y') %> 
+                        </b>
+                        <%= control_rate %>%
+                      </span>
+                    </div>
+                    <div style="height: <%= control_rate * 2 %>px;" class="bar">
+                      <span></span>
+                    </div>
                   </td>
                 <% end %>
-            </tr>
-        </tbody>
-    </table>
-    <p class="center" style="margin: 12px 0 0 0; text-align: center;"><%= raw t("analytics.last_12_months") %></p>
-  </div>
-
-  <div class="card">
-     <a href="#" onclick="openWindow('progress-cohort', 'progress-start'); return false" class="nav-next">Cohort report</a>
-  </div>
-
-  <!-- all trophies view -->
-  <% if @user_analytics.achievements? %>
-    <div class="trophies">
-      <h4><%= raw t("analytics.achievements") %></h4>
-      <% @user_analytics.unlocked_trophies.sort.each do |trophy| %>
-        <div class="trophy trophy-<%= trophy %>">
-          <%= inline_svg('ribbon.svg') %>
-          <em></em>
-          <span>
-              <%= number_to_human(trophy, :format => '%n%u', :units => { thousand: 'K', million: 'M' }) %>
-            </span>
-          <div><%= trophy %> <%= raw t("analytics.follow_up") %><br><%= raw t("analytics.hypertension_patients") %></div>
+              </tr>
+            </tbody>
+          </table>
+          <p class="center" style="margin: 12px 0 0 0; text-align: center;">
+            <%= raw t("analytics.last_12_months") %>
+          </p>
         </div>
-      <% end %>
-
-      <div class="trophy trophy-<%= @user_analytics.locked_trophy %> trophy-upcoming">
-        <%= inline_svg('ribbon.svg') %>
-        <em></em>
-        <span>
-            <%= inline_svg('icon_lock.svg') %>
-          </span>
-        <div><%= @user_analytics.locked_trophy %> <%= raw t("analytics.follow_up") %><br><%= raw t("analytics.hypertension_patients") %></div>
-      </div>
-    </div>
-  <% end %>
-
-  <!-- footer -->
-  <footer>
-    <h4 style="padding-top: 60px;"><%= raw t("analytics.notes") %></h4>
-    <p><%= raw t("analytics.footer_note_1", facility_name: @current_facility.name) %></p>
-    <h4 style="padding-top: 60px;"><%= raw t("analytics.thank_you") %></h4>
-    <p><%= raw t("analytics.thank_you_note") %></p>
-    <div style="height: 100px;"></div>
-  </footer>
-  </div>
-</div>
-
-<div id="progress-help-registered" class="progress-body" style="display: none;">
-    <div class="progress-contents">
-        <a href="#" onclick="closeWindow('progress-help-registered', 'progress-start'); return false" class="help-back">
-            <%= inline_svg('icon_back.svg') %>
-        </a>
-
-        <h2 style="padding-top: 80px; padding-left: 8px;"><%= raw t("analytics.definition") %></h2>
-
         <div class="card">
-            <h3 style="margin-bottom: 1em;"><%= raw t("analytics.registered_patients") %></h3>
-            <p class="desc" style="margin-bottom: 1em;">
-              <%= raw t("analytics.registered_patients_desc") %>
-            </p>
+          <a
+            href="#"
+            onclick="openWindow('progress-cohort', 'progress-start'); return false"
+            class="nav-next"
+          >
+            Cohort report
+          </a>
         </div>
-    </div>
-</div>
-
-<div id="progress-help-followup" class="progress-body" style="display: none;">
-    <div class="progress-contents">
-        <a href="#" onclick="closeWindow('progress-help-followup', 'progress-start'); return false" class="help-back">
-            <%= inline_svg('icon_back.svg') %>
-        </a>
-
-        <h2 style="padding-top: 80px; padding-left: 8px;"><%= raw t("analytics.definition") %></h2>
-
-        <div class="card">
-            <h3 style="margin-bottom: 1em;"><%= raw t("analytics.follow_up_patients") %></h3>
-            <p class="desc" style="margin-bottom: 1em;">
-              <%= raw t("analytics.follow_up_patients_desc") %>
-            </p>
-        </div>
-    </div>
-</div>
-
-<div id="progress-help-controlled" class="progress-body" style="display: none;">
-    <div class="progress-contents">
-        <a href="#" onclick="closeWindow('progress-help-controlled', 'progress-start'); return false" class="help-back">
-            <%= inline_svg('icon_back.svg') %>
-        </a>
-
-        <h2 style="padding-top: 80px; padding-left: 8px;"><%= raw t("analytics.definition") %></h2>
-
-        <div class="card">
-            <h3 style="margin-bottom: 1em;"><%= raw t("analytics.hypertension_controlled") %></h3>
-            <p class="desc" style="margin-bottom: 1em;">
-                <b><%= raw t("analytics.numerator") %></b><br>
-              <%= raw t("analytics.hypertension_controlled_numerator") %>
-            </p>
-            <p class="desc">
-                <b><%= raw t("analytics.denominator") %></b><br>
-              <%= raw t("analytics.hypertension_controlled_denominator") %>
-            </p>
-        </div>
-    </div>
-</div>
-
-<div id="progress-cohort" class="progress-body" style="display: none;">
-    <div class="progress-contents">
-        <a href="#" onclick="closeWindow('progress-cohort', 'progress-start'); return false" class="help-back">
-            <%= inline_svg('icon_back.svg') %>
-        </a>
-
-        <h2 style="padding-top: 80px; padding-left: 8px;"><%= raw t("analytics.hypertension_cohort_report") %></h2>
-        <p class="left"><%= raw t("analytics.hypertension_cohort_report_desc") %></p>
-        <div class="key">
-            <p class="left" style="color: #007A31;"><span class="key-color green"></span> <%= raw t("analytics.patients_with_controlled_bp") %></p>
-            <p class="left" style="color: #FF3355;"><span class="key-color red"></span> <%= raw t("analytics.patients_with_uncontrolled_bp") %></p>
-            <p class="left" style="color: #6C737A;"><span class="key-color grey"></span> <%= raw t("analytics.patients_with_no_bp_measure") %></p>
-        </div>
-
-        <% @user_analytics.statistics.dig(:cohorts).each do |cohort| %>
-          <div class="card cohort">
-              <h6>
-                <%= cohort[:registered] %> <%= raw t("analytics.patient", count: cohort[:registered]) %>
-                <%= raw t("analytics.registered_in") %> <%= cohort[:patients_registered] %>
-              </h6>
-
-              <div style="font-size: 16px; margin: 8px 0 12px 0;">  <%= raw t("analytics.result_from_last_visit_in") %> <%= cohort[:results_in] %></div>
-              <table class="cohort-bars">
-                  <tr>
-                    <% if cohort[:registered].blank? %>
-                      <td class="cohort-none"> <%= raw t("analytics.no_patients") %></td>
-                    <% else %>
-                      <td class="cohort-nobp" style="width: <%= @user_analytics.cohort_no_bp(cohort) %>;">
-                        <%= @user_analytics.cohort_no_bp(cohort) %>
-                      </td>
-                      <td class="cohort-uncontrolled" style="width: <%= @user_analytics.cohort_uncontrolled(cohort) %>;">
-                        <%= @user_analytics.cohort_uncontrolled(cohort) %>
-                      </td>
-                      <td class="cohort-controlled" style="width: <%= @user_analytics.cohort_controlled(cohort) %>;">
-                        <%= @user_analytics.cohort_controlled(cohort) %>
-                      </td>
-                    <% end %>
-                  </tr>
-              </table>
+        <% if @user_analytics.achievements? %>
+          <div class="trophies">
+            <h4>
+              <%= raw t("analytics.achievements") %>
+            </h4>
+            <% @user_analytics.unlocked_trophies.sort.each do |trophy| %>
+              <div class="trophy trophy-<%= trophy %>">
+                <%= inline_svg('ribbon.svg') %>
+                <em></em>
+                <span>
+                    <%= number_to_human(trophy, :format => '%n%u', :units => { thousand: 'K', million: 'M' }) %>
+                  </span>
+                <div>
+                  <%= trophy %> <%= raw t("analytics.follow_up") %>
+                  <br>
+                  <%= raw t("analytics.hypertension_patients") %>
+                </div>
+              </div>
+            <% end %>
+            <div class="trophy trophy-<%= @user_analytics.locked_trophy %> trophy-upcoming">
+              <%= inline_svg('ribbon.svg') %>
+              <em></em>
+              <span>
+                  <%= inline_svg('icon_lock.svg') %>
+                </span>
+              <div>
+                <%= @user_analytics.locked_trophy %> <%= raw t("analytics.follow_up") %>
+                <br>
+                <%= raw t("analytics.hypertension_patients") %>
+              </div>
+            </div>
           </div>
         <% end %>
-
-        <h3 style="padding-top: 40px; padding-left: 8px;"> <%= raw t("analytics.notes") %></h3>
-        <ul class="footnotes">
-            <li><strong> <%= raw t("analytics.numerator") %>:</strong> <%= raw t("analytics.cohort_report_footnote_1") %></li>
-            <li><strong> <%= raw t("analytics.denominator") %>:</strong> <%= raw t("analytics.cohort_report_footnote_2") %></li>
-            <li><%= raw t("analytics.cohort_report_footnote_3") %></li>
-        </ul>
+        <footer>
+          <h4 style="padding-top: 60px;">
+            <%= raw t("analytics.notes") %>
+          </h4>
+          <p>
+            <%= raw t("analytics.footer_note_1", facility_name: @current_facility.name) %>
+          </p>
+          <h4 style="padding-top: 60px;">
+            <%= raw t("analytics.thank_you") %>
+          </h4>
+          <p>
+            <%= raw t("analytics.thank_you_note") %>
+          </p>
+          <div style="height: 100px;"></div>
+        </footer>
+      </div>
     </div>
-</div>
-</body>
-
-<!-- always insert JS here -->
-<%= inline_js("standalone/user_analytics.js") %>
+    <div id="progress-help-registered" class="progress-body" style="display: none;">
+      <div class="progress-contents">
+        <a
+          href="#"
+          onclick="closeWindow('progress-help-registered', 'progress-start'); return false"
+          class="help-back"
+        >
+          <%= inline_svg('icon_back.svg') %>
+        </a>
+        <h2 style="padding-top: 80px; padding-left: 8px;">
+          <%= raw t("analytics.definition") %>
+        </h2>
+        <div class="card">
+          <h3 style="margin-bottom: 1em;">
+            <%= raw t("analytics.registered_patients") %>
+          </h3>
+          <p class="desc" style="margin-bottom: 1em;">
+            <%= raw t("analytics.registered_patients_desc") %>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div id="progress-help-followup" class="progress-body" style="display: none;">
+      <div class="progress-contents">
+        <a
+          href="#"
+          onclick="closeWindow('progress-help-followup', 'progress-start'); return false"
+          class="help-back"
+        >
+          <%= inline_svg('icon_back.svg') %>
+        </a>
+        <h2 style="padding-top: 80px; padding-left: 8px;">
+          <%= raw t("analytics.definition") %>
+        </h2>
+        <div class="card">
+          <h3 style="margin-bottom: 1em;">
+            <%= raw t("analytics.follow_up_patients") %>
+          </h3>
+          <p class="desc" style="margin-bottom: 1em;">
+            <%= raw t("analytics.follow_up_patients_desc") %>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div id="progress-help-controlled" class="progress-body" style="display: none;">
+      <div class="progress-contents">
+        <a
+          href="#"
+          onclick="closeWindow('progress-help-controlled', 'progress-start'); return false"
+          class="help-back"
+        >
+          <%= inline_svg('icon_back.svg') %>
+        </a>
+        <h2 style="padding-top: 80px; padding-left: 8px;">
+          <%= raw t("analytics.definition") %>
+        </h2>
+        <div class="card">
+          <h3 style="margin-bottom: 1em;">
+            <%= raw t("analytics.hypertension_controlled") %>
+          </h3>
+          <p class="desc" style="margin-bottom: 1em;">
+            <b>
+              <%= raw t("analytics.numerator") %>
+            </b>
+            <br>
+            <%= raw t("analytics.hypertension_controlled_numerator") %>
+          </p>
+          <p class="desc">
+            <b>
+              <%= raw t("analytics.denominator") %>
+            </b>
+            <br>
+            <%= raw t("analytics.hypertension_controlled_denominator") %>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div id="progress-cohort" class="progress-body" style="display: none;">
+      <div class="progress-contents">
+        <a
+          href="#"
+          onclick="closeWindow('progress-cohort', 'progress-start'); return false"
+          class="help-back"
+        >
+          <%= inline_svg('icon_back.svg') %>
+        </a>
+        <h2 style="padding-top: 80px; padding-left: 8px;">
+          <%= raw t("analytics.hypertension_cohort_report") %>
+        </h2>
+        <p class="left">
+          <%= raw t("analytics.hypertension_cohort_report_desc") %>
+        </p>
+        <div class="key">
+          <p class="left" style="color: #007A31;">
+            <span class="key-color green"></span> <%= raw t("analytics.patients_with_controlled_bp") %>
+          </p>
+          <p class="left" style="color: #FF3355;">
+            <span class="key-color red"></span> <%= raw t("analytics.patients_with_uncontrolled_bp") %>
+          </p>
+          <p class="left" style="color: #6C737A;">
+            <span class="key-color grey"></span> <%= raw t("analytics.patients_with_no_bp_measure") %>
+          </p>
+        </div>
+        <% @user_analytics.statistics.dig(:cohorts).each do |cohort| %>
+          <div class="card cohort">
+            <h6>
+              <%= cohort[:registered] %> <%= raw t("analytics.patient", count: cohort[:registered]) %>
+              <%= raw t("analytics.registered_in") %> <%= cohort[:patients_registered] %>
+            </h6>
+            <div style="font-size: 16px; margin: 8px 0 12px 0;">
+              <%= raw t("analytics.result_from_last_visit_in") %> <%= cohort[:results_in] %>
+            </div>
+            <table class="cohort-bars">
+              <tr>
+                <% if cohort[:registered].blank? %>
+                  <td class="cohort-none">
+                      <%= raw t("analytics.no_patients") %>
+                  </td>
+                <% else %>
+                  <td class="cohort-nobp" style="width: <%= @user_analytics.cohort_no_bp(cohort) %>;">
+                    <%= @user_analytics.cohort_no_bp(cohort) %>
+                  </td>
+                  <td class="cohort-uncontrolled" style="width: <%= @user_analytics.cohort_uncontrolled(cohort) %>;">
+                    <%= @user_analytics.cohort_uncontrolled(cohort) %>
+                  </td>
+                  <td class="cohort-controlled" style="width: <%= @user_analytics.cohort_controlled(cohort) %>;">
+                    <%= @user_analytics.cohort_controlled(cohort) %>
+                  </td>
+                <% end %>
+              </tr>
+            </table>
+          </div>
+        <% end %>
+        <h3 style="padding-top: 40px; padding-left: 8px;">
+           <%= raw t("analytics.notes") %>
+        </h3>
+        <ul class="footnotes">
+          <li>
+            <strong> <%= raw t("analytics.numerator") %>:</strong> <%= raw t("analytics.cohort_report_footnote_1") %>
+          </li>
+          <li>
+            <strong> <%= raw t("analytics.denominator") %>:</strong> <%= raw t("analytics.cohort_report_footnote_2") %>
+          </li>
+          <li>
+            <%= raw t("analytics.cohort_report_footnote_3") %>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </body>
+  <%= inline_js("standalone/user_analytics.js") %>
 </html>

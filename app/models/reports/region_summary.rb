@@ -21,6 +21,11 @@ module Reports
       monthly_registrations
       monthly_overdue_calls
       monthly_follow_ups
+      total_appts_scheduled
+      appts_scheduled_0_to_14_days
+      appts_scheduled_15_to_31_days
+      appts_scheduled_32_to_62_days
+      appts_scheduled_more_than_62_days
     ].sort.freeze
 
     UNDER_CARE_WITH_LTFU = %i[

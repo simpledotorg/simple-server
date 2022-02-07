@@ -29,8 +29,11 @@ RSpec.describe Reports::ProgressController, type: :controller do
       end
     end
 
-    it "renders successfully if feature flag is enabled" do
+    it "renders successfully if follow_ups_v2 feature flag is enabled" do
+      facility_1
+      refresh_views
       cvho.enable_feature(:dashboard_progress_reports)
+      cvho.enable_feature(:follow_ups_v2_progress_tab)
       sign_in(cvho.email_authentication)
 
       get :show, params: {id: facility_1.slug}
