@@ -31,13 +31,9 @@ blocks:
         - name: DATABASE_URL
           value: "postgresql://postgres:@0.0.0.0:5432/myapp_test"
         - name: RAILS_ENV
-          value: test
+          value: "test"
         - name: TB_RSPEC_OPTIONS
-          value: "--profile"
-        - name: TB_RSPEC_FORMATTER
-          value: RspecJunitFormatter
-        - name: REPORT_PATH
-          value: junit.xml
+          value: "--profile --format RspecJunitFormatter --out "junit.xml"
       secrets:
         - name: sentry-release-auth-token
         - name: semaphore-deploy-key
