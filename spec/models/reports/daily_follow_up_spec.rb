@@ -113,19 +113,24 @@ RSpec.describe Reports::DailyFollowUp, {type: :model, reporting_spec: true} do
   end
 
   it "does not count more than one visit per day for the same patient and facility" do
-    pending
-    patient = create(:patient, recorded_at: june_2021[:long_ago])
+    now = Time.current
+    facility_2 = create(:facility)
+    Timecop.freeze(now) do
+      patient = create(:patient, recorded_at: 2.years.ago)
 
-    create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: june_2021[:beginning_of_month])
-    create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: june_2021[:end_of_month])
-    create(:blood_sugar, patient: patient, user: user, facility: facility, recorded_at: june_2021[:end_of_month])
-    create(:appointment, patient: patient, user: user, facility: facility, recorded_at: june_2021[:end_of_month])
-    create(:prescription_drug, patient: patient, user: user, facility: facility, recorded_at: june_2021[:end_of_month])
+      create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: now)
+      create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: now)
+      create(:blood_sugar, patient: patient, user: user, facility: facility, recorded_at: now)
+      create(:appointment, patient: patient, user: user, facility: facility, recorded_at: now)
+      create(:prescription_drug, patient: patient, user: user, facility: facility, recorded_at: now)
+      create(:prescription_drug, patient: patient, user: user, facility: facility_2, recorded_at: now)
 
-    described_class.refresh
+      described_class.refresh
 
-    expect(described_class.count).to eq(1)
-    follow_up = described_class.find_by(patient: patient, user: user, facility: facility, month_string: june_2021[:month_string])
-    expect(follow_up).to be_present
+      expect(described_class.count).to eq(2)
+      expect(described_class.where(patient: patient, facility: facility).count).to eq(1)
+      follow_up = described_class.find_by(patient: patient, facility: facility)
+      expect(follow_up).to be_present
+    end
   end
 end
