@@ -1,7 +1,7 @@
 require "csv"
 
 class PatientsWithHistoryExporter < PatientsExporter
-  def csv(patients, display_blood_pressures = 3, display_medication_columns = 5)
+  def csv(patients, display_blood_pressures: 3, display_medication_columns: 5)
     @display_blood_pressures = display_blood_pressures
     @display_medication_columns = display_medication_columns
     super(patients)
