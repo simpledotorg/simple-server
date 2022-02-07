@@ -12,8 +12,8 @@ RSpec.describe MonthlyDistrictDataService, reporting_spec: true do
 
   let(:organization) { FactoryBot.create(:organization) }
   let(:facility_group) { create(:facility_group, organization: organization) }
-  let(:facility1) { create(:facility, facility_group: facility_group, facility_size: :community) }
-  let(:facility2) { create(:facility, facility_group: facility_group, facility_size: :community) }
+  let(:facility1) { create(:facility, block: "Eagle Estates", facility_group: facility_group, facility_size: :community) }
+  let(:facility2) { create(:facility, block: "Summer Heights", facility_group: facility_group, facility_size: :community) }
   let(:region) { facility1.region.district_region }
   let(:period) { Period.month(Date.today) }
   let(:service) { described_class.new(region, period) }
