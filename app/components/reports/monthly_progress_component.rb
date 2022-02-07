@@ -7,11 +7,11 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
   attr_reader :monthly_counts
   attr_reader :total_counts
 
-  def initialize(dimension, range:, total_counts:, monthly_counts:)
+  def initialize(dimension, service:)
     @dimension = dimension
-    @monthly_counts = monthly_counts
-    @total_counts = total_counts
-    @range = range
+    @monthly_counts = service.monthly_counts
+    @total_counts = service.total_counts
+    @range = service.range
   end
 
   def diagnosis_group_class
