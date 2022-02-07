@@ -24,7 +24,7 @@ RSpec.describe Reports::View, {type: :model, reporting_spec: true} do
   end
 
   it "has documentation for all reporting materialized views, and their columns" do
-    [Reports::Facility, Reports::Month, Reports::PatientState].each do |klass|
+    [Reports::Facility, Reports::Month, Reports::PatientState, Reports::FacilityState].each do |klass|
       klass.add_comments
       expect(ActiveRecord::Base.connection.execute(table_descriptions_sql(klass.table_name)).map { |d| d["description"] }).to all be_present
       expect(ActiveRecord::Base.connection.execute(column_descriptions_sql(klass.table_name)).map { |d| d["col_description"] }).to all be_present
