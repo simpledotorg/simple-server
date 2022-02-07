@@ -33,7 +33,7 @@ blocks:
         - name: RAILS_ENV
           value: "test"
         - name: TB_RSPEC_OPTIONS
-          value: "--profile --format RspecJunitFormatter --out "junit.xml"
+          value: "--profile --format RspecJunitFormatter --out junit.xml"
       secrets:
         - name: sentry-release-auth-token
         - name: semaphore-deploy-key
