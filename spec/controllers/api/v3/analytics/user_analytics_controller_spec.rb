@@ -31,6 +31,7 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
         expect(response.status).to eq(200)
         expect(response_body.keys.map(&:to_sym)).to include(:daily, :monthly, :all_time, :trophies, :metadata)
       end
+
     end
 
     context "html" do
@@ -52,6 +53,12 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
         Flipper.enable(:drug_stocks, request_facility.facility_group.region)
         get :show, format: :html
         expect(response.body).to include("Enter drug stock")
+      end
+
+      it "renders show_v2 if :new_progress_tab feature flag is enabled" do
+        Flipper.disable(:new_progress_tab)
+        get :show_v2, format: :html
+        expect(response.body).to include("Yearly")
       end
 
       it "renders successfully for follow_ups_v2 with no data" do
