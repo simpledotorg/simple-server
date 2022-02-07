@@ -204,6 +204,18 @@ describe "RateLimiter", type: :controller do
         end
       end
 
+      it "does not rate limit across user ids" do
+        stub_const("SIMPLE_SERVER_ENV", "production")
+
+        (limit * 2).times do |i|
+          post "/api/v4/users/activate", {user: {id: SecureRandom.uuid, password: "1234"}}
+          if i > limit
+            expect(i > limit).to eq(true)
+            expect(last_response.status).to eq(401)
+          end
+        end
+      end
+
       it "does not rate limit in non production environments" do
         stub_const("SIMPLE_SERVER_ENV", "sandbox")
         user = create(:user, password: "1234")
