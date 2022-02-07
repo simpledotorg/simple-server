@@ -90,7 +90,7 @@ RSpec.describe Reports::Repository, type: :model do
           jan_2019.to_period => 2,
           "Feb 2019".to_period => 0,
           "March 2019".to_period => 0,
-          "April 2019".to_period => 1,
+          "April 2019".to_period => 0,
           "May 2019".to_period => 0,
           "June 2019".to_period => 0
         }
