@@ -9,6 +9,7 @@ RSpec.describe MonthlyStateDataService, reporting_spec: true do
       example.run
     end
   end
+
   let(:organization) { FactoryBot.create(:organization) }
   let(:facility_group) { create(:facility_group, organization: organization) }
   let(:facility1) { create(:facility, facility_group: facility_group) }

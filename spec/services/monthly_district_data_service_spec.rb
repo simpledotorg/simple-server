@@ -2,7 +2,12 @@ require "rails_helper"
 
 RSpec.describe MonthlyDistrictDataService, reporting_spec: true do
   around do |example|
-    freeze_time_for_reporting_specs(example)
+    # This is in the style of ReportingHelpers::freeze_time_for_reporting_specs.
+    # Since FacilityAppointmentScheduledDays only keeps the last 6 months of data, the date cannot be a
+    # fixed point in time like the spec helper.
+    Timecop.freeze("#{Date.today.end_of_month} 23:00 IST") do
+      example.run
+    end
   end
 
   let(:organization) { FactoryBot.create(:organization) }
@@ -28,8 +33,15 @@ RSpec.describe MonthlyDistrictDataService, reporting_spec: true do
   end
   let(:ltfu_patient) { create(:patient, :hypertension, recorded_at: 2.years.ago, assigned_facility: facility1, registration_facility: facility1) }
 
+  let(:medications_dispensed_patients) {
+    create(:appointment, facility: facility1, scheduled_date: 10.days.from_now, device_created_at: Date.today, patient: create(:patient, recorded_at: 1.year.ago))
+    create(:appointment, facility: facility2, scheduled_date: 10.days.from_now, device_created_at: Date.today, patient: create(:patient, recorded_at: 1.year.ago))
+    create(:appointment, facility: facility2, scheduled_date: Date.today, device_created_at: 32.days.ago, patient: create(:patient, recorded_at: 1.year.ago))
+    create(:appointment, facility: facility1, scheduled_date: Date.today, device_created_at: 63.days.ago, patient: create(:patient, recorded_at: 1.year.ago))
+  }
+
   def find_in_csv(csv_data, row_index, column_name)
-    headers = csv_data[2]
+    headers = csv_data[3]
     column = headers.index(column_name)
     csv_data[row_index][column]
   end
@@ -47,11 +59,13 @@ RSpec.describe MonthlyDistrictDataService, reporting_spec: true do
       follow_up_patient
       patient_without_hypertension
       ltfu_patient
+      medications_dispensed_patients
+
       RefreshReportingViews.new.refresh_v2
 
       result = service.report
       csv = CSV.parse(result)
-      row_index = 3
+      row_index = 4
 
       expect(find_in_csv(csv, row_index, "#")).to eq("All facilities")
       expect(csv[row_index][1..3].uniq).to eq([nil])
@@ -72,7 +86,10 @@ RSpec.describe MonthlyDistrictDataService, reporting_spec: true do
       expect(find_in_csv(csv, row_index, "Patients with a missed visit")).to eq("0")
       expect(find_in_csv(csv, row_index, "Patients with a visit but no BP taken")).to eq("1")
       expect(find_in_csv(csv, row_index, "Patients under care as of #{period.end.strftime("%e-%b-%Y")}")).to eq("2")
-      expect(csv[row_index][28..30].uniq).to eq([nil])
+      expect(csv[row_index][31]).to eq("1")
+      expect(csv[row_index][34]).to eq("1")
+      expect(csv[row_index][36]).to eq("2")
+      expect(csv[row_index][40..42].uniq).to eq([nil])
     end
 
     it "provides accurate numbers for facility sizes" do
@@ -80,11 +97,13 @@ RSpec.describe MonthlyDistrictDataService, reporting_spec: true do
       follow_up_patient
       patient_without_hypertension
       ltfu_patient
+      medications_dispensed_patients
+
       RefreshReportingViews.new.refresh_v2
 
       result = service.report
       csv = CSV.parse(result)
-      row_index = 5
+      row_index = 6
 
       expect(find_in_csv(csv, row_index, "#")).to eq("Community facilities")
       expect(csv[row_index][1..3].uniq).to eq([nil])
@@ -105,18 +124,23 @@ RSpec.describe MonthlyDistrictDataService, reporting_spec: true do
       expect(find_in_csv(csv, row_index, "Patients with a missed visit")).to eq("0")
       expect(find_in_csv(csv, row_index, "Patients with a visit but no BP taken")).to eq("1")
       expect(find_in_csv(csv, row_index, "Patients under care as of #{period.end.strftime("%e-%b-%Y")}")).to eq("2")
-      expect(csv[row_index][28..30].uniq).to eq([nil])
+      expect(csv[row_index][31]).to eq("1")
+      expect(csv[row_index][34]).to eq("1")
+      expect(csv[row_index][36]).to eq("2")
+      expect(csv[row_index][40..42].uniq).to eq([nil])
     end
 
     it "provides accurate numbers for individual facilities" do
       missed_visit_patient
       patient_without_hypertension
       ltfu_patient
+      medications_dispensed_patients
+
       RefreshReportingViews.new.refresh_v2
 
       result = service.report
       csv = CSV.parse(result)
-      row_index = 7
+      row_index = 8
 
       expect(find_in_csv(csv, row_index, "#")).to eq("1")
       expect(find_in_csv(csv, row_index, "Block")).to eq(facility1.block)
@@ -140,18 +164,20 @@ RSpec.describe MonthlyDistrictDataService, reporting_spec: true do
       expect(find_in_csv(csv, row_index, "Patients with a visit but no BP taken")).to eq("1")
       expect(find_in_csv(csv, row_index, "Patients with a visit but no BP taken")).to eq("1")
       expect(find_in_csv(csv, row_index, "Patients under care as of #{period.end.strftime("%e-%b-%Y")}")).to eq("1")
-      expect(csv[row_index][28..30].uniq).to eq([nil])
+      expect(csv[row_index][31]).to eq("1")
+      expect(csv[row_index][36]).to eq("1")
+      expect(csv[row_index][40..42].uniq).to eq([nil])
     end
 
     it "scopes the report to the provided period" do
-      old_period = Period.month("July 2018")
+      old_period = Period.current
       result = described_class.new(region, old_period).report
       csv = CSV.parse(result)
-      column_headers = csv[2]
+      column_headers = csv[3]
       first_month_index = 11
       last_month_index = 16
-      expect(column_headers[first_month_index]).to eq("Feb-2018")
-      expect(column_headers[last_month_index]).to eq("Jul-2018")
+      expect(column_headers[first_month_index]).to eq(Period.month(5.month.ago).to_s)
+      expect(column_headers[last_month_index]).to eq(Period.current.to_s)
     end
   end
 end
