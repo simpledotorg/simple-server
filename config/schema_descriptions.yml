@@ -51,9 +51,9 @@ reporting_facility_states:
     monthly_follow_ups: "The number of follow-up patient visits at the facility in the reporting month"
     total_appts_scheduled: "The total number of appointments scheduled by healthcare workers at the facility in the reporting month"
     appts_scheduled_0_to_14_days: "The total number of appointments scheduled by healthcare workers at the facility in the reporting month between 0 and 14 days from the visit date"
-    appts_scheduled_15_to_30_days: "The total number of appointments scheduled by healthcare workers at the facility in the reporting month between 15 and 30 days from the visit date"
-    appts_scheduled_31_to_60_days: "The total number of appointments scheduled by healthcare workers at the facility in the reporting month between 31 and 60 days from the visit date"
-    appts_scheduled_more_than_60_days: "The total number of appointments scheduled by healthcare workers at the facility in the reporting month more than 60 days from the visit date"
+    appts_scheduled_15_to_31_days: "The total number of appointments scheduled by healthcare workers at the facility in the reporting month between 15 and 31 days from the visit date"
+    appts_scheduled_32_to_62_days: "The total number of appointments scheduled by healthcare workers at the facility in the reporting month between 32 and 62 days from the visit date"
+    appts_scheduled_more_than_62_days: "The total number of appointments scheduled by healthcare workers at the facility in the reporting month more than 62 days from the visit date"
 reporting_patient_states:
   description: "Monthly summary of a patient's information and health indicators. This table has one row per patient, per month, from the month of the patient's registration."
   columns:

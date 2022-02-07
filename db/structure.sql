@@ -3274,17 +3274,24 @@ COMMENT ON COLUMN public.reporting_facility_states.appts_scheduled_0_to_14_days 
 
 
 --
--- Name: COLUMN reporting_facility_states.appts_scheduled_15_to_30_days; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN reporting_facility_states.appts_scheduled_15_to_31_days; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.reporting_facility_states.appts_scheduled_15_to_30_days IS 'The total number of appointments scheduled by healthcare workers at the facility in the reporting month between 15 and 30 days from the visit date';
+COMMENT ON COLUMN public.reporting_facility_states.appts_scheduled_15_to_31_days IS 'The total number of appointments scheduled by healthcare workers at the facility in the reporting month between 15 and 31 days from the visit date';
 
 
 --
--- Name: COLUMN reporting_facility_states.appts_scheduled_31_to_60_days; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN reporting_facility_states.appts_scheduled_32_to_62_days; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.reporting_facility_states.appts_scheduled_31_to_60_days IS 'The total number of appointments scheduled by healthcare workers at the facility in the reporting month between 31 and 60 days from the visit date';
+COMMENT ON COLUMN public.reporting_facility_states.appts_scheduled_32_to_62_days IS 'The total number of appointments scheduled by healthcare workers at the facility in the reporting month between 32 and 62 days from the visit date';
+
+
+--
+-- Name: COLUMN reporting_facility_states.appts_scheduled_more_than_62_days; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.appts_scheduled_more_than_62_days IS 'The total number of appointments scheduled by healthcare workers at the facility in the reporting month more than 62 days from the visit date';
 
 
 --
