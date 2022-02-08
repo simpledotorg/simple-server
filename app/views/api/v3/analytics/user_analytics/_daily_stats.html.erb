@@ -42,6 +42,8 @@
             </strong>
             <div class="big-number">
               <%= @user_analytics.daily_stats_by_date(:follow_ups, day_date) %>
+              | 
+              <%= @service.daily_follow_ups(day_date) %>
             </div>
             <%= raw t("analytics.patient", count: @user_analytics.daily_stats_by_date(:follow_ups, day_date)) %>
           </div>

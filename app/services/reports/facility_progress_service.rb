@@ -9,6 +9,13 @@ module Reports
       @range = Range.new(@period.advance(months: -5), @period)
     end
 
+    def daily_follow_ups(date)
+      day = date.yday
+      @daily_counts ||= Reports::DailyFollowUp.where(facility: facility).group(:day_of_year).count
+      d @daily_counts
+      @daily_counts[day] || 0
+    end
+
     def total_counts
       @total_counts ||= Reports::FacilityStateGroup.totals(facility)
     end
