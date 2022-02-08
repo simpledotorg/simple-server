@@ -50,7 +50,7 @@ class RefreshReportingViews
     MaterializedPatientSummary
   ].freeze
 
-  # The order for these must remain BPs -> Visits -> States
+  # The order for these _is important_, as many of the later ones depend on previous matviews.
   V2_REPORTING_VIEWS = %w[
     Reports::Month
     Reports::Facility
@@ -62,6 +62,7 @@ class RefreshReportingViews
     Reports::PatientFollowUp
     Reports::PatientState
     Reports::FacilityAppointmentScheduledDays
+    Reports::FacilityStateByGender
     Reports::FacilityState
     Reports::QuarterlyFacilityState
     Reports::FacilityStateGroup

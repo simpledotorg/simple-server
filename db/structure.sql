@@ -4160,7 +4160,7 @@ CREATE UNIQUE INDEX facility_state_groups_month_date_region_id ON public.reporti
 -- Name: facility_states_by_gender_month_date_region_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX facility_states_by_gender_month_date_region_id ON public.reporting_facility_states USING btree (month_date, facility_region_id);
+CREATE UNIQUE INDEX facility_states_by_gender_month_date_region_id ON public.reporting_facility_states_by_genders USING btree (month_date, facility_region_id);
 
 
 --
