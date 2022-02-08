@@ -1,5 +1,5 @@
 require "rails_helper"
- require_relative "../../../lib/data_scripts/nhf_study_export_script"
+require_relative "../../../lib/data_scripts/nhf_study_export_script"
 
 describe NhfStudyExportScript do
   it "runs" do

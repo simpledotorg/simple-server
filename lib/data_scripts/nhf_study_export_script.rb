@@ -17,8 +17,6 @@ class NhfStudyExportScript < DataScript
 
     csv = PatientsWithHistoryExporter.csv(patients, display_blood_pressures: 12)
 
-    File.open(File.join(Rails.root, "nhf_study_line_list.csv"), "w") do |f|
-      f.write(csv)
-    end
+    File.write(File.join(Rails.root, "nhf_study_line_list.csv"), csv)
   end
 end
