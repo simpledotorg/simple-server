@@ -3404,6 +3404,55 @@ COMMENT ON COLUMN public.reporting_facility_states.appts_scheduled_more_than_62_
 
 
 --
+-- Name: reporting_facility_states_by_genders; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+--
+
+CREATE MATERIALIZED VIEW public.reporting_facility_states_by_genders AS
+ WITH adjusted_outcomes AS (
+         SELECT reporting_patient_states.assigned_facility_region_id AS region_id,
+            reporting_patient_states.month_date,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND ((reporting_patient_states.gender)::text = 'female'::text) AND (reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'controlled'::text))) AS female_controlled_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND ((reporting_patient_states.gender)::text = 'male'::text) AND (reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'controlled'::text))) AS male_controlled_under_care
+           FROM public.reporting_patient_states
+          WHERE ((reporting_patient_states.hypertension = 'yes'::text) AND (reporting_patient_states.months_since_registration >= (3)::double precision))
+          GROUP BY reporting_patient_states.assigned_facility_region_id, reporting_patient_states.month_date
+        )
+ SELECT cal.month_date,
+    cal.month,
+    cal.quarter,
+    cal.year,
+    cal.month_string,
+    cal.quarter_string,
+    rf.facility_id,
+    rf.facility_name,
+    rf.facility_type,
+    rf.facility_size,
+    rf.facility_region_id,
+    rf.facility_region_name,
+    rf.facility_region_slug,
+    rf.block_region_id,
+    rf.block_name,
+    rf.block_slug,
+    rf.district_id,
+    rf.district_region_id,
+    rf.district_name,
+    rf.district_slug,
+    rf.state_region_id,
+    rf.state_name,
+    rf.state_slug,
+    rf.organization_id,
+    rf.organization_region_id,
+    rf.organization_name,
+    rf.organization_slug,
+    adjusted_outcomes.female_controlled_under_care,
+    adjusted_outcomes.male_controlled_under_care
+   FROM ((public.reporting_facilities rf
+     JOIN public.reporting_months cal ON (true))
+     LEFT JOIN adjusted_outcomes ON (((adjusted_outcomes.month_date = cal.month_date) AND (adjusted_outcomes.region_id = rf.facility_region_id))))
+  WITH NO DATA;
+
+
+--
 -- Name: reporting_quarterly_facility_states; Type: MATERIALIZED VIEW; Schema: public; Owner: -
 --
 
@@ -4105,6 +4154,13 @@ CREATE UNIQUE INDEX daily_follow_ups_day_patient_facility ON public.reporting_da
 --
 
 CREATE UNIQUE INDEX facility_state_groups_month_date_region_id ON public.reporting_facility_state_groups USING btree (month_date, facility_region_id);
+
+
+--
+-- Name: facility_states_by_gender_month_date_region_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX facility_states_by_gender_month_date_region_id ON public.reporting_facility_states USING btree (month_date, facility_region_id);
 
 
 --
@@ -5551,6 +5607,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220124215220'),
 ('20220202091240'),
 ('20220203073617'),
-('20220204224734');
+('20220204224734'),
+('20220208230221');
 
 
