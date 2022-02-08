@@ -53,7 +53,8 @@ unless SimpleServer.env.sandbox? || SimpleServer.env.qa? || SimpleServer.env.and
 
     throttle("throttle_user_activate", RateLimit.user_api_options) do |req|
       if req.post? && req.path.start_with?("/api/v4/users/activate") && SimpleServer.env.production?
-        req.ip
+        request = ActionDispatch::Request.new(req.env)
+        request.params["user"]["id"]
       end
     end
 
