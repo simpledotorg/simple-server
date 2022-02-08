@@ -75,7 +75,7 @@ class MonthlyStateDataService
   end
 
   def medications_dispensation_month_headers
-    @medication_dispensation_months.map { |month| month.to_s }
+    @medication_dispensation_months.map(&:to_s)
   end
 
   def drug_headers
@@ -97,7 +97,7 @@ class MonthlyStateDataService
       "Treatment outcomes of patients under care",
       Array.new(outcome_headers.size - 1, nil),
       "Days of patient medications",
-      Array.new((medications_dispensation_headers.size * 3) - 1, nil),
+      Array.new((medications_dispensation_headers.size * @medication_dispensation_months.size) - 1, nil),
       "Drug availability",
       Array.new(drug_headers.size - 1, nil)
     ].flatten
@@ -106,11 +106,13 @@ class MonthlyStateDataService
   def sub_section_row
     [
       Array.new(region_headers.size + summary_headers.size + month_headers.size * 2 + outcome_headers.size, nil),
-      medications_dispensation_month_headers.first,
-      Array.new(medications_dispensation_headers.size - 1, nil),
-      medications_dispensation_month_headers.second,
-      Array.new(medications_dispensation_headers.size - 1, nil),
-      medications_dispensation_month_headers.last
+      medications_dispensation_month_headers.map do |month|
+        if month == medications_dispensation_headers.last
+          month
+        else
+          [month, Array.new(medications_dispensation_headers.size - 1, nil)]
+        end
+      end
     ].flatten
   end
 
@@ -121,9 +123,7 @@ class MonthlyStateDataService
       month_headers,
       month_headers,
       outcome_headers,
-      medications_dispensation_headers,
-      medications_dispensation_headers,
-      medications_dispensation_headers,
+      *(medications_dispensation_headers * @medication_dispensation_months.size),
       drug_headers
     ].flatten
   end
@@ -171,11 +171,11 @@ class MonthlyStateDataService
       hsh["follow_ups_#{month.value}".to_sym] = monthly_follow_ups[month] || 0
     }
 
-    medications_dispensation_by_month = period.downto(2).reverse.each_with_object({}) { |month, hsh|
-      hsh["Patients_with_0_to_14_days_of_medications_#{month}".to_sym] = repo.appts_scheduled_0_to_14_days[subregion.slug][month]
-      hsh["Patients_with_15_to_31_days_of_medications_#{month}".to_sym] = repo.appts_scheduled_15_to_31_days[subregion.slug][month]
-      hsh["Patients_with_32_to_62_days_of_medications_#{month}".to_sym] = repo.appts_scheduled_32_to_62_days[subregion.slug][month]
-      hsh["Patients_with_62+_days_of_medications_#{month}".to_sym] = repo.appts_scheduled_more_than_62_days[subregion.slug][month]
+    medications_dispensation_by_month = @medication_dispensation_months.each_with_object({}) { |month, hsh|
+      hsh["patients_with_0_to_14_days_of_medications_#{month}".to_sym] = repo.appts_scheduled_0_to_14_days[subregion.slug][month]
+      hsh["patients_with_15_to_31_days_of_medications_#{month}".to_sym] = repo.appts_scheduled_15_to_31_days[subregion.slug][month]
+      hsh["patients_with_32_to_62_days_of_medications_#{month}".to_sym] = repo.appts_scheduled_32_to_62_days[subregion.slug][month]
+      hsh["patients_with_62+_days_of_medications_#{month}".to_sym] = repo.appts_scheduled_more_than_62_days[subregion.slug][month]
     }
 
     {
