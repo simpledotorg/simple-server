@@ -1,12 +1,12 @@
 version: v1.0
-name: Test simple-server
+name: Test simple-server on RAILS_NEXT
 agent:
   machine:
     type: e1-standard-8
     os_image: ubuntu1804
 auto_cancel:
   running:
-    when: "true"
+    when: "false"
 blocks:
   - name: Cache dependencies
     task:
