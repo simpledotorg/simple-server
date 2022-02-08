@@ -503,6 +503,8 @@ GEM
       rspec-core (~> 3.0, >= 3.0.0)
       sidekiq (>= 2.4.0)
     rspec-support (3.9.4)
+    rspec_junit_formatter (0.5.1)
+      rspec-core (>= 2, < 4, != 2.12.0)
     rswag-api (2.4.0)
       railties (>= 3.1, < 7.0)
     rswag-specs (2.4.0)
@@ -747,6 +749,7 @@ DEPENDENCIES
   roo (~> 2.8.0)
   rspec-rails (~> 4)
   rspec-sidekiq
+  rspec_junit_formatter
   rswag-api
   rswag-specs
   rswag-ui
