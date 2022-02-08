@@ -180,6 +180,17 @@ describe "RateLimiter", type: :controller do
         allow(RequestOtpSmsJob).to receive_message_chain("set.perform_later")
       end
 
+      it "returns 400 bad request when params are malformed" do
+        stub_const("SIMPLE_SERVER_ENV", "production")
+        limit.times do |i|
+          post "/api/v4/users/activate", {}
+          if i > limit
+            expect(i > limit).to eq(true)
+            expect(last_response.status).to eq(400)
+          end
+        end
+      end
+
       it "does not change the request status when the number of requests is lower than the limit" do
         stub_const("SIMPLE_SERVER_ENV", "production")
         user = create(:user, password: "1234")
