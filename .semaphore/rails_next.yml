@@ -13,6 +13,8 @@ blocks:
       env_vars:
         - name: DD_PROFILING_NO_EXTENSION
           value: "true"
+        - name: RAILS_NEXT
+          value: "1"
       jobs:
         - name: Cache everything
           commands:
@@ -34,6 +36,8 @@ blocks:
           value: "test"
         - name: TB_RSPEC_OPTIONS
           value: "--profile --format RspecJunitFormatter --out junit.xml"
+        - name: RAILS_NEXT
+          value: "1"
       secrets:
         - name: sentry-release-auth-token
         - name: semaphore-deploy-key
@@ -63,9 +67,3 @@ after_pipeline:
       - name: Publish Results
         commands:
           - test-results gen-pipeline-report
-
-promotions:
-  - name: Deploy
-    pipeline_file: deploy.yml
-    auto_promote:
-      when: (branch = 'master' AND result = 'passed') OR (tag =~ '^release-.*' AND result = 'passed')
