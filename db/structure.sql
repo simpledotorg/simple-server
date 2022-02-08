@@ -3411,8 +3411,10 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states_by_genders AS
  WITH adjusted_outcomes AS (
          SELECT reporting_patient_states.assigned_facility_region_id AS region_id,
             reporting_patient_states.month_date,
-            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND ((reporting_patient_states.gender)::text = 'female'::text) AND (reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'controlled'::text))) AS female_controlled_under_care,
-            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND ((reporting_patient_states.gender)::text = 'male'::text) AND (reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'controlled'::text))) AS male_controlled_under_care
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND ((reporting_patient_states.gender)::text = 'female'::text) AND (reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'controlled'::text))) AS monthly_controlled_htn_female,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND ((reporting_patient_states.gender)::text = 'male'::text) AND (reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'controlled'::text))) AS monthly_controlled_htn_male,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND ((reporting_patient_states.gender)::text = 'female'::text) AND (reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'uncontrolled'::text))) AS monthly_uncontrolled_htn_female,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND ((reporting_patient_states.gender)::text = 'male'::text) AND (reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'uncontrolled'::text))) AS monthly_uncontrolled_htn_male
            FROM public.reporting_patient_states
           WHERE ((reporting_patient_states.hypertension = 'yes'::text) AND (reporting_patient_states.months_since_registration >= (3)::double precision))
           GROUP BY reporting_patient_states.assigned_facility_region_id, reporting_patient_states.month_date
@@ -3444,8 +3446,10 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states_by_genders AS
     rf.organization_region_id,
     rf.organization_name,
     rf.organization_slug,
-    adjusted_outcomes.female_controlled_under_care,
-    adjusted_outcomes.male_controlled_under_care
+    adjusted_outcomes.monthly_controlled_htn_female,
+    adjusted_outcomes.monthly_controlled_htn_male,
+    adjusted_outcomes.monthly_uncontrolled_htn_female,
+    adjusted_outcomes.monthly_uncontrolled_htn_male
    FROM ((public.reporting_facilities rf
      JOIN public.reporting_months cal ON (true))
      LEFT JOIN adjusted_outcomes ON (((adjusted_outcomes.month_date = cal.month_date) AND (adjusted_outcomes.region_id = rf.facility_region_id))))
@@ -5608,6 +5612,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220202091240'),
 ('20220203073617'),
 ('20220204224734'),
-('20220208230221');
+('20220208230221'),
+('20220208234530');
 
 
