@@ -7,6 +7,13 @@ unless SimpleServer.env.sandbox? || SimpleServer.env.qa? || SimpleServer.env.and
       {limit: limit_proc, period: period_proc}
     end
 
+    def self.user_api_options
+      limit_proc = proc { |_req| 5 }
+      period_proc = proc { |_req| 30.minutes }
+
+      {limit: limit_proc, period: period_proc}
+    end
+
     def self.patient_lookup_api_options
       limit_proc = proc { |_req| 5 }
       period_proc = proc { |_req| 5.second }
@@ -44,9 +51,9 @@ unless SimpleServer.env.sandbox? || SimpleServer.env.qa? || SimpleServer.env.and
       end
     end
 
-    throttle("throttle_user_activate", RateLimit.auth_api_options) do |req|
+    throttle("throttle_user_activate", RateLimit.user_api_options) do |req|
       if req.post? && req.path.start_with?("/api/v4/users/activate") && SimpleServer.env.production?
-        req.params["user"]["id"]
+        req.ip
       end
     end
 

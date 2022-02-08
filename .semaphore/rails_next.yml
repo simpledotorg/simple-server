@@ -1,0 +1,68 @@
+version: v1.0
+name: Test simple-server on RAILS_NEXT
+agent:
+  machine:
+    type: e1-standard-8
+    os_image: ubuntu1804
+auto_cancel:
+  running:
+    when: "false"
+blocks:
+  - name: Cache dependencies
+    task:
+      env_vars:
+        - name: DD_PROFILING_NO_EXTENSION
+          value: "true"
+        - name: RAILS_NEXT
+          value: "1"
+      jobs:
+        - name: Cache everything
+          commands:
+            - sem-version ruby 2.7.4
+            - checkout
+            # - cache clear
+            - cache restore
+            - bundle config set deployment 'true'
+            - bundle config set path 'vendor/bundle'
+            - bundle install
+            - yarn install
+            - cache store
+  - name: Tests
+    task:
+      env_vars:
+        - name: DATABASE_URL
+          value: "postgresql://postgres:@0.0.0.0:5432/myapp_test"
+        - name: RAILS_ENV
+          value: "test"
+        - name: TB_RSPEC_OPTIONS
+          value: "--profile --format RspecJunitFormatter --out junit.xml"
+        - name: RAILS_NEXT
+          value: "1"
+      secrets:
+        - name: sentry-release-auth-token
+      jobs:
+        - name: StandardRB
+          commands:
+            - checkout
+            - cache restore
+            - bundle config set deployment 'true'
+            - bundle config set path 'vendor/bundle'
+            - bundle install
+            - "bundle exec standardrb"
+        - name: RSpec
+          parallelism: 8
+          commands:
+            - checkout
+            - script/semaphore_setup
+            - rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT
+      epilogue:
+        always:
+          commands:
+            - "[[ -f junit.xml ]] && test-results publish junit.xml"
+
+after_pipeline:
+  task:
+    jobs:
+      - name: Publish Results
+        commands:
+          - test-results gen-pipeline-report
