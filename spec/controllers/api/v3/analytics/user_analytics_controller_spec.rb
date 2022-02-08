@@ -56,8 +56,8 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
       end
 
       it "renders show_v2 if :new_progress_tab feature flag is enabled" do
-        Flipper.disable(:new_progress_tab)
-        get :show_v2, format: :html
+        Flipper.enable(:new_progress_tab)
+        get :show, format: :html
         expect(response.body).to include("Yearly")
       end
 
