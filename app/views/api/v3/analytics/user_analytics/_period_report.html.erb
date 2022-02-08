@@ -1,4 +1,5 @@
 <!-- Will delete when data is available -->
+<% periods = ["8-Feb-2022", "7-Feb-2022", "6-Feb-2022", "5-Feb-2022", "4-Feb-2022", "3-Feb-2022", "2-Feb-2022"] %>
 <% registered_patients_data = 
   {
     "name" => "Registered patients",
@@ -45,8 +46,12 @@
       Daily
     </h1>
   </div>
-  <div>
-    <!-- Date pill carousel -->
+  <div class="ws-nowrap ox-scroll pl-16px d-none-scrollbar">
+    <% periods.each do |pill| %>
+      <%= render partial: "api/v3/analytics/user_analytics/pill",
+                locals: { title: pill,
+                          is_active: pill == periods.first ? true : false } %>
+    <% end %>
   </div>
 </div>
 <div class="mb-8px p-16px bgc-white br-4px bs-card">
