@@ -1,50 +1,18 @@
-<!-- Will delete when data is available -->
-<% periods = ["8-Feb-2022", "7-Feb-2022", "6-Feb-2022", "5-Feb-2022", "4-Feb-2022", "3-Feb-2022", "2-Feb-2022"] %>
-<% registered_patients_data = 
-  {
-    "name" => "Registered patients",
-    "total" => 7,
-    "breakdown" => [
-      { "title" => "Hypertension only", "value" => 2, "row_type" => :header },
-      { "title" => "Male", "value" => 1, "row_type" => :secondary },
-      { "title" => "Female", "value" => 1, "row_type" => :secondary },
-      { "title" => "Transgender", "value" => 0, "row_type" => :secondary },
-      { "title" => "Diabetes only", "value" => 1, "row_type" => :header },
-      { "title" => "Male", "value" => 0, "row_type" => :secondary },
-      { "title" => "Female", "value" => 1, "row_type" => :secondary },
-      { "title" => "Transgender", "value" => 0, "row_type" => :secondary },
-      { "title" => "Hypertension and diabetes", "value" => 4, "row_type" => :header },
-      { "title" => "Male", "value" => 3, "row_type" => :secondary },
-      { "title" => "Female", "value" => 0, "row_type" => :secondary },
-      { "title" => "Transgender", "value" => 1, "row_type" => :secondary },
-    ]
-  }
-%>
-<% follow_up_patients_data = 
-  {
-    "name" => "Follow-up patients",
-    "total" => 15,
-    "breakdown" => [
-      { "title" => "Hypertension only", "value" => 3, "row_type" => :header },
-      { "title" => "Male", "value" => 1, "row_type" => :secondary },
-      { "title" => "Female", "value" => 2, "row_type" => :secondary },
-      { "title" => "Transgender", "value" => 0, "row_type" => :secondary },
-      { "title" => "Diabetes only", "value" => 2, "row_type" => :header },
-      { "title" => "Male", "value" => 1, "row_type" => :secondary },
-      { "title" => "Female", "value" => 1, "row_type" => :secondary },
-      { "title" => "Transgender", "value" => 0, "row_type" => :secondary },
-      { "title" => "Hypertension and diabetes", "value" => 10, "row_type" => :header },
-      { "title" => "Male", "value" => 4, "row_type" => :secondary },
-      { "title" => "Female", "value" => 4, "row_type" => :secondary },
-      { "title" => "Transgender", "value" => 2, "row_type" => :secondary },
-    ]
-  }
-%>
 <div class="mb-8px pt-16px pb-16px bgc-white br-4px bs-card">
-  <div class="pr-16px pl-16px">
+  <a href="" title="" class="d-block pl-16px mb-24px">
+    <div class="d-inline-block">
+      <%= inline_file("chevron-left.svg") %>
+    </div>
+  </a>
+  <div class="mb-12px pr-16px pl-16px">
     <h1 class="m-0px mb-8px fw-bold fs-24px">
-      Daily
+      <%= title %>
     </h1>
+    <% if subtitle %>
+      <p class="m-0px p-0px ts-left fw-normal fs-16px c-grey-dark">
+        <%= subtitle %>
+      </p>
+    <% end %>
   </div>
   <div class="ws-nowrap ox-scroll pl-16px d-none-scrollbar">
     <% periods.each do |pill| %>
@@ -57,41 +25,45 @@
 <div class="mb-8px p-16px bgc-white br-4px bs-card">
   <div class="d-flex ai-center jc-space-between mb-8px">
     <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
-      <%= registered_patients_data["name"] %>
+      <%= registered_patients["name"] %>
     </h2>
     <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
-      <%=registered_patients_data["total"]  %>
+      <%=registered_patients["total"]  %>
     </p>
   </div>
   <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
     Patients registered at <%= current_facility.name %>
   </p>
-  <% registered_patients_data["breakdown"].each_with_index do |row, index| %>
+  <% registered_patients["breakdown"].each_with_index do |row, index| %>
     <%= render partial: "api/v3/analytics/user_analytics/data_table_row",
                locals: { title: row["title"],
-                        value: row["value"],
-                        row_type: row["row_type"],
-                        include_bottom_border: index == registered_patients_data["breakdown"].length - 1 ? false : true } %>
+                         value: row["value"],
+                         row_type: row["row_type"],
+                         include_bottom_border: index == registered_patients["breakdown"].length - 1 ? false : true
+                       }
+    %>
   <% end %>
 </div>
 <div class="mb-8px p-16px bgc-white br-4px bs-card">
   <div class="d-flex ai-center jc-space-between mb-8px">
     <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
-      <%= follow_up_patients_data["name"] %>
+      <%= follow_up_patients["name"] %>
     </h2>
     <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
-      <%= follow_up_patients_data["total"]  %>
+      <%= follow_up_patients["total"]  %>
     </p>
   </div>
   <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
     Patients that had a BP taken, a blood sugar taken, an appointment scheduled, or their medications updated at <%= current_facility.name %>.
   </p>
-  <% follow_up_patients_data["breakdown"].each_with_index do |row, index| %>
+  <% follow_up_patients["breakdown"].each_with_index do |row, index| %>
     <%= render partial: "api/v3/analytics/user_analytics/data_table_row",
                locals: { title: row["title"],
-                        value: row["value"],
-                        row_type: row["row_type"],
-                        include_bottom_border: index == registered_patients_data["breakdown"].length - 1 ? false : true } %>
+                         value: row["value"],
+                         row_type: row["row_type"],
+                         include_bottom_border: index == registered_patients["breakdown"].length - 1 ? false : true
+                       }
+    %>
   <% end %>
 </div>
 <% if CountryConfig.current_country?("India") %>

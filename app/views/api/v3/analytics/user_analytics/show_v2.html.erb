@@ -16,7 +16,15 @@
     <%= inline_stylesheet("user_analytics.css") %>
   </head>
   <body>
-    <%= render partial: "api/v3/analytics/user_analytics/period_report" %>
+    <%= render partial: "api/v3/analytics/user_analytics/period_report",
+               locals: {
+                 title: "Daily",
+                 subtitle: false,
+                 periods: @daily_periods,
+                 registered_patients: @daily_registered_patients,
+                 follow_up_patients: @daily_follow_up_patients
+               }
+    %>
     <div style="display: none;">
       <div class="mb-16px p-16px bgc-white bs-card">
         <h1 class="m-0px mb-4px fw-bold fs-24px c-black">

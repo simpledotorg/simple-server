@@ -13,6 +13,46 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
       @service = Reports::FacilityProgressService.new(current_facility, @period)
     end
 
+    if Flipper.enabled?(:new_progress_tab)
+      @daily_periods = ["8-Feb-2022", "7-Feb-2022", "6-Feb-2022", "5-Feb-2022", "4-Feb-2022", "3-Feb-2022", "2-Feb-2022"]
+      @daily_registered_patients = {
+        "name" => "Registered patients",
+        "total" => 7,
+        "breakdown" => [
+          { "title" => "Hypertension only", "value" => 2, "row_type" => :header },
+          { "title" => "Male", "value" => 1, "row_type" => :secondary },
+          { "title" => "Female", "value" => 1, "row_type" => :secondary },
+          { "title" => "Transgender", "value" => 0, "row_type" => :secondary },
+          { "title" => "Diabetes only", "value" => 1, "row_type" => :header },
+          { "title" => "Male", "value" => 0, "row_type" => :secondary },
+          { "title" => "Female", "value" => 1, "row_type" => :secondary },
+          { "title" => "Transgender", "value" => 0, "row_type" => :secondary },
+          { "title" => "Hypertension and diabetes", "value" => 4, "row_type" => :header },
+          { "title" => "Male", "value" => 3, "row_type" => :secondary },
+          { "title" => "Female", "value" => 0, "row_type" => :secondary },
+          { "title" => "Transgender", "value" => 1, "row_type" => :secondary },
+        ]
+      }
+      @daily_follow_up_patients = {
+        "name" => "Follow-up patients",
+        "total" => 15,
+        "breakdown" => [
+          { "title" => "Hypertension only", "value" => 3, "row_type" => :header },
+          { "title" => "Male", "value" => 1, "row_type" => :secondary },
+          { "title" => "Female", "value" => 2, "row_type" => :secondary },
+          { "title" => "Transgender", "value" => 0, "row_type" => :secondary },
+          { "title" => "Diabetes only", "value" => 2, "row_type" => :header },
+          { "title" => "Male", "value" => 1, "row_type" => :secondary },
+          { "title" => "Female", "value" => 1, "row_type" => :secondary },
+          { "title" => "Transgender", "value" => 0, "row_type" => :secondary },
+          { "title" => "Hypertension and diabetes", "value" => 10, "row_type" => :header },
+          { "title" => "Male", "value" => 4, "row_type" => :secondary },
+          { "title" => "Female", "value" => 4, "row_type" => :secondary },
+          { "title" => "Transgender", "value" => 2, "row_type" => :secondary },
+        ]
+      }
+    end
+
     respond_to do |format|
       if Flipper.enabled?(:new_progress_tab)
         format.html { render :show_v2 }
