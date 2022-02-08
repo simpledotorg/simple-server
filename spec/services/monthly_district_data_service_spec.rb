@@ -40,6 +40,23 @@ RSpec.describe MonthlyDistrictDataService, reporting_spec: true do
     create(:appointment, facility: facility1, scheduled_date: Date.today, device_created_at: 63.days.ago, patient: create(:patient, recorded_at: 1.year.ago))
   }
 
+  let(:months) {
+    period.downto(5).reverse.map(&:to_s)
+  }
+
+  let(:all_headers) {
+    [
+      "Monthly facility data for #{region.name} #{period.to_date.strftime("%B %Y")}",
+      nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, "New Registrations", nil, nil, nil, nil, nil, "Follow-up patients", nil, nil, nil, nil, nil, "Treatment outcomes of patients under care", nil, nil, nil, nil, "Days of patient medications", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, "Drug availability", nil, nil,
+      nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, months[3].to_s, nil, nil, nil, months[4].to_s, nil, nil, nil, months[5].to_s, nil, nil, nil,
+      "#", "Block", "Facility", "Facility type", "Facility size", "Estimated hypertensive population", "Total registrations", "Total assigned patients", "Lost to follow-up patients", "Dead patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})", "Patients under care as of #{period.end.strftime("%e-%b-%Y")}", *(months * 2), "Patients under care as of  #{period.adjusted_period.end.strftime("%e-%b-%Y")}", "Patients with BP controlled", "Patients with BP not controlled", "Patients with a missed visit", *(["Patients with a visit but no BP taken",
+        "Patients with 0 to 14 days of medications",
+        "Patients with 15 to 31 days of medications",
+        "Patients with 32 to 62 days of medications",
+        "Patients with 62+ days of medications"] * 3), "Amlodipine", "ARBs/ACE Inhibitors", "Diuretic"
+    ]
+  }
+
   def find_in_csv(csv_data, row_index, column_name)
     headers = csv_data[3]
     column = headers.index(column_name)
@@ -52,6 +69,13 @@ RSpec.describe MonthlyDistrictDataService, reporting_spec: true do
       expect {
         CSV.parse(result)
       }.not_to raise_error
+    end
+
+    it "includes the section name, sub-section name and headers" do
+      result = service.report
+      _csv = CSV.parse(result)
+      # TODO: complete this
+      # expect(csv [] ).to eq(all_headers)
     end
 
     it "provides accurate numbers for the district" do
