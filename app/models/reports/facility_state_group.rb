@@ -1,6 +1,6 @@
 module Reports
   class FacilityStateGroup < Reports::View
-    self.table_name = "reporting_facility_state_groups"
+    self.table_name = "reporting_facility_state_dimensions"
 
     belongs_to :facility
 

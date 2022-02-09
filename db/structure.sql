@@ -2787,10 +2787,10 @@ COMMENT ON COLUMN public.reporting_patient_states.titrated IS 'True, if the pati
 
 
 --
--- Name: reporting_facility_state_groups; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+-- Name: reporting_facility_state_dimensions; Type: MATERIALIZED VIEW; Schema: public; Owner: -
 --
 
-CREATE MATERIALIZED VIEW public.reporting_facility_state_groups AS
+CREATE MATERIALIZED VIEW public.reporting_facility_state_dimensions AS
  WITH monthly_registration_patient_states AS (
          SELECT reporting_patient_states.registration_facility_id AS facility_id,
             reporting_patient_states.month_date,
@@ -4101,17 +4101,17 @@ CREATE UNIQUE INDEX daily_follow_ups_day_patient_facility ON public.reporting_da
 
 
 --
--- Name: facility_state_groups_month_date_region_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX facility_state_groups_month_date_region_id ON public.reporting_facility_state_groups USING btree (month_date, facility_region_id);
-
-
---
 -- Name: facility_states_month_date_region_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX facility_states_month_date_region_id ON public.reporting_facility_states USING btree (month_date, facility_region_id);
+
+
+--
+-- Name: fs_dimensions_month_date_facility_region_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX fs_dimensions_month_date_facility_region_id ON public.reporting_facility_state_dimensions USING btree (month_date, facility_region_id);
 
 
 --
@@ -5551,6 +5551,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220124215220'),
 ('20220202091240'),
 ('20220203073617'),
-('20220204224734');
+('20220204224734'),
+('20220209233034');
 
 

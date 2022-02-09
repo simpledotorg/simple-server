@@ -145,7 +145,7 @@ module Reports
     end
 
     # Returns facility progress dimensional data (for progress tab) in the form of
-    #   region => { period_1 => monthly_facility_progress, period_2 => monthly_facility_progress }
+    #   region => { period_1 => monthly_facility_progress_record, period_2 => monthly_facility_progress_1 }
     # Note that this does differ from the more standard return values returned from the Repository because
     # this data is specifically for the Progress Tab, where all the dimensions are needed at once
     def facility_progress
