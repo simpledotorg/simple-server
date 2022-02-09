@@ -15,7 +15,7 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
     expect(dimensions.count { |d| d.diagnosis == :all }).to eq(1)
   end
 
-  context "daily registratiosn" do
+  context "daily registrations" do
     it "returns counts for HTN or DM patients if diabetes is enabled" do
       facility = create(:facility, enable_diabetes_management: true)
       _htn_patient1 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 3.days.ago)

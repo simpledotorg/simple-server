@@ -24,7 +24,12 @@ module Reports
     end
 
     def monthly_counts
-      @monthly_counts ||= Reports::FacilityStateGroup.where(facility_region_id: facility.region.id, month_date: @range).to_a
+      repository.facility_progress[facility.region.slug]
+      # @monthly_counts ||= Reports::FacilityStateGroup.where(facility_region_id: facility.region.id, month_date: @range).to_a
+    end
+
+    def repository
+      @repository ||= Reports::Repository.new(facility, periods: @range)
     end
 
     # Returns all possible combinations of FacilityProgressDimensions for displaying
