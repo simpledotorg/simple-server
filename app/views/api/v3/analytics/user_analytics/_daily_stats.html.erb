@@ -41,9 +41,11 @@
               <%= raw t("analytics.follow_up") %>
             </strong>
             <div class="big-number">
-              <%= @user_analytics.daily_stats_by_date(:follow_ups, day_date) %>
-              | 
-              <%= @service.daily_follow_ups(day_date) %>
+              <% if current_user.feature_enabled?(:follow_ups_v2_progress_tab) %>
+                <%= @service.daily_follow_ups(day_date) %>
+              <% else %>
+                <%= @user_analytics.daily_stats_by_date(:follow_ups, day_date) %>
+              <% end %>
             </div>
             <%= raw t("analytics.patient", count: @user_analytics.daily_stats_by_date(:follow_ups, day_date)) %>
           </div>
