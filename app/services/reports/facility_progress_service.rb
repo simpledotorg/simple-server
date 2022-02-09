@@ -51,7 +51,7 @@ module Reports
 
     memoize def daily_follow_ups_grouped_by_day
       scope = Reports::DailyFollowUp.with_hypertension
-      scope = scope.or(Reports::DailyFollowUp.with_diabetes) if facility.enable_diabetes_management
+      scope = scope.or(Reports::DailyFollowUp.with_diabetes) if diabetes_enabled
       scope.where(facility: facility).group(:day_of_year).count
     end
 
