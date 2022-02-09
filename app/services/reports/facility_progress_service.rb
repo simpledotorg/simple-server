@@ -1,5 +1,6 @@
 module Reports
   class FacilityProgressService
+    include Memery
     attr_reader :facility
     attr_reader :range
 
@@ -10,10 +11,7 @@ module Reports
     end
 
     def daily_follow_ups(date)
-      day = date.yday
-      @daily_counts ||= Reports::DailyFollowUp.where(facility: facility).group(:day_of_year).count
-      d @daily_counts
-      @daily_counts[day] || 0
+      daily_counts_grouped_by_day[date.yday] || 0
     end
 
     def total_counts
@@ -38,6 +36,11 @@ module Reports
     end
 
     private
+
+    memoize def daily_counts_grouped_by_day
+      scope = Reports::DailyFollowUp.with_hypertension.or(Reports::DailyFollowUp.with_diabetes)
+      scope.where(facility: facility).group(:day_of_year).count
+    end
 
     def create_dimension(*args)
       Reports::FacilityProgressDimension.new(*args)
