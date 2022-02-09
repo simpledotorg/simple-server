@@ -27,7 +27,6 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
       create(:blood_pressure, recorded_at: 2.days.ago, patient: patient3, facility: facility, user: user)
       create(:blood_sugar, recorded_at: 2.days.ago, patient: patient4, facility: facility, user: user)
       create(:blood_pressure, recorded_at: 2.minutes.ago, patient: patient2, facility: facility, user: user)
-      service = described_class.new(facility, Period.current)
 
       refresh_views
       service = described_class.new(facility, Period.current)
