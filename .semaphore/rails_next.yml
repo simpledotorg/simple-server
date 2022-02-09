@@ -1,18 +1,20 @@
 version: v1.0
-name: Test simple-server
+name: Test simple-server on RAILS_NEXT
 agent:
   machine:
     type: e1-standard-8
     os_image: ubuntu1804
 auto_cancel:
   running:
-    when: "true"
+    when: "false"
 blocks:
   - name: Cache dependencies
     task:
       env_vars:
         - name: DD_PROFILING_NO_EXTENSION
           value: "true"
+        - name: RAILS_NEXT
+          value: "1"
       jobs:
         - name: Cache everything
           commands:
@@ -34,9 +36,10 @@ blocks:
           value: "test"
         - name: TB_RSPEC_OPTIONS
           value: "--profile --format RspecJunitFormatter --out junit.xml"
+        - name: RAILS_NEXT
+          value: "1"
       secrets:
         - name: sentry-release-auth-token
-        - name: semaphore-deploy-key
       jobs:
         - name: StandardRB
           commands:
@@ -63,9 +66,3 @@ after_pipeline:
       - name: Publish Results
         commands:
           - test-results gen-pipeline-report
-
-promotions:
-  - name: Deploy
-    pipeline_file: deploy.yml
-    auto_promote:
-      when: (branch = 'master' AND result = 'passed') OR (tag =~ '^release-.*' AND result = 'passed')

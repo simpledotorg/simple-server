@@ -1,12 +1,13 @@
 $accent-color: #FF3355; /* PINK */
 
-$red-dark: #B81631;
-$red: #FF3355;
 $red-light: #FFD6DD;
-$yellow-darkest: #886B00;
-$yellow-dark: #E0B000;
-$yellow: #FFC800;
+$red: #FF3355;
+$red-dark: #B81631;
+
 $yellow-light: #FFECA8;
+$yellow: #FFC800;
+$yellow-dark: #E0B000;
+$yellow-darkest: #886B00;
 
 $offwhite: #f8f9fa;
 $white: #ffffff;
@@ -19,23 +20,35 @@ $grey: #ADB2B8;
 $grey-dark: #6C737A;
 $grey-darkest: #2F363D;
 
+$baby-blue-light: #e1eef5;
+$baby-blue: #61afff;
+
 $blue-light: #E9F3FF;
 $blue-mid: #9dcbf9;
 $blue: #0075EB;
 $blue-dark: #0c3966;
+
+$navy-light: #dbe2e8;
+$navy: #0c3966;
+
+$blue-green-light: #ebf7f7;
+$blue-green: #2fa7ae;
 
 $green-light: #E0FFED;
 $green-mid: #5CFF9D;
 $green: #00B849;
 $green-dark: #007A31;
 
-$orange-dark: #944700;
-$orange: #FF7A00;
 $orange-light: #FFC58F;
+$orange: #FF7A00;
+$orange-dark: #944700;
 
-$purple: #5300E0;
-$purple-mid: #A980EF;
 $purple-light: #EEE5FC;
+$purple-mid: #A980EF;
+$purple: #5300E0;
+
+$lavander-light: #e7e3ff;
+$lavander: #a090ff;
 
 $font-condensed: 'Roboto Condensed', sans-serif;
 $font-small: 11px;
