@@ -44,7 +44,7 @@ module Reports
 
     attr_reader :diabetes_enabled
 
-    def daily_registrations_grouped_by_day
+    memoize def daily_registrations_grouped_by_day
       diagnosis = diabetes_enabled ? :all : :hypertension
       RegisteredPatientsQuery.new.count_daily(facility, diagnosis: diagnosis, last: 30)
     end
