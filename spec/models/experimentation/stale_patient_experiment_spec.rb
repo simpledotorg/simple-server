@@ -76,7 +76,7 @@ RSpec.describe Experimentation::StalePatientExperiment do
       expect(result).to contain_exactly(eligible_1, eligible_2)
     end
 
-    it "only selects patients who have no appointments scheduled in the future" do
+    it "only selects patients who have no appointments scheduled after the enrollment date" do
       create(:experiment, experiment_type: "stale_patients")
       patient_with_future_appt = create(:patient, age: 80)
       create(:bp_with_encounter, patient: patient_with_future_appt, device_created_at: 40.days.ago)
@@ -92,7 +92,7 @@ RSpec.describe Experimentation::StalePatientExperiment do
       expect(result).to contain_exactly(patient_with_past_appt)
     end
 
-    it "does not include any patients that have an appointment with remind_on in the future" do
+    it "does not include any patients that have an appointment with remind_on after the enrollment date" do
       create(:experiment, experiment_type: "stale_patients")
       patient_with_past_remind_on = create(:patient, age: 80)
       patient_with_future_remind_on = create(:patient, age: 80)
