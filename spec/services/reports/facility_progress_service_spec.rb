@@ -18,10 +18,10 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
   context "daily registratiosn" do
     it "returns counts for HTN or DM patients if diabetes is enabled" do
       facility = create(:facility, enable_diabetes_management: true)
-      patient1 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 3.days.ago)
-      patient2 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 3.days.ago)
-      dm_patient = create(:patient, :diabetes, registration_facility: facility, registration_user: user, recorded_at: 3.days.ago)
-      patient3 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 1.minute.ago)
+      _htn_patient1 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 3.days.ago)
+      _htn_patient2 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 3.days.ago)
+      _dm_patient = create(:patient, :diabetes, registration_facility: facility, registration_user: user, recorded_at: 3.days.ago)
+      _htn_patient3 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 1.minute.ago)
 
       with_reporting_time_zone do
         service = described_class.new(facility, Period.current)
@@ -33,14 +33,13 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
 
     it "returns counts for HTN only if diabetes is not enabled" do
       facility = create(:facility, enable_diabetes_management: false)
-      patient1 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 3.days.ago)
-      patient2 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 3.days.ago)
-      dm_patient = create(:patient, :diabetes, registration_facility: facility, registration_user: user, recorded_at: 3.days.ago)
-      patient3 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 1.minute.ago)
+      _htn_patient1 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 3.days.ago)
+      _htn_patient2 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 3.days.ago)
+      _dm_patient = create(:patient, :diabetes, registration_facility: facility, registration_user: user, recorded_at: 3.days.ago)
+      _htn_patient3 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 1.minute.ago)
 
       with_reporting_time_zone do
         service = described_class.new(facility, Period.current)
-        # d service.send(:daily_registrations_grouped_by_day)
         expect(service.daily_registrations(3.days.ago)).to eq(2)
         expect(service.daily_registrations(1.days.ago)).to eq(0)
         expect(service.daily_registrations(Date.current)).to eq(1)

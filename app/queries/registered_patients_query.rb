@@ -5,7 +5,7 @@ class RegisteredPatientsQuery
   #  * we need to take into account diagnosis here (for progress tab usage)
   #
   # Returns a count of registered patients over the past last days
-  def count_daily(region, diagnosis: :hypertension, last:)
+  def count_daily(region, last:, diagnosis: :hypertension)
     scope = case diagnosis
     when :all then region.registered_patients
     when :hypertension then region.registered_hypertension_patients
