@@ -15,6 +15,39 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
     expect(dimensions.count { |d| d.diagnosis == :all }).to eq(1)
   end
 
+  context "daily registratiosn" do
+    it "returns counts for HTN or DM patients if diabetes is enabled" do
+      facility = create(:facility, enable_diabetes_management: true)
+      patient1 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 3.days.ago)
+      patient2 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 3.days.ago)
+      dm_patient = create(:patient, :diabetes, registration_facility: facility, registration_user: user, recorded_at: 3.days.ago)
+      patient3 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 1.minute.ago)
+
+      with_reporting_time_zone do
+        service = described_class.new(facility, Period.current)
+        expect(service.daily_registrations(3.days.ago)).to eq(3)
+        expect(service.daily_registrations(1.days.ago)).to eq(0)
+        expect(service.daily_registrations(Date.current)).to eq(1)
+      end
+    end
+
+    it "returns counts for HTN only if diabetes is not enabled" do
+      facility = create(:facility, enable_diabetes_management: false)
+      patient1 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 3.days.ago)
+      patient2 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 3.days.ago)
+      dm_patient = create(:patient, :diabetes, registration_facility: facility, registration_user: user, recorded_at: 3.days.ago)
+      patient3 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 1.minute.ago)
+
+      with_reporting_time_zone do
+        service = described_class.new(facility, Period.current)
+        # d service.send(:daily_registrations_grouped_by_day)
+        expect(service.daily_registrations(3.days.ago)).to eq(2)
+        expect(service.daily_registrations(1.days.ago)).to eq(0)
+        expect(service.daily_registrations(Date.current)).to eq(1)
+      end
+    end
+  end
+
   context "daily follow up counts" do
     it "returns counts for HTN or DM patients if diabetes is enabled" do
       Timecop.freeze do
@@ -30,10 +63,12 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
         create(:blood_pressure, recorded_at: 2.minutes.ago, patient: patient2, facility: facility, user: user)
 
         refresh_views
-        service = described_class.new(facility, Period.current)
-        expect(service.daily_follow_ups(2.days.ago)).to eq(3)
-        expect(service.daily_follow_ups(1.days.ago)).to eq(0)
-        expect(service.daily_follow_ups(Date.current)).to eq(1)
+        with_reporting_time_zone do
+          service = described_class.new(facility, Period.current)
+          expect(service.daily_follow_ups(2.days.ago)).to eq(3)
+          expect(service.daily_follow_ups(1.days.ago)).to eq(0)
+          expect(service.daily_follow_ups(Date.current)).to eq(1)
+        end
       end
     end
 
@@ -52,11 +87,13 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
         create(:blood_pressure, recorded_at: 2.minutes.ago, patient: dm_patient, facility: facility, user: user)
 
         refresh_views
-        service = described_class.new(facility, Period.current)
-        expect(service.daily_follow_ups(7.days.ago)).to eq(1)
-        expect(service.daily_follow_ups(2.days.ago)).to eq(2)
-        expect(service.daily_follow_ups(1.days.ago)).to eq(0)
-        expect(service.daily_follow_ups(Date.current)).to eq(0)
+        with_reporting_time_zone do
+          service = described_class.new(facility, Period.current)
+          expect(service.daily_follow_ups(7.days.ago)).to eq(1)
+          expect(service.daily_follow_ups(2.days.ago)).to eq(2)
+          expect(service.daily_follow_ups(1.days.ago)).to eq(0)
+          expect(service.daily_follow_ups(Date.current)).to eq(0)
+        end
       end
     end
   end

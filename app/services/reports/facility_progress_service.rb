@@ -8,10 +8,15 @@ module Reports
       @facility = facility
       @period = period
       @range = Range.new(@period.advance(months: -5), @period)
+      @diabetes_enabled = facility.enable_diabetes_management
+    end
+
+    def daily_registrations(date)
+      daily_registrations_grouped_by_day[date.to_date] || 0
     end
 
     def daily_follow_ups(date)
-      daily_counts_grouped_by_day[date.yday] || 0
+      daily_follow_ups_grouped_by_day[date.yday] || 0
     end
 
     def total_counts
@@ -37,7 +42,14 @@ module Reports
 
     private
 
-    memoize def daily_counts_grouped_by_day
+    attr_reader :diabetes_enabled
+
+    def daily_registrations_grouped_by_day
+      diagnosis = diabetes_enabled ? :all : :hypertension
+      RegisteredPatientsQuery.new.count_daily(facility, diagnosis: diagnosis, last: 30)
+    end
+
+    memoize def daily_follow_ups_grouped_by_day
       scope = Reports::DailyFollowUp.with_hypertension
       scope = scope.or(Reports::DailyFollowUp.with_diabetes) if facility.enable_diabetes_management
       scope.where(facility: facility).group(:day_of_year).count
