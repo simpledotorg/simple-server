@@ -1416,6 +1416,115 @@ CREATE TABLE public.reminder_templates (
 
 
 --
+-- Name: reporting_daily_follow_ups; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+--
+
+CREATE MATERIALIZED VIEW public.reporting_daily_follow_ups AS
+ WITH follow_up_blood_pressures AS (
+         SELECT DISTINCT ON (p.id, bp.facility_id, ((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))))::integer)) p.id AS patient_id,
+            (p.gender)::public.gender_enum AS patient_gender,
+            bp.id AS visit_id,
+            'BloodPressure'::text AS visit_type,
+            bp.facility_id,
+            bp.user_id,
+            bp.recorded_at AS visited_at,
+            (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))))::integer AS day_of_year
+           FROM (public.patients p
+             JOIN public.blood_pressures bp ON (((p.id = bp.patient_id) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
+          WHERE ((p.deleted_at IS NULL) AND (bp.recorded_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
+        ), follow_up_blood_sugars AS (
+         SELECT DISTINCT ON (p.id, bs.facility_id, ((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))))::integer)) p.id AS patient_id,
+            (p.gender)::public.gender_enum AS patient_gender,
+            bs.id AS visit_id,
+            'BloodSugar'::text AS visit_type,
+            bs.facility_id,
+            bs.user_id,
+            bs.recorded_at AS visited_at,
+            (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))))::integer AS day_of_year
+           FROM (public.patients p
+             JOIN public.blood_sugars bs ON (((p.id = bs.patient_id) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
+          WHERE ((p.deleted_at IS NULL) AND (bs.recorded_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
+        ), follow_up_prescription_drugs AS (
+         SELECT DISTINCT ON (p.id, pd.facility_id, ((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at))))::integer)) p.id AS patient_id,
+            (p.gender)::public.gender_enum AS patient_gender,
+            pd.id AS visit_id,
+            'PrescriptionDrug'::text AS visit_type,
+            pd.facility_id,
+            pd.user_id,
+            pd.device_created_at AS visited_at,
+            (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at))))::integer AS day_of_year
+           FROM (public.patients p
+             JOIN public.prescription_drugs pd ON (((p.id = pd.patient_id) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
+          WHERE ((p.deleted_at IS NULL) AND (pd.device_created_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
+        ), follow_up_appointments AS (
+         SELECT DISTINCT ON (p.id, app.creation_facility_id, ((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at))))::integer)) p.id AS patient_id,
+            (p.gender)::public.gender_enum AS patient_gender,
+            app.id AS visit_id,
+            'Appointment'::text AS visit_type,
+            app.creation_facility_id AS facility_id,
+            app.user_id,
+            app.device_created_at AS visited_at,
+            (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at))))::integer AS day_of_year
+           FROM (public.patients p
+             JOIN public.appointments app ON (((p.id = app.patient_id) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
+          WHERE ((p.deleted_at IS NULL) AND (app.device_created_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
+        ), all_follow_ups AS (
+         SELECT follow_up_blood_pressures.patient_id,
+            follow_up_blood_pressures.patient_gender,
+            follow_up_blood_pressures.visit_id,
+            follow_up_blood_pressures.visit_type,
+            follow_up_blood_pressures.facility_id,
+            follow_up_blood_pressures.user_id,
+            follow_up_blood_pressures.visited_at,
+            follow_up_blood_pressures.day_of_year
+           FROM follow_up_blood_pressures
+        UNION
+         SELECT follow_up_blood_sugars.patient_id,
+            follow_up_blood_sugars.patient_gender,
+            follow_up_blood_sugars.visit_id,
+            follow_up_blood_sugars.visit_type,
+            follow_up_blood_sugars.facility_id,
+            follow_up_blood_sugars.user_id,
+            follow_up_blood_sugars.visited_at,
+            follow_up_blood_sugars.day_of_year
+           FROM follow_up_blood_sugars
+        UNION
+         SELECT follow_up_prescription_drugs.patient_id,
+            follow_up_prescription_drugs.patient_gender,
+            follow_up_prescription_drugs.visit_id,
+            follow_up_prescription_drugs.visit_type,
+            follow_up_prescription_drugs.facility_id,
+            follow_up_prescription_drugs.user_id,
+            follow_up_prescription_drugs.visited_at,
+            follow_up_prescription_drugs.day_of_year
+           FROM follow_up_prescription_drugs
+        UNION
+         SELECT follow_up_appointments.patient_id,
+            follow_up_appointments.patient_gender,
+            follow_up_appointments.visit_id,
+            follow_up_appointments.visit_type,
+            follow_up_appointments.facility_id,
+            follow_up_appointments.user_id,
+            follow_up_appointments.visited_at,
+            follow_up_appointments.day_of_year
+           FROM follow_up_appointments
+        )
+ SELECT DISTINCT ON (all_follow_ups.day_of_year, all_follow_ups.facility_id, all_follow_ups.patient_id) all_follow_ups.patient_id,
+    all_follow_ups.patient_gender,
+    all_follow_ups.facility_id,
+    mh.diabetes,
+    mh.hypertension,
+    all_follow_ups.user_id,
+    all_follow_ups.visit_id,
+    all_follow_ups.visit_type,
+    all_follow_ups.visited_at,
+    all_follow_ups.day_of_year
+   FROM (all_follow_ups
+     JOIN public.medical_histories mh ON ((all_follow_ups.patient_id = mh.patient_id)))
+  WITH NO DATA;
+
+
+--
 -- Name: reporting_facilities; Type: VIEW; Schema: public; Owner: -
 --
 
@@ -3985,6 +4094,13 @@ CREATE UNIQUE INDEX clean_medicine_to_dosages__unique_name_and_dosage ON public.
 
 
 --
+-- Name: daily_follow_ups_day_patient_facility; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX daily_follow_ups_day_patient_facility ON public.reporting_daily_follow_ups USING btree (patient_id, facility_id, day_of_year);
+
+
+--
 -- Name: facility_state_groups_month_date_region_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -5434,5 +5550,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220124212048'),
 ('20220124215220'),
 ('20220202091240'),
-('20220203073617');
+('20220203073617'),
+('20220204224734');
+
 
