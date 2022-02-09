@@ -70,12 +70,13 @@ class Api::V3::SyncController < APIController
   def capture_errors(params, errors)
     return unless errors.present?
 
-    Sentry.capture_message("Validation Error",
-      extra: {
-        params_with_errors: params_with_errors(params, errors),
-        errors: errors
-      },
-      tags: {type: "validation"})
+    Rails.logger.info(
+      msg: "validation_error",
+      controller: self.class.name,
+      action: action_name,
+      params_with_errors: params_with_errors(params, errors),
+      errors: errors
+    )
   end
 
   def process_token

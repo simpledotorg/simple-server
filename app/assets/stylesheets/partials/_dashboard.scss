@@ -209,6 +209,10 @@ th sup {
       text-overflow: ellipsis;
       overflow: hidden;
     }
+
+    a.allow-wrap {
+      white-space: normal !important;
+    }
   }
 
   col { border-left: 1px solid $grey-lightest; }

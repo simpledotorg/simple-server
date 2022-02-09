@@ -15,5 +15,10 @@ module MonthlyDistrictReport
         value
       end
     end
+
+    def percentage(numerator, denominator)
+      return 0 if numerator.nil? || denominator.nil? || denominator == 0 || numerator == 0
+      ((numerator.to_f / denominator) * 100).round(0)
+    end
   end
 end

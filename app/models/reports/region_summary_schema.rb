@@ -1,8 +1,9 @@
 module Reports
-  class SchemaV2
+  class RegionSummarySchema
     include BustCache
     include Memery
     include RegionCaching
+    include Percentage
 
     attr_reader :periods
     attr_reader :period_hash
@@ -84,6 +85,26 @@ module Reports
 
     memoize def uncontrolled
       values_at("adjusted_uncontrolled_under_care")
+    end
+
+    memoize def total_appts_scheduled
+      values_at("total_appts_scheduled")
+    end
+
+    memoize def appts_scheduled_0_to_14_days
+      values_at("appts_scheduled_0_to_14_days")
+    end
+
+    memoize def appts_scheduled_15_to_31_days
+      values_at("appts_scheduled_15_to_31_days")
+    end
+
+    memoize def appts_scheduled_32_to_62_days
+      values_at("appts_scheduled_32_to_62_days")
+    end
+
+    memoize def appts_scheduled_more_than_62_days
+      values_at("appts_scheduled_more_than_62_days")
     end
 
     memoize def ltfu_rates
@@ -180,6 +201,30 @@ module Reports
       end
     end
 
+    memoize def appts_scheduled_0_to_14_days_rates
+      region_period_cached_query(__method__) do |entry|
+        appts_scheduled_rates(entry)[__method__]
+      end
+    end
+
+    memoize def appts_scheduled_15_to_31_days_rates
+      region_period_cached_query(__method__) do |entry|
+        appts_scheduled_rates(entry)[__method__]
+      end
+    end
+
+    memoize def appts_scheduled_32_to_62_days_rates
+      region_period_cached_query(__method__) do |entry|
+        appts_scheduled_rates(entry)[__method__]
+      end
+    end
+
+    memoize def appts_scheduled_more_than_62_days_rates
+      region_period_cached_query(__method__) do |entry|
+        appts_scheduled_rates(entry)[__method__]
+      end
+    end
+
     private
 
     memoize def denominator(region, period, with_ltfu: false)
@@ -191,9 +236,13 @@ module Reports
       end
     end
 
-    def percentage(numerator, denominator)
-      return 0 if numerator.nil? || denominator.nil? || denominator == 0 || numerator == 0
-      ((numerator.to_f / denominator) * 100).round(PERCENTAGE_PRECISION)
+    memoize def appts_scheduled_rates(entry)
+      rounded_percentages({
+        appts_scheduled_0_to_14_days_rates: appts_scheduled_0_to_14_days[entry.region.slug][entry.period],
+        appts_scheduled_15_to_31_days_rates: appts_scheduled_15_to_31_days[entry.region.slug][entry.period],
+        appts_scheduled_32_to_62_days_rates: appts_scheduled_32_to_62_days[entry.region.slug][entry.period],
+        appts_scheduled_more_than_62_days_rates: appts_scheduled_more_than_62_days[entry.region.slug][entry.period]
+      })
     end
 
     memoize def earliest_patient_data_query_v2(region)

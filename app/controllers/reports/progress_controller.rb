@@ -9,9 +9,12 @@ class Reports::ProgressController < AdminController
   def show
     @current_facility = @region
     @user_analytics = UserAnalyticsPresenter.new(@region)
-    @range = Range.new(@period.advance(months: -5), @period)
-    @query = Reports::FacilityStateGroup.where(facility_region_id: current_facility.region.id)
-    render "api/v3/analytics/user_analytics/show"
+    @service = Reports::FacilityProgressService.new(current_facility, @period)
+    if Flipper.enabled?(:new_progress_tab)
+      render "api/v3/analytics/user_analytics/show_v2"
+    else
+      render "api/v3/analytics/user_analytics/show"
+    end
   end
 
   helper_method :current_facility, :current_user, :current_facility_group

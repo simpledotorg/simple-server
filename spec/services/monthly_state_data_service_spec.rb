@@ -1,6 +1,9 @@
 require "rails_helper"
 
-RSpec.describe MonthlyStateDataService do
+RSpec.describe MonthlyStateDataService, reporting_spec: true do
+  around do |example|
+    freeze_time_for_reporting_specs(example)
+  end
   let(:organization) { FactoryBot.create(:organization) }
   let(:facility_group) { create(:facility_group, organization: organization) }
   let(:facility1) { create(:facility, facility_group: facility_group) }
@@ -50,7 +53,7 @@ RSpec.describe MonthlyStateDataService do
       csv = CSV.parse(result)
       region_row_index = 3
 
-      expect(find_in_csv(csv, region_row_index, "#")).to eq("All")
+      expect(find_in_csv(csv, region_row_index, "#")).to eq("All districts")
       expect(find_in_csv(csv, region_row_index, "State")).to eq(state.name)
       expect(csv[region_row_index][2..3].uniq).to eq([nil])
       expect(find_in_csv(csv, region_row_index, "Total registrations")).to eq("3")

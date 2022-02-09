@@ -1,13 +1,13 @@
 <div class="d-lg-flex flex-lg-wrap">
   <div class="d-lg-flex w-lg-50 pr-lg-2">
     <div id="patient-breakdown" data-period="<%= @period.to_s %>" class="mt-8px mx-0px mb-16px p-20px bg-white br-4px bs-small w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
-      <% if current_admin.feature_enabled?(:estimated_population) && @region.supports_htn_population_coverage %>
+      <% if @region.supports_htn_population_coverage %>
         <div class="d-flex flex-1 mb-8px">
           <h3 class="mb-0px mr-8px">
             Hypertension coverage
           </h3>
         </div>
-        <p class="mb-24px c-grey-dark mr-lg-12px">
+        <p class="mb-16px c-grey-dark mr-lg-12px">
           All hypertensive individuals and patients in <%= @region.name %>
         </p>
         <%= render "reports/regions/hypertension_patient_coverage" %>
@@ -165,6 +165,7 @@
     </div>
   </div>
 </div>
+</div>
 
 <div id="data-json" style="display: none;">
   <%= raw @chart_data.to_json %>
@@ -176,5 +177,4 @@
   });
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js" integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-piechart-outlabels@0.1.4/dist/chartjs-plugin-piechart-outlabels.min.js" integrity="sha256-yVxLw9A3MN0xzvzu6ByJRFAGgGH1ALIfgfuMURm3Bnc=" crossorigin="anonymous"></script>

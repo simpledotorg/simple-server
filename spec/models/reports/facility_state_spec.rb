@@ -226,4 +226,36 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       end
     end
   end
+
+  context "medication dispensed in last 3 months" do
+    it "counts the latest appointments scheduled per patient by days scheduled by bucket" do
+      Timecop.return do
+        Timecop.freeze("#{Date.today.end_of_month} 23:00 IST") do
+          facility = create(:facility)
+          patients = create_list(:patient, 2, recorded_at: 3.months.ago, assigned_facility: facility)
+          _current_month_appointments = patients.each do |patient|
+            create(:appointment, facility: facility, patient: patient, scheduled_date: 10.days.from_now, device_created_at: Time.current)
+          end
+
+          _appointment_1_month_ago = create(:appointment,
+            facility: facility,
+            patient: patients.first,
+            scheduled_date: Date.today,
+            device_created_at: 32.days.ago)
+          _appointment_2_month_ago = create(:appointment,
+            facility: facility,
+            patient: patients.first,
+            scheduled_date: Date.today,
+            device_created_at: 63.days.ago)
+
+          RefreshReportingViews.new.refresh_v2
+
+          expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_0_to_14_days).to eq 2
+          expect(described_class.find_by(month_date: Period.current, facility: facility).total_appts_scheduled).to eq 2
+          expect(described_class.find_by(month_date: Period.month(32.days.ago), facility: facility).appts_scheduled_32_to_62_days).to eq 1
+          expect(described_class.find_by(month_date: Period.month(63.days.ago), facility: facility).appts_scheduled_more_than_62_days).to eq 1
+        end
+      end
+    end
+  end
 end
