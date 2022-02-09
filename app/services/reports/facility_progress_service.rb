@@ -38,7 +38,8 @@ module Reports
     private
 
     memoize def daily_counts_grouped_by_day
-      scope = Reports::DailyFollowUp.with_hypertension.or(Reports::DailyFollowUp.with_diabetes)
+      scope = Reports::DailyFollowUp.with_hypertension
+      scope = scope.or(Reports::DailyFollowUp.with_diabetes) if facility.enable_diabetes_management
       scope.where(facility: facility).group(:day_of_year).count
     end
 
