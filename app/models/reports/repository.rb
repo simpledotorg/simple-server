@@ -144,6 +144,10 @@ module Reports
       }
     end
 
+    # Returns facility progress dimensional data (for progress tab) in the form of
+    #   region => { period_1 => monthly_facility_progress, period_2 => monthly_facility_progress }
+    # Note that this does differ from the more standard return values returned from the Repository because
+    # this data is specifically for the Progress Tab, where all the dimensions are needed at once
     def facility_progress
       regions.each_with_object({}) do |region, result|
         records = Reports::FacilityStateGroup.for_region(region).where(month_date: periods)

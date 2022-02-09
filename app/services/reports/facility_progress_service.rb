@@ -24,8 +24,7 @@ module Reports
     end
 
     def monthly_counts
-      repository.facility_progress[facility.region.slug]
-      # @monthly_counts ||= Reports::FacilityStateGroup.where(facility_region_id: facility.region.id, month_date: @range).to_a
+      @monthly_counts ||= repository.facility_progress[facility.region.slug]
     end
 
     def repository
