@@ -1,7 +1,7 @@
 module Reports
   # Represents different dimensions of facility state data - i.e. registrations by diagnosis and gender,
   # follow ups by diagnosis and gender, etc.
-  # See also FacilityProgressDimension, which is used to generate the permutations of fields to retreive from 
+  # See also FacilityProgressDimension, which is used to generate the permutations of fields to retreive from
   # this matview.
   class FacilityStateDimension < Reports::View
     self.table_name = "reporting_facility_state_dimensions"
