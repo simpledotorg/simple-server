@@ -20,7 +20,7 @@ module Reports
     end
 
     def total_counts
-      @total_counts ||= Reports::FacilityStateGroup.totals(facility)
+      @total_counts ||= Reports::FacilityStateDimension.totals(facility)
     end
 
     def monthly_counts

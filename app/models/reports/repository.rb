@@ -150,7 +150,7 @@ module Reports
     # this data is specifically for the Progress Tab, where all the dimensions are needed at once
     def facility_progress
       regions.each_with_object({}) do |region, result|
-        records = Reports::FacilityStateGroup.for_region(region).where(month_date: periods)
+        records = Reports::FacilityStateDimension.for_region(region).where(month_date: periods)
         records_per_period = records.each_with_object({}) do |record, hsh|
           hsh[record.period] = record
         end

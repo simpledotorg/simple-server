@@ -1,5 +1,9 @@
 module Reports
-  class FacilityStateGroup < Reports::View
+  # Represents different dimensions of facility state data - i.e. registrations by diagnosis and gender,
+  # follow ups by diagnosis and gender, etc.
+  # See also FacilityProgressDimension, which is used to generate the permutations of fields to retreive from 
+  # this matview.
+  class FacilityStateDimension < Reports::View
     self.table_name = "reporting_facility_state_dimensions"
 
     belongs_to :facility
@@ -18,7 +22,7 @@ module Reports
       state_region_id
     ]
 
-    # Returns the all time totals for a facility as a single FacilityStateGroup record
+    # Returns the all time totals for a facility as a single FacilityStateDimension record
     def self.totals(facility)
       count_columns = column_names - NON_COUNT_FIELDS.map(&:to_s)
       calculations = count_columns.map { |c| "sum(#{c}) as #{c}" }
