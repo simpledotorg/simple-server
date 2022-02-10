@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
 class Reports::DailyProgressComponent < ViewComponent::Base
-  # We use 29 here because we also show today, so its 30 days inclusively
+  include AssetsHelper
+
+  # We use 29 here because we also show today, so its 30 days including today
   DAYS_AGO = 29
   DAY_FORMAT = ApplicationHelper::STANDARD_DATE_DISPLAY_FORMAT
-  include AssetsHelper
 
   attr_reader :service
 
