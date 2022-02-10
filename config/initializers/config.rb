@@ -31,9 +31,3 @@ EnvHelper.ensure_required_keys_are_present(required_keys: [
   "SIDEKIQ_CONCURRENCY",
   "ANALYTICS_DASHBOARD_CACHE_TTL"
 ])
-
-EnvHelper.ensure_required_keys_have_fallbacks(required_keys: {
-  "CALL_SESSION_REDIS_HOST" => "REDIS_URL",
-  "SIDEKIQ_REDIS_HOST" => "REDIS_URL",
-  "RAILS_CACHE_REDIS_URL" => "REDIS_URL"
-})
