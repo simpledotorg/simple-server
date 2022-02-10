@@ -43,18 +43,6 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
   end
 
   def monthly_count(period)
-    counts_by_period[period].attributes[dimension.field]
-  end
-
-  NULL_COUNTS = Struct.new(:attributes) do
-    def attributes
-      Hash.new(0)
-    end
-  end
-
-  def counts_by_period
-    @counts_by_period ||= range.each_with_object({}) do |period, hsh|
-      hsh[period] = @monthly_counts.find { |c| c.period == period } || NULL_COUNTS.new
-    end
+    monthly_counts[period].attributes[dimension.field]
   end
 end
