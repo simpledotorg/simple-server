@@ -1,12 +1,12 @@
 # See https://app.clubhouse.io/simpledotorg/story/1616/why-do-heroku-deployments-intermittently-fail
 unless SimpleServer.env.review? && Rake.application.top_level_tasks.any? { |task| task.include?("assets") }
-  Config.ensure_required_keys_are_present(required_keys: [
+  EnvHelper.ensure_required_keys_are_present(required_keys: [
     "SENTRY_SECURITY_HEADER_ENDPOINT",
     "TEMPORARY_RETENTION_DURATION_SECONDS"
   ])
 end
 
-Config.ensure_required_keys_are_present(required_keys: [
+EnvHelper.ensure_required_keys_are_present(required_keys: [
   "DEFAULT_NUMBER_OF_RECORDS",
   "DEFAULT_COUNTRY",
   "SIMPLE_APP_SIGNATURE",
