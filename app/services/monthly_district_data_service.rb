@@ -1,19 +1,22 @@
 class MonthlyDistrictDataService
   attr_reader :region, :period, :months, :repo, :dashboard_analytics
-  def initialize(region, period)
+  def initialize(region, period, medications_dispensation_enabled: false)
     @region = region
     @period = period
     @months = period.downto(5).reverse
     @medication_dispensation_months = period.downto(2).reverse
     regions = region.facility_regions.to_a << region
     @repo = Reports::Repository.new(regions, periods: @months)
+    @medications_dispensation_enabled = medications_dispensation_enabled
   end
 
   def report
     CSV.generate(headers: true) do |csv|
       csv << ["Monthly #{localized_facility} data for #{region.name} #{period.to_date.strftime("%B %Y")}"]
       csv << section_row
-      csv << sub_section_row
+      if @medications_dispensation_enabled
+        csv << sub_section_row
+      end
       csv << header_row
       csv << district_row
 
@@ -79,12 +82,16 @@ class MonthlyDistrictDataService
   end
 
   def medications_dispensation_headers
-    [
-      "Patients with 0 to 14 days of medications",
-      "Patients with 15 to 31 days of medications",
-      "Patients with 32 to 62 days of medications",
-      "Patients with 62+ days of medications"
-    ]
+    if @medications_dispensation_enabled
+      [
+        "Patients with 0 to 14 days of medications",
+        "Patients with 15 to 31 days of medications",
+        "Patients with 32 to 62 days of medications",
+        "Patients with 62+ days of medications"
+      ]
+    else
+      []
+    end
   end
 
   def medications_dispensation_month_headers
@@ -109,8 +116,12 @@ class MonthlyDistrictDataService
       Array.new(month_headers.size - 1, nil),
       "Treatment outcomes of patients under care",
       Array.new(outcome_headers.size - 1, nil),
-      "Days of patient medications",
-      Array.new((medications_dispensation_headers.size * @medication_dispensation_months.size) - 1, nil),
+      (if @medications_dispensation_enabled
+         ["Days of patient medications",
+           Array.new((medications_dispensation_headers.size * @medication_dispensation_months.size) - 1, nil)]
+       else
+         []
+       end),
       "Drug availability",
       Array.new(drug_headers.size - 1, nil)
     ].flatten
@@ -119,14 +130,11 @@ class MonthlyDistrictDataService
   def sub_section_row
     [
       Array.new(region_headers.size + summary_headers.size + month_headers.size * 2 + outcome_headers.size, nil),
-      medications_dispensation_month_headers.map do |month|
-        if month == medications_dispensation_headers.last
-          month
-        else
-          [month, Array.new(medications_dispensation_headers.size - 1, nil)]
-        end
-      end
-    ].flatten
+      medications_dispensation_headers[0...-1].map do |month|
+        [month, Array.new(medications_dispensation_headers.size - 1, nil)]
+      end.flatten,
+      medications_dispensation_headers.last
+    ]
   end
 
   def header_row
@@ -213,12 +221,16 @@ class MonthlyDistrictDataService
       hsh["follow_ups_#{month.value}".to_sym] = monthly_follow_ups[month] || 0
     }
 
-    medications_dispensation_by_month = @medication_dispensation_months.each_with_object({}) { |month, hsh|
-      hsh["patients_with_0_to_14_days_of_medications_#{month}".to_sym] = repo.appts_scheduled_0_to_14_days[subregion.slug][month]
-      hsh["patients_with_15_to_31_days_of_medications_#{month}".to_sym] = repo.appts_scheduled_15_to_31_days[subregion.slug][month]
-      hsh["patients_with_32_to_62_days_of_medications_#{month}".to_sym] = repo.appts_scheduled_32_to_62_days[subregion.slug][month]
-      hsh["patients_with_62+_days_of_medications_#{month}".to_sym] = repo.appts_scheduled_more_than_62_days[subregion.slug][month]
-    }
+    medications_dispensation_by_month = if @medications_dispensation_enabled
+      @medication_dispensation_months.each_with_object({}) { |month, hsh|
+        hsh["patients_with_0_to_14_days_of_medications_#{month}".to_sym] = repo.appts_scheduled_0_to_14_days[subregion.slug][month]
+        hsh["patients_with_15_to_31_days_of_medications_#{month}".to_sym] = repo.appts_scheduled_15_to_31_days[subregion.slug][month]
+        hsh["patients_with_32_to_62_days_of_medications_#{month}".to_sym] = repo.appts_scheduled_32_to_62_days[subregion.slug][month]
+        hsh["patients_with_62+_days_of_medications_#{month}".to_sym] = repo.appts_scheduled_more_than_62_days[subregion.slug][month]
+      }
+    else
+      {}
+    end
 
     {
       estimated_hypertension_population: nil,
