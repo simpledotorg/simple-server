@@ -14,18 +14,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
     <%= inline_stylesheet("user_analytics.css") %>
+    <%= inline_js "standalone/progress_tab.js" %>
   </head>
   <body>
-    <%= render partial: "api/v3/analytics/user_analytics/period_report",
-               locals: {
-                 title: "Daily",
-                 subtitle: false,
-                 periods: @daily_periods,
-                 registered_patients: @daily_registered_patients,
-                 follow_up_patients: @daily_follow_up_patients
-               }
-    %>
-    <div style="display: none;">
+    <div id="home-page">
       <div class="mb-16px p-16px bgc-white bs-card">
         <h1 class="m-0px mb-4px fw-bold fs-24px c-black">
           Reports
@@ -34,7 +26,7 @@
           Data last updated on <%= DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P") %>
         </p>
         <div class="d-flex ai-center jc-space-between mb-16px">
-          <a class="f-1 d-flex fd-column ai-center jc-center td-none mr-10px p-12px bgc-blue-green-light br-8px">
+          <a class="f-1 d-flex fd-column ai-center jc-center td-none mr-10px p-12px bgc-blue-green-light br-8px" href="#" onclick="openWindow('daily-report-page', 'home-page'); return false;">
             <div class="p-relative d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px o-hidden">
               <div class="p-absolute t-0 l-0 w-100 h-6px bgc-blue-green"></div>
               <p class="m-0px mt-6px p-0px ta-center fw-bold fs-14px c-blue-green">
@@ -168,5 +160,15 @@
         </div>
       </div>
     </div>
+    <%= render partial: "api/v3/analytics/user_analytics/period_report",
+               locals: {
+                 elementId: "daily-report-page",
+                 title: "Daily",
+                 subtitle: false,
+                 periods: @daily_periods,
+                 registered_patients: @daily_registered_patients,
+                 follow_up_patients: @daily_follow_up_patients
+               }
+    %>
   </body>
 </html>
