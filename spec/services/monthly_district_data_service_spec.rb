@@ -16,7 +16,7 @@ RSpec.describe MonthlyDistrictDataService, reporting_spec: true do
   let(:facility2) { create(:facility, block: "Block 2 - alphabetically second", facility_group: facility_group, facility_size: :community) }
   let(:region) { facility1.region.district_region }
   let(:period) { Period.month(Date.today) }
-  let(:service) { described_class.new(region, period) }
+  let(:service) { described_class.new(region, period, medications_dispensation_enabled: true) }
   let(:missed_visit_patient) do
     patient = create(:patient, :hypertension, recorded_at: 3.months.ago, assigned_facility: facility1, registration_facility: facility1)
     create(:appointment, creation_facility: facility1, scheduled_date: 2.months.ago, patient: patient)
@@ -58,7 +58,8 @@ RSpec.describe MonthlyDistrictDataService, reporting_spec: true do
       nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
       months[3].to_s, nil, nil, nil,
       months[4].to_s, nil, nil, nil,
-      months[5].to_s, nil, nil, nil
+      months[5].to_s, nil, nil, nil,
+      nil, nil, nil
     ]
   }
 
@@ -231,7 +232,7 @@ RSpec.describe MonthlyDistrictDataService, reporting_spec: true do
 
     it "scopes the report to the provided period" do
       old_period = Period.current
-      result = described_class.new(region, old_period).report
+      result = described_class.new(region, old_period, medications_dispensation_enabled: true).report
       csv = CSV.parse(result)
       column_headers = csv[3]
       first_month_index = 11

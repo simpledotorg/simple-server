@@ -130,11 +130,11 @@ class MonthlyDistrictDataService
   def sub_section_row
     [
       Array.new(region_headers.size + summary_headers.size + month_headers.size * 2 + outcome_headers.size, nil),
-      medications_dispensation_headers[0...-1].map do |month|
+      medications_dispensation_month_headers.map do |month|
         [month, Array.new(medications_dispensation_headers.size - 1, nil)]
-      end.flatten,
-      medications_dispensation_headers.last
-    ]
+      end,
+      Array.new(drug_headers.size, nil)
+    ].flatten
   end
 
   def header_row
