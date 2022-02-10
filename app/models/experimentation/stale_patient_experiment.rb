@@ -12,7 +12,7 @@ module Experimentation
       staleness_date = date - earliest_remind_on.days
       last_visit_since = (staleness_date + PATIENT_VISITED_SINCE).beginning_of_day
       last_visit_until = (staleness_date + PATIENT_VISITED_UNTIL).end_of_day
-      no_appointments_after = staleness_date.end_of_day
+      no_appointments_after = date.end_of_day
 
       self.class.superclass.eligible_patients
         .joins("INNER JOIN reporting_patient_visits ON reporting_patient_visits.patient_id = patients.id")

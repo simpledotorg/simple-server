@@ -54,7 +54,8 @@ RSpec.describe Experimentation::StalePatientExperiment do
     end
 
     it "only selects patients whose last visit was in the selected date range" do
-      create(:experiment, experiment_type: "stale_patients")
+      experiment = create(:experiment, experiment_type: "stale_patients")
+      treatment_group = create(:treatment_group, experiment: experiment)
       eligible_1 = create(:patient, age: 55)
       create(:prescription_drug, patient: eligible_1, device_created_at: 70.days.ago)
       eligible_2 = create(:patient, age: 80)
@@ -64,6 +65,7 @@ RSpec.describe Experimentation::StalePatientExperiment do
       ineligible_2 = create(:patient, age: 80)
       create(:bp_with_encounter, patient: ineligible_2, device_created_at: 1.days.ago)
       create(:blood_sugar_with_encounter, patient: ineligible_1, device_created_at: 10.days.ago)
+      create(:reminder_template, treatment_group: treatment_group, remind_on_in_days: 0)
 
       ineligible_3 = create(:patient, age: 80)
       create(:bp_with_encounter, patient: ineligible_3, device_created_at: 100.days.ago)
@@ -129,6 +131,29 @@ RSpec.describe Experimentation::StalePatientExperiment do
       result = described_class.first.eligible_patients(Date.today)
 
       expect(result).to contain_exactly(patient)
+    end
+
+    it "includes patients who are stale on the date the first reminder is to be sent" do
+      earliest_remind_on = -10
+      patients = create_list(:patient, 5, age: 18)
+      experiment = create(:experiment, experiment_type: "stale_patients")
+      treatment_group = create(:treatment_group, experiment: experiment)
+      create(:reminder_template, treatment_group: treatment_group, remind_on_in_days: earliest_remind_on)
+
+      # Eligible
+      create(:appointment, patient: patients.first, device_created_at: 35.days.ago - earliest_remind_on.days, scheduled_date: Date.yesterday)
+      create(:appointment, patient: patients.second, device_created_at: 100.days.ago - earliest_remind_on.days, scheduled_date: Date.yesterday)
+      create(:appointment, patient: patients.third, device_created_at: 365.days.ago - earliest_remind_on.days, scheduled_date: Date.yesterday)
+
+      # Ineligible
+      create(:appointment, patient: patients.fourth, device_created_at: 34.days.ago - earliest_remind_on.days, scheduled_date: Date.yesterday)
+      create(:appointment, patient: patients.fifth, device_created_at: 366.days.ago - earliest_remind_on.days, scheduled_date: Date.yesterday)
+
+      RefreshReportingViews.new.refresh_v2
+
+      result = described_class.first.eligible_patients(Date.today)
+
+      expect(result).to contain_exactly(patients.first, patients.second, patients.third)
     end
   end
 
