@@ -26,7 +26,7 @@
           Data last updated on <%= DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P") %>
         </p>
         <div class="d-flex ai-center jc-space-between mb-16px">
-          <a class="f-1 d-flex fd-column ai-center jc-center td-none mr-10px p-12px bgc-blue-green-light br-8px" href="#" onclick="openWindow('daily-report-page', 'home-page'); return false;">
+          <a class="f-1 d-flex fd-column ai-center jc-center td-none mr-10px p-12px bgc-blue-green-light br-8px" href="#" onclick="goToPage('home-page', 'daily-report-page'); return false;">
             <div class="p-relative d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px o-hidden">
               <div class="p-absolute t-0 l-0 w-100 h-6px bgc-blue-green"></div>
               <p class="m-0px mt-6px p-0px ta-center fw-bold fs-14px c-blue-green">
@@ -37,7 +37,7 @@
               Daily
             </p>
           </a>
-          <a class="f-1 d-flex fd-column ai-center jc-center td-none mr-4px ml-4px p-12px bgc-blue-light br-8px" href="#" onclick="openWindow('monthly-report-page', 'home-page'); return false;">
+          <a class="f-1 d-flex fd-column ai-center jc-center td-none mr-4px ml-4px p-12px bgc-blue-light br-8px" href="#" onclick="goToPage('home-page', 'monthly-report-page'); return false;">
             <div class="p-relative d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px o-hidden">
               <div class="p-absolute t-0 l-0 w-100 h-6px bgc-blue"></div>
               <p class="m-0px mt-6px p-0px ta-center tt-uppercase fw-bold ls-0_4px fs-12px c-blue">
@@ -48,7 +48,7 @@
               Monthly
             </p>
           </a>
-          <a class="f-1 d-flex fd-column ai-center jc-center td-none ml-10px p-12px bgc-navy-light br-8px" href="#" onclick="openWindow('yearly-report-page', 'home-page'); return false;">
+          <a class="f-1 d-flex fd-column ai-center jc-center td-none ml-10px p-12px bgc-navy-light br-8px" href="#" onclick="goToPage('home-page', 'yearly-report-page'); return false;">
             <div class="p-relative d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px o-hidden">
               <div class="p-absolute t-0 l-0 w-100 h-6px bgc-navy"></div>
               <p class="m-0px mt-6px p-0px ta-center fw-bold fs-10px c-navy">
@@ -162,7 +162,7 @@
     </div>
     <%= render partial: "api/v3/analytics/user_analytics/period_report",
                locals: {
-                 elementId: "daily-report-page",
+                 pageId: "daily-report-page",
                  title: "Daily",
                  subtitle: false,
                  periods: @daily_periods,
@@ -172,7 +172,7 @@
     %>
     <%= render partial: "api/v3/analytics/user_analytics/period_report",
                locals: {
-                 elementId: "monthly-report-page",
+                 pageId: "monthly-report-page",
                  title: "Monthly",
                  subtitle: false,
                  periods: @monthly_periods,
@@ -182,7 +182,7 @@
     %>
     <%= render partial: "api/v3/analytics/user_analytics/period_report",
                locals: {
-                 elementId: "yearly-report-page",
+                 pageId: "yearly-report-page",
                  title: "Yearly",
                  subtitle: "Apr-2021 to Mar-2022",
                  periods: @yearly_periods,

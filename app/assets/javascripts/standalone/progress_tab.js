@@ -1,22 +1,12 @@
-// Hides and shows each "Progress tab" sub-page
+function goToPage(startPageId, endPageId) {
+  const startPage = document.getElementById(startPageId);
+  startPage.style.display = "none";
+  startPage.style.height = "0";
 
-function openWindow(subPageId, homePageId) {
-  const subPage = document.getElementById(subPageId);
-  subPage.style.display = "block";
-
-  var homePage = document.getElementById(homePageId);
-  homePage.style.display = "none";
-  homePage.style.height = "0";
+  const endPage = document.getElementById(endPageId);
+  endPage.style.display = "block";
+  endPage.style.height = "auto";
 
   document.body.scrollTop = 0;
   document.documentElement.scrollTop = 0;
-}
-
-function closeWindow(subPageId, homePageId) {
-  const subPage = document.getElementById(subPageId);
-  subPage.style.display = "none";
-
-  var homePage = document.getElementById(homePageId);
-  homePage.style.display = "block";
-  homePage.style.height = "auto";
 }
