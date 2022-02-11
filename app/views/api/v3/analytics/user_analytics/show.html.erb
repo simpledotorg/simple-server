@@ -26,7 +26,11 @@
                         style: "display: none" do %>
         <% end %>
 
-        <%= render partial: "api/v3/analytics/user_analytics/daily_stats" %>
+        <% if current_user.feature_enabled?(:follow_ups_v2_progress_tab) %>
+          <%= render(Reports::DailyProgressComponent.new(@service)) %>
+        <% else %>
+          <%= render partial: "api/v3/analytics/user_analytics/daily_stats" %>
+        <% end %>
 
         <div class="card">
           <a href="#" onclick="openWindow('progress-help-registered', 'progress-start'); return false" class="info">
