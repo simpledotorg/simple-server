@@ -27,3 +27,7 @@ so-ET:
       emotional_guilt: "Waad la daahay qiyaastaada BP. Marka aan la daaweyn, BP-ga sare wuxuu leeyahay kharashyo badan bulshadaada oo dhan. %{patient_name}, fadlan booqo %{facility_name}sida ugu dhakhsaha badan ee suurtogalka ah ee qiyaasta BP iyo daawooyinka. "
       professional_request: "Waad la daahay qiyaastaada BP. Dhakhtarkaagu wuxuu jecel yahay inuu ku xusuusiyo inaad qiyaasto BP-gaaga. %{patient_name}, fadlan booqo%{facility_name} sida ugu dhakhsaha badan ee suurtogalka ah ee qiyaasta BP iyo daawooyinka."
       response: "Waad la daahay qiyaastaada BP. %{patient_name}fadlan booqo%{facility_name}sida ugu dhakhsaha badan ee suurtogalka ah ee qiyaasta BP iyo daawooyinka. Riix lifaaqan si aad noogu sheegto inaad ka soo qaybgalayso: "
+    set03_basic_repeated:
+      first: "You are late for your BP measure. %{patient_name}, fadlan booqo %{facility_name}sida ugu dhakhsaha badan ee suurtogalka ah ee qiyaasta BP iyo daawooyinka. "
+      second: "You are late for your BP measure. %{patient_name}, fadlan booqo %{facility_name}sida ugu dhakhsaha badan ee suurtogalka ah ee qiyaasta BP iyo daawooyinka. "
+      third: "You are late for your BP measure. %{patient_name}, fadlan booqo %{facility_name}sida ugu dhakhsaha badan ee suurtogalka ah ee qiyaasta BP iyo daawooyinka. "

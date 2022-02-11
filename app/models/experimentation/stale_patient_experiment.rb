@@ -7,6 +7,11 @@ module Experimentation
 
     # Eligible patients whose last visit was 35-365 days ago and
     # don't have an appointment in the future.
+    #
+    # This eligibility test needs to happen on the date of inclusion.
+    # The stale experiment reminders are always centered around the experiment_inclusion_date.
+    # Unlike the current patient experiment where reminders are scheduled around the expected_return_date,
+    # it is not useful to schedule reminders around a date different than the experiment_inclusion_date.
     def eligible_patients(date)
       current_month = date.beginning_of_month
       last_visit_since = (date + PATIENT_VISITED_SINCE).beginning_of_day
