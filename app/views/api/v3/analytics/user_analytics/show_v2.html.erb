@@ -37,7 +37,7 @@
               Daily
             </p>
           </a>
-          <a class="f-1 d-flex fd-column ai-center jc-center td-none mr-4px ml-4px p-12px bgc-blue-light br-8px">
+          <a class="f-1 d-flex fd-column ai-center jc-center td-none mr-4px ml-4px p-12px bgc-blue-light br-8px" href="#" onclick="openWindow('monthly-report-page', 'home-page'); return false;">
             <div class="p-relative d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px o-hidden">
               <div class="p-absolute t-0 l-0 w-100 h-6px bgc-blue"></div>
               <p class="m-0px mt-6px p-0px ta-center tt-uppercase fw-bold ls-0_4px fs-12px c-blue">
@@ -48,7 +48,7 @@
               Monthly
             </p>
           </a>
-          <a class="f-1 d-flex fd-column ai-center jc-center td-none ml-10px p-12px bgc-navy-light br-8px">
+          <a class="f-1 d-flex fd-column ai-center jc-center td-none ml-10px p-12px bgc-navy-light br-8px" href="#" onclick="openWindow('yearly-report-page', 'home-page'); return false;">
             <div class="p-relative d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px o-hidden">
               <div class="p-absolute t-0 l-0 w-100 h-6px bgc-navy"></div>
               <p class="m-0px mt-6px p-0px ta-center fw-bold fs-10px c-navy">
@@ -168,6 +168,26 @@
                  periods: @daily_periods,
                  registered_patients: @daily_registered_patients,
                  follow_up_patients: @daily_follow_up_patients
+               } 
+    %>
+    <%= render partial: "api/v3/analytics/user_analytics/period_report",
+               locals: {
+                 elementId: "monthly-report-page",
+                 title: "Monthly",
+                 subtitle: false,
+                 periods: @monthly_periods,
+                 registered_patients: @monthly_registered_patients,
+                 follow_up_patients: @monthly_follow_up_patients
+               }
+    %>
+    <%= render partial: "api/v3/analytics/user_analytics/period_report",
+               locals: {
+                 elementId: "yearly-report-page",
+                 title: "Yearly",
+                 subtitle: "Apr-2021 to Mar-2022",
+                 periods: @yearly_periods,
+                 registered_patients: @yearly_registered_patients,
+                 follow_up_patients: @yearly_follow_up_patients
                }
     %>
   </body>

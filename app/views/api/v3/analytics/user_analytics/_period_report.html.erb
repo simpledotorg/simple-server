@@ -1,81 +1,83 @@
-<div id="<%= elementId %>" class="mb-8px pt-16px pb-16px bgc-white br-4px bs-card" style="display: none;">
-  <a class="d-block pl-16px mb-24px" href="#" onclick="closeWindow('<%= elementId %>', 'home-page'); return false;">
-    <div class="d-inline-block">
-      <%= inline_file("chevron-left.svg") %>
+<div id="<%= elementId %>" style="display: none;">
+  <div class="mb-8px pt-16px pb-16px bgc-white br-4px bs-card">
+    <a class="d-block pl-16px mb-24px" href="#" onclick="closeWindow('<%= elementId %>', 'home-page'); return false;">
+      <div class="d-inline-block">
+        <%= inline_file("chevron-left.svg") %>
+      </div>
+    </a>
+    <div class="mb-12px pr-16px pl-16px">
+      <h1 class="m-0px mb-8px fw-bold fs-24px">
+        <%= title %>
+      </h1>
+      <% if subtitle %>
+        <p class="m-0px p-0px ta-left fw-normal fs-16px c-grey-dark">
+          <%= subtitle %>
+        </p>
+      <% end %>
     </div>
-  </a>
-  <div class="mb-12px pr-16px pl-16px">
-    <h1 class="m-0px mb-8px fw-bold fs-24px">
-      <%= title %>
-    </h1>
-    <% if subtitle %>
-      <p class="m-0px p-0px ts-left fw-normal fs-16px c-grey-dark">
-        <%= subtitle %>
+    <div class="ws-nowrap ox-scroll pl-16px d-none-scrollbar">
+      <% periods.each do |pill| %>
+        <%= render partial: "api/v3/analytics/user_analytics/pill",
+                  locals: { title: pill,
+                            is_active: pill == periods.first ? true : false } %>
+      <% end %>
+    </div>
+  </div>
+  <div class="mb-8px p-16px bgc-white br-4px bs-card">
+    <div class="d-flex ai-center jc-space-between mb-8px">
+      <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
+        <%= registered_patients["name"] %>
+      </h2>
+      <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
+        <%=registered_patients["total"]  %>
       </p>
-    <% end %>
-  </div>
-  <div class="ws-nowrap ox-scroll pl-16px d-none-scrollbar">
-    <% periods.each do |pill| %>
-      <%= render partial: "api/v3/analytics/user_analytics/pill",
-                locals: { title: pill,
-                          is_active: pill == periods.first ? true : false } %>
-    <% end %>
-  </div>
-</div>
-<div class="mb-8px p-16px bgc-white br-4px bs-card">
-  <div class="d-flex ai-center jc-space-between mb-8px">
-    <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
-      <%= registered_patients["name"] %>
-    </h2>
-    <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
-      <%=registered_patients["total"]  %>
-    </p>
-  </div>
-  <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-    Patients registered at <%= current_facility.name %>
-  </p>
-  <% registered_patients["breakdown"].each_with_index do |row, index| %>
-    <%= render partial: "api/v3/analytics/user_analytics/data_table_row",
-               locals: { title: row["title"],
-                         value: row["value"],
-                         row_type: row["row_type"],
-                         include_bottom_border: index == registered_patients["breakdown"].length - 1 ? false : true
-                       }
-    %>
-  <% end %>
-</div>
-<div class="mb-8px p-16px bgc-white br-4px bs-card">
-  <div class="d-flex ai-center jc-space-between mb-8px">
-    <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
-      <%= follow_up_patients["name"] %>
-    </h2>
-    <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
-      <%= follow_up_patients["total"]  %>
-    </p>
-  </div>
-  <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-    Patients that had a BP taken, a blood sugar taken, an appointment scheduled, or their medications updated at <%= current_facility.name %>.
-  </p>
-  <% follow_up_patients["breakdown"].each_with_index do |row, index| %>
-    <%= render partial: "api/v3/analytics/user_analytics/data_table_row",
-               locals: { title: row["title"],
-                         value: row["value"],
-                         row_type: row["row_type"],
-                         include_bottom_border: index == registered_patients["breakdown"].length - 1 ? false : true
-                       }
-    %>
-  <% end %>
-</div>
-<% if CountryConfig.current_country?("India") %>
-  <div class="p-relative mb-8px p-16px bgc-yellow-lightest br-4px bs-card">
-    <h1 class="m-0px mb-8px p-0px ta-left fw-medium fs-18px lh-135 c-black">
-      Where is the "Patients initiated on treatment" data?
-    </h1>
-    <p class="m-0px p-0px ta-left fw-normal fs-16px lh-165 c-black">
-      Use <span class="td-underline">registered patients</span>, it will always equal <span class="td-underline">patients initiated on treatment</span> for patients registered on Simple.
-    </p>
-    <div class="p-absolute t-8px r-8px">
-      <%= inline_svg("exclamation-mark.svg") %>
     </div>
+    <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+      Patients registered at <%= current_facility.name %>
+    </p>
+    <% registered_patients["breakdown"].each_with_index do |row, index| %>
+      <%= render partial: "api/v3/analytics/user_analytics/data_table_row",
+                locals: { title: row["title"],
+                          value: row["value"],
+                          row_type: row["row_type"],
+                          include_bottom_border: index == registered_patients["breakdown"].length - 1 ? false : true
+                        }
+      %>
+    <% end %>
   </div>
-<% end %>
+  <div class="mb-8px p-16px bgc-white br-4px bs-card">
+    <div class="d-flex ai-center jc-space-between mb-8px">
+      <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
+        <%= follow_up_patients["name"] %>
+      </h2>
+      <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
+        <%= follow_up_patients["total"]  %>
+      </p>
+    </div>
+    <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+      Patients that had a BP taken, a blood sugar taken, an appointment scheduled, or their medications updated at <%= current_facility.name %>.
+    </p>
+    <% follow_up_patients["breakdown"].each_with_index do |row, index| %>
+      <%= render partial: "api/v3/analytics/user_analytics/data_table_row",
+                locals: { title: row["title"],
+                          value: row["value"],
+                          row_type: row["row_type"],
+                          include_bottom_border: index == registered_patients["breakdown"].length - 1 ? false : true
+                        }
+      %>
+    <% end %>
+  </div>
+  <% if CountryConfig.current_country?("India") %>
+    <div class="p-relative mb-8px p-16px bgc-yellow-lightest br-4px bs-card">
+      <h1 class="m-0px mb-8px p-0px ta-left fw-medium fs-18px lh-135 c-black">
+        Where is the "Patients initiated on treatment" data?
+      </h1>
+      <p class="m-0px p-0px ta-left fw-normal fs-16px lh-165 c-black">
+        Use <span class="td-underline">registered patients</span>, it will always equal <span class="td-underline">patients initiated on treatment</span> for patients registered on Simple.
+      </p>
+      <div class="p-absolute t-8px r-8px">
+        <%= inline_svg("exclamation-mark.svg") %>
+      </div>
+    </div>
+  <% end %>
+</div>
