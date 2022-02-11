@@ -14,9 +14,7 @@ class MonthlyDistrictDataService
     CSV.generate(headers: true) do |csv|
       csv << ["Monthly #{localized_facility} data for #{region.name} #{period.to_date.strftime("%B %Y")}"]
       csv << section_row
-      if @medications_dispensation_enabled
-        csv << sub_section_row
-      end
+      csv << sub_section_row if @medications_dispensation_enabled
       csv << header_row
       csv << district_row
 
