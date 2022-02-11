@@ -1,5 +1,7 @@
 class CreateFebruary2022BdExperiment < ActiveRecord::Migration[5.2]
   def up
+    return unless CountryConfig.current_country?("Bangladesh") && SimpleServer.env.production?
+
     create_current_experiment
     create_stale_experiment
   end
@@ -11,7 +13,7 @@ class CreateFebruary2022BdExperiment < ActiveRecord::Migration[5.2]
   def create_current_experiment
     ActiveRecord::Base.transaction do
       Experimentation::Experiment.current_patients.create!(
-        name: "Current patient experiment February 2022",
+        name: "Current Patient February 2022",
         start_time: Date.parse("Feb 12, 2022").beginning_of_day,
         end_time: Date.parse("Mar 14, 2022").end_of_day,
         max_patients_per_day: 5000
@@ -33,7 +35,7 @@ class CreateFebruary2022BdExperiment < ActiveRecord::Migration[5.2]
   def create_stale_experiment
     ActiveRecord::Base.transaction do
       Experimentation::Experiment.stale_patients.create!(
-        name: "Stale patient experiment February 2022",
+        name: "Stale Patient February 2022",
         start_time: Date.parse("Feb 12, 2022").beginning_of_day,
         end_time: Date.parse("Mar 14, 2022").end_of_day,
         max_patients_per_day: 2000
