@@ -27,3 +27,7 @@ ti-ET:
       emotional_guilt: "ንናይ BP ልክዒት ደንጒኻ ኣለኻ። እንድሕር ዘይተሓኪሙ፣ ልዑል BP ማሕበረሰብካ ብዙሕ ወጻኢታት እዩ ዜውጽእ። %{patient_name}, ብኽብረትካ ናብዚ ዝስዕብ ብጻሕ %{facility_name} ብዝተኻእለ መጠን፣ ናይ BP ንምልካዕን መድሃኒታትን።"
       professional_request: "ንናይ BP ልክዒት ደንጒኻ ኣለኻ። ሓኪምካ ናይ BP ልክዒት ንኽትገብር ከዘኻኽረካ ይደሊ። %{patient_name}, ብኽብረትካ ናብዚ ዝስዕብ ብጻሕ %{facility_name} ብዝተኻእለ መጠን፣ ናይ BP ንምልካዕን መድሃኒታትን።"
       response: "ንናይ BP ልክዒት ደንጒኻ ኣለኻ። %{patient_name}, ብኽብረትካ ናብዚ ዝስዕብ ብጻሕ %{facility_name} ብዝተኻእለ መጠን፣ ናይ BP ንምልካዕን መድሃኒታትን። ኣብዚ ዝስዕብ ኸም እትሳተፍ ምእንቲ ኽትነግረና ነዚ ሊንክ እዚ ጠውቕ፦"
+    set03_basic_repeated:
+      first: "ንናይ BP ልክዒት ደንጒኻ ኣለኻ። %{patient_name}, ብኽብረትካ ናብዚ ዝስዕብ ብጻሕ %{facility_name} ብዝተኻእለ መጠን፣ ናይ BP ንምልካዕን መድሃኒታትን።"
+      second: "ንናይ BP ልክዒት ደንጒኻ ኣለኻ። %{patient_name}, ብኽብረትካ ናብዚ ዝስዕብ ብጻሕ %{facility_name} ብዝተኻእለ መጠን፣ ናይ BP ንምልካዕን መድሃኒታትን።"
+      third: "ንናይ BP ልክዒት ደንጒኻ ኣለኻ። %{patient_name}, ብኽብረትካ ናብዚ ዝስዕብ ብጻሕ %{facility_name} ብዝተኻእለ መጠን፣ ናይ BP ንምልካዕን መድሃኒታትን።"
