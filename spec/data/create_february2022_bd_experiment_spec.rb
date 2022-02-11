@@ -38,4 +38,3 @@ RSpec.describe CreateFebruary2022BdExperiment do
     expect(experiment.reminder_templates.where(remind_on_in_days: 4).count).to eq(1)
   end
 end
-

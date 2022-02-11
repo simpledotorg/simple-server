@@ -27,3 +27,7 @@ am-ET:
       emotional_guilt: "ለደም ግፊትዎ መለካት ዘግይተዋል። በማይታከምበት ጊዜ ከፍተኛ የደም ግፊት ለሙሉ ማህበረሰብ ከፍተኛ ወጪዎች አሉት። %{patient_name}፣ እባክዎ ለደም ግፊት ልኬት እና ለመድሃኒቶች  %{facility_name} ይጎብኙ።"
       professional_request: "ዛሬ እንጠብቅዎታለን። የደም ግፊትዎ እንዲለካ ሐኪምዎ እርስዎን ለማስታወስ ይመኛል።  %{patient_name}፣ እባክዎ ለደም ግፊት ልኬት እና መድሃኒቶች በተቻለ መጠን%{facility_name}ይጎብኙ። "
       response: "ለደም ግፊትዎ መለካት ዘግይተዋል። %{patient_name}፣ እባክዎ ለደም ግፊት ልኬት እና ለመድሃኒቶች በተቻለ መጠን %{facility_name} ይጎብኙ። እንደሚሳተፉ እንድናውቅ ይህንን አገናኝ ጠቅ ያድርጉ፦"
+    set03_basic_repeated:
+      first: "ለደም ግፊትዎ መለካት ዘግይተዋል።  %{patient_name}፣ እባክዎ ለደም ግፊት ልኬት እና ለመድሃኒቶች በተቻለ መጠን  %{facility_name} ይጎብኙ።"
+      second: "ለደም ግፊትዎ መለካት ዘግይተዋል።  %{patient_name}፣ እባክዎ ለደም ግፊት ልኬት እና ለመድሃኒቶች በተቻለ መጠን  %{facility_name} ይጎብኙ።"
+      third: "ለደም ግፊትዎ መለካት ዘግይተዋል።  %{patient_name}፣ እባክዎ ለደም ግፊት ልኬት እና ለመድሃኒቶች በተቻለ መጠን  %{facility_name} ይጎብኙ።"
