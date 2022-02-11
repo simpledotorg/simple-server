@@ -28,7 +28,9 @@ RSpec.describe RedisService do
 
     it "should throw an exception if there is a connection error" do
       expected_exception = Redis::CannotConnectError.new
-      expect(connection).to receive(:hmset).and_raise(expected_exception)
+      pipeline = double("pipeline")
+      expect(connection).to receive(:pipelined).and_yield(pipeline)
+      expect(pipeline).to receive(:hmset).and_raise expected_exception
 
       expect {
         described_class.new(connection).hmset_with_expiry(key, {user: "margaret"}, expire_key_in_one_day)

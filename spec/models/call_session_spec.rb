@@ -1,14 +1,9 @@
 require "rails_helper"
-require "mock_redis"
 
 describe CallSession, type: :model do
   let!(:user) { create(:user, :with_sanitized_phone_number) }
   let!(:patient) { create(:patient, :with_sanitized_phone_number) }
   let!(:call_id) { SecureRandom.uuid }
-
-  before do
-    allow(CallSessionStore).to receive(:create_redis).with(anything).and_return(MockRedis.new)
-  end
 
   describe "#initialize" do
     it "should strip leading 0 when looking up users by phone number" do
