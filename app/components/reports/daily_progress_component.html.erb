@@ -19,11 +19,11 @@
         <%= raw t("analytics.tap_sync") %>
       </p>
     </div>
-    <% @user_analytics.daily_period_list.each do |day_date| %>
+    <% last_30_days.each do |date| %>
       <div class="day">
         <h3 class="stat-day">
           <span class="num">
-            <%= display_date(day_date) %>
+            <%= display_date(date) %>
           </span>
         </h3>
         <div class="counts">
@@ -32,18 +32,18 @@
               <%= raw t("analytics.registered") %>
             </strong>
             <div class="big-number">
-              <%= @user_analytics.daily_stats_by_date(:registrations, day_date) %>
+              <%= daily_registrations(date) %>
             </div>
-            <%= raw t("analytics.patient", count: @user_analytics.daily_stats_by_date(:registrations, day_date)) %>
+            <%= raw t("analytics.patient", count: daily_registrations(date)) %>
           </div>
           <div class="count count-2">
             <strong>
               <%= raw t("analytics.follow_up") %>
             </strong>
             <div class="big-number">
-              <%= @user_analytics.daily_stats_by_date(:follow_ups, day_date) %>
+              <%= daily_follow_ups(date) %>
             </div>
-            <%= raw t("analytics.patient", count: @user_analytics.daily_stats_by_date(:follow_ups, day_date)) %>
+            <%= raw t("analytics.patient", count: daily_follow_ups(date)) %>
           </div>
         </div>
       </div>
