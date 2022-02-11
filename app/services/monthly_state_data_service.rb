@@ -66,6 +66,15 @@ class MonthlyStateDataService
     ]
   end
 
+  def medications_dispensation_section_header
+    if @medications_dispensation_enabled
+      ["Days of patient medications",
+        Array.new((medications_dispensation_headers.size * @medication_dispensation_months.size) - 1, nil)]
+    else
+      []
+    end
+  end
+
   def medications_dispensation_headers
     if @medications_dispensation_enabled
       [
@@ -101,12 +110,7 @@ class MonthlyStateDataService
       Array.new(month_headers.size - 1, nil),
       "Treatment outcomes of patients under care",
       Array.new(outcome_headers.size - 1, nil),
-      (if @medications_dispensation_enabled
-         ["Days of patient medications",
-           Array.new((medications_dispensation_headers.size * @medication_dispensation_months.size) - 1, nil)]
-       else
-         []
-       end),
+      medications_dispensation_section_header,
       "Drug availability",
       Array.new(drug_headers.size - 1, nil)
     ].flatten
