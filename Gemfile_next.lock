@@ -474,7 +474,7 @@ GEM
     redis-prescription (1.0.0)
     regexp_parser (2.2.0)
     render_async (2.1.7)
-    request_store (1.5.0)
+    request_store (1.5.1)
       rack (>= 1.4)
     request_store-sidekiq (0.1.0)
       request_store (>= 1.3)
