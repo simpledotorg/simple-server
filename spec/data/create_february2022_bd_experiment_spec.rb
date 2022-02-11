@@ -3,12 +3,15 @@ require Rails.root.join("db", "data", "20220211100928_create_february2022_bd_exp
 
 RSpec.describe CreateFebruary2022BdExperiment do
   it "creates the current experiment" do
+    allow(CountryConfig).to receive(:current_country?).with("Bangladesh").and_return true
+    stub_const("SIMPLE_SERVER_ENV", "production")
+
     described_class.new.up
 
     experiment = Experimentation::CurrentPatientExperiment.first
 
     expect(experiment).to be_current_patients
-    expect(experiment.name).to eq("Current patient experiment February 2022")
+    expect(experiment.name).to eq("Current Patient February 2022")
     expect(experiment.start_time.to_date).to eq(Date.parse("Feb 12, 2022").to_date)
     expect(experiment.end_time.to_date).to eq(Date.parse("Mar 14, 2022").to_date)
     expect(experiment.max_patients_per_day).to eq(5000)
@@ -21,12 +24,15 @@ RSpec.describe CreateFebruary2022BdExperiment do
   end
 
   it "creates the stale experiment" do
+    allow(CountryConfig).to receive(:current_country?).with("Bangladesh").and_return true
+    stub_const("SIMPLE_SERVER_ENV", "production")
+
     described_class.new.up
 
     experiment = Experimentation::StalePatientExperiment.first
 
     expect(experiment).to be_stale_patients
-    expect(experiment.name).to eq("Stale patient experiment February 2022")
+    expect(experiment.name).to eq("Stale Patient February 2022")
     expect(experiment.start_time.to_date).to eq(Date.parse("Feb 12, 2022").to_date)
     expect(experiment.end_time.to_date).to eq(Date.parse("Mar 14, 2022").to_date)
     expect(experiment.max_patients_per_day).to eq(2000)
