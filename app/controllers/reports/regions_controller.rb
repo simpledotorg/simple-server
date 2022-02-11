@@ -147,7 +147,8 @@ class Reports::RegionsController < AdminController
   def monthly_district_data_report
     @region ||= authorize { current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id]) }
     @period = Period.month(params[:period] || Date.current)
-    csv = MonthlyDistrictDataService.new(@region, @period).report
+    @medications_dispensation_enabled = current_admin.feature_enabled?(:medications_dispensation)
+    csv = MonthlyDistrictDataService.new(@region, @period, medications_dispensation_enabled: @medications_dispensation_enabled).report
     report_date = @period.to_s.downcase
     filename = "monthly-facility-data-#{@region.slug}-#{report_date}.csv"
 
@@ -161,7 +162,8 @@ class Reports::RegionsController < AdminController
   def monthly_state_data_report
     @region ||= authorize { current_admin.accessible_state_regions(:view_reports).find_by!(slug: report_params[:id]) }
     @period = Period.month(params[:period] || Date.current)
-    csv = MonthlyStateDataService.new(@region, @period).report
+    @medications_dispensation_enabled = current_admin.feature_enabled?(:medications_dispensation)
+    csv = MonthlyStateDataService.new(@region, @period, medications_dispensation_enabled: @medications_dispensation_enabled).report
     report_date = @period.to_s.downcase
     filename = "monthly-district-data-#{@region.slug}-#{report_date}.csv"
 
