@@ -31,7 +31,6 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
         expect(response.status).to eq(200)
         expect(response_body.keys.map(&:to_sym)).to include(:daily, :monthly, :all_time, :trophies, :metadata)
       end
-
     end
 
     context "html" do
