@@ -541,7 +541,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       sign_in(cvho.email_authentication)
 
       period = Period.month("July 2018")
-      expect(MonthlyDistrictDataService).to receive(:new).with(region, period).and_call_original
+      expect(MonthlyDistrictDataService).to receive(:new).with(region, period, medications_dispensation_enabled: false).and_call_original
       get :monthly_district_data_report,
         params: {id: region.slug, report_scope: "district", format: "csv", period: period.value}
     end
