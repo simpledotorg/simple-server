@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Reports::FacilityStateGroup, {type: :model, reporting_spec: true} do
+RSpec.describe Reports::FacilityStateDimension, {type: :model, reporting_spec: true} do
   let(:user) { create(:user) }
   let(:user_2) { create(:user) }
   let(:facility) { create(:facility) }

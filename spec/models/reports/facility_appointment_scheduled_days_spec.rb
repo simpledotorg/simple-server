@@ -57,8 +57,8 @@ RSpec.describe Reports::FacilityAppointmentScheduledDays, {type: :model, reporti
     RefreshReportingViews.new.refresh_v2
 
     expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_0_to_14_days).to eq 1
-    expect(described_class.find_by(month_date: Period.month(1.month.ago), facility: facility).appts_scheduled_15_to_31_days).to eq 1
-    expect(described_class.find_by(month_date: Period.month(2.month.ago), facility: facility).appts_scheduled_32_to_62_days).to eq 1
+    expect(described_class.find_by(month_date: Period.month(32.days.ago), facility: facility).appts_scheduled_15_to_31_days).to eq 1
+    expect(described_class.find_by(month_date: Period.month(63.days.ago), facility: facility).appts_scheduled_32_to_62_days).to eq 1
   end
 
   it "considers only the latest appointment of a patient in a month" do

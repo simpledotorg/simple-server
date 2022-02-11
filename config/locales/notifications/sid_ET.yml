@@ -27,3 +27,7 @@ sid-ET:
       emotional_guilt: "Munidete xiiwo layirate gedenite dayoto. Xagisira hogitoro, jawa munidete xiso aterano iko qoxesikira millara gawajo illishano. %{patient_name}, egotena la'isi %{assigned_facility_name} danidito yanani munidete xiiwo layirana xagicho adha danidato."
       professional_request: "Munidete xiiwo layirate gedenite dayoto. Ate la'anohe dokiterichiki munideki xiwo layirato gede qaggo anohena. %{patient_name}, egotena la'isi %{assigned_facility_name} danidito yanani munidete xiiwo layirana xagicho adha danidato."
       response: "Munidete xiiwo layirate gedenite dayoto. %{patient_name}, egotena la'isi %{assigned_facility_name} danidito yanani munidete xiiwo layirana xagicho adha danidato. kone horonisiranicho kisse ka'e affiri gido boresamotoro:"
+    set03_basic_repeated:
+      first: "Munidete xiiwo layirate gedenite dayoto. %{patient_name}, egotena la'isi %{assigned_facility_name} danidito yanani munidete xiiwo layirana xagicho adha danidato."
+      second: "Munidete xiiwo layirate gedenite dayoto. %{patient_name}, egotena la'isi %{assigned_facility_name} danidito yanani munidete xiiwo layirana xagicho adha danidato."
+      third: "Munidete xiiwo layirate gedenite dayoto. %{patient_name}, egotena la'isi %{assigned_facility_name} danidito yanani munidete xiiwo layirana xagicho adha danidato."
