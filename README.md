@@ -186,7 +186,7 @@ This temporary environment can be used to test your changes in a production-like
 If you need to test your changes with a mobile app build as well, you can generate a mobile app build that points to
 your review app. To do so:
 
-* Navigate to the Github Actions page on the `simple-server` repository
+* Navigate to the GitHub Actions page on the `simple-server` repository
 * Select the "Mobile Review App Build" action
 * Trigger a "workflow dispatch" at the top of the screen. You can keep the branch as `master` (it doesn't matter) and
   enter your PR number in the required input
