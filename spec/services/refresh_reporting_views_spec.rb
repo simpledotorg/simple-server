@@ -54,7 +54,7 @@ RSpec.describe RefreshReportingViews do
       .and change { Reports::PatientFollowUp.count }.by(1)
   end
 
-  it "updates only the specified view when argument is passed in" do
+  it "updates only the specified view when views are passed in" do
     time = Time.current
     expect {
       Timecop.freeze(time) do

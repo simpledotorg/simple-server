@@ -36,6 +36,8 @@ class RefreshReportingViews
     Rails.cache.write(REPORTING_VIEW_REFRESH_TIME_KEY, Time.current.in_time_zone(tz))
   end
 
+  # Refreshes all views by default, or can take an Array of class names if you want to
+  # specifically refresh certain matviews.
   def self.call(views: :all)
     new(views: views).call
   end
