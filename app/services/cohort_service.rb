@@ -1,5 +1,6 @@
 class CohortService
   include BustCache
+  include Reports::Percentage
   CACHE_VERSION = 3
   CACHE_TTL = 7.days
 
@@ -13,6 +14,7 @@ class CohortService
     cohort_missed_visit
     cohort_patients
     cohort_uncontrolled
+    cohort_visited_no_bp
   ].freeze
 
   def initialize(region:, periods:)
@@ -46,15 +48,27 @@ class CohortService
         result.period.advance(months: -2)
       end
       arry << {
-        controlled: result.cohort_controlled,
-        no_bp: result.cohort_missed_visit,
+        controlled: cohort_reports_rates(result)[:controlled],
+        no_bp: cohort_reports_rates(result)[:no_bp],
+        missed_visits: cohort_reports_rates(result)[:missed_visits],
+        uncontrolled: cohort_reports_rates(result)[:uncontrolled],
         period: result.period,
         patients_registered: registration_period.to_s,
         registered: result.cohort_patients,
-        results_in: result.period.to_s(:cohort),
-        uncontrolled: result.cohort_uncontrolled
+        results_in: result.period.to_s(:cohort)
       }.with_indifferent_access
+      pp arry
+      arry
     end
+  end
+
+  def cohort_reports_rates(cohort)
+    rounded_percentages({
+      controlled: cohort.cohort_controlled,
+      no_bp: cohort.cohort_visited_no_bp,
+      missed_visits: cohort.cohort_missed_visit,
+      uncontrolled: cohort.cohort_uncontrolled
+    })
   end
 
   def query(range)

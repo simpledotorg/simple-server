@@ -54,6 +54,7 @@ RSpec.describe CohortService, type: :model do
       expect(jan_registered_results).to eq({
         "controlled" => 1,
         "no_bp" => 0,
+        "missed_visits" => 0,
         "patients_registered" => "Jan-2020",
         "registered" => 2,
         "results_in" => "Feb/Mar",
@@ -62,7 +63,8 @@ RSpec.describe CohortService, type: :model do
       feb_registered_results = result.find { |r| r["patients_registered"] == "Feb-2020" }.except(:period)
       expect(feb_registered_results).to eq({
         "controlled" => 1,
-        "no_bp" => 1,
+        "no_bp" => 0,
+        "missed_visits" => 1,
         "patients_registered" => "Feb-2020",
         "registered" => 2,
         "results_in" => "Mar/Apr",
@@ -142,22 +144,24 @@ RSpec.describe CohortService, type: :model do
 
       q3_results, q2_results = results[0], results[1]
       expect(q3_results).to eq({
-        "controlled" => 4,
-        "no_bp" => 1,
+        "controlled" => 50,
+        "missed_visits" => 12,
+        "no_bp" => 0,
         "patients_registered" => "Q2-2020",
         "period" => Period.quarter("September 1st 2020"),
         "registered" => 8,
         "results_in" => "Q3-2020",
-        "uncontrolled" => 3
+        "uncontrolled" => 38
       })
       expect(q2_results).to eq({
-        "controlled" => 3,
-        "no_bp" => 2,
+        "controlled" => 50,
+        "no_bp" => 0,
+        "missed_visits" => 33,
         "patients_registered" => "Q1-2020",
         "period" => Period.quarter("June 1st 2020"),
         "registered" => 6,
         "results_in" => "Q2-2020",
-        "uncontrolled" => 1
+        "uncontrolled" => 17
       })
     end
   end
@@ -186,7 +190,8 @@ RSpec.describe CohortService, type: :model do
     q2, q1 = result[0], result[1]
     expect(q2).to eq({
       "controlled" => 0,
-      "no_bp" => 1,
+      "no_bp" => 0,
+      "missed_visits" => 100,
       "patients_registered" => "Q2-2020",
       "period" => Period.quarter("September 2020"),
       "registered" => 1,
@@ -194,13 +199,14 @@ RSpec.describe CohortService, type: :model do
       "uncontrolled" => 0
     })
     expect(q1).to eq({
-      "controlled" => 2,
+      "controlled" => 67,
       "no_bp" => 0,
+      "missed_visits" => 0,
       "patients_registered" => "Q1-2020",
       "period" => Period.quarter("June 2020"),
       "registered" => 3,
       "results_in" => "Q2-2020",
-      "uncontrolled" => 1
+      "uncontrolled" => 33
     })
   end
 end

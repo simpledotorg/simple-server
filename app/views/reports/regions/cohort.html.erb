@@ -45,10 +45,10 @@
               <tr>
                 <% if cohort["registered"] && cohort["registered"] > 0 %>
                   <%
-                    controlled_percent = compute_percentage(cohort["controlled"], cohort["registered"])
-                    uncontrolled_percent = compute_percentage(cohort["uncontrolled"], cohort["registered"])
-                    no_bp_percent = compute_percentage(cohort["no_bp"], cohort["registered"])
-                    missed_visits_percent = compute_percentage(cohort["missed_visits"], cohort["registered"])
+                    controlled_percent = cohort["controlled"]
+                    uncontrolled_percent = cohort["uncontrolled"]
+                    no_bp_percent = cohort["no_bp"]
+                    missed_visits_percent = cohort["missed_visits"]
                   %>
                   <td
                     class="bar bar-1"
