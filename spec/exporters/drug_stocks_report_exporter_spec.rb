@@ -54,7 +54,7 @@ RSpec.describe DrugStocksReportExporter do
     end
 
     def refresh_views
-      RefreshReportingViews.new.refresh_v2
+      RefreshReportingViews.refresh_v2
     end
 
     it "renders the csv" do

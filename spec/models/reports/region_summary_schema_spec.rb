@@ -14,7 +14,7 @@ describe Reports::RegionSummarySchema, type: :model do
   let(:june_2020) { Period.month("June 1 2020") }
 
   def refresh_views
-    RefreshReportingViews.new.refresh_v2
+    RefreshReportingViews.refresh_v2
   end
 
   it "returns data correctly grouped when passed mixed region types" do

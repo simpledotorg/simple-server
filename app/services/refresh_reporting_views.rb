@@ -44,6 +44,9 @@ class RefreshReportingViews
     new(views: ["Reports::DailyFollowUp"]).call
   end
 
+  def self.refresh_v2
+    new(views: V2_REPORTING_VIEWS).call
+  end
 
   attr_reader :logger
   delegate :tz, :set_last_updated_at, to: self

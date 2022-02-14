@@ -16,7 +16,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         two_years_ago = june_2021[:now] - 2.years
         create_list(:patient, 6, registration_facility: facility, recorded_at: two_years_ago)
         create_list(:patient, 3, registration_facility: facility, recorded_at: june_2021[:under_three_months_ago])
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
         with_reporting_time_zone do
           expect(described_class
             .where(facility_id: facility.id)
@@ -46,7 +46,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         month_2020_07 = "2020-07-01"
         month_2021_04 = "2021-04-01"
 
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
         with_reporting_time_zone do
           expect(described_class
             .where(facility_id: facility.id)
@@ -82,7 +82,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         _different_facility_patient = create(:patient, recorded_at: june_2021[:long_ago])
         create_list(:patient, 3, recorded_at: june_2021[:long_ago], assigned_facility: facility, status: "dead")
 
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: june_2021[:now], facility: facility).lost_to_follow_up).to eq 1
           expect(described_class.find_by(month_date: june_2021[:now], facility: facility).under_care).to eq 2
@@ -100,7 +100,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         create(:patient, assigned_facility: facility, recorded_at: june_2021[:end_of_month])
         create_list(:patient, 3, recorded_at: june_2021[:long_ago], assigned_facility: facility, status: "dead")
 
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
         with_reporting_time_zone do
           expect(described_class.find_by(facility: facility, month_date: june_2021[:now] - 2.years).cumulative_assigned_patients).to eq 1
           expect(described_class.find_by(facility: facility, month_date: june_2021[:under_12_months_ago]).cumulative_assigned_patients).to eq 2
@@ -142,7 +142,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         create(:blood_pressure, patient: patient, recorded_at: june_2021[:over_3_months_ago])
       end
 
-      RefreshReportingViews.new.refresh_v2
+      RefreshReportingViews.refresh_v2
       with_reporting_time_zone do
         facility_state_june_2021 = described_class.find_by(facility: facility, month_date: june_2021[:now])
 
@@ -171,7 +171,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         user: patient_visited_no_bp.registration_user)
       create(:blood_pressure, patient: patient_visited_no_bp, recorded_at: june_2021[:over_12_months_ago])
 
-      RefreshReportingViews.new.refresh_v2
+      RefreshReportingViews.refresh_v2
       with_reporting_time_zone do
         facility_state_june_2021 = described_class.find_by(facility: facility, month_date: june_2021[:now])
 
@@ -214,7 +214,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         create(:blood_pressure, patient: patient, recorded_at: june_2021[:over_3_months_ago])
       end
 
-      RefreshReportingViews.new.refresh_v2
+      RefreshReportingViews.refresh_v2
       with_reporting_time_zone do
         facility_state_june_2021 = described_class.find_by(facility: facility, month_date: june_2021[:now])
 
@@ -248,7 +248,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
             scheduled_date: Date.today,
             device_created_at: 63.days.ago)
 
-          RefreshReportingViews.new.refresh_v2
+          RefreshReportingViews.refresh_v2
 
           expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_0_to_14_days).to eq 2
           expect(described_class.find_by(month_date: Period.current, facility: facility).total_appts_scheduled).to eq 2

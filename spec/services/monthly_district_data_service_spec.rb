@@ -111,7 +111,7 @@ RSpec.describe MonthlyDistrictDataService, reporting_spec: true do
         ltfu_patient
         medications_dispensed_patients
 
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
 
         result = service.report
         csv = CSV.parse(result)
@@ -146,7 +146,7 @@ RSpec.describe MonthlyDistrictDataService, reporting_spec: true do
         ltfu_patient
         medications_dispensed_patients
 
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
 
         result = service.report
         csv = CSV.parse(result)
@@ -180,7 +180,7 @@ RSpec.describe MonthlyDistrictDataService, reporting_spec: true do
         ltfu_patient
         medications_dispensed_patients
 
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
 
         result = service.report
         csv = CSV.parse(result)
@@ -303,7 +303,7 @@ RSpec.describe MonthlyDistrictDataService, reporting_spec: true do
         ltfu_patient
         medications_dispensed_patients
 
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
 
         result = service.report
         csv = CSV.parse(result)
@@ -341,7 +341,7 @@ RSpec.describe MonthlyDistrictDataService, reporting_spec: true do
         ltfu_patient
         medications_dispensed_patients
 
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
 
         result = service.report
         csv = CSV.parse(result)
@@ -378,7 +378,7 @@ RSpec.describe MonthlyDistrictDataService, reporting_spec: true do
         ltfu_patient
         medications_dispensed_patients
 
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
 
         result = service.report
         csv = CSV.parse(result)
