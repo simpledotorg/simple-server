@@ -27,7 +27,9 @@ every :day, at: local("12:30am"), roles: [:cron] do
   rake "db:refresh_reporting_views"
 end
 
-every :day, at: [local("09:00 am"), local("11:00 am"), local("01:00 pm"), local("03:00 pm"), local("05:00 pm")] roles: [:cron] do
+FOLLOW_UP_TIMES = ["09:00 am", "11:00 am", "01:00 pm", "03:00 pm", "05:00 pm", "07:00 pm"].map { |t| local(t) }
+
+every :day, at: FOLLOW_UP_TIMES, roles: [:cron] do
   rake "db:refresh_dailly_follow_ups"
 end
 
