@@ -11,6 +11,14 @@ module Reports
       @diabetes_enabled = facility.enable_diabetes_management
     end
 
+    # we use the daily timestamp for the purposes of the last updated at,
+    # even though monthly numbers may lag behind the daily.  The update time
+    # probably matters the most health care workers as they see patients 
+    # throughout the day and expect to see those reflected in the daily counts.
+    def last_updated_at
+
+    end
+
     def daily_registrations(date)
       daily_registrations_grouped_by_day[date.to_date] || 0
     end

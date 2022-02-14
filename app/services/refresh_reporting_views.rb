@@ -2,6 +2,7 @@ class RefreshReportingViews
   prepend SentryHandler
   include ActiveSupport::Benchmarkable
   REPORTING_VIEW_REFRESH_TIME_KEY = "last_reporting_view_refresh_time".freeze
+  REPORTING_VIEW_DAILY_REFRESH_KEY = "last_reporting_view_daily_refresh_time".freeze
 
   # Keep the views below in the order as defined, as they have dependencies on earlier matviews in the lists
   V1_REPORTING_VIEWS = %w[
@@ -55,6 +56,7 @@ class RefreshReportingViews
 
   def initialize(views:)
     @logger = Rails.logger.child(class: self.class.name)
+    @all = true if views == :all
     @views = if views == :all
       V1_REPORTING_VIEWS + V2_REPORTING_VIEWS
     else
@@ -71,7 +73,8 @@ class RefreshReportingViews
     benchmark_and_statsd("all") do
       refresh
     end
-    set_last_updated_at
+    set_last_updated_at if all_views_refreshed?
+    self.class.set_daily_last_updated_at if views.include?(/Daily/)
     logger.info "Completed full reporting view refresh"
   end
 
@@ -80,6 +83,15 @@ class RefreshReportingViews
   end
 
   private
+
+  def all_views_refreshed?
+    @all == true
+  end
+
+  def self.set_daily_last_updated_at
+    Rails.cache.write(REPORTING_VIEW_DAILY_REFRESH_KEY, Time.current.in_time_zone(tz))
+  end
+
 
   attr_reader :views
 
