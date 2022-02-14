@@ -27,6 +27,10 @@ every :day, at: local("12:30am"), roles: [:cron] do
   rake "db:refresh_reporting_views"
 end
 
+every :day, at: [local("09:00 am"), local("11:00 am"), local("01:00 pm"), local("03:00 pm"), local("05:00 pm")] roles: [:cron] do
+  rake "db:refresh_dailly_follow_ups"
+end
+
 every :day, at: local("01:00 am"), roles: [:cron] do
   runner "MarkPatientMobileNumbers.call"
 end
