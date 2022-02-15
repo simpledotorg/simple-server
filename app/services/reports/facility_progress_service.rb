@@ -13,7 +13,7 @@ module Reports
 
     # we use the daily timestamp for the purposes of the last updated at,
     # even though monthly numbers may lag behind the daily.  The update time
-    # probably matters the most health care workers as they see patients 
+    # probably matters the most health care workers as they see patients
     # throughout the day and expect to see those reflected in the daily counts.
     def last_updated_at
       RefreshReportingViews.last_updated_at_daily_follow_ups

@@ -45,7 +45,6 @@ class RefreshReportingViews
     Rails.cache.write(REPORTING_VIEW_DAILY_REFRESH_KEY, Time.current.in_time_zone(tz))
   end
 
-
   # Refreshes all views by default, or can take an Array of class names if you want to
   # specifically refresh certain matviews.
   def self.call(views: :all)
@@ -96,7 +95,6 @@ class RefreshReportingViews
   def all_views_refreshed?
     @all == true
   end
-
 
   attr_reader :views
 
