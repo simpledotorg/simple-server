@@ -82,7 +82,7 @@ describe MonthlyDistrictReport::DistrictData do
         end
       end
 
-      RefreshReportingViews.new.refresh_v2
+      RefreshReportingViews.refresh_v2
 
       rows = described_class.new(district[:region], month).content_rows
       expect(rows[0].count).to eq 76

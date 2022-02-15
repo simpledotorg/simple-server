@@ -10,7 +10,7 @@ RSpec.describe MedicationDispensationService, type: :model do
       _appointment_created_1_month_ago = create(:appointment, patient: patient, facility: facility, scheduled_date: Date.today, device_created_at: 32.days.ago)
       _appointment_created_2_month_ago = create(:appointment, patient: patient, facility: facility, scheduled_date: Date.today, device_created_at: 63.days.ago)
 
-      RefreshReportingViews.new.refresh_v2
+      RefreshReportingViews.refresh_v2
 
       medications_dispensation_service = MedicationDispensationService.new(region: facility, period: period)
       last_3_months = (Period.month(2.months.ago)..Period.current).to_a

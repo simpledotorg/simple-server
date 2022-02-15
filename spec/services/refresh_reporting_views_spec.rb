@@ -53,4 +53,18 @@ RSpec.describe RefreshReportingViews do
       .and change { Reports::PatientVisit.count }.by(4)
       .and change { Reports::PatientFollowUp.count }.by(1)
   end
+
+  it "updates only the specified view when views are passed in" do
+    time = Time.current
+    expect {
+      Timecop.freeze(time) do
+        patient = create(:patient, recorded_at: 1.month.ago)
+        create(:blood_pressure, patient: patient, recorded_at: 2.days.ago)
+        create(:appointment, patient: patient, recorded_at: 1.day.ago)
+
+        RefreshReportingViews.call(views: ["Reports::DailyFollowUp"])
+      end
+    }.to change { Reports::DailyFollowUp.count }.by(2)
+    expect(Reports::PatientState.count).to eq(0)
+  end
 end
