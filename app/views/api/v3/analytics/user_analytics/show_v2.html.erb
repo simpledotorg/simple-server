@@ -165,9 +165,9 @@
                  pageId: "daily-report-page",
                  title: "Daily",
                  subtitle: false,
-                 periods: @daily_periods,
-                 registered_patients: @daily_registered_patients,
-                 follow_up_patients: @daily_follow_up_patients
+                 periods: @data["daily_periods"],
+                 registered_patients: @data["daily_registered_patients"],
+                 follow_up_patients: @data["daily_follow_up_patients"]
                } 
     %>
     <%= render partial: "api/v3/analytics/user_analytics/period_report",
@@ -175,9 +175,9 @@
                  pageId: "monthly-report-page",
                  title: "Monthly",
                  subtitle: false,
-                 periods: @monthly_periods,
-                 registered_patients: @monthly_registered_patients,
-                 follow_up_patients: @monthly_follow_up_patients
+                 periods: @data["monthly_periods"],
+                 registered_patients: @data["monthly_registered_patients"],
+                 follow_up_patients: @data["monthly_follow_up_patients"]
                }
     %>
     <%= render partial: "api/v3/analytics/user_analytics/period_report",
@@ -185,9 +185,9 @@
                  pageId: "yearly-report-page",
                  title: "Yearly",
                  subtitle: "Apr-2021 to Mar-2022",
-                 periods: @yearly_periods,
-                 registered_patients: @yearly_registered_patients,
-                 follow_up_patients: @yearly_follow_up_patients
+                 periods: @data["yearly_periods"],
+                 registered_patients: @data["yearly_registered_patients"],
+                 follow_up_patients: @data["yearly_follow_up_patients"]
                }
     %>
   </body>
