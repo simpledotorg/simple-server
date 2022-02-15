@@ -97,7 +97,7 @@ GEM
     capistrano-rails-console (2.3.0)
       capistrano (>= 3.5.0, < 4.0.0)
       sshkit-interactive (~> 0.3.0)
-    capistrano-rbenv (2.1.6)
+    capistrano-rbenv (2.2.0)
       capistrano (~> 3.1)
       sshkit (~> 1.3)
     capistrano-sentry (0.4.2)
