@@ -245,6 +245,7 @@ class UserAnalyticsPresenter
   # i.e. increment by TROPHY_MILESTONE_INCR
   def trophy_stats
     follow_up_count = all_time_htn_stats.dig(:grouped_by_gender, :hypertension, :follow_ups).values.sum
+    d follow_up_count
     milestones = trophy_milestones(follow_up_count)
     locked_milestone_idx = milestones.index { |milestone| follow_up_count < milestone }
 

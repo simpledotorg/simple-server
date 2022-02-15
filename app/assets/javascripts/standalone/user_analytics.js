@@ -11,6 +11,7 @@ function statistics() {
 }
 
 function dailyStatistics() {
+  console.log("daily stats called")
   return Object.entries(statistics()
     .daily
     .grouped_by_date);

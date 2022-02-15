@@ -17,25 +17,11 @@
       <div class="progress-contents">
         <p class="updated-date">
           <span>
-            <% if current_user.feature_enabled?(:follow_ups_v2_progress_tab) %>
-              <%= raw t("analytics.updated", time: @service.last_updated_at) %>
-            <% else %>
-              <%= raw t("analytics.updated", time: @user_analytics.last_updated_at) %>
-            <% end %>
+            <%= raw t("analytics.updated", time: @service.last_updated_at) %>
           </span>
         </p>
 
-        <%= content_tag :div,
-                        id: "statistics",
-                        data: { statistics: @user_analytics.statistics },
-                        style: "display: none" do %>
-        <% end %>
-
-        <% if current_user.feature_enabled?(:follow_ups_v2_progress_tab) %>
-          <%= render(Reports::DailyProgressComponent.new(@service)) %>
-        <% else %>
-          <%= render partial: "api/v3/analytics/user_analytics/daily_stats" %>
-        <% end %>
+        <%= render(Reports::DailyProgressComponent.new(@service)) %>
 
         <div class="card">
           <a href="#" onclick="openWindow('progress-help-registered', 'progress-start'); return false" class="info">
@@ -48,15 +34,8 @@
           <%= render partial: 'api/v3/analytics/user_analytics/gender_filter',
                     locals: { data_table_name: registrations_table_name,
                               is_diabetes_enabled: @user_analytics.diabetes_enabled? } %>
-          <% if current_user.feature_enabled?(:follow_ups_v2_progress_tab) %>
-            <% @service.dimension_combinations_for(:registrations).each do |dimension| %>
-              <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service)) %>
-            <% end %>
-          <% else %>
-            <%= render partial: 'api/v3/analytics/user_analytics/monthly_gender_table',
-                      locals: { stat: :registrations,
-                                user_analytics: @user_analytics,
-                                data_table_name: registrations_table_name } %>
+          <% @service.dimension_combinations_for(:registrations).each do |dimension| %>
+            <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service)) %>
           <% end %>
         </div>
 
@@ -71,15 +50,8 @@
           <%= render partial: 'api/v3/analytics/user_analytics/gender_filter',
                     locals: { data_table_name: follow_ups_table_name,
                               is_diabetes_enabled: @user_analytics.diabetes_enabled? } %>
-          <% if current_user.feature_enabled?(:follow_ups_v2_progress_tab) %>
-            <% @service.dimension_combinations_for(:follow_ups).each do |dimension| %>
-              <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service)) %>
-            <% end %>
-          <% else %>
-            <%= render partial: 'api/v3/analytics/user_analytics/monthly_gender_table',
-                      locals: { stat: :follow_ups,
-                                user_analytics: @user_analytics,
-                                data_table_name: follow_ups_table_name } %>
+          <% @service.dimension_combinations_for(:follow_ups).each do |dimension| %>
+            <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service)) %>
           <% end %>
         </div>
 

@@ -7,14 +7,13 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
   layout false
 
   def show
-    @user_analytics = UserAnalyticsPresenter.new(current_facility)
     @period = Period.month(@for_end_of_month)
-    if current_user.feature_enabled?(:follow_ups_v2_progress_tab)
-      @service = Reports::FacilityProgressService.new(current_facility, @period)
-    end
 
     if Flipper.enabled?(:new_progress_tab)
       @data = Reports::ReportsFakeFacilityProgressService.new.call
+    else
+      @achievements = Reports::FacilityProgressAchievementService.new(current_facility)
+      @service = Reports::FacilityProgressService.new(current_facility, @period)
     end
 
     respond_to do |format|
