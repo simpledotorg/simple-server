@@ -13,6 +13,7 @@ class Reports::ProgressController < AdminController
 
     if Flipper.enabled?(:new_progress_tab)
       @data = Reports::ReportsFakeFacilityProgressService.new.call
+      @diagnosis_report_data = Reports::ReportsFakeDiagnosisService.new(@region.name).call
       render "api/v3/analytics/user_analytics/show_v2"
     else
       render "api/v3/analytics/user_analytics/show"

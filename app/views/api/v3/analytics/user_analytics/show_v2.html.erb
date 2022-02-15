@@ -190,11 +190,12 @@
                  follow_up_patients: @data["yearly_follow_up_patients"]
                }
     %>
-    <%= render partial: "api/v3/analytics/user_analytics/period_report",
+    <%= render partial: "api/v3/analytics/user_analytics/diagnosis_report",
                locals: {
                  pageId: "hypertension-report",
                  title: "Hypertension report",
-                 subtitle: "Data last updated on #{DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")}"
+                 subtitle: "Data last updated on #{DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")}",
+                 data: @diagnosis_report_data
                }
     
     %>

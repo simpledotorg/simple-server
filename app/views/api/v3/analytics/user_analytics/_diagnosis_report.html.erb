@@ -16,4 +16,26 @@
       <% end %>
     </div>
   </div>
+  <div class="mb-8px p-16px bgc-white br-4px bs-card">
+    <div class="d-flex ai-center jc-space-between mb-8px">
+      <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
+        <%= data["hypertension_assigned_patients"]["name"] %>
+      </h2>
+      <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
+        <%= data["hypertension_assigned_patients"]["total"]  %>
+      </p>
+    </div>
+    <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+      <%= data["hypertension_assigned_patients"]["subtitle"] %>
+    </p>
+    <% data["hypertension_assigned_patients"]["breakdown"].each_with_index do |row, index| %>
+      <%= render partial: "api/v3/analytics/user_analytics/data_table_plusminus_row",
+                 locals: {
+                          title: row["title"],
+                          value: row["value"],
+                          include_bottom_border: index == data["hypertension_assigned_patients"]["breakdown"].length - 1 ? false : true
+                         }
+      %>
+    <% end %>
+  </div>
 </div>
