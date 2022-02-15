@@ -93,7 +93,7 @@ RSpec.describe MonthlyStateDataService, reporting_spec: true do
         follow_up_patient
         patient_without_hypertension
         ltfu_patient
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
 
         result = service.report
         csv = CSV.parse(result)
@@ -124,7 +124,7 @@ RSpec.describe MonthlyStateDataService, reporting_spec: true do
         missed_visit_patient
         patient_without_hypertension
         ltfu_patient
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
 
         result = service.report
         csv = CSV.parse(result)
@@ -241,7 +241,7 @@ RSpec.describe MonthlyStateDataService, reporting_spec: true do
         patient_without_hypertension
         ltfu_patient
         medications_dispensed_patients
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
 
         result = service.report
         csv = CSV.parse(result)
@@ -276,7 +276,7 @@ RSpec.describe MonthlyStateDataService, reporting_spec: true do
         patient_without_hypertension
         medications_dispensed_patients
         ltfu_patient
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
 
         result = service.report
         csv = CSV.parse(result)
