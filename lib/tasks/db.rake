@@ -7,6 +7,12 @@ namespace :db do
 
   task refresh_matviews: :refresh_reporting_views
 
+  desc "Refresh matviews for daily follow ups"
+  task refresh_daily_follow_ups: :environment do
+    RefreshReportingViews.refresh_daily_follow_ups
+    puts "Daily follow ups have been refreshed"
+  end
+
   desc "Generate fake Patient data"
   task seed_patients: :environment do
     abort "Can't run this task in env:#{ENV["SIMPLE_SERVER_ENV"]}!" if ENV["SIMPLE_SERVER_ENV"] == "production"

@@ -17,7 +17,7 @@ RSpec.describe Reports::FacilityAppointmentScheduledDays, {type: :model, reporti
     create(:appointment, patient: follow_up_patient, facility: facility, scheduled_date: 10.days.from_now, device_created_at: Time.current)
     create(:appointment, patient: registered_patient, facility: facility, scheduled_date: 10.days.from_now, device_created_at: Time.current)
 
-    RefreshReportingViews.new.refresh_v2
+    RefreshReportingViews.refresh_v2
 
     expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_0_to_14_days).to eq 1
   end
@@ -38,7 +38,7 @@ RSpec.describe Reports::FacilityAppointmentScheduledDays, {type: :model, reporti
         patient: create(:patient, recorded_at: 1.month.ago))
     end
 
-    RefreshReportingViews.new.refresh_v2
+    RefreshReportingViews.refresh_v2
 
     expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_0_to_14_days).to eq 2
     expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_15_to_31_days).to eq 2
@@ -54,7 +54,7 @@ RSpec.describe Reports::FacilityAppointmentScheduledDays, {type: :model, reporti
     _appointment_created_1_month_ago = create(:appointment, patient: patient, facility: facility, scheduled_date: Date.today, device_created_at: 31.days.ago)
     _appointment_created_2_month_ago = create(:appointment, patient: patient, facility: facility, scheduled_date: Date.today, device_created_at: 62.days.ago)
 
-    RefreshReportingViews.new.refresh_v2
+    RefreshReportingViews.refresh_v2
 
     expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_0_to_14_days).to eq 1
     expect(described_class.find_by(month_date: Period.month(32.days.ago), facility: facility).appts_scheduled_15_to_31_days).to eq 1
@@ -83,7 +83,7 @@ RSpec.describe Reports::FacilityAppointmentScheduledDays, {type: :model, reporti
       scheduled_date: third_appointment_date + 70.days,
       device_created_at: third_appointment_date)
 
-    RefreshReportingViews.new.refresh_v2
+    RefreshReportingViews.refresh_v2
 
     expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_more_than_62_days).to eq 1
   end
@@ -95,7 +95,7 @@ RSpec.describe Reports::FacilityAppointmentScheduledDays, {type: :model, reporti
     _appointment_created_6_months_ago = create(:appointment, facility: facility, patient: patient, scheduled_date: Date.today, device_created_at: 6.month.ago)
     _appointment_created_7_months_ago = create(:appointment, facility: facility, patient: patient, scheduled_date: Date.today, device_created_at: 7.month.ago)
 
-    RefreshReportingViews.new.refresh_v2
+    RefreshReportingViews.refresh_v2
 
     expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_0_to_14_days).to eq 1
     expect(described_class.find_by(month_date: Period.month(6.month.ago), facility: facility).appts_scheduled_more_than_62_days).to eq 1
@@ -110,7 +110,7 @@ RSpec.describe Reports::FacilityAppointmentScheduledDays, {type: :model, reporti
       scheduled_date: Date.yesterday,
       device_created_at: Time.current)
 
-    RefreshReportingViews.new.refresh_v2
+    RefreshReportingViews.refresh_v2
 
     expect(described_class.find_by(month_date: Period.current, facility: facility)).to be_nil
   end
@@ -133,7 +133,7 @@ RSpec.describe Reports::FacilityAppointmentScheduledDays, {type: :model, reporti
       scheduled_date: Date.tomorrow,
       device_created_at: Time.current)
 
-    RefreshReportingViews.new.refresh_v2
+    RefreshReportingViews.refresh_v2
 
     expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_0_to_14_days).to eq 2
   end
@@ -149,7 +149,7 @@ RSpec.describe Reports::FacilityAppointmentScheduledDays, {type: :model, reporti
         patient: create(:patient, recorded_at: 2.months.ago),
         deleted_at: Time.current)
 
-    RefreshReportingViews.new.refresh_v2
+    RefreshReportingViews.refresh_v2
 
     expect(described_class.find_by(month_date: Period.current, facility: facility)).to be_nil
   end
@@ -165,7 +165,7 @@ RSpec.describe Reports::FacilityAppointmentScheduledDays, {type: :model, reporti
         device_created_at: Time.current)
     end
 
-    RefreshReportingViews.new.refresh_v2
+    RefreshReportingViews.refresh_v2
 
     expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_0_to_14_days).to eq 1
   end
