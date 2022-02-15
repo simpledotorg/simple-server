@@ -19,10 +19,11 @@
           <span>
             <% if current_user.feature_enabled?(:follow_ups_v2_progress_tab) %>
               <%= @service.last_updated_at %>
+              <%= raw t("analytics.updated", time: @service.last_updated_at) %>
             <% else %>
               <%= @user_analytics.last_updated_at %>
+              <%= raw t("analytics.updated", time: @user_analytics.last_updated_at) %>
             <% end %>
-            <%= raw t("analytics.updated", time: @service.last_updated_at) %>
           </span>
         </p>
 

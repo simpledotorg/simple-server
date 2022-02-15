@@ -16,7 +16,7 @@ module Reports
     # probably matters the most health care workers as they see patients 
     # throughout the day and expect to see those reflected in the daily counts.
     def last_updated_at
-
+      RefreshReportingViews.last_updated_at_daily_follow_ups
     end
 
     def daily_registrations(date)

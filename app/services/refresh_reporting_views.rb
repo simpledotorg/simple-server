@@ -33,9 +33,18 @@ class RefreshReportingViews
     Rails.cache.fetch(REPORTING_VIEW_REFRESH_TIME_KEY)
   end
 
+  def self.last_updated_at_daily_follow_ups
+    Rails.cache.fetch(REPORTING_VIEW_DAILY_REFRESH_KEY)
+  end
+
   def self.set_last_updated_at
     Rails.cache.write(REPORTING_VIEW_REFRESH_TIME_KEY, Time.current.in_time_zone(tz))
   end
+
+  def self.set_last_updated_at_daily_follow_ups
+    Rails.cache.write(REPORTING_VIEW_DAILY_REFRESH_KEY, Time.current.in_time_zone(tz))
+  end
+
 
   # Refreshes all views by default, or can take an Array of class names if you want to
   # specifically refresh certain matviews.
@@ -74,7 +83,7 @@ class RefreshReportingViews
       refresh
     end
     set_last_updated_at if all_views_refreshed?
-    self.class.set_daily_last_updated_at if views.include?(/Daily/)
+    self.class.set_last_updated_at_daily_follow_ups if views.include?(/Daily/)
     logger.info "Completed full reporting view refresh"
   end
 
@@ -86,10 +95,6 @@ class RefreshReportingViews
 
   def all_views_refreshed?
     @all == true
-  end
-
-  def self.set_daily_last_updated_at
-    Rails.cache.write(REPORTING_VIEW_DAILY_REFRESH_KEY, Time.current.in_time_zone(tz))
   end
 
 
