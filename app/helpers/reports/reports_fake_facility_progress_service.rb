@@ -1,4 +1,4 @@
-module Reports 
+module Reports
   class ReportsFakeFacilityProgressService
     def initialize
       @daily_periods = ["8-Feb-2022", "7-Feb-2022", "6-Feb-2022", "5-Feb-2022", "4-Feb-2022", "3-Feb-2022", "2-Feb-2022"]
@@ -115,7 +115,7 @@ module Reports
     end
 
     def call
-      data = {
+      {
         "daily_periods" => @daily_periods,
         "daily_registered_patients" => @daily_registered_patients,
         "daily_follow_up_patients" => @daily_follow_up_patients,

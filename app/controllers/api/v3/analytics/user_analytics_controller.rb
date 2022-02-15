@@ -14,7 +14,7 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
     end
 
     if Flipper.enabled?(:new_progress_tab)
-      @data = Reports::ReportsFakeFacilityProgressService.new().call
+      @data = Reports::ReportsFakeFacilityProgressService.new.call
     end
 
     respond_to do |format|
