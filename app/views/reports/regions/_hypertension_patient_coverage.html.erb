@@ -31,7 +31,7 @@
       <% if accessible_region?(@region, :manage) %>
         <div class="mb-16px p-12px br-4px bg-blue-light">
           <p class="m-0px fs-14px c-black">
-            Add the est. hypertensive population to see the coverage rate.
+            Add the estimated hypertensive population to see the coverage rate.
           </p>
           <%= link_to "+ Add population", edit_admin_facility_group_path(@region.source), :class => "fs-14px" %>
         </div>
@@ -46,9 +46,9 @@
       <% if current_admin.accessible_district_regions(:manage).to_set.superset?(@region.district_regions.to_set) %>
         <div class="mb-16px p-12px br-4px bg-blue-light">
           <p class="m-0px fs-14px c-black">
-            Add the est. hypertensive population for all districts to see the coverage rate.
+            Add the estimated hypertensive population for all <%= @region.child_region_type.pluralize %> to see the coverage rate.
           </p>
-          <%= link_to "+ Add district populations", "/admin/facilities", :class => "fs-14px" %>
+          <%= link_to "+ Add #{@region.child_region_type} populations", "/admin/facilities", :class => "fs-14px" %>
         </div>
         <% else %>
         <div class="mb-16px p-12px br-4px bg-yellow-light">

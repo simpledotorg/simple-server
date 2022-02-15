@@ -9,7 +9,7 @@ RSpec.describe FacilityStatsService do
   let(:user) { create(:admin, :manager, :with_access, resource: organization, organization: organization) }
 
   def refresh_views
-    RefreshReportingViews.new.refresh_v2
+    RefreshReportingViews.refresh_v2
   end
 
   def facilities_data(facilities)
