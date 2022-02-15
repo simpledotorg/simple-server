@@ -15,7 +15,7 @@ RSpec.describe CohortService, type: :model do
   end
 
   def refresh_views
-    RefreshReportingViews.new.refresh_v2
+    RefreshReportingViews.refresh_v2
   end
 
   it "sorts periods from most recent to earliest" do
