@@ -48,26 +48,29 @@ class CohortService
         result.period.advance(months: -2)
       end
       arry << {
-        controlled: cohort_reports_rates(result)[:controlled],
-        no_bp: cohort_reports_rates(result)[:no_bp],
-        missed_visits: cohort_reports_rates(result)[:missed_visits],
-        uncontrolled: cohort_reports_rates(result)[:uncontrolled],
+        controlled: result.cohort_controlled,
+        no_bp: result.cohort_visited_no_bp,
+        missed_visits: result.cohort_missed_visit,
+        uncontrolled: result.cohort_uncontrolled,
+        controlled_rate: cohort_reports_rates(result)[:controlled_rate],
+        no_bp_rate: cohort_reports_rates(result)[:no_bp_rate],
+        missed_visits_rate: cohort_reports_rates(result)[:missed_visits_rate],
+        uncontrolled_rate: cohort_reports_rates(result)[:uncontrolled_rate],
         period: result.period,
         patients_registered: registration_period.to_s,
         registered: result.cohort_patients,
         results_in: result.period.to_s(:cohort)
       }.with_indifferent_access
-      pp arry
       arry
     end
   end
 
   def cohort_reports_rates(cohort)
     rounded_percentages({
-      controlled: cohort.cohort_controlled,
-      no_bp: cohort.cohort_visited_no_bp,
-      missed_visits: cohort.cohort_missed_visit,
-      uncontrolled: cohort.cohort_uncontrolled
+      controlled_rate: cohort.cohort_controlled,
+      no_bp_rate: cohort.cohort_visited_no_bp,
+      missed_visits_rate: cohort.cohort_missed_visit,
+      uncontrolled_rate: cohort.cohort_uncontrolled
     })
   end
 
