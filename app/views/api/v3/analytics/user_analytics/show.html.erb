@@ -33,7 +33,7 @@
           <% registrations_table_name = 'registrations' %>
           <%= render partial: 'api/v3/analytics/user_analytics/gender_filter',
                     locals: { data_table_name: registrations_table_name,
-                              is_diabetes_enabled: @user_analytics.diabetes_enabled? } %>
+                              is_diabetes_enabled: current_facility.diabetes_enabled? } %>
           <% @service.dimension_combinations_for(:registrations).each do |dimension| %>
             <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service)) %>
           <% end %>
@@ -49,7 +49,7 @@
           <% follow_ups_table_name = 'follow_ups' %>
           <%= render partial: 'api/v3/analytics/user_analytics/gender_filter',
                     locals: { data_table_name: follow_ups_table_name,
-                              is_diabetes_enabled: @user_analytics.diabetes_enabled? } %>
+                              is_diabetes_enabled: current_facility.diabetes_enabled? } %>
           <% @service.dimension_combinations_for(:follow_ups).each do |dimension| %>
             <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service)) %>
           <% end %>
@@ -91,7 +91,7 @@
           </p>
           <p class="desc control-desc">
             <strong>
-              <%= @user_analytics.monthly_htn_control_last_period %>
+              <%= @service.control_range.last.to_s(:month_year) %>
             </strong>
             <br>
             <%= @user_analytics.monthly_htn_control_last_period_patient_counts %>

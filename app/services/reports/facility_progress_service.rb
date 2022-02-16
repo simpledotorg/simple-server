@@ -3,11 +3,13 @@ module Reports
     include Memery
     attr_reader :facility
     attr_reader :range
+    attr_reader :control_range
 
     def initialize(facility, period)
       @facility = facility
       @period = period
       @range = Range.new(@period.advance(months: -5), @period)
+      @control_range = Range.new(@period.advance(months: -12), @period.previous)
       @diabetes_enabled = facility.enable_diabetes_management
     end
 
