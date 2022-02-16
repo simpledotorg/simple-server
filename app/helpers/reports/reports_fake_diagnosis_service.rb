@@ -19,7 +19,7 @@ module Reports
           {"month" => "Sep-2021", "value" => 320},
           {"month" => "Oct-2021", "value" => 498},
           {"month" => "Nov-2021", "value" => 570},
-          {"month" => "Dec-2021", "value" => 800},
+          {"month" => "Dec-2021", "value" => 634},
           {"month" => "Jan-2022", "value" => 877}
         ]
       }

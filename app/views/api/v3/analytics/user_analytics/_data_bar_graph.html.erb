@@ -5,7 +5,7 @@
     <% data.each_with_index do |data_point, index| %>
       <div class="f-1 d-flex fd-column ai-center jc-end">
         <% if data.length - 1 == index %>
-          <p class="m-0px mb-8px p-0px ta-center fw-medium fs-20px c-black">
+          <p class="m-0px mb-8px p-0px ta-center fw-medium fs-16px c-black">
             <%= data_point["value"] %>
           </p>
           <div class="w-32px <%= graph_css_color %> btrr-2px btlr-2px" style="height: <%= data_point_heights[index] %>%;"></div>
