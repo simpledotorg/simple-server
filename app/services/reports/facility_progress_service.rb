@@ -34,6 +34,10 @@ module Reports
       "#{numerator} of #{denominator} #{unit}"
     end
 
+    def control_rates
+      control_rates_repository.controlled_rates[region.slug]
+    end
+
     def daily_registrations(date)
       daily_registrations_grouped_by_day[date.to_date] || 0
     end

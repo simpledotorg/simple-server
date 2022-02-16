@@ -95,21 +95,23 @@
             </strong>
             <br>
             <%= @user_analytics.monthly_htn_control_last_period_patient_counts %>
+            |
+            <%= @service.control_summary %>
             <br>
             <strong class="green">
-              <%= @user_analytics.monthly_htn_control_last_control_rate %>%
+              <%= @service.control_rates[@service.control_range.last] %>%
             </strong>
           </p>
           <table class="bar-chart">
             <tbody>
               <tr>
-                <% @user_analytics.htn_control_monthly_period_list.each do |month_date| %>
-                  <% control_rate = @user_analytics.monthly_htn_control_rate(month_date) %>
+                <% @service.control_range.each do |period| %>
+                  <% control_rate = @service.control_rates[period] %>
                   <td class="bar-row">
                     <div class="bar-value">
                       <span>
                         <b class="tip">
-                          <%= month_date.strftime('%b-%Y') %> 
+                          <%= period.to_s(:mon_year) %> 
                         </b>
                         <%= control_rate %>%
                       </span>
