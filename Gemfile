@@ -19,7 +19,7 @@ if ENV["RAILS_NEXT"]
   # bundler command prefixed with `RAILS_NEXT=1`.
   gem "rails", "~> 6"
 else
-  gem "rails", "5.2.6"
+  gem "rails", "~> 5"
 end
 
 gem "active_hash", "~> 2.3.0"
