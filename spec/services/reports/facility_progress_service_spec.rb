@@ -16,7 +16,7 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
   end
 
   context "control stuff" do
-    it "returns range of months for control rates going back 12 months (not including current month)"  do
+    it "returns range of months for control rates going back 12 months (not including current month)" do
       Timecop.freeze("February 15th 2022") do
         service = described_class.new(facility, Period.current)
         legacy_analytics = UserAnalyticsPresenter.new(facility)
