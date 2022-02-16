@@ -54,8 +54,140 @@
     <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph",
                locals: {
                           data: data["hypertension_registered_patients"]["breakdown"],
+                          data_type: data["hypertension_registered_patients"]["data_type"],
                           graph_css_color: "bgc-purple-new"
                         }
     %>
+  </div>
+  <div class="mb-8px p-16px bgc-white br-4px bs-card">
+    <div class="d-flex ai-center jc-space-between mb-8px">
+      <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
+        <%= data["hypertension_monthly_follow_up_patients"]["name"] %>
+      </h2>
+      <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
+        <%= data["hypertension_monthly_follow_up_patients"]["total"]  %>
+      </p>
+    </div>
+    <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+      <%= data["hypertension_monthly_follow_up_patients"]["subtitle"] %>
+    </p>
+    <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph",
+               locals: {
+                          data: data["hypertension_monthly_follow_up_patients"]["breakdown"],
+                          data_type: data["hypertension_monthly_follow_up_patients"]["data_type"],
+                          graph_css_color: "bgc-blue-new"
+                        }
+    %>
+  </div>
+  <div class="mt-24px mb-8px pr-16px pl-16px">
+    <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey">
+      Patient treatment outcomes
+    </h3>
+  </div>
+  <div class="mb-8px p-16px bgc-white br-4px bs-card">
+    <div class="d-flex ai-center jc-space-between mb-8px">
+      <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
+        <%= data["hypertension_bp_controlled"]["name"] %>
+      </h2>
+      <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
+        <%= data["hypertension_bp_controlled"]["total"] %>
+      </p>
+    </div>
+    <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+        <%= data["hypertension_bp_controlled"]["subtitle"] %>
+    </p>
+    <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph",
+               locals: {
+                          data: data["hypertension_bp_controlled"]["breakdown"],
+                          data_type: data["hypertension_bp_controlled"]["data_type"],
+                          graph_css_color: "bgc-green-new"
+                        }
+    %>
+  </div>
+  <div class="mb-8px p-16px bgc-white br-4px bs-card">
+    <div class="d-flex ai-center jc-space-between mb-8px">
+      <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
+        <%= data["hypertension_bp_not_controlled"]["name"] %>
+      </h2>
+      <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
+        <%= data["hypertension_bp_not_controlled"]["total"] %>
+      </p>
+    </div>
+    <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+        <%= data["hypertension_bp_not_controlled"]["subtitle"] %>
+    </p>
+    <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph",
+               locals: {
+                          data: data["hypertension_bp_not_controlled"]["breakdown"],
+                          data_type: data["hypertension_bp_not_controlled"]["data_type"],
+                          graph_css_color: "bgc-yellow-new"
+                        }
+    %>
+  </div>
+  <div class="mb-8px p-16px bgc-white br-4px bs-card">
+    <div class="d-flex ai-center jc-space-between mb-8px">
+      <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
+        <%= data["hypertension_missed_visits"]["name"] %>
+      </h2>
+      <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
+        <%= data["hypertension_missed_visits"]["total"] %>
+      </p>
+    </div>
+    <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+        <%= data["hypertension_missed_visits"]["subtitle"] %>
+    </p>
+    <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph",
+               locals: {
+                          data: data["hypertension_missed_visits"]["breakdown"],
+                          data_type: data["hypertension_missed_visits"]["data_type"],
+                          graph_css_color: "bgc-red-new"
+                        }
+    %>
+  </div>
+  <div class="mt-24px mb-8px pr-16px pl-16px">
+    <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey">
+      Cohort reports
+    </h3>
+  </div>
+  <div class="mb-8px p-16px bgc-white br-4px bs-card">
+    <h2 class="m-0px mb-8px p-0px ta-left fw-medium fs-18px c-black">
+      <%= data["hypertension_quarterly_cohort_reports"]["name"] %>
+    </h2>
+    <p class="m-0px mb-12px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+        <%= data["hypertension_quarterly_cohort_reports"]["subtitle"] %>
+    </p>
+    <div class="mb-32px">
+      <div class="d-flex ai-center jc-center mb-8px">
+        <div class="w-16px h-16px mr-8px br-4px bgc-green-new"></div>
+        <p class="f-1 m-0px p-0px ta-left fw-regular fs-14px c-black">
+          BP controlled
+        </p>
+      </div>
+      <div class="d-flex ai-center jc-center mb-8px">
+        <div class="w-16px h-16px mr-8px br-4px bgc-yellow-new"></div>
+        <p class="f-1 m-0px p-0px ta-left fw-regular fs-14px c-black">
+          BP not controlled
+        </p>
+      </div>
+      <div class="d-flex ai-center jc-center">
+        <div class="w-16px h-16px mr-8px br-4px bgc-red-new"></div>
+        <p class="f-1 m-0px p-0px ta-left fw-regular fs-14px c-black">
+          Missed visits
+        </p>
+      </div>
+    </div>
+    <% data["hypertension_quarterly_cohort_reports"]["breakdown"].each_with_index do |cohort, index| %>
+      <div class="<% if data["hypertension_quarterly_cohort_reports"]["breakdown"].length - 1 > index %>mb-24px<% end %>">
+        <p class="m-0px mb-2px p-0px ta-left fw-regular fs-16px c-black">
+          Result from last visit in <%= cohort["result_period"] %>
+        </p>
+        <p class="m-0px mb-8px p-0px ta-left fw-reguar fs-16px c-grey-dark">
+          <%= cohort["total_patients"] %> patients registered in <%= cohort["registration_period"] %>
+        </p>
+        <%= render partial: "api/v3/analytics/user_analytics/data_stacked_bar_graph",
+                    locals: { data: cohort }
+        %>
+      </div>
+    <% end %>
   </div>
 </div>

@@ -34,4 +34,8 @@ module ProgressTabHelper
     max_value = array.max
     array.map { |value| ((value.to_f/max_value.to_f)*100.0).to_i }
   end
+
+  def set_min_value(value, min_value)
+    value < min_value ? min_value : value
+  end
 end

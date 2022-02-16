@@ -790,6 +790,7 @@ footer p {
 .zi-100 { z-index: 100; }
 .o-hidden { overflow: hidden; }
 /* WIDTH & HEIGHT */
+.w-16px { width: 16px; }
 .w-24px { width: 24px; }
 .w-32px { width: 32px; }
 .w-40px { width: 40px; }
@@ -799,6 +800,7 @@ footer p {
 .w-100 { width: 100%; }
 .h-1px { height: 1px; }
 .h-6px { height: 6px; }
+.h-16px { height: 16px; }
 .h-32px { height: 32px; }
 .h-40px { height: 40px; }
 .h-64px { height: 64px; }
@@ -806,11 +808,18 @@ footer p {
 .h-160px { height: 160px; }
 /* SPACING */
 .mt-6px { margin-top: 6px; }
+.mt-24px { margin-top: 24px; }
+.mr-1px { margin-right: 1px; }
+.mr-2px { margin-right: 2px; }
+.mr-8px { margin-right: 8px; }
 .mr-10px { margin-right: 10px; }
 .mr-16px { margin-right: 16px; }
+.ml-1px { margin-left: 1px; }
+.ml-2px { margin-left: 2px; }
 .ml-10px { margin-left: 10px; }
 .mb-2px { margin-bottom: 2px; }
 .mb-4px { margin-bottom: 4px; }
+.mb-12px { margin-bottom: 12px; }
 .mb-32px { margin-bottom: 32px; }
 .pt-4px { padding-top: 4px; }
 .pt-16px { padding-top: 16px; }
@@ -867,15 +876,18 @@ footer p {
 .bgc-white { background-color: $white; }
 .bgc-blue-light { background-color: $blue-light; }
 .bgc-blue { background-color: $blue; }
+.bgc-blue-new { background-color: $blue-new; }
 .bgc-baby-blue-light { background-color: $baby-blue-light; }
 .bgc-baby-blue { background-color: $baby-blue; }
 .bgc-green-light { background-color: $green-light; }
+.bgc-green-new { background-color: $green-new; }
 .bgc-blue-green { background-color: $blue-green; }
 .bgc-blue-green-light { background-color: $blue-green-light; }
 .bgc-navy-light { background-color: $navy-light; }
 .bgc-navy { background-color: $navy; }
 .bgc-red-light { background-color: $red-light; }
 .bgc-red { background-color: $red; }
+.bgc-red-new { background-color: $red-new; }
 .bgc-purple-light { background-color: $purple-light; }
 .bgc-purple-new { background-color: $purple-new; }
 .bgc-lavander-light { background-color: $lavander-light; } 
@@ -883,6 +895,7 @@ footer p {
 .bgc-yellow-lightest { background-color: $yellow-lightest; }
 .bgc-yellow-light { background-color: $yellow-light; }
 .bgc-yellow { background-color: $yellow; }
+.bgc-yellow-new { background-color: $yellow-new; }
 .b-none { border: none; }
 .b-grey-mid { border: 1px solid $grey-mid; }
 .bt-grey-mid { border-top: 1px solid $grey-mid; }
@@ -894,8 +907,8 @@ footer p {
 .br-10px { border-radius: 10px; }
 .br-24px { border-radius: 24px; }
 .br-100 { border-radius: 100%; }
-.btlr-2px { border-top-left-radius: 2px; }
 .btrr-2px { border-top-right-radius: 2px; }
+.btlr-2px { border-top-left-radius: 2px; }
 .bs-card { box-shadow: 0px 2px 4px $transparent-black-10; }
 .bs-fixed-card { box-shadow: 0px -2px 8px $transparent-black-10; }
 .bs-primary-button { box-shadow: 0px 4px 0px $blue-dark; }
