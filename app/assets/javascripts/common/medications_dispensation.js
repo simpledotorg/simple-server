@@ -106,7 +106,7 @@ MedicationsDispensationGraph = function () {
         label: function(tooltipItem, data) {
             let numerators = Object.values(data.datasets[tooltipItem.datasetIndex].numerators);
             let denominators = Object.values(data.datasets[tooltipItem.datasetIndex].denominators);
-          return numerators[tooltipItem.index].toLocaleString() + " of " + denominators[tooltipItem.index].toLocaleString() + " follow-up patients";
+          return reports.formatNumberWithCommas(numerators[tooltipItem.index]) + " of " + reports.formatNumberWithCommas(denominators[tooltipItem.index]) + " follow-up patients";
         },
       }
     }
