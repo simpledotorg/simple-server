@@ -86,12 +86,13 @@
             Cohort report
           </a>
         </div>
-        <% if @user_analytics.achievements? %>
+
+        <% if @achievements.show? %>
           <div class="trophies">
             <h4>
               <%= raw t("analytics.achievements") %>
             </h4>
-            <% @user_analytics.unlocked_trophies.sort.each do |trophy| %>
+            <% @achievements.unlocked_trophies.sort.each do |trophy| %>
               <div class="trophy trophy-<%= trophy %>">
                 <%= inline_svg('ribbon.svg') %>
                 <em></em>
@@ -105,14 +106,14 @@
                 </div>
               </div>
             <% end %>
-            <div class="trophy trophy-<%= @user_analytics.locked_trophy %> trophy-upcoming">
+            <div class="trophy trophy-<%= @achievements.locked_trophy %> trophy-upcoming">
               <%= inline_svg('ribbon.svg') %>
               <em></em>
               <span>
                   <%= inline_svg('icon_lock.svg') %>
                 </span>
               <div>
-                <%= @user_analytics.locked_trophy %> <%= raw t("analytics.follow_up") %>
+                <%= @achievements.locked_trophy %> <%= raw t("analytics.follow_up") %>
                 <br>
                 <%= raw t("analytics.hypertension_patients") %>
               </div>

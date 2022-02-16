@@ -9,6 +9,10 @@ module Reports
       @facility = facility
     end
 
+    def show?
+      locked_trophy > TROPHY_MILESTONES.first
+    end
+
     def statistics
       @statistics ||= {trophies: trophy_stats}
     end
@@ -29,6 +33,14 @@ module Reports
         unlocked_trophy_values:
           milestones[0, locked_milestone_idx]
       }
+    end
+
+    def unlocked_trophies
+      trophy_stats[:unlocked_trophy_values]
+    end
+
+    def locked_trophy
+      trophy_stats[:locked_trophy_value]
     end
 
     #
