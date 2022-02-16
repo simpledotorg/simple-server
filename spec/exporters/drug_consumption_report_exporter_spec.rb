@@ -12,7 +12,10 @@ RSpec.describe DrugConsumptionReportExporter do
   context "exports the csv" do
     let(:protocol) { create(:protocol, :with_tracked_drugs) }
     let(:facility_group) { create(:facility_group, protocol: protocol, state: "Punjab") }
-    let(:facilities) { create_list(:facility, 2, facility_group: facility_group) }
+    let(:facilities) {
+      [create(:facility, facility_group: facility_group, zone: "Block 2"),
+        create(:facility, facility_group: facility_group, zone: "Block 1")]
+    }
     let(:query) {
       DrugStocksQuery.new(facilities: facilities,
         for_end_of_month: Date.current.end_of_month)
@@ -116,17 +119,7 @@ RSpec.describe DrugConsumptionReportExporter do
         -1000, -6000, "?"
       ]
 
-      facility_1_row =
-        [facilities.first.name,
-          facilities.first.facility_type,
-          facilities.first.localized_facility_size,
-          facilities.first.zone,
-          1000, 0, -1000,
-          0, -3000,
-          "?", "?",
-          -1000, -6000, "?"]
-
-      facility_2_row =
+      facility_row_1 =
         [facilities.second.name,
           facilities.second.facility_type,
           facilities.second.localized_facility_size,
@@ -136,6 +129,16 @@ RSpec.describe DrugConsumptionReportExporter do
           "?", "?",
           "?", "?"]
 
+      facility_row_2 =
+        [facilities.first.name,
+          facilities.first.facility_type,
+          facilities.first.localized_facility_size,
+          facilities.first.zone,
+          1000, 0, -1000,
+          0, -3000,
+          "?", "?",
+          -1000, -6000, "?"]
+
       csv = described_class.csv(query)
       expected_csv =
         timestamp.to_csv +
@@ -143,8 +146,8 @@ RSpec.describe DrugConsumptionReportExporter do
         headers_row_2.to_csv +
         totals_row.to_csv +
         district_warehouse_row.to_csv +
-        facility_1_row.to_csv +
-        facility_2_row.to_csv
+        facility_row_1.to_csv +
+        facility_row_2.to_csv
 
       expect(csv).to eq(expected_csv)
     end
@@ -195,17 +198,7 @@ RSpec.describe DrugConsumptionReportExporter do
         -6000, -1000, "?"
       ]
 
-      facility_1_row =
-        [facilities.first.name,
-          facilities.first.facility_type,
-          facilities.first.localized_facility_size,
-          facilities.first.zone,
-          0, -3000,
-          1000, 0, -1000,
-          "?", "?",
-          -6000, -1000, "?"]
-
-      facility_2_row =
+      facility_row_1 =
         [facilities.second.name,
           facilities.second.facility_type,
           facilities.first.localized_facility_size,
@@ -215,6 +208,16 @@ RSpec.describe DrugConsumptionReportExporter do
           "?", "?",
           "?", "?"]
 
+      facility_row_2 =
+        [facilities.first.name,
+          facilities.first.facility_type,
+          facilities.first.localized_facility_size,
+          facilities.first.zone,
+          0, -3000,
+          1000, 0, -1000,
+          "?", "?",
+          -6000, -1000, "?"]
+
       csv = described_class.csv(query)
       expected_csv =
         timestamp.to_csv +
@@ -222,8 +225,8 @@ RSpec.describe DrugConsumptionReportExporter do
         headers_row_2.to_csv +
         totals_row.to_csv +
         district_warehouse_row.to_csv +
-        facility_1_row.to_csv +
-        facility_2_row.to_csv
+        facility_row_1.to_csv +
+        facility_row_2.to_csv
 
       expect(csv).to eq(expected_csv)
     end
