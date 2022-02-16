@@ -1,12 +1,14 @@
 module Reports
   class FacilityProgressService
     include Memery
+    attr_reader :control_range
     attr_reader :facility
     attr_reader :range
-    attr_reader :control_range
+    attr_reader :region
 
     def initialize(facility, period)
       @facility = facility
+      @region = facility.region
       @period = period
       @range = Range.new(@period.advance(months: -5), @period)
       @control_range = Range.new(@period.advance(months: -12), @period.previous)
@@ -19,6 +21,17 @@ module Reports
     # throughout the day and expect to see those reflected in the daily counts.
     def last_updated_at
       RefreshReportingViews.last_updated_at_daily_follow_ups
+    end
+
+    def control_summary
+      controlled = control_rates_repository.controlled[region.slug][control_range.last]
+      registrations = control_rates_repository.cumulative_registrations[region.slug][control_range.last]
+      return "#{controlled} of #{registrations} patients"
+
+      numerator = number_with_delimiter(controlled_patients)
+      denominator = number_with_delimiter(registrations)
+      unit = "patient".pluralize(registrations)
+      "#{numerator} of #{denominator} #{unit}"
     end
 
     def daily_registrations(date)
@@ -39,6 +52,10 @@ module Reports
 
     def repository
       @repository ||= Reports::Repository.new(facility, periods: @range)
+    end
+
+    def control_rates_repository
+      @control_rates_repository ||= Reports::Repository.new(facility, periods: control_range)
     end
 
     # Returns all possible combinations of FacilityProgressDimensions for displaying
