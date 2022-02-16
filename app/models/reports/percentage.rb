@@ -9,6 +9,8 @@ module Reports::Percentage
   end
 
   def rounded_percentages(counts_hash)
+    return counts_hash if counts_hash.values.uniq == [nil]
+
     total = counts_hash.values.sum
     return counts_hash if total.zero?
 
