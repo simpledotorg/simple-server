@@ -12,14 +12,18 @@ class Reports::ProgressControlComponent < ViewComponent::Base
   end
 
   def control_summary
-    controlled = format(control_rates[control_range.last])
+    controlled_count = format(controlled[control_range.last])
     registrations = format(adjusted_patients[control_range.last])
     label = "patient".pluralize(registrations)
-    "#{controlled} of #{registrations} #{label}"
+    "#{controlled_count} of #{registrations} #{label}"
   end
 
   def format(number)
     number_with_delimiter(number)
+  end
+
+  def controlled
+    repository.controlled[@region.slug]
   end
 
   def control_rates
