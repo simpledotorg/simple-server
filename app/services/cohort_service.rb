@@ -61,7 +61,6 @@ class CohortService
         registered: result.cohort_patients,
         results_in: result.period.to_s(:cohort)
       }.with_indifferent_access
-      arry
     end
   end
 
