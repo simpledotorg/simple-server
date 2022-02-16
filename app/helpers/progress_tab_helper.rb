@@ -29,4 +29,9 @@ module ProgressTabHelper
 
     badges.reverse
   end
+
+  def numbers_to_relative_percentages(array)
+    max_value = array.max
+    array.map { |value| ((value.to_f/max_value.to_f)*100.0).to_i }
+  end
 end

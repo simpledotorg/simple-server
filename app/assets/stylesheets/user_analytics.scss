@@ -770,6 +770,7 @@ footer p {
 .ai-flex-start { align-items: flex-start; }
 .jc-space-between { justify-content: space-between; }
 .jc-center { justify-content: center; }
+.jc-end { justify-content: end; }
 .f-1 { flex: 1; }
 /* POSITION */
 .p-absolute { position: absolute; } 
@@ -788,6 +789,7 @@ footer p {
 .zi-100 { z-index: 100; }
 .o-hidden { overflow: hidden; }
 /* WIDTH & HEIGHT */
+.w-24px { width: 24px; }
 .w-32px { width: 32px; }
 .w-40px { width: 40px; }
 .w-56px { width: 56px; }
@@ -800,6 +802,7 @@ footer p {
 .h-40px { height: 40px; }
 .h-64px { height: 64px; }
 .h-96px { height: 96px; }
+.h-160px { height: 160px; }
 /* SPACING */
 .mt-6px { margin-top: 6px; }
 .mr-10px { margin-right: 10px; }
@@ -846,8 +849,10 @@ footer p {
 .c-navy { color: $navy; }
 .c-blue-green { color: $blue-green; }
 .c-green { color: $green; }
+.c-green-new { color: $green-new; }
 .c-yellow { color: $yellow; }
 .c-red { color: $red; }
+.c-red-new { color: $red-new; }
 .c-lavander { color: $lavander; }
 .c-purple { color: $purple; }
 .c-grey-mid { color: $grey-mid; }
@@ -871,6 +876,7 @@ footer p {
 .bgc-red-light { background-color: $red-light; }
 .bgc-red { background-color: $red; }
 .bgc-purple-light { background-color: $purple-light; }
+.bgc-purple-new { background-color: $purple-new; }
 .bgc-lavander-light { background-color: $lavander-light; } 
 .bgc-lavander { background-color: $lavander; }
 .bgc-yellow-lightest { background-color: $yellow-lightest; }
@@ -878,6 +884,7 @@ footer p {
 .bgc-yellow { background-color: $yellow; }
 .b-none { border: none; }
 .b-grey-mid { border: 1px solid $grey-mid; }
+.bt-grey-mid { border-top: 1px solid $grey-mid; }
 .bb-blue-mid { border-bottom: 2px solid $blue-mid; }
 .bb-grey-mid { border-bottom: 1px solid $grey-mid; }
 .br-2px { border-radius: 2px; }
@@ -886,10 +893,13 @@ footer p {
 .br-10px { border-radius: 10px; }
 .br-24px { border-radius: 24px; }
 .br-100 { border-radius: 100%; }
+.btlr-2px { border-top-left-radius: 2px; }
+.btrr-2px { border-top-right-radius: 2px; }
 .bs-card { box-shadow: 0px 2px 4px $transparent-black-10; }
 .bs-fixed-card { box-shadow: 0px -2px 8px $transparent-black-10; }
 .bs-primary-button { box-shadow: 0px 4px 0px $blue-dark; }
 .bs-secondary-button { box-shadow: 0px 4px 0px $blue-mid; }
+.o-35 { opacity: 0.35; }
 /* FORM FIELDS */
 .bs-border-box { box-sizing: border-box; }
 .o-none:focus { outline: none; }

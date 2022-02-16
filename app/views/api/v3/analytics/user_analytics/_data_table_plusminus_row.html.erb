@@ -3,10 +3,10 @@
     <%= title %>
   </p>
   <div class="f-1 d-flex ai-center">
-    <p class="f-1 m-0px p-0px ta-right fw-bold fs-16px <% if value >= 0 %>c-green<% else %>c-red<% end %>">
+    <p class="f-1 m-0px p-0px ta-right fw-bold fs-16px <%= css_text_color %>">
       <% if value >= 0 %>+<% else %>–<% end %>
     </p>
-    <p class="f-1 m-0px p-0px ta-right fw-bold fs-16px <% if value >= 0 %>c-green<% else %>c-red<% end %>">
+    <p class="f-1 m-0px p-0px ta-right fw-bold fs-16px <%= css_text_color %>"> 
       <%= (value).abs %>
     </p>
   </div>

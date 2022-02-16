@@ -33,9 +33,29 @@
                  locals: {
                           title: row["title"],
                           value: row["value"],
+                          css_text_color: row["value"] > 0 ? "c-green-new" : "c-red-new",
                           include_bottom_border: index == data["hypertension_assigned_patients"]["breakdown"].length - 1 ? false : true
                          }
       %>
     <% end %>
+  </div>
+  <div class="mb-8px p-16px bgc-white br-4px bs-card">
+    <div class="d-flex ai-center jc-space-between mb-8px">
+      <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
+        <%= data["hypertension_registered_patients"]["name"] %>
+      </h2>
+      <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
+        <%= data["hypertension_registered_patients"]["total"]  %>
+      </p>
+    </div>
+    <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+      <%= data["hypertension_assigned_patients"]["subtitle"] %>
+    </p>
+    <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph",
+               locals: {
+                          data: data["hypertension_registered_patients"]["breakdown"],
+                          graph_css_color: "bgc-purple-new"
+                        }
+    %>
   </div>
 </div>
