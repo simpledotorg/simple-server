@@ -1,0 +1,49 @@
+<div>Add Reports::ProgressControl template here</div>
+
+<div class="card">
+  <a href="#" onclick="openWindow('progress-help-controlled', 'progress-start'); return false" class="info">
+    <span>?</span>
+  </a>
+  <h3>
+    <%= raw t("analytics.hypertension_controlled") %>
+  </h3>
+  <p class="desc">
+    <%= raw t("analytics.hypertension_control_desc") %>
+  </p>
+  <p class="desc control-desc">
+    <strong>
+      <%= control_range.last.to_s(:month_year) %>
+    </strong>
+    <br>
+    <%= control_summary %>
+    <br>
+    <strong class="green">
+      <%= control_rates[control_range.last] %>%
+    </strong>
+  </p>
+  <table class="bar-chart">
+    <tbody>
+      <tr>
+        <% control_range.each do |period| %>
+          <% control_rate = control_rates[period] %>
+          <td class="bar-row">
+            <div class="bar-value">
+              <span>
+                <b class="tip">
+                  <%= period.to_s(:mon_year) %> 
+                </b>
+                <%= control_rate %>%
+              </span>
+            </div>
+            <div style="height: <%= control_rate * 2 %>px;" class="bar">
+              <span></span>
+            </div>
+          </td>
+        <% end %>
+      </tr>
+    </tbody>
+  </table>
+  <p class="center" style="margin: 12px 0 0 0; text-align: center;">
+    <%= raw t("analytics.last_12_months") %>
+  </p>
+</div>

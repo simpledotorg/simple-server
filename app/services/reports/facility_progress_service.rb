@@ -23,21 +23,6 @@ module Reports
       RefreshReportingViews.last_updated_at_daily_follow_ups
     end
 
-    def control_summary
-      controlled = control_rates_repository.controlled[region.slug][control_range.last]
-      registrations = control_rates_repository.cumulative_registrations[region.slug][control_range.last]
-      return "#{controlled} of #{registrations} patients"
-
-      numerator = number_with_delimiter(controlled_patients)
-      denominator = number_with_delimiter(registrations)
-      unit = "patient".pluralize(registrations)
-      "#{numerator} of #{denominator} #{unit}"
-    end
-
-    def control_rates
-      control_rates_repository.controlled_rates[region.slug]
-    end
-
     def daily_registrations(date)
       daily_registrations_grouped_by_day[date.to_date] || 0
     end
