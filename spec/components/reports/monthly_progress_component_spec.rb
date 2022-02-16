@@ -11,8 +11,8 @@ RSpec.describe Reports::MonthlyProgressComponent, type: :component do
   let(:user) { create(:user) }
   let(:range) { Range.new(Period.month("June 1st 2021"), Period.month("December 1st 2021")) }
   let(:date_range) { range.map(&:to_date) }
-  let(:counts) { Reports::FacilityStateGroup.where(facility_region_id: facility.region.id, month_date: date_range).to_a }
-  let(:total_counts) { Reports::FacilityStateGroup.totals(facility) }
+  let(:counts) { Reports::FacilityStateDimension.where(facility_region_id: facility.region.id, month_date: date_range).to_a }
+  let(:total_counts) { Reports::FacilityStateDimension.totals(facility) }
   let(:service) { Reports::FacilityProgressService.new(facility, december_2021_period) }
 
   it "returns totals based the dimension" do

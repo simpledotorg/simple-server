@@ -31,7 +31,7 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
     context "as power_user" do
       it "returns a success response" do
         create(:patient, registration_facility: facilities_with_stock_tracked.first)
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
 
         sign_in(power_user.email_authentication)
         get :drug_stocks, params: {}
@@ -43,7 +43,7 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
         skip "failing on CI"
         patient = create(:patient, :hypertension, recorded_at: 2.months.ago, registration_facility: facilities_with_stock_tracked.first, assigned_facility: facilities_with_stock_tracked.second)
         create(:blood_pressure, patient: patient, recorded_at: 1.month.ago, facility: facilities_with_stock_tracked.third)
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
 
         sign_in(power_user.email_authentication)
         get :drug_stocks, params: {facility_group: facility_group_with_stock_tracked.slug}
@@ -56,7 +56,7 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
     context "as manager" do
       it "only include facilities with tracked protocol drugs and patients, and manager has access" do
         create(:patient, registration_facility: allowed_facility_for_manager)
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
 
         sign_in(manager.email_authentication)
         get :drug_stocks, params: {}
@@ -69,7 +69,7 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
       it "only include facilities with tracked protocol drugs and patients, and viewer has access" do
         create(:patient, registration_facility: facilities_with_stock_tracked.first)
         create(:patient, registration_facility: facilities_with_stock_tracked.second)
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
         sign_in(report_viewer.email_authentication)
         get :drug_stocks, params: {}
 
