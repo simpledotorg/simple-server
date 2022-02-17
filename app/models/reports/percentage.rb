@@ -1,4 +1,5 @@
 module Reports::Percentage
+  include Memery
   def percentage(numerator, denominator, with_rounding: true)
     return 0 if numerator.nil? || denominator.nil? || denominator == 0 || numerator == 0
     if with_rounding
@@ -8,7 +9,7 @@ module Reports::Percentage
     end
   end
 
-  def rounded_percentages(counts_hash)
+  memoize def rounded_percentages(counts_hash)
     return counts_hash if counts_hash.values.all?(&:nil?)
 
     total = counts_hash.values.sum
