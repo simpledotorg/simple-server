@@ -2,25 +2,27 @@
 <% values = data.map { |data_point| data_point["value"] } %>
 <% data_point_heights = numbers_to_relative_percentages(values) %>
 <div class="d-flex fd-column h-160px">
-  <div class="f-1 d-flex">
+  <div class="f-1 d-flex" data-graph-type="bar-chart">
     <% data.each_with_index do |data_point, index| %>
-      <div class="f-1 d-flex fd-column ai-center jc-end">
+      <div class="f-1 d-flex fd-column ai-center jc-end" data-data-point="bar">
         <% if data.length - 1 == index %>
-          <p class="m-0px mb-8px p-0px ta-center fw-medium fs-16px c-black">
+          <p class="m-0px mb-8px p-0px ta-center fw-medium fs-16px c-black" data-point-type="value">
             <%= data_point["value"] %><% if data_type == "percentage" %>%<% end %>
           </p>
           <div
             class="w-32px <%= graph_css_color %> btrr-2px btlr-2px"
             style="height: <%= set_min_value(data_point_heights[index], min_height) %>%;"
+            data-point-type="bar"
           >
           </div>
         <% else %>
-          <p class="m-0px mb-8px p-0px ta-center fw-medium fs-16px c-grey-dark">
+          <p class="m-0px mb-8px p-0px ta-center fw-medium fs-16px c-grey-dark" data-point-type="value">
             <%= data_point["value"] %><% if data_type == "percentage" %>%<% end %>
           </p>
           <div
             class="w-32px <%= graph_css_color %> btrr-2px btlr-2px o-35"
             style="height: <%= set_min_value(data_point_heights[index], min_height) %>%;"
+            data-point-type="bar"
           >
           </div>
         <% end %>
