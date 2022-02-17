@@ -1,13 +1,23 @@
 require "rails_helper"
 
 RSpec.describe Reports::ProgressControlComponent, type: :component do
-  pending "add some examples to (or delete) #{__FILE__}"
+  let(:user) { create(:user) }
+  let(:facility) { create(:facility) }
 
-  # it "renders something useful" do
-  #   expect(
-  #     render_inline(described_class.new(attr: "value")) { "Hello, components!" }.css("p").to_html
-  #   ).to include(
-  #     "Hello, components!"
-  #   )
-  # end
+  it "returns the summary of control stats for the previous month" do
+    Timecop.freeze("February 1st 2022") do
+      patients = [create(:patient, :hypertension, registration_facility: facility, recorded_at: 6.months.ago, gender: "female"),
+        create(:patient, :hypertension, registration_facility: facility, recorded_at: 6.months.ago, gender: "male"),
+        create(:patient, :diabetes, registration_facility: facility, recorded_at: 6.months.ago, gender: "transgender")]
+
+      patients.each do |patient|
+        create(:blood_pressure, :with_encounter, :critical, patient: patient, facility: facility, user: user, recorded_at: 3.months.ago)
+        create(:blood_pressure, :under_control, patient: patient, facility: facility, user: user, recorded_at: 2.month.ago)
+      end
+      refresh_views
+      service = Reports::FacilityProgressService.new(facility, Period.current)
+      component = described_class.new(service)
+      expect(component.control_summary).to eq("2 of 2 patients")
+    end
+  end
 end
