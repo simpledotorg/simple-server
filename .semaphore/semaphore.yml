@@ -31,11 +31,9 @@ blocks:
         - name: DATABASE_URL
           value: "postgresql://postgres:@0.0.0.0:5432/myapp_test"
         - name: RAILS_ENV
-          value: test
+          value: "test"
         - name: TB_RSPEC_OPTIONS
-          value: "--profile"
-        - name: TB_RSPEC_FORMATTER
-          value: progress
+          value: "--profile --format RspecJunitFormatter --out junit.xml"
       secrets:
         - name: sentry-release-auth-token
         - name: semaphore-deploy-key
@@ -54,6 +52,18 @@ blocks:
             - checkout
             - script/semaphore_setup
             - rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT
+      epilogue:
+        always:
+          commands:
+            - "[[ -f junit.xml ]] && test-results publish junit.xml"
+
+after_pipeline:
+  task:
+    jobs:
+      - name: Publish Results
+        commands:
+          - test-results gen-pipeline-report
+
 promotions:
   - name: Deploy
     pipeline_file: deploy.yml

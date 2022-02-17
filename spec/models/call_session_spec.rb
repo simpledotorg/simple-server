@@ -9,7 +9,6 @@ describe CallSession, type: :model do
   before do
     allow(CallSessionStore).to receive(:create_redis).with(anything).and_return(MockRedis.new)
   end
-
   describe "#initialize" do
     it "should strip leading 0 when looking up users by phone number" do
       user = create(:user, phone_number: "9876543210")

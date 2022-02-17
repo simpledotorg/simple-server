@@ -51,7 +51,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
         patient_registered_13m_ago = Timecop.freeze(13.months.ago) { create(:patient) }
         Timecop.freeze(13.months.ago) { create(:blood_pressure, patient: patient_registered_13m_ago) }
 
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
         with_reporting_time_zone do
           expect(described_class
             .where(htn_care_state: "lost_to_follow_up", month_date: Date.current.beginning_of_month)
@@ -66,7 +66,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
         patient_registered_12m_ago = Timecop.freeze(12.months.ago) { create(:patient) }
         patient_registered_11m_ago = Timecop.freeze(11.months.ago) { create(:patient) }
 
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
         with_reporting_time_zone do
           expect(described_class
             .where(htn_care_state: "lost_to_follow_up", month_date: Date.current.beginning_of_month)
@@ -88,7 +88,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
         patient_with_recent_bp = Timecop.freeze(13.months.ago) { create(:patient) }
         Timecop.freeze(11.months.ago) { create(:blood_pressure, patient: patient_with_recent_bp) }
 
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
         with_reporting_time_zone do
           expect(described_class
             .where(htn_care_state: "lost_to_follow_up", month_date: Date.current.beginning_of_month)
@@ -107,7 +107,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
           create(:blood_pressure, patient: under_care_patient, recorded_at: june_2021[:under_12_months_ago])
           create(:blood_pressure, patient: ltfu_patient, recorded_at: june_2021[:over_12_months_ago])
 
-          RefreshReportingViews.new.refresh_v2
+          RefreshReportingViews.refresh_v2
 
           with_reporting_time_zone do
             expect(described_class
@@ -132,7 +132,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
           create(:blood_pressure, patient: under_care_patient, recorded_at: june_2021[:end_of_month] - 1.minute)
           create(:blood_pressure, patient: ltfu_patient, recorded_at: june_2021[:end_of_month] + 1.minute)
 
-          RefreshReportingViews.new.refresh_v2
+          RefreshReportingViews.refresh_v2
 
           with_reporting_time_zone do
             expect(described_class
@@ -154,7 +154,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
           under_care_patient = create(:patient, recorded_at: june_2021[:under_12_months_ago])
           ltfu_patient = create(:patient, recorded_at: june_2021[:over_12_months_ago])
 
-          RefreshReportingViews.new.refresh_v2
+          RefreshReportingViews.refresh_v2
           with_reporting_time_zone do
             expect(described_class
               .where(htn_care_state: "lost_to_follow_up", month_date: june_2021[:beginning_of_month])
@@ -180,7 +180,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
         patient_2 = create(:patient, recorded_at: june_2021[:long_ago])
         create(:encounter, patient: patient_2, encountered_on: june_2021[:under_3_months_ago])
         patient_3 = create(:patient, recorded_at: june_2021[:long_ago])
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
           expect(described_class.where(htn_treatment_outcome_in_last_3_months: "missed_visit", month_date: june_2021[:now]).pluck(:patient_id))
@@ -213,7 +213,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
           facility: patient_with_no_bp.registration_facility,
           patient: patient_with_no_bp,
           user: patient_with_no_bp.registration_user)
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
           expect(described_class.where(htn_treatment_outcome_in_last_3_months: "visited_no_bp", month_date: june_2021[:now]).pluck(:patient_id))
@@ -230,7 +230,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
         patient_bp_over_3_months = create(:patient, recorded_at: june_2021[:long_ago])
         create(:bp_with_encounter, patient: patient_bp_over_3_months, recorded_at: june_2021[:over_3_months_ago])
 
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
           expect(described_class.where(htn_treatment_outcome_in_last_3_months: "controlled", month_date: june_2021[:now]).pluck(:patient_id))
@@ -247,7 +247,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
         patient_bp_over_3_months = create(:patient, recorded_at: june_2021[:long_ago])
         create(:bp_with_encounter, patient: patient_bp_over_3_months, recorded_at: june_2021[:over_3_months_ago])
 
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
           expect(described_class.where(htn_treatment_outcome_in_last_3_months: "uncontrolled", month_date: june_2021[:now]).pluck(:patient_id))
@@ -265,7 +265,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
         patient_2 = create(:patient, recorded_at: june_2021[:long_ago])
         create(:encounter, patient: patient_2, encountered_on: june_2021[:now] - 1.month)
         patient_3 = create(:patient, recorded_at: june_2021[:long_ago])
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
           expect(described_class.where(htn_treatment_outcome_in_last_2_months: "missed_visit", month_date: june_2021[:now]).pluck(:patient_id))
@@ -298,7 +298,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
           facility: patient_with_no_bp.registration_facility,
           patient: patient_with_no_bp,
           user: patient_with_no_bp.registration_user)
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
           expect(described_class.where(htn_treatment_outcome_in_last_2_months: "visited_no_bp", month_date: june_2021[:now]).pluck(:patient_id))
@@ -315,7 +315,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
         patient_bp_over_2_months = create(:patient, recorded_at: june_2021[:long_ago])
         create(:bp_with_encounter, patient: patient_bp_over_2_months, recorded_at: june_2021[:now] - 2.months)
 
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
           expect(described_class.where(htn_treatment_outcome_in_last_2_months: "controlled", month_date: june_2021[:now]).pluck(:patient_id))
@@ -332,7 +332,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
         patient_bp_over_2_months = create(:patient, recorded_at: june_2021[:long_ago])
         create(:bp_with_encounter, patient: patient_bp_over_2_months, recorded_at: june_2021[:now] - 2.months)
 
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
           expect(described_class.where(htn_treatment_outcome_in_last_2_months: "uncontrolled", month_date: june_2021[:now]).pluck(:patient_id))
@@ -353,7 +353,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
         patient_2 = create(:patient, recorded_at: june_2021[:long_ago])
         create(:encounter, patient: patient_2, encountered_on: one_quarter_ago)
         patient_3 = create(:patient, recorded_at: june_2021[:long_ago])
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
           expect(described_class.where(htn_treatment_outcome_in_quarter: "missed_visit", month_date: this_quarter).pluck(:patient_id))
@@ -386,7 +386,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
           facility: patient_with_no_bp.registration_facility,
           patient: patient_with_no_bp,
           user: patient_with_no_bp.registration_user)
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
           expect(described_class.where(htn_treatment_outcome_in_quarter: "visited_no_bp", month_date: june_2021[:now]).pluck(:patient_id))
@@ -403,7 +403,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
         patient_bp_in_last_quarter = create(:patient, recorded_at: june_2021[:long_ago])
         create(:bp_with_encounter, patient: patient_bp_in_last_quarter, recorded_at: june_2021[:now] - 3.months)
 
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
           expect(described_class.where(htn_treatment_outcome_in_quarter: "controlled", month_date: june_2021[:now]).pluck(:patient_id))
@@ -420,7 +420,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
         patient_bp_in_last_quarter = create(:patient, recorded_at: june_2021[:long_ago])
         create(:bp_with_encounter, patient: patient_bp_in_last_quarter, recorded_at: june_2021[:now] - 3.months)
 
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
           expect(described_class.where(htn_treatment_outcome_in_quarter: "uncontrolled", month_date: june_2021[:now]).pluck(:patient_id))
@@ -438,7 +438,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
         patient_3 = create(:patient, recorded_at: june_2021[:now])
         patient_4 = create(:patient, recorded_at: june_2021[:over_3_months_ago])
 
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
         with_reporting_time_zone do
           expect(described_class.find_by(patient_id: patient_1.id, month_string: june_2021[:month_string]).months_since_registration).to eq 11
           expect(described_class.find_by(patient_id: patient_2.id, month_string: june_2021[:month_string]).months_since_registration).to eq 12
@@ -455,7 +455,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
         patient_3 = create(:patient, recorded_at: june_2021[:now] - 4.months)
         patient_4 = create(:patient, recorded_at: june_2021[:now])
 
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
         with_reporting_time_zone do
           expect(described_class.find_by(patient_id: patient_1.id, month_string: june_2021[:month_string]).quarters_since_registration).to eq 7
           expect(described_class.find_by(patient_id: patient_2.id, month_string: june_2021[:month_string]).quarters_since_registration).to eq 4
@@ -478,7 +478,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
 
         patient = create(:patient, registration_facility: registration_facility, assigned_facility: assigned_facility)
 
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
           patient_state = described_class.find_by(patient_id: patient.id, month_string: june_2021[:month_string])
@@ -510,7 +510,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
 
         patient = create(:patient, registration_facility: registration_facility, assigned_facility: assigned_facility)
 
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
           patient_state = described_class.find_by(patient_id: patient.id, month_string: june_2021[:month_string])
@@ -541,7 +541,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
 
         patient_no_bp = create(:patient, recorded_at: june_2021[:long_ago])
 
-        RefreshReportingViews.new.refresh_v2
+        RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
           controlled_state = described_class.find_by(patient_id: patient_controlled.id, month_string: june_2021[:month_string])
@@ -586,7 +586,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
             create(:prescription_drug, patient: patient, device_created_at: eight_months_ago)
             create(:bp_with_encounter, :hypertensive, patient: patient, recorded_at: five_months_ago)
 
-            RefreshReportingViews.new.refresh_v2
+            RefreshReportingViews.refresh_v2
 
             # NOTE: we have to run some of these assertions for a range of up until the "current" frozen timestamp, because we build this matview
             # off a join with the reporting_months view, which uses now() and so will always have records up until

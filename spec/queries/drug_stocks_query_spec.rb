@@ -33,7 +33,7 @@ RSpec.describe DrugStocksQuery do
   }
 
   def refresh_views
-    RefreshReportingViews.new.refresh_v2
+    RefreshReportingViews.refresh_v2
   end
 
   context "drug stock report" do

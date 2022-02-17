@@ -19,7 +19,7 @@ if ENV["RAILS_NEXT"]
   # bundler command prefixed with `RAILS_NEXT=1`.
   gem "rails", "~> 6"
 else
-  gem "rails", "5.2.6"
+  gem "rails", "~> 5"
 end
 
 gem "active_hash", "~> 2.3.0"
@@ -121,6 +121,7 @@ group :development, :test do
   gem "rails-controller-testing"
   gem "rb-readline"
   gem "rspec-rails", "~> 4"
+  gem "rspec_junit_formatter"
   gem "rswag-specs"
   gem "shoulda-matchers", "~> 5.1.0"
   gem "standard", "1.6.0", require: false

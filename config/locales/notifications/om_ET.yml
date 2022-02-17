@@ -27,3 +27,7 @@ om-ET:
       emotional_guilt: "Safara BP irraa barfattee jirta. Yoo hin yaalamne ta'e, BP ol ka'aan hawaasa hunda gatii baasisuu mala. %{patient_name}, maaloo safaraa fi dawaa BP tiif dafii %{facility_name} daawwadhu."
       professional_request: "Safara BP irraa barfattee jirta. Haakimni kee akka BP kee safaratti si yaadachiisuu barbaada. %{patient_name}, maaloo safaraa fi dawaa BP tiif dafii %{facility_name} daawwadhu."
       response: "Safara BP irraa barfattee jirta. %{patient_name}, maaloo safaraa fi dawaa BP tiif dafii %{facility_name} daawwadhu. akka dhuftu akka nnuti beeknuuf geessituu kana irratti cuqaasi."
+    set03_basic_repeated:
+      first: "Safara BP irraa barfattee jirta. %{patient_name}, maaloo safaraa fi dawaa BP tiif dafii %{facility_name} daawwadhu. "
+      second: "Safara BP irraa barfattee jirta. %{patient_name}, maaloo safaraa fi dawaa BP tiif dafii %{facility_name} daawwadhu. "
+      third: "Safara BP irraa barfattee jirta. %{patient_name}, maaloo safaraa fi dawaa BP tiif dafii %{facility_name} daawwadhu. "

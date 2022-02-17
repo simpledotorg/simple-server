@@ -4,9 +4,9 @@ class RedisService
   end
 
   def hmset_with_expiry(key, value_hash, ttl)
-    @connection.pipelined do
-      @connection.hmset(key, *value_hash)
-      @connection.expire(key, ttl)
+    @connection.pipelined do |pipeline|
+      pipeline.hmset(key, *value_hash)
+      pipeline.expire(key, ttl)
     end
   end
 

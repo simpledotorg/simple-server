@@ -41,9 +41,9 @@ module Reports
       uncontrolled_rates
       visited_without_bp_taken_rates
       appts_scheduled_0_to_14_days_rates
-      appts_scheduled_15_to_30_days_rates
-      appts_scheduled_31_to_60_days_rates
-      appts_scheduled_more_than_60_days_rates
+      appts_scheduled_15_to_31_days_rates
+      appts_scheduled_32_to_62_days_rates
+      appts_scheduled_more_than_62_days_rates
     ]
 
     DELEGATED_COUNTS = %i[
@@ -67,9 +67,9 @@ module Reports
       monthly_overdue_calls
       total_appts_scheduled
       appts_scheduled_0_to_14_days
-      appts_scheduled_15_to_30_days
-      appts_scheduled_31_to_60_days
-      appts_scheduled_more_than_60_days
+      appts_scheduled_15_to_31_days
+      appts_scheduled_32_to_62_days
+      appts_scheduled_more_than_62_days
     ]
 
     def warm_cache
@@ -142,6 +142,20 @@ module Reports
       result.each_with_object({}) { |(region_entry, counts), hsh|
         hsh[region_entry.region.slug] = counts
       }
+    end
+
+    # Returns facility progress dimensional data (for progress tab) in the form of
+    #   region => { period_1 => monthly_facility_progress_record, period_2 => monthly_facility_progress_1 }
+    # Note that this does differ from the more standard return values returned from the Repository because
+    # this data is specifically for the Progress Tab, where all the dimensions are needed at once
+    def facility_progress
+      regions.each_with_object({}) do |region, result|
+        records = Reports::FacilityStateDimension.for_region(region).where(month_date: periods)
+        records_per_period = records.each_with_object({}) do |record, hsh|
+          hsh[record.period] = record
+        end
+        result[region.slug] = records_per_period
+      end
     end
 
     def period_info(region)

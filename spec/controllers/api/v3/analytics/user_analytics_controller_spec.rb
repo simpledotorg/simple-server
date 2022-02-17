@@ -54,8 +54,17 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
         expect(response.body).to include("Enter drug stock")
       end
 
+      it "renders show_v2 if :new_progress_tab feature flag is enabled" do
+        Flipper.enable(:new_progress_tab)
+        get :show, format: :html
+        expect(response.body).to include("Yearly")
+      end
+
       it "renders successfully for follow_ups_v2 with no data" do
         Flipper.enable(:follow_ups_v2_progress_tab)
+        patients = create_list(:patient, 2, registration_facility: request_facility, registration_user: request_user, recorded_at: 3.months.ago)
+        create(:bp_with_encounter, :under_control, recorded_at: 4.days.ago, patient: patients[0], facility: request_facility, user: request_user)
+        create(:bp_with_encounter, :hypertensive, recorded_at: 3.days.ago, patient: patients[1], facility: request_facility, user: request_user)
         refresh_views
 
         get :show, format: :html

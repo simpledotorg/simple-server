@@ -1,3 +1,0 @@
-<% @service.dimension_combinations_for(indicator).each do |dimension| %>
-  <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service)) %>
-<% end %>
