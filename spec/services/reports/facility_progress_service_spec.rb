@@ -31,7 +31,7 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
     end
   end
 
-  fit "matches stats" do
+  it "matches daily stats for including JSON in the view" do
       facility = create(:facility, enable_diabetes_management: true)
       htn_patient1 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 3.days.ago)
       _htn_patient2 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 3.days.ago)
@@ -51,9 +51,6 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
 
         expect(service.daily_statistics[:daily][:grouped_by_date][:registrations]).to eq(expected[:daily][:grouped_by_date][:registrations])
         expect(service.daily_statistics[:daily][:grouped_by_date][:follow_ups]).to eq(expected[:daily][:grouped_by_date][:follow_ups])
-        expect(service.daily_registrations(3.days.ago)).to eq(3)
-        expect(service.daily_registrations(1.days.ago)).to eq(0)
-        expect(service.daily_registrations(Date.current)).to eq(1)
       end
   end
 
@@ -103,13 +100,11 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
         create(:blood_pressure, recorded_at: two_days_ago, patient: patient2, facility: facility, user: user)
         create(:blood_pressure, recorded_at: two_days_ago, patient: patient3, facility: facility, user: user)
         create(:blood_sugar, recorded_at: two_days_ago, patient: patient4, facility: facility, user: user)
-        create(:blood_pressure, recorded_at: two_minutes_ago, patient: patient2, facility: facility, user: user)
-        refresh_views
         with_reporting_time_zone do
+          refresh_views
           service = described_class.new(facility, Period.current)
           expect(service.daily_follow_ups(two_days_ago)).to eq(3)
           expect(service.daily_follow_ups(one_day_ago)).to eq(0)
-          expect(service.daily_follow_ups(two_minutes_ago)).to eq(1)
         end
       end
     end
