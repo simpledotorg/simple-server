@@ -40,6 +40,12 @@ module Reports
             follow_ups: daily_follow_ups_grouped_by_day,
             registrations: daily_registrations_grouped_by_day
           }
+        },
+        metadata: {
+          is_diabetes_enabled: @diabetes_enabled,
+          last_updated_at: I18n.l(Time.current),
+          formatted_next_date: (Time.current + 1.day).to_s(:mon_year),
+          today_string: I18n.t(:today_str)
         }
       }
     end
