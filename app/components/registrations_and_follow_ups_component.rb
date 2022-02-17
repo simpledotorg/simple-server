@@ -15,11 +15,7 @@ class RegistrationsAndFollowUpsComponent < ViewComponent::Base
   end
 
   def follow_ups_definition
-    if current_admin.feature_enabled?(:follow_ups_v2)
-      :follow_up_patients_copy_v2
-    else
-      :follow_up_patients_copy
-    end
+    :follow_up_patients_copy_v2
   end
 
   def number_or_dash_with_delimiter(value, options = {})

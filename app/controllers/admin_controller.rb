@@ -4,7 +4,6 @@ class AdminController < ApplicationController
 
   before_action :authenticate_email_authentication!
   before_action :current_admin
-  around_action :set_feature_flags_from_params
   before_action :set_bust_cache
   before_action :set_datadog_tags
 
@@ -39,20 +38,6 @@ class AdminController < ApplicationController
 
   def safe_admin_params
     params.permit(:bust_cache, :_follow_ups_v2)
-  end
-
-  def set_feature_flags_from_params
-    follow_ups_override = safe_admin_params[:_follow_ups_v2]
-    if follow_ups_override
-      override = ActiveModel::Type::Boolean.new.deserialize(safe_admin_params[:_follow_ups_v2])
-      original = current_admin.feature_enabled?(:follow_ups_v2)
-      current_admin.set_feature(:follow_ups_v2, override)
-    end
-    yield
-  ensure # reset the flag back to original state
-    if follow_ups_override
-      current_admin.set_feature(:follow_ups_v2, original)
-    end
   end
 
   def current_admin

@@ -34,7 +34,7 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
         expect(response.body).to include("Yearly")
       end
 
-      it "renders successfully for follow_ups_v2 with no data" do
+      it "renders successfully for follow_ups_v2_progress_tab with no data" do
         Flipper.enable(:follow_ups_v2_progress_tab)
         patients = create_list(:patient, 2, registration_facility: request_facility, registration_user: request_user, recorded_at: 3.months.ago)
         create(:bp_with_encounter, :under_control, recorded_at: 4.days.ago, patient: patients[0], facility: request_facility, user: request_user)
@@ -45,7 +45,7 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
         expect(response.status).to eq(200)
       end
 
-      it "renders successfully for follow_ups_v2 for facility with DM disabled" do
+      it "renders successfully for follow_ups_v2_progress_tab for facility with DM disabled" do
         facility = create(:facility, enable_diabetes_management: false, facility_group: request_user.facility.facility_group)
         Flipper.enable(:follow_ups_v2_progress_tab)
         Timecop.freeze(1.month.ago) do
