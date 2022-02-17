@@ -33,8 +33,4 @@ class Reports::ProgressControlComponent < ViewComponent::Base
   def adjusted_patients
     repository.adjusted_patients[@region.slug]
   end
-
-  private
-
-
 end

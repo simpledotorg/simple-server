@@ -1,6 +1,8 @@
 module Reports
   class FacilityProgressService
     include Memery
+    MONTHS = -5
+    CONTROL_MONTHS = -12
     attr_reader :control_range
     attr_reader :facility
     attr_reader :range
@@ -10,8 +12,8 @@ module Reports
       @facility = facility
       @region = facility.region
       @period = period
-      @range = Range.new(@period.advance(months: -5), @period)
-      @control_range = Range.new(@period.advance(months: -12), @period.previous)
+      @range = Range.new(@period.advance(months: MONTHS), @period)
+      @control_range = Range.new(@period.advance(months: CONTROL_MONTHS), @period.previous)
       @diabetes_enabled = facility.enable_diabetes_management
     end
 
