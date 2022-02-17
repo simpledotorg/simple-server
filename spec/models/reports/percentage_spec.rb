@@ -51,6 +51,10 @@ RSpec.describe Reports::Percentage, type: :helper do
       it "returns zeroes when the counts are all zeroes" do
         expect(rounded_percentages({a: 0, b: 0, c: 0})).to eq({a: 0, b: 0, c: 0})
       end
+
+      it "returns nils when the counts are all nil" do
+        expect(rounded_percentages({a: nil, b: nil, c: nil})).to eq({a: nil, b: nil, c: nil})
+      end
     end
   end
 end
