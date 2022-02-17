@@ -15,7 +15,7 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
     expect(dimensions.count { |d| d.diagnosis == :all }).to eq(1)
   end
 
-  context "control stuff" do
+  context "control_range" do
     it "returns range of months for control rates going back 12 months (not including current month)" do
       Timecop.freeze("February 15th 2022") do
         service = described_class.new(facility, Period.current)
@@ -25,7 +25,6 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
         expect(service.control_range.map(&:to_date)).to eq(legacy_analytics.htn_control_monthly_period_list)
       end
     end
-
   end
 
   context "daily registrations" do
