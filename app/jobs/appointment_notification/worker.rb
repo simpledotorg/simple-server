@@ -89,13 +89,13 @@ class AppointmentNotification::Worker
   end
 
   def create_communication(notification, communication_type, response)
-      Communication.create_with_twilio_details!(
-        appointment: notification.subject,
-        notification: notification,
-        twilio_sid: response.sid,
-        twilio_msg_status: response.status,
-        communication_type: communication_type
-      )
+    Communication.create_with_twilio_details!(
+      appointment: notification.subject,
+      notification: notification,
+      twilio_sid: response.sid,
+      twilio_msg_status: response.status,
+      communication_type: communication_type
+    )
   end
 
   def callback_url
