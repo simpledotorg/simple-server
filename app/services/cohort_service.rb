@@ -41,13 +41,13 @@ class CohortService
   private
 
   def compute(results)
-    results.each_with_object([]) do |result, arry|
+    results.each_with_object([]) do |result, cohort_data|
       registration_period = if quarterly?
         result.period.previous
       else
         result.period.advance(months: -2)
       end
-      arry << {
+      cohort_data << {
         controlled: result.cohort_controlled,
         no_bp: result.cohort_visited_no_bp,
         missed_visits: result.cohort_missed_visit,
