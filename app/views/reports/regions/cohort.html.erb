@@ -45,9 +45,10 @@
               <tr>
                 <% if cohort["registered"] && cohort["registered"] > 0 %>
                   <%
-                    controlled_percent = compute_percentage(cohort["controlled"], cohort["registered"])
-                    uncontrolled_percent = compute_percentage(cohort["uncontrolled"], cohort["registered"])
-                    no_bp_percent = compute_percentage(cohort["no_bp"], cohort["registered"])
+                    controlled_percent = cohort["controlled_rate"]
+                    uncontrolled_percent = cohort["uncontrolled_rate"]
+                    no_bp_percent = cohort["no_bp_rate"]
+                    missed_visits_percent = cohort["missed_visits_rate"]
                   %>
                   <td
                     class="bar bar-1"
@@ -55,7 +56,7 @@
                     data-placement="top"
                     data-trigger="hover focus click"
                     title="<%= number_with_delimiter(cohort["no_bp"]) %> <%= "patient".pluralize(cohort["no_bp"]) %> didn't have a BP taken"
-                    style="width: <%= no_bp_percent %>;"
+                    style="width: <%= no_bp_percent %>%;"
                   >
                     <%= (cohort["no_bp"] > 0 && no_bp_percent == 0) ? "< 1" : no_bp_percent %>
                   </td>
@@ -65,7 +66,7 @@
                     data-placement="top"
                     data-trigger="hover focus click"
                     title="<%= number_with_delimiter(cohort["uncontrolled"]) %> <%= "patient".pluralize(cohort["uncontrolled"]) %> visited with BP not controlled"
-                    style="width: <%= uncontrolled_percent %>;"
+                    style="width: <%= uncontrolled_percent %>%;"
                   >
                     <%= (cohort["uncontrolled"] > 1 && uncontrolled_percent == 0) ? "< 1" : uncontrolled_percent %>
                   </td>
@@ -75,9 +76,19 @@
                     data-placement="top"
                     data-trigger="hover focus click"
                     title="<%= number_with_delimiter(cohort["controlled"]) %> <%= "patient".pluralize(cohort["controlled"]) %> visited with BP controlled"
-                    style="width: <%= controlled_percent %>;"
+                    style="<%= controlled_percent %>%;"
                   >
                     <%= (cohort["controlled"] > 0 && controlled_percent == 0) ? "< 1" : controlled_percent %>
+                  </td>
+                  <td
+                    class="bar bar-4"
+                    data-toggle="tooltip"
+                    data-placement="top"
+                    data-trigger="hover focus click"
+                    title="<%= number_with_delimiter(cohort["missed_visits"]) %> <%= "patient".pluralize(cohort["missed_visits"]) %> missed visit"
+                    style="width: <%= missed_visits_percent %>%;"
+                  >
+                    <%= (cohort["missed_visits"] > 0 && missed_visits_percent == 0) ? "< 1" : missed_visits_percent %>
                   </td>
                 <% else %>
                   <td class="bar bar-none w-100pt">
@@ -99,9 +110,13 @@
         <span class="p-relative t-1px d-inline-block w-12px h-12px mr-4px br-2px bg-red-medium"></span>
         BP not controlled
       </p>
-      <p class="m-0px c-black mb-lg-0">
+      <p class="m-0px c-black mr-lg-4 mb-lg-0">
         <span class="p-relative t-1px d-inline-block w-12px h-12px mr-4px br-2px bg-green-dark"></span>
         BP controlled
+      </p>
+      <p class="m-0px c-black mb-lg-0">
+        <span class="p-relative t-1px d-inline-block w-12px h-12px mr-4px br-2px bg-blue"></span>
+        Missed visits
       </p>
     </div>
   </div>
