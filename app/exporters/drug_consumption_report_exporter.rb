@@ -91,7 +91,7 @@ class DrugConsumptionReportExporter
   end
 
   def facility_rows
-    @query.facilities.with_region_information.order(:name).map do |facility|
+    @query.facilities.with_region_information.order(:block_name, :name).map do |facility|
       facility_row(facility)
     end
   end

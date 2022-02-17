@@ -13,6 +13,10 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
       @service = Reports::FacilityProgressService.new(current_facility, @period)
     end
 
+    if Flipper.enabled?(:new_progress_tab)
+      @data = Reports::ReportsFakeFacilityProgressService.new.call
+    end
+
     respond_to do |format|
       if Flipper.enabled?(:new_progress_tab)
         format.html { render :show_v2 }

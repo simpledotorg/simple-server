@@ -6,7 +6,7 @@ RSpec.describe Experimentation::StalePatientExperiment do
       create(:experiment, experiment_type: "stale_patients")
       allow(Experimentation::NotificationsExperiment).to receive(:eligible_patients).and_call_original
       expect(Experimentation::NotificationsExperiment).to receive(:eligible_patients)
-      RefreshReportingViews.new.refresh_v2
+      RefreshReportingViews.refresh_v2
 
       described_class.first.eligible_patients(Date.today)
     end
@@ -17,7 +17,7 @@ RSpec.describe Experimentation::StalePatientExperiment do
       create(:bp_with_encounter, patient: young_patient, device_created_at: 100.days.ago)
       old_patient = create(:patient, age: 18)
       create(:bp_with_encounter, patient: old_patient, device_created_at: 100.days.ago)
-      RefreshReportingViews.new.refresh_v2
+      RefreshReportingViews.refresh_v2
 
       result = described_class.first.eligible_patients(Date.today)
 
@@ -30,7 +30,7 @@ RSpec.describe Experimentation::StalePatientExperiment do
       create(:bp_with_encounter, patient: hypertensive, device_created_at: 100.days.ago)
       non_hypertensive = create(:patient, :without_hypertension, age: 80)
       create(:bp_with_encounter, patient: non_hypertensive, device_created_at: 100.days.ago)
-      RefreshReportingViews.new.refresh_v2
+      RefreshReportingViews.refresh_v2
 
       result = described_class.first.eligible_patients(Date.today)
 
@@ -46,7 +46,7 @@ RSpec.describe Experimentation::StalePatientExperiment do
 
       patient_with_phone = create(:patient, age: 80)
       create(:bp_with_encounter, patient: patient_with_phone, device_created_at: 100.days.ago)
-      RefreshReportingViews.new.refresh_v2
+      RefreshReportingViews.refresh_v2
 
       result = described_class.first.eligible_patients(Date.today)
 
@@ -69,7 +69,7 @@ RSpec.describe Experimentation::StalePatientExperiment do
       create(:bp_with_encounter, patient: ineligible_3, device_created_at: 100.days.ago)
       create(:bp_with_encounter, patient: ineligible_3, device_created_at: 10.days.ago)
 
-      RefreshReportingViews.new.refresh_v2
+      RefreshReportingViews.refresh_v2
 
       result = described_class.first.eligible_patients(Date.today)
 
@@ -85,7 +85,7 @@ RSpec.describe Experimentation::StalePatientExperiment do
       patient_with_past_appt = create(:patient, age: 80)
       create(:bp_with_encounter, patient: patient_with_past_appt, device_created_at: 40.days.ago)
       create(:appointment, patient: patient_with_past_appt, device_created_at: 70.days.ago, scheduled_date: 40.days.ago)
-      RefreshReportingViews.new.refresh_v2
+      RefreshReportingViews.refresh_v2
 
       result = described_class.first.eligible_patients(Date.today)
 
@@ -112,7 +112,7 @@ RSpec.describe Experimentation::StalePatientExperiment do
         patient: patient_without_future_remind_on,
         device_created_at: 70.days.ago,
         scheduled_date: 40.days.ago)
-      RefreshReportingViews.new.refresh_v2
+      RefreshReportingViews.refresh_v2
 
       result = described_class.first.eligible_patients(Date.today)
 
@@ -124,7 +124,7 @@ RSpec.describe Experimentation::StalePatientExperiment do
       patient = create(:patient, age: 80)
       create(:bp_with_encounter, patient: patient, device_created_at: 90.days.ago)
       create(:appointment, patient: patient, device_created_at: 120.days.ago, scheduled_date: 90.days.ago, status: "scheduled")
-      RefreshReportingViews.new.refresh_v2
+      RefreshReportingViews.refresh_v2
 
       result = described_class.first.eligible_patients(Date.today)
 

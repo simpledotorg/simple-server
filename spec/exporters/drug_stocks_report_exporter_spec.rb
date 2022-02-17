@@ -12,7 +12,10 @@ RSpec.describe DrugStocksReportExporter do
   context "exports the csv" do
     let(:protocol) { create(:protocol, :with_tracked_drugs) }
     let(:facility_group) { create(:facility_group, protocol: protocol, state: "Punjab") }
-    let(:facilities) { create_list(:facility, 2, facility_group: facility_group) }
+    let(:facilities) {
+      [create(:facility, facility_group: facility_group, zone: "Block 2"),
+        create(:facility, facility_group: facility_group, zone: "Block 1")]
+    }
     let(:query) {
       DrugStocksQuery.new(facilities: facilities,
         for_end_of_month: Date.current.end_of_month)
@@ -54,7 +57,7 @@ RSpec.describe DrugStocksReportExporter do
     end
 
     def refresh_views
-      RefreshReportingViews.new.refresh_v2
+      RefreshReportingViews.refresh_v2
     end
 
     it "renders the csv" do
@@ -101,7 +104,16 @@ RSpec.describe DrugStocksReportExporter do
         nil, nil, nil
       ]
 
-      facility_1_row =
+      facility_row_1 =
+        [facilities.second.name,
+          facilities.second.facility_type,
+          facilities.second.localized_facility_size,
+          facilities.second.zone,
+          10000, 10000, 20000, 81081,
+          10000, 20000, 17857,
+          nil, nil, nil]
+
+      facility_row_2 =
         [facilities.first.name,
           facilities.first.facility_type,
           facilities.first.localized_facility_size,
@@ -110,14 +122,6 @@ RSpec.describe DrugStocksReportExporter do
           10000, 20000, 17857,
           nil, nil, nil]
 
-      facility_2_row =
-        [facilities.second.name,
-          facilities.second.facility_type,
-          facilities.second.localized_facility_size,
-          facilities.second.zone,
-          10000, 10000, 20000, 81081,
-          10000, 20000, 17857,
-          nil, nil, nil]
       refresh_views
 
       csv = described_class.csv(query)
@@ -128,8 +132,8 @@ RSpec.describe DrugStocksReportExporter do
         headers_row_2.to_csv +
         totals_row.to_csv +
         district_warehouse_row.to_csv +
-        facility_1_row.to_csv +
-        facility_2_row.to_csv
+        facility_row_1.to_csv +
+        facility_row_2.to_csv
 
       expect(csv).to eq(expected_csv)
     end
@@ -179,7 +183,16 @@ RSpec.describe DrugStocksReportExporter do
         nil, nil, nil
       ]
 
-      facility_1_row =
+      facility_row_1 =
+        [facilities.second.name,
+          facilities.second.facility_type,
+          facilities.second.localized_facility_size,
+          facilities.second.zone,
+          10000, 20000, 17857,
+          10000, 10000, 20000, 81081,
+          nil, nil, nil]
+
+      facility_row_2 =
         [facilities.first.name,
           facilities.first.facility_type,
           facilities.first.localized_facility_size,
@@ -188,14 +201,6 @@ RSpec.describe DrugStocksReportExporter do
           10000, 10000, 20000, 81081,
           nil, nil, nil]
 
-      facility_2_row =
-        [facilities.second.name,
-          facilities.second.facility_type,
-          facilities.second.localized_facility_size,
-          facilities.second.zone,
-          10000, 20000, 17857,
-          10000, 10000, 20000, 81081,
-          nil, nil, nil]
       refresh_views
 
       csv = described_class.csv(query)
@@ -206,8 +211,8 @@ RSpec.describe DrugStocksReportExporter do
         headers_row_2.to_csv +
         totals_row.to_csv +
         district_warehouse_row.to_csv +
-        facility_1_row.to_csv +
-        facility_2_row.to_csv
+        facility_row_1.to_csv +
+        facility_row_2.to_csv
 
       expect(csv).to eq(expected_csv)
     end

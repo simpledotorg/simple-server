@@ -20,7 +20,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
   end
 
   def refresh_views
-    RefreshReportingViews.new.refresh_v2
+    RefreshReportingViews.refresh_v2
   end
 
   context "API contract" do
@@ -261,7 +261,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       range = Period.month(2.years.ago)..Period.current
       create(:patient, assigned_facility: facility, recorded_at: Date.today)
 
-      RefreshReportingViews.new.refresh_v2
+      RefreshReportingViews.refresh_v2
 
       expect(described_class.new(facility, range: range).for_regions.where("month_date < ?", Period.current.to_date)).to be_empty
       expect(described_class.new(facility, range: range).for_regions.where("month_date = ?", Period.current.to_date)).not_to be_empty

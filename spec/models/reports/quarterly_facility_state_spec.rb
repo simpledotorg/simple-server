@@ -19,7 +19,7 @@ RSpec.describe Reports::QuarterlyFacilityState, {type: :model, reporting_spec: t
     create(:patient, assigned_facility: facility, recorded_at: q4_2020)
     create(:patient, assigned_facility: facility, recorded_at: q1_2021)
 
-    RefreshReportingViews.new.refresh_v2
+    RefreshReportingViews.refresh_v2
     with_reporting_time_zone do
       expect(
         described_class.where(facility: facility)
@@ -71,7 +71,7 @@ RSpec.describe Reports::QuarterlyFacilityState, {type: :model, reporting_spec: t
         create(:blood_pressure, patient: patient, recorded_at: previous_quarter)
       end
 
-      RefreshReportingViews.new.refresh_v2
+      RefreshReportingViews.refresh_v2
       with_reporting_time_zone do
         quarterly_facility_state_2021_q2 = described_class.find_by(facility: facility, quarter_string: "2021-2")
 
