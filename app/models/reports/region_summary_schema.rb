@@ -236,7 +236,7 @@ module Reports
       end
     end
 
-    memoize def appts_scheduled_rates(entry)
+    def appts_scheduled_rates(entry)
       rounded_percentages({
         appts_scheduled_0_to_14_days_rates: appts_scheduled_0_to_14_days[entry.region.slug][entry.period],
         appts_scheduled_15_to_31_days_rates: appts_scheduled_15_to_31_days[entry.region.slug][entry.period],
