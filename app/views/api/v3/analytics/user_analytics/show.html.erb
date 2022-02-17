@@ -21,6 +21,11 @@
           </span>
         </p>
 
+        <%= content_tag :div,
+                         id: "statistics",
+                         data: { statistics: @service.daily_statistics },
+                         style: "display: none" do %>
+         <% end %>
         <%= render(Reports::DailyProgressComponent.new(@service)) %>
 
         <div class="card">
