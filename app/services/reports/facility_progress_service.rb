@@ -30,7 +30,18 @@ module Reports
     end
 
     def daily_follow_ups(date)
-      daily_follow_ups_grouped_by_day[date.yday] || 0
+      daily_follow_ups_grouped_by_day[date.to_date] || 0
+    end
+
+    def daily_statistics
+      {
+        daily: {
+          grouped_by_date: {
+            follow_ups: daily_follow_ups_grouped_by_day,
+            registrations: daily_registrations_grouped_by_day
+          }
+        }
+      }
     end
 
     def total_counts
@@ -62,8 +73,6 @@ module Reports
       dimensions
     end
 
-    private
-
     attr_reader :diabetes_enabled
 
     memoize def daily_registrations_grouped_by_day
@@ -74,7 +83,7 @@ module Reports
     memoize def daily_follow_ups_grouped_by_day
       scope = Reports::DailyFollowUp.with_hypertension
       scope = scope.or(Reports::DailyFollowUp.with_diabetes) if diabetes_enabled
-      scope.where(facility: facility).group(:day_of_year).count
+      scope.where(facility: facility).group_by_day(:visited_at).count
     end
 
     def create_dimension(*args)
