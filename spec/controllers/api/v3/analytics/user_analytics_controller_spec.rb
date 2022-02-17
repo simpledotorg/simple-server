@@ -161,6 +161,7 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
                 end
               end
 
+              refresh_views
               get :show, format: :html
               expect(response.body).to match(/Achievements/)
             end
