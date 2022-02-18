@@ -33,24 +33,23 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
 
   it "matches daily stats for including JSON in the view" do
     facility = create(:facility, enable_diabetes_management: true)
-    htn_patient1 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 3.days.ago)
-    _htn_patient2 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 3.days.ago)
-    _dm_patient = create(:patient, :diabetes, registration_facility: facility, registration_user: user, recorded_at: 3.days.ago)
+    htn_patient1 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: two_days_ago)
+    _htn_patient2 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: two_days_ago)
+    _dm_patient = create(:patient, :diabetes, registration_facility: facility, registration_user: user, recorded_at: two_days_ago)
     _htn_patient3 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 1.minute.ago)
     create(:blood_pressure, :with_encounter, recorded_at: two_days_ago, patient: htn_patient1, facility: facility, user: user)
 
     with_reporting_time_zone do
       refresh_views
       service = described_class.new(facility, Period.current)
-      presenter = UserAnalyticsPresenter.new(facility)
-
       actual = service.daily_statistics
-      expected = presenter.statistics.slice(:daily)
-      d actual
-      d expected
 
-      expect(service.daily_statistics[:daily][:grouped_by_date][:registrations]).to eq(expected[:daily][:grouped_by_date][:registrations])
-      expect(service.daily_statistics[:daily][:grouped_by_date][:follow_ups]).to eq(expected[:daily][:grouped_by_date][:follow_ups])
+      registrations = service.daily_statistics[:daily][:grouped_by_date][:registrations]
+      follow_ups = service.daily_statistics[:daily][:grouped_by_date][:follow_ups]
+      expect(registrations[seven_days_ago.to_date]).to eq(0)
+      expect(follow_ups[seven_days_ago.to_date]).to eq(0)
+      expect(registrations[two_days_ago.to_date]).to eq(3)
+      expect(follow_ups[two_days_ago.to_date]).to eq(1)
     end
   end
 
