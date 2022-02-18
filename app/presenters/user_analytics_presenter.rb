@@ -36,14 +36,6 @@ class UserAnalyticsPresenter
     current_facility.diabetes_enabled?
   end
 
-  def monthly_period_list
-    period_list_as_dates(:month, MONTHS_AGO)
-  end
-
-  def htn_control_monthly_period_list
-    period_list_as_dates(:month, HTN_CONTROL_MONTHS_AGO + 1).reverse.tap(&:pop)
-  end
-
   def display_percentage(numerator, denominator)
     return "0%" if denominator.nil? || denominator.zero? || numerator.nil?
     percentage = (numerator * 100.0) / denominator
