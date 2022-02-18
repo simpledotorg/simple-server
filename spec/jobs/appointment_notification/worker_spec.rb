@@ -84,18 +84,6 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       described_class.drain
     end
 
-    it "sends sms when notification's next_communication_type is imo" do
-      mock_successful_delivery
-      allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("imo")
-      allow_any_instance_of(ImoApiService).to receive(:send_notification).and_return({result: :sent, post_id: true})
-
-      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.attempts")
-      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.sent.imo")
-      expect_any_instance_of(ImoApiService).to receive(:send_notification)
-      described_class.perform_async(notification.id)
-      described_class.drain
-    end
-
     it "does not send a communication when notification's next_communication_type is nil" do
       mock_successful_delivery
       allow_any_instance_of(Notification).to receive(:next_communication_type).and_return(nil)
@@ -126,22 +114,6 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
         twilio_sid: "12345",
         twilio_msg_status: "sent",
         communication_type: "sms"
-      ).and_call_original
-      expect {
-        described_class.perform_async(notification.id)
-        described_class.drain
-      }.to change { Communication.count }.by(1)
-    end
-
-    it "creates a Communication with imo details when communication type is Imo" do
-      allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("imo")
-      imo_service = instance_double(ImoApiService, send_notification: {result: :sent, post_id: "abcde12345"})
-      allow(ImoApiService).to receive(:new).and_return(imo_service)
-
-      expect(Communication).to receive(:create_with_imo_details!).with(
-        notification: notification,
-        result: :sent,
-        post_id: "abcde12345"
       ).and_call_original
       expect {
         described_class.perform_async(notification.id)

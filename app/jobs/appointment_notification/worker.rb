@@ -39,13 +39,7 @@ class AppointmentNotification::Worker
     }
     Sentry.set_tags(context)
 
-    response =
-      case communication_type
-        when "imo"
-          ImoApiService.new.send_notification(notification, recipient_number)
-        else
-          notify_via_twilio(notification, communication_type, recipient_number, context)
-      end
+    response = notify_via_twilio(notification, communication_type, recipient_number, context)
 
     return unless response
     metrics.increment("sent.#{communication_type}")
@@ -95,21 +89,13 @@ class AppointmentNotification::Worker
   end
 
   def create_communication(notification, communication_type, response)
-    if communication_type == "imo"
-      Communication.create_with_imo_details!(
-        notification: notification,
-        result: response[:result],
-        post_id: response[:post_id]
-      )
-    else
-      Communication.create_with_twilio_details!(
-        appointment: notification.subject,
-        notification: notification,
-        twilio_sid: response.sid,
-        twilio_msg_status: response.status,
-        communication_type: communication_type
-      )
-    end
+    Communication.create_with_twilio_details!(
+      appointment: notification.subject,
+      notification: notification,
+      twilio_sid: response.sid,
+      twilio_msg_status: response.status,
+      communication_type: communication_type
+    )
   end
 
   def callback_url

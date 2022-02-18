@@ -627,56 +627,6 @@ ALTER SEQUENCE public.flipper_gates_id_seq OWNED BY public.flipper_gates.id;
 
 
 --
--- Name: imo_authorizations; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.imo_authorizations (
-    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
-    patient_id uuid NOT NULL,
-    last_invited_at timestamp without time zone NOT NULL,
-    status character varying NOT NULL,
-    deleted_at timestamp without time zone,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
-);
-
-
---
--- Name: imo_delivery_details; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.imo_delivery_details (
-    id bigint NOT NULL,
-    post_id character varying,
-    result character varying NOT NULL,
-    callee_phone_number character varying NOT NULL,
-    read_at timestamp without time zone,
-    deleted_at timestamp without time zone,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
-);
-
-
---
--- Name: imo_delivery_details_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.imo_delivery_details_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: imo_delivery_details_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.imo_delivery_details_id_seq OWNED BY public.imo_delivery_details.id;
-
-
---
 -- Name: patients; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -3692,13 +3642,6 @@ ALTER TABLE ONLY public.flipper_gates ALTER COLUMN id SET DEFAULT nextval('publi
 
 
 --
--- Name: imo_delivery_details id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.imo_delivery_details ALTER COLUMN id SET DEFAULT nextval('public.imo_delivery_details_id_seq'::regclass);
-
-
---
 -- Name: observations id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -3900,22 +3843,6 @@ ALTER TABLE ONLY public.flipper_features
 
 ALTER TABLE ONLY public.flipper_gates
     ADD CONSTRAINT flipper_gates_pkey PRIMARY KEY (id);
-
-
---
--- Name: imo_authorizations imo_authorizations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.imo_authorizations
-    ADD CONSTRAINT imo_authorizations_pkey PRIMARY KEY (id);
-
-
---
--- Name: imo_delivery_details imo_delivery_details_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.imo_delivery_details
-    ADD CONSTRAINT imo_delivery_details_pkey PRIMARY KEY (id);
 
 
 --
@@ -4609,13 +4536,6 @@ CREATE INDEX index_gin_phone_number_authentications_on_phone_number ON public.ph
 --
 
 CREATE INDEX index_gin_users_on_full_name ON public.users USING gin (to_tsvector('simple'::regconfig, COALESCE((full_name)::text, ''::text)));
-
-
---
--- Name: index_imo_authorizations_on_patient_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_imo_authorizations_on_patient_id ON public.imo_authorizations USING btree (patient_id);
 
 
 --
@@ -5553,6 +5473,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220203073617'),
 ('20220204224734'),
 ('20220209233034'),
+('20220217102418'),
+('20220217102500'),
 ('20220217202441');
 
 

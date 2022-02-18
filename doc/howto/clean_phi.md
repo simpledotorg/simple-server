@@ -20,7 +20,6 @@ drop table call_logs;
 drop table exotel_phone_number_details;
 drop table passport_authentications;
 alter table patients drop column deleted_reason cascade;
-drop table imo_authorizations;
 drop table ar_internal_metadata;
 alter table encounters drop column metadata;
 alter table encounters drop column notes;

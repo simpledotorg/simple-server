@@ -48,7 +48,6 @@ class Patient < ApplicationRecord
   has_many :experiments, through: :treatment_groups, class_name: "Experimentation::Experiment"
   has_one :medical_history
   has_many :teleconsultations
-  has_one :imo_authorization, required: false
 
   has_many :encounters
   has_many :observations, through: :encounters
