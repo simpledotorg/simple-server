@@ -2,28 +2,31 @@
 <% bp_controlled = set_min_value(data["bp_controlled"], min_width) %>
 <% bp_not_controlled = set_min_value(data["bp_not_controlled"], min_width) %>
 <% missed_visits = set_min_value(data["missed_visits"], min_width) %>
-<div class="d-flex br-4px o-hidden">
- <div
+<div class="d-flex br-4px o-hidden" data-graph-type="stacked-bar-chart">
+  <div
     class="d-flex ai-center jc-center mr-2px p-16px bgc-green-new"
     style="width: <%= bp_controlled %>%;"
+    data-data-point="stacked-bar"
   >
-    <p class="m-0px p-0px ta-center fw-bold fs-16px c-white">
+    <p class="m-0px p-0px ta-center fw-bold fs-16px c-white pe-none">
       <%= data["bp_controlled"] %>%
     </p>
   </div>
   <div
     class="d-flex ai-center jc-center ml-1px mr-1px p-16px bgc-yellow-new"
     style="width: <%= bp_not_controlled %>%;"
+    data-data-point="stacked-bar"
   >
-    <p class="m-0px p-0px ta-center fw-bold fs-16px c-white">
+    <p class="m-0px p-0px ta-center fw-bold fs-16px c-white pe-none">
       <%= data["bp_not_controlled"] %>%
     </p>
   </div>
   <div
     class="d-flex ai-center jc-center ml-2px p-16px bgc-red-new"
     style="width: <%= missed_visits %>%;"
+    data-data-point="stacked-bar"
   >
-    <p class="m-0px p-0px ta-center fw-bold fs-16px c-white">
+    <p class="m-0px p-0px ta-center fw-bold fs-16px c-white pe-none">
       <%= data["missed_visits"] %>%
     </p>
   </div>

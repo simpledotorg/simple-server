@@ -95,3 +95,30 @@ function handleHelpCircleTouchEnd(event) {
   tooltip.classList.remove("d-block");
   tooltip.classList.add("d-none");
 }
+
+// Stacked bar chart interactions
+const stackedBars = document.querySelectorAll("[data-data-point='stacked-bar']");
+stackedBars.forEach(stackedBar => {
+  stackedBar.addEventListener("touchstart", handleStackedBarTouchStart, false);
+  stackedBar.addEventListener("touchend", handleStackedBarTouchEnd, false);
+});
+
+function handleStackedBarTouchStart(event) {
+  event.preventDefault();
+  const selectedStackedBar = event.target;
+  const selectedStackedBarChart = selectedStackedBar.parentElement;
+  const stackedBars = selectedStackedBarChart.querySelectorAll("[data-data-point='stacked-bar']");
+  stackedBars.forEach(stackedBar => {
+    stackedBar.classList.add("o-35");
+  });
+  selectedStackedBar.classList.remove("o-35");
+}
+
+function handleStackedBarTouchEnd(event) {
+  event.preventDefault();
+  const selectedStackedBarChart = event.target.parentElement;
+  const stackedBars = selectedStackedBarChart.querySelectorAll("[data-data-point='stacked-bar']");
+  stackedBars.forEach(stackedBar => {
+    stackedBar.classList.remove("o-35");
+  });
+}
