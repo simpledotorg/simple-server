@@ -12,6 +12,7 @@ module Reports
     attr_reader :regions
     attr_reader :registered_patients_query
     attr_reader :schema
+    alias_method :range, :periods
 
     def initialize(regions, periods:, follow_ups_v2: Flipper.enabled?(:follow_ups_v2))
       @regions = Array(regions).map(&:region)
