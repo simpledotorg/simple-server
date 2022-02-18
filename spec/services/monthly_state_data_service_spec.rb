@@ -164,6 +164,7 @@ RSpec.describe MonthlyStateDataService, reporting_spec: true do
         expect(column_headers[last_month_index]).to eq(Period.current.to_s)
       end
     end
+
     context "when medications_dispensed is enabled" do
       let(:service) { described_class.new(state, period, medications_dispensation_enabled: true) }
       let(:sections) {
@@ -295,7 +296,7 @@ RSpec.describe MonthlyStateDataService, reporting_spec: true do
         new_registrations = csv[facility_row_index][9..14]
         expect(new_registrations).to eq(%w[0 0 1 0 0 0])
         follow_ups = csv[facility_row_index][15..20]
-        expect(follow_ups).to eq(%w[0 0 0 0 0 0])
+        expect(follow_ups).to eq(%w[0 0 0 1 1 3])
         expect(find_in_csv(csv, facility_row_index, "Patients with BP controlled")).to eq("0")
         expect(find_in_csv(csv, facility_row_index, "Patients with BP not controlled")).to eq("0")
         expect(find_in_csv(csv, facility_row_index, "Patients with a missed visit")).to eq("0")
