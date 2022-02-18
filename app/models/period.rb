@@ -36,7 +36,7 @@ class Period
     end
   end
 
-  # Return the common formatteer so groupdate can return Period keys instead of dates
+  # Return the common formatter so GroupDate can return Period keys instead of dates
   def self.formatter(period_type)
     lambda { |v| period_type == :quarter ? Period.quarter(v) : Period.month(v) }
   end

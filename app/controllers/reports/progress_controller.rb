@@ -11,6 +11,7 @@ class Reports::ProgressController < AdminController
     @current_facility = @region
     @user_analytics = UserAnalyticsPresenter.new(@region)
     @service = Reports::FacilityProgressService.new(current_facility, @period)
+    @achievements = Reports::FacilityProgressAchievementService.new(current_facility)
 
     if Flipper.enabled?(:new_progress_tab)
       @data = Reports::ReportsFakeFacilityProgressService.new.call

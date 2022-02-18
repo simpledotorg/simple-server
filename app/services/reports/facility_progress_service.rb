@@ -1,13 +1,19 @@
 module Reports
   class FacilityProgressService
     include Memery
+    MONTHS = -5
+    CONTROL_MONTHS = -12
+    attr_reader :control_range
     attr_reader :facility
     attr_reader :range
+    attr_reader :region
 
     def initialize(facility, period)
       @facility = facility
+      @region = facility.region
       @period = period
-      @range = Range.new(@period.advance(months: -5), @period)
+      @range = Range.new(@period.advance(months: MONTHS), @period)
+      @control_range = Range.new(@period.advance(months: CONTROL_MONTHS), @period.previous)
       @diabetes_enabled = facility.enable_diabetes_management
     end
 
@@ -24,7 +30,24 @@ module Reports
     end
 
     def daily_follow_ups(date)
-      daily_follow_ups_grouped_by_day[date.yday] || 0
+      daily_follow_ups_grouped_by_day[date.to_date] || 0
+    end
+
+    def daily_statistics
+      {
+        daily: {
+          grouped_by_date: {
+            follow_ups: daily_follow_ups_grouped_by_day,
+            registrations: daily_registrations_grouped_by_day
+          }
+        },
+        metadata: {
+          is_diabetes_enabled: @diabetes_enabled,
+          last_updated_at: I18n.l(Time.current),
+          formatted_next_date: (Time.current + 1.day).to_s(:mon_year),
+          today_string: I18n.t(:today_str)
+        }
+      }
     end
 
     def total_counts
@@ -37,6 +60,10 @@ module Reports
 
     def repository
       @repository ||= Reports::Repository.new(facility, periods: @range)
+    end
+
+    def control_rates_repository
+      @control_rates_repository ||= Reports::Repository.new(facility, periods: control_range)
     end
 
     # Returns all possible combinations of FacilityProgressDimensions for displaying
@@ -52,8 +79,6 @@ module Reports
       dimensions
     end
 
-    private
-
     attr_reader :diabetes_enabled
 
     memoize def daily_registrations_grouped_by_day
@@ -64,7 +89,7 @@ module Reports
     memoize def daily_follow_ups_grouped_by_day
       scope = Reports::DailyFollowUp.with_hypertension
       scope = scope.or(Reports::DailyFollowUp.with_diabetes) if diabetes_enabled
-      scope.where(facility: facility).group(:day_of_year).count
+      scope.where(facility: facility).group_by_day(:visited_at, last: 30, current: false).count
     end
 
     def create_dimension(*args)
