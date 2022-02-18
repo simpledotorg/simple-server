@@ -1,4 +1,4 @@
-am-ET:
+am_ET:
   notifications:
     set01:
       basic: "%{patient_name}፣ እባክዎ ለደም ግፊት ልኬት እና ለመድሃኒቶች %{facility_name} በ %{appointment_date}ይጎብኙ።"
@@ -31,3 +31,5 @@ am-ET:
       first: "ለደም ግፊትዎ መለካት ዘግይተዋል።  %{patient_name}፣ እባክዎ ለደም ግፊት ልኬት እና ለመድሃኒቶች በተቻለ መጠን  %{facility_name} ይጎብኙ።"
       second: "ለደም ግፊትዎ መለካት ዘግይተዋል።  %{patient_name}፣ እባክዎ ለደም ግፊት ልኬት እና ለመድሃኒቶች በተቻለ መጠን  %{facility_name} ይጎብኙ።"
       third: "ለደም ግፊትዎ መለካት ዘግይተዋል።  %{patient_name}፣ እባክዎ ለደም ግፊት ልኬት እና ለመድሃኒቶች በተቻለ መጠን  %{facility_name} ይጎብኙ።"
+    covid:
+      medication_reminder: "ውድ%{patient_name}፡ የእኛ ሰራተኞች በ%{facility_name}በዚህ የኮቪድ ድንገተኛ አደጋ ወቅት ስለእርስዎ እና የልብ ጤናዎ እያሰቡ ነው። የBP መድሃኒቶችዎን መቀጠል በጣም አስፈላጊ ነው። ነጻ መድሃኒትዎን በአቅራቢያዎ ከሚገኝ ንዑስ ማእከል ወይም የጤና ደህንነት ማእከል ይሰብስቡ። የእርስዎን ANM ወይም ASHA ያግኙ።"
