@@ -130,25 +130,6 @@ class UserAnalyticsPresenter
       }
   end
 
-  def statistics_legacy
-    @statistics ||=
-      Rails.cache.fetch(statistics_cache_key, expires_in: EXPIRE_STATISTICS_CACHE_IN, force: bust_cache?) {
-        {
-          daily: daily_stats,
-          monthly: monthly_stats,
-          all_time: all_time_stats,
-          cohorts: cohort_stats,
-          trophies: trophy_stats,
-          metadata: {
-            is_diabetes_enabled: diabetes_enabled?,
-            last_updated_at: I18n.l(Time.current),
-            formatted_next_date: display_date(Time.current + 1.day),
-            today_string: I18n.t(:today_str)
-          }
-        }
-      }
-  end
-
   private
 
   def daily_stats

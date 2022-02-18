@@ -58,36 +58,6 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
               recorded_at: follow_up_date)
           end
         end
-
-        it "has data grouped by gender" do
-          data = described_class.new(current_facility).statistics
-
-          expected_output = {
-            hypertension: {
-              follow_ups: {
-                "female" => 1,
-                "male" => 1
-              },
-
-              registrations: {
-                "female" => 1,
-                "male" => 1
-              }
-            },
-
-            diabetes: {
-              follow_ups: {
-                "transgender" => 1
-              },
-
-              registrations: {
-                "transgender" => 1
-              }
-            }
-          }
-
-          expect(data.dig(:all_time, :grouped_by_gender)).to eq(expected_output)
-        end
       end
     end
 
@@ -130,26 +100,6 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
               user: current_user,
               recorded_at: follow_up_date)
           end
-        end
-
-        it "has data grouped by gender" do
-          data = described_class.new(current_facility).statistics
-
-          expected_output = {
-            hypertension: {
-              follow_ups: {
-                "female" => 1,
-                "male" => 1
-              },
-
-              registrations: {
-                "female" => 1,
-                "male" => 1
-              }
-            }
-          }
-
-          expect(data.dig(:all_time, :grouped_by_gender)).to eq(expected_output)
         end
 
         it "has data grouped by date" do
