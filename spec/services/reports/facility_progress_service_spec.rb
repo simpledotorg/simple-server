@@ -42,7 +42,6 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
     with_reporting_time_zone do
       refresh_views
       service = described_class.new(facility, Period.current)
-      actual = service.daily_statistics
 
       registrations = service.daily_statistics[:daily][:grouped_by_date][:registrations]
       follow_ups = service.daily_statistics[:daily][:grouped_by_date][:follow_ups]
