@@ -1,4 +1,4 @@
-sid-ET:
+sid:
   notifications:
     set01:
       basic: "%{patient_name}, egotena la'isi %{assigned_facility_name}  %{appointment_date} munidete xisorana xagichoho."
@@ -31,3 +31,5 @@ sid-ET:
       first: "Munidete xiiwo layirate gedenite dayoto. %{patient_name}, egotena la'isi %{assigned_facility_name} danidito yanani munidete xiiwo layirana xagicho adha danidato."
       second: "Munidete xiiwo layirate gedenite dayoto. %{patient_name}, egotena la'isi %{assigned_facility_name} danidito yanani munidete xiiwo layirana xagicho adha danidato."
       third: "Munidete xiiwo layirate gedenite dayoto. %{patient_name}, egotena la'isi %{assigned_facility_name} danidito yanani munidete xiiwo layirana xagicho adha danidato."
+    covid:
+      medication_reminder: "roodoya 1% (xiiwaminohu suuma): nnike ledohu 2% (hoorosirano suuma) atte qaaganina atte faayima kuni COVID wiinamira. loowogesha muundete xiiwaa xaagichu guufate danchaho. sinu meererimin mulla xaagicho gaaniba asse qoleno faayimate laanani meererimn. atti ANM leedeno ASHA  xaadi."
