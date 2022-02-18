@@ -42,12 +42,60 @@ module Reports
         "data_type" => "percentage",
         "subtitle" => "Hypertension patients in #{facility_name} registered >3 months ago with BP <140/90 at their last visit in the last 3 months.",
         "breakdown" => [
-          {"month" => "Aug-2021", "value" => 32},
-          {"month" => "Sep-2021", "value" => 44},
-          {"month" => "Oct-2021", "value" => 37},
-          {"month" => "Nov-2021", "value" => 34},
-          {"month" => "Dec-2021", "value" => 32},
-          {"month" => "Jan-2022", "value" => 31}
+          {
+            "month" => "Aug-2021",
+            "value" => 32,
+            "period_start" => "Jun-2021",
+            "period_end" => "Aug-2021",
+            "registration_period" => "May-2021",
+            "total_patients" => 116,
+            "registered_patients" => 363
+          },
+          {
+            "month" => "Sep-2021",
+            "value" => 44,
+            "period_start" => "Jul-2021",
+            "period_end" => "Sep-2021",
+            "registration_period" => "Jun-2021",
+            "total_patients" => 154,
+            "registered_patients" => 350
+          },
+          {
+            "month" => "Oct-2021",
+            "value" => 37,
+            "period_start" => "Aug-2021",
+            "period_end" => "Oct-2021",
+            "registration_period" => "Jul-2021",
+            "total_patients" => 177,
+            "registered_patients" => 478
+          },
+          {
+            "month" => "Nov-2021",
+            "value" => 34,
+            "period_start" => "Sep-2021",
+            "period_end" => "Nov-2021",
+            "registration_period" => "Aug-2021",
+            "total_patients" => 165,
+            "registered_patients" => 485
+          },
+          {
+            "month" => "Dec-2021",
+            "value" => 32,
+            "period_start" => "Oct-2021",
+            "period_end" => "Dec-2021",
+            "registration_period" => "Sep-2021",
+            "total_patients" => 176,
+            "registered_patients" => 550
+          },
+          {
+            "month" => "Jan-2022",
+            "value" => 31,
+            "period_start" => "Nov-2021",
+            "period_end" => "Jan-2022",
+            "registration_period" => "Oct-2021",
+            "total_patients" => 165,
+            "registered_patients" => 532 
+          }
         ]
       }
       @hypertension_bp_not_controlled = {
@@ -55,12 +103,60 @@ module Reports
         "data_type" => "percentage",
         "subtitle" => "Hypertension patients in #{facility_name} registered >3 months ago with BP ≥140/90 at their last visit in the last 3 months.",
         "breakdown" => [
-          {"month" => "Aug-2021", "value" => 13},
-          {"month" => "Sep-2021", "value" => 14},
-          {"month" => "Oct-2021", "value" => 12},
-          {"month" => "Nov-2021", "value" => 18},
-          {"month" => "Dec-2021", "value" => 23},
-          {"month" => "Jan-2022", "value" => 15}
+          {
+            "month" => "Aug-2021",
+            "value" => 13,
+            "period_start" => "Jun-2021",
+            "period_end" => "Aug-2021",
+            "registration_period" => "May-2021",
+            "total_patients" => 47,
+            "registered_patients" => 363
+          },
+          {
+            "month" => "Sep-2021",
+            "value" => 14,
+            "period_start" => "Jul-2021",
+            "period_end" => "Sep-2021",
+            "registration_period" => "Jun-2021",
+            "total_patients" => 49,
+            "registered_patients" => 350
+          },
+          {
+            "month" => "Oct-2021",
+            "value" => 12,
+            "period_start" => "Aug-2021",
+            "period_end" => "Oct-2021",
+            "registration_period" => "Jul-2021",
+            "total_patients" => 57,
+            "registered_patients" => 478
+          },
+          {
+            "month" => "Nov-2021",
+            "value" => 18,
+            "period_start" => "Sep-2021",
+            "period_end" => "Nov-2021",
+            "registration_period" => "Aug-2021",
+            "total_patients" => 87,
+            "registered_patients" => 485
+          },
+          {
+            "month" => "Dec-2021",
+            "value" => 23,
+            "period_start" => "Oct-2021",
+            "period_end" => "Dec-2021",
+            "registration_period" => "Sep-2021",
+            "total_patients" => 127,
+            "registered_patients" => 550
+          },
+          {
+            "month" => "Jan-2022",
+            "value" => 15,
+            "period_start" => "Nov-2021",
+            "period_end" => "Jan-2022",
+            "registration_period" => "Oct-2021",
+            "total_patients" => 80,
+            "registered_patients" => 532 
+          }
         ]
       }
       @hypertension_missed_visits = {
@@ -68,12 +164,60 @@ module Reports
         "data_type" => "percentage",
         "subtitle" => "Hypertension patients in #{facility_name} registered >3 months ago with no visit in the last 3 months.",
         "breakdown" => [
-          {"month" => "Aug-2021", "value" => 17},
-          {"month" => "Sep-2021", "value" => 18},
-          {"month" => "Oct-2021", "value" => 18},
-          {"month" => "Nov-2021", "value" => 19},
-          {"month" => "Dec-2021", "value" => 27},
-          {"month" => "Jan-2022", "value" => 16}
+          {
+            "month" => "Aug-2021",
+            "value" => 17,
+            "period_start" => "Jun-2021",
+            "period_end" => "Aug-2021",
+            "registration_period" => "May-2021",
+            "total_patients" => 62,
+            "registered_patients" => 363
+          },
+          {
+            "month" => "Sep-2021",
+            "value" => 18,
+            "period_start" => "Jul-2021",
+            "period_end" => "Sep-2021",
+            "registration_period" => "Jun-2021",
+            "total_patients" => 63,
+            "registered_patients" => 350
+          },
+          {
+            "month" => "Oct-2021",
+            "value" => 18,
+            "period_start" => "Aug-2021",
+            "period_end" => "Oct-2021",
+            "registration_period" => "Jul-2021",
+            "total_patients" => 86,
+            "registered_patients" => 478
+          },
+          {
+            "month" => "Nov-2021",
+            "value" => 19,
+            "period_start" => "Sep-2021",
+            "period_end" => "Nov-2021",
+            "registration_period" => "Aug-2021",
+            "total_patients" => 92,
+            "registered_patients" => 485
+          },
+          {
+            "month" => "Dec-2021",
+            "value" => 27,
+            "period_start" => "Oct-2021",
+            "period_end" => "Dec-2021",
+            "registration_period" => "Sep-2021",
+            "total_patients" => 149,
+            "registered_patients" => 550
+          },
+          {
+            "month" => "Jan-2022",
+            "value" => 16,
+            "period_start" => "Nov-2021",
+            "period_end" => "Jan-2022",
+            "registration_period" => "Oct-2021",
+            "total_patients" => 85,
+            "registered_patients" => 532 
+          }
         ]
       }
       @hypertension_quarterly_cohort_reports = {

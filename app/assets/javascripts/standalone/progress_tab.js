@@ -3,11 +3,9 @@ function goToPage(startPageId, endPageId) {
   const startPage = document.getElementById(startPageId);
   startPage.style.display = "none";
   startPage.style.height = "0";
-
   const endPage = document.getElementById(endPageId);
   endPage.style.display = "block";
   endPage.style.height = "auto";
-
   document.body.scrollTop = 0;
   document.documentElement.scrollTop = 0;
 }
@@ -24,40 +22,49 @@ barCharts.forEach(barChart => {
 
 function handleBarTouchStart(event) {
   event.preventDefault();
-
   const barChart = event.target.parentElement.parentElement;
   Array.from(barChart.children).forEach(dataPoint => {
     const value = dataPoint.querySelector("[data-point-type='value'");
-    const bar = dataPoint.querySelector("[data-point-type='bar'");
     value.classList.remove("c-black");
     value.classList.add("c-grey-dark");
+    const bar = dataPoint.querySelector("[data-point-type='bar'");
     bar.classList.add("o-35");
   });
-
   const selectedDataPoint = event.target.parentElement;
   const selectedValue = selectedDataPoint.querySelector("[data-point-type='value'");
-  const selectedBar = selectedDataPoint.querySelector("[data-point-type='bar'");
   selectedValue.classList.remove("c-grey-dark");
   selectedValue.classList.add("c-black");
+  const selectedBar = selectedDataPoint.querySelector("[data-point-type='bar'");
   selectedBar.classList.remove("o-35");
+  if (barChart.getAttribute("data-with-tooltip") === "true") {
+    const selectedTooltip = selectedDataPoint.querySelector("[data-point-type='tooltip']");
+    const selectedTooltipTip = selectedTooltip.querySelector("[data-element='tip'");
+    selectedTooltip.classList.remove("d-none");
+    selectedTooltip.classList.add("d-block");
+    selectedTooltip.style.top = `${selectedValue.offsetTop - selectedTooltip.offsetHeight - 12}px`;
+    selectedTooltipTip.style.left = `${(selectedValue.offsetLeft + (selectedValue.offsetWidth / 2)) - (selectedTooltipTip.offsetWidth / 2)}px`;
+  }
 }
 
 function handleBarTouchEnd(event) {
   event.preventDefault();
-
   const barChart = event.target.parentElement.parentElement;
   Array.from(barChart.children).forEach(dataPoint => {
     const value = dataPoint.querySelector("[data-point-type='value'");
-    const bar = dataPoint.querySelector("[data-point-type='bar'");
     value.classList.remove("c-black");
     value.classList.add("c-grey-dark");
+    const bar = dataPoint.querySelector("[data-point-type='bar'");
     bar.classList.add("o-35");
+    if (barChart.getAttribute("data-with-tooltip") === "true") {
+      const tooltip = dataPoint.querySelector("[data-point-type='tooltip'");
+      tooltip.classList.remove("d-block");
+      tooltip.classList.add("d-none");
+    }
   });
-
   const currentDataPoint = barChart.children[barChart.children.length - 1];
   const currentValue = currentDataPoint.querySelector("[data-point-type='value'");
-  const currentBar = currentDataPoint.querySelector("[data-point-type='bar'");
   currentValue.classList.remove("c-grey-dark");
   currentValue.classList.add("c-black");
+  const currentBar = currentDataPoint.querySelector("[data-point-type='bar'");
   currentBar.classList.remove("o-35");
 }

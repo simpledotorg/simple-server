@@ -55,7 +55,8 @@
                locals: {
                           data: data["hypertension_registered_patients"]["breakdown"],
                           data_type: data["hypertension_registered_patients"]["data_type"],
-                          graph_css_color: "bgc-purple-new"
+                          graph_css_color: "bgc-purple-new",
+                          show_tooltip: false
                         }
     %>
   </div>
@@ -75,7 +76,8 @@
                locals: {
                           data: data["hypertension_monthly_follow_up_patients"]["breakdown"],
                           data_type: data["hypertension_monthly_follow_up_patients"]["data_type"],
-                          graph_css_color: "bgc-blue-new"
+                          graph_css_color: "bgc-blue-new",
+                          show_tooltip: false
                         }
     %>
   </div>
@@ -100,7 +102,8 @@
                locals: {
                           data: data["hypertension_bp_controlled"]["breakdown"],
                           data_type: data["hypertension_bp_controlled"]["data_type"],
-                          graph_css_color: "bgc-green-new"
+                          graph_css_color: "bgc-green-new",
+                          show_tooltip: true
                         }
     %>
   </div>
@@ -120,7 +123,8 @@
                locals: {
                           data: data["hypertension_bp_not_controlled"]["breakdown"],
                           data_type: data["hypertension_bp_not_controlled"]["data_type"],
-                          graph_css_color: "bgc-yellow-new"
+                          graph_css_color: "bgc-yellow-new",
+                          show_tooltip: true
                         }
     %>
   </div>
@@ -140,7 +144,8 @@
                locals: {
                           data: data["hypertension_missed_visits"]["breakdown"],
                           data_type: data["hypertension_missed_visits"]["data_type"],
-                          graph_css_color: "bgc-red-new"
+                          graph_css_color: "bgc-red-new",
+                          show_tooltip: true
                         }
     %>
   </div>

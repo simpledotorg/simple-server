@@ -765,6 +765,7 @@ footer p {
 /* FLEX */
 .d-flex { display: flex; }
 .d-inline-flex { display: inline-flex; }
+.d-none { display: none; }
 .fd-column { flex-direction: column; }
 .ai-center { align-items: center; }
 .ai-flex-start { align-items: flex-start; }
@@ -780,16 +781,21 @@ footer p {
 .t--3px { top: -3px; }
 .t-0 { top: 0; }
 .t-8px { top: 8px; }
+.b--8px { bottom: -8px; } 
 .b-0 { bottom: 0; }
 .r-8px { right: 8px; }
 .l-0 { left: 0; }
+.l-16px { left: 16px; }
 /* LAYOUT */
 .d-block { display: block; }
 .d-inline-block { display: inline-block; }
 .d-hidden { display: hidden; }
 .zi-100 { z-index: 100; }
+.o-35 { opacity: 0.35; }
 .o-hidden { overflow: hidden; }
 /* WIDTH & HEIGHT */
+.w-0px { width: 0px; }
+.w-8px { width: 8px; }
 .w-16px { width: 16px; }
 .w-24px { width: 24px; }
 .w-32px { width: 32px; }
@@ -798,8 +804,11 @@ footer p {
 .w-96px { width: 96px; }
 .w-95 { width: 95%; }
 .w-100 { width: 100%; }
+.w-100-16px { width: calc(100% - 16px); }
+.h-0px { height: 0px; }
 .h-1px { height: 1px; }
 .h-6px { height: 6px; }
+.h-8px { height: 4px; }
 .h-16px { height: 16px; }
 .h-32px { height: 32px; }
 .h-40px { height: 40px; }
@@ -855,6 +864,7 @@ footer p {
 .ls-0_4px { letter-spacing: 0.4px }
 .ls-1_25px { letter-spacing: 1.25px; }
 .c-baby-blue { color: $baby-blue; }
+/* COLOR */
 .c-blue { color: $blue; }
 .c-navy { color: $navy; }
 .c-blue-green { color: $blue-green; }
@@ -871,9 +881,10 @@ footer p {
 .c-grey-darkest { color: $grey-darkest; }
 .c-white { color: $white; }
 .c-black { color: $black; }
-/* BACKGROUND */
+/* BACKGROUND COLORS */
 .bgc-grey-light { background: $grey-light; }
 .bgc-white { background-color: $white; }
+.bgc-black { background-color: $black; }
 .bgc-blue-light { background-color: $blue-light; }
 .bgc-blue { background-color: $blue; }
 .bgc-blue-new { background-color: $blue-new; }
@@ -896,11 +907,15 @@ footer p {
 .bgc-yellow-light { background-color: $yellow-light; }
 .bgc-yellow { background-color: $yellow; }
 .bgc-yellow-new { background-color: $yellow-new; }
+/* BORDERS */
 .b-none { border: none; }
 .b-grey-mid { border: 1px solid $grey-mid; }
 .bt-grey-mid { border-top: 1px solid $grey-mid; }
+.br-8px-transparent { border-right: 8px solid $transparent-black-0; }
 .bb-blue-mid { border-bottom: 2px solid $blue-mid; }
 .bb-grey-mid { border-bottom: 1px solid $grey-mid; }
+.bl-8px-transparent { border-left: 8px solid $transparent-black-0; }
+.bt-8px-black { border-top: 8px solid $black; }
 .br-2px { border-radius: 2px; }
 .br-4px { border-radius: 4px; }
 .br-8px { border-radius: 8px; }
@@ -909,23 +924,25 @@ footer p {
 .br-100 { border-radius: 100%; }
 .btrr-2px { border-top-right-radius: 2px; }
 .btlr-2px { border-top-left-radius: 2px; }
+/* BOX SHADOWS */
 .bs-card { box-shadow: 0px 2px 4px $transparent-black-10; }
 .bs-fixed-card { box-shadow: 0px -2px 8px $transparent-black-10; }
 .bs-primary-button { box-shadow: 0px 4px 0px $blue-dark; }
 .bs-secondary-button { box-shadow: 0px 4px 0px $blue-mid; }
-.o-35 { opacity: 0.35; }
+.bs-tooltip { box-shadow: 0px 2px 8px $transparent-black-10; }
 /* FORM FIELDS */
 .bs-border-box { box-sizing: border-box; }
 .o-none:focus { outline: none; }
 .chevron-down-icon { background: $blue-light url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTQgNkw4IDEwTDEyIDYiIHN0cm9rZT0iIzAwNzVFQiIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+Cg==) no-repeat 97% 52% }
-.a-none {
-  -moz-appearance: none;;
-  -webkit-appearance: none;
-  appearance: none;
-}
+.a-none { -moz-appearance: none; -webkit-appearance: none; appearance: none; }
 /* SCROLL */
 .sb-auto { scroll-behavior: auto; }
 .ws-nowrap { white-space: nowrap; }
 .oy-visible { overflow-y: visible; }
 .ox-scroll { overflow-x: scroll; }
 .d-none-scrollbar::-webkit-scrollbar { display: none; }
+/* TRANSITIONS */
+.ttf-ease-in-out { -webkit-transition-timing-function: ease-in-out; transition-timing-function: ease-in-out; }
+.td-0_25s { -webkit-transition-duration: 0.25s; transition-duration: 0.25s; }
+.tp-opacity { -webkit-transition-property: opacity; transition-property: opacity; }
+.tp-color { -webkit-transition-property: color; transition-property: color; }
