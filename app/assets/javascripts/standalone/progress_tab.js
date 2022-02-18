@@ -68,3 +68,30 @@ function handleBarTouchEnd(event) {
   const currentBar = currentDataPoint.querySelector("[data-point-type='bar'");
   currentBar.classList.remove("o-35");
 }
+
+// Card header tooltip interactions
+const helpCircles = document.querySelectorAll("[data-element-type='help-circle']");
+helpCircles.forEach(helpCircle => {
+  helpCircle.addEventListener("touchstart", handleHelpCircleTouchStart, false);
+  helpCircle.addEventListener("touchend", handleHelpCircleTouchEnd, false);
+});
+
+function handleHelpCircleTouchStart(event) {
+  event.preventDefault();
+  const header = event.target.parentElement.parentElement;
+  const helpCircle = header.querySelector("[data-element-type='help-circle']");
+  const tooltip = header.querySelector("[data-element-type='tooltip']");
+  const tooltipTip = header.querySelector("[data-element-type='tip']");
+  tooltip.classList.remove("d-none");
+  tooltip.classList.add("d-block");
+  tooltip.style.top = `${helpCircle.offsetTop + helpCircle.offsetHeight + tooltipTip.offsetHeight + 4}px`;
+  tooltipTip.style.left = `${helpCircle.offsetLeft + 2}px`;
+}
+
+function handleHelpCircleTouchEnd(event) {
+  event.preventDefault();
+  const header = event.target.parentElement.parentElement;
+  const tooltip = header.querySelector("[data-element-type='tooltip']");
+  tooltip.classList.remove("d-block");
+  tooltip.classList.add("d-none");
+}

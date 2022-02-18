@@ -778,6 +778,7 @@ footer p {
 .p-absolute { position: absolute; } 
 .p-fixed { position: fixed; }
 .p-relative { position: relative; }
+.t--8px { top: -8px; }
 .t--3px { top: -3px; }
 .t-0 { top: 0; }
 .t-8px { top: 8px; }
@@ -916,6 +917,7 @@ footer p {
 .bb-grey-mid { border-bottom: 1px solid $grey-mid; }
 .bl-8px-transparent { border-left: 8px solid $transparent-black-0; }
 .bt-8px-black { border-top: 8px solid $black; }
+.bb-8px-black { border-bottom: 8px solid $black; }
 .br-2px { border-radius: 2px; }
 .br-4px { border-radius: 4px; }
 .br-8px { border-radius: 8px; }

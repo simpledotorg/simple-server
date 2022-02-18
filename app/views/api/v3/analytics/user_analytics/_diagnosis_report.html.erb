@@ -87,13 +87,29 @@
     </h3>
   </div>
   <div class="mb-8px p-16px bgc-white bs-card">
-    <div class="d-flex ai-center jc-space-between mb-8px">
-      <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
+    <div class="p-relative d-flex ai-center mb-8px" data-element-type="header">
+      <h2 class="m-0px mr-8px p-0px ta-left fw-medium fs-18px c-black">
         <%= data["hypertension_bp_controlled"]["name"] %>
       </h2>
-      <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
-        <%= data["hypertension_bp_controlled"]["total"] %>
-      </p>
+      <div class="d-flex ai-center" data-element-type="help-circle">
+        <%= inline_file("help-circle.svg") %>
+      </div>
+      <div class="d-none p-absolute l-0 zi-100 d-flex fd-column w-100 bs-tooltip" data-element-type="tooltip">
+        <div
+          class="p-absolute t--8px w-0px h-0px br-8px-transparent bl-8px-transparent bb-8px-black"
+          style="left: 8px;"
+          data-element-type="tip"
+        >
+        </div>
+        <div class="p-8px bgc-black br-4px">
+          <p class="m-0px mb-4px p-0px ta-left fw-regular fs-14px lh-150 c-white">
+            <span class="fw-bold">Numerator:</span> Patients with BP &lt;140/90 at their last visit in the last 3 months.
+          </p>
+          <p class="m-0px p-0px ta-left fw-regular fs-14px lh-150 c-white">
+            <span class="fw-bold">Denominator:</span> Hypertension patients assigned to <%= current_facility.name %>, registered before the last 3 months. Dead and lost to follow-up patients are excluded.
+          </p>
+        </div>
+      </div>
     </div>
     <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
         <%= data["hypertension_bp_controlled"]["subtitle"] %>
@@ -108,13 +124,29 @@
     %>
   </div>
   <div class="mb-8px p-16px bgc-white bs-card">
-    <div class="d-flex ai-center jc-space-between mb-8px">
-      <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
+    <div class="d-flex ai-center mb-8px" data-element-type="header">
+      <h2 class="m-0px mr-8px p-0px ta-left fw-medium fs-18px c-black">
         <%= data["hypertension_bp_not_controlled"]["name"] %>
       </h2>
-      <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
-        <%= data["hypertension_bp_not_controlled"]["total"] %>
-      </p>
+      <div class="d-flex ai-center" data-element-type="help-circle">
+        <%= inline_file("help-circle.svg") %>
+      </div>
+      <div class="d-none p-absolute l-0 zi-100 d-flex fd-column w-100 bs-tooltip" data-element-type="tooltip">
+        <div
+          class="p-absolute t--8px w-0px h-0px br-8px-transparent bl-8px-transparent bb-8px-black"
+          style="left: 8px;"
+          data-element-type="tip"
+        >
+        </div>
+        <div class="p-8px bgc-black br-4px">
+          <p class="m-0px mb-4px p-0px ta-left fw-regular fs-14px lh-150 c-white">
+            <span class="fw-bold">Numerator:</span> Patients with BP &ge;140/90 at their last visit in the last 3 months.
+          </p>
+          <p class="m-0px p-0px ta-left fw-regular fs-14px lh-150 c-white">
+            <span class="fw-bold">Denominator:</span> Hypertension patients assigned to <%= current_facility.name %>, registered before the last 3 months. Dead and lost to follow-up patients are excluded.
+          </p>
+        </div>
+      </div>
     </div>
     <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
         <%= data["hypertension_bp_not_controlled"]["subtitle"] %>
@@ -129,13 +161,29 @@
     %>
   </div>
   <div class="mb-8px p-16px bgc-white bs-card">
-    <div class="d-flex ai-center jc-space-between mb-8px">
-      <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
+    <div class="d-flex ai-center mb-8px" data-element-type="header">
+      <h2 class="m-0px mr-8px p-0px ta-left fw-medium fs-18px c-black">
         <%= data["hypertension_missed_visits"]["name"] %>
       </h2>
-      <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
-        <%= data["hypertension_missed_visits"]["total"] %>
-      </p>
+      <div class="d-flex ai-center" data-element-type="help-circle">
+        <%= inline_file("help-circle.svg") %>
+      </div>
+      <div class="d-none p-absolute l-0 zi-100 d-flex fd-column w-100 bs-tooltip" data-element-type="tooltip">
+        <div
+          class="p-absolute t--8px w-0px h-0px br-8px-transparent bl-8px-transparent bb-8px-black"
+          style="left: 8px;"
+          data-element-type="tip"
+        >
+        </div>
+        <div class="p-8px bgc-black br-4px">
+          <p class="m-0px mb-4px p-0px ta-left fw-regular fs-14px lh-150 c-white">
+            <span class="fw-bold">Numerator:</span> Patients with no visit in the last 3 months.
+          </p>
+          <p class="m-0px p-0px ta-left fw-regular fs-14px lh-150 c-white">
+            <span class="fw-bold">Denominator:</span> Hypertension patients assigned to <%= current_facility.name %>, registered before the last 3 months. Dead and lost to follow-up patients are excluded.
+          </p>
+        </div>
+      </div>
     </div>
     <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
         <%= data["hypertension_missed_visits"]["subtitle"] %>
