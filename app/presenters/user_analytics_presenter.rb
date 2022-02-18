@@ -1,7 +1,5 @@
 class UserAnalyticsPresenter
   include ApplicationHelper
-  include DayHelper
-  include PeriodHelper
   include DashboardHelper
   include ActionView::Helpers::NumberHelper
   include BustCache
@@ -12,12 +10,7 @@ class UserAnalyticsPresenter
 
   attr_reader :current_facility
 
-  DAYS_AGO = 30
-  MONTHS_AGO = 6
-  HTN_CONTROL_MONTHS_AGO = 12
-  TROPHY_MILESTONES = [10, 25, 50, 100, 250, 500, 1_000, 2_000, 3_000, 4_000, 5_000]
-  TROPHY_MILESTONE_INCR = 10_000
-  CACHE_VERSION = 4
+  CACHE_VERSION = 5
   EXPIRE_STATISTICS_CACHE_IN = 15.minutes
 
   def cohort_controlled(cohort)
@@ -71,12 +64,5 @@ class UserAnalyticsPresenter
 
   def statistics_cache_key
     "user_analytics/#{current_facility.id}/dm=#{diabetes_enabled?}/#{CACHE_VERSION}"
-  end
-
-  def sum_by_gender(data)
-    data.each_with_object({}) do |((_, gender), count), by_gender|
-      by_gender[gender] ||= 0
-      by_gender[gender] += count
-    end
   end
 end
