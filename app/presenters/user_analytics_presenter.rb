@@ -20,10 +20,6 @@ class UserAnalyticsPresenter
   CACHE_VERSION = 4
   EXPIRE_STATISTICS_CACHE_IN = 15.minutes
 
-  def daily_stats_by_date(*stats)
-    zero_if_blank_or_zero statistics.dig(:daily, :grouped_by_date, *stats)
-  end
-
   def monthly_htn_stats_by_date(*stats)
     zero_if_blank_or_zero statistics.dig(:monthly, :grouped_by_date, :hypertension, *stats)
   end
