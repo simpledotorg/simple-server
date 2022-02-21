@@ -21,7 +21,9 @@ class PatientsWithHistoryExporter < PatientsExporter
   def csv_headers
     [
       "Registration Date",
-      "Registration Quarter",
+      "Patient Registration Date",
+      "Patient Entry Date",
+      "Patient Registration Quarter",
       "Simple Patient ID",
       "BP Passport ID",
       "Patient Name",
@@ -49,6 +51,7 @@ class PatientsWithHistoryExporter < PatientsExporter
       (1..display_blood_pressures).map do |i|
         [
           "BP #{i} Date",
+          "BP #{i} Entry Date",
           "BP #{i} Quarter",
           "BP #{i} Systolic",
           "BP #{i} Diastolic",
@@ -74,6 +77,7 @@ class PatientsWithHistoryExporter < PatientsExporter
         ]
       end,
       "Latest Blood Sugar Date",
+      "Latest Blood Sugar Entry Date",
       "Latest Blood Sugar Value",
       "Latest Blood Sugar Type"
     ].flatten.compact
@@ -93,6 +97,7 @@ class PatientsWithHistoryExporter < PatientsExporter
 
     csv_fields = [
       registration_date(patient_summary),
+      device_created_at_date(patient_summary),
       registration_quarter(patient_summary),
       patient_summary.id,
       patient_summary.latest_bp_passport&.shortcode,
@@ -123,6 +128,7 @@ class PatientsWithHistoryExporter < PatientsExporter
         appointment = appointment_created_on(patient_appointments, bp&.recorded_at)
 
         [bp&.recorded_at.presence && I18n.l(bp&.recorded_at&.to_date),
+         bp&.device_created_at.presence && I18n.l(bp&.device_created_at&.to_date),
           bp&.recorded_at.presence && quarter_string(bp&.recorded_at&.to_date),
           bp&.systolic,
           bp&.diastolic,
@@ -137,6 +143,7 @@ class PatientsWithHistoryExporter < PatientsExporter
           *formatted_medications(all_medications, bp&.recorded_at)]
       end,
       latest_blood_sugar_date(patient_summary),
+      latest_blood_sugar_device_date(patient_summary),
       patient_summary.latest_blood_sugar.to_s,
       latest_blood_sugar_type(patient_summary)
     ].flatten
@@ -150,6 +157,12 @@ class PatientsWithHistoryExporter < PatientsExporter
   def display_blood_pressures
     @display_blood_pressures || DEFAULT_DISPLAY_BLOOD_PRESSURES
   end
+
+  def device_created_at_date(patient_summary)
+    patient_summary.device_created_at.presence &&
+      I18n.l(patient_summary.device_created_at.to_date)
+  end
+
 
   def display_medication_columns
     @display_medication_columns || DEFAULT_DISPLAY_MEDICATION_COLUMNS
