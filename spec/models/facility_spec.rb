@@ -405,8 +405,13 @@ RSpec.describe Facility, type: :model do
     let!(:facility) { create(:facility) }
 
     context "isn't discardable if data exists" do
-      it "has patients" do
+      it "has registered patients" do
         create(:patient, registration_facility: facility)
+        expect(facility.discardable?).to be false
+      end
+
+      it "has assigned patients" do
+        create(:patient, assigned_facility: facility)
         expect(facility.discardable?).to be false
       end
 

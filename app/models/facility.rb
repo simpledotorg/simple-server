@@ -219,6 +219,7 @@ class Facility < ApplicationRecord
 
   def records_preventing_discard
     {
+      "assigned_patients" => assigned_patients,
       "registered patient" => registered_patients,
       "blood pressure" => blood_pressures,
       "blood sugar" => blood_sugars,
