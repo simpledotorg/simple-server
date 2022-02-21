@@ -15,7 +15,7 @@
         >
         </div>
         <% if show_tooltip %>
-          <div class="d-none p-absolute l-0 d-flex fd-column w-100 bs-tooltip" data-point-type="tooltip">
+          <div class="o-0 pe-none p-absolute l-0 d-flex fd-column w-100 bs-tooltip ttf-ease-in-out td-0_25s tp-opacity" data-point-type="tooltip">
             <div class="p-8px bgc-black br-4px">
               <p class="m-0px p-0px ta-left fw-regular fs-14px lh-150 c-white">
                 <%= data_point["total_patients"] %> patients with a BP 140/90 between <%= data_point["period_start"] %> and <%= data_point["period_end"] %> of <%= data_point["registered_patients"] %> patients registered till <%= data_point["registration_period"] %>.

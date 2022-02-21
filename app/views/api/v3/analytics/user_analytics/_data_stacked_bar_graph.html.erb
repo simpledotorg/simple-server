@@ -4,7 +4,7 @@
 <% missed_visits = set_min_value(data["missed_visits_rate"], min_width) %>
 <div class="p-relative d-flex br-4px" data-graph-type="stacked-bar-chart">
   <div
-    class="d-flex ai-center jc-center mr-2px p-16px bgc-green-new btlr-4px bblr-4px"
+    class="d-flex ai-center jc-center mr-2px p-16px bgc-green-new btlr-4px bblr-4px ttf-ease-in-out td-0_25s tp-opacity"
     style="width: <%= bp_controlled %>%;"
     data-data-point="stacked-bar"
   >
@@ -12,7 +12,7 @@
       <%= data["bp_controlled_rate"] %>%
     </p>
     <div
-      class="d-none p-absolute l-0 zi-100 d-flex fd-column w-100 bs-tooltip"
+      class="o-0 pe-none p-absolute l-0 zi-100 d-flex fd-column w-100 bs-tooltip ttf-ease-in-out td-0_25s tp-opacity"
       data-element-type="tooltip"
       data-tooltip-index="0"
       data-tooltip-length="3"
@@ -30,7 +30,7 @@
     </div>
   </div>
   <div
-    class="d-flex ai-center jc-center ml-1px mr-1px p-16px bgc-yellow-new"
+    class="d-flex ai-center jc-center ml-1px mr-1px p-16px bgc-yellow-new ttf-ease-in-out td-0_25s tp-opacity"
     style="width: <%= bp_not_controlled %>%;"
     data-data-point="stacked-bar"
   >
@@ -38,7 +38,7 @@
       <%= data["bp_not_controlled_rate"] %>%
     </p>
     <div
-      class="d-none p-absolute l-0 zi-100 d-flex fd-column w-100 bs-tooltip"
+      class="o-0 pe-none p-absolute l-0 zi-100 d-flex fd-column w-100 bs-tooltip ttf-ease-in-out td-0_25s tp-opacity"
       data-element-type="tooltip"
       data-tooltip-index="1"
       data-tooltip-length="3"
@@ -56,7 +56,7 @@
     </div>
   </div>
   <div
-    class="d-flex ai-center jc-center ml-2px p-16px bgc-red-new btrr-4px bbrr-4px"
+    class="d-flex ai-center jc-center ml-2px p-16px bgc-red-new btrr-4px bbrr-4px ttf-ease-in-out td-0_25s tp-opacity"
     style="width: <%= missed_visits %>%;"
     data-data-point="stacked-bar"
   >
@@ -64,7 +64,7 @@
       <%= data["missed_visits_rate"] %>%
     </p>
     <div
-      class="d-none p-absolute l-0 zi-100 d-flex fd-column w-100 bs-tooltip"
+      class="o-0 pe-none p-absolute l-0 zi-100 d-flex fd-column w-100 bs-tooltip ttf-ease-in-out td-0_25s tp-opacity"
       data-element-type="tooltip"
       data-tooltip-index="2"
       data-tooltip-length="3"

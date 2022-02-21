@@ -39,10 +39,9 @@ function handleBarTouchStart(event) {
   if (barChart.getAttribute("data-with-tooltip") === "true") {
     const selectedTooltip = selectedDataPoint.querySelector("[data-point-type='tooltip']");
     const selectedTooltipTip = selectedTooltip.querySelector("[data-element='tip'");
-    selectedTooltip.classList.remove("d-none");
-    selectedTooltip.classList.add("d-block");
     selectedTooltip.style.top = `${selectedValue.offsetTop - selectedTooltip.offsetHeight - 12}px`;
     selectedTooltipTip.style.left = `${(selectedValue.offsetLeft + (selectedValue.offsetWidth / 2)) - (selectedTooltipTip.offsetWidth / 2)}px`;
+    selectedTooltip.classList.remove("o-0");
   }
 }
 
@@ -57,8 +56,7 @@ function handleBarTouchEnd(event) {
     bar.classList.remove("o-35");
     if (barChart.getAttribute("data-with-tooltip") === "true") {
       const tooltip = dataPoint.querySelector("[data-point-type='tooltip'");
-      tooltip.classList.remove("d-block");
-      tooltip.classList.add("d-none");
+      tooltip.classList.add("o-0");
     }
   });
 }
@@ -76,8 +74,7 @@ function handleHelpCircleTouchStart(event) {
   const helpCircle = header.querySelector("[data-element-type='help-circle']");
   const tooltip = header.querySelector("[data-element-type='tooltip']");
   const tooltipTip = header.querySelector("[data-element-type='tip']");
-  tooltip.classList.remove("d-none");
-  tooltip.classList.add("d-block");
+  tooltip.classList.remove("o-0");
   tooltip.style.top = `${helpCircle.offsetTop + helpCircle.offsetHeight + tooltipTip.offsetHeight + 4}px`;
   tooltipTip.style.left = `${helpCircle.offsetLeft + 2}px`;
 }
@@ -86,8 +83,7 @@ function handleHelpCircleTouchEnd(event) {
   event.preventDefault();
   const header = event.target.parentElement.parentElement;
   const tooltip = header.querySelector("[data-element-type='tooltip']");
-  tooltip.classList.remove("d-block");
-  tooltip.classList.add("d-none");
+  tooltip.classList.add("o-0");
 }
 
 // Stacked bar chart interactions
@@ -107,8 +103,7 @@ function handleStackedBarTouchStart(event) {
   });
   selectedStackedBar.classList.remove("o-35");
   const selectedTooltipContainer = selectedStackedBar.querySelector("[data-element-type='tooltip']");
-  selectedTooltipContainer.classList.remove("d-none");
-  selectedTooltipContainer.classList.add("d-block");
+  selectedTooltipContainer.classList.remove("o-0");
   setTooltipPosition(selectedTooltipContainer, selectedStackedBar);
 }
 
@@ -120,8 +115,7 @@ function handleStackedBarTouchEnd(event) {
     stackedBar.classList.remove("o-35");
   });
   const selectedTooltip = event.target.querySelector("[data-element-type='tooltip']");
-  selectedTooltip.classList.remove("d-block");
-  selectedTooltip.classList.add("d-none");
+  selectedTooltip.classList.add("o-0");
 }
 
 function setTooltipCopyPosition(copyElement, containerElement, barElement) {
