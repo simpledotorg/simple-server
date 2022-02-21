@@ -1,16 +1,29 @@
 <% min_width = 5 %>
-<% bp_controlled = set_min_value(data["bp_controlled"], min_width) %>
-<% bp_not_controlled = set_min_value(data["bp_not_controlled"], min_width) %>
-<% missed_visits = set_min_value(data["missed_visits"], min_width) %>
-<div class="d-flex br-4px o-hidden" data-graph-type="stacked-bar-chart">
+<% bp_controlled = set_min_value(data["bp_controlled_rate"], min_width) %>
+<% bp_not_controlled = set_min_value(data["bp_not_controlled_rate"], min_width) %>
+<% missed_visits = set_min_value(data["missed_visits_rate"], min_width) %>
+<div class="p-relative d-flex br-4px" data-graph-type="stacked-bar-chart">
   <div
     class="d-flex ai-center jc-center mr-2px p-16px bgc-green-new"
     style="width: <%= bp_controlled %>%;"
     data-data-point="stacked-bar"
   >
     <p class="m-0px p-0px ta-center fw-bold fs-16px c-white pe-none">
-      <%= data["bp_controlled"] %>%
+      <%= data["bp_controlled_rate"] %>%
     </p>
+    <div class="d-none p-absolute l-0 zi-100 d-flex fd-column bs-tooltip" data-element-type="tooltip">
+      <div
+        class="p-absolute b--8px w-0px h-0px br-8px-transparent bl-8px-transparent bt-8px-black"
+        style="left: 8px;"
+        data-element-type="tip"
+      >
+      </div>
+      <div class="p-8px bgc-black br-4px">
+        <p class="m-0px p-0px ta-left fw-regular fs-14px lh-150 c-white">
+          <%= data["bp_controlled_patients"] %> patients with BP &lt;140/90
+        </p>
+      </div>
+    </div>
   </div>
   <div
     class="d-flex ai-center jc-center ml-1px mr-1px p-16px bgc-yellow-new"
@@ -18,8 +31,21 @@
     data-data-point="stacked-bar"
   >
     <p class="m-0px p-0px ta-center fw-bold fs-16px c-white pe-none">
-      <%= data["bp_not_controlled"] %>%
+      <%= data["bp_not_controlled_rate"] %>%
     </p>
+    <div class="d-none p-absolute l-0 zi-100 d-flex fd-column bs-tooltip" data-element-type="tooltip">
+      <div
+        class="p-absolute b--8px w-0px h-0px br-8px-transparent bl-8px-transparent bt-8px-black"
+        style="left: 8px;"
+        data-element-type="tip"
+      >
+      </div>
+      <div class="p-8px bgc-black br-4px">
+        <p class="m-0px p-0px ta-left fw-regular fs-14px lh-150 c-white">
+          <%= data["bp_not_controlled_patients"] %> patients with &ge;140/90
+        </p>
+      </div>
+    </div>
   </div>
   <div
     class="d-flex ai-center jc-center ml-2px p-16px bgc-red-new"
@@ -27,7 +53,20 @@
     data-data-point="stacked-bar"
   >
     <p class="m-0px p-0px ta-center fw-bold fs-16px c-white pe-none">
-      <%= data["missed_visits"] %>%
+      <%= data["missed_visits_rate"] %>%
     </p>
+    <div class="d-none p-absolute l-0 zi-100 d-flex fd-column bs-tooltip" data-element-type="tooltip">
+      <div
+        class="p-absolute b--8px w-0px h-0px br-8px-transparent bl-8px-transparent bt-8px-black"
+        style="left: 8px;"
+        data-element-type="tip"
+      >
+      </div>
+      <div class="p-8px bgc-black br-4px">
+        <p class="m-0px p-0px ta-left fw-regular fs-14px lh-150 c-white">
+          <%= data["missed_visits_patients"] %> patients with no visit
+        </p>
+      </div>
+    </div>
   </div>
 </div>

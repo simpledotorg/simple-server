@@ -229,25 +229,34 @@ module Reports
             "result_period" => "Q4-2021/Q1-2022",
             "registration_period" => "Q3-2021",
             "total_patients" => 227,
-            "bp_controlled" => 42,
-            "bp_not_controlled" => 28,
-            "missed_visits" => 29
+            "bp_controlled_rate" => 42,
+            "bp_controlled_patients" => 95,
+            "bp_not_controlled_rate" => 28,
+            "bp_not_controlled_patients" => 64,
+            "missed_visits_rate" => 29,
+            "missed_visits_patients" => 67
           },
           {
             "result_period" => "Q3-2021/Q4-2021",
             "registration_period" => "Q2-2021",
             "total_patients" => 207,
-            "bp_controlled" => 50,
-            "bp_not_controlled" => 48,
-            "missed_visits" => 2 
+            "bp_controlled_rate" => 50,
+            "bp_controlled_patients" => 104,
+            "bp_not_controlled_rate" => 48,
+            "bp_not_controlled_patients" => 99,
+            "missed_visits_rate" => 2,
+            "missed_visits_patients" => 4
           },
           {
             "result_period" => "Q2-2021/Q3-2021",
             "registration_period" => "Q1-2021",
             "total_patients" => 247,
-            "bp_controlled" => 42,
-            "bp_not_controlled" => 26,
-            "missed_visits" => 31 
+            "bp_controlled_rate" => 42,
+            "bp_controlled_patients" => 104,
+            "bp_not_controlled_rate" => 26,
+            "bp_not_controlled_patients" => 64,
+            "missed_visits_rate" => 31,
+            "missed_visits_patients" => 79
           }
         ]
       }

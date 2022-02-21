@@ -112,6 +112,16 @@ function handleStackedBarTouchStart(event) {
     stackedBar.classList.add("o-35");
   });
   selectedStackedBar.classList.remove("o-35");
+  const selectedTooltip = selectedStackedBar.querySelector("[data-element-type='tooltip']");
+  const selectedTooltipTip = selectedTooltip.querySelector("[data-element-type='tip']");
+  selectedTooltip.classList.remove("d-none");
+  selectedTooltip.classList.add("d-block");
+  selectedTooltip.style.top = `${-selectedTooltip.offsetHeight - selectedTooltipTip.offsetHeight - 4}px`;
+  const barMidXPosition = selectedStackedBar.offsetLeft + (selectedStackedBar.offsetWidth / 2);
+  const tooltipXPosition = barMidXPosition - (selectedTooltip.offsetWidth / 2);
+  console.log(selectedStackedBar.offsetLeft);
+  selectedTooltip.style.left = `${tooltipXPosition}px`;
+  selectedTooltipTip.style.left = `${(selectedStackedBar.offsetLeft + (selectedStackedBar.offsetWidth / 2)) - (selectedTooltipTip.offsetWidth / 2)}px`;
 }
 
 function handleStackedBarTouchEnd(event) {
@@ -121,4 +131,7 @@ function handleStackedBarTouchEnd(event) {
   stackedBars.forEach(stackedBar => {
     stackedBar.classList.remove("o-35");
   });
+  const selectedTooltip = event.target.querySelector("[data-element-type='tooltip']");
+  selectedTooltip.classList.remove("d-block");
+  selectedTooltip.classList.add("d-none");
 }
