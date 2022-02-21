@@ -68,11 +68,11 @@ SELECT
 
     ------------------------------------------------------------
     -- details of the visit: latest BP, encounter, prescription drug and appointment
-    bps.blood_pressure_id as blood_pressure_id,
-    bps.blood_pressure_facility_id AS bp_facility_id,
-    bps.blood_pressure_recorded_at AS bp_recorded_at,
-    bps.systolic,
-    bps.diastolic,
+    visits.bp_id as blood_pressure_id,
+    visits.bp_facility_id AS bp_facility_id,
+    visits.bp_recorded_at AS bp_recorded_at,
+    visits.systolic,
+    visits.diastolic,
 
     visits.encounter_id AS encounter_id,
     visits.encounter_recorded_at AS encounter_recorded_at,
@@ -97,53 +97,79 @@ SELECT
 
     visits.months_since_visit AS months_since_visit,
     visits.quarters_since_visit AS quarters_since_visit,
-    bps.months_since_bp AS months_since_bp,
-    bps.quarters_since_bp AS quarters_since_bp,
+    visits.months_since_bp AS months_since_bp,
+    visits.quarters_since_bp AS quarters_since_bp,
 
     ------------------------------------------------------------
     -- indicators
     CASE
-        WHEN (bps.systolic IS NULL OR bps.diastolic IS NULL) THEN 'unknown'
-        WHEN (bps.systolic < 140 AND bps.diastolic < 90) THEN 'controlled'
+        WHEN (visits.systolic IS NULL OR visits.diastolic IS NULL) THEN 'unknown'
+        WHEN (visits.systolic < 140 AND visits.diastolic < 90) THEN 'controlled'
         ELSE 'uncontrolled'
         END
         AS last_bp_state,
 
     CASE
         WHEN p.status = 'dead' THEN 'dead'
-        WHEN (
-          -- months_since_registration
-          (cal.year - DATE_PART('year', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 12 +
-          (cal.month - DATE_PART('month', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) < 12
-
-          OR
-
-          bps.months_since_bp < 12
-        ) THEN 'under_care'
+        WHEN mh.hypertension = 'no' THEN 'not_hypertensive'
+        WHEN (visits.months_since_registration < 12 OR visits.months_since_bp < 12) THEN 'under_care'
         ELSE 'lost_to_follow_up'
         END
         AS htn_care_state,
 
     CASE
+        WHEN p.status = 'dead' THEN 'dead'
+        WHEN mh.diabetes = 'no' THEN 'not_diabetic'
+        WHEN (visits.months_since_registration < 12 OR visits.months_since_bs < 12) THEN 'under_care'
+        ELSE 'lost_to_follow_up'
+        END
+        AS diabetes_care_state,
+
+    CASE
+        WHEN mh.hypertension = 'no' THEN 'not_hypertensive'
         WHEN (visits.months_since_visit >= 3 OR visits.months_since_visit is NULL) THEN 'missed_visit'
-        WHEN (bps.months_since_bp >= 3 OR bps.months_since_bp is NULL) THEN 'visited_no_bp'
-        WHEN (bps.systolic < 140 AND bps.diastolic < 90) THEN 'controlled'
+        WHEN (visits.months_since_bp >= 3 OR visits.months_since_bp is NULL) THEN 'visited_no_bp'
+        WHEN (visits.systolic < 140 AND visits.diastolic < 90) THEN 'controlled'
         ELSE 'uncontrolled'
         END
         AS htn_treatment_outcome_in_last_3_months,
 
     CASE
+        WHEN mh.diabetes = 'no' THEN 'not_diabetic'
+        WHEN (visits.months_since_visit >= 3 OR visits.months_since_visit is NULL) THEN 'missed_visit'
+        WHEN (visits.months_since_bs >= 3 OR visits.months_since_bs is NULL) THEN 'visited_no_bp'
+        WHEN (
+            (visits.blood_sugar_type IN ('RBS', 'PPBS') AND visits.blood_sugar_value < 200)
+            OR
+            (visits.blood_sugar_type = 'FBS' AND visits.blood_sugar_value < 126)
+            OR
+            (visits.blood_sugar_type = 'HbA1c' AND visits.blood_sugar_value < 7.0)
+            ) THEN 'controlled'
+        WHEN (
+            (visits.blood_sugar_type IN ('RBS', 'PPBS') AND visits.blood_sugar_value BETWEEN 200 AND 299)
+            OR
+            (visits.blood_sugar_type = 'FBS' AND visits.blood_sugar_value BETWEEN 126 AND 199)
+            OR
+            (visits.blood_sugar_type = 'HbA1c' AND visits.blood_sugar_value BETWEEN 7.0 AND 8.9)
+            ) THEN 'uncontrolled_bs_200'
+        ELSE 'uncontrolled_bs_300'
+        END
+        AS diabetes_treatment_outcome_in_last_3_months,
+
+    CASE
+        WHEN mh.hypertension = 'no' THEN 'not_hypertensive'
         WHEN (visits.months_since_visit >= 2 OR visits.months_since_visit is NULL) THEN 'missed_visit'
-        WHEN (bps.months_since_bp >= 2 OR bps.months_since_bp is NULL) THEN 'visited_no_bp'
-        WHEN (bps.systolic < 140 AND bps.diastolic < 90) THEN 'controlled'
+        WHEN (visits.months_since_bp >= 2 OR visits.months_since_bp is NULL) THEN 'visited_no_bp'
+        WHEN (visits.systolic < 140 AND visits.diastolic < 90) THEN 'controlled'
         ELSE 'uncontrolled'
         END
         AS htn_treatment_outcome_in_last_2_months,
 
     CASE
+        WHEN mh.hypertension = 'no' THEN 'not_hypertensive'
         WHEN (visits.quarters_since_visit >= 1 OR visits.quarters_since_visit is NULL) THEN 'missed_visit'
-        WHEN (bps.quarters_since_bp >= 1 OR bps.quarters_since_bp is NULL) THEN 'visited_no_bp'
-        WHEN (bps.systolic < 140 AND bps.diastolic < 90) THEN 'controlled'
+        WHEN (visits.quarters_since_bp >= 1 OR visits.quarters_since_bp is NULL) THEN 'visited_no_bp'
+        WHEN (visits.systolic < 140 AND visits.diastolic < 90) THEN 'controlled'
         ELSE 'uncontrolled'
         END
         AS htn_treatment_outcome_in_quarter,
@@ -162,8 +188,6 @@ LEFT OUTER JOIN reporting_months cal
 
 -- Only fetch BPs and visits that happened on or before the selected calendar month
 -- We use year and month comparisons to avoid timezone errors
-LEFT OUTER JOIN reporting_patient_blood_pressures bps
-    ON p.id = bps.patient_id AND cal.month = bps.month AND cal.year = bps.year
 LEFT OUTER JOIN reporting_patient_visits visits
     ON p.id = visits.patient_id AND cal.month = visits.month AND cal.year = visits.year
 LEFT OUTER JOIN medical_histories mh
