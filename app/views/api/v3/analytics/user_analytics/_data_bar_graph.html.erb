@@ -5,27 +5,15 @@
   <div class="p-relative f-1 d-flex" data-graph-type="bar-chart" data-with-tooltip="<%= show_tooltip %>">
     <% data.each_with_index do |data_point, index| %>
       <div class="f-1 d-flex fd-column ai-center jc-end" data-data-point="bar">
-        <% if data.length - 1 == index %>
-          <p class="m-0px mb-8px p-0px ta-center fw-medium fs-16px c-black ttf-ease-in-out td-0_25s tp-color" data-point-type="value">
-            <%= data_point["value"] %><% if data_type == "percentage" %>%<% end %>
-          </p>
-          <div
-            class="w-32px <%= graph_css_color %> btrr-2px btlr-2px ttf-ease-in-out td-0_25s tp-opacity"
-            style="height: <%= set_min_value(data_point_heights[index], min_height) %>%;"
-            data-point-type="bar"
-          >
-          </div>
-        <% else %>
-          <p class="m-0px mb-8px p-0px ta-center fw-medium fs-16px c-grey-dark ttf-ease-in-out td-0_25s tp-color" data-point-type="value">
-            <%= data_point["value"] %><% if data_type == "percentage" %>%<% end %>
-          </p>
-          <div
-            class="w-32px <%= graph_css_color %> btrr-2px btlr-2px o-35 ttf-ease-in-out td-0_25s tp-opacity"
-            style="height: <%= set_min_value(data_point_heights[index], min_height) %>%;"
-            data-point-type="bar"
-          >
-          </div>
-        <% end %>
+        <p class="m-0px mb-8px p-0px ta-center fw-medium fs-16px c-black ttf-ease-in-out td-0_25s tp-color" data-point-type="value">
+          <%= data_point["value"] %><% if data_type == "percentage" %>%<% end %>
+        </p>
+        <div
+          class="w-32px <%= graph_css_color %> btrr-2px btlr-2px ttf-ease-in-out td-0_25s tp-opacity"
+          style="height: <%= set_min_value(data_point_heights[index], min_height) %>%;"
+          data-point-type="bar"
+        >
+        </div>
         <% if show_tooltip %>
           <div class="d-none p-absolute l-0 d-flex fd-column w-100 bs-tooltip" data-point-type="tooltip">
             <div class="p-8px bgc-black br-4px">

@@ -27,7 +27,7 @@ function handleBarTouchStart(event) {
     const value = dataPoint.querySelector("[data-point-type='value'");
     value.classList.remove("c-black");
     value.classList.add("c-grey-dark");
-    const bar = dataPoint.querySelector("[data-point-type='bar'");
+    const bar = dataPoint.querySelector("[data-point-type='bar']");
     bar.classList.add("o-35");
   });
   const selectedDataPoint = event.target.parentElement;
@@ -50,23 +50,17 @@ function handleBarTouchEnd(event) {
   event.preventDefault();
   const barChart = event.target.parentElement.parentElement;
   Array.from(barChart.children).forEach(dataPoint => {
-    const value = dataPoint.querySelector("[data-point-type='value'");
-    value.classList.remove("c-black");
-    value.classList.add("c-grey-dark");
-    const bar = dataPoint.querySelector("[data-point-type='bar'");
-    bar.classList.add("o-35");
+    const value = dataPoint.querySelector("[data-point-type='value']");
+    value.classList.remove("c-grey-dark");
+    value.classList.add("c-black");
+    const bar = dataPoint.querySelector("[data-point-type='bar']");
+    bar.classList.remove("o-35");
     if (barChart.getAttribute("data-with-tooltip") === "true") {
       const tooltip = dataPoint.querySelector("[data-point-type='tooltip'");
       tooltip.classList.remove("d-block");
       tooltip.classList.add("d-none");
     }
   });
-  const currentDataPoint = barChart.children[barChart.children.length - 1];
-  const currentValue = currentDataPoint.querySelector("[data-point-type='value'");
-  currentValue.classList.remove("c-grey-dark");
-  currentValue.classList.add("c-black");
-  const currentBar = currentDataPoint.querySelector("[data-point-type='bar'");
-  currentBar.classList.remove("o-35");
 }
 
 // Card header tooltip interactions
