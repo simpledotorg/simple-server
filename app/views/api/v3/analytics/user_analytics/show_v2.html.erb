@@ -22,11 +22,7 @@
           <%= t("progress_tab.reports_card.title") %>
         </h1>
         <p class="m-0px mb-16px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-          <%= t(
-                "progress_tab.reports_card.subtitle",
-                date: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")
-               )
-          %>
+          <%= t("progress_tab.reports_card.subtitle", date: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")) %>
         </p>
         <div class="d-flex ai-center jc-space-between mb-16px">
           <a class="f-1 d-flex fd-column ai-center jc-center td-none mr-10px p-12px bgc-blue-green-light br-8px" href="#" onclick="goToPage('home-page', 'daily-report-page'); return false;">
@@ -95,12 +91,7 @@
               <%= t("progress_tab.drug_stock_report_card.title") %>
             </h1>
             <p class="m-0px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-              <%= t(
-                    "progress_tab.drug_stock_report_card.subtitle",
-                    facility_name: current_facility.name,
-                    period: @period.to_s(:mon_year)
-                   )
-              %>
+              <%= t("progress_tab.drug_stock_report_card.subtitle", facility_name: current_facility.name, period: @period.to_s(:mon_year)) %>
             </p>
           </div>
           <div>
@@ -120,11 +111,7 @@
             <%= t("progress_tab.achievements_card.title") %>
           </h1>
           <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-            <%= t(
-                  "progress_tab.achievements_card.subtitle",
-                  facility_name: current_facility.name
-                 )
-            %>
+            <%= t("progress_tab.achievements_card.subtitle", facility_name: current_facility.name) %>
           </p>
         </div>
         <div class="mb-24px">
