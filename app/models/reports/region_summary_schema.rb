@@ -116,17 +116,13 @@ module Reports
 
     memoize def controlled_rates(with_ltfu: false)
       region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
-        numerator = controlled[entry.slug][entry.period]
-        total = denominator(entry.region, entry.period, with_ltfu: with_ltfu)
-        percentage(numerator, total)
+        visit_details_rates(entry, with_ltfu)[__method__]
       end
     end
 
     memoize def uncontrolled_rates(with_ltfu: false)
       region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
-        numerator = uncontrolled[entry.region.slug][entry.period]
-        total = denominator(entry.region, entry.period, with_ltfu: with_ltfu)
-        percentage(numerator, total)
+        visit_details_rates(entry, with_ltfu)[__method__]
       end
     end
 
@@ -137,10 +133,7 @@ module Reports
 
     memoize def missed_visits_rates(with_ltfu: false)
       region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
-        slug, period = entry.slug, entry.period
-        numerator = missed_visits(with_ltfu: with_ltfu)[slug][period]
-        total = denominator(entry.region, period, with_ltfu: with_ltfu)
-        percentage(numerator, total)
+        visit_details_rates(entry, with_ltfu)[__method__]
       end
     end
 
@@ -194,10 +187,7 @@ module Reports
 
     memoize def visited_without_bp_taken_rates(with_ltfu: false)
       region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
-        slug, period = entry.slug, entry.period
-        numerator = visited_without_bp_taken(with_ltfu: with_ltfu)[slug][period]
-        total = denominator(entry.region, period, with_ltfu: with_ltfu)
-        percentage(numerator, total)
+        visit_details_rates(entry, with_ltfu)[__method__]
       end
     end
 
@@ -242,6 +232,15 @@ module Reports
         appts_scheduled_15_to_31_days_rates: appts_scheduled_15_to_31_days[entry.region.slug][entry.period],
         appts_scheduled_32_to_62_days_rates: appts_scheduled_32_to_62_days[entry.region.slug][entry.period],
         appts_scheduled_more_than_62_days_rates: appts_scheduled_more_than_62_days[entry.region.slug][entry.period]
+      })
+    end
+
+    def visit_details_rates(entry, with_ltfu: false)
+      rounded_percentages({
+        visited_without_bp_taken_rates: visited_without_bp_taken(with_ltfu: with_ltfu)[entry.region.slug][entry.period],
+        missed_visits_rates: missed_visits_rates(with_ltfu: with_ltfu)[entry.region.slug][entry.period],
+        uncontrolled_rates: uncontrolled_rates(with_ltfu: with_ltfu)[entry.region.slug][entry.period],
+        controlled_rates: controlled_rates(with_ltfu: with_ltfu)[entry.region.slug][entry.period]
       })
     end
 
