@@ -85,6 +85,105 @@ en:
     numerator: "Number of days till a patient's next scheduled appointment."
     denominator: "Total appointments scheduled for follow-up patients during a month."
 
+  progress_tab:
+    reports_card:
+      title: "Reports"
+      subtitle: "Data last updated on %{date}."
+      daily_report_title: "Daily"
+      monthly_report_title: "Monthly"
+      yearly_report_title: "Yearly"
+      hypertension_report_title: "Hypertension"
+      diabetes_report_title: "Diabetes"
+    drug_stock_report_card:
+      title: "Drug stock report"
+      subtitle: "Submit %{facility_name}'s drug stock report for %{period}."
+      button_title: "Enter drug stock"
+    achievements_card:
+      title: "Achievements"
+      subtitle: "%{facility_name}'s all-time progress."
+      follow_up_visits_section_title: "%{total_patients} follow-up %{visit_or_visits} recorded"
+      overdue_patients_section_title: "%{total_patients} %{call_or_calls} to overdue patients"
+      registered_patients_title: "%{total_patients} registered %{patient_or_patients}"
+    period_report:
+      diagnoses_breakdown:
+        hypertension_only: "Hypertension only"
+        diabetes_only: "Diabetes only"
+        hypertension_and_diabetes: "Hypertension and diabetes"
+      gender_breakdown:
+        male: "Male"
+        female: "Female"
+        transgender: "Transgender"
+      registered_patients_card:
+        title: "Registered patients"  
+        subtitle: "Patients registered at %{facility_name}."
+      follow_up_patients_card:
+        title: "Follow-up patients"
+        subtitle: "Patients that had a BP taken, a blood sugar taken, an appointment scheduled, or their medications updated at %{facility_name}."
+      patients_initiated_on_treatment_card:
+        title: "Where is the patients initiated on treatment data?"
+        main_text: "Use registered patients, it will always equal patients initiated on treatment for patients registered on Simple."
+    diagnosis_report:
+      assigned_patients_card:
+        title: "Assigned patients"
+        subtitle: "Patients expected to follow-up at %{facility_name} to receive %{diagnosis} treatment."
+        assigned_patients_breakdown:
+          registered_patients: "Registered patients"
+          transferred_in_patients: "Transferred-in"
+          transferred_out_patients: "Transferred-out"
+      total_registered_patients:
+        title: "Total registered patients"
+        subtitle: "All %{diagnosis} patients registered in %{facility_name}"
+      monthly_follow_up_patients:
+        title: "Monthly follow-up patients"
+        subtitle: "%{diagnosis} patients with a BP taken, a blood sugar taken, an appointment scheduled, or a medication updated at %{facility_name} during a month."
+      patient_treatment_outcomes:
+        section_title: "Patient treatment outcomes"
+        diagnosis_thresholds:
+          hypertension_controlled_short: "BP controlled"
+          hypertension_controlled_long: "BP <140/90"
+          diabetes_controlled_short: "BS <200"
+          diabetes_controlled_long: "RBS/PPBS <200, FBS <126, or HbA1c <7.0"
+          hypertension_uncontrolled_short: "BP not controlled"
+          hypertension_uncontrolled_long: "BP ≥140/90"
+          diabetes_uncontrolled_short: "BS 200-299"
+          diabetes_uncontrolled_long: "RBS/PPBS 200-99, FBS 126-199, or HbA1c 7.0-8.9"
+          diabetes_very_uncontrolled_short: "BS ≥300"
+          diabetes_very_uncontrolled_long: "RBS/PPBS ≥300, FBS ≥200, or HbA1c ≥9.0"
+          missed_visits: "Missed visits"
+        controlled_card:
+          subtitle: "%{diagnosis} patients in %{facility_name} registered >3 months ago with %{controlled_threshold} at their last visit in the last 3 months."
+          help_tooltip:
+            numerator: "Patients with %{controlled_threshold} at their last visit in the last 3 months."
+            denominator: "%{diagnosis} patients assigned to %{facility_name}, registered before the last 3 months. Dead and lost to follow-up patients are excluded."
+          chart_tooltip: "%{number_of_patients} %{patient_or_patients} with %{controlled_threshold} between %{start_period} and %{end_period} of %{number_of_registered_patients} %{patient_or_patients} registered till %{registration_period}."
+        uncontrolled_card:
+          subtitle: "%{diagnosis} patients in %{facility_name} registered >3 months ago with %{uncontrolled_threshold} at their last visit in the last 3 months."
+          help_tooltip:
+            numerator: "%{diagnosis} patients in %{uncontrolled_threshold} at their last visit in the last 3 months."
+            denominator: "%{diagnosis} patients assigned to %{facility_name}, registered before the last 3 months. Dead and lost to follow-up patients are excluded."
+          chart_tooltip: "%{number_of_patients} %{patient_or_patients} with %{uncontrolled_threshold} between %{start_period} and %{end_period} of %{number_of_registered_patients} %{patient_or_patients} registered till %{registration_period}."
+        very_uncontrolled_card:
+          subtitle: "Diabetes patients in %{facility_name} registered >3 months ago with %{very_uncontrolled_threshold} at their last visit in the last 3 months."
+          help_tooltip:
+            numerator: "%{diagnosis} patients in %{very_uncontrolled_threshold} at their last visit in the last 3 months."
+            denominator: "%{diagnosis} patient assigned to %{facility_name}, registered before the last 3 months. Dead and lost to follow-up patients are excluded."
+          chart_tooltip: "%{number_of_patients} %{patient_or_patients} with %{very_uncontrolled_threshold} between %{start_period} and %{end_period} of %{number_of_registered_patients} %{patient_or_patients} registered till %{registration_period}."
+        missed_visits_card:
+          subtitle: "%{diagnosis} patients in %{facility_name} registered >3 months ago with no visit in the last 3 months."
+          help_tooltip:
+            numerator: "%{diagnosis} patients with no visit in the last 3 months."
+            denominator: "%{diagnosis} patient assigned to %{facility_name}, registered before the last 3 months. Dead and lost to follow-up patients are excluded."
+          chart_tooltip: "%{number_of_patients} %{patient_or_patients} with no visit between %{start_period} and %{end_period} of %{number_of_registered_patients} %{patient_or_patients} registered till %{registration_period}."
+      drug_stock_report:
+        section_title: "Drug stock report"
+        card_subtitle: "%{number_of_days} %{day_or_days} of tablets in stock"
+      cohort_report:
+        section_title: "Cohort reports" 
+        card_title: "Quarterly cohort reports"
+        card_subtitle: "The result for all assigned hypertensive patients registered in a quarter at their follow-up visit in the following two quarters."
+        cohort_title: "Result from last visit in %{start_period}/%{end_period}"
+        cohort_subtitle: "%{number_of_patients} %{patient_or_patients} registered in %{registration_period}"
+
   admin:
     reset_otp_alert: 'Are you sure you want to reset the OTP? This will invalidate the previous OTP and a SMS will be sent to the user with the new OTP'
     disable_access_alert: 'Are you sure you want to disable the access for user?'

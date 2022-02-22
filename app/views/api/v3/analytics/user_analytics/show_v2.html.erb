@@ -199,6 +199,16 @@
     %>
     <%= render partial: "api/v3/analytics/user_analytics/diagnosis_report",
                locals: {
+                 page_id: "hypertension-report",
+                 report_diagnosis: "Hypertension",
+                 title: "Hypertension report",
+                 subtitle: "Data last updated on #{DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")}",
+                 diagnosis_data: @hypertension_reports_data
+               }
+    
+    %>
+    <%= render partial: "api/v3/analytics/user_analytics/diagnosis_report",
+               locals: {
                  page_id: "diabetes-report",
                  report_diagnosis: "Diabetes",
                  title: "Diabetes report",
