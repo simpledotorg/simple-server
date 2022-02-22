@@ -213,14 +213,68 @@
         Drug stock report
       </h3>
     </div>
-    <!-- LOOP THROUGH DATA -->
     <div class="mb-8px p-16px bgc-white bs-card">
       <h3 class="m-0px mb-2px p-0px ta-left fw-medium fs-20px c-black">
-        CCB tablets
+        <%= drug_stock_data["ccb_tablets"]["name"] %>
       </h3>
-      <p class="m-0px mb-16px p-0px ta-left fw-regular fs-16px lh-150 c-yellow">
-        65 days of tablets in stock
+      <p class="m-0px mb-16px p-0px ta-left fw-regular fs-16px lh-150 c-yellow <%= patient_days_css_class(drug_stock_data['ccb_tablets']['days_of_drugs_left'], prefix: 'c') %>">
+        <%= drug_stock_data["ccb_tablets"]["days_of_drugs_left"] %> days of tablets in stock
       </p>
+      <% drug_stock_data["ccb_tablets"]["breakdown"].each_with_index do |drug, index| %>
+        <div class="d-flex ai-center jc-space-between">
+          <p class="m-0px p-0px ta-left fw-regular fs-16px c-black">
+            <%= drug["title"] %>
+          </p>
+          <p class="m-0px p-0px ta-left fw-regular fs-16px c-black">
+            <%= drug["stock"] %> tablets
+          </p>
+        </div>
+        <% unless index == drug_stock_data["ccb_tablets"]["breakdown"].length - 1 %>
+          <div class="h-1px mt-8px mb-8px bgc-grey-light"></div>
+        <% end %>
+      <% end %>
+    </div>
+    <div class="mb-8px p-16px bgc-white bs-card">
+      <h3 class="m-0px mb-2px p-0px ta-left fw-medium fs-20px c-black">
+        <%= drug_stock_data["arb_tablets"]["name"] %>
+      </h3>
+      <p class="m-0px mb-16px p-0px ta-left fw-regular fs-16px lh-150 c-yellow <%= patient_days_css_class(drug_stock_data['arb_tablets']['days_of_drugs_left'], prefix: 'c') %>">
+        <%= drug_stock_data["arb_tablets"]["days_of_drugs_left"] %> days of tablets in stock
+      </p>
+      <% drug_stock_data["arb_tablets"]["breakdown"].each_with_index do |drug, index| %>
+        <div class="d-flex ai-center jc-space-between">
+          <p class="m-0px p-0px ta-left fw-regular fs-16px c-black">
+            <%= drug["title"] %>
+          </p>
+          <p class="m-0px p-0px ta-left fw-regular fs-16px c-black">
+            <%= drug["stock"] %> tablets
+          </p>
+        </div>
+        <% unless index == drug_stock_data["arb_tablets"]["breakdown"].length - 1 %>
+          <div class="h-1px mt-8px mb-8px bgc-grey-light"></div>
+        <% end %>
+      <% end %>
+    </div>
+    <div class="mb-8px p-16px bgc-white bs-card">
+      <h3 class="m-0px mb-2px p-0px ta-left fw-medium fs-20px c-black">
+        <%= drug_stock_data["diuretic_tablets"]["name"] %>
+      </h3>
+      <p class="m-0px mb-16px p-0px ta-left fw-regular fs-16px lh-150 c-yellow <%= patient_days_css_class(drug_stock_data['diuretic_tablets']['days_of_drugs_left'], prefix: 'c') %>">
+        <%= drug_stock_data["diuretic_tablets"]["days_of_drugs_left"] %> days of tablets in stock
+      </p>
+      <% drug_stock_data["diuretic_tablets"]["breakdown"].each_with_index do |drug, index| %>
+        <div class="d-flex ai-center jc-space-between">
+          <p class="m-0px p-0px ta-left fw-regular fs-16px c-black">
+            <%= drug["title"] %>
+          </p>
+          <p class="m-0px p-0px ta-left fw-regular fs-16px c-black">
+            <%= drug["stock"] %> tablets
+          </p>
+        </div>
+        <% unless index == drug_stock_data["diuretic_tablets"]["breakdown"].length - 1 %>
+          <div class="h-1px mt-8px mb-8px bgc-grey-light"></div>
+        <% end %>
+      <% end %>
     </div>
     <div class="mt-24px mb-8px pr-16px pl-16px">
       <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey">
