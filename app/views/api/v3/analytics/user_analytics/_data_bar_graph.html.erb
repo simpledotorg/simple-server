@@ -4,18 +4,18 @@
 <div class="d-flex fd-column h-160px">
   <div class="p-relative f-1 d-flex" data-graph-type="bar-chart" data-with-tooltip="<%= show_tooltip %>">
     <% data.each_with_index do |data_point, index| %>
-      <div class="f-1 d-flex fd-column ai-center jc-end" data-data-point="bar">
-        <p class="m-0px mb-8px p-0px ta-center fw-medium fs-16px c-black ttf-ease-in-out td-0_25s tp-color" data-point-type="value">
+      <div class="f-1 d-flex fd-column ai-center jc-end" data-graph-element="bar">
+        <p class="m-0px mb-8px p-0px ta-center fw-medium fs-16px c-black ttf-ease-in-out td-0_25s tp-color" data-element-type="text">
           <%= data_point["value"] %><% if data_type == "percentage" %>%<% end %>
         </p>
         <div
           class="w-32px <%= graph_css_color %> btrr-2px btlr-2px ttf-ease-in-out td-0_25s tp-opacity"
           style="height: <%= set_min_value(data_point_heights[index], min_height) %>%;"
-          data-point-type="bar"
+          data-element-type="bar"
         >
         </div>
         <% if show_tooltip %>
-          <div class="o-0 pe-none p-absolute l-0 d-flex fd-column w-100 bs-tooltip ttf-ease-in-out td-0_25s tp-opacity" data-point-type="tooltip">
+          <div class="o-0 pe-none p-absolute l-0 d-flex fd-column w-100 bs-tooltip ttf-ease-in-out td-0_25s tp-opacity" data-element-type="tooltip">
             <div class="p-8px bgc-black br-4px">
               <p class="m-0px p-0px ta-left fw-regular fs-14px lh-150 c-white">
                 <%= data_point["total_patients"] %> patients with a BP 140/90 between <%= data_point["period_start"] %> and <%= data_point["period_end"] %> of <%= data_point["registered_patients"] %> patients registered till <%= data_point["registration_period"] %>.
@@ -23,7 +23,7 @@
             </div>
             <div
               class="p-absolute b--8px w-0px h-0px br-8px-transparent bl-8px-transparent bt-8px-black" style="left: 8px;"
-              data-element="tip"
+              data-element-type="tip"
             >
             </div>
           </div>

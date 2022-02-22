@@ -13,53 +13,60 @@ function goToPage(startPageId, endPageId) {
 }
 
 // Bar chart interactions
-const barCharts = document.querySelectorAll("[data-graph-type='bar-chart']");
+const barCharts = document.querySelectorAll("[data-graph-type='bar-chart'][data-with-tooltip='true']");
 barCharts.forEach(barChart => {
-  const dataPoints = barChart.querySelectorAll("[data-data-point='bar'");
-  dataPoints.forEach(dataPoint => {
-    dataPoint.addEventListener("touchstart", handleBarTouchStart, false);
-    dataPoint.addEventListener("touchend", handleBarTouchEnd, false);
+  const bars = barChart.querySelectorAll("[data-graph-element='bar'");
+
+  bars.forEach(bar => {
+    bar.addEventListener("touchstart", handleBarTouchStart, false);
+    bar.addEventListener("touchend", handleBarTouchEnd, false);
   });
 });
 
 function handleBarTouchStart(event) {
   event.preventDefault();
+
   const barChart = event.target.parentElement.parentElement;
-  Array.from(barChart.children).forEach(dataPoint => {
-    const value = dataPoint.querySelector("[data-point-type='value'");
-    value.classList.remove("c-black");
-    value.classList.add("c-grey-dark");
-    const bar = dataPoint.querySelector("[data-point-type='bar']");
+  Array.from(barChart.children).forEach(barContainer => {
+    const text = barContainer.querySelector("[data-element-type='text'");
+    text.classList.add("c-grey-dark");
+    text.classList.remove("c-black");
+
+    const bar = barContainer.querySelector("[data-element-type='bar']");
     bar.classList.add("o-35");
   });
+
   const selectedDataPoint = event.target.parentElement;
-  const selectedValue = selectedDataPoint.querySelector("[data-point-type='value'");
-  selectedValue.classList.remove("c-grey-dark");
-  selectedValue.classList.add("c-black");
+
+  const selectedText = selectedDataPoint.querySelector("[data-element-type='text'");
+  selectedText.classList.add("c-black");
+  selectedText.classList.remove("c-grey-dark");
+
   const selectedBar = selectedDataPoint.querySelector("[data-point-type='bar'");
   selectedBar.classList.remove("o-35");
-  if (barChart.getAttribute("data-with-tooltip") === "true") {
-    const selectedTooltip = selectedDataPoint.querySelector("[data-point-type='tooltip']");
-    const selectedTooltipTip = selectedTooltip.querySelector("[data-element='tip'");
-    selectedTooltip.style.top = `${selectedValue.offsetTop - selectedTooltip.offsetHeight - 12}px`;
-    selectedTooltipTip.style.left = `${(selectedValue.offsetLeft + (selectedValue.offsetWidth / 2)) - (selectedTooltipTip.offsetWidth / 2)}px`;
-    selectedTooltip.classList.remove("o-0");
-  }
+
+  const selectedTooltip = selectedDataPoint.querySelector("[data-element-type='tooltip']");
+  const selectedTooltipTip = selectedTooltip.querySelector("[data-element-type='tip'");
+  selectedTooltip.style.top = `${selectedText.offsetTop - selectedTooltip.offsetHeight - 12}px`;
+  selectedTooltipTip.style.left = `${(selectedText.offsetLeft + (selectedText.offsetWidth / 2)) - (selectedTooltipTip.offsetWidth / 2)}px`;
+
+  selectedTooltip.classList.remove("o-0");
 }
 
 function handleBarTouchEnd(event) {
   event.preventDefault();
+
   const barChart = event.target.parentElement.parentElement;
-  Array.from(barChart.children).forEach(dataPoint => {
-    const value = dataPoint.querySelector("[data-point-type='value']");
-    value.classList.remove("c-grey-dark");
-    value.classList.add("c-black");
-    const bar = dataPoint.querySelector("[data-point-type='bar']");
+  Array.from(barChart.children).forEach(barContainer => {
+    const text = barContainer.querySelector("[data-element-type='text']");
+    text.classList.add("c-black");
+    text.classList.remove("c-grey-dark");
+
+    const bar = barContainer.querySelector("[data-element-type='bar']");
     bar.classList.remove("o-35");
-    if (barChart.getAttribute("data-with-tooltip") === "true") {
-      const tooltip = dataPoint.querySelector("[data-point-type='tooltip'");
-      tooltip.classList.add("o-0");
-    }
+
+    const tooltip = barContainer.querySelector("[data-element-type='tooltip'");
+    tooltip.classList.add("o-0");
   });
 }
 
@@ -72,17 +79,20 @@ helpCircles.forEach(helpCircle => {
 
 function handleHelpCircleTouchStart(event) {
   event.preventDefault();
+
   const header = event.target.parentElement.parentElement;
   const helpCircle = header.querySelector("[data-element-type='help-circle']");
   const tooltip = header.querySelector("[data-element-type='tooltip']");
-  const tooltipTip = header.querySelector("[data-element-type='tip']");
   tooltip.classList.remove("o-0");
   tooltip.style.top = `${helpCircle.offsetTop + helpCircle.offsetHeight + tooltipTip.offsetHeight + 4}px`;
+
+  const tooltipTip = header.querySelector("[data-element-type='tip']");
   tooltipTip.style.left = `${helpCircle.offsetLeft + 2}px`;
 }
 
 function handleHelpCircleTouchEnd(event) {
   event.preventDefault();
+
   const header = event.target.parentElement.parentElement;
   const tooltip = header.querySelector("[data-element-type='tooltip']");
   tooltip.classList.add("o-0");
