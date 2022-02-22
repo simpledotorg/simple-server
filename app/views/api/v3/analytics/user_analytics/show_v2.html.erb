@@ -19,10 +19,14 @@
     <div id="home-page">
       <div class="mb-16px p-16px bgc-white bs-card">
         <h1 class="m-0px mb-4px fw-bold fs-24px c-black">
-          Reports
+          <%= t("progress_tab.reports_card.title") %>
         </h1>
         <p class="m-0px mb-16px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-          Data last updated on <%= DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P") %>
+          <%= t(
+                "progress_tab.reports_card.subtitle",
+                date: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")
+               )
+          %>
         </p>
         <div class="d-flex ai-center jc-space-between mb-16px">
           <a class="f-1 d-flex fd-column ai-center jc-center td-none mr-10px p-12px bgc-blue-green-light br-8px" href="#" onclick="goToPage('home-page', 'daily-report-page'); return false;">
@@ -33,7 +37,7 @@
               </p>
             </div>
             <p class="m-0px p-0px ta-center fw-medium fs-16px c-blue-green">
-              Daily
+              <%= t("progress_tab.daily_report_title") %>
             </p>
           </a>
           <a class="f-1 d-flex fd-column ai-center jc-center td-none mr-4px ml-4px p-12px bgc-blue-light br-8px" href="#" onclick="goToPage('home-page', 'monthly-report-page'); return false;">
@@ -44,7 +48,7 @@
               </p>
             </div>
             <p class="m-0px p-0px ta-center fw-medium fs-16px c-blue">
-              Monthly
+              <%= t("progress_tab.monthly_report_title") %>
             </p>
           </a>
           <a class="f-1 d-flex fd-column ai-center jc-center td-none ml-10px p-12px bgc-navy-light br-8px" href="#" onclick="goToPage('home-page', 'yearly-report-page'); return false;">
@@ -55,7 +59,7 @@
               </p>
             </div>
             <p class="m-0px p-0px ta-center fw-medium fs-16px c-navy">
-              Yearly
+              <%= t("progress_tab.yearly_report_title") %>
             </p>
           </a>
         </div>
@@ -68,7 +72,7 @@
             <%= inline_file("graph-red.svg") %>
           </div>
           <p class="m-0px p-0px ta-left fw-medium fs-16px c-red">
-            Hypertension
+            <%= t("progress_tab.hypertension_report_title") %>
           </p>
         </a>
         <a
@@ -80,7 +84,7 @@
             <%= inline_file("graph-purple.svg") %>
           </div>
           <p class="m-0px p-0px ta-left fw-medium fs-16px c-purple">
-            Diabetes
+            <%= t("progress_tab.diabetes_report_title") %>
           </p>
         </a>
       </div>
@@ -88,17 +92,22 @@
         <div class="d-flex ai-flex-start jc-space-between mb-16px">
           <div class="f-1">
             <h1 class="m-0px mb-8px fw-bold fs-24px">
-              Drug stock report
+              <%= t("progress_tab.drug_stock_report_card.title") %>
             </h1>
             <p class="m-0px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-              Submit <%= current_facility.name %>'s drug stock report for end of <%= @period.to_s(:mon_year) %>
+              <%= t(
+                    "progress_tab.drug_stock_report_card.subtitle",
+                    facility_name: current_facility.name,
+                    period: @period.to_s(:mon_year)
+                   )
+              %>
             </p>
           </div>
           <div>
             <%= inline_svg("drug-stock.svg") %>
           </div>
         </div>
-        <%= link_to "Enter drug stock", new_webview_drug_stock_url(user_id: current_user.id,
+        <%= link_to t("progress_tab.drug_stock_report_card.button_title"), new_webview_drug_stock_url(user_id: current_user.id,
           access_token: current_user.access_token,
           facility_id: current_facility.id),
           style: "font-weight: 700;",
@@ -108,15 +117,19 @@
       <div class="mb-16px pt-16px pb-16px bgc-white br-4px bs-card">
         <div class="pr-16px pl-16px">
           <h1 class="m-0px mb-8px fw-bold fs-24px">
-            Achievements
+            <%= t("progress_tab.achievements_card.title") %>
           </h1>
           <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-            <%= current_facility.name %>'s all-time progress
+            <%= t(
+                  "progress_tab.achievements_card.subtitle",
+                  facility_name: current_facility.name
+                 )
+            %>
           </p>
         </div>
         <div class="mb-24px">
           <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
-            <span class="fw-bold">7,051</span> follow-up visits recorded
+            <span class="fw-bold">7,051</span> <%= t("progress_tab.achievements_card.follow_up_visits_section_title", visit_or_visits: "visit".pluralize(7051)) %>
           </p>
           <div class="ws-nowrap ox-scroll pt-4px pb-4px pl-16px d-none-scrollbar">
             <% follow_up_badge_goals = create_badge_array(7051) %>
@@ -133,7 +146,7 @@
         </div>
         <div class="mb-24px">
           <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
-            <span class="fw-bold">2,501</span> calls to overdue patients
+            <span class="fw-bold">2,501</span> <%= t("progress_tab.achievements_card.overdue_patients_section_title", call_or_calls: "call".pluralize(2501)) %>
           </p>
           <div class="ws-nowrap ox-scroll pt-4px pb-4px pl-16px d-none-scrollbar">
             <% overdue_call_badge_goals = create_badge_array(2501) %>
@@ -150,7 +163,7 @@
         </div>
         <div>
           <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
-            <span class="fw-bold">1,512</span> registered patients
+            <span class="fw-bold">1,512</span> <%= t("progress_tab.achievements_card.registered_patients_title", patient_or_patients: "patient".pluralize(1512)) %>
           </p>
           <div class="ws-nowrap ox-scroll pt-4px pb-4px pl-16px d-none-scrollbar">
             <% registered_patients_badge_goals = create_badge_array(1512) %>
@@ -170,7 +183,7 @@
     <%= render partial: "api/v3/analytics/user_analytics/period_report",
                locals: {
                  page_id: "daily-report-page",
-                 title: "Daily",
+                 title: t("progress_tab.daily_report_title"),
                  subtitle: false,
                  periods: @period_reports_data["daily_periods"],
                  registered_patients: @period_reports_data["daily_registered_patients"],
@@ -180,7 +193,7 @@
     <%= render partial: "api/v3/analytics/user_analytics/period_report",
                locals: {
                  page_id: "monthly-report-page",
-                 title: "Monthly",
+                 title: t("progress_tab.monthly_report_title"),
                  subtitle: false,
                  periods: @period_reports_data["monthly_periods"],
                  registered_patients: @period_reports_data["monthly_registered_patients"],
@@ -190,7 +203,7 @@
     <%= render partial: "api/v3/analytics/user_analytics/period_report",
                locals: {
                  page_id: "yearly-report-page",
-                 title: "Yearly",
+                 title: t("progress_tab.yearly_report_title"),
                  subtitle: "Apr-2021 to Mar-2022",
                  periods: @period_reports_data["yearly_periods"],
                  registered_patients: @period_reports_data["yearly_registered_patients"],
@@ -200,9 +213,9 @@
     <%= render partial: "api/v3/analytics/user_analytics/diagnosis_report",
                locals: {
                  page_id: "hypertension-report",
-                 report_diagnosis: "Hypertension",
-                 title: "Hypertension report",
-                 subtitle: "Data last updated on #{DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")}",
+                 report_diagnosis: t("progress_tab.diagnoses.hypertension"),
+                 title: t("progress_tab.hypertension_report_title"),
+                 subtitle: t("progress_tab.reports_card.subtitle", date: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")),
                  diagnosis_data: @hypertension_reports_data
                }
     
@@ -210,9 +223,9 @@
     <%= render partial: "api/v3/analytics/user_analytics/diagnosis_report",
                locals: {
                  page_id: "diabetes-report",
-                 report_diagnosis: "Diabetes",
-                 title: "Diabetes report",
-                 subtitle: "Data last updated on #{DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")}",
+                 report_diagnosis: t("progress_tab.diagnoses.diabetes"),
+                 title: t("progress_tab.diabetes_report_title"),
+                 subtitle: t("progress_tab.reports_card.subtitle", date: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")),
                  diagnosis_data: @diabetes_reports_data
                }
     
