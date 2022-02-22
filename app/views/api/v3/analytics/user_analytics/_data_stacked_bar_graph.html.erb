@@ -6,7 +6,7 @@
   <div
     class="d-flex ai-center jc-center mr-2px p-16px bgc-green-new btlr-4px bblr-4px ttf-ease-in-out td-0_25s tp-opacity"
     style="width: <%= bp_controlled %>%;"
-    data-data-point="stacked-bar"
+    data-graph-element="stacked-bar"
   >
     <p class="m-0px p-0px ta-center fw-bold fs-16px c-white pe-none">
       <%= data["bp_controlled_rate"] %>%
@@ -32,7 +32,7 @@
   <div
     class="d-flex ai-center jc-center ml-1px mr-1px p-16px bgc-yellow-new ttf-ease-in-out td-0_25s tp-opacity"
     style="width: <%= bp_not_controlled %>%;"
-    data-data-point="stacked-bar"
+    data-graph-element="stacked-bar"
   >
     <p class="m-0px p-0px ta-center fw-bold fs-16px c-white pe-none">
       <%= data["bp_not_controlled_rate"] %>%
@@ -58,7 +58,7 @@
   <div
     class="d-flex ai-center jc-center ml-2px p-16px bgc-red-new btrr-4px bbrr-4px ttf-ease-in-out td-0_25s tp-opacity"
     style="width: <%= missed_visits %>%;"
-    data-data-point="stacked-bar"
+    data-graph-element="stacked-bar"
   >
     <p class="m-0px p-0px ta-center fw-bold fs-16px c-white pe-none">
       <%= data["missed_visits_rate"] %>%

@@ -42,7 +42,7 @@ function handleBarTouchStart(event) {
   selectedText.classList.add("c-black");
   selectedText.classList.remove("c-grey-dark");
 
-  const selectedBar = selectedDataPoint.querySelector("[data-point-type='bar'");
+  const selectedBar = selectedDataPoint.querySelector("[data-element-type='bar'");
   selectedBar.classList.remove("o-35");
 
   const selectedTooltip = selectedDataPoint.querySelector("[data-element-type='tooltip']");
@@ -99,7 +99,7 @@ function handleHelpCircleTouchEnd(event) {
 }
 
 // Stacked bar chart interactions
-const stackedBars = document.querySelectorAll("[data-data-point='stacked-bar']");
+const stackedBars = document.querySelectorAll("[data-graph-element='stacked-bar']");
 stackedBars.forEach(stackedBar => {
   stackedBar.addEventListener("touchstart", handleStackedBarTouchStart, false);
   stackedBar.addEventListener("touchend", handleStackedBarTouchEnd, false);
@@ -107,25 +107,30 @@ stackedBars.forEach(stackedBar => {
 
 function handleStackedBarTouchStart(event) {
   event.preventDefault();
-  const selectedStackedBar = event.target;
-  const selectedStackedBarChart = selectedStackedBar.parentElement;
-  const stackedBars = selectedStackedBarChart.querySelectorAll("[data-data-point='stacked-bar']");
-  stackedBars.forEach(stackedBar => {
-    stackedBar.classList.add("o-35");
+
+  const selectedBar = event.target;
+  const selectedBarChart = selectedBar.parentElement;
+  const selectedBarChartBars = selectedBarChart.querySelectorAll("[data-graph-element='stacked-bar']");
+  selectedBarChartBars.forEach(bar => {
+    bar.classList.add("o-35");
   });
-  selectedStackedBar.classList.remove("o-35");
-  const selectedTooltipContainer = selectedStackedBar.querySelector("[data-element-type='tooltip']");
-  selectedTooltipContainer.classList.remove("o-0");
-  setTooltipPosition(selectedTooltipContainer, selectedStackedBar);
+
+  selectedBar.classList.remove("o-35");
+  const selectedTooltip = selectedBar.querySelector("[data-element-type='tooltip']");
+  selectedTooltip.classList.remove("o-0");
+
+  setTooltipPosition(selectedTooltip, selectedBar);
 }
 
 function handleStackedBarTouchEnd(event) {
   event.preventDefault();
-  const selectedStackedBarChart = event.target.parentElement;
-  const stackedBars = selectedStackedBarChart.querySelectorAll("[data-data-point='stacked-bar']");
-  stackedBars.forEach(stackedBar => {
-    stackedBar.classList.remove("o-35");
+
+  const selectedBarChart = event.target.parentElement;
+  const selectedBarChartBars = selectedBarChart.querySelectorAll("[data-graph-element='stacked-bar']");
+  selectedBarChartBars.forEach(bar => {
+    bar.classList.remove("o-35");
   });
+
   const selectedTooltip = event.target.querySelector("[data-element-type='tooltip']");
   selectedTooltip.classList.add("o-0");
 }
@@ -133,6 +138,7 @@ function handleStackedBarTouchEnd(event) {
 function setTooltipCopyPosition(copyElement, containerElement, barElement) {
   const index = parseInt(containerElement.getAttribute("data-tooltip-index"));
   const totalTooltips = parseInt(containerElement.getAttribute("data-tooltip-length"));
+
   if (index === 0) {
     copyElement.style.left = 0;
   }
@@ -142,6 +148,7 @@ function setTooltipCopyPosition(copyElement, containerElement, barElement) {
   else {
     copyElement.style.left = `${barElement.offsetLeft + ((barElement.offsetWidth / 2) - (copyElement.offsetWidth / 2))}px`;
   }
+
   copyElement.style.top = `${-copyElement.offsetHeight}px`;
 }
 
@@ -150,6 +157,7 @@ function setTooltipTipPosition(tipElement, barElement) {
 }
 
 function setTooltipPosition(tooltipElement, barElement) {
+  // "tipElement" is the tooltrip triangle
   const tipElement = tooltipElement.querySelector("[data-element-type='tooltip-tip']");
   const copyElement = tooltipElement.querySelector("[data-element-type='tooltip-copy']");
   // Position container
