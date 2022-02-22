@@ -12,7 +12,9 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
     @achievements = Reports::FacilityProgressAchievementService.new(current_facility)
     @service = Reports::FacilityProgressService.new(current_facility, @period)
     if Flipper.enabled?(:new_progress_tab)
-      @data = Reports::ReportsFakeFacilityProgressService.new.call
+      @period_reports_data = Reports::ReportsFakeFacilityProgressService.new(@current_facility.name).period_reports
+      @diagnosis_reports_data = Reports::ReportsFakeFacilityProgressService.new(@current_facility.name).diagnosis_reports
+      @drug_stock_reports_data = Reports::ReportsFakeFacilityProgressService.new(@current_facility.name).drug_stock_reports
     end
 
     respond_to do |format|

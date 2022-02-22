@@ -1,9 +1,9 @@
-<div id="<%= pageId %>" class="d-none">
+<div id="<%= page_id %>" class="d-none">
   <div class="mb-8px pt-16px pb-16px bgc-white bs-card">
     <a
       class="d-block pl-16px mb-24px"
       href="#"
-      onclick="goToPage('<%= pageId %>', 'home-page'); return false;"
+      onclick="goToPage('<%= page_id %>', 'home-page'); return false;"
     >
       <div class="d-inline-block">
         <%= inline_file("chevron-left.svg") %>
@@ -201,12 +201,26 @@
                         }
     %>
   </div>
-  <div class="mt-24px mb-8px pr-16px pl-16px">
-    <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey">
-      Cohort reports
-    </h3>
-  </div>
   <% if report_diagnosis == "Hypertension" %>
+    <div class="mt-24px mb-8px pr-16px pl-16px">
+      <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey">
+        Drug stock report
+      </h3>
+    </div>
+    <!-- LOOP THROUGH DATA -->
+    <div class="mb-8px p-16px bgc-white bs-card">
+      <h3 class="m-0px mb-2px p-0px ta-left fw-medium fs-20px c-black">
+        CCB tablets
+      </h3>
+      <p class="m-0px mb-16px p-0px ta-left fw-regular fs-16px lh-150 c-yellow">
+        65 days of tablets in stock
+      </p>
+    </div>
+    <div class="mt-24px mb-8px pr-16px pl-16px">
+      <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey">
+        Cohort reports
+      </h3>
+    </div>
     <div class="mb-8px p-16px bgc-white bs-card">
       <h2 class="m-0px mb-8px p-0px ta-left fw-medium fs-18px c-black">
         <%= data["hypertension_quarterly_cohort_reports"]["name"] %>
