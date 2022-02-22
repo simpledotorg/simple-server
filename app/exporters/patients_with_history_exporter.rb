@@ -18,6 +18,10 @@ class PatientsWithHistoryExporter
     hba1c: "HbA1c"
   }.with_indifferent_access.freeze
 
+  def self.csv(*args)
+    new.csv(*args)
+  end
+
   def csv(patients, display_blood_pressures: DEFAULT_DISPLAY_BLOOD_PRESSURES, display_medication_columns: DEFAULT_DISPLAY_MEDICATION_COLUMNS)
     @display_blood_pressures = display_blood_pressures
     @display_medication_columns = display_medication_columns
