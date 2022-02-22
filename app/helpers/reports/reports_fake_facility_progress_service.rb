@@ -2,6 +2,7 @@ module Reports
   class ReportsFakeFacilityProgressService
     def initialize(facility_name)
       @daily_periods = ["8-Feb-2022", "7-Feb-2022", "6-Feb-2022", "5-Feb-2022", "4-Feb-2022", "3-Feb-2022", "2-Feb-2022"]
+
       @daily_registered_patients = {
         "name" => "Registered patients",
         "total" => 7,
@@ -20,6 +21,7 @@ module Reports
           {"title" => "Transgender", "value" => 1, "row_type" => :secondary}
         ]
       }
+
       @daily_follow_up_patients = {
         "name" => "Follow-up patients",
         "total" => 15,
@@ -38,7 +40,9 @@ module Reports
           {"title" => "Transgender", "value" => 2, "row_type" => :secondary}
         ]
       }
+
       @monthly_periods = ["Feb-2022", "Jan-2022", "Dec-2021", "Nov-2021", "Oct-2021", "Sep-2021", "Aug-2021"]
+
       @monthly_registered_patients = {
         "name" => "Registered patients",
         "total" => 90,
@@ -57,6 +61,7 @@ module Reports
           {"title" => "Transgender", "value" => 1, "row_type" => :secondary}
         ]
       }
+
       @monthly_follow_up_patients = {
         "name" => "Follow-up patients",
         "total" => 158,
@@ -75,7 +80,9 @@ module Reports
           {"title" => "Transgender", "value" => 1, "row_type" => :secondary}
         ]
       }
+
       @yearly_periods = ["2022", "2021", "2020", "2019"]
+
       @yearly_registered_patients = {
         "name" => "Registered patients",
         "total" => 810,
@@ -94,6 +101,7 @@ module Reports
           {"title" => "Transgender", "value" => 0, "row_type" => :secondary}
         ]
       }
+
       @yearly_follow_up_patients = {
         "name" => "Follow-up patients",
         "total" => 1422,
