@@ -414,6 +414,293 @@ module Reports
           }
         ]
       }
+
+      @diabetes_assigned_patients = {
+        "name" => "Assigned patients",
+        "total" => 397,
+        "subtitle" => "Patients expected to follow-up at #{facility_name} to receive diabetes treatment.",
+        "breakdown" => [
+          {"title" => "Registered patients", "value" => 423},
+          {"title" => "Transferred-in", "value" => 16},
+          {"title" => "Transferred-out", "value" => -42}
+        ]
+      }
+
+      @diabetes_registered_patients = {
+        "name" => "Total registered patients",
+        "data_type" => "number",
+        "subtitle" => "All diabetes patients registered in #{facility_name}.",
+        "breakdown" => [
+          {"month" => "Aug-2021", "value" => 278},
+          {"month" => "Sep-2021", "value" => 290},
+          {"month" => "Oct-2021", "value" => 315},
+          {"month" => "Nov-2021", "value" => 360},
+          {"month" => "Dec-2021", "value" => 380},
+          {"month" => "Jan-2022", "value" => 423}
+        ]
+      }
+
+      @diabetes_monthly_follow_up_patients = {
+        "name" => "Monthly follow-up patients",
+        "data_type" => "number",
+        "subtitle" => "Diabetes patients with a blood sugar taken, a BP taken, an appointment scheduled, or a medication updated at #{facility_name} during a month.",
+        "breakdown" => [
+          {"month" => "Aug-2021", "value" => 103},
+          {"month" => "Sep-2021", "value" => 96},
+          {"month" => "Oct-2021", "value" => 85},
+          {"month" => "Nov-2021", "value" => 120},
+          {"month" => "Dec-2021", "value" => 137},
+          {"month" => "Jan-2022", "value" => 97}
+        ]
+      }
+
+      @diabetes_lt_200 = {
+        "name" => "BS <200",
+        "data_type" => "percentage",
+        "subtitle" => "Diabetes patients in #{facility_name} registered >3 months ago with BS <200 at their last visit in the last 3 months.",
+        "breakdown" => [
+          {
+            "month" => "Aug-2021",
+            "value" => 31,
+            "period_start" => "Jun-2021",
+            "period_end" => "Aug-2021",
+            "registration_period" => "May-2021",
+            "total_patients" => 112,
+            "registered_patients" => 363
+          },
+          {
+            "month" => "Sep-2021",
+            "value" => 32,
+            "period_start" => "Jul-2021",
+            "period_end" => "Sep-2021",
+            "registration_period" => "Jun-2021",
+            "total_patients" => 112,
+            "registered_patients" => 350
+          },
+          {
+            "month" => "Oct-2021",
+            "value" => 34,
+            "period_start" => "Aug-2021",
+            "period_end" => "Oct-2021",
+            "registration_period" => "Jul-2021",
+            "total_patients" => 163,
+            "registered_patients" => 478
+          },
+          {
+            "month" => "Nov-2021",
+            "value" => 39,
+            "period_start" => "Sep-2021",
+            "period_end" => "Nov-2021",
+            "registration_period" => "Aug-2021",
+            "total_patients" => 189,
+            "registered_patients" => 485
+          },
+          {
+            "month" => "Dec-2021",
+            "value" => 44,
+            "period_start" => "Oct-2021",
+            "period_end" => "Dec-2021",
+            "registration_period" => "Sep-2021",
+            "total_patients" => 242,
+            "registered_patients" => 550
+          },
+          {
+            "month" => "Jan-2022",
+            "value" => 37,
+            "period_start" => "Nov-2021",
+            "period_end" => "Jan-2022",
+            "registration_period" => "Oct-2021",
+            "total_patients" => 197,
+            "registered_patients" => 532 
+          }
+        ]
+      }
+
+      @diabetes_200_299 = {
+        "name" => "BS 200-299",
+        "data_type" => "percentage",
+        "subtitle" => "Diabetes patients in #{facility_name} registered >3 months ago with BS 200-299 at their last visit in the last 3 months.",
+        "breakdown" => [
+          {
+            "month" => "Aug-2021",
+            "value" => 47,
+            "period_start" => "Jun-2021",
+            "period_end" => "Aug-2021",
+            "registration_period" => "May-2021",
+            "total_patients" => 116,
+            "registered_patients" => 363
+          },
+          {
+            "month" => "Sep-2021",
+            "value" => 14,
+            "period_start" => "Jul-2021",
+            "period_end" => "Sep-2021",
+            "registration_period" => "Jun-2021",
+            "total_patients" => 49,
+            "registered_patients" => 350
+          },
+          {
+            "month" => "Oct-2021",
+            "value" => 12,
+            "period_start" => "Aug-2021",
+            "period_end" => "Oct-2021",
+            "registration_period" => "Jul-2021",
+            "total_patients" => 57,
+            "registered_patients" => 478
+          },
+          {
+            "month" => "Nov-2021",
+            "value" => 18,
+            "period_start" => "Sep-2021",
+            "period_end" => "Nov-2021",
+            "registration_period" => "Aug-2021",
+            "total_patients" => 87,
+            "registered_patients" => 485
+          },
+          {
+            "month" => "Dec-2021",
+            "value" => 23,
+            "period_start" => "Oct-2021",
+            "period_end" => "Dec-2021",
+            "registration_period" => "Sep-2021",
+            "total_patients" => 127,
+            "registered_patients" => 550
+          },
+          {
+            "month" => "Jan-2022",
+            "value" => 15,
+            "period_start" => "Nov-2021",
+            "period_end" => "Jan-2022",
+            "registration_period" => "Oct-2021",
+            "total_patients" => 80,
+            "registered_patients" => 532 
+          }
+        ]
+      }
+
+      @diabetes_ge_300 = {
+        "name" => "BS ≥300",
+        "data_type" => "percentage",
+        "subtitle" => "Diabetes patients in #{facility_name} registered >3 months ago with BS ≥300 at their last visit in the last 3 months.",
+        "breakdown" => [
+          {
+            "month" => "Aug-2021",
+            "value" => 8,
+            "period_start" => "Jun-2021",
+            "period_end" => "Aug-2021",
+            "registration_period" => "May-2021",
+            "total_patients" => 29,
+            "registered_patients" => 363
+          },
+          {
+            "month" => "Sep-2021",
+            "value" => 9,
+            "period_start" => "Jul-2021",
+            "period_end" => "Sep-2021",
+            "registration_period" => "Jun-2021",
+            "total_patients" => 32,
+            "registered_patients" => 350
+          },
+          {
+            "month" => "Oct-2021",
+            "value" => 4,
+            "period_start" => "Aug-2021",
+            "period_end" => "Oct-2021",
+            "registration_period" => "Jul-2021",
+            "total_patients" => 19,
+            "registered_patients" => 478
+          },
+          {
+            "month" => "Nov-2021",
+            "value" => 14,
+            "period_start" => "Sep-2021",
+            "period_end" => "Nov-2021",
+            "registration_period" => "Aug-2021",
+            "total_patients" => 68,
+            "registered_patients" => 485
+          },
+          {
+            "month" => "Dec-2021",
+            "value" => 17,
+            "period_start" => "Oct-2021",
+            "period_end" => "Dec-2021",
+            "registration_period" => "Sep-2021",
+            "total_patients" => 94,
+            "registered_patients" => 550
+          },
+          {
+            "month" => "Jan-2022",
+            "value" => 10,
+            "period_start" => "Nov-2021",
+            "period_end" => "Jan-2022",
+            "registration_period" => "Oct-2021",
+            "total_patients" => 53,
+            "registered_patients" => 532 
+          }
+        ]
+      }
+
+      @diabetes_missed_visits = {
+        "name" => "Missed visits",
+        "data_type" => "percentage",
+        "subtitle" => "Diabetes patients in #{facility_name} registered >3 months ago with no visit in the last 3 months.",
+        "breakdown" => [
+          {
+            "month" => "Aug-2021",
+            "value" => 17,
+            "period_start" => "Jun-2021",
+            "period_end" => "Aug-2021",
+            "registration_period" => "May-2021",
+            "total_patients" => 62,
+            "registered_patients" => 363
+          },
+          {
+            "month" => "Sep-2021",
+            "value" => 18,
+            "period_start" => "Jul-2021",
+            "period_end" => "Sep-2021",
+            "registration_period" => "Jun-2021",
+            "total_patients" => 63,
+            "registered_patients" => 350
+          },
+          {
+            "month" => "Oct-2021",
+            "value" => 18,
+            "period_start" => "Aug-2021",
+            "period_end" => "Oct-2021",
+            "registration_period" => "Jul-2021",
+            "total_patients" => 86,
+            "registered_patients" => 478
+          },
+          {
+            "month" => "Nov-2021",
+            "value" => 19,
+            "period_start" => "Sep-2021",
+            "period_end" => "Nov-2021",
+            "registration_period" => "Aug-2021",
+            "total_patients" => 92,
+            "registered_patients" => 485
+          },
+          {
+            "month" => "Dec-2021",
+            "value" => 27,
+            "period_start" => "Oct-2021",
+            "period_end" => "Dec-2021",
+            "registration_period" => "Sep-2021",
+            "total_patients" => 149,
+            "registered_patients" => 550
+          },
+          {
+            "month" => "Jan-2022",
+            "value" => 16,
+            "period_start" => "Nov-2021",
+            "period_end" => "Jan-2022",
+            "registration_period" => "Oct-2021",
+            "total_patients" => 85,
+            "registered_patients" => 532 
+          }
+        ]
+      }
     end
 
     def period_reports 
@@ -430,23 +717,30 @@ module Reports
       }
     end
 
-    def diagnosis_reports
+    def hypertension_reports
       {
-        "hypertension_assigned_patients" => @hypertension_assigned_patients,
-        "hypertension_registered_patients" => @hypertension_registered_patients,
-        "hypertension_monthly_follow_up_patients" => @hypertension_monthly_follow_up_patients,
-        "hypertension_bp_controlled" => @hypertension_bp_controlled,
-        "hypertension_bp_not_controlled" => @hypertension_bp_not_controlled,
-        "hypertension_missed_visits" => @hypertension_missed_visits,
-        "hypertension_quarterly_cohort_reports" => @hypertension_quarterly_cohort_reports
-      }
-    end
-
-    def drug_stock_reports
-      {
+        "assigned_patients" => @hypertension_assigned_patients,
+        "registered_patients" => @hypertension_registered_patients,
+        "monthly_follow_up_patients" => @hypertension_monthly_follow_up_patients,
+        "controlled" => @hypertension_bp_controlled,
+        "uncontrolled" => @hypertension_bp_not_controlled,
+        "missed_visits" => @hypertension_missed_visits,
+        "quarterly_cohort_reports" => @hypertension_quarterly_cohort_reports,
         "ccb_tablets" => @ccb_tablets,
         "arb_tablets" => @arb_tablets,
         "diuretic_tablets" => @diuretic_tablets
+      }
+    end
+
+    def diabetes_reports
+      {
+        "assigned_patients" => @diabetes_assigned_patients,
+        "registered_patients" => @diabetes_registered_patients,
+        "monthly_follow_up_patients" => @diabetes_monthly_follow_up_patients,
+        "controlled" => @diabetes_lt_200,
+        "uncontrolled" => @diabetes_200_299,
+        "very_uncontrolled" => @diabetes_ge_300,
+        "missed_visits" => @diabetes_missed_visits
       }
     end
   end

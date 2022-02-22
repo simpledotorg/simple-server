@@ -23,22 +23,22 @@
   <div class="mb-8px p-16px bgc-white bs-card">
     <div class="d-flex ai-center jc-space-between mb-8px">
       <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
-        <%= diagnosis_data["hypertension_assigned_patients"]["name"] %>
+        <%= diagnosis_data["assigned_patients"]["name"] %>
       </h2>
       <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
-        <%= diagnosis_data["hypertension_assigned_patients"]["total"]  %>
+        <%= diagnosis_data["assigned_patients"]["total"]  %>
       </p>
     </div>
     <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-      <%= diagnosis_data["hypertension_assigned_patients"]["subtitle"] %>
+      <%= diagnosis_data["assigned_patients"]["subtitle"] %>
     </p>
-    <% diagnosis_data["hypertension_assigned_patients"]["breakdown"].each_with_index do |row, index| %>
+    <% diagnosis_data["assigned_patients"]["breakdown"].each_with_index do |row, index| %>
       <%= render partial: "api/v3/analytics/user_analytics/data_table_plusminus_row",
                  locals: {
                           title: row["title"],
                           value: row["value"],
                           css_text_color: row["value"] > 0 ? "c-green-new" : "c-red-new",
-                          include_bottom_border: index == diagnosis_data["hypertension_assigned_patients"]["breakdown"].length - 1 ? false : true
+                          include_bottom_border: index == diagnosis_data["assigned_patients"]["breakdown"].length - 1 ? false : true
                          }
       %>
     <% end %>
@@ -46,19 +46,19 @@
   <div class="mb-8px p-16px bgc-white bs-card">
     <div class="d-flex ai-center jc-space-between mb-8px">
       <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
-        <%= diagnosis_data["hypertension_registered_patients"]["name"] %>
+        <%= diagnosis_data["registered_patients"]["name"] %>
       </h2>
       <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
-        <%= diagnosis_data["hypertension_registered_patients"]["total"]  %>
+        <%= diagnosis_data["registered_patients"]["total"]  %>
       </p>
     </div>
     <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-      <%= diagnosis_data["hypertension_assigned_patients"]["subtitle"] %>
+      <%= diagnosis_data["assigned_patients"]["subtitle"] %>
     </p>
     <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph",
                locals: {
-                          data: diagnosis_data["hypertension_registered_patients"]["breakdown"],
-                          data_type: diagnosis_data["hypertension_registered_patients"]["data_type"],
+                          data: diagnosis_data["registered_patients"]["breakdown"],
+                          data_type: diagnosis_data["registered_patients"]["data_type"],
                           graph_css_color: "bgc-purple-new",
                           show_tooltip: false
                         }
@@ -67,19 +67,19 @@
   <div class="mb-8px p-16px bgc-white bs-card">
     <div class="d-flex ai-center jc-space-between mb-8px">
       <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
-        <%= diagnosis_data["hypertension_monthly_follow_up_patients"]["name"] %>
+        <%= diagnosis_data["monthly_follow_up_patients"]["name"] %>
       </h2>
       <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
-        <%= diagnosis_data["hypertension_monthly_follow_up_patients"]["total"]  %>
+        <%= diagnosis_data["monthly_follow_up_patients"]["total"]  %>
       </p>
     </div>
     <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-      <%= diagnosis_data["hypertension_monthly_follow_up_patients"]["subtitle"] %>
+      <%= diagnosis_data["monthly_follow_up_patients"]["subtitle"] %>
     </p>
     <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph",
                locals: {
-                          data: diagnosis_data["hypertension_monthly_follow_up_patients"]["breakdown"],
-                          data_type: diagnosis_data["hypertension_monthly_follow_up_patients"]["data_type"],
+                          data: diagnosis_data["monthly_follow_up_patients"]["breakdown"],
+                          data_type: diagnosis_data["monthly_follow_up_patients"]["data_type"],
                           graph_css_color: "bgc-blue-new",
                           show_tooltip: false
                         }
@@ -93,7 +93,7 @@
   <div class="mb-8px p-16px bgc-white bs-card">
     <div class="p-relative d-flex ai-center mb-8px" data-element-type="header">
       <h2 class="m-0px mr-8px p-0px ta-left fw-medium fs-18px c-black">
-        <%= diagnosis_data["hypertension_bp_controlled"]["name"] %>
+        <%= diagnosis_data["controlled"]["name"] %>
       </h2>
       <div class="d-flex ai-center" data-element-type="help-circle">
         <%= inline_file("help-circle.svg") %>
@@ -118,12 +118,12 @@
       </div>
     </div>
     <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-        <%= diagnosis_data["hypertension_bp_controlled"]["subtitle"] %>
+        <%= diagnosis_data["controlled"]["subtitle"] %>
     </p>
     <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph",
                locals: {
-                          data: diagnosis_data["hypertension_bp_controlled"]["breakdown"],
-                          data_type: diagnosis_data["hypertension_bp_controlled"]["data_type"],
+                          data: diagnosis_data["controlled"]["breakdown"],
+                          data_type: diagnosis_data["controlled"]["data_type"],
                           graph_css_color: "bgc-green-new",
                           show_tooltip: true
                         }
@@ -132,7 +132,7 @@
   <div class="mb-8px p-16px bgc-white bs-card">
     <div class="p-relative d-flex ai-center mb-8px" data-element-type="header">
       <h2 class="m-0px mr-8px p-0px ta-left fw-medium fs-18px c-black">
-        <%= diagnosis_data["hypertension_bp_not_controlled"]["name"] %>
+        <%= diagnosis_data["uncontrolled"]["name"] %>
       </h2>
       <div class="d-flex ai-center" data-element-type="help-circle">
         <%= inline_file("help-circle.svg") %>
@@ -157,21 +157,62 @@
       </div>
     </div>
     <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-        <%= diagnosis_data["hypertension_bp_not_controlled"]["subtitle"] %>
+        <%= diagnosis_data["uncontrolled"]["subtitle"] %>
     </p>
     <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph",
                locals: {
-                          data: diagnosis_data["hypertension_bp_not_controlled"]["breakdown"],
-                          data_type: diagnosis_data["hypertension_bp_not_controlled"]["data_type"],
+                          data: diagnosis_data["uncontrolled"]["breakdown"],
+                          data_type: diagnosis_data["uncontrolled"]["data_type"],
                           graph_css_color: "bgc-yellow-new",
                           show_tooltip: true
                         }
     %>
   </div>
+  <% if report_diagnosis == "Diabetes" %>
+    <div class="mb-8px p-16px bgc-white bs-card">
+      <div class="p-relative d-flex ai-center mb-8px" data-element-type="header">
+        <h2 class="m-0px mr-8px p-0px ta-left fw-medium fs-18px c-black">
+          <%= diagnosis_data["very_uncontrolled"]["name"] %>
+        </h2>
+        <div class="d-flex ai-center" data-element-type="help-circle">
+          <%= inline_file("help-circle.svg") %>
+        </div>
+        <div
+          class="o-0 pe-none p-absolute l-0 zi-100 d-flex fd-column w-100 bs-tooltip ttf-ease-in-out td-0_25s tp-opacity"
+          data-element-type="tooltip"
+        >
+          <div
+            class="p-absolute t--8px l-8px w-0px h-0px br-8px-transparent bl-8px-transparent bb-8px-black"
+            data-element-type="tip"
+          >
+          </div>
+          <div class="p-8px bgc-black br-4px">
+            <p class="m-0px mb-4px p-0px ta-left fw-regular fs-14px lh-150 c-white">
+              <span class="fw-bold">Numerator:</span> Patients with BS &ge;300 at their last visit in the last 3 months.
+            </p>
+            <p class="m-0px p-0px ta-left fw-regular fs-14px lh-150 c-white">
+              <span class="fw-bold">Denominator:</span> Hypertension patients assigned to <%= current_facility.name %>, registered before the last 3 months. Dead and lost to follow-up patients are excluded.
+            </p>
+          </div>
+        </div>
+      </div>
+      <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+          <%= diagnosis_data["very_uncontrolled"]["subtitle"] %>
+      </p>
+      <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph",
+                locals: {
+                          data: diagnosis_data["very_uncontrolled"]["breakdown"],
+                          data_type: diagnosis_data["very_uncontrolled"]["data_type"],
+                          graph_css_color: "bgc-yellow-dark-new",
+                          show_tooltip: true
+                        }
+      %>
+    </div>
+  <% end %>
   <div class="mb-8px p-16px bgc-white bs-card">
     <div class="p-relative d-flex ai-center mb-8px" data-element-type="header">
       <h2 class="m-0px mr-8px p-0px ta-left fw-medium fs-18px c-black">
-        <%= diagnosis_data["hypertension_missed_visits"]["name"] %>
+        <%= diagnosis_data["missed_visits"]["name"] %>
       </h2>
       <div class="d-flex ai-center" data-element-type="help-circle">
         <%= inline_file("help-circle.svg") %>
@@ -196,12 +237,12 @@
       </div>
     </div>
     <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-        <%= diagnosis_data["hypertension_missed_visits"]["subtitle"] %>
+        <%= diagnosis_data["missed_visits"]["subtitle"] %>
     </p>
     <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph",
                locals: {
-                          data: diagnosis_data["hypertension_missed_visits"]["breakdown"],
-                          data_type: diagnosis_data["hypertension_missed_visits"]["data_type"],
+                          data: diagnosis_data["missed_visits"]["breakdown"],
+                          data_type: diagnosis_data["missed_visits"]["data_type"],
                           graph_css_color: "bgc-red-new",
                           show_tooltip: true
                         }
@@ -215,12 +256,12 @@
     </div>
     <div class="mb-8px p-16px bgc-white bs-card">
       <h3 class="m-0px mb-2px p-0px ta-left fw-medium fs-20px c-black">
-        <%= drug_stock_data["ccb_tablets"]["name"] %>
+        <%= diagnosis_data["ccb_tablets"]["name"] %>
       </h3>
-      <p class="m-0px mb-16px p-0px ta-left fw-regular fs-16px lh-150 c-yellow <%= patient_days_css_class(drug_stock_data['ccb_tablets']['days_of_drugs_left'], prefix: 'c') %>">
-        <%= drug_stock_data["ccb_tablets"]["days_of_drugs_left"] %> days of tablets in stock
+      <p class="m-0px mb-16px p-0px ta-left fw-regular fs-16px lh-150 c-yellow <%= patient_days_css_class(diagnosis_data['ccb_tablets']['days_of_drugs_left'], prefix: 'c') %>">
+        <%= diagnosis_data["ccb_tablets"]["days_of_drugs_left"] %> days of tablets in stock
       </p>
-      <% drug_stock_data["ccb_tablets"]["breakdown"].each_with_index do |drug, index| %>
+      <% diagnosis_data["ccb_tablets"]["breakdown"].each_with_index do |drug, index| %>
         <div class="d-flex ai-center jc-space-between">
           <p class="m-0px p-0px ta-left fw-regular fs-16px c-black">
             <%= drug["title"] %>
@@ -229,19 +270,19 @@
             <%= drug["stock"] %> tablets
           </p>
         </div>
-        <% unless index == drug_stock_data["ccb_tablets"]["breakdown"].length - 1 %>
+        <% unless index == diagnosis_data["ccb_tablets"]["breakdown"].length - 1 %>
           <div class="h-1px mt-8px mb-8px bgc-grey-light"></div>
         <% end %>
       <% end %>
     </div>
     <div class="mb-8px p-16px bgc-white bs-card">
       <h3 class="m-0px mb-2px p-0px ta-left fw-medium fs-20px c-black">
-        <%= drug_stock_data["arb_tablets"]["name"] %>
+        <%= diagnosis_data["arb_tablets"]["name"] %>
       </h3>
-      <p class="m-0px mb-16px p-0px ta-left fw-regular fs-16px lh-150 c-yellow <%= patient_days_css_class(drug_stock_data['arb_tablets']['days_of_drugs_left'], prefix: 'c') %>">
-        <%= drug_stock_data["arb_tablets"]["days_of_drugs_left"] %> days of tablets in stock
+      <p class="m-0px mb-16px p-0px ta-left fw-regular fs-16px lh-150 c-yellow <%= patient_days_css_class(diagnosis_data['arb_tablets']['days_of_drugs_left'], prefix: 'c') %>">
+        <%= diagnosis_data["arb_tablets"]["days_of_drugs_left"] %> days of tablets in stock
       </p>
-      <% drug_stock_data["arb_tablets"]["breakdown"].each_with_index do |drug, index| %>
+      <% diagnosis_data["arb_tablets"]["breakdown"].each_with_index do |drug, index| %>
         <div class="d-flex ai-center jc-space-between">
           <p class="m-0px p-0px ta-left fw-regular fs-16px c-black">
             <%= drug["title"] %>
@@ -250,19 +291,19 @@
             <%= drug["stock"] %> tablets
           </p>
         </div>
-        <% unless index == drug_stock_data["arb_tablets"]["breakdown"].length - 1 %>
+        <% unless index == diagnosis_data["arb_tablets"]["breakdown"].length - 1 %>
           <div class="h-1px mt-8px mb-8px bgc-grey-light"></div>
         <% end %>
       <% end %>
     </div>
     <div class="mb-8px p-16px bgc-white bs-card">
       <h3 class="m-0px mb-2px p-0px ta-left fw-medium fs-20px c-black">
-        <%= drug_stock_data["diuretic_tablets"]["name"] %>
+        <%= diagnosis_data["diuretic_tablets"]["name"] %>
       </h3>
-      <p class="m-0px mb-16px p-0px ta-left fw-regular fs-16px lh-150 c-yellow <%= patient_days_css_class(drug_stock_data['diuretic_tablets']['days_of_drugs_left'], prefix: 'c') %>">
-        <%= drug_stock_data["diuretic_tablets"]["days_of_drugs_left"] %> days of tablets in stock
+      <p class="m-0px mb-16px p-0px ta-left fw-regular fs-16px lh-150 c-yellow <%= patient_days_css_class(diagnosis_data['diuretic_tablets']['days_of_drugs_left'], prefix: 'c') %>">
+        <%= diagnosis_data["diuretic_tablets"]["days_of_drugs_left"] %> days of tablets in stock
       </p>
-      <% drug_stock_data["diuretic_tablets"]["breakdown"].each_with_index do |drug, index| %>
+      <% diagnosis_data["diuretic_tablets"]["breakdown"].each_with_index do |drug, index| %>
         <div class="d-flex ai-center jc-space-between">
           <p class="m-0px p-0px ta-left fw-regular fs-16px c-black">
             <%= drug["title"] %>
@@ -271,7 +312,7 @@
             <%= drug["stock"] %> tablets
           </p>
         </div>
-        <% unless index == drug_stock_data["diuretic_tablets"]["breakdown"].length - 1 %>
+        <% unless index == diagnosis_data["diuretic_tablets"]["breakdown"].length - 1 %>
           <div class="h-1px mt-8px mb-8px bgc-grey-light"></div>
         <% end %>
       <% end %>
@@ -283,10 +324,10 @@
     </div>
     <div class="mb-8px p-16px bgc-white bs-card">
       <h2 class="m-0px mb-8px p-0px ta-left fw-medium fs-18px c-black">
-        <%= diagnosis_data["hypertension_quarterly_cohort_reports"]["name"] %>
+        <%= diagnosis_data["quarterly_cohort_reports"]["name"] %>
       </h2>
       <p class="m-0px mb-12px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-          <%= diagnosis_data["hypertension_quarterly_cohort_reports"]["subtitle"] %>
+          <%= diagnosis_data["quarterly_cohort_reports"]["subtitle"] %>
       </p>
       <div class="mb-32px">
         <div class="d-flex ai-center jc-center mb-8px">
@@ -308,8 +349,8 @@
           </p>
         </div>
       </div>
-      <% diagnosis_data["hypertension_quarterly_cohort_reports"]["breakdown"].each_with_index do |cohort, index| %>
-        <div class="<% if diagnosis_data["hypertension_quarterly_cohort_reports"]["breakdown"].length - 1 > index %>mb-24px<% end %>">
+      <% diagnosis_data["quarterly_cohort_reports"]["breakdown"].each_with_index do |cohort, index| %>
+        <div class="<% if diagnosis_data["quarterly_cohort_reports"]["breakdown"].length - 1 > index %>mb-24px<% end %>">
           <p class="m-0px mb-2px p-0px ta-left fw-regular fs-16px c-black">
             Result from last visit in <%= cohort["result_period"] %>
           </p>
