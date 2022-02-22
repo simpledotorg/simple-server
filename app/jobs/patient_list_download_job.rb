@@ -1,5 +1,5 @@
 class PatientListDownloadJob < ApplicationJob
-  def perform(recipient_email, model_type, params, with_medication_history: false)
+  def perform(recipient_email, model_type, params)
     case model_type
     when "facility"
       model = Facility.find(params[:facility_id])
@@ -13,7 +13,7 @@ class PatientListDownloadJob < ApplicationJob
 
     patients = model.assigned_patients.excluding_dead
 
-    exporter = with_medication_history ? PatientsWithHistoryExporter : PatientsExporter
+    exporter = PatientsWithHistoryExporter
     patients_csv = exporter.csv(patients)
 
     PatientListDownloadMailer.patient_list(recipient_email, model_type, model_name, patients_csv).deliver_now
