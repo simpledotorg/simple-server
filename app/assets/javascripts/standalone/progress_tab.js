@@ -1,11 +1,13 @@
 // Subview navigation
 function goToPage(startPageId, endPageId) {
   const startPage = document.getElementById(startPageId);
-  startPage.style.display = "none";
-  startPage.style.height = "0";
+  addCSSClasses(startPage, ["d-none", "h-0px"]);
+  removeCSSClasses(startPage, ["d-block", "h-auto"]);
+
   const endPage = document.getElementById(endPageId);
-  endPage.style.display = "block";
-  endPage.style.height = "auto";
+  addCSSClasses(endPage, ["d-block", "h-auto"]);
+  removeCSSClasses(endPage, ["d-none", "h-0px"]);
+
   document.body.scrollTop = 0;
   document.documentElement.scrollTop = 0;
 }
@@ -146,4 +148,16 @@ function setTooltipPosition(tooltipElement, barElement) {
   setTooltipTipPosition(tipElement, barElement);
   // Position tooltip copy
   setTooltipCopyPosition(copyElement, tooltipElement, barElement);
+}
+
+function addCSSClasses(element, cssClasses) {
+  cssClasses.forEach(cssClass => {
+    element.classList.add(cssClass);
+  });
+}
+
+function removeCSSClasses(element, cssClasses) {
+  cssClasses.forEach(cssClass => {
+    element.classList.remove(cssClass);
+  })
 }
