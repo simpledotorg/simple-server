@@ -206,45 +206,47 @@
       Cohort reports
     </h3>
   </div>
-  <div class="mb-8px p-16px bgc-white bs-card">
-    <h2 class="m-0px mb-8px p-0px ta-left fw-medium fs-18px c-black">
-      <%= data["hypertension_quarterly_cohort_reports"]["name"] %>
-    </h2>
-    <p class="m-0px mb-12px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-        <%= data["hypertension_quarterly_cohort_reports"]["subtitle"] %>
-    </p>
-    <div class="mb-32px">
-      <div class="d-flex ai-center jc-center mb-8px">
-        <div class="w-16px h-16px mr-8px br-4px bgc-green-new"></div>
-        <p class="f-1 m-0px p-0px ta-left fw-regular fs-14px c-black">
-          BP controlled
-        </p>
+  <% if report_diagnosis == "Hypertension" %>
+    <div class="mb-8px p-16px bgc-white bs-card">
+      <h2 class="m-0px mb-8px p-0px ta-left fw-medium fs-18px c-black">
+        <%= data["hypertension_quarterly_cohort_reports"]["name"] %>
+      </h2>
+      <p class="m-0px mb-12px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+          <%= data["hypertension_quarterly_cohort_reports"]["subtitle"] %>
+      </p>
+      <div class="mb-32px">
+        <div class="d-flex ai-center jc-center mb-8px">
+          <div class="w-16px h-16px mr-8px br-4px bgc-green-new"></div>
+          <p class="f-1 m-0px p-0px ta-left fw-regular fs-14px c-black">
+            BP controlled
+          </p>
+        </div>
+        <div class="d-flex ai-center jc-center mb-8px">
+          <div class="w-16px h-16px mr-8px br-4px bgc-yellow-new"></div>
+          <p class="f-1 m-0px p-0px ta-left fw-regular fs-14px c-black">
+            BP not controlled
+          </p>
+        </div>
+        <div class="d-flex ai-center jc-center">
+          <div class="w-16px h-16px mr-8px br-4px bgc-red-new"></div>
+          <p class="f-1 m-0px p-0px ta-left fw-regular fs-14px c-black">
+            Missed visits
+          </p>
+        </div>
       </div>
-      <div class="d-flex ai-center jc-center mb-8px">
-        <div class="w-16px h-16px mr-8px br-4px bgc-yellow-new"></div>
-        <p class="f-1 m-0px p-0px ta-left fw-regular fs-14px c-black">
-          BP not controlled
-        </p>
-      </div>
-      <div class="d-flex ai-center jc-center">
-        <div class="w-16px h-16px mr-8px br-4px bgc-red-new"></div>
-        <p class="f-1 m-0px p-0px ta-left fw-regular fs-14px c-black">
-          Missed visits
-        </p>
-      </div>
+      <% data["hypertension_quarterly_cohort_reports"]["breakdown"].each_with_index do |cohort, index| %>
+        <div class="<% if data["hypertension_quarterly_cohort_reports"]["breakdown"].length - 1 > index %>mb-24px<% end %>">
+          <p class="m-0px mb-2px p-0px ta-left fw-regular fs-16px c-black">
+            Result from last visit in <%= cohort["result_period"] %>
+          </p>
+          <p class="m-0px mb-8px p-0px ta-left fw-reguar fs-16px c-grey-dark">
+            <%= cohort["total_patients"] %> patients registered in <%= cohort["registration_period"] %>
+          </p>
+          <%= render partial: "api/v3/analytics/user_analytics/data_stacked_bar_graph",
+                      locals: { data: cohort }
+          %>
+        </div>
+      <% end %>
     </div>
-    <% data["hypertension_quarterly_cohort_reports"]["breakdown"].each_with_index do |cohort, index| %>
-      <div class="<% if data["hypertension_quarterly_cohort_reports"]["breakdown"].length - 1 > index %>mb-24px<% end %>">
-        <p class="m-0px mb-2px p-0px ta-left fw-regular fs-16px c-black">
-          Result from last visit in <%= cohort["result_period"] %>
-        </p>
-        <p class="m-0px mb-8px p-0px ta-left fw-reguar fs-16px c-grey-dark">
-          <%= cohort["total_patients"] %> patients registered in <%= cohort["registration_period"] %>
-        </p>
-        <%= render partial: "api/v3/analytics/user_analytics/data_stacked_bar_graph",
-                    locals: { data: cohort }
-        %>
-      </div>
-    <% end %>
-  </div>
+  <% end %>
 </div>

@@ -161,7 +161,7 @@
     </div>
     <%= render partial: "api/v3/analytics/user_analytics/period_report",
                locals: {
-                 pageId: "daily-report-page",
+                 page_id: "daily-report-page",
                  title: "Daily",
                  subtitle: false,
                  periods: @data["daily_periods"],
@@ -171,7 +171,7 @@
     %>
     <%= render partial: "api/v3/analytics/user_analytics/period_report",
                locals: {
-                 pageId: "monthly-report-page",
+                 page_id: "monthly-report-page",
                  title: "Monthly",
                  subtitle: false,
                  periods: @data["monthly_periods"],
@@ -181,7 +181,7 @@
     %>
     <%= render partial: "api/v3/analytics/user_analytics/period_report",
                locals: {
-                 pageId: "yearly-report-page",
+                 page_id: "yearly-report-page",
                  title: "Yearly",
                  subtitle: "Apr-2021 to Mar-2022",
                  periods: @data["yearly_periods"],
@@ -191,7 +191,8 @@
     %>
     <%= render partial: "api/v3/analytics/user_analytics/diagnosis_report",
                locals: {
-                 pageId: "hypertension-report",
+                 page_id: "hypertension-report",
+                 report_diagnosis: "Hypertension",
                  title: "Hypertension report",
                  subtitle: "Data last updated on #{DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")}",
                  data: @diagnosis_report_data
