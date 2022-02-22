@@ -1,21 +1,56 @@
 require "csv"
 
-class PatientsWithHistoryExporter < PatientsExporter
+class PatientsWithHistoryExporter
+  include QuarterHelper
+
   DEFAULT_DISPLAY_BLOOD_PRESSURES = 3
   DEFAULT_DISPLAY_MEDICATION_COLUMNS = 5
+  BATCH_SIZE = 1000
+  PATIENT_STATUS_DESCRIPTIONS = {active: "Active",
+                                 migrated: "Transferred out",
+                                 dead: "Died",
+                                 ltfu: "Lost to follow-up"}.with_indifferent_access
+
+  BLOOD_SUGAR_TYPES = {
+    random: "Random",
+    post_prandial: "Postprandial",
+    fasting: "Fasting",
+    hba1c: "HbA1c"
+  }.with_indifferent_access.freeze
 
   def csv(patients, display_blood_pressures: DEFAULT_DISPLAY_BLOOD_PRESSURES, display_medication_columns: DEFAULT_DISPLAY_MEDICATION_COLUMNS)
     @display_blood_pressures = display_blood_pressures
     @display_medication_columns = display_medication_columns
-    super(patients)
+    summary = MaterializedPatientSummary.where(patient: patients)
+
+    CSV.generate(headers: true) do |csv|
+      csv << timestamp
+      csv << csv_headers
+
+      summary.in_batches(of: BATCH_SIZE).each do |batch|
+        load_batch(batch).each do |patient_summary|
+          csv << csv_fields(patient_summary)
+        end
+      end
+    end
   end
 
   def load_batch(batch)
-    super(batch)
+    batch
       .includes(
+        :current_prescription_drugs,
+        :latest_blood_sugar,
+        :latest_bp_passport,
         {appointments: :facility},
         {latest_blood_pressures: :facility}
       )
+  end
+
+  def timestamp
+    [
+      "Report generated at:",
+      Time.current
+    ]
   end
 
   def csv_headers
@@ -146,6 +181,40 @@ class PatientsWithHistoryExporter < PatientsExporter
   end
 
   private
+
+  def zone_column
+    "Patient #{Address.human_attribute_name :zone}"
+  end
+
+  def registration_date(patient_summary)
+    patient_summary.recorded_at.presence &&
+      I18n.l(patient_summary.recorded_at.to_date)
+  end
+
+  def registration_quarter(patient_summary)
+    patient_summary.recorded_at.presence &&
+      quarter_string(patient_summary.recorded_at)
+  end
+
+  def latest_blood_sugar_date(patient_summary)
+    patient_summary.latest_blood_sugar_recorded_at.presence &&
+      I18n.l(patient_summary.latest_blood_sugar_recorded_at.to_date)
+  end
+
+  def latest_blood_sugar_type(patient_summary)
+    patient_summary.latest_blood_sugar_type.presence &&
+      BLOOD_SUGAR_TYPES[patient_summary.latest_blood_sugar_type]
+  end
+
+  def status(patient_summary)
+    patient_status = if patient_summary.ltfu?
+      :ltfu
+    else
+      patient_summary.status
+    end
+
+    PATIENT_STATUS_DESCRIPTIONS[patient_status]
+  end
 
   def display_blood_pressures
     @display_blood_pressures || DEFAULT_DISPLAY_BLOOD_PRESSURES
