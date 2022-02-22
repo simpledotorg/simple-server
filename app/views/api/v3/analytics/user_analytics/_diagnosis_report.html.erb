@@ -23,22 +23,22 @@
   <div class="mb-8px p-16px bgc-white bs-card">
     <div class="d-flex ai-center jc-space-between mb-8px">
       <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
-        <%= data["hypertension_assigned_patients"]["name"] %>
+        <%= diagnosis_data["hypertension_assigned_patients"]["name"] %>
       </h2>
       <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
-        <%= data["hypertension_assigned_patients"]["total"]  %>
+        <%= diagnosis_data["hypertension_assigned_patients"]["total"]  %>
       </p>
     </div>
     <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-      <%= data["hypertension_assigned_patients"]["subtitle"] %>
+      <%= diagnosis_data["hypertension_assigned_patients"]["subtitle"] %>
     </p>
-    <% data["hypertension_assigned_patients"]["breakdown"].each_with_index do |row, index| %>
+    <% diagnosis_data["hypertension_assigned_patients"]["breakdown"].each_with_index do |row, index| %>
       <%= render partial: "api/v3/analytics/user_analytics/data_table_plusminus_row",
                  locals: {
                           title: row["title"],
                           value: row["value"],
                           css_text_color: row["value"] > 0 ? "c-green-new" : "c-red-new",
-                          include_bottom_border: index == data["hypertension_assigned_patients"]["breakdown"].length - 1 ? false : true
+                          include_bottom_border: index == diagnosis_data["hypertension_assigned_patients"]["breakdown"].length - 1 ? false : true
                          }
       %>
     <% end %>
@@ -46,19 +46,19 @@
   <div class="mb-8px p-16px bgc-white bs-card">
     <div class="d-flex ai-center jc-space-between mb-8px">
       <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
-        <%= data["hypertension_registered_patients"]["name"] %>
+        <%= diagnosis_data["hypertension_registered_patients"]["name"] %>
       </h2>
       <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
-        <%= data["hypertension_registered_patients"]["total"]  %>
+        <%= diagnosis_data["hypertension_registered_patients"]["total"]  %>
       </p>
     </div>
     <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-      <%= data["hypertension_assigned_patients"]["subtitle"] %>
+      <%= diagnosis_data["hypertension_assigned_patients"]["subtitle"] %>
     </p>
     <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph",
                locals: {
-                          data: data["hypertension_registered_patients"]["breakdown"],
-                          data_type: data["hypertension_registered_patients"]["data_type"],
+                          data: diagnosis_data["hypertension_registered_patients"]["breakdown"],
+                          data_type: diagnosis_data["hypertension_registered_patients"]["data_type"],
                           graph_css_color: "bgc-purple-new",
                           show_tooltip: false
                         }
@@ -67,19 +67,19 @@
   <div class="mb-8px p-16px bgc-white bs-card">
     <div class="d-flex ai-center jc-space-between mb-8px">
       <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
-        <%= data["hypertension_monthly_follow_up_patients"]["name"] %>
+        <%= diagnosis_data["hypertension_monthly_follow_up_patients"]["name"] %>
       </h2>
       <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
-        <%= data["hypertension_monthly_follow_up_patients"]["total"]  %>
+        <%= diagnosis_data["hypertension_monthly_follow_up_patients"]["total"]  %>
       </p>
     </div>
     <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-      <%= data["hypertension_monthly_follow_up_patients"]["subtitle"] %>
+      <%= diagnosis_data["hypertension_monthly_follow_up_patients"]["subtitle"] %>
     </p>
     <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph",
                locals: {
-                          data: data["hypertension_monthly_follow_up_patients"]["breakdown"],
-                          data_type: data["hypertension_monthly_follow_up_patients"]["data_type"],
+                          data: diagnosis_data["hypertension_monthly_follow_up_patients"]["breakdown"],
+                          data_type: diagnosis_data["hypertension_monthly_follow_up_patients"]["data_type"],
                           graph_css_color: "bgc-blue-new",
                           show_tooltip: false
                         }
@@ -93,12 +93,15 @@
   <div class="mb-8px p-16px bgc-white bs-card">
     <div class="p-relative d-flex ai-center mb-8px" data-element-type="header">
       <h2 class="m-0px mr-8px p-0px ta-left fw-medium fs-18px c-black">
-        <%= data["hypertension_bp_controlled"]["name"] %>
+        <%= diagnosis_data["hypertension_bp_controlled"]["name"] %>
       </h2>
       <div class="d-flex ai-center" data-element-type="help-circle">
         <%= inline_file("help-circle.svg") %>
       </div>
-      <div class="d-none p-absolute l-0 zi-100 d-flex fd-column w-100 bs-tooltip" data-element-type="tooltip">
+      <div
+        class="o-0 pe-none p-absolute l-0 zi-100 d-flex fd-column w-100 bs-tooltip ttf-ease-in-out td-0_25s tp-opacity" 
+        data-element-type="tooltip"
+      >
         <div
           class="p-absolute t--8px w-0px h-0px br-8px-transparent bl-8px-transparent bb-8px-black"
           style="left: 8px;"
@@ -116,26 +119,29 @@
       </div>
     </div>
     <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-        <%= data["hypertension_bp_controlled"]["subtitle"] %>
+        <%= diagnosis_data["hypertension_bp_controlled"]["subtitle"] %>
     </p>
     <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph",
                locals: {
-                          data: data["hypertension_bp_controlled"]["breakdown"],
-                          data_type: data["hypertension_bp_controlled"]["data_type"],
+                          data: diagnosis_data["hypertension_bp_controlled"]["breakdown"],
+                          data_type: diagnosis_data["hypertension_bp_controlled"]["data_type"],
                           graph_css_color: "bgc-green-new",
                           show_tooltip: true
                         }
     %>
   </div>
   <div class="mb-8px p-16px bgc-white bs-card">
-    <div class="d-flex ai-center mb-8px" data-element-type="header">
+    <div class="p-relative d-flex ai-center mb-8px" data-element-type="header">
       <h2 class="m-0px mr-8px p-0px ta-left fw-medium fs-18px c-black">
-        <%= data["hypertension_bp_not_controlled"]["name"] %>
+        <%= diagnosis_data["hypertension_bp_not_controlled"]["name"] %>
       </h2>
       <div class="d-flex ai-center" data-element-type="help-circle">
         <%= inline_file("help-circle.svg") %>
       </div>
-      <div class="d-none p-absolute l-0 zi-100 d-flex fd-column w-100 bs-tooltip" data-element-type="tooltip">
+      <div
+        class="o-0 pe-none p-absolute l-0 zi-100 d-flex fd-column w-100 bs-tooltip ttf-ease-in-out td-0_25s tp-opacity"
+        data-element-type="tooltip"
+      >
         <div
           class="p-absolute t--8px w-0px h-0px br-8px-transparent bl-8px-transparent bb-8px-black"
           style="left: 8px;"
@@ -153,26 +159,29 @@
       </div>
     </div>
     <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-        <%= data["hypertension_bp_not_controlled"]["subtitle"] %>
+        <%= diagnosis_data["hypertension_bp_not_controlled"]["subtitle"] %>
     </p>
     <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph",
                locals: {
-                          data: data["hypertension_bp_not_controlled"]["breakdown"],
-                          data_type: data["hypertension_bp_not_controlled"]["data_type"],
+                          data: diagnosis_data["hypertension_bp_not_controlled"]["breakdown"],
+                          data_type: diagnosis_data["hypertension_bp_not_controlled"]["data_type"],
                           graph_css_color: "bgc-yellow-new",
                           show_tooltip: true
                         }
     %>
   </div>
   <div class="mb-8px p-16px bgc-white bs-card">
-    <div class="d-flex ai-center mb-8px" data-element-type="header">
+    <div class="p-relative d-flex ai-center mb-8px" data-element-type="header">
       <h2 class="m-0px mr-8px p-0px ta-left fw-medium fs-18px c-black">
-        <%= data["hypertension_missed_visits"]["name"] %>
+        <%= diagnosis_data["hypertension_missed_visits"]["name"] %>
       </h2>
       <div class="d-flex ai-center" data-element-type="help-circle">
         <%= inline_file("help-circle.svg") %>
       </div>
-      <div class="d-none p-absolute l-0 zi-100 d-flex fd-column w-100 bs-tooltip" data-element-type="tooltip">
+      <div
+        class="o-0 pe-none p-absolute l-0 zi-100 d-flex fd-column w-100 bs-tooltip ttf-ease-in-out td-0_25s tp-opacity"
+        data-element-type="tooltip"
+      >
         <div
           class="p-absolute t--8px w-0px h-0px br-8px-transparent bl-8px-transparent bb-8px-black"
           style="left: 8px;"
@@ -190,12 +199,12 @@
       </div>
     </div>
     <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-        <%= data["hypertension_missed_visits"]["subtitle"] %>
+        <%= diagnosis_data["hypertension_missed_visits"]["subtitle"] %>
     </p>
     <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph",
                locals: {
-                          data: data["hypertension_missed_visits"]["breakdown"],
-                          data_type: data["hypertension_missed_visits"]["data_type"],
+                          data: diagnosis_data["hypertension_missed_visits"]["breakdown"],
+                          data_type: diagnosis_data["hypertension_missed_visits"]["data_type"],
                           graph_css_color: "bgc-red-new",
                           show_tooltip: true
                         }
@@ -223,10 +232,10 @@
     </div>
     <div class="mb-8px p-16px bgc-white bs-card">
       <h2 class="m-0px mb-8px p-0px ta-left fw-medium fs-18px c-black">
-        <%= data["hypertension_quarterly_cohort_reports"]["name"] %>
+        <%= diagnosis_data["hypertension_quarterly_cohort_reports"]["name"] %>
       </h2>
       <p class="m-0px mb-12px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-          <%= data["hypertension_quarterly_cohort_reports"]["subtitle"] %>
+          <%= diagnosis_data["hypertension_quarterly_cohort_reports"]["subtitle"] %>
       </p>
       <div class="mb-32px">
         <div class="d-flex ai-center jc-center mb-8px">
@@ -248,8 +257,8 @@
           </p>
         </div>
       </div>
-      <% data["hypertension_quarterly_cohort_reports"]["breakdown"].each_with_index do |cohort, index| %>
-        <div class="<% if data["hypertension_quarterly_cohort_reports"]["breakdown"].length - 1 > index %>mb-24px<% end %>">
+      <% diagnosis_data["hypertension_quarterly_cohort_reports"]["breakdown"].each_with_index do |cohort, index| %>
+        <div class="<% if diagnosis_data["hypertension_quarterly_cohort_reports"]["breakdown"].length - 1 > index %>mb-24px<% end %>">
           <p class="m-0px mb-2px p-0px ta-left fw-regular fs-16px c-black">
             Result from last visit in <%= cohort["result_period"] %>
           </p>

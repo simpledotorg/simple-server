@@ -80,13 +80,14 @@ helpCircles.forEach(helpCircle => {
 function handleHelpCircleTouchStart(event) {
   event.preventDefault();
 
-  const header = event.target.parentElement.parentElement;
+  const header = event.target.parentElement;
   const helpCircle = header.querySelector("[data-element-type='help-circle']");
   const tooltip = header.querySelector("[data-element-type='tooltip']");
+  const tooltipTip = header.querySelector("[data-element-type='tip']");
+
   tooltip.classList.remove("o-0");
   tooltip.style.top = `${helpCircle.offsetTop + helpCircle.offsetHeight + tooltipTip.offsetHeight + 4}px`;
 
-  const tooltipTip = header.querySelector("[data-element-type='tip']");
   tooltipTip.style.left = `${helpCircle.offsetLeft + 2}px`;
 }
 
