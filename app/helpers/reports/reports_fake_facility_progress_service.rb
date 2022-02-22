@@ -151,6 +151,7 @@ module Reports
           {"title" => "Transferred-out", "value" => -87}
         ]
       }
+
       @hypertension_registered_patients = {
         "name" => "Total registered patients",
         "data_type" => "number",
@@ -164,6 +165,7 @@ module Reports
           {"month" => "Jan-2022", "value" => 877}
         ]
       }
+
       @hypertension_monthly_follow_up_patients = {
         "name" => "Monthly follow-up patients",
         "data_type" => "number",
@@ -177,6 +179,7 @@ module Reports
           {"month" => "Jan-2022", "value" => 158}
         ]
       }
+
       @hypertension_bp_controlled = {
         "name" => "BP controlled",
         "data_type" => "percentage",
@@ -238,6 +241,7 @@ module Reports
           }
         ]
       }
+
       @hypertension_bp_not_controlled = {
         "name" => "BP not controlled",
         "data_type" => "percentage",
@@ -299,6 +303,7 @@ module Reports
           }
         ]
       }
+
       @hypertension_missed_visits = {
         "name" => "Missed visits",
         "data_type" => "percentage",
@@ -360,6 +365,7 @@ module Reports
           }
         ]
       }
+
       @hypertension_quarterly_cohort_reports = {
         "name" => "Quarterly cohort reports",
         "data_type" => "percentage",
