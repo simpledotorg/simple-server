@@ -18,8 +18,7 @@ class Reports::PatientListsController < AdminController
     PatientListDownloadJob.perform_later(
       recipient_email,
       region_class,
-      download_params,
-      with_medication_history: with_medication_history?
+      download_params
     )
     redirect_back(
       fallback_location: reports_region_path(@region, report_scope: params[:report_scope]),
@@ -31,12 +30,8 @@ class Reports::PatientListsController < AdminController
 
   private
 
-  def with_medication_history?
-    params[:medication_history] == "true"
-  end
-
   def filtered_params
-    params.permit(:id, :report_scope, :medication_history)
+    params.permit(:id, :report_scope)
   end
 
   def region_class
