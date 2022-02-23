@@ -161,7 +161,7 @@ en:
         uncontrolled_card:
           subtitle: "%{diagnosis} patients in %{facility_name} registered >3 months ago with %{uncontrolled_threshold} at their last visit in the last 3 months."
           help_tooltip:
-            numerator: "%{diagnosis} patients in %{uncontrolled_threshold} at their last visit in the last 3 months."
+            numerator: "Patients with %{uncontrolled_threshold} at their last visit in the last 3 months."
             denominator: "%{diagnosis} patients assigned to %{facility_name}, registered before the last 3 months. Dead and lost to follow-up patients are excluded."
           chart_tooltip: "%{number_of_patients} %{patient_or_patients} with %{uncontrolled_threshold} between %{start_period} and %{end_period} of %{number_of_registered_patients} %{patient_or_patients} registered till %{registration_period}."
         very_uncontrolled_card:
