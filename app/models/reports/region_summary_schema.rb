@@ -116,13 +116,13 @@ module Reports
 
     memoize def controlled_rates(with_ltfu: false)
       region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
-        visit_details_rates(entry, with_ltfu)[__method__]
+        treatment_outcome_rates(entry, with_ltfu)[__method__]
       end
     end
 
     memoize def uncontrolled_rates(with_ltfu: false)
       region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
-        visit_details_rates(entry, with_ltfu)[__method__]
+        treatment_outcome_rates(entry, with_ltfu)[__method__]
       end
     end
 
@@ -133,7 +133,7 @@ module Reports
 
     memoize def missed_visits_rates(with_ltfu: false)
       region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
-        visit_details_rates(entry, with_ltfu)[__method__]
+        treatment_outcome_rates(entry, with_ltfu)[__method__]
       end
     end
 
@@ -187,7 +187,7 @@ module Reports
 
     memoize def visited_without_bp_taken_rates(with_ltfu: false)
       region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
-        visit_details_rates(entry, with_ltfu)[__method__]
+        treatment_outcome_rates(entry, with_ltfu)[__method__]
       end
     end
 
@@ -235,12 +235,12 @@ module Reports
       })
     end
 
-    def visit_details_rates(entry, with_ltfu: false)
+    def treatment_outcome_rates(entry, with_ltfu)
       rounded_percentages({
         visited_without_bp_taken_rates: visited_without_bp_taken(with_ltfu: with_ltfu)[entry.region.slug][entry.period],
-        missed_visits_rates: missed_visits_rates(with_ltfu: with_ltfu)[entry.region.slug][entry.period],
-        uncontrolled_rates: uncontrolled_rates(with_ltfu: with_ltfu)[entry.region.slug][entry.period],
-        controlled_rates: controlled_rates(with_ltfu: with_ltfu)[entry.region.slug][entry.period]
+        missed_visits_rates: missed_visits(with_ltfu: with_ltfu)[entry.region.slug][entry.period],
+        uncontrolled_rates: uncontrolled[entry.region.slug][entry.period],
+        controlled_rates: controlled[entry.region.slug][entry.period]
       })
     end
 
