@@ -113,6 +113,11 @@ module Reports
       }
     end
 
+    memoize def controlled_by_gender
+      # magic, but for now, return registrations
+      monthly_registrations_by_gender
+    end
+
     # Returns Follow ups per Region / Period. Takes an optional group_by clause (commonly used to group by user_id)
     memoize def hypertension_follow_ups(group_by: nil)
       if follow_ups_v2?
