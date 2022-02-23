@@ -392,8 +392,8 @@ module Reports
             "missed_visits_patients" => 67
           },
           {
-            "result_period" => "Q3-2021",
-            "end_period" => "Q4/2021",
+            "start_period" => "Q3-2021",
+            "end_period" => "Q4-2021",
             "registration_period" => "Q2-2021",
             "total_patients" => 207,
             "bp_controlled_rate" => 50,

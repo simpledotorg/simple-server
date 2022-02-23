@@ -97,7 +97,8 @@
     <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
       <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.controlled_card.subtitle", facility_name: current_facility.name, diagnosis: report_diagnosis, controlled_threshold: controlled_threshold_subtitle) %>
     </p>
-    <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph", locals: { data: diagnosis_data["controlled"]["breakdown"], data_type: diagnosis_data["controlled"]["data_type"], graph_css_color: "bgc-green-new", show_tooltip: true } %>
+    <% controlled_tooltip_threshold = report_diagnosis == "Hypertension" ? t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_controlled_long") : t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_controlled_long") %>
+    <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph", locals: { data: diagnosis_data["controlled"]["breakdown"], data_type: diagnosis_data["controlled"]["data_type"], graph_css_color: "bgc-green-new", show_tooltip: true, threshold: controlled_tooltip_threshold } %>
   </div>
   <div class="mb-8px p-16px bgc-white bs-card">
     <div class="p-relative d-flex ai-center mb-8px" data-element-type="header">
@@ -129,9 +130,10 @@
     </div>
     <% uncontrolled_threshold_subtitle = report_diagnosis == "Hypertension" ? t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_uncontrolled_long") : t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_uncontrolled_short") %>
     <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-      <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.uncontrolled_card.subtitle", facility_name: current_facility.name, uncontrolled_threshold: uncontrolled_threshold_subtitle) %>
+      <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.uncontrolled_card.subtitle", facility_name: current_facility.name, uncontrolled_threshold: uncontrolled_threshold_subtitle, diagnosis: report_diagnosis) %>
     </p>
-    <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph", locals: { data: diagnosis_data["uncontrolled"]["breakdown"], data_type: diagnosis_data["uncontrolled"]["data_type"], graph_css_color: "bgc-yellow-new", show_tooltip: true } %>
+    <% uncontrolled_tooltip_threshold = report_diagnosis == "Hypertension" ? t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_uncontrolled_long") : t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_uncontrolled_long") %>
+    <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph", locals: { data: diagnosis_data["uncontrolled"]["breakdown"], data_type: diagnosis_data["uncontrolled"]["data_type"], graph_css_color: "bgc-yellow-new", show_tooltip: true, threshold: uncontrolled_tooltip_threshold } %>
   </div>
   <% if report_diagnosis == "Diabetes" %>
     <div class="mb-8px p-16px bgc-white bs-card">
@@ -164,13 +166,13 @@
       <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
         <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.very_uncontrolled_card.subtitle", facility_name: current_facility.name, very_uncontrolled_threshold: t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_very_uncontrolled_short")) %>
       </p>
-      <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph", locals: { data: diagnosis_data["very_uncontrolled"]["breakdown"], data_type: diagnosis_data["very_uncontrolled"]["data_type"], graph_css_color: "bgc-yellow-dark-new", show_tooltip: true } %>
+      <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph", locals: { data: diagnosis_data["very_uncontrolled"]["breakdown"], data_type: diagnosis_data["very_uncontrolled"]["data_type"], graph_css_color: "bgc-yellow-dark-new", show_tooltip: true, threshold: t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_very_uncontrolled_long") } %>
     </div>
   <% end %>
   <div class="mb-8px p-16px bgc-white bs-card">
     <div class="p-relative d-flex ai-center mb-8px" data-element-type="header">
       <h2 class="m-0px mr-8px p-0px ta-left fw-medium fs-18px c-black">
-        <%= t("progress_tab.diagnosis_report.diagnosis_thresholds.missed_visits") %>
+        <%= t("progress_tab.diagnosis_report.diagnosis_thresholds.missed_visits_short") %>
       </h2>
       <div class="d-flex ai-center" data-element-type="help-circle">
         <%= inline_file("help-circle.svg") %>
@@ -186,7 +188,7 @@
         </div>
         <div class="p-8px bgc-black br-4px">
           <p class="m-0px mb-4px p-0px ta-left fw-regular fs-14px lh-150 c-white">
-            <span class="fw-bold">Numerator:</span> <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.missed_visits_card.help_tooltip.numerator", diagnosis: report_diagnosis.downcase) %>
+            <span class="fw-bold">Numerator:</span> <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.missed_visits_card.help_tooltip.numerator", diagnosis: report_diagnosis) %>
           </p>
           <p class="m-0px p-0px ta-left fw-regular fs-14px lh-150 c-white">
             <span class="fw-bold">Denominator:</span> <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.missed_visits_card.help_tooltip.denominator", facility_name: current_facility.name, diagnosis: report_diagnosis) %>
@@ -195,9 +197,9 @@
       </div>
     </div>
     <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-      <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.missed_visits_card.subtitle", facility_name: current_facility.name, diagnosis: report_diagnosis.downcase) %>
+      <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.missed_visits_card.subtitle", facility_name: current_facility.name, diagnosis: report_diagnosis) %>
     </p>
-    <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph", locals: { data: diagnosis_data["missed_visits"]["breakdown"], data_type: diagnosis_data["missed_visits"]["data_type"], graph_css_color: "bgc-red-new", show_tooltip: true } %>
+    <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph", locals: { data: diagnosis_data["missed_visits"]["breakdown"], data_type: diagnosis_data["missed_visits"]["data_type"], graph_css_color: "bgc-red-new", show_tooltip: true, threshold: t("progress_tab.diagnosis_report.diagnosis_thresholds.missed_visits_long") } %>
   </div>
   <% if report_diagnosis == "Hypertension" %>
     <div class="mt-24px mb-8px pr-16px pl-16px">
@@ -296,7 +298,7 @@
         <div class="d-flex ai-center jc-center">
           <div class="w-16px h-16px mr-8px br-4px bgc-red-new"></div>
           <p class="f-1 m-0px p-0px ta-left fw-regular fs-14px c-black">
-            <%= t("progress_tab.diagnosis_report.diagnosis_thresholds.missed_visits") %>
+            <%= t("progress_tab.diagnosis_report.diagnosis_thresholds.missed_visits_short") %>
           </p>
         </div>
       </div>

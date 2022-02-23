@@ -136,7 +136,8 @@ en:
         diabetes_uncontrolled_long: "RBS/PPBS 200-99, FBS 126-199, or HbA1c 7.0-8.9"
         diabetes_very_uncontrolled_short: "BS ≥300"
         diabetes_very_uncontrolled_long: "RBS/PPBS ≥300, FBS ≥200, or HbA1c ≥9.0"
-        missed_visits: "Missed visits"
+        missed_visits_short: "Missed visits"
+        missed_visits_long: "no visit"
       assigned_patients_card:
         title: "Assigned patients"
         subtitle: "Patients expected to follow-up at %{facility_name} to receive %{diagnosis} treatment."
@@ -152,30 +153,27 @@ en:
         subtitle: "%{diagnosis} patients with a BP taken, a blood sugar taken, an appointment scheduled, or a medication updated at %{facility_name} during a month."
       patient_treatment_outcomes:
         section_title: "Patient treatment outcomes"
+        chart_tooltip: "%{number_of_patients} %{patient_or_patients} with %{threshold} between %{start_period} and %{end_period} of %{number_of_registered_patients} %{patient_or_patients} registered till %{registration_period}."
         controlled_card:
           subtitle: "%{diagnosis} patients in %{facility_name} registered >3 months ago with %{controlled_threshold} at their last visit in the last 3 months."
           help_tooltip:
             numerator: "Patients with %{controlled_threshold} at their last visit in the last 3 months."
             denominator: "%{diagnosis} patients assigned to %{facility_name}, registered before the last 3 months. Dead and lost to follow-up patients are excluded."
-          chart_tooltip: "%{number_of_patients} %{patient_or_patients} with %{controlled_threshold} between %{start_period} and %{end_period} of %{number_of_registered_patients} %{patient_or_patients} registered till %{registration_period}."
         uncontrolled_card:
           subtitle: "%{diagnosis} patients in %{facility_name} registered >3 months ago with %{uncontrolled_threshold} at their last visit in the last 3 months."
           help_tooltip:
             numerator: "Patients with %{uncontrolled_threshold} at their last visit in the last 3 months."
             denominator: "%{diagnosis} patients assigned to %{facility_name}, registered before the last 3 months. Dead and lost to follow-up patients are excluded."
-          chart_tooltip: "%{number_of_patients} %{patient_or_patients} with %{uncontrolled_threshold} between %{start_period} and %{end_period} of %{number_of_registered_patients} %{patient_or_patients} registered till %{registration_period}."
         very_uncontrolled_card:
           subtitle: "Diabetes patients in %{facility_name} registered >3 months ago with %{very_uncontrolled_threshold} at their last visit in the last 3 months."
           help_tooltip:
             numerator: "Diabetes patients in %{very_uncontrolled_threshold} at their last visit in the last 3 months."
             denominator: "Diabetes patients assigned to %{facility_name}, registered before the last 3 months. Dead and lost to follow-up patients are excluded."
-          chart_tooltip: "%{number_of_patients} %{patient_or_patients} with %{very_uncontrolled_threshold} between %{start_period} and %{end_period} of %{number_of_registered_patients} %{patient_or_patients} registered till %{registration_period}."
         missed_visits_card:
           subtitle: "%{diagnosis} patients in %{facility_name} registered >3 months ago with no visit in the last 3 months."
           help_tooltip:
             numerator: "%{diagnosis} patients with no visit in the last 3 months."
-            denominator: "%{diagnosis} patient assigned to %{facility_name}, registered before the last 3 months. Dead and lost to follow-up patients are excluded."
-          chart_tooltip: "%{number_of_patients} %{patient_or_patients} with no visit between %{start_period} and %{end_period} of %{number_of_registered_patients} %{patient_or_patients} registered till %{registration_period}."
+            denominator: "%{diagnosis} patients assigned to %{facility_name}, registered before the last 3 months. Dead and lost to follow-up patients are excluded."
       drug_stock_report:
         section_title: "Drug stock report"
         card_subtitle: "%{number_of_days} %{day_or_days} of tablets in stock"
