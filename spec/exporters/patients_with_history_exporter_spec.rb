@@ -250,7 +250,9 @@ RSpec.describe PatientsWithHistoryExporter, type: :model do
   end
 
   before do
+    allow(patient).to receive(:high_risk?).and_return(true)
     allow(Rails.application.config.country).to receive(:[]).with(:patient_line_list_show_zone).and_return(true)
+    blood_sugar.update!(encounter: bp_1.encounter)
     patient.medical_history.update!(hypertension: "no", diabetes: "yes")
     MaterializedPatientSummary.refresh
   end
@@ -277,6 +279,16 @@ RSpec.describe PatientsWithHistoryExporter, type: :model do
 
       expect(subject.csv_headers).not_to include("Patient #{Address.human_attribute_name :zone}")
       expect(subject.csv_fields(MaterializedPatientSummary.find_by(id: patient))).not_to include(patient.address.zone)
+    end
+
+    it "includes blood sugars from other visits" do
+      blood_sugar.destroy
+      _other_blood_sugar = create(:blood_sugar, :fasting, :with_encounter, facility: facility, patient: patient)
+      MaterializedPatientSummary.refresh
+
+      patient_summary = MaterializedPatientSummary.find_by(id: patient)
+      expect(subject.csv_fields(patient_summary)).to include("#{blood_sugar.blood_sugar_value} mg/dL")
+      expect(subject.csv_fields(patient_summary)).to include("Fasting")
     end
   end
 end

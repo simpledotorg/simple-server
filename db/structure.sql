@@ -4315,6 +4315,13 @@ CREATE INDEX index_deduplication_logs_on_user_id ON public.deduplication_logs US
 
 
 --
+-- Name: index_dfu_facility_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_dfu_facility_id ON public.reporting_daily_follow_ups USING btree (facility_id);
+
+
+--
 -- Name: index_drug_stocks_on_facility_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4515,6 +4522,13 @@ CREATE UNIQUE INDEX index_flipper_features_on_key ON public.flipper_features USI
 --
 
 CREATE UNIQUE INDEX index_flipper_gates_on_feature_key_and_key_and_value ON public.flipper_gates USING btree (feature_key, key, value);
+
+
+--
+-- Name: index_fs_dimensions_facility_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_fs_dimensions_facility_id ON public.reporting_facility_state_dimensions USING btree (facility_id);
 
 
 --
@@ -4823,6 +4837,13 @@ CREATE INDEX index_protocols_on_deleted_at ON public.protocols USING btree (dele
 --
 
 CREATE INDEX index_protocols_on_updated_at ON public.protocols USING btree (updated_at);
+
+
+--
+-- Name: index_qfs_facility_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_qfs_facility_id ON public.reporting_quarterly_facility_states USING btree (facility_id);
 
 
 --
@@ -5475,6 +5496,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220209233034'),
 ('20220217102418'),
 ('20220217102500'),
-('20220217202441');
+('20220217202441'),
+('20220223080958');
 
 

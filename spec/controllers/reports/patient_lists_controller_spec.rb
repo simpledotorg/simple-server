@@ -24,8 +24,7 @@ RSpec.describe Reports::PatientListsController, type: :controller do
       expect(PatientListDownloadJob).to receive(:perform_later).with(
         admin_with_pii.email,
         "facility_group",
-        {id: facility_group.id},
-        with_medication_history: false
+        {id: facility_group.id}
       )
       admin_with_pii.accesses.create!(resource: facility_group)
       sign_in(admin_with_pii.email_authentication)
@@ -51,16 +50,15 @@ RSpec.describe Reports::PatientListsController, type: :controller do
       }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
-    it "should queue line list with medication history if medication_history is true" do
+    it "should queue line list with medication history" do
       expect(PatientListDownloadJob).to receive(:perform_later).with(
         admin_with_pii.email,
         "facility_group",
-        {id: facility_group.id},
-        with_medication_history: true
+        {id: facility_group.id}
       )
       admin_with_pii.accesses.create!(resource: facility_group)
       sign_in(admin_with_pii.email_authentication)
-      get :show, params: {id: facility_group.slug, report_scope: "district", medication_history: true}
+      get :show, params: {id: facility_group.slug, report_scope: "district"}
     end
 
     it "works for facilities where the region slug does not match the facility slug" do
@@ -70,7 +68,7 @@ RSpec.describe Reports::PatientListsController, type: :controller do
       expect(PatientListDownloadJob).to receive(:perform_later)
       admin_with_pii.accesses.create!(resource: facility)
       sign_in(admin_with_pii.email_authentication)
-      get :show, params: {id: facility.region.slug, report_scope: "facility", medication_history: true}
+      get :show, params: {id: facility.region.slug, report_scope: "facility"}
       expect(response).to redirect_to(reports_region_path(facility.region.slug, report_scope: "facility"))
     end
   end
