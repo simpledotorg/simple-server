@@ -44,11 +44,7 @@
       <% if current_admin.can_access?(@region.source, :view_pii) %>
         <%= link_to(reports_patient_list_path(@region, report_scope: params[:report_scope]), class: "dropdown-item") do %>
           <i class="far fa-file w-16px ta-center mr-4px c-grey-medium"></i>
-          Patient list
-        <% end %>
-        <%= link_to(reports_patient_list_path(@region, report_scope: params[:report_scope], medication_history: true), class: "dropdown-item") do %>
-          <i class="far fa-file w-16px ta-center mr-4px c-grey-medium"></i>
-          Patient list with med. history
+          Patient line list
         <% end %>
       <% end %>
     <% end %>
