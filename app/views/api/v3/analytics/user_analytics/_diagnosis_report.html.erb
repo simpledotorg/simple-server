@@ -1,10 +1,6 @@
 <div id="<%= page_id %>" class="d-none">
   <div class="mb-8px pt-16px pb-16px bgc-white bs-card">
-    <a
-      class="d-block pl-16px mb-24px"
-      href="#"
-      onclick="goToPage('<%= page_id %>', 'home-page'); return false;"
-    >
+    <a class="d-block pl-16px mb-24px" href="#" onclick="goToPage('<%= page_id %>', 'home-page'); return false;">
       <div class="d-inline-block">
         <%= inline_file("chevron-left.svg") %>
       </div>
@@ -23,77 +19,56 @@
   <div class="mb-8px p-16px bgc-white bs-card">
     <div class="d-flex ai-center jc-space-between mb-8px">
       <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
-        <%= diagnosis_data["assigned_patients"]["name"] %>
+        <%= t("progress_tab.diagnosis_report.assigned_patients_card.title") %>
       </h2>
       <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
         <%= diagnosis_data["assigned_patients"]["total"]  %>
       </p>
     </div>
     <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-      <%= diagnosis_data["assigned_patients"]["subtitle"] %>
+      <%= t("progress_tab.diagnosis_report.assigned_patients_card.subtitle", facility_name: current_facility.name, diagnosis: report_diagnosis) %>
     </p>
     <% diagnosis_data["assigned_patients"]["breakdown"].each_with_index do |row, index| %>
-      <%= render partial: "api/v3/analytics/user_analytics/data_table_plusminus_row",
-                 locals: {
-                          title: row["title"],
-                          value: row["value"],
-                          css_text_color: row["value"] > 0 ? "c-green-new" : "c-red-new",
-                          include_bottom_border: index == diagnosis_data["assigned_patients"]["breakdown"].length - 1 ? false : true
-                         }
-      %>
+      <%= render partial: "api/v3/analytics/user_analytics/data_table_plusminus_row", locals: { title: row["title"], value: row["value"], css_text_color: row["value"] > 0 ? "c-green-new" : "c-red-new", include_bottom_border: index == diagnosis_data["assigned_patients"]["breakdown"].length - 1 ? false : true } %>
     <% end %>
   </div>
   <div class="mb-8px p-16px bgc-white bs-card">
     <div class="d-flex ai-center jc-space-between mb-8px">
       <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
-        <%= diagnosis_data["registered_patients"]["name"] %>
+        <%= t("progress_tab.diagnosis_report.total_registered_patients.title") %>
       </h2>
       <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
         <%= diagnosis_data["registered_patients"]["total"]  %>
       </p>
     </div>
     <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-      <%= diagnosis_data["assigned_patients"]["subtitle"] %>
+      <%= t("progress_tab.diagnosis_report.total_registered_patients.subtitle", facility_name: current_facility.name, diagnosis: report_diagnosis) %>
     </p>
-    <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph",
-               locals: {
-                          data: diagnosis_data["registered_patients"]["breakdown"],
-                          data_type: diagnosis_data["registered_patients"]["data_type"],
-                          graph_css_color: "bgc-purple-new",
-                          show_tooltip: false
-                        }
-    %>
+    <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph", locals: { data: diagnosis_data["registered_patients"]["breakdown"], data_type: diagnosis_data["registered_patients"]["data_type", graph_css_color: "bgc-purple-new", show_tooltip: false } %>
   </div>
   <div class="mb-8px p-16px bgc-white bs-card">
     <div class="d-flex ai-center jc-space-between mb-8px">
       <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
-        <%= diagnosis_data["monthly_follow_up_patients"]["name"] %>
+        <%= t("progress_tab.diagnosis_report.monthly_follow_up_patients.title") %>
       </h2>
       <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
         <%= diagnosis_data["monthly_follow_up_patients"]["total"]  %>
       </p>
     </div>
     <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-      <%= diagnosis_data["monthly_follow_up_patients"]["subtitle"] %>
+      <%= t("progress_tab.diagnosis_report.monthly_follow_up_patients.subtitle", facility_name: current_facility.name, diagnosis: report_diagnosis) %>
     </p>
-    <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph",
-               locals: {
-                          data: diagnosis_data["monthly_follow_up_patients"]["breakdown"],
-                          data_type: diagnosis_data["monthly_follow_up_patients"]["data_type"],
-                          graph_css_color: "bgc-blue-new",
-                          show_tooltip: false
-                        }
-    %>
+    <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph", locals: { data: diagnosis_data["monthly_follow_up_patients"]["breakdown"], data_type: diagnosis_data["monthly_follow_up_patients"]["data_type"], graph_css_color: "bgc-blue-new", show_tooltip: false } %>
   </div>
   <div class="mt-24px mb-8px pr-16px pl-16px">
     <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey">
-      Patient treatment outcomes
+      <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.section_title") %>
     </h3>
   </div>
   <div class="mb-8px p-16px bgc-white bs-card">
     <div class="p-relative d-flex ai-center mb-8px" data-element-type="header">
       <h2 class="m-0px mr-8px p-0px ta-left fw-medium fs-18px c-black">
-        <%= diagnosis_data["controlled"]["name"] %>
+        <%= controlled_title = report_diagnosis == "Hypertension" ? t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_controlled_short") : t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_controlled_short") %>
       </h2>
       <div class="d-flex ai-center" data-element-type="help-circle">
         <%= inline_file("help-circle.svg") %>
@@ -108,31 +83,26 @@
         >
         </div>
         <div class="p-8px bgc-black br-4px">
+          <% controlled_threshold_long = report_diagnosis == "Hypertension" ? t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_controlled_long") : t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_controlled_long") %>
           <p class="m-0px mb-4px p-0px ta-left fw-regular fs-14px lh-150 c-white">
-            <span class="fw-bold">Numerator:</span> Patients with BP &lt;140/90 at their last visit in the last 3 months.
+            <span class="fw-bold">Numerator:</span> <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.controlled_card.help_tooltip.numerator", controlled_threshold: controlled_threshold_long) %>
           </p>
           <p class="m-0px p-0px ta-left fw-regular fs-14px lh-150 c-white">
-            <span class="fw-bold">Denominator:</span> Hypertension patients assigned to <%= current_facility.name %>, registered before the last 3 months. Dead and lost to follow-up patients are excluded.
+            <span class="fw-bold">Denominator:</span> <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.controlled_card.help_tooltip.denominator", facility_name: current_facility.name, diagnosis: report_diagnosis) %>
           </p>
         </div>
       </div>
     </div>
+    <% controlled_threshold_short = report_diagnosis == "Hypertension" ? t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_controlled_short") : t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_controlled_short") %>
     <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-        <%= diagnosis_data["controlled"]["subtitle"] %>
+      <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.controlled_card.subtitle", facility_name: current_facility.name, diagnosis: report_diagnosis, controlled_threshold: controlled_threshold_short) %>
     </p>
-    <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph",
-               locals: {
-                          data: diagnosis_data["controlled"]["breakdown"],
-                          data_type: diagnosis_data["controlled"]["data_type"],
-                          graph_css_color: "bgc-green-new",
-                          show_tooltip: true
-                        }
-    %>
+    <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph", locals: { data: diagnosis_data["controlled"]["breakdown"], data_type: diagnosis_data["controlled"]["data_type"], graph_css_color: "bgc-green-new", show_tooltip: true } %>
   </div>
   <div class="mb-8px p-16px bgc-white bs-card">
     <div class="p-relative d-flex ai-center mb-8px" data-element-type="header">
       <h2 class="m-0px mr-8px p-0px ta-left fw-medium fs-18px c-black">
-        <%= diagnosis_data["uncontrolled"]["name"] %>
+        <%= uncontrolled_title = report_diagnosis == "Hypertension" ? t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_uncontrolled_short") : t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_uncontrolled_short") %>
       </h2>
       <div class="d-flex ai-center" data-element-type="help-circle">
         <%= inline_file("help-circle.svg") %>
@@ -147,32 +117,27 @@
         >
         </div>
         <div class="p-8px bgc-black br-4px">
+          <% uncontrolled_threshold_long = report_diagnosis == "Hypertension" ? t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_uncontrolled_long") : t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_uncontrolled_long") %>
           <p class="m-0px mb-4px p-0px ta-left fw-regular fs-14px lh-150 c-white">
-            <span class="fw-bold">Numerator:</span> Patients with BP &ge;140/90 at their last visit in the last 3 months.
+            <span class="fw-bold">Numerator:</span> <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.uncontrolled_card.help_tooltip.numerator", uncontrolled_threshold: uncontrolled_threshold_long, diagnosis: report_diagnosis) %>
           </p>
           <p class="m-0px p-0px ta-left fw-regular fs-14px lh-150 c-white">
-            <span class="fw-bold">Denominator:</span> Hypertension patients assigned to <%= current_facility.name %>, registered before the last 3 months. Dead and lost to follow-up patients are excluded.
+            <span class="fw-bold">Denominator:</span> <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.uncontrolled_card.help_tooltip.denominator", facility_name: current_facility.name, diagnosis: report_diagnosis) %>
           </p>
         </div>
       </div>
     </div>
+    <% uncontrolled_threshold_short = report_diagnosis == "Hypertension" ? t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_uncontrolled_short") : t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_uncontrolled_short") %>
     <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-        <%= diagnosis_data["uncontrolled"]["subtitle"] %>
+      <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.uncontrolled_card.subtitle", facility_name: current_facility.name, uncontrolled_threshold: uncontrolled_threshold_short, diagnosis: report_diagnosis) %>
     </p>
-    <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph",
-               locals: {
-                          data: diagnosis_data["uncontrolled"]["breakdown"],
-                          data_type: diagnosis_data["uncontrolled"]["data_type"],
-                          graph_css_color: "bgc-yellow-new",
-                          show_tooltip: true
-                        }
-    %>
+    <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph", locals: { data: diagnosis_data["uncontrolled"]["breakdown"], data_type: diagnosis_data["uncontrolled"]["data_type"], graph_css_color: "bgc-yellow-new", show_tooltip: true } %>
   </div>
   <% if report_diagnosis == "Diabetes" %>
     <div class="mb-8px p-16px bgc-white bs-card">
       <div class="p-relative d-flex ai-center mb-8px" data-element-type="header">
         <h2 class="m-0px mr-8px p-0px ta-left fw-medium fs-18px c-black">
-          <%= diagnosis_data["very_uncontrolled"]["name"] %>
+          <%= t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_very_uncontrolled_short") %>
         </h2>
         <div class="d-flex ai-center" data-element-type="help-circle">
           <%= inline_file("help-circle.svg") %>
@@ -188,31 +153,24 @@
           </div>
           <div class="p-8px bgc-black br-4px">
             <p class="m-0px mb-4px p-0px ta-left fw-regular fs-14px lh-150 c-white">
-              <span class="fw-bold">Numerator:</span> Patients with BS &ge;300 at their last visit in the last 3 months.
+              <span class="fw-bold">Numerator:</span> <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.very_uncontrolled_card.help_tooltip.numerator", very_uncontrolled_threshold: t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_very_uncontrolled_long")) %>
             </p>
             <p class="m-0px p-0px ta-left fw-regular fs-14px lh-150 c-white">
-              <span class="fw-bold">Denominator:</span> Hypertension patients assigned to <%= current_facility.name %>, registered before the last 3 months. Dead and lost to follow-up patients are excluded.
+              <span class="fw-bold">Denominator:</span> <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.very_uncontrolled_card.help_tooltip.denominator", facility_name: current_facility.name) %>
             </p>
           </div>
         </div>
       </div>
       <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-          <%= diagnosis_data["very_uncontrolled"]["subtitle"] %>
+        <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.very_uncontrolled_card.subtitle", facility_name: current_facility.name) %>
       </p>
-      <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph",
-                locals: {
-                          data: diagnosis_data["very_uncontrolled"]["breakdown"],
-                          data_type: diagnosis_data["very_uncontrolled"]["data_type"],
-                          graph_css_color: "bgc-yellow-dark-new",
-                          show_tooltip: true
-                        }
-      %>
+      <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph", locals: { data: diagnosis_data["very_uncontrolled"]["breakdown"], data_type: diagnosis_data["very_uncontrolled"]["data_type"], graph_css_color: "bgc-yellow-dark-new", show_tooltip: true } %>
     </div>
   <% end %>
   <div class="mb-8px p-16px bgc-white bs-card">
     <div class="p-relative d-flex ai-center mb-8px" data-element-type="header">
       <h2 class="m-0px mr-8px p-0px ta-left fw-medium fs-18px c-black">
-        <%= diagnosis_data["missed_visits"]["name"] %>
+        <%= t("progress_tab.diagnosis_report.diagnosis_thresholds.missed_visits") %>
       </h2>
       <div class="d-flex ai-center" data-element-type="help-circle">
         <%= inline_file("help-circle.svg") %>
@@ -228,30 +186,23 @@
         </div>
         <div class="p-8px bgc-black br-4px">
           <p class="m-0px mb-4px p-0px ta-left fw-regular fs-14px lh-150 c-white">
-            <span class="fw-bold">Numerator:</span> Patients with no visit in the last 3 months.
+            <span class="fw-bold">Numerator:</span> <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.missed_visits_card.help_tooltip.numerator", diagnosis: report_diagnosis) %>
           </p>
           <p class="m-0px p-0px ta-left fw-regular fs-14px lh-150 c-white">
-            <span class="fw-bold">Denominator:</span> Hypertension patients assigned to <%= current_facility.name %>, registered before the last 3 months. Dead and lost to follow-up patients are excluded.
+            <span class="fw-bold">Denominator:</span> <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.missed_visits_card.help_tooltip.denominator", facility_name: current_facility.name, diagnosis: report_diagnosis) %>
           </p>
         </div>
       </div>
     </div>
     <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-        <%= diagnosis_data["missed_visits"]["subtitle"] %>
+      <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.missed_visits_card.subtitle", facility_name: current_facility.name, diagnosis: report_diagnosis) %>
     </p>
-    <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph",
-               locals: {
-                          data: diagnosis_data["missed_visits"]["breakdown"],
-                          data_type: diagnosis_data["missed_visits"]["data_type"],
-                          graph_css_color: "bgc-red-new",
-                          show_tooltip: true
-                        }
-    %>
+    <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph", locals: { data: diagnosis_data["missed_visits"]["breakdown"], data_type: diagnosis_data["missed_visits"]["data_type"], graph_css_color: "bgc-red-new", show_tooltip: true } %>
   </div>
   <% if report_diagnosis == "Hypertension" %>
     <div class="mt-24px mb-8px pr-16px pl-16px">
       <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey">
-        Drug stock report
+        <%= t("progress_tab.diagnosis_report.drug_stock_report.section_title") %>
       </h3>
     </div>
     <div class="mb-8px p-16px bgc-white bs-card">
@@ -259,7 +210,7 @@
         <%= diagnosis_data["ccb_tablets"]["name"] %>
       </h3>
       <p class="m-0px mb-16px p-0px ta-left fw-regular fs-16px lh-150 c-yellow <%= patient_days_css_class(diagnosis_data['ccb_tablets']['days_of_drugs_left'], prefix: 'c') %>">
-        <%= diagnosis_data["ccb_tablets"]["days_of_drugs_left"] %> days of tablets in stock
+        <%= diagnosis_data["ccb_tablets"]["days_of_drugs_left"] %> <%= "day".pluralize(diagnosis_data["ccb_tablets"]["days_of_drugs_left"]) %> of tablets in stock
       </p>
       <% diagnosis_data["ccb_tablets"]["breakdown"].each_with_index do |drug, index| %>
         <div class="d-flex ai-center jc-space-between">
@@ -267,7 +218,7 @@
             <%= drug["title"] %>
           </p>
           <p class="m-0px p-0px ta-left fw-regular fs-16px c-black">
-            <%= drug["stock"] %> tablets
+            <%= drug["stock"] %> <%= "tablet".pluralize(drug["stock"]) %>
           </p>
         </div>
         <% unless index == diagnosis_data["ccb_tablets"]["breakdown"].length - 1 %>
@@ -280,7 +231,7 @@
         <%= diagnosis_data["arb_tablets"]["name"] %>
       </h3>
       <p class="m-0px mb-16px p-0px ta-left fw-regular fs-16px lh-150 c-yellow <%= patient_days_css_class(diagnosis_data['arb_tablets']['days_of_drugs_left'], prefix: 'c') %>">
-        <%= diagnosis_data["arb_tablets"]["days_of_drugs_left"] %> days of tablets in stock
+        <%= diagnosis_data["arb_tablets"]["days_of_drugs_left"] %> <%= "day".pluralize(diagnosis_data["arb_tablets"]["days_of_drugs_left"]) %> of tablets in stock
       </p>
       <% diagnosis_data["arb_tablets"]["breakdown"].each_with_index do |drug, index| %>
         <div class="d-flex ai-center jc-space-between">
@@ -288,7 +239,7 @@
             <%= drug["title"] %>
           </p>
           <p class="m-0px p-0px ta-left fw-regular fs-16px c-black">
-            <%= drug["stock"] %> tablets
+            <%= drug["stock"] %> <%= "tablet".pluralize(drug["stock"]) %>
           </p>
         </div>
         <% unless index == diagnosis_data["arb_tablets"]["breakdown"].length - 1 %>
@@ -301,7 +252,7 @@
         <%= diagnosis_data["diuretic_tablets"]["name"] %>
       </h3>
       <p class="m-0px mb-16px p-0px ta-left fw-regular fs-16px lh-150 c-yellow <%= patient_days_css_class(diagnosis_data['diuretic_tablets']['days_of_drugs_left'], prefix: 'c') %>">
-        <%= diagnosis_data["diuretic_tablets"]["days_of_drugs_left"] %> days of tablets in stock
+        <%= diagnosis_data["diuretic_tablets"]["days_of_drugs_left"] %> <%= "day".pluralize(diagnosis_data["diuretic_tablets"]["days_of_drugs_left"]) %> of tablets in stock
       </p>
       <% diagnosis_data["diuretic_tablets"]["breakdown"].each_with_index do |drug, index| %>
         <div class="d-flex ai-center jc-space-between">
@@ -309,7 +260,7 @@
             <%= drug["title"] %>
           </p>
           <p class="m-0px p-0px ta-left fw-regular fs-16px c-black">
-            <%= drug["stock"] %> tablets
+            <%= drug["stock"] %> <%= "tablet".pluralize(drug["stock"]) %>
           </p>
         </div>
         <% unless index == diagnosis_data["diuretic_tablets"]["breakdown"].length - 1 %>
@@ -319,47 +270,45 @@
     </div>
     <div class="mt-24px mb-8px pr-16px pl-16px">
       <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey">
-        Cohort reports
+        <%= t("progress_tab.diagnosis_report.cohort_report.section_title") %>
       </h3>
     </div>
     <div class="mb-8px p-16px bgc-white bs-card">
       <h2 class="m-0px mb-8px p-0px ta-left fw-medium fs-18px c-black">
-        <%= diagnosis_data["quarterly_cohort_reports"]["name"] %>
+        <%= t("progress_tab.diagnosis_report.cohort_report.card_title") %>
       </h2>
       <p class="m-0px mb-12px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-          <%= diagnosis_data["quarterly_cohort_reports"]["subtitle"] %>
+        <%= t("progress_tab.diagnosis_report.cohort_report.card_subtitle") %>
       </p>
       <div class="mb-32px">
         <div class="d-flex ai-center jc-center mb-8px">
           <div class="w-16px h-16px mr-8px br-4px bgc-green-new"></div>
           <p class="f-1 m-0px p-0px ta-left fw-regular fs-14px c-black">
-            BP controlled
+            <%= t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_controlled_short") %>
           </p>
         </div>
         <div class="d-flex ai-center jc-center mb-8px">
           <div class="w-16px h-16px mr-8px br-4px bgc-yellow-new"></div>
           <p class="f-1 m-0px p-0px ta-left fw-regular fs-14px c-black">
-            BP not controlled
+            <%= t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_uncontrolled_short") %>
           </p>
         </div>
         <div class="d-flex ai-center jc-center">
           <div class="w-16px h-16px mr-8px br-4px bgc-red-new"></div>
           <p class="f-1 m-0px p-0px ta-left fw-regular fs-14px c-black">
-            Missed visits
+            <%= t("progress_tab.diagnosis_report.diagnosis_thresholds.missed_visits") %>
           </p>
         </div>
       </div>
       <% diagnosis_data["quarterly_cohort_reports"]["breakdown"].each_with_index do |cohort, index| %>
         <div class="<% if diagnosis_data["quarterly_cohort_reports"]["breakdown"].length - 1 > index %>mb-24px<% end %>">
           <p class="m-0px mb-2px p-0px ta-left fw-regular fs-16px c-black">
-            Result from last visit in <%= cohort["result_period"] %>
+            <%= t("progress_tab.diagnosis_report.cohort_report.cohort_title", start_period: cohort["start_period"], end_period: cohort["end_period"]) %>
           </p>
           <p class="m-0px mb-8px p-0px ta-left fw-reguar fs-16px c-grey-dark">
-            <%= cohort["total_patients"] %> patients registered in <%= cohort["registration_period"] %>
+            <%= t("progress_tab.diagnosis_report.cohort_report.cohort_subtitle", number_of_patients: cohort["total_patients"]), patient_or_patients: "patient".pluralize(cohort["total_patients"]), registration_period: cohort["registration_period"] %>
           </p>
-          <%= render partial: "api/v3/analytics/user_analytics/data_stacked_bar_graph",
-                      locals: { data: cohort }
-          %>
+          <%= render partial: "api/v3/analytics/user_analytics/data_stacked_bar_graph", locals: { data: cohort } %>
         </div>
       <% end %>
     </div>

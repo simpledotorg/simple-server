@@ -380,7 +380,8 @@ module Reports
         "subtitle" => "The result for all assigned hypertensive patients registered in a quarter at their follow-up visit in the following two quarters.",
         "breakdown" => [
           {
-            "result_period" => "Q4-2021/Q1-2022",
+            "start_period" => "Q4-2021",
+            "end_period" => "Q1-2022",
             "registration_period" => "Q3-2021",
             "total_patients" => 227,
             "bp_controlled_rate" => 42,
@@ -391,7 +392,8 @@ module Reports
             "missed_visits_patients" => 67
           },
           {
-            "result_period" => "Q3-2021/Q4-2021",
+            "result_period" => "Q3-2021",
+            "end_period" => "Q4/2021",
             "registration_period" => "Q2-2021",
             "total_patients" => 207,
             "bp_controlled_rate" => 50,
@@ -402,7 +404,8 @@ module Reports
             "missed_visits_patients" => 4
           },
           {
-            "result_period" => "Q2-2021/Q3-2021",
+            "start_period" => "Q2-2021",
+            "end_period" => "Q3-2021",
             "registration_period" => "Q1-2021",
             "total_patients" => 247,
             "bp_controlled_rate" => 42,
@@ -411,6 +414,18 @@ module Reports
             "bp_not_controlled_patients" => 64,
             "missed_visits_rate" => 31,
             "missed_visits_patients" => 79
+          },
+          {
+            "start_period" => "Q1-2021",
+            "end_period" => "Q2-2021",
+            "registration_period" => "Q4-2020",
+            "total_patients" => 198,
+            "bp_controlled_rate" => 37,
+            "bp_controlled_patients" => 73,
+            "bp_not_controlled_rate" => 24,
+            "bp_not_controlled_patients" => 48,
+            "missed_visits_rate" => 39,
+            "missed_visits_patients" => 77
           }
         ]
       }
