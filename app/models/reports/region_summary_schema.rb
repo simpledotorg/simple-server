@@ -217,15 +217,6 @@ module Reports
 
     private
 
-    memoize def denominator(region, period, with_ltfu: false)
-      if with_ltfu
-        patients = adjusted_patients_without_ltfu[region.slug][period] || raise(ArgumentError, "Missing adjusted patient counts for #{region.region_type} #{region.slug} #{period}")
-        patients + ltfu[region.slug][period]
-      else
-        adjusted_patients_without_ltfu[region.slug][period]
-      end
-    end
-
     def appts_scheduled_rates(entry)
       rounded_percentages({
         appts_scheduled_0_to_14_days_rates: appts_scheduled_0_to_14_days[entry.region.slug][entry.period],
