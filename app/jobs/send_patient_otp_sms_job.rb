@@ -8,7 +8,7 @@ class SendPatientOtpSmsJob < ApplicationJob
       patient_id: passport_authentication.patient&.id,
       communication_type: :sms
     }
-    TwilioApiService.new.send_sms(
+    Messaging::Twilio::OtpSms.new.send_sms(
       recipient_number: phone_number,
       message: otp_message(passport_authentication),
       context: context

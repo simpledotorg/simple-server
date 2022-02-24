@@ -1,4 +1,4 @@
-class Notification < ApplicationRecord
+class PatientNotification < ApplicationRecord
   belongs_to :subject, optional: true, polymorphic: true
   belongs_to :patient
   belongs_to :experiment, class_name: "Experimentation::Experiment", optional: true
@@ -35,39 +35,8 @@ class Notification < ApplicationRecord
 
   scope :due_today, -> { where(remind_on: Date.current, status: [:pending]) }
 
-  def localized_message
-    return unless patient
+  def payload_for_bsnl
 
-    case purpose
-    when "covid_medication_reminder"
-      I18n.t(
-        message,
-        facility_name: patient.assigned_facility.name,
-        patient_name: patient.full_name,
-        locale: patient.locale
-      )
-    when "experimental_appointment_reminder"
-      facility = subject&.facility || patient.assigned_facility
-      I18n.t(
-        message,
-        facility_name: facility.name,
-        patient_name: patient.full_name,
-        appointment_date: subject&.scheduled_date&.strftime("%d-%m-%Y"),
-        locale: facility.locale
-      )
-    when "missed_visit_reminder"
-      I18n.t(
-        message,
-        facility_name: subject.facility.name,
-        patient_name: patient.full_name,
-        appointment_date: subject.scheduled_date.strftime("%d-%m-%Y"),
-        locale: subject.facility.locale
-      )
-    when "test_message"
-      "Test message sent by Simple.org to #{patient.full_name}"
-    else
-      raise ArgumentError, "No localized_message defined for notification of type #{purpose}"
-    end
   end
 
   def self.cancel
@@ -96,29 +65,5 @@ class Notification < ApplicationRecord
     else
       :failed
     end
-  end
-
-  def next_communication_type
-    return nil if status_cancelled?
-    if preferred_communication_method && !previously_communicated_by?(preferred_communication_method)
-      return preferred_communication_method
-    end
-    return backup_communication_method unless previously_communicated_by?(backup_communication_method)
-    nil
-  end
-
-  private
-
-  def previously_communicated_by?(method)
-    communications.any? { |communication| communication.communication_type == method }
-  end
-
-  def preferred_communication_method
-    return "whatsapp" if Flipper.enabled?(:whatsapp_appointment_reminders)
-    nil
-  end
-
-  def backup_communication_method
-    "sms"
   end
 end

@@ -13,7 +13,8 @@ class CountryConfig
       sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+91",
       supported_genders: %w[male female transgender],
       patient_line_list_show_zone: false,
-      custom_drug_category_order: %w[hypertension_ccb hypertension_arb hypertension_diuretic]
+      custom_drug_category_order: %w[hypertension_ccb hypertension_arb hypertension_diuretic],
+      appointment_reminder_service: Messaging::Twilio::Sms
     },
     BD: {
       abbreviation: "BD",
@@ -36,7 +37,8 @@ class CountryConfig
         dead: "Qf8Wq8u6AkK",
         cumulative_registrations: "BK2KRHKcTtU",
         monthly_registrations: "GxLDDKPxjxx"
-      }
+      },
+      appointment_reminder_service: Messaging::Twilio::Sms
     },
     ET: {
       abbreviation: "ET",
@@ -59,7 +61,8 @@ class CountryConfig
         dead: "ZNYhcG2efAB",
         cumulative_registrations: "PX8qBGsdF5G",
         monthly_registrations: "Tx3CKEUFqNN"
-      }
+      },
+      appointment_reminder_service: Messaging::Twilio::Sms
     },
     LK: {
       abbreviation: "LK",
@@ -71,7 +74,8 @@ class CountryConfig
       time_zone: ENV["DEFAULT_TIME_ZONE"] || "Asia/Colombo",
       sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+94",
       supported_genders: %w[male female],
-      patient_line_list_show_zone: false
+      patient_line_list_show_zone: false,
+      appointment_reminder_service: Messaging::Twilio::Sms
     },
     US: {
       abbreviation: "US",
@@ -82,7 +86,8 @@ class CountryConfig
       time_zone: "America/New_York",
       sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+1",
       supported_genders: %w[male female transgender],
-      patient_line_list_show_zone: false
+      patient_line_list_show_zone: false,
+      appointment_reminder_service: Messaging::Twilio::Sms
     },
     UK: {
       abbreviation: "UK",
@@ -93,7 +98,8 @@ class CountryConfig
       time_zone: "Europe/London",
       sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+44",
       supported_genders: %w[male female transgender],
-      patient_line_list_show_zone: false
+      patient_line_list_show_zone: false,
+      appointment_reminder_service: Messaging::Twilio::Sms
     }
   }.with_indifferent_access.freeze
 

@@ -1,4 +1,6 @@
 class RequestOtpSmsJob < ApplicationJob
+  sidekiq_options queue: :high
+
   def perform(user)
     context = {
       calling_class: self.class.name,
@@ -7,7 +9,7 @@ class RequestOtpSmsJob < ApplicationJob
     }
 
     handle_twilio_errors(user) do
-      TwilioApiService.new.send_sms(recipient_number: user.localized_phone_number, message: otp_message(user), context: context)
+      Messaging::Twilio::Sms.new.send(recipient_number: user.localized_phone_number, message: otp_message(user))
     end
   end
 
