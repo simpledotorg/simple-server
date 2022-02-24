@@ -4,7 +4,6 @@ module Reports
       @daily_periods = ["8-Feb-2022", "7-Feb-2022", "6-Feb-2022", "5-Feb-2022", "4-Feb-2022", "3-Feb-2022", "2-Feb-2022"]
 
       @daily_registered_patients = {
-        "name" => "Registered patients",
         "total" => 7,
         "breakdown" => [
           {"title" => "Hypertension only", "value" => 2, "row_type" => :header},
@@ -23,7 +22,6 @@ module Reports
       }
 
       @daily_follow_up_patients = {
-        "name" => "Follow-up patients",
         "total" => 15,
         "breakdown" => [
           {"title" => "Hypertension only", "value" => 3, "row_type" => :header},
@@ -44,7 +42,6 @@ module Reports
       @monthly_periods = ["Feb-2022", "Jan-2022", "Dec-2021", "Nov-2021", "Oct-2021", "Sep-2021", "Aug-2021"]
 
       @monthly_registered_patients = {
-        "name" => "Registered patients",
         "total" => 90,
         "breakdown" => [
           {"title" => "Hypertension only", "value" => 37, "row_type" => :header},
@@ -63,7 +60,6 @@ module Reports
       }
 
       @monthly_follow_up_patients = {
-        "name" => "Follow-up patients",
         "total" => 158,
         "breakdown" => [
           {"title" => "Hypertension only", "value" => 15, "row_type" => :header},
@@ -84,7 +80,6 @@ module Reports
       @yearly_periods = ["2022", "2021", "2020", "2019"]
 
       @yearly_registered_patients = {
-        "name" => "Registered patients",
         "total" => 810,
         "breakdown" => [
           {"title" => "Hypertension only", "value" => 567, "row_type" => :header},
@@ -103,7 +98,6 @@ module Reports
       }
 
       @yearly_follow_up_patients = {
-        "name" => "Follow-up patients",
         "total" => 1422,
         "breakdown" => [
           {"title" => "Hypertension only", "value" => 456, "row_type" => :header},
@@ -150,9 +144,7 @@ module Reports
       }
 
       @hypertension_assigned_patients = {
-        "name" => "Assigned patients",
         "total" => 793,
-        "subtitle" => "Patients expected to follow-up at #{facility_name} to receive hypertension treatment.",
         "breakdown" => [
           {"title" => "Registered patients", "value" => 877},
           {"title" => "Transferred-in", "value" => 3},
@@ -161,9 +153,7 @@ module Reports
       }
 
       @hypertension_registered_patients = {
-        "name" => "Total registered patients",
         "data_type" => "number",
-        "subtitle" => "All hypertensive patients registered in #{facility_name}",
         "breakdown" => [
           {"month" => "Aug-2021", "value" => 187},
           {"month" => "Sep-2021", "value" => 320},
@@ -175,9 +165,7 @@ module Reports
       }
 
       @hypertension_monthly_follow_up_patients = {
-        "name" => "Monthly follow-up patients",
         "data_type" => "number",
-        "subtitle" => "Hypertension patients with a BP taken, a blood sugar taken, an appointment scheduled, or a medication updated at #{facility_name} during a month.",
         "breakdown" => [
           {"month" => "Aug-2021", "value" => 182},
           {"month" => "Sep-2021", "value" => 175},
@@ -189,9 +177,7 @@ module Reports
       }
 
       @hypertension_bp_controlled = {
-        "name" => "BP controlled",
         "data_type" => "percentage",
-        "subtitle" => "Hypertension patients in #{facility_name} registered >3 months ago with BP <140/90 at their last visit in the last 3 months.",
         "breakdown" => [
           {
             "month" => "Aug-2021",
@@ -251,9 +237,7 @@ module Reports
       }
 
       @hypertension_bp_not_controlled = {
-        "name" => "BP not controlled",
         "data_type" => "percentage",
-        "subtitle" => "Hypertension patients in #{facility_name} registered >3 months ago with BP ≥140/90 at their last visit in the last 3 months.",
         "breakdown" => [
           {
             "month" => "Aug-2021",
@@ -313,9 +297,7 @@ module Reports
       }
 
       @hypertension_missed_visits = {
-        "name" => "Missed visits",
         "data_type" => "percentage",
-        "subtitle" => "Hypertension patients in #{facility_name} registered >3 months ago with no visit in the last 3 months.",
         "breakdown" => [
           {
             "month" => "Aug-2021",
@@ -375,9 +357,7 @@ module Reports
       }
 
       @hypertension_quarterly_cohort_reports = {
-        "name" => "Quarterly cohort reports",
         "data_type" => "percentage",
-        "subtitle" => "The result for all assigned hypertensive patients registered in a quarter at their follow-up visit in the following two quarters.",
         "breakdown" => [
           {
             "start_period" => "Q4-2021",
@@ -431,9 +411,7 @@ module Reports
       }
 
       @diabetes_assigned_patients = {
-        "name" => "Assigned patients",
         "total" => 397,
-        "subtitle" => "Patients expected to follow-up at #{facility_name} to receive diabetes treatment.",
         "breakdown" => [
           {"title" => "Registered patients", "value" => 423},
           {"title" => "Transferred-in", "value" => 16},
@@ -442,9 +420,7 @@ module Reports
       }
 
       @diabetes_registered_patients = {
-        "name" => "Total registered patients",
         "data_type" => "number",
-        "subtitle" => "All diabetes patients registered in #{facility_name}.",
         "breakdown" => [
           {"month" => "Aug-2021", "value" => 278},
           {"month" => "Sep-2021", "value" => 290},
@@ -456,9 +432,7 @@ module Reports
       }
 
       @diabetes_monthly_follow_up_patients = {
-        "name" => "Monthly follow-up patients",
         "data_type" => "number",
-        "subtitle" => "Diabetes patients with a blood sugar taken, a BP taken, an appointment scheduled, or a medication updated at #{facility_name} during a month.",
         "breakdown" => [
           {"month" => "Aug-2021", "value" => 103},
           {"month" => "Sep-2021", "value" => 96},
@@ -470,9 +444,7 @@ module Reports
       }
 
       @diabetes_lt_200 = {
-        "name" => "BS <200",
         "data_type" => "percentage",
-        "subtitle" => "Diabetes patients in #{facility_name} registered >3 months ago with BS <200 at their last visit in the last 3 months.",
         "breakdown" => [
           {
             "month" => "Aug-2021",
@@ -532,9 +504,7 @@ module Reports
       }
 
       @diabetes_200_299 = {
-        "name" => "BS 200-299",
         "data_type" => "percentage",
-        "subtitle" => "Diabetes patients in #{facility_name} registered >3 months ago with BS 200-299 at their last visit in the last 3 months.",
         "breakdown" => [
           {
             "month" => "Aug-2021",
@@ -594,9 +564,7 @@ module Reports
       }
 
       @diabetes_ge_300 = {
-        "name" => "BS ≥300",
         "data_type" => "percentage",
-        "subtitle" => "Diabetes patients in #{facility_name} registered >3 months ago with BS ≥300 at their last visit in the last 3 months.",
         "breakdown" => [
           {
             "month" => "Aug-2021",
@@ -656,9 +624,7 @@ module Reports
       }
 
       @diabetes_missed_visits = {
-        "name" => "Missed visits",
         "data_type" => "percentage",
-        "subtitle" => "Diabetes patients in #{facility_name} registered >3 months ago with no visit in the last 3 months.",
         "breakdown" => [
           {
             "month" => "Aug-2021",
