@@ -32,13 +32,12 @@ class MaharashtraDHIS2Exporter
     repository = Reports::Repository.new(facility.region, periods: period_range)
 
     period_range.each do |month_period|
-      binding.pry
       data = {
-        monthly_registrations_male: repository.monthly_registrations_by_gender[slug][month_period]["male"],
-        monthly_registrations_female: repository.monthly_registrations_by_gender[slug][month_period]["female"],
-        controlled_male: repository.controlled_by_gender[slug][month_period]["male"],
-        controlled_female: repository.controlled_by_gender[slug][month_period]["female"]
-      }
+        monthly_registrations_male: repository.monthly_registrations_by_gender.dig(slug, month_period, "male"),
+        monthly_registrations_female: repository.monthly_registrations_by_gender.dig(slug, month_period, "female"),
+        controlled_male: repository.controlled_by_gender.dig(slug, month_period, "male"),
+        controlled_female: repository.controlled_by_gender.dig(slug, month_period, "female")
+      }.compact
 
       data.each do |data_element, value|
         data_element_id, disaggregation_id = data_elements_map[data_element].split(".")
