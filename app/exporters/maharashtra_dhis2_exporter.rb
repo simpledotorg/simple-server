@@ -32,6 +32,7 @@ class MaharashtraDHIS2Exporter
     repository = Reports::Repository.new(facility.region, periods: period_range)
 
     period_range.each do |month_period|
+      binding.pry
       data = {
         monthly_registrations_male: repository.monthly_registrations_by_gender[slug][month_period]["male"],
         monthly_registrations_female: repository.monthly_registrations_by_gender[slug][month_period]["female"],
