@@ -231,7 +231,7 @@ module Reports
             "period_end" => "Jan-2022",
             "registration_period" => "Oct-2021",
             "total_patients" => 165,
-            "registered_patients" => 532 
+            "registered_patients" => 532
           }
         ]
       }
@@ -291,7 +291,7 @@ module Reports
             "period_end" => "Jan-2022",
             "registration_period" => "Oct-2021",
             "total_patients" => 80,
-            "registered_patients" => 532 
+            "registered_patients" => 532
           }
         ]
       }
@@ -351,7 +351,7 @@ module Reports
             "period_end" => "Jan-2022",
             "registration_period" => "Oct-2021",
             "total_patients" => 85,
-            "registered_patients" => 532 
+            "registered_patients" => 532
           }
         ]
       }
@@ -498,7 +498,7 @@ module Reports
             "period_end" => "Jan-2022",
             "registration_period" => "Oct-2021",
             "total_patients" => 197,
-            "registered_patients" => 532 
+            "registered_patients" => 532
           }
         ]
       }
@@ -558,7 +558,7 @@ module Reports
             "period_end" => "Jan-2022",
             "registration_period" => "Oct-2021",
             "total_patients" => 80,
-            "registered_patients" => 532 
+            "registered_patients" => 532
           }
         ]
       }
@@ -618,7 +618,7 @@ module Reports
             "period_end" => "Jan-2022",
             "registration_period" => "Oct-2021",
             "total_patients" => 53,
-            "registered_patients" => 532 
+            "registered_patients" => 532
           }
         ]
       }
@@ -678,13 +678,13 @@ module Reports
             "period_end" => "Jan-2022",
             "registration_period" => "Oct-2021",
             "total_patients" => 85,
-            "registered_patients" => 532 
+            "registered_patients" => 532
           }
         ]
       }
     end
 
-    def period_reports 
+    def period_reports
       {
         "daily_periods" => @daily_periods,
         "daily_registered_patients" => @daily_registered_patients,
