@@ -6,9 +6,9 @@ class MaharashtraDHIS2Exporter
   end
 
   def initialize
-    abort(
-      "Maharashtra DHIS2 export is not enabled. Enable the 'maharashtra_dhis2_export' flag in Flipper to enable it."
-    ) unless Flipper.enabled?(:maharashtra_dhis2_export)
+    unless Flipper.enabled?(:maharashtra_dhis2_export)
+      abort("Maharashtra DHIS2 export is not enabled. Enable the 'maharashtra_dhis2_export' flag in Flipper to enable it.")
+    end
 
     Dhis2.configure do |config|
       config.url = ENV.fetch("DHIS2_URL")

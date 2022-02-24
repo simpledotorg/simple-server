@@ -126,21 +126,21 @@ module Reports
 
       items = regions.map { |region| RegionEntry.new(region, __method__, group_by: :gender, period_type: period_type) }
       result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
-
         # Recreate the controlled patients indicator based on the implementatino of reporting_facility_states
         facility_counts = Reports::PatientState
           .where(
             assigned_facility_region_id: entry.region.id,
             htn_care_state: "under_care",
             htn_treatment_outcome_in_last_3_months: "controlled",
-            hypertension: "yes")
+            hypertension: "yes"
+          )
           .where("months_since_registration >= 3")
           .group_by_period(period_type, :month_date, {format: Period.formatter(period_type)})
           .group(:gender)
           .count
 
         # Group the results into { period: {male: 123, female: 456} }
-        facility_counts_by_period = facility_counts.each_with_object({}) { |(key, count), hsh|
+        facility_counts.each_with_object({}) { |(key, count), hsh|
           period, field_id = *key
           hsh[period] ||= {}
           hsh[period][field_id] = count
