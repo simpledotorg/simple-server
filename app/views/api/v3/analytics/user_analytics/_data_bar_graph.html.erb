@@ -1,6 +1,6 @@
 <% min_height = 5 %>
 <% values = data.map { |data_point| data_point["value"] } %>
-<% data_point_heights = numbers_to_relative_percentages(values) %>
+<% data_point_heights = values.map { |value| percentage(value, values.max).to_i } %>
 <div class="d-flex fd-column h-160px">
   <div class="p-relative f-1 d-flex" data-graph-type="bar-chart" data-with-tooltip="<%= show_tooltip %>">
     <% data.each_with_index do |data_point, index| %>
@@ -10,7 +10,7 @@
         </p>
         <div
           class="w-32px <%= graph_css_color %> btrr-2px btlr-2px ttf-ease-in-out td-0_25s tp-opacity"
-          style="height: <%= set_min_value(data_point_heights[index], min_height) %>%;"
+          style="height: <%= [data_point_heights[index], min_height].max %>%;"
           data-element-type="bar"
         >
         </div>

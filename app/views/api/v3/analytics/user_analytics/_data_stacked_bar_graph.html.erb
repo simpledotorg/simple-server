@@ -1,7 +1,7 @@
 <% min_width = 5 %>
-<% bp_controlled = set_min_value(data["bp_controlled_rate"], min_width) %>
-<% bp_not_controlled = set_min_value(data["bp_not_controlled_rate"], min_width) %>
-<% missed_visits = set_min_value(data["missed_visits_rate"], min_width) %>
+<% bp_controlled = [data["bp_controlled_rate"], min_width].max %>
+<% bp_not_controlled = [data["bp_not_controlled_rate"], min_width].max %>
+<% missed_visits = [data["missed_visits_rate"], min_width].max %>
 <div class="p-relative d-flex br-4px" data-graph-type="stacked-bar-chart">
   <div
     class="d-flex ai-center jc-center mr-2px p-16px bgc-green-new btlr-4px bblr-4px ttf-ease-in-out td-0_25s tp-opacity"
