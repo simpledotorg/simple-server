@@ -13,7 +13,9 @@ class Reports::ProgressController < AdminController
     @achievements = Reports::FacilityProgressAchievementService.new(current_facility)
 
     if Flipper.enabled?(:new_progress_tab)
-      @data = Reports::ReportsFakeFacilityProgressService.new.call
+      @period_reports_data = Reports::ReportsFakeFacilityProgressService.new(@current_facility.name).period_reports
+      @hypertension_reports_data = Reports::ReportsFakeFacilityProgressService.new(@current_facility.name).hypertension_reports
+      @diabetes_reports_data = Reports::ReportsFakeFacilityProgressService.new(@current_facility.name).diabetes_reports
       render "api/v3/analytics/user_analytics/show_v2"
     else
       render "api/v3/analytics/user_analytics/show"

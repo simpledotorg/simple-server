@@ -1,0 +1,84 @@
+<% min_width = 5 %>
+<% bp_controlled = [data["bp_controlled_rate"], min_width].max %>
+<% bp_not_controlled = [data["bp_not_controlled_rate"], min_width].max %>
+<% missed_visits = [data["missed_visits_rate"], min_width].max %>
+<div class="p-relative d-flex br-4px" data-graph-type="stacked-bar-chart">
+  <div
+    class="d-flex ai-center jc-center mr-2px p-16px bgc-green-new btlr-4px bblr-4px ttf-ease-in-out td-0_25s tp-opacity"
+    style="width: <%= bp_controlled %>%;"
+    data-graph-element="stacked-bar"
+  >
+    <p class="m-0px p-0px ta-center fw-bold fs-16px c-white pe-none">
+      <%= data["bp_controlled_rate"] %>%
+    </p>
+    <div
+      class="o-0 pe-none p-absolute l-0 zi-100 d-flex fd-column w-100 bs-tooltip ttf-ease-in-out td-0_25s tp-opacity"
+      data-element-type="tooltip"
+      data-tooltip-index="0"
+      data-tooltip-length="3"
+    >
+      <div
+        class="p-absolute b--8px w-0px h-0px br-8px-transparent bl-8px-transparent bt-8px-black"
+        data-element-type="tooltip-tip"
+      >
+      </div>
+      <div class="p-absolute l-0 w-auto mw-100 p-8px bgc-black br-4px" data-element-type="tooltip-copy">
+        <p class="m-0px p-0px ta-left fw-regular fs-14px lh-150 c-white">
+          <%= data["bp_controlled_patients"] %> patients with BP &lt;140/90
+        </p>
+      </div>
+    </div>
+  </div>
+  <div
+    class="d-flex ai-center jc-center ml-1px mr-1px p-16px bgc-yellow-new ttf-ease-in-out td-0_25s tp-opacity"
+    style="width: <%= bp_not_controlled %>%;"
+    data-graph-element="stacked-bar"
+  >
+    <p class="m-0px p-0px ta-center fw-bold fs-16px c-white pe-none">
+      <%= data["bp_not_controlled_rate"] %>%
+    </p>
+    <div
+      class="o-0 pe-none p-absolute l-0 zi-100 d-flex fd-column w-100 bs-tooltip ttf-ease-in-out td-0_25s tp-opacity"
+      data-element-type="tooltip"
+      data-tooltip-index="1"
+      data-tooltip-length="3"
+    >
+      <div
+        class="p-absolute b--8px w-0px h-0px br-8px-transparent bl-8px-transparent bt-8px-black"
+        data-element-type="tooltip-tip"
+      >
+      </div>
+      <div class="p-absolute l-0 w-auto mw-100 p-8px bgc-black br-4px" data-element-type="tooltip-copy">
+        <p class="m-0px p-0px ta-left fw-regular fs-14px lh-150 c-white">
+          <%= data["bp_not_controlled_patients"] %> patients with &ge;140/90
+        </p>
+      </div>
+    </div>
+  </div>
+  <div
+    class="d-flex ai-center jc-center ml-2px p-16px bgc-red-new btrr-4px bbrr-4px ttf-ease-in-out td-0_25s tp-opacity"
+    style="width: <%= missed_visits %>%;"
+    data-graph-element="stacked-bar"
+  >
+    <p class="m-0px p-0px ta-center fw-bold fs-16px c-white pe-none">
+      <%= data["missed_visits_rate"] %>%
+    </p>
+    <div
+      class="o-0 pe-none p-absolute l-0 zi-100 d-flex fd-column w-100 bs-tooltip ttf-ease-in-out td-0_25s tp-opacity"
+      data-element-type="tooltip"
+      data-tooltip-index="2"
+      data-tooltip-length="3"
+    >
+      <div
+        class="p-absolute b--8px w-0px h-0px br-8px-transparent bl-8px-transparent bt-8px-black"
+        data-element-type="tooltip-tip"
+      >
+      </div>
+      <div class="p-absolute l-0 w-auto mw-100 p-8px bgc-black br-4px" data-element-type="tooltip-copy">
+        <p class="m-0px p-0px ta-left fw-regular fs-14px lh-150 c-white">
+          <%= data["missed_visits_patients"] %> patients with no visit
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

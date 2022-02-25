@@ -1,0 +1,13 @@
+<div class="d-flex ai-center jc-space-between <% if include_bottom_border %>pb-3px bb-grey-mid<% end %> mb-4px">
+  <p class="f-1 m-0px p-0px ta-left fw-normal fs-16px c-black">
+    <%= title %>
+  </p>
+  <div class="f-1 d-flex ai-center jc-end">
+    <p class="f-2 m-0px p-0px ta-right fw-bold fs-16px <%= css_text_color %>">
+      <% if value >= 0 %>+<% else %>–<% end %>
+    </p>
+    <p class="f-1 m-0px p-0px ta-right fw-bold fs-16px <%= css_text_color %>"> 
+      <%= (value).abs %>
+    </p>
+  </div>
+</div>
