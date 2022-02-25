@@ -1,5 +1,5 @@
 class NotificationDispatchService
-  I_FAIL_ON_ERRORS = [:twilio_invalid_phone_number, :bsnl_random_error]
+  include Memery
 
   def initialize(notification, messaging_service)
     @notification = notification
@@ -10,6 +10,7 @@ class NotificationDispatchService
   attr_reader :notification, :messaging_service, :recipient_number
 
   def send_message
+    return false unless notifiable?(notification)
     case
     when messaging_service == Messaging::Twilio::Sms
       send_as_twilio_sms
@@ -18,17 +19,10 @@ class NotificationDispatchService
     end
   end
 
-  def message_data
+  memoize def message_data
     case notification.purpose
       when "covid_medication_reminder" || "experimental_appointment_reminder" || "missed_visit_reminder"
-        return unless notification.patient
-
-        facility = notification.subject&.facility || notification.patient.assigned_facility
-        { message: notification.message,
-          vars: { facility_name: facility.name,
-                  patient_name: notification.patient.full_name,
-                  appointment_date: notification.subject&.scheduled_date&.strftime("%d-%m-%Y") },
-          locale: facility.locale }
+        notification.message_data
       when "test_message"
         return unless notification.patient
 
@@ -71,5 +65,20 @@ class NotificationDispatchService
     else
       raise error
     end
+  end
+
+  def notifiable?(notification)
+    unless notification.status_scheduled?
+      logger.info "skipping notification #{notification.id}, scheduled already"
+      return
+    end
+
+    unless notification.patient.latest_mobile_number
+      logger.info "skipping notification #{notification.id}, patient #{notification.patient_id} does not have a mobile number"
+      notification.status_cancelled!
+      return
+    end
+
+    true
   end
 end

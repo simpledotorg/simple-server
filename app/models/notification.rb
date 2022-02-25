@@ -1,4 +1,6 @@
-class PatientNotification < ApplicationRecord
+class Notification < ApplicationRecord
+  self.inheritance_column = :purpose
+
   belongs_to :subject, optional: true, polymorphic: true
   belongs_to :patient
   belongs_to :experiment, class_name: "Experimentation::Experiment", optional: true
@@ -11,8 +13,6 @@ class PatientNotification < ApplicationRecord
     fields = {module: :notifications}.merge(extra_fields)
     Rails.logger.child(fields)
   end
-
-  APPOINTMENT_REMINDER_MSG_PREFIX = "communications.appointment_reminders"
 
   validates :status, presence: true
   validates :remind_on, presence: true
@@ -33,23 +33,32 @@ class PatientNotification < ApplicationRecord
     test_message: "test_message"
   }
 
+  purpose_classes = {
+    covid_medication_reminder: Notifications::CovidMedicationReminder,
+    experimental_appointment_reminder: Notifications::ExperimentalAppointmentReminder,
+    missed_visit_reminder: Notifications::MissedVisitReminder,
+    test_message: Notifications::TestMessage
+  }
+
   scope :due_today, -> { where(remind_on: Date.current, status: [:pending]) }
-
-  def payload_for_bsnl
-
-  end
 
   def self.cancel
     where(status: %w[pending scheduled]).update_all(status: :cancelled)
   end
 
+  def purpose_class
+    purpose_classes[purpose]
+  end
+
   def successful_deliveries
+    # TODO: this will need to become channel aware after BSNL
     communications.with_delivery_detail.select("delivery_detail.result, communications.*").where(
       delivery_detail: {result: [:read, :delivered, :sent]}
     )
   end
 
   def queued_deliveries
+    # TODO: this will need to become channel aware after BSNL
     communications.with_delivery_detail.select("delivery_detail.result, communications.*").where(
       delivery_detail: {result: [:queued]}
     )

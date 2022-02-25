@@ -4,8 +4,7 @@ class AppointmentNotification::Worker
   sidekiq_options queue: :default
 
   def perform(notification_id)
-    notification = Notification.includes(:patient).find(notification_id)
-    send_message(notification) if notifiable?(notification)
+    send_message(ExperimentalAppointmentReminder.includes(:patient).find(notification_id))
   end
 
   private
@@ -35,20 +34,5 @@ class AppointmentNotification::Worker
       twilio_msg_status: response.status,
       communication_type: communication_type
     )
-  end
-
-  def notifiable?(notification)
-    unless notification.status_scheduled?
-      logger.info "skipping notification #{notification.id}, scheduled already"
-      return
-    end
-
-    unless notification.patient.latest_mobile_number
-      logger.info "skipping notification #{notification.id}, patient #{notification.patient_id} does not have a mobile number"
-      notification.status_cancelled!
-      return
-    end
-
-    true
   end
 end

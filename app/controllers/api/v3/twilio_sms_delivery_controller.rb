@@ -3,23 +3,14 @@ class Api::V3::TwilioSmsDeliveryController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def create
-    twilio_message = TwilioSmsDeliveryDetail.includes(communication: :notification).find_by(session_id: message_session_id)
+    twilio_message = TwilioSmsDeliveryDetail.includes(:communication).find_by(session_id: message_session_id)
     return head :not_found unless twilio_message
 
     twilio_message.update(update_params)
-
-    communication_type = twilio_message.communication.communication_type
-    event = [communication_type, twilio_message.result].join(".")
-    metrics.increment(event)
-
     head :ok
   end
 
   private
-
-  def metrics
-    @metrics ||= Metrics.with_prefix("twilio_callback")
-  end
 
   def update_params
     details = {result: message_status}

@@ -1,4 +1,6 @@
 class AppointmentNotificationService
+  APPOINTMENT_REMINDER_MSG_PREFIX = "communications.appointment_reminders"
+
   def self.send_after_missed_visit(*args)
     new(*args).send_after_missed_visit
   end
@@ -32,7 +34,7 @@ class AppointmentNotificationService
       patient: appointment.patient,
       remind_on: remind_on,
       status: "scheduled",
-      message: "#{Notification::APPOINTMENT_REMINDER_MSG_PREFIX}.#{communication_type}",
+      message: "#{APPOINTMENT_REMINDER_MSG_PREFIX}.#{communication_type}",
       purpose: "missed_visit_reminder"
     )
   end
