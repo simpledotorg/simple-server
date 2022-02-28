@@ -101,16 +101,18 @@ en:
       male: "Male"
       female: "Female"
       transgender: "Transgender"
-    reports_card:
-      title: "Reports"
-      subtitle: "Data last updated on %{date}."
+    progress_reports_card:
+      title: "Progress reports"
+      subtitle: "Data for registrations and follow-ups."
+    diagnosis_reports_card:
+      title: "Diagnosis reports"
+      subtitle: "6-month trends for registrations, follow-ups, and treatment outcomes."
     drug_stock_report_card:
       title: "Drug stock report"
       subtitle: "Submit %{facility_name}'s drug stock report for %{period}."
       button_title: "Enter drug stock"
     achievements_card:
       title: "Achievements"
-      subtitle: "%{facility_name}'s all-time progress."
       follow_up_visits_section_title: "follow-up %{visit_or_visits} recorded"
       overdue_patients_section_title: "%{call_or_calls} to overdue patients"
       registered_patients_title: "registered %{patient_or_patients}"

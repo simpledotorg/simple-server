@@ -19,12 +19,12 @@
     <div id="home-page">
       <div class="mb-8px p-16px bgc-white bs-card">
         <h1 class="m-0px mb-4px fw-bold fs-24px c-black">
-          <%= t("progress_tab.reports_card.title") %>
+          <%= t("progress_tab.progress_reports_card.title") %>
         </h1>
         <p class="m-0px mb-16px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-          <%= t("progress_tab.reports_card.subtitle", date: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")) %>
+          <%= t("progress_tab.progress_reports_card.subtitle") %>
         </p>
-        <div class="d-flex ai-center jc-space-between mb-16px">
+        <div class="d-flex ai-center jc-space-between">
           <a class="f-1 d-flex fd-column ai-center jc-center td-none mr-10px p-12px bgc-blue-green-light br-8px" href="#" onclick="goToPage('home-page', 'daily-report-page'); return false;">
             <div class="p-relative d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px o-hidden">
               <div class="p-absolute t-0 l-0 w-100 h-6px bgc-blue-green"></div>
@@ -59,30 +59,40 @@
             </p>
           </a>
         </div>
-        <a
-          class="d-flex ai-center mb-16px p-12px td-none bgc-red-light br-8px"
-          href="#"
-          onclick="goToPage('home-page', 'hypertension-report'); return false;"
-        >
-          <div class="d-flex ai-center jc-center w-32px h-32px mr-12px bgc-white br-8px">
-            <%= inline_file("graph-red.svg") %>
-          </div>
-          <p class="m-0px p-0px ta-left fw-medium fs-16px c-red">
-            <%= t("progress_tab.hypertension_report_title") %>
-          </p>
-        </a>
-        <a
-          class="d-flex ai-center p-12px td-none bgc-purple-light br-8px"
-          href="#"
-          onclick="goToPage('home-page', 'diabetes-report'); return false;"
-        >
-          <div class="d-flex ai-center jc-center w-32px h-32px mr-12px bgc-white br-8px">
-            <%= inline_file("graph-purple.svg") %>
-          </div>
-          <p class="m-0px p-0px ta-left fw-medium fs-16px c-purple">
-            <%= t("progress_tab.diabetes_report_title") %>
-          </p>
-        </a>
+      </div>
+      <div class="mb-8px p-16px bgc-white bs-card">
+        <h1 class="m-0px mb-4px fw-bold fs-24px c-black">
+          <%= t("progress_tab.diagnosis_reports_card.title") %>
+        </h1>
+        <p class="m-0px mb-16px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+          <%= t("progress_tab.diagnosis_reports_card.subtitle") %>
+        </p>
+        <div class="d-flex ai-center jc-space-between">
+          <a
+            class="f-1 d-flex fd-column ai-center mr-8px p-12px td-none bgc-red-light br-8px"
+            href="#"
+            onclick="goToPage('home-page', 'hypertension-report'); return false;"
+          >
+            <div class="d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px">
+              <%= inline_file("graph-red.svg") %>
+            </div>
+            <p class="m-0px p-0px ta-left fw-medium fs-16px c-red">
+              <%= t("progress_tab.hypertension_report_title") %>
+            </p>
+          </a>
+          <a
+            class="f-1 d-flex fd-column ai-center ml-8px p-12px td-none bgc-purple-light br-8px"
+            href="#"
+            onclick="goToPage('home-page', 'diabetes-report'); return false;"
+          >
+            <div class="d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px">
+              <%= inline_file("graph-purple.svg") %>
+            </div>
+            <p class="m-0px p-0px ta-left fw-medium fs-16px c-purple">
+              <%= t("progress_tab.diabetes_report_title") %>
+            </p>
+          </a>
+        </div>
       </div>
       <div class="mb-8px p-16px bgc-white bs-card">
         <div class="d-flex ai-flex-start jc-space-between mb-16px">
@@ -106,19 +116,14 @@
         %>
       </div>
       <div class="mb-8px pt-16px pb-16px bgc-white bs-card">
-        <div class="pr-16px pl-16px">
-          <h1 class="m-0px mb-8px fw-bold fs-24px">
-            <%= t("progress_tab.achievements_card.title") %>
-          </h1>
-          <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-            <%= t("progress_tab.achievements_card.subtitle", facility_name: current_facility.name) %>
-          </p>
-        </div>
+        <h1 class="m-0px mb-24px pr-16px pl-16px fw-bold fs-24px">
+          <%= t("progress_tab.achievements_card.title") %>
+        </h1>
         <div class="mb-24px">
           <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
             <span class="fw-bold">7,051</span> <%= t("progress_tab.achievements_card.follow_up_visits_section_title", visit_or_visits: "visit".pluralize(7051)) %>
           </p>
-          <div class="ws-nowrap ox-scroll pt-4px pb-4px pl-16px d-none-scrollbar">
+          <div class="d-flex ai-center jc-space-between pt-4px pb-4px pr-16px pl-16px">
             <% follow_up_badge_goals = create_badge_array(7051) %>
             <% follow_up_badge_goals.each do |badge| %>
               <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
@@ -135,7 +140,7 @@
           <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
             <span class="fw-bold">2,501</span> <%= t("progress_tab.achievements_card.overdue_patients_section_title", call_or_calls: "call".pluralize(2501)) %>
           </p>
-          <div class="ws-nowrap ox-scroll pt-4px pb-4px pl-16px d-none-scrollbar">
+          <div class="d-flex ai-center jc-space-between pt-4px pb-4px pr-16px pl-16px">
             <% overdue_call_badge_goals = create_badge_array(2501) %>
             <% overdue_call_badge_goals.each do |badge| %>
               <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
@@ -152,7 +157,7 @@
           <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
             <span class="fw-bold">1,512</span> <%= t("progress_tab.achievements_card.registered_patients_title", patient_or_patients: "patient".pluralize(1512)) %>
           </p>
-          <div class="ws-nowrap ox-scroll pt-4px pb-4px pl-16px d-none-scrollbar">
+          <div class="d-flex ai-center jc-space-between pt-4px pb-4px pr-16px pl-16px">
             <% registered_patients_badge_goals = create_badge_array(1512) %>
             <% registered_patients_badge_goals.each do |badge| %>
               <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
