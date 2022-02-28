@@ -61,13 +61,11 @@ class AppointmentNotification::Worker
       context: context
     }
 
-    # remove missed_visit_whatsapp_reminder and missed_visit_sms_reminder
-    # https://app.clubhouse.io/simpledotorg/story/3585/backfill-notifications-from-communications
     handle_twilio_error(notification) do
       case communication_type
-      when "whatsapp", "missed_visit_whatsapp_reminder"
+      when "whatsapp"
         service.send_whatsapp(args)
-      when "sms", "missed_visit_sms_reminder"
+      when "sms"
         service.send_sms(args)
       else
         raise UnknownCommunicationType, "#{self.class.name} is not configured to handle communication type #{communication_type}"
