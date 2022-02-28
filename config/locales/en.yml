@@ -136,6 +136,8 @@ en:
         diabetes_uncontrolled_long: "RBS/PPBS 200-99, FBS 126-199, or HbA1c 7.0-8.9"
         diabetes_very_uncontrolled_short: "BS ≥300"
         diabetes_very_uncontrolled_long: "RBS/PPBS ≥300, FBS ≥200, or HbA1c ≥9.0"
+        hypertension_visited_but_no_bp_taken_short: "Visited but no BP taken"
+        hypertension_visited_but_no_bp_taken_long: "no BP taken"
         missed_visits_short: "Missed visits"
         missed_visits_long: "no visit"
       assigned_patients_card:
