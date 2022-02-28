@@ -7,8 +7,11 @@ class AdminController < ApplicationController
   around_action :set_feature_flags_from_params
   before_action :set_bust_cache
   before_action :set_datadog_tags
+  before_action :set_accessible_regions
 
   after_action :verify_authorization_attempted, except: [:root]
+
+  delegate :cache, to: Rails
 
   rescue_from UserAccess::NotAuthorizedError, with: :user_not_authorized
 
@@ -54,6 +57,34 @@ class AdminController < ApplicationController
       current_admin.set_feature(:follow_ups_v2, original)
     end
   end
+
+  INDEX_CACHE_KEY = "v3"
+  def set_accessible_regions
+    logger.info("regions#index: action called")
+    accessible_facility_regions = authorize { current_admin.accessible_facility_regions(:view_reports) }
+
+    cache_key = current_admin.regions_access_cache_key
+    cache_version = "#{accessible_facility_regions.cache_key}/#{INDEX_CACHE_KEY}"
+
+    @accessible_regions = cache.fetch(cache_key, force: bust_cache?, version: cache_version, expires_in: 7.days) {
+      accessible_facility_regions.each_with_object({}) { |facility, result|
+        ancestors = facility.cached_ancestors.map { |facility| [facility.region_type, facility] }.to_h
+        org, state, district, block = ancestors.values_at("organization", "state", "district", "block")
+        result[org] ||= {}
+        result[org][state] ||= {}
+        result[org][state][district] ||= {}
+        result[org][state][district][block] ||= []
+        result[org][state][district][block] << facility
+      }
+    }
+    logger.info { "regions#index: Current admin has #{accessible_facility_regions.size} facility regions" }
+  end
+  def accessible_region?(region, action)
+    return false unless region.reportable_region?
+    current_admin.region_access(memoized: true).accessible_region?(region, action)
+  end
+
+  helper_method :accessible_region?
 
   def current_admin
     return @current_admin if defined?(@current_admin)

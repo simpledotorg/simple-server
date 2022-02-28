@@ -1,0 +1,15 @@
+<% rate_name = "controlled_patients_rate" %>
+<% @display_sizes.each_with_index do |size, i| %>
+  All <%= Facility.localized_facility_size(size) %>s,
+<% end %>
+<% @display_sizes.each_with_index do |size, i| %>
+  <%= number_to_percentage(@stats_by_size[size][:periods][@period][rate_name] || 0, precision: 0) %>,
+<% end %>
+<% @display_sizes.each_with_index do |size, i| %>
+  <% six_month_rate_change = facility_size_six_month_rate_change(@stats_by_size[size][:periods], rate_name) %>
+  6-month change, <span class="fw-bold <% if six_month_rate_change > 0 %><%= positive_number_color %><% elsif six_month_rate_change < 0 %><%= negative_number_color %><% else %>c-grey-dark<% end %>"><%= number_to_percentage(six_month_rate_change, precision: 0) %></span>,
+<% end %>
+
+
+
+

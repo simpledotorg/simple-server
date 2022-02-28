@@ -1,0 +1,40 @@
+<div class="typeahead">
+  <div class="input-group">
+    <div class="input-group-prepend">
+      <span class="input-group-text">
+        <i class="fa fa-search"></i>
+      </span>
+    </div>
+    <%= search_field_tag :search_query,
+                         nil,
+                         id: :search_query,
+                         class: "typeahead-input form-control",
+                         hide_label: true,
+                         placeholder: "Search for a region or facility report",
+                         autocomplete: "off" %>
+    <div class="typeahead-dropdown regions"></div>
+  </div>
+  <div class="typeahead-spinner">
+    <div class="spinner-border text-primary"></div>
+  </div>
+</div>
+
+<template class="no-results-found">
+  <div class="ta-center py-40px ph-16px">
+    <i class="fa fa-search c-grey-medium" style="font-size: 32px; margin-bottom: 12px;"></i>
+    <p class="mb-4px fs-16px fw-bold">No reports found for "<span class="search-query"></span>"</p>
+    <p class="mb-0px fs-14px c-grey-dark">Make sure your words are spelled correctly or use less or different key words</p>
+  </div>
+</template>
+
+<template class="result-row">
+  <div>
+    <a href="" class="typeahead-dropdown-row d-block c-black td-none"
+        data-id=""
+        data-name=""
+        data-link="">
+      <p class="subtitle mb-0px fs-14px lh-18px c-grey-dark"></p>
+    </a>
+  </div>
+</template>
+<%= render "shared/region_search_script" %>
