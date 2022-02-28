@@ -91,6 +91,7 @@ en:
     yearly_report_title: "Yearly"
     hypertension_report_title: "Hypertension"
     diabetes_report_title: "Diabetes"
+    last_updated_at: "Data last updated on %{date}"
     diagnoses:
       hypertension: "Hypertension"
       diabetes: "Diabetes"
@@ -101,12 +102,11 @@ en:
       male: "Male"
       female: "Female"
       transgender: "Transgender"
-    progress_reports_card:
-      title: "Progress reports"
-      subtitle: "Data for registrations and follow-ups."
-    diagnosis_reports_card:
-      title: "Diagnosis reports"
-      subtitle: "6-month trends for registrations, follow-ups, and treatment outcomes."
+    registrations_and_follow_ups_card:
+      title: "Registrations and follow-ups"
+    reports_card:
+      title: "Reports"
+      subtitle: "How %{facility_name} is helping patients treat their hypertension and diabetes."
     drug_stock_report_card:
       title: "Drug stock report"
       subtitle: "Submit %{facility_name}'s drug stock report for %{period}."

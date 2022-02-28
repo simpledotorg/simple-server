@@ -18,12 +18,9 @@
   <body>
     <div id="home-page">
       <div class="mb-8px p-16px bgc-white bs-card">
-        <h1 class="m-0px mb-4px fw-bold fs-24px c-black">
-          <%= t("progress_tab.progress_reports_card.title") %>
+        <h1 class="m-0px mb-16px fw-bold fs-24px c-black">
+          <%= t("progress_tab.registrations_and_follow_ups_card.title") %>
         </h1>
-        <p class="m-0px mb-16px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-          <%= t("progress_tab.progress_reports_card.subtitle") %>
-        </p>
         <div class="d-flex ai-center jc-space-between">
           <a class="f-1 d-flex fd-column ai-center jc-center td-none mr-10px p-12px bgc-blue-green-light br-8px" href="#" onclick="goToPage('home-page', 'daily-report-page'); return false;">
             <div class="p-relative d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px o-hidden">
@@ -62,10 +59,10 @@
       </div>
       <div class="mb-8px p-16px bgc-white bs-card">
         <h1 class="m-0px mb-4px fw-bold fs-24px c-black">
-          <%= t("progress_tab.diagnosis_reports_card.title") %>
+          <%= t("progress_tab.reports_card.title") %>
         </h1>
         <p class="m-0px mb-16px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-          <%= t("progress_tab.diagnosis_reports_card.subtitle") %>
+          <%= t("progress_tab.reports_card.subtitle", facility_name: current_facility.name) %>
         </p>
         <div class="d-flex ai-center jc-space-between">
           <a
@@ -176,7 +173,7 @@
                locals: {
                  page_id: "daily-report-page",
                  title: t("progress_tab.daily_report_title"),
-                 subtitle: false,
+                 subtitle: t("progress_tab.last_updated_at", date: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")),
                  periods: @period_reports_data["daily_periods"],
                  registered_patients: @period_reports_data["daily_registered_patients"],
                  follow_up_patients: @period_reports_data["daily_follow_up_patients"]
@@ -186,7 +183,7 @@
                locals: {
                  page_id: "monthly-report-page",
                  title: t("progress_tab.monthly_report_title"),
-                 subtitle: false,
+                 subtitle: t("progress_tab.last_updated_at", date: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")),
                  periods: @period_reports_data["monthly_periods"],
                  registered_patients: @period_reports_data["monthly_registered_patients"],
                  follow_up_patients: @period_reports_data["monthly_follow_up_patients"]
@@ -196,7 +193,7 @@
                locals: {
                  page_id: "yearly-report-page",
                  title: t("progress_tab.yearly_report_title"),
-                 subtitle: "Apr-2021 to Mar-2022",
+                 subtitle: t("progress_tab.last_updated_at", date: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")),
                  periods: @period_reports_data["yearly_periods"],
                  registered_patients: @period_reports_data["yearly_registered_patients"],
                  follow_up_patients: @period_reports_data["yearly_follow_up_patients"]
@@ -207,7 +204,7 @@
                  page_id: "hypertension-report",
                  report_diagnosis: t("progress_tab.diagnoses.hypertension"),
                  title: t("progress_tab.hypertension_report_title"),
-                 subtitle: t("progress_tab.reports_card.subtitle", date: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")),
+                 subtitle: t("progress_tab.last_updated_at", date: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")),
                  diagnosis_data: @hypertension_reports_data
                }
     
@@ -217,7 +214,7 @@
                  page_id: "diabetes-report",
                  report_diagnosis: t("progress_tab.diagnoses.diabetes"),
                  title: t("progress_tab.diabetes_report_title"),
-                 subtitle: t("progress_tab.reports_card.subtitle", date: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")),
+                 subtitle: t("progress_tab.last_updated_at", date: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")),
                  diagnosis_data: @diabetes_reports_data
                }
     
