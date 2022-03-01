@@ -17,6 +17,22 @@ class NotificationDispatchService
     when messaging_service == Messaging::Twilio::Whatsapp
       send_as_twilio_whatsapp
     end
+
+    notification.status_sent!
+  end
+
+  def record_communication(notification)
+    ActiveRecord::Base.transaction do
+      create_communication(notification, messaging_service.communication_type)
+    end
+  end
+
+  def create_communication(notification, communication_type)
+    messaging_service.create_communication(communication_type: communication_type,
+            appointment: appointment,
+            notification: notification,
+            device_created_at: now,
+            device_updated_at: now)
   end
 
   memoize def message_data
@@ -27,7 +43,8 @@ class NotificationDispatchService
     handle_twilio_error do
       Messaging::Twilio::Sms.send_message(
         recipient_number: recipient_number,
-        message: notification.localized_message
+        message: notification.localized_message,
+        communication_type: "sms"
       )
     end
   end
@@ -36,7 +53,8 @@ class NotificationDispatchService
     handle_twilio_error do
       Messaging::Twilio::Whatsapp.send_message(
         recipient_number: recipient_number,
-        message: notification.localized_message
+        message: notification.localized_message,
+        communication_type: "whatsapp"
       )
     end
   end
@@ -52,20 +70,5 @@ class NotificationDispatchService
     else
       raise error
     end
-  end
-
-  def notifiable?
-    unless notification.status_scheduled?
-      logger.info "skipping notification #{notification.id}, scheduled already"
-      return
-    end
-
-    unless notification.patient.latest_mobile_number
-      logger.info "skipping notification #{notification.id}, patient #{notification.patient_id} does not have a mobile number"
-      notification.status_cancelled!
-      return
-    end
-
-    true
   end
 end

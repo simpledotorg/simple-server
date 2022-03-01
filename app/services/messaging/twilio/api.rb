@@ -22,8 +22,8 @@ class Messaging::Twilio::Api
   )
   end
 
-  def send_message(recipient_number:, message:)
-    client.messages.create(
+  def send_message(recipient_number:, message:, communication_type:)
+    response = client.messages.create(
       from: sender_number,
       to: recipient_number,
       status_callback: callback_url,
@@ -35,6 +35,10 @@ class Messaging::Twilio::Api
 
   # To by supplied by the individual channel.
   def sender_number
+    nil
+  end
+
+  def self.communication_type
     nil
   end
 

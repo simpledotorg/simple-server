@@ -1,4 +1,8 @@
 class Messaging::Twilio::OtpSms < Messaging::Twilio::Api
+  def self.communication_type
+    Communication::communication_type[:sms]
+  end
+
   def initialize
     TestSms.new unless ENV["TWILIO_PRODUCTION_OVERRIDE"] || SimpleServer.env.production?
   end
