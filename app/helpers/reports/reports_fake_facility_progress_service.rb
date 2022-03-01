@@ -77,7 +77,7 @@ module Reports
         ]
       }
 
-      @yearly_periods = ["2022", "2021", "2020", "2019"]
+      @yearly_periods = ["Apr-2021 to Mar-2022", "Apr-2020 to Mar-2019", "Apr-2019 to Mar-2020", "Apr-2018 to Mar-2019"]
 
       @yearly_registered_patients = {
         "total" => 810,

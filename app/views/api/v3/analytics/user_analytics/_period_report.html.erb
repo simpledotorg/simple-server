@@ -18,13 +18,11 @@
           <%= subtitle %>
         </p>
       <% end %>
-    </div>
-    <div class="ws-nowrap ox-scroll pl-16px d-none-scrollbar">
-      <% periods.each do |pill| %>
-        <%= render partial: "api/v3/analytics/user_analytics/pill",
-                  locals: { title: pill,
-                            is_active: pill == periods.first ? true : false } %>
-      <% end %>
+      <select class="w-100 mt-16px p-12px fw-medium fs-18px c-blue bgc-blue-light b-none br-4px bs-secondary-button o-none a-none chevron-down-icon">
+        <% periods.each do |period| %>
+          <option value="<%= period %>"><%= period %></option>
+        <% end %>
+      </select>
     </div>
   </div>
   <div class="mb-8px p-16px bgc-white br-4px bs-card">
