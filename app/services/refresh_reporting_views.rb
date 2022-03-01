@@ -82,7 +82,7 @@ class RefreshReportingViews
       refresh
     end
     set_last_updated_at if all_views_refreshed?
-    self.class.set_last_updated_at_daily_follow_ups if views.include?(/Daily/)
+    self.class.set_last_updated_at_daily_follow_ups if views.any? { |view| view.match?(/Daily/) }
     logger.info "Completed full reporting view refresh"
   end
 

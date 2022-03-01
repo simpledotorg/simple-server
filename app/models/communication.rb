@@ -16,9 +16,7 @@ class Communication < ApplicationRecord
     voip_call: "voip_call",
     manual_call: "manual_call",
     sms: "sms",
-    whatsapp: "whatsapp",
-    missed_visit_sms_reminder: "missed_visit_sms_reminder",
-    missed_visit_whatsapp_reminder: "missed_visit_whatsapp_reminder"
+    whatsapp: "whatsapp"
   }
 
   COMMUNICATION_RESULTS = {
