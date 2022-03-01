@@ -91,6 +91,7 @@ en:
     yearly_report_title: "Yearly"
     hypertension_report_title: "Hypertension"
     diabetes_report_title: "Diabetes"
+    last_updated_at: "Data last updated on %{date}"
     diagnoses:
       hypertension: "Hypertension"
       diabetes: "Diabetes"
@@ -101,16 +102,17 @@ en:
       male: "Male"
       female: "Female"
       transgender: "Transgender"
+    registrations_and_follow_ups_card:
+      title: "Registrations and follow-ups"
     reports_card:
       title: "Reports"
-      subtitle: "Data last updated on %{date}."
+      subtitle: "How %{facility_name} is helping patients treat their hypertension and diabetes."
     drug_stock_report_card:
       title: "Drug stock report"
       subtitle: "Submit %{facility_name}'s drug stock report for %{period}."
       button_title: "Enter drug stock"
     achievements_card:
       title: "Achievements"
-      subtitle: "%{facility_name}'s all-time progress."
       follow_up_visits_section_title: "follow-up %{visit_or_visits} recorded"
       overdue_patients_section_title: "%{call_or_calls} to overdue patients"
       registered_patients_title: "registered %{patient_or_patients}"
