@@ -2,52 +2,166 @@
 Navigation
 *****************/
 
-nav.breadcrumb {
-    background: transparent;
+.navigation-brand {
+  padding: 16px 8px 0 8px;
+  margin: 0 6px;
+  display: block;
+}
+
+.navigation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 56px;
+  height: 100%;
+  background: #103047;
+  vertical-align: top;
+  transition: 0.2s ease-in-out width, color;
+  z-index: 10000000000;
+  overflow: scroll;
+
+  .nav-divider {
+    height: 1px;
+    background: $blue-dark;
+    margin: 16px 16px 16px 56px;
+  }
+
+  .sub-nav-link {
+    padding-left: 60px;
+
+    &.active {
+      border: none;
+      color: $white;
+    }
+  }
+
+  .nav-section {
+    padding-bottom: 24px;
+  }
+
+  .access-item {
+    padding-left: 45px !important;
+
+    a {
+      color: $blue-mid;
+
+      &:hover {
+        text-decoration: none;
+        color: $white;
+      }
+    }
+  }
+
+  .nav-search {
+    opacity: 0;
+    padding: 16px;
+    transition: 0.1s ease-in-out opacity;
+    transition-delay: 0.3s;
+  }
+
+  .nav-link,
+  .region-index a,
+  .region-index span,
+  .sub-nav-link {
+    white-space: nowrap;
+    color: $blue-mid;
+
+    &:hover {
+      background: $blue-dark;
+    }
+  }
+
+  .nav-link.active {
+    i {
+      color: $white !important;
+    }
+  }
+
+  .nav-link {
+    color: $white;
+    font-size: 18px;
     padding-left: 0;
-    margin: 0 0 8px 0;
+  }
+
+  i.fa-solid {
+    color: white !important;
+  }
+
+  span {
+    display: none;
+  }
+
+  &:hover {
+    background: #0b283d;
+    width: 340px;
+
+    .nav-search {
+      opacity: 1;
+    }
+
+    .nav-link-dropdown {
+      background: url(chevron-down.png) no-repeat 95% 50%;
+      background-size: 16px;
+
+      &:hover {
+        background-color: $blue-dark;
+      }
+    }
+
+    span {
+      display: inline;
+    }
+  }
+}
+
+nav.breadcrumb {
+  background: transparent;
+  padding-left: 0;
+  margin: 0 0 8px 0;
 }
 
 nav.breadcrumb .arrow,
 nav.breadcrumb i {
-   font-weight: 900;
-   color: $grey-mid;
-    margin: 0 6px;
-    font-size: 85%;
-    top: 5px;
-    position: relative;
+  font-weight: 900;
+  color: $grey-mid;
+  margin: 0 6px;
+  font-size: 85%;
+  top: 5px;
+  position: relative;
 }
 
 form.edit_email_authentication .invalid-feedback {
-    font-size: 100%;
-    font-weight: bold;
+  font-size: 100%;
+  font-weight: bold;
 }
 
-nav a.nav-link { color: $grey-darkest !important; }
-nav a.nav-link:hover { color: $grey-mid !important; }
+nav.navigation-development a.nav-link {
+}
 
+nav.navigation-qa a.nav-link {
+}
 
-nav.navbar-development a.nav-link { color: $grey-darkest !important; }
-nav.navbar-development a.nav-link.active { color: $blue !important; }
-nav.navbar-development a.nav-link:hover { color: $grey-mid !important; }
-nav.navbar-development { box-shadow: none; }
+nav.navigation-sandbox a.nav-link {
+}
 
-nav.navbar-qa a.nav-link { color: $grey-darkest !important; }
-nav.navbar-qa a.nav-link.active { color: $green !important; }
-nav.navbar-qa a.nav-link:hover { color: $grey-mid !important; }
-nav.navbar-qa { box-shadow: none; }
+nav.navigation-demo a.nav-link {
+}
 
-nav.navbar-sandbox a.nav-link { color: $grey-darkest !important; }
-nav.navbar-sandbox a.nav-link.active { color: #5300E0 !important; }
-nav.navbar-sandbox a.nav-link:hover { color: $grey-mid !important; }
-nav.navbar-sandbox { box-shadow: none; }
+nav.navigation-production a.nav-link {
+}
 
-nav.navbar-demo a.nav-link { color: $grey-darkest !important; }
-nav.navbar-demo a.nav-link.active { color: #977600 !important; }
-nav.navbar-demo a.nav-link:hover { color: $grey-mid !important; }
-nav.navbar-demo { box-shadow: none; }
+@include media-breakpoint-down(sm) {
+  .navigation {
+    display: none;
+  }
+  .mobile-header {
+    background: red;
+    padding: 16px;
+  }
+}
 
-nav.navbar-production a.nav-link { color: $grey-darkest !important; }
-nav.navbar-production a.nav-link.active { color: $red !important; }
-nav.navbar-production a.nav-link:hover { color: $grey-mid !important; }
-nav.navbar-production { box-shadow: none; }
+@include media-breakpoint-up(sm) {
+  .mobile-header {
+    display: none; 
+  }
+}

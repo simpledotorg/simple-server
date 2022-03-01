@@ -14,12 +14,12 @@
 
       <div id="facility-access">
         <% @accessible_regions.each do |org, children| %>
-          <div class="card organization show region-index">
+          <div class="card organization show">
             <div class="access-tree__section-header">
               <% if current_admin.feature_enabled?(:organization_reports) %>
                 <%= link_to(org.name, reports_region_path(org.source.slug, report_scope: org.region_type)) %>
               <% else %>
-                <%= org.name %>
+                <h3><%= org.name %></h3>
               <% end %>
             </div>
 

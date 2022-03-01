@@ -1,11 +1,7 @@
 <% period_selector = local_assigns.fetch(:period_selector, true) %>
 
 <div class="dashboard">
-  <%= form_tag regions_search_url(format: :json), id: "search-form", method: :get do %>
-    <div class="mo-search">
-      <%= render "search" %>
-    </div>
-  <% end %>
+
   <nav class="breadcrumb mt-24px mb-0px pb-8px">
     <%= link_to "All reports", dashboard_districts_path %>
 

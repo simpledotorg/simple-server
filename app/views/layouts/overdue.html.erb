@@ -1,7 +1,7 @@
 <% content_for(:content) do %>
-  <h1>
+  <p class="mb-12px fs-xxlarge fw-bold mb-2">
     Overdue patients
-  </h1>
+  </p>
   <p>
     Patients that are overdue for a follow-up visit<% if current_admin.accessible_facilities(:manage_overdue_list) %>. If you select a facility, you can download a patient list.<% end %>
   </p>
