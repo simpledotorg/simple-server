@@ -299,7 +299,7 @@ module Experimentation
           reminder_template_id: membership.reminder_template_id,
           status: "pending",
           subject_id: membership.appointment_id,
-          subject_type: "Appointment"
+          subject_type: membership.appointment_id.present? ? "Appointment" : nil
         ).then { |notification| membership.record_notification(notification) }
     end
   end

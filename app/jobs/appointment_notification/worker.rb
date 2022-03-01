@@ -4,7 +4,7 @@ class AppointmentNotification::Worker
   sidekiq_options queue: :default
 
   def perform(notification_id)
-    send_message(ExperimentalAppointmentReminder.includes(:patient).find(notification_id))
+    send_message(Notification.includes(:patient).find(notification_id))
   end
 
   private

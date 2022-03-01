@@ -1,6 +1,4 @@
 class Notification < ApplicationRecord
-  self.inheritance_column = :purpose
-
   belongs_to :subject, optional: true, polymorphic: true
   belongs_to :patient
   belongs_to :experiment, class_name: "Experimentation::Experiment", optional: true
@@ -26,18 +24,12 @@ class Notification < ApplicationRecord
     sent: "sent",
     cancelled: "cancelled"
   }, _prefix: true
+
   enum purpose: {
     covid_medication_reminder: "covid_medication_reminder",
     experimental_appointment_reminder: "experimental_appointment_reminder",
     missed_visit_reminder: "missed_visit_reminder",
     test_message: "test_message"
-  }
-
-  purpose_classes = {
-    covid_medication_reminder: Notifications::CovidMedicationReminder,
-    experimental_appointment_reminder: Notifications::ExperimentalAppointmentReminder,
-    missed_visit_reminder: Notifications::MissedVisitReminder,
-    test_message: Notifications::TestMessage
   }
 
   scope :due_today, -> { where(remind_on: Date.current, status: [:pending]) }
@@ -46,8 +38,23 @@ class Notification < ApplicationRecord
     where(status: %w[pending scheduled]).update_all(status: :cancelled)
   end
 
-  def purpose_class
-    purpose_classes[purpose]
+  def message_data
+    case purpose
+      when "covid_medication_reminder"
+        covid_medication_reminder_message_data
+      when "experimental_appointment_reminder"
+        experimental_appointment_reminder_message_data
+      when "missed_visit_reminder"
+        missed_visit_reminder_message_data
+      when "test_message"
+        test_message_reminder_message_data
+      else
+        raise ArgumentError, "No localized_message defined for notification of type #{purpose}"
+    end
+  end
+
+  def localized_message
+    I18n.t(message_data[:message], **message_data[:vars], locale: message_data[:locale])
   end
 
   def successful_deliveries
@@ -74,5 +81,45 @@ class Notification < ApplicationRecord
     else
       :failed
     end
+  end
+
+  private
+
+  def covid_medication_reminder_message_data
+    return unless patient
+
+    { message: message,
+      vars: { facility_name: patient.assigned_facility,
+              patient_name: patient.full_name },
+      locale: patient.locale }
+  end
+
+  def experimental_appointment_reminder_message_data
+    return unless patient
+
+    facility = subject&.facility || patient.assigned_facility
+    { message: message,
+      vars: { facility_name: facility.name,
+              patient_name: patient.full_name,
+              appointment_date: subject&.scheduled_date&.strftime("%d-%m-%Y") },
+      locale: facility.locale }
+  end
+
+  def missed_visit_reminder_message_data
+    return unless patient
+
+    { message: message,
+      vars: { facility_name: subject.facility.name,
+              patient_name: patient.full_name,
+              appointment_date: subject.scheduled_date.strftime("%d-%m-%Y") },
+      locale: subject.facility.locale }
+  end
+
+  def test_message_reminder_message_data
+    return unless notification.patient
+
+    { message: "Test message sent by Simple.org to #{notification.patient.full_name}",
+      vars: {},
+      locale: "en-IN" }
   end
 end

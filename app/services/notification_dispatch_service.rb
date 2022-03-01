@@ -10,7 +10,7 @@ class NotificationDispatchService
   attr_reader :notification, :messaging_service, :recipient_number
 
   def send_message
-    return false unless notifiable?(notification)
+    return false unless notifiable?
     case
     when messaging_service == Messaging::Twilio::Sms
       send_as_twilio_sms
@@ -20,27 +20,14 @@ class NotificationDispatchService
   end
 
   memoize def message_data
-    case notification.purpose
-      when "covid_medication_reminder" || "experimental_appointment_reminder" || "missed_visit_reminder"
-        notification.message_data
-      when "test_message"
-        return unless notification.patient
-
-        { message: "Test message sent by Simple.org to #{notification.patient.full_name}",
-          vars: {},
-          locale: "en-IN" }
-      else
-        raise ArgumentError, "No message defined for notification of type #{notification.purpose}"
-    end
+    notification.message_data
   end
-
-
 
   def send_as_twilio_sms
     handle_twilio_error do
       Messaging::Twilio::Sms.send_message(
         recipient_number: recipient_number,
-        message: I18n.t(message_data[:message], **message_data[:vars], locale: message_data[:locale]),
+        message: notification.localized_message
       )
     end
   end
@@ -49,7 +36,7 @@ class NotificationDispatchService
     handle_twilio_error do
       Messaging::Twilio::Whatsapp.send_message(
         recipient_number: recipient_number,
-        message: I18n.t(message_data[:message], **message_data[:vars], locale: message_data[:locale]),
+        message: notification.localized_message
       )
     end
   end
@@ -67,7 +54,7 @@ class NotificationDispatchService
     end
   end
 
-  def notifiable?(notification)
+  def notifiable?
     unless notification.status_scheduled?
       logger.info "skipping notification #{notification.id}, scheduled already"
       return
