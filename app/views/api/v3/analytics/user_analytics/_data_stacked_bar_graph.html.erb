@@ -25,7 +25,7 @@
       </div>
       <div class="p-absolute l-0 w-auto mw-100 p-8px bgc-black br-4px" data-element-type="tooltip-copy">
         <p class="m-0px p-0px ta-left fw-regular fs-14px lh-150 c-white">
-          <%= data["bp_controlled_patients"] %> <%= "patient".pluralize(data["bp_controlled_patients"]) %> with <%= t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_controlled_long") %>
+          <%= t("progress_tab.diagnosis_report.cohort_report.cohort_bar_tooltip", total_patients: data["bp_controlled_patioents"], patient_or_patients: "patient".pluralize(data["bp_controlled_patients"]), threshold: t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_controlled_long")) %>
         </p>
       </div>
     </div>
@@ -51,7 +51,7 @@
       </div>
       <div class="p-absolute l-0 w-auto mw-100 p-8px bgc-black br-4px" data-element-type="tooltip-copy">
         <p class="m-0px p-0px ta-left fw-regular fs-14px lh-150 c-white">
-          <%= data["bp_not_controlled_patients"] %> <%= "patient".pluralize(data["bp_not_controlled_patients"]) %> with <%= t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_uncontrolled_long") %>
+          <%= t("progress_tab.diagnosis_report.cohort_report.cohort_bar_tooltip", total_patients: data["bp_not_controlled_patioents"], patient_or_patients: "patient".pluralize(data["bp_not_controlled_patients"]), threshold: t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_uncontrolled_long")) %>
         </p>
       </div>
     </div>
@@ -77,7 +77,7 @@
       </div>
       <div class="p-absolute l-0 w-auto mw-100 p-8px bgc-black br-4px" data-element-type="tooltip-copy">
         <p class="m-0px p-0px ta-left fw-regular fs-14px lh-150 c-white">
-          <%= data["visited_but_no_bp_taken_patients"] %> <%= "patient".pluralize(data["visited_but_no_bp_taken_patients"]) %> with <%= t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_visited_but_no_bp_taken_long") %>
+          <%= t("progress_tab.diagnosis_report.cohort_report.cohort_bar_tooltip", total_patients: data["visited_but_no_bp_taken_patients"], patient_or_patients: "patient".pluralize(data["visited_but_no_bp_taken_patients"]), threshold: t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_visited_but_no_bp_taken_long")) %>
         </p>
       </div>
     </div>
@@ -103,7 +103,7 @@
       </div>
       <div class="p-absolute l-0 w-auto mw-100 p-8px bgc-black br-4px" data-element-type="tooltip-copy">
         <p class="m-0px p-0px ta-left fw-regular fs-14px lh-150 c-white">
-          <%= data["missed_visits_patients"] %> <%= "patient".pluralize(data["missed_visits_patients"]) %> with <%= t("progress_tab.diagnosis_report.diagnosis_thresholds.missed_visits_long") %>
+          <%= t("progress_tab.diagnosis_report.cohort_report.cohort_bar_tooltip", total_patients: data["missed_visits_patients"], patient_or_patients: "patient".pluralize(data["missed_visits_patients"]), threshold: t("progress_tab.diagnosis_report.diagnosis_thresholds.missed_visits_long")) %>
         </p>
       </div>
     </div>
