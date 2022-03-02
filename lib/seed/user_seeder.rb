@@ -51,7 +51,8 @@ module Seed
         user = cvho || FactoryBot.create(:admin, :manager, full_name: "CVHO", email: "cvho@simple.org",
                                                            password: config.admin_password, organization: organization)
         districts.each do |district|
-          user.accesses.create! resource: district
+          next if user.accesses.exists?(resource: district)
+          user.accesses.create!(resource: district)
         end
       end
 
@@ -61,7 +62,8 @@ module Seed
         user = sts || FactoryBot.create(:admin, :viewer_all, full_name: "STS", email: "sts@simple.org",
                                                              password: config.admin_password, organization: organization)
         districts.each do |district|
-          user.accesses.create! resource: district
+          next if user.accesses.exists?(resource: district)
+          user.accesses.create!(resource: district)
         end
       end
 
@@ -71,7 +73,8 @@ module Seed
         user = district_official || FactoryBot.create(:admin, :viewer_reports_only, full_name: "District Official", email: "district_official@simple.org",
                                                                                     password: config.admin_password, organization: organization)
         districts.each do |district|
-          user.accesses.create! resource: district
+          next if user.accesses.exists?(resource: district)
+          user.accesses.create!(resource: district)
         end
       end
 
@@ -81,7 +84,8 @@ module Seed
         user = medical_officer || FactoryBot.create(:admin, :viewer_all, full_name: "Medical Officer", email: "medical_officer@simple.org",
                                                                          password: config.admin_password, organization: organization)
         facilities.each do |facility|
-          user.accesses.create! resource: facility
+          next if user.accesses.exists?(resource: facility)
+          user.accesses.create!(resource: facility)
         end
       end
     end
