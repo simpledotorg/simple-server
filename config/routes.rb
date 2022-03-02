@@ -107,6 +107,8 @@ Rails.application.routes.draw do
     end
 
     namespace :v4, path: "v4" do
+      get "drug_stock", to: "drug_stocks#show"
+
       scope :blood_sugars do
         get "sync", to: "blood_sugars#sync_to_user"
         post "sync", to: "blood_sugars#sync_from_user"
