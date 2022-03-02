@@ -366,8 +366,10 @@ module Reports
             "total_patients" => 227,
             "bp_controlled_rate" => 42,
             "bp_controlled_patients" => 95,
-            "bp_not_controlled_rate" => 28,
-            "bp_not_controlled_patients" => 64,
+            "bp_not_controlled_rate" => 24,
+            "bp_not_controlled_patients" => 54,
+            "visited_but_no_bp_taken_rate" => 4,
+            "visited_but_no_bp_taken_patients" => 9,
             "missed_visits_rate" => 29,
             "missed_visits_patients" => 67
           },
@@ -378,8 +380,10 @@ module Reports
             "total_patients" => 207,
             "bp_controlled_rate" => 50,
             "bp_controlled_patients" => 104,
-            "bp_not_controlled_rate" => 48,
-            "bp_not_controlled_patients" => 99,
+            "bp_not_controlled_rate" => 40,
+            "bp_not_controlled_patients" => 83,
+            "visited_but_no_bp_taken_rate" => 8,
+            "visited_but_no_bp_taken_patients" => 8,
             "missed_visits_rate" => 2,
             "missed_visits_patients" => 4
           },
@@ -392,8 +396,10 @@ module Reports
             "bp_controlled_patients" => 104,
             "bp_not_controlled_rate" => 26,
             "bp_not_controlled_patients" => 64,
-            "missed_visits_rate" => 31,
-            "missed_visits_patients" => 79
+            "visited_but_no_bp_taken_rate" => 4,
+            "visited_but_no_bp_taken_patients" => 10,
+            "missed_visits_rate" => 27,
+            "missed_visits_patients" => 67
           },
           {
             "start_period" => "Q1-2021",
@@ -404,8 +410,10 @@ module Reports
             "bp_controlled_patients" => 73,
             "bp_not_controlled_rate" => 24,
             "bp_not_controlled_patients" => 48,
-            "missed_visits_rate" => 39,
-            "missed_visits_patients" => 77
+            "visited_but_no_bp_taken_rate" => 5,
+            "visited_but_no_bp_taken_patients" => 10,
+            "missed_visits_rate" => 32,
+            "missed_visits_patients" => 63
           }
         ]
       }

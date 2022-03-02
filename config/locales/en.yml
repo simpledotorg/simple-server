@@ -91,6 +91,7 @@ en:
     yearly_report_title: "Yearly"
     hypertension_report_title: "Hypertension"
     diabetes_report_title: "Diabetes"
+    last_updated_at: "Data last updated on %{date}"
     diagnoses:
       hypertension: "Hypertension"
       diabetes: "Diabetes"
@@ -101,16 +102,17 @@ en:
       male: "Male"
       female: "Female"
       transgender: "Transgender"
+    registrations_and_follow_ups_card:
+      title: "Registrations and follow-ups"
     reports_card:
       title: "Reports"
-      subtitle: "Data last updated on %{date}."
+      subtitle: "How %{facility_name} is helping patients treat their hypertension and diabetes."
     drug_stock_report_card:
       title: "Drug stock report"
       subtitle: "Submit %{facility_name}'s drug stock report for %{period}."
       button_title: "Enter drug stock"
     achievements_card:
       title: "Achievements"
-      subtitle: "%{facility_name}'s all-time progress."
       follow_up_visits_section_title: "follow-up %{visit_or_visits} recorded"
       overdue_patients_section_title: "%{call_or_calls} to overdue patients"
       registered_patients_title: "registered %{patient_or_patients}"
@@ -136,6 +138,8 @@ en:
         diabetes_uncontrolled_long: "RBS/PPBS 200-99, FBS 126-199, or HbA1c 7.0-8.9"
         diabetes_very_uncontrolled_short: "BS ≥300"
         diabetes_very_uncontrolled_long: "RBS/PPBS ≥300, FBS ≥200, or HbA1c ≥9.0"
+        hypertension_visited_but_no_bp_taken_short: "Visited but no BP taken"
+        hypertension_visited_but_no_bp_taken_long: "no BP taken"
         missed_visits_short: "Missed visits"
         missed_visits_long: "no visit"
       assigned_patients_card:
@@ -183,6 +187,7 @@ en:
         card_subtitle: "The result for all assigned hypertensive patients registered in a quarter at their follow-up visit in the following two quarters."
         cohort_title: "Result from last visit in %{start_period}/%{end_period}"
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients} registered in %{registration_period}"
+        cohort_bar_tooltip: "%{total_patients} %{patient_or_patients} with %{threshold}"
 
   admin:
     reset_otp_alert: 'Are you sure you want to reset the OTP? This will invalidate the previous OTP and a SMS will be sent to the user with the new OTP'
