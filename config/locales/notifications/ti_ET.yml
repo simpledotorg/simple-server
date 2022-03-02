@@ -1,4 +1,4 @@
-ti:
+ti-ET:
   notifications:
     set01:
       basic: "%{patient_name}፣ ብኽብረትኩም ይጎብንዩ %{facility_name} ኣብ %{appointment_date} ንBP ዓቐንን መድሓኒታትን።"

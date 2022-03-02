@@ -1,4 +1,4 @@
-kn_IN:
+kn-IN:
   notifications:
     set01:
       basic: "%{patient_name}, ಬಿಪಿ ಮಾಪನ ಮತ್ತು ಔಷಧಿಗಳಿಗಾಗಿ %{facility_name} ಅನ್ನು %{appointment_date} ದಿನಾಂಕದಂದು ದಯವಿಟ್ಟು ಭೇಟಿ ಮಾಡಿ."

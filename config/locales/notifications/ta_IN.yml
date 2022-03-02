@@ -1,4 +1,4 @@
-ta_IN:
+ta-IN:
   notifications:
     set01:
       basic: "%{patient_name}, பிபி அளவிடவும் மருந்துகளைப் பெறவும் %{appointment_date} அன்று %{facility_name} மையத்திற்குச் செல்லவும்."

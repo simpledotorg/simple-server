@@ -1,4 +1,4 @@
-am_ET:
+am-ET:
   notifications:
     set01:
       basic: "%{patient_name}፣ እባክዎ ለደም ግፊት ልኬት እና ለመድሃኒቶች %{facility_name} በ %{appointment_date}ይጎብኙ።"

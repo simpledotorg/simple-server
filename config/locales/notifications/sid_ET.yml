@@ -1,4 +1,4 @@
-sid:
+sid-ET:
   notifications:
     set01:
       basic: "%{patient_name}, egotena la'isi %{assigned_facility_name}  %{appointment_date} munidete xisorana xagichoho."

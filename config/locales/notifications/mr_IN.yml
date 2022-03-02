@@ -1,4 +1,4 @@
-mr:
+mr-IN:
   notifications:
     set01:
       basic: "%{patient_name}, कृपया बीपी मोजण्यासाठी आणि औषधांसाठी %{appointment_date} रोजी %{facility_name} येथे जा."

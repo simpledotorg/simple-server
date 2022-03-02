@@ -1,4 +1,4 @@
-bn_BD:
+bn-BD:
   notifications:
     set01:
       basic: "%{patient_name}, রক্তচাপের পরিমাপ এবং ওষুধের জন্য অনুগ্রহ করে %{appointment_date}-এ %{facility_name}-এ যান।"

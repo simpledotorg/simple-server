@@ -1,4 +1,4 @@
-si_LK:
+si-LK:
   notifications:
     set01:
       basic: "%{patient_name}, රුධිර පීඩනය මැනීමක් සහ ඖෂධ සඳහා කරුණාකර %{appointment_date} දින %{facility_name} වෙත පැමිණෙන්න."

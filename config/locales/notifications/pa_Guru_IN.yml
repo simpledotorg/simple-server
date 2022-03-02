@@ -1,4 +1,4 @@
-pa:
+pa-Guru-IN:
   notifications:
     set01:
       basic: "%{patient_name}, ਕਿਰਪਾ ਕਰਕੇ %{appointment_date} ਨੂੰ %{facility_name} ਵਿੱਚ ਬੀ.ਪੀ. ਦੀ ਜਾਂਚ ਅਤੇ ਦਵਾਈਆਂ ਲਈ ਆਓ।"
