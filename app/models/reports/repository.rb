@@ -120,7 +120,7 @@ module Reports
     #
     # Since its use-case is tightly constrained, we introduce several hard checks to ensure that only monthly reports
     # for facilities are requested.
-    def controlled_by_gender
+    memoize def controlled_by_gender
       raise "Controlled patients by gender is only available for facilities." unless regions.all? { |region| region.region_type == "facility" }
       raise "Controlled patients by gender is only available for monthly reports" unless period_type == :month
 
