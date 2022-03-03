@@ -159,35 +159,35 @@ RSpec.describe Reports::Repository, type: :model do
     end
 
     it "can count controlled patients by gender" do
-      facility_1 = FactoryBot.create(:facility, facility_group: facility_group_1)
+      facility = FactoryBot.create(:facility, facility_group: facility_group_1)
 
-      default_attrs = {registration_facility: facility_1, assigned_facility: facility_1, recorded_at: july_2018}
-      _facility_1_controlled_male = create_list(:patient, 1, default_attrs.merge(gender: :male))
-      _facility_1_controlled_female = create_list(:patient, 2, default_attrs.merge(gender: :female))
-      _facility_1_uncontrolled_male = create_list(:patient, 3, default_attrs.merge(gender: :male))
-      _facility_1_uncontrolled_female = create_list(:patient, 4, default_attrs.merge(gender: :female))
+      default_attrs = {registration_facility: facility, assigned_facility: facility, recorded_at: july_2018}
+      facility_controlled_male = create_list(:patient, 1, default_attrs.merge(gender: :male))
+      facility_controlled_female = create_list(:patient, 2, default_attrs.merge(gender: :female))
+      facility_uncontrolled_male = create_list(:patient, 3, default_attrs.merge(gender: :male))
+      facility_uncontrolled_female = create_list(:patient, 4, default_attrs.merge(gender: :female))
 
-      _facility_1_controlled_male.each do |patient|
+      facility_controlled_male.each do |patient|
         create(:blood_pressure, :with_encounter, :under_control, recorded_at: jan_2019, patient: patient)
       end
 
-      _facility_1_controlled_female.each do |patient|
+      facility_controlled_female.each do |patient|
         create(:blood_pressure, :with_encounter, :under_control, recorded_at: jan_2019, patient: patient)
       end
 
-      _facility_1_uncontrolled_male.each do |patient|
+      facility_uncontrolled_male.each do |patient|
         create(:blood_pressure, :with_encounter, :hypertensive, recorded_at: jan_2019, patient: patient)
       end
 
-      _facility_1_uncontrolled_female.each do |patient|
+      facility_uncontrolled_female.each do |patient|
         create(:blood_pressure, :with_encounter, :hypertensive, recorded_at: jan_2019, patient: patient)
       end
 
       refresh_views
 
-      repo = Reports::Repository.new(facility_1.region, periods: (july_2018.to_period..july_2020.to_period))
-      expect(repo.controlled_by_gender[facility_1.slug][jan_2019.to_period]["male"]).to eq(1)
-      expect(repo.controlled_by_gender[facility_1.slug][jan_2019.to_period]["female"]).to eq(2)
+      repo = Reports::Repository.new(facility.region, periods: (july_2018.to_period..july_2020.to_period))
+      expect(repo.controlled_by_gender[facility.slug][jan_2019.to_period]["male"]).to eq(1)
+      expect(repo.controlled_by_gender[facility.slug][jan_2019.to_period]["female"]).to eq(2)
     end
 
     it "gets registration and assigned patient counts for brand new regions with no data" do
