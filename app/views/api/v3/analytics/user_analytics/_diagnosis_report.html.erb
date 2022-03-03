@@ -64,7 +64,7 @@
     </p>
     <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph", locals: { data: diagnosis_data["monthly_follow_up_patients"]["breakdown"], data_type: diagnosis_data["monthly_follow_up_patients"]["data_type"], graph_css_color: "bgc-blue-new", show_tooltip: false } %>
   </div>
-  <div class="mt-24px mb-8px pr-16px pl-16px">
+  <div class="mt-48px mb-8px pr-16px pl-16px">
     <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey-dark">
       <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.section_title") %>
     </h3>
@@ -214,7 +214,7 @@
     <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph", locals: { data: diagnosis_data["missed_visits"]["breakdown"], data_type: diagnosis_data["missed_visits"]["data_type"], graph_css_color: "bgc-red-new", show_tooltip: true, threshold: t("progress_tab.diagnosis_report.diagnosis_thresholds.missed_visits_long") } %>
   </div>
   <% if report_diagnosis == "Hypertension" %>
-    <div class="mt-24px mb-8px pr-16px pl-16px">
+    <div class="mt-48px mb-8px pr-16px pl-16px">
       <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey-dark">
         <%= t("progress_tab.diagnosis_report.drug_stock_report.section_title") %>
       </h3>
@@ -282,7 +282,7 @@
         <% end %>
       <% end %>
     </div>
-    <div class="mt-24px mb-8px pr-16px pl-16px">
+    <div class="mt-48px mb-8px pr-16px pl-16px">
       <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey-dark">
         <%= t("progress_tab.diagnosis_report.cohort_report.section_title") %>
       </h3>
