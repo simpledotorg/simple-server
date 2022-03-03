@@ -125,7 +125,7 @@ en:
         subtitle: "Patients that had a BP taken, a blood sugar taken, an appointment scheduled, or their medications updated at %{facility_name}."
       patients_initiated_on_treatment_card:
         title: "Where is the \"Patients initiated on treatment\" data?"
-        main_text: "Use registered patients, it will always equal \"Patients initiated on treatment\" for patients registered on Simple."
+        main_text: "Use \"Registered patients\", it will always equal \"Patients initiated on treatment\" for patients registered on Simple."
     diagnosis_report:
       diagnosis_thresholds:
         hypertension_controlled_short: "BP controlled"
