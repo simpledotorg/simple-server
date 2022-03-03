@@ -71,21 +71,18 @@
   </div>
   <div class="mb-8px p-16px bgc-white bs-card">
     <div class="p-relative d-flex ai-center mb-8px" data-element-type="header">
-      <h2 class="m-0px mr-8px p-0px ta-left fw-medium fs-18px c-black">
-        <%= controlled_title = report_diagnosis == "Hypertension" ? t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_controlled_short") : t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_controlled_short") %>
-      </h2>
-      <div class="d-flex ai-center w-16px h-16px" data-element-type="help-circle">
-        <%= inline_file("help-circle.svg") %>
+      <div class="d-flex ai-center" data-element-type="header-title">
+        <h2 class="m-0px mr-8px p-0px ta-left fw-medium fs-18px c-black pe-none">
+          <%= controlled_title = report_diagnosis == "Hypertension" ? t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_controlled_short") : t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_controlled_short") %>
+        </h2>
+        <div class="d-flex ai-center w-16px h-16px pe-none" data-element-type="help-circle">
+          <%= inline_file("help-circle.svg") %>
+        </div>
       </div>
       <div
         class="o-0 pe-none p-absolute l-0 zi-100 d-flex fd-column w-100 bs-tooltip ttf-ease-in-out td-0_25s tp-opacity" 
         data-element-type="tooltip"
       >
-        <div
-          class="p-absolute t--8px l-8px w-0px h-0px br-8px-transparent bl-8px-transparent bb-8px-black"
-          data-element-type="tip"
-        >
-        </div>
         <div class="p-8px bgc-black br-4px">
           <% controlled_threshold_long = report_diagnosis == "Hypertension" ? t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_controlled_long") : t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_controlled_long") %>
           <p class="m-0px mb-4px p-0px ta-left fw-regular fs-14px lh-150 c-white">
@@ -94,6 +91,11 @@
           <p class="m-0px p-0px ta-left fw-regular fs-14px lh-150 c-white">
             <span class="fw-bold">Denominator:</span> <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.controlled_card.help_tooltip.denominator", facility_name: current_facility.name, diagnosis: report_diagnosis) %>
           </p>
+        </div>
+        <div
+          class="p-absolute b--8px w-0px h-0px br-8px-transparent bl-8px-transparent bt-8px-black"
+          data-element-type="tip"
+        >
         </div>
       </div>
     </div>
@@ -106,21 +108,18 @@
   </div>
   <div class="mb-8px p-16px bgc-white bs-card">
     <div class="p-relative d-flex ai-center mb-8px" data-element-type="header">
-      <h2 class="m-0px mr-8px p-0px ta-left fw-medium fs-18px c-black">
-        <%= uncontrolled_title = report_diagnosis == "Hypertension" ? t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_uncontrolled_short") : t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_uncontrolled_short") %>
-      </h2>
-      <div class="d-flex ai-center w-16px h-16px" data-element-type="help-circle">
-        <%= inline_file("help-circle.svg") %>
+      <div class="d-flex ai-center" data-element-type="header-title">
+        <h2 class="m-0px mr-8px p-0px ta-left fw-medium fs-18px c-black pe-none">
+          <%= uncontrolled_title = report_diagnosis == "Hypertension" ? t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_uncontrolled_short") : t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_uncontrolled_short") %>
+        </h2>
+        <div class="d-flex ai-center w-16px h-16px pe-none" data-element-type="help-circle">
+          <%= inline_file("help-circle.svg") %>
+        </div>
       </div>
       <div
         class="o-0 pe-none p-absolute l-0 zi-100 d-flex fd-column w-100 bs-tooltip ttf-ease-in-out td-0_25s tp-opacity"
         data-element-type="tooltip"
       >
-        <div
-          class="p-absolute t--8px l-8px w-0px h-0px br-8px-transparent bl-8px-transparent bb-8px-black"
-          data-element-type="tip"
-        >
-        </div>
         <div class="p-8px bgc-black br-4px">
           <% uncontrolled_threshold_long = report_diagnosis == "Hypertension" ? t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_uncontrolled_long") : t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_uncontrolled_long") %>
           <p class="m-0px mb-4px p-0px ta-left fw-regular fs-14px lh-150 c-white">
@@ -129,6 +128,11 @@
           <p class="m-0px p-0px ta-left fw-regular fs-14px lh-150 c-white">
             <span class="fw-bold">Denominator:</span> <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.uncontrolled_card.help_tooltip.denominator", facility_name: current_facility.name, diagnosis: report_diagnosis) %>
           </p>
+        </div>
+        <div
+          class="p-absolute b--8px w-0px h-0px br-8px-transparent bl-8px-transparent bt-8px-black"
+          data-element-type="tip"
+        >
         </div>
       </div>
     </div>
@@ -142,21 +146,18 @@
   <% if report_diagnosis == "Diabetes" %>
     <div class="mb-8px p-16px bgc-white bs-card">
       <div class="p-relative d-flex ai-center mb-8px" data-element-type="header">
-        <h2 class="m-0px mr-8px p-0px ta-left fw-medium fs-18px c-black">
-          <%= t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_very_uncontrolled_short") %>
-        </h2>
-        <div class="d-flex ai-center w-16px h-16px" data-element-type="help-circle">
-          <%= inline_file("help-circle.svg") %>
+        <div class="d-flex ai-center" data-element-type="header-title">
+          <h2 class="m-0px mr-8px p-0px ta-left fw-medium fs-18px c-black pe-none">
+            <%= t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_very_uncontrolled_short") %>
+          </h2>
+          <div class="d-flex ai-center w-16px h-16px pe-none" data-element-type="help-circle">
+            <%= inline_file("help-circle.svg") %>
+          </div>
         </div>
         <div
           class="o-0 pe-none p-absolute l-0 zi-100 d-flex fd-column w-100 bs-tooltip ttf-ease-in-out td-0_25s tp-opacity"
           data-element-type="tooltip"
         >
-          <div
-            class="p-absolute t--8px l-8px w-0px h-0px br-8px-transparent bl-8px-transparent bb-8px-black"
-            data-element-type="tip"
-          >
-          </div>
           <div class="p-8px bgc-black br-4px">
             <p class="m-0px mb-4px p-0px ta-left fw-regular fs-14px lh-150 c-white">
               <span class="fw-bold">Numerator:</span> <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.very_uncontrolled_card.help_tooltip.numerator", very_uncontrolled_threshold: t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_very_uncontrolled_long")) %>
@@ -164,6 +165,11 @@
             <p class="m-0px p-0px ta-left fw-regular fs-14px lh-150 c-white">
               <span class="fw-bold">Denominator:</span> <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.very_uncontrolled_card.help_tooltip.denominator", facility_name: current_facility.name) %>
             </p>
+          </div>
+          <div
+            class="p-absolute b--8px w-0px h-0px br-8px-transparent bl-8px-transparent bt-8px-black"
+            data-element-type="tip"
+          >
           </div>
         </div>
       </div>
@@ -175,21 +181,18 @@
   <% end %>
   <div class="mb-8px p-16px bgc-white bs-card">
     <div class="p-relative d-flex ai-center mb-8px" data-element-type="header">
-      <h2 class="m-0px mr-8px p-0px ta-left fw-medium fs-18px c-black">
-        <%= t("progress_tab.diagnosis_report.diagnosis_thresholds.missed_visits_short") %>
-      </h2>
-      <div class="d-flex ai-center w-16px h-16px" data-element-type="help-circle">
-        <%= inline_file("help-circle.svg") %>
+      <div class="d-flex ai-center" data-element-type="header-title">
+        <h2 class="m-0px mr-8px p-0px ta-left fw-medium fs-18px c-black pe-none">
+          <%= t("progress_tab.diagnosis_report.diagnosis_thresholds.missed_visits_short") %>
+        </h2>
+        <div class="d-flex ai-center w-16px h-16px pe-none" data-element-type="help-circle">
+          <%= inline_file("help-circle.svg") %>
+        </div>
       </div>
       <div
         class="o-0 pe-none p-absolute l-0 zi-100 d-flex fd-column w-100 bs-tooltip ttf-ease-in-out td-0_25s tp-opacity"
         data-element-type="tooltip"
       >
-        <div
-          class="p-absolute t--8px l-8px w-0px h-0px br-8px-transparent bl-8px-transparent bb-8px-black"
-          data-element-type="tip"
-        >
-        </div>
         <div class="p-8px bgc-black br-4px">
           <p class="m-0px mb-4px p-0px ta-left fw-regular fs-14px lh-150 c-white">
             <span class="fw-bold">Numerator:</span> <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.missed_visits_card.help_tooltip.numerator", diagnosis: report_diagnosis) %>
@@ -197,6 +200,11 @@
           <p class="m-0px p-0px ta-left fw-regular fs-14px lh-150 c-white">
             <span class="fw-bold">Denominator:</span> <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.missed_visits_card.help_tooltip.denominator", facility_name: current_facility.name, diagnosis: report_diagnosis) %>
           </p>
+        </div>
+        <div
+          class="p-absolute b--8px w-0px h-0px br-8px-transparent bl-8px-transparent bt-8px-black"
+          data-element-type="tip"
+        >
         </div>
       </div>
     </div>
