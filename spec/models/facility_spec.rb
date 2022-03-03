@@ -471,4 +471,24 @@ RSpec.describe Facility, type: :model do
       I18n.locale = previous_locale
     end
   end
+
+  describe ".active" do
+    it "returns only active facilities" do
+      active_facilities = create_list(:facility, 4)
+      create(:patient, registration_facility: active_facilities.first)
+      create(:patient, registration_facility: active_facilities.first, assigned_facility: active_facilities.second)
+      patient = create(:patient, :hypertension, registration_facility: active_facilities.third, device_created_at: 10.days.ago)
+      create(:blood_pressure,
+        patient: patient,
+        recorded_at: 1.day.ago,
+        facility: active_facilities.fourth)
+      inactive_facility = create(:facility)
+
+      refresh_views
+
+      expect(Facility.all.active.count).to eq(4)
+      expect(Facility.all.active).to match_array(active_facilities)
+      expect(Facility.all.active).not_to include(inactive_facility)
+    end
+  end
 end

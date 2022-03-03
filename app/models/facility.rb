@@ -64,6 +64,12 @@ class Facility < ApplicationRecord
       .select("facilities.*, reporting_facilities.*")
   }
 
+  scope :active, -> {
+    joins("INNER JOIN reporting_facility_states on reporting_facility_states.facility_id = facilities.id")
+      .where("cumulative_registrations > 0 OR cumulative_assigned_patients > 0 OR monthly_follow_ups > 0")
+      .distinct
+  }
+
   enum facility_size: {
     community: "community",
     small: "small",
