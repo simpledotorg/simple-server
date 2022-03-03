@@ -147,9 +147,8 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
           post :create, params: params
         end
 
-        it "logs failure and schedules a new attempt if the first attempt failed and there is a next communication type" do
+        it "logs failure if the attempt failed" do
           session_id = SecureRandom.uuid
-          fallback_time = 5.minutes.from_now
           notification = create(:notification)
           communication = create(:communication, :whatsapp, notification: notification)
           create(:twilio_sms_delivery_detail, session_id: session_id, result: "queued", communication: communication)
@@ -160,16 +159,9 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
           )
           set_twilio_signature_header(callback_url, params)
 
-          allow(Communication).to receive(:next_messaging_time).and_return(fallback_time)
-          expect(AppointmentNotification::Worker).to receive(:perform_at).with(
-            fallback_time,
-            communication.notification.id
-          )
           expect(Statsd.instance).to receive(:increment).with("twilio_callback.whatsapp.failed")
 
           post :create, params: params
-
-          expect(communication.notification.reload.status).to eq("scheduled")
         end
 
         context "For communication with no appointment" do
