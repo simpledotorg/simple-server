@@ -19,6 +19,10 @@ class Messaging::Twilio::Api < Messaging::Channel
     # To be provided by the channel.
   end
 
+  def fetch_message(sid)
+    client.messages(sid).fetch
+  end
+
   private
 
   memoize def client

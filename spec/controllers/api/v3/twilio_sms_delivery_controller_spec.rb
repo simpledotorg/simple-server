@@ -176,10 +176,10 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
           it "logs failure and schedules a new attempt if the first attempt failed and there is a next communication type" do
             twilio_client = double("TwilioClientDouble")
             twilio_response = double("TwilioClientResponseDouble")
+            allow(Twilio::REST::Client).to receive(:new).and_return(twilio_client)
             allow(twilio_client).to receive_message_chain("messages.create").and_return(twilio_response)
             allow(twilio_response).to receive(:sid).and_return(nil)
             allow(twilio_response).to receive(:status).and_return(nil)
-            allow_any_instance_of(TwilioApiService).to receive(:client).and_return(twilio_client)
 
             session_id = SecureRandom.uuid
             fallback_time = 5.minutes.from_now

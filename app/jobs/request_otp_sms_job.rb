@@ -1,13 +1,10 @@
 class RequestOtpSmsJob < ApplicationJob
   def perform(user)
-    context = {
-      calling_class: self.class.name,
-      user_id: user.id,
-      communication_type: :sms
-    }
-
     handle_twilio_errors(user) do
-      TwilioApiService.new.send_sms(recipient_number: user.localized_phone_number, message: otp_message(user), context: context)
+      Messaging::Twilio::OtpSms.new.send_message(
+        recipient_number: user.localized_phone_number,
+        message: otp_message(user)
+      )
     end
   end
 
@@ -20,7 +17,7 @@ class RequestOtpSmsJob < ApplicationJob
 
   def handle_twilio_errors(user, &block)
     block.call
-  rescue TwilioApiService::Error => error
+  rescue Messaging::Twilio::Error => error
     if error.reason == :invalid_phone_number
       Rails.logger.warn("OTP to #{user.id} failed because of an invalid phone number")
       Statsd.instance.increment("twilio.errors.invalid_phone_number")

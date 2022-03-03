@@ -39,7 +39,7 @@ class AppointmentNotification::Worker
     }
     Sentry.set_tags(context)
 
-    response = notify_via_twilio(notification, communication_type, recipient_number, context)
+    response = notify_via_twilio(notification, communication_type, recipient_number)
 
     return unless response
     metrics.increment("sent.#{communication_type}")
@@ -52,30 +52,25 @@ class AppointmentNotification::Worker
     response
   end
 
-  def notify_via_twilio(notification, communication_type, recipient_number, context)
-    service = TwilioApiService.new(sms_sender: medication_reminder_sms_sender)
-    args = {
-      recipient_number: recipient_number,
-      message: notification.localized_message,
-      callback_url: callback_url,
-      context: context
-    }
+  def notify_via_twilio(notification, communication_type, recipient_number)
+    messaging_channel =
+      case communication_type
+        when "whatsapp"
+          Messaging::Twilio::Whatsapp
+        when "sms"
+          Messaging::Twilio::ReminderSms
+        else
+          raise UnknownCommunicationType, "#{self.class.name} is not configured to handle communication type #{communication_type}"
+      end
 
     handle_twilio_error(notification) do
-      case communication_type
-      when "whatsapp"
-        service.send_whatsapp(args)
-      when "sms"
-        service.send_sms(args)
-      else
-        raise UnknownCommunicationType, "#{self.class.name} is not configured to handle communication type #{communication_type}"
-      end
+      messaging_channel.new.send_message(recipient_number: recipient_number, message: notification.localized_message)
     end
   end
 
   def handle_twilio_error(notification, &block)
     block.call
-  rescue TwilioApiService::Error => error
+  rescue Messaging::Twilio::Error => error
     if error.reason == :invalid_phone_number
       notification.status_cancelled!
       logger.warn("notification #{notification.id} cancelled because of an invalid phone number")
@@ -94,21 +89,6 @@ class AppointmentNotification::Worker
       twilio_msg_status: response.status,
       communication_type: communication_type
     )
-  end
-
-  def callback_url
-    api_v3_twilio_sms_delivery_url(
-      host: ENV.fetch("SIMPLE_SERVER_HOST"),
-      protocol: ENV.fetch("SIMPLE_SERVER_HOST_PROTOCOL")
-    )
-  end
-
-  def medication_reminder_sms_sender
-    @medication_reminder_sms_sender ||= medication_reminder_sms_senders.sample
-  end
-
-  def medication_reminder_sms_senders
-    ENV.fetch("TWILIO_APPOINTMENT_REMINDER_NUMBERS", "").split(",").map(&:strip)
   end
 
   def valid_notification?(notification)
