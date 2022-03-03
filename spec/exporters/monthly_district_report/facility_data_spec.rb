@@ -48,6 +48,11 @@ describe MonthlyDistrictReport::FacilityData do
       mock_facility_repo(repo_double, district, month)
       allow(Reports::Repository).to receive(:new).and_return(repo_double)
 
+      # We are creating patients for these facilities so that they are considered as active
+      district[:region].facilities.each { |facility| create(:patient, registration_facility: facility) }
+
+      refresh_views
+
       rows = described_class.new(district[:region], month).content_rows
 
       expect(rows[0].count).to eq 8
@@ -74,8 +79,33 @@ describe MonthlyDistrictReport::FacilityData do
     it "orders the rows by block, and then facility names" do
       district = setup_district_with_facilities
       month = Period.month("2021-09-01".to_date)
+
+      # We are creating patients for these facilities so that they are considered as active
+      district[:region].facilities.each { |facility| create(:patient, registration_facility: facility) }
+
+      refresh_views
+
       rows = described_class.new(district[:region], month).content_rows
       expect(rows.map { |row| row["Name of facility"] }).to match_array ["Test Facility 1", "Test Facility 2"]
+    end
+
+    it "only includes active facilities" do
+      district = setup_district_with_facilities
+      month = Period.month("2021-09-01".to_date)
+
+      repo_double = instance_double(Reports::Repository)
+      mock_facility_repo(repo_double, district, month)
+      allow(Reports::Repository).to receive(:new).and_return(repo_double)
+
+      # We are creating patients for these facilities so that they are considered as active
+      create(:patient, registration_facility: district[:facility_1])
+
+      refresh_views
+
+      rows = described_class.new(district[:region], month).content_rows
+      expect(rows.count).to eq(1)
+      expect(rows.map { |row| row["Name of facility"] }).to include("Test Facility 1")
+      expect(rows.map { |row| row["Name of facility"] }).not_to include("Test Facility 2")
     end
   end
 end
