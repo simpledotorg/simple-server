@@ -62,7 +62,7 @@
             <div class="mb-24px">
               <% choices = last_n_months(n: 6, inclusive: @show_current_month).map { |d| [d.to_date.to_s(:mon_year), d.to_date.to_s(:mon_year)] }
               %>
-              <%= form.select :for_end_of_month, choices, { label_class: "d-block mb-8px fw-medium fs-18px c-black", selected: @for_end_of_month.to_date.to_s(:mon_year) }, { id: "for_end_of_month", class: "w-100 p-12px fw-medium fs-18px c-blue bgc-blue-light b-none br-4px bs-secondary-button o-none a-none chevron-down-icon" } %>
+              <%= form.select :for_end_of_month, choices, { label_class: "d-block mb-8px fw-medium fs-18px c-black", selected: @for_end_of_month.to_date.to_s(:mon_year) }, { id: "for_end_of_month", class: "w-100 p-12px fw-regular fs-16px c-blue bgc-blue-light b-none br-2px bs-secondary-button o-none a-none chevron-down-icon" } %>
             </div>
             <% @protocol_drugs.each_with_index do |protocol_drug, index| %>
               <%= form.fields_for "drug_stocks[#{index}]", DrugStock.new do |drug_stock_form| %>
@@ -117,7 +117,7 @@
               <% end %>
             </div>
             <div class="p-fixed b-0 l-0 zi-100 w-100 p-8px bgc-blue-light bs-border-box bs-fixed-card" style="padding-bottom: 12px;">
-              <%= form.button "SAVE", class: "d-block w-100 p-16px ta-center bgc-blue tt-uppercase ls-1_25px br-4px fs-16px b-none bs-primary-button bs-border-box", style: "font-weight: 700; color: #ffffff;" %>
+              <%= form.button "SAVE", class: "d-block w-100 p-16px ta-center bgc-blue tt-uppercase ls-1_25px br-2px fs-16px b-none bs-primary-button bs-border-box", style: "font-weight: 700; color: #ffffff;" %>
             </div>
           <% end %>
         </div>
