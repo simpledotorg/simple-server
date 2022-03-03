@@ -124,8 +124,8 @@ en:
         title: "Follow-up patients"
         subtitle: "Patients that had a BP taken, a blood sugar taken, an appointment scheduled, or their medications updated at %{facility_name}."
       patients_initiated_on_treatment_card:
-        title: "Where is the patients initiated on treatment data?"
-        main_text: "Use registered patients, it will always equal patients initiated on treatment for patients registered on Simple."
+        title: "Where is the \"Patients initiated on treatment\" data?"
+        main_text: "Use registered patients, it will always equal \"Patients initiated on treatment\" for patients registered on Simple."
     diagnosis_report:
       diagnosis_thresholds:
         hypertension_controlled_short: "BP controlled"
@@ -151,7 +151,7 @@ en:
           transferred_out_patients: "Transferred-out"
       total_registered_patients:
         title: "Total registered patients"
-        subtitle: "All %{diagnosis} patients registered in %{facility_name}."
+        subtitle: "All %{diagnosis} patients registered at %{facility_name}."
       monthly_follow_up_patients:
         title: "Monthly follow-up patients"
         subtitle: "%{diagnosis} patients with a BP taken, a blood sugar taken, an appointment scheduled, or a medication updated at %{facility_name} during a month."
@@ -159,22 +159,22 @@ en:
         section_title: "Patient treatment outcomes"
         chart_tooltip: "%{number_of_patients} %{patient_or_patients} with %{threshold} between %{start_period} and %{end_period} of %{number_of_registered_patients} %{patient_or_patients} registered till %{registration_period}."
         controlled_card:
-          subtitle: "%{diagnosis} patients in %{facility_name} registered >3 months ago with %{controlled_threshold} at their last visit in the last 3 months."
+          subtitle: "%{diagnosis} patients at %{facility_name} registered >3 months ago with %{controlled_threshold} at their last visit in the last 3 months."
           help_tooltip:
             numerator: "Patients with %{controlled_threshold} at their last visit in the last 3 months."
             denominator: "%{diagnosis} patients assigned to %{facility_name}, registered before the last 3 months. Dead and lost to follow-up patients are excluded."
         uncontrolled_card:
-          subtitle: "%{diagnosis} patients in %{facility_name} registered >3 months ago with %{uncontrolled_threshold} at their last visit in the last 3 months."
+          subtitle: "%{diagnosis} patients at %{facility_name} registered >3 months ago with %{uncontrolled_threshold} at their last visit in the last 3 months."
           help_tooltip:
             numerator: "Patients with %{uncontrolled_threshold} at their last visit in the last 3 months."
             denominator: "%{diagnosis} patients assigned to %{facility_name}, registered before the last 3 months. Dead and lost to follow-up patients are excluded."
         very_uncontrolled_card:
-          subtitle: "Diabetes patients in %{facility_name} registered >3 months ago with %{very_uncontrolled_threshold} at their last visit in the last 3 months."
+          subtitle: "Diabetes patients at %{facility_name} registered >3 months ago with %{very_uncontrolled_threshold} at their last visit in the last 3 months."
           help_tooltip:
             numerator: "Diabetes patients in %{very_uncontrolled_threshold} at their last visit in the last 3 months."
             denominator: "Diabetes patients assigned to %{facility_name}, registered before the last 3 months. Dead and lost to follow-up patients are excluded."
         missed_visits_card:
-          subtitle: "%{diagnosis} patients in %{facility_name} registered >3 months ago with no visit in the last 3 months."
+          subtitle: "%{diagnosis} patients at %{facility_name} registered >3 months ago with no visit in the last 3 months."
           help_tooltip:
             numerator: "%{diagnosis} patients with no visit in the last 3 months."
             denominator: "%{diagnosis} patients assigned to %{facility_name}, registered before the last 3 months. Dead and lost to follow-up patients are excluded."
