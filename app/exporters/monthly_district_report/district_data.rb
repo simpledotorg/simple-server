@@ -74,10 +74,10 @@ module MonthlyDistrictReport
     private
 
     def row_data
-      facility_counts_by_size = district.facilities.group(:facility_size).count
+      facility_counts_by_size = district.facilities.active.group(:facility_size).count
       {
         "District" => district.name, # "District"
-        "Facilities implementing IHCI" => district.facilities.count, # "Facilities implementing IHCI"
+        "Facilities implementing IHCI" => district.facilities.active.count, # "Facilities implementing IHCI"
         "Total DHs/SDHs" => facility_counts_by_size.fetch("large", 0), # "Total DHs/SDHs"
         "Total CHCs" => facility_counts_by_size.fetch("medium", 0), # "Total CHCs"
         "Total PHCs" => facility_counts_by_size.fetch("small", 0), # "Total PHCs"
