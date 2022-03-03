@@ -4,7 +4,7 @@
 <div class="d-flex fd-column h-160px">
   <div class="p-relative f-1 d-flex" data-graph-type="bar-chart" data-with-tooltip="<%= show_tooltip %>">
     <% data.each_with_index do |data_point, index| %>
-      <div class="f-1 d-flex fd-column ai-center jc-end" data-graph-element="bar">
+      <div class="f-1 d-flex fd-column ai-center jc-flex-end" data-graph-element="bar">
         <p class="m-0px mb-8px p-0px ta-center fw-medium fs-16px c-black ttf-ease-in-out td-0_25s tp-color" data-element-type="text">
           <%= data_point["value"] %><% if data_type == "percentage" %>%<% end %>
         </p>
