@@ -65,7 +65,7 @@
     <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph", locals: { data: diagnosis_data["monthly_follow_up_patients"]["breakdown"], data_type: diagnosis_data["monthly_follow_up_patients"]["data_type"], graph_css_color: "bgc-blue-new", show_tooltip: false } %>
   </div>
   <div class="mt-24px mb-8px pr-16px pl-16px">
-    <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey">
+    <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey-dark">
       <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.section_title") %>
     </h3>
   </div>
@@ -215,7 +215,7 @@
   </div>
   <% if report_diagnosis == "Hypertension" %>
     <div class="mt-24px mb-8px pr-16px pl-16px">
-      <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey">
+      <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey-dark">
         <%= t("progress_tab.diagnosis_report.drug_stock_report.section_title") %>
       </h3>
     </div>
@@ -244,7 +244,7 @@
       <h3 class="m-0px mb-2px p-0px ta-left fw-medium fs-20px c-black">
         <%= diagnosis_data["arb_tablets"]["name"] %>
       </h3>
-      <p class="m-0px mb-16px p-0px ta-left fw-regular fs-16px lh-150 c-yellow <%= patient_days_css_class(diagnosis_data['arb_tablets']['days_of_drugs_left'], prefix: 'c') %>">
+      <p class="m-0px mb-16px p-0px ta-left fw-regular fs-16px lh-150 c-yellow-dark-new <%= patient_days_css_class(diagnosis_data['arb_tablets']['days_of_drugs_left'], prefix: 'c') %>">
         <%= diagnosis_data["arb_tablets"]["days_of_drugs_left"] %> <%= "day".pluralize(diagnosis_data["arb_tablets"]["days_of_drugs_left"]) %> of tablets in stock
       </p>
       <% diagnosis_data["arb_tablets"]["breakdown"].each_with_index do |drug, index| %>
@@ -283,7 +283,7 @@
       <% end %>
     </div>
     <div class="mt-24px mb-8px pr-16px pl-16px">
-      <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey">
+      <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey-dark">
         <%= t("progress_tab.diagnosis_report.cohort_report.section_title") %>
       </h3>
     </div>
