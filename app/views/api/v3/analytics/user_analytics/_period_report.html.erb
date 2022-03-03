@@ -11,20 +11,14 @@
     </a>
     <div class="mb-12px pr-16px pl-16px">
       <h1 class="m-0px mb-8px fw-bold fs-24px">
-        <%= title %>
+        <%= title %> report
       </h1>
       <% if subtitle %>
         <p class="m-0px p-0px ta-left fw-normal fs-16px c-grey-dark">
           <%= subtitle %>
         </p>
       <% end %>
-    </div>
-    <div class="ws-nowrap ox-scroll pl-16px d-none-scrollbar">
-      <% periods.each do |pill| %>
-        <%= render partial: "api/v3/analytics/user_analytics/pill",
-                  locals: { title: pill,
-                            is_active: pill == periods.first ? true : false } %>
-      <% end %>
+      <%= select_tag "periods", options_for_select(periods, periods.first), class: "w-100 mt-16px p-12px fw-medium fs-18px c-blue bgc-blue-light b-none br-4px bs-secondary-button o-none a-none chevron-down-icon" %>
     </div>
   </div>
   <div class="mb-8px p-16px bgc-white br-4px bs-card">
