@@ -2,8 +2,8 @@ class Messaging::Twilio::Whatsapp < Messaging::Twilio::Api
   # This number comes from https://www.twilio.com/docs/whatsapp/sandbox#what-is-the-twilio-sandbox-for-whatsapp
   TWILIO_TEST_WHATSAPP_NUMBER = "+14155238886"
 
-  def send_message(recipient_number, message)
-    super(whatsapp_format(recipient_number), message)
+  def send_message(recipient_number:, message:)
+    super(recipient_number: whatsapp_format(recipient_number), message: message)
   end
 
   def communication_type

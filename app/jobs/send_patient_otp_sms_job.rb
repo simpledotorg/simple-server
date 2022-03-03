@@ -3,15 +3,9 @@ class SendPatientOtpSmsJob < ApplicationJob
     phone_number = passport_authentication.patient&.latest_mobile_number
     return unless phone_number.present?
 
-    context = {
-      calling_class: self.class.name,
-      patient_id: passport_authentication.patient&.id,
-      communication_type: :sms
-    }
-    TwilioApiService.new.send_sms(
+    Messaging::Twilio::OtpSms.new.send_message(
       recipient_number: phone_number,
-      message: otp_message(passport_authentication),
-      context: context
+      message: otp_message(passport_authentication)
     )
   end
 

@@ -39,22 +39,18 @@ class MessagePatients
   def send_messages
     contactable_patients.each do |patient|
       phone_number = phone_number_for(patient)
-
       next unless phone_number
-      notification_service = TwilioApiService.new
-      context = {
-        calling_class: self.class.name,
-        patient_id: patient.id,
-        communication_type: channel
-      }
+
+      messaging_channel =
+        if whatsapp?
+          Messaging::Twilio::Whatsapp
+        elsif sms?
+          Messaging::Twilio::ReminderSms
+        end
 
       begin
-        response = if whatsapp?
-          notification_service.send_whatsapp(recipient_number: phone_number, message: message, context: context)
-        elsif sms?
-          notification_service.send_sms(recipient_number: phone_number, message: message, context: context)
-        end
-      rescue TwilioApiService::Error
+        response = messaging_channel.new.send_message(recipient_number: phone_number, message: message)
+      rescue Messaging::Twilio::Error
         update_report(:exception, patient: patient)
         next
       end

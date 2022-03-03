@@ -1,8 +1,8 @@
-class Messaging::Twilio::Api < Messaging::Provider
+class Messaging::Twilio::Api < Messaging::Channel
   include Rails.application.routes.url_helpers
   include Memery
 
-  def send_message(recipient_number, message)
+  def send_message(recipient_number:, message:)
     track_metrics do
       client.messages.create(
         from: sender_number,
