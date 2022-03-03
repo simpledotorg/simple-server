@@ -2,6 +2,9 @@
  Reports
 <% end %>
 
+<h1 class="page-header">
+  Reports
+</h1>
 <div class="container">
   <div class="row">
     <div class="col-sm-5 col-lg-7">
@@ -17,7 +20,7 @@
           <div class="card organization show">
             <div class="access-tree__section-header">
               <% if current_admin.feature_enabled?(:organization_reports) %>
-                <%= link_to(org.name, reports_region_path(org.source.slug, report_scope: org.region_type)) %>
+                <h3><%= link_to(org.name, reports_region_path(org.source.slug, report_scope: org.region_type)) %></h3>
               <% else %>
                 <h3><%= org.name %></h3>
               <% end %>

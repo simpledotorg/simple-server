@@ -14,16 +14,16 @@
     <%= @region.name %>
   </nav>
 
-  <p class="mb-12px fs-xxlarge fw-bold">
+  <h1 class="mb-3 page-header">
     <%= @region.name %>
-  </p>
+  </h1>
 
   <p class="d-none fw-bold d-print-block">
     <%= @period %> Report — <% if params[:action] == "show" %>Overview<% elsif params[:action] == "details" %>Details<% elsif params[:action] == "cohort" %>Cohort Reports<% end %>
   </p>
   <%
     # We want to maintain the request params for Overview and Detail nav links, but _only_ in the
-    # case where its _not_ a quarter (as those pages don't support quarters).
+    # case where it's _not_ a quarter (as those pages don't support quarters).
     url_params = (params.dig(:period, :type) == "quarter") ? {} : request.params
   %>
   <div class="d-flex fd-column fd-lg-row justify-lg-between mb-24px d-print-none">

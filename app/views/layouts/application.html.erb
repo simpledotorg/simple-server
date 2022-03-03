@@ -44,6 +44,15 @@
   <body>
     <% if email_authentication_signed_in? %>
       <%= render "shared/nav_bar" %>
+
+      <%= form_tag regions_search_url(format: :json), id: "search-form", method: :get do %>
+        <div class="mo-search" style="background: rgba(0,0,0,0.03); padding: 6px; margin: 0 -20px 60px -20px;">
+          <div style="max-width: 700px; margin: 0 auto;">
+          <%= render "shared/region_search" %>
+          </div>
+        </div>
+      <% end %>
+      
     <% end %>
     <main role="main" class="container pb-5">
       <% flash.each do |type, message| %>

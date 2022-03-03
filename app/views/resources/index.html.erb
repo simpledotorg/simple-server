@@ -1,7 +1,10 @@
+<h1 class="page-header">
+  Training materials
+</h1>
 <div class="page" id="resources">
   <div class="container">
     <div class="row">
-      <div class="col-sm-4 col-lg-2 pl-lg-0">
+      <div class="col-lg-2 pl-lg-0">
         <nav class="secondary-nav">
           <h4 class="pl-2 mt-3">
             Resources
@@ -32,7 +35,7 @@
           </a>
         </nav>
       </div>
-      <div class="col-12 col-sm-8 col-lg-10">
+      <div class="col-12 col-lg-10">
         <% if CountryConfig.current[:name] == "India" %>
           <%= render "shared/office_hours_india" %>
         <% elsif CountryConfig.current[:name] == "Bangladesh" %>

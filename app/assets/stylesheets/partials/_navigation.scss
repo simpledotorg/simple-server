@@ -3,7 +3,7 @@ Navigation
 *****************/
 
 .navigation-brand {
-  padding: 16px 8px 0 8px;
+  padding: 16px 8px 32px 8px;
   margin: 0 6px;
   display: block;
 }
@@ -16,7 +16,7 @@ Navigation
   height: 100%;
   background: #103047;
   vertical-align: top;
-  transition: 0.2s ease-in-out width, color;
+  transition: 0.15s ease-in-out width, color;
   z-index: 10000000000;
   overflow: scroll;
 
@@ -54,9 +54,10 @@ Navigation
 
   .nav-search {
     opacity: 0;
+    min-width: 200px; /* keeps search from wrapping */
     padding: 16px;
     transition: 0.1s ease-in-out opacity;
-    transition-delay: 0.3s;
+    transition-delay: 0.1s;
   }
 
   .nav-link,
@@ -91,7 +92,8 @@ Navigation
     display: none;
   }
 
-  &:hover {
+  &:hover,
+  &.navigation-open {
     background: #0b283d;
     width: 340px;
 
@@ -135,33 +137,59 @@ form.edit_email_authentication .invalid-feedback {
   font-weight: bold;
 }
 
-nav.navigation-development a.nav-link {
-}
-
-nav.navigation-qa a.nav-link {
-}
-
-nav.navigation-sandbox a.nav-link {
-}
-
-nav.navigation-demo a.nav-link {
-}
-
-nav.navigation-production a.nav-link {
-}
-
 @include media-breakpoint-down(sm) {
   .navigation {
     display: none;
+    width: 85% !important;
   }
   .mobile-header {
-    background: red;
-    padding: 16px;
+    background: $blue-dark;
+    color: $white;
+    padding: 12px;
+    display: block;
+
+    .navigation-brand {
+      position: absolute;
+      left: 50%;
+      top: -4px;
+      margin-left: -20px;
+    }
+
+    .navigation-icon {
+      color: $white;
+      font-size: 12px;
+      display: inline-block;
+      padding: 6px 20px;
+      border: 1px solid $transparent-blue-30;
+      border-radius: 4px;
+
+      &:hover {
+        text-decoration: none;
+      }
+    }
+  }
+  .navigation-open {
+    display: block;
+  }
+  a.navigation-shim {
+    display: block;
+    width: 15%;
+    background: rgba(0, 0, 0, 0.8);
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100%;
+    text-indent: -1000em;
   }
 }
 
-@include media-breakpoint-up(sm) {
-  .mobile-header {
-    display: none; 
+@include media-breakpoint-up(md) {
+  body {
+    padding: 0 20px 0 76px; /* 56px left menu */
+  }
+
+  .mobile-header,
+  a.navigation-shim {
+    display: none;
   }
 }

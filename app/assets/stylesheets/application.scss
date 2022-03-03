@@ -46,6 +46,17 @@ h1.btn {
   }
 }
 
+h1.page-header {
+  font-size: 48px;
+  font-family: $font-condensed;
+}
+
+@include media-breakpoint-down(md) {
+  h1.page-header {
+    font-size: 36px;
+  }
+}
+
 h2 {
   font-size: 22px;
   font-weight: bold;
@@ -97,6 +108,10 @@ a.link-add {
   border: 1px solid $blue-mid !important;
   background: #fff !important;
   color: $blue !important;
+}
+
+nav.secondary-nav h4 {
+  margin-left: 8px;
 }
 
 nav.secondary-nav a {
@@ -317,8 +332,6 @@ footer {
 @include media-breakpoint-up(lg) {
   main.container {
     margin-top: 32px !important;
-    position: relative;
-    left: 25px;
   }
 
   .container div.container {
@@ -342,6 +355,12 @@ footer {
 @include media-breakpoint-up(xl) {
   main.container {
     max-width: 1200px;
+  }
+}
+
+@include media-breakpoint-up(xxxl) {
+  main.container {
+    max-width: 1400px;
   }
 }
 

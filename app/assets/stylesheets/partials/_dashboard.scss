@@ -19,8 +19,32 @@ Dashboard UI
   border-radius: 5px;
   padding: 16px;
   margin: 8px -4px 0 -4px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   background: #fff;
+}
+
+.update {
+  position: relative;
+  padding-left: 52px;
+
+  .update-date {
+    position: absolute;
+    left: 0;
+    top: 16px;
+    width: 56px;
+    background: $green-light;
+    color: $green-dark;
+    text-align: center;
+    padding: 12px 2px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: bold;
+
+    b {
+      font-size: 12px;
+    }
+  }
 }
 
 sup {
@@ -99,7 +123,8 @@ th sup {
   clear: both;
 
   tr.sorts {
-    a, .sort-label {
+    a,
+    .sort-label {
       background: $grey-lightest;
       color: $blue;
       height: 100%;
@@ -134,7 +159,7 @@ th sup {
     }
 
     th.sort-label {
-      border-left: 1px solid #C9D3D8;
+      border-left: 1px solid #c9d3d8;
     }
 
     th.sort-label:first-of-type {
@@ -215,19 +240,33 @@ th sup {
     }
   }
 
-  col { border-left: 1px solid $grey-lightest; }
-  col:first-of-type { border-left: none; }
-  col.table-divider { border-left: 1px solid $grey-mid; }
+  col {
+    border-left: 1px solid $grey-lightest;
+  }
+  col:first-of-type {
+    border-left: none;
+  }
+  col.table-divider {
+    border-left: 1px solid $grey-mid;
+  }
 
   td.type-grade {
     font-weight: bold;
     text-align: center;
   }
 
-  td.grade-a { color: $green-dark }
-  td.grade-b { color: $yellow-dark }
-  td.grade-c { color: $orange-dark }
-  td.grade-d { color: $red }
+  td.grade-a {
+    color: $green-dark;
+  }
+  td.grade-b {
+    color: $yellow-dark;
+  }
+  td.grade-c {
+    color: $orange-dark;
+  }
+  td.grade-d {
+    color: $red;
+  }
 
   td.type-number {
     text-align: right;
@@ -240,8 +279,8 @@ th sup {
 
   td.type-percent em {
     font-style: normal;
-    background: #F1DBFF;
-    color: #BE72E3;
+    background: #f1dbff;
+    color: #be72e3;
     border-radius: 100px;
     padding: 2px;
     width: 3.5em;
@@ -249,8 +288,8 @@ th sup {
   }
 
   .row-total td.type-percent em {
-    background: rgba(0,0,0,0.1);
-    color: rgba(0,0,0,0.6);
+    background: rgba(0, 0, 0, 0.1);
+    color: rgba(0, 0, 0, 0.6);
   }
 }
 
@@ -260,8 +299,7 @@ th sup {
 
     .dropdown-menu {
       max-height: 350px;
-      overflow:
-              hidden;
+      overflow: hidden;
       overflow: scroll;
     }
 
@@ -309,9 +347,9 @@ th sup {
 }
 
 .table-compact .row-total td {
-  background: #FFFAE3;
+  background: #fffae3;
   font-weight: bold;
-  border-color: #E2DBBB;
+  border-color: #e2dbbb;
 }
 
 .split-bars {
@@ -338,11 +376,29 @@ th sup {
   white-space: nowrap;
 }
 
-.split-bars .bar-none { background: $grey-light; color: $grey-dark; border-radius: 3px; }
-.split-bars .bar-1 { background: $grey-mid; color: $grey-darkest; border-radius: 3px 0 0 3px; }
-.split-bars .bar-2 { background: $red; color: #fff; }
-.split-bars .bar-3 { background: $green-dark; color: $white; }
-.split-bars .bar-4 { background: $blue; border-radius: 0 3px 3px 0; color: $white; }
+.split-bars .bar-none {
+  background: $grey-light;
+  color: $grey-dark;
+  border-radius: 3px;
+}
+.split-bars .bar-1 {
+  background: $grey-mid;
+  color: $grey-darkest;
+  border-radius: 3px 0 0 3px;
+}
+.split-bars .bar-2 {
+  background: $red;
+  color: #fff;
+}
+.split-bars .bar-3 {
+  background: $green-dark;
+  color: $white;
+}
+.split-bars .bar-4 {
+  background: $blue;
+  border-radius: 0 3px 3px 0;
+  color: $white;
+}
 
 .split-row-first .split-bars .bar {
   background-image: asset-url("diagonal-stripe.png");
@@ -361,10 +417,14 @@ th sup {
   padding: 0 0 4px 0;
 }
 
-.key.desktop { display: inline-block; }
+.key.desktop {
+  display: inline-block;
+}
 
 @include media-breakpoint-down(sm) {
-  .key.desktop { display: none; }
+  .key.desktop {
+    display: none;
+  }
 }
 
 .key div.key-definition {
@@ -390,13 +450,25 @@ th sup {
   text-indent: -1000em;
 }
 
-.key div.didntattend:after { background: $grey-mid; }
-.key div.uncontrolled:after { background: $red; }
-.key div.controlled:after { background: $green-dark; }
+.key div.didntattend:after {
+  background: $grey-mid;
+}
+.key div.uncontrolled:after {
+  background: $red;
+}
+.key div.controlled:after {
+  background: $green-dark;
+}
 
-.key div.didntattend { color: $grey-dark; }
-.key div.uncontrolled { color: $red-dark; }
-.key div.controlled { color: $green-dark; }
+.key div.didntattend {
+  color: $grey-dark;
+}
+.key div.uncontrolled {
+  color: $red-dark;
+}
+.key div.controlled {
+  color: $green-dark;
+}
 
 @include media-breakpoint-down(sm) {
   .key {
@@ -413,14 +485,18 @@ th sup {
   white-space: nowrap;
 }
 
-.split-bars-secondary { margin-bottom: 24px; }
+.split-bars-secondary {
+  margin-bottom: 24px;
+}
 
 .split-bars-secondary td {
   padding: 6px;
   border-top: 1px solid $grey-lightest;
 }
 
-.split-bars-secondary tr:first-child td { border-top: 0; }
+.split-bars-secondary tr:first-child td {
+  border-top: 0;
+}
 
 .bars {
   text-align: center;
@@ -436,12 +512,14 @@ th sup {
   margin-bottom: 2px;
 }
 
-.bars td:last-child div { background: #aaa; }
+.bars td:last-child div {
+  background: #aaa;
+}
 
 //
 // Table sorting styles (override tablesort.css)
 //
-th[role=columnheader]:not(.no-sort):after {
+th[role="columnheader"]:not(.no-sort):after {
   border-color: $blue transparent;
   display: inline-block;
   float: none;
@@ -449,7 +527,7 @@ th[role=columnheader]:not(.no-sort):after {
   vertical-align: middle;
 }
 
-th[role=columnheader]:not(.no-sort):hover:after {
+th[role="columnheader"]:not(.no-sort):hover:after {
   opacity: 0.5;
 }
 
@@ -459,17 +537,19 @@ th[aria-sort]:not(.no-sort):hover:after {
 }
 
 // Reverse the arrows since we default to descending
-th[role=columnheader]:not(.no-sort):after,
-th[aria-sort=descending]:not(.no-sort):after {
+th[role="columnheader"]:not(.no-sort):after,
+th[aria-sort="descending"]:not(.no-sort):after {
   border-width: 4px 4px 0;
 }
 
-th[aria-sort=ascending]:not(.no-sort):after {
+th[aria-sort="ascending"]:not(.no-sort):after {
   border-bottom: 4px solid;
   border-width: 0 4px 4px;
 }
 
-.pad-bottom { padding-bottom: 10px; }
+.pad-bottom {
+  padding-bottom: 10px;
+}
 
 h2 .heading-label,
 h3 .heading-label {
@@ -496,7 +576,6 @@ h3 .heading-label {
     color: $grey-mid;
     margin-right: 4px;
   }
-
 }
 .no-medical-officers {
   width: 100%;
@@ -507,7 +586,9 @@ h3 .heading-label {
   border-radius: 5px;
   color: $grey-dark;
 
-  h5 { margin: auto; }
+  h5 {
+    margin: auto;
+  }
 }
 
 em.bg-green {
@@ -533,4 +614,76 @@ em.bg-orange {
   border-color: $orange-light !important;
 }
 
-.tl-fixed { table-layout: fixed; }
+.tl-fixed {
+  table-layout: fixed;
+}
+
+.resource-link {
+  position: relative;
+  padding-left: 60px;
+  margin: 8px 0;
+
+  span {
+    display: block;
+    color: #666;
+  }
+
+  i {
+    position: absolute;
+    left: 12px;
+    top: 8px;
+    font-size: 24px;
+  }
+
+  &.resource-presentation i {
+    color: Gold;
+  }
+
+  &.resource-doc i {
+    color: ForestGreen;
+    font-size: 28px;
+  }
+
+  &.resource-video i {
+    color: Red;
+    font-size: 28px;
+  }
+
+  &.resource-calendar i {
+    color: Grey;
+    font-size: 28px;
+  }
+
+  a:hover {
+    text-decoration: none;
+  }
+}
+
+.col-video {
+  strong {
+    display: block;
+    margin: 6px 0 0 0;
+  }
+
+  span {
+    display: block;
+    color: #999;
+    font-size: 85%;
+  }
+
+  .fa-youtube {
+    color: orangered;
+  }
+
+  a {
+    display: block;
+    position: relative;
+    padding: 4px 0 4px 28px;
+
+    i {
+      position: absolute;
+      left: 2px;
+      top: 7px;
+    }
+  }
+}
