@@ -252,7 +252,7 @@ describe MaterializedPatientSummary, type: :model do
   end
 
   describe "#ltfu?" do
-    it "is true if patient was registered over a year ago w/o any BPs recorded" do
+    it "is true if patient was registered over a year ago w/o any BPs, BSs, PDs or appointments recorded" do
       ltfu_patient = create(:patient, recorded_at: 2.years.ago)
       refresh_view
 
@@ -261,6 +261,38 @@ describe MaterializedPatientSummary, type: :model do
 
     it "is false if patient registerd w/i the LTFU time" do
       not_ltfu_patient = create(:patient, recorded_at: 1.month.ago)
+      refresh_view
+
+      expect(described_class.find(not_ltfu_patient.id).ltfu?).to eq false
+    end
+
+    it "is false if patient recorded a BP w/i the LTFU time" do
+      not_ltfu_patient = create(:patient, recorded_at: 2.years.ago)
+      create(:blood_pressure, patient: not_ltfu_patient)
+      refresh_view
+
+      expect(described_class.find(not_ltfu_patient.id).ltfu?).to eq false
+    end
+
+    it "is false if patient recorded a BS w/i the LTFU time" do
+      not_ltfu_patient = create(:patient, recorded_at: 2.years.ago)
+      create(:blood_sugar, patient: not_ltfu_patient)
+      refresh_view
+
+      expect(described_class.find(not_ltfu_patient.id).ltfu?).to eq false
+    end
+
+    it "is false if patient recoreded a PD w/i the LTFU time" do
+      not_ltfu_patient = create(:patient, recorded_at: 2.years.ago)
+      create(:prescription_drug, patient: not_ltfu_patient)
+      refresh_view
+
+      expect(described_class.find(not_ltfu_patient.id).ltfu?).to eq false
+    end
+
+    it "is false if patient recoreded a appointment w/i the LTFU time" do
+      not_ltfu_patient = create(:patient, recorded_at: 2.years.ago)
+      create(:appointment, patient: not_ltfu_patient)
       refresh_view
 
       expect(described_class.find(not_ltfu_patient.id).ltfu?).to eq false

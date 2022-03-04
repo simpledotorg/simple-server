@@ -27,7 +27,9 @@ class MaterializedPatientSummary < ActiveRecord::Base
 
   def ltfu?
     recorded_at < Patient::LTFU_TIME.ago &&
-      (latest_blood_pressure_recorded_at.nil? ||
-        latest_blood_pressure_recorded_at < Patient::LTFU_TIME.ago)
+      (latest_blood_pressure_recorded_at.nil? || latest_blood_pressure_recorded_at < Patient::LTFU_TIME.ago) &&
+      (latest_blood_sugar_recorded_at.nil? || latest_blood_sugar_recorded_at < Patient::LTFU_TIME.ago) &&
+      (next_scheduled_appointment.nil? || next_scheduled_appointment.device_created_at < Patient::LTFU_TIME.ago) &&
+      (prescription_drugs.empty? || current_prescription_drugs.first.device_created_at < Patient::LTFU_TIME.ago)
   end
 end
