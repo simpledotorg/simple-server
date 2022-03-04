@@ -495,14 +495,13 @@ RSpec.describe Facility, type: :model do
       facilities = create_list(:facility, 4)
       patient = create(:patient, :hypertension, registration_facility: facilities.first, device_created_at: 2.months.ago)
       create(:blood_pressure,
-             patient: patient,
-             recorded_at: 1.day.ago,
-             facility: facilities.second)
+        patient: patient,
+        recorded_at: 1.day.ago,
+        facility: facilities.second)
       create(:blood_pressure,
-             patient: patient,
-             recorded_at: 1.month.ago,
-             facility: facilities.third)
-
+        patient: patient,
+        recorded_at: 1.month.ago,
+        facility: facilities.third)
 
       refresh_views
 
