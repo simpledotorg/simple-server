@@ -49,7 +49,9 @@ describe MonthlyDistrictReport::FacilityData do
       allow(Reports::Repository).to receive(:new).and_return(repo_double)
 
       # We are creating patients for these facilities so that they are considered as active
-      district[:region].facilities.each { |facility| create(:patient, registration_facility: facility) }
+      district[:region].facilities.each do |facility|
+        create(:patient, registration_facility: facility, device_created_at: month.to_date)
+      end
 
       refresh_views
 
@@ -81,7 +83,9 @@ describe MonthlyDistrictReport::FacilityData do
       month = Period.month("2021-09-01".to_date)
 
       # We are creating patients for these facilities so that they are considered as active
-      district[:region].facilities.each { |facility| create(:patient, registration_facility: facility) }
+      district[:region].facilities.each do |facility|
+        create(:patient, registration_facility: facility, device_created_at: month.to_date)
+      end
 
       refresh_views
 
@@ -98,7 +102,7 @@ describe MonthlyDistrictReport::FacilityData do
       allow(Reports::Repository).to receive(:new).and_return(repo_double)
 
       # We are creating patients for these facilities so that they are considered as active
-      create(:patient, registration_facility: district[:facility_1])
+      create(:patient, registration_facility: district[:facility_1], device_created_at: month.to_date)
 
       refresh_views
 

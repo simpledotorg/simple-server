@@ -10,7 +10,7 @@ module MonthlyDistrictReport
     end
 
     def content_rows
-      active_facility_ids = district.facilities.active.pluck(:id)
+      active_facility_ids = district.facilities.active(month_date: @month.to_date).pluck(:id)
 
       district
         .facility_regions

@@ -490,5 +490,26 @@ RSpec.describe Facility, type: :model do
       expect(Facility.all.active).to match_array(active_facilities)
       expect(Facility.all.active).not_to include(inactive_facility)
     end
+
+    it "returns only facilities active in a given month" do
+      facilities = create_list(:facility, 4)
+      patient = create(:patient, :hypertension, registration_facility: facilities.first, device_created_at: 2.months.ago)
+      create(:blood_pressure,
+             patient: patient,
+             recorded_at: 1.day.ago,
+             facility: facilities.second)
+      create(:blood_pressure,
+             patient: patient,
+             recorded_at: 1.month.ago,
+             facility: facilities.third)
+
+
+      refresh_views
+
+      active_facilities = Facility.all.active(month_date: Date.today)
+      expect(active_facilities.count).to eq(2)
+      expect(active_facilities).to match_array([facilities.first, facilities.second])
+      expect(active_facilities).not_to include(facilities.third, facilities.fourth)
+    end
   end
 end

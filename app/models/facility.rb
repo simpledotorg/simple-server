@@ -64,8 +64,9 @@ class Facility < ApplicationRecord
       .select("facilities.*, reporting_facilities.*")
   }
 
-  scope :active, -> {
+  scope :active, ->(month_date: Date.today) {
     joins("INNER JOIN reporting_facility_states on reporting_facility_states.facility_id = facilities.id")
+      .where("reporting_facility_states.month_date" => month_date.at_beginning_of_month)
       .where("cumulative_registrations > 0 OR cumulative_assigned_patients > 0 OR monthly_follow_ups > 0")
       .distinct
   }
