@@ -52,12 +52,21 @@ Navigation
     }
   }
 
-  .nav-search {
-    opacity: 0;
-    min-width: 200px; /* keeps search from wrapping */
-    padding: 16px;
-    transition: 0.1s ease-in-out opacity;
-    transition-delay: 0.1s;
+  .nav-user {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 12px 0 20px 20px;
+    border-top: 1px solid $blue-dark;
+    background: #0b283d;
+    color: $blue-light;
+    font-size: 14px;
+    width: 100%;
+    display: none;
+
+    .float-right {
+      padding-right: 20px;
+    }
   }
 
   .nav-link,
@@ -97,10 +106,6 @@ Navigation
     background: #0b283d;
     width: 340px;
 
-    .nav-search {
-      opacity: 1;
-    }
-
     .nav-link-dropdown {
       background: url(chevron-down.png) no-repeat 95% 50%;
       background-size: 16px;
@@ -108,6 +113,10 @@ Navigation
       &:hover {
         background-color: $blue-dark;
       }
+    }
+
+    .nav-user {
+      display: block;
     }
 
     span {

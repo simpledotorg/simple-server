@@ -1,4 +1,4 @@
-<nav class="<%= style_class_for_environment %>" id="navigation">
+<nav class="<%= style_class_for_environment %> d-print-none" id="navigation">
     <%= link_to root_path, class: "navigation-brand" do %>
       <%= logo_for_environment %>
     <% end %>
@@ -40,24 +40,9 @@
     <!-----------------
       Facilities
     -----------------> 
-      <a data-toggle="collapse" href="#nav-my-facilities" role="button" aria-expanded="false" aria-controls="nav-my-facilities" class="nav-link nav-link-dropdown">
+      <%= link_to(my_facilities_bp_controlled_path(preserve_query_params(request.query_parameters, ["zone", "size", "facility_group"])), class: "nav-link #{active_action?("bp_controlled")}") do %>
         <i class="fas fa-table main-menu-icon"></i> <span>Facilities tables</span>
-      </a>
-      
-      <div id="nav-my-facilities" class="nav-section collapse">
-        <%= link_to(my_facilities_bp_controlled_path(preserve_query_params(request.query_parameters, ["zone", "size", "facility_group"])), class: "sub-nav-link #{active_action?("bp_controlled")}") do %>
-          BP controlled
-        <% end %>
-        
-        <%= link_to(my_facilities_bp_not_controlled_path(preserve_query_params(request.query_parameters, ["zone", "size", "facility_group"])), class: "sub-nav-link #{active_action?("bp_not_controlled")}") do %>
-          BP not controlled
-        <% end %>
-        
-        <%= link_to(my_facilities_missed_visits_path(preserve_query_params(request.query_parameters, ["zone", "size", "period", "facility_group"])), class: "sub-nav-link #{active_action?("missed_visits")}") do %>
-          Missed visits
-        <% end %>
-  
-      </div>
+      <% end %>
     
     <!-----------------
       Drug stock
@@ -175,16 +160,22 @@
     </div>
     
     <!-----------------
-      Logout
-    ----------------->
-    <a data-toggle="collapse" href="#nav-account" role="button" aria-expanded="false" aria-controls="nav-account" class="nav-link nav-link-dropdown">
-      <i class="fas fa-user-circle main-menu-icon"></i> <%= current_admin.email %>
-    </a>
+    User
+    ------------------>
     
-    <div id="nav-account" class="nav-section collapse">
-      <%= link_to(destroy_email_authentication_session_path, method: :delete, class: "sub-nav-link", id: "nav-more-logout") do %>
-        Logout
-      <% end %>
+    <%= link_to(destroy_email_authentication_session_path, method: :delete, class: "nav-link mobile", id: "nav-more-logout") do %>
+      <i class="fas fa-user-circle main-menu-icon"></i>  <span>Logout</span>
+    <% end %>
+    
+    <div class="desktop">
+      <div class="nav-user">
+        
+        <%= link_to(destroy_email_authentication_session_path, method: :delete, class: "float-right", id: "nav-more-logout") do %>
+          <span>Logout</span>
+        <% end %>
+      
+        <%= current_admin.email %>
+      </div>
     </div>
     
   </div>

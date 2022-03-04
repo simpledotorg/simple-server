@@ -1,6 +1,28 @@
 <h1 class="page-header">
   BP controlled
 </h1>
+<div class="d-flex fd-column fd-lg-row justify-lg-between mb-24px d-print-none">
+  <div class="d-flex order-2 order-lg-1">
+    <p class="mr-24px mb-0px pb-8px fs-20px fw-bold td-none <%= params[:action] == "show" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
+      <%= link_to(my_facilities_bp_controlled_path(preserve_query_params(request.query_parameters, ["zone", "size", "facility_group"])), class: "#{active_action?("bp_controlled")}") do %>
+        BP controlled
+      <% end %>
+    </p>
+    <p class="mr-24px mb-0px pb-8px fs-20px fw-bold <%= params[:action] == "details" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
+      <%= link_to(my_facilities_bp_not_controlled_path(preserve_query_params(request.query_parameters, ["zone", "size", "facility_group"])), class: "#{active_action?("bp_not_controlled")}") do %>
+        BP not controlled
+      <% end %>
+    </p>
+    <p class="mr-24px mb-0px pb-8px fs-20px fw-bold <%= params[:action] == "cohort" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
+      <%= link_to(my_facilities_missed_visits_path(preserve_query_params(request.query_parameters, ["zone", "size", "period", "facility_group"])), class: "#{active_action?("missed_visits")}") do %>
+        Missed visits
+      <% end %>
+    </p>
+  </div>
+  <div class="d-flex actions order-1 mb-24px order-lg-2 mb-lg-0">
+    Last updated on <%= @last_updated_at %>
+  </div>
+</div>
 <div class="row">
   <div class="col-lg-12">
     <div class="card-responsive bg-white bs-small br-4px">
@@ -9,9 +31,6 @@
           <h3 class="mb-8px mb-lg-0">
             Compare BP control across facilities
           </h3>
-          <p class="c-grey-medium">
-            Last updated on <%= @last_updated_at %>
-          </p>
         </div>
         <p class="mb-4px c-grey-dark">
           <strong>What to look for:</strong> High percentages are good, and 70% or higher is ideal
