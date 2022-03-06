@@ -19,14 +19,14 @@ module MyFacilitiesHelper
     end
   end
 
-  def patient_days_css_class(patient_days, prefix: "bg")
+  def patient_days_css_class(patient_days, prefix: "bgc")
     return if patient_days.nil?
     color = if patient_days == "error" then :red
     elsif patient_days < 30 then "red-new"
     elsif patient_days < 60 then "orange-new"
     elsif patient_days < 90 then "yellow-dark-new"
     else
-      :green
+      "green-new"
     end
     "#{prefix}-#{color}"
   end
