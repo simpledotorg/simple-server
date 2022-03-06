@@ -897,6 +897,7 @@ footer p {
 .c-grey-darkest { color: $grey-darkest; }
 .c-white { color: $white; }
 .c-black { color: $black; }
+.c-brown-new { color:$brown-new; }
 /* BACKGROUND COLORS */
 .bgc-grey-light { background: $grey-light; }
 .bgc-white { background-color: $white; }
@@ -935,6 +936,7 @@ footer p {
 .bl-8px-transparent { border-left: 8px solid $transparent-black-0; }
 .bt-8px-black { border-top: 8px solid $black; }
 .bb-8px-black { border-bottom: 8px solid $black; }
+.br-1px { border-radius: 1px; }
 .br-2px { border-radius: 2px; }
 .br-4px { border-radius: 4px; }
 .br-8px { border-radius: 8px; }
@@ -951,10 +953,10 @@ footer p {
 .bs-card { box-shadow: 0px 2px 4px $transparent-black-10; }
 .bs-fixed-card { box-shadow: 0px -2px 8px $transparent-black-10; }
 .bs-primary-button {
-  box-shadow: 0 2px 2px $transparent-black-5, 0px 2px 0px $blue-dark;
+  box-shadow: 0 2px 2px $transparent-black-16;
 }
 .bs-secondary-button {
-  box-shadow: 0 2px 2px $transparent-black-5, 0px 2px 0px $blue-mid;
+  box-shadow: 0 2px 2px $transparent-black-16;
 }
 .bs-tooltip { box-shadow: 0px 2px 8px $transparent-black-10; }
 /* FORM FIELDS */
