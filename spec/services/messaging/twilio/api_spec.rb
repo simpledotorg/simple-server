@@ -7,6 +7,11 @@ RSpec.describe Messaging::Twilio::Api do
     allow(client).to receive_message_chain("messages.create")
   end
 
+  before do
+    allow_any_instance_of(described_class).to receive(:communication_type).and_return("sms")
+    allow_any_instance_of(described_class).to receive(:sender_number).and_return("9999999999")
+  end
+
   describe "test mode vs production mode" do
     it "uses the test twilio creds by default in test environment" do
       twilio_test_account_sid = ENV.fetch("TWILIO_TEST_ACCOUNT_SID")
