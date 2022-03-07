@@ -16,7 +16,7 @@ class Messaging::Twilio::Api < Messaging::Channel
   end
 
   def sender_number
-    # To be provided by the channel.
+    raise NotImplementedError
   end
 
   def fetch_message(sid)

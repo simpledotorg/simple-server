@@ -12,12 +12,13 @@ class Messaging::Channel
   attr_reader :metrics
 
   def send_message(recipient_number:, message:)
-    # To be implemented by the individual channel.
+    raise NotImplementedError
   end
 
+  # A channel supports one of the communication types enumerated in
+  # Communication.communication_types.
   def communication_type
-    # A channel supports one of the communication types enumerated in
-    # Communication.communication_types.
+    raise NotImplementedError
   end
 
   def track_metrics(&block)
