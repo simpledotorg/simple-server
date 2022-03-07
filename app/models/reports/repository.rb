@@ -102,6 +102,56 @@ module Reports
       }
     end
 
+    # Returns registration counts per region / period counted by gender
+    memoize def monthly_registrations_by_gender
+      items = regions.map { |region| RegionEntry.new(region, __method__, group_by: :gender, period_type: period_type) }
+      result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
+        registered_patients_query.count(entry.region, period_type, group_by: :gender)
+      end
+      result.each_with_object({}) { |(region_entry, counts), hsh|
+        hsh[region_entry.region.slug] = counts
+      }
+    end
+
+    # Controlled patients by gender for Maharashtra DHIS2 integration pilot. Until gender disaggregation has first-class
+    # support in the reporting pipeline, this method is a very one-off workaround to add the necessary numbers to the
+    # repository. We choose to add this method to the repository so that the DHIS2 exporter can work off of a consistent
+    # interface.
+    #
+    # Since its use-case is tightly constrained, we introduce several hard checks to ensure that only monthly reports
+    # for facilities are requested.
+    memoize def controlled_by_gender
+      raise "Controlled patients by gender is only available for facilities." unless regions.all? { |region| region.region_type == "facility" }
+      raise "Controlled patients by gender is only available for monthly reports" unless period_type == :month
+
+      items = regions.map { |region| RegionEntry.new(region, __method__, group_by: :gender, period_type: period_type) }
+      result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
+        # Recreate the controlled patients indicator based on the implementatino of reporting_facility_states
+        facility_counts = Reports::PatientState
+          .where(
+            assigned_facility_region_id: entry.region.id,
+            htn_care_state: "under_care",
+            htn_treatment_outcome_in_last_3_months: "controlled",
+            hypertension: "yes"
+          )
+          .where("months_since_registration >= 3")
+          .group_by_period(period_type, :month_date, {format: Period.formatter(period_type)})
+          .group(:gender)
+          .count
+
+        # Group the results into { period: {male: 123, female: 456} }
+        facility_counts.each_with_object({}) { |(key, count), hsh|
+          period, field_id = *key
+          hsh[period] ||= {}
+          hsh[period][field_id] = count
+        }
+      end
+
+      result.each_with_object({}) { |(region_entry, counts), hsh|
+        hsh[region_entry.region.slug] = counts
+      }
+    end
+
     # Returns Follow ups per Region / Period. Takes an optional group_by clause (commonly used to group by user_id)
     memoize def hypertension_follow_ups(group_by: nil)
       if follow_ups_v2?
