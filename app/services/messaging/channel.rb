@@ -11,6 +11,10 @@ class Messaging::Channel
 
   attr_reader :metrics
 
+  def self.send_message(*args)
+    new.send_message(*args)
+  end
+
   def send_message(recipient_number:, message:)
     raise NotImplementedError
   end

@@ -1,7 +1,7 @@
 class RequestOtpSmsJob < ApplicationJob
   def perform(user)
     handle_twilio_errors(user) do
-      Messaging::Twilio::OtpSms.new.send_message(
+      Messaging::Twilio::OtpSms.send_message(
         recipient_number: user.localized_phone_number,
         message: otp_message(user)
       )

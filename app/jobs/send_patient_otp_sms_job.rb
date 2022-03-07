@@ -3,7 +3,7 @@ class SendPatientOtpSmsJob < ApplicationJob
     phone_number = passport_authentication.patient&.latest_mobile_number
     return unless phone_number.present?
 
-    Messaging::Twilio::OtpSms.new.send_message(
+    Messaging::Twilio::OtpSms.send_message(
       recipient_number: phone_number,
       message: otp_message(passport_authentication)
     )

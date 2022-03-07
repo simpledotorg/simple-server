@@ -18,8 +18,8 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       response_double = double
       allow(response_double).to receive(:status).and_return("sent")
       allow(response_double).to receive(:sid).and_return("12345")
-      allow_any_instance_of(Messaging::Twilio::Whatsapp).to receive(:send_message).and_return(response_double)
-      allow_any_instance_of(Messaging::Twilio::ReminderSms).to receive(:send_message).and_return(response_double)
+      allow(Messaging::Twilio::Whatsapp).to receive(:send_message).and_return(response_double)
+      allow(Messaging::Twilio::ReminderSms).to receive(:send_message).and_return(response_double)
     end
 
     it "logs but creates nothing when notifications and experiment flags are disabled" do
@@ -69,7 +69,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("whatsapp")
 
       expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.sent.whatsapp")
-      expect_any_instance_of(Messaging::Twilio::Whatsapp).to receive(:send_message)
+      expect(Messaging::Twilio::Whatsapp).to receive(:send_message)
       described_class.perform_async(notification.id)
       described_class.drain
     end
@@ -79,7 +79,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("sms")
 
       expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.sent.sms")
-      expect_any_instance_of(Messaging::Twilio::ReminderSms).to receive(:send_message)
+      expect(Messaging::Twilio::ReminderSms).to receive(:send_message)
       described_class.perform_async(notification.id)
       described_class.drain
     end
@@ -127,7 +127,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       previous_whatsapp = create(:communication, :whatsapp, notification: notification)
       create(:twilio_sms_delivery_detail, :failed, communication: previous_whatsapp)
 
-      expect_any_instance_of(Messaging::Twilio::ReminderSms).to receive(:send_message)
+      expect(Messaging::Twilio::ReminderSms).to receive(:send_message)
       described_class.perform_async(notification.id)
       described_class.drain
     end
@@ -152,7 +152,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
         }
       )
 
-      expect_any_instance_of(Messaging::Twilio::ReminderSms).to receive(:send_message).with(
+      expect(Messaging::Twilio::ReminderSms).to receive(:send_message).with(
         recipient_number: notification.patient.latest_mobile_number,
         message: localized_message
       )
@@ -161,7 +161,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
     end
 
     it "can send to a specified phone number if provided" do
-      expect_any_instance_of(Messaging::Twilio::ReminderSms).to receive(:send_message).with(
+      expect(Messaging::Twilio::ReminderSms).to receive(:send_message).with(
         recipient_number: "+14145555555",
         message: notification.localized_message
       )
@@ -182,7 +182,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
     end
 
     it "cancels the notification if twilio responds with invalid phone number error" do
-      allow_any_instance_of(Messaging::Twilio::ReminderSms).to receive(:send_message).and_raise(Messaging::Twilio::Error.new("An error", 21211))
+      allow(Messaging::Twilio::ReminderSms).to receive(:send_message).and_raise(Messaging::Twilio::Error.new("An error", 21211))
       expect {
         described_class.perform_async(notification.id)
         described_class.drain

@@ -64,7 +64,7 @@ class AppointmentNotification::Worker
       end
 
     handle_twilio_error(notification) do
-      messaging_channel.new.send_message(recipient_number: recipient_number, message: notification.localized_message)
+      messaging_channel.send_message(recipient_number: recipient_number, message: notification.localized_message)
     end
   end
 

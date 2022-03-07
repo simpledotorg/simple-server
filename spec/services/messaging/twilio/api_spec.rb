@@ -20,7 +20,7 @@ RSpec.describe Messaging::Twilio::Api do
 
       expect(Twilio::REST::Client).to receive(:new).with(twilio_test_account_sid, twilio_test_auth_token)
 
-      described_class.new.send_message(recipient_number: "9999999999", message: "hello")
+      described_class.send_message(recipient_number: "9999999999", message: "hello")
     end
 
     it "uses the production twilio creds when SIMPLE_SERVER_ENV is production" do
@@ -31,7 +31,7 @@ RSpec.describe Messaging::Twilio::Api do
 
       expect(Twilio::REST::Client).to receive(:new).with(twilio_account_sid, twilio_auth_token)
 
-      described_class.new.send_message(recipient_number: "9999999999", message: "hello")
+      described_class.send_message(recipient_number: "9999999999", message: "hello")
     end
 
     it "uses the production twilio creds when TWILIO_PRODUCTION_OVERRIDE is set" do
@@ -44,7 +44,7 @@ RSpec.describe Messaging::Twilio::Api do
 
       expect(Twilio::REST::Client).to receive(:new).with(twilio_account_sid, twilio_auth_token)
 
-      described_class.new.send_message(recipient_number: "9999999999", message: "hello")
+      described_class.send_message(recipient_number: "9999999999", message: "hello")
     end
   end
 
@@ -58,7 +58,7 @@ RSpec.describe Messaging::Twilio::Api do
 
     allow(client).to receive_message_chain("messages.create").and_raise(Twilio::REST::RestError.new("An error", response))
     expect {
-      described_class.new.send_message(
+      described_class.send_message(
         recipient_number: recipient_phone_number,
         message: "test message"
       )
@@ -78,7 +78,7 @@ RSpec.describe Messaging::Twilio::Api do
     )
 
     expect {
-      described_class.new.send_message(
+      described_class.send_message(
         recipient_number: recipient_phone_number,
         message: "test message"
       )

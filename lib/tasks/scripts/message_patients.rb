@@ -49,7 +49,7 @@ class MessagePatients
         end
 
       begin
-        response = messaging_channel.new.send_message(recipient_number: phone_number, message: message)
+        response = messaging_channel.send_message(recipient_number: phone_number, message: message)
       rescue Messaging::Twilio::Error
         update_report(:exception, patient: patient)
         next

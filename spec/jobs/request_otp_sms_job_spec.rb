@@ -7,7 +7,7 @@ RSpec.describe RequestOtpSmsJob, type: :job do
   let(:otp_message) { "<#> #{user.otp} is your Simple verification code\n#{app_signature}" }
 
   it "sends the OTP via SMS" do
-    expect_any_instance_of(Messaging::Twilio::OtpSms).to receive(:send_message).with(
+    expect(Messaging::Twilio::OtpSms).to receive(:send_message).with(
       recipient_number: user.localized_phone_number, message: otp_message
     )
 
@@ -15,7 +15,7 @@ RSpec.describe RequestOtpSmsJob, type: :job do
   end
 
   it "does not raise an exception if twilio responds with invalid phone number error" do
-    allow_any_instance_of(Messaging::Twilio::OtpSms).to receive(:send_message).and_raise(Messaging::Twilio::Error.new("An error", 21211))
+    allow(Messaging::Twilio::OtpSms).to receive(:send_message).and_raise(Messaging::Twilio::Error.new("An error", 21211))
     described_class.perform_now(user)
   end
 end

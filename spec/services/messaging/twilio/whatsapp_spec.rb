@@ -23,7 +23,7 @@ RSpec.describe Messaging::Twilio::Whatsapp do
     end
   end
 
-  describe "#send_message" do
+  describe ".send_message" do
     it "correctly calls the Twilio API" do
       client = double("TwilioClientDouble")
       allow(Twilio::REST::Client).to receive(:new).and_return(client)
@@ -39,7 +39,7 @@ RSpec.describe Messaging::Twilio::Whatsapp do
         body: "test whatsapp message"
       )
 
-      described_class.new.send_message(
+      described_class.send_message(
         recipient_number: recipient_phone_number,
         message: "test whatsapp message"
       )
