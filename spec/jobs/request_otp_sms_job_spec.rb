@@ -7,11 +7,6 @@ RSpec.describe RequestOtpSmsJob, type: :job do
   let(:otp_message) { "<#> #{user.otp} is your Simple verification code\n#{app_signature}" }
 
   it "sends the OTP via SMS" do
-    context = {
-      calling_class: "RequestOtpSmsJob",
-      user_id: user.id,
-      communication_type: :sms
-    }
     expect_any_instance_of(Messaging::Twilio::OtpSms).to receive(:send_message).with(
       recipient_number: user.localized_phone_number, message: otp_message
     )
