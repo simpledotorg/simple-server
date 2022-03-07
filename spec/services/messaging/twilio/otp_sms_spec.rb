@@ -7,7 +7,6 @@ RSpec.describe Messaging::Twilio::OtpSms do
     it "uses the production sender in production" do
       stub_const("SIMPLE_SERVER_ENV", "production")
 
-
       allow(ENV).to receive(:[]).and_call_original
       allow(ENV).to receive(:fetch).with("TWILIO_PHONE_NUMBER").and_return("1234567890")
 

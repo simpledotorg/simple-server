@@ -80,7 +80,7 @@ RSpec.describe Messaging::Twilio::Api do
     expect {
       described_class.new.send_message(
         recipient_number: recipient_phone_number,
-        message: "test message",
+        message: "test message"
       )
     }.to raise_error(an_instance_of(Messaging::Twilio::Error)) do |error|
       expect(error.reason).to be_nil

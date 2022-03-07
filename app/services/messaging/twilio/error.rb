@@ -1,7 +1,7 @@
 class Messaging::Twilio::Error < Messaging::Error
   # https://www.twilio.com/docs/api/errors
-  ERROR_CODE_REASONS = { 21211 => :invalid_phone_number,
-                         21614 => :invalid_phone_number }
+  ERROR_CODE_REASONS = {21211 => :invalid_phone_number,
+                        21614 => :invalid_phone_number}
 
   attr_reader :message, :reason
 

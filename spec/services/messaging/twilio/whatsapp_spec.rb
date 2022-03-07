@@ -1,7 +1,6 @@
 require "rails_helper"
 
 RSpec.describe Messaging::Twilio::Whatsapp do
-
   specify { expect(described_class.new.communication_type).to eq("whatsapp") }
 
   describe "Whatsapp sender" do
