@@ -253,49 +253,89 @@ describe MaterializedPatientSummary, type: :model do
 
   describe "#ltfu?" do
     it "is true if patient was registered over a year ago w/o any BPs, BSs, PDs or appointments recorded" do
-      ltfu_patient = create(:patient, recorded_at: 2.years.ago)
+      ltfu_patient = create(:patient, recorded_at: 365.days.ago)
       refresh_view
 
       expect(described_class.find(ltfu_patient.id).ltfu?).to eq true
     end
 
     it "is false if patient registerd w/i the LTFU time" do
-      not_ltfu_patient = create(:patient, recorded_at: 1.month.ago)
+      not_ltfu_patient = create(:patient, recorded_at: 364.days.ago)
       refresh_view
 
       expect(described_class.find(not_ltfu_patient.id).ltfu?).to eq false
     end
 
-    it "is false if patient recorded a BP w/i the LTFU time" do
-      not_ltfu_patient = create(:patient, recorded_at: 2.years.ago)
-      create(:blood_pressure, patient: not_ltfu_patient)
-      refresh_view
+    context "patient records a BP" do
+      it "is false if patient recorded a BP w/i the LTFU time" do
+        not_ltfu_patient = create(:patient, recorded_at: 365.days.ago)
+        create(:blood_pressure, patient: not_ltfu_patient, device_created_at: 364.days.ago)
+        refresh_view
 
-      expect(described_class.find(not_ltfu_patient.id).ltfu?).to eq false
+        expect(described_class.find(not_ltfu_patient.id).ltfu?).to eq false
+      end
+
+      it "is true if patient recorded a BP not w/i the LTFU time" do
+        ltfu_patient = create(:patient, recorded_at: 365.days.ago)
+        create(:blood_pressure, patient: ltfu_patient, device_created_at: 365.days.ago)
+        refresh_view
+
+        expect(described_class.find(ltfu_patient.id).ltfu?).to eq true
+      end
     end
 
-    it "is false if patient recorded a BS w/i the LTFU time" do
-      not_ltfu_patient = create(:patient, recorded_at: 2.years.ago)
-      create(:blood_sugar, patient: not_ltfu_patient)
-      refresh_view
+    context "patient records a BS" do
+      it "is false if patient recorded a BS w/i the LTFU time" do
+        not_ltfu_patient = create(:patient, recorded_at: 365.days.ago)
+        create(:blood_sugar, patient: not_ltfu_patient, device_created_at: 364.days.ago)
+        refresh_view
 
-      expect(described_class.find(not_ltfu_patient.id).ltfu?).to eq false
+        expect(described_class.find(not_ltfu_patient.id).ltfu?).to eq false
+      end
+
+      it "is true if patient recorded a BS not w/i the LTFU time" do
+        ltfu_patient = create(:patient, recorded_at: 365.days.ago)
+        create(:blood_sugar, patient: ltfu_patient, device_created_at: 365.days.ago)
+        refresh_view
+
+        expect(described_class.find(ltfu_patient.id).ltfu?).to eq true
+      end
     end
 
-    it "is false if patient recoreded a PD w/i the LTFU time" do
-      not_ltfu_patient = create(:patient, recorded_at: 2.years.ago)
-      create(:prescription_drug, patient: not_ltfu_patient)
-      refresh_view
+    context "patient records a PD" do
+      it "is false if patient recorded a PD w/i the LTFU time" do
+        not_ltfu_patient = create(:patient, recorded_at: 365.days.ago)
+        create(:prescription_drug, patient: not_ltfu_patient, device_created_at: 364.days.ago)
+        refresh_view
 
-      expect(described_class.find(not_ltfu_patient.id).ltfu?).to eq false
+        expect(described_class.find(not_ltfu_patient.id).ltfu?).to eq false
+      end
+
+      it "is true if patient recorded a PD not w/i the LTFU time" do
+        ltfu_patient = create(:patient, recorded_at: 365.days.ago)
+        create(:prescription_drug, patient: ltfu_patient, device_created_at: 365.days.ago)
+        refresh_view
+
+        expect(described_class.find(ltfu_patient.id).ltfu?).to eq true
+      end
     end
 
-    it "is false if patient recoreded a appointment w/i the LTFU time" do
-      not_ltfu_patient = create(:patient, recorded_at: 2.years.ago)
-      create(:appointment, patient: not_ltfu_patient)
-      refresh_view
+    context "patient records a PD" do
+      it "is false if patient recorded an appointment w/i the LTFU time" do
+        not_ltfu_patient = create(:patient, recorded_at: 365.days.ago)
+        create(:appointment, patient: not_ltfu_patient, device_created_at: 364.days.ago)
+        refresh_view
 
-      expect(described_class.find(not_ltfu_patient.id).ltfu?).to eq false
+        expect(described_class.find(not_ltfu_patient.id).ltfu?).to eq false
+      end
+
+      it "is true if patient recorded an appointment not w/i the LTFU time" do
+        ltfu_patient = create(:patient, recorded_at: 365.days.ago)
+        create(:appointment, patient: ltfu_patient, device_created_at: 365.days.ago)
+        refresh_view
+
+        expect(described_class.find(ltfu_patient.id).ltfu?).to eq true
+      end
     end
   end
 end
