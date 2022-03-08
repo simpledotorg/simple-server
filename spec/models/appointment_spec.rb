@@ -315,49 +315,6 @@ describe Appointment, type: :model do
     end
   end
 
-  describe "#previously_communicated_via" do
-    let(:overdue_appointment) do
-      create(:appointment,
-        scheduled_date: 31.days.ago,
-        status: :scheduled)
-    end
-
-    it "returns falsey if there are no communications for the appointment" do
-      expect(overdue_appointment.previously_communicated_via?(:sms)).to be_falsey
-    end
-
-    it "returns falsey if there are non sms communications for the appointment" do
-      notification = create(:notification, subject: overdue_appointment)
-      create(:communication,
-        communication_type: :voip_call,
-        appointment: overdue_appointment,
-        notification: notification)
-
-      expect(overdue_appointment.previously_communicated_via?(:sms)).to be_falsey
-    end
-
-    it "returns true if followup reminder SMS for the appointment was unsuccessful" do
-      notification = create(:notification, subject: overdue_appointment)
-      notification.communications << create(:communication,
-        :sms,
-        appointment: overdue_appointment,
-        detailable: create(:twilio_sms_delivery_detail, :undelivered))
-
-      expect(overdue_appointment.previously_communicated_via?(:sms)).to eq(false)
-    end
-
-    it "returns false if followup reminder SMS for the appointment were successful" do
-      notification = create(:notification, subject: overdue_appointment)
-      notification.communications << create(:communication,
-        :sms,
-        appointment_id: overdue_appointment.id,
-        notification: notification,
-        detailable: create(:twilio_sms_delivery_detail, :delivered))
-
-      expect(overdue_appointment.reload.previously_communicated_via?(:sms)).to eq(true)
-    end
-  end
-
   context "anonymised data for appointments" do
     describe "anonymized_data" do
       it "correctly retrieves the anonymised data for an appointment" do

@@ -12,13 +12,6 @@ class Api::V3::TwilioSmsDeliveryController < ApplicationController
     event = [communication_type, twilio_message.result].join(".")
     metrics.increment(event)
 
-    notification = twilio_message.communication.notification
-
-    if twilio_message.unsuccessful? && notification&.next_communication_type
-      notification.status_scheduled!
-      AppointmentNotification::Worker.perform_at(Communication.next_messaging_time, notification.id)
-    end
-
     head :ok
   end
 
