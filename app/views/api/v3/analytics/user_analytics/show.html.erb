@@ -11,24 +11,19 @@
     </title>
     <%= inline_stylesheet("user_analytics.css") %>
   </head>
-
-  <body id="progress">
-    <div id="progress-start" class="progress-body">
-      <div class="progress-contents">
-        <p class="updated-date">
-          <span>
-            <%= raw t("analytics.updated", time: @service.last_updated_at ? l(@service.last_updated_at) : "") %>
-          </span>
+  <body class="bgc-grey-lightest">
+    <div id="home-page">
+      <div class="mb-8px">
+        <p>
+          <%= raw t("analytics.updated", time: @service.last_updated_at ? l(@service.last_updated_at) : "") %>
         </p>
-
         <%= content_tag :div,
                          id: "statistics",
                          data: { statistics: @service.daily_statistics },
                          style: "display: none" do %>
-         <% end %>
+        <% end %>
         <%= render(Reports::DailyProgressComponent.new(@service)) %>
-
-        <div class="card">
+        <div class="mb-8px p-16px bgc-white bs-card">
           <a href="#" onclick="openWindow('progress-help-registered', 'progress-start'); return false" class="info">
             <span>?</span>
           </a>
@@ -43,7 +38,6 @@
             <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service)) %>
           <% end %>
         </div>
-
         <div class="card">
           <a href="#" onclick="openWindow('progress-help-followup', 'progress-start'); return false" class="info">
             <span>?</span>
