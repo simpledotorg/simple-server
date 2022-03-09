@@ -12,7 +12,7 @@
     <%= inline_stylesheet("user_analytics.css") %>
   </head>
   <body class="bgc-grey-lightest">
-    <div id="home-page">
+    <div id="progress-start">
       <div class="mb-8px">
         <p>
           <%= raw t("analytics.updated", time: @service.last_updated_at ? l(@service.last_updated_at) : "") %>

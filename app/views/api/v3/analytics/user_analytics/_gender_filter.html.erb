@@ -1,5 +1,5 @@
 <form>
-  <select class="w-100 mt-16px p-12px fw-medium fs-16px ls-1_25px tt-uppercase c-blue bgc-blue-light b-none br-1px bs-secondary-button o-none a-none chevron-down-icon card-dropdown select <%= data_table_name %>" onchange='filterDataByGender("<%= data_table_name %>")'>
+  <select class="w-100 mt-8px mb-16px p-12px fw-medium fs-16px ls-1_25px tt-uppercase c-blue bgc-blue-light b-none br-1px bs-secondary-button o-none a-none chevron-down-icon card-dropdown select <%= data_table_name %>" onchange='filterDataByGender("<%= data_table_name %>")'>
     <% if is_diabetes_enabled %>
       <option value="all"><%= raw t("analytics.all_hypertension_and_diabetes") %></option>
     <% end %>
