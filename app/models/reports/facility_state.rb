@@ -20,5 +20,9 @@ module Reports
     def period
       @period ||= Period.month(month_date)
     end
+
+    scope :with_registered_assigned_or_follow_up_patients, -> {
+      where("cumulative_registrations > 0 OR cumulative_assigned_patients > 0 OR monthly_follow_ups > 0")
+    }
   end
 end

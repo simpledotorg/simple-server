@@ -477,7 +477,7 @@ RSpec.describe Facility, type: :model do
       active_facilities = create_list(:facility, 4)
       create(:patient, registration_facility: active_facilities.first)
       create(:patient, registration_facility: active_facilities.first, assigned_facility: active_facilities.second)
-      patient = create(:patient, :hypertension, registration_facility: active_facilities.third, device_created_at: 10.days.ago)
+      patient = create(:patient, :hypertension, registration_facility: active_facilities.third, device_created_at: 1.month.ago)
       create(:blood_pressure,
         patient: patient,
         recorded_at: 1.day.ago,
