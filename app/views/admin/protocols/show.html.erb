@@ -27,26 +27,31 @@
 <h3 class="mt-5">Medications list</h3>
 <p class="mb-4">Include common anti-hypertensive (and diabetes) medications as per the regional protocol and also commonly dispensed alternative medications and dosages. Try to keep the list to &lt;10 medications, if possible.</p>
 
-<% @protocol_drugs.sort_by(&:name).each do |protocol_drug| %>
-  <div class="card" name="<%= protocol_drug.name %>">
-    <div class="row">
-      <div class="col-md-4">
-        <h5 class="mb-1"><%= protocol_drug.name %> <%= protocol_drug.dosage %></h5>
-      </div>
-      <div class="col-md-3 mb-2"><i class="fas fa-pills light mr-1"></i>
-        <span class="text-secondary">RXnorm Code:</span>
-        <% if protocol_drug.rxnorm_code.present? %>
-          <%= protocol_drug.rxnorm_code %>
-        <% else %>
-          <span class="light"><i class="fas fa-angle-left"></i>NONE<i class="fas fa-angle-right"></i></span>
-        <% end %>
-      </div>
-      <div class="col-5 text-md-right">
-        <%= link_to 'Edit', edit_admin_protocol_protocol_drug_path(@protocol, protocol_drug), class: "btn btn-sm btn-outline-primary" %>
-        <%= link_to([:admin, @protocol, protocol_drug], method: :delete, data: { confirm: "Are you sure you want to delete #{protocol_drug.name}?" }, class: "btn btn-sm btn-outline-danger") do %>
-          <i class="fas fa-trash-alt"></i>
-        <% end %>
+<% @protocol_drugs.group_by(&:name).sort.each do |protocol_drug_name, protocol_drugs| %>
+  <h2><%= protocol_drug_name %></h2>
+
+  <% protocol_drugs.each do |protocol_drug| %>
+    <div class="card" name="<%= protocol_drug.name %>">
+      <div class="row">
+        <div class="col-md-4">
+          <h5 class="mb-1"><%= protocol_drug.name %> <%= protocol_drug.dosage %></h5>
+          <%= ProtocolDrug.drug_categories[protocol_drug.drug_category] %>
+        </div>
+        <div class="col-md-3 mb-2"><i class="fas fa-pills light mr-1"></i>
+          <span class="text-secondary">RXnorm Code:</span>
+          <% if protocol_drug.rxnorm_code.present? %>
+            <%= protocol_drug.rxnorm_code %>
+          <% else %>
+            <span class="light"><i class="fas fa-angle-left"></i>NONE<i class="fas fa-angle-right"></i></span>
+          <% end %>
+        </div>
+        <div class="col-5 text-md-right">
+          <%= link_to 'Edit', edit_admin_protocol_protocol_drug_path(@protocol, protocol_drug), class: "btn btn-sm btn-outline-primary" %>
+          <%= link_to([:admin, @protocol, protocol_drug], method: :delete, data: { confirm: "Are you sure you want to delete #{protocol_drug.name}?" }, class: "btn btn-sm btn-outline-danger") do %>
+            <i class="fas fa-trash-alt"></i>
+          <% end %>
+        </div>
       </div>
     </div>
-  </div>
+  <% end %>
 <% end %>
