@@ -24,12 +24,18 @@
         <% end %>
         <%= render(Reports::DailyProgressComponent.new(@service)) %>
         <div class="mb-8px p-16px bgc-white bs-card">
-          <a href="#" onclick="openWindow('progress-help-registered', 'progress-start'); return false" class="info">
-            <span>?</span>
-          </a>
-          <h3>
-            <%= raw t("analytics.registered_patients") %>
-          </h3>
+          <div class="d-flex ai-center">
+            <h3 class="m-0px mr-4px fw-bold fs-24px c-black">
+              <%= raw t("analytics.registered_patients") %>
+            </h3>
+            <a
+              class="d-flex ai-center w-32px h-32px"
+              href="#"
+              onclick="openWindow('progress-help-registered', 'progress-start'); return false"
+            >
+              <%= inline_file("help-circle.svg") %>
+            </a>
+          </div>
           <% registrations_table_name = 'registrations' %>
           <%= render partial: 'api/v3/analytics/user_analytics/gender_filter',
                     locals: { data_table_name: registrations_table_name,
@@ -38,13 +44,19 @@
             <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service)) %>
           <% end %>
         </div>
-        <div class="card">
-          <a href="#" onclick="openWindow('progress-help-followup', 'progress-start'); return false" class="info">
-            <span>?</span>
-          </a>
-          <h3>
-            <%= raw t("analytics.follow_up_patients") %>
-          </h3>
+        <div class="mb-8px p-16px bgc-white bs-card">
+          <div class="d-flex ai-center">
+            <h3 class="m-0px mr-4px fw-bold fs-24px c-black">
+              <%= raw t("analytics.follow_up_patients") %>
+            </h3>
+            <a
+              class="d-flex ai-center w-32px h-32px"
+              href="#"
+              onclick="openWindow('progress-help-followup', 'progress-start'); return false"
+            >
+              <%= inline_file("help-circle.svg") %>
+            </a>
+          </div>
           <% follow_ups_table_name = 'follow_ups' %>
           <%= render partial: 'api/v3/analytics/user_analytics/gender_filter',
                     locals: { data_table_name: follow_ups_table_name,
