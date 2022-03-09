@@ -50,9 +50,6 @@
               Medical officers will receive teleconsult requests via WhatsApp at the number listed in their profile.
               Edit the user’s profile to update the number.
             </div>
-            <div class="mo-search">
-              <%= render "shared/user_teleconsult_search", facility_group_id: facility_group.id %>
-            </div>
 
             <% @facility.errors.full_messages_for(:teleconsultation_medical_officers).each do |error| %>
               <p class="mt-3 mb-3 text-danger"><strong><%= error %></strong></p>

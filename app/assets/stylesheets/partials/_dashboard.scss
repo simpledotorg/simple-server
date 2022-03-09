@@ -516,6 +516,15 @@ th sup {
   background: #aaa;
 }
 
+th.sticky {
+  position: sticky;
+  top: 0;
+}
+
+th {
+  background: white;
+}
+
 //
 // Table sorting styles (override tablesort.css)
 //

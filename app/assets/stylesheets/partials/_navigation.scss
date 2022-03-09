@@ -141,6 +141,23 @@ nav.breadcrumb i {
   position: relative;
 }
 
+.mo-search {
+  background: rgba(0, 0, 0, 0.03);
+  padding: 6px;
+  margin: -32px -40px 32px -40px;
+
+  .mo-search-inner {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+}
+
+@include media-breakpoint-down(sm) {
+  .mo-search {
+    margin: -32px -16px 32px -16px;
+  }
+}
+
 form.edit_email_authentication .invalid-feedback {
   font-size: 100%;
   font-weight: bold;

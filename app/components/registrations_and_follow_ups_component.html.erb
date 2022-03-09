@@ -7,7 +7,7 @@
                 definitions: { "Monthly registered patients" => t("registered_patients_copy.monthly_registered_patients", region_name: region.name),
                               "Follow-up patients" => t(follow_ups_definition, region_name: region.name) } %>
   </div>
-  <div class="table-responsive">
+  <div class="table-responsive-md">
     <table class="analytics-table table-compact">
       <colgroup>
           <col>
@@ -38,22 +38,22 @@
           </th>
         </tr>
         <tr class="sorts" data-sort-method="thead">
-          <th class="row-label sort-label sort-label-small ta-center" data-sort-default>
+          <th class="row-label sort-label sort-label-small ta-center sticky" data-sort-default>
             Facilities
           </th>
-          <th class="row-label sort-label sort-label-small ta-center" data-sort-method="number">
+          <th class="row-label sort-label sort-label-small ta-center sticky" data-sort-method="number">
             Total assigned patients
           </th>
-          <th class="row-label sort-label sort-label-small ta-center" data-sort-method="number">
+          <th class="row-label sort-label sort-label-small ta-center sticky" data-sort-method="number">
             Total registered patients
           </th>
           <% range.each do |period| %>
-            <th class="row-label sort-label sort-label-small" data-sort-method="number">
+            <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
               <%= period.to_s(:mon_year_multiline) %>
             </th>
           <% end %>
           <% range.each do |period| %>
-            <th class="row-label sort-label sort-label-small" data-sort-method="number">
+            <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
               <%= period.to_s(:mon_year_multiline) %>
             </th>
           <% end %>
@@ -119,7 +119,7 @@
       <%= render "definition_tooltip",
                  definitions: { "Overdue patients contacted" => t("call_results_copy.monthly_overdue_calls_made", region_name: region.name) } %>
     </div>
-    <div class="table-responsive">
+    <div class="table-responsive-md">
       <table class="analytics-table table-compact">
         <colgroup>
           <col>
@@ -138,11 +138,11 @@
           </th>
         </tr>
         <tr class="sorts" data-sort-method="thead">
-          <th class="row-label sort-label sort-label-small ta-center" data-sort-default>
+          <th class="row-label sort-label sort-label-small ta-center sticky" data-sort-default>
             Facilities
           </th>
           <% range.each do |period| %>
-            <th class="row-label sort-label sort-label-small" data-sort-method="number">
+            <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
               <%= period %>
             </th>
           <% end %>

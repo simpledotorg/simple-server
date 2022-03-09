@@ -1,41 +1,22 @@
 <nav class="<%= style_class_for_environment %> d-print-none" id="navigation">
-    <%= link_to root_path, class: "navigation-brand" do %>
-      <%= logo_for_environment %>
-    <% end %>
-    <% if email_authentication_signed_in? %>
+  <%= link_to root_path, class: "navigation-brand" do %>
+    <%= logo_for_environment %>
+  <% end %>
     
+  <% if email_authentication_signed_in? %>
     <!-----------------
       Home
     ----------------->
+    
   		<% if current_admin.accessible_facilities(:view_reports).any? || current_admin.power_user? %>
   		  <%= link_to(my_facilities_overview_path, class: "nav-link #{active_controller?("my_facilities")}") do %>
         <i class="fas fa-home main-menu-icon"></i> <span>Home</span>
   		<% end %>
-		
+    
     <!-----------------
       Reports
     ----------------->			
-      <a data-toggle="collapse" href="#facility-access" role="button" aria-expanded="false" aria-controls="facility-access" class="nav-link nav-link-dropdown">
-        <i class="fas fa-chart-line main-menu-icon"></i> <span>Reports</span>
-      </a>
-    
-   <!-----------------
-      Reports tree
-   ----------------->		          
-      <div id="facility-access" class="nav-section collapse">
-        <% @accessible_regions.each do |org, children| %>
-          <% if current_admin.feature_enabled?(:organization_reports) %>
-            <%= link_to(org.name, reports_region_path(org.source.slug, report_scope: org.region_type), class: "sub-nav-link") %>
-          <% else %>
-            <div class="sub-nav-link"><span><%= org.name %></span></div>
-          <% end %>
-
-            <%= render Reports::RegionTreeComponent.new(parent: org, children: children) %>
-          </div>
-        <% end %>
-      </div>
-            
-			<% end %>
+      LINK TO REPORTS
       
     <!-----------------
       Facilities
@@ -177,7 +158,8 @@
         <%= current_admin.email %>
       </div>
     </div>
-    
+  <% end %>
+     
   </div>
   <a href="#" onclick="openMenu()" class="navigation-shim">Close</a>
   <script>
