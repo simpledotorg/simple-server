@@ -28,15 +28,17 @@
     <div class="card-responsive bg-white bs-small br-4px">
       <div class="pt-16px ph-16px">
         <div class="d-lg-flex align-lg-baseline justify-lg-between">
-          <h3 class="mb-8px mb-lg-0">
+          <h3 class="mb-8px">
             Compare BP control across facilities
           </h3>
         </div>
         <p class="mb-4px c-grey-dark">
           <strong>What to look for:</strong> High percentages are good, and 70% or higher is ideal
         </p>
-        <p class="c-grey-dark c-print-black">
+        <p class="mb-4px c-grey-dark c-print-black">
           <strong>Numerator:</strong> <%= t("bp_controlled_copy.numerator") %>
+        </p>
+        <p class="c-grey-dark c-print-black">
           <strong>Denominator:</strong>
           <%= t("denominator_copy", region_name: "each facility") %>
         </p>
