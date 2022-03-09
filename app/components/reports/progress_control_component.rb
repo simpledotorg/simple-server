@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Reports::ProgressControlComponent < ViewComponent::Base
-  include AssetsHelper 
+  include AssetsHelper
   include ActionView::Helpers::NumberHelper
 
   attr_reader :control_range, :repository
