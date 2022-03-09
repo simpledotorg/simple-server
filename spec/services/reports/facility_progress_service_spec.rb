@@ -130,5 +130,27 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
         end
       end
     end
+
+    it "returns includes data from current day for follow up numbers" do
+      Timecop.freeze("10-03-2022 11:35AM") do
+        facility = create(:facility, enable_diabetes_management: true)
+        htn_patient1 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
+        htn_patient2 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
+        undiagnosed_patient = create(:patient, :without_hypertension, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
+        dm_patient = create(:patient, :diabetes, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
+        create(:appointment, recorded_at: seven_days_ago, patient: htn_patient1, facility: facility, user: user)
+        create(:appointment, recorded_at: two_minutes_ago, patient: htn_patient1, facility: facility, user: user)
+        create(:blood_pressure, recorded_at: two_minutes_ago, patient: htn_patient2, facility: facility, user: user)
+        create(:blood_pressure, recorded_at: two_minutes_ago, patient: undiagnosed_patient, facility: facility, user: user)
+        create(:blood_sugar, recorded_at: two_minutes_ago, patient: dm_patient, facility: facility, user: user)
+        create(:blood_pressure, recorded_at: two_minutes_ago, patient: dm_patient, facility: facility, user: user)
+
+        with_reporting_time_zone do
+          refresh_views
+          service = described_class.new(facility, Period.current)
+          expect(service.daily_follow_ups(Date.current)).to eq(3)
+        end
+      end
+    end
   end
 end

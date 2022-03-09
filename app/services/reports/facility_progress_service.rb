@@ -1,6 +1,5 @@
 module Reports
   class FacilityProgressService
-    include Memery
     MONTHS = -5
     CONTROL_MONTHS = -12
     attr_reader :control_range
@@ -81,15 +80,15 @@ module Reports
 
     attr_reader :diabetes_enabled
 
-    memoize def daily_registrations_grouped_by_day
+    def daily_registrations_grouped_by_day
       diagnosis = diabetes_enabled ? :all : :hypertension
       RegisteredPatientsQuery.new.count_daily(facility, diagnosis: diagnosis, last: 30)
     end
 
-    memoize def daily_follow_ups_grouped_by_day
+    def daily_follow_ups_grouped_by_day
       scope = Reports::DailyFollowUp.with_hypertension
       scope = scope.or(Reports::DailyFollowUp.with_diabetes) if diabetes_enabled
-      scope.where(facility: facility).group_by_day(:visited_at, last: 30, current: false).count
+      scope.where(facility: facility).group_by_day(:visited_at, last: 30).count
     end
 
     def create_dimension(*args)
