@@ -320,7 +320,7 @@ describe MaterializedPatientSummary, type: :model do
       end
     end
 
-    context "patient records a PD" do
+    context "patient records an appointment" do
       it "is false if patient recorded an appointment w/i the LTFU time" do
         not_ltfu_patient = create(:patient, recorded_at: 365.days.ago)
         create(:appointment, patient: not_ltfu_patient, device_created_at: 364.days.ago)
