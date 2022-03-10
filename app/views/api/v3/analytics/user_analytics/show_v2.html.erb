@@ -92,15 +92,15 @@
               <%= t("progress_tab.drug_stock_report_card.subtitle", facility_name: current_facility.name, period: @period.to_s(:mon_year)) %>
             </p>
           </div>
-          <div>
+          <div class="w-76px h-76px">
             <%= inline_svg("drug-stock.svg") %>
           </div>
         </div>
         <%= link_to t("progress_tab.drug_stock_report_card.button_title"), new_webview_drug_stock_url(user_id: current_user.id,
           access_token: current_user.access_token,
           facility_id: current_facility.id),
-          style: "font-weight: 700;",
-          class: "d-block p-16px ta-center fs-16px tt-uppercase ls-1_25px c-blue b-none bb-blue-mid br-2px bgc-blue-light bs-secondary-button"
+          style: "font-weight: 500;",
+          class: "d-block p-16px ta-center fs-16px fw-regular tt-uppercase ls-1_25px c-blue b-none br-1px bgc-blue-light bs-secondary-button"
         %>
       </div>
       <div class="mb-8px pt-16px pb-16px bgc-white bs-card">
@@ -109,15 +109,17 @@
         </h1>
         <div class="mb-24px">
           <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
-            <span class="fw-bold">7,051</span> <%= t("progress_tab.achievements_card.follow_up_visits_section_title", visit_or_visits: "visit".pluralize(7051)) %>
+            <span class="fw-bold">4,124</span> <%= t("progress_tab.achievements_card.follow_up_visits_section_title", visit_or_visits: "visit".pluralize(4124)) %>
           </p>
           <div class="d-flex ai-center jc-space-between pt-4px pb-4px pr-16px pl-16px">
-            <% follow_up_badge_goals = create_badge_array(7051) %>
+            <% follow_up_badge_goals = create_badge_array(4124) %>
             <% follow_up_badge_goals.each do |badge| %>
               <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
                 locals: { value: badge["goal_value"],
                           is_goal_completed: badge["is_goal_completed"],
-                          badge_color: "lavander",
+                          text_color: "c-lavander",
+                          circle_color: "bgc-lavander",
+                          badge_color: "bgc-lavander-light",
                           icon_completed: "refresh-arrow-white.svg",
                           icon_goal: "refresh-arrow-grey.svg"
               } %>
@@ -126,15 +128,17 @@
         </div>
         <div class="mb-24px">
           <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
-            <span class="fw-bold">2,501</span> <%= t("progress_tab.achievements_card.overdue_patients_section_title", call_or_calls: "call".pluralize(2501)) %>
+            <span class="fw-bold">8,716</span> <%= t("progress_tab.achievements_card.overdue_patients_section_title", call_or_calls: "call".pluralize(8716)) %>
           </p>
           <div class="d-flex ai-center jc-space-between pt-4px pb-4px pr-16px pl-16px">
-            <% overdue_call_badge_goals = create_badge_array(2501) %>
+            <% overdue_call_badge_goals = create_badge_array(8716) %>
             <% overdue_call_badge_goals.each do |badge| %>
               <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
                 locals: { value: badge["goal_value"],
                           is_goal_completed: badge["is_goal_completed"],
-                          badge_color: "baby-blue",
+                          text_color: "c-baby-blue",
+                          circle_color: "bgc-baby-blue",
+                          badge_color: "bgc-baby-blue-light",
                           icon_completed: "phone-white.svg",
                           icon_goal: "phone-grey.svg"
               } %>
@@ -151,7 +155,9 @@
               <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
                 locals: { value: badge["goal_value"],
                           is_goal_completed: badge["is_goal_completed"],
-                          badge_color: "yellow",
+                          text_color: "c-yellow-dark-new",
+                          circle_color: "bgc-yellow-new",
+                          badge_color: "bgc-yellow-light",
                           icon_completed: "face-yellow-darkest.svg",
                           icon_goal: "face-grey.svg"
               } %>
