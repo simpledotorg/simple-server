@@ -26,8 +26,8 @@
   <h5 class="mb-2"><b><%= protocol_drug_name %></b></h5>
 
   <% protocol_drugs.each do |protocol_drug| %>
-    
-      <div class="row card-row">
+
+      <div class="row card-row" name="<%= "#{protocol_drug.name}-#{protocol_drug.dosage}" %>">
         <div class="col-3">
           <h5 class="mb-1"><%= protocol_drug.dosage %></h5>
         </div>
