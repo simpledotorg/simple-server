@@ -23,10 +23,9 @@
 
 <% @protocol_drugs.group_by(&:name).sort.each do |protocol_drug_name, protocol_drugs| %>
   <div class="card">
-  <h5 class="mb-2"><b><%= protocol_drug_name %></b></h5>
+    <h5 class="mb-2"><b><%= protocol_drug_name %></b></h5>
 
-  <% protocol_drugs.each do |protocol_drug| %>
-
+    <% protocol_drugs.each do |protocol_drug| %>
       <div class="row card-row" name="<%= "#{protocol_drug.name}-#{protocol_drug.dosage}" %>">
         <div class="col-3">
           <h5 class="mb-1"><%= protocol_drug.dosage %></h5>
@@ -49,7 +48,7 @@
           <% end %>
         </div>
       </div>
-  <% end %>
+    <% end %>
   </div>
 <% end %>
 
