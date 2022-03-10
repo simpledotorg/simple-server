@@ -71,27 +71,29 @@ function handleBarTouchEnd(event) {
 }
 
 // Card header tooltip interactions
-const helpCircles = document.querySelectorAll("[data-element-type='help-circle']");
-helpCircles.forEach(helpCircle => {
-  helpCircle.addEventListener("touchstart", handleHelpCircleTouchStart, false);
-  helpCircle.addEventListener("touchend", handleHelpCircleTouchEnd, false);
+const headerTitles = document.querySelectorAll("[data-element-type='header-title']");
+headerTitles.forEach(headerTitle => {
+  headerTitle.addEventListener("touchstart", handleHeaderTitleTouchStart, false);
+  headerTitle.addEventListener("touchend", handleHeaderTitleTouchEnd, false);
 });
 
-function handleHelpCircleTouchStart(event) {
+function handleHeaderTitleTouchStart(event) {
   event.preventDefault();
 
   const header = event.target.parentElement;
+  const headerTitle = header.querySelector("[data-element-type='header-title']");
   const helpCircle = header.querySelector("[data-element-type='help-circle']");
   const tooltip = header.querySelector("[data-element-type='tooltip']");
   const tooltipTip = header.querySelector("[data-element-type='tip']");
 
   tooltip.classList.remove("o-0");
-  tooltip.style.top = `${helpCircle.offsetTop + helpCircle.offsetHeight + tooltipTip.offsetHeight + 4}px`;
+  tooltip.style.top = `${headerTitle.offsetTop - tooltip.offsetHeight - 8}px`;
+  tooltip.style.left = `${headerTitle.offsetLeft}px`;
 
-  tooltipTip.style.left = `${helpCircle.offsetLeft + 2}px`;
+  tooltipTip.style.left = `${helpCircle.offsetLeft}px`;
 }
 
-function handleHelpCircleTouchEnd(event) {
+function handleHeaderTitleTouchEnd(event) {
   event.preventDefault();
 
   const header = event.target.parentElement.parentElement;

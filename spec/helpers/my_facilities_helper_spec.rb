@@ -6,25 +6,25 @@ RSpec.describe MyFacilitiesHelper, type: :helper do
       expect(patient_days_css_class(nil)).to be_nil
     end
 
-    it "returns red if < 30" do
-      expect(patient_days_css_class(29)).to eq("bg-red")
+    it "returns red-new if < 30" do
+      expect(patient_days_css_class(29)).to eq("bgc-red-new")
     end
 
-    it "is orange for 30 to < 60" do
-      expect(patient_days_css_class(35)).to eq("bg-orange")
+    it "is orange-new for 30 to < 60" do
+      expect(patient_days_css_class(35)).to eq("bgc-orange-new")
     end
 
-    it "is yellow for 60 to < 90" do
-      expect(patient_days_css_class(66)).to eq("bg-yellow-dark")
+    it "is yellow-dark-new for 60 to < 90" do
+      expect(patient_days_css_class(66)).to eq("bgc-yellow-dark-new")
     end
 
-    it "is green for more than 90" do
-      expect(patient_days_css_class(91)).to eq("bg-green")
+    it "is green-new for more than 90" do
+      expect(patient_days_css_class(91)).to eq("bgc-green-new")
     end
 
     it "can change the prefix for the css class" do
-      expect(patient_days_css_class(29, prefix: "text")).to eq("text-red")
-      expect(patient_days_css_class(200, prefix: "text")).to eq("text-green")
+      expect(patient_days_css_class(29, prefix: "c")).to eq("c-red-new")
+      expect(patient_days_css_class(200, prefix: "c")).to eq("c-green-new")
     end
   end
 
