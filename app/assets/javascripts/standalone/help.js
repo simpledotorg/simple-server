@@ -1,28 +1,16 @@
 // Hides and shows each page of Help
 
-function openWindow(id, parentId) {
-   const element = document.getElementById(id);
-   element.style.display = 'block';
+function goToPage(startPageId, endPageId) {
+  const startPage = document.getElementById(startPageId);
+  startPage.style.display = "none";
+  startPage.style.height = "0";
 
-   if (parentId) {
-     var parent = document.getElementById(parentId);
-     parent.style.display = 'none';
-     parent.style.height = '0';
-   }
+  const endPage = document.getElementById(endPageId);
+  endPage.style.display = "block";
+  endPage.style.height = "0";
 
-   document.body.scrollTop = 0; // For Safari
-   document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
-}
-
-function closeWindow(id, parentId) {
-   const element = document.getElementById(id);
-   element.style.display = 'none';
-
-   if (parentId) {
-     var parent = document.getElementById(parentId);
-     parent.style.display = 'block';
-     parent.style.height = 'auto';
-   }
+  document.body.scrollTop = 0;
+  document.documentElement.scrollTop = 0;
 }
 
 // FAQ hides and shows answers
