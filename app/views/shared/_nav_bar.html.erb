@@ -4,32 +4,34 @@
   <% end %>
     
   <% if email_authentication_signed_in? %>
+    <% if current_admin.accessible_facilities(:view_reports).any? || current_admin.power_user? %>
     <!-----------------
       Home
     ----------------->
-    
-  		<% if current_admin.accessible_facilities(:view_reports).any? || current_admin.power_user? %>
-  		  <%= link_to(my_facilities_overview_path, class: "nav-link #{active_controller?("my_facilities")}") do %>
-        <i class="fas fa-home main-menu-icon"></i> <span>Home</span>
-  		<% end %>
+  	
+		  <%= link_to(root_path, class: "nav-link #{active_controller?("my_facilities") && active_action?("index")}") do %>
+        <i class="fas fa-home main-menu-icon w-16px"></i> <span>Home</span>
+		  <% end %>
     
     <!-----------------
       Reports
     ----------------->			
-      LINK TO REPORTS
+      <%= link_to(reports_regions_path, class: "nav-link #{active_controller?("reports/regions")}") do %>
+        <i class="fas fa-chart-line main-menu-icon w-16px"></i> <span>Reports</span>
+      <% end %>
       
     <!-----------------
-      Facilities
-    -----------------> 
-      <%= link_to(my_facilities_bp_controlled_path(preserve_query_params(request.query_parameters, ["zone", "size", "facility_group"])), class: "nav-link #{active_action?("bp_controlled")}") do %>
-        <i class="fas fa-table main-menu-icon"></i> <span>Facilities tables</span>
+      My Facilities
+    ----------------->
+      <%= link_to(my_facilities_bp_controlled_path(preserve_query_params(request.query_parameters, ["zone", "size", "facility_group"])), class: "nav-link #{active_controller?("my_facilities") && !active_action?("index")}") do %>
+        <i class="fas fa-table main-menu-icon w-16px"></i> <span>Facilities tables</span>
       <% end %>
     
     <!-----------------
       Drug stock
     ----------------->  
     <a data-toggle="collapse" href="#nav-drug_stocks" role="button" aria-expanded="false" aria-controls="nav-drug_stocks" class="nav-link nav-link-dropdown <% active_controller?("my_facilities/drug_stocks") %>">
-      <i class="fas fa-tablets main-menu-icon"></i> <span>Drug stock</span>
+      <i class="fas fa-tablets main-menu-icon w-16px"></i> <span>Drug stock</span>
     </a>
     
     <div id="nav-drug_stocks" class="nav-section collapse">
@@ -51,7 +53,7 @@
     ----------------->     
       <% if current_admin.accessible_facilities(:manage_overdue_list).any? || current_admin.power_user? %>
           <%= link_to(appointments_path, class: "nav-link #{active_controller?("appointments")}") do %>
-           <i class="fas fa-phone main-menu-icon"></i> <span>Overdue patients</span>
+           <i class="fas fa-phone main-menu-icon w-16px"></i> <span>Overdue patients</span>
           <% end %>
       <% end %>
       
@@ -61,14 +63,14 @@
       Training
     ----------------->
       <%= link_to (resources_path), class: "nav-link #{active_controller?("resources")}" do %>
-        <i class="fas fa-chalkboard-teacher main-menu-icon"></i> <span>Training materials</span>
+        <i class="fas fa-chalkboard-teacher main-menu-icon w-16px"></i> <span>Training materials</span>
       <% end %>
 		
     <!-----------------
       Settings
     ----------------->	
       <a data-toggle="collapse" href="#nav-settings" role="button" aria-expanded="false" aria-controls="nav-settings" class="nav-link nav-link-dropdown">
-        <i class="fas fa-cog main-menu-icon"></i> <span>Settings</span>
+        <i class="fas fa-cog main-menu-icon w-16px"></i> <span>Settings</span>
       </a>
       
       <div id="nav-settings" class="nav-section collapse">    
@@ -160,7 +162,6 @@
     </div>
   <% end %>
      
-  </div>
   <a href="#" onclick="openMenu()" class="navigation-shim">Close</a>
   <script>
     const async = false;
@@ -172,7 +173,6 @@
     }
   </script>
 
-    </div>
 </nav>
 
 <div class="mobile-header">

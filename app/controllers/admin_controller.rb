@@ -28,7 +28,7 @@ class AdminController < ApplicationController
     if current_admin.call_center_access?
       redirect_to appointments_path
     else
-      redirect_to root_path
+      redirect_to my_facilities_overview_path
     end
   end
 
