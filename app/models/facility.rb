@@ -64,6 +64,13 @@ class Facility < ApplicationRecord
       .select("facilities.*, reporting_facilities.*")
   }
 
+  scope :active, ->(month_date: Date.today) {
+    joins(:facility_states)
+      .merge(Reports::FacilityState.with_patients)
+      .merge(Reports::FacilityState.where(month_date: month_date.at_beginning_of_month))
+      .distinct
+  }
+
   enum facility_size: {
     community: "community",
     small: "small",
