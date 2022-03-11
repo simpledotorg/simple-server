@@ -20,7 +20,6 @@ to facility the launch of a new feature, and may reference the Simple team's int
 | fixed_otp | No | When enabled, Simple Server will freeze all app user OTPs to `000000`. Intended for use in test environments only. |
 | force_mark_patient_mobile_numbers | Yes | When enabled, Simple Server will automatically mark all patient phone numbers as "mobile" on a nightly basis. Disable this if patient phone number types are validated through other means (eg. Exotel API in India). |
 | generate_encounter_id_endpoint | No | When enabled, the Simple API exposes a "generate_id" endpoint on the encounters sync resource. This endpoint would be used if encounter records were created client-side. |
-| imo_messaging | Yes | When enabled, patient reminder messages will be attempted via Imo first, before falling back to SMS. |
 | notifications | Yes | When enabled, Simple Server will send patient reminder messages. |
 | organization_reports | Yes | When enabled, the Simple Dashboard will allow users to view a top-level report for the whole organization. |
 | skip_api_validation | Yes | When enabled, Simple Server will not perform JSON validation of incoming API requests. This makes the API endpoints much more performant, but should only be enabled if all API clients are trusted (Simple app only). |

@@ -16,10 +16,7 @@ class Communication < ApplicationRecord
     voip_call: "voip_call",
     manual_call: "manual_call",
     sms: "sms",
-    whatsapp: "whatsapp",
-    missed_visit_sms_reminder: "missed_visit_sms_reminder",
-    missed_visit_whatsapp_reminder: "missed_visit_whatsapp_reminder",
-    imo: "imo"
+    whatsapp: "whatsapp"
   }
 
   COMMUNICATION_RESULTS = {
@@ -64,28 +61,6 @@ class Communication < ApplicationRecord
       logger.info(class: self.class.name, msg: __method__.to_s, communication_id: communication.id,
         communication_type: communication_type, appointment_id: appointment&.id, result: twilio_msg_status,
         notification_id: notification&.id)
-    end
-  end
-
-  def self.create_with_imo_details!(notification:, result:, post_id:)
-    patient = notification.patient
-    now = DateTime.current
-    transaction do
-      detailable = ImoDeliveryDetail.create!(callee_phone_number: patient.latest_mobile_number, result: result, post_id: post_id)
-      communication = create!(communication_type: :imo,
-        detailable: detailable,
-        appointment: notification.subject,
-        notification: notification,
-        device_created_at: now,
-        device_updated_at: now)
-
-      if detailable.unsubscribed_or_missing?
-        patient = notification.patient
-        patient.imo_authorization.update!(status: detailable.result)
-      end
-
-      logger.info(class: self.class.name, msg: __method__.to_s, communication_id: communication.id,
-        communication_type: "imo", appointment_id: notification.subject&.id, notification_id: notification&.id)
     end
   end
 

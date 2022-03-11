@@ -43,6 +43,11 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
   end
 
   def monthly_count(period)
-    monthly_counts[period].attributes[dimension.field]
+    counts = monthly_counts[period]
+    if counts
+      counts.attributes[dimension.field]
+    else
+      0
+    end
   end
 end

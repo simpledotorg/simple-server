@@ -7,32 +7,6 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
   describe "#show" do
     let(:request_facility) { create(:facility, facility_group: request_user.facility.facility_group) }
 
-    context "json" do
-      render_views
-
-      before :each do
-        request.env["HTTP_X_USER_ID"] = request_user.id
-        request.env["HTTP_X_FACILITY_ID"] = request_facility.id
-        request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
-      end
-
-      it "renders statistics for the facility as json" do
-        refresh_views
-
-        get :show, format: :json, params: {v2: "0"}
-
-        response_body = JSON.parse(response.body)
-        expect(response.status).to eq(200)
-        expect(response_body.keys.map(&:to_sym)).to include(:daily, :monthly, :all_time, :trophies, :metadata)
-
-        get :show, format: :json, params: {v2: "1"}
-
-        response_body = JSON.parse(response.body)
-        expect(response.status).to eq(200)
-        expect(response_body.keys.map(&:to_sym)).to include(:daily, :monthly, :all_time, :trophies, :metadata)
-      end
-    end
-
     context "html" do
       render_views
 
@@ -161,6 +135,7 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
                 end
               end
 
+              refresh_views
               get :show, format: :html
               expect(response.body).to match(/Achievements/)
             end

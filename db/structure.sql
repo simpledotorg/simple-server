@@ -627,56 +627,6 @@ ALTER SEQUENCE public.flipper_gates_id_seq OWNED BY public.flipper_gates.id;
 
 
 --
--- Name: imo_authorizations; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.imo_authorizations (
-    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
-    patient_id uuid NOT NULL,
-    last_invited_at timestamp without time zone NOT NULL,
-    status character varying NOT NULL,
-    deleted_at timestamp without time zone,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
-);
-
-
---
--- Name: imo_delivery_details; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.imo_delivery_details (
-    id bigint NOT NULL,
-    post_id character varying,
-    result character varying NOT NULL,
-    callee_phone_number character varying NOT NULL,
-    read_at timestamp without time zone,
-    deleted_at timestamp without time zone,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
-);
-
-
---
--- Name: imo_delivery_details_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.imo_delivery_details_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: imo_delivery_details_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.imo_delivery_details_id_seq OWNED BY public.imo_delivery_details.id;
-
-
---
 -- Name: patients; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1430,7 +1380,7 @@ CREATE MATERIALIZED VIEW public.reporting_daily_follow_ups AS
             bp.recorded_at AS visited_at,
             (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))))::integer AS day_of_year
            FROM (public.patients p
-             JOIN public.blood_pressures bp ON (((p.id = bp.patient_id) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
+             JOIN public.blood_pressures bp ON ((p.id = bp.patient_id)))
           WHERE ((p.deleted_at IS NULL) AND (bp.recorded_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
         ), follow_up_blood_sugars AS (
          SELECT DISTINCT ON (p.id, bs.facility_id, ((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))))::integer)) p.id AS patient_id,
@@ -1442,7 +1392,7 @@ CREATE MATERIALIZED VIEW public.reporting_daily_follow_ups AS
             bs.recorded_at AS visited_at,
             (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))))::integer AS day_of_year
            FROM (public.patients p
-             JOIN public.blood_sugars bs ON (((p.id = bs.patient_id) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
+             JOIN public.blood_sugars bs ON ((p.id = bs.patient_id)))
           WHERE ((p.deleted_at IS NULL) AND (bs.recorded_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
         ), follow_up_prescription_drugs AS (
          SELECT DISTINCT ON (p.id, pd.facility_id, ((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at))))::integer)) p.id AS patient_id,
@@ -1454,7 +1404,7 @@ CREATE MATERIALIZED VIEW public.reporting_daily_follow_ups AS
             pd.device_created_at AS visited_at,
             (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at))))::integer AS day_of_year
            FROM (public.patients p
-             JOIN public.prescription_drugs pd ON (((p.id = pd.patient_id) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
+             JOIN public.prescription_drugs pd ON ((p.id = pd.patient_id)))
           WHERE ((p.deleted_at IS NULL) AND (pd.device_created_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
         ), follow_up_appointments AS (
          SELECT DISTINCT ON (p.id, app.creation_facility_id, ((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at))))::integer)) p.id AS patient_id,
@@ -1466,7 +1416,7 @@ CREATE MATERIALIZED VIEW public.reporting_daily_follow_ups AS
             app.device_created_at AS visited_at,
             (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at))))::integer AS day_of_year
            FROM (public.patients p
-             JOIN public.appointments app ON (((p.id = app.patient_id) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
+             JOIN public.appointments app ON ((p.id = app.patient_id)))
           WHERE ((p.deleted_at IS NULL) AND (app.device_created_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
         ), all_follow_ups AS (
          SELECT follow_up_blood_pressures.patient_id,
@@ -3692,13 +3642,6 @@ ALTER TABLE ONLY public.flipper_gates ALTER COLUMN id SET DEFAULT nextval('publi
 
 
 --
--- Name: imo_delivery_details id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.imo_delivery_details ALTER COLUMN id SET DEFAULT nextval('public.imo_delivery_details_id_seq'::regclass);
-
-
---
 -- Name: observations id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -3900,22 +3843,6 @@ ALTER TABLE ONLY public.flipper_features
 
 ALTER TABLE ONLY public.flipper_gates
     ADD CONSTRAINT flipper_gates_pkey PRIMARY KEY (id);
-
-
---
--- Name: imo_authorizations imo_authorizations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.imo_authorizations
-    ADD CONSTRAINT imo_authorizations_pkey PRIMARY KEY (id);
-
-
---
--- Name: imo_delivery_details imo_delivery_details_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.imo_delivery_details
-    ADD CONSTRAINT imo_delivery_details_pkey PRIMARY KEY (id);
 
 
 --
@@ -4388,6 +4315,13 @@ CREATE INDEX index_deduplication_logs_on_user_id ON public.deduplication_logs US
 
 
 --
+-- Name: index_dfu_facility_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_dfu_facility_id ON public.reporting_daily_follow_ups USING btree (facility_id);
+
+
+--
 -- Name: index_drug_stocks_on_facility_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4591,6 +4525,13 @@ CREATE UNIQUE INDEX index_flipper_gates_on_feature_key_and_key_and_value ON publ
 
 
 --
+-- Name: index_fs_dimensions_facility_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_fs_dimensions_facility_id ON public.reporting_facility_state_dimensions USING btree (facility_id);
+
+
+--
 -- Name: index_gin_email_authentications_on_email; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4609,13 +4550,6 @@ CREATE INDEX index_gin_phone_number_authentications_on_phone_number ON public.ph
 --
 
 CREATE INDEX index_gin_users_on_full_name ON public.users USING gin (to_tsvector('simple'::regconfig, COALESCE((full_name)::text, ''::text)));
-
-
---
--- Name: index_imo_authorizations_on_patient_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_imo_authorizations_on_patient_id ON public.imo_authorizations USING btree (patient_id);
 
 
 --
@@ -4903,6 +4837,13 @@ CREATE INDEX index_protocols_on_deleted_at ON public.protocols USING btree (dele
 --
 
 CREATE INDEX index_protocols_on_updated_at ON public.protocols USING btree (updated_at);
+
+
+--
+-- Name: index_qfs_facility_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_qfs_facility_id ON public.reporting_quarterly_facility_states USING btree (facility_id);
 
 
 --
@@ -5552,6 +5493,10 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220202091240'),
 ('20220203073617'),
 ('20220204224734'),
-('20220209233034');
+('20220209233034'),
+('20220217102418'),
+('20220217102500'),
+('20220217202441'),
+('20220223080958');
 
 

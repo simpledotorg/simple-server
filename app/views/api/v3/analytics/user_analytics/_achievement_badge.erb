@@ -1,12 +1,12 @@
-<div class="d-inline-flex fd-column ai-center jc-center w-56px h-64px mr-16px <% if is_goal_completed %>bgc-<%= badge_color %>-light<% else %>bgc-white b-grey-mid<% end %> br-10px">
-  <div class="p-relative t--3px d-flex ai-center jc-center w-40px h-40px br-100 <% if is_goal_completed %>bgc-<%= badge_color %><% else %>bgc-white b-grey-mid<% end %>">
+<div class="d-inline-flex fd-column ai-center jc-center w-56px h-64px <% if is_goal_completed %><%= badge_color %><% else %>bgc-white b-grey-mid<% end %> br-10px">
+  <div class="p-relative t--3px d-flex ai-center jc-center w-40px h-40px br-100 <% if is_goal_completed %><%= circle_color %><% else %>bgc-white b-grey-mid<% end %>">
     <% if is_goal_completed %>
       <%= inline_file(icon_completed) %>
     <% else %>
       <%= inline_file(icon_goal) %>
     <% end %>
   </div>
-  <p class="m-0px p-0px ta-center ff-fredoka-one <% if value >= 10000 %>fs-16px<% else %>fs-18px<% end %> <% if is_goal_completed %>c-<%= badge_color %><% else %>c-grey-mid<% end %>">
+  <p class="m-0px p-0px ta-center ff-fredoka-one <% if value >= 100000 %>fs-12px<% elsif value >= 10000 %>fs-16px<% else %>fs-18px<% end %> <% if is_goal_completed %><%= text_color %><% else %>c-grey-mid<% end %>">
     <%= number_with_delimiter(value) %>
   </p>
 </div>

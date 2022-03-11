@@ -2253,10 +2253,7 @@
             "voip_call",
             "manual_call",
             "sms",
-            "whatsapp",
-            "missed_visit_sms_reminder",
-            "missed_visit_whatsapp_reminder",
-            "imo"
+            "whatsapp"
           ]
         },
         "communication_result": {

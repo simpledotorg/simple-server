@@ -1,39 +1,37 @@
-<div id="<%= pageId %>" style="display: none;">
+<div id="<%= page_id %>" class="d-none">
   <div class="mb-8px pt-16px pb-16px bgc-white br-4px bs-card">
-    <a class="d-block pl-16px mb-24px" href="#" onclick="goToPage('<%= pageId %>', 'home-page'); return false;">
+    <a
+      class="d-block w-24px h-24px mb-24px pl-16px"
+      href="#"
+      onclick="goToPage('<%= page_id %>', 'home-page'); return false;"
+    >
       <div class="d-inline-block">
         <%= inline_file("chevron-left.svg") %>
       </div>
     </a>
-    <div class="mb-12px pr-16px pl-16px">
+    <div class="pr-16px pl-16px">
       <h1 class="m-0px mb-8px fw-bold fs-24px">
-        <%= title %>
+        <%= title %> report
       </h1>
       <% if subtitle %>
         <p class="m-0px p-0px ta-left fw-normal fs-16px c-grey-dark">
           <%= subtitle %>
         </p>
       <% end %>
-    </div>
-    <div class="ws-nowrap ox-scroll pl-16px d-none-scrollbar">
-      <% periods.each do |pill| %>
-        <%= render partial: "api/v3/analytics/user_analytics/pill",
-                  locals: { title: pill,
-                            is_active: pill == periods.first ? true : false } %>
-      <% end %>
+      <%= select_tag "periods", options_for_select(periods, periods.first), class: "w-100 mt-16px p-12px fw-medium fs-16px ls-1_25px tt-uppercase c-blue bgc-blue-light b-none br-1px bs-secondary-button o-none a-none chevron-down-icon" %>
     </div>
   </div>
   <div class="mb-8px p-16px bgc-white br-4px bs-card">
     <div class="d-flex ai-center jc-space-between mb-8px">
       <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
-        <%= registered_patients["name"] %>
+        <%= t("progress_tab.period_report.registered_patients_card.title") %>
       </h2>
       <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
-        <%=registered_patients["total"]  %>
+        <%= registered_patients["total"] %>
       </p>
     </div>
     <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-      Patients registered at <%= current_facility.name %>
+      <%= t("progress_tab.period_report.registered_patients_card.subtitle", facility_name: current_facility.name) %>
     </p>
     <% registered_patients["breakdown"].each_with_index do |row, index| %>
       <%= render partial: "api/v3/analytics/user_analytics/data_table_row",
@@ -48,14 +46,14 @@
   <div class="mb-8px p-16px bgc-white br-4px bs-card">
     <div class="d-flex ai-center jc-space-between mb-8px">
       <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
-        <%= follow_up_patients["name"] %>
+        <%= t("progress_tab.period_report.follow_up_patients_card.title") %>
       </h2>
       <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
         <%= follow_up_patients["total"]  %>
       </p>
     </div>
     <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-      Patients that had a BP taken, a blood sugar taken, an appointment scheduled, or their medications updated at <%= current_facility.name %>.
+      <%= t("progress_tab.period_report.follow_up_patients_card.subtitle", facility_name: current_facility.name) %>
     </p>
     <% follow_up_patients["breakdown"].each_with_index do |row, index| %>
       <%= render partial: "api/v3/analytics/user_analytics/data_table_row",
@@ -69,13 +67,13 @@
   </div>
   <% if CountryConfig.current_country?("India") %>
     <div class="p-relative mb-8px p-16px bgc-yellow-lightest br-4px bs-card">
-      <h1 class="m-0px mb-8px p-0px ta-left fw-medium fs-18px lh-135 c-black">
-        Where is the "Patients initiated on treatment" data?
+      <h1 class="m-0px mb-8px p-0px pr-48px ta-left fw-medium fs-18px lh-135 c-black">
+        <%= t("progress_tab.period_report.patients_initiated_on_treatment_card.title") %>
       </h1>
       <p class="m-0px p-0px ta-left fw-normal fs-16px lh-165 c-black">
-        Use <span class="td-underline">registered patients</span>, it will always equal <span class="td-underline">patients initiated on treatment</span> for patients registered on Simple.
+        <%= t("progress_tab.period_report.patients_initiated_on_treatment_card.main_text") %>
       </p>
-      <div class="p-absolute t-8px r-8px">
+      <div class="p-absolute t-8px r-8px w-48px h-48px">
         <%= inline_svg("exclamation-mark.svg") %>
       </div>
     </div>
