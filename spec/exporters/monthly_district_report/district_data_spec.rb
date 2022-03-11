@@ -116,5 +116,42 @@ describe MonthlyDistrictReport::DistrictData do
       expect(periods.drop(3).map { |period| rows[0]["monthly_follow_ups_community_percentage - #{period}"] }).to eq %w[25% 25% 25%]
       expect(periods.drop(3).map { |period| rows[0]["cumulative_assigned_patients_community - #{period}"] }).to eq [4, 5, 6]
     end
+
+    it "only include active facilities" do
+      district = setup_district_with_facilities
+      create(:facility, name: "Test Facility 3", facility_group: district[:region].source, facility_size: "medium", zone: "Test Block 3")
+      inactive_facility = create(:facility, name: "Test Facility 4", facility_group: district[:region].source, facility_size: "large", zone: "Test Block 4")
+      month = Period.month("2021-09-01".to_date)
+      periods = Range.new(month.advance(months: -5), month)
+      user = create(:user, registration_facility: district[:facility_1])
+
+      repo_double = instance_double(Reports::Repository)
+      mock_district_repo(repo_double, district, month)
+      allow(Reports::Repository).to receive(:new).and_return(repo_double)
+
+      periods.each do |period|
+        district[:region].facilities.each do |facility|
+          unless facility.id == inactive_facility.id
+            create(:patient, registration_facility: facility, registration_user: user, recorded_at: period.value)
+            patient = Patient.where(registration_facility: facility).order(:recorded_at).first
+            if patient
+              create(:blood_pressure, patient: patient, facility: facility, user: user, recorded_at: period.value)
+            end
+          end
+        end
+      end
+
+      RefreshReportingViews.refresh_v2
+
+      rows = described_class.new(district[:region], month).content_rows
+      expect(rows[0].count).to eq 76
+
+      expect(rows[0]["District"]).to eq "Test District"
+      expect(rows[0]["Facilities implementing IHCI"]).to eq 3
+      expect(rows[0]["Total DHs/SDHs"]).to eq 0
+      expect(rows[0]["Total CHCs"]).to eq 1
+      expect(rows[0]["Total PHCs"]).to eq 1
+      expect(rows[0]["Total HWCs/SCs"]).to eq 1
+    end
   end
 end
