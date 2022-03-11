@@ -259,8 +259,8 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
     end
   end
 
-  describe '.with_registerd_assigned_or_follow_up_patients' do
-    it 'returns all rows where a facility has registered patients' do
+  describe ".with_registerd_assigned_or_follow_up_patients" do
+    it "returns all rows where a facility has registered patients" do
       facility_1 = create(:facility)
       facility_2 = create(:facility)
 
@@ -271,15 +271,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       rows = Reports::FacilityState.with_registered_assigned_or_follow_up_patients
       expect(rows.pluck(:facility_id, :month_date, :cumulative_registrations))
         .to include([facility_1.id, 3.months.ago.at_beginning_of_month, 1],
-                    [facility_1.id, 2.months.ago.at_beginning_of_month, 1],
-                    [facility_1.id, 1.months.ago.at_beginning_of_month, 1],
-                    [facility_1.id, Date.today.at_beginning_of_month, 2])
+          [facility_1.id, 2.months.ago.at_beginning_of_month, 1],
+          [facility_1.id, 1.months.ago.at_beginning_of_month, 1],
+          [facility_1.id, Date.today.at_beginning_of_month, 2])
       expect(rows.pluck(:facility_id, :month_date))
         .not_to include([facility_1.id, 4.months.ago.at_beginning_of_month])
       expect(rows.pluck(:facility_id)).not_to include(facility_2.id)
     end
 
-    it 'returns all rows where a facility has assigned patients' do
+    it "returns all rows where a facility has assigned patients" do
       facility_1 = create(:facility)
       facility_2 = create(:facility)
 
@@ -290,15 +290,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       rows = Reports::FacilityState.with_registered_assigned_or_follow_up_patients
       expect(rows.pluck(:facility_id, :month_date, :cumulative_assigned_patients))
         .to include([facility_1.id, 3.months.ago.at_beginning_of_month, 1],
-                    [facility_1.id, 2.months.ago.at_beginning_of_month, 1],
-                    [facility_1.id, 1.months.ago.at_beginning_of_month, 1],
-                    [facility_1.id, Date.today.at_beginning_of_month, 2])
+          [facility_1.id, 2.months.ago.at_beginning_of_month, 1],
+          [facility_1.id, 1.months.ago.at_beginning_of_month, 1],
+          [facility_1.id, Date.today.at_beginning_of_month, 2])
       expect(rows.pluck(:facility_id, :month_date))
         .not_to include([facility_1.id, 4.months.ago.at_beginning_of_month])
       expect(rows.pluck(:facility_id)).not_to include(facility_2.id)
     end
 
-    it 'returns all rows where a facility has monthly follow patients' do
+    it "returns all rows where a facility has monthly follow patients" do
       facility_1 = create(:facility)
       facility_2 = create(:facility)
 
@@ -310,10 +310,10 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       rows = Reports::FacilityState.with_registered_assigned_or_follow_up_patients
       expect(rows.pluck(:facility_id, :month_date, :monthly_follow_ups))
         .to include([facility_1.id, 3.months.ago.at_beginning_of_month, 1],
-                    [facility_1.id, Date.today.at_beginning_of_month, 1])
+          [facility_1.id, Date.today.at_beginning_of_month, 1])
       expect(rows.pluck(:facility_id, :month_date))
         .not_to include([facility_1.id, 2.months.ago.at_beginning_of_month],
-                        [facility_1.id, 1.months.ago.at_beginning_of_month])
+          [facility_1.id, 1.months.ago.at_beginning_of_month])
       expect(rows.pluck(:facility_id)).not_to include(facility_2.id)
     end
   end
