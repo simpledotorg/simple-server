@@ -259,7 +259,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
     end
   end
 
-  describe ".with_registerd_assigned_or_follow_up_patients" do
+  describe ".with_patients" do
     it "returns all rows where a facility has registered patients" do
       facility_1 = create(:facility)
       facility_2 = create(:facility)
@@ -268,7 +268,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       create(:patient, registration_facility: facility_1, device_created_at: 3.months.ago)
 
       refresh_views
-      rows = Reports::FacilityState.with_registered_assigned_or_follow_up_patients
+      rows = Reports::FacilityState.with_patients
       expect(rows.pluck(:facility_id, :month_date, :cumulative_registrations))
         .to include([facility_1.id, 3.months.ago.at_beginning_of_month, 1],
           [facility_1.id, 2.months.ago.at_beginning_of_month, 1],
@@ -287,7 +287,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       create(:patient, assigned_facility: facility_1, device_created_at: 3.months.ago)
 
       refresh_views
-      rows = Reports::FacilityState.with_registered_assigned_or_follow_up_patients
+      rows = Reports::FacilityState.with_patients
       expect(rows.pluck(:facility_id, :month_date, :cumulative_assigned_patients))
         .to include([facility_1.id, 3.months.ago.at_beginning_of_month, 1],
           [facility_1.id, 2.months.ago.at_beginning_of_month, 1],
@@ -307,7 +307,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       create(:blood_pressure, patient: patient, facility: facility_1, device_created_at: 3.months.ago)
 
       refresh_views
-      rows = Reports::FacilityState.with_registered_assigned_or_follow_up_patients
+      rows = Reports::FacilityState.with_patients
       expect(rows.pluck(:facility_id, :month_date, :monthly_follow_ups))
         .to include([facility_1.id, 3.months.ago.at_beginning_of_month, 1],
           [facility_1.id, Date.today.at_beginning_of_month, 1])

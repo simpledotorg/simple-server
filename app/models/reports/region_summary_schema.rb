@@ -237,7 +237,7 @@ module Reports
 
     memoize def earliest_patient_data_query_v2(region)
       FacilityState.for_region(region)
-        .with_registered_assigned_or_follow_up_patients
+        .with_patients
         .minimum(:month_date)
     end
 
