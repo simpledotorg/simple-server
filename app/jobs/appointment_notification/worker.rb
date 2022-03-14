@@ -29,7 +29,7 @@ class AppointmentNotification::Worker
   private
 
   def send_message(notification, recipient_number)
-    communication_type = notification.next_communication_type
+    communication_type = "sms"
     logger.info "send_message for notification #{notification.id} communication_type=#{communication_type}"
     context = {
       calling_class: self.class.name,
@@ -92,12 +92,6 @@ class AppointmentNotification::Worker
   end
 
   def valid_notification?(notification)
-    unless notification.next_communication_type
-      logger.info "skipping notification #{notification.id}, no next communication type"
-      metrics.increment("skipped.no_next_communication_type")
-      return
-    end
-
     unless notification.status_scheduled?
       logger.info "skipping notification #{notification.id}, scheduled already"
       metrics.increment("skipped.not_scheduled")
