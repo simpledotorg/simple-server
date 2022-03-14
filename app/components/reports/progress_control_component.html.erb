@@ -1,10 +1,16 @@
-<div class="card">
-  <a href="#" onclick="openWindow('progress-help-controlled', 'progress-start'); return false" class="info">
-    <span>?</span>
-  </a>
-  <h3>
-    <%= raw t("analytics.hypertension_controlled") %>
-  </h3>
+<div class="mb-8px p-16px bgc-white bs-card card" style="border-radius: 0px;">
+  <div class="d-flex ai-center">
+    <h3 class="m-0px mr-4px fw-bold fs-24px c-black">
+      <%= raw t("analytics.hypertension_controlled") %>
+    </h3>
+    <a
+      class="d-flex ai-center w-32px h-32px"
+      href="#"
+      onclick="openWindow('progress-help-controlled', 'progress-start'); return false"
+    >
+      <%= inline_file("help-circle.svg") %>
+    </a>
+  </div>
   <p class="desc">
     <%= raw t("analytics.hypertension_control_desc") %>
   </p>

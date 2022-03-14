@@ -311,7 +311,7 @@ p.desc {
 
 .progress-table .total td,
 .progress-table .total + tr td {
-  border-color: $blue;
+  border-color: $grey;
 }
 
 .progress-table .total.green td,
@@ -559,20 +559,19 @@ footer p {
   opacity: 0.4;
 }
 
-.card .counts {
+.counts {
   display: flex;
   justify-content: space-between;
   clear: both;
   padding-top: 16px;
 }
 
-.card .count {
+.count {
   display: block;
   padding: 30px 0 30px 0;
   text-align: center;
   font-size: 18px;
   background: $grey-light;
-  margin: 0 4px 4px 0;
   border-radius: 10px;
 
   strong {
@@ -582,23 +581,23 @@ footer p {
   }
 }
 
-.card .count-1 {
+.count-1 {
   background: $purple-light;
   color: $purple;
   flex: 1;
 }
 
-.card .count-2 {
+.count-2 {
   flex: 1;
   background: $blue-light;
   color: $blue-dark;
 }
 
-.card .count:last-child {
+.count:last-child {
   margin-right: 0;
 }
 
-.card .count-empty svg {
+.count-empty svg {
   height: 160px;
   margin-top: 0;
 }
@@ -610,29 +609,19 @@ footer p {
   letter-spacing: -0.03em;
 }
 
-.next-prev {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  z-index: 1000000;
-}
-
 .button-next {
-  background: none;
-  border: none;
   display: block;
-  float: left;
-  padding: 6px 24px 6px 16px;
+  padding: 6px 12px 6px 0px;
   border-radius: 4px;
+  border: none;
+  background: none;
 }
 
 .button-prev {
-  background: none;
-  border: none;
   display: block;
-  float: right;
-  padding: 6px 24px 6px 16px;
-  margin-right: -6px;
+  padding: 6px 0px 6px 12px;
+  border: none;
+  background: none;
 }
 
 .button-next:active,
@@ -848,6 +837,7 @@ footer p {
 .pt-16px { padding-top: 16px; }
 .pr-16px { padding-right: 16px; }
 .pr-48px { padding-right: 48px; }
+.pb-0px { padding-bottom: 0px; }
 .pb-3px { padding-bottom: 3px; }
 .pb-4px { padding-bottom: 4px; }
 .pb-12px { padding-bottom: 12px; }
@@ -899,6 +889,7 @@ footer p {
 .c-black { color: $black; }
 .c-brown-new { color:$brown-new; }
 /* BACKGROUND COLORS */
+.bgc-grey-lightest { background: $grey-lightest; }
 .bgc-grey-light { background: $grey-light; }
 .bgc-white { background-color: $white; }
 .bgc-black { background-color: $black; }
