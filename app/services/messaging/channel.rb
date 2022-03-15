@@ -1,5 +1,5 @@
 class Messaging::Channel
-  # Note on Error Handling: Any messaging channel implementation should raise
+  # Note on error handling: Any messaging channel implementation should raise
   # errors from the channel's API as exceptions. This is to allow background jobs to
   # retry in case of network/limit errors. The error object should contains the reason of
   # failure if it was due to a known error so that users of the service can use it
