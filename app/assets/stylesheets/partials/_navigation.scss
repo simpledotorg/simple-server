@@ -61,7 +61,7 @@ Navigation
     background: #0b283d;
     color: $blue-light;
     font-size: 14px;
-    width: 340px;
+    width: 280px;
     display: none;
 
     .float-right {
@@ -110,7 +110,7 @@ Navigation
   &:focus,
   &.navigation-open {
     background: #0b283d;
-    width: 340px;
+    width: 280px;
 
     .nav-link-dropdown {
       background: url(chevron-down.png) no-repeat 95% 50%;
