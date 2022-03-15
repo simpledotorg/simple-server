@@ -92,7 +92,7 @@ class Reports::RegionsController < AdminController
     regions = if @region.facility_region?
       [@region]
     else
-      [@region, @region.facility_regions].flatten
+      [@region, @region.reportable_children].flatten
     end
 
     if current_admin.feature_enabled?(:show_call_results) && @region.state_region?

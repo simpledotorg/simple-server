@@ -10,8 +10,11 @@ module MonthlyDistrictReport
     end
 
     def content_rows
+      active_facility_ids = district.facilities.active(month_date: @month.to_date).pluck(:id)
+
       district
         .facility_regions
+        .where("regions.source_id" => active_facility_ids)
         .joins("INNER JOIN reporting_facilities on reporting_facilities.facility_id = regions.source_id")
         .select("regions.*, reporting_facilities.*")
         .order(:block_name, :facility_name)
