@@ -8,20 +8,19 @@ module ProgressTabHelper
     starting_goal = 25
     current_goal = starting_goal 
     multiplier_index = 0
-
     badges = []
 
     while current_value >= current_goal
       add_new_badge(current_goal, badges, true)
-      update_current_goal(current_goal, multiplier_index)
-      set_multiplier_index(multiplier_index)
+      update_current_goal(current_goal, multiplier_index, goal_multipliers)
+      set_multiplier_index(multiplier_index, goal_multipliers)
     end
 
     if badges.length < 5
       (5 - badges.length).times {
         add_new_badge(current_goal, badges, false)
-        update_current_goal(current_goal, multiplier_index)
-        set_multiplier_index(multiplier_index)
+        update_current_goal(current_goal, multiplier_index, goal_multipliers)
+        set_multiplier_index(multiplier_index, goal_multipliers)
       }
     else
       add_new_badge(current_goal, badges, false)
@@ -30,11 +29,11 @@ module ProgressTabHelper
     badges.last(5)
   end
 
-  def update_current_goal(current_goal, multiplier_index)
+  def update_current_goal(current_goal, multiplier_index, goal_multipliers)
     current_goal = (current_goal * goal_multipliers[multiplier_index]).to_i
   end
 
-  def set_multiplier_index(multiplier_index)
+  def set_multiplier_index(multiplier_index, goal_multipliers)
     if multiplier_index == goal_multipliers.length - 1
       multiplier_index = 0
     else
