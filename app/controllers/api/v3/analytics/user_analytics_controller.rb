@@ -9,7 +9,6 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
   def show
     @period = Period.month(Date.current)
     @user_analytics = UserAnalyticsPresenter.new(current_facility)
-    @achievements = Reports::FacilityProgressAchievementService.new(current_facility)
     @service = Reports::FacilityProgressService.new(current_facility, @period)
     @total_follow_ups_dimension = Reports::FacilityProgressDimension.new(:follow_ups, diagnosis: :all, gender: :all)
     @total_registrations_dimension = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :all, gender: :all)
