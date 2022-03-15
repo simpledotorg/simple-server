@@ -11,6 +11,10 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
     @user_analytics = UserAnalyticsPresenter.new(current_facility)
     @achievements = Reports::FacilityProgressAchievementService.new(current_facility)
     @service = Reports::FacilityProgressService.new(current_facility, @period)
+    @total_follow_ups_dimension = Reports::FacilityProgressDimension.new(:follow_ups, diagnosis: :all, gender: :all)
+    @total_registrations_dimension = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :all, gender: :all)
+    @total_follow_ups = Reports::MonthlyProgressComponent.new(@total_follow_ups_dimension, service: @service).total_count
+    @total_registrations = Reports::MonthlyProgressComponent.new(@total_registrations_dimension, service: @service).total_count
     if Flipper.enabled?(:new_progress_tab)
       @period_reports_data = Reports::ReportsFakeFacilityProgressService.new(@current_facility.name).period_reports
       @hypertension_reports_data = Reports::ReportsFakeFacilityProgressService.new(@current_facility.name).hypertension_reports
