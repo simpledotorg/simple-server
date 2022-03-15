@@ -66,8 +66,8 @@ follow_up_appointments AS (
 FROM patients p
   INNER JOIN appointments app
     ON p.id = app.patient_id
-    AND date_trunc('month', app.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
-      > date_trunc('month', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
+    AND date_trunc('day', app.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
+      > date_trunc('day', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
   WHERE p.deleted_at IS NULL
     AND app.device_created_at > current_timestamp - interval '30 day'
 ),
