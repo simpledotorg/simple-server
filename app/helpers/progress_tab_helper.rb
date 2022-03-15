@@ -6,7 +6,7 @@ module ProgressTabHelper
   def create_badge_array(current_value)
     # Achievement badges are generated dynamically and follow the following infinite sequence where "S" is the starting badge value
     # S x 2 x 2 x 2.5 x 2 x 2 x 2.5 x 2 x 2 x 2.5 ...
-    current_goal = STARTING_GOAL
+    current_goal = 25
     multiplier_index = 0
     badges = []
 
