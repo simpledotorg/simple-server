@@ -42,9 +42,9 @@ module ProgressTabHelper
 
   def set_multiplier_index(multiplier_index)
     if multiplier_index == GOAL_MULTIPLIERS.length - 1
-      return 0
+      0
     else
-      return multiplier_index + 1
+      multiplier_index + 1
     end
   end
 end
