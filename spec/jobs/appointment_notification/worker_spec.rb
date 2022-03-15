@@ -64,47 +64,6 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       }.to change { Communication.count }.by(1)
     end
 
-    it "sends a whatsapp message when notification's next_communication_type is whatsapp" do
-      mock_successful_delivery
-      allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("whatsapp")
-
-      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.sent.whatsapp")
-      expect(Messaging::Twilio::Whatsapp).to receive(:send_message)
-      described_class.perform_async(notification.id)
-      described_class.drain
-    end
-
-    it "sends sms when notification's next_communication_type is sms" do
-      mock_successful_delivery
-      allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("sms")
-
-      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.sent.sms")
-      expect(Messaging::Twilio::ReminderSms).to receive(:send_message)
-      described_class.perform_async(notification.id)
-      described_class.drain
-    end
-
-    it "does not send a communication when notification's next_communication_type is nil" do
-      mock_successful_delivery
-      allow_any_instance_of(Notification).to receive(:next_communication_type).and_return(nil)
-
-      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.skipped.no_next_communication_type")
-      expect {
-        described_class.perform_async(notification.id)
-        described_class.drain
-      }.not_to change { Communication.count }
-    end
-
-    it "raises an error when next_communication_type is not supported" do
-      allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("aol_instant_messenger")
-
-      expect {
-        described_class.perform_async(notification.id)
-        described_class.drain
-      }.to raise_error(StandardError)
-        .with_message("AppointmentNotification::Worker is not configured to handle communication type aol_instant_messenger")
-    end
-
     it "creates a Communication with twilio response status and sid" do
       mock_successful_delivery
 
