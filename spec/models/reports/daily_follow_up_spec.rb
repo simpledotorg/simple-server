@@ -144,4 +144,14 @@ RSpec.describe Reports::DailyFollowUp, {type: :model, reporting_spec: true} do
 
     expect(described_class.count).to eq(0)
   end
+
+  it "counts activity the day after registration as a follow up" do
+    now = Time.current
+    patient = create(:patient, recorded_at: now.advance(days: -1).beginning_of_day)
+    create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: now.end_of_day)
+
+    described_class.refresh
+
+    expect(described_class.count).to eq(1)
+  end
 end
