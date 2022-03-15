@@ -97,28 +97,4 @@ class Notification < ApplicationRecord
       :failed
     end
   end
-
-  def next_communication_type
-    return nil if status_cancelled?
-    if preferred_communication_method && !previously_communicated_by?(preferred_communication_method)
-      return preferred_communication_method
-    end
-    return backup_communication_method unless previously_communicated_by?(backup_communication_method)
-    nil
-  end
-
-  private
-
-  def previously_communicated_by?(method)
-    communications.any? { |communication| communication.communication_type == method }
-  end
-
-  def preferred_communication_method
-    return "whatsapp" if Flipper.enabled?(:whatsapp_appointment_reminders)
-    nil
-  end
-
-  def backup_communication_method
-    "sms"
-  end
 end

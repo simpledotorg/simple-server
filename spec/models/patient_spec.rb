@@ -25,7 +25,6 @@ describe Patient, type: :model do
 
   describe "Associations" do
     it { is_expected.to have_one(:medical_history) }
-    it { is_expected.to have_one(:imo_authorization).optional }
 
     it { is_expected.to have_many(:phone_numbers) }
     it { is_expected.to have_many(:business_identifiers) }

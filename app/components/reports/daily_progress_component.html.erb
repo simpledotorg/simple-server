@@ -1,52 +1,52 @@
-<div class="card" style="min-height: 210px;">
-  <div class="next-prev">
-    <button onclick="nextSlide(+1)" class="button-next">
-      <span>
-        <%= inline_svg('icon_arrow_back.svg') %>
-      </span>
-    </button>
-    <button onclick="nextSlide(-1)" class="button-prev">
-      <span>
-        <%= inline_svg('icon_arrow_forward.svg') %>
-      </span>
-    </button>
+<div id="daily-stats-card" class="mb-8px p-16px bgc-white bs-card">
+  <div class="day count-empty" style="display: none">
+    <h3 class="stat-day"></h3>
+    <%= inline_svg('icon_sync_cloud.svg') %>
+    <p>
+      <%= raw t("analytics.tap_sync") %>
+    </p>
   </div>
-  <div id="daily-stats-card">
-    <div class="day count-empty" style="display: none">
-      <h3 class="stat-day"></h3>
-      <%= inline_svg('icon_sync_cloud.svg') %>
-      <p>
-        <%= raw t("analytics.tap_sync") %>
-      </p>
-    </div>
-    <% last_30_days.each do |date| %>
-      <div class="day">
-        <h3 class="stat-day">
+  <% last_30_days.each do |date| %>
+    <div class="day">
+      <div class="d-flex ai-center jc-space-between mb-16px">
+        <h1 class="m-0px fw-bold fs-24px c-black stat-day">
           <span class="num">
             <%= display_date(date) %>
           </span>
-        </h3>
-        <div class="counts">
-          <div class="count count-1">
-            <strong>
-              <%= raw t("analytics.registered") %>
-            </strong>
-            <div class="big-number">
-              <%= daily_registrations(date) %>
-            </div>
-            <%= raw t("analytics.patient", count: daily_registrations(date)) %>
-          </div>
-          <div class="count count-2">
-            <strong>
-              <%= raw t("analytics.follow_up") %>
-            </strong>
-            <div class="big-number">
-              <%= daily_follow_ups(date) %>
-            </div>
-            <%= raw t("analytics.patient", count: daily_follow_ups(date)) %>
-          </div>
+        </h1>
+        <div class="d-flex ai-center jc-space-between">
+          <button onclick="nextSlide(+1)" class="button-next">
+            <span>
+              <%= inline_svg('icon_arrow_back.svg') %>
+            </span>
+          </button>
+          <button onclick="nextSlide(-1)" class="button-prev">
+            <span>
+              <%= inline_svg('icon_arrow_forward.svg') %>
+            </span>
+          </button>
         </div>
       </div>
-    <% end %>
-  </div>
+      <div class="d-flex ai-center jc-space-between">
+        <div class="f-1 mr-8px count count-1">
+          <strong>
+            <%= raw t("analytics.registered") %>
+          </strong>
+          <div class="big-number">
+            <%= daily_registrations(date) %>
+          </div>
+          <%= raw t("analytics.patient", count: daily_registrations(date)) %>
+        </div>
+        <div class="f-1 ml-8px count count-2">
+          <strong>
+            <%= raw t("analytics.follow_up") %>
+          </strong>
+          <div class="big-number">
+            <%= daily_follow_ups(date) %>
+          </div>
+          <%= raw t("analytics.patient", count: daily_follow_ups(date)) %>
+        </div>
+      </div>
+    </div>
+  <% end %>
 </div>

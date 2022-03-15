@@ -1,5 +1,4 @@
 class AppointmentNotification::Worker
-  include Rails.application.routes.url_helpers
   include Sidekiq::Worker
 
   sidekiq_options queue: :high
@@ -29,7 +28,7 @@ class AppointmentNotification::Worker
   private
 
   def send_message(notification, recipient_number)
-    communication_type = notification.next_communication_type
+    communication_type = "sms"
     logger.info "send_message for notification #{notification.id} communication_type=#{communication_type}"
     context = {
       calling_class: self.class.name,
@@ -39,13 +38,7 @@ class AppointmentNotification::Worker
     }
     Sentry.set_tags(context)
 
-    response =
-      case communication_type
-        when "imo"
-          ImoApiService.new.send_notification(notification, recipient_number)
-        else
-          notify_via_twilio(notification, communication_type, recipient_number, context)
-      end
+    response = notify_via_twilio(notification, communication_type, recipient_number)
 
     return unless response
     metrics.increment("sent.#{communication_type}")
@@ -58,32 +51,25 @@ class AppointmentNotification::Worker
     response
   end
 
-  def notify_via_twilio(notification, communication_type, recipient_number, context)
-    service = TwilioApiService.new(sms_sender: medication_reminder_sms_sender)
-    args = {
-      recipient_number: recipient_number,
-      message: notification.localized_message,
-      callback_url: callback_url,
-      context: context
-    }
-
-    # remove missed_visit_whatsapp_reminder and missed_visit_sms_reminder
-    # https://app.clubhouse.io/simpledotorg/story/3585/backfill-notifications-from-communications
-    handle_twilio_error(notification) do
+  def notify_via_twilio(notification, communication_type, recipient_number)
+    messaging_channel =
       case communication_type
-      when "whatsapp", "missed_visit_whatsapp_reminder"
-        service.send_whatsapp(args)
-      when "sms", "missed_visit_sms_reminder"
-        service.send_sms(args)
-      else
-        raise UnknownCommunicationType, "#{self.class.name} is not configured to handle communication type #{communication_type}"
+        when "whatsapp"
+          Messaging::Twilio::Whatsapp
+        when "sms"
+          Messaging::Twilio::ReminderSms
+        else
+          raise UnknownCommunicationType, "#{self.class.name} is not configured to handle communication type #{communication_type}"
       end
+
+    handle_twilio_error(notification) do
+      messaging_channel.send_message(recipient_number: recipient_number, message: notification.localized_message)
     end
   end
 
   def handle_twilio_error(notification, &block)
     block.call
-  rescue TwilioApiService::Error => error
+  rescue Messaging::Twilio::Error => error
     if error.reason == :invalid_phone_number
       notification.status_cancelled!
       logger.warn("notification #{notification.id} cancelled because of an invalid phone number")
@@ -95,45 +81,16 @@ class AppointmentNotification::Worker
   end
 
   def create_communication(notification, communication_type, response)
-    if communication_type == "imo"
-      Communication.create_with_imo_details!(
-        notification: notification,
-        result: response[:result],
-        post_id: response[:post_id]
-      )
-    else
-      Communication.create_with_twilio_details!(
-        appointment: notification.subject,
-        notification: notification,
-        twilio_sid: response.sid,
-        twilio_msg_status: response.status,
-        communication_type: communication_type
-      )
-    end
-  end
-
-  def callback_url
-    api_v3_twilio_sms_delivery_url(
-      host: ENV.fetch("SIMPLE_SERVER_HOST"),
-      protocol: ENV.fetch("SIMPLE_SERVER_HOST_PROTOCOL")
+    Communication.create_with_twilio_details!(
+      appointment: notification.subject,
+      notification: notification,
+      twilio_sid: response.sid,
+      twilio_msg_status: response.status,
+      communication_type: communication_type
     )
   end
 
-  def medication_reminder_sms_sender
-    @medication_reminder_sms_sender ||= medication_reminder_sms_senders.sample
-  end
-
-  def medication_reminder_sms_senders
-    ENV.fetch("TWILIO_APPOINTMENT_REMINDER_NUMBERS", "").split(",").map(&:strip)
-  end
-
   def valid_notification?(notification)
-    unless notification.next_communication_type
-      logger.info "skipping notification #{notification.id}, no next communication type"
-      metrics.increment("skipped.no_next_communication_type")
-      return
-    end
-
     unless notification.status_scheduled?
       logger.info "skipping notification #{notification.id}, scheduled already"
       metrics.increment("skipped.not_scheduled")
