@@ -31,7 +31,7 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
 
   it "matches daily stats for including JSON in the view" do
     facility = create(:facility, enable_diabetes_management: true)
-    htn_patient1 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: two_days_ago)
+    htn_patient1 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: seven_days_ago)
     _htn_patient2 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: two_days_ago)
     _dm_patient = create(:patient, :diabetes, registration_facility: facility, registration_user: user, recorded_at: two_days_ago)
     _htn_patient3 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 1.minute.ago)
@@ -43,9 +43,9 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
 
       registrations = service.daily_statistics[:daily][:grouped_by_date][:registrations]
       follow_ups = service.daily_statistics[:daily][:grouped_by_date][:follow_ups]
-      expect(registrations[seven_days_ago.to_date]).to eq(0)
+      expect(registrations[seven_days_ago.to_date]).to eq(1)
       expect(follow_ups[seven_days_ago.to_date]).to eq(0)
-      expect(registrations[two_days_ago.to_date]).to eq(3)
+      expect(registrations[two_days_ago.to_date]).to eq(2)
       expect(follow_ups[two_days_ago.to_date]).to eq(1)
     end
   end
