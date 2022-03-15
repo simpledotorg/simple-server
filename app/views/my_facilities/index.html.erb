@@ -2,16 +2,6 @@
  Home
 <% end %>
 
-<% if current_admin.accessible_facilities(:view_reports).any? %>  
-  <%= form_tag regions_search_url(format: :json), id: "search-form", method: :get do %>
-    <div class="mo-search">
-      <div class="mo-search-inner">
-        <%= render "shared/region_search" %>
-      </div>
-    </div>
-  <% end %>
-<% end %>
-
 <h1 class="page-header">
   Home
 </h1>

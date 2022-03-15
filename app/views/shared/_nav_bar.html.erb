@@ -23,30 +23,18 @@
     <!-----------------
       My Facilities
     ----------------->
-      <%= link_to(my_facilities_bp_controlled_path(preserve_query_params(request.query_parameters, ["zone", "size", "facility_group"])), class: "nav-link #{active_controller?("my_facilities") && !active_action?("index")}") do %>
+      <%= link_to(my_facilities_bp_controlled_path(preserve_query_params(request.query_parameters, ["zone", "size", "facility_group"])), class: "nav-link #{active_action?("bp_controlled")} #{active_action?("bp_not_controlled")} #{active_action?("missed_visits")}") do %>
         <i class="fas fa-table main-menu-icon w-16px"></i> <span>Facilities tables</span>
       <% end %>
     
     <!-----------------
       Drug stock
     ----------------->  
-    <a data-toggle="collapse" href="#nav-drug_stocks" role="button" aria-expanded="false" aria-controls="nav-drug_stocks" class="nav-link nav-link-dropdown <% active_controller?("my_facilities/drug_stocks") %>">
-      <i class="fas fa-tablets main-menu-icon w-16px"></i> <span>Drug stock</span>
-    </a>
-    
-    <div id="nav-drug_stocks" class="nav-section collapse">
-      
       <% if current_admin.drug_stocks_enabled? %>
-      
-        <%= link_to(my_facilities_drug_stocks_path(preserve_query_params(request.query_parameters, ["facility_group", "zone", "size", "for_end_of_month"])), class: "sub-nav-link #{active_action?("drug_stocks")}") do %>
-          Drug stock-on-hand
-        <% end %>
-      
-        <%= link_to(my_facilities_drug_consumption_path(preserve_query_params(request.query_parameters, ["facility_group", "zone", "size", "for_end_of_month"])), class: "sub-nav-link #{active_action?("drug_consumption")}") do %>
-            Drug consumption
+        <%= link_to(my_facilities_drug_stocks_path(preserve_query_params(request.query_parameters, ["facility_group", "zone", "size", "for_end_of_month"])), class: "nav-link #{active_action?("drug_stocks")} #{active_action?("drug_consumption")}") do %>
+          <i class="fas fa-tablets main-menu-icon w-16px"></i> <span>Drug stock</span>
         <% end %>
       <% end %>
-    </div>
     
     <!-----------------
       Overdue patients

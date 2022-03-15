@@ -61,7 +61,7 @@ Navigation
     background: #0b283d;
     color: $blue-light;
     font-size: 14px;
-    width: 100%;
+    width: 340px;
     display: none;
 
     .float-right {
@@ -91,6 +91,10 @@ Navigation
     color: $white;
     font-size: 18px;
     padding-left: 0;
+    
+    i {
+      color: rgba(255,255,255,0.3);
+    }
   }
 
   i.fa-solid {
@@ -102,6 +106,8 @@ Navigation
   }
 
   &:hover,
+  &:active,
+  &:focus,
   &.navigation-open {
     background: #0b283d;
     width: 340px;
@@ -144,7 +150,7 @@ nav.breadcrumb i {
 .mo-search {
   background: rgba(0, 0, 0, 0.03);
   padding: 6px;
-  margin: -32px -40px 32px -40px;
+  margin: 0 -20px 32px -20px;
 
   .mo-search-inner {
     max-width: 700px;
@@ -152,9 +158,23 @@ nav.breadcrumb i {
   }
 }
 
+.sub-menu {
+  a {
+    color: $grey-dark;
+  }
+
+  a.active {
+    color: $red;
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+}
+
 @include media-breakpoint-down(sm) {
   .mo-search {
-    margin: -32px -16px 32px -16px;
+    margin: 0 0 32px 0;
   }
 }
 

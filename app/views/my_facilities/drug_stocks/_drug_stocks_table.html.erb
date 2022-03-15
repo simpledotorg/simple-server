@@ -19,18 +19,18 @@
       <% end %>
     </tr>
     <tr data-sort-method="thead" class="sorts">
-      <th class="row-label sort-label" colspan="2" data-sort-default>Facilities</th>
+      <th class="row-label sort-label sticky" colspan="2" data-sort-default>Facilities</th>
       <% @drugs_by_category.map do |drug_category, drugs| %>
         <% drugs.map do |drug| %>
-          <th class="row-label sort-label row-medicine" data-sort-method="number" data-sort-column-key=<%= drug.id %>>
+          <th class="row-label sort-label row-medicine sticky" data-sort-method="number" data-sort-column-key=<%= drug.id %>>
             <%= drug.name %><br> <%= drug.dosage %>
           </th>
         <% end %>
-        <th class="row-label sort-label" data-sort-method="number" data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
+        <th class="row-label sort-label sticky" data-sort-method="number" data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
           Patient<br>days
         </th>
       <% end %>
-      <th class="mobile"></th>
+      <th class="mobile sticky"></th>
     </tr>
     </thead>
     <tbody>
