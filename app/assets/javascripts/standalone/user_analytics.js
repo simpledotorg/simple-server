@@ -195,6 +195,7 @@ function filterDataByGender(tableName) {
 function openWindow(id, parentId) {
   let element = document.getElementById(id);
   element.style.display = 'block';
+  element.style.height = 'auto';
 
   if (parentId) {
     let parent = document.getElementById(parentId);
@@ -209,10 +210,14 @@ function openWindow(id, parentId) {
 function closeWindow(id, parentId) {
   let element = document.getElementById(id);
   element.style.display = 'none';
+  element.style.height = '0';
 
   if (parentId) {
     let parent = document.getElementById(parentId);
     parent.style.display = 'block';
     parent.style.height = 'auto';
   }
+
+  document.body.scrollTop = 0;
+  document.documentElement.scrollTop = 0;
 }

@@ -169,10 +169,10 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
           it "logs failure if the attempt failed, doesn't schedule a fallback message" do
             twilio_client = double("TwilioClientDouble")
             twilio_response = double("TwilioClientResponseDouble")
+            allow(Twilio::REST::Client).to receive(:new).and_return(twilio_client)
             allow(twilio_client).to receive_message_chain("messages.create").and_return(twilio_response)
             allow(twilio_response).to receive(:sid).and_return(nil)
             allow(twilio_response).to receive(:status).and_return(nil)
-            allow_any_instance_of(TwilioApiService).to receive(:client).and_return(twilio_client)
 
             session_id = SecureRandom.uuid
             notification = create(:notification, message: "notifications.covid.medication_reminder", purpose: "covid_medication_reminder")
