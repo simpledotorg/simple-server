@@ -118,16 +118,6 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       described_class.drain
     end
 
-    it "can send to a specified phone number if provided" do
-      expect(Messaging::Twilio::ReminderSms).to receive(:send_message).with(
-        recipient_number: "+14145555555",
-        message: notification.localized_message
-      )
-
-      described_class.perform_async(notification.id, "+14145555555")
-      described_class.drain
-    end
-
     it "does not create a communication or update notification status if the notification status is not 'scheduled'" do
       notification = create(:notification, status: "pending")
 

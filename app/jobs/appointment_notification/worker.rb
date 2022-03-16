@@ -14,7 +14,7 @@ class AppointmentNotification::Worker
     @logger ||= Notification.logger(class: self.class.name)
   end
 
-  def perform(notification_id, phone_number = nil)
+  def perform(notification_id)
     return unless flipper_enabled?
 
     notification = Notification.includes(:subject, :patient).find(notification_id)
@@ -22,7 +22,7 @@ class AppointmentNotification::Worker
     Sentry.set_tags(patient_id: patient.id)
 
     return unless valid_notification?(notification)
-    send_message(notification, phone_number || patient.latest_mobile_number)
+    send_message(notification, patient.latest_mobile_number)
   end
 
   private
