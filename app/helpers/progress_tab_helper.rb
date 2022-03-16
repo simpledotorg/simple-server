@@ -10,7 +10,7 @@ module ProgressTabHelper
     multiplier_index = 0
     badges = []
 
-    while current_value >= current_goal
+    while current_value && (current_value >= current_goal)
       add_badges_to_array(current_goal, true, badges)
       current_goal = set_current_goal(current_goal, multiplier_index)
       multiplier_index = set_multiplier_index(multiplier_index)
