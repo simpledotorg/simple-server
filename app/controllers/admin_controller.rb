@@ -79,6 +79,7 @@ class AdminController < ApplicationController
     }
     logger.info { "regions#index: Current admin has #{accessible_facility_regions.size} facility regions" }
   end
+
   def accessible_region?(region, action)
     return false unless region.reportable_region?
     current_admin.region_access(memoized: true).accessible_region?(region, action)
