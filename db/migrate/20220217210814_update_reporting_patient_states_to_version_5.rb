@@ -1,6 +1,6 @@
 class UpdateReportingPatientStatesToVersion5 < ActiveRecord::Migration[5.2]
   def change
-    drop_view :reporting_facility_state_dimensions, materialized: true, revert_to_version: 7
+    drop_view :reporting_facility_state_dimensions, materialized: true
     drop_view :reporting_facility_states, materialized: true
     drop_view :reporting_quarterly_facility_states, materialized: true
 
@@ -9,7 +9,7 @@ class UpdateReportingPatientStatesToVersion5 < ActiveRecord::Migration[5.2]
       revert_to_version: 4,
       materialized: true
 
-    create_view :reporting_facility_state_dimensions, materialized: true
+    create_view :reporting_facility_state_dimensions, materialized: true, version: 1
     add_index :reporting_facility_state_dimensions, [:month_date, :facility_region_id], name: :fs_dimensions_month_date_facility_region_id, unique: true
 
     create_view :reporting_facility_states, materialized: true, version: 7
