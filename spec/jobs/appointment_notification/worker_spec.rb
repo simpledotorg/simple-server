@@ -11,7 +11,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       create(:notification,
         subject: create(:appointment),
         status: "scheduled",
-        message: "#{Notification::APPOINTMENT_REMINDER_MSG_PREFIX}.whatsapp")
+        message: "locale.key")
     }
 
     def mock_successful_delivery

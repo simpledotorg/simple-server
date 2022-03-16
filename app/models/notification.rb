@@ -12,8 +12,6 @@ class Notification < ApplicationRecord
     Rails.logger.child(fields)
   end
 
-  APPOINTMENT_REMINDER_MSG_PREFIX = "communications.appointment_reminders"
-
   validates :status, presence: true
   validates :remind_on, presence: true
   validates :message, presence: true
