@@ -14,7 +14,7 @@ RSpec.describe SimpleServerEnvHelper do
       it "should return the default style class" do
         ENV[simple_server_env] = "default"
 
-        expect(style_class_for_environment).to eq "navbar navbar-expand-md fixed-top navbar-light bg-light"
+        expect(style_class_for_environment).to eq "navigation navbar-light bg-light"
       end
     end
 
@@ -22,7 +22,7 @@ RSpec.describe SimpleServerEnvHelper do
       it "should return the qa style class" do
         ENV[simple_server_env] = "qa"
 
-        expect(style_class_for_environment).to eq "navbar navbar-expand-md fixed-top navbar-light bg-light navbar-qa"
+        expect(style_class_for_environment).to eq "navigation navbar-qa"
       end
     end
 
@@ -30,7 +30,7 @@ RSpec.describe SimpleServerEnvHelper do
       it "should return the production style class" do
         ENV[simple_server_env] = "demo"
 
-        expect(style_class_for_environment).to eq "navbar navbar-expand-md fixed-top navbar-light bg-light navbar-demo"
+        expect(style_class_for_environment).to eq "navigation navbar-demo"
       end
     end
 
@@ -38,7 +38,7 @@ RSpec.describe SimpleServerEnvHelper do
       it "should return the production style class" do
         ENV[simple_server_env] = "sandbox"
 
-        expect(style_class_for_environment).to eq "navbar navbar-expand-md fixed-top navbar-light navbar-sandbox"
+        expect(style_class_for_environment).to eq "navigation navbar-sandbox"
       end
     end
 
@@ -46,7 +46,7 @@ RSpec.describe SimpleServerEnvHelper do
       it "should return the production style class" do
         ENV[simple_server_env] = "production"
 
-        expect(style_class_for_environment).to eq "navbar navbar-expand-md fixed-top navbar-light navbar-production"
+        expect(style_class_for_environment).to eq "navigation navbar-production"
       end
     end
   end

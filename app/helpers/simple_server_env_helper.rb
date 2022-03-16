@@ -7,7 +7,6 @@ module SimpleServerEnvHelper
 
     styles = %w[navigation]
     styles += bootstrap_navbar_classes_for_environment(env)
-    styles << "navbar-#{env}" if CUSTOMIZED_ENVS.include?(env)
 
     styles.join(" ")
   end
