@@ -3,15 +3,8 @@ class AppointmentNotification::Worker
 
   sidekiq_options queue: :high
 
-  class UnknownCommunicationType < StandardError
-  end
-
   def metrics
     @metrics ||= Metrics.with_object(self)
-  end
-
-  def logger
-    @logger ||= Notification.logger(class: self.class.name)
   end
 
   def perform(notification_id)
@@ -28,48 +21,37 @@ class AppointmentNotification::Worker
   private
 
   def send_message(notification, recipient_number)
-    communication_type = "sms"
-    logger.info "send_message for notification #{notification.id} communication_type=#{communication_type}"
-    context = {
-      calling_class: self.class.name,
-      notification_id: notification.id,
-      notification_purpose: notification.purpose,
-      communication_type: communication_type
-    }
-    Sentry.set_tags(context)
-
-    response = notify_via_twilio(notification, communication_type, recipient_number)
-
+    response = notify(notification, recipient_number)
     return unless response
-    metrics.increment("sent.#{communication_type}")
 
     ActiveRecord::Base.transaction do
-      create_communication(notification, communication_type, response)
+      create_communication(notification, response)
       notification.status_sent!
     end
-    logger.info("notification #{notification.id} communication_type=#{communication_type} sent")
+
+    log_notification_sent
     response
   end
 
-  def notify_via_twilio(notification, communication_type, recipient_number)
-    messaging_channel =
-      case communication_type
-        when "whatsapp"
-          Messaging::Twilio::Whatsapp
-        when "sms"
-          Messaging::Twilio::ReminderSms
-        else
-          raise UnknownCommunicationType, "#{self.class.name} is not configured to handle communication type #{communication_type}"
-      end
+  def log_notification_sent
+    communication_type = appointment_reminders_channel.communication_type
+    metrics.increment("sent.#{communication_type}")
+    logger.info("notification #{notification.id} communication_type=#{communication_type} sent")
+  end
 
-    handle_twilio_error(notification) do
-      messaging_channel.send_message(recipient_number: recipient_number, message: notification.localized_message)
+  def notify(notification, recipient_number)
+    handle_messaging_error(notification) do
+      appointment_reminders_channel.send_message(recipient_number: recipient_number, message: notification.localized_message)
     end
   end
 
-  def handle_twilio_error(notification, &block)
+  memoize def appointment_reminders_channel
+    CountryConfig.current[:appointment_reminders_channel]
+  end
+
+  def handle_messaging_error(notification, &block)
     block.call
-  rescue Messaging::Twilio::Error => error
+  rescue Messaging::Error => error
     if error.reason == :invalid_phone_number
       notification.status_cancelled!
       logger.warn("notification #{notification.id} cancelled because of an invalid phone number")
@@ -80,12 +62,12 @@ class AppointmentNotification::Worker
     end
   end
 
-  def create_communication(notification, communication_type, response)
+  def create_communication(notification, response)
     Communication.create_with_twilio_details!(
       notification: notification,
       twilio_sid: response.sid,
       twilio_msg_status: response.status,
-      communication_type: communication_type
+      communication_type: appointment_reminders_channel.communication_type
     )
   end
 
