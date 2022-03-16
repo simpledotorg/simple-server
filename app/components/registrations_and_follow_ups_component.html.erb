@@ -39,7 +39,7 @@
         </tr>
         <tr class="sorts" data-sort-method="thead">
           <th class="row-label sort-label sort-label-small ta-center sticky" data-sort-default>
-            Facilities
+            <%= region.child_region_type.capitalize %>
           </th>
           <th class="row-label sort-label sort-label-small ta-center sticky" data-sort-method="number">
             Total assigned patients
@@ -81,11 +81,11 @@
             </td>
           <% end %>
         </tr>
-        <% region.facility_regions.each do |resource| %>
+        <% region.reportable_children.each do |resource| %>
           <% slug = resource.region.slug %>
           <tr>
             <td class="row-title">
-              <%= link_to resource.name, reports_region_details_path(resource.region, report_scope: :facility) %>
+              <%= link_to resource.name, reports_region_details_path(resource.region, report_scope: resource.region_type) %>
             </td>
             <td class="ta-center">
               <%= number_or_dash_with_delimiter(repository.cumulative_assigned_patients[slug][current_period]) %>
@@ -139,7 +139,7 @@
         </tr>
         <tr class="sorts" data-sort-method="thead">
           <th class="row-label sort-label sort-label-small ta-center sticky" data-sort-default>
-            Facilities
+            <%= region.child_region_type.capitalize %>
           </th>
           <% range.each do |period| %>
             <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
@@ -159,28 +159,12 @@
             </td>
           <% end %>
         </tr>
-        <% if region.state_region? %>
-          <% region.district_regions.each do |resource| %>
-            <% slug = resource.region.slug %>
-            <% next unless repository.earliest_patient_recorded_at[resource.slug] %>
-            <tr>
-              <td class="row-title">
-                <%= link_to resource.name, reports_region_district_path(resource.region) %>
-              </td>
-              <% range.each do |period| %>
-                <td class="ta-center">
-                  <%= number_or_dash_with_delimiter repository.monthly_overdue_calls[slug][period] %>
-                </td>
-              <% end %>
-            </tr>
-          <% end %>
-        <% else %>
-        <% region.facility_regions.each do |resource| %>
+        <% region.reportable_children.each do |resource| %>
           <% slug = resource.region.slug %>
           <% next unless repository.earliest_patient_recorded_at[resource.slug] %>
           <tr>
             <td class="row-title">
-              <%= link_to resource.name, reports_region_facility_details_path(resource.region) %>
+              <%= link_to resource.name, reports_region_details_path(resource.region, report_scope: resource.region_type) %>
             </td>
             <% range.each do |period| %>
               <td class="ta-center">
@@ -189,7 +173,6 @@
             <% end %>
           </tr>
         <% end %>
-  <% end %>
         </tbody>
       </table>
     </div>

@@ -1,7 +1,7 @@
 <div id="<%= page_id %>" class="d-none">
   <div class="mb-8px pt-16px pb-16px bgc-white br-4px bs-card">
     <a
-      class="d-block pl-16px mb-24px"
+      class="d-block w-24px h-24px mb-24px pl-16px"
       href="#"
       onclick="goToPage('<%= page_id %>', 'home-page'); return false;"
     >
@@ -9,22 +9,16 @@
         <%= inline_file("chevron-left.svg") %>
       </div>
     </a>
-    <div class="mb-12px pr-16px pl-16px">
+    <div class="pr-16px pl-16px">
       <h1 class="m-0px mb-8px fw-bold fs-24px">
-        <%= title %>
+        <%= title %> report
       </h1>
       <% if subtitle %>
         <p class="m-0px p-0px ta-left fw-normal fs-16px c-grey-dark">
           <%= subtitle %>
         </p>
       <% end %>
-    </div>
-    <div class="ws-nowrap ox-scroll pl-16px d-none-scrollbar">
-      <% periods.each do |pill| %>
-        <%= render partial: "api/v3/analytics/user_analytics/pill",
-                  locals: { title: pill,
-                            is_active: pill == periods.first ? true : false } %>
-      <% end %>
+      <%= select_tag "periods", options_for_select(periods, periods.first), class: "w-100 mt-16px p-12px fw-medium fs-16px ls-1_25px tt-uppercase c-blue bgc-blue-light b-none br-1px bs-secondary-button o-none a-none chevron-down-icon" %>
     </div>
   </div>
   <div class="mb-8px p-16px bgc-white br-4px bs-card">
@@ -73,13 +67,13 @@
   </div>
   <% if CountryConfig.current_country?("India") %>
     <div class="p-relative mb-8px p-16px bgc-yellow-lightest br-4px bs-card">
-      <h1 class="m-0px mb-8px p-0px ta-left fw-medium fs-18px lh-135 c-black">
+      <h1 class="m-0px mb-8px p-0px pr-48px ta-left fw-medium fs-18px lh-135 c-black">
         <%= t("progress_tab.period_report.patients_initiated_on_treatment_card.title") %>
       </h1>
       <p class="m-0px p-0px ta-left fw-normal fs-16px lh-165 c-black">
         <%= t("progress_tab.period_report.patients_initiated_on_treatment_card.main_text") %>
       </p>
-      <div class="p-absolute t-8px r-8px">
+      <div class="p-absolute t-8px r-8px w-48px h-48px">
         <%= inline_svg("exclamation-mark.svg") %>
       </div>
     </div>

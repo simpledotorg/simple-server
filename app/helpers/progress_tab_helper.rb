@@ -27,6 +27,6 @@ module ProgressTabHelper
       "is_goal_completed" => false
     })
 
-    badges.reverse
+    badges.last(5)
   end
 end

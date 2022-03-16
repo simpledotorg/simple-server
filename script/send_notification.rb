@@ -42,7 +42,7 @@ sent_message = AppointmentNotification::Worker.new.perform(notification.id, phon
 puts "Twilio message sid=#{sent_message.sid} status=#{sent_message.status}..."
 puts "Waiting a second and then refetching Twilio status"
 sleep 1
-fetched_message = TwilioApiService.new.client.messages(sent_message.sid).fetch
+fetched_message = Messaging::Twilio::Api.fetch_message(sent_message.sid)
 puts "status=#{fetched_message.status}"
 puts "Twilio message sid=#{fetched_message.sid} status=#{fetched_message.status}..."
 puts

@@ -155,14 +155,6 @@ class Appointment < ApplicationRecord
      remind_on: remind_on}
   end
 
-  def previously_communicated_via?(communication_type)
-    latest_notification = notifications.includes(:communications)
-      .where(communications: {communication_type: communication_type})
-      .order(created_at: :desc)
-      .first
-    latest_notification&.communications&.any? { |c| c.attempted? }
-  end
-
   private
 
   def cancel_reason_is_present_if_cancelled

@@ -99,10 +99,10 @@ RSpec.describe MessagePatients do
 
   def mock_successful_delivery
     response_double = double("NotificationServiceResponse")
-    twilio_client = double
+    twilio_client = double("TwilioClientDouble")
 
     allow(response_double).to receive(:status).and_return("queued")
-    allow_any_instance_of(TwilioApiService).to receive(:client).and_return(twilio_client)
+    allow(Twilio::REST::Client).to receive(:new).and_return(twilio_client)
     allow(twilio_client).to receive_message_chain("messages.create").and_return(response_double)
   end
 end

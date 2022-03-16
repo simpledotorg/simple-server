@@ -31,7 +31,7 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
 
   it "matches daily stats for including JSON in the view" do
     facility = create(:facility, enable_diabetes_management: true)
-    htn_patient1 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: two_days_ago)
+    htn_patient1 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: seven_days_ago)
     _htn_patient2 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: two_days_ago)
     _dm_patient = create(:patient, :diabetes, registration_facility: facility, registration_user: user, recorded_at: two_days_ago)
     _htn_patient3 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 1.minute.ago)
@@ -43,9 +43,9 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
 
       registrations = service.daily_statistics[:daily][:grouped_by_date][:registrations]
       follow_ups = service.daily_statistics[:daily][:grouped_by_date][:follow_ups]
-      expect(registrations[seven_days_ago.to_date]).to eq(0)
+      expect(registrations[seven_days_ago.to_date]).to eq(1)
       expect(follow_ups[seven_days_ago.to_date]).to eq(0)
-      expect(registrations[two_days_ago.to_date]).to eq(3)
+      expect(registrations[two_days_ago.to_date]).to eq(2)
       expect(follow_ups[two_days_ago.to_date]).to eq(1)
     end
   end
@@ -127,6 +127,28 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
           expect(service.daily_follow_ups(two_days_ago)).to eq(2)
           expect(service.daily_follow_ups(one_day_ago)).to eq(0)
           expect(service.daily_follow_ups(Date.current)).to eq(0)
+        end
+      end
+    end
+
+    it "returns includes data from current day for follow up numbers" do
+      Timecop.freeze("10-03-2022 11:35AM") do
+        facility = create(:facility, enable_diabetes_management: true)
+        htn_patient1 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
+        htn_patient2 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
+        undiagnosed_patient = create(:patient, :without_hypertension, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
+        dm_patient = create(:patient, :diabetes, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
+        create(:appointment, recorded_at: seven_days_ago, patient: htn_patient1, facility: facility, user: user)
+        create(:appointment, recorded_at: two_minutes_ago, patient: htn_patient1, facility: facility, user: user)
+        create(:blood_pressure, recorded_at: two_minutes_ago, patient: htn_patient2, facility: facility, user: user)
+        create(:blood_pressure, recorded_at: two_minutes_ago, patient: undiagnosed_patient, facility: facility, user: user)
+        create(:blood_sugar, recorded_at: two_minutes_ago, patient: dm_patient, facility: facility, user: user)
+        create(:blood_pressure, recorded_at: two_minutes_ago, patient: dm_patient, facility: facility, user: user)
+
+        with_reporting_time_zone do
+          refresh_views
+          service = described_class.new(facility, Period.current)
+          expect(service.daily_follow_ups(Date.current)).to eq(3)
         end
       end
     end

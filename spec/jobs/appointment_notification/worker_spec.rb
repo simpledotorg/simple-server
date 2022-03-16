@@ -18,8 +18,8 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       response_double = double
       allow(response_double).to receive(:status).and_return("sent")
       allow(response_double).to receive(:sid).and_return("12345")
-      allow_any_instance_of(TwilioApiService).to receive(:send_whatsapp).and_return(response_double)
-      allow_any_instance_of(TwilioApiService).to receive(:send_sms).and_return(response_double)
+      allow(Messaging::Twilio::Whatsapp).to receive(:send_message).and_return(response_double)
+      allow(Messaging::Twilio::ReminderSms).to receive(:send_message).and_return(response_double)
     end
 
     it "logs but creates nothing when notifications and experiment flags are disabled" do
@@ -64,47 +64,6 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       }.to change { Communication.count }.by(1)
     end
 
-    it "sends a whatsapp message when notification's next_communication_type is whatsapp" do
-      mock_successful_delivery
-      allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("whatsapp")
-
-      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.sent.whatsapp")
-      expect_any_instance_of(TwilioApiService).to receive(:send_whatsapp)
-      described_class.perform_async(notification.id)
-      described_class.drain
-    end
-
-    it "sends sms when notification's next_communication_type is sms" do
-      mock_successful_delivery
-      allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("sms")
-
-      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.sent.sms")
-      expect_any_instance_of(TwilioApiService).to receive(:send_sms)
-      described_class.perform_async(notification.id)
-      described_class.drain
-    end
-
-    it "does not send a communication when notification's next_communication_type is nil" do
-      mock_successful_delivery
-      allow_any_instance_of(Notification).to receive(:next_communication_type).and_return(nil)
-
-      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.skipped.no_next_communication_type")
-      expect {
-        described_class.perform_async(notification.id)
-        described_class.drain
-      }.not_to change { Communication.count }
-    end
-
-    it "raises an error when next_communication_type is not supported" do
-      allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("aol_instant_messenger")
-
-      expect {
-        described_class.perform_async(notification.id)
-        described_class.drain
-      }.to raise_error(StandardError)
-        .with_message("AppointmentNotification::Worker is not configured to handle communication type aol_instant_messenger")
-    end
-
     it "creates a Communication with twilio response status and sid" do
       mock_successful_delivery
 
@@ -127,7 +86,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       previous_whatsapp = create(:communication, :whatsapp, notification: notification)
       create(:twilio_sms_delivery_detail, :failed, communication: previous_whatsapp)
 
-      expect_any_instance_of(TwilioApiService).to receive(:send_sms)
+      expect(Messaging::Twilio::ReminderSms).to receive(:send_message)
       described_class.perform_async(notification.id)
       described_class.drain
     end
@@ -152,33 +111,20 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
         }
       )
 
-      expect_any_instance_of(TwilioApiService).to receive(:send_sms).with(
+      expect(Messaging::Twilio::ReminderSms).to receive(:send_message).with(
         recipient_number: notification.patient.latest_mobile_number,
-        message: localized_message,
-        callback_url: "https://localhost/api/v3/twilio_sms_delivery",
-        context: {
-          calling_class: "AppointmentNotification::Worker",
-          communication_type: "sms",
-          notification_id: notification.id,
-          notification_purpose: "missed_visit_reminder"
-        }
+        message: localized_message
       )
       described_class.perform_async(notification.id)
       described_class.drain
     end
 
     it "can send to a specified phone number if provided" do
-      expect_any_instance_of(TwilioApiService).to receive(:send_sms).with(
+      expect(Messaging::Twilio::ReminderSms).to receive(:send_message).with(
         recipient_number: "+14145555555",
-        message: notification.localized_message,
-        callback_url: "https://localhost/api/v3/twilio_sms_delivery",
-        context: {
-          calling_class: "AppointmentNotification::Worker",
-          communication_type: "sms",
-          notification_id: notification.id,
-          notification_purpose: "missed_visit_reminder"
-        }
+        message: notification.localized_message
       )
+
       described_class.perform_async(notification.id, "+14145555555")
       described_class.drain
     end
@@ -195,7 +141,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
     end
 
     it "cancels the notification if twilio responds with invalid phone number error" do
-      allow_any_instance_of(TwilioApiService).to receive(:send_sms).and_raise(TwilioApiService::Error.new("An error", 21211))
+      allow(Messaging::Twilio::ReminderSms).to receive(:send_message).and_raise(Messaging::Twilio::Error.new("An error", 21211))
       expect {
         described_class.perform_async(notification.id)
         described_class.drain
@@ -217,36 +163,6 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
         described_class.perform_async(notification.id)
         described_class.drain
       }.not_to change { Communication.count }
-    end
-
-    describe "twilio senders" do
-      it "provides a sender if available" do
-        mock_successful_delivery
-        allow(ENV).to receive(:fetch).and_call_original
-        allow(ENV).to receive(:fetch).with("TWILIO_APPOINTMENT_REMINDER_NUMBERS", "").and_return("+testnumber111,+testnumber222,+testnumber333")
-        experiment = create(:experiment)
-        allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("sms")
-        allow_any_instance_of(Notification).to receive(:experiment).and_return(experiment)
-
-        expect(TwilioApiService).to receive(:new).with(sms_sender: /testnumber/).and_call_original
-        expect_any_instance_of(TwilioApiService).to receive(:send_sms)
-        described_class.perform_async(notification.id)
-        described_class.drain
-      end
-
-      it "provides a nil sender if unavailable" do
-        mock_successful_delivery
-        allow(ENV).to receive(:fetch).and_call_original
-        allow(ENV).to receive(:fetch).with("TWILIO_APPOINTMENT_REMINDER_NUMBERS", "").and_return("")
-        experiment = create(:experiment, experiment_type: "medication_reminder")
-        allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("sms")
-        allow_any_instance_of(Notification).to receive(:experiment).and_return(experiment)
-
-        expect(TwilioApiService).to receive(:new).with(sms_sender: nil).and_call_original
-        expect_any_instance_of(TwilioApiService).to receive(:send_sms)
-        described_class.perform_async(notification.id)
-        described_class.drain
-      end
     end
   end
 end

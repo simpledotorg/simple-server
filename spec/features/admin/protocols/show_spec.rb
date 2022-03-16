@@ -42,7 +42,7 @@ RSpec.feature "test medication list detail page functionality", type: :feature d
 
     it "should edit medication" do
       medication_list.select_medication_list(medication_list_1.name)
-      medication_list_show.click_edit_medication_button(medication_1.name)
+      medication_list_show.click_edit_medication_button("#{medication_1.name}-#{medication_1.dosage}")
       AdminPage::ProtocolDrugs::Edit.new.edit_medication_info("50mg", "AXDFC")
     end
   end
