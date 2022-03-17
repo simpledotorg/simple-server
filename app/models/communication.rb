@@ -48,7 +48,6 @@ class Communication < ApplicationRecord
       logger.info(class: self.class.name, msg: __method__.to_s, communication_id: communication.id,
         communication_type: communication_type, result: twilio_msg_status,
         notification_id: notification&.id)
-    end
   end
 
   def self.messaging_start_hour

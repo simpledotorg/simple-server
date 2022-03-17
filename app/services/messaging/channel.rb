@@ -25,6 +25,12 @@ class Messaging::Channel
     raise NotImplementedError
   end
 
+  # A channel supports recording the delivery's details.
+  # It should also tie it to a Communication.
+  def record_communication(recipient_number:, response:)
+    raise NotImplementedError
+  end
+
   def track_metrics(&block)
     metrics.increment("#{communication_type}.attempts")
 

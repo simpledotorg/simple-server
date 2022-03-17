@@ -26,7 +26,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       Flipper.disable(:notifications)
       Flipper.disable(:experiment)
 
-      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.skipped.feature_disabled")
+      expect(Statsd.instance).to receive(:increment).with("notifications.skipped.feature_disabled")
       expect {
         described_class.perform_async(notification.id)
         described_class.drain
@@ -35,7 +35,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
 
     it "logs and cancels notification when patient doesn't have a mobile number" do
       notification.patient.phone_numbers.update_all(phone_type: :invalid)
-      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.skipped.no_mobile_number")
+      expect(Statsd.instance).to receive(:increment).with("notifications.skipped.no_mobile_number")
       expect {
         described_class.perform_async(notification.id)
         described_class.drain
@@ -121,7 +121,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
     it "does not create a communication or update notification status if the notification status is not 'scheduled'" do
       notification = create(:notification, status: "pending")
 
-      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.skipped.not_scheduled")
+      expect(Statsd.instance).to receive(:increment).with("notifications.skipped.not_scheduled")
       expect {
         described_class.perform_async(notification.id)
         described_class.drain

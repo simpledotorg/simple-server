@@ -23,4 +23,19 @@ class TwilioSmsDeliveryDetail < ApplicationRecord
   def in_progress?
     queued? || sending? || sent?
   end
+
+  def record_communication(response:, recipient_number:, communication_type:)
+    transaction do
+      delivery_detail = create!(
+        session_id: response.sid,
+        result: response.status,
+        callee_phone_number: recipient_number
+      )
+
+      Communication.create!(
+        communication_type: communication_type,
+        detailable: delivery_detail,
+      )
+    end
+  end
 end

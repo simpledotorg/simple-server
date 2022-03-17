@@ -23,6 +23,14 @@ class Messaging::Twilio::Api < Messaging::Channel
     client.messages(sid).fetch
   end
 
+  def record_communication(recipient_number:, response:)
+    TwilioSmsDeliveryDetail.record_communication(
+      recipient_number: recipient_number,
+      response: response,
+      communication_type: communication_type
+    )
+  end
+
   private
 
   memoize def client
