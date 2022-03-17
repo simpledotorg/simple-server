@@ -74,24 +74,20 @@ class Notification < ApplicationRecord
     where(status: %w[pending scheduled]).update_all(status: :cancelled)
   end
 
-  def successful_deliveries
-    communications.with_delivery_detail.select("delivery_detail.result, communications.*").where(
-      delivery_detail: {result: [:read, :delivered, :sent]}
-    )
+  def successful_deliveries?
+    communications.any? {|communication| communication.successful?}
   end
 
-  def queued_deliveries
-    communications.with_delivery_detail.select("delivery_detail.result, communications.*").where(
-      delivery_detail: {result: [:queued]}
-    )
+  def queued_deliveries?
+    communications.any? {|communication| communication.pending?}
   end
 
   def delivery_result
     if status_cancelled?
       :failed
-    elsif successful_deliveries.exists?
+    elsif successful_deliveries?
       :success
-    elsif queued_deliveries.exists? || !communications.exists?
+    elsif queued_deliveries? || !communications.exists?
       :queued
     else
       :failed
