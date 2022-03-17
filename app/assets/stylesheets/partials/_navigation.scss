@@ -109,7 +109,7 @@ Navigation
   &:active,
   &:focus,
   &.navigation-open {
-    background: #0b283d;
+    background: #0b283d !important;
     width: 280px;
 
     .nav-link-dropdown {
@@ -172,7 +172,7 @@ nav.breadcrumb i {
   }
 }
 
-@include media-breakpoint-down(sm) {
+@include media-breakpoint-down(md) {
   .mo-search {
     margin: 0 0 32px 0;
   }
@@ -183,7 +183,7 @@ form.edit_email_authentication .invalid-feedback {
   font-weight: bold;
 }
 
-@include media-breakpoint-down(sm) {
+@include media-breakpoint-down(md) {
   .navigation {
     display: none;
     width: 85% !important;
@@ -229,7 +229,7 @@ form.edit_email_authentication .invalid-feedback {
   }
 }
 
-@include media-breakpoint-up(md) {
+@include media-breakpoint-up(lg) {
   body {
     padding: 0 20px 0 76px; /* 56px left menu */
   }
