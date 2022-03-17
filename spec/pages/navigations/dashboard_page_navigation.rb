@@ -1,10 +1,9 @@
 module Navigations
   class DashboardPageNavigation < ApplicationPage
-    LOGOUT_BUTTON = "#nav-more-logout"
-    MANAGE_OPTION = {xpath: "//li/div/a"}.freeze
-    MAIN_MENU = {css: "#navigation"}.freeze
-    MAIN_MENU_TABS = {css: ".nav-link"}.freeze
-    MORE_DROPDOWN = ".nav-link-dropdown"
+    LOGOUT_BUTTON = {css: "#nav-more-logout"}
+    MAIN_MENU = {css: "#navigation"}
+    MAIN_MENU_TABS = {css: ".nav-link"}
+    MORE_DROPDOWN = {css: ".nav-link-dropdown"}
 
     def hover_nav
       find(MAIN_MENU[:css]).hover
@@ -21,7 +20,7 @@ module Navigations
     end
 
     def open_more
-      find(MORE_DROPDOWN).click
+      find(MORE_DROPDOWN[:css]).click
     end
 
     def click_manage_option(option)
@@ -32,7 +31,7 @@ module Navigations
 
     def click_logout_button
       hover_nav
-      find(LOGOUT_BUTTON).click
+      find(LOGOUT_BUTTON[:css]).click
     end
   end
 end
