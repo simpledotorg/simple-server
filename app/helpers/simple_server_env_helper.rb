@@ -63,6 +63,6 @@ module SimpleServerEnvHelper
       "production" => ["navbar-production"]
     }
 
-    navbar_classes[env] || ["navbar-light", "bg-light"]
+    navbar_classes[env]
   end
 end
