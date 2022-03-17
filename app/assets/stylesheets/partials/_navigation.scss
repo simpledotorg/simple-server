@@ -18,7 +18,8 @@ Navigation
   vertical-align: top;
   transition: 0.15s ease-in-out width, color;
   z-index: 10000000000;
-  overflow: scroll;
+  overflow-x: clip;
+  overflow-y: scroll;
 
   .nav-divider {
     height: 1px;
@@ -91,7 +92,7 @@ Navigation
     color: $white;
     font-size: 18px;
     padding-left: 0;
-    
+
     i {
       color: rgba(255,255,255,0.4);
     }
