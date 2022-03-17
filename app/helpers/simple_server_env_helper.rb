@@ -63,6 +63,6 @@ module SimpleServerEnvHelper
       "production" => ["navbar-production"]
     }
 
-    navbar_classes[env]
+    navbar_classes[env] || []
   end
 end
