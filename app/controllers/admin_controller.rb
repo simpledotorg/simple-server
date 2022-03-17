@@ -10,8 +10,6 @@ class AdminController < ApplicationController
 
   after_action :verify_authorization_attempted, except: [:root]
 
-  delegate :cache, to: Rails
-
   rescue_from UserAccess::NotAuthorizedError, with: :user_not_authorized
 
   def switch_locale(&action)
