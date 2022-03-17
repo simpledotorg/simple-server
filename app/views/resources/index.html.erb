@@ -1,13 +1,16 @@
 <div class="page" id="resources">
   <div class="container">
     <div class="row">
-      <div class="col-sm-4 col-lg-2 pl-lg-0">
+      <div class="col-sm-4 col-lg-3 pl-lg-0">
         <nav class="secondary-nav">
           <h4 class="pl-2 mt-3">
-            Resources
+            Resources &amp; training
           </h4>
           <a href="#card-office-hours" class="nav-link">
             Tech team office hours
+          </a>
+          <a href="#card-district-reports" class="nav-link">
+            District reports template
           </a>
           <a href="#card-checklist" class="nav-link">
             Deployment checklist
@@ -32,7 +35,7 @@
           </a>
         </nav>
       </div>
-      <div class="col-12 col-sm-8 col-lg-10">
+      <div class="col-12 col-sm-8 col-lg-9">
         <% if CountryConfig.current[:name] == "India" %>
           <%= render "shared/office_hours_india" %>
         <% elsif CountryConfig.current[:name] == "Bangladesh" %>
@@ -40,6 +43,23 @@
         <% elsif CountryConfig.current[:name] == "Ethiopia" %>
           <%= render "shared/office_hours_ethiopia" %>
         <% end %>
+        
+        <% if CountryConfig.current[:name] == "India" %>
+        <div class="card" id="card-district-reports">
+          <h2>
+            District reports template
+          </h2>
+          <div class="resource-link resource-doc">
+            <%= link_to 'XLS template for creating district reports', root_url+'assets/resources/monthly-report-template.xlsx', { target: '_blank' } %>
+              <span>
+                A blank template that can be auto-filled by downloading data from district reports.
+              </span>
+              <i class="far fa-file-excel"></i>
+            </a>
+          </div>
+        </div>
+        <% end %>
+        
         <div class="card" id="card-checklist">
           <h2>
             Deployment checklist
