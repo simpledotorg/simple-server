@@ -2,7 +2,7 @@
 
 <div class="dashboard">
 
-  <nav class="breadcrumb mt-24px mb-0px pb-8px">
+  <nav class="breadcrumb mb-0px pb-16px">
     <%= link_to "All reports", dashboard_districts_path %>
 
     <% @region.ancestors.where(region_type: %w[state district block facility]).order(:path).each do |region| %>
@@ -39,13 +39,13 @@
       </p>
       <% if @region.facility_region? && current_admin.feature_enabled?(:dashboard_progress_reports) %>
         <p class="mr-lg-24px mb-0px pb-8px fs-20px fw-bold <%= params[:action] == "cohort" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
-          <%= link_to "Progress reports", reports_progress_path(@region), :class => "c-grey-dark td-none" %>
+          <%= link_to "Progress", reports_progress_path(@region), :class => "c-grey-dark td-none" %>
         </p>
       <% end %>
     </div>
-    <div class="d-flex actions order-1 mb-24px order-lg-2 mb-lg-0">
+    <div class="d-flex actions order-1 mb-16px order-lg-2 mb-lg-0">
       <% if period_selector %>
-        <div class="dropdown show mb-24px mb-lg-0 w-lg-auto">
+        <div class="dropdown show mb-24px mb-lg-0 w-100 w-lg-auto">
           <a
             class="d-block d-lg-inline-block btn btn-sm dropdown-toggle c-black bg-white bs-small"
             href="#"
