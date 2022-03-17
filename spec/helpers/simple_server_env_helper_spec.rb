@@ -14,7 +14,7 @@ RSpec.describe SimpleServerEnvHelper do
       it "should return the default style class" do
         ENV[simple_server_env] = "default"
 
-        expect(style_class_for_environment).to eq "navigation navbar-light bg-light"
+        expect(style_class_for_environment).to eq "navigation"
       end
     end
 
