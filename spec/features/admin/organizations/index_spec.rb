@@ -12,19 +12,17 @@ RSpec.feature "Organization management", type: :feature do
 
   describe "test organization screen" do
     it "Verify organisation is displayed in ManageOrganisation" do
-      visit root_path
+      visit admin_organizations_path
       login.do_login(owner.email, owner.password)
 
-      dashboard_navigation.click_manage_option("#nav-organizations-link")
       expect(page).to have_content("IHMI")
       expect(page).to have_content("PATH")
     end
 
     it "Verify owner should be able to delete organisation " do
-      visit root_path
+      visit admin_organizations_path
       login.do_login(owner.email, owner.password)
 
-      dashboard_navigation.click_manage_option("#nav-organizations-link")
       organization_page.click_on_add_organization_button
 
       AdminPage::Organizations::New.new.create_new_organization("test", "testDescription")
