@@ -75,11 +75,15 @@ class Notification < ApplicationRecord
   end
 
   def successful_deliveries?
-    communications.any? {|communication| communication.successful?}
+    communications.any? { |communication| communication.successful? }
+  end
+
+  def successful_deliveries
+    communications.select { |communication| communication.successful? }
   end
 
   def queued_deliveries?
-    communications.any? {|communication| communication.pending?}
+    communications.any? { |communication| communication.in_progress? }
   end
 
   def delivery_result
