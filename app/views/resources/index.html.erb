@@ -50,11 +50,12 @@
             District reports template
           </h2>
           <div class="resource-link resource-doc">
-            <%= link_to 'XLS template for creating district reports', root_url+'assets/resources/monthly-report-template.xlsx', { target: '_blank' } %>
+            <%= link_to root_url+'assets/resources/monthly-report-template.xlsx', { target: '_blank' } do %>
+              <i class="far fa-file-excel"></i> XLS template for creating district reports
+            <% end %>
               <span>
                 A blank template that can be auto-filled by downloading data from district reports.
               </span>
-              <i class="far fa-file-excel"></i>
             </a>
           </div>
         </div>
