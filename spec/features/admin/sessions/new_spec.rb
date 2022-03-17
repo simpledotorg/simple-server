@@ -15,7 +15,7 @@ RSpec.feature "Owner Login as Admin", type: :feature do
 
     it "logs in" do
       dashboard_navigation.validate_owners_home_page
-      dashboard_navigation.open_more
+      dashboard_navigation.hover_nav
       expect(page).to have_content(owner.email)
     end
 

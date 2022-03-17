@@ -20,6 +20,7 @@ module Navigations
     end
 
     def open_more
+      hover_nav
       find(MORE_DROPDOWN[:css]).click
     end
 
