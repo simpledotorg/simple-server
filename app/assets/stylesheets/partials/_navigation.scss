@@ -20,6 +20,11 @@ Navigation
   z-index: 10000000000;
   overflow-x: clip;
   overflow-y: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   .nav-divider {
     height: 1px;
