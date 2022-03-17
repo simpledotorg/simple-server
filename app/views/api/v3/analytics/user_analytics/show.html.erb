@@ -6,6 +6,8 @@
     <meta name="MobileOptimized" content="320">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,shrink-to-fit=no"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
     <title>
       <%= raw t("analytics.page_title") %>
     </title>
@@ -65,7 +67,6 @@
             <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service)) %>
           <% end %>
         </div>
-
         <% if current_facility_group.region.feature_enabled?(:drug_stocks) && controller_name == "user_analytics" %>
           <div class="mb-16px p-16px bgc-white br-4px bs-card">
             <div class="d-flex ai-flex-start jc-space-between mb-16px">
@@ -89,66 +90,57 @@
             %>
           </div>
         <% end %>
-
         <%= render(Reports::ProgressControlComponent.new(@service)) %>
-
         <div class="card">
           <a href="#" onclick="openWindow('progress-cohort', 'progress-start'); return false" class="nav-next">
             Cohort report
           </a>
         </div>
-
-        <% if @achievements.show? %>
-          <div class="trophies">
-            <h4>
-              <%= raw t("analytics.achievements") %>
-            </h4>
-            <% @achievements.unlocked_trophies.sort.each do |trophy| %>
-              <div class="trophy trophy-<%= trophy %>">
-                <%= inline_svg('ribbon.svg') %>
-                <em></em>
-                <span>
-                    <%= number_to_human(trophy, :format => '%n%u', :units => { thousand: 'K', million: 'M' }) %>
-                  </span>
-                <div>
-                  <%= trophy %> <%= raw t("analytics.follow_up") %>
-                  <br>
-                  <%= raw t("analytics.hypertension_patients") %>
-                </div>
-              </div>
-            <% end %>
-            <div class="trophy trophy-<%= @achievements.locked_trophy %> trophy-upcoming">
-              <%= inline_svg('ribbon.svg') %>
-              <em></em>
-              <span>
-                  <%= inline_svg('icon_lock.svg') %>
-                </span>
-              <div>
-                <%= @achievements.locked_trophy %> <%= raw t("analytics.follow_up") %>
-                <br>
-                <%= raw t("analytics.hypertension_patients") %>
-              </div>
+        <div class="mb-8px pt-16px pb-16px bgc-white bs-card">
+          <h1 class="m-0px mb-24px pr-16px pl-16px fw-bold fs-24px">
+            <%= t("progress_tab.achievements_card.title") %>
+          </h1>
+          <div class="mb-24px">
+            <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
+              <span class="fw-bold"><%= number_with_delimiter(@total_follow_ups) %></span> <%= t("progress_tab.achievements_card.follow_up_visits_section_title", visit_or_visits: "visit".pluralize(@total_follow_ups)) %>
+            </p>
+            <div class="d-flex ai-center jc-space-between pt-4px pb-4px pr-16px pl-16px">
+              <% follow_up_badge_goals = create_badge_array(@total_follow_ups) %>
+              <% follow_up_badge_goals.each do |badge| %>
+                <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
+                  locals: { value: badge["goal_value"],
+                            is_goal_completed: badge["is_goal_completed"],
+                            text_color: "c-lavander",
+                            circle_color: "bgc-lavander",
+                            badge_color: "bgc-lavander-light",
+                            icon_completed: "refresh-arrow-white.svg",
+                            icon_goal: "refresh-arrow-grey.svg"
+                } %>
+              <% end %>
             </div>
           </div>
-        <% end %>
-        <footer>
-          <h4 style="padding-top: 60px;">
-            <%= raw t("analytics.notes") %>
-          </h4>
-          <p>
-            <%= raw t("analytics.footer_note_1", facility_name: @current_facility.name) %>
-          </p>
-          <h4 style="padding-top: 60px;">
-            <%= raw t("analytics.thank_you") %>
-          </h4>
-          <p>
-            <%= raw t("analytics.thank_you_note") %>
-          </p>
-          <div style="height: 100px;"></div>
-        </footer>
+          <div>
+            <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
+              <span class="fw-bold"><%= number_with_delimiter(@total_registrations) %></span> <%= t("progress_tab.achievements_card.registered_patients_title", patient_or_patients: "patient".pluralize(@total_registrations)) %>
+            </p>
+            <div class="d-flex ai-center jc-space-between pt-4px pb-4px pr-16px pl-16px">
+              <% registered_patients_badge_goals = create_badge_array(@total_registrations) %>
+              <% registered_patients_badge_goals.each do |badge| %>
+                <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
+                  locals: { value: badge["goal_value"],
+                            is_goal_completed: badge["is_goal_completed"],
+                            text_color: "c-yellow-dark-new",
+                            circle_color: "bgc-yellow-new",
+                            badge_color: "bgc-yellow-light",
+                            icon_completed: "face-yellow-darkest.svg",
+                            icon_goal: "face-grey.svg"
+                } %>
+              <% end %>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-
     <div id="progress-help-registered" class="progress-body" style="display: none;">
       <div class="progress-contents">
         <a href="#" onclick="closeWindow('progress-help-registered', 'progress-start'); return false" class="help-back">
