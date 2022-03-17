@@ -1,7 +1,7 @@
 class Messaging::Twilio::ReminderSms < Messaging::Twilio::Api
   TWILIO_TEST_SMS_NUMBER = "+15005550006"
 
-  def communication_type
+  def self.communication_type
     Communication.communication_types[:sms]
   end
 
@@ -18,4 +18,5 @@ class Messaging::Twilio::ReminderSms < Messaging::Twilio::Api
   memoize def senders
     ENV.fetch("TWILIO_APPOINTMENT_REMINDER_NUMBERS", "").split(",").map(&:strip)
   end
+
 end

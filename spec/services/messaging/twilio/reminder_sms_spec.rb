@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Messaging::Twilio::ReminderSms do
-  specify { expect(described_class.new.communication_type).to eq("sms") }
+  specify { expect(described_class.communication_type).to eq("sms") }
 
   describe "SMS sender" do
     it "uses the production sender in production" do

@@ -21,25 +21,19 @@ class Messaging::Channel
 
   # A channel supports one of the communication types enumerated in
   # Communication.communication_types.
-  def communication_type
-    raise NotImplementedError
-  end
-
-  # A channel supports recording the delivery's details.
-  # It should also tie it to a Communication.
-  def record_communication(recipient_number:, response:)
+  def self.communication_type
     raise NotImplementedError
   end
 
   def track_metrics(&block)
-    metrics.increment("#{communication_type}.attempts")
+    metrics.increment("#{self.class.communication_type}.attempts")
 
     begin
       response = yield block
-      metrics.increment("#{communication_type}.send")
+      metrics.increment("#{self.class.communication_type}.send")
       response
     rescue Messaging::Error => exception
-      metrics.increment("#{communication_type}.errors")
+      metrics.increment("#{self.class.communication_type}.errors")
       raise exception
     end
   end

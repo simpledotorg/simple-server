@@ -8,7 +8,7 @@ RSpec.describe Messaging::Twilio::Api do
   end
 
   before do
-    allow_any_instance_of(described_class).to receive(:communication_type).and_return("sms")
+    allow(described_class).to receive(:communication_type).and_return("sms")
     allow_any_instance_of(described_class).to receive(:sender_number).and_return("9999999999")
   end
 

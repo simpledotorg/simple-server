@@ -25,7 +25,7 @@ class TwilioSmsDeliveryDetail < ApplicationRecord
   end
 
   def record_communication(response:, recipient_number:, communication_type:)
-    transaction do
+    ActiveRecord::Base.transaction do
       delivery_detail = create!(
         session_id: response.sid,
         result: response.status,
@@ -34,7 +34,7 @@ class TwilioSmsDeliveryDetail < ApplicationRecord
 
       Communication.create!(
         communication_type: communication_type,
-        detailable: delivery_detail,
+        detailable: delivery_detail
       )
     end
   end

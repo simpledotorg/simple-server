@@ -19,7 +19,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       allow(response_double).to receive(:status).and_return("sent")
       allow(response_double).to receive(:sid).and_return("12345")
       allow(Messaging::Twilio::Whatsapp).to receive(:send_message).and_return(response_double)
-      allow(Messaging::Twilio::ReminderSms).to receive(:send_message).and_return(response_double)
+      allow_any_instance_of(Messaging::Twilio::ReminderSms).to receive(:send_message).and_return(response_double)
     end
 
     it "logs but creates nothing when notifications and experiment flags are disabled" do
