@@ -33,5 +33,19 @@
     <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.controlled_card.subtitle", facility_name: @region.name, diagnosis: "Hypertension", controlled_threshold: controlled_threshold_subtitle) %>
   </p>
   <% controlled_tooltip_threshold = t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_controlled_long") %>
-  <%#= render partial: "api/v3/analytics/user_analytics/data_bar_graph", locals: { data: control_range, data_type: "percentage", graph_css_color: "bgc-green-new", show_tooltip: true, threshold: controlled_tooltip_threshold } %>
+  <p>
+    <%= control_rates %>
+  </p>
+  <%#= render partial: "api/v3/analytics/user_analytics/data_bar_graph",
+             locals: {
+               data: {
+                 "numerator" => controlled,
+                 "denominator" => adjusted_patients,
+                 "rate" => control_rates
+               },
+               data_type: "percentage",
+               graph_css_color: "bgc-green-new",
+               show_tooltip: true,
+               threshold: controlled_tooltip_threshold }
+  %>
 </div>
