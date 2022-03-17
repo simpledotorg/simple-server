@@ -10,8 +10,10 @@ class Reports::ProgressController < AdminController
     @current_facility = @region
     @user_analytics = UserAnalyticsPresenter.new(@region)
     @service = Reports::FacilityProgressService.new(current_facility, @period)
-    @achievements = Reports::FacilityProgressAchievementService.new(current_facility)
-
+    @total_follow_ups_dimension = Reports::FacilityProgressDimension.new(:follow_ups, diagnosis: :all, gender: :all)
+    @total_registrations_dimension = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :all, gender: :all)
+    @total_follow_ups = Reports::MonthlyProgressComponent.new(@total_follow_ups_dimension, service: @service).total_count
+    @total_registrations = Reports::MonthlyProgressComponent.new(@total_registrations_dimension, service: @service).total_count
     if Flipper.enabled?(:new_progress_tab)
       @period_reports_data = Reports::ReportsFakeFacilityProgressService.new(@current_facility.name).period_reports
       @hypertension_reports_data = Reports::ReportsFakeFacilityProgressService.new(@current_facility.name).hypertension_reports
