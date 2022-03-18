@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-class Reports::ProgressControlComponent < ViewComponent::Base
+class Reports::ProgressUncontrolledComponent < ViewComponent::Base
   include AssetsHelper
-  include ActionView::Helpers::NumberHelper
+  include ActionView::Helpers::NumberHelper 
 
   attr_reader :control_range, :repository
 
@@ -12,12 +12,12 @@ class Reports::ProgressControlComponent < ViewComponent::Base
     @region = service.region
   end
 
-  def control_rates
-    repository.controlled_rates[@region.slug]
+  def uncontrolled_rates
+    repository.uncontrolled_rates[@region.slug]
   end
 
-  def controlled
-    repository.controlled[@region.slug]
+  def uncontrolled
+    repository.uncontrolled[@region.slug]
   end
 
   def adjusted_patients
