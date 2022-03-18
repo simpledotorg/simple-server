@@ -25,7 +25,7 @@
     <% end %>
 
     <h2 class="mb-16px"><%= t("facility_group").capitalize %>s</h2>
-    
+
     <% @facility_groups.dig(organization)&.sort_by(&:name)&.each do |facility_group| %>
       <div class="card">
         <div class="row">
@@ -55,28 +55,36 @@
             </div>
           <% end %>
         </div>
-        <div class="mb-0">
-          <a href="#<%= facility_group.slug %>" data-toggle="collapse" data-target="#<%= facility_group.slug %>" aria-expanded="false" aria-controls="<%= facility_group.slug %>">
-            <i class="fas fa-angle-down mr-4px"></i> Show facilities
-          </a>
-        </div>
-        <div class="collapse multi-collapse" id="<%= facility_group.slug %>">
-          <h4 class="mt-24px text-grey">Facilities</h4>
-          <% @facilities.dig(facility_group)&.sort_by(&:name)&.each do |facility| %>
-            <div class="row card-row">
-              <div class="col-md-5">
-                <h5 class="pb-md-0 pb-1">
-                  <%= link_to facility.name, [:admin, facility_group, facility], class: "d-block" %>
-                </h5>
+
+        <% local_facilities = @facilities.dig(facility_group) %>
+        <% if local_facilities&.any? %>
+          <div class="mb-0">
+            <a href="#<%= facility_group.slug %>" data-toggle="collapse" data-target="#<%= facility_group.slug %>" aria-expanded="false" aria-controls="<%= facility_group.slug %>">
+              <i class="fas fa-angle-down mr-4px"></i> Show <%= pluralize(local_facilities.count, "facilities") %>
+            </a>
+          </div>
+          <div class="collapse multi-collapse" id="<%= facility_group.slug %>">
+            <h4 class="mt-24px text-grey">Facilities</h4>
+            <% local_facilities.sort_by(&:name)&.each do |facility| %>
+              <div class="row card-row">
+                <div class="col-md-5">
+                  <h5 class="pb-md-0 pb-1">
+                    <%= link_to facility.name, [:admin, facility_group, facility], class: "d-block" %>
+                  </h5>
+                </div>
+                <div class="col-md-2"><span class="text-muted"><%= facility.facility_type %></span></div>
+                <div class="col-md-2">
+                  <span class="text-muted"><%= facility.localized_facility_size || "No size set" %></span></div>
+                <div class="col-md-2">
+                  <span class="text-muted">OPD: <%= facility.monthly_estimated_opd_load || "N/A" %></span></div>
               </div>
-              <div class="col-md-2"><span class="text-muted"><%= facility.facility_type %></span></div>
-              <div class="col-md-2">
-                <span class="text-muted"><%= facility.localized_facility_size || "No size set" %></span></div>
-              <div class="col-md-2">
-                <span class="text-muted">OPD: <%= facility.monthly_estimated_opd_load || "N/A" %></span></div>
-            </div>
-          <% end %>
-        </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="mb-0">
+            <span>No facilities</span>
+          </div>
+        <% end %>
       </div>
     <% end %>
   <% end %>
