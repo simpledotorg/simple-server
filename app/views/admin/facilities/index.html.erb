@@ -60,7 +60,7 @@
         <% if local_facilities&.any? %>
           <div class="mb-0">
             <a href="#<%= facility_group.slug %>" data-toggle="collapse" data-target="#<%= facility_group.slug %>" aria-expanded="false" aria-controls="<%= facility_group.slug %>">
-              <i class="fas fa-angle-down mr-4px"></i> Show <%= pluralize(local_facilities.count, "facilities") %>
+              <i class="fas fa-angle-down mr-4px"></i> <%= pluralize(local_facilities.count, "facilities") %>
             </a>
           </div>
           <div class="collapse multi-collapse" id="<%= facility_group.slug %>">
@@ -82,7 +82,7 @@
           </div>
         <% else %>
           <div class="mb-0">
-            <span>No facilities</span>
+            <span class="text-grey">No facilities</span>
           </div>
         <% end %>
       </div>
