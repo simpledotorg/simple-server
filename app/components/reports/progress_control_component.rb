@@ -34,4 +34,8 @@ class Reports::ProgressControlComponent < ViewComponent::Base
   def adjusted_patients
     repository.adjusted_patients[@region.slug]
   end
+
+  def period_info
+    repository.period_info(@region)
+  end
 end

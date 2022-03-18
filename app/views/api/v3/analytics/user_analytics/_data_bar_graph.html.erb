@@ -2,7 +2,7 @@
 <% data_point_heights = data["rates"].map { |value| percentage(value, data["rates"].max).to_i } %>
 <div class="d-flex fd-column h-160px">
   <div class="p-relative f-1 d-flex" data-graph-type="bar-chart" data-with-tooltip="<%= show_tooltip %>">
-    <% data["periods"].each_with_index do |period, index| %>
+    <% data["period_info"].each_with_index do |period, index| %>
       <div class="f-1 d-flex fd-column ai-center jc-flex-end" data-graph-element="bar">
         <p class="m-0px mb-8px p-0px ta-center fw-medium fs-16px c-black ttf-ease-in-out td-0_25s tp-color" data-element-type="text">
           <%= data["rates"][index] %><% if data_type == "percentage" %>%<% end %>
@@ -17,7 +17,7 @@
           <div class="o-0 pe-none p-absolute l-0 d-flex fd-column w-100 bs-tooltip ttf-ease-in-out td-0_25s tp-opacity" data-element-type="tooltip">
             <div class="p-8px bgc-black br-4px">
               <p class="m-0px p-0px ta-left fw-regular fs-14px lh-150 c-white">
-                <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.chart_tooltip", number_of_patients: data["numerators"][index], patient_or_patients: "patient".pluralize(data["numerators"][index]), threshold: threshold, start_period: "START-PER", end_period: "END-PER", number_of_registered_patients: data["denominators"][index], patient_or_patients: "patient".pluralize(data["denominators"][index]), registration_period: "REG-PERIOD") %>
+                <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.chart_tooltip", number_of_patients: data["numerators"][index], patient_or_patients: "patient".pluralize(data["numerators"][index]), threshold: threshold, start_period: period[:bp_control_start_date], end_period: period[:bp_control_end_date], number_of_registered_patients: data["denominators"][index], patient_or_patients: "patient".pluralize(data["denominators"][index]), registration_period: period[:bp_control_registration_date]) %>
               </p>
             </div>
             <div
@@ -31,9 +31,9 @@
     <% end %>
   </div>
   <div class="d-flex ai-center jc-space-between pt-12px bt-grey-mid">
-    <% data["periods"].each do |period| %>
+    <% data["period_info"].each do |period| %>
       <p class="f-1 m-0px p-0px ta-center fw-medium fs-12px c-grey-dark">
-        <%= period %>
+        <%= period[:name] %>
       </p>
     <% end %>
   </div>
