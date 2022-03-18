@@ -313,3 +313,75 @@ function handleBarTouchEnd(event) {
     tooltip.classList.add("o-0");
   });
 }
+
+//
+// Stacked bar chart interactions
+//
+const stackedBars = document.querySelectorAll("[data-graph-element='stacked-bar']");
+stackedBars.forEach(stackedBar => {
+  stackedBar.addEventListener("touchstart", handleStackedBarTouchStart, false);
+  stackedBar.addEventListener("touchend", handleStackedBarTouchEnd, false);
+});
+
+function handleStackedBarTouchStart(event) {
+  event.preventDefault();
+
+  const selectedBar = event.target;
+  const selectedBarChart = selectedBar.parentElement;
+  const selectedBarChartBars = selectedBarChart.querySelectorAll("[data-graph-element='stacked-bar']");
+  selectedBarChartBars.forEach(bar => {
+    bar.classList.add("o-35");
+  });
+
+  selectedBar.classList.remove("o-35");
+  const selectedTooltip = selectedBar.querySelector("[data-element-type='tooltip']");
+  selectedTooltip.classList.remove("o-0");
+
+  setTooltipPosition(selectedTooltip, selectedBar);
+}
+
+function handleStackedBarTouchEnd(event) {
+  event.preventDefault();
+
+  const selectedBarChart = event.target.parentElement;
+  const selectedBarChartBars = selectedBarChart.querySelectorAll("[data-graph-element='stacked-bar']");
+  selectedBarChartBars.forEach(bar => {
+    bar.classList.remove("o-35");
+  });
+
+  const selectedTooltip = event.target.querySelector("[data-element-type='tooltip']");
+  selectedTooltip.classList.add("o-0");
+}
+
+function setTooltipCopyPosition(copyElement, containerElement, barElement) {
+  const index = parseInt(containerElement.getAttribute("data-tooltip-index"));
+  const totalTooltips = parseInt(containerElement.getAttribute("data-tooltip-length"));
+
+  if (index === 0) {
+    copyElement.style.left = 0;
+  }
+  else if (index === totalTooltips - 1) {
+    copyElement.style.left = `${containerElement.offsetLeft + (containerElement.offsetWidth - copyElement.offsetWidth) - 1}px`;
+  }
+  else {
+    copyElement.style.left = `${barElement.offsetLeft + ((barElement.offsetWidth / 2) - (copyElement.offsetWidth / 2))}px`;
+  }
+
+  copyElement.style.top = `${-copyElement.offsetHeight}px`;
+}
+
+function setTooltipTipPosition(tipElement, barElement) {
+  tipElement.style.left = `${(barElement.offsetLeft + (barElement.offsetWidth / 2)) - (tipElement.offsetWidth / 2)}px`;
+}
+
+function setTooltipPosition(tooltipElement, barElement) {
+  // "tipElement" is the tooltrip triangle
+  const tipElement = tooltipElement.querySelector("[data-element-type='tooltip-tip']");
+  const copyElement = tooltipElement.querySelector("[data-element-type='tooltip-copy']");
+  // Position container
+  tooltipElement.style.top = `${tooltipElement.offsetHeight - tipElement.offsetHeight - 4}px`;
+  // Position tooltip tip
+  setTooltipTipPosition(tipElement, barElement);
+  // Position tooltip copy
+  setTooltipCopyPosition(copyElement, tooltipElement, barElement);
+}

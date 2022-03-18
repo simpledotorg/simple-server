@@ -28,4 +28,54 @@
   <%= render(Reports::ProgressControlComponent.new(@service)) %>
   <%= render(Reports::ProgressUncontrolledComponent.new(@service)) %>
   <%= render(Reports::ProgressMissedVisitsComponent.new(@service)) %>
+  <div class="mt-48px mb-8px pr-16px pl-16px">
+    <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey-dark">
+      <%= t("progress_tab.diagnosis_report.cohort_report.section_title") %>
+    </h3>
+  </div>
+  <div class="mb-8px p-16px bgc-white bs-card">
+    <h2 class="m-0px mb-8px p-0px ta-left fw-medium fs-18px c-black">
+      <%= t("progress_tab.diagnosis_report.cohort_report.card_title") %>
+    </h2>
+    <p class="m-0px mb-12px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+      <%= t("progress_tab.diagnosis_report.cohort_report.card_subtitle") %>
+    </p>
+    <div class="mb-32px">
+      <div class="d-flex ai-center jc-center mb-8px">
+        <div class="w-16px h-16px mr-8px br-4px bgc-green-new"></div>
+        <p class="f-1 m-0px p-0px ta-left fw-regular fs-14px c-black">
+          <%= t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_controlled_short") %>
+        </p>
+      </div>
+      <div class="d-flex ai-center jc-center mb-8px">
+        <div class="w-16px h-16px mr-8px br-4px bgc-yellow-new"></div>
+        <p class="f-1 m-0px p-0px ta-left fw-regular fs-14px c-black">
+          <%= t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_uncontrolled_short") %>
+        </p>
+      </div>
+      <div class="d-flex ai-center jc-center mb-8px">
+        <div class="w-16px h-16px mr-8px br-4px bgc-orange-new"></div>
+        <p class="f-1 m-0px p-0px ta-left fw-regular fs-14px c-black">
+          <%= t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_visited_but_no_bp_taken_short") %>
+        </p>
+      </div>
+      <div class="d-flex ai-center jc-center">
+        <div class="w-16px h-16px mr-8px br-4px bgc-red-new"></div>
+        <p class="f-1 m-0px p-0px ta-left fw-regular fs-14px c-black">
+          <%= t("progress_tab.diagnosis_report.diagnosis_thresholds.missed_visits_short") %>
+        </p>
+      </div>
+    </div>
+    <% @user_analytics.statistics.dig(:cohorts).each_with_index do |cohort, index| %>
+      <div class="<% if @user_analytics.statistics.dig(:cohorts).length - 1 > index %>mb-24px<% end %>">
+        <p class="m-0px mb-2px p-0px ta-left fw-regular fs-16px c-black">
+          <%= t("progress_tab.diagnosis_report.cohort_report.cohort_title", start_period: cohort[:period], end_period: cohort[:results_in]) %>
+        </p>
+        <p class="m-0px mb-8px p-0px ta-left fw-reguar fs-16px c-grey-dark">
+          <%= t("progress_tab.diagnosis_report.cohort_report.cohort_subtitle", number_of_patients: cohort[:registered], patient_or_patients: "patient".pluralize(cohort[:registered]), registration_period: cohort[:results_in]) %>
+        </p>
+        <%= render partial: "api/v3/analytics/user_analytics/data_stacked_bar_graph", locals: { data: cohort } %>
+      </div>
+    <% end %>
+  </div>
 </div>
