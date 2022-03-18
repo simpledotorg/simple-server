@@ -1,0 +1,16 @@
+<div class="mb-8px p-16px bgc-white bs-card">
+  <div class="d-flex ai-center jc-space-between mb-8px">
+    <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
+      <%= t("progress_tab.diagnosis_report.assigned_patients_card.title") %>
+    </h2>
+    <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
+      <%= assigned_patients %>
+    </p>
+  </div>
+  <p class="m-0px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+    <%= t("progress_tab.diagnosis_report.assigned_patients_card.subtitle", facility_name: @region.name, diagnosis: "Hypertension") %>
+  </p>
+  <%# diagnosis_data["assigned_patients"]["breakdown"].each_with_index do |row, index| %>
+    <%#= render partial: "api/v3/analytics/user_analytics/data_table_plusminus_row", locals: { title: row["title"], value: row["value"], css_text_color: row["value"] > 0 ? "c-green-new" : "c-red-new", include_bottom_border: index == diagnosis_data["assigned_patients"]["breakdown"].length - 1 ? false : true } %>
+  <%# end %>
+</div>
