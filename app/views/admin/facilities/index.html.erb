@@ -61,7 +61,7 @@
           </a>
         </div>
         <div class="collapse multi-collapse" id="<%= facility_group.slug %>">
-          <h4 class="mt-24px">Facilities</h4>
+          <h4 class="mt-24px text-grey">Facilities</h4>
           <% @facilities.dig(facility_group)&.sort_by(&:name)&.each do |facility| %>
             <div class="row card-row">
               <div class="col-md-5">
