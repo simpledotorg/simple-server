@@ -12,6 +12,9 @@
           <a href="#card-office-hours" class="nav-link">
             Tech team office hours
           </a>
+          <a href="#card-district-reports" class="nav-link">
+            District reports template
+          </a>
           <a href="#card-checklist" class="nav-link">
             Deployment checklist
           </a>
@@ -43,6 +46,24 @@
         <% elsif CountryConfig.current[:name] == "Ethiopia" %>
           <%= render "shared/office_hours_ethiopia" %>
         <% end %>
+
+        <% if CountryConfig.current[:name] == "India" %>
+        <div class="card" id="card-district-reports">
+          <h2>
+            District reports template
+          </h2>
+          <div class="resource-link resource-doc">
+            <%= link_to root_url+'assets/resources/monthly-report-template.xlsx', { target: '_blank' } do %>
+              <i class="far fa-file-excel"></i> XLS template for creating district reports
+            <% end %>
+              <span>
+                A blank template that can be auto-filled by downloading data from district reports.
+              </span>
+            </a>
+          </div>
+        </div>
+        <% end %>
+
         <div class="card" id="card-checklist">
           <h2>
             Deployment checklist
@@ -521,7 +542,7 @@
           <% if CountryConfig.current[:name] == "India" %>
             <%= render "shared/one_pager_india" %>
           <% end %>
-          <%= render "shared/one_pager_simple" %> 
+          <%= render "shared/one_pager_simple" %>
         </div>
         <div class="card" id="card-print">
           <h2>
