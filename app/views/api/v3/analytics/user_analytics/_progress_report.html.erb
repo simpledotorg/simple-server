@@ -20,6 +20,7 @@
       <% end %>
     </div>
   </div>
+  <%= render(Reports::ProgressTotalRegistrationsComponent.new(@service, @period)) %>
   <div class="mt-48px mb-8px pr-16px pl-16px">
     <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey-dark">
       <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.section_title") %>
