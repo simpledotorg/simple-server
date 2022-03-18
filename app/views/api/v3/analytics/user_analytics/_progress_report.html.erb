@@ -20,6 +20,12 @@
       <% end %>
     </div>
   </div>
+  <div class="mt-48px mb-8px pr-16px pl-16px">
+    <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey-dark">
+      <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.section_title") %>
+    </h3>
+  </div>
   <%= render(Reports::ProgressControlComponent.new(@service)) %>
   <%= render(Reports::ProgressUncontrolledComponent.new(@service)) %>
+  <%= render(Reports::ProgressMissedVisitsComponent.new(@service)) %>
 </div>
