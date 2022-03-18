@@ -85,7 +85,7 @@ RSpec.feature "Facility page functionality", type: :feature do
       end
 
       it "displays a new facility link" do
-        expect(page).to have_link("Facility", href: new_admin_facility_group_facility_path(ihmi_group_bathinda))
+        expect(page).to have_link("Add facility", href: new_admin_facility_group_facility_path(ihmi_group_bathinda))
       end
     end
 
@@ -99,7 +99,7 @@ RSpec.feature "Facility page functionality", type: :feature do
       end
 
       it "does not display a new facility link" do
-        expect(page).not_to have_link("Facility", href: new_admin_facility_group_facility_path(ihmi_group_bathinda))
+        expect(page).not_to have_link("Add facility", href: new_admin_facility_group_facility_path(ihmi_group_bathinda))
       end
     end
   end
