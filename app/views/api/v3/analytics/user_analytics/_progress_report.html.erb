@@ -69,10 +69,10 @@
     <% @user_analytics.statistics.dig(:cohorts).each_with_index do |cohort, index| %>
       <div class="<% if @user_analytics.statistics.dig(:cohorts).length - 1 > index %>mb-24px<% end %>">
         <p class="m-0px mb-2px p-0px ta-left fw-regular fs-16px c-black">
-          <%= t("progress_tab.diagnosis_report.cohort_report.cohort_title", start_period: cohort[:period], end_period: cohort[:results_in]) %>
+          <%= t("progress_tab.diagnosis_report.cohort_report.cohort_title", period: cohort[:results_in]) %>
         </p>
         <p class="m-0px mb-8px p-0px ta-left fw-reguar fs-16px c-grey-dark">
-          <%= t("progress_tab.diagnosis_report.cohort_report.cohort_subtitle", number_of_patients: cohort[:registered], patient_or_patients: "patient".pluralize(cohort[:registered]), registration_period: cohort[:results_in]) %>
+          <%= t("progress_tab.diagnosis_report.cohort_report.cohort_subtitle", number_of_patients: cohort[:registered], patient_or_patients: "patient".pluralize(cohort[:registered]), registration_period: cohort[:patients_registered]) %>
         </p>
         <%= render partial: "api/v3/analytics/user_analytics/data_stacked_bar_graph", locals: { data: cohort } %>
       </div>
