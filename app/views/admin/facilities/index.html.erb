@@ -1,5 +1,5 @@
 <div class="page-header">
-  <h1 class="page-title">Facilities</h1>
+  <h1 class="page-title"><%= t("facility_group").capitalize %>s &amp; facilities</h1>
 
   <div class="page-nav">
     <% if current_admin.accessible_facility_groups(:manage).any? || current_admin.power_user? %>
@@ -24,58 +24,65 @@
       <h2 class="mt-5 mb-3"><span class="heading-label">Organization</span><%= organization.name %></h2>
     <% end %>
 
+    <h2 class="mb-16px"><%= t("facility_group").capitalize %>s</h2>
+
     <% @facility_groups.dig(organization)&.sort_by(&:name)&.each do |facility_group| %>
       <div class="card">
         <div class="row">
-          <div class="col-8">
-            <h3>
-              <span class="heading-label">
-                <%= t("facility_group").capitalize %>
-              </span>
-              <%= facility_group.name %>
-            </h3>
+          <div class="col-md-4">
+            <h5>
+              <b><%= facility_group.name %></b>
+            </h5>
+          </div>
+          <div class="col-md-4">
             <p class="subtitle">
               Estimated hypertensive population:
               <% if facility_group.region.estimated_population&.population %>
                 <%= number_with_delimiter(facility_group.region.estimated_population.population) %>
               <% else %>
-                <%= link_to "+ Add population", edit_admin_facility_group_path(facility_group) %>
+                <%= link_to "Add", edit_admin_facility_group_path(facility_group) %>
               <% end %>
             </p>
           </div>
           <% if current_admin.accessible_facility_groups(:manage).find_by_id(facility_group) %>
-            <div class="col-4 text-right">
+            <div class="col-md-4 text-md-right mb-16px mb-lg-0">
               <strong><%= link_to "Edit #{t("facility_group")}", edit_admin_facility_group_path(facility_group), class: "spec-edit-#{facility_group.name}-button btn btn-sm btn-outline-primary" %></strong>
+              <% if current_admin.accessible_facility_groups(:manage).find_by_id(facility_group) %>
+                <%= link_to new_admin_facility_group_facility_path(facility_group), class: "btn btn-sm btn-outline-success" do %>
+                  <i class="fas fa-plus mr-1"></i> Add facility
+                <% end %>
+              <% end %>
             </div>
           <% end %>
         </div>
-        <h3 class="mb-0">
-          <span class="mt-3 mb-0 heading-label">
-            Facilities
-          </span>
-        </h3>
-        <div class="row card-row">
-          <div class="col-md-4">
-            <% if current_admin.accessible_facility_groups(:manage).find_by_id(facility_group) %>
-              <%= link_to new_admin_facility_group_facility_path(facility_group), class: "btn btn-sm btn-outline-success" do %>
-                <i class="fas fa-plus mr-1"></i> Facility
-              <% end %>
+
+        <% local_facilities = @facilities.dig(facility_group) %>
+        <% if local_facilities&.any? %>
+          <div class="mb-0">
+            <a href="#<%= facility_group.slug %>" data-toggle="collapse" data-target="#<%= facility_group.slug %>" aria-expanded="false" aria-controls="<%= facility_group.slug %>">
+              <i class="fas fa-angle-down mr-4px"></i> <%= pluralize(local_facilities.count, "facilities") %>
+            </a>
+          </div>
+          <div class="collapse multi-collapse" id="<%= facility_group.slug %>">
+            <h4 class="mt-24px text-grey">Facilities</h4>
+            <% local_facilities.sort_by(&:name)&.each do |facility| %>
+              <div class="row card-row">
+                <div class="col-md-5">
+                  <h5 class="pb-md-0 pb-1">
+                    <%= link_to facility.name, [:admin, facility_group, facility], class: "d-block" %>
+                  </h5>
+                </div>
+                <div class="col-md-2"><span class="text-muted"><%= facility.facility_type %></span></div>
+                <div class="col-md-2">
+                  <span class="text-muted"><%= facility.localized_facility_size || "No size set" %></span></div>
+                <div class="col-md-2">
+                  <span class="text-muted">OPD: <%= facility.monthly_estimated_opd_load || "N/A" %></span></div>
+              </div>
             <% end %>
           </div>
-        </div>
-
-        <% @facilities.dig(facility_group)&.sort_by(&:name)&.each do |facility| %>
-          <div class="row card-row">
-            <div class="col-md-5">
-              <h5 class="pb-md-0 pb-1">
-                <%= link_to facility.name, [:admin, facility_group, facility], class: "d-block" %>
-              </h5>
-            </div>
-            <div class="col-md-2"><span class="text-muted"><%= facility.facility_type %></span></div>
-            <div class="col-md-2">
-              <span class="text-muted"><%= facility.localized_facility_size || "No size set" %></span></div>
-            <div class="col-md-2">
-              <span class="text-muted">OPD: <%= facility.monthly_estimated_opd_load || "N/A" %></span></div>
+        <% else %>
+          <div class="mb-0">
+            <span class="text-grey">No facilities</span>
           </div>
         <% end %>
       </div>
