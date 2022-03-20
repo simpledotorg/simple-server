@@ -19,7 +19,7 @@ Dashboard UI
   border-radius: 5px;
   padding: 16px;
   margin: 8px -4px 0 -4px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   background: #fff;
 }
 
@@ -99,7 +99,8 @@ th sup {
   clear: both;
 
   tr.sorts {
-    a, .sort-label {
+    a,
+    .sort-label {
       background: $grey-lightest;
       color: $blue;
       height: 100%;
@@ -134,7 +135,7 @@ th sup {
     }
 
     th.sort-label {
-      border-left: 1px solid #C9D3D8;
+      border-left: 1px solid #c9d3d8;
     }
 
     th.sort-label:first-of-type {
@@ -215,19 +216,33 @@ th sup {
     }
   }
 
-  col { border-left: 1px solid $grey-lightest; }
-  col:first-of-type { border-left: none; }
-  col.table-divider { border-left: 1px solid $grey-mid; }
+  col {
+    border-left: 1px solid $grey-lightest;
+  }
+  col:first-of-type {
+    border-left: none;
+  }
+  col.table-divider {
+    border-left: 1px solid $grey-mid;
+  }
 
   td.type-grade {
     font-weight: bold;
     text-align: center;
   }
 
-  td.grade-a { color: $green-dark }
-  td.grade-b { color: $yellow-dark }
-  td.grade-c { color: $orange-dark }
-  td.grade-d { color: $red }
+  td.grade-a {
+    color: $green-dark;
+  }
+  td.grade-b {
+    color: $yellow-dark;
+  }
+  td.grade-c {
+    color: $orange-dark;
+  }
+  td.grade-d {
+    color: $red;
+  }
 
   td.type-number {
     text-align: right;
@@ -237,20 +252,145 @@ th sup {
   td.type-percent {
     text-align: center;
   }
+}
 
-  td.type-percent em {
+td.type-percent {
+  em {
     font-style: normal;
-    background: #F1DBFF;
-    color: #BE72E3;
+    background: $purple-light;
+    color: $purple;
     border-radius: 100px;
     padding: 2px;
     width: 3.5em;
     display: block;
   }
 
-  .row-total td.type-percent em {
-    background: rgba(0,0,0,0.1);
-    color: rgba(0,0,0,0.6);
+  em.high-is-good {
+    background: $green-mid;
+    color: $green-dark;
+  }
+
+  em[data-rate="0"].high-is-good {
+    color: $grey-dark;
+    background: $grey-light;
+  }
+
+  em[data-rate="1"].high-is-good,
+  em[data-rate="2"].high-is-good,
+  em[data-rate="3"].high-is-good,
+  em[data-rate="4"].high-is-good,
+  em[data-rate="5"].high-is-good,
+  em[data-rate="6"].high-is-good,
+  em[data-rate="7"].high-is-good,
+  em[data-rate="8"].high-is-good,
+  em[data-rate="9"].high-is-good,
+  em[data-rate="10"].high-is-good,
+  em[data-rate="11"].high-is-good,
+  em[data-rate="12"].high-is-good,
+  em[data-rate="13"].high-is-good,
+  em[data-rate="14"].high-is-good,
+  em[data-rate="15"].high-is-good,
+  em[data-rate="16"].high-is-good,
+  em[data-rate="17"].high-is-good,
+  em[data-rate="18"].high-is-good,
+  em[data-rate="19"].high-is-good,
+  em[data-rate="20"].high-is-good {
+    color: $red-dark;
+    background: $red-light;
+  }
+
+  em[data-rate="21"].high-is-good,
+  em[data-rate="22"].high-is-good,
+  em[data-rate="23"].high-is-good,
+  em[data-rate="24"].high-is-good,
+  em[data-rate="25"].high-is-good,
+  em[data-rate="26"].high-is-good,
+  em[data-rate="27"].high-is-good,
+  em[data-rate="28"].high-is-good,
+  em[data-rate="29"].high-is-good,
+  em[data-rate="30"].high-is-good,
+  em[data-rate="31"].high-is-good,
+  em[data-rate="32"].high-is-good,
+  em[data-rate="33"].high-is-good,
+  em[data-rate="34"].high-is-good,
+  em[data-rate="35"].high-is-good {
+    color: $orange-dark;
+    background: $orange-light;
+  }
+
+  em[data-rate="36"].high-is-good,
+  em[data-rate="37"].high-is-good,
+  em[data-rate="38"].high-is-good,
+  em[data-rate="39"].high-is-good,
+  em[data-rate="40"].high-is-good,
+  em[data-rate="41"].high-is-good,
+  em[data-rate="42"].high-is-good,
+  em[data-rate="43"].high-is-good,
+  em[data-rate="44"].high-is-good,
+  em[data-rate="45"].high-is-good,
+  em[data-rate="46"].high-is-good,
+  em[data-rate="47"].high-is-good,
+  em[data-rate="48"].high-is-good,
+  em[data-rate="49"].high-is-good {
+    color: $yellow-darkest;
+    background: $yellow-light;
+    font-weight: normal;
+  }
+
+  em.low-is-good {
+    background: $red-light;
+    color: $red-dark;
+  }
+
+  em[data-rate="0"].low-is-good {
+    color: $grey-dark;
+    background: $grey-light;
+    font-weight: normal;
+  }
+
+  em[data-rate="1"].low-is-good,
+  em[data-rate="2"].low-is-good,
+  em[data-rate="3"].low-is-good,
+  em[data-rate="4"].low-is-good,
+  em[data-rate="5"].low-is-good,
+  em[data-rate="6"].low-is-good,
+  em[data-rate="7"].low-is-good,
+  em[data-rate="8"].low-is-good,
+  em[data-rate="9"].low-is-good,
+  em[data-rate="10"].low-is-good {
+    color: $green-dark;
+    background: $green-light;
+    font-weight: normal;
+  }
+
+  em[data-rate="11"].low-is-good,
+  em[data-rate="12"].low-is-good,
+  em[data-rate="13"].low-is-good,
+  em[data-rate="14"].low-is-good,
+  em[data-rate="15"].low-is-good,
+  em[data-rate="16"].low-is-good,
+  em[data-rate="17"].low-is-good,
+  em[data-rate="18"].low-is-good,
+  em[data-rate="19"].low-is-good,
+  em[data-rate="20"].low-is-good {
+    color: $yellow-darkest;
+    background: $yellow-light;
+    font-weight: normal;
+  }
+
+  em[data-rate="21"].low-is-good,
+  em[data-rate="22"].low-is-good,
+  em[data-rate="23"].low-is-good,
+  em[data-rate="24"].low-is-good,
+  em[data-rate="25"].low-is-good,
+  em[data-rate="26"].low-is-good,
+  em[data-rate="27"].low-is-good,
+  em[data-rate="28"].low-is-good,
+  em[data-rate="29"].low-is-good,
+  em[data-rate="30"].low-is-good {
+    color: $orange-dark;
+    background: $orange-light;
+    font-weight: normal;
   }
 }
 
@@ -260,8 +400,7 @@ th sup {
 
     .dropdown-menu {
       max-height: 350px;
-      overflow:
-              hidden;
+      overflow: hidden;
       overflow: scroll;
     }
 
@@ -309,9 +448,13 @@ th sup {
 }
 
 .table-compact .row-total td {
-  background: #FFFAE3;
+  background: #fffae3;
   font-weight: bold;
-  border-color: #E2DBBB;
+  border-color: #e2dbbb;
+
+  em {
+    font-weight: normal;
+  }
 }
 
 .split-bars {
@@ -340,11 +483,29 @@ th sup {
   white-space: nowrap;
 }
 
-.split-bars .bar-none { background: $grey-light; color: $grey-dark; border-radius: 3px; }
-.split-bars .bar-1 { background: $grey-mid; color: $grey-darkest; border-radius: 3px 0 0 3px; }
-.split-bars .bar-2 { background: $red; color: #fff; }
-.split-bars .bar-3 { background: $green-dark; color: $white; }
-.split-bars .bar-4 { background: $blue; border-radius: 0 3px 3px 0; color: $white; }
+.split-bars .bar-none {
+  background: $grey-light;
+  color: $grey-dark;
+  border-radius: 3px;
+}
+.split-bars .bar-1 {
+  background: $grey-mid;
+  color: $grey-darkest;
+  border-radius: 3px 0 0 3px;
+}
+.split-bars .bar-2 {
+  background: $red;
+  color: #fff;
+}
+.split-bars .bar-3 {
+  background: $green-dark;
+  color: $white;
+}
+.split-bars .bar-4 {
+  background: $blue;
+  border-radius: 0 3px 3px 0;
+  color: $white;
+}
 
 .split-row-first .split-bars .bar {
   background-image: asset-url("diagonal-stripe.png");
@@ -363,10 +524,14 @@ th sup {
   padding: 0 0 4px 0;
 }
 
-.key.desktop { display: inline-block; }
+.key.desktop {
+  display: inline-block;
+}
 
 @include media-breakpoint-down(sm) {
-  .key.desktop { display: none; }
+  .key.desktop {
+    display: none;
+  }
 }
 
 .key div.key-definition {
@@ -392,13 +557,25 @@ th sup {
   text-indent: -1000em;
 }
 
-.key div.didntattend:after { background: $grey-mid; }
-.key div.uncontrolled:after { background: $red; }
-.key div.controlled:after { background: $green-dark; }
+.key div.didntattend:after {
+  background: $grey-mid;
+}
+.key div.uncontrolled:after {
+  background: $red;
+}
+.key div.controlled:after {
+  background: $green-dark;
+}
 
-.key div.didntattend { color: $grey-dark; }
-.key div.uncontrolled { color: $red-dark; }
-.key div.controlled { color: $green-dark; }
+.key div.didntattend {
+  color: $grey-dark;
+}
+.key div.uncontrolled {
+  color: $red-dark;
+}
+.key div.controlled {
+  color: $green-dark;
+}
 
 @include media-breakpoint-down(sm) {
   .key {
@@ -415,14 +592,18 @@ th sup {
   white-space: nowrap;
 }
 
-.split-bars-secondary { margin-bottom: 24px; }
+.split-bars-secondary {
+  margin-bottom: 24px;
+}
 
 .split-bars-secondary td {
   padding: 6px;
   border-top: 1px solid $grey-lightest;
 }
 
-.split-bars-secondary tr:first-child td { border-top: 0; }
+.split-bars-secondary tr:first-child td {
+  border-top: 0;
+}
 
 .bars {
   text-align: center;
@@ -438,12 +619,14 @@ th sup {
   margin-bottom: 2px;
 }
 
-.bars td:last-child div { background: #aaa; }
+.bars td:last-child div {
+  background: #aaa;
+}
 
 //
 // Table sorting styles (override tablesort.css)
 //
-th[role=columnheader]:not(.no-sort):after {
+th[role="columnheader"]:not(.no-sort):after {
   border-color: $blue transparent;
   display: inline-block;
   float: none;
@@ -451,7 +634,7 @@ th[role=columnheader]:not(.no-sort):after {
   vertical-align: middle;
 }
 
-th[role=columnheader]:not(.no-sort):hover:after {
+th[role="columnheader"]:not(.no-sort):hover:after {
   opacity: 0.5;
 }
 
@@ -461,17 +644,19 @@ th[aria-sort]:not(.no-sort):hover:after {
 }
 
 // Reverse the arrows since we default to descending
-th[role=columnheader]:not(.no-sort):after,
-th[aria-sort=descending]:not(.no-sort):after {
+th[role="columnheader"]:not(.no-sort):after,
+th[aria-sort="descending"]:not(.no-sort):after {
   border-width: 4px 4px 0;
 }
 
-th[aria-sort=ascending]:not(.no-sort):after {
+th[aria-sort="ascending"]:not(.no-sort):after {
   border-bottom: 4px solid;
   border-width: 0 4px 4px;
 }
 
-.pad-bottom { padding-bottom: 10px; }
+.pad-bottom {
+  padding-bottom: 10px;
+}
 
 h2 .heading-label,
 h3 .heading-label {
@@ -498,7 +683,6 @@ h3 .heading-label {
     color: $grey-mid;
     margin-right: 4px;
   }
-
 }
 .no-medical-officers {
   width: 100%;
@@ -509,7 +693,9 @@ h3 .heading-label {
   border-radius: 5px;
   color: $grey-dark;
 
-  h5 { margin: auto; }
+  h5 {
+    margin: auto;
+  }
 }
 
 em.bg-green {
@@ -535,4 +721,6 @@ em.bg-orange {
   border-color: $orange-light !important;
 }
 
-.tl-fixed { table-layout: fixed; }
+.tl-fixed {
+  table-layout: fixed;
+}
