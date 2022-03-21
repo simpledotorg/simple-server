@@ -109,10 +109,10 @@
         </div>
       </div>
     </div>
-    <% unless @region.child_region_type.nil? %>
+    <% unless @region.region_type == "facility" %>
     <div class="col-lg-5">
       <h3 class="mb-16px pb-8px fw-bold c-grey-dark bb-1px bb-grey-medium">
-        Key for <%= @child_regions.first.localized_region_type %> performance tables
+        Key for performance tables
       </h3>
       <p class="mb-8px fs-16px fw-bold c-grey-dark">
         BP controlled
