@@ -86,7 +86,7 @@ describe Notification, type: :model do
       notification.update(status: :sent)
 
       successful_communication = create(:communication, notification: notification, user: nil, appointment: nil)
-      create(:twilio_sms_delivery_detail, :sent, communication: successful_communication)
+      create(:twilio_sms_delivery_detail, :delivered, communication: successful_communication)
 
       expect(notification.delivery_result).to eq(:success)
     end
