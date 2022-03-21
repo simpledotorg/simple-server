@@ -89,4 +89,10 @@ RSpec.describe Messaging::Twilio::Api do
       expect(error.reason).to be_nil
     end
   end
+
+  it "creates communications and detailables" do
+  end
+
+  it "calls the block passed to it with the communication created" do
+  end
 end
