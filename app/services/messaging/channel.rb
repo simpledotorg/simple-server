@@ -9,19 +9,23 @@ class Messaging::Channel
     @metrics = Metrics.with_object(self)
   end
 
+  delegate :transaction, to: ActiveRecord::Base
+
   attr_reader :metrics
 
+  # The channel implementation is responsible for creating a Communication
+  # and delivery details. This should return the communication object that was created.
   def self.send_message(*args)
     new.send_message(*args)
-  end
-
-  def send_message(recipient_number:, message:)
-    raise NotImplementedError
   end
 
   # A channel supports one of the communication types enumerated in
   # Communication.communication_types.
   def self.communication_type
+    raise NotImplementedError
+  end
+
+  def send_message(recipient_number:, message:, &with_communication_do)
     raise NotImplementedError
   end
 

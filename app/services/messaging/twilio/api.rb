@@ -2,13 +2,12 @@ class Messaging::Twilio::Api < Messaging::Channel
   include Rails.application.routes.url_helpers
   include Memery
 
-  def send_message(recipient_number:, message:)
+  def send_message(recipient_number:, message:, &with_communication_do)
     track_metrics do
-      client.messages.create(
-        from: sender_number,
-        to: recipient_number,
-        status_callback: callback_url,
-        body: message
+      record_communication(
+        recipient_number,
+        create_twilio_message(recipient_number, message),
+        &with_communication_do
       )
     rescue Twilio::REST::RestError => exception
       raise Messaging::Twilio::Error.new(exception.message, exception.code)
@@ -23,15 +22,28 @@ class Messaging::Twilio::Api < Messaging::Channel
     client.messages(sid).fetch
   end
 
-  def record_communication(recipient_number:, response:)
-    TwilioSmsDeliveryDetail.record_communication(
-      recipient_number: recipient_number,
-      response: response,
-      communication_type: communication_type
-    )
+  private
+
+  def record_communication(recipient_number, response, &with_communication_do)
+    transaction do
+      TwilioSmsDeliveryDetail.create_communication(
+        callee_phone_number: recipient_number,
+        response: response,
+        communication_type: communication_type
+      ).tap do |communication|
+        with_communication_do.call(communication) if block_given?
+      end
+    end
   end
 
-  private
+  def create_twilio_message(recipient_number, message)
+    client.messages.create(
+      from: sender_number,
+      to: recipient_number,
+      status_callback: callback_url,
+      body: message
+    )
+  end
 
   memoize def client
     credentials = test_mode? ? test_credentials : production_credentials

@@ -33,6 +33,11 @@ class Notification < ApplicationRecord
 
   scope :due_today, -> { where(remind_on: Date.current, status: [:pending]) }
 
+  def record_communication(communication)
+    communication.update!(notification: self)
+    status_sent!
+  end
+
   def localized_message
     return unless patient
 

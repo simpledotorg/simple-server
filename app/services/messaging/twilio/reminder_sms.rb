@@ -18,5 +18,4 @@ class Messaging::Twilio::ReminderSms < Messaging::Twilio::Api
   memoize def senders
     ENV.fetch("TWILIO_APPOINTMENT_REMINDER_NUMBERS", "").split(",").map(&:strip)
   end
-
 end

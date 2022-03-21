@@ -24,12 +24,12 @@ class TwilioSmsDeliveryDetail < ApplicationRecord
     queued? || sending? || sent?
   end
 
-  def record_communication(response:, recipient_number:, communication_type:)
+  def create_communication(callee_phone_number:, response:, communication_type:)
     ActiveRecord::Base.transaction do
       delivery_detail = create!(
         session_id: response.sid,
         result: response.status,
-        callee_phone_number: recipient_number
+        callee_phone_number: callee_phone_number
       )
 
       Communication.create!(
