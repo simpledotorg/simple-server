@@ -102,6 +102,7 @@ RSpec.describe MessagePatients do
     twilio_client = double("TwilioClientDouble")
 
     allow(response_double).to receive(:status).and_return("queued")
+    allow(response_double).to receive(:sid).and_return("1234")
     allow(Twilio::REST::Client).to receive(:new).and_return(twilio_client)
     allow(twilio_client).to receive_message_chain("messages.create").and_return(response_double)
   end

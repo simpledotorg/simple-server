@@ -49,12 +49,12 @@ class MessagePatients
         end
 
       begin
-        response = messaging_channel.send_message(recipient_number: phone_number, message: message)
+        communication = messaging_channel.send_message(recipient_number: phone_number, message: message)
       rescue Messaging::Twilio::Error
         update_report(:exception, patient: patient)
         next
       end
-      update_report(:responses, response: response, patient: patient)
+      update_report(:responses, communication: communication, patient: patient)
     end
   end
 
@@ -88,7 +88,7 @@ class MessagePatients
         when :exception
           response_type
         when :responses
-          params[:response].status
+          params[:communication].detailable.result
         else
           raise ArgumentError, "Invalid response_type for updating report: #{response_type}"
       end.to_sym
