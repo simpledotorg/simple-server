@@ -38,7 +38,6 @@ class Communication < ApplicationRecord
 
   def self.create_with_twilio_details!(twilio_sid:, twilio_msg_status:, communication_type:, notification: nil)
     patient = notification.patient
-    now = DateTime.current
     transaction do
       sms_delivery_details = TwilioSmsDeliveryDetail.create!(session_id: twilio_sid,
         result: twilio_msg_status,
