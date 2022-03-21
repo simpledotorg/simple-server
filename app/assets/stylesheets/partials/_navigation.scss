@@ -99,7 +99,11 @@ Navigation
     padding-left: 0;
 
     i {
-      color: rgba(255,255,255,0.4);
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    &:hover i {
+      color: rgba(255, 255, 255, 0.9);
     }
   }
 
@@ -211,7 +215,7 @@ form.edit_email_authentication .invalid-feedback {
       color: $white;
       font-size: 12px;
       display: inline-block;
-      padding: 6px 20px;
+      padding: 6px 16px;
       border: 1px solid $transparent-blue-30;
       border-radius: 4px;
 
