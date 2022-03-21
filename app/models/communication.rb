@@ -2,7 +2,6 @@ class Communication < ApplicationRecord
   include Mergeable
   include Hashable
 
-  belongs_to :appointment, optional: true
   belongs_to :notification, optional: true
   belongs_to :user, optional: true
   belongs_to :detailable, polymorphic: true, optional: true
@@ -28,7 +27,7 @@ class Communication < ApplicationRecord
     unknown: "unknown"
   }
 
-  ANONYMIZED_DATA_FIELDS = %w[id appointment_id patient_id created_at communication_type
+  ANONYMIZED_DATA_FIELDS = %w[id patient_id created_at communication_type
     communication_result]
 
   DEFAULT_MESSAGING_START_HOUR = 14
@@ -42,7 +41,7 @@ class Communication < ApplicationRecord
     send(communication_type).order(device_created_at: :desc).first
   end
 
-  def self.create_with_twilio_details!(appointment:, twilio_sid:, twilio_msg_status:, communication_type:, notification: nil)
+  def self.create_with_twilio_details!(twilio_sid:, twilio_msg_status:, communication_type:, notification: nil)
     patient = notification.patient
     now = DateTime.current
     transaction do
@@ -51,12 +50,11 @@ class Communication < ApplicationRecord
         callee_phone_number: patient.latest_mobile_number)
       communication = create!(communication_type: communication_type,
         detailable: sms_delivery_details,
-        appointment: appointment,
         notification: notification,
         device_created_at: now,
         device_updated_at: now)
       logger.info(class: self.class.name, msg: __method__.to_s, communication_id: communication.id,
-        communication_type: communication_type, appointment_id: appointment&.id, result: twilio_msg_status,
+        communication_type: communication_type, result: twilio_msg_status,
         notification_id: notification&.id)
     end
   end

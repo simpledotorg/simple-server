@@ -4,7 +4,6 @@ describe Communication, type: :model do
   context "Associations" do
     it { should belong_to(:notification).optional }
     it { should belong_to(:detailable).optional }
-    it { should belong_to(:appointment).optional }
   end
 
   context "Validations" do
@@ -57,23 +56,8 @@ describe Communication, type: :model do
 
     describe ".create_with_twilio_details!" do
       it "creates a communication with a TwilioSmsDeliveryDetail" do
-        patient = create(:patient)
-        appt = create(:appointment, patient: patient)
-        notification = create(:notification, subject: appt, patient: patient)
         expect {
-          Communication.create_with_twilio_details!(appointment: notification.subject,
-            twilio_sid: SecureRandom.uuid,
-            twilio_msg_status: "sent",
-            communication_type: :sms,
-            notification: notification)
-        }.to change { Communication.count }.by(1)
-          .and change { TwilioSmsDeliveryDetail.count }.by(1)
-      end
-
-      it "does not require an appointment" do
-        notification = create(:notification)
-        expect {
-          Communication.create_with_twilio_details!(appointment: nil,
+          Communication.create_with_twilio_details!(
             twilio_sid: SecureRandom.uuid,
             twilio_msg_status: "sent",
             communication_type: :sms,
