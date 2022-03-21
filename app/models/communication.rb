@@ -26,9 +26,7 @@ class Communication < ApplicationRecord
     unknown: "unknown"
   }
 
-  ANONYMIZED_DATA_FIELDS = %w[id patient_id created_at communication_type
-    communication_result]
-
+  ANONYMIZED_DATA_FIELDS = %w[id patient_id created_at communication_type communication_result]
   DEFAULT_MESSAGING_START_HOUR = 14
   DEFAULT_MESSAGING_END_HOUR = 16
 
