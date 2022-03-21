@@ -29,7 +29,7 @@ class Messaging::Twilio::Api < Messaging::Channel
       TwilioSmsDeliveryDetail.create_communication(
         callee_phone_number: recipient_number,
         response: response,
-        communication_type: communication_type
+        communication_type: self.class.communication_type
       ).tap do |communication|
         with_communication_do.call(communication) if block_given?
       end
