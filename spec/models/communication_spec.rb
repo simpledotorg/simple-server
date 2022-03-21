@@ -2,7 +2,6 @@ require "rails_helper"
 
 describe Communication, type: :model do
   context "Associations" do
-    it { should belong_to(:user).optional }
     it { should belong_to(:notification).optional }
     it { should belong_to(:detailable).optional }
     it { should belong_to(:appointment).optional }
@@ -125,7 +124,6 @@ describe Communication, type: :model do
 
         anonymised_data =
           {id: Hashable.hash_uuid(communication.id),
-           user_id: Hashable.hash_uuid(communication.user_id),
            created_at: communication.created_at,
            communication_type: communication.communication_type,
            communication_result: communication.communication_result}

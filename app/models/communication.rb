@@ -28,14 +28,11 @@ class Communication < ApplicationRecord
     unknown: "unknown"
   }
 
-  ANONYMIZED_DATA_FIELDS = %w[id appointment_id patient_id user_id created_at communication_type
+  ANONYMIZED_DATA_FIELDS = %w[id appointment_id patient_id created_at communication_type
     communication_result]
 
   DEFAULT_MESSAGING_START_HOUR = 14
   DEFAULT_MESSAGING_END_HOUR = 16
-
-  validates :device_created_at, presence: true
-  validates :device_updated_at, presence: true
 
   scope :with_delivery_detail, -> {
     joins("inner join twilio_sms_delivery_details delivery_detail on delivery_detail.id = communications.detailable_id")
@@ -103,7 +100,6 @@ class Communication < ApplicationRecord
 
   def anonymized_data
     {id: hash_uuid(id),
-     user_id: hash_uuid(user_id),
      created_at: created_at,
      communication_type: communication_type,
      communication_result: communication_result}
