@@ -7,8 +7,7 @@ RSpec.describe CountryConfig do
                .values
                .pluck(:appointment_reminders_channel)
                .compact
-               .all?(&:constantize)
-      ).to eq true
+               .all?(&:constantize)).to eq true
     end
   end
 end

@@ -32,7 +32,7 @@ class Messaging::Twilio::Api < Messaging::Channel
         session_id: response.sid,
         result: response.status
       ).tap do |communication|
-        with_communication_do.call(communication) if block_given?
+        with_communication_do&.call(communication)
       end
     end
   end

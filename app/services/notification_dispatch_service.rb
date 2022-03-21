@@ -20,7 +20,7 @@ class NotificationDispatchService
     handle_messaging_errors {
       messaging_channel.send_message(
         recipient_number: recipient_number,
-        message: notification.localized_message,
+        message: notification.localized_message
       ) { |communication| notification.record_communication(communication) }
     }.tap { log_success }
   end
