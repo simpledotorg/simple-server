@@ -16,7 +16,7 @@
 <% end %>
 
 <%= bootstrap_form_tag(url: admin_patient_imports_url, multipart: true) do |f| %>
-  <%= f.collection_select :facility_id, current_admin.accessible_facilities(:manage), :id, :name, selected: params[:facility_id] %>
+  <%= f.collection_select :facility_id, current_admin.accessible_facilities(:manage)&.sort_by(&:name), :id, :name, selected: params[:facility_id] %>
   <%= f.file_field :patient_import_file, required: true, accept: '.csv, .xlsx', label: 'Upload your filled in patient import file' %>
   <%= f.primary 'Upload' %>
 <% end %>

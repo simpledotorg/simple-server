@@ -140,9 +140,9 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
               expect(response.body).to match(/Achievements/)
             end
 
-            it "is not visible if there are insufficient follow_ups" do
+            it "is visible if there are >10 follow-ups" do
               get :show, format: :html
-              expect(response.body).to_not match(/Achievements/)
+              expect(response.body).to match(/Achievements/)
             end
           end
         end
