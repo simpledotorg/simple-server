@@ -1,7 +1,7 @@
 class AppointmentNotification::Worker
   include Sidekiq::Worker
   include Memery
-  APPOINTMENT_REMINDERS_CHANNEL = CountryConfig.current[:appointment_reminders_channel]
+  APPOINTMENT_REMINDERS_CHANNEL = CountryConfig.current[:appointment_reminders_channel].constantize
 
   sidekiq_options queue: :high
 

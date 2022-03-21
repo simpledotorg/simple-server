@@ -15,11 +15,11 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
     }
 
     def mock_successful_delivery
-      response_double = double
-      allow(response_double).to receive(:status).and_return("sent")
-      allow(response_double).to receive(:sid).and_return("12345")
-      allow(Messaging::Twilio::Whatsapp).to receive(:send_message).and_return(response_double)
-      allow_any_instance_of(Messaging::Twilio::ReminderSms).to receive(:send_message).and_return(response_double)
+      response_double = double("NotificationServiceResponse")
+      twilio_client = double("TwilioClientDouble")
+
+      allow(Twilio::REST::Client).to receive(:new).and_return(twilio_client)
+      allow(twilio_client).to receive_message_chain("messages.create").and_return(response_double)
     end
 
     it "logs but creates nothing when notifications and experiment flags are disabled" do
@@ -43,57 +43,20 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       expect(notification.reload.status).to eq("cancelled")
     end
 
-    it "creates communications when notifications is enabled" do
-      mock_successful_delivery
+    it "passes a block to the communication channel that updates the notification in a transaction with communication creation" do
+      communication = create(:communication)
+      allow(Messaging::Twilio::ReminderSms).to receive(:send_message) do |_, &block|
+        block.call(communication)
+      end
 
-      expect {
-        described_class.perform_async(notification.id)
-        described_class.drain
-      }.to change { Communication.count }.by(1)
-    end
-
-    it "creates communications when experiment is enabled" do
-      Flipper.disable(:notifications)
-      Flipper.enable(:experiment)
-
-      mock_successful_delivery
-
-      expect {
-        described_class.perform_async(notification.id)
-        described_class.drain
-      }.to change { Communication.count }.by(1)
-    end
-
-    it "creates a Communication with twilio response status and sid" do
-      mock_successful_delivery
-
-      expect {
-        described_class.perform_async(notification.id)
-        described_class.drain
-      }.to change { Communication.count }.by(1)
-    end
-
-    it "does not attempt to resend the same communication type even if previous attempt failed" do
-      mock_successful_delivery
-
-      previous_whatsapp = create(:communication, :whatsapp, notification: notification)
-      create(:twilio_sms_delivery_detail, :failed, communication: previous_whatsapp)
-
-      expect(Messaging::Twilio::ReminderSms).to receive(:send_message)
       described_class.perform_async(notification.id)
       described_class.drain
-    end
-
-    it "updates the appointment notification status to 'sent'" do
-      mock_successful_delivery
-
-      expect {
-        described_class.perform_async(notification.id)
-        described_class.drain
-      }.to change { notification.reload.status }.from("scheduled").to("sent")
+      expect(notification.reload.status).to eq("sent")
+      expect(notification.communications.first).to eq(communication)
     end
 
     it "localizes the message based on facility state, not patient address" do
+      mock_successful_delivery
       notification.patient.address.update!(state: "maharashtra")
       notification.subject.facility.update!(state: "punjab")
       localized_message = I18n.t(

@@ -20,7 +20,7 @@ class NotificationDispatchService
     end
 
     handle_messaging_errors {
-      Messaging::Twilio::ReminderSms.send_message(
+      messaging_channel.send_message(
         recipient_number: recipient_number,
         message: notification.localized_message,
       ) { |communication| notification.record_communication(communication) }
