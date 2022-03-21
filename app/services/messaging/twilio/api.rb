@@ -26,10 +26,11 @@ class Messaging::Twilio::Api < Messaging::Channel
 
   def record_communication(recipient_number, response, &with_communication_do)
     transaction do
-      TwilioSmsDeliveryDetail.create_communication(
+      TwilioSmsDeliveryDetail.create_with_communication(
         callee_phone_number: recipient_number,
-        response: response,
-        communication_type: self.class.communication_type
+        communication_type: self.class.communication_type,
+        session_id: response.sid,
+        result: response.status
       ).tap do |communication|
         with_communication_do.call(communication) if block_given?
       end
