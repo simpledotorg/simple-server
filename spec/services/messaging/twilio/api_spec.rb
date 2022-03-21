@@ -3,8 +3,11 @@ require "rails_helper"
 RSpec.describe Messaging::Twilio::Api do
   def stub_twilio_client
     client = double("TwilioClientDouble")
+    response = double("TwilioApiResponse")
     allow(Twilio::REST::Client).to receive(:new).and_return(client)
-    allow(client).to receive_message_chain("messages.create")
+    allow(response).to receive(:sid).and_return("1234")
+    allow(response).to receive(:status).and_return("sent")
+    allow(client).to receive_message_chain("messages.create").and_return(response)
   end
 
   before do

@@ -52,7 +52,7 @@ describe Notification, type: :model do
       expect { covid_medication_reminder.localized_message }.not_to raise_error
 
       appointment = create(:appointment)
-      missed_visit_reminder = create(:notification, message: "locale.key",
+      missed_visit_reminder = create(:notification, message: "notifications.set01.basic",
                                                     purpose: :missed_visit_reminder,
                                                     subject: appointment)
       expect(missed_visit_reminder.localized_message).to include(appointment.facility.name)

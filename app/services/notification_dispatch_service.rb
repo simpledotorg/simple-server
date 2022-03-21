@@ -47,13 +47,13 @@ class NotificationDispatchService
 
   def cancel_no_mobile_notification
     notification.status_cancelled!
-    Rails.logger.warn("notification #{notification.id} cancelled because of an invalid phone number")
-    Statsd.instance.increment("notifications.skipped.invalid_phone_number")
+    Rails.logger.info "skipping notification #{notification.id}, patient #{notification.patient_id} does not have a mobile number"
+    Statsd.instance.increment("notifications.skipped.no_mobile_number")
   end
 
   def cancel_invalid_number_notification
     notification.status_cancelled!
-    Rails.logger.info "skipping notification #{notification.id}, patient #{notification.patient_id} does not have a mobile number"
-    Statsd.instance.increment("notifications.skipped.no_mobile_number")
+    Rails.logger.warn("notification #{notification.id} cancelled because of an invalid phone number")
+    Statsd.instance.increment("notifications.skipped.invalid_phone_number")
   end
 end
