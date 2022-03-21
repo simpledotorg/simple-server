@@ -1,6 +1,4 @@
 class NotificationDispatchService
-  include Memery
-
   def self.call(*args)
     new(*args).call
   end

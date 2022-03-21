@@ -4,7 +4,7 @@ class Messaging::Twilio::Api < Messaging::Channel
 
   def send_message(recipient_number:, message:, &with_communication_do)
     track_metrics do
-      record_communication(
+      create_communication(
         recipient_number,
         create_twilio_message(recipient_number, message),
         &with_communication_do
@@ -24,7 +24,7 @@ class Messaging::Twilio::Api < Messaging::Channel
 
   private
 
-  def record_communication(recipient_number, response, &with_communication_do)
+  def create_communication(recipient_number, response, &with_communication_do)
     transaction do
       TwilioSmsDeliveryDetail.create_with_communication(
         callee_phone_number: recipient_number,
