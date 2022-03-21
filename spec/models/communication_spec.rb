@@ -61,7 +61,8 @@ describe Communication, type: :model do
             twilio_sid: SecureRandom.uuid,
             twilio_msg_status: "sent",
             communication_type: :sms,
-            notification: notification)
+            notification: notification
+          )
         }.to change { Communication.count }.by(1)
           .and change { TwilioSmsDeliveryDetail.count }.by(1)
       end
