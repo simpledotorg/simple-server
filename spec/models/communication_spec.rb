@@ -108,7 +108,7 @@ describe Communication, type: :model do
         detailable: create(:twilio_sms_delivery_detail, :queued))
       communication_2 = create(:communication,
         :sms,
-        detailable: create(:twilio_sms_delivery_detail, :sent))
+        detailable: create(:twilio_sms_delivery_detail, :sending))
 
       expect(communication_1.communication_result).to eq("in_progress")
       expect(communication_2.communication_result).to eq("in_progress")
