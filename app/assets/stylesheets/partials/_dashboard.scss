@@ -382,27 +382,23 @@ th sup {
 }
 
 .split-bars .bar-none {
-  background: $grey-light;
-  color: $grey-dark;
-  border-radius: 3px;
+  background: $grey-light; color: $grey-dark; border-radius: 3px;
 }
-.split-bars .bar-1 {
-  background: $grey-mid;
-  color: $grey-darkest;
-  border-radius: 3px 0 0 3px;
+
+.split-bars .bar-controlled {
+  background: $green-dark; color: $white; border-radius: 3px 0 0 3px;
 }
-.split-bars .bar-2 {
-  background: $red;
-  color: #fff;
+
+.split-bars .bar-uncontrolled {
+  background: $red; color: #fff;
 }
-.split-bars .bar-3 {
-  background: $green-dark;
-  color: $white;
+
+.split-bars .bar-missed-visits {
+  background: $blue; color: $white;
 }
-.split-bars .bar-4 {
-  background: $blue;
-  border-radius: 0 3px 3px 0;
-  color: $white;
+
+.split-bars .bar-no-bp {
+  background: $grey-mid; color: $grey-darkest; border-radius: 0 3px 3px 0;
 }
 
 .split-row-first .split-bars .bar {
