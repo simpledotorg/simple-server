@@ -17,10 +17,10 @@ class TwilioSmsDeliveryDetail < DeliveryDetail
   end
 
   def successful?
-    delivered? || read?
+    delivered? || read? || sent?
   end
 
   def in_progress?
-    queued? || sending? || sent?
+    queued? || sending?
   end
 end
