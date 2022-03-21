@@ -6,10 +6,6 @@ describe Communication, type: :model do
     it { should belong_to(:detailable).optional }
   end
 
-  context "Validations" do
-    it_behaves_like "a record that validates device timestamps"
-  end
-
   context "Behavior" do
     it_behaves_like "a record that is deletable"
   end
@@ -56,6 +52,7 @@ describe Communication, type: :model do
 
     describe ".create_with_twilio_details!" do
       it "creates a communication with a TwilioSmsDeliveryDetail" do
+        notification = create(:notification)
         expect {
           Communication.create_with_twilio_details!(
             twilio_sid: SecureRandom.uuid,
