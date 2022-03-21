@@ -21,7 +21,9 @@ class NotificationDispatchService
       messaging_channel.send_message(
         recipient_number: recipient_number,
         message: notification.localized_message
-      ) { |communication| notification.record_communication(communication) }
+      ) do |communication|
+        notification.record_communication(communication)
+      end
     }.tap { log_success }
   end
 
