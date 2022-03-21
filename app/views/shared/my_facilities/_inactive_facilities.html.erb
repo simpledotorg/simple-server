@@ -33,7 +33,7 @@
           </tr>
         </thead>
         <tbody>
-          <% @inactive_facilities.sort_by(&:name).each do |facility| %>
+          <% @inactive_facilities.sort_by(&:name).first(100).each do |facility| %>
             <tr>
               <td>
                 <%= link_to facility.name, reports_region_facility_path(facility) %>
