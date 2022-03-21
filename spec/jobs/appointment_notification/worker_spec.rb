@@ -67,12 +67,6 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
     it "creates a Communication with twilio response status and sid" do
       mock_successful_delivery
 
-      expect(Communication).to receive(:create_with_twilio_details!).with(
-        notification: notification,
-        twilio_sid: "12345",
-        twilio_msg_status: "sent",
-        communication_type: "sms"
-      ).and_call_original
       expect {
         described_class.perform_async(notification.id)
         described_class.drain
