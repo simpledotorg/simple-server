@@ -26,8 +26,11 @@ RSpec.describe Messaging::Twilio::OtpSms do
   describe ".send_message" do
     it "correctly calls the Twilio API" do
       client = double("TwilioClientDouble")
+      response = double("TwilioApiResponse")
       allow(Twilio::REST::Client).to receive(:new).and_return(client)
-      allow(client).to receive_message_chain("messages.create")
+      allow(response).to receive(:sid).and_return("1234")
+      allow(response).to receive(:status).and_return("sent")
+      allow(client).to receive_message_chain("messages.create").and_return(response)
       sender_sms_phone_number = described_class::TWILIO_TEST_SMS_NUMBER
       recipient_phone_number = "+918585858585"
       callback_url = "https://localhost/api/v3/twilio_sms_delivery"
