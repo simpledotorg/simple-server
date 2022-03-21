@@ -1,6 +1,7 @@
 class AppointmentNotification::Worker
   include Sidekiq::Worker
   include Memery
+  APPOINTMENT_REMINDERS_CHANNEL = CountryConfig.current[:appointment_reminders_channel]
 
   sidekiq_options queue: :high
 
@@ -10,15 +11,11 @@ class AppointmentNotification::Worker
     notification = Notification.find(notification_id)
 
     if scheduled?(notification)
-      NotificationDispatchService.call(notification, appointment_reminders_channel)
+      NotificationDispatchService.call(notification, APPOINTMENT_REMINDERS_CHANNEL)
     end
   end
 
   private
-
-  memoize def appointment_reminders_channel
-    CountryConfig.current[:appointment_reminders_channel]
-  end
 
   def scheduled?(notification)
     return true if notification.status_scheduled?
