@@ -1,32 +1,50 @@
 module ProgressTabHelper
-  def create_badge_array(current_value)
-    # Badge goals: 25, 50, 100, 250, 500, 1000, 2500...
-    goal_multipliers = [2, 2, 2.5]
-    starting_goal = 25
-    current_goal = starting_goal
-    multiplier_index = 0
+  GOAL_MULTIPLIERS = [2, 2, 2.5]
+  STARTING_GOAL = 25
+  TOTAL_BADGES = 5
 
+  def create_badge_array(current_value)
+    # Achievement badges are generated using the infinite sequence below where "S" is the starting badge value:
+    # S x 2 x 2 x 2.5 x 2 x 2 x 2.5 x 2 x 2 x 2.5 ...
+    current_goal = STARTING_GOAL
+    multiplier_index = 0
     badges = []
 
-    while current_value > current_goal
-      badges.push({
-        "goal_value" => current_goal,
-        "is_goal_completed" => true
-      })
-
-      current_goal = (current_goal * goal_multipliers[multiplier_index]).to_i
-      if multiplier_index == goal_multipliers.length - 1
-        multiplier_index = 0
-      else
-        multiplier_index += 1
-      end
+    while current_value && (current_value >= current_goal)
+      add_badges_to_array(current_goal, true, badges)
+      current_goal = set_current_goal(current_goal, multiplier_index)
+      multiplier_index = set_multiplier_index(multiplier_index)
     end
 
-    badges.push({
-      "goal_value" => current_goal.to_i,
-      "is_goal_completed" => false
-    })
+    if badges.length < TOTAL_BADGES
+      (TOTAL_BADGES - badges.length).times {
+        add_badges_to_array(current_goal, false, badges)
+        current_goal = set_current_goal(current_goal, multiplier_index)
+        multiplier_index = set_multiplier_index(multiplier_index)
+      }
+    else
+      add_badges_to_array(current_goal, false, badges)
+    end
 
-    badges.last(5)
+    badges.last(TOTAL_BADGES)
+  end
+
+  def add_badges_to_array(current_goal, is_goal_completed, badge_array)
+    badge_array.push({
+      "goal_value" => current_goal,
+      "is_goal_completed" => is_goal_completed
+    })
+  end
+
+  def set_current_goal(current_goal, multiplier_index)
+    (current_goal * GOAL_MULTIPLIERS[multiplier_index]).to_i
+  end
+
+  def set_multiplier_index(multiplier_index)
+    if multiplier_index == GOAL_MULTIPLIERS.length - 1
+      0
+    else
+      multiplier_index + 1
+    end
   end
 end
