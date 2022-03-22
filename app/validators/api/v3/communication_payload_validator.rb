@@ -2,7 +2,6 @@ class Api::V3::CommunicationPayloadValidator < Api::V3::PayloadValidator
   attr_accessor(
     :id,
     :appointment_id,
-    :user_id,
     :communication_type,
     :communication_result,
     :created_at,
