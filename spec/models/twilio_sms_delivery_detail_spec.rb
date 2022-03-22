@@ -8,6 +8,6 @@ describe TwilioSmsDeliveryDetail, type: :model do
   end
 
   describe ".create_with_communication" do
-    
+
   end
 end

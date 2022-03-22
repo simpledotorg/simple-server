@@ -36,21 +36,6 @@ class Communication < ApplicationRecord
     joins("inner join twilio_sms_delivery_details delivery_detail on delivery_detail.id = communications.detailable_id")
   }
 
-  def self.create_with_twilio_details!(twilio_sid:, twilio_msg_status:, communication_type:, notification: nil)
-    patient = notification.patient
-    transaction do
-      sms_delivery_details = TwilioSmsDeliveryDetail.create!(session_id: twilio_sid,
-        result: twilio_msg_status,
-        callee_phone_number: patient.latest_mobile_number)
-      communication = create!(communication_type: communication_type,
-        detailable: sms_delivery_details,
-        notification: notification)
-      logger.info(class: self.class.name, msg: __method__.to_s, communication_id: communication.id,
-        communication_type: communication_type, result: twilio_msg_status,
-        notification_id: notification&.id)
-    end
-  end
-
   def self.messaging_start_hour
     @messaging_start_hour ||= ENV.fetch("APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_START", DEFAULT_MESSAGING_START_HOUR).to_i
   end
