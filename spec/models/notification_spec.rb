@@ -109,4 +109,9 @@ describe Notification, type: :model do
       expect(notification.delivery_result).to eq(:queued)
     end
   end
+
+  describe "#record_communication" do
+    it "ties the communication to a notification and updates status to 'sent'" do
+    end
+  end
 end

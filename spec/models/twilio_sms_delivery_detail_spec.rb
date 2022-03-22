@@ -6,4 +6,8 @@ describe TwilioSmsDeliveryDetail, type: :model do
   describe "Associations" do
     it { should have_one(:communication) }
   end
+
+  describe ".create_with_communication" do
+    
+  end
 end
