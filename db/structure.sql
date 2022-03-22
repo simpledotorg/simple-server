@@ -355,6 +355,19 @@ CREATE TABLE public.communications (
 
 
 --
+-- Name: credentials; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.credentials (
+    name character varying NOT NULL,
+    value character varying NOT NULL,
+    deleted_at timestamp without time zone,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: data_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -5498,6 +5511,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220217102500'),
 ('20220217202441'),
 ('20220223080958'),
-('20220315095931');
+('20220315095931'),
+('20220322115123');
 
 
