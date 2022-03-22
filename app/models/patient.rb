@@ -69,6 +69,8 @@ class Patient < ApplicationRecord
 
   has_many :current_prescription_drugs, -> { where(is_deleted: false).order(created_at: :desc) }, class_name: "PrescriptionDrug"
 
+  has_many :patient_states, class_name: "Reports::PatientState"
+
   belongs_to :deleted_by_user, class_name: "User", optional: true
 
   attribute :call_result, :string
