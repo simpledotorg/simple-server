@@ -37,4 +37,21 @@
     </a>
   </div>
 </template>
-<%= render "shared/region_search_script" %>
+
+<script>
+  $(() => {
+    const search = new RegionsSearch().search;
+    const form = $("#search-form");
+
+    form.on("submit", function(event) {
+      input = $(event.target).find(".typeahead-input");
+      search(input);
+      return false;
+    });
+
+    form.on("keyup", function(event) {
+      search(event.target);
+      return false;
+    });
+  })
+</script>
