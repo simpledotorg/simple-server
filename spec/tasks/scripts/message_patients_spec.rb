@@ -98,8 +98,8 @@ RSpec.describe MessagePatients do
   end
 
   def mock_successful_delivery
-    response_double = double("NotificationServiceResponse")
     twilio_client = double("TwilioClientDouble")
+    response_double = double("MessagingChannelResponse")
 
     allow(response_double).to receive(:status).and_return("queued")
     allow(response_double).to receive(:sid).and_return("1234")
