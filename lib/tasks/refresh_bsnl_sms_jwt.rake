@@ -8,7 +8,7 @@ namespace :bsnl do
     password = ENV["BSNL_PASSWORD"]
     token_id = ENV["BSNL_TOKEN_ID"]
 
-    abort unless service_id && username && password && token_id
+    abort "Aborting, need BSNL credentials to run this task." unless service_id && username && password && token_id
 
     http = Net::HTTP.new("bulksms.bsnl.in", 5010)
     http.use_ssl = true
@@ -23,7 +23,7 @@ namespace :bsnl do
       jwt = response.body.delete_prefix('"').delete_suffix('"')
       Credential.find("BSNL_SMS_JWT").update(value: jwt)
     else
-      #todo: send an alert
+      # todo: send an alert
     end
   end
 end
