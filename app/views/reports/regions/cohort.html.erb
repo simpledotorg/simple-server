@@ -51,7 +51,7 @@
                     no_bp_percent = cohort["no_bp_rate"]
                   %>
                   <td
-                    class="bar bar-controlled"
+                    class="bar bar-3 bar-controlled"
                     data-toggle="tooltip"
                     data-placement="top"
                     data-trigger="hover focus click"
@@ -61,7 +61,7 @@
                     <%= (cohort["controlled"] > 0 && controlled_percent == 0) ? "< 1" : controlled_percent %>%
                   </td>
                   <td
-                    class="bar bar-uncontrolled"
+                    class="bar bar-2 bar-uncontrolled"
                     data-toggle="tooltip"
                     data-placement="top"
                     data-trigger="hover focus click"
@@ -71,7 +71,7 @@
                     <%= (cohort["uncontrolled"] > 1 && uncontrolled_percent == 0) ? "< 1" : uncontrolled_percent %>%
                   </td>
                   <td
-                    class="bar bar-missed-visits"
+                    class="bar bar-4 bar-missed-visits"
                     data-toggle="tooltip"
                     data-placement="top"
                     data-trigger="hover focus click"
@@ -103,7 +103,7 @@
     <% end %>
     <div class="mt-8px pt-24px bt-1px bt-grey-light d-lg-flex align-lg-center justify-lg-end mt-lg-0px pt-lg-16px">
       <p class="mb-8px c-black mr-lg-4 mb-lg-0">
-        <span class="p-relative t-1px d-inline-block w-12px h-12px mr-4px br-2px bg-green-dark"></span>
+        <span class="p-relative t-1px d-inline-block w-12px h-12px mr-4px br-2px bg-green"></span>
         BP controlled
       </p>
       <p class="mb-8px c-black mr-lg-4 mb-lg-0">
