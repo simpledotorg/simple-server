@@ -4289,6 +4289,7 @@ CREATE INDEX index_communications_on_deleted_at ON public.communications USING b
 
 CREATE INDEX index_communications_on_detailable_type_and_detailable_id ON public.communications USING btree (detailable_type, detailable_id);
 
+
 --
 -- Name: index_communications_on_notification_id; Type: INDEX; Schema: public; Owner: -
 --
