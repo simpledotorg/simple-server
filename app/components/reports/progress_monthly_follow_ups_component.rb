@@ -4,7 +4,7 @@ class Reports::ProgressMonthlyFollowUpsComponent < ViewComponent::Base
   include AssetsHelper
   include ActionView::Helpers::NumberHelper
 
-  attr_reader :repo, :report_month, :last_6_months  
+  attr_reader :repo, :report_month, :last_6_months
 
   def initialize(service, period_month)
     @region = service.region

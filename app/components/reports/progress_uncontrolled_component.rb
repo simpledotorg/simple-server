@@ -2,7 +2,7 @@
 
 class Reports::ProgressUncontrolledComponent < ViewComponent::Base
   include AssetsHelper
-  include ActionView::Helpers::NumberHelper 
+  include ActionView::Helpers::NumberHelper
 
   attr_reader :control_range, :repository
 
