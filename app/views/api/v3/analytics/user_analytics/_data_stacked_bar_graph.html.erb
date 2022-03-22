@@ -5,11 +5,11 @@
 <% missed_visits = [data[:missed_visits_rate], min_width].max %>
 <div class="p-relative d-flex br-4px" data-graph-type="stacked-bar-chart">
   <div
-    class="d-flex ai-center jc-center mr-1px p-16px bgc-green-new btlr-4px bblr-4px ttf-ease-in-out td-0_25s tp-opacity"
+    class="d-flex ai-center jc-center mr-1px p-16px bgc-green-dark-new btlr-4px bblr-4px ttf-ease-in-out td-0_25s tp-opacity"
     style="width: <%= bp_controlled %>%;"
     data-graph-element="stacked-bar"
   >
-    <p class="m-0px p-0px ta-center fw-bold fs-16px c-white pe-none">
+    <p class="m-0px p-0px ta-center fw-bold fs-16px c-black pe-none">
       <%= data[:controlled_rate] %>%
     </p>
     <div
@@ -31,11 +31,11 @@
     </div>
   </div>
   <div
-    class="d-flex ai-center jc-center ml-1px mr-1px p-16px bgc-yellow-new ttf-ease-in-out td-0_25s tp-opacity"
+    class="d-flex ai-center jc-center ml-1px mr-1px p-16px bgc-yellow-dark-new ttf-ease-in-out td-0_25s tp-opacity"
     style="width: <%= bp_not_controlled %>%;"
     data-graph-element="stacked-bar"
   >
-    <p class="m-0px p-0px ta-center fw-bold fs-16px c-white pe-none">
+    <p class="m-0px p-0px ta-center fw-bold fs-16px c-black pe-none">
       <%= data[:uncontrolled_rate] %>%
     </p>
     <div
@@ -57,11 +57,11 @@
     </div>
   </div>
   <div
-    class="d-flex ai-center jc-center ml-1px mr-1px p-16px bgc-orange-new ttf-ease-in-out td-0_25s tp-opacity"
+    class="d-flex ai-center jc-center ml-1px mr-1px p-16px bgc-orange-dark-new ttf-ease-in-out td-0_25s tp-opacity"
     style="width: <%= visited_but_no_bp_taken %>%;"
     data-graph-element="stacked-bar"
   >
-    <p class="m-0px p-0px ta-center fw-bold fs-16px c-white pe-none">
+    <p class="m-0px p-0px ta-center fw-bold fs-16px c-black pe-none">
       <%= data[:no_bp_rate] %>%
     </p>
     <div
@@ -83,7 +83,7 @@
     </div>
   </div>
   <div
-    class="d-flex ai-center jc-center ml-1px p-16px bgc-red-new btrr-4px bbrr-4px ttf-ease-in-out td-0_25s tp-opacity"
+    class="d-flex ai-center jc-center ml-1px p-16px bgc-red-dark-new btrr-4px bbrr-4px ttf-ease-in-out td-0_25s tp-opacity"
     style="width: <%= missed_visits %>%;"
     data-graph-element="stacked-bar"
   >

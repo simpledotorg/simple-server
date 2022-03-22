@@ -21,7 +21,7 @@
   <%= render(Reports::ProgressAssignedPatientsComponent.new(@service, @period)) %>
   <%= render(Reports::ProgressTotalRegistrationsComponent.new(@service, @period)) %>
   <%= render(Reports::ProgressMonthlyFollowUpsComponent.new(@service, @period)) %>
-  <div class="mt-48px mb-8px pr-16px pl-16px">
+  <div class="mt-48px mb-16px pr-16px pl-16px">
     <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey-dark">
       <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.section_title") %>
     </h3>
@@ -30,7 +30,12 @@
   <%= render(Reports::ProgressUncontrolledComponent.new(@service)) %>
   <%= render(Reports::ProgressMissedVisitsComponent.new(@service)) %>
   <% if @query %>
-   <% @drugs_by_category.each do |category, drugs| %>
+    <div class="mt-48px mb-16px pr-16px pl-16px">
+      <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey-dark">
+        <%= t("progress_tab.diagnosis_report.drug_stock_report.section_title") %>
+      </h3>
+    </div>
+    <% @drugs_by_category.each do |category, drugs| %>
       <% patient_days = @query.patient_days_by_facility_id.dig(@current_facility.id, category, :patient_days) || 0 %>
       <div class="mb-8px p-16px bgc-white bs-card">
         <h3 class="m-0px mb-2px p-0px ta-left fw-medium fs-20px c-black">
@@ -60,7 +65,7 @@
       </div>
     <% end %> 
   <% end %>
-  <div class="mt-48px mb-8px pr-16px pl-16px">
+  <div class="mt-48px mb-16px pr-16px pl-16px">
     <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey-dark">
       <%= t("progress_tab.diagnosis_report.cohort_report.section_title") %>
     </h3>
