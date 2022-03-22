@@ -45,15 +45,13 @@
     <% if email_authentication_signed_in? %>
       <%= render "shared/nav_bar" %>
 
-      <% if current_admin.accessible_facilities(:view_reports).any? %>
-        <% if active_controller_and_action?(["my_facilities", "reports/regions"], ["index", "show", "details", "cohort"]) %>
-          <%= form_tag regions_search_url(format: :json), id: "search-form", method: :get do %>
-            <div class="mo-search">
-              <div class="mo-search-inner">
-                <%= render "shared/region_search" %>
-              </div>
+      <% if @show_region_search && current_admin.accessible_facilities(:view_reports).any? %>
+        <%= form_tag regions_search_url(format: :json), id: "search-form", method: :get do %>
+          <div class="mo-search">
+            <div class="mo-search-inner">
+              <%= render "shared/region_search" %>
             </div>
-          <% end %>
+          </div>
         <% end %>
       <% end %>
 

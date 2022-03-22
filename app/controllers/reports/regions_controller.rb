@@ -1,11 +1,13 @@
 class Reports::RegionsController < AdminController
   include Pagination
   include GraphicsDownload
+  include RegionSearch
 
   before_action :set_period, only: [:show, :cohort]
   before_action :set_page, only: [:details]
   before_action :set_per_page, only: [:details]
   before_action :find_region, except: [:index, :fastindex, :monthly_district_data_report]
+  before_action :show_region_search
   around_action :set_reporting_time_zone
   after_action :log_cache_metrics
   delegate :cache, to: Rails
