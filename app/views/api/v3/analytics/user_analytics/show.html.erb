@@ -33,7 +33,7 @@
             <a
               class="d-flex ai-center w-32px h-32px"
               href="#"
-              onclick="openWindow('progress-help-registered', 'progress-start'); return false"
+              onclick="openWindow('progress-registrations-help', 'progress-start'); return false"
             >
               <%= inline_file("help-circle.svg") %>
             </a>
@@ -54,7 +54,7 @@
             <a
               class="d-flex ai-center w-32px h-32px"
               href="#"
-              onclick="openWindow('progress-help-followup', 'progress-start'); return false"
+              onclick="openWindow('progress-follow-ups-help', 'progress-start'); return false"
             >
               <%= inline_file("help-circle.svg") %>
             </a>
@@ -67,42 +67,44 @@
             <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service)) %>
           <% end %>
         </div>
-        <div class="mb-8px p-16px bgc-white bs-card">
-          <h1 class="m-0px mb-4px fw-bold fs-24px c-black">
-            <%= t("progress_tab.reports_card.title") %>
-          </h1>
-          <p class="m-0px mb-16px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-            <%= t("progress_tab.reports_card.subtitle", facility_name: current_facility.name) %>
-          </p>
-          <div class="d-flex ai-center jc-space-between">
-            <a
-              class="f-1 d-flex fd-column ai-center jc-center h-96px mr-8px p-12px td-none bgc-red-light br-8px"
-              href="#"
-              onclick="openWindow('hypertension-report', 'progress-start'); return false;"
-            >
-              <div class="d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px">
-                <%= inline_file("graph-red.svg") %>
-              </div>
-              <p class="m-0px p-0px ta-left fw-medium fs-16px c-red">
-                <%= t("progress_tab.hypertension_report_title") %>
-              </p>
-            </a>
-            <a
-              class="p-relative f-1 d-flex fd-column ai-center jc-center h-96px ml-8px p-12px td-none bgc-grey-light-new br-8px"
-              href="#"
-            >
-              <div class="d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px">
-                <%= inline_file("graph-grey.svg") %>
-              </div>
-              <p class="m-0px p-0px ta-left fw-medium fs-16px c-grey-dark">
-                <%= t("progress_tab.diabetes_report_title") %>
-              </p>
-              <p class="p-absolute b-0 l-0 w-100 fw-regular fs-12px c-grey ta-center bs-border-box">
-                Coming soon
-              </p>
-            </a>
+        <% if Flipper.enabled?(:new_progress_tab) %>
+          <div class="mb-8px p-16px bgc-white bs-card">
+            <h1 class="m-0px mb-4px fw-bold fs-24px c-black">
+              <%= t("progress_tab.reports_card.title") %>
+            </h1>
+            <p class="m-0px mb-16px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+              <%= t("progress_tab.reports_card.subtitle", facility_name: current_facility.name) %>
+            </p>
+            <div class="d-flex ai-center jc-space-between">
+              <a
+                class="f-1 d-flex fd-column ai-center jc-center h-96px mr-8px p-12px td-none bgc-red-light br-8px"
+                href="#"
+                onclick="openWindow('progress-hypertension-report', 'progress-start'); return false;"
+              >
+                <div class="d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px">
+                  <%= inline_file("graph-red.svg") %>
+                </div>
+                <p class="m-0px p-0px ta-left fw-medium fs-16px c-red">
+                  <%= t("progress_tab.hypertension_report_title") %>
+                </p>
+              </a>
+              <a
+                class="p-relative f-1 d-flex fd-column ai-center jc-center h-96px ml-8px p-12px td-none bgc-grey-light-new br-8px"
+                href="#"
+              >
+                <div class="d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px">
+                  <%= inline_file("graph-grey.svg") %>
+                </div>
+                <p class="m-0px p-0px ta-left fw-medium fs-16px c-grey-dark">
+                  <%= t("progress_tab.diabetes_report_title") %>
+                </p>
+                <p class="p-absolute b-0 l-0 w-100 fw-regular fs-12px c-grey ta-center bs-border-box">
+                  Coming soon
+                </p>
+              </a>
+            </div>
           </div>
-        </div>
+        <% end %>
         <% if current_facility_group.region.feature_enabled?(:drug_stocks) && controller_name == "user_analytics" %>
           <div class="mb-16px p-16px bgc-white br-4px bs-card">
             <div class="d-flex ai-flex-start jc-space-between mb-16px">
@@ -124,6 +126,14 @@
               style: "font-weight: 500;",
               class: "d-block p-16px ta-center fs-16px fw-regular tt-uppercase ls-1_25px c-blue b-none bb-blue-mid br-1px bgc-blue-light bs-secondary-button"
             %>
+          </div>
+        <% end %>
+        <% unless Flipper.enabled?(:new_progress_tab) %>
+          <%= render(Reports::ProgressControlComponent.new(@service)) %>
+          <div class="card">
+            <a href="#" onclick="openWindow('progress-cohort-report', 'progress-start'); return false" class="nav-next">
+              Cohort report
+            </a>
           </div>
         <% end %>
         <div class="mb-8px pt-16px pb-16px bgc-white bs-card">
@@ -171,47 +181,14 @@
         </div>
       </div>
     </div>
-    <div id="progress-help-registered" class="progress-body" style="display: none;">
-      <div class="progress-contents">
-        <a href="#" onclick="closeWindow('progress-help-registered', 'progress-start'); return false" class="help-back">
-          <%= inline_svg('icon_back.svg') %>
-        </a>
-        <h2 style="padding-top: 80px; padding-left: 8px;">
-          <%= raw t("analytics.definition") %>
-        </h2>
-        <div class="card">
-          <h3 style="margin-bottom: 1em;">
-            <%= raw t("analytics.registered_patients") %>
-          </h3>
-          <p class="desc" style="margin-bottom: 1em;">
-            <%= raw t("analytics.registered_patients_desc") %>
-          </p>
-        </div>
-      </div>
-    </div>
-    <div id="progress-help-followup" class="progress-body" style="display: none;">
-      <div class="progress-contents">
-        <a
-          href="#"
-          onclick="closeWindow('progress-help-followup', 'progress-start'); return false"
-          class="help-back"
-        >
-          <%= inline_svg('icon_back.svg') %>
-        </a>
-        <h2 style="padding-top: 80px; padding-left: 8px;">
-          <%= raw t("analytics.definition") %>
-        </h2>
-        <div class="card">
-          <h3 style="margin-bottom: 1em;">
-            <%= raw t("analytics.follow_up_patients") %>
-          </h3>
-          <p class="desc" style="margin-bottom: 1em;">
-            <%= raw t("analytics.follow_up_patients_desc") %>
-          </p>
-        </div>
-      </div>
-    </div>
-    <%= render partial: "api/v3/analytics/user_analytics/hypertension_report" %>
+    <% if Flipper.enabled?(:new_progress_tab) %>
+      <%= render partial: "api/v3/analytics/user_analytics/progress_hypertension_report" %>
+    <% else %>
+      <%= render partial: "api/v3/analytics/user_analytics/progress_controlled_help" %>
+      <%= render partial: "api/v3/analytics/user_analytics/progress_cohort_report" %>
+    <% end %>
+    <%= render partial: "api/v3/analytics/user_analytics/progress_registrations_help" %> 
+    <%= render partial: "api/v3/analytics/user_analytics/progress_follow_ups_help" %> 
   </body>
   <%= inline_js("standalone/user_analytics.js") %>
 </html>
