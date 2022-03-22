@@ -1,9 +1,9 @@
-<div id="<%= page_id %>" class="d-none">
+<div id="hypertension-report" class="d-none">
   <div class="mb-8px pt-16px pb-16px bgc-white bs-card">
     <a
       class="d-block w-24px h-24px mb-24px pl-16px"
       href="#"
-      onclick="closeWindow('<%= page_id %>', 'progress-start'); return false;"
+      onclick="closeWindow('hypertension-report', 'progress-start'); return false;"
     >
       <div class="d-inline-block">
         <%= inline_file("chevron-left.svg") %>
@@ -11,17 +11,16 @@
     </a>
     <div class="pr-16px pl-16px">
       <h1 class="m-0px mb-8px fw-bold fs-24px">
-        <%= title %> report
+        <%= t("progress_tab.hypertension_report_title") %> report
       </h1>
-      <% if subtitle %>
-        <p class="m-0px p-0px ta-left fw-normal fs-16px c-grey-dark">
-          <%= subtitle %>
-        </p>
-      <% end %>
+      <p class="m-0px p-0px ta-left fw-normal fs-16px c-grey-dark">
+        <%= t("progress_tab.last_updated_at", date: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")) %>
+      </p>
     </div>
   </div>
-  <%= render(Reports::ProgressTotalRegistrationsComponent.new(@service, @period)) %>
   <%= render(Reports::ProgressAssignedPatientsComponent.new(@service, @period)) %>
+  <%= render(Reports::ProgressTotalRegistrationsComponent.new(@service, @period)) %>
+  <%= render(Reports::ProgressMonthlyFollowUpsComponent.new(@service, @period)) %>
   <div class="mt-48px mb-8px pr-16px pl-16px">
     <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey-dark">
       <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.section_title") %>
@@ -30,6 +29,37 @@
   <%= render(Reports::ProgressControlComponent.new(@service)) %>
   <%= render(Reports::ProgressUncontrolledComponent.new(@service)) %>
   <%= render(Reports::ProgressMissedVisitsComponent.new(@service)) %>
+  <% if @query %>
+   <% @drugs_by_category.each do |category, drugs| %>
+      <% patient_days = @query.patient_days_by_facility_id.dig(@current_facility.id, category, :patient_days) || 0 %>
+      <div class="mb-8px p-16px bgc-white bs-card">
+        <h3 class="m-0px mb-2px p-0px ta-left fw-medium fs-20px c-black">
+          <%= protocol_drug_labels[category][:full] %>
+        </h3>
+        <p class="m-0px mb-16px p-0px ta-left fw-regular fs-16px lh-150 <%= patient_days_css_class(patient_days, prefix: "c") %>">
+          <%= patient_days %> days of drug stock
+        </p>
+        <% drugs.each_with_index do |drug, index| %>
+          <% drug_stock = @query.drugs_in_stock_by_facility_id.dig([@current_facility.id, drug.rxnorm_code]) %>
+          <div class="d-flex ai-center jc-space-between">
+            <p class="m-0px p-0px ta-left fw-regular fs-16px c-black">
+              <%= drug.name %> <%= drug.dosage %>
+            </p>
+            <p class="m-0px p-0px ta-left fw-regular fs-16px c-black">
+              <% if drug_stock.present? %>
+                <%= drug_stock %> tablets
+              <% else %>
+                &#8212;
+              <% end %>
+            </p>
+          </div>
+          <% unless drugs.length == index + 1 %>
+            <div class="h-1px mt-8px mb-8px bgc-grey-light"></div>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %> 
+  <% end %>
   <div class="mt-48px mb-8px pr-16px pl-16px">
     <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey-dark">
       <%= t("progress_tab.diagnosis_report.cohort_report.section_title") %>

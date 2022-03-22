@@ -14,6 +14,12 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
     @total_registrations_dimension = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :all, gender: :all)
     @total_follow_ups = Reports::MonthlyProgressComponent.new(@total_follow_ups_dimension, service: @service).total_count
     @total_registrations = Reports::MonthlyProgressComponent.new(@total_registrations_dimension, service: @service).total_count
+    @drug_stocks = DrugStock.latest_for_facilities_grouped_by_protocol_drug(current_facility, @for_end_of_month)
+    unless @drug_stock.empty?
+      @query = DrugStocksQuery.new(facilities: [current_facility],
+        for_end_of_month: @for_end_of_month)
+      @drugs_by_category = @query.protocol_drugs_by_category
+    end
     if Flipper.enabled?(:new_progress_tab)
       @period_reports_data = Reports::ReportsFakeFacilityProgressService.new(@current_facility.name).period_reports
       @hypertension_reports_data = Reports::ReportsFakeFacilityProgressService.new(@current_facility.name).hypertension_reports
