@@ -24,7 +24,7 @@
       My Facilities
     ----------------->
       <%= link_to(my_facilities_bp_controlled_path(preserve_query_params(request.query_parameters, ["zone", "size", "facility_group"])), class: "nav-link #{active_action?("bp_controlled")} #{active_action?("bp_not_controlled")} #{active_action?("missed_visits")}") do %>
-        <i class="fa-regular fa-table main-menu-icon w-16px"></i> <span>Facilities tables</span>
+        <i class="fa-regular fa-table main-menu-icon w-16px"></i> <span>Facility trends</span>
       <% end %>
 
     <!-----------------

@@ -382,23 +382,31 @@ th sup {
 }
 
 .split-bars .bar-none {
-  background: $grey-light; color: $grey-dark; border-radius: 3px;
+  background: $grey-light;
+  color: $grey-dark;
+  border-radius: 3px;
 }
 
 .split-bars .bar-controlled {
-  background: $green-dark; color: $white; border-radius: 3px 0 0 3px;
+  background: $green-dark;
+  color: $white;
+  border-radius: 3px 0 0 3px;
 }
 
 .split-bars .bar-uncontrolled {
-  background: $red; color: #fff;
+  background: $red;
+  color: #fff;
 }
 
 .split-bars .bar-missed-visits {
-  background: $blue; color: $white;
+  background: $blue;
+  color: $white;
 }
 
 .split-bars .bar-no-bp {
-  background: $grey-mid; color: $grey-darkest; border-radius: 0 3px 3px 0;
+  background: $grey-mid;
+  color: $grey-darkest;
+  border-radius: 0 3px 3px 0;
 }
 
 .split-row-first .split-bars .bar {
@@ -626,47 +634,6 @@ em.bg-orange {
 
 .tl-fixed {
   table-layout: fixed;
-}
-
-.resource-link {
-  position: relative;
-  padding-left: 60px;
-  margin: 8px 0;
-
-  span {
-    display: block;
-    color: #666;
-  }
-
-  i {
-    position: absolute;
-    left: 12px;
-    top: 8px;
-    font-size: 24px;
-  }
-
-  &.resource-presentation i {
-    color: Gold;
-  }
-
-  &.resource-doc i {
-    color: ForestGreen;
-    font-size: 28px;
-  }
-
-  &.resource-video i {
-    color: Red;
-    font-size: 28px;
-  }
-
-  &.resource-calendar i {
-    color: Grey;
-    font-size: 28px;
-  }
-
-  a:hover {
-    text-decoration: none;
-  }
 }
 
 .col-video {

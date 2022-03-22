@@ -45,19 +45,6 @@ Navigation
     padding-bottom: 24px;
   }
 
-  .access-item {
-    padding-left: 45px !important;
-
-    a {
-      color: $blue-mid;
-
-      &:hover {
-        text-decoration: none;
-        color: $white;
-      }
-    }
-  }
-
   .nav-user {
     position: fixed;
     bottom: 0;
@@ -89,7 +76,7 @@ Navigation
 
   .nav-link.active {
     i {
-      color: $white !important;
+      color: $white;
     }
   }
 
@@ -107,10 +94,6 @@ Navigation
     }
   }
 
-  i.fa-solid {
-    color: white !important;
-  }
-
   span {
     display: none;
   }
@@ -119,7 +102,7 @@ Navigation
   &:active,
   &:focus,
   &.navigation-open {
-    background: #0b283d !important;
+    background: #0b283d;
     width: 280px;
 
     .nav-link-dropdown {

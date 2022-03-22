@@ -3,18 +3,59 @@ Resources
 *****************/
 
 div.question {
-    margin-top: 2em;
-    font-family: Roboto;
-    border-top: 1px solid #eee;
-    padding-top: 1em;
+  margin-top: 2em;
+  font-family: Roboto;
+  border-top: 1px solid #eee;
+  padding-top: 1em;
 }
 div.question h6 {
-    font-family: Roboto;
+  font-family: Roboto;
 }
 div.question li {
-    margin-top: 0.5em;
+  margin-top: 0.5em;
 }
 h6.question {
-    font-weight: bold;
-    font-size: 110%;
+  font-weight: bold;
+  font-size: 110%;
+}
+
+.resource-link {
+  position: relative;
+  padding-left: 60px;
+  margin: 8px 0;
+
+  span {
+    display: block;
+    color: #666;
+  }
+
+  i {
+    position: absolute;
+    left: 12px;
+    top: 8px;
+    font-size: 24px;
+  }
+
+  &.resource-presentation i {
+    color: Gold;
+  }
+
+  &.resource-doc i {
+    color: ForestGreen;
+    font-size: 28px;
+  }
+
+  &.resource-video i {
+    color: Red;
+    font-size: 28px;
+  }
+
+  &.resource-calendar i {
+    color: Grey;
+    font-size: 28px;
+  }
+
+  a:hover {
+    text-decoration: none;
+  }
 }

@@ -56,11 +56,11 @@ module SimpleServerEnvHelper
 
   def bootstrap_navbar_classes_for_environment(env)
     navbar_classes = {
-      "development" => ["navbar-development"],
-      "demo" => ["navbar-demo"],
-      "qa" => ["navbar-qa"],
-      "sandbox" => ["navbar-sandbox"],
-      "production" => ["navbar-production"]
+      "development" => ["navigation-development"],
+      "demo" => ["navigation-demo"],
+      "qa" => ["navigation-qa"],
+      "sandbox" => ["navigation-sandbox"],
+      "production" => ["navigation-production"]
     }
 
     navbar_classes[env] || []
