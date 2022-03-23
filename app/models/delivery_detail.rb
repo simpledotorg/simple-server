@@ -1,5 +1,6 @@
 class DeliveryDetail < ApplicationRecord
   self.abstract_class = true
+  has_one :communication, as: :detailable
 
   def successful?
     raise NotImplementedError
