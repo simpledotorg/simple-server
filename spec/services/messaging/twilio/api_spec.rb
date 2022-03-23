@@ -1,12 +1,12 @@
 require "rails_helper"
 
 RSpec.describe Messaging::Twilio::Api do
-  def stub_twilio_client
+  def mock_successful_delivery
     client = double("TwilioClientDouble")
     response = double("TwilioApiResponse")
     allow(Twilio::REST::Client).to receive(:new).and_return(client)
     allow(response).to receive(:sid).and_return("1234")
-    allow(response).to receive(:status).and_return("sent")
+    allow(response).to receive(:status).and_return("queued")
     allow(client).to receive_message_chain("messages.create").and_return(response)
   end
 
@@ -19,7 +19,7 @@ RSpec.describe Messaging::Twilio::Api do
     it "uses the test twilio creds by default in test environment" do
       twilio_test_account_sid = ENV.fetch("TWILIO_TEST_ACCOUNT_SID")
       twilio_test_auth_token = ENV.fetch("TWILIO_TEST_AUTH_TOKEN")
-      stub_twilio_client
+      mock_successful_delivery
 
       expect(Twilio::REST::Client).to receive(:new).with(twilio_test_account_sid, twilio_test_auth_token)
 
@@ -30,7 +30,7 @@ RSpec.describe Messaging::Twilio::Api do
       stub_const("SIMPLE_SERVER_ENV", "production")
       twilio_account_sid = ENV.fetch("TWILIO_ACCOUNT_SID")
       twilio_auth_token = ENV.fetch("TWILIO_AUTH_TOKEN")
-      stub_twilio_client
+      mock_successful_delivery
 
       expect(Twilio::REST::Client).to receive(:new).with(twilio_account_sid, twilio_auth_token)
 
@@ -43,7 +43,7 @@ RSpec.describe Messaging::Twilio::Api do
       allow(ENV).to receive(:[]).with("TWILIO_PRODUCTION_OVERRIDE").and_return("true")
       twilio_account_sid = ENV.fetch("TWILIO_ACCOUNT_SID")
       twilio_auth_token = ENV.fetch("TWILIO_AUTH_TOKEN")
-      stub_twilio_client
+      mock_successful_delivery
 
       expect(Twilio::REST::Client).to receive(:new).with(twilio_account_sid, twilio_auth_token)
 
@@ -90,7 +90,8 @@ RSpec.describe Messaging::Twilio::Api do
     end
   end
 
-  it "creates communications and detailables" do
+  it "creates a communication and a detailable and returns it" do
+
   end
 
   it "calls the block passed to it with the communication created" do

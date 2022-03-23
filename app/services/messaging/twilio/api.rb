@@ -6,7 +6,7 @@ class Messaging::Twilio::Api < Messaging::Channel
     track_metrics do
       create_communication(
         recipient_number,
-        create_twilio_message(recipient_number, message),
+        send_twilio_message(recipient_number, message),
         &with_communication_do
       )
     rescue Twilio::REST::RestError => exception
@@ -37,7 +37,7 @@ class Messaging::Twilio::Api < Messaging::Channel
     end
   end
 
-  def create_twilio_message(recipient_number, message)
+  def send_twilio_message(recipient_number, message)
     client.messages.create(
       from: sender_number,
       to: recipient_number,

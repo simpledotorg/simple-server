@@ -7,9 +7,9 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       allow(Statsd.instance).to receive(:increment).with(anything)
     end
 
-    def mock_successful_delivery
+    def mock_successful_twilio_delivery
       twilio_client = double("TwilioClientDouble")
-      response_double = double("MessagingChannelResponse")
+      response_double = double("TwilioResponse")
 
       allow(response_double).to receive(:status).and_return("queued")
       allow(response_double).to receive(:sid).and_return("1234")
@@ -17,20 +17,8 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       allow(twilio_client).to receive_message_chain("messages.create").and_return(response_double)
     end
 
-    it "logs but creates nothing when notifications and experiment flags are disabled" do
-      Flipper.disable(:notifications)
-      Flipper.disable(:experiment)
-      notification = create(:notification, status: :scheduled)
-
-      expect(Statsd.instance).to receive(:increment).with("notifications.skipped.feature_disabled")
-      expect {
-        described_class.perform_async(notification.id)
-        described_class.drain
-      }.not_to change { Communication.count }
-    end
-
     it "only sends 'scheduled' notifications" do
-      mock_successful_delivery
+      mock_successful_twilio_delivery
 
       pending_notification = create(:notification, status: "pending")
       cancelled_notification = create(:notification, status: "cancelled")
@@ -43,6 +31,19 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
 
       expect(pending_notification.reload.status).to eq("pending")
       expect(cancelled_notification.reload.status).to eq("cancelled")
+    end
+
+
+    it "logs but creates nothing when notifications and experiment flags are disabled" do
+      Flipper.disable(:notifications)
+      Flipper.disable(:experiment)
+      notification = create(:notification, status: :scheduled)
+
+      expect(Statsd.instance).to receive(:increment).with("notifications.skipped.feature_disabled")
+      expect {
+        described_class.perform_async(notification.id)
+        described_class.drain
+      }.not_to change { Communication.count }
     end
 
     it "raises an error if appointment notification is not found" do

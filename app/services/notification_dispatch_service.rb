@@ -17,17 +17,21 @@ class NotificationDispatchService
       return
     end
 
-    handle_messaging_errors {
-      messaging_channel.send_message(
-        recipient_number: recipient_number,
-        message: notification.localized_message
-      ) do |communication|
-        notification.record_communication(communication)
-      end
-    }.tap { log_success }
+    handle_messaging_errors do
+      send_message.tap { log_success }
+    end
   end
 
   private
+
+  def send_message
+    messaging_channel.send_message(
+      recipient_number: recipient_number,
+      message: notification.localized_message
+    ) do |communication|
+      notification.record_communication(communication)
+    end
+  end
 
   def log_success
     communication_type = messaging_channel.communication_type
