@@ -4,10 +4,10 @@
 #
 # Provide a patient ID as the argument.
 # This will find the patient and hang the notification record to it.
-# The patient's latest mobile number provided will be used as the actual recipient,
+# The patient's latest mobile number will be used as the recipient,
 # and they can have any fully qualified phone number (include the country code).
 #
-#   script/send_notification.rb "<patient-uuid>"
+#   script/send_notification_via_twilio.rb "<patient-uuid>"
 #
 # To send real messages from Sandbox, set the following first:
 #
@@ -25,6 +25,8 @@ require_relative "../config/environment"
 
 id = ARGV.first || raise(ArgumentError, "You must provide a patient ID")
 patient = Patient.find_by!(id: id)
+
+raise "Patient doesn't have a mobile number" unless patient.latest_mobile_number
 puts "Sending a test notification message to #{patient.latest_mobile_number}..."
 
 notification = Notification.create!(
@@ -34,12 +36,13 @@ notification = Notification.create!(
   message: "test_message",
   purpose: "test_message"
 )
-sent_message = AppointmentNotification::Worker.new.perform(notification.id)
+communication = NotificationDispatchService.call(notification, Messaging::Twilio::ReminderSms)
+delivery_detail = communication.detailable
 
-puts "Twilio message sid=#{sent_message.sid} status=#{sent_message.status}..."
+puts "Twilio message sid=#{delivery_detail.sid} status=#{delivery_detail.status}..."
 puts "Waiting a second and then refetching Twilio status"
 sleep 1
-fetched_message = Messaging::Twilio::Api.fetch_message(sent_message.sid)
+fetched_message = Messaging::Twilio::Api.fetch_message(delivery_detail.sid)
 puts "status=#{fetched_message.status}"
 puts "Twilio message sid=#{fetched_message.sid} status=#{fetched_message.status}..."
 puts
