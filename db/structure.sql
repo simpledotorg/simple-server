@@ -341,10 +341,7 @@ CREATE TABLE public.clean_medicine_to_dosages (
 CREATE TABLE public.communications (
     id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     appointment_id uuid,
-    user_id uuid,
     communication_type character varying,
-    device_created_at timestamp without time zone NOT NULL,
-    device_updated_at timestamp without time zone NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     deleted_at timestamp without time zone,
@@ -4314,13 +4311,6 @@ CREATE INDEX index_communications_on_notification_id ON public.communications US
 
 
 --
--- Name: index_communications_on_user_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_communications_on_user_id ON public.communications USING btree (user_id);
-
-
---
 -- Name: index_deduplication_logs_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -5512,6 +5502,5 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220217202441'),
 ('20220223080958'),
 ('20220315095931'),
+('20220321074052'),
 ('20220322115123');
-
-

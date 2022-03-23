@@ -460,52 +460,55 @@ td.type-percent {
 .split-bars {
   font-family: $font-condensed;
   height: 40px;
-  border-radius: 4px;
+  border-radius: 10px;
   overflow: hidden;
-}
-
-.split-bars table {
   border-collapse: separate;
-  border-spacing: 0;
+
+  table {
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  td {
+    text-align: center;
+    line-height: 2; /* Sets height of bar */
+  }
+
+  .bar {
+    background: $grey-light;
+    vertical-align: middle;
+    padding: 4px 8px;
+    font-size: 110%;
+    position: relative;
+    white-space: nowrap;
+  }
+
+  .bar-none {
+    background: $grey-light;
+    color: $grey-dark;
+  }
+
+  .bar-1 {
+    background: $grey-mid;
+    color: $grey-darkest;
+  }
+
+  .bar-2 {
+    background: $red;
+    color: #fff;
+  }
+
+  .bar-3 {
+    background: $green;
+    color: $white;
+  }
+
+  .bar-4 {
+    background: $blue;
+    color: $white;
+  }
 }
 
-.split-bars td {
-  text-align: center;
-  line-height: 1.7; /* Sets height of bar */
-}
-
-.split-bars .bar {
-  background: #ddd;
-  vertical-align: middle;
-  padding: 4px 8px;
-  font-size: 110%;
-  position: relative;
-  white-space: nowrap;
-}
-
-.split-bars .bar-none {
-  background: $grey-light;
-  color: $grey-dark;
-  border-radius: 3px;
-}
-.split-bars .bar-1 {
-  background: $grey-mid;
-  color: $grey-darkest;
-  border-radius: 3px 0 0 3px;
-}
-.split-bars .bar-2 {
-  background: $red;
-  color: #fff;
-}
-.split-bars .bar-3 {
-  background: $green-dark;
-  color: $white;
-}
-.split-bars .bar-4 {
-  background: $blue;
-  border-radius: 0 3px 3px 0;
-  color: $white;
-}
 .split-row-first .split-bars .bar {
   background-image: asset-url("diagonal-stripe.png");
   background-size: 120px;
@@ -563,7 +566,7 @@ td.type-percent {
   background: $red;
 }
 .key div.controlled:after {
-  background: $green-dark;
+  background: $green;
 }
 
 .key div.didntattend {
