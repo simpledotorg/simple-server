@@ -7,7 +7,7 @@
 # The patient's latest mobile number will be used as the recipient,
 # and they can have any fully qualified phone number (include the country code).
 #
-#   script/send_notification_via_twilio.rb "<patient-uuid>"
+#   script/send_notification.rb "<patient-uuid>"
 #
 # To send real messages from Sandbox, set the following first:
 #
@@ -39,11 +39,11 @@ notification = Notification.create!(
 communication = NotificationDispatchService.call(notification, Messaging::Twilio::ReminderSms)
 delivery_detail = communication.detailable
 
-puts "Twilio message sid=#{delivery_detail.sid} status=#{delivery_detail.status}..."
+puts "Twilio message sid=#{delivery_detail.session_id} status=#{delivery_detail.result}..."
 puts "Waiting a second and then refetching Twilio status"
 sleep 1
-fetched_message = Messaging::Twilio::Api.fetch_message(delivery_detail.sid)
-puts "status=#{fetched_message.status}"
-puts "Twilio message sid=#{fetched_message.sid} status=#{fetched_message.status}..."
+fetched_message = Messaging::Twilio::Api.fetch_message(delivery_detail.session_id)
+puts "status=#{fetched_message.result}"
+puts "Twilio message sid=#{fetched_message.session_id} status=#{fetched_message.result}..."
 puts
 puts "Done!"
