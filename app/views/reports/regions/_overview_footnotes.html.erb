@@ -1,110 +1,186 @@
-<div class="mt-32px mb-64px ph-20px">
-  <h3 class="mb-16px pb-8px fw-bold c-grey-dark bb-1px bb-grey-medium">
-    Definitions
-  </h3>
-  <div class="mb-24px">
-    <p class="mb-8px fs-16px fw-bold c-grey-dark">
-      Total assigned patients
-    </p>
-    <div class="pl-16px">
-      <p class="mb-0px fs-14px c-grey-dark">
-        <%= t("assigned_patients_copy.total_assigned_patients", region_name: @region.name) %>
-      </p>
+<div class="row mt-32px mb-64px ph-20px">
+    <div class="col-lg-7">
+      <h3 class="mb-16px pb-8px fw-bold c-grey-dark bb-1px bb-grey-medium">
+        Definitions
+      </h3>
+      <div class="mb-24px">
+        <p class="mb-8px fs-16px fw-bold c-grey-dark">
+          Total assigned patients
+        </p>
+        <div class="pl-16px">
+          <p class="mb-0px fs-14px c-grey-dark">
+            <%= t("assigned_patients_copy.total_assigned_patients", region_name: @region.name) %>
+          </p>
+        </div>
+      </div>
+      <div class="mb-24px">
+        <p class="mb-8px fs-16px fw-bold c-grey-dark">
+          Total registered patients
+        </p>
+        <div class="pl-16px">
+          <p class="mb-0px fs-14px c-grey-dark">
+            <%= t("registered_patients_copy.total_registered_patients", region_name: @region.name) %>
+          </p>
+        </div>
+      </div>
+      <div class="mb-24px">
+        <p class="mb-8px fs-16px fw-bold c-grey-dark">
+          Monthly registered patients
+        </p>
+        <div class="pl-16px">
+          <p class="mb-0px fs-14px c-grey-dark">
+            <%= t("registered_patients_copy.monthly_registered_patients", region_name: @region.name) %>
+          </p>
+        </div>
+      </div>
+      <div class="mb-24px">
+        <p class="mb-8px fs-16px fw-bold c-grey-dark">
+          BP controlled
+        </p>
+        <div class="pl-16px">
+          <p class="mb-8px fs-14px c-grey-dark">
+            <strong>Numerator:</strong> <%= t("bp_controlled_copy.numerator") %>
+          </p>
+          <p class="mb-0px fs-14px c-grey-dark">
+            <strong>Denominator:</strong> <%= t("denominator_copy", region_name: @region.name) %>
+          </p>
+        </div>
+      </div>
+      <div class="mb-24px">
+        <p class="mb-8px fs-16px fw-bold c-grey-dark">
+          BP not controlled
+        </p>
+        <div class="pl-16px">
+          <p class="mb-8px fs-14px c-grey-dark">
+            <strong>Numerator:</strong> <%= t("bp_not_controlled_copy.numerator") %>
+          </p>
+          <p class="mb-0px fs-14px c-grey-dark">
+            <strong>Denominator</strong> <%= t("denominator_copy", region_name: @region.name) %>
+          </p>
+        </div>
+      </div>
+      <div class="mb-24px">
+        <p class="mb-8px fs-16px fw-bold c-grey-dark">
+          Missed visits
+        </p>
+        <div class="pl-16px">
+          <p class="mb-8px fs-14px c-grey-dark">
+            <strong>Numerator:</strong> <%= t("missed_visits_copy.numerator") %>
+          </p>
+          <p class="mb-0px fs-14px c-grey-dark">
+            <strong>Denominator</strong> <%= t("denominator_copy", region_name: @region.name) %>
+          </p>
+        </div>
+      </div>
+      <div class="mb-24px">
+        <p class="mb-8px fs-16px fw-bold c-grey-dark">
+          Visit but no BP taken
+        </p>
+        <div class="pl-16px">
+          <p class="mb-8px fs-14px c-grey-dark">
+            <strong>Numerator:</strong> <%= t("visit_but_no_bp_taken_copy.numerator") %>
+          </p>
+          <p class="mb-0px fs-14px c-grey-dark">
+            <strong>Denominator</strong> <%= t("denominator_copy", region_name: @region.name) %>
+          </p>
+        </div>
+      </div>
+      <div class="mb-24px">
+        <p class="mb-8px fs-16px fw-bold c-grey-dark">
+          Patients under care
+        </p>
+        <div class="pl-16px">
+          <p class="mb-0px fs-14px c-grey-dark">
+            <%= t("patients_under_care_copy") %>
+          </p>
+        </div>
+      </div>
+      <div class="mb-24px">
+        <p class="mb-8px fs-16px fw-bold c-grey-dark">
+          Lost to follow-up
+        </p>
+        <div class="pl-16px">
+          <p class="mb-8px fs-14px c-grey-dark">
+            <strong>Numerator:</strong> <%= t("lost_to_follow_up_copy.numerator") %>
+          </p>
+          <p class="mb-0px fs-14px c-grey-dark">
+            <strong>Denominator</strong> <%= t("ltfu_denominator_copy", region_name: @region.name) %>
+          </p>
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="mb-24px">
-    <p class="mb-8px fs-16px fw-bold c-grey-dark">
-      Total registered patients
-    </p>
-    <div class="pl-16px">
-      <p class="mb-0px fs-14px c-grey-dark">
-        <%= t("registered_patients_copy.total_registered_patients", region_name: @region.name) %>
+    <% unless @region.region_type == "facility" %>
+    <div class="col-lg-5">
+      <h3 class="mb-16px pb-8px fw-bold c-grey-dark bb-1px bb-grey-medium">
+        Key for performance tables
+      </h3>
+      <p class="mb-8px fs-16px fw-bold c-grey-dark">
+        BP controlled
       </p>
+      <div class="d-flex mt-3">
+        <em class="h-12px w-12px mr-8px bg-grey-medium br-6px"></em>
+        <p class="fs-12px lh-1 c-grey-dark">
+          0%
+        </p>
+      </div>
+      <div class="d-flex">
+        <em class="h-12px w-12px mr-8px bg-red br-6px"></em>
+        <p class="fs-12px lh-1 c-grey-dark">
+          1-20%
+        </p>
+      </div>
+      <div class="d-flex">
+        <em class="h-12px w-12px mr-8px bg-orange br-6px"></em>
+        <p class="fs-12px lh-1 c-grey-dark">
+          21-35%
+        </p>
+      </div>
+      <div class="d-flex">
+        <em class="h-12px w-12px mr-8px bg-yellow br-6px"></em>
+        <p class="fs-12px lh-1 c-grey-dark">
+          36-49%
+        </p>
+      </div>
+      <div class="d-flex">
+        <em class="h-12px w-12px mr-8px bg-green-medium br-6px"></em>
+        <p class="fs-12px lh-1 c-grey-dark">
+          &ge;50%
+        </p>
+      </div>
+      
+      <p class="mt-24px mb-8px fs-16px fw-bold c-grey-dark">
+        BP not controlled &amp; Missed visits
+      </p>
+      <div class="d-flex mt-3">
+        <em class="h-12px w-12px mr-8px bg-red br-6px"></em>
+        <p class="fs-12px lh-1 c-grey-dark">
+          &ge;31%
+        </p>
+      </div>
+      <div class="d-flex">
+        <em class="h-12px w-12px mr-8px bg-orange br-6px"></em>
+        <p class="fs-12px lh-1 c-grey-dark">
+          21-30%
+        </p>
+      </div>
+      <div class="d-flex">
+        <em class="h-12px w-12px mr-8px bg-yellow br-6px"></em>
+        <p class="fs-12px lh-1 c-grey-dark">
+          11-20%
+        </p>
+      </div>
+      <div class="d-flex">
+        <em class="h-12px w-12px mr-8px bg-green-medium br-6px"></em>
+        <p class="fs-12px lh-1 c-grey-dark">
+          1-10%
+        </p>
+      </div>
+      <div class="d-flex">
+        <em class="h-12px w-12px mr-8px bg-grey-medium br-6px"></em>
+        <p class="fs-12px lh-1 c-grey-dark">
+          0%
+        </p>
+      </div>
     </div>
-  </div>
-  <div class="mb-24px">
-    <p class="mb-8px fs-16px fw-bold c-grey-dark">
-      Monthly registered patients
-    </p>
-    <div class="pl-16px">
-      <p class="mb-0px fs-14px c-grey-dark">
-        <%= t("registered_patients_copy.monthly_registered_patients", region_name: @region.name) %>
-      </p>
-    </div>
-  </div>
-  <div class="mb-24px">
-    <p class="mb-8px fs-16px fw-bold c-grey-dark">
-      BP controlled
-    </p>
-    <div class="pl-16px">
-      <p class="mb-8px fs-14px c-grey-dark">
-        <strong>Numerator:</strong> <%= t("bp_controlled_copy.numerator") %>
-      </p>
-      <p class="mb-0px fs-14px c-grey-dark">
-        <strong>Denominator:</strong> <%= t("denominator_copy", region_name: @region.name) %>
-      </p>
-    </div>
-  </div>
-  <div class="mb-24px">
-    <p class="mb-8px fs-16px fw-bold c-grey-dark">
-      BP not controlled
-    </p>
-    <div class="pl-16px">
-      <p class="mb-8px fs-14px c-grey-dark">
-        <strong>Numerator:</strong> <%= t("bp_not_controlled_copy.numerator") %>
-      </p>
-      <p class="mb-0px fs-14px c-grey-dark">
-        <strong>Denominator</strong> <%= t("denominator_copy", region_name: @region.name) %>
-      </p>
-    </div>
-  </div>
-  <div class="mb-24px">
-    <p class="mb-8px fs-16px fw-bold c-grey-dark">
-      Missed visits
-    </p>
-    <div class="pl-16px">
-      <p class="mb-8px fs-14px c-grey-dark">
-        <strong>Numerator:</strong> <%= t("missed_visits_copy.numerator") %>
-      </p>
-      <p class="mb-0px fs-14px c-grey-dark">
-        <strong>Denominator</strong> <%= t("denominator_copy", region_name: @region.name) %>
-      </p>
-    </div>
-  </div>
-  <div class="mb-24px">
-    <p class="mb-8px fs-16px fw-bold c-grey-dark">
-      Visit but no BP taken
-    </p>
-    <div class="pl-16px">
-      <p class="mb-8px fs-14px c-grey-dark">
-        <strong>Numerator:</strong> <%= t("visit_but_no_bp_taken_copy.numerator") %>
-      </p>
-      <p class="mb-0px fs-14px c-grey-dark">
-        <strong>Denominator</strong> <%= t("denominator_copy", region_name: @region.name) %>
-      </p>
-    </div>
-  </div>
-  <div class="mb-24px">
-    <p class="mb-8px fs-16px fw-bold c-grey-dark">
-      Patients under care
-    </p>
-    <div class="pl-16px">
-      <p class="mb-0px fs-14px c-grey-dark">
-        <%= t("patients_under_care_copy") %>
-      </p>
-    </div>
-  </div>
-  <div class="mb-24px">
-    <p class="mb-8px fs-16px fw-bold c-grey-dark">
-      Lost to follow-up
-    </p>
-    <div class="pl-16px">
-      <p class="mb-8px fs-14px c-grey-dark">
-        <strong>Numerator:</strong> <%= t("lost_to_follow_up_copy.numerator") %>
-      </p>
-      <p class="mb-0px fs-14px c-grey-dark">
-        <strong>Denominator</strong> <%= t("ltfu_denominator_copy", region_name: @region.name) %>
-      </p>
-    </div>
-  </div>
+    <% end %>
 </div>

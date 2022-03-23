@@ -279,20 +279,145 @@ th sup {
   td.type-percent {
     text-align: center;
   }
+}
 
-  td.type-percent em {
+td.type-percent {
+  em {
     font-style: normal;
-    background: #f1dbff;
-    color: #be72e3;
+    background: $purple-light;
+    color: $purple;
     border-radius: 100px;
     padding: 2px;
     width: 3.5em;
     display: block;
   }
 
-  .row-total td.type-percent em {
-    background: rgba(0, 0, 0, 0.1);
-    color: rgba(0, 0, 0, 0.6);
+  em.high-is-good {
+    background: $green-mid;
+    color: $green-dark;
+  }
+
+  em[data-rate="0"].high-is-good {
+    color: $grey-dark;
+    background: $grey-light;
+  }
+
+  em[data-rate="1"].high-is-good,
+  em[data-rate="2"].high-is-good,
+  em[data-rate="3"].high-is-good,
+  em[data-rate="4"].high-is-good,
+  em[data-rate="5"].high-is-good,
+  em[data-rate="6"].high-is-good,
+  em[data-rate="7"].high-is-good,
+  em[data-rate="8"].high-is-good,
+  em[data-rate="9"].high-is-good,
+  em[data-rate="10"].high-is-good,
+  em[data-rate="11"].high-is-good,
+  em[data-rate="12"].high-is-good,
+  em[data-rate="13"].high-is-good,
+  em[data-rate="14"].high-is-good,
+  em[data-rate="15"].high-is-good,
+  em[data-rate="16"].high-is-good,
+  em[data-rate="17"].high-is-good,
+  em[data-rate="18"].high-is-good,
+  em[data-rate="19"].high-is-good,
+  em[data-rate="20"].high-is-good {
+    color: $red-dark;
+    background: $red-light;
+  }
+
+  em[data-rate="21"].high-is-good,
+  em[data-rate="22"].high-is-good,
+  em[data-rate="23"].high-is-good,
+  em[data-rate="24"].high-is-good,
+  em[data-rate="25"].high-is-good,
+  em[data-rate="26"].high-is-good,
+  em[data-rate="27"].high-is-good,
+  em[data-rate="28"].high-is-good,
+  em[data-rate="29"].high-is-good,
+  em[data-rate="30"].high-is-good,
+  em[data-rate="31"].high-is-good,
+  em[data-rate="32"].high-is-good,
+  em[data-rate="33"].high-is-good,
+  em[data-rate="34"].high-is-good,
+  em[data-rate="35"].high-is-good {
+    color: $orange-dark;
+    background: $orange-light;
+  }
+
+  em[data-rate="36"].high-is-good,
+  em[data-rate="37"].high-is-good,
+  em[data-rate="38"].high-is-good,
+  em[data-rate="39"].high-is-good,
+  em[data-rate="40"].high-is-good,
+  em[data-rate="41"].high-is-good,
+  em[data-rate="42"].high-is-good,
+  em[data-rate="43"].high-is-good,
+  em[data-rate="44"].high-is-good,
+  em[data-rate="45"].high-is-good,
+  em[data-rate="46"].high-is-good,
+  em[data-rate="47"].high-is-good,
+  em[data-rate="48"].high-is-good,
+  em[data-rate="49"].high-is-good {
+    color: $yellow-darkest;
+    background: $yellow-light;
+    font-weight: normal;
+  }
+
+  em.low-is-good {
+    background: $red-light;
+    color: $red-dark;
+  }
+
+  em[data-rate="0"].low-is-good {
+    color: $grey-dark;
+    background: $grey-light;
+    font-weight: normal;
+  }
+
+  em[data-rate="1"].low-is-good,
+  em[data-rate="2"].low-is-good,
+  em[data-rate="3"].low-is-good,
+  em[data-rate="4"].low-is-good,
+  em[data-rate="5"].low-is-good,
+  em[data-rate="6"].low-is-good,
+  em[data-rate="7"].low-is-good,
+  em[data-rate="8"].low-is-good,
+  em[data-rate="9"].low-is-good,
+  em[data-rate="10"].low-is-good {
+    color: $green-dark;
+    background: $green-light;
+    font-weight: normal;
+  }
+
+  em[data-rate="11"].low-is-good,
+  em[data-rate="12"].low-is-good,
+  em[data-rate="13"].low-is-good,
+  em[data-rate="14"].low-is-good,
+  em[data-rate="15"].low-is-good,
+  em[data-rate="16"].low-is-good,
+  em[data-rate="17"].low-is-good,
+  em[data-rate="18"].low-is-good,
+  em[data-rate="19"].low-is-good,
+  em[data-rate="20"].low-is-good {
+    color: $yellow-darkest;
+    background: $yellow-light;
+    font-weight: normal;
+  }
+
+  em[data-rate="21"].low-is-good,
+  em[data-rate="22"].low-is-good,
+  em[data-rate="23"].low-is-good,
+  em[data-rate="24"].low-is-good,
+  em[data-rate="25"].low-is-good,
+  em[data-rate="26"].low-is-good,
+  em[data-rate="27"].low-is-good,
+  em[data-rate="28"].low-is-good,
+  em[data-rate="29"].low-is-good,
+  em[data-rate="30"].low-is-good {
+    color: $orange-dark;
+    background: $orange-light;
+    font-weight: normal;
   }
 }
 
@@ -353,60 +478,62 @@ th sup {
   background: #fffae3;
   font-weight: bold;
   border-color: #e2dbbb;
+
+  em {
+    font-weight: normal;
+  }
 }
 
 .split-bars {
   font-family: $font-condensed;
   height: 40px;
-  border-radius: 4px;
+  border-radius: 10px;
   overflow: hidden;
-}
-
-.split-bars table {
   border-collapse: separate;
-  border-spacing: 0;
-}
 
-.split-bars td {
-  text-align: center;
-  line-height: 1.7; /* Sets height of bar */
-}
+  table {
+    border-collapse: separate;
+    border-spacing: 0;
+  }
 
-.split-bars .bar {
-  background: #ddd;
-  vertical-align: middle;
-  padding: 4px 8px;
-  font-size: 110%;
-  position: relative;
-  white-space: nowrap;
-}
+  td {
+    text-align: center;
+    line-height: 2; /* Sets height of bar */
+  }
 
-.split-bars .bar-none {
-  background: $grey-light;
-  color: $grey-dark;
-  border-radius: 3px;
-}
+  .bar {
+    background: $grey-light;
+    vertical-align: middle;
+    padding: 4px 8px;
+    font-size: 110%;
+    position: relative;
+    white-space: nowrap;
+  }
 
-.split-bars .bar-controlled {
-  background: $green-dark;
-  color: $white;
-  border-radius: 3px 0 0 3px;
-}
+  .bar-none {
+    background: $grey-light;
+    color: $grey-dark;
+  }
 
-.split-bars .bar-uncontrolled {
-  background: $red;
-  color: #fff;
-}
+  .bar-1 {
+    background: $grey-mid;
+    color: $grey-darkest;
+  }
 
-.split-bars .bar-missed-visits {
-  background: $blue;
-  color: $white;
-}
+  .bar-2 {
+    background: $red;
+    color: #fff;
+  }
 
-.split-bars .bar-no-bp {
-  background: $grey-mid;
-  color: $grey-darkest;
-  border-radius: 0 3px 3px 0;
+  .bar-3 {
+    background: $green;
+    color: $white;
+  }
+
+  .bar-4 {
+    background: $blue;
+    color: $white;
+  }
 }
 
 .split-row-first .split-bars .bar {
@@ -466,7 +593,7 @@ th sup {
   background: $red;
 }
 .key div.controlled:after {
-  background: $green-dark;
+  background: $green;
 }
 
 .key div.didntattend {

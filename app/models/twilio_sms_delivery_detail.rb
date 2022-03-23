@@ -1,6 +1,4 @@
-class TwilioSmsDeliveryDetail < ApplicationRecord
-  has_one :communication, as: :detailable
-
+class TwilioSmsDeliveryDetail < DeliveryDetail
   enum result: {
     queued: "queued",
     sending: "sending",
@@ -17,10 +15,10 @@ class TwilioSmsDeliveryDetail < ApplicationRecord
   end
 
   def successful?
-    delivered? || read?
+    delivered? || read? || sent?
   end
 
   def in_progress?
-    queued? || sending? || sent?
+    queued? || sending?
   end
 end
