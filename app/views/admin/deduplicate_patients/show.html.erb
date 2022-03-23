@@ -1,6 +1,13 @@
 <h1 class="page-title mb-3">Merge duplicate patients</h1>
 <div class="card">
-  <h3>Duplicate patients</h3>
+  <h3>
+    <% if @duplicate_count == Admin::DeduplicatePatientsController::DUPLICATE_LIMIT %>
+    <%= Admin::DeduplicatePatientsController::DUPLICATE_LIMIT %>+
+  <% else %>
+    <%= @duplicate_count %>
+  <% end %>
+  duplicate patients remaining
+  </h3>
   <div class="container">
     <div class="row">
       <div class="col-12">
@@ -11,19 +18,11 @@
       </div>
     </div>
     <div class="row mt-4 mb-4">
-      <div class="col-6">
+      <div class="col-12">
       <form id="deduplicate_patients" method="POST" action="<%= admin_deduplication_path %>">
         <button class="btn btn-primary mr-2" type="submit">Merge selected patients</button>
         <a href="javascript:location.reload();" class="btn btn-outline-primary mr-2">Skip</a>
       </form>
-      </div>
-      <div class="col-6 text-right c-grey-dark align-baseline">
-          <% if @duplicate_count == Admin::DeduplicatePatientsController::DUPLICATE_LIMIT %>
-            <%= Admin::DeduplicatePatientsController::DUPLICATE_LIMIT %>+
-          <% else %>
-            <%= @duplicate_count %>
-          <% end %>
-          duplicate patients remaining
       </div>
     </div>
   </div>
