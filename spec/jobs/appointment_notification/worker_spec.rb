@@ -33,7 +33,6 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       expect(cancelled_notification.reload.status).to eq("cancelled")
     end
 
-
     it "logs but creates nothing when notifications and experiment flags are disabled" do
       Flipper.disable(:notifications)
       Flipper.disable(:experiment)

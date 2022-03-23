@@ -102,8 +102,8 @@ RSpec.describe Messaging::Twilio::Api do
     mock_successful_delivery
     spy = spy("Awaits a_method to be called")
 
-    described_class.send_message(recipient_number: "+918585858585", message: "test message") {
-      |_| spy.a_method
+    described_class.send_message(recipient_number: "+918585858585", message: "test message") { |_|
+      spy.a_method
     }
     expect(spy).to have_received(:a_method)
   end

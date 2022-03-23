@@ -15,8 +15,8 @@ class Messaging::Channel
 
   # The channel implementation is responsible for creating a Communication
   # and delivery details. This should return the communication object that was created.
-  def self.send_message(*args, &with_communication_do)
-    new.send_message(*args, &with_communication_do)
+  def self.send_message(...)
+    new.send_message(...)
   end
 
   # A channel supports one of the communication types enumerated in
