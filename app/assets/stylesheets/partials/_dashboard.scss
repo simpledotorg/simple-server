@@ -385,8 +385,8 @@ td.type-percent {
   em[data-rate="8"].low-is-good,
   em[data-rate="9"].low-is-good,
   em[data-rate="10"].low-is-good {
+    background: $green-mid;
     color: $green-dark;
-    background: $green-light;
     font-weight: normal;
   }
 
