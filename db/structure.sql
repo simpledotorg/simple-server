@@ -340,6 +340,7 @@ CREATE TABLE public.clean_medicine_to_dosages (
 
 CREATE TABLE public.communications (
     id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    appointment_id uuid,
     communication_type character varying,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
@@ -5481,7 +5482,4 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220217202441'),
 ('20220223080958'),
 ('20220315095931'),
-('20220321074052'),
-('20220321075338');
-
-
+('20220321074052');

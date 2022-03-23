@@ -97,7 +97,7 @@
           data-toggle="tooltip"
           title="<%= number_with_delimiter(@data.dig(:controlled_patients, @period)) %> / <%= number_with_delimiter(@data.dig(:adjusted_patient_counts, @period)) %> patients"
         >
-          <em data-rate="<%= @data.dig(:controlled_patients_rate, @period) %>">
+          <em data-rate="<%= @data.dig(:controlled_patients_rate, @period) %>" class="high-is-good">
             <%= number_to_percentage(@data.dig(:controlled_patients_rate, @period) || 0, precision: 0) %>
           </em>
         </td>
@@ -111,7 +111,7 @@
           data-toggle="tooltip"
           title="<%= number_with_delimiter(@data.dig(:uncontrolled_patients, @period)) %> / <%= number_with_delimiter(@data.dig(:adjusted_patient_counts, @period)) %> patients"
         >
-          <em data-rate="<%= @data.dig(:uncontrolled_patients_rate, @period) %>">
+          <em data-rate="<%= @data.dig(:uncontrolled_patients_rate, @period) %>" class="low-is-good">
             <%= number_to_percentage(@data.dig(:uncontrolled_patients_rate, @period) || 0, precision: 0) %>
           </em>
         </td>
@@ -125,7 +125,7 @@
           data-toggle="tooltip"
           title="<%= number_with_delimiter(@data.dig(:missed_visits, @period)) %> / <%= number_with_delimiter(@data.dig(:adjusted_patient_counts, @period)) %> patients"
         >
-          <em data-rate="<%= @data.dig(:missed_visits_rate, @period) %>">
+          <em data-rate="<%= @data.dig(:missed_visits_rate, @period) %>" class="low-is-good">
             <%= number_to_percentage(@data.dig(:missed_visits_rate, @period) || 0, precision: 0) %>
           </em>
         </td>
@@ -155,7 +155,7 @@
             data-toggle="tooltip"
             title="<%= number_with_delimiter(result.dig(:controlled_patients, @period)) %> / <%= number_with_delimiter(result.dig(:adjusted_patient_counts, @period)) %> patients"
           >
-            <em data-rate="<%= result.dig(:controlled_patients_rate, @period) %>">
+            <em data-rate="<%= result.dig(:controlled_patients_rate, @period) %>" class="high-is-good">
               <%= number_to_percentage(result.dig(:controlled_patients_rate, @period) || 0, precision: 0) %>
             </em>
           </td>
@@ -169,7 +169,7 @@
             data-toggle="tooltip"
             title="<%= number_with_delimiter(result.dig(:uncontrolled_patients, @period)) %> / <%= number_with_delimiter(result.dig(:adjusted_patient_counts, @period)) %> patients"
           >
-            <em data-rate="<%= result.dig(:uncontrolled_patients_rate, @period) %>">
+            <em data-rate="<%= result.dig(:uncontrolled_patients_rate, @period) %>" class="low-is-good">
               <%= number_to_percentage(result.dig(:uncontrolled_patients_rate, @period) || 0, precision: 0) %>
             </em>
           </td>
@@ -183,7 +183,7 @@
             data-toggle="tooltip"
             title="<%= number_with_delimiter(result.dig(:missed_visits, @period)) %> / <%= number_with_delimiter(result.dig(:adjusted_patient_counts, @period)) %> patients"
           >
-            <em data-rate="<%= result.dig(:missed_visits_rate, @period) %>">
+            <em data-rate="<%= result.dig(:missed_visits_rate, @period) %>" class="low-is-good">
               <%= number_to_percentage(result.dig(:missed_visits_rate, @period) || 0, precision: 0) %>
             </em>
           </td>
