@@ -30,12 +30,12 @@
     <%= stylesheet_link_tag "application", media: "all" %>
     <%= stylesheet_link_tag "print", media: "print" %>
     <%= javascript_include_tag "application" %>
+    <script src="https://kit.fontawesome.com/72c701f5ae.js" crossorigin="anonymous"></script>
     <link rel="apple-touch-icon" sizes="180x180" href="<%= apple_logo_for_environment %>">
     <link rel="icon" sizes="192x192" href="<%= android_logo_for_environment(size: '192') %>">
     <link rel="icon" sizes="512x512" href="<%= android_logo_for_environment(size: '512') %>">
     <link rel="icon" type="image/png" href="<%= favicon_for_environment %>">
     <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700|Roboto:400,700" rel="stylesheet">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, shrink-to-fit=no"/>
@@ -44,6 +44,17 @@
   <body>
     <% if email_authentication_signed_in? %>
       <%= render "shared/nav_bar" %>
+
+      <% if @show_region_search && current_admin.accessible_facilities(:view_reports).any? %>
+        <%= form_tag regions_search_url(format: :json), id: "search-form", method: :get do %>
+          <div class="mo-search">
+            <div class="mo-search-inner">
+              <%= render "shared/region_search" %>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+
     <% end %>
     <main role="main" class="container pb-5">
       <% flash.each do |type, message| %>

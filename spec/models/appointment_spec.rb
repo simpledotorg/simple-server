@@ -139,7 +139,7 @@ describe Appointment, type: :model do
         expect(described_class.eligible_for_reminders(days_overdue: 3)).to be_empty
       end
 
-      it "excludes appointments that have communications" do
+      it "excludes appointments that have notifications" do
         overdue_appointment = create(:appointment, scheduled_date: 3.days.ago, status: :scheduled)
         notification = create(:notification, subject: overdue_appointment)
         create(:communication, notification: notification)

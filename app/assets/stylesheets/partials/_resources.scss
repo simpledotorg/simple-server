@@ -2,91 +2,60 @@
 Resources
 *****************/
 
-.page#resources {
-  .resource-link {
-    position: relative;
-    padding-left: 60px;
-    margin: 8px 0;
+div.question {
+  margin-top: 2em;
+  font-family: Roboto;
+  border-top: 1px solid #eee;
+  padding-top: 1em;
+}
+div.question h6 {
+  font-family: Roboto;
+}
+div.question li {
+  margin-top: 0.5em;
+}
+h6.question {
+  font-weight: bold;
+  font-size: 110%;
+}
 
-    span {
-      display: block;
-      color: #666;
-    }
+.resource-link {
+  position: relative;
+  padding-left: 60px;
+  margin: 8px 0;
 
-    i {
-      position: absolute;
-      left: 12px;
-      top: 8px;
-      font-size: 24px;
-    }
-
-    &.resource-presentation i {
-      color: Gold;
-    }
-
-    &.resource-doc i {
-      color: ForestGreen;
-      font-size: 28px;
-    }
-
-    &.resource-video i {
-      color: Red;
-      font-size: 28px;
-    }
-
-    &.resource-calendar i {
-      color: Grey;
-      font-size: 28px;
-    }
-
-    a:hover {
-      text-decoration: none;
-    }
+  span {
+    display: block;
+    color: #666;
   }
 
-  .col-video {
-    strong {
-      display: block;
-      margin: 6px 0 0 0;
-    }
-
-    span {
-      display: block;
-      color: #999;
-      font-size: 85%;
-    }
-
-    .fa-youtube {
-      color: orangered;
-    }
-
-    a {
-      display: block;
-      position: relative;
-      padding: 4px 0 4px 28px;
-
-      i {
-        position: absolute;
-        left: 2px;
-        top: 7px;
-      }
-    }
+  i {
+    position: absolute;
+    left: 12px;
+    top: 8px;
+    font-size: 24px;
   }
 
-  div.question {
-      margin-top: 2em;
-      font-family: Roboto;
-      border-top: 1px solid #eee;
-      padding-top: 1em;
+  &.resource-presentation i {
+    color: Gold;
   }
-  div.question h6 {
-      font-family: Roboto;
+
+  &.resource-doc i {
+    color: ForestGreen;
+    font-size: 28px;
   }
-  div.question li {
-      margin-top: 0.5em;
+
+  &.resource-video i {
+    color: Red;
+    font-size: 28px;
   }
-  h6.question {
-      font-weight: bold;
-      font-size: 110%;
+
+  &.resource-calendar i {
+    color: Grey;
+    font-size: 28px;
+  }
+
+  a:hover {
+    text-decoration: none;
   }
 }
