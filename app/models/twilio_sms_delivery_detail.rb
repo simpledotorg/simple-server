@@ -1,6 +1,4 @@
 class TwilioSmsDeliveryDetail < DeliveryDetail
-  has_one :communication, as: :detailable
-
   enum result: {
     queued: "queued",
     sending: "sending",
