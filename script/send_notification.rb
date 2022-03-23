@@ -23,10 +23,10 @@
 
 require_relative "../config/environment"
 
-id = ARGV.first || raise(ArgumentError, "You must provide a patient ID")
+id = ARGV.first || puts("You must provide a patient ID")
 patient = Patient.find_by!(id: id)
 
-raise "Patient doesn't have a mobile number" unless patient.latest_mobile_number
+puts "Patient doesn't have a mobile number" unless patient.latest_mobile_number
 puts "Sending a test notification message to #{patient.latest_mobile_number}..."
 
 notification = Notification.create!(

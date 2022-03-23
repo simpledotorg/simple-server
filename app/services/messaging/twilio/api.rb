@@ -3,7 +3,7 @@ class Messaging::Twilio::Api < Messaging::Channel
   include Memery
 
   def self.fetch_message(sid)
-    client.messages(sid).fetch
+    new.client.messages(sid).fetch
   end
 
   def send_message(recipient_number:, message:, &with_communication_do)
