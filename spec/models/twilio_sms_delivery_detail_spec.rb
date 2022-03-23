@@ -7,7 +7,15 @@ describe TwilioSmsDeliveryDetail, type: :model do
     it { should have_one(:communication) }
   end
 
-  describe ".create_with_communication" do
-
+  describe ".create_with_communication!" do
+    it "creates a communication with a TwilioSmsDeliveryDetail" do
+      expect {
+        described_class.create_with_communication!(callee_phone_number: "1111111111",
+                                                   session_id: SecureRandom.uuid,
+                                                   result: "sent",
+                                                   communication_type: :sms)
+      }.to change { Communication.count }.by(1)
+       .and change { TwilioSmsDeliveryDetail.count }.by(1)
+    end
   end
 end

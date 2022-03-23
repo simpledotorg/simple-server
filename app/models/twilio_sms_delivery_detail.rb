@@ -24,7 +24,7 @@ class TwilioSmsDeliveryDetail < ApplicationRecord
     queued? || sending? || sent?
   end
 
-  def self.create_with_communication(callee_phone_number:, communication_type:, session_id:, result:)
+  def self.create_with_communication!(callee_phone_number:, communication_type:, session_id:, result:)
     ActiveRecord::Base.transaction do
       delivery_detail = create!(
         session_id: session_id,
