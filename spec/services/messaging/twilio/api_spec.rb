@@ -90,10 +90,21 @@ RSpec.describe Messaging::Twilio::Api do
     end
   end
 
-  it "creates a communication and a detailable and returns it" do
+  it "creates a detailable and a communication and returns it" do
+    recipient_phone_number = "+918585858585"
+    mock_successful_delivery
 
+    communication = described_class.send_message(recipient_number: recipient_phone_number, message: "test message")
+    expect(communication.detailable.callee_phone_number).to eq recipient_phone_number
   end
 
   it "calls the block passed to it with the communication created" do
+    mock_successful_delivery
+    spy = spy('A spy that listens to a_method')
+
+    described_class.send_message(recipient_number: "+918585858585", message: "test message") {
+      |_| spy.a_method
+    }
+    expect(spy).to have_received(:a_method)
   end
 end
