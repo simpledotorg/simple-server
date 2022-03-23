@@ -1,10 +1,13 @@
-<div class="page" id="resources">
-  <div class="container">
+<h1 class="page-header">
+  Resources &amp; training
+</h1>
+<div id="resources">
+  <div>
     <div class="row">
-      <div class="col-sm-4 col-lg-3 pl-lg-0">
+      <div class="col-lg-2 pl-lg-0">
         <nav class="secondary-nav">
           <h4 class="pl-2 mt-3">
-            Resources &amp; training
+            Menu
           </h4>
           <a href="#card-office-hours" class="nav-link">
             Tech team office hours
@@ -35,7 +38,7 @@
           </a>
         </nav>
       </div>
-      <div class="col-12 col-sm-8 col-lg-9">
+      <div class="col-12 col-lg-10">
         <% if CountryConfig.current[:name] == "India" %>
           <%= render "shared/office_hours_india" %>
         <% elsif CountryConfig.current[:name] == "Bangladesh" %>
@@ -43,7 +46,7 @@
         <% elsif CountryConfig.current[:name] == "Ethiopia" %>
           <%= render "shared/office_hours_ethiopia" %>
         <% end %>
-        
+
         <% if CountryConfig.current[:name] == "India" %>
         <div class="card" id="card-district-reports">
           <h2>
@@ -60,7 +63,7 @@
           </div>
         </div>
         <% end %>
-        
+
         <div class="card" id="card-checklist">
           <h2>
             Deployment checklist
@@ -539,7 +542,7 @@
           <% if CountryConfig.current[:name] == "India" %>
             <%= render "shared/one_pager_india" %>
           <% end %>
-          <%= render "shared/one_pager_simple" %> 
+          <%= render "shared/one_pager_simple" %>
         </div>
         <div class="card" id="card-print">
           <h2>

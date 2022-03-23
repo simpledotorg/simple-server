@@ -18,9 +18,8 @@ RSpec.feature "Admin User page functionality", type: :feature do
 
   context "Admin User landing page" do
     before(:each) do
-      visit reports_regions_path
+      visit admin_users_path
       login_page.do_login(owner.email, owner.password)
-      navigation.click_manage_option("#mobile-app-users")
     end
 
     it "Verify User landing page" do
@@ -55,9 +54,8 @@ RSpec.feature "Admin User page functionality", type: :feature do
       create_list(:user, 5, registration_facility: facility_hoshiarpur)
       create_list(:user, 4, registration_facility: facility_buchho)
 
-      visit root_path
+      visit admin_users_path
       login_page.do_login(owner.email, owner.password)
-      navigation.click_manage_option("#mobile-app-users")
 
       user_page.select_district("All districts")
       expect(user_page.get_all_user_count).to eq(10)
@@ -74,9 +72,8 @@ RSpec.feature "Admin User page functionality", type: :feature do
     it " should be able to edit User facility" do
       user = create_list(:user, 5, registration_facility: facility_buchho)
 
-      visit root_path
+      visit admin_users_path
       login_page.do_login(owner.email, owner.password)
-      navigation.click_manage_option("#mobile-app-users")
 
       user_page.select_district(facility_buchho.district)
       # assertion for chc buchoo facility
@@ -87,7 +84,7 @@ RSpec.feature "Admin User page functionality", type: :feature do
       edit_page.edit_registration_facility(facility_hoshiarpur.name)
 
       # user should be displayed in hoshiarpur as we have edited its registration facility
-      navigation.click_manage_option("#mobile-app-users")
+      visit admin_users_path
       user_page.select_district(facility_hoshiarpur.district)
       expect(user_page.get_all_user(facility_hoshiarpur.name)).to eq(1)
 
@@ -99,9 +96,8 @@ RSpec.feature "Admin User page functionality", type: :feature do
     it " should display user list for - Path Dr Amir Sen" do
       create_list(:user, 5, registration_facility: var_amir)
 
-      visit root_path
+      visit admin_users_path
       login_page.do_login(owner.email, owner.password)
-      navigation.click_manage_option("#mobile-app-users")
 
       user_page.select_district(var_amir.district)
       user_page.is_facility_name_present(var_amir.name)
@@ -123,9 +119,8 @@ RSpec.feature "Admin User page functionality", type: :feature do
       user.sync_approval_status = User.sync_approval_statuses[:requested]
       user.save
 
-      visit root_path
+      visit admin_users_path
       login_page.do_login(owner.email, owner.password)
-      navigation.click_manage_option("#mobile-app-users")
       user_page.deny_access(user.full_name)
     end
 
@@ -134,9 +129,8 @@ RSpec.feature "Admin User page functionality", type: :feature do
       user.sync_approval_status = User.sync_approval_statuses[:requested]
       user.save
 
-      visit root_path
+      visit admin_users_path
       login_page.do_login(owner.email, owner.password)
-      navigation.click_manage_option("#mobile-app-users")
       user_page.allow_access(user.full_name)
     end
 
@@ -145,9 +139,8 @@ RSpec.feature "Admin User page functionality", type: :feature do
       user.sync_approval_status = User.sync_approval_statuses[:denied]
       user.save
 
-      visit root_path
+      visit admin_users_path
       login_page.do_login(owner.email, owner.password)
-      navigation.click_manage_option("#mobile-app-users")
       user_page.allow_access(user.full_name)
     end
   end
