@@ -2,37 +2,26 @@
  Reports
 <% end %>
 
-<div class="container">
-  <div class="row">
-    <div class="col-sm-5 col-lg-7">
-
-      <%= form_tag regions_search_url(format: :json), id: "search-form", method: :get do %>
-        <div class="mo-search">
-          <%= render "search" %>
-        <div>
-      <% end %>
-
-      <div id="facility-access">
-        <% @accessible_regions.each do |org, children| %>
-          <div class="card organization show region-index">
-            <div class="access-tree__section-header">
-              <% if current_admin.feature_enabled?(:organization_reports) %>
-                <%= link_to(org.name, reports_region_path(org.source.slug, report_scope: org.region_type)) %>
-              <% else %>
-                <%= org.name %>
-              <% end %>
-            </div>
-
-            <%= render Reports::RegionTreeComponent.new(parent: org, children: children) %>
-          </div>
+<h1 class="page-header">
+  Reports
+</h1>
+<div id="facility-access">
+  <% @accessible_regions.each do |org, children| %>
+    <div class="organization card show">
+      <div class="access-tree__section-header">
+        <% if current_admin.feature_enabled?(:organization_reports) %>
+          <h3><%= link_to(org.name, reports_region_path(org.source.slug, report_scope: org.region_type)) %></h3>
+        <% else %>
+          <h3><%= org.name %></h3>
         <% end %>
       </div>
 
-      <script>
-        const async = false;
-        new AdminAccess("facility-access").initialize(async);
-      </script>
-
+      <%= render Reports::RegionTreeComponent.new(parent: org, children: children) %>
     </div>
-  </div>
+  <% end %>
 </div>
+
+  <script>
+    const async = false;
+    new AdminAccess("facility-access").initialize(async);
+  </script>

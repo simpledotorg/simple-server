@@ -23,6 +23,33 @@ Dashboard UI
   background: #fff;
 }
 
+.update {
+  position: relative;
+  padding-left: 42px;
+
+  .update-date {
+    position: absolute;
+    left: 0;
+    top: 16px;
+    width: 48px;
+    background: $green-light;
+    border-bottom: 1px solid $green-mid;
+    color: $green-dark;
+    text-align: center;
+    padding: 12px 4px;
+    line-height: 1.3;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: bold;
+    font-size: 12px;
+
+    b {
+      font-size: 11px;
+    }
+  }
+}
+
 sup {
   font-size: 9px;
   font-weight: normal;
@@ -358,8 +385,8 @@ td.type-percent {
   em[data-rate="8"].low-is-good,
   em[data-rate="9"].low-is-good,
   em[data-rate="10"].low-is-good {
+    background: $green-mid;
     color: $green-dark;
-    background: $green-light;
     font-weight: normal;
   }
 
@@ -625,6 +652,15 @@ td.type-percent {
   background: #aaa;
 }
 
+th.sticky {
+  position: sticky;
+  top: 0;
+}
+
+th {
+  background: white;
+}
+
 //
 // Table sorting styles (override tablesort.css)
 //
@@ -725,4 +761,33 @@ em.bg-orange {
 
 .tl-fixed {
   table-layout: fixed;
+}
+
+.col-video {
+  strong {
+    display: block;
+    margin: 6px 0 0 0;
+  }
+
+  span {
+    display: block;
+    color: #999;
+    font-size: 85%;
+  }
+
+  .fa-youtube {
+    color: orangered;
+  }
+
+  a {
+    display: block;
+    position: relative;
+    padding: 4px 0 4px 28px;
+
+    i {
+      position: absolute;
+      left: 2px;
+      top: 7px;
+    }
+  }
 }

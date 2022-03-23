@@ -2,9 +2,7 @@ class Communication < ApplicationRecord
   include Mergeable
   include Hashable
 
-  belongs_to :appointment, optional: true
   belongs_to :notification, optional: true
-  belongs_to :user, optional: true
   belongs_to :detailable, polymorphic: true, optional: true
 
   delegate :unsuccessful?, :successful?, :in_progress?, to: :detailable
@@ -28,38 +26,25 @@ class Communication < ApplicationRecord
     unknown: "unknown"
   }
 
-  ANONYMIZED_DATA_FIELDS = %w[id appointment_id patient_id user_id created_at communication_type
-    communication_result]
-
+  ANONYMIZED_DATA_FIELDS = %w[id patient_id created_at communication_type communication_result]
   DEFAULT_MESSAGING_START_HOUR = 14
   DEFAULT_MESSAGING_END_HOUR = 16
-
-  validates :device_created_at, presence: true
-  validates :device_updated_at, presence: true
 
   scope :with_delivery_detail, -> {
     joins("inner join twilio_sms_delivery_details delivery_detail on delivery_detail.id = communications.detailable_id")
   }
 
-  def self.latest_by_type(communication_type)
-    send(communication_type).order(device_created_at: :desc).first
-  end
-
-  def self.create_with_twilio_details!(appointment:, twilio_sid:, twilio_msg_status:, communication_type:, notification: nil)
+  def self.create_with_twilio_details!(twilio_sid:, twilio_msg_status:, communication_type:, notification: nil)
     patient = notification.patient
-    now = DateTime.current
     transaction do
       sms_delivery_details = TwilioSmsDeliveryDetail.create!(session_id: twilio_sid,
         result: twilio_msg_status,
         callee_phone_number: patient.latest_mobile_number)
       communication = create!(communication_type: communication_type,
         detailable: sms_delivery_details,
-        appointment: appointment,
-        notification: notification,
-        device_created_at: now,
-        device_updated_at: now)
+        notification: notification)
       logger.info(class: self.class.name, msg: __method__.to_s, communication_id: communication.id,
-        communication_type: communication_type, appointment_id: appointment&.id, result: twilio_msg_status,
+        communication_type: communication_type, result: twilio_msg_status,
         notification_id: notification&.id)
     end
   end
@@ -103,7 +88,6 @@ class Communication < ApplicationRecord
 
   def anonymized_data
     {id: hash_uuid(id),
-     user_id: hash_uuid(user_id),
      created_at: created_at,
      communication_type: communication_type,
      communication_result: communication_result}

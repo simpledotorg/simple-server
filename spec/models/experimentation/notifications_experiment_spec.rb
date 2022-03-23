@@ -346,10 +346,10 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       membership = create(:treatment_group_membership, treatment_group: treatment_group, patient: patient)
       membership.record_notification(notification)
 
-      successful_communication = create(:communication, notification: notification, user: nil, appointment: nil)
+      successful_communication = create(:communication, notification: notification)
       create(:twilio_sms_delivery_detail, :delivered, communication: successful_communication)
 
-      unsuccessful_communication = create(:communication, notification: notification, user: nil, appointment: nil)
+      unsuccessful_communication = create(:communication, notification: notification)
       create(:twilio_sms_delivery_detail, :failed, communication: unsuccessful_communication)
       notification.update(status: :sent)
 
@@ -380,7 +380,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       membership = create(:treatment_group_membership, treatment_group: treatment_group, patient: patient)
       membership.record_notification(notification)
 
-      unsuccessful_communication = create(:communication, notification: notification, user: nil, appointment: nil)
+      unsuccessful_communication = create(:communication, notification: notification)
       create(:twilio_sms_delivery_detail, :failed, communication: unsuccessful_communication)
       notification.update(status: :sent)
 
@@ -430,7 +430,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       membership = create(:treatment_group_membership, treatment_group: treatment_group, status: :evicted, patient: patient)
       membership.record_notification(notification)
 
-      successful_communication = create(:communication, notification: notification, user: nil, appointment: nil)
+      successful_communication = create(:communication, notification: notification)
       create(:twilio_sms_delivery_detail, :delivered, communication: successful_communication)
 
       experiment.record_notification_results

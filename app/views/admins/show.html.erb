@@ -26,9 +26,10 @@
 </div>
 
 <div id="facility-access" data-page="show">
-  <div class="card access-tree show">
+  <div class="card show">
+    <h3 class="card-title">Facility access</h3>
     <div class="access-tree__section-header">
-      Facility access
+      
     </div>
 
     <%= render_async(access_tree_admin_path(admin, :show), error_message: access_tree_load_error) do %>
