@@ -7,7 +7,7 @@ class HomeController < AdminController
 
   def index
     unless current_admin.feature_enabled?(:dashboard_ui_refresh)
-      redirect_to my_facilities_overview_path(request.query_parameters)
+      redirect_to root_path(request.query_parameters)
     end
   end
 end

@@ -1,23 +1,32 @@
+<h1 class="page-title mb-3">Merge duplicate patients</h1>
 <div class="card">
-  <h1 class="page-title">Merge duplicate patients</h1>
+  <h3>
+    <% if @duplicate_count == Admin::DeduplicatePatientsController::DUPLICATE_LIMIT %>
+    <%= Admin::DeduplicatePatientsController::DUPLICATE_LIMIT %>+
+  <% else %>
+    <%= @duplicate_count %>
+  <% end %>
+  duplicate patients remaining
+  </h3>
   <div class="container">
     <div class="row">
-      <div class="col-md-7 col-sm-12">
+      <div class="col-12">
         <p class="c-grey-dark">
           These patients have the same BP passport. Please confirm that they refer to the same person.
-          <br/>
-          Unselect patients that don't refer to this person. They will not be merged and be left as is.
+          Unselect patients that don't refer to this person &#8212; they will not be merged.
         </p>
       </div>
-      <div class="col-md-5 col-sm-12 text-md-right mb-3">
+    </div>
+    <div class="row mt-4 mb-4">
+      <div class="col-12">
       <form id="deduplicate_patients" method="POST" action="<%= admin_deduplication_path %>">
         <button class="btn btn-primary mr-2" type="submit">Merge selected patients</button>
-        <a href="javascript:location.reload();" class="btn btn-outline-info mr-2">Skip</a>
+        <a href="javascript:location.reload();" class="btn btn-outline-primary mr-2">Skip</a>
       </form>
       </div>
     </div>
   </div>
-  <table class="table table-responsive-md table-hover">
+  <table class="table table-responsive-md">
     <thead>
       <th>Select</th>
       <th style="min-width: 150px">Full name</th>
@@ -73,7 +82,7 @@
     <% unless @patients.present? %>
       <tr class="text-center">
         <td colspan="9">
-          No duplicate patients found that need to be merged
+          <p class="bg-blue-light" style="padding: 48px; border-radius: 5px;">No duplicate patients found that need to be merged</p>
         </td>
       </tr>
     <% end %>
@@ -81,18 +90,6 @@
   </table>
 </div>
 
-<div class="container">
-  <div class="row">
-    <p class="c-grey-dark col-sm text-right align-baseline">
-      <% if @duplicate_count == Admin::DeduplicatePatientsController::DUPLICATE_LIMIT %>
-        <%= Admin::DeduplicatePatientsController::DUPLICATE_LIMIT %>+
-      <% else %>
-        <%= @duplicate_count %>
-      <% end %>
-      duplicate patients remaining
-    </p>
-  </div>
-</div>
 <script>
   $("tr.toggle-row").click(function()  {
     let patientId = $(this).data()["patientId"];

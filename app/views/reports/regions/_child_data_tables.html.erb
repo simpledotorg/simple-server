@@ -2,7 +2,7 @@
   <h3 class="mb-16px c-black">
     <%= @period %> <%= localized_region_type %> performance
   </h3>
-  <div class="table-responsive">
+  <div class="table-responsive-md">
     <table id="region-comparison-table" class="table-compact">
       <colgroup>
         <col>
@@ -17,8 +17,8 @@
       </colgroup>
       <thead>
       <tr>
-        <th></th>
-        <th colspan="2">
+        <th class="sticky"></th>
+        <th colspan="2" class="sticky">
           BP controlled
           <%= render "definition_tooltip",
                      definitions: {
@@ -27,7 +27,7 @@
                      }
           %>
         </th>
-        <th colspan="2">
+        <th colspan="2" class="sticky">
           BP not controlled
           <%= render "definition_tooltip",
                      definitions: {
@@ -36,7 +36,7 @@
                      }
           %>
         </th>
-        <th colspan="2">
+        <th colspan="2" class="sticky">
           Missed visits
           <%= render "definition_tooltip",
                      definitions: {
@@ -45,7 +45,7 @@
                      }
           %>
         </th>
-        <th colspan="2">
+        <th colspan="2" class="sticky">
           Registrations
           <%= render "definition_tooltip",
                      definitions: {

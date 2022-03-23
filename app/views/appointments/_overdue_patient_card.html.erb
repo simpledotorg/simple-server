@@ -1,12 +1,12 @@
 <div class="card">
 
     <h5 class="mb-2">
-        <%= patient_summary.full_name %>,
+        <b><%= patient_summary.full_name %></b>
         <%= patient_summary.gender.capitalize %>,
         <%= patient_summary.current_age.to_i %>
     </h5>
 
-    <div>
+    <div class="pb-8px">
       <div>
         <span class="text-secondary">Registered on:</span>
         <%= handle_impossible_registration_date(patient_summary.recorded_at) %><br>

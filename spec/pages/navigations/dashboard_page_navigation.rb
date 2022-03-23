@@ -1,11 +1,16 @@
 module Navigations
   class DashboardPageNavigation < ApplicationPage
-    LOGOUT_BUTTON = "#nav-more-logout"
-    MANAGE_OPTION = {xpath: "//li/div/a"}.freeze
-    MAIN_MENU_TABS = {css: "ul.mr-auto>li>a"}.freeze
-    MORE_DROPDOWN = "#nav-more-link"
+    LOGOUT_BUTTON = {css: "#nav-more-logout"}
+    MAIN_MENU = {css: "#navigation"}
+    MAIN_MENU_TABS = {css: ".nav-link"}
+    MORE_DROPDOWN = {css: ".nav-link-dropdown"}
+
+    def hover_nav
+      find(MAIN_MENU[:css]).hover
+    end
 
     def click_main_menu_tab(option)
+      hover_nav
       find(MAIN_MENU_TABS[:css], text: option).click
     end
 
@@ -14,18 +19,19 @@ module Navigations
       main_menu_tabs.each(&:visible?)
     end
 
+    def open_more
+      find(MORE_DROPDOWN[:css]).click
+    end
+
     def click_manage_option(option)
-      find("#nav-more-link").click
+      hover_nav
+      open_more
       find(option).click
     end
 
-    def open_more
-      find(MORE_DROPDOWN).click
-    end
-
     def click_logout_button
-      open_more
-      find(LOGOUT_BUTTON).click
+      hover_nav
+      find(LOGOUT_BUTTON[:css]).click
     end
   end
 end

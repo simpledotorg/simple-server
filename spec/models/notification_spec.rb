@@ -63,7 +63,7 @@ describe Notification, type: :model do
     it "is failed if no successful deliveries are present" do
       notification = create(:notification)
 
-      unsuccessful_communication = create(:communication, notification: notification, user: nil, appointment: nil)
+      unsuccessful_communication = create(:communication, notification: notification)
       create(:twilio_sms_delivery_detail, :failed, communication: unsuccessful_communication)
       notification.update(status: :sent)
 
@@ -72,7 +72,7 @@ describe Notification, type: :model do
 
     it "is failed if notification is cancelled even if successful communications are present" do
       notification = create(:notification, status: :cancelled)
-      successful_communication = create(:communication, notification: notification, user: nil, appointment: nil)
+      successful_communication = create(:communication, notification: notification)
       create(:twilio_sms_delivery_detail, :sent, communication: successful_communication)
 
       expect(notification.delivery_result).to eq(:failed)
@@ -81,11 +81,11 @@ describe Notification, type: :model do
     it "is success if at least one successful deliveries are present" do
       notification = create(:notification)
 
-      unsuccessful_communication = create(:communication, notification: notification, user: nil, appointment: nil)
+      unsuccessful_communication = create(:communication, notification: notification)
       create(:twilio_sms_delivery_detail, :failed, communication: unsuccessful_communication)
       notification.update(status: :sent)
 
-      successful_communication = create(:communication, notification: notification, user: nil, appointment: nil)
+      successful_communication = create(:communication, notification: notification)
       create(:twilio_sms_delivery_detail, :sent, communication: successful_communication)
 
       expect(notification.delivery_result).to eq(:success)
@@ -99,11 +99,11 @@ describe Notification, type: :model do
     it "is queued if at least one queued deliveries are present" do
       notification = create(:notification)
 
-      unsuccessful_communication = create(:communication, notification: notification, user: nil, appointment: nil)
+      unsuccessful_communication = create(:communication, notification: notification)
       create(:twilio_sms_delivery_detail, :failed, communication: unsuccessful_communication)
       notification.update(status: :sent)
 
-      queued_communication = create(:communication, notification: notification, user: nil, appointment: nil)
+      queued_communication = create(:communication, notification: notification)
       create(:twilio_sms_delivery_detail, :queued, communication: queued_communication)
 
       expect(notification.delivery_result).to eq(:queued)

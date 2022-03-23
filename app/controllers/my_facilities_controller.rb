@@ -5,6 +5,7 @@ class MyFacilitiesController < AdminController
   include MyFacilitiesFiltering
   include CohortPeriodSelection
   include PeriodSelection
+  include RegionSearch
 
   PERIODS_TO_DISPLAY = {quarter: 3, month: 3, day: 14}.freeze
 
@@ -15,6 +16,7 @@ class MyFacilitiesController < AdminController
   before_action :set_selected_cohort_period, only: [:blood_pressure_control]
   before_action :set_selected_period, only: [:registrations, :missed_visits]
   before_action :set_last_updated_at
+  before_action :show_region_search, only: [:index]
 
   def index
     @facilities = current_admin.accessible_facilities(:view_reports)

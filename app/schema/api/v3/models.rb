@@ -319,14 +319,13 @@ class Api::V3::Models
        properties: {
          id: {"$ref" => "#/definitions/uuid"},
          appointment_id: {"$ref" => "#/definitions/uuid"},
-         user_id: {"$ref" => "#/definitions/uuid"},
          communication_type: {type: :string, enum: Communication.communication_types.keys},
          communication_result: {type: :string, enum: Communication::COMMUNICATION_RESULTS.keys},
          deleted_at: {"$ref" => "#/definitions/nullable_timestamp"},
          created_at: {"$ref" => "#/definitions/timestamp"},
          updated_at: {"$ref" => "#/definitions/timestamp"}
        },
-       required: %w[id appointment_id user_id communication_type communication_result created_at updated_at]}
+       required: %w[id appointment_id communication_type communication_result created_at updated_at]}
     end
 
     def medical_history
