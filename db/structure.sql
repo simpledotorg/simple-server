@@ -4270,6 +4270,13 @@ CREATE INDEX index_bp_months_patient_recorded_at ON public.latest_blood_pressure
 
 
 --
+-- Name: index_communications_on_appointment_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_communications_on_appointment_id ON public.communications USING btree (appointment_id);
+
+
+--
 -- Name: index_communications_on_deleted_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -5483,3 +5490,5 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220223080958'),
 ('20220315095931'),
 ('20220321074052');
+
+
