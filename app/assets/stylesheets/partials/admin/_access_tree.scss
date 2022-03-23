@@ -68,7 +68,6 @@
     li {
       height: 100%;
       padding: 0;
-      border-top: 1px solid var(--light);
       position: relative;
       margin-bottom: -1px;
     }
@@ -231,7 +230,8 @@
     color: #6c737a;
   }
 
-  .form-check-input, .form-check-label {
+  .form-check-input,
+  .form-check-label {
     cursor: pointer;
   }
 }

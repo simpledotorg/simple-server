@@ -32,7 +32,7 @@ RSpec.feature "Verify Dashboard", type: :feature do
     visit reports_regions_path
     original_org_count = dashboard.all_elements(css: ".card.organization").count
 
-    dashboard_navigation.click_manage_option("#nav-organizations-link")
+    visit admin_organizations_path
 
     org_page.click_on_add_organization_button
     AdminPage::Organizations::New.new.create_new_organization("test", "testDescription")

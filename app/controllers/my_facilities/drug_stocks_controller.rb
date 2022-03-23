@@ -3,8 +3,6 @@ class MyFacilities::DrugStocksController < AdminController
   include MyFacilitiesFiltering
   include SetForEndOfMonth
 
-  layout "my_facilities"
-
   around_action :set_reporting_time_zone
   before_action :authorize_my_facilities
   after_action :verify_authorization_attempted
