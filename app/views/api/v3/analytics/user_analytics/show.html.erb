@@ -24,86 +24,55 @@
                          data: { statistics: @service.daily_statistics },
                          style: "display: none" do %>
         <% end %>
-        <%= render(Reports::DailyProgressComponent.new(@service)) %>
-        <div class="mb-8px p-16px bgc-white bs-card">
-          <div class="d-flex ai-center">
-            <h3 class="m-0px mr-4px fw-bold fs-24px c-black">
-              <%= raw t("analytics.registered_patients") %>
-            </h3>
-            <a
-              class="d-flex ai-center w-32px h-32px"
-              href="#"
-              onclick="openWindow('progress-registrations-help', 'progress-start'); return false"
-            >
-              <%= inline_file("help-circle.svg") %>
-            </a>
-          </div>
-          <% registrations_table_name = 'registrations' %>
-          <%= render partial: 'api/v3/analytics/user_analytics/gender_filter',
-                    locals: { data_table_name: registrations_table_name,
-                              is_diabetes_enabled: current_facility.diabetes_enabled? } %>
-          <% @service.dimension_combinations_for(:registrations).each do |dimension| %>
-            <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service)) %>
-          <% end %>
-        </div>
-        <div class="mb-8px p-16px bgc-white bs-card">
-          <div class="d-flex ai-center">
-            <h3 class="m-0px mr-4px fw-bold fs-24px c-black">
-              <%= raw t("analytics.follow_up_patients") %>
-            </h3>
-            <a
-              class="d-flex ai-center w-32px h-32px"
-              href="#"
-              onclick="openWindow('progress-follow-ups-help', 'progress-start'); return false"
-            >
-              <%= inline_file("help-circle.svg") %>
-            </a>
-          </div>
-          <% follow_ups_table_name = 'follow_ups' %>
-          <%= render partial: 'api/v3/analytics/user_analytics/gender_filter',
-                    locals: { data_table_name: follow_ups_table_name,
-                              is_diabetes_enabled: current_facility.diabetes_enabled? } %>
-          <% @service.dimension_combinations_for(:follow_ups).each do |dimension| %>
-            <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service)) %>
-          <% end %>
-        </div>
         <% if Flipper.enabled?(:new_progress_tab) %>
+          <%= render partial: "api/v3/analytics/user_analytics/progress_period_card" %>
+        <% else %>
+          <%= render(Reports::DailyProgressComponent.new(@service)) %>
           <div class="mb-8px p-16px bgc-white bs-card">
-            <h1 class="m-0px mb-4px fw-bold fs-24px c-black">
-              <%= t("progress_tab.reports_card.title") %>
-            </h1>
-            <p class="m-0px mb-16px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-              <%= t("progress_tab.reports_card.subtitle", facility_name: current_facility.name) %>
-            </p>
-            <div class="d-flex ai-center jc-space-between">
+            <div class="d-flex ai-center">
+              <h3 class="m-0px mr-4px fw-bold fs-24px c-black">
+                <%= raw t("analytics.registered_patients") %>
+              </h3>
               <a
-                class="f-1 d-flex fd-column ai-center jc-center h-96px mr-8px p-12px td-none bgc-red-light br-8px"
+                class="d-flex ai-center w-32px h-32px"
                 href="#"
-                onclick="openWindow('progress-hypertension-report', 'progress-start'); return false;"
+                onclick="openWindow('progress-registrations-help', 'progress-start'); return false"
               >
-                <div class="d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px">
-                  <%= inline_file("graph-red.svg") %>
-                </div>
-                <p class="m-0px p-0px ta-left fw-medium fs-16px c-red">
-                  <%= t("progress_tab.hypertension_report_title") %>
-                </p>
-              </a>
-              <a
-                class="p-relative f-1 d-flex fd-column ai-center jc-center h-96px ml-8px p-12px td-none bgc-grey-light-new br-8px"
-                href="#"
-              >
-                <div class="d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px">
-                  <%= inline_file("graph-grey.svg") %>
-                </div>
-                <p class="m-0px p-0px ta-left fw-medium fs-16px c-grey-dark">
-                  <%= t("progress_tab.diabetes_report_title") %>
-                </p>
-                <p class="p-absolute b-0 l-0 w-100 fw-regular fs-12px c-grey ta-center bs-border-box">
-                  Coming soon
-                </p>
+                <%= inline_file("help-circle.svg") %>
               </a>
             </div>
+            <% registrations_table_name = 'registrations' %>
+            <%= render partial: 'api/v3/analytics/user_analytics/gender_filter',
+                      locals: { data_table_name: registrations_table_name,
+                                is_diabetes_enabled: current_facility.diabetes_enabled? } %>
+            <% @service.dimension_combinations_for(:registrations).each do |dimension| %>
+              <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service)) %>
+            <% end %>
           </div>
+          <div class="mb-8px p-16px bgc-white bs-card">
+            <div class="d-flex ai-center">
+              <h3 class="m-0px mr-4px fw-bold fs-24px c-black">
+                <%= raw t("analytics.follow_up_patients") %>
+              </h3>
+              <a
+                class="d-flex ai-center w-32px h-32px"
+                href="#"
+                onclick="openWindow('progress-follow-ups-help', 'progress-start'); return false"
+              >
+                <%= inline_file("help-circle.svg") %>
+              </a>
+            </div>
+            <% follow_ups_table_name = 'follow_ups' %>
+            <%= render partial: 'api/v3/analytics/user_analytics/gender_filter',
+                      locals: { data_table_name: follow_ups_table_name,
+                                is_diabetes_enabled: current_facility.diabetes_enabled? } %>
+            <% @service.dimension_combinations_for(:follow_ups).each do |dimension| %>
+              <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service)) %>
+            <% end %>
+          </div>
+        <% end %>
+        <% if Flipper.enabled?(:new_progress_tab) %>
+          <%= render partial: "api/v3/analytics/user_analytics/progress_reports_card" %> 
         <% end %>
         <% if current_facility_group.region.feature_enabled?(:drug_stocks) && controller_name == "user_analytics" %>
           <div class="mb-16px p-16px bgc-white br-4px bs-card">
@@ -183,6 +152,8 @@
     </div>
     <% if Flipper.enabled?(:new_progress_tab) %>
       <%= render partial: "api/v3/analytics/user_analytics/progress_hypertension_report" %>
+      <%= render partial: "api/v3/analytics/user_analytics/progress_daily_report" %>
+      <%#= render partial: "api/v3/analytics/user_analytics/progress_monthly_report" %>
     <% else %>
       <%= render partial: "api/v3/analytics/user_analytics/progress_controlled_help" %>
       <%= render partial: "api/v3/analytics/user_analytics/progress_cohort_report" %>
