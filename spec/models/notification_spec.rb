@@ -112,6 +112,12 @@ describe Notification, type: :model do
 
   describe "#record_communication" do
     it "ties the communication to a notification and updates status to 'sent'" do
+      notification = create(:notification)
+      communication = create(:communication)
+      notification.record_communication(communication)
+
+      expect(communication.reload.notification_id).to eq(notification.id)
+      expect(notification.reload.status).to eq("sent")
     end
   end
 end
