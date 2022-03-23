@@ -1,5 +1,4 @@
 class TwilioSmsDeliveryDetail < DeliveryDetail
-
   enum result: {
     queued: "queued",
     sending: "sending",
