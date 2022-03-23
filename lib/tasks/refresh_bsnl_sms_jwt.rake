@@ -22,8 +22,6 @@ namespace :bsnl do
     if response.is_a?(Net::HTTPSuccess)
       jwt = response.body.delete_prefix('"').delete_suffix('"')
       Credential.find("BSNL_SMS_JWT").update(value: jwt)
-    else
-      # todo: send an alert
     end
   end
 end
