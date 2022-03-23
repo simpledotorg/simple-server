@@ -68,7 +68,6 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       mock_successful_delivery
 
       expect(Communication).to receive(:create_with_twilio_details!).with(
-        appointment: notification.subject,
         notification: notification,
         twilio_sid: "12345",
         twilio_msg_status: "sent",
