@@ -30,11 +30,9 @@ RSpec.describe NotificationDispatchService do
   end
 
   it "cancels notifications if the phone number is missing" do
-
   end
 
   it "cancels notifications if the phone number is invalid and does not raise an error" do
-
   end
 
   it "calls send_message on the messaging channel supplied to the service" do
