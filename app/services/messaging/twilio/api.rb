@@ -2,6 +2,10 @@ class Messaging::Twilio::Api < Messaging::Channel
   include Rails.application.routes.url_helpers
   include Memery
 
+  def self.fetch_message(sid)
+    client.messages(sid).fetch
+  end
+
   def send_message(recipient_number:, message:, &with_communication_do)
     track_metrics do
       create_communication(
@@ -16,10 +20,6 @@ class Messaging::Twilio::Api < Messaging::Channel
 
   def sender_number
     raise NotImplementedError
-  end
-
-  def fetch_message(sid)
-    client.messages(sid).fetch
   end
 
   private
