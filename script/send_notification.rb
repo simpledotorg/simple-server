@@ -42,7 +42,7 @@ delivery_detail = communication.detailable
 puts "Twilio message sid=#{delivery_detail.session_id} status=#{delivery_detail.result}..."
 puts "Waiting a second and then refetching Twilio status"
 sleep 1
-fetched_message = Messaging::Twilio::Api.fetch_message(delivery_detail.session_id)
+fetched_message = Messaging::Twilio::Api.new.fetch_message(delivery_detail.session_id)
 puts "status=#{fetched_message.result}"
 puts "Twilio message sid=#{fetched_message.session_id} status=#{fetched_message.result}..."
 puts
