@@ -100,7 +100,7 @@ RSpec.describe Messaging::Twilio::Api do
 
   it "calls the block passed to it with the communication created" do
     mock_successful_delivery
-    spy = spy('A spy that listens to a_method')
+    spy = spy("Awaits a_method to be called")
 
     described_class.send_message(recipient_number: "+918585858585", message: "test message") {
       |_| spy.a_method
