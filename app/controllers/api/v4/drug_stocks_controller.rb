@@ -6,7 +6,11 @@ class Api::V4::DrugStocksController < APIController
     end
 
     @drug_stocks = DrugStock.latest_for_facilities([current_facility], for_end_of_month)
-    return head :not_found if @drug_stocks.empty?
+
+    if @drug_stocks.empty?
+      head :not_found
+      return
+    end
   end
 
   private
