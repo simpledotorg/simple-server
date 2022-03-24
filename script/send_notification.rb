@@ -42,7 +42,6 @@ puts "Twilio message sid=#{delivery_detail.session_id} status=#{delivery_detail.
 puts "Waiting a second and then refetching Twilio status"
 sleep 1
 fetched_message = Messaging::Twilio::OtpSms.new.fetch_message(delivery_detail.session_id)
-pp fetched_message
 puts "status=#{fetched_message.status}"
 puts "Twilio message sid=#{fetched_message.sid} status=#{fetched_message.status}..."
 puts

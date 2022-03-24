@@ -25,6 +25,9 @@ class Messaging::Channel
     raise NotImplementedError
   end
 
+  # Takes a block that is executed in a transaction with the communication creation.
+  # This should be used when there are other associations (for example, notifications)
+  # that need to be updated atomically.
   def send_message(recipient_number:, message:, &with_communication_do)
     raise NotImplementedError
   end
