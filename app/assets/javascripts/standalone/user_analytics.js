@@ -385,3 +385,22 @@ function setTooltipPosition(tooltipElement, barElement) {
   // Position tooltip copy
   setTooltipCopyPosition(copyElement, tooltipElement, barElement);
 }
+//
+// Daily report
+//
+function updateDailyReport() {
+  const dropdown = document.getElementById("period-dropdown");
+  const selectValue = dropdown.value;
+
+  const dailyCards = document.querySelectorAll("[data-element='daily-cards']");
+
+  dailyCards.forEach($card => {
+    if ($card.getAttribute("data-date") == selectValue) {
+      $card.classList.remove("d-none");
+      $card.classList.add("d-block");
+    } else {
+      $card.classList.remove("d-block");
+      $card.classList.add("d-none");
+    }
+  });
+}
