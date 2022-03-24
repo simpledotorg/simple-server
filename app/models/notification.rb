@@ -67,7 +67,13 @@ class Notification < ApplicationRecord
         locale: subject.facility.locale
       )
     when "test_message"
-      "Test message sent by Simple.org to #{patient.full_name}"
+      I18n.t(
+        "notifications.set01.basic",
+        facility_name: "Test Facility",
+        patient_name: "Test Patient",
+        appointment_date: Date.today.strftime("%d-%m-%Y"),
+        locale: "en"
+      )
     else
       raise ArgumentError, "No localized_message defined for notification of type #{purpose}"
     end

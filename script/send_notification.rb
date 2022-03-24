@@ -22,28 +22,28 @@
 # export TWILIO_PRODUCTION_OVERRIDE=true
 
 require_relative "../config/environment"
-
-id = ARGV.first || puts("You must provide a patient ID")
+id = ARGV.first || raise(ArgumentError, "You must provide a patient ID")
 patient = Patient.find_by!(id: id)
 
-puts "Patient doesn't have a mobile number" unless patient.latest_mobile_number
+raise "Patient doesn't have a mobile number" unless patient.latest_mobile_number
 puts "Sending a test notification message to #{patient.latest_mobile_number}..."
 
 notification = Notification.create!(
   patient: patient,
   remind_on: Date.current,
   status: "scheduled",
-  message: "test_message",
+  message: "This doesn't matter since test_message will override the localized message.",
   purpose: "test_message"
 )
-communication = NotificationDispatchService.call(notification, Messaging::Twilio::ReminderSms)
+communication = NotificationDispatchService.call(notification, Messaging::Twilio::OtpSms)
 delivery_detail = communication.detailable
 
 puts "Twilio message sid=#{delivery_detail.session_id} status=#{delivery_detail.result}..."
 puts "Waiting a second and then refetching Twilio status"
 sleep 1
-fetched_message = Messaging::Twilio::Api.new.fetch_message(delivery_detail.session_id)
-puts "status=#{fetched_message.result}"
-puts "Twilio message sid=#{fetched_message.session_id} status=#{fetched_message.result}..."
+fetched_message = Messaging::Twilio::OtpSms.new.fetch_message(delivery_detail.session_id)
+pp fetched_message
+puts "status=#{fetched_message.status}"
+puts "Twilio message sid=#{fetched_message.sid} status=#{fetched_message.status}..."
 puts
 puts "Done!"
