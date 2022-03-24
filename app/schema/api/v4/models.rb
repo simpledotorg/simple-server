@@ -6,6 +6,12 @@ class Api::V4::Models
        description: "Timestamp with millisecond precision."}
     end
 
+    def date
+      {type: :string,
+       format: "date-time",
+       description: "Timestamp with millisecond precision."}
+    end
+
     def uuid
       {type: :string,
        format: :uuid,
