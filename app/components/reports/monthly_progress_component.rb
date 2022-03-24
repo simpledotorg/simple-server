@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class Reports::MonthlyProgressComponent < ViewComponent::Base
+  include AssetsHelper
   include DashboardHelper
   attr_reader :dimension
   attr_reader :range
@@ -11,7 +12,9 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
     @dimension = dimension
     @monthly_counts = service.monthly_counts
     @total_counts = service.total_counts
-    @range = service.range
+    @region = service.region
+    @range = service.range.reverse_each
+    # @last_updated_at = DateTime.parse(last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")
   end
 
   def diagnosis_group_class

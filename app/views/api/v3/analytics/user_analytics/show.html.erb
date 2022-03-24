@@ -152,6 +152,7 @@
     </div>
     <% if Flipper.enabled?(:new_progress_tab) %>
       <%= render(Reports::DailyProgressComponent.new(@service, @user_analytics.last_updated_at)) %>
+      <%= render partial: "api/v3/analytics/user_analytics/progress_monthly_report" %>
       <%= render partial: "api/v3/analytics/user_analytics/progress_hypertension_report" %>
     <% else %>
       <%= render partial: "api/v3/analytics/user_analytics/progress_controlled_help" %>

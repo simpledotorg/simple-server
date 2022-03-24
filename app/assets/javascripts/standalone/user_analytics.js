@@ -404,3 +404,25 @@ function updateDailyReport() {
     }
   });
 }
+
+//
+// Monthly report
+//
+function updateMonthlyReport(elementId) {
+  const registrationsDropdown = document.getElementById(elementId);
+  const selectValue = registrationsDropdown.value;
+
+  const querySelector = "[data-element='monthly-" + elementId + "-card']";
+
+  const monthlyTables = document.querySelectorAll(querySelector);
+
+  monthlyTables.forEach($table => {
+    if ($table.getAttribute("data-dimension-field") == selectValue) {
+      $table.classList.remove("d-none");
+      $table.classList.add("d-block");
+    } else {
+      $table.classList.remove("d-block");
+      $table.classList.add("d-none");
+    }
+  });
+}
