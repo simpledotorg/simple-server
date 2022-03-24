@@ -67,7 +67,7 @@ class MyFacilitiesController < AdminController
       if last_updated_at.nil?
         "unknown"
       else
-        last_updated_at.in_time_zone(Rails.application.config.country[:time_zone]).strftime("%d-%^b-%Y %I:%M%p")
+        last_updated_at.in_time_zone(Rails.application.config.country[:time_zone]).to_s(:day_mon_year_time)
       end
   end
 
