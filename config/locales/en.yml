@@ -60,8 +60,8 @@ en:
   visit_but_no_bp_taken_copy:
     numerator: "Patients with no BP taken at their last visit in the last 3 months."
   lost_to_follow_up_copy:
-    reports_card_subtitle: "Hypertension patients with no BP taken in the last 12 months."
-    numerator: "Patients with no BP taken in the last 12 months."
+    reports_card_subtitle: "Hypertension patients with no visit in the last 12 months."
+    numerator: "Patients with no visit in the last 12 months."
   registered_patients_copy:
     reports_card_subtitle: "Monthly and total hypertension patients registered in %{region_name}"
     monthly_registered_patients: "Hypertension patients registered during a month in %{region_name}."
@@ -75,7 +75,7 @@ en:
   ltfu_denominator_copy: "Hypertension patients assigned to %{region_name}. Dead patients are excluded."
   follow_up_patients_copy: "Hypertension patients with a BP measure taken during a month in %{region_name}."
   follow_up_patients_copy_v2: "Hypertension patients with a BP measure taken, a blood sugar taken, an appointment scheduled, or their medications refilled during a month in %{region_name}."
-  patients_under_care_copy: "Hypertension patients with a BP taken in the last 12 months."
+  patients_under_care_copy: "Hypertension patients with a visit in the last 12 months."
   bp_measures_taken_copy: "All BP measures taken in a month by healthcare workers at %{region_name}."
   hypertension_patient_coverage_copy: "Total registered patients diagnosed with hypertension divided by the region's estimated hypertensive population."
   total_estimated_hypertensive_population:
