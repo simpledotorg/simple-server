@@ -1,7 +1,7 @@
 <% admin = AdminAccessPresenter.new(@admin) %>
 
 <div class="page-header">
-  <nav class="breadcrumb">
+  <nav class="breadcrumb mt-n3 mt-md-0">
     <%= link_to "Admins", admins_path, class: "#{active_controller?("email_authentications")}" %>
     <i class="fas fa-chevron-right"></i> <%= admin.full_name %>
   </nav>
@@ -9,9 +9,11 @@
 
 <div class="row mt-2">
   <div class="col-md-5">
-    <h2><%= admin.full_name %></h2>
-    <span class="user-role"><%= admin.role %> • </span>
-    <a class="user-email" href="mailto:<%= admin.email %>"><%= admin.email %></a>
+    <h1 class="page-title"><%= admin.full_name %></h1>
+    <p class="mb-16px">
+      <span class="user-role"><%= admin.role %> • </span>
+      <a class="user-email" href="mailto:<%= admin.email %>"><%= admin.email %></a>
+    </p>
   </div>
   <div class="col-md-7" style="text-align:right;">
     <%= link_to 'Edit admin', edit_admin_path(admin), class: "btn btn-sm btn-primary" %>
