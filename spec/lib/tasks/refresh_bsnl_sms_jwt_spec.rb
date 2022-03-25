@@ -18,8 +18,8 @@ RSpec.describe "RefreshBsnlSmsJwt" do
       allow(ENV).to receive(:[]).with("BSNL_TOKEN_ID").and_return("X")
 
       request = stub_request(:post, "https://bulksms.bsnl.in:5010/api/Create_New_API_Token").to_return(body: "\"new_jwt\"")
-      expect { Rake::Task["bsnl:refresh_sms_jwt"].invoke }.to raise_error(SystemExit)
 
+      expect { Rake::Task["bsnl:refresh_sms_jwt"].invoke }.to raise_error(SystemExit)
       expect(request).not_to have_been_made
       expect(Configuration.fetch("bsnl_sms_jwt")).to eq("old_jwt")
     end
@@ -35,8 +35,8 @@ RSpec.describe "RefreshBsnlSmsJwt" do
       allow(ENV).to receive(:[]).with("BSNL_TOKEN_ID").and_return("X")
 
       request = stub_request(:post, "https://bulksms.bsnl.in:5010/api/Create_New_API_Token").to_return(body: "\"new_jwt\"")
-      Rake::Task["bsnl:refresh_sms_jwt"].invoke
 
+      expect { Rake::Task["bsnl:refresh_sms_jwt"].invoke }.not_to raise_error(SystemExit)
       expect(request).to have_been_made
       expect(Configuration.fetch("bsnl_sms_jwt")).to eq("new_jwt")
     end
