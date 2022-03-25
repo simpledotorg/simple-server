@@ -15,7 +15,7 @@ class RegistrationsAndFollowUpsComponent < ViewComponent::Base
   end
 
   def follow_ups_definition
-    :follow_up_patients_copy_v2
+    :follow_up_patients_copy
   end
 
   def number_or_dash_with_delimiter(value, options = {})

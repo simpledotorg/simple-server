@@ -37,7 +37,7 @@ class AdminController < ApplicationController
   private
 
   def safe_admin_params
-    params.permit(:bust_cache, :_follow_ups_v2)
+    params.permit(:bust_cache)
   end
 
   def current_admin
