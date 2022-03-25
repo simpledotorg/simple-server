@@ -21,7 +21,7 @@ namespace :bsnl do
 
     if response.is_a?(Net::HTTPSuccess)
       jwt = response.body.delete_prefix('"').delete_suffix('"')
-      Credential.find("BSNL_SMS_JWT").update(value: jwt)
+      Configuration.find_by(name: "bsnl_sms_jwt").update(value: jwt)
     end
   end
 end

@@ -352,10 +352,11 @@ CREATE TABLE public.communications (
 
 
 --
--- Name: credentials; Type: TABLE; Schema: public; Owner: -
+-- Name: configurations; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.credentials (
+CREATE TABLE public.configurations (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     name character varying NOT NULL,
     value character varying NOT NULL,
     deleted_at timestamp without time zone,
@@ -3752,6 +3753,14 @@ ALTER TABLE ONLY public.communications
 
 
 --
+-- Name: configurations configurations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.configurations
+    ADD CONSTRAINT configurations_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: data_migrations data_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4308,6 +4317,13 @@ CREATE INDEX index_communications_on_detailable_type_and_detailable_id ON public
 --
 
 CREATE INDEX index_communications_on_notification_id ON public.communications USING btree (notification_id);
+
+
+--
+-- Name: index_configurations_on_name; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_configurations_on_name ON public.configurations USING btree (name);
 
 
 --
@@ -5504,3 +5520,5 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220315095931'),
 ('20220321074052'),
 ('20220322115123');
+
+
