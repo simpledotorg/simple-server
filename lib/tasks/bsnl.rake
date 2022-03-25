@@ -1,4 +1,5 @@
 require "net/http"
+require "tasks/scripts/bsnl"
 
 namespace :bsnl do
   desc "Fetch a fresh JWT for BSNL Bulk SMS and overwrite the old token"
@@ -8,20 +9,6 @@ namespace :bsnl do
     password = ENV["BSNL_PASSWORD"]
     token_id = ENV["BSNL_TOKEN_ID"]
 
-    abort "Aborting, need BSNL credentials to run this task." unless service_id && username && password && token_id
-
-    http = Net::HTTP.new("bulksms.bsnl.in", 5010)
-    http.use_ssl = true
-    request = Net::HTTP::Post.new("/api/Create_New_API_Token", "Content-Type" => "application/json")
-    request.body = {Service_Id: service_id,
-                    Username: username,
-                    Password: password,
-                    Token_Id: token_id}.to_json
-    response = http.request(request)
-
-    if response.is_a?(Net::HTTPSuccess)
-      jwt = response.body.delete_prefix('"').delete_suffix('"')
-      Configuration.find_by(name: "bsnl_sms_jwt").update(value: jwt)
-    end
+    Bsnl.new(service_id, username, password, token_id).refresh_sms_jwt
   end
 end
