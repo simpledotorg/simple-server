@@ -21,8 +21,8 @@ agent:
   machine:
     type: e1-standard-2
     os_image: ubuntu1804
-promotions:
-  - name: Ethiopia Production Deployment
-    pipeline_file: ethiopia_production_deployment.yml
-    auto_promote:
-      when: (branch = 'master' AND result = 'passed') OR (tag =~ '^release-.*' AND result = 'passed')
+# promotions:
+#   - name: Ethiopia Production Deployment
+#     pipeline_file: ethiopia_production_deployment.yml
+#     auto_promote:
+#       when: (branch = 'master' AND result = 'passed') OR (tag =~ '^release-.*' AND result = 'passed')
