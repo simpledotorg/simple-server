@@ -3,7 +3,7 @@ require "rake"
 
 Rails.application.load_tasks
 
-RSpec.describe "RefreshBsnlSmsJwt" do
+RSpec.describe "Bsnl" do
   after do
     Rake::Task["bsnl:refresh_sms_jwt"].reenable
   end

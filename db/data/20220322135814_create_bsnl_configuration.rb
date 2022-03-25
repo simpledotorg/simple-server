@@ -6,7 +6,7 @@ class CreateBsnlConfiguration < ActiveRecord::Migration[5.2]
 
     rake = Rake.application
     rake.init
-    rake.add_import "lib/tasks/refresh_bsnl_sms_jwt.rake"
+    rake.add_import "lib/tasks/bsnl.rake"
     rake.load_rakefile
 
     Configuration.create(name: "bsnl_sms_jwt", value: "jwt")
