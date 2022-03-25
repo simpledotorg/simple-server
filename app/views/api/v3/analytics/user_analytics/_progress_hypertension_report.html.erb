@@ -109,7 +109,7 @@
           <%= t("progress_tab.diagnosis_report.cohort_report.cohort_title", period: cohort[:results_in]) %>
         </p>
         <p class="m-0px mb-8px p-0px ta-left fw-reguar fs-16px c-grey-dark">
-          <%= t("progress_tab.diagnosis_report.cohort_report.cohort_subtitle", number_of_patients: cohort[:registered], patient_or_patients: "patient".pluralize(cohort[:registered]), registration_period: cohort[:patients_registered]) %>
+          <%= t("progress_tab.diagnosis_report.cohort_report.cohort_subtitle", number_of_patients: cohort[:registered] || 0, patient_or_patients: "patient".pluralize(cohort[:registered] || 0), registration_period: cohort[:patients_registered]) %>
         </p>
         <%= render partial: "api/v3/analytics/user_analytics/data_stacked_bar_graph", locals: { data: cohort } %>
       </div>
