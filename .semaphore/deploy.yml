@@ -51,6 +51,10 @@ promotions:
     pipeline_file: ethiopia_demo_deployment.yml
     auto_promote:
       when: (branch = 'master' AND result = 'passed') OR (tag =~ '^release-.*' AND result = 'passed')
+  - name: Ethiopia ettest Deployment 
+    pipeline_file: ethiopia_ettest_deployment.yml
+    auto_promote:
+      when: (branch = 'ettest' AND result = 'passed') OR (tag =~ '^release-.*' AND result = 'passed')     
   - name: Sri Lanka Demo Deployment
     pipeline_file: sri_lanka_demo_deployment.yml
     auto_promote:
