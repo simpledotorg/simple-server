@@ -1,3 +1,5 @@
+<%= render "drug_stock_nav" %>
+
 <div class="row">
   <div class="col-lg-12">
     <div class="card card-responsive">
@@ -6,11 +8,6 @@
           <h3>
             Drug consumption during <%= @for_end_of_month_display %>
           </h3>
-          <% if @facilities.present? %>
-            <p class="c-grey-dark">
-              Last updated: <%= @report&.fetch(:last_updated_at) %>
-            </p>
-          <% end %>
         </div>
 
         <p class="mb-4">

@@ -1,22 +1,14 @@
+<%= render "facilities_tables_nav" %>
+
 <div class="row">
   <div class="col-lg-12">
     <div class="card-responsive bg-white bs-small br-4px">
-      <div class="pt-16px ph-16px">
-        <div class="d-lg-flex align-lg-baseline justify-lg-between">
-          <h3 class="mb-8px mb-lg-0">
-            BP not controlled
-          </h3>
-          <p class="c-grey-medium">
-            Last updated on <%= @last_updated_at %>
-          </p>
-        </div>
-        <p class="mb-4px c-grey-dark">
-          <strong>What to look for:</strong> Low percentages are good, and 10% or lower is ideal
-        </p>
-        <p class="c-grey-dark c-print-black">
-          <strong>Numerator:</strong> <%= t("bp_not_controlled_copy.numerator") %>
-          <strong>Denominator:</strong>
-          <%= t("denominator_copy", region_name: "each facility") %>
+      <div class="p-16px">
+        <h2 class="mb-8px">
+          BP not controlled
+        </h2>
+        <p class="c-grey-dark">
+          <%= t("bp_not_controlled_copy.reports_card_subtitle") %>
         </p>
       </div>
       <div class="d-flex fw-wrap mb-16px ph-16px">
@@ -49,17 +41,17 @@
             </colgroup>
             <thead>
               <tr data-sort-method="thead" class="sorts">
-                <th class="row-label sort-label sort-label-small" data-sort-default>
+                <th class="row-label sort-label sort-label-small sticky" data-sort-default>
                   Facilities
                 </th>
-                <th class="row-label sort-label sort-label-small" data-sort-method="number">
+                <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
                   Total assigned<br>patients
                 </th>
-                <th class="row-label sort-label sort-label-small" data-sort-method="number">
+                <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
                   Total registered<br>patients
                 </th>
                 <th
-                  class="row-label sort-label sort-label-small"
+                  class="row-label sort-label sort-label-small sticky"
                   data-sort-column-key="6-month-change"
                   data-sort-method="number"
                   colspan="2"
@@ -68,7 +60,7 @@
                 </th>
                 <% (@start_period..@period).each do |period| %>
                   <th
-                    class="row-label sort-label sort-label-small"
+                    class="row-label sort-label sort-label-small sticky"
                     data-sort-column-key="total-patients-<%= period %>"
                     data-sort-method="number"
                   >
@@ -201,4 +193,41 @@
     </div>
   </div>
 </div>
+
+<div class="mt-32px mb-64px ph-20px">
+  <h3 class="mb-16px pb-8px fw-bold c-grey-dark bb-1px bb-grey-medium">
+    How to interpret this table?
+  </h3>
+  <div class="mb-24px">
+    <p class="mb-8px fs-16px fw-bold c-grey-dark">
+      What to look for
+    </p>
+    <div class="pl-16px">
+      <p class="mb-8px fs-14px c-grey-dark">
+        Low percentages are good, and 10% or lower is ideal
+      </p>
+    </div>
+  </div>
+  <div class="mb-24px">
+    <p class="mb-8px fs-16px fw-bold c-grey-dark">
+      Numerator
+    </p>
+    <div class="pl-16px">
+      <p class="mb-8px fs-14px c-grey-dark">
+        <%= t("bp_not_controlled_copy.numerator") %>
+      </p>
+    </div>
+  </div>
+  <div class="mb-24px">
+    <p class="mb-8px fs-16px fw-bold c-grey-dark">
+      Denominator
+    </p>
+    <div class="pl-16px">
+      <p class="mb-8px fs-14px c-grey-dark">
+        <%= t("denominator_copy", region_name: "each facility") %>
+      </p>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js" integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>

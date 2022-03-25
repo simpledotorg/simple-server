@@ -30,8 +30,6 @@ RSpec.describe "Admin authentication", type: :request do
       expect(RequestStore.store[:current_user]["usr.access_level"]).to eq("power_user")
       Thread.current[:request_store] = {}
 
-      expect(response).to redirect_to("/my_facilities")
-
       delete "/email_authentications/sign_out"
 
       expect(RequestStore.store[:current_user]).to be_nil

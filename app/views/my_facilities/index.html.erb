@@ -1,11 +1,23 @@
 <% content_for :title do %>
- Overview
+ Home
 <% end %>
 
+<h1 class="page-header">
+  Home
+</h1>
 <div class="d-flex row">
   <div class="col-lg-6">
     <%= render "shared/user_approvals" %>
     <%= render "recent_updates" %>
+    
+    <% if CountryConfig.current[:name] == "India" %>
+      <%= render "shared/office_hours_india" %>
+    <% elsif CountryConfig.current[:name] == "Bangladesh" %>
+      <%= render "shared/office_hours_bangladesh" %>
+    <% elsif CountryConfig.current[:name] == "Ethiopia" %>
+      <%= render "shared/office_hours_ethiopia" %>
+    <% end %>
+    
     <%= render "upcoming_improvements" %>
   </div>
   <div class="col-lg-6">
