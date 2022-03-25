@@ -107,5 +107,7 @@ every :day, at: local("4:00 am"), roles: [:cron] do
 end
 
 every :week, at: local("01:00 am"), roles: [:cron] do
-  rake "bsnl:refresh_sms_jwt"
+  if CountryConfig.current_country?("India") && SimpleServer.env.production?
+    rake "bsnl:refresh_sms_jwt"
+  end
 end
