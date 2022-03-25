@@ -17,7 +17,7 @@
   </div>
   <div class="d-flex actions order-1 mb-24px order-lg-2 mb-lg-0 text-grey">
     <% if @facilities.present? %>
-      Last updated on <%= @report&.fetch(:last_updated_at).to_s(:day_mon_year_time) %>
+      Last updated on <%= @report&.fetch(:last_updated_at)&.to_s(:day_mon_year_time) %>
   <% end %>
   </div>
 </div>
