@@ -36,7 +36,7 @@ RSpec.describe "RefreshBsnlSmsJwt" do
 
       request = stub_request(:post, "https://bulksms.bsnl.in:5010/api/Create_New_API_Token").to_return(body: "\"new_jwt\"")
 
-      expect { Rake::Task["bsnl:refresh_sms_jwt"].invoke }.not_to raise_error(SystemExit)
+      expect { Rake::Task["bsnl:refresh_sms_jwt"].invoke }.not_to raise_error
       expect(request).to have_been_made
       expect(Configuration.fetch("bsnl_sms_jwt")).to eq("new_jwt")
     end

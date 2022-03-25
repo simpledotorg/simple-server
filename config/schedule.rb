@@ -105,3 +105,7 @@ every :day, at: local("4:00 am"), roles: [:cron] do
     rake "dhis2:maharashtra_export"
   end
 end
+
+every :week, at: local("01:00 am"), roles: [:cron] do
+  rake "bsnl:refresh_sms_jwt"
+end
