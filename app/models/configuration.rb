@@ -3,6 +3,6 @@ class Configuration < ApplicationRecord
   validates :value, presence: true
 
   def self.fetch(name)
-    Configuration.find_by(name: name).value
+    find_by(name: name)&.value
   end
 end
