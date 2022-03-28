@@ -18,9 +18,9 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
 
     @drug_stocks = DrugStock.latest_for_facilities_grouped_by_protocol_drug(current_facility, @for_end_of_month)
     unless @drug_stocks.empty?
-      @query = DrugStocksQuery.new(facilities: [current_facility],
+      @drug_stocks_query = DrugStocksQuery.new(facilities: [current_facility],
         for_end_of_month: @for_end_of_month)
-      @drugs_by_category = @query.protocol_drugs_by_category
+      @drugs_by_category = @drug_stocks_query.protocol_drugs_by_category
     end
 
     respond_to do |format|

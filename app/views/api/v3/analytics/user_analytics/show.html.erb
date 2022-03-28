@@ -33,7 +33,7 @@
             <a
               class="d-flex ai-center w-32px h-32px"
               href="#"
-              onclick="openWindow('progress-registrations-help', 'progress-start'); return false"
+              onclick="openWindow('progress-help-registrations', 'progress-start'); return false"
             >
               <%= inline_file("help-circle.svg") %>
             </a>
@@ -54,7 +54,7 @@
             <a
               class="d-flex ai-center w-32px h-32px"
               href="#"
-              onclick="openWindow('progress-follow-ups-help', 'progress-start'); return false"
+              onclick="openWindow('progress-help-follow-ups', 'progress-start'); return false"
             >
               <%= inline_file("help-circle.svg") %>
             </a>
@@ -187,8 +187,8 @@
       <%= render partial: "api/v3/analytics/user_analytics/progress_controlled_help" %>
       <%= render partial: "api/v3/analytics/user_analytics/progress_cohort_report" %>
     <% end %>
-    <%= render partial: "api/v3/analytics/user_analytics/progress_registrations_help" %> 
-    <%= render partial: "api/v3/analytics/user_analytics/progress_follow_ups_help" %> 
+    <%= render partial: "api/v3/analytics/user_analytics/progress_help_registrations" %> 
+    <%= render partial: "api/v3/analytics/user_analytics/progress_help_follow_ups" %> 
   </body>
   <%= inline_js("standalone/user_analytics.js") %>
 </html>
