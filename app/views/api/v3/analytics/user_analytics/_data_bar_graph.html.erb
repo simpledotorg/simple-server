@@ -1,9 +1,9 @@
 <% min_height = 15 %>
 <% data_point_heights = data["rates"].map { |value| percentage(value, data["rates"].max).to_i } %>
 <div class="d-flex fd-column h-160px">
-  <div class="f-1 d-flex" data-graph-type="bar-chart" data-with-tooltip="<%= show_tooltip %>">
+  <div class="p-relative f-1 d-flex" data-graph-type="bar-chart" data-with-tooltip="<%= show_tooltip %>">
     <% data["period_info"].each_with_index do |period, index| %>
-      <div class="p-relative f-1 d-flex fd-column ai-center jc-flex-end" data-graph-element="bar">
+      <div class="f-1 d-flex fd-column ai-center jc-flex-end" data-graph-element="bar">
         <p class="m-0px mb-4px p-0px ta-center fw-medium fs-16px c-black ttf-ease-in-out td-0_25s tp-color" data-element-type="text">
           <%= data["rates"][index] %><% if data_type == "percentage" %>%<% end %>
         </p>
