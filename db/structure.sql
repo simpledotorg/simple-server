@@ -10,20 +10,6 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-
-
---
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
---
-
--- COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
-
---
 -- Name: ltree; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -64,7 +50,7 @@ CREATE TYPE public.gender_enum AS ENUM (
 
 SET default_tablespace = '';
 
-SET default_with_oids = false;
+SET default_table_access_method = heap;
 
 --
 -- Name: accesses; Type: TABLE; Schema: public; Owner: -
@@ -181,7 +167,7 @@ CREATE TABLE public.facilities (
     slug character varying,
     zone character varying,
     enable_diabetes_management boolean DEFAULT false NOT NULL,
-    facility_size character varying NOT NULL,
+    facility_size character varying,
     monthly_estimated_opd_load integer,
     enable_teleconsultation boolean DEFAULT false NOT NULL
 );
@@ -1368,52 +1354,52 @@ CREATE TABLE public.reminder_templates (
 
 CREATE MATERIALIZED VIEW public.reporting_daily_follow_ups AS
  WITH follow_up_blood_pressures AS (
-         SELECT DISTINCT ON (p.id, bp.facility_id, ((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))))::integer)) p.id AS patient_id,
+         SELECT DISTINCT ON (p.id, bp.facility_id, ((EXTRACT(doy FROM ((bp.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer)) p.id AS patient_id,
             (p.gender)::public.gender_enum AS patient_gender,
             bp.id AS visit_id,
             'BloodPressure'::text AS visit_type,
             bp.facility_id,
             bp.user_id,
             bp.recorded_at AS visited_at,
-            (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))))::integer AS day_of_year
+            (EXTRACT(doy FROM ((bp.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer AS day_of_year
            FROM (public.patients p
-             JOIN public.blood_pressures bp ON (((p.id = bp.patient_id) AND (date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))) > date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
+             JOIN public.blood_pressures bp ON (((p.id = bp.patient_id) AND (date_trunc('day'::text, ((bp.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))) > date_trunc('day'::text, ((p.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))))))
           WHERE ((p.deleted_at IS NULL) AND (bp.recorded_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
         ), follow_up_blood_sugars AS (
-         SELECT DISTINCT ON (p.id, bs.facility_id, ((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))))::integer)) p.id AS patient_id,
+         SELECT DISTINCT ON (p.id, bs.facility_id, ((EXTRACT(doy FROM ((bs.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer)) p.id AS patient_id,
             (p.gender)::public.gender_enum AS patient_gender,
             bs.id AS visit_id,
             'BloodSugar'::text AS visit_type,
             bs.facility_id,
             bs.user_id,
             bs.recorded_at AS visited_at,
-            (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))))::integer AS day_of_year
+            (EXTRACT(doy FROM ((bs.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer AS day_of_year
            FROM (public.patients p
-             JOIN public.blood_sugars bs ON (((p.id = bs.patient_id) AND (date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))) > date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
+             JOIN public.blood_sugars bs ON (((p.id = bs.patient_id) AND (date_trunc('day'::text, ((bs.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))) > date_trunc('day'::text, ((p.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))))))
           WHERE ((p.deleted_at IS NULL) AND (bs.recorded_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
         ), follow_up_prescription_drugs AS (
-         SELECT DISTINCT ON (p.id, pd.facility_id, ((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at))))::integer)) p.id AS patient_id,
+         SELECT DISTINCT ON (p.id, pd.facility_id, ((EXTRACT(doy FROM ((pd.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer)) p.id AS patient_id,
             (p.gender)::public.gender_enum AS patient_gender,
             pd.id AS visit_id,
             'PrescriptionDrug'::text AS visit_type,
             pd.facility_id,
             pd.user_id,
             pd.device_created_at AS visited_at,
-            (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at))))::integer AS day_of_year
+            (EXTRACT(doy FROM ((pd.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer AS day_of_year
            FROM (public.patients p
-             JOIN public.prescription_drugs pd ON (((p.id = pd.patient_id) AND (date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at))) > date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
+             JOIN public.prescription_drugs pd ON (((p.id = pd.patient_id) AND (date_trunc('day'::text, ((pd.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))) > date_trunc('day'::text, ((p.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))))))
           WHERE ((p.deleted_at IS NULL) AND (pd.device_created_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
         ), follow_up_appointments AS (
-         SELECT DISTINCT ON (p.id, app.creation_facility_id, ((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at))))::integer)) p.id AS patient_id,
+         SELECT DISTINCT ON (p.id, app.creation_facility_id, ((EXTRACT(doy FROM ((app.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer)) p.id AS patient_id,
             (p.gender)::public.gender_enum AS patient_gender,
             app.id AS visit_id,
             'Appointment'::text AS visit_type,
             app.creation_facility_id AS facility_id,
             app.user_id,
             app.device_created_at AS visited_at,
-            (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at))))::integer AS day_of_year
+            (EXTRACT(doy FROM ((app.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer AS day_of_year
            FROM (public.patients p
-             JOIN public.appointments app ON (((p.id = app.patient_id) AND (date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at))) > date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
+             JOIN public.appointments app ON (((p.id = app.patient_id) AND (date_trunc('day'::text, ((app.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))) > date_trunc('day'::text, ((p.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))))))
           WHERE ((p.deleted_at IS NULL) AND (app.device_created_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
         ), all_follow_ups AS (
          SELECT follow_up_blood_pressures.patient_id,
@@ -3683,6 +3669,14 @@ ALTER TABLE ONLY public.addresses
 
 
 --
+-- Name: notifications appointment_reminders_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.notifications
+    ADD CONSTRAINT appointment_reminders_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: appointments appointments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3843,19 +3837,19 @@ ALTER TABLE ONLY public.flipper_gates
 
 
 --
+-- Name: users master_users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT master_users_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: medical_histories medical_histories_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.medical_histories
     ADD CONSTRAINT medical_histories_pkey PRIMARY KEY (id);
-
-
---
--- Name: notifications notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.notifications
-    ADD CONSTRAINT notifications_pkey PRIMARY KEY (id);
 
 
 --
@@ -3891,14 +3885,6 @@ ALTER TABLE ONLY public.patient_business_identifiers
 
 
 --
--- Name: patient_phone_numbers patient_phone_numbers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.patient_phone_numbers
-    ADD CONSTRAINT patient_phone_numbers_pkey PRIMARY KEY (id);
-
-
---
 -- Name: patients patients_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3912,6 +3898,14 @@ ALTER TABLE ONLY public.patients
 
 ALTER TABLE ONLY public.phone_number_authentications
     ADD CONSTRAINT phone_number_authentications_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: patient_phone_numbers phone_numbers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.patient_phone_numbers
+    ADD CONSTRAINT phone_numbers_pkey PRIMARY KEY (id);
 
 
 --
@@ -4000,14 +3994,6 @@ ALTER TABLE ONLY public.twilio_sms_delivery_details
 
 ALTER TABLE ONLY public.user_authentications
     ADD CONSTRAINT user_authentications_pkey PRIMARY KEY (id);
-
-
---
--- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.users
-    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
 
 
 --
@@ -5155,11 +5141,11 @@ ALTER TABLE ONLY public.treatment_group_memberships
 
 
 --
--- Name: communications fk_rails_17477eedd4; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: drug_stocks fk_rails_1c0d01ebd1; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.communications
-    ADD CONSTRAINT fk_rails_17477eedd4 FOREIGN KEY (notification_id) REFERENCES public.notifications(id);
+ALTER TABLE ONLY public.drug_stocks
+    ADD CONSTRAINT fk_rails_1c0d01ebd1 FOREIGN KEY (facility_id) REFERENCES public.facilities(id);
 
 
 --
@@ -5176,6 +5162,14 @@ ALTER TABLE ONLY public.treatment_groups
 
 ALTER TABLE ONLY public.patients
     ADD CONSTRAINT fk_rails_256d8f15cb FOREIGN KEY (registration_facility_id) REFERENCES public.facilities(id);
+
+
+--
+-- Name: notifications fk_rails_35bea55cab; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.notifications
+    ADD CONSTRAINT fk_rails_35bea55cab FOREIGN KEY (experiment_id) REFERENCES public.experiments(id);
 
 
 --
@@ -5251,6 +5245,14 @@ ALTER TABLE ONLY public.patients
 
 
 --
+-- Name: communications fk_rails_6a806d798a; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.communications
+    ADD CONSTRAINT fk_rails_6a806d798a FOREIGN KEY (notification_id) REFERENCES public.notifications(id);
+
+
+--
 -- Name: blood_sugars fk_rails_7c63b0ef2d; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5315,22 +5317,6 @@ ALTER TABLE ONLY public.clean_medicine_to_dosages
 
 
 --
--- Name: notifications fk_rails_a0b99d451b; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.notifications
-    ADD CONSTRAINT fk_rails_a0b99d451b FOREIGN KEY (experiment_id) REFERENCES public.experiments(id);
-
-
---
--- Name: notifications fk_rails_aa9c165c6f; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.notifications
-    ADD CONSTRAINT fk_rails_aa9c165c6f FOREIGN KEY (reminder_template_id) REFERENCES public.reminder_templates(id);
-
-
---
 -- Name: exotel_phone_number_details fk_rails_b7da75c721; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5387,11 +5373,19 @@ ALTER TABLE ONLY public.accesses
 
 
 --
--- Name: notifications fk_rails_e966d86b08; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: notifications fk_rails_e63a74423b; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.notifications
-    ADD CONSTRAINT fk_rails_e966d86b08 FOREIGN KEY (patient_id) REFERENCES public.patients(id);
+    ADD CONSTRAINT fk_rails_e63a74423b FOREIGN KEY (reminder_template_id) REFERENCES public.reminder_templates(id);
+
+
+--
+-- Name: notifications fk_rails_edf5e7210c; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.notifications
+    ADD CONSTRAINT fk_rails_edf5e7210c FOREIGN KEY (patient_id) REFERENCES public.patients(id);
 
 
 --
@@ -5401,6 +5395,203 @@ ALTER TABLE ONLY public.notifications
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20180509061518'),
+('20180510090438'),
+('20180510102039'),
+('20180516103835'),
+('20180522110435'),
+('20180523111001'),
+('20180524113536'),
+('20180528103059'),
+('20180529105725'),
+('20180603184000'),
+('20180603185002'),
+('20180604085551'),
+('20180606024835'),
+('20180607015458'),
+('20180607063809'),
+('20180608081018'),
+('20180614061014'),
+('20180619105933'),
+('20180621114114'),
+('20180622104921'),
+('20180701191522'),
+('20180716214337'),
+('20180730082447'),
+('20180801021322'),
+('20180807101604'),
+('20180808093531'),
+('20180822071129'),
+('20180904083728'),
+('20180919091200'),
+('20180921095941'),
+('20180926084225'),
+('20181008050747'),
+('20181115091323'),
+('20181115091324'),
+('20181123071408'),
+('20181127085041'),
+('20181128012620'),
+('20181202095202'),
+('20181207112413'),
+('20181224051848'),
+('20181224051858'),
+('20181227081322'),
+('20181228064557'),
+('20190124181118'),
+('20190124181733'),
+('20190124181746'),
+('20190214075550'),
+('20190220085744'),
+('20190315160807'),
+('20190322071636'),
+('20190401101313'),
+('20190402050907'),
+('20190411101836'),
+('20190419110628'),
+('20190419110744'),
+('20190430140043'),
+('20190510124318'),
+('20190510131035'),
+('20190510143758'),
+('20190510143922'),
+('20190510143923'),
+('20190510143924'),
+('20190510143925'),
+('20190510143926'),
+('20190529085112'),
+('20190529120752'),
+('20190623191212'),
+('20190715121041'),
+('20190715122633'),
+('20190802121156'),
+('20190827061512'),
+('20190827061612'),
+('20190827061712'),
+('20190828011312'),
+('20190828133606'),
+('20190828133611'),
+('20190828133615'),
+('20190828133620'),
+('20190828133624'),
+('20190828133628'),
+('20190905131707'),
+('20190905131721'),
+('20190905131736'),
+('20191003064554'),
+('20191007100156'),
+('20191007100157'),
+('20191007100158'),
+('20191009085236'),
+('20191022080653'),
+('20191025120438'),
+('20191105114448'),
+('20191111081404'),
+('20191118113108'),
+('20191121075139'),
+('20191206165546'),
+('20191210103929'),
+('20191210131121'),
+('20191213151620'),
+('20191220103935'),
+('20191225171020'),
+('20191225171641'),
+('20191230103921'),
+('20200103112932'),
+('20200123123135'),
+('20200123123144'),
+('20200127123121'),
+('20200128102802'),
+('20200210074711'),
+('20200210110351'),
+('20200218082025'),
+('20200224131635'),
+('20200228094952'),
+('20200304073131'),
+('20200330113845'),
+('20200409071355'),
+('20200410201924'),
+('20200416091918'),
+('20200421132003'),
+('20200430141834'),
+('20200430144041'),
+('20200504204839'),
+('20200505104339'),
+('20200511081004'),
+('20200511135921'),
+('20200514193029'),
+('20200515072317'),
+('20200515101844'),
+('20200521143843'),
+('20200527182353'),
+('20200528113707'),
+('20200528113844'),
+('20200605103543'),
+('20200612054350'),
+('20200616111304'),
+('20200703070251'),
+('20200708201410'),
+('20200715104703'),
+('20200716070836'),
+('20200716084425'),
+('20200717062323'),
+('20200728074416'),
+('20200810095935'),
+('20200811135315'),
+('20200821072154'),
+('20200824112700'),
+('20200831222026'),
+('20200902074027'),
+('20200902174738'),
+('20200904102220'),
+('20200904103339'),
+('20200908183016'),
+('20200914073359'),
+('20200916194451'),
+('20200916204008'),
+('20200917184207'),
+('20201001194549'),
+('20201009131102'),
+('20201009131854'),
+('20201012091028'),
+('20201021062248'),
+('20201030091557'),
+('20201102150828'),
+('20201103092409'),
+('20201202074942'),
+('20201218061336'),
+('20201218062046'),
+('20201224074852'),
+('20210107060947'),
+('20210107092746'),
+('20210107112850'),
+('20210108060640'),
+('20210120062330'),
+('20210120081308'),
+('20210205115506'),
+('20210217111153'),
+('20210220065508'),
+('20210224120024'),
+('20210309112622'),
+('20210310102235'),
+('20210310105007'),
+('20210310122746'),
+('20210324113651'),
+('20210325162125'),
+('20210325164154'),
+('20210325164207'),
+('20210325164437'),
+('20210329202937'),
+('20210407214406'),
+('20210412122537'),
+('20210413211941'),
+('20210506095001'),
+('20210506095327'),
+('20210506095835'),
+('20210506095848'),
+('20210506095905'),
+('20210506095914'),
+('20210514060816'),
 ('20210517195627'),
 ('20210517201622'),
 ('20210517213259'),
@@ -5468,7 +5659,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211209110618'),
 ('20211210152751'),
 ('20211210152752'),
-('20211214014913'),
 ('20211215192748'),
 ('20211216144440'),
 ('20211216154413'),
@@ -5476,7 +5666,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20211231084747'),
 ('20211231110314'),
 ('20220106075216'),
-('20220112142707'),
 ('20220118190607'),
 ('20220124212048'),
 ('20220124215220'),

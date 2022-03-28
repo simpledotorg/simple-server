@@ -1,6 +1,6 @@
 <% content_for(:content) do %>
   <h1 class="page-header">
-    Overdue patients
+    The Overdue patients
   </h1>
   <p>
     Patients that are overdue for a follow-up visit<% if current_admin.accessible_facilities(:manage_overdue_list) %>. If you select a facility, you can download a patient list.<% end %>
@@ -28,7 +28,7 @@
       <% end %>
       <label>
         <button type="submit" class="btn btn-sm btn-outline-primary">
-          Apply filters
+          Apply your filters
         </button>
       </label>
     <% end %>
