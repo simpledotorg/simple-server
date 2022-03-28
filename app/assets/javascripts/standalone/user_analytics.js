@@ -357,11 +357,11 @@ function setTooltipCopyPosition(copyElement, containerElement, barElement) {
   const index = parseInt(containerElement.getAttribute("data-tooltip-index"));
   const totalTooltips = parseInt(containerElement.getAttribute("data-tooltip-length"));
 
-  if (index === 0) {
-    copyElement.style.left = 0;
-  }
-  else if (index === totalTooltips - 1) {
+  if (index === totalTooltips - 1) {
     copyElement.style.left = `${containerElement.offsetLeft + (containerElement.offsetWidth - copyElement.offsetWidth) - 1}px`;
+  }
+  else if (index === 1) {
+    copyElement.style.left = 0;
   }
   else {
     copyElement.style.left = `${barElement.offsetLeft + ((barElement.offsetWidth / 2) - (copyElement.offsetWidth / 2))}px`;
