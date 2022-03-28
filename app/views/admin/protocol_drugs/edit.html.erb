@@ -1,5 +1,5 @@
-<nav class="breadcrumb">
+<nav class="breadcrumb mt-n3 mt-md-0">
 	<%= link_to "Medication lists", admin_protocols_path, class: "#{active_controller?("admin/protocols")}" %> <i class="fas fa-chevron-right"></i> <%= link_to @protocol.name, [:admin, @protocol] %> <i class="fas fa-chevron-right"></i> Edit medication
 </nav>
-<h1>Edit medication</h1>
+<h1 class="mt-32px">Edit medication</h1>
 <%= render 'form', protocol_drug: @protocol_drug %>
