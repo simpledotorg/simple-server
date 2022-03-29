@@ -80,7 +80,7 @@ class GetBsnlTemplateDetails
 
   def locale_keys_by_language
     Dir.glob("config/locales/notifications/*").to_h do |file_name|
-      [file_name, flatten_translations(nil, YAML.load(File.open(file_name)), nil, false).keys.map(&:to_s)]
+      [file_name, flatten_translations(nil, YAML.safe_load(File.open(file_name)), nil, false).keys.map(&:to_s)]
     end
   end
 

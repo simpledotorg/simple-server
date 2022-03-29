@@ -6,7 +6,6 @@ class Messaging::Bsnl::Api
     post("/api/Get_Content_Template_Details")["Content_Template_Ids"]
   end
 
-
   def self.credentials
     {
       header: ENV["BSNL_IHCI_HEADER"],
