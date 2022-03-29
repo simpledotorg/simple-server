@@ -12,13 +12,13 @@ class Messaging::Bsnl::Api
     {
       header: ENV["BSNL_IHCI_HEADER"],
       message_type: "SI",
-      entity_id: ENV["BSNL_IHCI_DLT_ID"],
+      entity_id: ENV["BSNL_IHCI_ENTITY_ID"],
       jwt: ENV["BSNL_JWT_TOKEN"]
     }
   end
 
   def self.post(path, body = nil)
-    raise Messaging::Error "Credentials missing" unless credentials.values.all?
+    raise Messaging::Error "Missing BSNL credentials" unless credentials.values.all?
 
     http = Net::HTTP.new(HOST, PORT)
     http.use_ssl = true
