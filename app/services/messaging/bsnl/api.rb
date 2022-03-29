@@ -3,7 +3,10 @@ class Messaging::Bsnl::Api
   PORT = 5010
 
   def initialize
-    raise Messaging::Error "Missing BSNL credentials" unless credentials.values.all?
+    unless credentials.values.all?
+      raise Messaging::Bsnl::Error.new("Missing BSNL credentials")
+    end
+  end
   end
 
   def get_template_details
@@ -17,7 +20,7 @@ class Messaging::Bsnl::Api
       header: ENV["BSNL_IHCI_HEADER"],
       message_type: "SI",
       entity_id: ENV["BSNL_IHCI_ENTITY_ID"],
-      jwt: ENV["BSNL_JWT_TOKEN"]
+      jwt: Configuration.fetch("bsnl_sms_jwt")
     }
   end
 
