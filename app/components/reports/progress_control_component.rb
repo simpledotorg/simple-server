@@ -23,15 +23,19 @@ class Reports::ProgressControlComponent < ViewComponent::Base
     number_with_delimiter(number)
   end
 
-  def controlled
-    repository.controlled[@region.slug]
-  end
-
   def control_rates
     repository.controlled_rates[@region.slug]
   end
 
+  def controlled
+    repository.controlled[@region.slug]
+  end
+
   def adjusted_patients
     repository.adjusted_patients[@region.slug]
+  end
+
+  def period_info
+    repository.period_info(@region)
   end
 end
