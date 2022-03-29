@@ -23,7 +23,7 @@ class RefreshBsnlSmsJwt
     if response.is_a?(Net::HTTPSuccess)
       jwt = response.body.delete_prefix('"').delete_suffix('"')
       config = Configuration.find_or_create_by(name: "bsnl_sms_jwt")
-      config.update(value: jwt)
+      config.update!(value: jwt)
     end
   end
 end

@@ -7,7 +7,6 @@ class Messaging::Bsnl::Api
       raise Messaging::Bsnl::Error.new("Missing BSNL credentials")
     end
   end
-  end
 
   def get_template_details
     post("/api/Get_Content_Template_Details")["Content_Template_Ids"]

@@ -75,6 +75,7 @@ Haryana:
       '429503': 0.5
       '316049': 1
       '331132': 1
+      'Chlor6.25': 1
 Jharkhand:
   load_coefficient: 1
   drug_categories:
