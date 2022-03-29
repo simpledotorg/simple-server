@@ -22,9 +22,8 @@ class Bsnl
 
     if response.is_a?(Net::HTTPSuccess)
       jwt = response.body.delete_prefix('"').delete_suffix('"')
-      Configuration.find_or_create_by(name: "bsnl_sms_jwt") do |config|
-        config.value = jwt
-      end
+      config = Configuration.find_or_create_by(name: "bsnl_sms_jwt")
+      config.update(value: jwt)
     end
   end
 end
