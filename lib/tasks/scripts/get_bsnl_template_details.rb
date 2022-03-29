@@ -3,7 +3,7 @@ class GetBsnlTemplateDetails
   include Memery
 
   def initialize
-    @template_details = Messaging::Bsnl::Api.get_template_details
+    @template_details = Messaging::Bsnl::Api.new.get_template_details
     @template_names = @template_details.map { |detail| detail["Template_Name"] }
   end
 

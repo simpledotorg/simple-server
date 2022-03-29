@@ -6,6 +6,7 @@ a mapping between IDs assigned by DLT and our messages (identified by locale key
 This is a how-to on interacting with the BSNL and DLT dashboards and maintaining the required mapping with `simple-server`.
 
 ### Managing JWT tokens
+<TODO>
 
 ### Adding new notification strings
 - Add the new notification strings to the locale file (in `config/notifications/locale`)

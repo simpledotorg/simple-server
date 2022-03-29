@@ -2,11 +2,17 @@ class Messaging::Bsnl::Api
   HOST = "bulksms.bsnl.in"
   PORT = 5010
 
-  def self.get_template_details
+  def initialize
+    raise Messaging::Error "Missing BSNL credentials" unless credentials.values.all?
+  end
+
+  def get_template_details
     post("/api/Get_Content_Template_Details")["Content_Template_Ids"]
   end
 
-  def self.credentials
+  private
+
+  def credentials
     {
       header: ENV["BSNL_IHCI_HEADER"],
       message_type: "SI",
@@ -15,9 +21,7 @@ class Messaging::Bsnl::Api
     }
   end
 
-  def self.post(path, body = nil)
-    raise Messaging::Error "Missing BSNL credentials" unless credentials.values.all?
-
+  def post(path, body = nil)
     http = Net::HTTP.new(HOST, PORT)
     http.use_ssl = true
     request = Net::HTTP::Post.new(path, "Content-Type" => "application/json")
