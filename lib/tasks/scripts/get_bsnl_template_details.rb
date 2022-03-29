@@ -76,10 +76,10 @@ class GetBsnlTemplateDetails
 
     if list_pending
       info "✔ These messages have been uploaded to BSNL:"
-      puts_list uploaded_templates
+      puts_list uploaded_templates.sort
 
       error "˟ These messages have not been uploaded to BSNL:"
-      puts_list remaining_templates
+      puts_list remaining_templates.sort
     end
   end
 
