@@ -27,15 +27,17 @@ class Messaging::Bsnl::Api
     http = Net::HTTP.new(HOST, PORT)
     http.use_ssl = true
     request = Net::HTTP::Post.new(path, "Content-Type" => "application/json")
-
     request.body = body.to_json if body
     request["Authorization"] = "Bearer #{credentials[:jwt]}"
-    response = http.request(request).body
 
+    json_or_string(http.request(request).body)
+  end
+
+  def json_or_string(string)
     begin
-      JSON.parse(response)
+      JSON.parse(string)
     rescue JSON::ParserError
-      response
+      string.to_s
     end
   end
 end
