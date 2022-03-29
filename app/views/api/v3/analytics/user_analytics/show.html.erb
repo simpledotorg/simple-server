@@ -17,6 +17,7 @@
     <div id="progress-start">
       <div class="mb-8px">
         <p>
+          <%= raw t("analytics.updated", time: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")) %>
           <%= raw t("analytics.updated", time: @service.last_updated_at ? l(@service.last_updated_at) : "") %>
         </p>
         <%= content_tag :div,
@@ -157,9 +158,9 @@
     <% else %>
       <%= render partial: "api/v3/analytics/user_analytics/progress_controlled_help" %>
       <%= render partial: "api/v3/analytics/user_analytics/progress_cohort_report" %>
+      <%= render partial: "api/v3/analytics/user_analytics/progress_registrations_help" %> 
+      <%= render partial: "api/v3/analytics/user_analytics/progress_follow_ups_help" %> 
     <% end %>
-    <%= render partial: "api/v3/analytics/user_analytics/progress_registrations_help" %> 
-    <%= render partial: "api/v3/analytics/user_analytics/progress_follow_ups_help" %> 
   </body>
   <%= inline_js("standalone/user_analytics.js") %>
 </html>
