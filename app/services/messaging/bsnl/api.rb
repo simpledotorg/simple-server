@@ -34,10 +34,8 @@ class Messaging::Bsnl::Api
   end
 
   def json_or_string(string)
-    begin
-      JSON.parse(string)
-    rescue JSON::ParserError
-      string.to_s
-    end
+    JSON.parse(string)
+  rescue JSON::ParserError
+    string.to_s
   end
 end
