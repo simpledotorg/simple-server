@@ -6,7 +6,6 @@ class Messaging::Bsnl::Api
     post("/api/Get_Content_Template_Details")["Content_Template_Ids"]
   end
 
-  private
 
   def self.credentials
     {

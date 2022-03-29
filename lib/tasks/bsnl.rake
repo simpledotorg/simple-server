@@ -13,7 +13,7 @@ namespace :bsnl do
     RefreshBsnlSmsJwt.new(service_id, username, password, token_id).call
   end
 
-  desc "Get BSNL templates details from the API"
+  desc "Get BSNL template details from the API"
   task get_template_details: :environment do
     GetBsnlTemplateDetails.new.call
   end
