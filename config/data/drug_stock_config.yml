@@ -58,6 +58,23 @@ Gujarat:
     hypertension_diuretic:
       new_patient_coefficient: 0.05
       '331132': 1
+Haryana:
+  load_coefficient: 1
+  drug_categories:
+    hypertension_ccb:
+      new_patient_coefficient: 1.4
+      '329528': 1
+      '329526': 2
+    hypertension_arb:
+      new_patient_coefficient: 0.37
+      '316764': 1
+      '316765': 2
+      '979467': 1
+    hypertension_diuretic:
+      new_patient_coefficient: 0.05
+      '429503': 0.5
+      '316049': 1
+      '331132': 1
 Jharkhand:
   load_coefficient: 1
   drug_categories:
