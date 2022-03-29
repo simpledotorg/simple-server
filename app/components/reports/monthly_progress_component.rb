@@ -14,8 +14,6 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
     @total_counts = service.total_counts
     @region = service.region
     @range = service.range.reverse_each
-    @facility = Facility.find_by(name: @region.name)
-    @is_diabetes_enabled = @facility.diabetes_enabled?
   end
 
   def diagnosis_group_class
