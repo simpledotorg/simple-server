@@ -28,7 +28,7 @@
       <%= t("progress_tab.period_report.registered_patients_card.subtitle", facility_name: @region.name) %>
     </p>
     <% registration_options = @service.dimension_combinations_for(:registrations).map { |dimension| dimension.field } %>
-    <%= select_tag "dimensions_for_registrations", options_for_select(registration_options, registration_options.first), class: "w-100 mb-24px p-12px fw-medium fs-16px ls-1_25px tt-uppercase c-blue bgc-blue-light b-none br-1px bs-secondary-button o-none a-none chevron-down-icon", id: "registrations", onchange: "updateMonthlyReport('registrations')" %>
+    <%= render partial: "api/v3/analytics/user_analytics/progress_monthly_period_dropdown", locals: { element_id: "registration" } %>
     <% @service.dimension_combinations_for(:registrations).each do |dimension| %>
       <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service)) %>
     <% end %>
@@ -43,7 +43,7 @@
       <%= t("progress_tab.period_report.follow_up_patients_card.subtitle", facility_name: @region.name) %>
     </p>
     <% follow_ups_options = @service.dimension_combinations_for(:follow_ups).map { |dimension| dimension.field } %>
-    <%= select_tag "dimensions_for_registrations", options_for_select(follow_ups_options, follow_ups_options.first), class: "w-100 mb-24px mb-16px p-12px fw-medium fs-16px ls-1_25px tt-uppercase c-blue bgc-blue-light b-none br-1px bs-secondary-button o-none a-none chevron-down-icon", id: "follow_ups", onchange: "updateMonthlyReport('follow_ups')" %>
+    <% render partial: "api/v3/analytics/user_analytics/progress_monthly_period_dropdown", locals: { element_id: "follow_ups" } %>
     <% @service.dimension_combinations_for(:follow_ups).each do |dimension| %>
       <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service)) %>
     <% end %>

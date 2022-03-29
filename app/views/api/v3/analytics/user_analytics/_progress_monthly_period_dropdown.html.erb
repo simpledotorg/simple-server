@@ -1,0 +1,30 @@
+<select
+  id="<%= element_id %>"
+  class="w-100 mb-24px p-12px fw-medium fs-16px ls-1_25px tt-uppercase c-blue bgc-blue-light b-none br-1px bs-secondary-button o-none a-none chevron-down-icon"
+  onchange="updateMonthlyReport('<%= element_id %>');"
+>
+  <% if @is_diabetes_enabled %>
+    <option value="all">
+      <%= raw t("analytics.all_hypertension_and_diabetes") %>
+    </option>
+  <% end %>
+  <% hypertension_option_text = @is_diabetes_enabled ? "#{raw(t('analytics.hypertension'))}:" : "" %>
+  <option value="hypertension:all">
+    <%= hypertension_option_text + raw(t("analytics.genders.all")) %>
+  </option>
+  <% Patient::GENDERS.each do |gender| %>
+    <option value="hypertension:<%= gender %>">
+      <%= hypertension_option_text + raw(t("analytics.genders." + gender.to_s)) %>
+    </option>
+  <% end %>
+  <% if @is_diabetes_enabled %>
+    <option value="diabetes:all">
+      <%= raw [t("analytics.diabetes"), t("analytics.genders.all")].join(": ") %>
+    </option>
+    <% Patient:GENDERS.each do |gender| %>
+      <option value="diabetes:<%= gender %>">
+        <%= raw [t("analytics.diabetes"), t("analytics.genders." + gender.to_s)].join(": ") %>
+      </option>
+    <% end %>
+  <% end %>
+<select>

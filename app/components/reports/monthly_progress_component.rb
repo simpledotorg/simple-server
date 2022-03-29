@@ -14,6 +14,7 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
     @total_counts = service.total_counts
     @region = service.region
     @range = service.range.reverse_each
+    @is_diabetes_enabled = @region.diabetes_enabled?
     # @last_updated_at = DateTime.parse(last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")
   end
 

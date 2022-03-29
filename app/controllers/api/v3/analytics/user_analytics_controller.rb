@@ -1,4 +1,5 @@
 class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
+
   include ApplicationHelper
   include SetForEndOfMonth
   before_action :set_for_end_of_month
