@@ -20,6 +20,11 @@ class GetBsnlTemplateDetails
     validate_templates
   end
 
+  def validate_templates
+    validate_names
+    validate_statuses
+  end
+
   def write_config_to_tmp_file
     config_output = "tmp/bsnl_template_details.yml"
     config = template_details.to_h do |template|
@@ -36,17 +41,6 @@ class GetBsnlTemplateDetails
     end
     info "Written latest template details to #{config_output}."
     info "Copy it over to config/data/bsnl_template_details.yml."
-  end
-
-  def validate_templates
-    validate_names
-    validate_statuses
-  end
-
-  def locale_keys_by_language
-    Dir.glob("config/locales/notifications/*").to_h do |file_name|
-      [file_name, flatten_translations(nil, YAML.load(File.open(file_name)), nil, false).keys.map(&:to_s)]
-    end
   end
 
   def print_summary(list_pending: false)
@@ -80,6 +74,12 @@ class GetBsnlTemplateDetails
 
       error "˟ These messages have not been uploaded to BSNL:"
       puts_list remaining_templates.sort
+    end
+  end
+
+  def locale_keys_by_language
+    Dir.glob("config/locales/notifications/*").to_h do |file_name|
+      [file_name, flatten_translations(nil, YAML.load(File.open(file_name)), nil, false).keys.map(&:to_s)]
     end
   end
 
