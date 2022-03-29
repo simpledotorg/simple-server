@@ -4,7 +4,7 @@ class Reports::ProgressAssignedPatientsComponent < ViewComponent::Base
   include AssetsHelper
   include ActionView::Helpers::NumberHelper
 
-  attr_reader :repo, :report_month, :last_6_months
+  attr_reader :repository, :region, :report_month, :last_6_months
 
   def initialize(service, period_month)
     @region = service.region
@@ -14,6 +14,6 @@ class Reports::ProgressAssignedPatientsComponent < ViewComponent::Base
   end
 
   def assigned_patients
-    @repository.cumulative_assigned_patients[@region.slug][@report_month]
+    repository.cumulative_assigned_patients[region.slug][@report_month]
   end
 end

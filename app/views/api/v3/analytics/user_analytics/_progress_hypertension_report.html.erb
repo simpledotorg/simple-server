@@ -29,14 +29,14 @@
   <%= render(Reports::ProgressControlComponent.new(@service)) %>
   <%= render(Reports::ProgressUncontrolledComponent.new(@service)) %>
   <%= render(Reports::ProgressMissedVisitsComponent.new(@service)) %>
-  <% if @query %>
+  <% if @drug_stocks_query %>
     <div class="mt-48px mb-16px pr-16px pl-16px">
       <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey-dark">
         <%= t("progress_tab.diagnosis_report.drug_stock_report.section_title") %>
       </h3>
     </div>
     <% @drugs_by_category.each do |category, drugs| %>
-      <% patient_days = @query.patient_days_by_facility_id.dig(@current_facility.id, category, :patient_days) || 0 %>
+      <% patient_days = @drug_stocks_query.patient_days_by_facility_id.dig(@current_facility.id, category, :patient_days) || 0 %>
       <div class="mb-8px p-16px bgc-white bs-card">
         <h3 class="m-0px mb-2px p-0px ta-left fw-medium fs-20px c-black">
           <%= protocol_drug_labels[category][:full] %>
@@ -45,7 +45,7 @@
           <%= patient_days %> days of drug stock
         </p>
         <% drugs.each_with_index do |drug, index| %>
-          <% drug_stock = @query.drugs_in_stock_by_facility_id.dig([@current_facility.id, drug.rxnorm_code]) %>
+          <% drug_stock = @drug_stocks_query.drugs_in_stock_by_facility_id.dig([@current_facility.id, drug.rxnorm_code]) %>
           <div class="d-flex ai-center jc-space-between">
             <p class="m-0px p-0px ta-left fw-regular fs-16px c-black">
               <%= drug.name %> <%= drug.dosage %>
@@ -109,7 +109,7 @@
           <%= t("progress_tab.diagnosis_report.cohort_report.cohort_title", period: cohort[:results_in]) %>
         </p>
         <p class="m-0px mb-8px p-0px ta-left fw-reguar fs-16px c-grey-dark">
-          <%= t("progress_tab.diagnosis_report.cohort_report.cohort_subtitle", number_of_patients: cohort[:registered], patient_or_patients: "patient".pluralize(cohort[:registered]), registration_period: cohort[:patients_registered]) %>
+          <%= t("progress_tab.diagnosis_report.cohort_report.cohort_subtitle", number_of_patients: cohort[:registered] || 0, patient_or_patients: "patient".pluralize(cohort[:registered] || 0), registration_period: cohort[:patients_registered]) %>
         </p>
         <%= render partial: "api/v3/analytics/user_analytics/data_stacked_bar_graph", locals: { data: cohort } %>
       </div>

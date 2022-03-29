@@ -357,11 +357,11 @@ function setTooltipCopyPosition(copyElement, containerElement, barElement) {
   const index = parseInt(containerElement.getAttribute("data-tooltip-index"));
   const totalTooltips = parseInt(containerElement.getAttribute("data-tooltip-length"));
 
-  if (index === 0) {
-    copyElement.style.left = 0;
-  }
-  else if (index === totalTooltips - 1) {
+  if (index === totalTooltips - 1) {
     copyElement.style.left = `${containerElement.offsetLeft + (containerElement.offsetWidth - copyElement.offsetWidth) - 1}px`;
+  }
+  else if (index === 1) {
+    copyElement.style.left = 0;
   }
   else {
     copyElement.style.left = `${barElement.offsetLeft + ((barElement.offsetWidth / 2) - (copyElement.offsetWidth / 2))}px`;
@@ -384,45 +384,4 @@ function setTooltipPosition(tooltipElement, barElement) {
   setTooltipTipPosition(tipElement, barElement);
   // Position tooltip copy
   setTooltipCopyPosition(copyElement, tooltipElement, barElement);
-}
-//
-// Daily report
-//
-function updateDailyReport() {
-  const dropdown = document.getElementById("period-dropdown");
-  const selectValue = dropdown.value;
-
-  const dailyCards = document.querySelectorAll("[data-element='daily-cards']");
-
-  dailyCards.forEach($card => {
-    if ($card.getAttribute("data-date") == selectValue) {
-      $card.classList.remove("d-none");
-      $card.classList.add("d-block");
-    } else {
-      $card.classList.remove("d-block");
-      $card.classList.add("d-none");
-    }
-  });
-}
-
-//
-// Monthly report
-//
-function updateMonthlyReport(elementId) {
-  const registrationsDropdown = document.getElementById(elementId);
-  const selectValue = registrationsDropdown.value;
-
-  const querySelector = "[data-element='monthly-" + elementId + "-card']";
-
-  const monthlyTables = document.querySelectorAll(querySelector);
-
-  monthlyTables.forEach($table => {
-    if ($table.getAttribute("data-dimension-field") == selectValue) {
-      $table.classList.remove("d-none");
-      $table.classList.add("d-block");
-    } else {
-      $table.classList.remove("d-block");
-      $table.classList.add("d-none");
-    }
-  });
 }
