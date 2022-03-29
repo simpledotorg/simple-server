@@ -6,7 +6,7 @@ RSpec.describe Messaging::Bsnl::Api do
     expect { described_class.new.get_template_details }.to raise_error(Messaging::Bsnl::Error)
   end
 
-  it "gets all the templates that" do
+  it "gets all the templates added to DLT" do
     allow(ENV).to receive(:[]).and_call_original
     allow(ENV).to receive(:[]).with("BSNL_IHCI_HEADER").and_return("ABCDEF")
     allow(ENV).to receive(:[]).with("BSNL_IHCI_ENTITY_ID").and_return("123")
