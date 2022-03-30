@@ -28,6 +28,36 @@ describe Notification, type: :model do
     end
   end
 
+  describe "#message_data" do
+    it "returns the variable content and subject's facility's locale" do
+      notification.patient.address.update!(state: "punjab")
+      notification.subject = create(:appointment, patient: notification.patient)
+      facility = notification.subject.facility
+      facility.update!(state: "Maharashtra")
+
+      expect(notification.message_data[:variable_content]).to eq({ facility_name: notification.subject.facility.name,
+                                                                   patient_name: notification.patient.full_name,
+                                                                   appointment_date: notification.subject.scheduled_date.strftime("%d-%m-%Y") })
+      expect(notification.message_data[:locale]).to eq(facility.locale)
+    end
+
+    context "when appointment is not present as the subject" do
+      before { notification.update(subject: nil) }
+
+      it "returns nil appointment_date" do
+        expect(notification.message_data[:variable_content][:appointment_date]).to be_nil
+      end
+
+      it "returns the patient's assigned facility as the facility_name" do
+        expect(notification.message_data[:variable_content][:facility_name]).to eq(notification.patient.assigned_facility.name)
+      end
+
+      it "returns the patient's assigned facility's locale" do
+        expect(notification.message_data[:locale]).to eq(notification.patient.assigned_facility.locale)
+      end
+    end
+  end
+
   describe "#localized_message" do
     it "localizes the message according to the facility state, not the patient's address" do
       notification.patient.address.update!(state: "punjab")
@@ -45,17 +75,18 @@ describe Notification, type: :model do
       expect(notification.localized_message).to eq(expected_message)
     end
 
-    it "provides translation values based on purpose" do
-      covid_medication_reminder = create(:notification, message: "notifications.covid.medication_reminder",
-                                                        subject: nil,
-                                                        purpose: "covid_medication_reminder")
-      expect { covid_medication_reminder.localized_message }.not_to raise_error
+    context "when appointment is not present as the subject" do
+      it " does not throw an error and localizes a message that requires an appointment_date with a blank date" do
+        allow_any_instance_of(Facility).to receive(:locale).and_return("en")
+        patient = notification.patient
+        notification.update(
+          subject: nil,
+          message: "notifications.set01.basic",
+        )
 
-      appointment = create(:appointment)
-      missed_visit_reminder = create(:notification, message: "notifications.set01.basic",
-                                                    purpose: :missed_visit_reminder,
-                                                    subject: appointment)
-      expect(missed_visit_reminder.localized_message).to include(appointment.facility.name)
+        expected_message = "#{patient.full_name}, please visit #{patient.assigned_facility.name} on  for a BP measure and medicines."
+        expect(notification.localized_message).to eq(expected_message)
+      end
     end
   end
 

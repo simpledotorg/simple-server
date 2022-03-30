@@ -32,7 +32,7 @@ notification = Notification.create!(
   patient: patient,
   remind_on: Date.current,
   status: "scheduled",
-  message: "This doesn't matter since test_message will override the localized message.",
+  message: "notifications.set01.basic",
   purpose: "test_message"
 )
 communication = NotificationDispatchService.call(notification)

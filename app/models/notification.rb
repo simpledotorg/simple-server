@@ -38,45 +38,20 @@ class Notification < ApplicationRecord
     status_sent!
   end
 
-  def localized_message
-    return unless patient
+  def message_data
+    return {} unless patient
+    facility = subject&.facility || patient.assigned_facility
 
-    case purpose
-    when "covid_medication_reminder"
-      I18n.t(
-        message,
-        facility_name: patient.assigned_facility.name,
-        patient_name: patient.full_name,
-        locale: patient.locale
-      )
-    when "experimental_appointment_reminder"
-      facility = subject&.facility || patient.assigned_facility
-      I18n.t(
-        message,
-        facility_name: facility.name,
-        patient_name: patient.full_name,
-        appointment_date: subject&.scheduled_date&.strftime("%d-%m-%Y"),
-        locale: facility.locale
-      )
-    when "missed_visit_reminder"
-      I18n.t(
-        message,
-        facility_name: subject.facility.name,
-        patient_name: patient.full_name,
-        appointment_date: subject.scheduled_date.strftime("%d-%m-%Y"),
-        locale: subject.facility.locale
-      )
-    when "test_message"
-      I18n.t(
-        "notifications.set01.basic",
-        facility_name: "Test Facility",
-        patient_name: "Test Patient",
-        appointment_date: Date.today.strftime("%d-%m-%Y"),
-        locale: "en"
-      )
-    else
-      raise ArgumentError, "No localized_message defined for notification of type #{purpose}"
-    end
+    {
+      variable_content: { facility_name: facility.name,
+                          patient_name: patient.full_name,
+                          appointment_date: subject&.scheduled_date&.strftime("%d-%m-%Y") },
+      locale: facility.locale
+    }
+  end
+
+  def localized_message
+    I18n.t(message, **message_data[:variable_content], locale: message_data[:locale])
   end
 
   def self.cancel
