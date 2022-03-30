@@ -18,6 +18,7 @@ describe "Drug Stocks v4 API", swagger_doc: "v4/swagger.json" do
         let(:Authorization) { "Bearer #{request_user.access_token}" }
         let!(:drug_stock) { create(:drug_stock, facility: request_facility, for_end_of_month: Date.new(2021, 10, 31)) }
 
+        schema Api::V4::Schema.drug_stocks_response
         run_test!
       end
 

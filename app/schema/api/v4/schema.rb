@@ -72,6 +72,21 @@ class Api::V4::Schema
       sync_from_user_request(:teleconsultations)
     end
 
+    def drug_stocks_response
+      {
+        type: :object,
+        properties: {
+          month: {"$ref" => "#/definitions/month"},
+          facility_id: {"$ref" => "#/definitions/uuid"},
+          drug_stocks: {
+            type: :array,
+            items: {"$ref" => "#/definitions/drug_stock"},
+            description: "List of drug stocks"
+          }
+        }
+      }
+    end
+
     def patient_activate_request
       {
         type: :object,
