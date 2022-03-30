@@ -8,7 +8,7 @@ class Api::V4::Models
 
     def month
       {type: :string,
-       pattern: '[1-9]{4}\-[0-9]{2}'}
+       pattern: '[1-9]{1}[0-9]{1}\-[0-9]{2}'}
     end
 
     def uuid
