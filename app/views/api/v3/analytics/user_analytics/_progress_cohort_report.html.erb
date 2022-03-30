@@ -1,0 +1,72 @@
+<div id="progress-cohort-report" class="progress-body" style="display: none;">
+  <div class="progress-contents">
+    <a
+      href="#"
+      onclick="closeWindow('progress-cohort-report', 'progress-start'); return false"
+      class="help-back"
+    >
+      <%= inline_svg('icon_back.svg') %>
+    </a>
+    <h2 style="padding-top: 80px; padding-left: 8px;">
+      <%= raw t("analytics.hypertension_cohort_report") %>
+    </h2>
+    <p class="left">
+      <%= raw t("analytics.hypertension_cohort_report_desc") %>
+    </p>
+    <div class="key">
+      <p class="left" style="color: #007A31;">
+        <span class="key-color green"></span> <%= raw t("analytics.patients_with_controlled_bp") %>
+      </p>
+      <p class="left" style="color: #FF3355;">
+        <span class="key-color red"></span> <%= raw t("analytics.patients_with_uncontrolled_bp") %>
+      </p>
+      <p class="left" style="color: #6C737A;">
+        <span class="key-color grey"></span> <%= raw t("analytics.patients_with_no_bp_measure") %>
+      </p>
+    </div>
+    <% @user_analytics.statistics.dig(:cohorts).each do |cohort| %>
+      <div class="card cohort">
+        <h6>
+          <%= cohort[:registered] %> <%= raw t("analytics.patient", count: cohort[:registered]) %>
+          <%= raw t("analytics.registered_in") %> <%= cohort[:patients_registered] %>
+        </h6>
+        <div style="font-size: 16px; margin: 8px 0 12px 0;">
+          <%= raw t("analytics.result_from_last_visit_in") %> <%= cohort[:results_in] %>
+        </div>
+        <table class="cohort-bars">
+          <tr>
+            <% if cohort[:registered].blank? %>
+              <td class="cohort-none">
+                  <%= raw t("analytics.no_patients") %>
+              </td>
+            <% else %>
+              <td class="cohort-nobp" style="width: <%= @user_analytics.cohort_no_bp(cohort) %>;">
+                <%= @user_analytics.cohort_no_bp(cohort) %>
+              </td>
+              <td class="cohort-uncontrolled" style="width: <%= @user_analytics.cohort_uncontrolled(cohort) %>;">
+                <%= @user_analytics.cohort_uncontrolled(cohort) %>
+              </td>
+              <td class="cohort-controlled" style="width: <%= @user_analytics.cohort_controlled(cohort) %>;">
+                <%= @user_analytics.cohort_controlled(cohort) %>
+              </td>
+            <% end %>
+          </tr>
+        </table>
+      </div>
+    <% end %>
+    <h3 style="padding-top: 40px; padding-left: 8px;">
+        <%= raw t("analytics.notes") %>
+    </h3>
+    <ul class="footnotes">
+      <li>
+        <strong> <%= raw t("analytics.numerator") %>:</strong> <%= raw t("analytics.cohort_report_footnote_1") %>
+      </li>
+      <li>
+        <strong> <%= raw t("analytics.denominator") %>:</strong> <%= raw t("analytics.cohort_report_footnote_2") %>
+      </li>
+      <li>
+        <%= raw t("analytics.cohort_report_footnote_3") %>
+      </li>
+    </ul>
+  </div>
+</div>

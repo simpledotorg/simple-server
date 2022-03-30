@@ -157,7 +157,7 @@ en:
         subtitle: "%{diagnosis} patients with a BP taken, a blood sugar taken, an appointment scheduled, or a medication updated at %{facility_name} during a month."
       patient_treatment_outcomes:
         section_title: "Patient treatment outcomes"
-        chart_tooltip: "%{number_of_patients} %{patient_or_patients} with %{threshold} between %{start_period} and %{end_period} of %{number_of_registered_patients} %{patient_or_patients} registered till %{registration_period}."
+        chart_tooltip: "%{number_of_patients} %{number_of_patient_or_patients} with %{threshold} between %{start_period} and %{end_period} of %{number_of_registered_patients} %{number_of_registered_patient_or_patients} registered till %{registration_period}."
         controlled_card:
           subtitle: "%{diagnosis} patients at %{facility_name} registered >3 months ago with %{controlled_threshold} at their last visit in the last 3 months."
           help_tooltip:
@@ -184,8 +184,8 @@ en:
       cohort_report:
         section_title: "Cohort reports" 
         card_title: "Quarterly cohort reports"
-        card_subtitle: "The result for all assigned hypertensive patients registered in a quarter at their follow-up visit in the following two quarters."
-        cohort_title: "Result from last visit in %{start_period}/%{end_period}"
+        card_subtitle: "The result for all assigned hypertensive patients registered in a quarter at their follow-up visit in the following quarter."
+        cohort_title: "Result from last visit in %{period}"
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients} registered in %{registration_period}"
         cohort_bar_tooltip: "%{total_patients} %{patient_or_patients} with %{threshold}"
 
