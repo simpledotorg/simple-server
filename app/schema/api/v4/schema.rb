@@ -72,15 +72,6 @@ class Api::V4::Schema
       sync_from_user_request(:teleconsultations)
     end
 
-    def drug_stocks_request
-      {
-        type: :object,
-        properties: {
-          date: {"$ref" => "#/definitions/date"}
-        }
-      }
-    end
-
     def patient_activate_request
       {
         type: :object,
