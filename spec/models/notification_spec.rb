@@ -1,8 +1,6 @@
 require "rails_helper"
 
 describe Notification, type: :model do
-  let(:notification) { create(:notification) }
-
   describe "associations" do
     it { should belong_to(:subject).optional }
     it { should belong_to(:patient) }
@@ -30,6 +28,7 @@ describe Notification, type: :model do
 
   describe "#message_data" do
     it "returns the variable content and subject's facility's locale" do
+      notification = create(:notification)
       notification.patient.address.update!(state: "punjab")
       notification.subject = create(:appointment, patient: notification.patient)
       facility = notification.subject.facility
@@ -42,17 +41,18 @@ describe Notification, type: :model do
     end
 
     context "when appointment is not present as the subject" do
-      before { notification.update(subject: nil) }
-
       it "returns nil appointment_date" do
+        notification = create(:notification, purpose: "experimental_appointment_reminder", subject: nil)
         expect(notification.message_data[:variable_content][:appointment_date]).to be_nil
       end
 
       it "returns the patient's assigned facility as the facility_name" do
+        notification = create(:notification, purpose: "experimental_appointment_reminder", subject: nil)
         expect(notification.message_data[:variable_content][:facility_name]).to eq(notification.patient.assigned_facility.name)
       end
 
       it "returns the patient's assigned facility's locale" do
+        notification = create(:notification, purpose: "experimental_appointment_reminder", subject: nil)
         expect(notification.message_data[:locale]).to eq(notification.patient.assigned_facility.locale)
       end
     end
@@ -60,6 +60,7 @@ describe Notification, type: :model do
 
   describe "#localized_message" do
     it "localizes the message according to the facility state, not the patient's address" do
+      notification = create(:notification)
       notification.patient.address.update!(state: "punjab")
       notification.subject = create(:appointment, patient: notification.patient)
       facility = notification.subject.facility
@@ -76,8 +77,9 @@ describe Notification, type: :model do
     end
 
     context "when appointment is not present as the subject" do
-      it " does not throw an error and localizes a message that requires an appointment_date with a blank date" do
+      it "does not throw an error and localizes a message that requires an appointment_date with a blank date" do
         allow_any_instance_of(Facility).to receive(:locale).and_return("en")
+        notification = create(:notification, purpose: "experimental_appointment_reminder", subject: nil)
         patient = notification.patient
         notification.update(
           subject: nil,
@@ -87,6 +89,15 @@ describe Notification, type: :model do
         expected_message = "#{patient.full_name}, please visit #{patient.assigned_facility.name} on  for a BP measure and medicines."
         expect(notification.localized_message).to eq(expected_message)
       end
+    end
+  end
+
+  describe "#dlt_template_name" do
+    it "returns the dlt_template_name using the locale and the message" do
+      allow_any_instance_of(Facility).to receive(:locale).and_return("en")
+      notification = create(:notification, message: "notifications.set100.basic")
+
+      expect(notification.dlt_template_name).to eq("en.notifications.set100.basic")
     end
   end
 

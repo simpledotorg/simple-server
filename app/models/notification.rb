@@ -54,6 +54,10 @@ class Notification < ApplicationRecord
     I18n.t(message, **message_data[:variable_content], locale: message_data[:locale])
   end
 
+  def dlt_template_name
+    "#{message_data[:locale]}.#{message}"
+  end
+
   def self.cancel
     where(status: %w[pending scheduled]).update_all(status: :cancelled)
   end
