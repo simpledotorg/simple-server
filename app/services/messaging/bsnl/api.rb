@@ -1,6 +1,9 @@
 class Messaging::Bsnl::Api
   HOST = "bulksms.bsnl.in"
   PORT = 5010
+  URL_PATHS = {
+    get_content_template_details: "/api/Get_Content_Template_Details"
+  }
 
   def initialize
     unless credentials.values.all?
@@ -9,7 +12,7 @@ class Messaging::Bsnl::Api
   end
 
   def get_template_details
-    post("/api/Get_Content_Template_Details")["Content_Template_Ids"]
+    post(URL_PATHS[:get_content_template_details])["Content_Template_Ids"]
   end
 
   private
