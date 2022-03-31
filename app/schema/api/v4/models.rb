@@ -6,6 +6,11 @@ class Api::V4::Models
        description: "Timestamp with millisecond precision."}
     end
 
+    def month
+      {type: :string,
+       pattern: '[1-9]{1}[0-9]{1}\-[0-9]{2}'}
+    end
+
     def uuid
       {type: :string,
        format: :uuid,
@@ -372,6 +377,16 @@ class Api::V4::Models
        required: %w[id user_id appointment_id result_type created_at updated_at]}
     end
 
+    def drug_stock
+      {type: :object,
+       properties: {
+         protocol_drug_id: {"$ref" => "#/definitions/uuid"},
+         in_stock: {type: :integer},
+         received: {type: :integer}
+       },
+       required: %w[protocol_drug_id in_stock received]}
+    end
+
     def definitions
       {
         activate_user: activate_user,
@@ -386,6 +401,7 @@ class Api::V4::Models
         blood_sugars: array_of("blood_sugar"),
         call_result: call_result,
         call_results: array_of("call_result"),
+        drug_stock: drug_stock,
         facility_medical_officer: facility_medical_officer,
         facility_medical_officers: array_of("facility_medical_officer"),
         find_user: find_user,
@@ -396,6 +412,7 @@ class Api::V4::Models
         medical_officer: medical_officer,
         medication: medication,
         medications: array_of("medication"),
+        month: month,
         non_empty_string: non_empty_string,
         nullable_timestamp: nullable_timestamp,
         nullable_uuid: Api::V3::Models.nullable_uuid,
