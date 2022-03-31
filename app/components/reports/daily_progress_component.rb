@@ -9,10 +9,12 @@ class Reports::DailyProgressComponent < ViewComponent::Base
 
   attr_reader :service
 
-  def initialize(service)
+  def initialize(service, last_updated_at)
     @service = service
     @now = Date.current
     @start = @now - DAYS_AGO
+    @region = service.region
+    @last_updated_at = DateTime.parse(last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")
   end
 
   delegate :daily_follow_ups, :daily_registrations, to: :service
