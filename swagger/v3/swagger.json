@@ -2244,9 +2244,6 @@
         "appointment_id": {
           "$ref": "#/definitions/uuid"
         },
-        "user_id": {
-          "$ref": "#/definitions/uuid"
-        },
         "communication_type": {
           "type": "string",
           "enum": [
@@ -2280,7 +2277,6 @@
       "required": [
         "id",
         "appointment_id",
-        "user_id",
         "communication_type",
         "communication_result",
         "created_at",
