@@ -272,7 +272,8 @@
 .fs-32px {
   font-size: 32px;
 }
-.fs-xxlarge {
+.fs-xxlarge,
+.fs-48px {
   font-size: 48px;
 }
 .fs-italic {
@@ -637,6 +638,32 @@
     padding-bottom: 20px;
   }
   // Typography
+  .fs-lg-12px {
+    font-size: 12px;
+  }
+  .fs-lg-14px {
+    font-size: 14px;
+  }
+  .fs-lg-16px {
+    font-size: 16px;
+  }
+  .fs-lg-20px {
+    font-size: 20px;
+  }
+  .fs-lg-24px {
+    font-size: 24px;
+  }
+  .fs-lg-28px {
+    font-size: 28px;
+  }
+  .fs-lg-32px {
+    font-size: 32px;
+  }
+  .fs-lg-xxlarge,
+  .fs-lg-48px {
+    font-size: 48px;
+  }
+
   .fw-lg-bold {
     font-weight: 700;
   }
