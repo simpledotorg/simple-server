@@ -30,10 +30,10 @@ class Messaging::Bsnl::Api
     request.body = body.to_json if body
     request["Authorization"] = "Bearer #{credentials[:jwt]}"
 
-    json_or_string(http.request(request).body)
+    hsh_or_string(http.request(request).body)
   end
 
-  def json_or_string(string)
+  def hsh_or_string(string)
     JSON.parse(string)
   rescue JSON::ParserError
     string.to_s
