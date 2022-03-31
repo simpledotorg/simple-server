@@ -2,12 +2,12 @@ class GetBsnlTemplateDetails
   include I18n::Backend::Flatten
   include Memery
 
+  attr_reader :template_details, :template_names
+
   def initialize
     @template_details = Messaging::Bsnl::Api.new.get_template_details
     @template_names = @template_details.map { |detail| detail["Template_Name"] }
   end
-
-  attr_reader :template_details, :template_names
 
   def call
     validate_templates
