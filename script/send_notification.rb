@@ -35,13 +35,13 @@ notification = Notification.create!(
   message: "This doesn't matter since test_message will override the localized message.",
   purpose: "test_message"
 )
-communication = NotificationDispatchService.call(notification, Messaging::Twilio::OtpSms)
+communication = NotificationDispatchService.call(notification)
 delivery_detail = communication.detailable
 
 puts "Twilio message sid=#{delivery_detail.session_id} status=#{delivery_detail.result}..."
 puts "Waiting a second and then refetching Twilio status"
 sleep 1
-fetched_message = Messaging::Twilio::OtpSms.new.fetch_message(delivery_detail.session_id)
+fetched_message = Messaging::Twilio::ReminderSms.new.fetch_message(delivery_detail.session_id)
 puts "status=#{fetched_message.status}"
 puts "Twilio message sid=#{fetched_message.sid} status=#{fetched_message.status}..."
 puts

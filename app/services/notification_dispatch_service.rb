@@ -3,9 +3,9 @@ class NotificationDispatchService
     new(*args).call
   end
 
-  def initialize(notification, messaging_channel)
+  def initialize(notification)
     @notification = notification
-    @messaging_channel = messaging_channel
+    @messaging_channel = country_messaging_channel
     @recipient_number = notification.patient.latest_mobile_number
   end
 
@@ -23,6 +23,10 @@ class NotificationDispatchService
   end
 
   private
+
+  def country_messaging_channel
+    CountryConfig.current[:appointment_reminders_channel].constantize
+  end
 
   def send_message
     messaging_channel.send_message(

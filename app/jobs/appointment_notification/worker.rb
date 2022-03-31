@@ -1,7 +1,6 @@
 class AppointmentNotification::Worker
   include Sidekiq::Worker
   include Memery
-  APPOINTMENT_REMINDERS_CHANNEL = CountryConfig.current[:appointment_reminders_channel].constantize
 
   sidekiq_options queue: :high
 
@@ -9,10 +8,7 @@ class AppointmentNotification::Worker
     return unless flipper_enabled?
 
     notification = Notification.find(notification_id)
-
-    if scheduled?(notification)
-      NotificationDispatchService.call(notification, APPOINTMENT_REMINDERS_CHANNEL)
-    end
+    NotificationDispatchService.call(notification) if scheduled?(notification)
   end
 
   private

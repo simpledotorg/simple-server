@@ -2,8 +2,10 @@ require "rails_helper"
 
 RSpec.describe NotificationDispatchService do
   def mock_messaging_channel
-    messaging_channel = double("MessagingChannel")
+    messaging_channel = Messaging::Channel
     allow(messaging_channel).to receive(:communication_type).and_return(:sms)
+    allow(CountryConfig.current).to receive(:[]).and_call_original
+    allow(CountryConfig.current).to receive(:[]).with(:appointment_reminders_channel).and_return(messaging_channel.to_s)
     messaging_channel
   end
 
@@ -15,7 +17,7 @@ RSpec.describe NotificationDispatchService do
       message: notification.localized_message
     )
 
-    described_class.call(notification, messaging_channel)
+    described_class.call(notification)
   end
 
   it "cancels notification when patient doesn't have a mobile number" do
@@ -24,7 +26,7 @@ RSpec.describe NotificationDispatchService do
     expect(mock_messaging_channel).not_to receive(:send_message)
     expect(Statsd.instance).to receive(:increment).with("notifications.skipped.no_mobile_number")
 
-    described_class.call(notification, mock_messaging_channel)
+    described_class.call(notification)
     expect(notification.reload.status).to eq("cancelled")
   end
 
@@ -34,7 +36,7 @@ RSpec.describe NotificationDispatchService do
     allow(messaging_channel).to receive(:send_message).and_raise(Messaging::Twilio::Error.new("An error", 21211))
     expect(Statsd.instance).to receive(:increment).with("notifications.skipped.invalid_phone_number")
 
-    described_class.call(notification, messaging_channel)
+    described_class.call(notification)
     expect(notification.reload.status).to eq("cancelled")
   end
 
@@ -42,7 +44,7 @@ RSpec.describe NotificationDispatchService do
     notification = create(:notification)
     notification.patient.phone_numbers.destroy_all
 
-    described_class.call(notification, mock_messaging_channel)
+    described_class.call(notification)
     expect(notification.reload.status).to eq("cancelled")
   end
 
@@ -55,7 +57,7 @@ RSpec.describe NotificationDispatchService do
       block.call(communication)
     end
 
-    described_class.call(notification, messaging_channel)
+    described_class.call(notification)
 
     expect(notification.reload.status).to eq("sent")
     expect(notification.communications.first).to eq(communication)
