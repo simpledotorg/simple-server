@@ -7,7 +7,7 @@ describe "Drug Stocks v4 API", swagger_doc: "v4/swagger.json" do
       security [access_token: [], user_id: [], facility_id: []]
       parameter name: "HTTP_X_USER_ID", in: :header, type: :uuid
       parameter name: "HTTP_X_FACILITY_ID", in: :header, type: :uuid
-      parameter name: :date, in: :query, type: :date, description: "Any date in the requested month - eg. 2021-10-29"
+      parameter name: :date, in: :query, type: :date, description: "Any date in the requested month in YYYY-MM-DD format - eg. 2021-10-29"
 
       response "200", "Drug stocks are returned" do
         let(:date) { "2021-10-29" }

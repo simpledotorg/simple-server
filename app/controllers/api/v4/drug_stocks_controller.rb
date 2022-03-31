@@ -1,7 +1,7 @@
 class Api::V4::DrugStocksController < APIController
   def index
     if for_end_of_month.nil?
-      render status: 400, json: {errors: ["valid `date` must be provided - eg. 2021-10-29"]}
+      render status: 400, json: {errors: ["valid `date` must be provided in YYYY-MM-DD format - eg. 2021-10-29"]}
       return
     end
 
@@ -13,8 +13,8 @@ class Api::V4::DrugStocksController < APIController
   private
 
   def for_end_of_month
-    @for_end_of_month ||= Date.parse(params[:date]).end_of_month
-  rescue Date::Error, TypeError
+    @for_end_of_month ||= Date.strptime(params[:date], "%Y-%m-%d").end_of_month
+  rescue ArgumentError, TypeError
     nil
   end
 end
