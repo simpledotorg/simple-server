@@ -1,0 +1,33 @@
+<div id="progress-controlled-help" class="progress-body" style="display: none;">
+  <div class="progress-contents">
+    <a
+      href="#"
+      onclick="closeWindow('progress-controlled-help', 'progress-start'); return false"
+      class="help-back"
+    >
+      <%= inline_svg('icon_back.svg') %>
+    </a>
+    <h2 style="padding-top: 80px; padding-left: 8px;">
+      <%= raw t("analytics.definition") %>
+    </h2>
+    <div class="card">
+      <h3 style="margin-bottom: 1em;">
+        <%= raw t("analytics.hypertension_controlled") %>
+      </h3>
+      <p class="desc" style="margin-bottom: 1em;">
+        <b>
+          <%= raw t("analytics.numerator") %>
+        </b>
+        <br>
+        <%= raw t("analytics.hypertension_controlled_numerator") %>
+      </p>
+      <p class="desc">
+        <b>
+          <%= raw t("analytics.denominator") %>
+        </b>
+        <br>
+        <%= raw t("analytics.hypertension_controlled_denominator") %>
+      </p>
+    </div>
+  </div>
+</div>
