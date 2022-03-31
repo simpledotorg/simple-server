@@ -25,7 +25,7 @@ class Messaging::Twilio::Api < Messaging::Channel
   private
 
   def create_communication(recipient_number, response, &with_communication_do)
-    transaction do
+    ActiveRecord::Base.transaction do
       TwilioSmsDeliveryDetail.create_with_communication!(
         callee_phone_number: recipient_number,
         communication_type: self.class.communication_type,

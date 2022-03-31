@@ -9,8 +9,6 @@ class Messaging::Channel
     @metrics = Metrics.with_object(self)
   end
 
-  delegate :transaction, to: ActiveRecord::Base
-
   attr_reader :metrics
 
   # The channel implementation is responsible for creating a Communication
