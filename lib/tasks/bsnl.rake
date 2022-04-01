@@ -1,6 +1,6 @@
 require "net/http"
 require "tasks/scripts/refresh_bsnl_sms_jwt"
-require "tasks/scripts/get_bsnl_template_details"
+require "tasks/scripts/get_bsnl_templates"
 
 # Usage instructions at: doc/howto/manage_bsnl_sms_reminders.md
 namespace :bsnl do
