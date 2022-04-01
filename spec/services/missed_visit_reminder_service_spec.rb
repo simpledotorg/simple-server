@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe AppointmentNotificationService do
+RSpec.describe MissedVisitReminderService do
   describe "#send_after_missed_visit" do
     let(:overdue_appointment) { create(:appointment, scheduled_date: 3.days.ago, remind_on: Date.current) }
 
@@ -13,7 +13,7 @@ RSpec.describe AppointmentNotificationService do
       create(:appointment, scheduled_date: 4.days.ago, remind_on: Date.current)
 
       expect {
-        AppointmentNotificationService.send_after_missed_visit(appointments: common_org.appointments)
+        described_class.send_after_missed_visit(appointments: common_org.appointments)
       }.to change(AppointmentNotification::Worker.jobs, :size).by(2)
     end
 
@@ -21,7 +21,7 @@ RSpec.describe AppointmentNotificationService do
       create(:appointment, scheduled_date: 3.days.ago, remind_on: nil)
 
       expect {
-        AppointmentNotificationService.send_after_missed_visit(appointments: common_org.appointments)
+        described_class.send_after_missed_visit(appointments: common_org.appointments)
       }.to change(AppointmentNotification::Worker.jobs, :size).by(1)
     end
 
@@ -34,14 +34,14 @@ RSpec.describe AppointmentNotificationService do
       create(:appointment, scheduled_date: 3.days.ago, remind_on: 1.day.from_now)
 
       expect {
-        AppointmentNotificationService.send_after_missed_visit(appointments: common_org.appointments)
+        described_class.send_after_missed_visit(appointments: common_org.appointments)
       }.to change(AppointmentNotification::Worker.jobs, :size).by(0)
     end
 
     it "creates notifications for provided appointments with correct attributes" do
       overdue_appointment
       expect {
-        AppointmentNotificationService.send_after_missed_visit(appointments: common_org.appointments)
+        described_class.send_after_missed_visit(appointments: common_org.appointments)
       }.to change { overdue_appointment.notifications.count }.by(1)
       notification = overdue_appointment.notifications.last
       expect(notification.status).to eq("scheduled")
@@ -75,7 +75,7 @@ RSpec.describe AppointmentNotificationService do
       end
 
       expect {
-        AppointmentNotificationService.send_after_missed_visit(appointments: Appointment.where(id: eligible_appointments))
+        described_class.send_after_missed_visit(appointments: Appointment.where(id: eligible_appointments))
       }.to change(AppointmentNotification::Worker.jobs, :size).by(2)
       eligible_appointments.each do |appointment|
         expect(appointment.notifications.count).to eq(1)

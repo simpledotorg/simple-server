@@ -2,13 +2,16 @@ class Messaging::Twilio::Api < Messaging::Channel
   include Rails.application.routes.url_helpers
   include Memery
 
-  def send_message(recipient_number:, message:)
+  def fetch_message(sid)
+    client.messages(sid).fetch
+  end
+
+  def send_message(recipient_number:, message:, &with_communication_do)
     track_metrics do
-      client.messages.create(
-        from: sender_number,
-        to: recipient_number,
-        status_callback: callback_url,
-        body: message
+      create_communication(
+        recipient_number,
+        send_twilio_message(recipient_number, message),
+        &with_communication_do
       )
     rescue Twilio::REST::RestError => exception
       raise Messaging::Twilio::Error.new(exception.message, exception.code)
@@ -19,11 +22,29 @@ class Messaging::Twilio::Api < Messaging::Channel
     raise NotImplementedError
   end
 
-  def fetch_message(sid)
-    client.messages(sid).fetch
+  private
+
+  def create_communication(recipient_number, response, &with_communication_do)
+    ActiveRecord::Base.transaction do
+      TwilioSmsDeliveryDetail.create_with_communication!(
+        callee_phone_number: recipient_number,
+        communication_type: self.class.communication_type,
+        session_id: response.sid,
+        result: response.status
+      ).tap do |communication|
+        with_communication_do&.call(communication)
+      end
+    end
   end
 
-  private
+  def send_twilio_message(recipient_number, message)
+    client.messages.create(
+      from: sender_number,
+      to: recipient_number,
+      status_callback: callback_url,
+      body: message
+    )
+  end
 
   memoize def client
     credentials = test_mode? ? test_credentials : production_credentials
