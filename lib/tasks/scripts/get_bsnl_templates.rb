@@ -30,7 +30,7 @@ class GetBsnlTemplateDetails
     config = template_details.to_h do |template|
       [
         template["Template_Name"],
-        template.slice("Template_Id", "Template_Keys", "Non_Variable_Text_Length", "Max_Length_Permitted")
+        template.slice("Template_Id", "Template_Keys", "Non_Variable_Text_Length", "Max_Length_Permitted", "Template_Status")
       ]
     end
 
