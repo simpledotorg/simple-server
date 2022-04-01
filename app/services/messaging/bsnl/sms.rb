@@ -14,7 +14,7 @@ class Messaging::Bsnl::Sms < Messaging::Channel
     Messaging::Bsnl::Api.new.send_sms(
       recipient_number: recipient_number,
       dlt_template_id: template.id,
-      key_values: variables.map { |k, v| { "Key" => k.to_s, "Value" => v } }
+      key_values: variables.map { |k, v| {"Key" => k.to_s, "Value" => v} }
     ).then { |response| handle_api_errors(response, template, variables) }
   end
 

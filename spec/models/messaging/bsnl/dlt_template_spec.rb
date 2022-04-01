@@ -3,10 +3,10 @@ require "rails_helper"
 RSpec.describe Messaging::Bsnl::DltTemplate do
   def stub_template(template_name)
     stub_const("Messaging::Bsnl::DltTemplate::BSNL_TEMPLATES", {
-      template_name => { "Template_Id" => "a template id",
-                         "Template_Keys" => %w[key_1 key_2],
-                         "Non_Variable_Text_Length" => "10",
-                         "Max_Length_Permitted" => "20" }
+      template_name => {"Template_Id" => "a template id",
+                        "Template_Keys" => %w[key_1 key_2],
+                        "Non_Variable_Text_Length" => "10",
+                        "Max_Length_Permitted" => "20"}
     })
   end
 
@@ -59,8 +59,8 @@ RSpec.describe Messaging::Bsnl::DltTemplate do
       stub_template(template_name)
       template = described_class.new(template_name)
 
-      expect { template.check_variables_presence({ key_1: "Value 1" }) }.
-        to raise_error(Messaging::Bsnl::Error, "Variables key_2 not provided to #{template_name}")
+      expect { template.check_variables_presence({key_1: "Value 1"}) }
+        .to raise_error(Messaging::Bsnl::Error, "Variables key_2 not provided to #{template_name}")
     end
 
     it "does not raise an error if all the variables have been provided" do
@@ -68,7 +68,7 @@ RSpec.describe Messaging::Bsnl::DltTemplate do
       stub_template(template_name)
       template = described_class.new(template_name)
 
-      expect { template.check_variables_presence({ key_1: "Value 1", key_2: "Value 2" }) }.not_to raise_error(Messaging::Bsnl::Error)
+      expect { template.check_variables_presence({key_1: "Value 1", key_2: "Value 2"}) }.not_to raise_error(Messaging::Bsnl::Error)
     end
   end
 
@@ -80,7 +80,7 @@ RSpec.describe Messaging::Bsnl::DltTemplate do
       stub_template(template_name)
       template = described_class.new(template_name)
 
-      expect(template.trim_variables({ key_1: "A variable longer than 10 characters" })).to eq({ key_1: "A variable" })
+      expect(template.trim_variables({key_1: "A variable longer than 10 characters"})).to eq({key_1: "A variable"})
     end
   end
 
@@ -88,15 +88,15 @@ RSpec.describe Messaging::Bsnl::DltTemplate do
     it "doesn't change the variable lengths if they are within the limit" do
       template_name = "en.a.template.name"
       stub_const("Messaging::Bsnl::DltTemplate::BSNL_TEMPLATES", {
-        template_name => { "Template_Id" => "a template id",
-                           "Template_Keys" => %w[key_1 key_2 key_3],
-                           "Non_Variable_Text_Length" => "10",
-                           "Max_Length_Permitted" => "20" }
+        template_name => {"Template_Id" => "a template id",
+                          "Template_Keys" => %w[key_1 key_2 key_3],
+                          "Non_Variable_Text_Length" => "10",
+                          "Max_Length_Permitted" => "20"}
       })
       stub_const("Messaging::Bsnl::DltTemplate::TRIMMABLE_VARIABLES", %i[key_1 key_2 key_3])
 
       template = described_class.new(template_name)
-      variable_content = { key_1: "a" * 3, key_2: "a" * 3, key_3: "a" * 3 }
+      variable_content = {key_1: "a" * 3, key_2: "a" * 3, key_3: "a" * 3}
       expect(template.limit_total_variable_length(variable_content)).to eq(variable_content)
     end
 
@@ -107,22 +107,22 @@ RSpec.describe Messaging::Bsnl::DltTemplate do
 
       template = described_class.new(template_name)
 
-      expect(template.limit_total_variable_length({ key_1: "a" * 3, key_2: "a" * 10 })).to eq({ key_1: "", key_2: "a" * 10 })
+      expect(template.limit_total_variable_length({key_1: "a" * 3, key_2: "a" * 10})).to eq({key_1: "", key_2: "a" * 10})
     end
 
     it "preserves equal amounts of all variables that are trimmable" do
       template_name = "en.a.template.name"
       stub_const("Messaging::Bsnl::DltTemplate::BSNL_TEMPLATES", {
-        template_name => { "Template_Id" => "a template id",
-                           "Template_Keys" => %w[key_1 key_2 key_3],
-                           "Non_Variable_Text_Length" => "10",
-                           "Max_Length_Permitted" => "20" }
+        template_name => {"Template_Id" => "a template id",
+                          "Template_Keys" => %w[key_1 key_2 key_3],
+                          "Non_Variable_Text_Length" => "10",
+                          "Max_Length_Permitted" => "20"}
       })
       stub_const("Messaging::Bsnl::DltTemplate::TRIMMABLE_VARIABLES", %i[key_1 key_2])
 
       template = described_class.new(template_name)
-      expect(template.limit_total_variable_length({ key_1: "a" * 5, key_2: "a" * 5, key_3: "a" * 3 })).to eq({ key_1: "aaaa", key_2: "aaa", key_3: "aaa" })
-      expect(template.limit_total_variable_length({ key_1: "a" * 2, key_2: "a" * 5, key_3: "a" * 3 })).to eq({ key_1: "aa", key_2: "aaaaa", key_3: "aaa" })
+      expect(template.limit_total_variable_length({key_1: "a" * 5, key_2: "a" * 5, key_3: "a" * 3})).to eq({key_1: "aaaa", key_2: "aaa", key_3: "aaa"})
+      expect(template.limit_total_variable_length({key_1: "a" * 2, key_2: "a" * 5, key_3: "a" * 3})).to eq({key_1: "aa", key_2: "aaaaa", key_3: "aaa"})
     end
   end
 
@@ -133,8 +133,8 @@ RSpec.describe Messaging::Bsnl::DltTemplate do
       stub_const("Messaging::Bsnl::DltTemplate::TRIMMABLE_VARIABLES", %i[key_1 key_2])
 
       template = described_class.new(template_name)
-      expect { template.limit_total_variable_length({ key_1: "a" * 2, key_2: "a" * 5 }) }.not_to raise_error
-      expect { template.check_total_variable_length({ key_1: "a" * 10, key_2: "a" * 10}) }.to raise_error
+      expect { template.limit_total_variable_length({key_1: "a" * 2, key_2: "a" * 5}) }.not_to raise_error
+      expect { template.check_total_variable_length({key_1: "a" * 10, key_2: "a" * 10}) }.to raise_error
     end
   end
 end

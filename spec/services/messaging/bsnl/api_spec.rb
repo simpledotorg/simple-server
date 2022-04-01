@@ -41,6 +41,10 @@ RSpec.describe Messaging::Bsnl::Api do
 
   describe "#get_template_details" do
     it "gets all the templates added to DLT" do
+      allow(ENV).to receive(:[]).with("BSNL_IHCI_HEADER").and_return("ABCDEF")
+      allow(ENV).to receive(:[]).with("BSNL_IHCI_ENTITY_ID").and_return("123")
+      allow(ENV).to receive(:[]).with("BSNL_JWT_TOKEN").and_return("ey123123")
+
       stub_request(:post, "https://bulksms.bsnl.in:5010/api/Get_Content_Template_Details").to_return(body: {"Content_Template_Ids" => ["A list of template details"]}.to_json)
       expect(described_class.new.get_template_details).to contain_exactly("A list of template details")
     end

@@ -20,7 +20,7 @@ RSpec.describe NotificationDispatchService do
     described_class.call(notification)
   end
 
-  it "calls send_message for twilio with right args supplied" do
+  it "calls send_message for twilio with the right args supplied" do
     messaging_channel = Messaging::Twilio::Whatsapp
     allow(CountryConfig.current).to receive(:[]).and_call_original
     allow(CountryConfig.current).to receive(:[]).with(:appointment_reminders_channel).and_return(messaging_channel.to_s)
@@ -34,7 +34,7 @@ RSpec.describe NotificationDispatchService do
     described_class.call(notification)
   end
 
-  it "calls send_message for bsnl with right args supplied" do
+  it "calls send_message for bsnl with the right args supplied" do
     messaging_channel = Messaging::Bsnl::Sms
     allow(CountryConfig.current).to receive(:[]).and_call_original
     allow(CountryConfig.current).to receive(:[]).with(:appointment_reminders_channel).and_return(messaging_channel.to_s)

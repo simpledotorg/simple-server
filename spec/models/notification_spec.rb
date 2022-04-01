@@ -34,9 +34,9 @@ describe Notification, type: :model do
       facility = notification.subject.facility
       facility.update!(state: "Maharashtra")
 
-      expect(notification.message_data[:variable_content]).to eq({ facility_name: notification.subject.facility.name,
+      expect(notification.message_data[:variable_content]).to eq({facility_name: notification.subject.facility.name,
                                                                    patient_name: notification.patient.full_name,
-                                                                   appointment_date: notification.subject.scheduled_date.strftime("%d-%m-%Y") })
+                                                                   appointment_date: notification.subject.scheduled_date.strftime("%d-%m-%Y")})
       expect(notification.message_data[:locale]).to eq(facility.locale)
     end
 
@@ -83,7 +83,7 @@ describe Notification, type: :model do
         patient = notification.patient
         notification.update(
           subject: nil,
-          message: "notifications.set01.basic",
+          message: "notifications.set01.basic"
         )
 
         expected_message = "#{patient.full_name}, please visit #{patient.assigned_facility.name} on  for a BP measure and medicines."
