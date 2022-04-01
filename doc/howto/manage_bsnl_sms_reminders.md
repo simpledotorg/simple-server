@@ -33,7 +33,7 @@ BSNL_IHCI_HEADER=IHCxxx
 BSNL_JWT_TOKEN=eyJhxxxx
 ```
 - Run `bundle exec rake bsnl:get_template_details`.
-- This should pull the latest configuration from BSNL and save it to `config/data/bsnl_template_details.yml`. This will also output a summary of any actions to be taken, go through them carefully.
+- This should pull the latest configuration from BSNL and save it to `config/data/bsnl_templates.yml`. This will also output a summary of any actions to be taken, go through them carefully.
 - Commit and push changes in this file (if there are any).
 - Remove the credentials from `.env.development.local`.
 - You are all set to use the new reminder message.
