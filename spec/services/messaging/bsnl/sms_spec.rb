@@ -10,6 +10,7 @@ RSpec.describe Messaging::Bsnl::Sms do
       allow(Messaging::Bsnl::DltTemplate).to receive(:new).and_return(mock_template)
       allow(mock_template).to receive(:id).and_return("123")
       allow(mock_template).to receive(:massaged_variable_content).and_return({"a" => "hash"})
+      allow(mock_template).to receive(:check_approved)
       allow(mock_api).to receive(:send_sms).and_return({})
 
       expect(mock_api).to receive(:send_sms).with(
@@ -34,6 +35,7 @@ RSpec.describe Messaging::Bsnl::Sms do
       allow(mock_template).to receive(:id).and_return("123")
       allow(mock_template).to receive(:name).and_return("a.template.name")
       allow(mock_template).to receive(:massaged_variable_content).and_return({"a" => "hash"})
+      allow(mock_template).to receive(:check_approved)
       allow(mock_api).to receive(:send_sms).and_return({"Error" => "An error happened."})
 
       expect {

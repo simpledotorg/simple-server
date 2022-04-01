@@ -1,7 +1,7 @@
 class Messaging::Bsnl::DltTemplate
   MAX_VARIABLE_LENGTH = 30
   TRIMMABLE_VARIABLES = %i[facility_name patient_name].freeze
-  BSNL_TEMPLATES = YAML.load_file("config/data/bsnl_template_details.yml")
+  BSNL_TEMPLATES = YAML.load_file("config/data/bsnl_templates.yml")
   STATUSES = {
     "0" => :pending_naming,
     "1" => :approved
