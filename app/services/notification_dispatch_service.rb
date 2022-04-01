@@ -3,9 +3,9 @@ class NotificationDispatchService
     new(*args).call
   end
 
-  def initialize(notification)
+  def initialize(notification, messaging_channel: nil)
     @notification = notification
-    @messaging_channel = country_messaging_channel
+    @messaging_channel = messaging_channel || country_messaging_channel
     @recipient_number = notification.patient.latest_mobile_number
   end
 
