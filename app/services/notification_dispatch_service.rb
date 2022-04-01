@@ -31,9 +31,20 @@ class NotificationDispatchService
   def send_message
     messaging_channel.send_message(
       recipient_number: recipient_number,
-      message: notification.localized_message
+      **message_data
     ) do |communication|
       notification.record_communication(communication)
+    end
+  end
+
+  def message_data
+    if messaging_channel == Messaging::Bsnl::Sms
+      {
+        dlt_template_name: notification.dlt_template_name,
+        variable_content: notification.message_data[:variable_content]
+      }
+    else
+      {message: notification.localized_message}
     end
   end
 

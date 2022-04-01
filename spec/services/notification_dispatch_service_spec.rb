@@ -20,6 +20,35 @@ RSpec.describe NotificationDispatchService do
     described_class.call(notification)
   end
 
+  it "calls send_message for twilio with right args supplied" do
+    messaging_channel = Messaging::Twilio::Whatsapp
+    allow(CountryConfig.current).to receive(:[]).and_call_original
+    allow(CountryConfig.current).to receive(:[]).with(:appointment_reminders_channel).and_return(messaging_channel.to_s)
+
+    notification = create(:notification)
+    expect(messaging_channel).to receive(:send_message).with(
+      recipient_number: notification.patient.latest_mobile_number,
+      message: notification.localized_message
+    )
+
+    described_class.call(notification)
+  end
+
+  it "calls send_message for bsnl with right args supplied" do
+    messaging_channel = Messaging::Bsnl::Sms
+    allow(CountryConfig.current).to receive(:[]).and_call_original
+    allow(CountryConfig.current).to receive(:[]).with(:appointment_reminders_channel).and_return(messaging_channel.to_s)
+
+    notification = create(:notification)
+    expect(messaging_channel).to receive(:send_message).with(
+      recipient_number: notification.patient.latest_mobile_number,
+      dlt_template_name: notification.dlt_template_name,
+      variable_content: notification.message_data[:variable_content]
+    )
+
+    described_class.call(notification)
+  end
+
   it "cancels notification when patient doesn't have a mobile number" do
     notification = create(:notification)
     notification.patient.phone_numbers.update_all(phone_type: :invalid)

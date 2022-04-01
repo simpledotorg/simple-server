@@ -1,4 +1,8 @@
 class Messaging::Bsnl::Sms < Messaging::Channel
+  def self.communication_type
+    Communication.communication_types[:sms]
+  end
+
   # variable_content: A map that takes the values to be interpolated
   # in the templates. For example: { facility_name: "Facility A", patient_name: "Patient" }
   # TODO: This should also create communications and return them.
