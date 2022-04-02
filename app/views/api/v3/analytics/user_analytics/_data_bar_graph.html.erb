@@ -7,6 +7,12 @@
         <p class="m-0px mb-4px p-0px ta-center fw-medium fs-16px c-black ttf-ease-in-out td-0_25s tp-color" data-element-type="text">
           <%= data["rates"][index] %><% if data_type == "percentage" %>%<% end %>
         </p>
+        <% bar_height = [data_point_heights[index], min_height].max %>
+        <% unless data_point_heights[index] == data_point_heights.max %>
+          <%# The `height_buffer` value ensures bar heights are rendered accurately. The bar's data value (displayed above the bar) takes up space and doesn't properly render bar heights whose value is >80% to the max value in the set. %>
+          <% height_buffer = 0.75 %>
+          <% bar_height = bar_height * height_buffer %>
+        <% end %>
         <div
           class="w-32px <%= graph_css_color %> btrr-2px btlr-2px ttf-ease-in-out td-0_25s tp-opacity"
           style="height: <%= ([data_point_heights[index], min_height].max) - 10 %>%;"

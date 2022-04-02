@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class Reports::MonthlyProgressComponent < ViewComponent::Base
+  include AssetsHelper
   include DashboardHelper
   attr_reader :dimension
   attr_reader :range
@@ -11,7 +12,8 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
     @dimension = dimension
     @monthly_counts = service.monthly_counts
     @total_counts = service.total_counts
-    @range = service.range
+    @region = service.region
+    @range = service.range.reverse_each
   end
 
   def diagnosis_group_class

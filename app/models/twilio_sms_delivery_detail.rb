@@ -21,4 +21,19 @@ class TwilioSmsDeliveryDetail < DeliveryDetail
   def in_progress?
     queued? || sending?
   end
+
+  def self.create_with_communication!(callee_phone_number:, communication_type:, session_id:, result:)
+    ActiveRecord::Base.transaction do
+      delivery_detail = create!(
+        session_id: session_id,
+        result: result,
+        callee_phone_number: callee_phone_number
+      )
+
+      Communication.create!(
+        communication_type: communication_type,
+        detailable: delivery_detail
+      )
+    end
+  end
 end

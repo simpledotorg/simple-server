@@ -12,8 +12,6 @@ class Notification < ApplicationRecord
     Rails.logger.child(fields)
   end
 
-  APPOINTMENT_REMINDER_MSG_PREFIX = "communications.appointment_reminders"
-
   validates :status, presence: true
   validates :remind_on, presence: true
   validates :message, presence: true
@@ -34,6 +32,11 @@ class Notification < ApplicationRecord
   }
 
   scope :due_today, -> { where(remind_on: Date.current, status: [:pending]) }
+
+  def record_communication(communication)
+    communication.update!(notification: self)
+    status_sent!
+  end
 
   def localized_message
     return unless patient
@@ -64,7 +67,13 @@ class Notification < ApplicationRecord
         locale: subject.facility.locale
       )
     when "test_message"
-      "Test message sent by Simple.org to #{patient.full_name}"
+      I18n.t(
+        "notifications.set01.basic",
+        facility_name: "Test Facility",
+        patient_name: "Test Patient",
+        appointment_date: Date.today.strftime("%d-%m-%Y"),
+        locale: "en"
+      )
     else
       raise ArgumentError, "No localized_message defined for notification of type #{purpose}"
     end

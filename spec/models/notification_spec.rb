@@ -52,7 +52,7 @@ describe Notification, type: :model do
       expect { covid_medication_reminder.localized_message }.not_to raise_error
 
       appointment = create(:appointment)
-      missed_visit_reminder = create(:notification, message: "#{Notification::APPOINTMENT_REMINDER_MSG_PREFIX}.whatsapp",
+      missed_visit_reminder = create(:notification, message: "notifications.set01.basic",
                                                     purpose: :missed_visit_reminder,
                                                     subject: appointment)
       expect(missed_visit_reminder.localized_message).to include(appointment.facility.name)
@@ -107,6 +107,17 @@ describe Notification, type: :model do
       create(:twilio_sms_delivery_detail, :queued, communication: queued_communication)
 
       expect(notification.delivery_result).to eq(:queued)
+    end
+  end
+
+  describe "#record_communication" do
+    it "ties the communication to a notification and updates status to 'sent'" do
+      notification = create(:notification)
+      communication = create(:communication)
+      notification.record_communication(communication)
+
+      expect(communication.reload.notification_id).to eq(notification.id)
+      expect(notification.reload.status).to eq("sent")
     end
   end
 end
