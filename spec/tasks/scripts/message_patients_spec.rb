@@ -10,7 +10,7 @@ RSpec.describe MessagePatients do
     context "sends a whatsapp message to all patients" do
       it "generates a status report" do
         patient
-        mock_successful_delivery
+        mock_successful_twilio_delivery
 
         report = MessagePatients.call(Patient.all, message, verbose: false).report
 
@@ -30,7 +30,7 @@ RSpec.describe MessagePatients do
     context "sends an sms to all patients" do
       it "generates a status report" do
         patient
-        mock_successful_delivery
+        mock_successful_twilio_delivery
 
         report = MessagePatients.call(Patient.all, message, channel: :sms, verbose: false).report
         expect(report[:queued]).to contain_exactly(patient.id)
@@ -52,7 +52,7 @@ RSpec.describe MessagePatients do
           phone_number.update!(phone_type: "landline")
         end
 
-        mock_successful_delivery
+        mock_successful_twilio_delivery
 
         report = MessagePatients.call(Patient.all, message, channel: :sms, verbose: false).report
         expect(report[:queued]).to contain_exactly(patients.first.id)
@@ -64,7 +64,7 @@ RSpec.describe MessagePatients do
           phone_number.update!(phone_type: "landline")
         end
 
-        mock_successful_delivery
+        mock_successful_twilio_delivery
 
         report = MessagePatients.call(Patient.all, message, channel: :sms, only_contactable: false, verbose: false).report
         expect(report[:queued]).to contain_exactly(patients.first.id, patients.second.id)
@@ -76,7 +76,7 @@ RSpec.describe MessagePatients do
           phone_number.destroy!
         end
 
-        mock_successful_delivery
+        mock_successful_twilio_delivery
 
         report = MessagePatients.call(Patient.all, message, channel: :sms, only_contactable: false, verbose: false).report
         expect(report[:queued]).to contain_exactly(patients.first.id)
@@ -97,11 +97,12 @@ RSpec.describe MessagePatients do
     end
   end
 
-  def mock_successful_delivery
-    response_double = double("NotificationServiceResponse")
+  def mock_successful_twilio_delivery
     twilio_client = double("TwilioClientDouble")
+    response_double = double("TwilioResponse")
 
     allow(response_double).to receive(:status).and_return("queued")
+    allow(response_double).to receive(:sid).and_return("1234")
     allow(Twilio::REST::Client).to receive(:new).and_return(twilio_client)
     allow(twilio_client).to receive_message_chain("messages.create").and_return(response_double)
   end

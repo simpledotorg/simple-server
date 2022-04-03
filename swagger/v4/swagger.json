@@ -266,6 +266,72 @@
         }
       }
     },
+    "/drug_stocks": {
+      "get": {
+        "summary": "Request the drug stock report for a given month at your facility",
+        "tags": [
+          "Drug stock"
+        ],
+        "security": [
+          {
+            "access_token": [
+
+            ],
+            "user_id": [
+
+            ],
+            "facility_id": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "type": "date",
+            "description": "Any date in the requested month - eg. 2021-10-29"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Drug stocks are returned",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "month": {
+                  "$ref": "#/definitions/month",
+                  "description": "Month of the drug stock report - eg. '2021-10'"
+                },
+                "facility_id": {
+                  "$ref": "#/definitions/uuid"
+                },
+                "drug_stocks": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/drug_stock"
+                  },
+                  "description": "List of drug stocks"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No drug stock report has been submitted for the specified month"
+          }
+        }
+      }
+    },
     "/facility_teleconsultations/{facility_id}": {
       "get": {
         "summary": "Fetch a facility's teleconsultation phone number",
@@ -1274,6 +1340,25 @@
         "$ref": "#/definitions/call_result"
       }
     },
+    "drug_stock": {
+      "type": "object",
+      "properties": {
+        "protocol_drug_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "in_stock": {
+          "type": "integer"
+        },
+        "received": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "protocol_drug_id",
+        "in_stock",
+        "received"
+      ]
+    },
     "facility_medical_officer": {
       "type": "object",
       "properties": {
@@ -1718,6 +1803,10 @@
       "items": {
         "$ref": "#/definitions/medication"
       }
+    },
+    "month": {
+      "type": "string",
+      "pattern": "[1-9]{4}\\-[0-9]{2}"
     },
     "non_empty_string": {
       "type": "string",

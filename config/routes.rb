@@ -151,6 +151,8 @@ Rails.application.routes.draw do
         resource :overdue_list, only: [:show]
       end
 
+      resources :drug_stocks, only: [:index]
+
       get "states", to: "states#index"
     end
   end

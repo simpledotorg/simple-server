@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Messaging::Twilio::Whatsapp do
-  specify { expect(described_class.new.communication_type).to eq("whatsapp") }
+  specify { expect(described_class.communication_type).to eq("whatsapp") }
 
   describe "Whatsapp sender" do
     it "uses the production sender in production" do
@@ -26,8 +26,11 @@ RSpec.describe Messaging::Twilio::Whatsapp do
   describe ".send_message" do
     it "correctly calls the Twilio API" do
       client = double("TwilioClientDouble")
+      response = double("TwilioApiResponse")
       allow(Twilio::REST::Client).to receive(:new).and_return(client)
-      allow(client).to receive_message_chain("messages.create")
+      allow(response).to receive(:sid).and_return("1234")
+      allow(response).to receive(:status).and_return("sent")
+      allow(client).to receive_message_chain("messages.create").and_return(response)
       sender_whatsapp_phone_number = described_class::TWILIO_TEST_WHATSAPP_NUMBER
       recipient_phone_number = "+918585858585"
       callback_url = "https://localhost/api/v3/twilio_sms_delivery"

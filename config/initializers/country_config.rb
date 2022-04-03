@@ -19,7 +19,8 @@ class CountryConfig
         monthly_registrations_female: "F0cPY1T9lNs.VHbljVQ8REF",
         controlled_male: "FSuHsnyPYcV.tY82VK3LTQq",
         controlled_female: "FSuHsnyPYcV.VHbljVQ8REF"
-      }
+      },
+      appointment_reminders_channel: "Messaging::Twilio::ReminderSms"
     },
     BD: {
       abbreviation: "BD",
@@ -42,7 +43,8 @@ class CountryConfig
         dead: "Qf8Wq8u6AkK",
         cumulative_registrations: "BK2KRHKcTtU",
         monthly_registrations: "GxLDDKPxjxx"
-      }
+      },
+      appointment_reminders_channel: "Messaging::Twilio::ReminderSms"
     },
     ET: {
       abbreviation: "ET",
@@ -65,7 +67,8 @@ class CountryConfig
         dead: "ZNYhcG2efAB",
         cumulative_registrations: "PX8qBGsdF5G",
         monthly_registrations: "Tx3CKEUFqNN"
-      }
+      },
+      appointment_reminders_channel: "Messaging::Twilio::ReminderSms"
     },
     LK: {
       abbreviation: "LK",
@@ -77,7 +80,8 @@ class CountryConfig
       time_zone: ENV["DEFAULT_TIME_ZONE"] || "Asia/Colombo",
       sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+94",
       supported_genders: %w[male female],
-      patient_line_list_show_zone: false
+      patient_line_list_show_zone: false,
+      appointment_reminders_channel: "Messaging::Twilio::ReminderSms"
     },
     US: {
       abbreviation: "US",
@@ -88,7 +92,8 @@ class CountryConfig
       time_zone: "America/New_York",
       sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+1",
       supported_genders: %w[male female transgender],
-      patient_line_list_show_zone: false
+      patient_line_list_show_zone: false,
+      appointment_reminders_channel: "Messaging::Twilio::ReminderSms"
     },
     UK: {
       abbreviation: "UK",
@@ -99,7 +104,8 @@ class CountryConfig
       time_zone: "Europe/London",
       sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+44",
       supported_genders: %w[male female transgender],
-      patient_line_list_show_zone: false
+      patient_line_list_show_zone: false,
+      appointment_reminders_channel: "Messaging::Twilio::ReminderSms"
     }
   }.with_indifferent_access.freeze
 

@@ -8,7 +8,7 @@ class AppointmentNotification::MissedVisitJob < ApplicationJob
     end
 
     Organization.all.each do |organization|
-      AppointmentNotificationService.send_after_missed_visit(appointments: organization.appointments)
+      MissedVisitReminderService.send_after_missed_visit(appointments: organization.appointments)
     end
   end
 end
