@@ -14,10 +14,6 @@ class RegistrationsAndFollowUpsComponent < ViewComponent::Base
     @current_period = current_period
   end
 
-  def follow_ups_definition
-    :follow_up_patients_copy
-  end
-
   def number_or_dash_with_delimiter(value, options = {})
     return "-" if value.blank? || value.zero?
     number_with_delimiter(value, options)

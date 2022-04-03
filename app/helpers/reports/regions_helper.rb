@@ -28,8 +28,4 @@ module Reports::RegionsHelper
   def cohort_report_type(period)
     "#{period.type.to_s.humanize}ly report"
   end
-
-  def follow_ups_definition
-    :follow_up_patients_copy
-  end
 end
