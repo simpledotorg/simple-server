@@ -21,8 +21,11 @@ RSpec.describe FollowUpsQuery do
         second_follow_up_date.to_date.beginning_of_month => 1
       }
       expected_repo_output = {
+        Period.month(first_follow_up_date) => 1,
         Period.month(second_follow_up_date) => 1
       }
+
+      refresh_views
 
       region = facility.region
       periods = Range.new(registration_date.to_period, second_follow_up_date.to_period)
