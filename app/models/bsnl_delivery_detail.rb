@@ -21,4 +21,19 @@ class BsnlDeliveryDetail < DeliveryDetail
   def in_progress?
     created? || inserted_in_queue? || submitted_to_smsc? || accepted_by_carrier?
   end
+
+  def self.create_with_communication!(message_id:, recipient_number:, dlt_template_id:)
+    ActiveRecord::Base.transaction do
+      delivery_detail = create!(
+        message_id: message_id,
+        recipient_number: recipient_number,
+        dlt_template_id: dlt_template_id
+      )
+
+      Communication.create!(
+        communication_type: Messaging::Bsnl::Sms.communication_type,
+        detailable: delivery_detail
+      )
+    end
+  end
 end
