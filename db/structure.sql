@@ -268,6 +268,25 @@ CREATE TABLE public.blood_sugars (
 
 
 --
+-- Name: bsnl_delivery_details; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.bsnl_delivery_details (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    message_id character varying,
+    message_status character varying,
+    message_status_description character varying,
+    recipient_number character varying NOT NULL,
+    dlt_template_id character varying,
+    result character varying,
+    delivered_on timestamp without time zone,
+    deleted_at timestamp without time zone,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: call_logs; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -3729,6 +3748,14 @@ ALTER TABLE ONLY public.blood_sugars
 
 
 --
+-- Name: bsnl_delivery_details bsnl_delivery_details_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.bsnl_delivery_details
+    ADD CONSTRAINT bsnl_delivery_details_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: call_logs call_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5519,6 +5546,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220223080958'),
 ('20220315095931'),
 ('20220321074052'),
-('20220322115123');
+('20220322115123'),
+('20220403123845');
 
 
