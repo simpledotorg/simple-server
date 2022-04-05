@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe BsnlDeliveryDetail, type: :model do
   describe "Associations" do
-    it { should have_one(:communication) }
+    it { is_expected.to have_one(:communication) }
   end
 
   describe ".create_with_communication!" do
