@@ -214,20 +214,35 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
 
     context "region has diabetes management enabled" do
-      @facility.update(enable_diabetes_management: true)
-      it "contains a link to the Diabetes management reports if the feature is enabled" do
+      it "contains a link to the Diabetes management reports if the feature flag is enabled" do
+        @facility.update(enable_diabetes_management: true)
+        Flipper.enable(:diabetes_management_reports)
         sign_in(cvho.email_authentication)
         get :show, params: {id: @facility_region.slug, report_scope: "facility"}
+        assert_select "a[href*='diabetes']", count: 1
+      end
+
+      it "does not contain a link to the Diabetes management reports if the feature flag is disabled" do
+        @facility.update(enable_diabetes_management: true)
+        Flipper.disable(:diabetes_management_reports)
+        sign_in(cvho.email_authentication)
+        get :show, params: {id: @facility_region.slug, report_scope: "facility"}
+        assert_select "a[href*='diabetes']", count: 0
       end
     end
 
     context "region has diabetes management disabled" do
-      @facility.update(enable_diabetes_management: false)
       it "does not contain a link to the diabetes management report" do
+        @facility.update(enable_diabetes_management: false)
         sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility_region.slug, report_scope: "facility"}
 
-        assert_select "a[href=#{reports_region_diabetes_path(@facility_region, report_scope_scope: 'facility')}]" "Diabetes"
+        Flipper.enable(:diabetes_management_reports)
+        get :show, params: {id: @facility_region.slug, report_scope: "facility"}
+        assert_select "a[href*='diabetes']", count: 0
+
+        Flipper.disable(:diabetes_management_reports)
+        get :show, params: {id: @facility_region.slug, report_scope: "facility"}
+        assert_select "a[href*='diabetes']", count: 0
       end
     end
   end
@@ -616,6 +631,42 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect(MonthlyStateDataService).to receive(:new).with(region, period, medications_dispensation_enabled: false).and_call_original
       get :monthly_state_data_report,
         params: {id: region.slug, report_scope: "state", format: "csv", period: period.value}
+    end
+  end
+
+  describe "#diabetes" do
+    let(:facility) { create(:facility, facility_group: facility_group_1, enable_diabetes_management: true) }
+    let(:facility_region) { create(:region, region_type: :facility, source: facility, reparent_to: Region.root) }
+
+    before do
+      sign_in(cvho.email_authentication)
+      Flipper.enable(:diabetes_management_reports)
+    end
+
+    context "when diabetes management is disabled in the region" do
+      it "returns 404 / page not found error" do
+        facility.update(enable_diabetes_management: false)
+
+        get :diabetes, params: {id: facility_region.slug, report_scope: "facility"}
+
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context "when diabetes management is enabled in the region" do
+      it "return diabetes reports page" do
+        get :diabetes, params: {id: facility_region.slug, report_scope: "facility"}
+
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "returns 404 / page not found error when the diabetes_management_reports feature is disabled" do
+        Flipper.disable(:diabetes_management_reports)
+
+        get :diabetes, params: {id: facility_region.slug, report_scope: "facility"}
+
+        expect(response).to have_http_status(:not_found)
+      end
     end
   end
 end

@@ -125,8 +125,8 @@ class Reports::RegionsController < AdminController
   end
 
   def diabetes
-    unless Flipper.enabled?(:diabetes_management_reports)
-      raise ActionController::RoutingError.new("Not Found")
+    unless Flipper.enabled?(:diabetes_management_reports) && @region.diabetes_management_enabled?
+      return head :not_found
     end
 
     authorize { current_admin.accessible_facilities(:view_reports).any? }
