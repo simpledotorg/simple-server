@@ -17,7 +17,7 @@ RSpec.describe Messaging::Bsnl::Sms do
       mock_api = double("BsnlApiDouble")
       allow(Messaging::Bsnl::Api).to receive(:new).and_return(mock_api)
       allow(mock_api).to receive(:send_sms)
-      allow(mock_api).to receive(:send_sms).and_return({})
+      allow(mock_api).to receive(:send_sms).and_return({"Message_Id" => "1111111"})
 
       expect(mock_api).to receive(:send_sms).with(
         recipient_number: "+91123123",
