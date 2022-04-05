@@ -38,7 +38,7 @@ class Messaging::Bsnl::DltTemplate
   end
 
   def check_variables_presence(content)
-    missing_keys = missing_keys(content)
+    missing_keys = find_missing_keys(content)
     return content unless missing_keys.present?
 
     raise Messaging::Bsnl::Error.new(
@@ -85,7 +85,7 @@ class Messaging::Bsnl::DltTemplate
     details
   end
 
-  def missing_keys(content)
+  def find_missing_keys(content)
     keys - content.keys.map(&:to_s)
   end
 
