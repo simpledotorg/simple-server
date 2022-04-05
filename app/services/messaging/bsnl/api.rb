@@ -36,7 +36,7 @@ class Messaging::Bsnl::Api
       header: ENV["BSNL_IHCI_HEADER"],
       message_type: "SI",
       entity_id: ENV["BSNL_IHCI_ENTITY_ID"],
-      jwt: Configuration.fetch("bsnl_sms_jwt") || ENV["BSNL_JWT_TOKEN"]
+      jwt: Configuration.fetch("bsnl_sms_jwt")
     }
   end
 

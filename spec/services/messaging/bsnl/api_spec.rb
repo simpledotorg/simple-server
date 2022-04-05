@@ -30,16 +30,6 @@ RSpec.describe Messaging::Bsnl::Api do
         "Template_Keys_and_Values" => {}
       })).to have_been_made
     end
-
-    it "falls back to picking up JWT token from ENV for testing purposes" do
-      allow(ENV).to receive(:[]).and_call_original
-      allow(ENV).to receive(:[]).with("BSNL_IHCI_HEADER").and_return("ABCDEF")
-      allow(ENV).to receive(:[]).with("BSNL_IHCI_ENTITY_ID").and_return("123")
-      allow(ENV).to receive(:[]).with("BSNL_JWT_TOKEN").and_return("ey123123")
-
-      expect(Configuration.fetch("bsnl_sms_jwt")).to be_nil
-      expect { described_class.new }.not_to raise_error(Messaging::Bsnl::Error)
-    end
   end
 
   describe "#get_template_details" do
