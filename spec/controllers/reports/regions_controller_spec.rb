@@ -212,6 +212,24 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect(data[:controlled_patients]).to eq({})
       expect(data[:period_info]).to eq({})
     end
+
+    context "region has diabetes management enabled" do
+      @facility.update(enable_diabetes_management: true)
+      it "contains a link to the Diabetes management reports if the feature is enabled" do
+        sign_in(cvho.email_authentication)
+        get :show, params: {id: @facility_region.slug, report_scope: "facility"}
+      end
+    end
+
+    context "region has diabetes management disabled" do
+      @facility.update(enable_diabetes_management: false)
+      it "does not contain a link to the diabetes management report" do
+        sign_in(cvho.email_authentication)
+        get :show, params: {id: @facility_region.slug, report_scope: "facility"}
+
+        assert_select "a[href=#{reports_region_diabetes_path(@facility_region, report_scope_scope: 'facility')}]" "Diabetes"
+      end
+    end
   end
 
   describe "index" do
