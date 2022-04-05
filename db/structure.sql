@@ -272,7 +272,7 @@ CREATE TABLE public.blood_sugars (
 --
 
 CREATE TABLE public.bsnl_delivery_details (
-    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    id bigint NOT NULL,
     message_id character varying,
     message_status character varying,
     result character varying,
@@ -283,6 +283,25 @@ CREATE TABLE public.bsnl_delivery_details (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
+
+
+--
+-- Name: bsnl_delivery_details_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.bsnl_delivery_details_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: bsnl_delivery_details_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.bsnl_delivery_details_id_seq OWNED BY public.bsnl_delivery_details.id;
 
 
 --
@@ -3640,6 +3659,13 @@ CREATE TABLE public.users (
     teleconsultation_isd_code character varying,
     receive_approval_notifications boolean DEFAULT true NOT NULL
 );
+
+
+--
+-- Name: bsnl_delivery_details id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.bsnl_delivery_details ALTER COLUMN id SET DEFAULT nextval('public.bsnl_delivery_details_id_seq'::regclass);
 
 
 --
