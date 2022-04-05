@@ -78,7 +78,7 @@ hi-IN.notifications.set02.professional_request:
   Max_Length_Permitted: '0'
   Template_Status: '0'
   Is_Unicode: '1'
-hi-IN.notifications.set03.basic:
+hi-IN.notifications.set03.basic: &1
   Template_Id: '1407164786881633140'
   Template_Keys: []
   Non_Variable_Text_Length: '0'
@@ -260,7 +260,7 @@ en.notifications.set02.professional_request:
   Max_Length_Permitted: '266'
   Template_Status: '1'
   Is_Unicode: '0'
-en.notifications.set03.basic:
+en.notifications.set03.basic: &2
   Template_Id: '1407164725768334531'
   Template_Keys:
   - facility_name
@@ -363,3 +363,9 @@ bn-IN.notifications.set01.basic:
   Max_Length_Permitted: '122'
   Template_Status: '1'
   Is_Unicode: '1'
+hi-IN.notifications.set03.basic_repeated.first: *1
+en.notifications.set03.basic_repeated.first: *2
+hi-IN.notifications.set03.basic_repeated.second: *1
+en.notifications.set03.basic_repeated.second: *2
+hi-IN.notifications.set03.basic_repeated.third: *1
+en.notifications.set03.basic_repeated.third: *2
