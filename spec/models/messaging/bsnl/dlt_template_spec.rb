@@ -23,7 +23,7 @@ RSpec.describe Messaging::Bsnl::DltTemplate do
     expect(described_class.new(template_name).variable_length_permitted).to eq(10)
   end
 
-  it "returns nil if the message key is missing in config" do
+  it "raises an error if the message key is missing in config" do
     allow_any_instance_of(Facility).to receive(:locale).and_return("en")
     existing_template_name = "en.a.template.name"
     stub_template(existing_template_name)

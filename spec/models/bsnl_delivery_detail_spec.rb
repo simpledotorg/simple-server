@@ -12,7 +12,7 @@ RSpec.describe BsnlDeliveryDetail, type: :model do
         described_class.create_with_communication!(
           message_id: "1000123",
           recipient_number: phone_number,
-          dlt_template_id: "12398127312492",
+          dlt_template_id: "12398127312492"
         )
 
       expect(communication.detailable.recipient_number).to eq phone_number

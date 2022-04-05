@@ -1,13 +1,13 @@
 class BsnlDeliveryDetail < DeliveryDetail
   enum message_status: {
-    :created => "0",
-    :input_error => "1",
-    :inserted_in_queue => "2",
-    :submitted_to_smsc => "3",
-    :rejected_by_smsc => "4",
-    :accepted_by_carrier => "5",
-    :delivery_failed => "6",
-    :delivered => "7"
+    created: "0",
+    input_error: "1",
+    inserted_in_queue: "2",
+    submitted_to_smsc: "3",
+    rejected_by_smsc: "4",
+    accepted_by_carrier: "5",
+    delivery_failed: "6",
+    delivered: "7"
   }
 
   def unsuccessful?
