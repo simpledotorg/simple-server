@@ -532,19 +532,17 @@ RSpec.describe Region, type: :model do
   end
 
   describe "#diabetes_management_enabled?" do
-    let(:facility_1) { create(:facility, enable_diabetes_management: true)}
-    let(:facility_2) { create(:facility, enable_diabetes_management: false)}
-    let(:facility_3) { create(:facility, enable_diabetes_management: false)}
+    let(:facility_1) { create(:facility, enable_diabetes_management: true) }
+    let(:facility_2) { create(:facility, enable_diabetes_management: false) }
+    let(:facility_3) { create(:facility, enable_diabetes_management: false) }
 
-    let(:enabled_state_region) { create(:region, region_type: :state, reparent_to: Region.root)}
-    let(:enabled_district_region) { create(:region, region_type: :district, reparent_to: enabled_state_region)}
-    let(:enabled_block_region) { create(:region, region_type: :block, reparent_to: enabled_district_region)}
-    let!(:facility_region_2) { create(:region, region_type: :facility, source: facility_2, reparent_to: enabled_block_region)}
+    let(:enabled_state_region) { create(:region, region_type: :state, reparent_to: Region.root) }
+    let(:enabled_district_region) { create(:region, region_type: :district, reparent_to: enabled_state_region) }
+    let(:enabled_block_region) { create(:region, region_type: :block, reparent_to: enabled_district_region) }
 
-    let(:disabled_state_region) { create(:region, region_type: :state, reparent_to: Region.root)}
-    let(:disabled_district_region) { create(:region, region_type: :district, reparent_to: enabled_state_region)}
-    let(:disabled_block_region) { create(:region, region_type: :block, reparent_to: enabled_district_region)}
-    let!(:facility_region_3) { create(:region, region_type: :facility, source: facility_3, reparent_to: enabled_block_region)}
+    let(:disabled_state_region) { create(:region, region_type: :state, reparent_to: Region.root) }
+    let(:disabled_district_region) { create(:region, region_type: :district, reparent_to: enabled_state_region) }
+    let(:disabled_block_region) { create(:region, region_type: :block, reparent_to: enabled_district_region) }
 
     context "region is a facility" do
       it "returns true if enable_diabetes_management is set to true for the facility" do
@@ -560,8 +558,8 @@ RSpec.describe Region, type: :model do
 
     context "region contains many facilities" do
       it "returns true if any of its facilities has enabled_diabetes_management set to  true" do
-        facility_region_1 = create(:region, region_type: :facility, source: facility_1, reparent_to: enabled_block_region)
-        facility_region_2 = create(:region, region_type: :facility, source: facility_2, reparent_to: enabled_block_region)
+        create(:region, region_type: :facility, source: facility_1, reparent_to: enabled_block_region)
+        create(:region, region_type: :facility, source: facility_2, reparent_to: enabled_block_region)
 
         expect(enabled_state_region.diabetes_management_enabled?).to eq(true)
         expect(enabled_district_region.diabetes_management_enabled?).to eq(true)
@@ -569,8 +567,8 @@ RSpec.describe Region, type: :model do
       end
 
       it "returns false only if all of its facilities has enabled_diabetes_management set to false" do
-        facility_region_1 = create(:region, region_type: :facility, source: facility_2, reparent_to: disabled_block_region)
-        facility_region_2 = create(:region, region_type: :facility, source: facility_3, reparent_to: disabled_block_region)
+        create(:region, region_type: :facility, source: facility_2, reparent_to: disabled_block_region)
+        create(:region, region_type: :facility, source: facility_3, reparent_to: disabled_block_region)
 
         expect(disabled_state_region.diabetes_management_enabled?).to eq(false)
         expect(disabled_district_region.diabetes_management_enabled?).to eq(false)
