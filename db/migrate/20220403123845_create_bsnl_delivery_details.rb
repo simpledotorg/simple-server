@@ -1,7 +1,7 @@
 class CreateBsnlDeliveryDetails < ActiveRecord::Migration[5.2]
   def change
     create_table :bsnl_delivery_details do |t|
-      t.string :message_id
+      t.string :message_id, null: false
       t.string :message_status
       t.string :result
       t.string :recipient_number, null: false

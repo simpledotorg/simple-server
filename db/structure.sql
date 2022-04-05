@@ -273,7 +273,7 @@ CREATE TABLE public.blood_sugars (
 
 CREATE TABLE public.bsnl_delivery_details (
     id bigint NOT NULL,
-    message_id character varying,
+    message_id character varying NOT NULL,
     message_status character varying,
     result character varying,
     recipient_number character varying NOT NULL,
