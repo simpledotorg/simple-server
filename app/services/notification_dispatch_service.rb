@@ -3,9 +3,9 @@ class NotificationDispatchService
     new(*args).call
   end
 
-  def initialize(notification)
+  def initialize(notification, messaging_channel: nil)
     @notification = notification
-    @messaging_channel = country_messaging_channel
+    @messaging_channel = messaging_channel || country_messaging_channel
     @recipient_number = notification.patient.latest_mobile_number
   end
 
@@ -31,9 +31,20 @@ class NotificationDispatchService
   def send_message
     messaging_channel.send_message(
       recipient_number: recipient_number,
-      message: notification.localized_message
+      **message_data
     ) do |communication|
       notification.record_communication(communication)
+    end
+  end
+
+  def message_data
+    if messaging_channel == Messaging::Bsnl::Sms
+      {
+        dlt_template_name: notification.dlt_template_name,
+        variable_content: notification.message_data[:variable_content]
+      }
+    else
+      {message: notification.localized_message}
     end
   end
 
