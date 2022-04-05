@@ -13,17 +13,17 @@ class Messaging::Bsnl::Sms < Messaging::Channel
 
     Messaging::Bsnl::Api.new.send_sms(
       recipient_number: recipient_number,
-      dlt_template_id: template.id,
-      key_values: variables.map { |k, v| {"Key" => k.to_s, "Value" => v} }
+      dlt_template: template,
+      key_values: variables
     ).then { |response| handle_api_errors(response, template, variables) }
   end
 
   private
 
-  def handle_api_errors(response, template, variable_content)
+  def handle_api_errors(response, template, variables)
     error = response["Error"]
     if error.present?
-      raise Messaging::Bsnl::Error.new("#{error} Error on template #{template.name} with content #{variable_content}")
+      raise Messaging::Bsnl::Error.new("#{error} Error on template #{template.name} with content #{variables}")
     else
       response
     end

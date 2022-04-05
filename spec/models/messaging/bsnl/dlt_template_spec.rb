@@ -37,7 +37,7 @@ RSpec.describe Messaging::Bsnl::DltTemplate do
       template_name = "en.a.template.name"
       stub_template(template_name)
       template = described_class.new(template_name)
-      content = {a: :hash}
+      content = {a: "hash"}
 
       allow(template).to receive(:check_variables_presence).and_return(content)
       allow(template).to receive(:trim_variables).and_return(content)
@@ -49,7 +49,7 @@ RSpec.describe Messaging::Bsnl::DltTemplate do
       expect(template).to receive(:limit_total_variable_length).with(content)
       expect(template).to receive(:check_total_variable_length).with(content)
 
-      template.sanitised_variable_content(content)
+      expect(template.sanitised_variable_content(content)).to eq([{"Key" => "a", "Value" => "hash"}])
     end
   end
 

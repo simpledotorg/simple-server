@@ -12,15 +12,15 @@ class Messaging::Bsnl::Api
     end
   end
 
-  def send_sms(recipient_number:, dlt_template_id:, key_values:)
+  def send_sms(recipient_number:, dlt_template:, key_values:)
     post(URL_PATHS[:send_sms], {
       Header: credentials[:header],
       Target: Phonelib.parse(recipient_number, Rails.application.config.country[:abbreviation]).raw_national,
-      Is_Unicode: "0",
+      Is_Unicode: dlt_template.is_unicode,
       Is_Flash: "0",
       Message_Type: credentials[:message_type],
       Entity_Id: credentials[:entity_id],
-      Content_Template_Id: dlt_template_id,
+      Content_Template_Id: dlt_template.id,
       Template_Keys_and_Values: key_values
     })
   end

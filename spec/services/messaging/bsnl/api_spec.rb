@@ -13,13 +13,16 @@ RSpec.describe Messaging::Bsnl::Api do
       allow(ENV).to receive(:[]).with("BSNL_IHCI_HEADER").and_return("ABCDEF")
       allow(ENV).to receive(:[]).with("BSNL_IHCI_ENTITY_ID").and_return("123")
       Configuration.create(name: "bsnl_sms_jwt", value: "a jwt token")
+      mock_template = double("DltTemplate")
+      allow(mock_template).to receive(:is_unicode).and_return "1"
+      allow(mock_template).to receive(:id).and_return "1234"
 
       request = stub_request(:post, "https://bulksms.bsnl.in:5010/api/Send_Sms")
-      described_class.new.send_sms(recipient_number: "+911111111111", dlt_template_id: "1234", key_values: {})
+      described_class.new.send_sms(recipient_number: "+911111111111", dlt_template: mock_template, key_values: {})
       expect(request.with(body: {
         "Header" => "ABCDEF",
         "Target" => "1111111111",
-        "Is_Unicode" => "0",
+        "Is_Unicode" => "1",
         "Is_Flash" => "0",
         "Message_Type" => "SI",
         "Entity_Id" => "123",

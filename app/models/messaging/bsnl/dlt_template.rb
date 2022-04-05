@@ -10,6 +10,7 @@ class Messaging::Bsnl::DltTemplate
   attr_reader :name
   attr_reader :id
   attr_reader :keys
+  attr_reader :is_unicode
   attr_reader :max_length_permitted
   attr_reader :non_variable_text_length
   attr_reader :variable_length_permitted
@@ -20,6 +21,7 @@ class Messaging::Bsnl::DltTemplate
     details = template_details(dlt_template_name)
     @id = details["Template_Id"]
     @status = STATUSES[details["Template_Status"]]
+    @is_unicode = details["Is_Unicode"]
     @keys = details["Template_Keys"]
     @max_length_permitted = details["Max_Length_Permitted"].to_i
     @non_variable_text_length = details["Non_Variable_Text_Length"].to_i
@@ -32,6 +34,7 @@ class Messaging::Bsnl::DltTemplate
       .then { |c| trim_variables(c) }
       .then { |c| limit_total_variable_length(c) }
       .then { |c| check_total_variable_length(c) }
+      .map { |k, v| {"Key" => k.to_s, "Value" => v} }
   end
 
   def check_variables_presence(content)
