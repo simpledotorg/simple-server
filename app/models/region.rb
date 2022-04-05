@@ -168,6 +168,10 @@ class Region < ApplicationRecord
     Patient.joins(:appointments).where(appointments: {facility: facility_regions.pluck(:source_id)})
   end
 
+  def diabetes_management_enabled?
+    facilities.where(enable_diabetes_management: true).exists?
+  end
+
   REGION_TYPES.reject { |t| t == "root" }.map do |region_type|
     # Generates belongs_to type of methods to fetch a region's ancestor
     # e.g. facility.organization
