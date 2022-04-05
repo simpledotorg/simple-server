@@ -26,7 +26,7 @@ class Messaging::Bsnl::DltTemplate
     @variable_length_permitted = max_length_permitted - non_variable_text_length
   end
 
-  def massaged_variable_content(content)
+  def sanitised_variable_content(content)
     content.compact
       .then { |c| check_variables_presence(c) }
       .then { |c| trim_variables(c) }

@@ -2,14 +2,14 @@ require "rspec"
 
 RSpec.describe Messaging::Bsnl::Sms do
   describe "#send_message" do
-    it "passed variables massaged_variable_content to the API" do
+    it "passes sanitised variable content to the API" do
       mock_api = double("BsnlApiDouble")
       allow(Messaging::Bsnl::Api).to receive(:new).and_return(mock_api)
       allow(mock_api).to receive(:send_sms)
       mock_template = double("BsnlDltTemplate")
       allow(Messaging::Bsnl::DltTemplate).to receive(:new).and_return(mock_template)
       allow(mock_template).to receive(:id).and_return("123")
-      allow(mock_template).to receive(:massaged_variable_content).and_return({"a" => "hash"})
+      allow(mock_template).to receive(:sanitised_variable_content).and_return({"a" => "hash"})
       allow(mock_template).to receive(:check_approved)
       allow(mock_api).to receive(:send_sms).and_return({})
 
@@ -34,7 +34,7 @@ RSpec.describe Messaging::Bsnl::Sms do
       allow(Messaging::Bsnl::DltTemplate).to receive(:new).and_return(mock_template)
       allow(mock_template).to receive(:id).and_return("123")
       allow(mock_template).to receive(:name).and_return("a.template.name")
-      allow(mock_template).to receive(:massaged_variable_content).and_return({"a" => "hash"})
+      allow(mock_template).to receive(:sanitised_variable_content).and_return({"a" => "hash"})
       allow(mock_template).to receive(:check_approved)
       allow(mock_api).to receive(:send_sms).and_return({"Error" => "An error happened."})
 

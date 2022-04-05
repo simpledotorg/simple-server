@@ -32,7 +32,7 @@ RSpec.describe Messaging::Bsnl::DltTemplate do
     expect { described_class.new(missing_template_name) }.to raise_error(Messaging::Bsnl::Error)
   end
 
-  describe "#massaged_variable_content" do
+  describe "#sanitised_variable_content" do
     it "calls validation methods" do
       template_name = "en.a.template.name"
       stub_template(template_name)
@@ -49,7 +49,7 @@ RSpec.describe Messaging::Bsnl::DltTemplate do
       expect(template).to receive(:limit_total_variable_length).with(content)
       expect(template).to receive(:check_total_variable_length).with(content)
 
-      template.massaged_variable_content(content)
+      template.sanitised_variable_content(content)
     end
   end
 

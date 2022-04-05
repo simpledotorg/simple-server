@@ -9,7 +9,7 @@ class Messaging::Bsnl::Sms < Messaging::Channel
   def send_message(recipient_number:, dlt_template_name:, variable_content:)
     template = Messaging::Bsnl::DltTemplate.new(dlt_template_name)
     template.check_approved
-    variables = template.massaged_variable_content(variable_content)
+    variables = template.sanitised_variable_content(variable_content)
 
     Messaging::Bsnl::Api.new.send_sms(
       recipient_number: recipient_number,
