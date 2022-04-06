@@ -268,6 +268,43 @@ CREATE TABLE public.blood_sugars (
 
 
 --
+-- Name: bsnl_delivery_details; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.bsnl_delivery_details (
+    id bigint NOT NULL,
+    message_id character varying NOT NULL,
+    message_status character varying,
+    result character varying,
+    recipient_number character varying NOT NULL,
+    dlt_template_id character varying NOT NULL,
+    delivered_on timestamp without time zone,
+    deleted_at timestamp without time zone,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: bsnl_delivery_details_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.bsnl_delivery_details_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: bsnl_delivery_details_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.bsnl_delivery_details_id_seq OWNED BY public.bsnl_delivery_details.id;
+
+
+--
 -- Name: call_logs; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -3625,6 +3662,13 @@ CREATE TABLE public.users (
 
 
 --
+-- Name: bsnl_delivery_details id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.bsnl_delivery_details ALTER COLUMN id SET DEFAULT nextval('public.bsnl_delivery_details_id_seq'::regclass);
+
+
+--
 -- Name: call_logs id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -3726,6 +3770,14 @@ ALTER TABLE ONLY public.blood_pressures
 
 ALTER TABLE ONLY public.blood_sugars
     ADD CONSTRAINT blood_sugars_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: bsnl_delivery_details bsnl_delivery_details_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.bsnl_delivery_details
+    ADD CONSTRAINT bsnl_delivery_details_pkey PRIMARY KEY (id);
 
 
 --
@@ -5520,4 +5572,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220315095931'),
 ('20220321074052'),
 ('20220321095014'),
-('20220322115123');
+('20220322115123'),
+('20220403123845');
+
+
