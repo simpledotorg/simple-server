@@ -73,8 +73,7 @@ en:
   denominator_copy: "Hypertension patients assigned to %{region_name}, registered before the last 3 months. Dead and lost to follow-up patients are excluded."
   denominator_with_ltfu_copy: "Hypertension patients assigned to %{region_name}, registered before the last 3 months. Dead patients are excluded."
   ltfu_denominator_copy: "Hypertension patients assigned to %{region_name}. Dead patients are excluded."
-  follow_up_patients_copy: "Hypertension patients with a BP measure taken during a month in %{region_name}."
-  follow_up_patients_copy_v2: "Hypertension patients with a BP measure taken, a blood sugar taken, an appointment scheduled, or their medications refilled during a month in %{region_name}."
+  follow_up_patients_copy: "Hypertension patients with a BP measure taken, a blood sugar taken, an appointment scheduled, or their medications refilled during a month in %{region_name}."
   patients_under_care_copy: "Hypertension patients with a visit in the last 12 months."
   bp_measures_taken_copy: "All BP measures taken in a month by healthcare workers at %{region_name}."
   hypertension_patient_coverage_copy: "Total registered patients diagnosed with hypertension divided by the region's estimated hypertensive population."
@@ -118,7 +117,7 @@ en:
       registered_patients_title: "registered %{patient_or_patients}"
     period_report:
       registered_patients_card:
-        title: "Registered patients"  
+        title: "Registered patients"
         subtitle: "Patients registered at %{facility_name}."
       follow_up_patients_card:
         title: "Follow-up patients"
@@ -185,7 +184,7 @@ en:
         section_title: "Drug stock report"
         card_subtitle: "%{number_of_days} %{day_or_days} of tablets in stock"
       cohort_report:
-        section_title: "Cohort reports" 
+        section_title: "Cohort reports"
         card_title: "Quarterly cohort reports"
         card_subtitle: "The result for all assigned hypertensive patients registered in a quarter at their follow-up visit in the following quarter."
         cohort_title: "Result from last visit in %{period}"
