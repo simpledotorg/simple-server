@@ -277,7 +277,7 @@ CREATE TABLE public.bsnl_delivery_details (
     message_status character varying,
     result character varying,
     recipient_number character varying NOT NULL,
-    dlt_template_id character varying,
+    dlt_template_id character varying NOT NULL,
     delivered_on timestamp without time zone,
     deleted_at timestamp without time zone,
     created_at timestamp without time zone NOT NULL,

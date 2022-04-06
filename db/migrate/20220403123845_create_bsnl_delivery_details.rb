@@ -5,7 +5,7 @@ class CreateBsnlDeliveryDetails < ActiveRecord::Migration[5.2]
       t.string :message_status
       t.string :result
       t.string :recipient_number, null: false
-      t.string :dlt_template_id
+      t.string :dlt_template_id, null: false
       t.timestamp :delivered_on
       t.timestamp :deleted_at
       t.timestamps

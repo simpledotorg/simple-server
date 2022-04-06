@@ -10,6 +10,10 @@ class BsnlDeliveryDetail < DeliveryDetail
     delivered: "7"
   }
 
+  validates :message_id, presence: true
+  validates :recipient_number, presence: true
+  validates :dlt_template_id, presence: true
+
   def unsuccessful?
     input_error? || rejected_by_smsc? || delivery_failed?
   end
