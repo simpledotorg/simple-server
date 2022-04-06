@@ -6,7 +6,7 @@ def mock_facility_repo(repo, district, month)
     district[:facility_2].slug => {month => 23}
   })
 
-  allow(repo).to receive(:under_care).and_return({
+  allow(repo).to receive(:adjusted_patients).and_return({
     district[:facility_1].slug => {month => 12},
     district[:facility_2].slug => {month => 24}
   })

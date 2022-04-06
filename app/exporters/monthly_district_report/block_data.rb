@@ -58,7 +58,7 @@ module MonthlyDistrictReport
         "Blocks" => block.name,
         "Total registrations" => repo.cumulative_registrations[block.slug][report_month],
         "Total assigned patients" => repo.cumulative_assigned_patients[block.slug][report_month],
-        "Total patients under care" => repo.under_care[block.slug][report_month],
+        "Total patients under care" => repo.adjusted_patients[block.slug][report_month],
         "Total patients lost to followup" => repo.ltfu[block.slug][report_month],
         "% BP controlled" => percentage_string(repo.controlled_rates[block.slug][report_month]),
         "% BP uncontrolled" => percentage_string(repo.uncontrolled_rates[block.slug][report_month]),
