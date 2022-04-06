@@ -214,7 +214,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
 
     context "when region has diabetes management enabled" do
-      it "contains a link to the Diabetes management reports if the feature flag is enabled" do
+      it "contains a link to the diabetes management reports if the feature flag is enabled" do
         @facility.update(enable_diabetes_management: true)
         Flipper.enable(:diabetes_management_reports)
         sign_in(cvho.email_authentication)
@@ -222,7 +222,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
         assert_select "a[href*='diabetes']", count: 1
       end
 
-      it "does not contain a link to the Diabetes management reports if the feature flag is disabled" do
+      it "does not contain a link to the diabetes management reports if the feature flag is disabled" do
         @facility.update(enable_diabetes_management: true)
         Flipper.disable(:diabetes_management_reports)
         sign_in(cvho.email_authentication)
