@@ -2,7 +2,7 @@ class Messaging::Twilio::OtpSms < Messaging::Twilio::Api
   # This number comes from https://www.twilio.com/docs/iam/test-credentials#test-sms-messages-parameters-From
   TWILIO_TEST_SMS_NUMBER = "+15005550006"
 
-  def communication_type
+  def self.communication_type
     Communication.communication_types[:sms]
   end
 

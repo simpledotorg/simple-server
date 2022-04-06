@@ -16,6 +16,8 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
     @total_follow_ups = Reports::MonthlyProgressComponent.new(@total_follow_ups_dimension, service: @service).total_count
     @total_registrations = Reports::MonthlyProgressComponent.new(@total_registrations_dimension, service: @service).total_count
 
+    @is_diabetes_enabled = current_facility.diabetes_enabled?
+
     @drug_stocks = DrugStock.latest_for_facilities_grouped_by_protocol_drug(current_facility, @for_end_of_month)
     unless @drug_stocks.empty?
       @drug_stocks_query = DrugStocksQuery.new(facilities: [current_facility],

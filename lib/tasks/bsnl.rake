@@ -1,6 +1,8 @@
 require "net/http"
-require "tasks/scripts/bsnl"
+require "tasks/scripts/refresh_bsnl_sms_jwt"
+require "tasks/scripts/get_bsnl_templates"
 
+# Usage instructions at: doc/howto/manage_bsnl_sms_reminders.md
 namespace :bsnl do
   desc "Fetch a fresh JWT for BSNL Bulk SMS and overwrite the old token"
   task refresh_sms_jwt: :environment do
@@ -9,6 +11,16 @@ namespace :bsnl do
     password = ENV["BSNL_PASSWORD"]
     token_id = ENV["BSNL_TOKEN_ID"]
 
-    Bsnl.new(service_id, username, password, token_id).refresh_sms_jwt
+    RefreshBsnlSmsJwt.new(service_id, username, password, token_id).call
+  end
+
+  desc "Get BSNL template details from the API"
+  task get_template_details: :environment do
+    GetBsnlTemplateDetails.new.call
+  end
+
+  desc "List pending notification strings to be uploaded to DLT and BSNL dashboard"
+  task list_pending_templates: :environment do
+    GetBsnlTemplateDetails.new.pending_templates
   end
 end

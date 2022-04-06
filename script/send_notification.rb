@@ -2,13 +2,12 @@
 #
 # Script to send messages via our Twilio notification system.
 #
-# Provide a patient name as the first argument, and a recipient phone number as the second.
-# Note that the patient name must be a real patient in our database - it is used to
-# have a patient to hang the notification record off of, and for the full name in the message.
-# The phone number provided will be used as the actual recipient,
-# and you can use any fully qualified phone number (include the country code).
+# Provide a patient ID as the argument.
+# This will find the patient and hang the notification record to it.
+# The patient's latest mobile number will be used as the recipient,
+# and they can have any fully qualified phone number (include the country code).
 #
-#   script/send_notification.rb "Patient Name" "+1605551234"
+#   script/send_notification.rb "<patient-uuid>"
 #
 # To send real messages from Sandbox, set the following first:
 #
@@ -23,26 +22,26 @@
 # export TWILIO_PRODUCTION_OVERRIDE=true
 
 require_relative "../config/environment"
+id = ARGV.first || raise(ArgumentError, "You must provide a patient ID")
+patient = Patient.find_by!(id: id)
 
-full_name = ARGV.first || raise(ArgumentError, "You must provide a patient name")
-phone_number = ARGV.second || raise(ArgumentError, "You must provide a phone number to receive the message")
+raise "Patient doesn't have a mobile number" unless patient.latest_mobile_number
+puts "Sending a test notification message to #{patient.latest_mobile_number}..."
 
-puts "Sending a test notification message to #{phone_number}..."
-
-patient = Patient.find_by!(full_name: full_name)
 notification = Notification.create!(
   patient: patient,
   remind_on: Date.current,
   status: "scheduled",
-  message: "test_message",
+  message: "notifications.set01.basic",
   purpose: "test_message"
 )
-sent_message = AppointmentNotification::Worker.new.perform(notification.id, phone_number)
+communication = NotificationDispatchService.call(notification)
+delivery_detail = communication.detailable
 
-puts "Twilio message sid=#{sent_message.sid} status=#{sent_message.status}..."
+puts "Twilio message sid=#{delivery_detail.session_id} status=#{delivery_detail.result}..."
 puts "Waiting a second and then refetching Twilio status"
 sleep 1
-fetched_message = Messaging::Twilio::Api.fetch_message(sent_message.sid)
+fetched_message = Messaging::Twilio::ReminderSms.new.fetch_message(delivery_detail.session_id)
 puts "status=#{fetched_message.status}"
 puts "Twilio message sid=#{fetched_message.sid} status=#{fetched_message.status}..."
 puts

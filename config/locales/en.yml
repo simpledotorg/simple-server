@@ -102,7 +102,7 @@ en:
       male: "Male"
       female: "Female"
       transgender: "Transgender"
-    registrations_and_follow_ups_card:
+    period_card:
       title: "Registrations and follow-ups"
     reports_card:
       title: "Reports"
@@ -126,6 +126,9 @@ en:
       patients_initiated_on_treatment_card:
         title: "Where is the \"Patients initiated on treatment\" data?"
         main_text: "Use \"Registered patients\", it will always equal \"Patients initiated on treatment\" for patients registered on Simple."
+      more_patient_data_coming_soon_card:
+        title: "More patient data coming soon"
+        main_text: "Daily registration and follow-up data broken down by disease and gender will be added soon."
     diagnosis_report:
       diagnosis_thresholds:
         hypertension_controlled_short: "BP controlled"

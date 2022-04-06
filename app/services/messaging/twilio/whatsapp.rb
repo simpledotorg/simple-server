@@ -6,7 +6,7 @@ class Messaging::Twilio::Whatsapp < Messaging::Twilio::Api
     super(recipient_number: whatsapp_format(recipient_number), message: message)
   end
 
-  def communication_type
+  def self.communication_type
     Communication.communication_types[:whatsapp]
   end
 

@@ -49,21 +49,6 @@ describe Communication, type: :model do
         end
       end
     end
-
-    describe ".create_with_twilio_details!" do
-      it "creates a communication with a TwilioSmsDeliveryDetail" do
-        notification = create(:notification)
-        expect {
-          Communication.create_with_twilio_details!(
-            twilio_sid: SecureRandom.uuid,
-            twilio_msg_status: "sent",
-            communication_type: :sms,
-            notification: notification
-          )
-        }.to change { Communication.count }.by(1)
-          .and change { TwilioSmsDeliveryDetail.count }.by(1)
-      end
-    end
   end
 
   describe "#communication_result" do

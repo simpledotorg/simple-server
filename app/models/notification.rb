@@ -12,8 +12,6 @@ class Notification < ApplicationRecord
     Rails.logger.child(fields)
   end
 
-  APPOINTMENT_REMINDER_MSG_PREFIX = "communications.appointment_reminders"
-
   validates :status, presence: true
   validates :remind_on, presence: true
   validates :message, presence: true
@@ -35,39 +33,29 @@ class Notification < ApplicationRecord
 
   scope :due_today, -> { where(remind_on: Date.current, status: [:pending]) }
 
-  def localized_message
-    return unless patient
+  def record_communication(communication)
+    communication.update!(notification: self)
+    status_sent!
+  end
 
-    case purpose
-    when "covid_medication_reminder"
-      I18n.t(
-        message,
-        facility_name: patient.assigned_facility.name,
-        patient_name: patient.full_name,
-        locale: patient.locale
-      )
-    when "experimental_appointment_reminder"
-      facility = subject&.facility || patient.assigned_facility
-      I18n.t(
-        message,
-        facility_name: facility.name,
-        patient_name: patient.full_name,
-        appointment_date: subject&.scheduled_date&.strftime("%d-%m-%Y"),
-        locale: facility.locale
-      )
-    when "missed_visit_reminder"
-      I18n.t(
-        message,
-        facility_name: subject.facility.name,
-        patient_name: patient.full_name,
-        appointment_date: subject.scheduled_date.strftime("%d-%m-%Y"),
-        locale: subject.facility.locale
-      )
-    when "test_message"
-      "Test message sent by Simple.org to #{patient.full_name}"
-    else
-      raise ArgumentError, "No localized_message defined for notification of type #{purpose}"
-    end
+  def message_data
+    return {} unless patient
+    facility = subject&.facility || patient.assigned_facility
+
+    {
+      variable_content: {facility_name: facility.name,
+                         patient_name: patient.full_name,
+                         appointment_date: subject&.scheduled_date&.strftime("%d-%m-%Y")},
+      locale: facility.locale
+    }
+  end
+
+  def localized_message
+    I18n.t(message, **message_data[:variable_content], locale: message_data[:locale])
+  end
+
+  def dlt_template_name
+    "#{message_data[:locale]}.#{message}"
   end
 
   def self.cancel
