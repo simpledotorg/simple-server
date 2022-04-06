@@ -2,9 +2,9 @@ class GetBsnlTemplateDetails
   include I18n::Backend::Flatten
   include Memery
   DUPLICATE_TEMPLATES = {
-    "notifications.set03.basic_repeated.first" => "notifications.set03.basic",
-    "notifications.set03.basic_repeated.second" => "notifications.set03.basic",
-    "notifications.set03.basic_repeated.third" => "notifications.set03.basic"
+    "notifications.set03_basic_repeated.first" => "notifications.set03.basic",
+    "notifications.set03_basic_repeated.second" => "notifications.set03.basic",
+    "notifications.set03_basic_repeated.third" => "notifications.set03.basic"
   }
 
   attr_reader :template_details, :template_names
