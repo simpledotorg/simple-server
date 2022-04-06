@@ -644,12 +644,12 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
 
     context "when diabetes management is disabled in the region" do
-      it "returns 404 / page not found error" do
+      it "raises a routing error" do
         facility.update(enable_diabetes_management: false)
 
-        get :diabetes, params: {id: facility_region.slug, report_scope: "facility"}
-
-        expect(response).to have_http_status(:not_found)
+        expect {
+          get :diabetes, params: {id: facility_region.slug, report_scope: "facility"}
+        }.to raise_error(ActionController::RoutingError)
       end
     end
 
@@ -660,12 +660,12 @@ RSpec.describe Reports::RegionsController, type: :controller do
         expect(response).to have_http_status(:ok)
       end
 
-      it "returns 404 / page not found error when the diabetes_management_reports feature is disabled" do
+      it "raises a routing error" do
         Flipper.disable(:diabetes_management_reports)
 
-        get :diabetes, params: {id: facility_region.slug, report_scope: "facility"}
-
-        expect(response).to have_http_status(:not_found)
+        expect {
+          get :diabetes, params: {id: facility_region.slug, report_scope: "facility"}
+        }.to raise_error(ActionController::RoutingError)
       end
     end
   end
