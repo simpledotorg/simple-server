@@ -3,6 +3,12 @@ class Messaging::Bsnl::Sms < Messaging::Channel
     Communication.communication_types[:sms]
   end
 
+  def self.get_message_statuses
+    BsnlDeliveryDetail.in_progress.in_batches(of: 1_000).each_record do |detailable|
+      BsnlSmsStatusJob.perform_async(detailable.id)
+    end
+  end
+
   # variable_content: A map that takes the values to be interpolated
   # in the templates. For example: { facility_name: "Facility A", patient_name: "Patient" }
   def send_message(recipient_number:, dlt_template_name:, variable_content:, &with_communication_do)

@@ -8,5 +8,7 @@ FactoryBot.define do
     delivered_on { nil }
 
     association :communication
+
+    trait(:created) { message_status { "0" } }
   end
 end
