@@ -9,7 +9,7 @@ describe TwilioSmsDeliveryDetail, type: :model do
 
   describe ".create_with_communication!" do
     it "creates a communication with a TwilioSmsDeliveryDetail" do
-      phone_number = "1111111111"
+      phone_number = Faker::PhoneNumber.phone_number
       communication =
         described_class.create_with_communication!(
           callee_phone_number: phone_number,
