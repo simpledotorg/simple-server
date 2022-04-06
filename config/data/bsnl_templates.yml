@@ -179,6 +179,9 @@ bn-IN.notifications.set03.response:
   Max_Length_Permitted: '0'
   Template_Status: '0'
   Is_Unicode: '1'
+bn-IN.notifications.set03_basic_repeated.first: *1
+bn-IN.notifications.set03_basic_repeated.second: *1
+bn-IN.notifications.set03_basic_repeated.third: *1
 en.notifications.set01.alarm:
   Template_Id: '1407164725510919631'
   Template_Keys:
@@ -375,6 +378,9 @@ en.notifications.set03.professional_request:
   Max_Length_Permitted: '318'
   Template_Status: '1'
   Is_Unicode: '0'
+en.notifications.set03_basic_repeated.first: *2
+en.notifications.set03_basic_repeated.second: *2
+en.notifications.set03_basic_repeated.third: *2
 hi-IN.notifications.covid.medication_reminder:
   Template_Id: '1407164904210999916'
   Template_Keys: []
@@ -559,6 +565,9 @@ hi-IN.notifications.set03.response:
   Max_Length_Permitted: '0'
   Template_Status: '0'
   Is_Unicode: '1'
+hi-IN.notifications.set03_basic_repeated.first: *3
+hi-IN.notifications.set03_basic_repeated.second: *3
+hi-IN.notifications.set03_basic_repeated.third: *3
 kn-IN.notifications.covid.medication_reminder:
   Template_Id: '1407164904338588930'
   Template_Keys: []
@@ -734,6 +743,9 @@ kn-IN.notifications.set03.response:
   Max_Length_Permitted: '0'
   Template_Status: '0'
   Is_Unicode: '1'
+kn-IN.notifications.set03_basic_repeated.first: *4
+kn-IN.notifications.set03_basic_repeated.second: *4
+kn-IN.notifications.set03_basic_repeated.third: *4
 mr-IN.notifications.covid.medication_reminder:
   Template_Id: '1407164904254274076'
   Template_Keys: []
@@ -911,6 +923,9 @@ mr-IN.notifications.set03.response:
   Max_Length_Permitted: '0'
   Template_Status: '0'
   Is_Unicode: '1'
+mr-IN.notifications.set03_basic_repeated.first: *5
+mr-IN.notifications.set03_basic_repeated.second: *5
+mr-IN.notifications.set03_basic_repeated.third: *5
 pa-Guru-IN.notifications.covid.medication_reminder:
   Template_Id: '1407164904375888288'
   Template_Keys: []
@@ -1088,6 +1103,9 @@ pa-Guru-IN.notifications.set03.response:
   Max_Length_Permitted: '0'
   Template_Status: '0'
   Is_Unicode: '1'
+pa-Guru-IN.notifications.set03_basic_repeated.first: *6
+pa-Guru-IN.notifications.set03_basic_repeated.second: *6
+pa-Guru-IN.notifications.set03_basic_repeated.third: *6
 ta-IN.notifications.covid.medication_reminder:
   Template_Id: '1407164904296563463'
   Template_Keys: []
@@ -1263,6 +1281,9 @@ ta-IN.notifications.set03.response:
   Max_Length_Permitted: '0'
   Template_Status: '0'
   Is_Unicode: '1'
+ta-IN.notifications.set03_basic_repeated.first: *7
+ta-IN.notifications.set03_basic_repeated.second: *7
+ta-IN.notifications.set03_basic_repeated.third: *7
 te-IN.notifications.covid.medication_reminder:
   Template_Id: '1407164904168867232'
   Template_Keys: []
@@ -1438,6 +1459,9 @@ te-IN.notifications.set03.response:
   Max_Length_Permitted: '0'
   Template_Status: '0'
   Is_Unicode: '1'
+te-IN.notifications.set03_basic_repeated.first: *8
+te-IN.notifications.set03_basic_repeated.second: *8
+te-IN.notifications.set03_basic_repeated.third: *8
 test_message:
   Template_Id: '1407164914557014154'
   Template_Keys: []
@@ -1445,27 +1469,3 @@ test_message:
   Max_Length_Permitted: '0'
   Template_Status: '0'
   Is_Unicode: '0'
-bn-IN.notifications.set03_basic_repeated.first: *1
-en.notifications.set03_basic_repeated.first: *2
-hi-IN.notifications.set03_basic_repeated.first: *3
-kn-IN.notifications.set03_basic_repeated.first: *4
-mr-IN.notifications.set03_basic_repeated.first: *5
-pa-Guru-IN.notifications.set03_basic_repeated.first: *6
-ta-IN.notifications.set03_basic_repeated.first: *7
-te-IN.notifications.set03_basic_repeated.first: *8
-bn-IN.notifications.set03_basic_repeated.second: *1
-en.notifications.set03_basic_repeated.second: *2
-hi-IN.notifications.set03_basic_repeated.second: *3
-kn-IN.notifications.set03_basic_repeated.second: *4
-mr-IN.notifications.set03_basic_repeated.second: *5
-pa-Guru-IN.notifications.set03_basic_repeated.second: *6
-ta-IN.notifications.set03_basic_repeated.second: *7
-te-IN.notifications.set03_basic_repeated.second: *8
-bn-IN.notifications.set03_basic_repeated.third: *1
-en.notifications.set03_basic_repeated.third: *2
-hi-IN.notifications.set03_basic_repeated.third: *3
-kn-IN.notifications.set03_basic_repeated.third: *4
-mr-IN.notifications.set03_basic_repeated.third: *5
-pa-Guru-IN.notifications.set03_basic_repeated.third: *6
-ta-IN.notifications.set03_basic_repeated.third: *7
-te-IN.notifications.set03_basic_repeated.third: *8
