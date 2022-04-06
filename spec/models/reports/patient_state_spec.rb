@@ -86,7 +86,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
 
       it "marks a patient registered long ago, with a recent BP as under care" do
         patient_with_recent_bp = Timecop.freeze(13.months.ago) { create(:patient) }
-        Timecop.freeze(11.months.ago) { create(:blood_pressure, patient: patient_with_recent_bp) }
+        Timecop.freeze(11.months.ago) { create(:blood_pressure, :with_encounter, patient: patient_with_recent_bp) }
 
         RefreshReportingViews.refresh_v2
         with_reporting_time_zone do
@@ -104,8 +104,8 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
           under_care_patient = create(:patient, recorded_at: june_2021[:long_ago])
           ltfu_patient = create(:patient, recorded_at: june_2021[:long_ago])
 
-          create(:blood_pressure, patient: under_care_patient, recorded_at: june_2021[:under_12_months_ago])
-          create(:blood_pressure, patient: ltfu_patient, recorded_at: june_2021[:over_12_months_ago])
+          create(:blood_pressure, :with_encounter, patient: under_care_patient, recorded_at: june_2021[:under_12_months_ago])
+          create(:blood_pressure, :with_encounter, patient: ltfu_patient, recorded_at: june_2021[:over_12_months_ago])
 
           RefreshReportingViews.refresh_v2
 
@@ -129,8 +129,8 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
           under_care_patient = create(:patient, recorded_at: june_2021[:long_ago])
           ltfu_patient = create(:patient, recorded_at: june_2021[:long_ago])
 
-          create(:blood_pressure, patient: under_care_patient, recorded_at: june_2021[:end_of_month] - 1.minute)
-          create(:blood_pressure, patient: ltfu_patient, recorded_at: june_2021[:end_of_month] + 1.minute)
+          create(:blood_pressure, :with_encounter, patient: under_care_patient, recorded_at: june_2021[:end_of_month] - 1.minute)
+          create(:blood_pressure, :with_encounter, patient: ltfu_patient, recorded_at: june_2021[:end_of_month] + 1.minute)
 
           RefreshReportingViews.refresh_v2
 

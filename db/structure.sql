@@ -2251,7 +2251,7 @@ CREATE MATERIALIZED VIEW public.reporting_patient_states AS
         END AS last_bp_state,
         CASE
             WHEN ((p.status)::text = 'dead'::text) THEN 'dead'::text
-            WHEN (((((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))))) < (12)::double precision) OR (bps.months_since_bp < (12)::double precision)) THEN 'under_care'::text
+            WHEN (((((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))))) < (12)::double precision) OR (visits.months_since_visit < (12)::double precision)) THEN 'under_care'::text
             ELSE 'lost_to_follow_up'::text
         END AS htn_care_state,
         CASE
@@ -4099,20 +4099,6 @@ CREATE UNIQUE INDEX daily_follow_ups_day_patient_facility ON public.reporting_da
 
 
 --
--- Name: facility_states_month_date_region_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX facility_states_month_date_region_id ON public.reporting_facility_states USING btree (month_date, facility_region_id);
-
-
---
--- Name: fs_dimensions_month_date_facility_region_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX fs_dimensions_month_date_facility_region_id ON public.reporting_facility_state_dimensions USING btree (month_date, facility_region_id);
-
-
---
 -- Name: idx_deduplication_logs_lookup_deleted_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4603,6 +4589,20 @@ CREATE INDEX index_fs_dimensions_facility_id ON public.reporting_facility_state_
 
 
 --
+-- Name: index_fs_dimensions_month_date_facility_region_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_fs_dimensions_month_date_facility_region_id ON public.reporting_facility_state_dimensions USING btree (month_date, facility_region_id);
+
+
+--
+-- Name: index_fs_month_date_region_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_fs_month_date_region_id ON public.reporting_facility_states USING btree (month_date, facility_region_id);
+
+
+--
 -- Name: index_gin_email_authentications_on_email; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4918,6 +4918,13 @@ CREATE INDEX index_qfs_facility_id ON public.reporting_quarterly_facility_states
 
 
 --
+-- Name: index_qfs_quarter_string_region_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_qfs_quarter_string_region_id ON public.reporting_quarterly_facility_states USING btree (quarter_string, facility_region_id);
+
+
+--
 -- Name: index_regions_on_path; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -5160,13 +5167,6 @@ CREATE UNIQUE INDEX patient_states_month_date_patient_id ON public.reporting_pat
 --
 
 CREATE UNIQUE INDEX patient_visits_patient_id_month_date ON public.reporting_patient_visits USING btree (month_date, patient_id);
-
-
---
--- Name: quarterly_facility_states_quarter_string_region_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX quarterly_facility_states_quarter_string_region_id ON public.reporting_quarterly_facility_states USING btree (quarter_string, facility_region_id);
 
 
 --
@@ -5571,6 +5571,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220223080958'),
 ('20220315095931'),
 ('20220321074052'),
+('20220321095014'),
 ('20220322115123'),
 ('20220403123845');
 
