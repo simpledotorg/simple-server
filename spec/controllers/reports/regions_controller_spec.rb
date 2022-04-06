@@ -660,7 +660,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
         expect(response).to have_http_status(:ok)
       end
 
-      it "raises a routing error" do
+      it "raises a routing error when feature flag is disabled" do
         Flipper.disable(:diabetes_management_reports)
 
         expect {
