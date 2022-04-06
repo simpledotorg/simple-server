@@ -7,120 +7,126 @@ hi-IN.notifications.set01.gratitude:
   Non_Variable_Text_Length: '0'
   Max_Length_Permitted: '0'
   Template_Status: '0'
-hi-IN.notifications.set01.free:
-  Template_Id: '1407164786707500363'
-  Template_Keys: []
-  Non_Variable_Text_Length: '0'
-  Max_Length_Permitted: '0'
-  Template_Status: '0'
+  Is_Unicode: '1'
 hi-IN.notifications.set01.alarm:
   Template_Id: '1407164786727828632'
   Template_Keys: []
   Non_Variable_Text_Length: '0'
   Max_Length_Permitted: '0'
   Template_Status: '0'
+  Is_Unicode: '1'
 hi-IN.notifications.set01.emotional_relatives:
   Template_Id: '1407164786737032194'
   Template_Keys: []
   Non_Variable_Text_Length: '0'
   Max_Length_Permitted: '0'
   Template_Status: '0'
+  Is_Unicode: '1'
 hi-IN.notifications.set01.emotional_guilt:
   Template_Id: '1407164786755728873'
   Template_Keys: []
   Non_Variable_Text_Length: '0'
   Max_Length_Permitted: '0'
   Template_Status: '0'
-hi-IN.notifications.set01.professional_request:
-  Template_Id: '1407164786769683386'
-  Template_Keys: []
-  Non_Variable_Text_Length: '0'
-  Max_Length_Permitted: '0'
-  Template_Status: '0'
+  Is_Unicode: '1'
 hi-IN.notifications.set02.basic:
   Template_Id: '1407164786776695444'
   Template_Keys: []
   Non_Variable_Text_Length: '0'
   Max_Length_Permitted: '0'
   Template_Status: '0'
+  Is_Unicode: '1'
 hi-IN.notifications.set02.gratitude:
   Template_Id: '1407164786841065362'
   Template_Keys: []
   Non_Variable_Text_Length: '0'
   Max_Length_Permitted: '0'
   Template_Status: '0'
+  Is_Unicode: '1'
 hi-IN.notifications.set02.free:
   Template_Id: '1407164786848924077'
   Template_Keys: []
   Non_Variable_Text_Length: '0'
   Max_Length_Permitted: '0'
   Template_Status: '0'
+  Is_Unicode: '1'
 hi-IN.notifications.set02.alarm:
   Template_Id: '1407164786854655569'
   Template_Keys: []
   Non_Variable_Text_Length: '0'
   Max_Length_Permitted: '0'
   Template_Status: '0'
+  Is_Unicode: '1'
 hi-IN.notifications.set02.emotional_relatives:
   Template_Id: '1407164786859899448'
   Template_Keys: []
   Non_Variable_Text_Length: '0'
   Max_Length_Permitted: '0'
   Template_Status: '0'
+  Is_Unicode: '1'
 hi-IN.notifications.set02.emotional_guilt:
   Template_Id: '1407164786864964119'
   Template_Keys: []
   Non_Variable_Text_Length: '0'
   Max_Length_Permitted: '0'
   Template_Status: '0'
+  Is_Unicode: '1'
 hi-IN.notifications.set02.professional_request:
   Template_Id: '1407164786871299569'
   Template_Keys: []
   Non_Variable_Text_Length: '0'
   Max_Length_Permitted: '0'
   Template_Status: '0'
+  Is_Unicode: '1'
 hi-IN.notifications.set03.basic:
   Template_Id: '1407164786881633140'
   Template_Keys: []
   Non_Variable_Text_Length: '0'
   Max_Length_Permitted: '0'
   Template_Status: '0'
+  Is_Unicode: '1'
 hi-IN.notifications.set03.gratitude:
   Template_Id: '1407164786890353301'
   Template_Keys: []
   Non_Variable_Text_Length: '0'
   Max_Length_Permitted: '0'
   Template_Status: '0'
+  Is_Unicode: '1'
 hi-IN.notifications.set03.free:
   Template_Id: '1407164786894922849'
   Template_Keys: []
   Non_Variable_Text_Length: '0'
   Max_Length_Permitted: '0'
   Template_Status: '0'
+  Is_Unicode: '1'
 hi-IN.notifications.set03.alarm:
   Template_Id: '1407164786900357171'
   Template_Keys: []
   Non_Variable_Text_Length: '0'
   Max_Length_Permitted: '0'
   Template_Status: '0'
+  Is_Unicode: '1'
 hi-IN.notifications.set03.emotional_relatives:
   Template_Id: '1407164786907816819'
   Template_Keys: []
   Non_Variable_Text_Length: '0'
   Max_Length_Permitted: '0'
   Template_Status: '0'
+  Is_Unicode: '1'
 hi-IN.notifications.set03.emotional_guilt:
   Template_Id: '1407164786914098232'
   Template_Keys: []
   Non_Variable_Text_Length: '0'
   Max_Length_Permitted: '0'
   Template_Status: '0'
+  Is_Unicode: '1'
 hi-IN.notifications.set03.professional_request:
   Template_Id: '1407164786921074167'
   Template_Keys: []
   Non_Variable_Text_Length: '0'
   Max_Length_Permitted: '0'
   Template_Status: '0'
+  Is_Unicode: '1'
 en.notifications.set01.basic:
   Template_Id: '1407164725487206185'
   Template_Keys:
@@ -130,6 +136,7 @@ en.notifications.set01.basic:
   Non_Variable_Text_Length: '51'
   Max_Length_Permitted: '102'
   Template_Status: '1'
+  Is_Unicode: '0'
 en.notifications.set01.gratitude:
   Template_Id: '1407164725496461044'
   Template_Keys:
@@ -139,6 +146,7 @@ en.notifications.set01.gratitude:
   Non_Variable_Text_Length: '103'
   Max_Length_Permitted: '206'
   Template_Status: '1'
+  Is_Unicode: '0'
 en.notifications.set01.free:
   Template_Id: '1407164725502986191'
   Template_Keys:
@@ -148,6 +156,7 @@ en.notifications.set01.free:
   Non_Variable_Text_Length: '70'
   Max_Length_Permitted: '140'
   Template_Status: '1'
+  Is_Unicode: '0'
 en.notifications.set01.alarm:
   Template_Id: '1407164725510919631'
   Template_Keys:
@@ -157,6 +166,7 @@ en.notifications.set01.alarm:
   Non_Variable_Text_Length: '98'
   Max_Length_Permitted: '196'
   Template_Status: '1'
+  Is_Unicode: '0'
 en.notifications.set01.emotional_relatives:
   Template_Id: '1407164725529980989'
   Template_Keys:
@@ -166,6 +176,7 @@ en.notifications.set01.emotional_relatives:
   Non_Variable_Text_Length: '130'
   Max_Length_Permitted: '260'
   Template_Status: '1'
+  Is_Unicode: '0'
 en.notifications.set01.emotional_guilt:
   Template_Id: '1407164725538353809'
   Template_Keys:
@@ -175,6 +186,7 @@ en.notifications.set01.emotional_guilt:
   Non_Variable_Text_Length: '116'
   Max_Length_Permitted: '232'
   Template_Status: '1'
+  Is_Unicode: '0'
 en.notifications.set01.professional_request:
   Template_Id: '1407164725545153540'
   Template_Keys:
@@ -184,6 +196,7 @@ en.notifications.set01.professional_request:
   Non_Variable_Text_Length: '109'
   Max_Length_Permitted: '218'
   Template_Status: '1'
+  Is_Unicode: '0'
 en.notifications.set02.basic:
   Template_Id: '1407164725572137856'
   Template_Keys:
@@ -192,6 +205,7 @@ en.notifications.set02.basic:
   Non_Variable_Text_Length: '75'
   Max_Length_Permitted: '150'
   Template_Status: '1'
+  Is_Unicode: '0'
 en.notifications.set02.gratitude:
   Template_Id: '1407164725579238311'
   Template_Keys:
@@ -200,6 +214,7 @@ en.notifications.set02.gratitude:
   Non_Variable_Text_Length: '127'
   Max_Length_Permitted: '254'
   Template_Status: '1'
+  Is_Unicode: '0'
 en.notifications.set02.free:
   Template_Id: '1407164725585480961'
   Template_Keys:
@@ -208,6 +223,7 @@ en.notifications.set02.free:
   Non_Variable_Text_Length: '125'
   Max_Length_Permitted: '250'
   Template_Status: '1'
+  Is_Unicode: '0'
 en.notifications.set02.alarm:
   Template_Id: '1407164725632922267'
   Template_Keys:
@@ -216,6 +232,7 @@ en.notifications.set02.alarm:
   Non_Variable_Text_Length: '122'
   Max_Length_Permitted: '244'
   Template_Status: '1'
+  Is_Unicode: '0'
 en.notifications.set02.emotional_relatives:
   Template_Id: '1407164725692394948'
   Template_Keys:
@@ -224,6 +241,7 @@ en.notifications.set02.emotional_relatives:
   Non_Variable_Text_Length: '154'
   Max_Length_Permitted: '308'
   Template_Status: '1'
+  Is_Unicode: '0'
 en.notifications.set02.emotional_guilt:
   Template_Id: '1407164725714608569'
   Template_Keys:
@@ -232,6 +250,7 @@ en.notifications.set02.emotional_guilt:
   Non_Variable_Text_Length: '140'
   Max_Length_Permitted: '280'
   Template_Status: '1'
+  Is_Unicode: '0'
 en.notifications.set02.professional_request:
   Template_Id: '1407164725761218672'
   Template_Keys:
@@ -240,6 +259,7 @@ en.notifications.set02.professional_request:
   Non_Variable_Text_Length: '133'
   Max_Length_Permitted: '266'
   Template_Status: '1'
+  Is_Unicode: '0'
 en.notifications.set03.basic:
   Template_Id: '1407164725768334531'
   Template_Keys:
@@ -248,6 +268,7 @@ en.notifications.set03.basic:
   Non_Variable_Text_Length: '101'
   Max_Length_Permitted: '202'
   Template_Status: '1'
+  Is_Unicode: '0'
 en.notifications.set03.gratitude:
   Template_Id: '1407164725779473440'
   Template_Keys:
@@ -256,6 +277,7 @@ en.notifications.set03.gratitude:
   Non_Variable_Text_Length: '153'
   Max_Length_Permitted: '306'
   Template_Status: '1'
+  Is_Unicode: '0'
 en.notifications.set03.free:
   Template_Id: '1407164725785600391'
   Template_Keys:
@@ -264,6 +286,7 @@ en.notifications.set03.free:
   Non_Variable_Text_Length: '151'
   Max_Length_Permitted: '302'
   Template_Status: '1'
+  Is_Unicode: '0'
 en.notifications.set03.alarm:
   Template_Id: '1407164725798282340'
   Template_Keys:
@@ -272,6 +295,7 @@ en.notifications.set03.alarm:
   Non_Variable_Text_Length: '148'
   Max_Length_Permitted: '296'
   Template_Status: '1'
+  Is_Unicode: '0'
 en.notifications.set03.emotional_relatives:
   Template_Id: '1407164725812055561'
   Template_Keys:
@@ -280,6 +304,7 @@ en.notifications.set03.emotional_relatives:
   Non_Variable_Text_Length: '180'
   Max_Length_Permitted: '360'
   Template_Status: '1'
+  Is_Unicode: '0'
 en.notifications.set03.emotional_guilt:
   Template_Id: '1407164725821278607'
   Template_Keys:
@@ -288,6 +313,7 @@ en.notifications.set03.emotional_guilt:
   Non_Variable_Text_Length: '166'
   Max_Length_Permitted: '332'
   Template_Status: '1'
+  Is_Unicode: '0'
 en.notifications.set03.professional_request:
   Template_Id: '1407164725844182825'
   Template_Keys:
@@ -296,6 +322,7 @@ en.notifications.set03.professional_request:
   Non_Variable_Text_Length: '159'
   Max_Length_Permitted: '318'
   Template_Status: '1'
+  Is_Unicode: '0'
 hi-IN.notifications.set01.basic:
   Template_Id: '1407164786628639161'
   Template_Keys:
@@ -305,3 +332,34 @@ hi-IN.notifications.set01.basic:
   Non_Variable_Text_Length: '48'
   Max_Length_Permitted: '96'
   Template_Status: '1'
+  Is_Unicode: '1'
+hi-IN.notifications.set01.free:
+  Template_Id: '1407164786707500363'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '71'
+  Max_Length_Permitted: '142'
+  Template_Status: '1'
+  Is_Unicode: '1'
+hi-IN.notifications.set01.professional_request:
+  Template_Id: '1407164786769683386'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '112'
+  Max_Length_Permitted: '224'
+  Template_Status: '1'
+  Is_Unicode: '1'
+bn-IN.notifications.set01.basic:
+  Template_Id: '1407164881181967562'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '61'
+  Max_Length_Permitted: '122'
+  Template_Status: '1'
+  Is_Unicode: '1'
