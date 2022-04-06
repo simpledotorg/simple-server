@@ -16,57 +16,64 @@
   <body class="bgc-grey-lightest">
     <div id="progress-start">
       <div class="mb-8px">
-        <p>
-          <%= raw t("analytics.updated", time: @service.last_updated_at ? l(@service.last_updated_at) : "") %>
-        </p>
-        <%= content_tag :div,
-                         id: "statistics",
-                         data: { statistics: @service.daily_statistics },
-                         style: "display: none" do %>
+        <% if Flipper.enabled?(:new_progress_tab) %>
+          <%= render partial: "api/v3/analytics/user_analytics/progress_period_card" %>
+        <% else %>
+          <p>
+            <%= raw t("analytics.updated", time: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")) %>
+          </p>
+          <%= content_tag :div,
+                          id: "statistics",
+                          data: { statistics: @service.daily_statistics },
+                          style: "display: none" do %>
+          <% end %>
+          <%= render(Reports::DailyProgressComponent.new(@service, @user_analytics.last_updated_at)) %>
+          <div class="mb-8px p-16px bgc-white bs-card">
+            <div class="d-flex ai-center">
+              <h3 class="m-0px mr-4px fw-bold fs-24px c-black">
+                <%= raw t("analytics.registered_patients") %>
+              </h3>
+              <a
+                class="d-flex ai-center w-32px h-32px"
+                href="#"
+                onclick="openWindow('progress-registrations-help', 'progress-start'); return false"
+              >
+                <%= inline_file("help-circle.svg") %>
+              </a>
+            </div>
+            <% registrations_table_name = 'registrations' %>
+            <%= render partial: 'api/v3/analytics/user_analytics/gender_filter',
+                      locals: { data_table_name: registrations_table_name,
+                                is_diabetes_enabled: current_facility.diabetes_enabled? } %>
+            <% @service.dimension_combinations_for(:registrations).each do |dimension| %>
+              <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service)) %>
+            <% end %>
+          </div>
+          <div class="mb-8px p-16px bgc-white bs-card">
+            <div class="d-flex ai-center">
+              <h3 class="m-0px mr-4px fw-bold fs-24px c-black">
+                <%= raw t("analytics.follow_up_patients") %>
+              </h3>
+              <a
+                class="d-flex ai-center w-32px h-32px"
+                href="#"
+                onclick="openWindow('progress-follow-ups-help', 'progress-start'); return false"
+              >
+                <%= inline_file("help-circle.svg") %>
+              </a>
+            </div>
+            <% follow_ups_table_name = 'follow_ups' %>
+            <%= render partial: 'api/v3/analytics/user_analytics/gender_filter',
+                      locals: { data_table_name: follow_ups_table_name,
+                                is_diabetes_enabled: current_facility.diabetes_enabled? } %>
+            <% @service.dimension_combinations_for(:follow_ups).each do |dimension| %>
+              <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service)) %>
+            <% end %>
+          </div>
         <% end %>
-        <%= render(Reports::DailyProgressComponent.new(@service)) %>
-        <div class="mb-8px p-16px bgc-white bs-card">
-          <div class="d-flex ai-center">
-            <h3 class="m-0px mr-4px fw-bold fs-24px c-black">
-              <%= raw t("analytics.registered_patients") %>
-            </h3>
-            <a
-              class="d-flex ai-center w-32px h-32px"
-              href="#"
-              onclick="openWindow('progress-help-registered', 'progress-start'); return false"
-            >
-              <%= inline_file("help-circle.svg") %>
-            </a>
-          </div>
-          <% registrations_table_name = 'registrations' %>
-          <%= render partial: 'api/v3/analytics/user_analytics/gender_filter',
-                    locals: { data_table_name: registrations_table_name,
-                              is_diabetes_enabled: current_facility.diabetes_enabled? } %>
-          <% @service.dimension_combinations_for(:registrations).each do |dimension| %>
-            <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service)) %>
-          <% end %>
-        </div>
-        <div class="mb-8px p-16px bgc-white bs-card">
-          <div class="d-flex ai-center">
-            <h3 class="m-0px mr-4px fw-bold fs-24px c-black">
-              <%= raw t("analytics.follow_up_patients") %>
-            </h3>
-            <a
-              class="d-flex ai-center w-32px h-32px"
-              href="#"
-              onclick="openWindow('progress-help-followup', 'progress-start'); return false"
-            >
-              <%= inline_file("help-circle.svg") %>
-            </a>
-          </div>
-          <% follow_ups_table_name = 'follow_ups' %>
-          <%= render partial: 'api/v3/analytics/user_analytics/gender_filter',
-                    locals: { data_table_name: follow_ups_table_name,
-                              is_diabetes_enabled: current_facility.diabetes_enabled? } %>
-          <% @service.dimension_combinations_for(:follow_ups).each do |dimension| %>
-            <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service)) %>
-          <% end %>
-        </div>
+        <% if Flipper.enabled?(:new_progress_tab) %>
+          <%= render partial: "api/v3/analytics/user_analytics/progress_reports_card" %> 
+        <% end %>
         <% if current_facility_group.region.feature_enabled?(:drug_stocks) && controller_name == "user_analytics" %>
           <div class="mb-16px p-16px bgc-white br-4px bs-card">
             <div class="d-flex ai-flex-start jc-space-between mb-16px">
@@ -90,12 +97,14 @@
             %>
           </div>
         <% end %>
-        <%= render(Reports::ProgressControlComponent.new(@service)) %>
-        <div class="card">
-          <a href="#" onclick="openWindow('progress-cohort', 'progress-start'); return false" class="nav-next">
-            Cohort report
-          </a>
-        </div>
+        <% unless Flipper.enabled?(:new_progress_tab) %>
+          <%= render(Reports::ProgressControlComponent.new(@service)) %>
+          <div class="card">
+            <a href="#" onclick="openWindow('progress-cohort-report', 'progress-start'); return false" class="nav-next">
+              Cohort report
+            </a>
+          </div>
+        <% end %>
         <div class="mb-8px pt-16px pb-16px bgc-white bs-card">
           <h1 class="m-0px mb-24px pr-16px pl-16px fw-bold fs-24px">
             <%= t("progress_tab.achievements_card.title") %>
@@ -141,151 +150,16 @@
         </div>
       </div>
     </div>
-    <div id="progress-help-registered" class="progress-body" style="display: none;">
-      <div class="progress-contents">
-        <a href="#" onclick="closeWindow('progress-help-registered', 'progress-start'); return false" class="help-back">
-          <%= inline_svg('icon_back.svg') %>
-        </a>
-        <h2 style="padding-top: 80px; padding-left: 8px;">
-          <%= raw t("analytics.definition") %>
-        </h2>
-        <div class="card">
-          <h3 style="margin-bottom: 1em;">
-            <%= raw t("analytics.registered_patients") %>
-          </h3>
-          <p class="desc" style="margin-bottom: 1em;">
-            <%= raw t("analytics.registered_patients_desc") %>
-          </p>
-        </div>
-      </div>
-    </div>
-    <div id="progress-help-followup" class="progress-body" style="display: none;">
-      <div class="progress-contents">
-        <a
-          href="#"
-          onclick="closeWindow('progress-help-followup', 'progress-start'); return false"
-          class="help-back"
-        >
-          <%= inline_svg('icon_back.svg') %>
-        </a>
-        <h2 style="padding-top: 80px; padding-left: 8px;">
-          <%= raw t("analytics.definition") %>
-        </h2>
-        <div class="card">
-          <h3 style="margin-bottom: 1em;">
-            <%= raw t("analytics.follow_up_patients") %>
-          </h3>
-          <p class="desc" style="margin-bottom: 1em;">
-            <%= raw t("analytics.follow_up_patients_desc") %>
-          </p>
-        </div>
-      </div>
-    </div>
-    <div id="progress-help-controlled" class="progress-body" style="display: none;">
-      <div class="progress-contents">
-        <a
-          href="#"
-          onclick="closeWindow('progress-help-controlled', 'progress-start'); return false"
-          class="help-back"
-        >
-          <%= inline_svg('icon_back.svg') %>
-        </a>
-        <h2 style="padding-top: 80px; padding-left: 8px;">
-          <%= raw t("analytics.definition") %>
-        </h2>
-        <div class="card">
-          <h3 style="margin-bottom: 1em;">
-            <%= raw t("analytics.hypertension_controlled") %>
-          </h3>
-          <p class="desc" style="margin-bottom: 1em;">
-            <b>
-              <%= raw t("analytics.numerator") %>
-            </b>
-            <br>
-            <%= raw t("analytics.hypertension_controlled_numerator") %>
-          </p>
-          <p class="desc">
-            <b>
-              <%= raw t("analytics.denominator") %>
-            </b>
-            <br>
-            <%= raw t("analytics.hypertension_controlled_denominator") %>
-          </p>
-        </div>
-      </div>
-    </div>
-    <div id="progress-cohort" class="progress-body" style="display: none;">
-      <div class="progress-contents">
-        <a
-          href="#"
-          onclick="closeWindow('progress-cohort', 'progress-start'); return false"
-          class="help-back"
-        >
-          <%= inline_svg('icon_back.svg') %>
-        </a>
-        <h2 style="padding-top: 80px; padding-left: 8px;">
-          <%= raw t("analytics.hypertension_cohort_report") %>
-        </h2>
-        <p class="left">
-          <%= raw t("analytics.hypertension_cohort_report_desc") %>
-        </p>
-        <div class="key">
-          <p class="left" style="color: #007A31;">
-            <span class="key-color green"></span> <%= raw t("analytics.patients_with_controlled_bp") %>
-          </p>
-          <p class="left" style="color: #FF3355;">
-            <span class="key-color red"></span> <%= raw t("analytics.patients_with_uncontrolled_bp") %>
-          </p>
-          <p class="left" style="color: #6C737A;">
-            <span class="key-color grey"></span> <%= raw t("analytics.patients_with_no_bp_measure") %>
-          </p>
-        </div>
-        <% @user_analytics.statistics.dig(:cohorts).each do |cohort| %>
-          <div class="card cohort">
-            <h6>
-              <%= cohort[:registered] %> <%= raw t("analytics.patient", count: cohort[:registered]) %>
-              <%= raw t("analytics.registered_in") %> <%= cohort[:patients_registered] %>
-            </h6>
-            <div style="font-size: 16px; margin: 8px 0 12px 0;">
-              <%= raw t("analytics.result_from_last_visit_in") %> <%= cohort[:results_in] %>
-            </div>
-            <table class="cohort-bars">
-              <tr>
-                <% if cohort[:registered].blank? %>
-                  <td class="cohort-none">
-                      <%= raw t("analytics.no_patients") %>
-                  </td>
-                <% else %>
-                  <td class="cohort-nobp" style="width: <%= @user_analytics.cohort_no_bp(cohort) %>;">
-                    <%= @user_analytics.cohort_no_bp(cohort) %>
-                  </td>
-                  <td class="cohort-uncontrolled" style="width: <%= @user_analytics.cohort_uncontrolled(cohort) %>;">
-                    <%= @user_analytics.cohort_uncontrolled(cohort) %>
-                  </td>
-                  <td class="cohort-controlled" style="width: <%= @user_analytics.cohort_controlled(cohort) %>;">
-                    <%= @user_analytics.cohort_controlled(cohort) %>
-                  </td>
-                <% end %>
-              </tr>
-            </table>
-          </div>
-        <% end %>
-        <h3 style="padding-top: 40px; padding-left: 8px;">
-           <%= raw t("analytics.notes") %>
-        </h3>
-        <ul class="footnotes">
-          <li>
-            <strong> <%= raw t("analytics.numerator") %>:</strong> <%= raw t("analytics.cohort_report_footnote_1") %>
-          </li>
-          <li>
-            <strong> <%= raw t("analytics.denominator") %>:</strong> <%= raw t("analytics.cohort_report_footnote_2") %>
-          </li>
-          <li>
-            <%= raw t("analytics.cohort_report_footnote_3") %>
-          </li>
-        </ul>
-      </div>
-    </div>
+    <% if Flipper.enabled?(:new_progress_tab) %>
+      <%= render(Reports::DailyProgressComponent.new(@service, @user_analytics.last_updated_at)) %>
+      <%= render partial: "api/v3/analytics/user_analytics/progress_monthly_report" %>
+      <%= render partial: "api/v3/analytics/user_analytics/progress_hypertension_report" %>
+    <% else %>
+      <%= render partial: "api/v3/analytics/user_analytics/progress_controlled_help" %>
+      <%= render partial: "api/v3/analytics/user_analytics/progress_cohort_report" %>
+      <%= render partial: "api/v3/analytics/user_analytics/progress_registrations_help" %> 
+      <%= render partial: "api/v3/analytics/user_analytics/progress_follow_ups_help" %> 
+    <% end %>
   </body>
   <%= inline_js("standalone/user_analytics.js") %>
 </html>

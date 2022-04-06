@@ -10,18 +10,23 @@ class Reports::ProgressController < AdminController
     @current_facility = @region
     @user_analytics = UserAnalyticsPresenter.new(@region)
     @service = Reports::FacilityProgressService.new(current_facility, @period)
+
     @total_follow_ups_dimension = Reports::FacilityProgressDimension.new(:follow_ups, diagnosis: :all, gender: :all)
     @total_registrations_dimension = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :all, gender: :all)
     @total_follow_ups = Reports::MonthlyProgressComponent.new(@total_follow_ups_dimension, service: @service).total_count
     @total_registrations = Reports::MonthlyProgressComponent.new(@total_registrations_dimension, service: @service).total_count
-    if Flipper.enabled?(:new_progress_tab)
-      @period_reports_data = Reports::ReportsFakeFacilityProgressService.new(@current_facility.name).period_reports
-      @hypertension_reports_data = Reports::ReportsFakeFacilityProgressService.new(@current_facility.name).hypertension_reports
-      @diabetes_reports_data = Reports::ReportsFakeFacilityProgressService.new(@current_facility.name).diabetes_reports
-      render "api/v3/analytics/user_analytics/show_v2"
-    else
-      render "api/v3/analytics/user_analytics/show"
+    @drug_stocks = DrugStock.latest_for_facilities_grouped_by_protocol_drug(current_facility, @for_end_of_month)
+
+    @is_diabetes_enabled = current_facility.diabetes_enabled?
+
+    @drug_stocks = DrugStock.latest_for_facilities_grouped_by_protocol_drug(current_facility, @for_end_of_month)
+    unless @drug_stocks.empty?
+      @drug_stocks_query = DrugStocksQuery.new(facilities: [current_facility],
+        for_end_of_month: @for_end_of_month)
+      @drugs_by_category = @drug_stocks_query.protocol_drugs_by_category
     end
+
+    render "api/v3/analytics/user_analytics/show"
   end
 
   helper_method :current_facility, :current_user, :current_facility_group

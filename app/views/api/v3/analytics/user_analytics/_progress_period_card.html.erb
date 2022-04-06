@@ -1,0 +1,45 @@
+<div class="mb-8px p-16px bgc-white bs-card">
+  <h1 class="m-0px mb-16px fw-bold fs-24px c-black">
+    <%= t("progress_tab.period_card.title") %>
+  </h1>
+  <div class="d-flex ai-center jc-space-between">
+    <a
+      class="f-1 d-flex fd-column ai-center jc-center h-96px mr-8px p-12px td-none bgc-blue-green-light br-8px"
+      href="#"
+      onclick="openWindow('progress-daily-report', 'progress-start'); return false;"
+    >
+      <div class="p-relative d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px o-hidden">
+        <div class="p-absolute t-0 l-0 w-100 h-6px bgc-blue-green"></div>
+      </div>
+      <p class="m-0px p-0px ta-left fw-medium fs-16px c-blue-green">
+        <%= t("progress_tab.daily_report_title") %>
+      </p>
+    </a>
+    <a
+      class="p-relative f-1 d-flex fd-column ai-center jc-center h-96px mr-4px ml-4px p-12px td-none bgc-blue-light br-8px"
+      href="#"
+      onclick="openWindow('progress-monthly-report', 'progress-start'); return false;"
+    >
+      <div class="p-relative d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px o-hidden">
+        <div class="p-absolute t-0 l-0 w-100 h-6px bgc-blue"></div>
+      </div>
+      <p class="m-0px p-0px ta-left fw-medium fs-16px c-blue">
+        <%= t("progress_tab.monthly_report_title") %>
+      </p>
+    </a>
+    <a
+      class="p-relative f-1 d-flex fd-column ai-center jc-center h-96px ml-8px p-12px td-none bgc-grey-light-new br-8px"
+      href="#"
+    >
+      <div class="p-relative d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px o-hidden">
+        <div class="p-absolute t-0 l-0 w-100 h-6px bgc-grey-dark"></div>
+      </div>
+      <p class="m-0px p-0px ta-left fw-medium fs-16px c-grey-dark">
+        <%= t("progress_tab.yearly_report_title") %>
+      </p>
+      <p class="p-absolute b-0 l-0 w-100 fw-regular fs-12px c-grey ta-center bs-border-box">
+        Coming soon
+      </p>
+    </a>
+  </div>
+</div>

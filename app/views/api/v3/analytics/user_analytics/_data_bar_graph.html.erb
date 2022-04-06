@@ -1,16 +1,21 @@
-<% min_height = 5 %>
-<% values = data.map { |data_point| data_point["value"] } %>
-<% data_point_heights = values.map { |value| percentage(value, values.max).to_i } %>
+<% min_height = 15 %>
+<% data_point_heights = data["rates"].map { |value| percentage(value, data["rates"].max).to_i } %>
 <div class="d-flex fd-column h-160px">
   <div class="p-relative f-1 d-flex" data-graph-type="bar-chart" data-with-tooltip="<%= show_tooltip %>">
-    <% data.each_with_index do |data_point, index| %>
+    <% data["period_info"].each_with_index do |period, index| %>
       <div class="f-1 d-flex fd-column ai-center jc-flex-end" data-graph-element="bar">
-        <p class="m-0px mb-8px p-0px ta-center fw-medium fs-16px c-black ttf-ease-in-out td-0_25s tp-color" data-element-type="text">
-          <%= data_point["value"] %><% if data_type == "percentage" %>%<% end %>
+        <p class="m-0px mb-4px p-0px ta-center fw-medium fs-16px c-black ttf-ease-in-out td-0_25s tp-color" data-element-type="text">
+          <%= data["rates"][index] %><% if data_type == "percentage" %>%<% end %>
         </p>
+        <% bar_height = [data_point_heights[index], min_height].max %>
+        <% unless data_point_heights[index] == data_point_heights.max %>
+          <%# The `height_buffer` value ensures bar heights are rendered accurately. The bar's data value (displayed above the bar) takes up space and doesn't properly render bar heights whose value is >80% to the max value in the set. %>
+          <% height_buffer = 0.75 %>
+          <% bar_height = bar_height * height_buffer %>
+        <% end %>
         <div
           class="w-32px <%= graph_css_color %> btrr-2px btlr-2px ttf-ease-in-out td-0_25s tp-opacity"
-          style="height: <%= [data_point_heights[index], min_height].max %>%;"
+          style="height: <%= ([data_point_heights[index], min_height].max) - 10 %>%;"
           data-element-type="bar"
         >
         </div>
@@ -18,7 +23,7 @@
           <div class="o-0 pe-none p-absolute l-0 d-flex fd-column w-100 bs-tooltip ttf-ease-in-out td-0_25s tp-opacity" data-element-type="tooltip">
             <div class="p-8px bgc-black br-4px">
               <p class="m-0px p-0px ta-left fw-regular fs-14px lh-150 c-white">
-                <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.chart_tooltip", number_of_patients: data_point["total_patients"], patient_or_patients: "patient".pluralize(data_point["total_patients"]), threshold: threshold, start_period: data_point["period_start"], end_period: data_point["period_end"], number_of_registered_patients: data_point["registered_patients"], patient_or_patients: "patient".pluralize(data_point["registered_patients"]), registration_period: data_point["registration_period"]) %>
+                <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.chart_tooltip", number_of_patients: data["numerators"][index], number_of_patient_or_patients: "patient".pluralize(data["numerators"][index]), threshold: threshold, start_period: period[:bp_control_start_date], end_period: period[:bp_control_end_date], number_of_registered_patients: data["denominators"][index], number_of_registered_patient_or_patients: "patient".pluralize(data["denominators"][index]), registration_period: period[:bp_control_registration_date]) %>
               </p>
             </div>
             <div
@@ -32,9 +37,9 @@
     <% end %>
   </div>
   <div class="d-flex ai-center jc-space-between pt-12px bt-grey-mid">
-    <% data.each do |data_point| %>
-      <p class="f-1 m-0px p-0px ta-center fw-medium fs-12px c-grey-dark">
-        <%= data_point["month"] %>
+    <% data["period_info"].each do |period| %>
+      <p class="f-1 m-0px p-0px ta-center fw-medium fs-12px c-grey-dark wb-break-word">
+        <%= period[:name] %>
       </p>
     <% end %>
   </div>

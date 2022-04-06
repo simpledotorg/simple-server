@@ -1,16 +1,39 @@
-<%= table do %>
-  <tr class="total">
-    <td class="row-label"><%= raw t("analytics.all_time") %></td>
-    <td class="row-value">
-      <%= number_or_zero_with_delimiter total_count %>
-    </td>
-  </tr>
-  <% range.reverse_each do |period| %>
-    <tr>
-      <td class="row-label no-padding"><%= period.to_s(:month_name) %></td>
-      <td>
-        <%= number_or_zero_with_delimiter monthly_count(period) %>
+<% if Flipper.enabled?(:new_progress_tab) %>
+  <div data-element="monthly_<%= @dimension.indicator %>_table" data-dimension-field="<%= @dimension.field %>" class="<% if @dimension.field == 'monthly_registrations_all' || @dimension.field == 'monthly_follow_ups_all' %>d-block<% else %>d-none<% end %>">
+    <div class="d-flex ai-center jc-space-between pb-3px bb-grey-mid mb-4px">
+      <h3 class="m-0px p-0px ta-left fw-medium fs-16px c-grey-darkest">
+        All-time
+      </h3>
+      <p class="m-0px p-0px ta-right fw-medium fs-16px c-grey-darkest">
+        <%= number_or_zero_with_delimiter(total_count) %>
+      </p>
+    </div>
+    <% range.each_with_index do |period, index| %>
+      <div class="d-flex ai-center jc-space-between <% unless range.count - 1 == index %>pb-3px bb-grey-mid<% end %> mb-4px"> 
+        <p class="m-0px p-0px pl-16px ta-left fw-normal fs-16px c-grey-dark">
+          <%= period %>
+        </p>
+        <p class="m-0px p-0px ta-right fw-normal fs-16px c-grey-dark">
+          <%= number_or_zero_with_delimiter(monthly_count(period)) %>
+        </p>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <%= table do %>
+    <tr class="total">
+      <td class="row-label"><%= raw t("analytics.all_time") %></td>
+      <td class="row-value">
+        <%= number_or_zero_with_delimiter total_count %>
       </td>
     </tr>
+    <% range.reverse_each do |period| %>
+      <tr>
+        <td class="row-label no-padding"><%= period.to_s(:month_name) %></td>
+        <td>
+          <%= number_or_zero_with_delimiter monthly_count(period) %>
+        </td>
+      </tr>
+    <% end %>
   <% end %>
 <% end %>

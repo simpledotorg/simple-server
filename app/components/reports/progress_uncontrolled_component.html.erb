@@ -1,0 +1,49 @@
+<div class="mb-8px p-16px bgc-white bs-card">
+  <div class="p-relative d-flex ai-center mb-8px" data-element-type="header">
+    <div class="d-flex ai-center" data-element-type="header-title">
+      <h2 class="m-0px mr-8px p-0px ta-left fw-medium fs-18px c-black pe-none">
+        <%= t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_uncontrolled_short") %>
+      </h2>
+      <div class="d-flex ai-center w-16px h-16px pe-none" data-element-type="help-circle">
+        <%= inline_file("help-circle.svg") %>
+      </div>
+    </div>
+    <div
+      class="o-0 pe-none p-absolute l-0 zi-100 d-flex fd-column w-100 bs-tooltip ttf-ease-in-out td-0_25s tp-opacity" 
+      data-element-type="tooltip"
+    >
+      <div class="p-8px bgc-black br-4px">
+        <% uncontrolled_threshold_long = t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_uncontrolled_long") %>
+        <p class="m-0px mb-4px p-0px ta-left fw-regular fs-14px lh-150 c-white">
+          <span class="fw-bold">Numerator:</span> <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.uncontrolled_card.help_tooltip.numerator", uncontrolled_threshold: uncontrolled_threshold_long) %>
+        </p>
+        <p class="m-0px p-0px ta-left fw-regular fs-14px lh-150 c-white">
+          <span class="fw-bold">Denominator:</span> <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.uncontrolled_card.help_tooltip.denominator", facility_name: @region.name, diagnosis: "Hypertension") %>
+        </p>
+      </div>
+      <div
+        class="p-absolute b--8px w-0px h-0px br-8px-transparent bl-8px-transparent bt-8px-black"
+        data-element-type="tip"
+      >
+      </div>
+    </div>
+  </div>
+  <% uncontrolled_threshold_subtitle = t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_uncontrolled_long") %>
+  <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+    <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.uncontrolled_card.subtitle", facility_name: @region.name, diagnosis: "Hypertension", uncontrolled_threshold: uncontrolled_threshold_subtitle) %>
+  </p>
+  <% uncontrolled_tooltip_threshold = t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_uncontrolled_long") %>
+  <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph",
+             locals: {
+               data: {
+                 "numerators" => uncontrolled.values.last(6),
+                 "denominators" => adjusted_patients.values.last(6),
+                 "rates" => uncontrolled_rates.values.last(6),
+                 "period_info" => period_info.values.last(6)
+               },
+               data_type: "percentage",
+               graph_css_color: "bgc-yellow-dark-new",
+               show_tooltip: true,
+               threshold: uncontrolled_tooltip_threshold }
+  %>
+</div>

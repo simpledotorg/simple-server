@@ -11,29 +11,34 @@ class Messaging::Channel
 
   attr_reader :metrics
 
-  def self.send_message(*args)
-    new.send_message(*args)
-  end
-
-  def send_message(recipient_number:, message:)
-    raise NotImplementedError
+  # The channel implementation is responsible for creating a Communication
+  # and delivery details. This should return the communication object that was created.
+  def self.send_message(...)
+    new.send_message(...)
   end
 
   # A channel supports one of the communication types enumerated in
   # Communication.communication_types.
-  def communication_type
+  def self.communication_type
+    raise NotImplementedError
+  end
+
+  # Takes a block that is executed in a transaction with the communication creation.
+  # This should be used when there are other associations (for example, notifications)
+  # that need to be updated atomically.
+  def send_message(**opts, &with_communication_do)
     raise NotImplementedError
   end
 
   def track_metrics(&block)
-    metrics.increment("#{communication_type}.attempts")
+    metrics.increment("#{self.class.communication_type}.attempts")
 
     begin
       response = yield block
-      metrics.increment("#{communication_type}.send")
+      metrics.increment("#{self.class.communication_type}.send")
       response
     rescue Messaging::Error => exception
-      metrics.increment("#{communication_type}.errors")
+      metrics.increment("#{self.class.communication_type}.errors")
       raise exception
     end
   end

@@ -1,0 +1,23 @@
+<div class="mb-8px p-16px bgc-white bs-card">
+  <div class="d-flex ai-center jc-space-between mb-8px">
+    <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
+      <%= t("progress_tab.diagnosis_report.monthly_follow_up_patients.title") %>
+    </h2>
+  </div>
+  <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+    <%= t("progress_tab.diagnosis_report.monthly_follow_up_patients.subtitle", facility_name: @region.name, diagnosis: "Hypertension") %>
+  </p>
+  <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph",
+             locals: {
+               data: {
+                 "numerators" => monthly_follow_ups.values,
+                 "denominators" => monthly_follow_ups.values,
+                 "rates" => monthly_follow_ups.values,
+                 "period_info" => period_info.values.last(6)
+               },
+               data_type: "value",
+               graph_css_color: "bgc-blue-new",
+               show_tooltip: false
+             }
+  %>
+</div>
