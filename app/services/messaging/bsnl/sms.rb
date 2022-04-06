@@ -5,7 +5,7 @@ class Messaging::Bsnl::Sms < Messaging::Channel
 
   def self.get_message_statuses
     BsnlDeliveryDetail.in_progress.in_batches(of: 1_000).each_record do |detailable|
-      BsnlSmsStatusJob.perform_async(detailable.id)
+      BsnlSmsStatusJob.perform_async(detailable.message_id)
     end
   end
 
