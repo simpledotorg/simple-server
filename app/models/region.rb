@@ -169,7 +169,8 @@ class Region < ApplicationRecord
   end
 
   def diabetes_management_enabled?
-    facilities.where(enable_diabetes_management: true).exists?
+    Flipper.enabled?(:diabetes_management_reports) &&
+      facilities.where(enable_diabetes_management: true).exists?
   end
 
   REGION_TYPES.reject { |t| t == "root" }.map do |region_type|
