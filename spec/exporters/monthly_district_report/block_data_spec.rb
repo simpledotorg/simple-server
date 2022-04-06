@@ -18,6 +18,11 @@ def mock_block_repo(repo, district, month)
     district[:block_2].slug => periods.zip([4, 12, 11, 23, 14, 24]).to_h
   })
 
+  allow(repo).to receive(:adjusted_patients).and_return({
+    district[:block_1].slug => periods.zip([2, 11, 15, 22, 25, 12]).to_h,
+    district[:block_2].slug => periods.zip([4, 12, 11, 23, 14, 24]).to_h
+  })
+
   allow(repo).to receive(:ltfu).and_return({
     district[:block_1].slug => {month => 3},
     district[:block_2].slug => {month => 4}

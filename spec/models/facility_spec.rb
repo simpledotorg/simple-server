@@ -152,10 +152,13 @@ RSpec.describe Facility, type: :model do
         create(:blood_pressure, :with_encounter, facility: facility, patient: htn_patient, recorded_at: second_follow_up_date)
         create(:blood_pressure, :with_encounter, facility: facility, patient: dm_patient, recorded_at: second_follow_up_date)
 
+        refresh_views
+
         expected_output = {
           second_follow_up_date.to_date.beginning_of_month => 1
         }
         expected_repo_output = {
+          Period.month(first_follow_up_date) => 1,
           Period.month(second_follow_up_date) => 1
         }
 

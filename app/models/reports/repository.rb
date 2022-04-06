@@ -14,7 +14,7 @@ module Reports
     attr_reader :schema
     alias_method :range, :periods
 
-    def initialize(regions, periods:, follow_ups_v2: Flipper.enabled?(:follow_ups_v2))
+    def initialize(regions, periods:)
       @regions = Array(regions).map(&:region)
       @periods = if periods.is_a?(Period)
         Range.new(periods, periods)
@@ -22,7 +22,6 @@ module Reports
         periods
       end
       @period_type = @periods.first.type
-      @follow_ups_v2 = follow_ups_v2
       raise ArgumentError, "Quarter periods not supported" if @period_type != :month
       @schema = RegionSummarySchema.new(@regions, periods: @periods)
       @bp_measures_query = BPMeasuresQuery.new
@@ -83,6 +82,9 @@ module Reports
         hypertension_follow_ups(group_by: "blood_pressures.user_id")
         bp_measures_by_user
         monthly_registrations_by_user
+        monthly_registrations_by_gender
+        controlled_by_gender
+        overdue_calls_by_user
       end
     end
 
@@ -154,25 +156,7 @@ module Reports
 
     # Returns Follow ups per Region / Period. Takes an optional group_by clause (commonly used to group by user_id)
     memoize def hypertension_follow_ups(group_by: nil)
-      if follow_ups_v2?
-        schema.hypertension_follow_ups(group_by: group_by)
-      else
-        follow_ups_v1(group_by: group_by)
-      end
-    end
-
-    memoize def follow_ups_v1(group_by: nil)
-      items = regions.map { |region| RegionEntry.new(region, __method__, group_by: group_by, period_type: period_type) }
-      result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
-        follow_ups_query.hypertension(entry.region, period_type, group_by: group_by)
-      end
-      result.each_with_object({}) { |(region_entry, counts), hsh|
-        hsh[region_entry.region.slug] = counts
-      }
-    end
-
-    def follow_ups_v2?
-      @follow_ups_v2
+      schema.hypertension_follow_ups(group_by: group_by)
     end
 
     memoize def bp_measures_by_user
