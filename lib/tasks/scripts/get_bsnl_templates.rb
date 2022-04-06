@@ -32,7 +32,7 @@ class GetBsnlTemplateDetails
 
   def write_config_to_tmp_file
     config_file = "config/data/bsnl_templates.yml"
-    config = template_details.to_h do |template|
+    config = template_details.map do |template|
       [
         template["Template_Name"],
         template.slice(
@@ -41,7 +41,7 @@ class GetBsnlTemplateDetails
           "Template_Status", "Is_Unicode"
         )
       ]
-    end
+    end.sort_by(&:first).to_h
 
     info "Added latest templates list to #{config_file}."
     info "Changes to this file (if any) should be committed to simple-server."
