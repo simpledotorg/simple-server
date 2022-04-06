@@ -21,9 +21,9 @@ RSpec.describe BsnlSmsStatusJob, type: :job do
       message_id = "12345"
       detailable = create(:bsnl_delivery_detail, message_id: message_id)
       allow_any_instance_of(Messaging::Bsnl::Api).to receive(:get_message_status_report).and_return(
-        { "Message_Status" => "7",
-          "Message_Status_Description" => "Message Delivered",
-          "Delivery_Success_Time" => "03-04-2022 06:00:00 PM" }
+        {"Message_Status" => "7",
+         "Message_Status_Description" => "Message Delivered",
+         "Delivery_Success_Time" => "03-04-2022 06:00:00 PM"}
       )
 
       described_class.perform_async(message_id)
@@ -44,7 +44,7 @@ RSpec.describe BsnlSmsStatusJob, type: :job do
       message_id = "12345"
       create(:bsnl_delivery_detail, message_id: message_id)
       allow_any_instance_of(Messaging::Bsnl::Api).to receive(:get_message_status_report).and_return(
-        { "Error" => "Error description" }
+        {"Error" => "Error description"}
       )
 
       described_class.perform_async(message_id)

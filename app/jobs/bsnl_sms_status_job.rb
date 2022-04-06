@@ -7,7 +7,7 @@ class BsnlSmsStatusJob
   sidekiq_options retry: 3
 
   sidekiq_throttle(
-    threshold: { limit: 250, period: 1.minute }
+    threshold: {limit: 250, period: 1.minute}
   )
 
   def perform(message_id)
