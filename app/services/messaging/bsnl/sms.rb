@@ -43,7 +43,7 @@ class Messaging::Bsnl::Sms < Messaging::Channel
   def handle_api_errors(response, template, variables)
     error = response["Error"]
     if error.present?
-      raise Messaging::Bsnl::Error.new("#{error} Error on template #{template.name} with content #{variables}")
+      raise Messaging::Bsnl::Error.new("#{error} Error on #{template.name} with content #{variables}")
     end
   end
 
