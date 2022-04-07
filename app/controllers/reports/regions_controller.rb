@@ -101,8 +101,8 @@ class Reports::RegionsController < AdminController
       regions.concat(@region.district_regions)
     end
 
-    @repository = Reports::Repository.new(regions, periods: @period_range, follow_ups_v2: current_admin.feature_enabled?(:follow_ups_v2))
-    chart_repo = Reports::Repository.new(@region, periods: chart_range, follow_ups_v2: current_admin.feature_enabled?(:follow_ups_v2))
+    @repository = Reports::Repository.new(regions, periods: @period_range)
+    chart_repo = Reports::Repository.new(@region, periods: chart_range)
 
     @chart_data = {
       patient_breakdown: PatientBreakdownService.call(region: @region, period: @period),

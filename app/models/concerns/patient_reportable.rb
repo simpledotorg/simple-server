@@ -3,6 +3,8 @@ module PatientReportable
   LTFU_TIME = 12.months
 
   included do
+    has_many :patient_states, class_name: "Reports::PatientState"
+
     delegate :sanitize_sql, to: ActiveRecord::Base
 
     scope :with_diabetes, -> { joins(:medical_history).merge(MedicalHistory.diabetes_yes).distinct }
@@ -10,20 +12,16 @@ module PatientReportable
     scope :excluding_dead, -> { where.not(status: :dead) }
 
     scope :ltfu_as_of, ->(time) do
-      last_bp_after = (time - LTFU_TIME).end_of_month
-      joins("LEFT OUTER JOIN latest_blood_pressures_per_patient_per_months
-             ON patients.id = latest_blood_pressures_per_patient_per_months.patient_id
-             AND #{sanitize_sql(["bp_recorded_at > ? AND bp_recorded_at < ?", last_bp_after, time])}")
-        .where("bp_recorded_at IS NULL AND patients.recorded_at <= ?", last_bp_after)
+      left_outer_joins(:patient_states)
+        .merge(Reports::PatientState.by_month_date(time.beginning_of_month))
+        .merge(Reports::PatientState.htn_care_state_lost_to_follow_up)
         .distinct(:patient_id)
     end
 
     scope :not_ltfu_as_of, ->(time) do
-      last_bp_after = (time - LTFU_TIME).end_of_month
-      joins("LEFT OUTER JOIN latest_blood_pressures_per_patient_per_months
-             ON patients.id = latest_blood_pressures_per_patient_per_months.patient_id")
-        .where("bp_recorded_at > ? AND bp_recorded_at < ? OR patients.recorded_at >= ?",
-          last_bp_after, time, last_bp_after)
+      left_outer_joins(:patient_states)
+        .merge(Reports::PatientState.by_month_date(time.beginning_of_month))
+        .merge(Reports::PatientState.where.not(htn_care_state: "lost_to_follow_up"))
         .distinct(:patient_id)
     end
 

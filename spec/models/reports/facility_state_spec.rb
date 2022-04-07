@@ -176,9 +176,9 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         facility_state_june_2021 = described_class.find_by(facility: facility, month_date: june_2021[:now])
 
         expect(facility_state_june_2021.adjusted_missed_visit_lost_to_follow_up).to eq 2
-        expect(facility_state_june_2021.adjusted_visited_no_bp_lost_to_follow_up).to eq 1
-        expect(facility_state_june_2021.adjusted_patients_under_care).to eq 0
-        expect(facility_state_june_2021.adjusted_patients_lost_to_follow_up).to eq 3
+        expect(facility_state_june_2021.adjusted_visited_no_bp_lost_to_follow_up).to eq 0
+        expect(facility_state_june_2021.adjusted_patients_under_care).to eq 1
+        expect(facility_state_june_2021.adjusted_patients_lost_to_follow_up).to eq 2
       end
     end
   end

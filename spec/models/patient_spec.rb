@@ -2,9 +2,6 @@ require "rails_helper"
 
 describe Patient, type: :model do
   let(:reporting_timezone) { Period::REPORTING_TIME_ZONE }
-  def refresh_views
-    LatestBloodPressuresPerPatientPerMonth.refresh
-  end
 
   subject(:patient) { build(:patient) }
 
@@ -197,14 +194,38 @@ describe Patient, type: :model do
 
       it "excludes patient who is not LTFU because they had a BP recently" do
         not_ltfu_patient = Timecop.freeze(2.years.ago) { create(:patient) }
-        Timecop.freeze(6.months.ago) { create(:blood_pressure, patient: not_ltfu_patient) }
+        Timecop.freeze(6.months.ago) { create(:blood_pressure, :with_encounter, patient: not_ltfu_patient) }
+        refresh_views
+
+        expect(described_class.ltfu_as_of(Time.current)).not_to include(not_ltfu_patient)
+      end
+
+      it "excludes patient who is not LTFU because they had blood sugar measured recently" do
+        not_ltfu_patient = Timecop.freeze(2.years.ago) { create(:patient) }
+        Timecop.freeze(6.months.ago) { create(:blood_sugar, :with_encounter, patient: not_ltfu_patient) }
+        refresh_views
+
+        expect(described_class.ltfu_as_of(Time.current)).not_to include(not_ltfu_patient)
+      end
+
+      it "excludes patient who is not LTFU because they had an appointment recently" do
+        not_ltfu_patient = Timecop.freeze(2.years.ago) { create(:patient) }
+        Timecop.freeze(6.months.ago) { create(:appointment, patient: not_ltfu_patient) }
+        refresh_views
+
+        expect(described_class.ltfu_as_of(Time.current)).not_to include(not_ltfu_patient)
+      end
+
+      it "excludes patient who is not LTFU because they had prescription drugs updated recently" do
+        not_ltfu_patient = Timecop.freeze(2.years.ago) { create(:patient) }
+        Timecop.freeze(6.months.ago) { create(:blood_sugar, :with_encounter, patient: not_ltfu_patient) }
         refresh_views
 
         expect(described_class.ltfu_as_of(Time.current)).not_to include(not_ltfu_patient)
       end
 
       describe "timezone-specific boundaries" do
-        it "bp cutoffs for a year ago" do
+        it "visit cutoffs for a year ago" do
           # For any provided date in June in the local timezone, the LTFU BP cutoff is the end of June 30 of the
           # previous year in the local timezone.
           #
@@ -223,8 +244,8 @@ describe Patient, type: :model do
           not_ltfu_patient = create(:patient, recorded_at: long_ago)
           ltfu_patient = create(:patient, recorded_at: long_ago)
 
-          create(:blood_pressure, patient: not_ltfu_patient, recorded_at: under_a_year_ago)
-          create(:blood_pressure, patient: ltfu_patient, recorded_at: over_a_year_ago)
+          create(:blood_pressure, :with_encounter, patient: not_ltfu_patient, recorded_at: under_a_year_ago)
+          create(:blood_pressure, :with_encounter, patient: ltfu_patient, recorded_at: over_a_year_ago)
           with_reporting_time_zone do # We don't actually need this, but its a nice sanity check
             refresh_views
 
@@ -236,32 +257,35 @@ describe Patient, type: :model do
           end
         end
 
-        it "bp cutoffs for now" do
+        it "visit cutoffs for a month from now" do
           # For any provided date in June in the local timezone, the LTFU BP ending cutoff is the time provided
 
           long_ago = 5.years.ago
           timezone = Time.find_zone(reporting_timezone)
           beginning_of_month = timezone.local(2021, 6, 1, 0, 0, 0) # Beginning of June 1 2021 in local timezone
-          a_moment_ago = beginning_of_month - 1.minute # A moment before the provided date
-          a_moment_from_now = beginning_of_month + 1.minute # A moment after the provided date
+          a_moment_ago = beginning_of_month - 1.minute
+          a_day_from_now = beginning_of_month + 1.day # A day before the provided date
+          a_month_from_now = beginning_of_month + 1.month # A month after the provided date
 
-          end_of_month = timezone.local(2021, 6, 30, 23, 59, 59) # End of June 30 2021 in local timezone
-
-          not_ltfu_patient = create(:patient, recorded_at: long_ago)
+          not_ltfu_patient_1 = create(:patient, recorded_at: long_ago)
+          not_ltfu_patient_2 = create(:patient, recorded_at: long_ago)
           ltfu_patient = create(:patient, recorded_at: long_ago)
 
-          create(:blood_pressure, patient: not_ltfu_patient, recorded_at: a_moment_ago)
-          create(:blood_pressure, patient: ltfu_patient, recorded_at: a_moment_from_now)
+          create(:blood_pressure, :with_encounter, patient: not_ltfu_patient_1, recorded_at: a_moment_ago)
+          create(:blood_pressure, :with_encounter, patient: not_ltfu_patient_2, recorded_at: a_day_from_now)
+          create(:blood_pressure, :with_encounter, patient: ltfu_patient, recorded_at: a_month_from_now)
 
           with_reporting_time_zone do
             refresh_views
 
-            expect(described_class.ltfu_as_of(beginning_of_month)).not_to include(not_ltfu_patient)
+            expect(described_class.ltfu_as_of(beginning_of_month)).not_to include(not_ltfu_patient_1)
+            expect(described_class.ltfu_as_of(beginning_of_month)).not_to include(not_ltfu_patient_2)
             expect(described_class.ltfu_as_of(beginning_of_month)).to include(ltfu_patient)
 
             # Both patients are not LTFU at the end of the month
-            expect(described_class.ltfu_as_of(end_of_month)).not_to include(not_ltfu_patient)
-            expect(described_class.ltfu_as_of(end_of_month)).not_to include(ltfu_patient)
+            expect(described_class.ltfu_as_of(a_month_from_now)).not_to include(not_ltfu_patient_1)
+            expect(described_class.ltfu_as_of(a_month_from_now)).not_to include(not_ltfu_patient_2)
+            expect(described_class.ltfu_as_of(a_month_from_now)).not_to include(ltfu_patient)
           end
         end
 
@@ -311,14 +335,38 @@ describe Patient, type: :model do
 
       it "includes patient who is not LTFU because they had a BP recently" do
         not_ltfu_patient = Timecop.freeze(2.years.ago) { create(:patient) }
-        Timecop.freeze(6.months.ago) { create(:blood_pressure, patient: not_ltfu_patient) }
+        Timecop.freeze(6.months.ago) { create(:blood_pressure, :with_encounter, patient: not_ltfu_patient) }
+        refresh_views
+
+        expect(described_class.not_ltfu_as_of(Time.current)).to include(not_ltfu_patient)
+      end
+
+      it "includes patient who is not LTFU because they had a blood sugar measurement recently" do
+        not_ltfu_patient = Timecop.freeze(2.years.ago) { create(:patient) }
+        Timecop.freeze(6.months.ago) { create(:blood_sugar, :with_encounter, patient: not_ltfu_patient) }
+        refresh_views
+
+        expect(described_class.not_ltfu_as_of(Time.current)).to include(not_ltfu_patient)
+      end
+
+      it "includes patient who is not LTFU because they had an appointment created recently" do
+        not_ltfu_patient = Timecop.freeze(2.years.ago) { create(:patient) }
+        Timecop.freeze(6.months.ago) { create(:appointment, patient: not_ltfu_patient) }
+        refresh_views
+
+        expect(described_class.not_ltfu_as_of(Time.current)).to include(not_ltfu_patient)
+      end
+
+      it "includes patient who is not LTFU because they had an prescription drugs assigned recently" do
+        not_ltfu_patient = Timecop.freeze(2.years.ago) { create(:patient) }
+        Timecop.freeze(6.months.ago) { create(:appointment, patient: not_ltfu_patient) }
         refresh_views
 
         expect(described_class.not_ltfu_as_of(Time.current)).to include(not_ltfu_patient)
       end
 
       describe "timezone-specific boundaries" do
-        it "bp cutoffs for a year ago" do
+        it "visit cutoffs for a year ago" do
           # For any provided date in June in the local timezone, the LTFU BP cutoff is the end of June 30 of the
           # previous year in the local timezone.
           #
@@ -337,8 +385,8 @@ describe Patient, type: :model do
           not_ltfu_patient = create(:patient, recorded_at: long_ago)
           ltfu_patient = create(:patient, recorded_at: long_ago)
 
-          create(:blood_pressure, patient: not_ltfu_patient, recorded_at: under_a_year_ago)
-          create(:blood_pressure, patient: ltfu_patient, recorded_at: over_a_year_ago)
+          create(:blood_pressure, :with_encounter, patient: not_ltfu_patient, recorded_at: under_a_year_ago)
+          create(:blood_pressure, :with_encounter, patient: ltfu_patient, recorded_at: over_a_year_ago)
           refresh_views
 
           expect(described_class.not_ltfu_as_of(beginning_of_month)).to include(not_ltfu_patient)
@@ -348,32 +396,35 @@ describe Patient, type: :model do
           expect(described_class.not_ltfu_as_of(end_of_month)).not_to include(ltfu_patient)
         end
 
-        it "bp cutoffs for now" do
-          # For any provided date in June in the local timezone, the LTFU BP ending cutoff is the time provided
+        it "visit cutoffs for a month from now" do
+          # For any provided date in June in the local timezone, the LTFU BP ending cutoff is any date in June
 
           long_ago = 5.years.ago
           timezone = Time.find_zone(reporting_timezone)
           beginning_of_month = timezone.local(2021, 6, 1, 0, 0, 0) # Beginning of June 1 2021 in local timezone
-          a_moment_ago = beginning_of_month - 1.minute # A moment before the provided date
-          a_moment_from_now = beginning_of_month + 1.minute # A moment after the provided date
+          a_moment_ago = beginning_of_month - 1.minute
+          a_day_from_now = beginning_of_month + 1.day # A day before the provided date
+          a_month_from_now = beginning_of_month + 1.month # A month after the provided date
 
-          end_of_month = timezone.local(2021, 6, 30, 23, 59, 59) # End of June 30 2021 in local timezone
-
-          not_ltfu_patient = create(:patient, recorded_at: long_ago)
+          not_ltfu_patient_1 = create(:patient, recorded_at: long_ago)
+          not_ltfu_patient_2 = create(:patient, recorded_at: long_ago)
           ltfu_patient = create(:patient, recorded_at: long_ago)
 
-          create(:blood_pressure, patient: not_ltfu_patient, recorded_at: a_moment_ago)
-          create(:blood_pressure, patient: ltfu_patient, recorded_at: a_moment_from_now)
+          create(:blood_pressure, :with_encounter, patient: not_ltfu_patient_1, recorded_at: a_moment_ago)
+          create(:blood_pressure, :with_encounter, patient: not_ltfu_patient_2, recorded_at: a_day_from_now)
+          create(:blood_pressure, :with_encounter, patient: ltfu_patient, recorded_at: a_month_from_now)
 
           with_reporting_time_zone do
             refresh_views
 
-            expect(described_class.not_ltfu_as_of(beginning_of_month)).to include(not_ltfu_patient)
+            expect(described_class.not_ltfu_as_of(beginning_of_month)).to include(not_ltfu_patient_1)
+            expect(described_class.not_ltfu_as_of(beginning_of_month)).to include(not_ltfu_patient_2)
             expect(described_class.not_ltfu_as_of(beginning_of_month)).not_to include(ltfu_patient)
 
-            # Both patients are not LTFU at the end of the month
-            expect(described_class.not_ltfu_as_of(end_of_month)).to include(not_ltfu_patient)
-            expect(described_class.not_ltfu_as_of(end_of_month)).to include(ltfu_patient)
+            # Both patients are not LTFU at the beginning of the next month
+            expect(described_class.not_ltfu_as_of(a_month_from_now)).to include(not_ltfu_patient_1)
+            expect(described_class.not_ltfu_as_of(a_month_from_now)).to include(not_ltfu_patient_2)
+            expect(described_class.not_ltfu_as_of(a_month_from_now)).to include(ltfu_patient)
           end
         end
 
