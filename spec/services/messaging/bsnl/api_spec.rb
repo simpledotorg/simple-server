@@ -51,12 +51,12 @@ RSpec.describe Messaging::Bsnl::Api do
       template_id = "a template id"
       message_with_named_vars = "message with {#var1#} and {#var2#}"
 
-      request = stub_request(:post, "https://bulksms.bsnl.in:5010/api/Name_Content_Template_Variables").to_return(body: {"Error"=>nil, "Template_Keys"=> %w[var1 var2]}.to_json)
-      expect(described_class.new.name_template_variables(template_id, message_with_named_vars)).to eq("Error"=>nil, "Template_Keys"=> %w[var1 var2])
+      request = stub_request(:post, "https://bulksms.bsnl.in:5010/api/Name_Content_Template_Variables").to_return(body: {"Error" => nil, "Template_Keys" => %w[var1 var2]}.to_json)
+      expect(described_class.new.name_template_variables(template_id, message_with_named_vars)).to eq("Error" => nil, "Template_Keys" => %w[var1 var2])
       expect(request.with(body: {
-        "Template_ID": template_id,
-        "Entity_ID": "123",
-        "Template_Message_Named": message_with_named_vars
+        Template_ID: template_id,
+        Entity_ID: "123",
+        Template_Message_Named: message_with_named_vars
       })).to have_been_made
     end
   end

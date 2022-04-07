@@ -32,9 +32,9 @@ class Messaging::Bsnl::Api
 
   def name_template_variables(template_id, template_message_named)
     post(URL_PATHS[:name_content_template_variables], {
-      "Template_ID": template_id,
-      "Entity_ID": credentials[:entity_id],
-      "Template_Message_Named": template_message_named
+      Template_ID: template_id,
+      Entity_ID: credentials[:entity_id],
+      Template_Message_Named: template_message_named
     })
   end
 
