@@ -28,6 +28,7 @@ class BsnlSmsStatusJob
   def log(response)
     Rails.logger.info(
       {
+        job: "bsnl_sms_status",
         message_id: response["Message_Id"],
         content_template_id: response["Content_Template_Id"],
         error: response["Error"],
