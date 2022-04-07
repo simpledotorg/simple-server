@@ -37,13 +37,13 @@ class Messaging::Bsnl::Sms < Messaging::Channel
       recipient_number: recipient_number,
       dlt_template: template,
       key_values: variables
-    ).tap { |response| handle_api_errors(response, template) }
+    ).tap { |response| raise_api_errors(response, template) }
   end
 
-  def handle_api_errors(response, template)
+  def raise_api_errors(response, template)
     error = response["Error"]
     if error.present?
-      raise Messaging::Bsnl::Error.new("#{error} Error on #{template.name}")
+      raise Messaging::Bsnl::Error.new("#{error} Error sending SMS for #{template.name}")
     end
   end
 

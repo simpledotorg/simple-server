@@ -12,7 +12,7 @@ class BsnlSmsStatusJob
 
   def perform(message_id)
     response = Messaging::Bsnl::Api.new.get_message_status_report(message_id)
-    handle_api_errors(message_id, response)
+    raise_api_errors(message_id, response)
 
     detailable = BsnlDeliveryDetail.find_by!(message_id: message_id)
     detailable.message_status = response["Message_Status"] if response["Message_Status"]
@@ -38,7 +38,7 @@ class BsnlSmsStatusJob
     )
   end
 
-  def handle_api_errors(message_id, response)
+  def raise_api_errors(message_id, response)
     error = response["Error"]
     if error.present?
       raise Messaging::Bsnl::Error.new("Error fetching message status for #{message_id}: #{error}")
