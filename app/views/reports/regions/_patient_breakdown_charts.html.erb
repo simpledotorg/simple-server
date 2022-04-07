@@ -123,8 +123,7 @@
                 <span data-total-patients="<%= number_with_delimiter(current_ltfu_patients) %>">
                   <%= number_with_delimiter(current_ltfu_patients) %>
                 </span>
-                <%= "patient".pluralize(current_ltfu_patients) %> with no BP taken since
-
+                <%= "patient".pluralize(current_ltfu_patients) %> with no visit since
                 <span data-period-start="<%= @period.ltfu_since_date %>">
                   <%= @period.ltfu_since_date %>
                 </span>

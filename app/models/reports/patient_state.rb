@@ -3,6 +3,12 @@ module Reports
     self.table_name = "reporting_patient_states"
     belongs_to :patient
 
+    enum htn_care_state: {
+      dead: "dead",
+      under_care: "under_care",
+      lost_to_follow_up: "lost_to_follow_up"
+    }, _prefix: :htn_care_state
+
     def self.materialized?
       true
     end

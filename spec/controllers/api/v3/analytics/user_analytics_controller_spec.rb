@@ -39,7 +39,7 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
         expect(response.status).to eq(200)
       end
 
-      it "renders successfully for follow_ups_v2 for facility with DM disabled" do
+      it "renders successfully for follow_ups_v2_progress_tab for facility with DM disabled" do
         facility = create(:facility, enable_diabetes_management: false, facility_group: request_user.facility.facility_group)
         Flipper.enable(:follow_ups_v2_progress_tab)
         Timecop.freeze(1.month.ago) do

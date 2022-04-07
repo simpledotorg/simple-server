@@ -14,9 +14,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
   let(:mar_2020) { Time.zone.parse("March 1st, 2020 00:00:00+00:00") }
 
   around do |example|
-    Flipper.enable(:follow_ups_v2)
     with_reporting_time_zone { example.run }
-    Flipper.disable(:follow_ups_v2)
   end
 
   def refresh_views
@@ -220,7 +218,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
     facility_1 = FactoryBot.create_list(:facility, 1, facility_group: facility_group_1).first
     slug = facility_1.region.slug
     # Patient registers Jan 2019 and has a visit with no BP Jan 2020...so they have a
-    # visit w/ no BP and are LTFU in Jan, Feb, and March 2020.
+    # visit w/ no BP. Since an appointment is created in Jan 2020, the patient is under care from Jan 2020 through Dec 2020
+    # The patient becomes lost to follow up in Jan 2021
     visit_with_no_bp_and_ltfu = create(:patient, full_name: "visit_with_no_bp_and_ltfu", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
     create(:appointment, patient: visit_with_no_bp_and_ltfu, recorded_at: jan_2020, facility: facility_1, user: user)
 
@@ -243,10 +242,17 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       expect(facility_results[period]["cumulative_assigned_patients"]).to eq(1)
       expect(facility_results[period]["adjusted_missed_visit_under_care"]).to eq(0)
       expect(facility_results[period]["adjusted_missed_visit_under_care_with_lost_to_follow_up"]).to eq(0)
-      expect(facility_results[period]["adjusted_visited_no_bp_lost_to_follow_up"]).to eq(1)
-      expect(facility_results[period]["lost_to_follow_up"]).to eq(1)
+      expect(facility_results[period]["adjusted_visited_no_bp_lost_to_follow_up"]).to eq(0)
+      expect(facility_results[period]["lost_to_follow_up"]).to eq(0)
     end
-    (("April 2020".to_period)..("October 2021".to_period)).each do |period|
+    (("April 2020".to_period)..("December 2020".to_period)).each do |period|
+      expect(facility_results[period]["cumulative_assigned_patients"]).to eq(1)
+      expect(facility_results[period]["adjusted_missed_visit_under_care"]).to eq(1)
+      expect(facility_results[period]["adjusted_missed_visit_under_care_with_lost_to_follow_up"]).to eq(1)
+      expect(facility_results[period]["adjusted_visited_no_bp_lost_to_follow_up"]).to eq(0)
+      expect(facility_results[period]["lost_to_follow_up"]).to eq(0)
+    end
+    (("Jan 2021".to_period)..("October 2021".to_period)).each do |period|
       expect(facility_results[period]["cumulative_assigned_patients"]).to eq(1)
       expect(facility_results[period]["adjusted_missed_visit_under_care"]).to eq(0)
       expect(facility_results[period]["adjusted_missed_visit_under_care_with_lost_to_follow_up"]).to eq(1)

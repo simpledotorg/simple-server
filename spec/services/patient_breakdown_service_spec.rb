@@ -17,6 +17,8 @@ RSpec.describe PatientBreakdownService do
       _dead_patient = create(:patient, :hypertension, status: :dead, assigned_facility: facility)
       _not_hypertensive_patient = create(:patient, :without_hypertension, assigned_facility: facility)
 
+      refresh_views
+
       expected_result = {
         dead_patients: 1,
         ltfu_patients: 2,
