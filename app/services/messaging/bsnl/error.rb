@@ -7,10 +7,7 @@ class Messaging::Bsnl::Error < Messaging::Error
   end
 
   def error_reason(message)
-    known_error_message = ERROR_CODE_REASONS.keys.select do |e|
-      e.match(message).present?
-    end.first
-
+    known_error_message = ERROR_CODE_REASONS.keys.find { |error_message| error_message.match(message).present? }
     ERROR_CODE_REASONS[known_error_message] if known_error_message
   end
 end

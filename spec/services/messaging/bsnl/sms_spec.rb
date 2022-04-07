@@ -55,7 +55,7 @@ RSpec.describe Messaging::Bsnl::Sms do
         )
       }.to raise_error(an_instance_of(Messaging::Bsnl::Error)) do |error|
         expect(error.reason).to be_nil
-        expect(/An error happened. Error on template a.template.name with content/).to match(error.message)
+        expect(/An error happened. Error sending SMS for a.template.name/).to match(error.message)
       end
     end
 
