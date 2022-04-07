@@ -1,4 +1,4 @@
-require "rspec"
+require "rails_helper"
 
 RSpec.describe Messaging::Bsnl::Sms do
   def mock_template
@@ -9,6 +9,14 @@ RSpec.describe Messaging::Bsnl::Sms do
     allow(mock_template).to receive(:sanitised_variable_content).and_return([{"Key" => "a", "Value" => "hash"}])
     allow(mock_template).to receive(:check_approved)
     mock_template
+  end
+
+  describe ".get_message_statuses" do
+    it "picks up any in progress BSNL delivery details and queues a BsnlSmsStatusJob" do
+      create_list(:bsnl_delivery_detail, 2, :created)
+
+      expect { described_class.get_message_statuses }.to change(Sidekiq::Queues["default"], :size).by(2)
+    end
   end
 
   describe "#send_message" do
@@ -45,7 +53,10 @@ RSpec.describe Messaging::Bsnl::Sms do
           dlt_template_name: template.name,
           variable_content: {}
         )
-      }.to raise_error(Messaging::Bsnl::Error, 'An error happened. Error on template a.template.name with content [{"Key"=>"a", "Value"=>"hash"}]')
+      }.to raise_error(an_instance_of(Messaging::Bsnl::Error)) do |error|
+        expect(error.reason).to be_nil
+        expect(/An error happened. Error sending SMS for a.template.name/).to match(error.message)
+      end
     end
 
     it "creates a detailable and a communication and returns it" do

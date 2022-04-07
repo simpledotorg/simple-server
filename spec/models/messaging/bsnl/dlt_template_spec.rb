@@ -60,7 +60,10 @@ RSpec.describe Messaging::Bsnl::DltTemplate do
       template = described_class.new(template_name)
 
       expect { template.check_variables_presence({key_1: "Value 1"}) }
-        .to raise_error(Messaging::Bsnl::Error, "Variables key_2 not provided to #{template_name}")
+        .to raise_error(an_instance_of(Messaging::Bsnl::Error)) do |error|
+        expect(error.reason).to be_nil
+        expect(/Variables key_2 not provided to #{template_name}/).to match(error.message)
+      end
     end
 
     it "does not raise an error if all the variables have been provided" do
