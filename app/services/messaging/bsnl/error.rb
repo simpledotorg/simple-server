@@ -11,6 +11,6 @@ class Messaging::Bsnl::Error < Messaging::Error
       e.match(message).present?
     end.first
 
-    ERROR_CODE_REASONS[known_error_message]
+    ERROR_CODE_REASONS[known_error_message] if known_error_message
   end
 end
