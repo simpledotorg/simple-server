@@ -53,7 +53,10 @@ RSpec.describe Messaging::Bsnl::Sms do
           dlt_template_name: template.name,
           variable_content: {}
         )
-      }.to raise_error(Messaging::Bsnl::Error, 'An error happened. Error on template a.template.name with content [{"Key"=>"a", "Value"=>"hash"}]')
+      }.to raise_error(an_instance_of(Messaging::Bsnl::Error)) do |error|
+        expect(error.reason).to be_nil
+        expect(/An error happened. Error on template a.template.name with content/).to match(error.message)
+      end
     end
 
     it "creates a detailable and a communication and returns it" do
