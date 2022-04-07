@@ -544,6 +544,10 @@ RSpec.describe Region, type: :model do
     let(:disabled_district_region) { create(:region, region_type: :district, reparent_to: enabled_state_region) }
     let(:disabled_block_region) { create(:region, region_type: :block, reparent_to: enabled_district_region) }
 
+    before do
+      Flipper.enable(:diabetes_management_reports)
+    end
+
     context "region is a facility" do
       it "returns true if enable_diabetes_management is set to true for the facility" do
         facility_region = create(:region, region_type: :facility, source: facility_1, reparent_to: enabled_block_region)
