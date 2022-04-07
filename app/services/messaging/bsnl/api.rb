@@ -3,7 +3,8 @@ class Messaging::Bsnl::Api
   PORT = 5010
   URL_PATHS = {
     get_content_template_details: "/api/Get_Content_Template_Details",
-    send_sms: "/api/Send_Sms"
+    send_sms: "/api/Send_Sms",
+    name_content_template_variables: "/api/Name_Content_Template_Variables"
   }
 
   def initialize
@@ -27,6 +28,14 @@ class Messaging::Bsnl::Api
 
   def get_template_details
     post(URL_PATHS[:get_content_template_details])["Content_Template_Ids"]
+  end
+
+  def name_template_variables(template_id, template_message_named)
+    post(URL_PATHS[:name_content_template_variables], {
+      "Template_ID": template_id,
+      "Entity_ID": credentials[:entity_id],
+      "Template_Message_Named": template_message_named
+    })
   end
 
   private
