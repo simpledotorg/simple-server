@@ -139,22 +139,6 @@ RSpec.describe AdminController, type: :controller do
       expect(Datadog.tracer).to receive(:active_span).and_return(span_double)
       get :authorized
     end
-
-    it "enables follow_ups_v2 if set" do
-      expect(Flipper).to receive(:enable).with(:follow_ups_v2, user)
-      expect(Flipper).to receive(:disable).with(:follow_ups_v2, user)
-      get :authorized, params: {_follow_ups_v2: 1}
-      expect(Flipper.enabled?(:follow_ups_v2, user)).to be_falsey
-    end
-
-    it "disables follow_ups_v2 if flag is 0" do
-      Flipper.enable(:follow_ups_v2)
-      expect(Flipper).to receive(:disable).with(:follow_ups_v2, user)
-      expect(Flipper).to receive(:enable).with(:follow_ups_v2, user)
-      get :authorized, params: {_follow_ups_v2: 0}
-      expect(Flipper.enabled?(:follow_ups_v2, user)).to be_truthy
-      expect(Flipper.enabled?(:follow_ups_v2)).to be_truthy
-    end
   end
 
   context "#verify_authorization_attempted" do

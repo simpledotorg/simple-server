@@ -130,7 +130,7 @@ RSpec.describe MonthlyDistrictDataService, reporting_spec: true do
         new_registrations = csv[row_index][11..16]
         expect(new_registrations).to eq(%w[0 0 2 0 0 0])
         follow_ups = csv[row_index][17..22]
-        expect(follow_ups).to eq(%w[0 0 0 1 0 0])
+        expect(follow_ups).to eq(%w[0 0 0 2 1 4])
         expect(find_in_csv(csv, row_index, "Patients with BP controlled")).to eq("1")
         expect(find_in_csv(csv, row_index, "Patients with BP not controlled")).to eq("0")
         expect(find_in_csv(csv, row_index, "Patients with a missed visit")).to eq("0")
@@ -165,7 +165,7 @@ RSpec.describe MonthlyDistrictDataService, reporting_spec: true do
         new_registrations = csv[row_index][11..16]
         expect(new_registrations).to eq(%w[0 0 2 0 0 0])
         follow_ups = csv[row_index][17..22]
-        expect(follow_ups).to eq(%w[0 0 0 1 0 0])
+        expect(follow_ups).to eq(%w[0 0 0 2 1 4])
         expect(find_in_csv(csv, row_index, "Patients with BP controlled")).to eq("1")
         expect(find_in_csv(csv, row_index, "Patients with BP not controlled")).to eq("0")
         expect(find_in_csv(csv, row_index, "Patients with a missed visit")).to eq("0")
@@ -201,7 +201,7 @@ RSpec.describe MonthlyDistrictDataService, reporting_spec: true do
         new_registrations = csv[row_index][11..16]
         expect(new_registrations).to eq(%w[0 0 1 0 0 0])
         follow_ups = csv[row_index][17..22]
-        expect(follow_ups).to eq(%w[0 0 0 0 0 0])
+        expect(follow_ups).to eq(%w[0 0 0 1 0 2])
         expect(find_in_csv(csv, row_index, "Patients with BP controlled")).to eq("0")
         expect(find_in_csv(csv, row_index, "Patients with BP not controlled")).to eq("0")
         expect(find_in_csv(csv, row_index, "Patients with a missed visit")).to eq("0")
@@ -322,7 +322,7 @@ RSpec.describe MonthlyDistrictDataService, reporting_spec: true do
         new_registrations = csv[row_index][11..16]
         expect(new_registrations).to eq(%w[0 0 2 0 0 0])
         follow_ups = csv[row_index][17..22]
-        expect(follow_ups).to eq(%w[0 0 0 1 0 0])
+        expect(follow_ups).to eq(%w[0 0 0 2 1 4])
         expect(find_in_csv(csv, row_index, "Patients with BP controlled")).to eq("1")
         expect(find_in_csv(csv, row_index, "Patients with BP not controlled")).to eq("0")
         expect(find_in_csv(csv, row_index, "Patients with a missed visit")).to eq("0")
@@ -360,7 +360,7 @@ RSpec.describe MonthlyDistrictDataService, reporting_spec: true do
         new_registrations = csv[row_index][11..16]
         expect(new_registrations).to eq(%w[0 0 2 0 0 0])
         follow_ups = csv[row_index][17..22]
-        expect(follow_ups).to eq(%w[0 0 0 1 0 0])
+        expect(follow_ups).to eq(%w[0 0 0 2 1 4])
         expect(find_in_csv(csv, row_index, "Patients with BP controlled")).to eq("1")
         expect(find_in_csv(csv, row_index, "Patients with BP not controlled")).to eq("0")
         expect(find_in_csv(csv, row_index, "Patients with a missed visit")).to eq("0")
@@ -399,7 +399,7 @@ RSpec.describe MonthlyDistrictDataService, reporting_spec: true do
         new_registrations = csv[row_index][11..16]
         expect(new_registrations).to eq(%w[0 0 1 0 0 0])
         follow_ups = csv[row_index][17..22]
-        expect(follow_ups).to eq(%w[0 0 0 0 0 0])
+        expect(follow_ups).to eq(%w[0 0 0 1 0 2])
         expect(find_in_csv(csv, row_index, "Patients with BP controlled")).to eq("0")
         expect(find_in_csv(csv, row_index, "Patients with BP not controlled")).to eq("0")
         expect(find_in_csv(csv, row_index, "Patients with a missed visit")).to eq("0")
