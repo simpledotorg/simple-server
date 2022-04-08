@@ -4,7 +4,7 @@ class Messaging::Bsnl::Api
   URL_PATHS = {
     get_content_template_details: "/api/Get_Content_Template_Details",
     send_sms: "/api/Send_Sms",
-    name_content_template_variables: "/api/Name_Content_Template_Variables"
+    name_content_template_variables: "/api/Name_Content_Template_Variables",
     message_status_report: "/api/Message_Status_Report"
   }
 
@@ -36,6 +36,8 @@ class Messaging::Bsnl::Api
       Template_ID: template_id,
       Entity_ID: credentials[:entity_id],
       Template_Message_Named: template_message_named
+    })
+  end
 
   def get_message_status_report(message_id)
     post(URL_PATHS[:message_status_report], {

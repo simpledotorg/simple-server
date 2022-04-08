@@ -58,7 +58,9 @@ RSpec.describe Messaging::Bsnl::Api do
         Entity_ID: "123",
         Template_Message_Named: message_with_named_vars
       })).to have_been_mad
-  
+    end
+  end
+
   describe "#get_message_status_report" do
     it "gets the message's status" do
       allow(ENV).to receive(:[]).with("BSNL_IHCI_HEADER").and_return("ABCDEF")
