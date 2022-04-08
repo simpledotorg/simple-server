@@ -20,7 +20,7 @@ class CountryConfig
         controlled_male: "FSuHsnyPYcV.tY82VK3LTQq",
         controlled_female: "FSuHsnyPYcV.VHbljVQ8REF"
       },
-      appointment_reminders_channel: "Messaging::Twilio::ReminderSms"
+      appointment_reminders_channel: "Messaging::Bsnl::Sms"
     },
     BD: {
       abbreviation: "BD",

@@ -3,7 +3,8 @@ class Messaging::Bsnl::Api
   PORT = 5010
   URL_PATHS = {
     get_content_template_details: "/api/Get_Content_Template_Details",
-    send_sms: "/api/Send_Sms"
+    send_sms: "/api/Send_Sms",
+    message_status_report: "/api/Message_Status_Report"
   }
 
   def initialize
@@ -27,6 +28,12 @@ class Messaging::Bsnl::Api
 
   def get_template_details
     post(URL_PATHS[:get_content_template_details])["Content_Template_Ids"]
+  end
+
+  def get_message_status_report(message_id)
+    post(URL_PATHS[:message_status_report], {
+      "Message_id" => message_id
+    })
   end
 
   private
