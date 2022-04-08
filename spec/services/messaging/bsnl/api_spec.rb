@@ -57,7 +57,16 @@ RSpec.describe Messaging::Bsnl::Api do
         Template_ID: template_id,
         Entity_ID: "123",
         Template_Message_Named: message_with_named_vars
-      })).to have_been_made
+      })).to have_been_mad
+  
+  describe "#get_message_status_report" do
+    it "gets the message's status" do
+      allow(ENV).to receive(:[]).with("BSNL_IHCI_HEADER").and_return("ABCDEF")
+      allow(ENV).to receive(:[]).with("BSNL_IHCI_ENTITY_ID").and_return("123")
+      Configuration.create(name: "bsnl_sms_jwt", value: "a jwt token")
+
+      stub_request(:post, "https://bulksms.bsnl.in:5010/api/Message_Status_Report").to_return(body: {a: :hash}.to_json)
+      expect(described_class.new.get_message_status_report(123123)).to eq({"a" => "hash"})
     end
   end
 end

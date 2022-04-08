@@ -86,6 +86,10 @@ every :day, at: local("07:30 am"), roles: [:cron] do
   runner "Experimentation::Runner.call;AppointmentNotification::ScheduleExperimentReminders.call"
 end
 
+every :day, at: local("05:30 pm"), roles: [:cron] do
+  runner "Messaging::Bsnl::Sms.get_message_statuses"
+end
+
 every 2.minutes, roles: [:cron] do
   runner "TracerJob.perform_async(Time.current.iso8601, false)"
 end
