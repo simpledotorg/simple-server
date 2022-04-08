@@ -43,6 +43,24 @@ RSpec.describe Messaging::Bsnl::Api do
     end
   end
 
+  describe "#name_template_variables" do
+    it "names the variables for a DLT template" do
+      allow(ENV).to receive(:[]).with("BSNL_IHCI_HEADER").and_return("ABCDEF")
+      allow(ENV).to receive(:[]).with("BSNL_IHCI_ENTITY_ID").and_return("123")
+      Configuration.create(name: "bsnl_sms_jwt", value: "a jwt token")
+      template_id = "a template id"
+      message_with_named_vars = "message with {#var1#} and {#var2#}"
+
+      request = stub_request(:post, "https://bulksms.bsnl.in:5010/api/Name_Content_Template_Variables").to_return(body: {"Error" => nil, "Template_Keys" => %w[var1 var2]}.to_json)
+      expect(described_class.new.name_template_variables(template_id, message_with_named_vars)).to eq("Error" => nil, "Template_Keys" => %w[var1 var2])
+      expect(request.with(body: {
+        Template_ID: template_id,
+        Entity_ID: "123",
+        Template_Message_Named: message_with_named_vars
+      })).to have_been_made
+    end
+  end
+
   describe "#get_message_status_report" do
     it "gets the message's status" do
       allow(ENV).to receive(:[]).with("BSNL_IHCI_HEADER").and_return("ABCDEF")
