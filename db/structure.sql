@@ -184,7 +184,7 @@ CREATE TABLE public.facilities (
     facility_size character varying NOT NULL,
     monthly_estimated_opd_load integer,
     enable_teleconsultation boolean DEFAULT false NOT NULL,
-    short_name character varying
+    short_name character varying NOT NULL
 );
 
 
