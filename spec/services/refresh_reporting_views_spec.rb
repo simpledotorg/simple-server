@@ -43,12 +43,16 @@ RSpec.describe RefreshReportingViews do
     expect {
       Timecop.freeze(time) do
         patients = create_list(:patient, 2, recorded_at: 1.month.ago)
-        patients.each { |patient| create(:blood_pressure, patient: patient, recorded_at: 1.month.ago) }
+        patients.each do |patient|
+          create(:blood_pressure, patient: patient, recorded_at: 1.month.ago)
+          create(:blood_sugar, patient: patient, recorded_at: 1.month.ago)
+        end
         create(:blood_pressure, patient: patients.first, recorded_at: Time.current)
 
         RefreshReportingViews.call
       end
     }.to change { Reports::PatientBloodPressure.count }.by(4)
+      .and change { Reports::PatientBloodSugar.count }.by(4)
       .and change { Reports::PatientState.count }.by(4)
       .and change { Reports::PatientVisit.count }.by(4)
       .and change { Reports::PatientFollowUp.count }.by(1)

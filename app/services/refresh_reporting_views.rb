@@ -18,6 +18,7 @@ class RefreshReportingViews
     Reports::Facility
     Reports::DailyFollowUp
     Reports::PatientBloodPressure
+    Reports::PatientBloodSugar
     Reports::OverdueCalls
     Reports::PatientVisit
     Reports::Prescriptions

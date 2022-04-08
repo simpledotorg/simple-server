@@ -3402,10 +3402,10 @@ COMMENT ON COLUMN public.reporting_facility_states.appts_scheduled_more_than_62_
 
 
 --
--- Name: reporting_patient_blood_sugars; Type: VIEW; Schema: public; Owner: -
+-- Name: reporting_patient_blood_sugars; Type: MATERIALIZED VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.reporting_patient_blood_sugars AS
+CREATE MATERIALIZED VIEW public.reporting_patient_blood_sugars AS
  SELECT DISTINCT ON (bs.patient_id, cal.month_date) cal.month_date,
     cal.month,
     cal.quarter,
@@ -3453,7 +3453,8 @@ CREATE VIEW public.reporting_patient_blood_sugars AS
      LEFT JOIN public.reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)), 'YYYY-MM'::text) <= to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))))
      JOIN public.patients p ON (((bs.patient_id = p.id) AND (p.deleted_at IS NULL))))
   WHERE (bs.deleted_at IS NULL)
-  ORDER BY bs.patient_id, cal.month_date, bs.recorded_at DESC;
+  ORDER BY bs.patient_id, cal.month_date, bs.recorded_at DESC
+  WITH NO DATA;
 
 
 --
