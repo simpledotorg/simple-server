@@ -110,6 +110,8 @@ class Facility < ApplicationRecord
     }
   validates :enable_diabetes_management, inclusion: {in: [true, false]}
   validate :valid_block, if: -> { !generating_seed_data && facility_group.present? }
+  validates :short_name, presence: true
+  validates :short_name, length: {minimum: 1, maximum: 30}
 
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, :organization_id, to: :facility_group, allow_nil: true
