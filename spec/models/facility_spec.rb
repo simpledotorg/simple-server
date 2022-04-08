@@ -284,7 +284,7 @@ RSpec.describe Facility, type: :model do
       end
 
       it "validates that the short name is 30 characters or shorter" do
-        facility = build(:facility, short_name: "a"*31)
+        facility = build(:facility, short_name: "a" * 31)
         facility.valid?
         expect(facility.errors[:short_name]).to include("is too long (maximum is 30 characters)")
       end

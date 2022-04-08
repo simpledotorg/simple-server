@@ -78,6 +78,8 @@ class Facility < ApplicationRecord
     large: "large"
   }
 
+  SHORT_NAME_MAX_LENGTH = 30
+
   liberal_enum :facility_size
 
   auto_strip_attributes :name, squish: true, upcase_first: true
@@ -111,7 +113,7 @@ class Facility < ApplicationRecord
   validates :enable_diabetes_management, inclusion: {in: [true, false]}
   validate :valid_block, if: -> { !generating_seed_data && facility_group.present? }
   validates :short_name, presence: true
-  validates :short_name, length: {minimum: 1, maximum: 30}
+  validates :short_name, length: {minimum: 1, maximum: SHORT_NAME_MAX_LENGTH}
 
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, :organization_id, to: :facility_group, allow_nil: true
