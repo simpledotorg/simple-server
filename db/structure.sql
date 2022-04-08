@@ -3436,8 +3436,8 @@ CREATE VIEW public.reporting_patient_blood_sugars AS
             WHEN ((bs.blood_sugar_type)::text = 'hba1c'::text) THEN
             CASE
                 WHEN (bs.blood_sugar_value < 7.0) THEN 'bs_below_200'::text
-                WHEN ((bs.blood_sugar_value >= 7.0) AND (bs.blood_sugar_value <= 8.9)) THEN 'bs_200_to_299'::text
-                WHEN (bs.blood_sugar_value > 9.0) THEN 'bs_over_299'::text
+                WHEN ((bs.blood_sugar_value >= 7.0) AND (bs.blood_sugar_value < 9.0)) THEN 'bs_200_to_299'::text
+                WHEN (bs.blood_sugar_value >= 9.0) THEN 'bs_over_299'::text
                 ELSE NULL::text
             END
             ELSE NULL::text

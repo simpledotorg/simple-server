@@ -172,7 +172,7 @@ describe Reports::PatientBloodSugar, {type: :model, reporting_spec: true} do
     hba1c_bs_200_to_299 = create(:blood_sugar, patient: patients.fourth, blood_sugar_type: :hba1c, blood_sugar_value: 7.5, recorded_at: 4.months.ago)
     hba1c_bs_over_299 = create(:blood_sugar, patient: patients.fourth, blood_sugar_type: :hba1c, blood_sugar_value: 9.5, recorded_at: 3.months.ago)
     hba1c_bs_200 = create(:blood_sugar, patient: patients.fourth, blood_sugar_type: :hba1c, blood_sugar_value: 7.0, recorded_at: 2.months.ago)
-    hba1c_bs_299 = create(:blood_sugar, patient: patients.fourth, blood_sugar_type: :hba1c, blood_sugar_value: 8.9, recorded_at: 1.months.ago)
+    hba1c_bs_299 = create(:blood_sugar, patient: patients.fourth, blood_sugar_type: :hba1c, blood_sugar_value: 9.0, recorded_at: 1.months.ago)
 
     refresh_views
 
@@ -209,7 +209,7 @@ describe Reports::PatientBloodSugar, {type: :model, reporting_spec: true} do
       [june_2021[:four_months_ago].to_date, patients.fourth.id, hba1c_bs_200_to_299.id, risk_states[:bs_200_to_299]],
       [june_2021[:three_months_ago].to_date, patients.fourth.id, hba1c_bs_over_299.id, risk_states[:bs_over_299]],
       [june_2021[:two_months_ago].to_date, patients.fourth.id, hba1c_bs_200.id, risk_states[:bs_200_to_299]],
-      [june_2021[:one_month_ago].to_date, patients.fourth.id, hba1c_bs_299.id, risk_states[:bs_200_to_299]]
+      [june_2021[:one_month_ago].to_date, patients.fourth.id, hba1c_bs_299.id, risk_states[:bs_over_299]]
     )
   end
 end

@@ -23,7 +23,7 @@ SELECT DISTINCT ON (bs.patient_id, cal.month_date)
     -- +----------+--------------+------------------+-------------+
     -- | RBS/PPBS | bs < 200     | 200 <= bs <= 299 | bs > 299    |
     -- | FBS      | bs < 126     | 126 <= bs <= 199 | bs > 199    |
-    -- | Hba1c    | bs < 7.0     | 7.0 <= bs <= 8.9 | bs > 9.0    |
+    -- | Hba1c    | bs < 7.0     | 7.0 <= bs < 9.0  | bs >= 9.0   |
     -- +----------+--------------+------------------+-------------+
     CASE
         -- RBS/PPBS
@@ -46,8 +46,8 @@ SELECT DISTINCT ON (bs.patient_id, cal.month_date)
         WHEN bs.blood_sugar_type = 'hba1c' THEN
             CASE
                 WHEN bs.blood_sugar_value < 7.0 THEN 'bs_below_200'
-                WHEN bs.blood_sugar_value >= 7.0 AND bs.blood_sugar_value <= 8.9 THEN 'bs_200_to_299'
-                WHEN bs.blood_sugar_value > 9.0 THEN 'bs_over_299'
+                WHEN bs.blood_sugar_value >= 7.0 AND bs.blood_sugar_value < 9.0 THEN 'bs_200_to_299'
+                WHEN bs.blood_sugar_value >= 9.0 THEN 'bs_over_299'
                 END
         END
         AS blood_sugar_risk_state,
