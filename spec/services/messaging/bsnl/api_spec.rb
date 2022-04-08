@@ -57,7 +57,7 @@ RSpec.describe Messaging::Bsnl::Api do
         Template_ID: template_id,
         Entity_ID: "123",
         Template_Message_Named: message_with_named_vars
-      })).to have_been_mad
+      })).to have_been_made
     end
   end
 
