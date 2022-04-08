@@ -5177,6 +5177,13 @@ CREATE UNIQUE INDEX patient_blood_pressures_patient_id_month_date ON public.repo
 
 
 --
+-- Name: patient_blood_sugars_month_date_patient_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX patient_blood_sugars_month_date_patient_id ON public.reporting_patient_blood_sugars USING btree (month_date, patient_id);
+
+
+--
 -- Name: patient_states_assigned_block; Type: INDEX; Schema: public; Owner: -
 --
 
