@@ -14,6 +14,9 @@ class BsnlDeliveryDetail < DeliveryDetail
   validates :recipient_number, presence: true
   validates :dlt_template_id, presence: true
 
+  IN_PROGRESS_STATUSES = %w[created inserted_in_queue submitted_to_smsc accepted_by_carrier]
+  scope :in_progress, -> { where(message_status: message_statuses.slice(*IN_PROGRESS_STATUSES).values).or(where(message_status: nil)) }
+
   def unsuccessful?
     input_error? || rejected_by_smsc? || delivery_failed?
   end
@@ -23,7 +26,7 @@ class BsnlDeliveryDetail < DeliveryDetail
   end
 
   def in_progress?
-    created? || inserted_in_queue? || submitted_to_smsc? || accepted_by_carrier?
+    IN_PROGRESS_STATUSES.includes?(message_status) || message_status.blank?
   end
 
   def self.create_with_communication!(message_id:, recipient_number:, dlt_template_id:)
