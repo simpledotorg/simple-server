@@ -34,7 +34,7 @@ describe Notification, type: :model do
       facility = notification.subject.facility
       facility.update!(state: "Maharashtra")
 
-      expect(notification.message_data[:variable_content]).to eq({facility_name: notification.subject.facility.name,
+      expect(notification.message_data[:variable_content]).to eq({facility_name: notification.subject.facility.short_name,
                                                                    patient_name: notification.patient.full_name,
                                                                    appointment_date: notification.subject.scheduled_date.strftime("%d-%m-%Y")})
       expect(notification.message_data[:locale]).to eq(facility.locale)
@@ -48,7 +48,7 @@ describe Notification, type: :model do
 
       it "returns the patient's assigned facility as the facility_name" do
         notification = create(:notification, purpose: "experimental_appointment_reminder", subject: nil)
-        expect(notification.message_data[:variable_content][:facility_name]).to eq(notification.patient.assigned_facility.name)
+        expect(notification.message_data[:variable_content][:facility_name]).to eq(notification.patient.assigned_facility.short_name)
       end
 
       it "returns the patient's assigned facility's locale" do
@@ -68,7 +68,7 @@ describe Notification, type: :model do
 
       expected_message = I18n.t(
         notification.message,
-        facility_name: notification.subject.facility.name,
+        facility_name: notification.subject.facility.short_name,
         patient_name: notification.patient.full_name,
         appointment_date: notification.subject.scheduled_date.strftime("%d-%m-%Y"),
         locale: "mr-IN"
@@ -86,7 +86,7 @@ describe Notification, type: :model do
           message: "notifications.set01.basic"
         )
 
-        expected_message = "#{patient.full_name}, please visit #{patient.assigned_facility.name} on  for a BP measure and medicines."
+        expected_message = "#{patient.full_name}, please visit #{patient.assigned_facility.short_name} on  for a BP measure and medicines."
         expect(notification.localized_message).to eq(expected_message)
       end
     end
