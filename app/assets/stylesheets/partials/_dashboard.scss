@@ -25,12 +25,16 @@ Dashboard UI
 
 .update {
   position: relative;
-  padding-left: 42px;
+  padding: 0.5em 16px 0 64px;
+  
+  p {
+    margin: 1em 0 0 0;
+  }
 
   .update-date {
     position: absolute;
     left: 0;
-    top: 16px;
+    top: 2em;
     width: 48px;
     background: $green-light;
     border-bottom: 1px solid $green-mid;
