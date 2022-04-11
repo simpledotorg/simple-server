@@ -39,4 +39,76 @@ RSpec.describe BsnlDeliveryDetail, type: :model do
       expect(communication.detailable.recipient_number).to eq phone_number
     end
   end
+
+  describe ".in_progress?" do
+    it "returns true if the notification is in the process of being delivered" do
+      new_detail = create(:bsnl_delivery_detail, message_status: nil)
+      created_detail = create(:bsnl_delivery_detail, message_status: "0")
+      input_error_detail = create(:bsnl_delivery_detail, message_status: "1")
+      inserted_in_queue_detail = create(:bsnl_delivery_detail, message_status: "2")
+      submitted_to_smsc_detail = create(:bsnl_delivery_detail, message_status: "3")
+      rejected_by_smsc_detail = create(:bsnl_delivery_detail, message_status: "4")
+      accepted_by_carrier_detail = create(:bsnl_delivery_detail, message_status: "5")
+      delivery_failed_detail = create(:bsnl_delivery_detail, message_status: "6")
+      delivered_detail = create(:bsnl_delivery_detail, message_status: "7")
+
+      expect(new_detail.in_progress?).to be_truthy
+      expect(created_detail.in_progress?).to be_truthy
+      expect(input_error_detail.in_progress?).not_to be_truthy
+      expect(inserted_in_queue_detail.in_progress?).to be_truthy
+      expect(submitted_to_smsc_detail.in_progress?).to be_truthy
+      expect(rejected_by_smsc_detail.in_progress?).not_to be_truthy
+      expect(accepted_by_carrier_detail.in_progress?).to be_truthy
+      expect(delivery_failed_detail.in_progress?).not_to be_truthy
+      expect(delivered_detail.in_progress?).not_to be_truthy
+    end
+  end
+
+  describe ".unsuccessful?" do
+    it "returns true if the notification could not be delivered" do
+      new_detail = create(:bsnl_delivery_detail, message_status: nil)
+      created_detail = create(:bsnl_delivery_detail, message_status: "0")
+      input_error_detail = create(:bsnl_delivery_detail, message_status: "1")
+      inserted_in_queue_detail = create(:bsnl_delivery_detail, message_status: "2")
+      submitted_to_smsc_detail = create(:bsnl_delivery_detail, message_status: "3")
+      rejected_by_smsc_detail = create(:bsnl_delivery_detail, message_status: "4")
+      accepted_by_carrier_detail = create(:bsnl_delivery_detail, message_status: "5")
+      delivery_failed_detail = create(:bsnl_delivery_detail, message_status: "6")
+      delivered_detail = create(:bsnl_delivery_detail, message_status: "7")
+
+      expect(new_detail.unsuccessful?).not_to be_truthy
+      expect(created_detail.unsuccessful?).not_to be_truthy
+      expect(input_error_detail.unsuccessful?).to be_truthy
+      expect(inserted_in_queue_detail.unsuccessful?).not_to be_truthy
+      expect(submitted_to_smsc_detail.unsuccessful?).not_to be_truthy
+      expect(rejected_by_smsc_detail.unsuccessful?).to be_truthy
+      expect(accepted_by_carrier_detail.unsuccessful?).not_to be_truthy
+      expect(delivery_failed_detail.unsuccessful?).to be_truthy
+      expect(delivered_detail.unsuccessful?).not_to be_truthy
+    end
+  end
+
+  describe ".successful?" do
+    it "returns true if the notification was delivered successfully" do
+      new_detail = create(:bsnl_delivery_detail, message_status: nil)
+      created_detail = create(:bsnl_delivery_detail, message_status: "0")
+      input_error_detail = create(:bsnl_delivery_detail, message_status: "1")
+      inserted_in_queue_detail = create(:bsnl_delivery_detail, message_status: "2")
+      submitted_to_smsc_detail = create(:bsnl_delivery_detail, message_status: "3")
+      rejected_by_smsc_detail = create(:bsnl_delivery_detail, message_status: "4")
+      accepted_by_carrier_detail = create(:bsnl_delivery_detail, message_status: "5")
+      delivery_failed_detail = create(:bsnl_delivery_detail, message_status: "6")
+      delivered_detail = create(:bsnl_delivery_detail, message_status: "7")
+
+      expect(new_detail.successful?).not_to be_truthy
+      expect(created_detail.successful?).not_to be_truthy
+      expect(input_error_detail.successful?).not_to be_truthy
+      expect(inserted_in_queue_detail.successful?).not_to be_truthy
+      expect(submitted_to_smsc_detail.successful?).not_to be_truthy
+      expect(rejected_by_smsc_detail.successful?).not_to be_truthy
+      expect(accepted_by_carrier_detail.successful?).not_to be_truthy
+      expect(delivery_failed_detail.successful?).not_to be_truthy
+      expect(delivered_detail.successful?).to be_truthy
+    end
+  end
 end
