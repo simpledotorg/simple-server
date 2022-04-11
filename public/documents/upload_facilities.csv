@@ -1,1 +1,1 @@
-organization,facility_group,facility_name,facility_type,street_address (optional),village_or_colony (optional),zone_or_block,district,pin (optional),latitude (optional),longitude (optional),size (optional),enable_diabetes_management (true/false)
+organization,facility_group,facility_name,facility_short_name,facility_type,street_address (optional),village_or_colony (optional),zone_or_block,district,pin (optional),latitude (optional),longitude (optional),size (optional),enable_diabetes_management (true/false)
