@@ -1089,14 +1089,13 @@ mr-IN.notifications.set03.basic: &5
   Template_Status: '1'
   Is_Unicode: '1'
 mr-IN.notifications.set03.emotional_guilt:
-  Template_Id: '1407164941894757796'
+  Template_Id: '1407164941876747072'
   Template_Keys:
   - facility_name
   - patient_name
-# These lengths are not accurate, need to be updated
-  Non_Variable_Text_Length: '224'
-  Max_Length_Permitted: '448'
-  Template_Status: '0'
+  Non_Variable_Text_Length: '232'
+  Max_Length_Permitted: '464'
+  Template_Status: '1'
   Is_Unicode: '1'
 mr-IN.notifications.set03.emotional_relatives:
   Template_Id: '1407164904243907770'
@@ -1126,14 +1125,13 @@ mr-IN.notifications.set03.gratitude:
   Template_Status: '1'
   Is_Unicode: '1'
 mr-IN.notifications.set03.professional_request:
-  Template_Id: '1407164941876747072'
+  Template_Id: '1407164941894757796'
   Template_Keys:
   - facility_name
   - patient_name
-# These lengths are not accurate, need to be updated
-  Non_Variable_Text_Length: '190'
-  Max_Length_Permitted: '380'
-  Template_Status: '0'
+  Non_Variable_Text_Length: '199'
+  Max_Length_Permitted: '398'
+  Template_Status: '1'
   Is_Unicode: '1'
 mr-IN.notifications.set03.response:
   Template_Id: '1407164904248501077'
