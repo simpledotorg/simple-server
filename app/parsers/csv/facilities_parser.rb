@@ -13,6 +13,7 @@ class Csv::FacilitiesParser
     organization_name: "organization",
     facility_group_name: "facility_group",
     name: "facility_name",
+    short_name: "facility_short_name",
     facility_type: "facility_type",
     street_address: "street_address (optional)",
     village_or_colony: "village_or_colony (optional)",
