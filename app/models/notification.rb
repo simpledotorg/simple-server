@@ -43,7 +43,7 @@ class Notification < ApplicationRecord
     facility = subject&.facility || patient.assigned_facility
 
     {
-      variable_content: {facility_name: facility.name,
+      variable_content: {facility_name: facility.short_name,
                          patient_name: patient.full_name,
                          appointment_date: subject&.scheduled_date&.strftime("%d-%m-%Y")},
       locale: facility.locale

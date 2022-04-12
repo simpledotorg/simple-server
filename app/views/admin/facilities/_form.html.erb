@@ -7,6 +7,7 @@
         </div>
       <% end %>
       <%= form.text_field :name, id: :facility_name, required: true, autocomplete: "off", help: "Include the facility type in the name. Example: PHC Brooklyn", label: "Facility name *" %>
+      <%= form.text_field :short_name, id: :facility_short_name, required: true, autocomplete: "off", help: "Shorten the facility name to less than 30 characters. Patients will see this name when they receive appointment reminders.", label: "Facility short name *", maxlength: Facility::SHORT_NAME_MAX_LENGTH%>
       <%= form.text_field :facility_type, id: :facility_type, help: "Examples: DH, SDH, CHC, PHC, UPHC, HWC, SC", required: true %>
       <%= form.select :facility_size, Facility.facility_sizes.map { |key, value| [Facility.localized_facility_size(key), value] }, id: :facility_size, help: "Select the closest relative size", required: true %>
       <h3 class="mt-5">Address</h3>

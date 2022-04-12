@@ -131,8 +131,8 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
       end
     end
 
-    it "returns includes data from current day for follow up numbers" do
-      Timecop.freeze("10-03-2022 11:35AM") do
+    it "includes data from current day for follow up numbers" do
+      Timecop.freeze(Date.today.at_noon) do
         facility = create(:facility, enable_diabetes_management: true)
         htn_patient1 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
         htn_patient2 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)

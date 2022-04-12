@@ -183,7 +183,8 @@ CREATE TABLE public.facilities (
     enable_diabetes_management boolean DEFAULT false NOT NULL,
     facility_size character varying NOT NULL,
     monthly_estimated_opd_load integer,
-    enable_teleconsultation boolean DEFAULT false NOT NULL
+    enable_teleconsultation boolean DEFAULT false NOT NULL,
+    short_name character varying NOT NULL
 );
 
 
@@ -5637,6 +5638,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220321095014'),
 ('20220322115123'),
 ('20220403123845'),
-('20220406075313');
+('20220406075313'),
+('20220408132514'),
+('20220408135115');
 
 

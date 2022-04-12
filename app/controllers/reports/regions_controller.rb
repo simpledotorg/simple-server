@@ -124,6 +124,14 @@ class Reports::RegionsController < AdminController
     @cohort_data = CohortService.new(region: @region, periods: periods).call
   end
 
+  def diabetes
+    unless @region.diabetes_management_enabled?
+      raise ActionController::RoutingError.new("Not Found")
+    end
+
+    authorize { current_admin.accessible_facilities(:view_reports).any? }
+  end
+
   def download
     authorize { current_admin.accessible_facilities(:view_reports).any? }
     @period = Period.new(type: params[:period], value: Date.current)
