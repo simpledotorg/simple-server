@@ -30,24 +30,24 @@ SELECT DISTINCT ON (bs.patient_id, cal.month_date)
         WHEN bs.blood_sugar_type = 'random' or blood_sugar_type = 'post_prandial' THEN
             CASE
                 WHEN bs.blood_sugar_value < 200.0 THEN 'bs_below_200'
-                WHEN bs.blood_sugar_value >= 200.0 AND bs.blood_sugar_value <= 299.0 THEN 'bs_200_to_299'
-                WHEN bs.blood_sugar_value > 299.0 THEN 'bs_over_299'
+                WHEN bs.blood_sugar_value >= 200.0 AND bs.blood_sugar_value < 300.0 THEN 'bs_200_to_300'
+                WHEN bs.blood_sugar_value >= 300.0 THEN 'bs_over_300'
                 END
 
         -- FBS
         WHEN bs.blood_sugar_type = 'fasting' THEN
             CASE
                 WHEN bs.blood_sugar_value < 126.0 THEN 'bs_below_200'
-                WHEN bs.blood_sugar_value >= 126.0 AND bs.blood_sugar_value <= 199.0 THEN 'bs_200_to_299'
-                WHEN bs.blood_sugar_value > 199.0 THEN 'bs_over_299'
+                WHEN bs.blood_sugar_value >= 126.0 AND bs.blood_sugar_value < 200.0 THEN 'bs_200_to_300'
+                WHEN bs.blood_sugar_value >= 200.0 THEN 'bs_over_300'
                 END
 
         -- Hba1c
         WHEN bs.blood_sugar_type = 'hba1c' THEN
             CASE
                 WHEN bs.blood_sugar_value < 7.0 THEN 'bs_below_200'
-                WHEN bs.blood_sugar_value >= 7.0 AND bs.blood_sugar_value < 9.0 THEN 'bs_200_to_299'
-                WHEN bs.blood_sugar_value >= 9.0 THEN 'bs_over_299'
+                WHEN bs.blood_sugar_value >= 7.0 AND bs.blood_sugar_value < 9.0 THEN 'bs_200_to_300'
+                WHEN bs.blood_sugar_value >= 9.0 THEN 'bs_over_300'
                 END
         END
         AS blood_sugar_risk_state,

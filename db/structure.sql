@@ -3422,22 +3422,22 @@ CREATE MATERIALIZED VIEW public.reporting_patient_blood_sugars AS
             WHEN (((bs.blood_sugar_type)::text = 'random'::text) OR ((bs.blood_sugar_type)::text = 'post_prandial'::text)) THEN
             CASE
                 WHEN (bs.blood_sugar_value < 200.0) THEN 'bs_below_200'::text
-                WHEN ((bs.blood_sugar_value >= 200.0) AND (bs.blood_sugar_value <= 299.0)) THEN 'bs_200_to_299'::text
-                WHEN (bs.blood_sugar_value > 299.0) THEN 'bs_over_299'::text
+                WHEN ((bs.blood_sugar_value >= 200.0) AND (bs.blood_sugar_value < 300.0)) THEN 'bs_200_to_300'::text
+                WHEN (bs.blood_sugar_value >= 300.0) THEN 'bs_over_300'::text
                 ELSE NULL::text
             END
             WHEN ((bs.blood_sugar_type)::text = 'fasting'::text) THEN
             CASE
                 WHEN (bs.blood_sugar_value < 126.0) THEN 'bs_below_200'::text
-                WHEN ((bs.blood_sugar_value >= 126.0) AND (bs.blood_sugar_value <= 199.0)) THEN 'bs_200_to_299'::text
-                WHEN (bs.blood_sugar_value > 199.0) THEN 'bs_over_299'::text
+                WHEN ((bs.blood_sugar_value >= 126.0) AND (bs.blood_sugar_value < 200.0)) THEN 'bs_200_to_300'::text
+                WHEN (bs.blood_sugar_value >= 200.0) THEN 'bs_over_300'::text
                 ELSE NULL::text
             END
             WHEN ((bs.blood_sugar_type)::text = 'hba1c'::text) THEN
             CASE
                 WHEN (bs.blood_sugar_value < 7.0) THEN 'bs_below_200'::text
-                WHEN ((bs.blood_sugar_value >= 7.0) AND (bs.blood_sugar_value < 9.0)) THEN 'bs_200_to_299'::text
-                WHEN (bs.blood_sugar_value >= 9.0) THEN 'bs_over_299'::text
+                WHEN ((bs.blood_sugar_value >= 7.0) AND (bs.blood_sugar_value < 9.0)) THEN 'bs_200_to_300'::text
+                WHEN (bs.blood_sugar_value >= 9.0) THEN 'bs_over_300'::text
                 ELSE NULL::text
             END
             ELSE NULL::text

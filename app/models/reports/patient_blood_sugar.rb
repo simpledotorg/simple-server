@@ -5,8 +5,8 @@ module Reports
 
     enum blood_sugar_risk_state: {
       bs_below_200: "bs_below_200",
-      bs_200_to_299: "bs_200_to_299",
-      bs_over_299: "bs_over_299"
+      bs_200_to_300: "bs_200_to_300",
+      bs_over_300: "bs_over_300"
     }
 
     def self.materialized?

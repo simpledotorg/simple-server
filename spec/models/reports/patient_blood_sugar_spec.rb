@@ -151,28 +151,28 @@ describe Reports::PatientBloodSugar, {type: :model, reporting_spec: true} do
   it "contains the risk-state for the blood sugar measurement" do
     patients = create_list(:patient, 4)
     random_bs_below_200 = create(:blood_sugar, patient: patients.first, blood_sugar_type: :random, blood_sugar_value: 150, recorded_at: 5.months.ago)
-    random_bs_200_to_299 = create(:blood_sugar, patient: patients.first, blood_sugar_type: :random, blood_sugar_value: 250, recorded_at: 4.months.ago)
-    random_bs_over_299 = create(:blood_sugar, patient: patients.first, blood_sugar_type: :random, blood_sugar_value: 350, recorded_at: 3.months.ago)
+    random_bs_200_to_300 = create(:blood_sugar, patient: patients.first, blood_sugar_type: :random, blood_sugar_value: 250, recorded_at: 4.months.ago)
+    random_bs_over_300 = create(:blood_sugar, patient: patients.first, blood_sugar_type: :random, blood_sugar_value: 350, recorded_at: 3.months.ago)
     random_bs_200 = create(:blood_sugar, patient: patients.first, blood_sugar_type: :random, blood_sugar_value: 200, recorded_at: 2.months.ago)
-    random_bs_299 = create(:blood_sugar, patient: patients.first, blood_sugar_type: :random, blood_sugar_value: 299, recorded_at: 1.months.ago)
+    random_bs_300 = create(:blood_sugar, patient: patients.first, blood_sugar_type: :random, blood_sugar_value: 300, recorded_at: 1.months.ago)
 
     post_prandial_bs_below_200 = create(:blood_sugar, patient: patients.second, blood_sugar_type: :post_prandial, blood_sugar_value: 150, recorded_at: 5.months.ago)
-    post_prandial_bs_200_to_299 = create(:blood_sugar, patient: patients.second, blood_sugar_type: :post_prandial, blood_sugar_value: 250, recorded_at: 4.months.ago)
-    post_prandial_bs_over_299 = create(:blood_sugar, patient: patients.second, blood_sugar_type: :post_prandial, blood_sugar_value: 350, recorded_at: 3.months.ago)
+    post_prandial_bs_200_to_300 = create(:blood_sugar, patient: patients.second, blood_sugar_type: :post_prandial, blood_sugar_value: 250, recorded_at: 4.months.ago)
+    post_prandial_bs_over_300 = create(:blood_sugar, patient: patients.second, blood_sugar_type: :post_prandial, blood_sugar_value: 350, recorded_at: 3.months.ago)
     post_prandial_bs_200 = create(:blood_sugar, patient: patients.second, blood_sugar_type: :post_prandial, blood_sugar_value: 200, recorded_at: 2.months.ago)
-    post_prandial_bs_299 = create(:blood_sugar, patient: patients.second, blood_sugar_type: :post_prandial, blood_sugar_value: 299, recorded_at: 1.months.ago)
+    post_prandial_bs_300 = create(:blood_sugar, patient: patients.second, blood_sugar_type: :post_prandial, blood_sugar_value: 300, recorded_at: 1.months.ago)
 
     fasting_bs_below_200 = create(:blood_sugar, patient: patients.third, blood_sugar_type: :fasting, blood_sugar_value: 100, recorded_at: 5.months.ago)
-    fasting_bs_200_to_299 = create(:blood_sugar, patient: patients.third, blood_sugar_type: :fasting, blood_sugar_value: 150, recorded_at: 4.months.ago)
-    fasting_bs_over_299 = create(:blood_sugar, patient: patients.third, blood_sugar_type: :fasting, blood_sugar_value: 250, recorded_at: 3.months.ago)
+    fasting_bs_200_to_300 = create(:blood_sugar, patient: patients.third, blood_sugar_type: :fasting, blood_sugar_value: 150, recorded_at: 4.months.ago)
+    fasting_bs_over_300 = create(:blood_sugar, patient: patients.third, blood_sugar_type: :fasting, blood_sugar_value: 250, recorded_at: 3.months.ago)
     fasting_bs_200 = create(:blood_sugar, patient: patients.third, blood_sugar_type: :fasting, blood_sugar_value: 126, recorded_at: 2.months.ago)
-    fasting_bs_299 = create(:blood_sugar, patient: patients.third, blood_sugar_type: :fasting, blood_sugar_value: 199, recorded_at: 1.months.ago)
+    fasting_bs_300 = create(:blood_sugar, patient: patients.third, blood_sugar_type: :fasting, blood_sugar_value: 200, recorded_at: 1.months.ago)
 
     hba1c_bs_below_200 = create(:blood_sugar, patient: patients.fourth, blood_sugar_type: :hba1c, blood_sugar_value: 6.5, recorded_at: 5.months.ago)
-    hba1c_bs_200_to_299 = create(:blood_sugar, patient: patients.fourth, blood_sugar_type: :hba1c, blood_sugar_value: 7.5, recorded_at: 4.months.ago)
-    hba1c_bs_over_299 = create(:blood_sugar, patient: patients.fourth, blood_sugar_type: :hba1c, blood_sugar_value: 9.5, recorded_at: 3.months.ago)
+    hba1c_bs_200_to_300 = create(:blood_sugar, patient: patients.fourth, blood_sugar_type: :hba1c, blood_sugar_value: 7.5, recorded_at: 4.months.ago)
+    hba1c_bs_over_300 = create(:blood_sugar, patient: patients.fourth, blood_sugar_type: :hba1c, blood_sugar_value: 9.5, recorded_at: 3.months.ago)
     hba1c_bs_200 = create(:blood_sugar, patient: patients.fourth, blood_sugar_type: :hba1c, blood_sugar_value: 7.0, recorded_at: 2.months.ago)
-    hba1c_bs_299 = create(:blood_sugar, patient: patients.fourth, blood_sugar_type: :hba1c, blood_sugar_value: 9.0, recorded_at: 1.months.ago)
+    hba1c_bs_300 = create(:blood_sugar, patient: patients.fourth, blood_sugar_type: :hba1c, blood_sugar_value: 9.0, recorded_at: 1.months.ago)
 
     refresh_views
 
@@ -188,28 +188,28 @@ describe Reports::PatientBloodSugar, {type: :model, reporting_spec: true} do
     expect(results).to include(
       # Random blood sugars
       [june_2021[:five_months_ago].to_date, patients.first.id, random_bs_below_200.id, risk_states[:bs_below_200]],
-      [june_2021[:four_months_ago].to_date, patients.first.id, random_bs_200_to_299.id, risk_states[:bs_200_to_299]],
-      [june_2021[:three_months_ago].to_date, patients.first.id, random_bs_over_299.id, risk_states[:bs_over_299]],
-      [june_2021[:two_months_ago].to_date, patients.first.id, random_bs_200.id, risk_states[:bs_200_to_299]],
-      [june_2021[:one_month_ago].to_date, patients.first.id, random_bs_299.id, risk_states[:bs_200_to_299]],
+      [june_2021[:four_months_ago].to_date, patients.first.id, random_bs_200_to_300.id, risk_states[:bs_200_to_300]],
+      [june_2021[:three_months_ago].to_date, patients.first.id, random_bs_over_300.id, risk_states[:bs_over_300]],
+      [june_2021[:two_months_ago].to_date, patients.first.id, random_bs_200.id, risk_states[:bs_200_to_300]],
+      [june_2021[:one_month_ago].to_date, patients.first.id, random_bs_300.id, risk_states[:bs_over_300]],
       # Post prandial blood sugars
       [june_2021[:five_months_ago].to_date, patients.second.id, post_prandial_bs_below_200.id, risk_states[:bs_below_200]],
-      [june_2021[:four_months_ago].to_date, patients.second.id, post_prandial_bs_200_to_299.id, risk_states[:bs_200_to_299]],
-      [june_2021[:three_months_ago].to_date, patients.second.id, post_prandial_bs_over_299.id, risk_states[:bs_over_299]],
-      [june_2021[:two_months_ago].to_date, patients.second.id, post_prandial_bs_200.id, risk_states[:bs_200_to_299]],
-      [june_2021[:one_month_ago].to_date, patients.second.id, post_prandial_bs_299.id, risk_states[:bs_200_to_299]],
+      [june_2021[:four_months_ago].to_date, patients.second.id, post_prandial_bs_200_to_300.id, risk_states[:bs_200_to_300]],
+      [june_2021[:three_months_ago].to_date, patients.second.id, post_prandial_bs_over_300.id, risk_states[:bs_over_300]],
+      [june_2021[:two_months_ago].to_date, patients.second.id, post_prandial_bs_200.id, risk_states[:bs_200_to_300]],
+      [june_2021[:one_month_ago].to_date, patients.second.id, post_prandial_bs_300.id, risk_states[:bs_over_300]],
       # Fasting blood sugars
       [june_2021[:five_months_ago].to_date, patients.third.id, fasting_bs_below_200.id, risk_states[:bs_below_200]],
-      [june_2021[:four_months_ago].to_date, patients.third.id, fasting_bs_200_to_299.id, risk_states[:bs_200_to_299]],
-      [june_2021[:three_months_ago].to_date, patients.third.id, fasting_bs_over_299.id, risk_states[:bs_over_299]],
-      [june_2021[:two_months_ago].to_date, patients.third.id, fasting_bs_200.id, risk_states[:bs_200_to_299]],
-      [june_2021[:one_month_ago].to_date, patients.third.id, fasting_bs_299.id, risk_states[:bs_200_to_299]],
+      [june_2021[:four_months_ago].to_date, patients.third.id, fasting_bs_200_to_300.id, risk_states[:bs_200_to_300]],
+      [june_2021[:three_months_ago].to_date, patients.third.id, fasting_bs_over_300.id, risk_states[:bs_over_300]],
+      [june_2021[:two_months_ago].to_date, patients.third.id, fasting_bs_200.id, risk_states[:bs_200_to_300]],
+      [june_2021[:one_month_ago].to_date, patients.third.id, fasting_bs_300.id, risk_states[:bs_over_300]],
       # Hba1c blood sugars
       [june_2021[:five_months_ago].to_date, patients.fourth.id, hba1c_bs_below_200.id, risk_states[:bs_below_200]],
-      [june_2021[:four_months_ago].to_date, patients.fourth.id, hba1c_bs_200_to_299.id, risk_states[:bs_200_to_299]],
-      [june_2021[:three_months_ago].to_date, patients.fourth.id, hba1c_bs_over_299.id, risk_states[:bs_over_299]],
-      [june_2021[:two_months_ago].to_date, patients.fourth.id, hba1c_bs_200.id, risk_states[:bs_200_to_299]],
-      [june_2021[:one_month_ago].to_date, patients.fourth.id, hba1c_bs_299.id, risk_states[:bs_over_299]]
+      [june_2021[:four_months_ago].to_date, patients.fourth.id, hba1c_bs_200_to_300.id, risk_states[:bs_200_to_300]],
+      [june_2021[:three_months_ago].to_date, patients.fourth.id, hba1c_bs_over_300.id, risk_states[:bs_over_300]],
+      [june_2021[:two_months_ago].to_date, patients.fourth.id, hba1c_bs_200.id, risk_states[:bs_200_to_300]],
+      [june_2021[:one_month_ago].to_date, patients.fourth.id, hba1c_bs_300.id, risk_states[:bs_over_300]]
     )
   end
 end
