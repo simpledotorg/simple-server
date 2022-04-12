@@ -22,6 +22,7 @@ RSpec.describe BsnlSmsStatusJob, type: :job do
       detailable = create(:bsnl_delivery_detail, message_id: message_id)
       allow_any_instance_of(Messaging::Bsnl::Api).to receive(:get_message_status_report).and_return(
         {"Message_Status" => "7",
+         "Message" => "A test message",
          "Message_Status_Description" => "Message Delivered",
          "Delivery_Success_Time" => "03-04-2022 06:00:00 PM"}
       )
@@ -31,6 +32,7 @@ RSpec.describe BsnlSmsStatusJob, type: :job do
       detailable.reload
 
       expect(detailable.message_status).to eq("delivered")
+      expect(detailable.message).to eq("A test message")
       expect(detailable.result).to eq("Message Delivered")
       expect(detailable.delivered_on).to eq("Sun, 03 Apr 2022 12:30:00")
     end
