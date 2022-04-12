@@ -1,6 +1,6 @@
 class AppointmentNotification::Worker
   include Sidekiq::Worker
-  include Memery
+  include Sidekiq::Throttled::Worker
 
   sidekiq_options queue: :high
   sidekiq_throttle(
