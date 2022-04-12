@@ -561,7 +561,7 @@ RSpec.describe Region, type: :model do
     end
 
     context "region contains many facilities" do
-      it "returns true if any of its facilities has enabled_diabetes_management set to  true" do
+      it "returns true if any of its facilities has enabled_diabetes_management set to true" do
         create(:region, region_type: :facility, source: facility_1, reparent_to: enabled_block_region)
         create(:region, region_type: :facility, source: facility_2, reparent_to: enabled_block_region)
 
