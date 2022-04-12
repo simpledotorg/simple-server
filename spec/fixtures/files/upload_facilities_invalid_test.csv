@@ -1,2 +1,2 @@
-organization,facility_group,facility_name,facility_type,street_address (optional),village_or_colony (optional),zone_or_block,district,state,pin (optional),latitude (optional),longitude (optional),size (optional),enable_diabetes_management (true/false)
-OrgOne,FGOne,Test Facility,CHC,,,,Bhatinda,Punjab,,,,,false
+organization,facility_group,facility_name,facility_short_name,facility_type,street_address (optional),village_or_colony (optional),zone_or_block,district,state,pin (optional),latitude (optional),longitude (optional),size (optional),enable_diabetes_management (true/false)
+OrgOne,FGOne,Test Facility,TF,CHC,,,,Bhatinda,Punjab,,,,,false

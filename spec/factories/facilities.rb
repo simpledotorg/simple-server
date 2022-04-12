@@ -2,6 +2,7 @@ FactoryBot.define do
   factory :facility do
     id { SecureRandom.uuid }
     sequence(:name) { |n| "Facility #{n}" }
+    sequence(:short_name) { |n| "F #{n}" }
     sequence(:street_address) { |n| "#{n} Gandhi Road" }
     sequence(:village_or_colony) { |n| "Colony #{n}" }
     country { Region.root.name }
