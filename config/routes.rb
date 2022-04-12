@@ -189,6 +189,7 @@ Rails.application.routes.draw do
     get "regions/:report_scope/:id", to: "regions#show", as: :region
     get "regions/:report_scope/:id/details", to: "regions#details", as: :region_details
     get "regions/:report_scope/:id/cohort", to: "regions#cohort", as: :region_cohort
+    get "regions/:report_scope/:id/diabetes", to: "regions#diabetes", as: :region_diabetes
     get "regions/:report_scope/:id/download", to: "regions#download", as: :region_download
     get "regions/:report_scope/:id/monthly_state_data_report",
       to: "regions#monthly_state_data_report", as: :region_monthly_state_data

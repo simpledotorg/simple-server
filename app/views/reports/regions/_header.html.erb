@@ -37,6 +37,11 @@
       <p class="mr-12px mr-lg-24px mb-0px pb-8px fs-16px fs-lg-20px fw-bold <%= params[:action] == "cohort" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
         <%= link_to_unless_current "Cohort reports", reports_region_cohort_path(@region, report_scope: params[:report_scope]), :class => "c-grey-dark td-none" %>
       </p>
+      <% if @region.diabetes_management_enabled? %>
+        <p class="mr-12px mr-lg-24px mb-0px pb-8px fs-16px fs-lg-20px fw-bold <%= params[:action] == "diabetes" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
+          <%= link_to "Diabetes", reports_region_diabetes_path(@region, report_scope: params[:report_scope]), :class => "c-grey-dark td-none" %>
+        </p>
+      <% end %>
       <% if @region.facility_region? && current_admin.feature_enabled?(:dashboard_progress_reports) %>
         <p class="mr-12px mr-lg-24px mb-0px pb-8px fs-16px fs-lg-20px fw-bold <%= params[:action] == "cohort" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
           <%= link_to "Progress", reports_progress_path(@region), :class => "c-grey-dark td-none" %>
