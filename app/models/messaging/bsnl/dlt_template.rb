@@ -17,11 +17,11 @@ class Messaging::Bsnl::DltTemplate
   attr_reader :status
 
   def self.latest_name_of(dlt_template_name)
-    name_without_version = self.split_name_and_version(dlt_template_name)[:name_without_version]
+    name_without_version = split_name_and_version(dlt_template_name)[:name_without_version]
 
     BSNL_TEMPLATES
       .keys
-      .map { |template| self.split_name_and_version(template) }
+      .map { |template| split_name_and_version(template) }
       .select { |template| template[:name_without_version] == name_without_version }
       .max_by { |template| template[:version] }
       &.dig(:name)
@@ -91,13 +91,13 @@ class Messaging::Bsnl::DltTemplate
   def self.split_name_and_version(template_name)
     if template_name.split(".").last.to_i.positive?
       *name_without_version, version = template_name.split(".")
-      { name: template_name,
-        name_without_version: name_without_version.join("."),
-        version: version.to_i }
+      {name: template_name,
+       name_without_version: name_without_version.join("."),
+       version: version.to_i}
     else
-      { name: template_name,
-        name_without_version: template_name,
-        version: 1 }
+      {name: template_name,
+       name_without_version: template_name,
+       version: 1}
     end
   end
 
