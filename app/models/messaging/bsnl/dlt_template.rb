@@ -16,6 +16,17 @@ class Messaging::Bsnl::DltTemplate
   attr_reader :variable_length_permitted
   attr_reader :status
 
+  def self.latest_name_of(dlt_template_name)
+    name_without_version = self.split_name_and_version(dlt_template_name)[:name_without_version]
+
+    BSNL_TEMPLATES
+      .keys
+      .map { |template| self.split_name_and_version(template) }
+      .select { |template| template[:name_without_version] == name_without_version }
+      .max_by { |template| template[:version] }
+      &.dig(:name)
+  end
+
   def initialize(dlt_template_name)
     @name = dlt_template_name
     details = template_details(dlt_template_name)
@@ -26,6 +37,7 @@ class Messaging::Bsnl::DltTemplate
     @max_length_permitted = details["Max_Length_Permitted"].to_i
     @non_variable_text_length = details["Non_Variable_Text_Length"].to_i
     @variable_length_permitted = max_length_permitted - non_variable_text_length
+    @version = self.class.split_name_and_version(dlt_template_name)[:version]
   end
 
   def sanitised_variable_content(content)
@@ -74,6 +86,19 @@ class Messaging::Bsnl::DltTemplate
     raise Messaging::Bsnl::Error.new(
       "Variables #{content.values} exceeded #{name}'s variable limit"
     )
+  end
+
+  def self.split_name_and_version(template_name)
+    if template_name.split(".").last.to_i.positive?
+      *name_without_version, version = template_name.split(".")
+      { name: template_name,
+        name_without_version: name_without_version.join("."),
+        version: version.to_i }
+    else
+      { name: template_name,
+        name_without_version: template_name,
+        version: 1 }
+    end
   end
 
   private
