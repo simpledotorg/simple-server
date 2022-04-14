@@ -1089,6 +1089,16 @@ mr-IN.notifications.set03.basic: &5
   Template_Status: '1'
   Is_Unicode: '1'
 mr-IN.notifications.set03.emotional_guilt:
+  Template_Id: '1407164904245425081'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '224'
+  Max_Length_Permitted: '448'
+  Template_Status: '1'
+  Is_Unicode: '1'
+mr-IN.notifications.set03.emotional_guilt.2:
   Template_Id: '1407164941876747072'
   Template_Keys:
   - facility_name
@@ -1125,6 +1135,16 @@ mr-IN.notifications.set03.gratitude:
   Template_Status: '1'
   Is_Unicode: '1'
 mr-IN.notifications.set03.professional_request:
+  Template_Id: '1407164904246963088'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '190'
+  Max_Length_Permitted: '380'
+  Template_Status: '1'
+  Is_Unicode: '1'
+mr-IN.notifications.set03.professional_request.2:
   Template_Id: '1407164941894757796'
   Template_Keys:
   - facility_name
