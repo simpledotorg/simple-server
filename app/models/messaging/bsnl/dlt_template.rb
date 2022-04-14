@@ -89,7 +89,7 @@ class Messaging::Bsnl::DltTemplate
   end
 
   def self.split_name_and_version(template_name)
-    if template_name.split(".").last.to_i.positive?
+    if contains_version?(template_name)
       *name_without_version, version = template_name.split(".")
       {name: template_name,
        name_without_version: name_without_version.join("."),
@@ -99,6 +99,10 @@ class Messaging::Bsnl::DltTemplate
        name_without_version: template_name,
        version: 1}
     end
+  end
+
+  def self.contains_version?(template_name)
+    template_name.split(".").last.to_i.positive?
   end
 
   private
