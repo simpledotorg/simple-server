@@ -12,7 +12,7 @@ RSpec.describe GetBsnlAccountBalance do
         stub_const("GetBsnlAccountBalance::BALANCE_EXPIRY_ALERT_DAYS", 7)
         expiry_date = 3.days.from_now
         stub_request(:post, "https://bulksms.bsnl.in:5010/api/Get_SMS_Count")
-          .to_return(body:  {"Recharge_Details" => [{"Balance_Expiry_Time" => expiry_date}]}.to_json)
+          .to_return(body: {"Recharge_Details" => [{"Balance_Expiry_Time" => expiry_date}]}.to_json)
 
         expect { described_class.new.call }.to raise_error(GetBsnlAccountBalance::BalanceError, "Account balance is going to expire in less than 7 days. Please extend validity before #{expiry_date.strftime("%d-%b-%y")}")
       end
@@ -28,7 +28,7 @@ RSpec.describe GetBsnlAccountBalance do
         stub_const("GetBsnlAccountBalance::MAX_DAILY_MESSAGE_SEGMENT_COUNT", 10)
         expiry_date = 10.days.from_now
         stub_request(:post, "https://bulksms.bsnl.in:5010/api/Get_SMS_Count")
-          .to_return(body:  {"Recharge_Details" => [{"Balance_Expiry_Time" => expiry_date, "SMS_Balance_Count" => 1000}]}.to_json)
+          .to_return(body: {"Recharge_Details" => [{"Balance_Expiry_Time" => expiry_date, "SMS_Balance_Count" => 1000}]}.to_json)
 
         expect { described_class.new.call }.not_to raise_error
       end
@@ -44,7 +44,7 @@ RSpec.describe GetBsnlAccountBalance do
         stub_const("GetBsnlAccountBalance::MAX_DAILY_MESSAGE_SEGMENT_COUNT", 1000)
         expiry_date = 30.days.from_now
         stub_request(:post, "https://bulksms.bsnl.in:5010/api/Get_SMS_Count")
-          .to_return(body:  {"Recharge_Details" => [{"Balance_Expiry_Time" => expiry_date, "SMS_Balance_Count" => 1000}]}.to_json)
+          .to_return(body: {"Recharge_Details" => [{"Balance_Expiry_Time" => expiry_date, "SMS_Balance_Count" => 1000}]}.to_json)
 
         expect { described_class.new.call }.to raise_error(GetBsnlAccountBalance::BalanceError, "Account balance remaining is 1000 segments, may run out in less than 7 days")
       end
@@ -60,7 +60,7 @@ RSpec.describe GetBsnlAccountBalance do
         stub_const("GetBsnlAccountBalance::MAX_DAILY_MESSAGE_SEGMENT_COUNT", 10)
         expiry_date = 10.days.from_now
         stub_request(:post, "https://bulksms.bsnl.in:5010/api/Get_SMS_Count")
-          .to_return(body:  {"Recharge_Details" => [{"Balance_Expiry_Time" => expiry_date, "SMS_Balance_Count" => 1000}]}.to_json)
+          .to_return(body: {"Recharge_Details" => [{"Balance_Expiry_Time" => expiry_date, "SMS_Balance_Count" => 1000}]}.to_json)
 
         expect { described_class.new.call }.not_to raise_error
       end
@@ -77,7 +77,7 @@ RSpec.describe GetBsnlAccountBalance do
         expiry_date = 10.days.from_now
         stub_request(:post, "https://bulksms.bsnl.in:5010/api/Get_SMS_Count")
           .to_return(body:  {"Recharge_Details" => [{"Balance_Expiry_Time" => expiry_date, "SMS_Balance_Count" => 1000},
-                                                    {"Balance_Expiry_Time" => expiry_date + 10.days, "SMS_Balance_Count" => 1000}]}.to_json)
+            {"Balance_Expiry_Time" => expiry_date + 10.days, "SMS_Balance_Count" => 1000}]}.to_json)
 
         expect { described_class.new.call }.to raise_error(GetBsnlAccountBalance::BalanceError, "Account balance remaining is 2000 segments, may run out in less than 7 days")
       end
@@ -92,8 +92,8 @@ RSpec.describe GetBsnlAccountBalance do
         expiry_date = 3.days.from_now
         expiry_date_2 = expiry_date + 2.days
         stub_request(:post, "https://bulksms.bsnl.in:5010/api/Get_SMS_Count")
-          .to_return(body:  {"Recharge_Details" => [{"Balance_Expiry_Time" => expiry_date, "SMS_Balance_Count" => 1000},
-                                                    {"Balance_Expiry_Time" => expiry_date_2, "SMS_Balance_Count" => 1000}]}.to_json)
+          .to_return(body:  {"Recharge_Details" => [{"Balance_Expiry_Time" => expiry_date_2, "SMS_Balance_Count" => 1000},
+            {"Balance_Expiry_Time" => expiry_date, "SMS_Balance_Count" => 1000}]}.to_json)
 
         expect { described_class.new.call }.to raise_error(GetBsnlAccountBalance::BalanceError, "Account balance is going to expire in less than 7 days. Please extend validity before #{expiry_date_2.strftime("%d-%b-%y")}")
       end
