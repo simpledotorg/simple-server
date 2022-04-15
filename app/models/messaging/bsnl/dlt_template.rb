@@ -132,7 +132,7 @@ class Messaging::Bsnl::DltTemplate
   end
 
   class << self
-    def self.numeric?(string)
+    def numeric?(string)
       !Float(string).nil?
     rescue
       false
