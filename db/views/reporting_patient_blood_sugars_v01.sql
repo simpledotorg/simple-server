@@ -1,4 +1,4 @@
--- Only most recent BP per patient per month. BPs are ordered appropriately below.
+-- Only most recent BS per patient per month. BSs are ordered appropriately below.
 SELECT DISTINCT ON (bs.patient_id, cal.month_date)
     cal.month_date,
     cal.month,
