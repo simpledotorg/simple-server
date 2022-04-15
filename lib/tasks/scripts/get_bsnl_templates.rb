@@ -41,7 +41,7 @@ class GetBsnlTemplateDetails
           "Non_Variable_Text_Length", "Max_Length_Permitted",
           "Template_Status", "Is_Unicode"
         ).merge("Version" => Messaging::Bsnl::DltTemplate.version_number(template_name),
-                "Template_Name_Without_Version" => Messaging::Bsnl::DltTemplate.drop_version_number(template_name))
+          "Template_Name_Without_Version" => Messaging::Bsnl::DltTemplate.drop_version_number(template_name))
       ]
     end
     add_latest_version_info!(config)
@@ -119,13 +119,13 @@ class GetBsnlTemplateDetails
     latest_versions = Hash.new(0)
     latest_version_names = {}
 
-    config.each do |name, template_details|
-      version = template_details["Version"]
-      name_without_version = template_details["Template_Name_Without_Version"]
+    config.each do |name, details|
+      version = details["Version"]
+      name_without_version = details["Template_Name_Without_Version"]
 
       if version > latest_versions[name_without_version]
-        latest_versions.merge!(name_without_version => version)
-        latest_version_names.merge!(name_without_version => name)
+        latest_versions[name_without_version] = version
+        latest_version_names[name_without_version] = name
       end
     end
 
@@ -139,9 +139,9 @@ class GetBsnlTemplateDetails
     DUPLICATE_TEMPLATES.each do |duplicate_template_name, original_template_name|
       matching_templates = config.select { |k, v| k.match?(original_template_name) && v["Is_Latest_Version"] }
 
-      matching_templates.each do |template_name, template_details|
+      matching_templates.each do |template_name, details|
         locale_name = template_name.split(".").first
-        config.merge!("#{locale_name}.#{duplicate_template_name}" => template_details)
+        config.merge!("#{locale_name}.#{duplicate_template_name}" => details)
       end
     end
   end

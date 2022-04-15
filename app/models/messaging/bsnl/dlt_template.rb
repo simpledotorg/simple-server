@@ -36,12 +36,12 @@ class Messaging::Bsnl::DltTemplate
     BSNL_TEMPLATES.dig(drop_version_number(dlt_template_name), "Latest_Template_Version")
   end
 
-  def self.drop_version_number(template_name)
-    template_name.chomp(".#{version_number(template_name)}")
+  def self.drop_version_number(dlt_template_name)
+    dlt_template_name.chomp(".#{version_number(dlt_template_name)}")
   end
 
-  def self.version_number(template_name)
-    version = template_name.split(".").last
+  def self.version_number(dlt_template_name)
+    version = dlt_template_name.split(".").last
 
     if numeric?(version)
       version.to_i
@@ -131,9 +131,11 @@ class Messaging::Bsnl::DltTemplate
     end
   end
 
-  def self.numeric?(string)
-    !Float(string).nil?
-  rescue
-    false
+  class << self
+    def self.numeric?(string)
+      !Float(string).nil?
+    rescue
+      false
+    end
   end
 end
