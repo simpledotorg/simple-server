@@ -1,7 +1,7 @@
 class TracerJob
   include Sidekiq::Worker
 
-  sidekiq_options queue: :high
+  sidekiq_options queue: :tracer
   sidekiq_options retry: false # job will be discarded if it fails
 
   def perform(submitted_at, raise_error)

@@ -26,7 +26,7 @@ class BsnlDeliveryDetail < DeliveryDetail
   end
 
   def in_progress?
-    IN_PROGRESS_STATUSES.includes?(message_status) || message_status.blank?
+    IN_PROGRESS_STATUSES.include?(message_status) || message_status.blank?
   end
 
   def self.create_with_communication!(message_id:, recipient_number:, dlt_template_id:)

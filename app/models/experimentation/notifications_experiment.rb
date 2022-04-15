@@ -47,7 +47,14 @@ module Experimentation
                                              .where(status: :scheduled)
                                              .group(:patient_id)
                                              .having("count(patient_id) > 1"))
+        .then { |patients| exclude_nagaland_patients(patients) }
         .then { |patients| exclude_bangladesh_blocks(patients) }
+    end
+
+    def self.exclude_nagaland_patients(patients)
+      return patients unless CountryConfig.current_country?("India")
+
+      patients.where.not(facilities: {state: "Nagaland"})
     end
 
     def self.exclude_bangladesh_blocks(patients)

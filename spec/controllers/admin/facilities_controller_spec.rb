@@ -128,6 +128,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
       let(:new_attributes) do
         attributes_for(:facility,
           facility_group_id: facility_group.id,
+          short_name: "short name",
           pin: "999999",
           zone: block.name,
           monthly_estimated_opd_load: 500).except(:id, :slug)

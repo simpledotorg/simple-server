@@ -1,6 +1,7 @@
 require "net/http"
 require "tasks/scripts/refresh_bsnl_sms_jwt"
 require "tasks/scripts/get_bsnl_templates"
+require "tasks/scripts/get_bsnl_account_balance"
 
 # Usage instructions at: doc/howto/manage_bsnl_sms_reminders.md
 namespace :bsnl do
@@ -22,5 +23,10 @@ namespace :bsnl do
   desc "List pending notification strings to be uploaded to DLT and BSNL dashboard"
   task list_pending_templates: :environment do
     GetBsnlTemplateDetails.new.pending_templates
+  end
+
+  desc "Fetch BSNL account balances and alert if we're running low or close to expiry"
+  task check_account_balance: :environment do
+    GetBsnlAccountBalance.new.call
   end
 end

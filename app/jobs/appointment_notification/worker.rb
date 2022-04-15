@@ -1,8 +1,11 @@
 class AppointmentNotification::Worker
   include Sidekiq::Worker
-  include Memery
+  include Sidekiq::Throttled::Worker
 
   sidekiq_options queue: :high
+  sidekiq_throttle(
+    threshold: {limit: 600, period: 1.minute}
+  )
 
   def perform(notification_id)
     return unless flipper_enabled?

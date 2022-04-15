@@ -269,6 +269,26 @@ RSpec.describe Facility, type: :model do
         it { is_expected.not_to validate_presence_of(:teleconsultation_medical_officers) }
       end
     end
+
+    describe "short_name" do
+      it "validates that a short name is present" do
+        facility = build(:facility, short_name: nil)
+        facility.valid?
+        expect(facility.errors[:short_name]).to include("can't be blank")
+      end
+
+      it "validates that the short name is at least 1 character long" do
+        facility = build(:facility, short_name: "")
+        facility.valid?
+        expect(facility.errors[:short_name]).to include("is too short (minimum is 1 character)")
+      end
+
+      it "validates that the short name is 30 characters or shorter" do
+        facility = build(:facility, short_name: "a" * 31)
+        facility.valid?
+        expect(facility.errors[:short_name]).to include("is too long (maximum is 30 characters)")
+      end
+    end
   end
 
   describe "Behavior" do
