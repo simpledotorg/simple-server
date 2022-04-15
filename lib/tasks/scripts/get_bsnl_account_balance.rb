@@ -1,7 +1,7 @@
 class GetBsnlAccountBalance
   # (20_000 * 3 patients from current experiments + 15_000 patients from stale experiments) * 4 segments per message
   # We're unlikely to actually hit this number on any given day, but we'd like to alert early if we're close to the limit
-  MAX_DAILY_MESSAGE_SEGMENT_COUNT = 75_000 * 4
+  MAX_DAILY_MESSAGE_SEGMENT_COUNT = 75_000 * 3
   BALANCE_EXPIRY_ALERT_DAYS = 3
 
   class BalanceError < StandardError
