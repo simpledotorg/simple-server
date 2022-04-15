@@ -4,21 +4,17 @@
 
 <div class="d-flex fd-column fd-lg-row justify-lg-between mb-24px d-print-none sub-menu">
   <div class="d-flex order-2 order-lg-1">
-    <p class="mr-12px mr-lg-24px mb-0px pb-8px fs-16px fs-lg-20px fw-bold td-none <%= params[:action] == "bp_controlled" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
-      <%= link_to(my_facilities_bp_controlled_path(preserve_query_params(request.query_parameters, ["zone", "size", "facility_group"])), class: "#{active_action?("bp_controlled")}") do %>
+    <nav class="nav">
+      <%= link_to(my_facilities_bp_controlled_path(preserve_query_params(request.query_parameters, ["zone", "size", "facility_group"])), class: "nav-link #{active_action?("bp_controlled")}") do %>
         BP controlled
       <% end %>
-    </p>
-    <p class="mr-12px mr-lg-24px mb-0px pb-8px fs-16px fs-lg-20px fw-bold <%= params[:action] == "bp_not_controlled" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
-      <%= link_to(my_facilities_bp_not_controlled_path(preserve_query_params(request.query_parameters, ["zone", "size", "facility_group"])), class: "#{active_action?("bp_not_controlled")}") do %>
+      <%= link_to(my_facilities_bp_not_controlled_path(preserve_query_params(request.query_parameters, ["zone", "size", "facility_group"])), class: "nav-link #{active_action?("bp_not_controlled")}") do %>
         BP not controlled
       <% end %>
-    </p>
-    <p class="mr-12px mr-lg-24px mb-0px pb-8px fs-16px fs-lg-20px fw-bold <%= params[:action] == "missed_visits" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
-      <%= link_to(my_facilities_missed_visits_path(preserve_query_params(request.query_parameters, ["zone", "size", "period", "facility_group"])), class: "#{active_action?("missed_visits")}") do %>
+      <%= link_to(my_facilities_missed_visits_path(preserve_query_params(request.query_parameters, ["zone", "size", "period", "facility_group"])), class: "nav-link #{active_action?("missed_visits")}") do %>
         Missed visits
       <% end %>
-    </p>
+    </nav>
   </div>
   <div class="d-flex actions order-1 mb-48px order-lg-2 mb-lg-0 text-grey">
     Last updated on <%= @last_updated_at %>
