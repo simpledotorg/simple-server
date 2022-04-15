@@ -12,7 +12,7 @@ class GetBsnlAccountBalance
   def initialize
     @recharge_details = Messaging::Bsnl::Api.new.get_account_balance
     @expiry_date = Date.parse(recharge_details.map { |recharge| recharge["Balance_Expiry_Time"] }.max).beginning_of_day
-    @total_balance_remaining = recharge_details.reduce(0) { |total, recharge| total + recharge["SMS_Balance_Count"].to_i }
+    @total_balance_remaining = recharge_details.map { |recharge_detail| recharge_detail["SMS_Balance_Count"].to_i }.sum
   end
 
   def call
