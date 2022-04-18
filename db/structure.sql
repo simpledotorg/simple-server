@@ -282,7 +282,8 @@ CREATE TABLE public.bsnl_delivery_details (
     delivered_on timestamp without time zone,
     deleted_at timestamp without time zone,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    message character varying
 );
 
 
@@ -5742,6 +5743,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220406075313'),
 ('20220408132514'),
 ('20220408135115'),
-('20220411035535');
+('20220411035535'),
+('20220412112538');
 
 

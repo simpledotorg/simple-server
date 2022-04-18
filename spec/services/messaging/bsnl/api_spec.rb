@@ -71,4 +71,15 @@ RSpec.describe Messaging::Bsnl::Api do
       expect(described_class.new.get_message_status_report(123123)).to eq({"a" => "hash"})
     end
   end
+
+  describe "#get account balance" do
+    it "fetches our BSNL account balances" do
+      allow(ENV).to receive(:[]).with("BSNL_IHCI_HEADER").and_return("ABCDEF")
+      allow(ENV).to receive(:[]).with("BSNL_IHCI_ENTITY_ID").and_return("123")
+      Configuration.create(name: "bsnl_sms_jwt", value: "a jwt token")
+
+      stub_request(:post, "https://bulksms.bsnl.in:5010/api/Get_SMS_Count").to_return(body: {"Recharge_Details" => ["A list of recharge details"]}.to_json)
+      expect(described_class.new.get_account_balance).to eq(["A list of recharge details"])
+    end
+  end
 end

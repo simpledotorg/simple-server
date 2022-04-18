@@ -3,6 +3,7 @@
 :logfile: ./log/sidekiq.log
 
 :queues:
+  - [tracer, 4]
   - [high, 3]
   - [default, 2]
   - [low, 1]

@@ -2,7 +2,7 @@ class Messaging::Bsnl::Error < Messaging::Error
   ERROR_CODE_REASONS = {/Invalid Mobile Number/ => :invalid_phone_number}
 
   def initialize(message)
-    @message = "Error while calling BSNL API: #{message}"
+    @message = message
     @reason = error_reason(message)
   end
 
