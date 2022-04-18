@@ -2370,580 +2370,6 @@ CREATE MATERIALIZED VIEW public.reporting_patient_states AS
 
 
 --
--- Name: MATERIALIZED VIEW reporting_patient_states; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON MATERIALIZED VIEW public.reporting_patient_states IS 'Monthly summary of a patient''s information and health indicators. This table has one row per patient, per month, from the month of the patient''s registration.';
-
-
---
--- Name: COLUMN reporting_patient_states.patient_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.patient_id IS 'ID of the patient';
-
-
---
--- Name: COLUMN reporting_patient_states.recorded_at; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.recorded_at IS 'Time (in UTC) at which the patient was registered';
-
-
---
--- Name: COLUMN reporting_patient_states.status; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.status IS 'active, dead, migrated, etc';
-
-
---
--- Name: COLUMN reporting_patient_states.gender; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.gender IS 'Gender of the patient';
-
-
---
--- Name: COLUMN reporting_patient_states.age; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.age IS 'Age of the patient as entered by a nurse';
-
-
---
--- Name: COLUMN reporting_patient_states.age_updated_at; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.age_updated_at IS 'Time (in UTC) at which the field ''age'' was last updated';
-
-
---
--- Name: COLUMN reporting_patient_states.date_of_birth; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.date_of_birth IS 'Date of birth of the patient';
-
-
---
--- Name: COLUMN reporting_patient_states.current_age; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.current_age IS 'Patient''s age as of today, based on ''age'', ''age_updated_at'' and ''date_of_birth''. This will have the same value for a patient across all rows.';
-
-
---
--- Name: COLUMN reporting_patient_states.month_date; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.month_date IS 'The reporting month for this row, represented as the date at the beginning of the month';
-
-
---
--- Name: COLUMN reporting_patient_states.month; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.month IS 'Month (1-12) of year';
-
-
---
--- Name: COLUMN reporting_patient_states.quarter; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.quarter IS 'Quarter (1-4) of year';
-
-
---
--- Name: COLUMN reporting_patient_states.year; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.year IS 'Year in YYYY format';
-
-
---
--- Name: COLUMN reporting_patient_states.month_string; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.month_string IS 'String that represents a month, in YYYY-MM format';
-
-
---
--- Name: COLUMN reporting_patient_states.quarter_string; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.quarter_string IS 'String that represents a quarter, in YYYY-Q format';
-
-
---
--- Name: COLUMN reporting_patient_states.hypertension; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.hypertension IS 'Has the patient been diagnosed with hypertension? Values can be yes, no, unknown, or null if the data is unavailable.';
-
-
---
--- Name: COLUMN reporting_patient_states.prior_heart_attack; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.prior_heart_attack IS 'Has the patient had a heart attack? Values can be yes, no, unknown, or null if the data is unavailable.';
-
-
---
--- Name: COLUMN reporting_patient_states.prior_stroke; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.prior_stroke IS 'Has the patient has had a stroke? Values can be yes, no, unknown, or null if the data is unavailable.';
-
-
---
--- Name: COLUMN reporting_patient_states.chronic_kidney_disease; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.chronic_kidney_disease IS 'Has the patient had a chronic kidney disease? Values can be yes, no, unknown, or null if the data is unavailable.';
-
-
---
--- Name: COLUMN reporting_patient_states.receiving_treatment_for_hypertension; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.receiving_treatment_for_hypertension IS 'Was the patient already receiving treatment for hypertension during registration? Values can be yes, no, unknown, or null if the data is unavailable.';
-
-
---
--- Name: COLUMN reporting_patient_states.diabetes; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.diabetes IS 'Has the patient been diagnosed with diabetes? Values can be yes, no, unknown, or null if the data is unavailable.';
-
-
---
--- Name: COLUMN reporting_patient_states.assigned_facility_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.assigned_facility_id IS 'ID of the patient''s assigned facility';
-
-
---
--- Name: COLUMN reporting_patient_states.assigned_facility_size; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.assigned_facility_size IS 'Size of the patient''s assigned facility';
-
-
---
--- Name: COLUMN reporting_patient_states.assigned_facility_type; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.assigned_facility_type IS 'Type of the patient''s assigned facility';
-
-
---
--- Name: COLUMN reporting_patient_states.assigned_facility_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.assigned_facility_slug IS 'Human readable ID of the patient''s assigned facility';
-
-
---
--- Name: COLUMN reporting_patient_states.assigned_facility_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.assigned_facility_region_id IS 'Region ID of the patient''s assigned facility';
-
-
---
--- Name: COLUMN reporting_patient_states.assigned_block_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.assigned_block_slug IS 'Human readable ID of the patient''s assigned facility''s block';
-
-
---
--- Name: COLUMN reporting_patient_states.assigned_block_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.assigned_block_region_id IS 'ID of the patient''s assigned facility''s block';
-
-
---
--- Name: COLUMN reporting_patient_states.assigned_district_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.assigned_district_slug IS 'Human readable ID of the patient''s assigned facility''s district';
-
-
---
--- Name: COLUMN reporting_patient_states.assigned_district_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.assigned_district_region_id IS 'ID of the patient''s assigned facility''s district';
-
-
---
--- Name: COLUMN reporting_patient_states.assigned_state_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.assigned_state_slug IS 'Human readable ID of the patient''s assigned facility''s state';
-
-
---
--- Name: COLUMN reporting_patient_states.assigned_state_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.assigned_state_region_id IS 'ID of the patient''s assigned facility''s state';
-
-
---
--- Name: COLUMN reporting_patient_states.assigned_organization_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.assigned_organization_slug IS 'Human readable ID of the patient''s assigned facility''s organization';
-
-
---
--- Name: COLUMN reporting_patient_states.assigned_organization_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.assigned_organization_region_id IS 'ID of the patient''s assigned facility''s organization';
-
-
---
--- Name: COLUMN reporting_patient_states.registration_facility_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.registration_facility_id IS 'ID of the patient''s registration facility';
-
-
---
--- Name: COLUMN reporting_patient_states.registration_facility_size; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.registration_facility_size IS 'Size of the patient''s registration facility';
-
-
---
--- Name: COLUMN reporting_patient_states.registration_facility_type; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.registration_facility_type IS 'Type of the patient''s registration facility';
-
-
---
--- Name: COLUMN reporting_patient_states.registration_facility_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.registration_facility_slug IS 'Human readable ID of the patient''s registration facility';
-
-
---
--- Name: COLUMN reporting_patient_states.registration_facility_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.registration_facility_region_id IS 'Region ID of the patient''s registration facility';
-
-
---
--- Name: COLUMN reporting_patient_states.registration_block_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.registration_block_slug IS 'Human readable ID of the patient''s registration facility''s block';
-
-
---
--- Name: COLUMN reporting_patient_states.registration_block_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.registration_block_region_id IS 'ID of the patient''s registration facility''s block';
-
-
---
--- Name: COLUMN reporting_patient_states.registration_district_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.registration_district_slug IS 'Human readable ID of the patient''s registration facility''s district';
-
-
---
--- Name: COLUMN reporting_patient_states.registration_district_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.registration_district_region_id IS 'ID of the patient''s registration facility''s district';
-
-
---
--- Name: COLUMN reporting_patient_states.registration_state_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.registration_state_slug IS 'Human readable ID of the patient''s registration facility''s state';
-
-
---
--- Name: COLUMN reporting_patient_states.registration_state_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.registration_state_region_id IS 'ID of the patient''s registration facility''s state';
-
-
---
--- Name: COLUMN reporting_patient_states.registration_organization_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.registration_organization_slug IS 'Human readable ID of the patient''s registration facility''s organization';
-
-
---
--- Name: COLUMN reporting_patient_states.registration_organization_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.registration_organization_region_id IS 'ID of the patient''s registration facility''s organization';
-
-
---
--- Name: COLUMN reporting_patient_states.blood_pressure_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.blood_pressure_id IS 'ID of the latest BP as of this month. Use this to join with the blood_pressures table.';
-
-
---
--- Name: COLUMN reporting_patient_states.bp_facility_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.bp_facility_id IS 'ID of the facility at which the latest BP was recorded as of this month';
-
-
---
--- Name: COLUMN reporting_patient_states.bp_recorded_at; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.bp_recorded_at IS 'Time (in UTC) at which the latest BP as of this month was recorded';
-
-
---
--- Name: COLUMN reporting_patient_states.systolic; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.systolic IS 'Systolic of the latest BP as of this month';
-
-
---
--- Name: COLUMN reporting_patient_states.diastolic; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.diastolic IS 'Diastolic of the latest BP as of this month';
-
-
---
--- Name: COLUMN reporting_patient_states.blood_sugar_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.blood_sugar_id IS 'ID of the latest BS as of this month. Use this to join with the blood_sugars table.';
-
-
---
--- Name: COLUMN reporting_patient_states.bs_facility_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.bs_facility_id IS 'ID of the facility at which the latest BS was recorded as of this month';
-
-
---
--- Name: COLUMN reporting_patient_states.bs_recorded_at; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.bs_recorded_at IS 'Time (in UTC) at which the latest BS as of this month was recorded';
-
-
---
--- Name: COLUMN reporting_patient_states.blood_sugar_type; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.blood_sugar_type IS 'Blood sugar type of the latest BS as of this month';
-
-
---
--- Name: COLUMN reporting_patient_states.blood_sugar_value; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.blood_sugar_value IS 'Blood sugar value of the latest BS as of this month';
-
-
---
--- Name: COLUMN reporting_patient_states.blood_sugar_risk_state; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.blood_sugar_risk_state IS 'Blood sugar risk state of the latest BS as of this month';
-
-
---
--- Name: COLUMN reporting_patient_states.encounter_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.encounter_id IS 'ID of the latest encounter as of this month. Use this to join with the encounters table.';
-
-
---
--- Name: COLUMN reporting_patient_states.encounter_recorded_at; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.encounter_recorded_at IS 'Time (in UTC) at which the latest encounter as of this month was recorded';
-
-
---
--- Name: COLUMN reporting_patient_states.prescription_drug_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.prescription_drug_id IS 'ID of the latest prescription drug as of this month. Use this to join with the prescription drugs table.';
-
-
---
--- Name: COLUMN reporting_patient_states.prescription_drug_recorded_at; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.prescription_drug_recorded_at IS 'Time (in UTC) at which the latest prescription drug as of this month was recorded';
-
-
---
--- Name: COLUMN reporting_patient_states.appointment_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.appointment_id IS 'ID of the latest appointment as of this month. Use this to join with the appointments table.';
-
-
---
--- Name: COLUMN reporting_patient_states.appointment_recorded_at; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.appointment_recorded_at IS 'Time (in UTC) at which the latest appointment as of this month was recorded';
-
-
---
--- Name: COLUMN reporting_patient_states.visited_facility_ids; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.visited_facility_ids IS 'IDs of the facilities visited this month';
-
-
---
--- Name: COLUMN reporting_patient_states.months_since_registration; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.months_since_registration IS 'Number of months since registration. If a patient was registered on 31st Jan, it would be 1 month since registration on 1st Feb.';
-
-
---
--- Name: COLUMN reporting_patient_states.quarters_since_registration; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.quarters_since_registration IS 'Number of quarters since registration. If a patient was registered on 31st Dec, it would be 1 quarter since registration on 1st Jan.';
-
-
---
--- Name: COLUMN reporting_patient_states.months_since_visit; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.months_since_visit IS 'Number of months since the patient''s last visit. If a patient visited on 31st Jan, it would be 1 month since the visit on 1st Feb.';
-
-
---
--- Name: COLUMN reporting_patient_states.quarters_since_visit; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.quarters_since_visit IS 'Number of quarters since the patient''s last visit. If a patient visited on 31st Jan, it would be 1 quarter since the visit on 1st Jan.';
-
-
---
--- Name: COLUMN reporting_patient_states.months_since_bp; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.months_since_bp IS 'Number of months since the patient''s last BP recording. If a patient had a BP reading on 31st Jan, it would be 1 month since BP on 1st Feb.';
-
-
---
--- Name: COLUMN reporting_patient_states.quarters_since_bp; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.quarters_since_bp IS 'Number of quarters since the patient''s last BP recording. If a patient had a BP reading on 31st Jan, it would be 1 quarter since BP on 1st Jan.';
-
-
---
--- Name: COLUMN reporting_patient_states.months_since_bs; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.months_since_bs IS 'Number of months since the patient''s last BS recording. If a patient had a BS reading on 31st Jan, it would be 1 month since BS on 1st Feb.';
-
-
---
--- Name: COLUMN reporting_patient_states.quarters_since_bs; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.quarters_since_bs IS 'Number of quarters since the patient''s last BS recording. If a patient had a BS reading on 31st Jan, it would be 1 quarter since BS on 1st Jan.';
-
-
---
--- Name: COLUMN reporting_patient_states.last_bp_state; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.last_bp_state IS 'The state of the last BP recorded: controlled, uncontrolled, or unknown';
-
-
---
--- Name: COLUMN reporting_patient_states.htn_care_state; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.htn_care_state IS 'Is the patient under_care, lost_to_follow_up, or dead as of this month?';
-
-
---
--- Name: COLUMN reporting_patient_states.htn_treatment_outcome_in_last_3_months; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.htn_treatment_outcome_in_last_3_months IS 'For the visiting period of the last 3 months, is this patient''s treatment outcome controlled, uncontrolled, missed_visit, or visited_no_bp?';
-
-
---
--- Name: COLUMN reporting_patient_states.htn_treatment_outcome_in_last_2_months; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.htn_treatment_outcome_in_last_2_months IS 'For the visiting period of the last 2 months, is this patient''s treatment outcome controlled, uncontrolled, missed_visit, or visited_no_bp?';
-
-
---
--- Name: COLUMN reporting_patient_states.htn_treatment_outcome_in_quarter; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.htn_treatment_outcome_in_quarter IS 'For the visiting period of the current quarter, is this patient''s treatment outcome controlled, uncontrolled, missed_visit, or visited_no_bp?';
-
-
---
--- Name: COLUMN reporting_patient_states.diabetes_treatment_outcome_in_last_3_months; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.diabetes_treatment_outcome_in_last_3_months IS 'For the visiting period of the last 3 months, is this patient''s diabetes treatment outcome bs_under_200, bs_200_to_300, bs_over_300, missed_visit, or visited_no_bp?';
-
-
---
--- Name: COLUMN reporting_patient_states.diabetes_treatment_outcome_in_last_2_months; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.diabetes_treatment_outcome_in_last_2_months IS 'For the visiting period of the last 2 months, is this patient''s diabetes treatment outcome bs_under_200, bs_200_to_300, bs_over_300, or visited_no_bp?';
-
-
---
--- Name: COLUMN reporting_patient_states.diabetes_treatment_outcome_in_quarter; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.diabetes_treatment_outcome_in_quarter IS 'For the visiting period of the current quarter, is this patient''s diabetes treatment outcome bs_under_200, bs_200_to_300, bs_over_300, or visited_no_bp?';
-
-
---
--- Name: COLUMN reporting_patient_states.titrated; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.titrated IS 'True, if the patient had an increase in dosage of any hypertension drug in a visit this month.';
-
-
---
 -- Name: reporting_facility_state_dimensions; Type: MATERIALIZED VIEW; Schema: public; Owner: -
 --
 
@@ -3060,39 +2486,72 @@ CREATE MATERIALIZED VIEW public.reporting_overdue_calls AS
 --
 
 CREATE MATERIALIZED VIEW public.reporting_facility_states AS
- WITH registered_patients AS (
+ WITH registered_htn_patients AS (
          SELECT reporting_patient_states.registration_facility_region_id AS region_id,
             reporting_patient_states.month_date,
-            count(*) AS cumulative_registrations,
-            count(*) FILTER (WHERE (reporting_patient_states.months_since_registration = (0)::double precision)) AS monthly_registrations
+            count(*) AS cumulative_htn_registrations,
+            count(*) FILTER (WHERE (reporting_patient_states.months_since_registration = (0)::double precision)) AS monthly_htn_registrations
            FROM public.reporting_patient_states
           WHERE (reporting_patient_states.hypertension = 'yes'::text)
           GROUP BY reporting_patient_states.registration_facility_region_id, reporting_patient_states.month_date
-        ), assigned_patients AS (
+        ), registered_diabetes_patients AS (
+         SELECT reporting_patient_states.registration_facility_region_id AS region_id,
+            reporting_patient_states.month_date,
+            count(*) AS cumulative_diabetes_registrations,
+            count(*) FILTER (WHERE (reporting_patient_states.months_since_registration = (0)::double precision)) AS monthly_diabetes_registrations
+           FROM public.reporting_patient_states
+          WHERE (reporting_patient_states.diabetes = 'yes'::text)
+          GROUP BY reporting_patient_states.registration_facility_region_id, reporting_patient_states.month_date
+        ), assigned_htn_patients AS (
          SELECT reporting_patient_states.assigned_facility_region_id AS region_id,
             reporting_patient_states.month_date,
-            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'under_care'::text)) AS under_care,
-            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text)) AS lost_to_follow_up,
-            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'dead'::text)) AS dead,
-            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state <> 'dead'::text)) AS cumulative_assigned_patients
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'under_care'::text)) AS htn_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text)) AS htn_lost_to_follow_up,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'dead'::text)) AS htn_dead,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state <> 'dead'::text)) AS cumulative_assigned_htn_patients
            FROM public.reporting_patient_states
           WHERE (reporting_patient_states.hypertension = 'yes'::text)
           GROUP BY reporting_patient_states.assigned_facility_region_id, reporting_patient_states.month_date
-        ), adjusted_outcomes AS (
+        ), assigned_diabetes_patients AS (
+         SELECT reporting_patient_states.assigned_facility_region_id AS region_id,
+            reporting_patient_states.month_date,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'under_care'::text)) AS diabetes_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text)) AS diabetes_lost_to_follow_up,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'dead'::text)) AS diabetes_dead,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state <> 'dead'::text)) AS cumulative_assigned_diabetes_patients
+           FROM public.reporting_patient_states
+          WHERE (reporting_patient_states.diabetes = 'yes'::text)
+          GROUP BY reporting_patient_states.assigned_facility_region_id, reporting_patient_states.month_date
+        ), adjusted_htn_outcomes AS (
          SELECT reporting_patient_states.assigned_facility_region_id AS region_id,
             reporting_patient_states.month_date,
             count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'controlled'::text))) AS controlled_under_care,
             count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'uncontrolled'::text))) AS uncontrolled_under_care,
-            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'missed_visit'::text))) AS missed_visit_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'missed_visit'::text))) AS htn_missed_visit_under_care,
             count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'visited_no_bp'::text))) AS visited_no_bp_under_care,
-            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text) AND (reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'missed_visit'::text))) AS missed_visit_lost_to_follow_up,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text) AND (reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'missed_visit'::text))) AS htn_missed_visit_lost_to_follow_up,
             count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text) AND (reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'visited_no_bp'::text))) AS visited_no_bp_lost_to_follow_up,
-            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'under_care'::text)) AS patients_under_care,
-            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text)) AS patients_lost_to_follow_up
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'under_care'::text)) AS htn_patients_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text)) AS htn_patients_lost_to_follow_up
            FROM public.reporting_patient_states
           WHERE ((reporting_patient_states.hypertension = 'yes'::text) AND (reporting_patient_states.months_since_registration >= (3)::double precision))
           GROUP BY reporting_patient_states.assigned_facility_region_id, reporting_patient_states.month_date
-        ), monthly_cohort_outcomes AS (
+        ), adjusted_diabetes_outcomes AS (
+         SELECT reporting_patient_states.assigned_facility_region_id AS region_id,
+            reporting_patient_states.month_date,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'bs_below_200'::text))) AS bs_below_200_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'bs_200_to_300'::text))) AS bs_200_to_300_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'bs_over_300'::text))) AS bs_over_300_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'missed_visit'::text))) AS bs_missed_visit_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'visited_no_bs'::text))) AS visited_no_bs_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'missed_visit'::text))) AS bs_missed_visit_lost_to_follow_up,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'visited_no_bs'::text))) AS visited_no_bs_lost_to_follow_up,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'under_care'::text)) AS diabetes_patients_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text)) AS diabetes_patients_lost_to_follow_up
+           FROM public.reporting_patient_states
+          WHERE ((reporting_patient_states.diabetes = 'yes'::text) AND (reporting_patient_states.months_since_registration >= (3)::double precision))
+          GROUP BY reporting_patient_states.assigned_facility_region_id, reporting_patient_states.month_date
+        ), monthly_htn_cohort_outcomes AS (
          SELECT reporting_patient_states.assigned_facility_region_id AS region_id,
             reporting_patient_states.month_date,
             count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_treatment_outcome_in_last_2_months = 'controlled'::text)) AS controlled,
@@ -3109,12 +2568,19 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
             count(DISTINCT reporting_overdue_calls.appointment_id) AS call_results
            FROM public.reporting_overdue_calls
           GROUP BY reporting_overdue_calls.appointment_facility_region_id, reporting_overdue_calls.month_date
-        ), monthly_follow_ups AS (
+        ), monthly_htn_follow_ups AS (
          SELECT reporting_patient_follow_ups.facility_id,
             reporting_patient_follow_ups.month_date,
             count(DISTINCT reporting_patient_follow_ups.patient_id) AS follow_ups
            FROM public.reporting_patient_follow_ups
           WHERE (reporting_patient_follow_ups.hypertension = 'yes'::text)
+          GROUP BY reporting_patient_follow_ups.facility_id, reporting_patient_follow_ups.month_date
+        ), monthly_diabetes_follow_ups AS (
+         SELECT reporting_patient_follow_ups.facility_id,
+            reporting_patient_follow_ups.month_date,
+            count(DISTINCT reporting_patient_follow_ups.patient_id) AS follow_ups
+           FROM public.reporting_patient_follow_ups
+          WHERE (reporting_patient_follow_ups.diabetes = 'yes'::text)
           GROUP BY reporting_patient_follow_ups.facility_id, reporting_patient_follow_ups.month_date
         )
  SELECT cal.month_date,
@@ -3144,420 +2610,31 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
     rf.organization_region_id,
     rf.organization_name,
     rf.organization_slug,
-    registered_patients.cumulative_registrations,
-    registered_patients.monthly_registrations,
-    assigned_patients.under_care,
-    assigned_patients.lost_to_follow_up,
-    assigned_patients.dead,
-    assigned_patients.cumulative_assigned_patients,
-    adjusted_outcomes.controlled_under_care AS adjusted_controlled_under_care,
-    adjusted_outcomes.uncontrolled_under_care AS adjusted_uncontrolled_under_care,
-    adjusted_outcomes.missed_visit_under_care AS adjusted_missed_visit_under_care,
-    adjusted_outcomes.visited_no_bp_under_care AS adjusted_visited_no_bp_under_care,
-    adjusted_outcomes.missed_visit_lost_to_follow_up AS adjusted_missed_visit_lost_to_follow_up,
-    adjusted_outcomes.visited_no_bp_lost_to_follow_up AS adjusted_visited_no_bp_lost_to_follow_up,
-    adjusted_outcomes.patients_under_care AS adjusted_patients_under_care,
-    adjusted_outcomes.patients_lost_to_follow_up AS adjusted_patients_lost_to_follow_up,
-    monthly_cohort_outcomes.controlled AS monthly_cohort_controlled,
-    monthly_cohort_outcomes.uncontrolled AS monthly_cohort_uncontrolled,
-    monthly_cohort_outcomes.missed_visit AS monthly_cohort_missed_visit,
-    monthly_cohort_outcomes.visited_no_bp AS monthly_cohort_visited_no_bp,
-    monthly_cohort_outcomes.patients AS monthly_cohort_patients,
-    monthly_overdue_calls.call_results AS monthly_overdue_calls,
-    monthly_follow_ups.follow_ups AS monthly_follow_ups,
+    registered_htn_patients.cumulative_htn_registrations,
+    registered_htn_patients.monthly_htn_registrations,
+    registered_diabetes_patients.cumulative_diabetes_registrations,
+    registered_diabetes_patients.monthly_diabetes_registrations,
+    monthly_htn_follow_ups.follow_ups AS monthly_htn_follow_ups,
+    monthly_diabetes_follow_ups.follow_ups AS monthly_diabetes_follow_ups,
     reporting_facility_appointment_scheduled_days.total_appts_scheduled,
     reporting_facility_appointment_scheduled_days.appts_scheduled_0_to_14_days,
     reporting_facility_appointment_scheduled_days.appts_scheduled_15_to_31_days,
     reporting_facility_appointment_scheduled_days.appts_scheduled_32_to_62_days,
     reporting_facility_appointment_scheduled_days.appts_scheduled_more_than_62_days
-   FROM ((((((((public.reporting_facilities rf
+   FROM ((((((((((((public.reporting_facilities rf
      JOIN public.reporting_months cal ON (true))
-     LEFT JOIN registered_patients ON (((registered_patients.month_date = cal.month_date) AND (registered_patients.region_id = rf.facility_region_id))))
-     LEFT JOIN assigned_patients ON (((assigned_patients.month_date = cal.month_date) AND (assigned_patients.region_id = rf.facility_region_id))))
-     LEFT JOIN adjusted_outcomes ON (((adjusted_outcomes.month_date = cal.month_date) AND (adjusted_outcomes.region_id = rf.facility_region_id))))
-     LEFT JOIN monthly_cohort_outcomes ON (((monthly_cohort_outcomes.month_date = cal.month_date) AND (monthly_cohort_outcomes.region_id = rf.facility_region_id))))
+     LEFT JOIN registered_htn_patients ON (((registered_htn_patients.month_date = cal.month_date) AND (registered_htn_patients.region_id = rf.facility_region_id))))
+     LEFT JOIN registered_diabetes_patients ON (((registered_diabetes_patients.month_date = cal.month_date) AND (registered_diabetes_patients.region_id = rf.facility_region_id))))
+     LEFT JOIN assigned_htn_patients ON (((assigned_htn_patients.month_date = cal.month_date) AND (assigned_htn_patients.region_id = rf.facility_region_id))))
+     LEFT JOIN assigned_diabetes_patients ON (((assigned_diabetes_patients.month_date = cal.month_date) AND (assigned_diabetes_patients.region_id = rf.facility_region_id))))
+     LEFT JOIN adjusted_htn_outcomes ON (((adjusted_htn_outcomes.month_date = cal.month_date) AND (adjusted_htn_outcomes.region_id = rf.facility_region_id))))
+     LEFT JOIN adjusted_diabetes_outcomes ON (((adjusted_diabetes_outcomes.month_date = cal.month_date) AND (adjusted_diabetes_outcomes.region_id = rf.facility_region_id))))
+     LEFT JOIN monthly_htn_cohort_outcomes ON (((monthly_htn_cohort_outcomes.month_date = cal.month_date) AND (monthly_htn_cohort_outcomes.region_id = rf.facility_region_id))))
      LEFT JOIN monthly_overdue_calls ON (((monthly_overdue_calls.month_date = cal.month_date) AND (monthly_overdue_calls.region_id = rf.facility_region_id))))
-     LEFT JOIN monthly_follow_ups ON (((monthly_follow_ups.month_date = cal.month_date) AND (monthly_follow_ups.facility_id = rf.facility_id))))
+     LEFT JOIN monthly_htn_follow_ups ON (((monthly_htn_follow_ups.month_date = cal.month_date) AND (monthly_htn_follow_ups.facility_id = rf.facility_id))))
+     LEFT JOIN monthly_diabetes_follow_ups ON (((monthly_diabetes_follow_ups.month_date = cal.month_date) AND (monthly_diabetes_follow_ups.facility_id = rf.facility_id))))
      LEFT JOIN public.reporting_facility_appointment_scheduled_days ON (((reporting_facility_appointment_scheduled_days.month_date = cal.month_date) AND (reporting_facility_appointment_scheduled_days.facility_id = rf.facility_id))))
   WITH NO DATA;
-
-
---
--- Name: MATERIALIZED VIEW reporting_facility_states; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON MATERIALIZED VIEW public.reporting_facility_states IS 'Monthly summary of a facility''s indicators. This table has one row per facility, per month, from the month of the facility''s first registration.';
-
-
---
--- Name: COLUMN reporting_facility_states.month_date; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.month_date IS 'The reporting month for this row, represented as the date at the beginning of the month';
-
-
---
--- Name: COLUMN reporting_facility_states.month; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.month IS 'Month (1-12) of year';
-
-
---
--- Name: COLUMN reporting_facility_states.quarter; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.quarter IS 'Quarter (1-4) of year';
-
-
---
--- Name: COLUMN reporting_facility_states.year; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.year IS 'Year in YYYY format';
-
-
---
--- Name: COLUMN reporting_facility_states.month_string; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.month_string IS 'String that represents a month, in YYYY-MM format';
-
-
---
--- Name: COLUMN reporting_facility_states.quarter_string; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.quarter_string IS 'String that represents a quarter, in YYYY-Q format';
-
-
---
--- Name: COLUMN reporting_facility_states.facility_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.facility_id IS 'ID of the facility';
-
-
---
--- Name: COLUMN reporting_facility_states.facility_name; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.facility_name IS 'Name of the facility';
-
-
---
--- Name: COLUMN reporting_facility_states.facility_type; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.facility_type IS 'Type of the facility (eg. ''District Hospital'')';
-
-
---
--- Name: COLUMN reporting_facility_states.facility_size; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.facility_size IS 'Size of the facility (community, small, medium, large)';
-
-
---
--- Name: COLUMN reporting_facility_states.facility_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.facility_region_id IS 'ID of the facility region';
-
-
---
--- Name: COLUMN reporting_facility_states.facility_region_name; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.facility_region_name IS 'Name of the facility region. Usually the same as the facility name';
-
-
---
--- Name: COLUMN reporting_facility_states.facility_region_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.facility_region_slug IS 'Human readable ID of the facility region';
-
-
---
--- Name: COLUMN reporting_facility_states.block_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.block_region_id IS 'ID of the block region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.block_name; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.block_name IS 'Name of the block region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.block_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.block_slug IS 'Human readable ID of the block region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.district_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.district_id IS 'ID of the facility group that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.district_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.district_region_id IS 'ID of the district region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.district_name; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.district_name IS 'Name of the district region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.district_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.district_slug IS 'Human readable ID of the district region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.state_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.state_region_id IS 'ID of the state region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.state_name; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.state_name IS 'Name of the state region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.state_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.state_slug IS 'Human readable ID of the state region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.organization_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.organization_id IS 'ID of the organization that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.organization_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.organization_region_id IS 'ID of the organization region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.organization_name; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.organization_name IS 'Name of the organization region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.organization_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.organization_slug IS 'Human readable ID of the organization region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.cumulative_registrations; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.cumulative_registrations IS 'The total number of hypertensive patients registered at the facility up to the end of the reporting month';
-
-
---
--- Name: COLUMN reporting_facility_states.monthly_registrations; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.monthly_registrations IS 'The number of hypertensive patients registered at the facility in the reporting month';
-
-
---
--- Name: COLUMN reporting_facility_states.under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.under_care IS 'The number of patients assigned to the facility as of the reporting month where the patient had a BP recorded within the last year, and is not dead';
-
-
---
--- Name: COLUMN reporting_facility_states.lost_to_follow_up; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.lost_to_follow_up IS 'The number of patients assigned to the facility as of the reporting month where the patient did not have a BP recorded within the last year, and is not dead';
-
-
---
--- Name: COLUMN reporting_facility_states.dead; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.dead IS 'The number of patients assigned to the facility as of the reporting month who are dead';
-
-
---
--- Name: COLUMN reporting_facility_states.cumulative_assigned_patients; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.cumulative_assigned_patients IS 'The total number of hypertensive patients assigned to the facility up to the end of the reporting month';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_controlled_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_controlled_under_care IS 'The number of hypertensive patients registered before the last 3 months, with a BP < 140/90 at their last visit in the last 3 months. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_uncontrolled_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_uncontrolled_under_care IS 'The number of hypertensive patients assigned to the facility that were registered before the last 3 months, with a BP >= 140/90 at their last visit in the last 3 months. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_missed_visit_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_missed_visit_under_care IS 'The number of hypertensive patients assigned to the facility that were registered before the last 3 months, with no visit in the last 3 months. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_visited_no_bp_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_visited_no_bp_under_care IS 'The number of hypertensive patients assigned to the facility that were registered before the last 3 months, with no BP taken at their last visit in the last 3 months. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_missed_visit_lost_to_follow_up; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_missed_visit_lost_to_follow_up IS 'adjusted_missed_visit_lost_to_follow_up';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_visited_no_bp_lost_to_follow_up; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_visited_no_bp_lost_to_follow_up IS 'adjusted_visited_no_bp_lost_to_follow_up';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_patients_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_patients_under_care IS 'The number of hypertensive patients assigned to the facility that were registered before the last 3 months';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_patients_lost_to_follow_up; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_patients_lost_to_follow_up IS 'The number of hypertensive patients assigned to the facility that were registered before the last 3 months, with no visit in the last year';
-
-
---
--- Name: COLUMN reporting_facility_states.monthly_cohort_controlled; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.monthly_cohort_controlled IS 'The number of patients from `monthly_cohort_patients` with a BP <140/90 at their latest visit in the next two months. Eg. The number of patients registered in Jan 2020 with a controlled BP at their latest visit in Feb-Mar 2020';
-
-
---
--- Name: COLUMN reporting_facility_states.monthly_cohort_uncontrolled; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.monthly_cohort_uncontrolled IS 'The number of patients from `monthly_cohort_patients` with a BP >=140/90 at their latest visit in the next two months. Eg. The number of patients registered in Jan 2020 with an uncontrolled BP at their latest visit in Feb-Mar 2020';
-
-
---
--- Name: COLUMN reporting_facility_states.monthly_cohort_missed_visit; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.monthly_cohort_missed_visit IS 'The number of patients from `monthly_cohort_patients` with no visit in the next two months. Eg. The number of patients registered in Jan 2020 with no visit in Feb-Mar 2020';
-
-
---
--- Name: COLUMN reporting_facility_states.monthly_cohort_visited_no_bp; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.monthly_cohort_visited_no_bp IS 'The number of patients from `monthly_cohort_patients` with no BP recorded at their latest visit in the next two months. Eg. The number of patients registered in Jan 2020 with no BP recorded at their latest visit in Feb-Mar 2020';
-
-
---
--- Name: COLUMN reporting_facility_states.monthly_cohort_patients; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.monthly_cohort_patients IS 'The number of patients assigned to the facility that were registered two months before the reporting month, and have a . Eg. For a March 2020 report, the number of patients registered in Jan 2020';
-
-
---
--- Name: COLUMN reporting_facility_states.monthly_overdue_calls; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.monthly_overdue_calls IS 'The number of overdue calls made by healthcare workers at the facility in the reporting month';
-
-
---
--- Name: COLUMN reporting_facility_states.monthly_follow_ups; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.monthly_follow_ups IS 'The number of follow-up patient visits at the facility in the reporting month';
-
-
---
--- Name: COLUMN reporting_facility_states.total_appts_scheduled; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.total_appts_scheduled IS 'The total number of appointments scheduled by healthcare workers at the facility in the reporting month';
-
-
---
--- Name: COLUMN reporting_facility_states.appts_scheduled_0_to_14_days; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.appts_scheduled_0_to_14_days IS 'The total number of appointments scheduled by healthcare workers at the facility in the reporting month between 0 and 14 days from the visit date';
-
-
---
--- Name: COLUMN reporting_facility_states.appts_scheduled_15_to_31_days; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.appts_scheduled_15_to_31_days IS 'The total number of appointments scheduled by healthcare workers at the facility in the reporting month between 15 and 31 days from the visit date';
-
-
---
--- Name: COLUMN reporting_facility_states.appts_scheduled_32_to_62_days; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.appts_scheduled_32_to_62_days IS 'The total number of appointments scheduled by healthcare workers at the facility in the reporting month between 32 and 62 days from the visit date';
-
-
---
--- Name: COLUMN reporting_facility_states.appts_scheduled_more_than_62_days; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.appts_scheduled_more_than_62_days IS 'The total number of appointments scheduled by healthcare workers at the facility in the reporting month more than 62 days from the visit date';
 
 
 --
@@ -5744,6 +4821,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220408132514'),
 ('20220408135115'),
 ('20220411035535'),
-('20220412112538');
+('20220412112538'),
+('20220414134624');
 
 
