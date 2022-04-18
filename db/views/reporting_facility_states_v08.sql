@@ -1,8 +1,8 @@
 WITH
     registered_htn_patients AS (
         SELECT registration_facility_region_id AS region_id, month_date,
-               COUNT(*) AS cumulative_registrations,
-               COUNT(*) FILTER (WHERE months_since_registration = 0) AS monthly_registrations
+               COUNT(*) AS cumulative_htn_registrations,
+               COUNT(*) FILTER (WHERE months_since_registration = 0) AS monthly_htn_registrations
 
         FROM reporting_patient_states
         WHERE hypertension = 'yes'
@@ -11,8 +11,8 @@ WITH
 
     registered_diabetes_patients AS (
         SELECT registration_facility_region_id AS region_id, month_date,
-               COUNT(*) AS cumulative_registrations,
-               COUNT(*) FILTER (WHERE months_since_registration = 0) AS monthly_registrations
+               COUNT(*) AS cumulative_diabetes_registrations,
+               COUNT(*) FILTER (WHERE months_since_registration = 0) AS monthly_diabetes_registrations
 
         FROM reporting_patient_states
         WHERE diabetes = 'yes'
@@ -21,9 +21,9 @@ WITH
 
     assigned_htn_patients AS (
         SELECT assigned_facility_region_id AS region_id, month_date,
-               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care') AS under_care,
-               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'lost_to_follow_up') AS lost_to_follow_up,
-               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'dead') AS dead,
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care') AS htn_under_care,
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'lost_to_follow_up') AS htn_lost_to_follow_up,
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'dead') AS htn_dead,
                COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state != 'dead') AS cumulative_assigned_htn_patients
 
         FROM reporting_patient_states
@@ -33,9 +33,9 @@ WITH
 
     assigned_diabetes_patients AS (
         SELECT assigned_facility_region_id AS region_id, month_date,
-               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care') AS under_care,
-               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'lost_to_follow_up') AS lost_to_follow_up,
-               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'dead') AS dead,
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care') AS diabetes_under_care,
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'lost_to_follow_up') AS diabetes_lost_to_follow_up,
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'dead') AS diabetes_dead,
                COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state != 'dead') AS cumulative_assigned_diabetes_patients
 
         FROM reporting_patient_states
@@ -47,14 +47,14 @@ WITH
         SELECT assigned_facility_region_id AS region_id, month_date,
                COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care' AND htn_treatment_outcome_in_last_3_months = 'controlled') AS controlled_under_care,
                COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care' AND htn_treatment_outcome_in_last_3_months = 'uncontrolled') AS uncontrolled_under_care,
-               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care' AND htn_treatment_outcome_in_last_3_months = 'missed_visit') AS missed_visit_under_care,
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care' AND htn_treatment_outcome_in_last_3_months = 'missed_visit') AS htn_missed_visit_under_care,
                COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care' AND htn_treatment_outcome_in_last_3_months = 'visited_no_bp') AS visited_no_bp_under_care,
 
-               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'lost_to_follow_up' AND htn_treatment_outcome_in_last_3_months = 'missed_visit') AS missed_visit_lost_to_follow_up,
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'lost_to_follow_up' AND htn_treatment_outcome_in_last_3_months = 'missed_visit') AS htn_missed_visit_lost_to_follow_up,
                COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'lost_to_follow_up' AND htn_treatment_outcome_in_last_3_months = 'visited_no_bp') AS visited_no_bp_lost_to_follow_up,
 
-               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care') AS patients_under_care,
-               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'lost_to_follow_up') AS patients_lost_to_follow_up
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care') AS htn_patients_under_care,
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'lost_to_follow_up') AS htn_patients_lost_to_follow_up
 
         FROM reporting_patient_states
         WHERE hypertension = 'yes'
@@ -67,14 +67,14 @@ WITH
                COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care' AND diabetes_treatment_outcome_in_last_3_months = 'bs_below_200') AS bs_below_200_under_care,
                COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care' AND diabetes_treatment_outcome_in_last_3_months = 'bs_200_to_300') AS bs_200_to_300_under_care,
                COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care' AND diabetes_treatment_outcome_in_last_3_months = 'bs_over_300') AS bs_over_300_under_care,
-               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care' AND diabetes_treatment_outcome_in_last_3_months = 'missed_visit') AS missed_visit_under_care,
-               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care' AND diabetes_treatment_outcome_in_last_3_months = 'visited_no_bp') AS visited_no_bp_under_care,
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care' AND diabetes_treatment_outcome_in_last_3_months = 'missed_visit') AS bs_missed_visit_under_care,
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care' AND diabetes_treatment_outcome_in_last_3_months = 'visited_no_bs') AS visited_no_bs_under_care,
 
-               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'lost_to_follow_up' AND diabetes_treatment_outcome_in_last_3_months = 'missed_visit') AS missed_visit_lost_to_follow_up,
-               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'lost_to_follow_up' AND diabetes_treatment_outcome_in_last_3_months = 'visited_no_bp') AS visited_no_bp_lost_to_follow_up,
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'lost_to_follow_up' AND diabetes_treatment_outcome_in_last_3_months = 'missed_visit') AS bs_missed_visit_lost_to_follow_up,
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'lost_to_follow_up' AND diabetes_treatment_outcome_in_last_3_months = 'visited_no_bs') AS visited_no_bs_lost_to_follow_up,
 
-               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care') AS patients_under_care,
-               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'lost_to_follow_up') AS patients_lost_to_follow_up
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care') AS diabetes_patients_under_care,
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'lost_to_follow_up') AS diabetes_patients_lost_to_follow_up
 
         FROM reporting_patient_states
         WHERE diabetes = 'yes'
@@ -123,59 +123,12 @@ cal.*,
 rf.*,
 
 -- registration counts of hypertensive patients
-registered_htn_patients.cumulative_registrations,
-registered_htn_patients.monthly_registrations,
+registered_htn_patients.cumulative_htn_registrations,
+registered_htn_patients.monthly_htn_registrations,
 
 -- registration counts of diabetic patients
-registered_diabetes_patients.cumulative_registrations,
-registered_diabetes_patients.monthly_registrations,
-
--- assigned hypertensive patient counts by care state
-assigned_htn_patients.under_care,
-assigned_htn_patients.lost_to_follow_up,
-assigned_htn_patients.dead,
-assigned_htn_patients.cumulative_assigned_htn_patients,
-
--- assigned diabetic patient counts by care state
-assigned_diabetes_patients.under_care,
-assigned_diabetes_patients.lost_to_follow_up,
-assigned_diabetes_patients.dead,
-assigned_diabetes_patients.cumulative_assigned_diabetes_patients,
-
--- adjusted htn outcomes
-adjusted_htn_outcomes.controlled_under_care AS adjusted_controlled_under_care,
-adjusted_htn_outcomes.uncontrolled_under_care AS adjusted_uncontrolled_under_care,
-adjusted_htn_outcomes.missed_visit_under_care AS adjusted_missed_visit_under_care,
-adjusted_htn_outcomes.visited_no_bp_under_care AS adjusted_visited_no_bp_under_care,
-
-adjusted_htn_outcomes.missed_visit_lost_to_follow_up AS adjusted_missed_visit_lost_to_follow_up,
-adjusted_htn_outcomes.visited_no_bp_lost_to_follow_up AS adjusted_visited_no_bp_lost_to_follow_up,
-
-adjusted_htn_outcomes.patients_under_care AS adjusted_patients_under_care,
-adjusted_htn_outcomes.patients_lost_to_follow_up AS adjusted_patients_lost_to_follow_up,
-
--- adjusted diabetes outcomes
-adjusted_diabetes_outcomes.bs_below_200_under_care AS adjusted_bs_below_200_under_care,
-adjusted_diabetes_outcomes.bs_200_to_300_under_care AS adjusted_bs_200_to_300_under_care,
-adjusted_diabetes_outcomes.bs_over_300_under_care AS adjusted_bs_over_300_under_care,
-adjusted_diabetes_outcomes.missed_visit_under_care AS adjusted_missed_visit_under_care,
-adjusted_diabetes_outcomes.visited_no_bp_under_care AS adjusted_visited_no_bp_under_care,
-
-adjusted_diabetes_outcomes.missed_visit_lost_to_follow_up AS adjusted_missed_visit_lost_to_follow_up,
-adjusted_diabetes_outcomes.visited_no_bp_lost_to_follow_up AS adjusted_visited_no_bp_lost_to_follow_up,
-
-adjusted_diabetes_outcomes.patients_under_care AS adjusted_patients_under_care,
-adjusted_diabetes_outcomes.patients_lost_to_follow_up AS adjusted_patients_lost_to_follow_up,
-
--- monthly cohort outcomes
-monthly_htn_cohort_outcomes.controlled AS monthly_cohort_controlled,
-monthly_htn_cohort_outcomes.uncontrolled AS monthly_cohort_uncontrolled,
-monthly_htn_cohort_outcomes.missed_visit AS monthly_cohort_missed_visit,
-monthly_htn_cohort_outcomes.visited_no_bp AS monthly_cohort_visited_no_bp,
-monthly_htn_cohort_outcomes.patients AS monthly_cohort_patients,
-
--- monthly overdue calls
-monthly_overdue_calls.call_results AS monthly_overdue_calls,
+registered_diabetes_patients.cumulative_diabetes_registrations,
+registered_diabetes_patients.monthly_diabetes_registrations,
 
 -- monthly htn follow ups
 monthly_htn_follow_ups.follow_ups AS monthly_htn_follow_ups,
@@ -197,12 +150,21 @@ INNER JOIN reporting_months cal
 LEFT OUTER JOIN registered_htn_patients
     ON registered_htn_patients.month_date = cal.month_date
     AND registered_htn_patients.region_id = rf.facility_region_id
+LEFT OUTER JOIN registered_diabetes_patients
+    ON registered_diabetes_patients.month_date = cal.month_date
+    AND registered_diabetes_patients.region_id = rf.facility_region_id
 LEFT OUTER JOIN assigned_htn_patients
     ON assigned_htn_patients.month_date = cal.month_date
     AND assigned_htn_patients.region_id = rf.facility_region_id
+LEFT OUTER JOIN assigned_diabetes_patients
+    ON assigned_diabetes_patients.month_date = cal.month_date
+    AND assigned_diabetes_patients.region_id = rf.facility_region_id
 LEFT OUTER JOIN adjusted_htn_outcomes
     ON adjusted_htn_outcomes.month_date = cal.month_date
     AND adjusted_htn_outcomes.region_id = rf.facility_region_id
+LEFT OUTER JOIN adjusted_diabetes_outcomes
+    ON adjusted_diabetes_outcomes.month_date = cal.month_date
+    AND adjusted_diabetes_outcomes.region_id = rf.facility_region_id
 LEFT OUTER JOIN monthly_htn_cohort_outcomes
     ON monthly_htn_cohort_outcomes.month_date = cal.month_date
     AND monthly_htn_cohort_outcomes.region_id = rf.facility_region_id
@@ -212,6 +174,9 @@ LEFT OUTER JOIN monthly_overdue_calls
 LEFT OUTER JOIN monthly_htn_follow_ups
     ON monthly_htn_follow_ups.month_date = cal.month_date
     AND monthly_htn_follow_ups.facility_id = rf.facility_id
+LEFT OUTER JOIN monthly_diabetes_follow_ups
+    ON monthly_diabetes_follow_ups.month_date = cal.month_date
+    AND monthly_diabetes_follow_ups.facility_id = rf.facility_id
 LEFT OUTER JOIN reporting_facility_appointment_scheduled_days
     ON reporting_facility_appointment_scheduled_days.month_date = cal.month_date
     AND reporting_facility_appointment_scheduled_days.facility_id = rf.facility_id
