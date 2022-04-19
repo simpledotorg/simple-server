@@ -257,7 +257,24 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
     end
 
     it "does not raise an exception and continues with other patients if a patient is tried to enrolled more than once" do
+      patient = create(:patient)
+      create(:experiment, :with_treatment_group, experiment_type: "current_patients")
+      allow_any_instance_of(Experimentation::CurrentPatientExperiment).to receive(:eligible_patients).and_return(Patient.where(id: patient.id))
 
+      exception = ActiveRecord::RecordNotUnique.new('duplicate key value violates unique constraint "index_tgm_patient_id_and_experiment_id"')
+      allow_any_instance_of(Experimentation::TreatmentGroup).to receive(:enroll).and_raise(exception)
+
+      expect { Experimentation::CurrentPatientExperiment.first.enroll_patients(Date.today) }.not_to raise_exception
+    end
+
+    it "does not suppress exceptions other than multiple enrollment for the same patient" do
+      patient = create(:patient)
+      create(:experiment, :with_treatment_group, experiment_type: "current_patients")
+      allow_any_instance_of(Experimentation::CurrentPatientExperiment).to receive(:eligible_patients).and_return(Patient.where(id: patient.id))
+
+      allow_any_instance_of(Experimentation::TreatmentGroup).to receive(:enroll).and_raise(StandardError)
+
+      expect { Experimentation::CurrentPatientExperiment.first.enroll_patients(Date.today) }.to raise_exception(StandardError)
     end
 
     it "enrolls a patient even if assigned/registration facility was discarded, no scheduled appointments are present" do

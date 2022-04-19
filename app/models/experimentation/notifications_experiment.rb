@@ -207,18 +207,17 @@ module Experimentation
     private
 
     # This exception handling has been added to temporarily handle patients with multiple
-    # scheduled appointments. This patients were earlier excluded from the eligible patients list
+    # scheduled appointments. These patients were earlier excluded from the eligible patients list
     # but we had to remove the exclusion for performance.
     def handle_multiple_enrollments
       begin
         yield
       rescue ActiveRecord::RecordNotUnique => error
         if error.message.include?('duplicate key value violates unique constraint "index_tgm_patient_id_and_experiment_id"')
-          Rails.logger.info("#{self.class.name} error while enrolling patient: #{e.message}")
+          Rails.logger.info("#{self.class.name} error while enrolling patient: #{error.message}")
         else
           raise error
         end
-
       end
     end
 
