@@ -82,7 +82,7 @@ every :monday, at: local("6:00 am"), roles: [:cron] do
   end
 end
 
-every :day, at: local("07:30 am"), roles: [:cron] do
+every :day, at: local("05:45 am"), roles: [:cron] do
   runner "Experimentation::Runner.call;AppointmentNotification::ScheduleExperimentReminders.call"
 end
 

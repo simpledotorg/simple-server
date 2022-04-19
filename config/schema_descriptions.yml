@@ -167,8 +167,8 @@ reporting_patient_states:
     htn_treatment_outcome_in_last_2_months: "For the visiting period of the last 2 months, is this patient's treatment outcome controlled, uncontrolled, missed_visit, or visited_no_bp?"
     htn_treatment_outcome_in_quarter: "For the visiting period of the current quarter, is this patient's treatment outcome controlled, uncontrolled, missed_visit, or visited_no_bp?"
     diabetes_treatment_outcome_in_last_3_months: "For the visiting period of the last 3 months, is this patient's diabetes treatment outcome bs_under_200, bs_200_to_300, bs_over_300, missed_visit, or visited_no_bp?"
-    diabetes_treatment_outcome_in_last_2_months: "For the visiting period of the last 2 months, is this patient's diabetes treatment outcome bs_under_200, bs_200_to_300, bs_over_300, or visited_no_bp?"
-    diabetes_treatment_outcome_in_quarter: "For the visiting period of the current quarter, is this patient's diabetes treatment outcome bs_under_200, bs_200_to_300, bs_over_300, or visited_no_bp?"
+    diabetes_treatment_outcome_in_last_2_months: "For the visiting period of the last 2 months, is this patient's diabetes treatment outcome bs_under_200, bs_200_to_300, bs_over_300, missed_visit, or visited_no_bp?"
+    diabetes_treatment_outcome_in_quarter: "For the visiting period of the current quarter, is this patient's diabetes treatment outcome bs_under_200, bs_200_to_300, bs_over_300, missed_visit, or visited_no_bp?"
     titrated: "True, if the patient had an increase in dosage of any hypertension drug in a visit this month."
 reporting_facilities:
   description: "List of Simple facililities with size, type, and geographical information. These facilities are used to segment reports by region."
