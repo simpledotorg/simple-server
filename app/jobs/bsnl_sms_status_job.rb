@@ -16,6 +16,7 @@ class BsnlSmsStatusJob
 
     detailable = BsnlDeliveryDetail.find_by!(message_id: message_id)
     detailable.message_status = response["Message_Status"] if response["Message_Status"]
+    detailable.message = response["Message"] if response["Message"]
     detailable.result = response["Message_Status_Description"] if response["Message_Status_Description"]
     detailable.delivered_on = parse_timestamp(response["Delivery_Success_Time"]) if response["Delivery_Success_Time"]
     detailable.save!

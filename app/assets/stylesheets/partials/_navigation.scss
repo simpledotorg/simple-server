@@ -232,3 +232,34 @@ form.edit_email_authentication .invalid-feedback {
     display: none;
   }
 }
+
+/*****************
+TABBED NAVIGATION
+*****************/
+
+.nav {
+  .nav-link {
+    font-size: 20px;
+    font-weight: bold;
+    padding-left: 0;
+    padding-right: 0;
+    margin-right: 22px;
+    color: $grey-dark;
+    
+    &:hover {
+      color: $grey-darkest;
+    }
+  }
+  
+  .nav-link.active {
+    color: $red;
+    border-bottom: 2px solid $red;
+  }
+}
+
+@include media-breakpoint-down(md) {
+  .nav .nav-link {
+    font-size: 16px;
+    margin-right: 16px;
+  }
+}

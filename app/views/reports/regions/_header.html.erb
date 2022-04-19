@@ -28,25 +28,17 @@
   %>
   <div class="d-flex fd-column fd-lg-row justify-lg-between mb-24px d-print-none">
     <div class="d-flex order-2 order-lg-1">
-      <p class="mr-12px mr-lg-24px mb-0px pb-8px fs-16px fs-lg-20px fw-bold td-none <%= params[:action] == "show" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
-        <%= link_to_unless_current "Overview", url_params.merge(action: "show"), :class => "c-grey-dark td-none" %>
-      </p>
-      <p class="mr-12px mr-lg-24px mb-0px pb-8px fs-16px fs-lg-20px fw-bold <%= params[:action] == "details" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
-        <%= link_to_unless_current "Details", url_params.merge(action: "details"), :class => "c-grey-dark td-none" %>
-      </p>
-      <p class="mr-12px mr-lg-24px mb-0px pb-8px fs-16px fs-lg-20px fw-bold <%= params[:action] == "cohort" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
-        <%= link_to_unless_current "Cohort reports", reports_region_cohort_path(@region, report_scope: params[:report_scope]), :class => "c-grey-dark td-none" %>
-      </p>
-      <% if @region.diabetes_management_enabled? %>
-        <p class="mr-12px mr-lg-24px mb-0px pb-8px fs-16px fs-lg-20px fw-bold <%= params[:action] == "diabetes" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
-          <%= link_to "Diabetes", reports_region_diabetes_path(@region, report_scope: params[:report_scope]), :class => "c-grey-dark td-none" %>
-        </p>
-      <% end %>
-      <% if @region.facility_region? && current_admin.feature_enabled?(:dashboard_progress_reports) %>
-        <p class="mr-12px mr-lg-24px mb-0px pb-8px fs-16px fs-lg-20px fw-bold <%= params[:action] == "cohort" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
-          <%= link_to "Progress", reports_progress_path(@region), :class => "c-grey-dark td-none" %>
-        </p>
-      <% end %>
+      <nav class="nav">
+        <%= link_to "Overview", url_params.merge(action: "show"), class: "nav-link #{active_action?("show")}" %>
+        <%= link_to "Details", url_params.merge(action: "details"), class: "nav-link #{active_action?("details")}" %>
+        <%= link_to "Cohort reports", reports_region_cohort_path(@region, report_scope: params[:report_scope]), class: "nav-link #{active_action?("cohort")}" %>
+        <% if @region.diabetes_management_enabled? %>
+          <%= link_to "Diabetes", reports_region_diabetes_path(@region, report_scope: params[:report_scope]), class: "nav-link #{active_action?("diabetes")}" %>
+        <% end %>
+        <% if @region.facility_region? && current_admin.feature_enabled?(:dashboard_progress_reports) %>
+            <%= link_to "Progress", reports_progress_path(@region), :class => "nav-link" %>
+        <% end %>
+      </nav>
     </div>
     <div class="d-flex actions order-1 mb-16px order-lg-2 mb-lg-0">
       <% if period_selector %>
