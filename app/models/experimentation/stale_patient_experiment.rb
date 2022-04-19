@@ -18,15 +18,21 @@ module Experimentation
       last_visit_until = (date + PATIENT_VISITED_UNTIL).end_of_day
       no_appointments_after = date.end_of_day
 
-      self.class.superclass.eligible_patients
-        .joins("INNER JOIN reporting_patient_visits ON reporting_patient_visits.patient_id = patients.id")
-        .joins("LEFT OUTER JOIN appointments future_appointments
+      eligible_patient_ids =
+        self.class.superclass.eligible_patients
+            .joins("INNER JOIN reporting_patient_visits ON reporting_patient_visits.patient_id = patients.id")
+            .joins("LEFT OUTER JOIN appointments future_appointments
                 ON future_appointments.patient_id = patients.id
                 AND (future_appointments.scheduled_date > '#{no_appointments_after}'
                       OR future_appointments.remind_on > '#{no_appointments_after}')")
-        .where(reporting_patient_visits: {month_date: current_month})
-        .where("visited_at > ? AND visited_at < ?", last_visit_since, last_visit_until)
-        .where("future_appointments.id IS NULL")
+            .where(reporting_patient_visits: { month_date: current_month })
+            .where("visited_at > ? AND visited_at < ?", last_visit_since, last_visit_until)
+            .where("future_appointments.id IS NULL")
+            .limit(MAX_ELIGIBLE_PATIENTS)
+            .pluck(:id)
+
+      p = Patient.where(id: eligible_patient_ids).except_multiple_scheduled_appointments
+      p
     end
 
     # Memberships where enrollment date falls on

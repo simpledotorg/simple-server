@@ -5,11 +5,17 @@ module Experimentation
     def eligible_patients(date)
       appointment_date = date - earliest_remind_on.days
 
-      self.class.superclass.eligible_patients
-        .joins(:appointments)
-        .merge(Appointment.status_scheduled)
-        .where("appointments.scheduled_date BETWEEN ? and ?", appointment_date.beginning_of_day, appointment_date.end_of_day)
-        .distinct
+      eligible_patient_ids =
+        self.class.superclass.eligible_patients
+            .joins(:appointments)
+            .merge(Appointment.status_scheduled)
+            .where("appointments.scheduled_date BETWEEN ? and ?", appointment_date.beginning_of_day, appointment_date.end_of_day)
+            .distinct
+            .limit(MAX_ELIGIBLE_PATIENTS)
+            .pluck(:id)
+
+
+      Patient.where(id: eligible_patient_ids).except_multiple_scheduled_appointments
     end
 
     # Memberships where the expected return date falls on

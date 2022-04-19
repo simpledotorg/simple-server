@@ -2,6 +2,7 @@ module Experimentation
   class NotificationsExperiment < Experiment
     include ActiveSupport::Benchmarkable
     BATCH_SIZE = 1000
+    MAX_ELIGIBLE_PATIENTS = 30_000
 
     default_scope { where(experiment_type: %w[current_patients stale_patients]) }
 
@@ -29,6 +30,11 @@ module Experimentation
 
     # Returns patients who are eligible for enrollment. These should be
     # filtered further by individual notification experiments based on their criteria.
+    #
+    # TODO: The limit is a temporary workaround to help with performance issues
+    # with the multiple_scheduled_appointments clause. We should remove that clause
+    # once all the multiple scheduled appointments have been cleaned up and a
+    # fix for incoming scheduled appointments is in place.
     def self.eligible_patients
       Patient.with_hypertension
         .contactable
@@ -40,13 +46,6 @@ module Experimentation
                                            .where("treatment_group_memberships.patient_id = patients.id")
                                            .where("end_time > ?", RECENT_EXPERIMENT_MEMBERSHIP_BUFFER.ago)
                                            .select(:patient_id))
-        .where("NOT EXISTS (:multiple_scheduled_appointments)",
-          multiple_scheduled_appointments: Appointment
-                                             .select(1)
-                                             .where("appointments.patient_id = patients.id")
-                                             .where(status: :scheduled)
-                                             .group(:patient_id)
-                                             .having("count(patient_id) > 1"))
         .then { |patients| exclude_nagaland_patients(patients) }
         .then { |patients| exclude_bangladesh_blocks(patients) }
     end

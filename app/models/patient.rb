@@ -105,6 +105,16 @@ class Patient < ApplicationRecord
               make_interval(years => age) + age('#{Date.today}', age_updated_at))) #{comparison_operator} #{age}")
   end
 
+  scope :except_multiple_scheduled_appointments, -> do
+    where("NOT EXISTS (:multiple_scheduled_appointments)",
+          multiple_scheduled_appointments: Appointment
+                                             .select(1)
+                                             .where("appointments.patient_id = patients.id")
+                                             .where(status: :scheduled)
+                                             .group(:patient_id)
+                                             .having("count(patient_id) > 1"))
+  end
+
   validate :past_date_of_birth
   validates :status, presence: true
 

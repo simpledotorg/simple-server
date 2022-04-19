@@ -76,6 +76,20 @@ RSpec.describe Experimentation::StalePatientExperiment do
       expect(result).to contain_exactly(eligible_1, eligible_2)
     end
 
+    it "excludes any patients who have multiple scheduled appointments" do
+      included_patient = create(:patient, age: 80)
+      create(:bp_with_encounter, patient: included_patient, device_created_at: 100.days.ago)
+
+      excluded_patient = create(:patient, age: 80)
+      create_list(:appointment, 2, patient: excluded_patient, status: :scheduled)
+      create(:bp_with_encounter, patient: excluded_patient, device_created_at: 100.days.ago)
+
+      RefreshReportingViews.refresh_v2
+
+      expect(described_class.new.eligible_patients(Date.today)).not_to include(excluded_patient)
+      expect(described_class.new.eligible_patients(Date.today)).to include(included_patient)
+    end
+
     it "only selects patients who have no appointments scheduled in the future" do
       create(:experiment, experiment_type: "stale_patients")
       patient_with_future_appt = create(:patient, age: 80)

@@ -26,6 +26,23 @@ RSpec.describe Experimentation::CurrentPatientExperiment do
       expect(described_class.first.eligible_patients(scheduled_appointment_date)).not_to include(patient)
       expect(described_class.first.eligible_patients(scheduled_appointment_date + 1.days)).not_to include(patient)
     end
+
+    it "excludes any patients who have multiple scheduled appointments" do
+      scheduled_appointment_date = 2.days.from_now
+
+      excluded_patient = create(:patient, age: 18)
+      create_list(:appointment, 2, scheduled_date: scheduled_appointment_date, status: :scheduled, patient: excluded_patient)
+      included_patient = create(:patient, age: 18)
+      create(:appointment, scheduled_date: scheduled_appointment_date, status: :scheduled, patient: included_patient)
+
+      experiment = create(:experiment, experiment_type: "current_patients")
+      group = create(:treatment_group, experiment: experiment)
+
+      earliest_reminder = create(:reminder_template, message: "1", treatment_group: group, remind_on_in_days: -1)
+
+      expect(described_class.first.eligible_patients(scheduled_appointment_date + earliest_reminder.remind_on_in_days.days)).not_to include(excluded_patient)
+      expect(described_class.first.eligible_patients(scheduled_appointment_date + earliest_reminder.remind_on_in_days.days)).to include(included_patient)
+    end
   end
 
   describe "#memberships_to_notify" do
