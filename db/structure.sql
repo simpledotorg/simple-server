@@ -1861,6 +1861,62 @@ CREATE MATERIALIZED VIEW public.reporting_patient_blood_pressures AS
 
 
 --
+-- Name: reporting_patient_blood_sugars; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+--
+
+CREATE MATERIALIZED VIEW public.reporting_patient_blood_sugars AS
+ SELECT DISTINCT ON (bs.patient_id, cal.month_date) cal.month_date,
+    cal.month,
+    cal.quarter,
+    cal.year,
+    cal.month_string,
+    cal.quarter_string,
+    timezone('UTC'::text, timezone('UTC'::text, bs.recorded_at)) AS blood_sugar_recorded_at,
+    bs.id AS blood_sugar_id,
+    bs.patient_id,
+    bs.blood_sugar_type,
+    bs.blood_sugar_value,
+    bs.facility_id AS blood_sugar_facility_id,
+        CASE
+            WHEN (((bs.blood_sugar_type)::text = 'random'::text) OR ((bs.blood_sugar_type)::text = 'post_prandial'::text)) THEN
+            CASE
+                WHEN (bs.blood_sugar_value < 200.0) THEN 'bs_below_200'::text
+                WHEN ((bs.blood_sugar_value >= 200.0) AND (bs.blood_sugar_value < 300.0)) THEN 'bs_200_to_300'::text
+                WHEN (bs.blood_sugar_value >= 300.0) THEN 'bs_over_300'::text
+                ELSE NULL::text
+            END
+            WHEN ((bs.blood_sugar_type)::text = 'fasting'::text) THEN
+            CASE
+                WHEN (bs.blood_sugar_value < 126.0) THEN 'bs_below_200'::text
+                WHEN ((bs.blood_sugar_value >= 126.0) AND (bs.blood_sugar_value < 200.0)) THEN 'bs_200_to_300'::text
+                WHEN (bs.blood_sugar_value >= 200.0) THEN 'bs_over_300'::text
+                ELSE NULL::text
+            END
+            WHEN ((bs.blood_sugar_type)::text = 'hba1c'::text) THEN
+            CASE
+                WHEN (bs.blood_sugar_value < 7.0) THEN 'bs_below_200'::text
+                WHEN ((bs.blood_sugar_value >= 7.0) AND (bs.blood_sugar_value < 9.0)) THEN 'bs_200_to_300'::text
+                WHEN (bs.blood_sugar_value >= 9.0) THEN 'bs_over_300'::text
+                ELSE NULL::text
+            END
+            ELSE NULL::text
+        END AS blood_sugar_risk_state,
+    timezone('UTC'::text, timezone('UTC'::text, p.recorded_at)) AS patient_registered_at,
+    p.assigned_facility_id AS patient_assigned_facility_id,
+    p.registration_facility_id AS patient_registration_facility_id,
+    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))))) AS months_since_registration,
+    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) * (4)::double precision) + (cal.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))))) AS quarters_since_registration,
+    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))))) AS months_since_bs,
+    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)))) * (4)::double precision) + (cal.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))))) AS quarters_since_bs
+   FROM ((public.blood_sugars bs
+     LEFT JOIN public.reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)), 'YYYY-MM'::text) <= to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))))
+     JOIN public.patients p ON (((bs.patient_id = p.id) AND (p.deleted_at IS NULL))))
+  WHERE (bs.deleted_at IS NULL)
+  ORDER BY bs.patient_id, cal.month_date, bs.recorded_at DESC
+  WITH NO DATA;
+
+
+--
 -- Name: reporting_patient_follow_ups; Type: MATERIALIZED VIEW; Schema: public; Owner: -
 --
 
@@ -2233,6 +2289,12 @@ CREATE MATERIALIZED VIEW public.reporting_patient_states AS
     bps.blood_pressure_recorded_at AS bp_recorded_at,
     bps.systolic,
     bps.diastolic,
+    bss.blood_sugar_id,
+    bss.blood_sugar_facility_id AS bs_facility_id,
+    bss.blood_sugar_recorded_at AS bs_recorded_at,
+    bss.blood_sugar_type,
+    bss.blood_sugar_value,
+    bss.blood_sugar_risk_state,
     visits.encounter_id,
     visits.encounter_recorded_at,
     visits.prescription_drug_id,
@@ -2246,6 +2308,8 @@ CREATE MATERIALIZED VIEW public.reporting_patient_states AS
     visits.quarters_since_visit,
     bps.months_since_bp,
     bps.quarters_since_bp,
+    bss.months_since_bs,
+    bss.quarters_since_bs,
         CASE
             WHEN ((bps.systolic IS NULL) OR (bps.diastolic IS NULL)) THEN 'unknown'::text
             WHEN ((bps.systolic < 140) AND (bps.diastolic < 90)) THEN 'controlled'::text
@@ -2274,10 +2338,26 @@ CREATE MATERIALIZED VIEW public.reporting_patient_states AS
             WHEN ((bps.systolic < 140) AND (bps.diastolic < 90)) THEN 'controlled'::text
             ELSE 'uncontrolled'::text
         END AS htn_treatment_outcome_in_quarter,
+        CASE
+            WHEN ((visits.months_since_visit >= (3)::double precision) OR (visits.months_since_visit IS NULL)) THEN 'missed_visit'::text
+            WHEN ((bss.months_since_bs >= (3)::double precision) OR (bss.months_since_bs IS NULL)) THEN 'visited_no_bs'::text
+            ELSE bss.blood_sugar_risk_state
+        END AS diabetes_treatment_outcome_in_last_3_months,
+        CASE
+            WHEN ((visits.months_since_visit >= (2)::double precision) OR (visits.months_since_visit IS NULL)) THEN 'missed_visit'::text
+            WHEN ((bss.months_since_bs >= (2)::double precision) OR (bss.months_since_bs IS NULL)) THEN 'visited_no_bs'::text
+            ELSE bss.blood_sugar_risk_state
+        END AS diabetes_treatment_outcome_in_last_2_months,
+        CASE
+            WHEN ((visits.quarters_since_visit >= (1)::double precision) OR (visits.quarters_since_visit IS NULL)) THEN 'missed_visit'::text
+            WHEN ((bss.quarters_since_bs >= (1)::double precision) OR (bss.quarters_since_bs IS NULL)) THEN 'visited_no_bs'::text
+            ELSE bss.blood_sugar_risk_state
+        END AS diabetes_treatment_outcome_in_quarter,
     ((current_meds.amlodipine > past_meds.amlodipine) OR (current_meds.telmisartan > past_meds.telmisartan) OR (current_meds.losartan > past_meds.losartan) OR (current_meds.atenolol > past_meds.atenolol) OR (current_meds.enalapril > past_meds.enalapril) OR (current_meds.chlorthalidone > past_meds.chlorthalidone) OR (current_meds.hydrochlorothiazide > past_meds.hydrochlorothiazide)) AS titrated
-   FROM ((((((((public.patients p
+   FROM (((((((((public.patients p
      LEFT JOIN public.reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)), 'YYYY-MM'::text) <= to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))))
      LEFT JOIN public.reporting_patient_blood_pressures bps ON (((p.id = bps.patient_id) AND (cal.month = bps.month) AND (cal.year = bps.year))))
+     LEFT JOIN public.reporting_patient_blood_sugars bss ON (((p.id = bss.patient_id) AND (cal.month = bss.month) AND (cal.year = bss.year))))
      LEFT JOIN public.reporting_patient_visits visits ON (((p.id = visits.patient_id) AND (cal.month = visits.month) AND (cal.year = visits.year))))
      LEFT JOIN public.medical_histories mh ON (((p.id = mh.patient_id) AND (mh.deleted_at IS NULL))))
      LEFT JOIN public.reporting_prescriptions current_meds ON (((current_meds.patient_id = p.id) AND (cal.month_date = current_meds.month_date))))
@@ -2654,6 +2734,48 @@ COMMENT ON COLUMN public.reporting_patient_states.diastolic IS 'Diastolic of the
 
 
 --
+-- Name: COLUMN reporting_patient_states.blood_sugar_id; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_patient_states.blood_sugar_id IS 'ID of the latest BS as of this month. Use this to join with the blood_sugars table.';
+
+
+--
+-- Name: COLUMN reporting_patient_states.bs_facility_id; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_patient_states.bs_facility_id IS 'ID of the facility at which the latest BS was recorded as of this month';
+
+
+--
+-- Name: COLUMN reporting_patient_states.bs_recorded_at; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_patient_states.bs_recorded_at IS 'Time (in UTC) at which the latest BS as of this month was recorded';
+
+
+--
+-- Name: COLUMN reporting_patient_states.blood_sugar_type; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_patient_states.blood_sugar_type IS 'Blood sugar type of the latest BS as of this month';
+
+
+--
+-- Name: COLUMN reporting_patient_states.blood_sugar_value; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_patient_states.blood_sugar_value IS 'Blood sugar value of the latest BS as of this month';
+
+
+--
+-- Name: COLUMN reporting_patient_states.blood_sugar_risk_state; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_patient_states.blood_sugar_risk_state IS 'Blood sugar risk state of the latest BS as of this month';
+
+
+--
 -- Name: COLUMN reporting_patient_states.encounter_id; Type: COMMENT; Schema: public; Owner: -
 --
 
@@ -2745,6 +2867,20 @@ COMMENT ON COLUMN public.reporting_patient_states.quarters_since_bp IS 'Number o
 
 
 --
+-- Name: COLUMN reporting_patient_states.months_since_bs; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_patient_states.months_since_bs IS 'Number of months since the patient''s last BS recording. If a patient had a BS reading on 31st Jan, it would be 1 month since BS on 1st Feb.';
+
+
+--
+-- Name: COLUMN reporting_patient_states.quarters_since_bs; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_patient_states.quarters_since_bs IS 'Number of quarters since the patient''s last BS recording. If a patient had a BS reading on 31st Jan, it would be 1 quarter since BS on 1st Jan.';
+
+
+--
 -- Name: COLUMN reporting_patient_states.last_bp_state; Type: COMMENT; Schema: public; Owner: -
 --
 
@@ -2777,6 +2913,27 @@ COMMENT ON COLUMN public.reporting_patient_states.htn_treatment_outcome_in_last_
 --
 
 COMMENT ON COLUMN public.reporting_patient_states.htn_treatment_outcome_in_quarter IS 'For the visiting period of the current quarter, is this patient''s treatment outcome controlled, uncontrolled, missed_visit, or visited_no_bp?';
+
+
+--
+-- Name: COLUMN reporting_patient_states.diabetes_treatment_outcome_in_last_3_months; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_patient_states.diabetes_treatment_outcome_in_last_3_months IS 'For the visiting period of the last 3 months, is this patient''s diabetes treatment outcome bs_under_200, bs_200_to_300, bs_over_300, missed_visit, or visited_no_bp?';
+
+
+--
+-- Name: COLUMN reporting_patient_states.diabetes_treatment_outcome_in_last_2_months; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_patient_states.diabetes_treatment_outcome_in_last_2_months IS 'For the visiting period of the last 2 months, is this patient''s diabetes treatment outcome bs_under_200, bs_200_to_300, bs_over_300, missed_visit, or visited_no_bp?';
+
+
+--
+-- Name: COLUMN reporting_patient_states.diabetes_treatment_outcome_in_quarter; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_patient_states.diabetes_treatment_outcome_in_quarter IS 'For the visiting period of the current quarter, is this patient''s diabetes treatment outcome bs_under_200, bs_200_to_300, bs_over_300, missed_visit, or visited_no_bp?';
 
 
 --
@@ -3401,62 +3558,6 @@ COMMENT ON COLUMN public.reporting_facility_states.appts_scheduled_32_to_62_days
 --
 
 COMMENT ON COLUMN public.reporting_facility_states.appts_scheduled_more_than_62_days IS 'The total number of appointments scheduled by healthcare workers at the facility in the reporting month more than 62 days from the visit date';
-
-
---
--- Name: reporting_patient_blood_sugars; Type: MATERIALIZED VIEW; Schema: public; Owner: -
---
-
-CREATE MATERIALIZED VIEW public.reporting_patient_blood_sugars AS
- SELECT DISTINCT ON (bs.patient_id, cal.month_date) cal.month_date,
-    cal.month,
-    cal.quarter,
-    cal.year,
-    cal.month_string,
-    cal.quarter_string,
-    timezone('UTC'::text, timezone('UTC'::text, bs.recorded_at)) AS blood_sugar_recorded_at,
-    bs.id AS blood_sugar_id,
-    bs.patient_id,
-    bs.blood_sugar_type,
-    bs.blood_sugar_value,
-    bs.facility_id AS blood_sugar_facility_id,
-        CASE
-            WHEN (((bs.blood_sugar_type)::text = 'random'::text) OR ((bs.blood_sugar_type)::text = 'post_prandial'::text)) THEN
-            CASE
-                WHEN (bs.blood_sugar_value < 200.0) THEN 'bs_below_200'::text
-                WHEN ((bs.blood_sugar_value >= 200.0) AND (bs.blood_sugar_value < 300.0)) THEN 'bs_200_to_300'::text
-                WHEN (bs.blood_sugar_value >= 300.0) THEN 'bs_over_300'::text
-                ELSE NULL::text
-            END
-            WHEN ((bs.blood_sugar_type)::text = 'fasting'::text) THEN
-            CASE
-                WHEN (bs.blood_sugar_value < 126.0) THEN 'bs_below_200'::text
-                WHEN ((bs.blood_sugar_value >= 126.0) AND (bs.blood_sugar_value < 200.0)) THEN 'bs_200_to_300'::text
-                WHEN (bs.blood_sugar_value >= 200.0) THEN 'bs_over_300'::text
-                ELSE NULL::text
-            END
-            WHEN ((bs.blood_sugar_type)::text = 'hba1c'::text) THEN
-            CASE
-                WHEN (bs.blood_sugar_value < 7.0) THEN 'bs_below_200'::text
-                WHEN ((bs.blood_sugar_value >= 7.0) AND (bs.blood_sugar_value < 9.0)) THEN 'bs_200_to_300'::text
-                WHEN (bs.blood_sugar_value >= 9.0) THEN 'bs_over_300'::text
-                ELSE NULL::text
-            END
-            ELSE NULL::text
-        END AS blood_sugar_risk_state,
-    timezone('UTC'::text, timezone('UTC'::text, p.recorded_at)) AS patient_registered_at,
-    p.assigned_facility_id AS patient_assigned_facility_id,
-    p.registration_facility_id AS patient_registration_facility_id,
-    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))))) AS months_since_registration,
-    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) * (4)::double precision) + (cal.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))))) AS quarters_since_registration,
-    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))))) AS months_since_bs,
-    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)))) * (4)::double precision) + (cal.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))))) AS quarters_since_bs
-   FROM ((public.blood_sugars bs
-     LEFT JOIN public.reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)), 'YYYY-MM'::text) <= to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))))
-     JOIN public.patients p ON (((bs.patient_id = p.id) AND (p.deleted_at IS NULL))))
-  WHERE (bs.deleted_at IS NULL)
-  ORDER BY bs.patient_id, cal.month_date, bs.recorded_at DESC
-  WITH NO DATA;
 
 
 --
@@ -5642,6 +5743,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220406075313'),
 ('20220408132514'),
 ('20220408135115'),
+('20220411035535'),
 ('20220412112538');
 
 

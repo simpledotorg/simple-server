@@ -631,5 +631,219 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
         end
       end
     end
+
+    describe "patient diabetes state" do
+      around do |example|
+        with_reporting_time_zone { example.run }
+      end
+
+      it "contains the details of the latest blood sugar measurement for a given month" do
+        patient = create(:patient, recorded_at: 3.months.ago)
+        blood_sugar_1 = create(:blood_sugar, patient: patient, recorded_at: 1.months.ago)
+        blood_sugar_2 = create(:blood_sugar, patient: patient, recorded_at: 2.days.ago)
+        blood_sugar_3 = create(:blood_sugar, patient: patient, recorded_at: Time.now)
+        blood_sugar_4 = create(:blood_sugar, recorded_at: Time.now)
+
+        refresh_views
+
+        results = Reports::PatientState.all.pluck(:patient_id, :month_date, :blood_sugar_id)
+
+        expect(results).to include(
+          [patient.id, june_2021[:one_month_ago].to_date, blood_sugar_1.id],
+          [patient.id, june_2021[:now].to_date, blood_sugar_3.id]
+        )
+
+        expect(results).not_to include(
+          [patient.id, june_2021[:now].to_date, blood_sugar_2.id],
+          [patient.id, june_2021[:now].to_date, blood_sugar_4.id]
+        )
+      end
+
+      it "contains the details of the latest blood sugar measurement from previous months if there is none in the given month" do
+        patient = create(:patient, recorded_at: 6.months.ago)
+        blood_sugar_1 = create(:blood_sugar, patient: patient, recorded_at: 4.months.ago)
+        blood_sugar_2 = create(:blood_sugar, patient: patient, recorded_at: 2.months.ago)
+        blood_sugar_3 = create(:blood_sugar, patient: patient, recorded_at: Time.now)
+
+        refresh_views
+
+        results = Reports::PatientState.all.pluck(:patient_id, :month_date, :blood_sugar_id)
+
+        expect(results).to include(
+          [patient.id, june_2021[:four_months_ago].to_date, blood_sugar_1.id],
+          [patient.id, june_2021[:three_months_ago].to_date, blood_sugar_1.id],
+          [patient.id, june_2021[:two_months_ago].to_date, blood_sugar_2.id],
+          [patient.id, june_2021[:one_month_ago].to_date, blood_sugar_2.id],
+          [patient.id, june_2021[:now].to_date, blood_sugar_3.id]
+        )
+      end
+
+      it "contains the blood sugar risk state based on the latest blood sugar measurement" do
+        patients = create_list(:patient, 4, recorded_at: 6.months.ago)
+        [[patients.first, :random],
+          [patients.second, :post_prandial],
+          [patients.third, :fasting],
+          [patients.fourth, :hba1c]].each do |(patient, blood_sugar_type)|
+          create(:blood_sugar, blood_sugar_type, :bs_below_200, patient: patient, recorded_at: Time.now)
+          create(:blood_sugar, blood_sugar_type, :bs_200_to_300, patient: patient, recorded_at: 1.month.ago)
+          create(:blood_sugar, blood_sugar_type, :bs_over_300, patient: patient, recorded_at: 2.months.ago)
+        end
+
+        refresh_views
+
+        results = Reports::PatientState.all.pluck(:patient_id, :month_date, :blood_sugar_type, :blood_sugar_value, :blood_sugar_risk_state)
+
+        # Random blood sugar
+        expect(results).to include(
+          [patients.first.id, june_2021[:now].to_date, "random", 150, "bs_below_200"],
+          [patients.first.id, june_2021[:one_month_ago].to_date, "random", 250, "bs_200_to_300"],
+          [patients.first.id, june_2021[:two_months_ago].to_date, "random", 350, "bs_over_300"]
+        )
+
+        # Post prandial blood sugar
+        expect(results).to include(
+          [patients.second.id, june_2021[:now].to_date, "post_prandial", 150, "bs_below_200"],
+          [patients.second.id, june_2021[:one_month_ago].to_date, "post_prandial", 250, "bs_200_to_300"],
+          [patients.second.id, june_2021[:two_months_ago].to_date, "post_prandial", 350, "bs_over_300"]
+        )
+
+        # Fasting blood sugar
+        expect(results).to include(
+          [patients.third.id, june_2021[:now].to_date, "fasting", 100, "bs_below_200"],
+          [patients.third.id, june_2021[:one_month_ago].to_date, "fasting", 165, "bs_200_to_300"],
+          [patients.third.id, june_2021[:two_months_ago].to_date, "fasting", 225, "bs_over_300"]
+        )
+
+        # Hba1c blood sugar
+        expect(results).to include(
+          [patients.fourth.id, june_2021[:now].to_date, "hba1c", 6.5, "bs_below_200"],
+          [patients.fourth.id, june_2021[:one_month_ago].to_date, "hba1c", 8.5, "bs_200_to_300"],
+          [patients.fourth.id, june_2021[:two_months_ago].to_date, "hba1c", 9.5, "bs_over_300"]
+        )
+      end
+
+      it "contains a count of months and quarters since the latest blood sugar measurement" do
+        patient = create(:patient, recorded_at: 6.months.ago)
+        blood_sugar_1 = create(:blood_sugar, patient: patient, recorded_at: 4.months.ago)
+        blood_sugar_2 = create(:blood_sugar, patient: patient, recorded_at: 1.months.ago)
+        blood_sugar_3 = create(:blood_sugar, patient: patient, recorded_at: Time.now)
+
+        refresh_views
+
+        results = Reports::PatientState.all.pluck(:patient_id, :month_date, :blood_sugar_id, :months_since_bs, :quarters_since_bs)
+
+        expect(results).to include(
+          [patient.id, june_2021[:six_months_ago].to_date, nil, nil, nil],
+          [patient.id, june_2021[:five_months_ago].to_date, nil, nil, nil],
+          [patient.id, june_2021[:four_months_ago].to_date, blood_sugar_1.id, 0, 0],
+          [patient.id, june_2021[:three_months_ago].to_date, blood_sugar_1.id, 1, 0],
+          [patient.id, june_2021[:two_months_ago].to_date, blood_sugar_1.id, 2, 1],
+          [patient.id, june_2021[:one_month_ago].to_date, blood_sugar_2.id, 0, 0],
+          [patient.id, june_2021[:now].to_date, blood_sugar_3.id, 0, 0]
+        )
+      end
+
+      it "contains the diabetes treatment outcome for a patient over the last 3 months" do
+        # Has no visit in the last 3 months
+        missed_visit_patient = create(:patient, recorded_at: 6.months.ago)
+        create(:blood_sugar, :with_encounter, patient: missed_visit_patient, recorded_at: 6.months.ago)
+
+        # Has visited in the last 3 months but has no BS measurement
+        visited_no_bs_patient = create(:patient, recorded_at: 6.months.ago)
+        # This BS measurement is not considered since it's older than 3 months
+        create(:blood_sugar, :with_encounter, patient: visited_no_bs_patient, recorded_at: 3.months.ago)
+        create(:blood_pressure, :with_encounter, patient: visited_no_bs_patient, recorded_at: 2.months.ago)
+
+        # Have BS measurement at different risk states in last 3 months
+        bs_below_200_patient = create(:patient, recorded_at: 6.months.ago)
+        create(:blood_sugar, :with_encounter, :bs_below_200, patient: bs_below_200_patient, recorded_at: 2.months.ago)
+
+        bs_200_to_300_patient = create(:patient, recorded_at: 6.months.ago)
+        create(:blood_sugar, :with_encounter, :bs_below_200, patient: bs_200_to_300_patient, recorded_at: 2.months.ago)
+        create(:blood_sugar, :with_encounter, :bs_200_to_300, patient: bs_200_to_300_patient, recorded_at: 1.months.ago)
+
+        bs_over_300_patient = create(:patient, recorded_at: 6.months.ago)
+        create(:blood_sugar, :with_encounter, :bs_over_300, patient: bs_over_300_patient, recorded_at: 2.months.ago)
+
+        refresh_views
+
+        results = Reports::PatientState.where(month_date: june_2021[:now]).pluck(:patient_id, :diabetes_treatment_outcome_in_last_3_months)
+        expect(results).to include(
+          [missed_visit_patient.id, "missed_visit"],
+          [visited_no_bs_patient.id, "visited_no_bs"],
+          [bs_below_200_patient.id, "bs_below_200"],
+          [bs_200_to_300_patient.id, "bs_200_to_300"],
+          [bs_over_300_patient.id, "bs_over_300"]
+        )
+      end
+
+      it "contains a patients diabetes treatment outcome over the last 2 months" do
+        # Has no visit in the last 2 months
+        missed_visit_patient = create(:patient, recorded_at: 6.months.ago)
+        create(:blood_sugar, :with_encounter, patient: missed_visit_patient, recorded_at: 6.months.ago)
+
+        # Has visited in the last 2 months but has no BS measurement
+        visited_no_bs_patient = create(:patient, recorded_at: 6.months.ago)
+        # This BS measurement is not considered since it's older than 2 months
+        create(:blood_sugar, :with_encounter, patient: visited_no_bs_patient, recorded_at: 2.months.ago)
+        create(:blood_pressure, :with_encounter, patient: visited_no_bs_patient, recorded_at: 40.days.ago)
+
+        # Have BS measurement at different risk states in last 2 months
+        bs_below_200_patient = create(:patient, recorded_at: 6.months.ago)
+        create(:blood_sugar, :with_encounter, :bs_below_200, patient: bs_below_200_patient, recorded_at: 1.month.ago)
+
+        bs_200_to_300_patient = create(:patient, recorded_at: 6.months.ago)
+        create(:blood_sugar, :with_encounter, :bs_below_200, patient: bs_200_to_300_patient, recorded_at: 1.month.ago)
+        create(:blood_sugar, :with_encounter, :bs_200_to_300, patient: bs_200_to_300_patient, recorded_at: 10.days.ago)
+
+        bs_over_300_patient = create(:patient, recorded_at: 6.months.ago)
+        create(:blood_sugar, :with_encounter, :bs_over_300, patient: bs_over_300_patient, recorded_at: 40.days.ago)
+
+        refresh_views
+
+        results = Reports::PatientState.where(month_date: june_2021[:now]).pluck(:patient_id, :diabetes_treatment_outcome_in_last_2_months)
+        expect(results).to include(
+          [missed_visit_patient.id, "missed_visit"],
+          [visited_no_bs_patient.id, "visited_no_bs"],
+          [bs_below_200_patient.id, "bs_below_200"],
+          [bs_200_to_300_patient.id, "bs_200_to_300"],
+          [bs_over_300_patient.id, "bs_over_300"]
+        )
+      end
+
+      it "contains a patients diabetes treatment outcome over the quarter" do
+        # Has no visit in the last quarter
+        missed_visit_patient = create(:patient, recorded_at: 6.months.ago)
+        create(:blood_sugar, :with_encounter, patient: missed_visit_patient, recorded_at: june_2021[:three_months_ago])
+
+        # Has visited in the last quarter but has no BS measurement
+        visited_no_bs_patient = create(:patient, recorded_at: 6.months.ago)
+        # This BS measurement is not considered since it's in the previous quarter
+        create(:blood_sugar, :with_encounter, patient: visited_no_bs_patient, recorded_at: june_2021[:three_months_ago])
+        create(:blood_pressure, :with_encounter, patient: visited_no_bs_patient, recorded_at: 2.months.ago)
+
+        # Have BS measurement at different risk states in last quarter
+        bs_below_200_patient = create(:patient, recorded_at: 6.months.ago)
+        create(:blood_sugar, :with_encounter, :bs_below_200, patient: bs_below_200_patient, recorded_at: 1.month.ago)
+
+        bs_200_to_300_patient = create(:patient, recorded_at: 6.months.ago)
+        create(:blood_sugar, :with_encounter, :bs_below_200, patient: bs_200_to_300_patient, recorded_at: 1.month.ago)
+        create(:blood_sugar, :with_encounter, :bs_200_to_300, patient: bs_200_to_300_patient, recorded_at: 10.days.ago)
+
+        bs_over_300_patient = create(:patient, recorded_at: 6.months.ago)
+        create(:blood_sugar, :with_encounter, :bs_over_300, patient: bs_over_300_patient, recorded_at: 40.days.ago)
+
+        refresh_views
+
+        results = Reports::PatientState.where(month_date: june_2021[:now]).pluck(:patient_id, :diabetes_treatment_outcome_in_quarter)
+        expect(results).to include(
+          [missed_visit_patient.id, "missed_visit"],
+          [visited_no_bs_patient.id, "visited_no_bs"],
+          [bs_below_200_patient.id, "bs_below_200"],
+          [bs_200_to_300_patient.id, "bs_200_to_300"],
+          [bs_over_300_patient.id, "bs_over_300"]
+        )
+      end
+    end
   end
 end
