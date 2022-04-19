@@ -36,9 +36,9 @@ RSpec.describe MarkOldScheduledAppointmentsVisited do
 
       described_class.new.up
 
-      expect(appointment_1.reload.updated_at).to eq(Time.current)
-      expect(appointment_2.reload.updated_at).to eq(Time.current)
-      expect(appointment_3.reload.updated_at).to eq(last_month)
+      expect(appointment_1.reload.updated_at.strftime("%Y-%m-%d")).to eq(Time.current.strftime("%Y-%m-%d"))
+      expect(appointment_2.reload.updated_at.strftime("%Y-%m-%d")).to eq(Time.current.strftime("%Y-%m-%d"))
+      expect(appointment_3.reload.updated_at.strftime("%Y-%m-%d")).to eq(last_month.strftime("%Y-%m-%d"))
     end
   end
 end
