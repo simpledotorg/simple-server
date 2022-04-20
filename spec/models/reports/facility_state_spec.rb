@@ -464,6 +464,25 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         expect(results.adjusted_visited_no_bs_under_care).to eq 2
       end
     end
+
+    it "contains the number of monthly diabetes followup patients" do
+      facility = create(:facility)
+      patients = create_list(:patient, 2, :diabetes, assigned_facility: facility, recorded_at: june_2021[:long_ago])
+      create(:blood_sugar, :with_encounter, :bs_below_200, blood_sugar_type: :random, patient: patients.first, recorded_at: june_2021[:two_months_ago])
+      create(:blood_pressure, :with_encounter, patient: patients.second, recorded_at: june_2021[:one_month_ago])
+
+      refresh_views
+      with_reporting_time_zone do
+        expect(described_class
+                 .where(facility_id: facility.id)
+                 .where("month_date = ?", june_2021[:two_months_ago])
+                 .pluck(:monthly_diabetes_follow_ups)).to all eq 1
+        expect(described_class
+                 .where(facility_id: facility.id)
+                 .where("month_date = ?", june_2021[:one_month_ago])
+                 .pluck(:monthly_diabetes_follow_ups)).to all eq 1
+      end
+    end
   end
 
   describe ".with_patients" do
