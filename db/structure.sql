@@ -3131,7 +3131,6 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
             count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'missed_visit'::text))) AS bs_missed_visit_under_care,
             count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'visited_no_bs'::text))) AS visited_no_bs_under_care,
             count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'missed_visit'::text))) AS bs_missed_visit_lost_to_follow_up,
-            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'visited_no_bs'::text))) AS visited_no_bs_lost_to_follow_up,
             count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'under_care'::text)) AS diabetes_patients_under_care,
             count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text)) AS diabetes_patients_lost_to_follow_up
            FROM public.reporting_patient_states
@@ -3234,7 +3233,6 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
     adjusted_diabetes_outcomes.bs_missed_visit_under_care AS adjusted_bs_missed_visit_under_care,
     adjusted_diabetes_outcomes.visited_no_bs_under_care AS adjusted_visited_no_bs_under_care,
     adjusted_diabetes_outcomes.bs_missed_visit_lost_to_follow_up AS adjusted_bs_missed_visit_lost_to_follow_up,
-    adjusted_diabetes_outcomes.visited_no_bs_lost_to_follow_up AS adjusted_visited_no_bs_lost_to_follow_up,
     adjusted_diabetes_outcomes.diabetes_patients_under_care AS adjusted_diabetes_patients_under_care,
     adjusted_diabetes_outcomes.diabetes_patients_lost_to_follow_up AS adjusted_diabetes_patients_lost_to_follow_up,
     monthly_cohort_outcomes.controlled AS monthly_cohort_controlled,
@@ -3726,13 +3724,6 @@ COMMENT ON COLUMN public.reporting_facility_states.adjusted_visited_no_bs_under_
 --
 
 COMMENT ON COLUMN public.reporting_facility_states.adjusted_bs_missed_visit_lost_to_follow_up IS 'adjusted_diabetes_missed_visit_lost_to_follow_up';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_visited_no_bs_lost_to_follow_up; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_visited_no_bs_lost_to_follow_up IS 'adjusted_visited_no_bs_lost_to_follow_up';
 
 
 --

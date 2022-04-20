@@ -68,7 +68,6 @@ reporting_facility_states:
     adjusted_missed_visit_lost_to_follow_up: "adjusted_missed_visit_lost_to_follow_up"
     adjusted_bs_missed_visit_lost_to_follow_up: "adjusted_diabetes_missed_visit_lost_to_follow_up"
     adjusted_visited_no_bp_lost_to_follow_up: "adjusted_visited_no_bp_lost_to_follow_up"
-    adjusted_visited_no_bs_lost_to_follow_up: "adjusted_visited_no_bs_lost_to_follow_up"
     adjusted_patients_under_care: "The number of hypertensive patients assigned to the facility that were registered before the last 3 months"
     adjusted_diabetes_patients_under_care: "The number of diabetic patients assigned to the facility that were registered before the last 3 months"
     adjusted_patients_lost_to_follow_up: "The number of hypertensive patients assigned to the facility that were registered before the last 3 months, with no visit in the last year"

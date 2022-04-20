@@ -83,7 +83,6 @@ WITH
                COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care' AND diabetes_treatment_outcome_in_last_3_months = 'visited_no_bs') AS visited_no_bs_under_care,
 
                COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'lost_to_follow_up' AND diabetes_treatment_outcome_in_last_3_months = 'missed_visit') AS bs_missed_visit_lost_to_follow_up,
-               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'lost_to_follow_up' AND diabetes_treatment_outcome_in_last_3_months = 'visited_no_bs') AS visited_no_bs_lost_to_follow_up,
 
                COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care') AS diabetes_patients_under_care,
                COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'lost_to_follow_up') AS diabetes_patients_lost_to_follow_up
@@ -189,7 +188,6 @@ adjusted_diabetes_outcomes.bs_missed_visit_under_care AS adjusted_bs_missed_visi
 adjusted_diabetes_outcomes.visited_no_bs_under_care AS adjusted_visited_no_bs_under_care,
 
 adjusted_diabetes_outcomes.bs_missed_visit_lost_to_follow_up AS adjusted_bs_missed_visit_lost_to_follow_up,
-adjusted_diabetes_outcomes.visited_no_bs_lost_to_follow_up AS adjusted_visited_no_bs_lost_to_follow_up,
 
 adjusted_diabetes_outcomes.diabetes_patients_under_care AS adjusted_diabetes_patients_under_care,
 adjusted_diabetes_outcomes.diabetes_patients_lost_to_follow_up AS adjusted_diabetes_patients_lost_to_follow_up,
