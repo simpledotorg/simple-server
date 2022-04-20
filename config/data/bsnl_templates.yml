@@ -11,7 +11,6 @@ bn-IN.notifications.covid.medication_reminder:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: bn-IN.notifications.covid.medication_reminder
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.covid.medication_reminder
 bn-IN.notifications.set01.alarm:
@@ -25,7 +24,6 @@ bn-IN.notifications.set01.alarm:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: bn-IN.notifications.set01.alarm
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.set01.alarm
 bn-IN.notifications.set01.basic:
@@ -39,7 +37,6 @@ bn-IN.notifications.set01.basic:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: bn-IN.notifications.set01.basic
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.set01.basic
 bn-IN.notifications.set01.emotional_guilt:
@@ -53,7 +50,6 @@ bn-IN.notifications.set01.emotional_guilt:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: bn-IN.notifications.set01.emotional_guilt
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.set01.emotional_guilt
 bn-IN.notifications.set01.emotional_relatives:
@@ -67,7 +63,6 @@ bn-IN.notifications.set01.emotional_relatives:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: bn-IN.notifications.set01.emotional_relatives
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.set01.emotional_relatives
 bn-IN.notifications.set01.free:
@@ -81,7 +76,6 @@ bn-IN.notifications.set01.free:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: bn-IN.notifications.set01.free
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.set01.free
 bn-IN.notifications.set01.gratitude:
@@ -95,7 +89,6 @@ bn-IN.notifications.set01.gratitude:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: bn-IN.notifications.set01.gratitude
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.set01.gratitude
 bn-IN.notifications.set01.professional_request:
@@ -109,7 +102,6 @@ bn-IN.notifications.set01.professional_request:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: bn-IN.notifications.set01.professional_request
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.set01.professional_request
 bn-IN.notifications.set01.response:
@@ -123,7 +115,6 @@ bn-IN.notifications.set01.response:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: bn-IN.notifications.set01.response
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.set01.response
 bn-IN.notifications.set02.alarm:
@@ -136,7 +127,6 @@ bn-IN.notifications.set02.alarm:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: bn-IN.notifications.set02.alarm
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.set02.alarm
 bn-IN.notifications.set02.basic:
@@ -149,7 +139,6 @@ bn-IN.notifications.set02.basic:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: bn-IN.notifications.set02.basic
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.set02.basic
 bn-IN.notifications.set02.emotional_guilt:
@@ -162,7 +151,6 @@ bn-IN.notifications.set02.emotional_guilt:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: bn-IN.notifications.set02.emotional_guilt
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.set02.emotional_guilt
 bn-IN.notifications.set02.emotional_relatives:
@@ -175,7 +163,6 @@ bn-IN.notifications.set02.emotional_relatives:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: bn-IN.notifications.set02.emotional_relatives
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.set02.emotional_relatives
 bn-IN.notifications.set02.free:
@@ -188,7 +175,6 @@ bn-IN.notifications.set02.free:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: bn-IN.notifications.set02.free
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.set02.free
 bn-IN.notifications.set02.gratitude:
@@ -201,7 +187,6 @@ bn-IN.notifications.set02.gratitude:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: bn-IN.notifications.set02.gratitude
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.set02.gratitude
 bn-IN.notifications.set02.professional_request:
@@ -214,7 +199,6 @@ bn-IN.notifications.set02.professional_request:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: bn-IN.notifications.set02.professional_request
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.set02.professional_request
 bn-IN.notifications.set02.response:
@@ -227,7 +211,6 @@ bn-IN.notifications.set02.response:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: bn-IN.notifications.set02.response
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.set02.response
 bn-IN.notifications.set03.alarm:
@@ -240,7 +223,6 @@ bn-IN.notifications.set03.alarm:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: bn-IN.notifications.set03.alarm
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.set03.alarm
 bn-IN.notifications.set03.basic: &1
@@ -253,7 +235,6 @@ bn-IN.notifications.set03.basic: &1
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: bn-IN.notifications.set03.basic
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.set03.basic
 bn-IN.notifications.set03.emotional_guilt:
@@ -266,7 +247,6 @@ bn-IN.notifications.set03.emotional_guilt:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: bn-IN.notifications.set03.emotional_guilt
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.set03.emotional_guilt
 bn-IN.notifications.set03.emotional_relatives:
@@ -279,7 +259,6 @@ bn-IN.notifications.set03.emotional_relatives:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: bn-IN.notifications.set03.emotional_relatives
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.set03.emotional_relatives
 bn-IN.notifications.set03.free:
@@ -292,7 +271,6 @@ bn-IN.notifications.set03.free:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: bn-IN.notifications.set03.free
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.set03.free
 bn-IN.notifications.set03.gratitude:
@@ -305,7 +283,6 @@ bn-IN.notifications.set03.gratitude:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: bn-IN.notifications.set03.gratitude
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.set03.gratitude
 bn-IN.notifications.set03.professional_request:
@@ -318,7 +295,6 @@ bn-IN.notifications.set03.professional_request:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: bn-IN.notifications.set03.professional_request
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.set03.professional_request
 bn-IN.notifications.set03.response:
@@ -331,12 +307,21 @@ bn-IN.notifications.set03.response:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: bn-IN.notifications.set03.response
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.set03.response
 bn-IN.notifications.set03_basic_repeated.first: *1
 bn-IN.notifications.set03_basic_repeated.second: *1
 bn-IN.notifications.set03_basic_repeated.third: *1
+en.notifications.covid.medication_reminder.2:
+  Template_Id: '1407165001269262073'
+  Template_Keys: []
+  Non_Variable_Text_Length: '0'
+  Max_Length_Permitted: '0'
+  Template_Status: '0'
+  Is_Unicode: '0'
+  Version: 2
+  Is_Latest_Version: true
+  Latest_Template_Version: en.notifications.covid.medication_reminder.2
 en.notifications.set01.alarm:
   Template_Id: '1407164725510919631'
   Template_Keys:
@@ -348,9 +333,18 @@ en.notifications.set01.alarm:
   Template_Status: '1'
   Is_Unicode: '0'
   Version: 1
-  Template_Name_Without_Version: en.notifications.set01.alarm
+  Is_Latest_Version: false
+  Latest_Template_Version: en.notifications.set01.alarm.2
+en.notifications.set01.alarm.2:
+  Template_Id: '1407165001223058275'
+  Template_Keys: []
+  Non_Variable_Text_Length: '0'
+  Max_Length_Permitted: '0'
+  Template_Status: '0'
+  Is_Unicode: '0'
+  Version: 2
   Is_Latest_Version: true
-  Latest_Template_Version: en.notifications.set01.alarm
+  Latest_Template_Version: en.notifications.set01.alarm.2
 en.notifications.set01.basic:
   Template_Id: '1407164725487206185'
   Template_Keys:
@@ -362,9 +356,18 @@ en.notifications.set01.basic:
   Template_Status: '1'
   Is_Unicode: '0'
   Version: 1
-  Template_Name_Without_Version: en.notifications.set01.basic
+  Is_Latest_Version: false
+  Latest_Template_Version: en.notifications.set01.basic.2
+en.notifications.set01.basic.2:
+  Template_Id: '1407165001219689845'
+  Template_Keys: []
+  Non_Variable_Text_Length: '0'
+  Max_Length_Permitted: '0'
+  Template_Status: '0'
+  Is_Unicode: '0'
+  Version: 2
   Is_Latest_Version: true
-  Latest_Template_Version: en.notifications.set01.basic
+  Latest_Template_Version: en.notifications.set01.basic.2
 en.notifications.set01.emotional_guilt:
   Template_Id: '1407164725538353809'
   Template_Keys:
@@ -376,9 +379,18 @@ en.notifications.set01.emotional_guilt:
   Template_Status: '1'
   Is_Unicode: '0'
   Version: 1
-  Template_Name_Without_Version: en.notifications.set01.emotional_guilt
+  Is_Latest_Version: false
+  Latest_Template_Version: en.notifications.set01.emotional_guilt.2
+en.notifications.set01.emotional_guilt.2:
+  Template_Id: '1407165001227855516'
+  Template_Keys: []
+  Non_Variable_Text_Length: '0'
+  Max_Length_Permitted: '0'
+  Template_Status: '0'
+  Is_Unicode: '0'
+  Version: 2
   Is_Latest_Version: true
-  Latest_Template_Version: en.notifications.set01.emotional_guilt
+  Latest_Template_Version: en.notifications.set01.emotional_guilt.2
 en.notifications.set01.emotional_relatives:
   Template_Id: '1407164725529980989'
   Template_Keys:
@@ -390,9 +402,18 @@ en.notifications.set01.emotional_relatives:
   Template_Status: '1'
   Is_Unicode: '0'
   Version: 1
-  Template_Name_Without_Version: en.notifications.set01.emotional_relatives
+  Is_Latest_Version: false
+  Latest_Template_Version: en.notifications.set01.emotional_relatives.2
+en.notifications.set01.emotional_relatives.2:
+  Template_Id: '1407165001225470547'
+  Template_Keys: []
+  Non_Variable_Text_Length: '0'
+  Max_Length_Permitted: '0'
+  Template_Status: '0'
+  Is_Unicode: '0'
+  Version: 2
   Is_Latest_Version: true
-  Latest_Template_Version: en.notifications.set01.emotional_relatives
+  Latest_Template_Version: en.notifications.set01.emotional_relatives.2
 en.notifications.set01.free:
   Template_Id: '1407164725502986191'
   Template_Keys:
@@ -404,9 +425,18 @@ en.notifications.set01.free:
   Template_Status: '1'
   Is_Unicode: '0'
   Version: 1
-  Template_Name_Without_Version: en.notifications.set01.free
+  Is_Latest_Version: false
+  Latest_Template_Version: en.notifications.set01.free.2
+en.notifications.set01.free.2:
+  Template_Id: '1407165001305061656'
+  Template_Keys: []
+  Non_Variable_Text_Length: '0'
+  Max_Length_Permitted: '0'
+  Template_Status: '0'
+  Is_Unicode: '0'
+  Version: 2
   Is_Latest_Version: true
-  Latest_Template_Version: en.notifications.set01.free
+  Latest_Template_Version: en.notifications.set01.free.2
 en.notifications.set01.gratitude:
   Template_Id: '1407164725496461044'
   Template_Keys:
@@ -418,9 +448,18 @@ en.notifications.set01.gratitude:
   Template_Status: '1'
   Is_Unicode: '0'
   Version: 1
-  Template_Name_Without_Version: en.notifications.set01.gratitude
+  Is_Latest_Version: false
+  Latest_Template_Version: en.notifications.set01.gratitude.2
+en.notifications.set01.gratitude.2:
+  Template_Id: '1407165001302662676'
+  Template_Keys: []
+  Non_Variable_Text_Length: '0'
+  Max_Length_Permitted: '0'
+  Template_Status: '0'
+  Is_Unicode: '0'
+  Version: 2
   Is_Latest_Version: true
-  Latest_Template_Version: en.notifications.set01.gratitude
+  Latest_Template_Version: en.notifications.set01.gratitude.2
 en.notifications.set01.professional_request:
   Template_Id: '1407164725545153540'
   Template_Keys:
@@ -432,9 +471,28 @@ en.notifications.set01.professional_request:
   Template_Status: '1'
   Is_Unicode: '0'
   Version: 1
-  Template_Name_Without_Version: en.notifications.set01.professional_request
+  Is_Latest_Version: false
+  Latest_Template_Version: en.notifications.set01.professional_request.2
+en.notifications.set01.professional_request.2:
+  Template_Id: '1407165001230300343'
+  Template_Keys: []
+  Non_Variable_Text_Length: '0'
+  Max_Length_Permitted: '0'
+  Template_Status: '0'
+  Is_Unicode: '0'
+  Version: 2
   Is_Latest_Version: true
-  Latest_Template_Version: en.notifications.set01.professional_request
+  Latest_Template_Version: en.notifications.set01.professional_request.2
+en.notifications.set01.response.2:
+  Template_Id: '1407165001233162374'
+  Template_Keys: []
+  Non_Variable_Text_Length: '0'
+  Max_Length_Permitted: '0'
+  Template_Status: '0'
+  Is_Unicode: '0'
+  Version: 2
+  Is_Latest_Version: true
+  Latest_Template_Version: en.notifications.set01.response.2
 en.notifications.set02.alarm:
   Template_Id: '1407164725632922267'
   Template_Keys:
@@ -445,9 +503,18 @@ en.notifications.set02.alarm:
   Template_Status: '1'
   Is_Unicode: '0'
   Version: 1
-  Template_Name_Without_Version: en.notifications.set02.alarm
+  Is_Latest_Version: false
+  Latest_Template_Version: en.notifications.set02.alarm.2
+en.notifications.set02.alarm.2:
+  Template_Id: '1407165001312263093'
+  Template_Keys: []
+  Non_Variable_Text_Length: '0'
+  Max_Length_Permitted: '0'
+  Template_Status: '0'
+  Is_Unicode: '0'
+  Version: 2
   Is_Latest_Version: true
-  Latest_Template_Version: en.notifications.set02.alarm
+  Latest_Template_Version: en.notifications.set02.alarm.2
 en.notifications.set02.basic:
   Template_Id: '1407164725572137856'
   Template_Keys:
@@ -458,9 +525,18 @@ en.notifications.set02.basic:
   Template_Status: '1'
   Is_Unicode: '0'
   Version: 1
-  Template_Name_Without_Version: en.notifications.set02.basic
+  Is_Latest_Version: false
+  Latest_Template_Version: en.notifications.set02.basic.2
+en.notifications.set02.basic.2:
+  Template_Id: '1407165001235568531'
+  Template_Keys: []
+  Non_Variable_Text_Length: '0'
+  Max_Length_Permitted: '0'
+  Template_Status: '0'
+  Is_Unicode: '0'
+  Version: 2
   Is_Latest_Version: true
-  Latest_Template_Version: en.notifications.set02.basic
+  Latest_Template_Version: en.notifications.set02.basic.2
 en.notifications.set02.emotional_guilt:
   Template_Id: '1407164725714608569'
   Template_Keys:
@@ -471,9 +547,18 @@ en.notifications.set02.emotional_guilt:
   Template_Status: '1'
   Is_Unicode: '0'
   Version: 1
-  Template_Name_Without_Version: en.notifications.set02.emotional_guilt
+  Is_Latest_Version: false
+  Latest_Template_Version: en.notifications.set02.emotional_guilt.2
+en.notifications.set02.emotional_guilt.2:
+  Template_Id: '1407165001317058855'
+  Template_Keys: []
+  Non_Variable_Text_Length: '0'
+  Max_Length_Permitted: '0'
+  Template_Status: '0'
+  Is_Unicode: '0'
+  Version: 2
   Is_Latest_Version: true
-  Latest_Template_Version: en.notifications.set02.emotional_guilt
+  Latest_Template_Version: en.notifications.set02.emotional_guilt.2
 en.notifications.set02.emotional_relatives:
   Template_Id: '1407164725692394948'
   Template_Keys:
@@ -484,9 +569,18 @@ en.notifications.set02.emotional_relatives:
   Template_Status: '1'
   Is_Unicode: '0'
   Version: 1
-  Template_Name_Without_Version: en.notifications.set02.emotional_relatives
+  Is_Latest_Version: false
+  Latest_Template_Version: en.notifications.set02.emotional_relatives.2
+en.notifications.set02.emotional_relatives.2:
+  Template_Id: '1407165001314659382'
+  Template_Keys: []
+  Non_Variable_Text_Length: '0'
+  Max_Length_Permitted: '0'
+  Template_Status: '0'
+  Is_Unicode: '0'
+  Version: 2
   Is_Latest_Version: true
-  Latest_Template_Version: en.notifications.set02.emotional_relatives
+  Latest_Template_Version: en.notifications.set02.emotional_relatives.2
 en.notifications.set02.free:
   Template_Id: '1407164725585480961'
   Template_Keys:
@@ -497,9 +591,18 @@ en.notifications.set02.free:
   Template_Status: '1'
   Is_Unicode: '0'
   Version: 1
-  Template_Name_Without_Version: en.notifications.set02.free
+  Is_Latest_Version: false
+  Latest_Template_Version: en.notifications.set02.free.2
+en.notifications.set02.free.2:
+  Template_Id: '1407165001309866982'
+  Template_Keys: []
+  Non_Variable_Text_Length: '0'
+  Max_Length_Permitted: '0'
+  Template_Status: '0'
+  Is_Unicode: '0'
+  Version: 2
   Is_Latest_Version: true
-  Latest_Template_Version: en.notifications.set02.free
+  Latest_Template_Version: en.notifications.set02.free.2
 en.notifications.set02.gratitude:
   Template_Id: '1407164725579238311'
   Template_Keys:
@@ -510,9 +613,18 @@ en.notifications.set02.gratitude:
   Template_Status: '1'
   Is_Unicode: '0'
   Version: 1
-  Template_Name_Without_Version: en.notifications.set02.gratitude
+  Is_Latest_Version: false
+  Latest_Template_Version: en.notifications.set02.gratitude.2
+en.notifications.set02.gratitude.2:
+  Template_Id: '1407165001307463709'
+  Template_Keys: []
+  Non_Variable_Text_Length: '0'
+  Max_Length_Permitted: '0'
+  Template_Status: '0'
+  Is_Unicode: '0'
+  Version: 2
   Is_Latest_Version: true
-  Latest_Template_Version: en.notifications.set02.gratitude
+  Latest_Template_Version: en.notifications.set02.gratitude.2
 en.notifications.set02.professional_request:
   Template_Id: '1407164725761218672'
   Template_Keys:
@@ -523,9 +635,28 @@ en.notifications.set02.professional_request:
   Template_Status: '1'
   Is_Unicode: '0'
   Version: 1
-  Template_Name_Without_Version: en.notifications.set02.professional_request
+  Is_Latest_Version: false
+  Latest_Template_Version: en.notifications.set02.professional_request.2
+en.notifications.set02.professional_request.2:
+  Template_Id: '1407165001319465494'
+  Template_Keys: []
+  Non_Variable_Text_Length: '0'
+  Max_Length_Permitted: '0'
+  Template_Status: '0'
+  Is_Unicode: '0'
+  Version: 2
   Is_Latest_Version: true
-  Latest_Template_Version: en.notifications.set02.professional_request
+  Latest_Template_Version: en.notifications.set02.professional_request.2
+en.notifications.set02.response.2:
+  Template_Id: '1407165001240359762'
+  Template_Keys: []
+  Non_Variable_Text_Length: '0'
+  Max_Length_Permitted: '0'
+  Template_Status: '0'
+  Is_Unicode: '0'
+  Version: 2
+  Is_Latest_Version: true
+  Latest_Template_Version: en.notifications.set02.response.2
 en.notifications.set03.alarm:
   Template_Id: '1407164725798282340'
   Template_Keys:
@@ -536,10 +667,19 @@ en.notifications.set03.alarm:
   Template_Status: '1'
   Is_Unicode: '0'
   Version: 1
-  Template_Name_Without_Version: en.notifications.set03.alarm
+  Is_Latest_Version: false
+  Latest_Template_Version: en.notifications.set03.alarm.2
+en.notifications.set03.alarm.2:
+  Template_Id: '1407165001249960671'
+  Template_Keys: []
+  Non_Variable_Text_Length: '0'
+  Max_Length_Permitted: '0'
+  Template_Status: '0'
+  Is_Unicode: '0'
+  Version: 2
   Is_Latest_Version: true
-  Latest_Template_Version: en.notifications.set03.alarm
-en.notifications.set03.basic: &2
+  Latest_Template_Version: en.notifications.set03.alarm.2
+en.notifications.set03.basic:
   Template_Id: '1407164725768334531'
   Template_Keys:
   - facility_name
@@ -549,9 +689,18 @@ en.notifications.set03.basic: &2
   Template_Status: '1'
   Is_Unicode: '0'
   Version: 1
-  Template_Name_Without_Version: en.notifications.set03.basic
+  Is_Latest_Version: false
+  Latest_Template_Version: en.notifications.set03.basic.2
+en.notifications.set03.basic.2: &2
+  Template_Id: '1407165001242755867'
+  Template_Keys: []
+  Non_Variable_Text_Length: '0'
+  Max_Length_Permitted: '0'
+  Template_Status: '0'
+  Is_Unicode: '0'
+  Version: 2
   Is_Latest_Version: true
-  Latest_Template_Version: en.notifications.set03.basic
+  Latest_Template_Version: en.notifications.set03.basic.2
 en.notifications.set03.emotional_guilt:
   Template_Id: '1407164725821278607'
   Template_Keys:
@@ -562,9 +711,18 @@ en.notifications.set03.emotional_guilt:
   Template_Status: '1'
   Is_Unicode: '0'
   Version: 1
-  Template_Name_Without_Version: en.notifications.set03.emotional_guilt
+  Is_Latest_Version: false
+  Latest_Template_Version: en.notifications.set03.emotional_guilt.2
+en.notifications.set03.emotional_guilt.2:
+  Template_Id: '1407165001254761437'
+  Template_Keys: []
+  Non_Variable_Text_Length: '0'
+  Max_Length_Permitted: '0'
+  Template_Status: '0'
+  Is_Unicode: '0'
+  Version: 2
   Is_Latest_Version: true
-  Latest_Template_Version: en.notifications.set03.emotional_guilt
+  Latest_Template_Version: en.notifications.set03.emotional_guilt.2
 en.notifications.set03.emotional_relatives:
   Template_Id: '1407164725812055561'
   Template_Keys:
@@ -575,9 +733,18 @@ en.notifications.set03.emotional_relatives:
   Template_Status: '1'
   Is_Unicode: '0'
   Version: 1
-  Template_Name_Without_Version: en.notifications.set03.emotional_relatives
+  Is_Latest_Version: false
+  Latest_Template_Version: en.notifications.set03.emotional_relatives.2
+en.notifications.set03.emotional_relatives.2:
+  Template_Id: '1407165001252361147'
+  Template_Keys: []
+  Non_Variable_Text_Length: '0'
+  Max_Length_Permitted: '0'
+  Template_Status: '0'
+  Is_Unicode: '0'
+  Version: 2
   Is_Latest_Version: true
-  Latest_Template_Version: en.notifications.set03.emotional_relatives
+  Latest_Template_Version: en.notifications.set03.emotional_relatives.2
 en.notifications.set03.free:
   Template_Id: '1407164725785600391'
   Template_Keys:
@@ -588,9 +755,18 @@ en.notifications.set03.free:
   Template_Status: '1'
   Is_Unicode: '0'
   Version: 1
-  Template_Name_Without_Version: en.notifications.set03.free
+  Is_Latest_Version: false
+  Latest_Template_Version: en.notifications.set03.free.2
+en.notifications.set03.free.2:
+  Template_Id: '1407165001247562973'
+  Template_Keys: []
+  Non_Variable_Text_Length: '0'
+  Max_Length_Permitted: '0'
+  Template_Status: '0'
+  Is_Unicode: '0'
+  Version: 2
   Is_Latest_Version: true
-  Latest_Template_Version: en.notifications.set03.free
+  Latest_Template_Version: en.notifications.set03.free.2
 en.notifications.set03.gratitude:
   Template_Id: '1407164725779473440'
   Template_Keys:
@@ -601,9 +777,18 @@ en.notifications.set03.gratitude:
   Template_Status: '1'
   Is_Unicode: '0'
   Version: 1
-  Template_Name_Without_Version: en.notifications.set03.gratitude
+  Is_Latest_Version: false
+  Latest_Template_Version: en.notifications.set03.gratitude.2
+en.notifications.set03.gratitude.2:
+  Template_Id: '1407165001245162476'
+  Template_Keys: []
+  Non_Variable_Text_Length: '0'
+  Max_Length_Permitted: '0'
+  Template_Status: '0'
+  Is_Unicode: '0'
+  Version: 2
   Is_Latest_Version: true
-  Latest_Template_Version: en.notifications.set03.gratitude
+  Latest_Template_Version: en.notifications.set03.gratitude.2
 en.notifications.set03.professional_request:
   Template_Id: '1407164725844182825'
   Template_Keys:
@@ -614,9 +799,28 @@ en.notifications.set03.professional_request:
   Template_Status: '1'
   Is_Unicode: '0'
   Version: 1
-  Template_Name_Without_Version: en.notifications.set03.professional_request
+  Is_Latest_Version: false
+  Latest_Template_Version: en.notifications.set03.professional_request.2
+en.notifications.set03.professional_request.2:
+  Template_Id: '1407165001257157419'
+  Template_Keys: []
+  Non_Variable_Text_Length: '0'
+  Max_Length_Permitted: '0'
+  Template_Status: '0'
+  Is_Unicode: '0'
+  Version: 2
   Is_Latest_Version: true
-  Latest_Template_Version: en.notifications.set03.professional_request
+  Latest_Template_Version: en.notifications.set03.professional_request.2
+en.notifications.set03.response.2:
+  Template_Id: '1407165001259563701'
+  Template_Keys: []
+  Non_Variable_Text_Length: '0'
+  Max_Length_Permitted: '0'
+  Template_Status: '0'
+  Is_Unicode: '0'
+  Version: 2
+  Is_Latest_Version: true
+  Latest_Template_Version: en.notifications.set03.response.2
 en.notifications.set03_basic_repeated.first: *2
 en.notifications.set03_basic_repeated.second: *2
 en.notifications.set03_basic_repeated.third: *2
@@ -630,7 +834,6 @@ hi-IN.notifications.covid.medication_reminder:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: hi-IN.notifications.covid.medication_reminder
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.covid.medication_reminder
 hi-IN.notifications.set01.alarm:
@@ -644,7 +847,6 @@ hi-IN.notifications.set01.alarm:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: hi-IN.notifications.set01.alarm
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.set01.alarm
 hi-IN.notifications.set01.basic:
@@ -658,7 +860,6 @@ hi-IN.notifications.set01.basic:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: hi-IN.notifications.set01.basic
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.set01.basic
 hi-IN.notifications.set01.emotional_guilt:
@@ -672,7 +873,6 @@ hi-IN.notifications.set01.emotional_guilt:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: hi-IN.notifications.set01.emotional_guilt
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.set01.emotional_guilt
 hi-IN.notifications.set01.emotional_relatives:
@@ -686,7 +886,6 @@ hi-IN.notifications.set01.emotional_relatives:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: hi-IN.notifications.set01.emotional_relatives
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.set01.emotional_relatives
 hi-IN.notifications.set01.free:
@@ -700,7 +899,6 @@ hi-IN.notifications.set01.free:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: hi-IN.notifications.set01.free
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.set01.free
 hi-IN.notifications.set01.gratitude:
@@ -714,7 +912,6 @@ hi-IN.notifications.set01.gratitude:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: hi-IN.notifications.set01.gratitude
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.set01.gratitude
 hi-IN.notifications.set01.professional_request:
@@ -728,7 +925,6 @@ hi-IN.notifications.set01.professional_request:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: hi-IN.notifications.set01.professional_request
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.set01.professional_request
 hi-IN.notifications.set01.response:
@@ -742,7 +938,6 @@ hi-IN.notifications.set01.response:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: hi-IN.notifications.set01.response
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.set01.response
 hi-IN.notifications.set02.alarm:
@@ -755,7 +950,6 @@ hi-IN.notifications.set02.alarm:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: hi-IN.notifications.set02.alarm
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.set02.alarm
 hi-IN.notifications.set02.basic:
@@ -768,7 +962,6 @@ hi-IN.notifications.set02.basic:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: hi-IN.notifications.set02.basic
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.set02.basic
 hi-IN.notifications.set02.emotional_guilt:
@@ -781,7 +974,6 @@ hi-IN.notifications.set02.emotional_guilt:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: hi-IN.notifications.set02.emotional_guilt
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.set02.emotional_guilt
 hi-IN.notifications.set02.emotional_relatives:
@@ -794,7 +986,6 @@ hi-IN.notifications.set02.emotional_relatives:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: hi-IN.notifications.set02.emotional_relatives
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.set02.emotional_relatives
 hi-IN.notifications.set02.free:
@@ -807,7 +998,6 @@ hi-IN.notifications.set02.free:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: hi-IN.notifications.set02.free
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.set02.free
 hi-IN.notifications.set02.gratitude:
@@ -820,7 +1010,6 @@ hi-IN.notifications.set02.gratitude:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: hi-IN.notifications.set02.gratitude
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.set02.gratitude
 hi-IN.notifications.set02.professional_request:
@@ -833,7 +1022,6 @@ hi-IN.notifications.set02.professional_request:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: hi-IN.notifications.set02.professional_request
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.set02.professional_request
 hi-IN.notifications.set02.response:
@@ -845,7 +1033,6 @@ hi-IN.notifications.set02.response:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: hi-IN.notifications.set02.response
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.set02.response
 hi-IN.notifications.set03.alarm:
@@ -858,7 +1045,6 @@ hi-IN.notifications.set03.alarm:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: hi-IN.notifications.set03.alarm
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.set03.alarm
 hi-IN.notifications.set03.basic: &3
@@ -871,7 +1057,6 @@ hi-IN.notifications.set03.basic: &3
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: hi-IN.notifications.set03.basic
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.set03.basic
 hi-IN.notifications.set03.emotional_guilt:
@@ -884,7 +1069,6 @@ hi-IN.notifications.set03.emotional_guilt:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: hi-IN.notifications.set03.emotional_guilt
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.set03.emotional_guilt
 hi-IN.notifications.set03.emotional_relatives:
@@ -897,7 +1081,6 @@ hi-IN.notifications.set03.emotional_relatives:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: hi-IN.notifications.set03.emotional_relatives
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.set03.emotional_relatives
 hi-IN.notifications.set03.free:
@@ -910,7 +1093,6 @@ hi-IN.notifications.set03.free:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: hi-IN.notifications.set03.free
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.set03.free
 hi-IN.notifications.set03.gratitude:
@@ -923,7 +1105,6 @@ hi-IN.notifications.set03.gratitude:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: hi-IN.notifications.set03.gratitude
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.set03.gratitude
 hi-IN.notifications.set03.professional_request:
@@ -936,7 +1117,6 @@ hi-IN.notifications.set03.professional_request:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: hi-IN.notifications.set03.professional_request
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.set03.professional_request
 hi-IN.notifications.set03.response:
@@ -949,7 +1129,6 @@ hi-IN.notifications.set03.response:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: hi-IN.notifications.set03.response
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.set03.response
 hi-IN.notifications.set03_basic_repeated.first: *3
@@ -965,7 +1144,6 @@ kn-IN.notifications.covid.medication_reminder:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: kn-IN.notifications.covid.medication_reminder
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.covid.medication_reminder
 kn-IN.notifications.set01.alarm:
@@ -979,7 +1157,6 @@ kn-IN.notifications.set01.alarm:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: kn-IN.notifications.set01.alarm
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.set01.alarm
 kn-IN.notifications.set01.basic:
@@ -993,7 +1170,6 @@ kn-IN.notifications.set01.basic:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: kn-IN.notifications.set01.basic
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.set01.basic
 kn-IN.notifications.set01.emotional_guilt:
@@ -1007,7 +1183,6 @@ kn-IN.notifications.set01.emotional_guilt:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: kn-IN.notifications.set01.emotional_guilt
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.set01.emotional_guilt
 kn-IN.notifications.set01.emotional_relatives:
@@ -1021,7 +1196,6 @@ kn-IN.notifications.set01.emotional_relatives:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: kn-IN.notifications.set01.emotional_relatives
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.set01.emotional_relatives
 kn-IN.notifications.set01.free:
@@ -1035,7 +1209,6 @@ kn-IN.notifications.set01.free:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: kn-IN.notifications.set01.free
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.set01.free
 kn-IN.notifications.set01.gratitude:
@@ -1049,7 +1222,6 @@ kn-IN.notifications.set01.gratitude:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: kn-IN.notifications.set01.gratitude
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.set01.gratitude
 kn-IN.notifications.set01.professional_request:
@@ -1063,7 +1235,6 @@ kn-IN.notifications.set01.professional_request:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: kn-IN.notifications.set01.professional_request
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.set01.professional_request
 kn-IN.notifications.set01.response:
@@ -1077,7 +1248,6 @@ kn-IN.notifications.set01.response:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: kn-IN.notifications.set01.response
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.set01.response
 kn-IN.notifications.set02.alarm:
@@ -1090,7 +1260,6 @@ kn-IN.notifications.set02.alarm:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: kn-IN.notifications.set02.alarm
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.set02.alarm
 kn-IN.notifications.set02.basic:
@@ -1103,7 +1272,6 @@ kn-IN.notifications.set02.basic:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: kn-IN.notifications.set02.basic
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.set02.basic
 kn-IN.notifications.set02.emotional_guilt:
@@ -1116,7 +1284,6 @@ kn-IN.notifications.set02.emotional_guilt:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: kn-IN.notifications.set02.emotional_guilt
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.set02.emotional_guilt
 kn-IN.notifications.set02.emotional_relatives:
@@ -1129,7 +1296,6 @@ kn-IN.notifications.set02.emotional_relatives:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: kn-IN.notifications.set02.emotional_relatives
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.set02.emotional_relatives
 kn-IN.notifications.set02.free:
@@ -1142,7 +1308,6 @@ kn-IN.notifications.set02.free:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: kn-IN.notifications.set02.free
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.set02.free
 kn-IN.notifications.set02.gratitude:
@@ -1155,7 +1320,6 @@ kn-IN.notifications.set02.gratitude:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: kn-IN.notifications.set02.gratitude
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.set02.gratitude
 kn-IN.notifications.set02.professional_request:
@@ -1168,7 +1332,6 @@ kn-IN.notifications.set02.professional_request:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: kn-IN.notifications.set02.professional_request
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.set02.professional_request
 kn-IN.notifications.set02.response:
@@ -1181,7 +1344,6 @@ kn-IN.notifications.set02.response:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: kn-IN.notifications.set02.response
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.set02.response
 kn-IN.notifications.set03.alarm:
@@ -1194,7 +1356,6 @@ kn-IN.notifications.set03.alarm:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: kn-IN.notifications.set03.alarm
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.set03.alarm
 kn-IN.notifications.set03.basic: &4
@@ -1207,7 +1368,6 @@ kn-IN.notifications.set03.basic: &4
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: kn-IN.notifications.set03.basic
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.set03.basic
 kn-IN.notifications.set03.emotional_guilt:
@@ -1220,7 +1380,6 @@ kn-IN.notifications.set03.emotional_guilt:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: kn-IN.notifications.set03.emotional_guilt
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.set03.emotional_guilt
 kn-IN.notifications.set03.emotional_relatives:
@@ -1233,7 +1392,6 @@ kn-IN.notifications.set03.emotional_relatives:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: kn-IN.notifications.set03.emotional_relatives
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.set03.emotional_relatives
 kn-IN.notifications.set03.free:
@@ -1246,7 +1404,6 @@ kn-IN.notifications.set03.free:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: kn-IN.notifications.set03.free
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.set03.free
 kn-IN.notifications.set03.gratitude:
@@ -1259,7 +1416,6 @@ kn-IN.notifications.set03.gratitude:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: kn-IN.notifications.set03.gratitude
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.set03.gratitude
 kn-IN.notifications.set03.professional_request:
@@ -1272,7 +1428,6 @@ kn-IN.notifications.set03.professional_request:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: kn-IN.notifications.set03.professional_request
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.set03.professional_request
 kn-IN.notifications.set03.response:
@@ -1285,7 +1440,6 @@ kn-IN.notifications.set03.response:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: kn-IN.notifications.set03.response
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.set03.response
 kn-IN.notifications.set03_basic_repeated.first: *4
@@ -1301,7 +1455,6 @@ mr-IN.notifications.covid.medication_reminder:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: mr-IN.notifications.covid.medication_reminder
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.covid.medication_reminder
 mr-IN.notifications.set01.alarm:
@@ -1315,7 +1468,6 @@ mr-IN.notifications.set01.alarm:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: mr-IN.notifications.set01.alarm
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.set01.alarm
 mr-IN.notifications.set01.basic:
@@ -1329,7 +1481,6 @@ mr-IN.notifications.set01.basic:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: mr-IN.notifications.set01.basic
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.set01.basic
 mr-IN.notifications.set01.emotional_guilt:
@@ -1343,7 +1494,6 @@ mr-IN.notifications.set01.emotional_guilt:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: mr-IN.notifications.set01.emotional_guilt
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.set01.emotional_guilt
 mr-IN.notifications.set01.emotional_relatives:
@@ -1357,7 +1507,6 @@ mr-IN.notifications.set01.emotional_relatives:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: mr-IN.notifications.set01.emotional_relatives
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.set01.emotional_relatives
 mr-IN.notifications.set01.free:
@@ -1371,7 +1520,6 @@ mr-IN.notifications.set01.free:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: mr-IN.notifications.set01.free
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.set01.free
 mr-IN.notifications.set01.gratitude:
@@ -1385,7 +1533,6 @@ mr-IN.notifications.set01.gratitude:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: mr-IN.notifications.set01.gratitude
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.set01.gratitude
 mr-IN.notifications.set01.professional_request:
@@ -1399,7 +1546,6 @@ mr-IN.notifications.set01.professional_request:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: mr-IN.notifications.set01.professional_request
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.set01.professional_request
 mr-IN.notifications.set01.response:
@@ -1413,7 +1559,6 @@ mr-IN.notifications.set01.response:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: mr-IN.notifications.set01.response
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.set01.response
 mr-IN.notifications.set02.alarm:
@@ -1426,7 +1571,6 @@ mr-IN.notifications.set02.alarm:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: mr-IN.notifications.set02.alarm
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.set02.alarm
 mr-IN.notifications.set02.basic:
@@ -1439,7 +1583,6 @@ mr-IN.notifications.set02.basic:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: mr-IN.notifications.set02.basic
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.set02.basic
 mr-IN.notifications.set02.emotional_guilt:
@@ -1453,7 +1596,6 @@ mr-IN.notifications.set02.emotional_guilt:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: mr-IN.notifications.set02.emotional_guilt
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.set02.emotional_guilt
 mr-IN.notifications.set02.emotional_relatives:
@@ -1466,7 +1608,6 @@ mr-IN.notifications.set02.emotional_relatives:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: mr-IN.notifications.set02.emotional_relatives
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.set02.emotional_relatives
 mr-IN.notifications.set02.free:
@@ -1479,7 +1620,6 @@ mr-IN.notifications.set02.free:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: mr-IN.notifications.set02.free
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.set02.free
 mr-IN.notifications.set02.gratitude:
@@ -1492,7 +1632,6 @@ mr-IN.notifications.set02.gratitude:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: mr-IN.notifications.set02.gratitude
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.set02.gratitude
 mr-IN.notifications.set02.professional_request:
@@ -1506,7 +1645,6 @@ mr-IN.notifications.set02.professional_request:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: mr-IN.notifications.set02.professional_request
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.set02.professional_request
 mr-IN.notifications.set02.response:
@@ -1519,7 +1657,6 @@ mr-IN.notifications.set02.response:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: mr-IN.notifications.set02.response
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.set02.response
 mr-IN.notifications.set03.alarm:
@@ -1532,7 +1669,6 @@ mr-IN.notifications.set03.alarm:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: mr-IN.notifications.set03.alarm
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.set03.alarm
 mr-IN.notifications.set03.basic: &5
@@ -1545,7 +1681,6 @@ mr-IN.notifications.set03.basic: &5
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: mr-IN.notifications.set03.basic
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.set03.basic
 mr-IN.notifications.set03.emotional_guilt:
@@ -1559,7 +1694,6 @@ mr-IN.notifications.set03.emotional_guilt:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: mr-IN.notifications.set03.emotional_guilt
   Is_Latest_Version: false
   Latest_Template_Version: mr-IN.notifications.set03.emotional_guilt.2
 mr-IN.notifications.set03.emotional_guilt.2:
@@ -1572,7 +1706,6 @@ mr-IN.notifications.set03.emotional_guilt.2:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 2
-  Template_Name_Without_Version: mr-IN.notifications.set03.emotional_guilt
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.set03.emotional_guilt.2
 mr-IN.notifications.set03.emotional_relatives:
@@ -1585,7 +1718,6 @@ mr-IN.notifications.set03.emotional_relatives:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: mr-IN.notifications.set03.emotional_relatives
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.set03.emotional_relatives
 mr-IN.notifications.set03.free:
@@ -1598,7 +1730,6 @@ mr-IN.notifications.set03.free:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: mr-IN.notifications.set03.free
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.set03.free
 mr-IN.notifications.set03.gratitude:
@@ -1611,7 +1742,6 @@ mr-IN.notifications.set03.gratitude:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: mr-IN.notifications.set03.gratitude
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.set03.gratitude
 mr-IN.notifications.set03.professional_request:
@@ -1625,7 +1755,6 @@ mr-IN.notifications.set03.professional_request:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: mr-IN.notifications.set03.professional_request
   Is_Latest_Version: false
   Latest_Template_Version: mr-IN.notifications.set03.professional_request.2
 mr-IN.notifications.set03.professional_request.2:
@@ -1638,7 +1767,6 @@ mr-IN.notifications.set03.professional_request.2:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 2
-  Template_Name_Without_Version: mr-IN.notifications.set03.professional_request
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.set03.professional_request.2
 mr-IN.notifications.set03.response:
@@ -1652,7 +1780,6 @@ mr-IN.notifications.set03.response:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: mr-IN.notifications.set03.response
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.set03.response
 mr-IN.notifications.set03_basic_repeated.first: *5
@@ -1668,7 +1795,6 @@ pa-Guru-IN.notifications.covid.medication_reminder:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: pa-Guru-IN.notifications.covid.medication_reminder
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.covid.medication_reminder
 pa-Guru-IN.notifications.set01.alarm:
@@ -1682,7 +1808,6 @@ pa-Guru-IN.notifications.set01.alarm:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: pa-Guru-IN.notifications.set01.alarm
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.set01.alarm
 pa-Guru-IN.notifications.set01.basic:
@@ -1696,7 +1821,6 @@ pa-Guru-IN.notifications.set01.basic:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: pa-Guru-IN.notifications.set01.basic
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.set01.basic
 pa-Guru-IN.notifications.set01.emotional_guilt:
@@ -1710,7 +1834,6 @@ pa-Guru-IN.notifications.set01.emotional_guilt:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: pa-Guru-IN.notifications.set01.emotional_guilt
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.set01.emotional_guilt
 pa-Guru-IN.notifications.set01.emotional_relatives:
@@ -1724,7 +1847,6 @@ pa-Guru-IN.notifications.set01.emotional_relatives:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: pa-Guru-IN.notifications.set01.emotional_relatives
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.set01.emotional_relatives
 pa-Guru-IN.notifications.set01.free:
@@ -1738,7 +1860,6 @@ pa-Guru-IN.notifications.set01.free:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: pa-Guru-IN.notifications.set01.free
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.set01.free
 pa-Guru-IN.notifications.set01.gratitude:
@@ -1752,7 +1873,6 @@ pa-Guru-IN.notifications.set01.gratitude:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: pa-Guru-IN.notifications.set01.gratitude
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.set01.gratitude
 pa-Guru-IN.notifications.set01.professional_request:
@@ -1766,7 +1886,6 @@ pa-Guru-IN.notifications.set01.professional_request:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: pa-Guru-IN.notifications.set01.professional_request
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.set01.professional_request
 pa-Guru-IN.notifications.set01.response:
@@ -1780,7 +1899,6 @@ pa-Guru-IN.notifications.set01.response:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: pa-Guru-IN.notifications.set01.response
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.set01.response
 pa-Guru-IN.notifications.set02.alarm:
@@ -1793,7 +1911,6 @@ pa-Guru-IN.notifications.set02.alarm:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: pa-Guru-IN.notifications.set02.alarm
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.set02.alarm
 pa-Guru-IN.notifications.set02.basic:
@@ -1806,7 +1923,6 @@ pa-Guru-IN.notifications.set02.basic:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: pa-Guru-IN.notifications.set02.basic
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.set02.basic
 pa-Guru-IN.notifications.set02.emotional_guilt:
@@ -1819,7 +1935,6 @@ pa-Guru-IN.notifications.set02.emotional_guilt:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: pa-Guru-IN.notifications.set02.emotional_guilt
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.set02.emotional_guilt
 pa-Guru-IN.notifications.set02.emotional_relatives:
@@ -1832,7 +1947,6 @@ pa-Guru-IN.notifications.set02.emotional_relatives:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: pa-Guru-IN.notifications.set02.emotional_relatives
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.set02.emotional_relatives
 pa-Guru-IN.notifications.set02.free:
@@ -1845,7 +1959,6 @@ pa-Guru-IN.notifications.set02.free:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: pa-Guru-IN.notifications.set02.free
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.set02.free
 pa-Guru-IN.notifications.set02.gratitude:
@@ -1858,7 +1971,6 @@ pa-Guru-IN.notifications.set02.gratitude:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: pa-Guru-IN.notifications.set02.gratitude
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.set02.gratitude
 pa-Guru-IN.notifications.set02.professional_request:
@@ -1871,7 +1983,6 @@ pa-Guru-IN.notifications.set02.professional_request:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: pa-Guru-IN.notifications.set02.professional_request
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.set02.professional_request
 pa-Guru-IN.notifications.set02.response:
@@ -1884,7 +1995,6 @@ pa-Guru-IN.notifications.set02.response:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: pa-Guru-IN.notifications.set02.response
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.set02.response
 pa-Guru-IN.notifications.set03.alarm:
@@ -1897,7 +2007,6 @@ pa-Guru-IN.notifications.set03.alarm:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: pa-Guru-IN.notifications.set03.alarm
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.set03.alarm
 pa-Guru-IN.notifications.set03.basic: &6
@@ -1910,7 +2019,6 @@ pa-Guru-IN.notifications.set03.basic: &6
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: pa-Guru-IN.notifications.set03.basic
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.set03.basic
 pa-Guru-IN.notifications.set03.emotional_guilt:
@@ -1923,7 +2031,6 @@ pa-Guru-IN.notifications.set03.emotional_guilt:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: pa-Guru-IN.notifications.set03.emotional_guilt
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.set03.emotional_guilt
 pa-Guru-IN.notifications.set03.emotional_relatives:
@@ -1936,7 +2043,6 @@ pa-Guru-IN.notifications.set03.emotional_relatives:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: pa-Guru-IN.notifications.set03.emotional_relatives
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.set03.emotional_relatives
 pa-Guru-IN.notifications.set03.free:
@@ -1949,7 +2055,6 @@ pa-Guru-IN.notifications.set03.free:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: pa-Guru-IN.notifications.set03.free
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.set03.free
 pa-Guru-IN.notifications.set03.gratitude:
@@ -1962,7 +2067,6 @@ pa-Guru-IN.notifications.set03.gratitude:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: pa-Guru-IN.notifications.set03.gratitude
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.set03.gratitude
 pa-Guru-IN.notifications.set03.professional_request:
@@ -1975,7 +2079,6 @@ pa-Guru-IN.notifications.set03.professional_request:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: pa-Guru-IN.notifications.set03.professional_request
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.set03.professional_request
 pa-Guru-IN.notifications.set03.response:
@@ -1988,7 +2091,6 @@ pa-Guru-IN.notifications.set03.response:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: pa-Guru-IN.notifications.set03.response
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.set03.response
 pa-Guru-IN.notifications.set03_basic_repeated.first: *6
@@ -2004,7 +2106,6 @@ ta-IN.notifications.covid.medication_reminder:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: ta-IN.notifications.covid.medication_reminder
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.covid.medication_reminder
 ta-IN.notifications.set01.alarm:
@@ -2018,7 +2119,6 @@ ta-IN.notifications.set01.alarm:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: ta-IN.notifications.set01.alarm
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.set01.alarm
 ta-IN.notifications.set01.basic:
@@ -2032,7 +2132,6 @@ ta-IN.notifications.set01.basic:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: ta-IN.notifications.set01.basic
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.set01.basic
 ta-IN.notifications.set01.emotional_guilt:
@@ -2046,7 +2145,6 @@ ta-IN.notifications.set01.emotional_guilt:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: ta-IN.notifications.set01.emotional_guilt
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.set01.emotional_guilt
 ta-IN.notifications.set01.emotional_relatives:
@@ -2060,7 +2158,6 @@ ta-IN.notifications.set01.emotional_relatives:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: ta-IN.notifications.set01.emotional_relatives
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.set01.emotional_relatives
 ta-IN.notifications.set01.free:
@@ -2074,7 +2171,6 @@ ta-IN.notifications.set01.free:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: ta-IN.notifications.set01.free
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.set01.free
 ta-IN.notifications.set01.gratitude:
@@ -2088,7 +2184,6 @@ ta-IN.notifications.set01.gratitude:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: ta-IN.notifications.set01.gratitude
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.set01.gratitude
 ta-IN.notifications.set01.professional_request:
@@ -2102,7 +2197,6 @@ ta-IN.notifications.set01.professional_request:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: ta-IN.notifications.set01.professional_request
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.set01.professional_request
 ta-IN.notifications.set01.response:
@@ -2116,7 +2210,6 @@ ta-IN.notifications.set01.response:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: ta-IN.notifications.set01.response
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.set01.response
 ta-IN.notifications.set02.alarm:
@@ -2129,7 +2222,6 @@ ta-IN.notifications.set02.alarm:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: ta-IN.notifications.set02.alarm
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.set02.alarm
 ta-IN.notifications.set02.basic:
@@ -2142,7 +2234,6 @@ ta-IN.notifications.set02.basic:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: ta-IN.notifications.set02.basic
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.set02.basic
 ta-IN.notifications.set02.emotional_guilt:
@@ -2155,7 +2246,6 @@ ta-IN.notifications.set02.emotional_guilt:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: ta-IN.notifications.set02.emotional_guilt
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.set02.emotional_guilt
 ta-IN.notifications.set02.emotional_relatives:
@@ -2168,7 +2258,6 @@ ta-IN.notifications.set02.emotional_relatives:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: ta-IN.notifications.set02.emotional_relatives
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.set02.emotional_relatives
 ta-IN.notifications.set02.free:
@@ -2181,7 +2270,6 @@ ta-IN.notifications.set02.free:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: ta-IN.notifications.set02.free
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.set02.free
 ta-IN.notifications.set02.gratitude:
@@ -2194,7 +2282,6 @@ ta-IN.notifications.set02.gratitude:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: ta-IN.notifications.set02.gratitude
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.set02.gratitude
 ta-IN.notifications.set02.professional_request:
@@ -2207,7 +2294,6 @@ ta-IN.notifications.set02.professional_request:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: ta-IN.notifications.set02.professional_request
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.set02.professional_request
 ta-IN.notifications.set02.response:
@@ -2220,7 +2306,6 @@ ta-IN.notifications.set02.response:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: ta-IN.notifications.set02.response
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.set02.response
 ta-IN.notifications.set03.alarm:
@@ -2233,7 +2318,6 @@ ta-IN.notifications.set03.alarm:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: ta-IN.notifications.set03.alarm
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.set03.alarm
 ta-IN.notifications.set03.basic: &7
@@ -2246,7 +2330,6 @@ ta-IN.notifications.set03.basic: &7
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: ta-IN.notifications.set03.basic
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.set03.basic
 ta-IN.notifications.set03.emotional_guilt:
@@ -2259,7 +2342,6 @@ ta-IN.notifications.set03.emotional_guilt:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: ta-IN.notifications.set03.emotional_guilt
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.set03.emotional_guilt
 ta-IN.notifications.set03.emotional_relatives:
@@ -2272,7 +2354,6 @@ ta-IN.notifications.set03.emotional_relatives:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: ta-IN.notifications.set03.emotional_relatives
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.set03.emotional_relatives
 ta-IN.notifications.set03.free:
@@ -2285,7 +2366,6 @@ ta-IN.notifications.set03.free:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: ta-IN.notifications.set03.free
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.set03.free
 ta-IN.notifications.set03.gratitude:
@@ -2298,7 +2378,6 @@ ta-IN.notifications.set03.gratitude:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: ta-IN.notifications.set03.gratitude
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.set03.gratitude
 ta-IN.notifications.set03.professional_request:
@@ -2311,7 +2390,6 @@ ta-IN.notifications.set03.professional_request:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: ta-IN.notifications.set03.professional_request
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.set03.professional_request
 ta-IN.notifications.set03.response:
@@ -2324,7 +2402,6 @@ ta-IN.notifications.set03.response:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: ta-IN.notifications.set03.response
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.set03.response
 ta-IN.notifications.set03_basic_repeated.first: *7
@@ -2340,7 +2417,6 @@ te-IN.notifications.covid.medication_reminder:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: te-IN.notifications.covid.medication_reminder
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.covid.medication_reminder
 te-IN.notifications.set01.alarm:
@@ -2354,7 +2430,6 @@ te-IN.notifications.set01.alarm:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: te-IN.notifications.set01.alarm
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.set01.alarm
 te-IN.notifications.set01.basic:
@@ -2368,7 +2443,6 @@ te-IN.notifications.set01.basic:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: te-IN.notifications.set01.basic
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.set01.basic
 te-IN.notifications.set01.emotional_guilt:
@@ -2382,7 +2456,6 @@ te-IN.notifications.set01.emotional_guilt:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: te-IN.notifications.set01.emotional_guilt
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.set01.emotional_guilt
 te-IN.notifications.set01.emotional_relatives:
@@ -2396,7 +2469,6 @@ te-IN.notifications.set01.emotional_relatives:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: te-IN.notifications.set01.emotional_relatives
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.set01.emotional_relatives
 te-IN.notifications.set01.free:
@@ -2410,7 +2482,6 @@ te-IN.notifications.set01.free:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: te-IN.notifications.set01.free
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.set01.free
 te-IN.notifications.set01.gratitude:
@@ -2424,7 +2495,6 @@ te-IN.notifications.set01.gratitude:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: te-IN.notifications.set01.gratitude
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.set01.gratitude
 te-IN.notifications.set01.professional_request:
@@ -2438,7 +2508,6 @@ te-IN.notifications.set01.professional_request:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: te-IN.notifications.set01.professional_request
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.set01.professional_request
 te-IN.notifications.set01.response:
@@ -2452,7 +2521,6 @@ te-IN.notifications.set01.response:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: te-IN.notifications.set01.response
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.set01.response
 te-IN.notifications.set02.alarm:
@@ -2465,7 +2533,6 @@ te-IN.notifications.set02.alarm:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: te-IN.notifications.set02.alarm
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.set02.alarm
 te-IN.notifications.set02.basic:
@@ -2478,7 +2545,6 @@ te-IN.notifications.set02.basic:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: te-IN.notifications.set02.basic
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.set02.basic
 te-IN.notifications.set02.emotional_guilt:
@@ -2491,7 +2557,6 @@ te-IN.notifications.set02.emotional_guilt:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: te-IN.notifications.set02.emotional_guilt
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.set02.emotional_guilt
 te-IN.notifications.set02.emotional_relatives:
@@ -2504,7 +2569,6 @@ te-IN.notifications.set02.emotional_relatives:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: te-IN.notifications.set02.emotional_relatives
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.set02.emotional_relatives
 te-IN.notifications.set02.free:
@@ -2517,7 +2581,6 @@ te-IN.notifications.set02.free:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: te-IN.notifications.set02.free
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.set02.free
 te-IN.notifications.set02.gratitude:
@@ -2530,7 +2593,6 @@ te-IN.notifications.set02.gratitude:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: te-IN.notifications.set02.gratitude
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.set02.gratitude
 te-IN.notifications.set02.professional_request:
@@ -2543,7 +2605,6 @@ te-IN.notifications.set02.professional_request:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: te-IN.notifications.set02.professional_request
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.set02.professional_request
 te-IN.notifications.set02.response:
@@ -2556,7 +2617,6 @@ te-IN.notifications.set02.response:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: te-IN.notifications.set02.response
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.set02.response
 te-IN.notifications.set03.alarm:
@@ -2569,7 +2629,6 @@ te-IN.notifications.set03.alarm:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: te-IN.notifications.set03.alarm
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.set03.alarm
 te-IN.notifications.set03.basic: &8
@@ -2582,7 +2641,6 @@ te-IN.notifications.set03.basic: &8
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: te-IN.notifications.set03.basic
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.set03.basic
 te-IN.notifications.set03.emotional_guilt:
@@ -2595,7 +2653,6 @@ te-IN.notifications.set03.emotional_guilt:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: te-IN.notifications.set03.emotional_guilt
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.set03.emotional_guilt
 te-IN.notifications.set03.emotional_relatives:
@@ -2608,7 +2665,6 @@ te-IN.notifications.set03.emotional_relatives:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: te-IN.notifications.set03.emotional_relatives
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.set03.emotional_relatives
 te-IN.notifications.set03.free:
@@ -2621,7 +2677,6 @@ te-IN.notifications.set03.free:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: te-IN.notifications.set03.free
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.set03.free
 te-IN.notifications.set03.gratitude:
@@ -2634,7 +2689,6 @@ te-IN.notifications.set03.gratitude:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: te-IN.notifications.set03.gratitude
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.set03.gratitude
 te-IN.notifications.set03.professional_request:
@@ -2647,7 +2701,6 @@ te-IN.notifications.set03.professional_request:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: te-IN.notifications.set03.professional_request
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.set03.professional_request
 te-IN.notifications.set03.response:
@@ -2660,7 +2713,6 @@ te-IN.notifications.set03.response:
   Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
-  Template_Name_Without_Version: te-IN.notifications.set03.response
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.set03.response
 te-IN.notifications.set03_basic_repeated.first: *8
@@ -2674,6 +2726,15 @@ test_message:
   Template_Status: '0'
   Is_Unicode: '0'
   Version: 1
-  Template_Name_Without_Version: test_message
+  Is_Latest_Version: false
+  Latest_Template_Version: test_message.2
+test_message.2:
+  Template_Id: '1407165001163549514'
+  Template_Keys: []
+  Non_Variable_Text_Length: '0'
+  Max_Length_Permitted: '0'
+  Template_Status: '0'
+  Is_Unicode: '0'
+  Version: 2
   Is_Latest_Version: true
-  Latest_Template_Version: test_message
+  Latest_Template_Version: test_message.2

@@ -26,7 +26,7 @@ class GetBsnlTemplateDetails
   end
 
   def validate_templates
-    validate_names
+    validate_template_names
     validate_statuses
   end
 
@@ -40,11 +40,10 @@ class GetBsnlTemplateDetails
           "Template_Id", "Template_Keys",
           "Non_Variable_Text_Length", "Max_Length_Permitted",
           "Template_Status", "Is_Unicode"
-        ).merge("Version" => Messaging::Bsnl::DltTemplate.version_number(template_name),
-          "Template_Name_Without_Version" => Messaging::Bsnl::DltTemplate.drop_version_number(template_name))
+        )
       ]
     end
-    add_latest_version_info!(config)
+    add_version_info!(config)
     insert_duplicate_templates!(config)
 
     info "Added latest templates list to #{config_file}."
@@ -115,13 +114,21 @@ class GetBsnlTemplateDetails
     puts array.to_yaml.delete_prefix("---\n")
   end
 
-  def add_latest_version_info!(config)
+  def add_version_info!(config)
+    config.each do |template_name, template_details|
+      template_details["Version"] = Messaging::Bsnl::DltTemplate.version_number(template_name)
+    end
+
+    add_latest_version_name!(config)
+  end
+
+  def add_latest_version_name!(config)
     latest_versions = Hash.new(0)
     latest_version_names = {}
 
     config.each do |name, details|
       version = details["Version"]
-      name_without_version = details["Template_Name_Without_Version"]
+      name_without_version = Messaging::Bsnl::DltTemplate.drop_version_number(template_name)
 
       if version > latest_versions[name_without_version]
         latest_versions[name_without_version] = version
@@ -130,14 +137,16 @@ class GetBsnlTemplateDetails
     end
 
     config.values.each do |template|
-      template["Is_Latest_Version"] = (template["Version"] == latest_versions[template["Template_Name_Without_Version"]])
-      template["Latest_Template_Version"] = latest_version_names[template["Template_Name_Without_Version"]]
+      name_without_version = Messaging::Bsnl::DltTemplate.drop_version_number(template_name)
+      template["Is_Latest_Version"] = (template["Version"] == latest_versions[name_without_version])
+      template["Latest_Template_Version"] = latest_version_names[name_without_version]
     end
   end
 
+
   def insert_duplicate_templates!(config)
     DUPLICATE_TEMPLATES.each do |duplicate_template_name, original_template_name|
-      matching_templates = config.select { |k, v| k.match?(original_template_name) && v["Is_Latest_Version"] }
+      matching_templates = config.select { |template_name, template_details| k.match?(original_template_name) && template_name["Is_Latest_Version"] }
 
       matching_templates.each do |template_name, details|
         locale_name = template_name.split(".").first
@@ -146,8 +155,8 @@ class GetBsnlTemplateDetails
     end
   end
 
-  def validate_names
-    invalid_names = template_names.reject { |name| locale_keys_by_language.values.flatten.include?(name) }
+  def validate_template_names
+    invalid_names = template_names.reject { |template_name| locale_keys_by_language.values.flatten.include?(template_name) }
 
     if invalid_names.any?
       error "⚠️  These templates are not in the notifications locale files but have been uploaded on DLT:"
@@ -156,11 +165,11 @@ class GetBsnlTemplateDetails
   end
 
   def validate_statuses
-    templates_pending_naming = template_details.select { |details| details["Template_Status"] == "0" }
+    templates_pending_naming = template_details.select { |template_details| template_details["Template_Status"] == "0" }
 
     if templates_pending_naming.any?
       error "⚠️  These templates need to be named on the BSNL dashboard:"
-      puts_list templates_pending_naming.map { |detail| detail["Template_Name"] }
+      puts_list templates_pending_naming.map { |template_detail| template_detail["Template_Name"] }
     end
   end
 end
