@@ -146,7 +146,7 @@ class GetBsnlTemplateDetails
 
   def insert_duplicate_templates!(config)
     DUPLICATE_TEMPLATES.each do |duplicate_template_name, original_template_name|
-      matching_templates = config.select { |template_name, template_details| k.match?(original_template_name) && template_name["Is_Latest_Version"] }
+      matching_templates = config.select { |template_name, template_details| k.match?(original_template_name) && template_details["Is_Latest_Version"] }
 
       matching_templates.each do |template_name, details|
         locale_name = template_name.split(".").first
