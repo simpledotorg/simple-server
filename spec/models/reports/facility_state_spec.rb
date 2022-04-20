@@ -306,25 +306,32 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
                      .where("month_date < ?", month_2020_07)
                      .pluck(:monthly_diabetes_registrations)).to all be_nil
 
-            expect(described_class
-                     .where(facility_id: facility.id)
-                     .where(month_date: month_2020_07)
-                     .pluck(:monthly_diabetes_registrations)).to eq [old_diabetes_patients.size]
+            expect(
+              described_class
+                .where(facility_id: facility.id)
+                .where(month_date: month_2020_07)
+                .pluck(:monthly_diabetes_registrations)
+            ).to eq [old_diabetes_patients.size]
 
-            expect(described_class
-                     .where(facility_id: facility.id)
-                     .where("month_date > ?", month_2020_07)
-                     .where("month_date < ?", month_2021_04)
-                     .pluck(:monthly_diabetes_registrations)).to all eq 0
+            expect(
+              described_class
+                .where(facility_id: facility.id)
+                .where("month_date > ?", month_2020_07)
+                .where("month_date < ?", month_2021_04)
+                .pluck(:monthly_diabetes_registrations)
+            ).to all eq 0
 
-            expect(described_class
-                     .where(facility_id: facility.id)
-                     .where(month_date: month_2021_04)
-                     .pluck(:monthly_diabetes_registrations)).to eq [new_diabetic_patients.size]
+            expect(
+              described_class
+                .where(facility_id: facility.id)
+                .where(month_date: month_2021_04)
+                .pluck(:monthly_diabetes_registrations)
+            ).to eq [new_diabetic_patients.size]
           end
         end
       end
     end
+
     context "assigned patients by care states" do
       describe "under care, lost to follow up and dead patients" do
         it "has the number of assigned diabetic patients which are under care,  lost to follow up or dead" do
@@ -377,9 +384,86 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
     end
 
     context "treatment outcomes in last 3 months" do
-      it "contains "
+      it "contains number of total under care patients at a facility, broken down by the blood sugar type and risk state" do
+        facility = create(:facility)
+        [:random, :post_prandial, :fasting, :hba1c].each do |blood_sugar_type|
+          create_list(:patient, 1, :diabetes, assigned_facility: facility, recorded_at: june_2021[:long_ago]).each do |patient|
+            create(:blood_sugar, :with_encounter, :bs_below_200, blood_sugar_type: blood_sugar_type, patient: patient, recorded_at: june_2021[:under_3_months_ago])
+          end
+        end
+
+        [:random, :post_prandial, :fasting, :hba1c].each do |blood_sugar_type|
+          create_list(:patient, 2, :diabetes, assigned_facility: facility, recorded_at: june_2021[:long_ago]).each do |patient|
+            create(:blood_sugar, :with_encounter, :bs_200_to_300, blood_sugar_type: blood_sugar_type, patient: patient, recorded_at: june_2021[:under_3_months_ago])
+          end
+        end
+
+        [:random, :post_prandial, :fasting, :hba1c].each do |blood_sugar_type|
+          create_list(:patient, 2, :diabetes, assigned_facility: facility, recorded_at: june_2021[:long_ago]).each do |patient|
+            create(:blood_sugar, :with_encounter, :bs_over_300, blood_sugar_type: blood_sugar_type, patient: patient, recorded_at: june_2021[:under_3_months_ago])
+          end
+        end
+
+        refresh_views
+        results = described_class.find_by(facility: facility, month_date: june_2021[:now])
+        expect(results.adjusted_random_bs_below_200_under_care).to eq 1
+        expect(results.adjusted_post_prandial_bs_below_200_under_care).to eq 1
+        expect(results.adjusted_fasting_bs_below_200_under_care).to eq 1
+        expect(results.adjusted_hba1c_bs_below_200_under_care).to eq 1
+        expect(results.adjusted_bs_below_200_under_care).to eq 4
+
+        expect(results.adjusted_random_bs_200_to_300_under_care).to eq 2
+        expect(results.adjusted_post_prandial_bs_200_to_300_under_care).to eq 2
+        expect(results.adjusted_fasting_bs_200_to_300_under_care).to eq 2
+        expect(results.adjusted_hba1c_bs_200_to_300_under_care).to eq 2
+        expect(results.adjusted_bs_200_to_300_under_care).to eq 8
+
+        expect(results.adjusted_random_bs_over_300_under_care).to eq 2
+        expect(results.adjusted_post_prandial_bs_over_300_under_care).to eq 2
+        expect(results.adjusted_fasting_bs_over_300_under_care).to eq 2
+        expect(results.adjusted_hba1c_bs_over_300_under_care).to eq 2
+        expect(results.adjusted_bs_over_300_under_care).to eq 8
+
+        expect(results.adjusted_diabetes_patients_under_care).to eq 20
+      end
+
+      it "contains number of total lost to follow up patients at a facility, broken down by the blood sugar type and risk state" do
+        facility = create(:facility)
+        create_list(:patient, 5, :diabetes, assigned_facility: facility, recorded_at: june_2021[:long_ago]).each do |patient|
+          create(:blood_sugar, :with_encounter, patient: patient, facility: facility, recorded_at: june_2021[:over_12_months_ago])
+        end
+        refresh_views
+        results = described_class.find_by(facility: facility, month_date: june_2021[:now])
+        expect(results.adjusted_diabetes_patients_lost_to_follow_up).to eq 5
+      end
+
+      it "contains number of total missed visits patients at a facility" do
+        facility = create(:facility)
+        create_list(:patient, 2, :diabetes, assigned_facility: facility, recorded_at: june_2021[:long_ago]).each do |patient|
+          create(:blood_sugar, :with_encounter, patient: patient, recorded_at: june_2021[:four_months_ago])
+        end
+
+        create_list(:patient, 3, :diabetes, assigned_facility: facility, recorded_at: june_2021[:long_ago]).each do |patient|
+          create(:blood_sugar, :with_encounter, patient: patient, recorded_at: june_2021[:over_12_months_ago])
+        end
+
+        refresh_views
+        results = described_class.find_by(facility: facility, month_date: june_2021[:now])
+        expect(results.adjusted_bs_missed_visit_under_care).to eq 2
+        expect(results.adjusted_bs_missed_visit_lost_to_follow_up).to eq 3
+      end
+
+      it "contains number of total visited but no BS measured patients at a facility" do
+        facility = create(:facility)
+        create_list(:patient, 2, :diabetes, assigned_facility: facility, recorded_at: june_2021[:long_ago]).each do |patient|
+          create(:blood_pressure, :with_encounter, patient: patient, recorded_at: june_2021[:under_3_months_ago])
+        end
+
+        refresh_views
+        results = described_class.find_by(facility: facility, month_date: june_2021[:now])
+        expect(results.adjusted_visited_no_bs_under_care).to eq 2
+      end
     end
-    # context "monthly cohort outcomes"
   end
 
   describe ".with_patients" do
