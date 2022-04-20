@@ -155,17 +155,6 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       expect(described_class.eligible_patients).not_to include(patient)
     end
 
-    it "excludes any patients who have multiple scheduled appointments" do
-      excluded_patient = create(:patient, age: 18)
-      create_list(:appointment, 2, patient: excluded_patient, status: :scheduled)
-
-      included_patient = create(:patient, age: 18)
-      create(:appointment, patient: included_patient, status: :scheduled)
-
-      expect(described_class.eligible_patients).not_to include(excluded_patient)
-      expect(described_class.eligible_patients).to include(included_patient)
-    end
-
     it "doesn't include any patients whose assigned facility has been deleted" do
       excluded_patient = create(:patient, age: 18)
       excluded_patient.assigned_facility.discard
@@ -265,6 +254,27 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
         :registration_facility_district,
         :registration_facility_state
       ).values).to all be_present
+    end
+
+    it "does not raise an exception and continues with other patients if a patient is tried to enrolled more than once" do
+      patient = create(:patient)
+      create(:experiment, :with_treatment_group, experiment_type: "current_patients")
+      allow_any_instance_of(Experimentation::CurrentPatientExperiment).to receive(:eligible_patients).and_return(Patient.where(id: patient.id))
+
+      exception = ActiveRecord::RecordNotUnique.new('duplicate key value violates unique constraint "index_tgm_patient_id_and_experiment_id"')
+      allow_any_instance_of(Experimentation::TreatmentGroup).to receive(:enroll).and_raise(exception)
+
+      expect { Experimentation::CurrentPatientExperiment.first.enroll_patients(Date.today) }.not_to raise_exception
+    end
+
+    it "does not suppress exceptions other than multiple enrollment for the same patient" do
+      patient = create(:patient)
+      create(:experiment, :with_treatment_group, experiment_type: "current_patients")
+      allow_any_instance_of(Experimentation::CurrentPatientExperiment).to receive(:eligible_patients).and_return(Patient.where(id: patient.id))
+
+      allow_any_instance_of(Experimentation::TreatmentGroup).to receive(:enroll).and_raise(StandardError)
+
+      expect { Experimentation::CurrentPatientExperiment.first.enroll_patients(Date.today) }.to raise_exception(StandardError)
     end
 
     it "enrolls a patient even if assigned/registration facility was discarded, no scheduled appointments are present" do

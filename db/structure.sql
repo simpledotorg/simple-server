@@ -2926,14 +2926,14 @@ COMMENT ON COLUMN public.reporting_patient_states.diabetes_treatment_outcome_in_
 -- Name: COLUMN reporting_patient_states.diabetes_treatment_outcome_in_last_2_months; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.reporting_patient_states.diabetes_treatment_outcome_in_last_2_months IS 'For the visiting period of the last 2 months, is this patient''s diabetes treatment outcome bs_under_200, bs_200_to_300, bs_over_300, or visited_no_bp?';
+COMMENT ON COLUMN public.reporting_patient_states.diabetes_treatment_outcome_in_last_2_months IS 'For the visiting period of the last 2 months, is this patient''s diabetes treatment outcome bs_under_200, bs_200_to_300, bs_over_300, missed_visit, or visited_no_bp?';
 
 
 --
 -- Name: COLUMN reporting_patient_states.diabetes_treatment_outcome_in_quarter; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.reporting_patient_states.diabetes_treatment_outcome_in_quarter IS 'For the visiting period of the current quarter, is this patient''s diabetes treatment outcome bs_under_200, bs_200_to_300, bs_over_300, or visited_no_bp?';
+COMMENT ON COLUMN public.reporting_patient_states.diabetes_treatment_outcome_in_quarter IS 'For the visiting period of the current quarter, is this patient''s diabetes treatment outcome bs_under_200, bs_200_to_300, bs_over_300, missed_visit, or visited_no_bp?';
 
 
 --
