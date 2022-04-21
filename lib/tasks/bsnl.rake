@@ -16,11 +16,6 @@ namespace :bsnl do
 
   desc "Get BSNL template details from the API"
   task get_template_details: :environment do
-    GetBsnlTemplateDetails.new.call
-  end
-
-  desc "List pending notification strings to be uploaded to DLT and BSNL dashboard"
-  task list_pending_templates: :environment do
-    GetBsnlTemplateDetails.new.pending_templates
+    GetBsnlTemplateDetails.new.write_to_config
   end
 end
