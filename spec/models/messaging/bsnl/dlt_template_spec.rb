@@ -6,7 +6,10 @@ RSpec.describe Messaging::Bsnl::DltTemplate do
       template_name => {"Template_Id" => "a template id",
                         "Template_Keys" => %w[key_1 key_2],
                         "Non_Variable_Text_Length" => "10",
-                        "Max_Length_Permitted" => "20"}
+                        "Max_Length_Permitted" => "20",
+                        "Version" => 1,
+                        "Is_Latest_Version" => true,
+                        "Latest_Template_Version" => template_name }
     })
   end
 
@@ -21,6 +24,8 @@ RSpec.describe Messaging::Bsnl::DltTemplate do
     expect(described_class.new(template_name).max_length_permitted).to eq(20)
     expect(described_class.new(template_name).non_variable_text_length).to eq(10)
     expect(described_class.new(template_name).variable_length_permitted).to eq(10)
+    expect(described_class.new(template_name).version).to eq(1)
+    expect(described_class.new(template_name).is_latest_version).to eq(true)
   end
 
   it "raises an error if the message key is missing in config" do
@@ -30,6 +35,41 @@ RSpec.describe Messaging::Bsnl::DltTemplate do
     missing_template_name = "en.a.missing.template"
 
     expect { described_class.new(missing_template_name) }.to raise_error(Messaging::Bsnl::Error)
+  end
+
+  describe ".latest_name_of" do
+    it "finds the name of the latest version of a template" do
+      stub_const("Messaging::Bsnl::DltTemplate::BSNL_TEMPLATES", {
+        "en.a.template.name" => { "Template_Id" => "a template id",
+                                  "Template_Keys" => %w[key_1 key_2],
+                                  "Non_Variable_Text_Length" => "10",
+                                  "Max_Length_Permitted" => "20",
+                                  "Version" => 1,
+                                  "Is_Latest_Version" => true,
+                                  "Latest_Template_Version" => "en.a.template.name.3" }
+      })
+
+      expect(described_class.latest_name_of("en.a.template.name")).to eq("en.a.template.name.3")
+      expect(described_class.latest_name_of("en.a.template.name.2")).to eq("en.a.template.name.3")
+    end
+  end
+
+  describe ".drop_version_number" do
+    it "returns the name of the template without the version suffix" do
+      expect(described_class.drop_version_number("en.a.template.name.1")).to eq("en.a.template.name")
+      expect(described_class.drop_version_number("en.a.template.name.200")).to eq("en.a.template.name")
+      expect(described_class.drop_version_number("en.a.template.name.text-suffix")).to eq("en.a.template.name.text-suffix")
+      expect(described_class.drop_version_number("en.a.template.name.text-suffix.1")).to eq("en.a.template.name.text-suffix")
+    end
+  end
+
+  describe ".version_number" do
+    it "returns the version number of the template, defaults to the initial version number" do
+      expect(described_class.version_number("en.a.template.name")).to eq(1)
+      expect(described_class.version_number("en.a.template.name.1")).to eq(1)
+      expect(described_class.version_number("en.a.template.name.200")).to eq(200)
+      expect(described_class.version_number("en.a.template.name.text-suffix")).to eq(1)
+    end
   end
 
   describe "#sanitised_variable_content" do

@@ -17,6 +17,7 @@ class Messaging::Bsnl::DltTemplate
   attr_reader :variable_length_permitted
   attr_reader :status
   attr_reader :version
+  attr_reader :is_latest_version
 
   def initialize(dlt_template_name)
     @name = dlt_template_name
@@ -26,7 +27,7 @@ class Messaging::Bsnl::DltTemplate
     @is_unicode = details["Is_Unicode"]
     @keys = details["Template_Keys"]
     @version = details["Version"]
-    @version = details["Is_Latest_Version"]
+    @is_latest_version = details["Is_Latest_Version"]
     @max_length_permitted = details["Max_Length_Permitted"].to_i
     @non_variable_text_length = details["Non_Variable_Text_Length"].to_i
     @variable_length_permitted = max_length_permitted - non_variable_text_length

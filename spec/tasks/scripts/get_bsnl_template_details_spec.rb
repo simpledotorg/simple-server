@@ -38,26 +38,28 @@ RSpec.describe GetBsnlTemplateDetails do
       allow(Messaging::Bsnl::Api).to receive(:new).and_return(dbl)
       allow(dbl).to receive(:get_template_details).and_return(templates)
 
-      expect(described_class.new.massaged_template_details).to eq({"en.notifications.set03.emotional_guilt" =>
-                                                                      {"Template_Id" => "2",
-                                                                       "Template_Keys" => ["facility_name", "patient_name"],
-                                                                       "Non_Variable_Text_Length" => "166",
-                                                                       "Max_Length_Permitted" => "332",
-                                                                       "Template_Status" => "1",
-                                                                       "Is_Unicode" => "0",
-                                                                       "Version" => 1,
-                                                                       "Is_Latest_Version" => false,
-                                                                       "Latest_Template_Version" => "en.notifications.set03.emotional_guilt.2"},
-                                                                    "en.notifications.set03.emotional_guilt.2" =>
-                                                                      {"Template_Id" => "1",
-                                                                       "Template_Keys" => [],
-                                                                       "Non_Variable_Text_Length" => "0",
-                                                                       "Max_Length_Permitted" => "0",
-                                                                       "Template_Status" => "0",
-                                                                       "Is_Unicode" => "0",
-                                                                       "Version" => 2,
-                                                                       "Is_Latest_Version" => true,
-                                                                       "Latest_Template_Version" => "en.notifications.set03.emotional_guilt.2"}})
+      expect(described_class.new.massaged_template_details).to eq(
+        {"en.notifications.set03.emotional_guilt" =>
+            {"Template_Id" => "2",
+             "Template_Keys" => ["facility_name", "patient_name"],
+             "Non_Variable_Text_Length" => "166",
+             "Max_Length_Permitted" => "332",
+             "Template_Status" => "1",
+             "Is_Unicode" => "0",
+             "Version" => 1,
+             "Is_Latest_Version" => false,
+             "Latest_Template_Version" => "en.notifications.set03.emotional_guilt.2"},
+         "en.notifications.set03.emotional_guilt.2" =>
+            {"Template_Id" => "1",
+             "Template_Keys" => [],
+             "Non_Variable_Text_Length" => "0",
+             "Max_Length_Permitted" => "0",
+             "Template_Status" => "0",
+             "Is_Unicode" => "0",
+             "Version" => 2,
+             "Is_Latest_Version" => true,
+             "Latest_Template_Version" => "en.notifications.set03.emotional_guilt.2"}}
+      )
     end
   end
 end
