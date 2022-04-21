@@ -40,14 +40,14 @@ module Experimentation
                                            .where("treatment_group_memberships.patient_id = patients.id")
                                            .where("end_time > ?", RECENT_EXPERIMENT_MEMBERSHIP_BUFFER.ago)
                                            .select(:patient_id))
-        .where("NOT EXISTS (:multiple_scheduled_appointments)",
-          multiple_scheduled_appointments: Appointment
-                                             .select(1)
-                                             .where("appointments.patient_id = patients.id")
-                                             .where(status: :scheduled)
-                                             .group(:patient_id)
-                                             .having("count(patient_id) > 1"))
+        .then { |patients| exclude_nagaland_patients(patients) }
         .then { |patients| exclude_bangladesh_blocks(patients) }
+    end
+
+    def self.exclude_nagaland_patients(patients)
+      return patients unless CountryConfig.current_country?("India")
+
+      patients.where.not(facilities: {state: "Nagaland"})
     end
 
     def self.exclude_bangladesh_blocks(patients)
@@ -70,7 +70,11 @@ module Experimentation
           .includes(:assigned_facility, :registration_facility, :medical_history)
           .includes(latest_scheduled_appointments: [:facility, :creation_facility])
           .in_batches(of: BATCH_SIZE)
-          .each_record { |patient| random_treatment_group.enroll(patient, reporting_data(patient, date)) }
+          .each_record do |patient|
+          handle_multiple_enrollments do
+            random_treatment_group.enroll(patient, reporting_data(patient, date))
+          end
+        end
       end
     end
 
@@ -201,6 +205,19 @@ module Experimentation
     end
 
     private
+
+    # This exception handling has been added to temporarily handle patients with multiple
+    # scheduled appointments. These patients were earlier excluded from the eligible patients list
+    # but we had to remove the exclusion for performance.
+    def handle_multiple_enrollments
+      yield
+    rescue ActiveRecord::RecordNotUnique => error
+      if error.message.include?('duplicate key value violates unique constraint "index_tgm_patient_id_and_experiment_id"')
+        Rails.logger.info("#{self.class.name} error while enrolling patient: #{error.message}")
+      else
+        raise error
+      end
+    end
 
     def remaining_enrollments_allowed(date)
       max_patients_per_day - treatment_group_memberships.where(experiment_inclusion_date: date).count

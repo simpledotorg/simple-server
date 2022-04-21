@@ -44,6 +44,33 @@ FactoryBot.define do
       blood_sugar_type { "hba1c" }
       blood_sugar_value { 8.5 }
     end
+
+    trait :bs_below_200 do
+      blood_sugar_value {
+        {random: 150,
+         post_prandial: 150,
+         fasting: 100,
+         hba1c: 6.5}[blood_sugar_type.to_sym]
+      }
+    end
+
+    trait :bs_200_to_300 do
+      blood_sugar_value {
+        {random: 250,
+         post_prandial: 250,
+         fasting: 165,
+         hba1c: 8.5}[blood_sugar_type.to_sym]
+      }
+    end
+
+    trait :bs_over_300 do
+      blood_sugar_value {
+        {random: 350,
+         post_prandial: 350,
+         fasting: 225,
+         hba1c: 9.5}[blood_sugar_type.to_sym]
+      }
+    end
   end
 
   factory :blood_sugar_with_encounter, parent: :blood_sugar do

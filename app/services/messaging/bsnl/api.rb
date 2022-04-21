@@ -5,7 +5,8 @@ class Messaging::Bsnl::Api
     get_content_template_details: "/api/Get_Content_Template_Details",
     send_sms: "/api/Send_Sms",
     name_content_template_variables: "/api/Name_Content_Template_Variables",
-    message_status_report: "/api/Message_Status_Report"
+    message_status_report: "/api/Message_Status_Report",
+    get_account_balance: "/api/Get_SMS_Count"
   }
 
   def initialize
@@ -43,6 +44,10 @@ class Messaging::Bsnl::Api
     post(URL_PATHS[:message_status_report], {
       "Message_id" => message_id
     })
+  end
+
+  def get_account_balance
+    post(URL_PATHS[:get_account_balance])["Recharge_Details"]
   end
 
   private
