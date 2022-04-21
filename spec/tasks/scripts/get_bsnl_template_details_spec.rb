@@ -7,7 +7,7 @@ RSpec.describe GetBsnlTemplateDetails do
       templates = [{"Template_Id" => "1",
                     "Header" => "ABCDEF",
                     "Message_Type" => "SI",
-                    "Template_Name" => "en.notifications.set03.emotional_guilt.2",
+                    "Template_Name" => "en.notifications.set03.basic.2",
                     "Template_Message_DLT" => "Test message",
                     "Template_Message" => nil,
                     "Template_Keys" => [],
@@ -22,7 +22,7 @@ RSpec.describe GetBsnlTemplateDetails do
         {"Template_Id" => "2",
          "Header" => "ABCDEF",
          "Message_Type" => "SI",
-         "Template_Name" => "en.notifications.set03.emotional_guilt",
+         "Template_Name" => "en.notifications.set03.basic",
          "Template_Message_DLT" => "Test template",
          "Template_Message" => "Test message",
          "Template_Keys" => %w[facility_name patient_name],
@@ -39,7 +39,7 @@ RSpec.describe GetBsnlTemplateDetails do
       allow(dbl).to receive(:get_template_details).and_return(templates)
 
       expect(described_class.new.massaged_template_details).to eq(
-        {"en.notifications.set03.emotional_guilt" =>
+        {"en.notifications.set03.basic" =>
             {"Template_Id" => "2",
              "Template_Keys" => ["facility_name", "patient_name"],
              "Non_Variable_Text_Length" => "166",
@@ -48,8 +48,8 @@ RSpec.describe GetBsnlTemplateDetails do
              "Is_Unicode" => "0",
              "Version" => 1,
              "Is_Latest_Version" => false,
-             "Latest_Template_Version" => "en.notifications.set03.emotional_guilt.2"},
-         "en.notifications.set03.emotional_guilt.2" =>
+             "Latest_Template_Version" => "en.notifications.set03.basic.2"},
+         "en.notifications.set03.basic.2" =>
             {"Template_Id" => "1",
              "Template_Keys" => [],
              "Non_Variable_Text_Length" => "0",
@@ -58,7 +58,37 @@ RSpec.describe GetBsnlTemplateDetails do
              "Is_Unicode" => "0",
              "Version" => 2,
              "Is_Latest_Version" => true,
-             "Latest_Template_Version" => "en.notifications.set03.emotional_guilt.2"}}
+             "Latest_Template_Version" => "en.notifications.set03.basic.2"},
+         "en.notifications.set03_basic_repeated.first" =>
+           {"Template_Id" => "1",
+            "Template_Keys" => [],
+            "Non_Variable_Text_Length" => "0",
+            "Max_Length_Permitted" => "0",
+            "Template_Status" => "0",
+            "Is_Unicode" => "0",
+            "Version" => 2,
+            "Is_Latest_Version" => true,
+            "Latest_Template_Version" => "en.notifications.set03.basic.2"},
+         "en.notifications.set03_basic_repeated.second" =>
+           {"Template_Id" => "1",
+            "Template_Keys" => [],
+            "Non_Variable_Text_Length" => "0",
+            "Max_Length_Permitted" => "0",
+            "Template_Status" => "0",
+            "Is_Unicode" => "0",
+            "Version" => 2,
+            "Is_Latest_Version" => true,
+            "Latest_Template_Version" => "en.notifications.set03.basic.2"},
+         "en.notifications.set03_basic_repeated.third" =>
+           {"Template_Id" => "1",
+            "Template_Keys" => [],
+            "Non_Variable_Text_Length" => "0",
+            "Max_Length_Permitted" => "0",
+            "Template_Status" => "0",
+            "Is_Unicode" => "0",
+            "Version" => 2,
+            "Is_Latest_Version" => true,
+            "Latest_Template_Version" => "en.notifications.set03.basic.2"}}
       )
     end
   end
