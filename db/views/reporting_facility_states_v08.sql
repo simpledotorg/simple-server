@@ -36,7 +36,7 @@ WITH
                COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care') AS diabetes_under_care,
                COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'lost_to_follow_up') AS diabetes_lost_to_follow_up,
                COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'dead') AS diabetes_dead,
-               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state != 'dead') AS cumulative_assigned_diabetes_patients
+               COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state != 'dead') AS cumulative_assigned_diabetic_patients
 
         FROM reporting_patient_states
         WHERE diabetes = 'yes'
@@ -151,7 +151,7 @@ assigned_patients.cumulative_assigned_patients,
 assigned_diabetes_patients.diabetes_under_care,
 assigned_diabetes_patients.diabetes_lost_to_follow_up,
 assigned_diabetes_patients.diabetes_dead,
-assigned_diabetes_patients.cumulative_assigned_diabetes_patients,
+assigned_diabetes_patients.cumulative_assigned_diabetic_patients,
 
 -- adjusted htn outcomes
 adjusted_outcomes.controlled_under_care AS adjusted_controlled_under_care,
