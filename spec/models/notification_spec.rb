@@ -96,8 +96,9 @@ describe Notification, type: :model do
     it "returns the dlt_template_name using the locale and the message" do
       allow_any_instance_of(Facility).to receive(:locale).and_return("en")
       notification = create(:notification, message: "notifications.set01.basic")
+      allow(Messaging::Bsnl::DltTemplate).to receive(:latest_name_of).and_return("en.notifications.set01.basic.200")
 
-      expect(notification.dlt_template_name).to eq("en.notifications.set01.basic")
+      expect(notification.dlt_template_name).to eq("en.notifications.set01.basic.200")
     end
   end
 
