@@ -16,7 +16,7 @@ SELECT DISTINCT ON (bs.patient_id, cal.month_date)
     bs.blood_sugar_value,
     bs.facility_id AS blood_sugar_facility_id,
 
-    ------------------------------------------------------------
+    ---------------------------------------------------------------
     -- Risk state of the latest measurement as of given month
     -- +----------+--------------+------------------+-------------+
     -- |   Type   | bs-below-200 |  bs-200-to-299   | bs-over-299 |

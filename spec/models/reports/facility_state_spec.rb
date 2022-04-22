@@ -287,6 +287,18 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
                      .pluck(:cumulative_diabetes_registrations)).to all eq (old_diabetes_patients + new_diabetic_patients).size
           end
         end
+
+        it "does not count patients which have not been marked as diabetic" do
+          facility = create(:facility)
+          _non_diabetic_patients = create_list(:patient, 3, :without_diabetes, registration_facility: facility, recorded_at: june_2021[:two_months_ago])
+
+          refresh_views
+          with_reporting_time_zone do
+            expect(described_class
+                     .where(facility_id: facility.id)
+                     .pluck(:cumulative_diabetes_registrations)).to all be_nil
+          end
+        end
       end
 
       describe "monthly_diabetes_registrations" do
@@ -329,12 +341,24 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
             ).to eq [new_diabetic_patients.size]
           end
         end
+
+        it "does not count patients who have not been marked as diabetic" do
+          facility = create(:facility)
+          _non_diabetic_patients = create_list(:patient, 3, :without_diabetes, registration_facility: facility, recorded_at: june_2021[:two_months_ago])
+
+          refresh_views
+          with_reporting_time_zone do
+            expect(described_class
+                     .where(facility_id: facility.id)
+                     .pluck(:monthly_diabetes_registrations)).to all be_nil
+          end
+        end
       end
     end
 
     context "assigned patients by care states" do
       describe "under care, lost to follow up and dead patients" do
-        it "has the number of assigned diabetic patients which are under care,  lost to follow up or dead" do
+        it "has the number of assigned diabetic patients which are under care, lost to follow up or dead" do
           facility = create(:facility)
 
           # non diabetic patient
@@ -351,7 +375,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
           create(:appointment, patient: under_care_diabetic_patients.third, recorded_at: june_2021[:one_month_ago])
 
           # dead patients
-          dead_diabetic_patients = create_list(:patient, 3, :diabetes, status: "dead", assigned_facility: facility, recorded_at: june_2021[:under_3_months_ago])
+          dead_diabetic_patients = create_list(:patient, 4, :diabetes, status: "dead", assigned_facility: facility, recorded_at: june_2021[:under_3_months_ago])
 
           refresh_views
           with_reporting_time_zone do
@@ -359,6 +383,34 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
                      .where(facility: facility, month_date: june_2021[:now])
                      .pluck(:diabetes_under_care, :diabetes_lost_to_follow_up, :diabetes_dead).first)
               .to eq([under_care_diabetic_patients.count, ltfu_diabetic_patients.count, dead_diabetic_patients.count])
+          end
+        end
+
+        it "does not count patients which are marked as non diabetic" do
+          facility = create(:facility)
+
+          # non diabetic patient
+          _non_diabetic_patient = create(:patient, :without_diabetes, assigned_facility: facility)
+
+          # ltfu diabetes patient
+          ltfu_non_diabetic_patients = create_list(:patient, 2, :without_diabetes, assigned_facility: facility, recorded_at: june_2021[:over_12_months_ago])
+          create(:blood_sugar, :with_encounter, patient: ltfu_non_diabetic_patients.first, recorded_at: june_2021[:over_12_months_ago])
+
+          # under care diabetes patients
+          under_care_non_diabetic_patients = create_list(:patient, 3, :without_diabetes, assigned_facility: facility, recorded_at: june_2021[:over_12_months_ago])
+          create(:blood_sugar, :with_encounter, patient: under_care_non_diabetic_patients.first, recorded_at: june_2021[:one_month_ago])
+          create(:blood_pressure, :with_encounter, patient: under_care_non_diabetic_patients.second, recorded_at: june_2021[:one_month_ago])
+          create(:appointment, patient: under_care_non_diabetic_patients.third, recorded_at: june_2021[:one_month_ago])
+
+          # dead patients
+          _dead_non_diabetic_patients = create_list(:patient, 3, :without_diabetes, status: "dead", assigned_facility: facility, recorded_at: june_2021[:under_3_months_ago])
+
+          refresh_views
+          with_reporting_time_zone do
+            expect(described_class
+                     .where(facility: facility, month_date: june_2021[:now])
+                     .pluck(:diabetes_under_care, :diabetes_lost_to_follow_up, :diabetes_dead).first)
+              .to all be_nil
           end
         end
       end
@@ -374,10 +426,27 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
 
           RefreshReportingViews.refresh_v2
           with_reporting_time_zone do
-            expect(described_class.find_by(facility: facility, month_date: june_2021[:now] - 2.years).cumulative_assigned_diabetes_patients).to eq 1
-            expect(described_class.find_by(facility: facility, month_date: june_2021[:under_12_months_ago]).cumulative_assigned_diabetes_patients).to eq 2
-            expect(described_class.find_by(facility: facility, month_date: june_2021[:under_3_months_ago]).cumulative_assigned_diabetes_patients).to eq 3
-            expect(described_class.find_by(facility: facility, month_date: june_2021[:now]).cumulative_assigned_diabetes_patients).to eq 4
+            expect(described_class.find_by(facility: facility, month_date: june_2021[:now] - 2.years).cumulative_assigned_diabetic_patients).to eq 1
+            expect(described_class.find_by(facility: facility, month_date: june_2021[:under_12_months_ago]).cumulative_assigned_diabetic_patients).to eq 2
+            expect(described_class.find_by(facility: facility, month_date: june_2021[:under_3_months_ago]).cumulative_assigned_diabetic_patients).to eq 3
+            expect(described_class.find_by(facility: facility, month_date: june_2021[:now]).cumulative_assigned_diabetic_patients).to eq 4
+          end
+        end
+
+        it "does not count non diabetic patients" do
+          facility = create(:facility)
+          create(:patient, :without_diabetes, assigned_facility: facility, recorded_at: june_2021[:now] - 2.years)
+          create(:patient, :without_diabetes, assigned_facility: facility, recorded_at: june_2021[:under_12_months_ago])
+          create(:patient, :without_diabetes, assigned_facility: facility, recorded_at: june_2021[:under_3_months_ago])
+          create(:patient, :without_diabetes, assigned_facility: facility, recorded_at: june_2021[:end_of_month])
+          create_list(:patient, 3, :without_diabetes, recorded_at: june_2021[:long_ago], assigned_facility: facility, status: "dead")
+
+          RefreshReportingViews.refresh_v2
+          with_reporting_time_zone do
+            expect(described_class.find_by(facility: facility, month_date: june_2021[:now] - 2.years).cumulative_assigned_diabetic_patients).to be_nil
+            expect(described_class.find_by(facility: facility, month_date: june_2021[:under_12_months_ago]).cumulative_assigned_diabetic_patients).to be_nil
+            expect(described_class.find_by(facility: facility, month_date: june_2021[:under_3_months_ago]).cumulative_assigned_diabetic_patients).to be_nil
+            expect(described_class.find_by(facility: facility, month_date: june_2021[:now]).cumulative_assigned_diabetic_patients).to be_nil
           end
         end
       end
