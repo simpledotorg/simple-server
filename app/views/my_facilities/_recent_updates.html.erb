@@ -3,15 +3,23 @@
     Recent updates
   </h2>
   <p class="c-grey-dark">
-    Last updated on Wednesday 8-Apr-2022. If you have Dashboard feedback contact the Simple tech team at help@simple.org.
+    Last updated 22-Apr-2022. If you have Dashboard feedback contact the Simple tech team at help@simple.org.
   </p>
   
   <section class="update">
     <div class="update-date">
       Apr <b class="d-block">2022</b>
     </div>
+    <% if CountryConfig.current[:name] == "India" %>
+      <p>
+        <b>SMS Patient reminders:</b> Simple is again sending text messages to all patients with upcoming appointments to remind them to return to care &#8212; patients receive a message 1 day before, day of, and 3 days after their appointment, if they don't come. We are also messaging patients who are late for their visits to see if we can reduced Missed Visit rates.
+      </p>
+    <% end %>
     <p>
-      The <b>Dashboard</b> now defines Lost-to-follow-up patients more specifically. Previously a patient was LTFU if they did not have a BP measure in &gt;1 year. Now a patient is LTFU if they didn't have a BP measure, a blood sugar measure, a medication refill, or a new appointment scheduled in &gt;1 year.
+      <b>Bug fix:</b> When you print reports, the charts no longer go over the edge of the cards.
+    </p>
+    <p>
+      The <b>Dashboard</b> now defines lost-to-follow-up patients more accurately. Previously a patient was LTFU if they did not have a BP measure in &gt;1 year. Now a patient is LTFU if they didn't have a BP measure, a blood sugar measure, a medication refill, or a new appointment scheduled in &gt;1 year.
     </p>
   </section>
 
@@ -29,7 +37,7 @@
       Feb <b class="d-block">2022</b>
     </div>
     <p>
-      The <b>Simple Android app</b> now allows users to edit and add Health IDs (such as BP Passports and NHID) from the patient's profile screen. In India, this makes it easier to add NHIDs to follow-up patients.
+      The <b>Simple Android app</b> now allows users to edit and add Health IDs (such as BP Passports<% if CountryConfig.current[:name] == "India" %> and NHID<% end %>) from the patient's profile screen.<% if CountryConfig.current[:name] == "India" %> In India, this makes it easier to add NHIDs to follow-up patients.<% end %>
     </p>
   </section>
 
