@@ -55,7 +55,7 @@ class Notification < ApplicationRecord
   end
 
   def dlt_template_name
-    "#{message_data[:locale]}.#{message}"
+    Messaging::Bsnl::DltTemplate.latest_name_of("#{message_data[:locale]}.#{message}")
   end
 
   def self.cancel
