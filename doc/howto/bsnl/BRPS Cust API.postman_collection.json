@@ -1,0 +1,482 @@
+{
+	"info": {
+		"_postman_id": "2435e810-626d-466f-8772-752465d9f3a9",
+		"name": "BRPS Cust API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create New Token",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"Service_Id\": \"10020\",\r\n  \"Username\": \"demouser\",\r\n  \"Password\": \"bsnl@123\",\r\n  \"Token_Id\": \"3\",\r\n  \"IP_Addresses\": [\r\n    \"117.193.77.26\",\r\n    \"117.193.77.27\"\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://bulksms.bsnl.in:5010/api/Create_New_API_Token",
+					"protocol": "https",
+					"host": [
+						"bulksms",
+						"bsnl",
+						"in"
+					],
+					"port": "5010",
+					"path": [
+						"api",
+						"Create_New_API_Token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get_Token_Status",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"Service_Id\": \"10020\",\r\n  \"Username\": \"demouser\",\r\n  \"Password\": \"bsnl@123\",\r\n  \"Token_Id\": \"3\",\r\n  \"IP_Addresses\": [\r\n    \"117.193.77.26\",\r\n    \"117.193.77.27\"\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://bulksms.bsnl.in:5010/api/Create_New_API_Token",
+					"protocol": "https",
+					"host": [
+						"bulksms",
+						"bsnl",
+						"in"
+					],
+					"port": "5010",
+					"path": [
+						"api",
+						"Create_New_API_Token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get_Content_Template_Details",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://bulksms.bsnl.in:5010/api/Get_Content_Template_Details",
+					"protocol": "https",
+					"host": [
+						"bulksms",
+						"bsnl",
+						"in"
+					],
+					"port": "5010",
+					"path": [
+						"api",
+						"Get_Content_Template_Details"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Name_Content_Template_Variables",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://bulksms.bsnl.in:5010/api/Get_Content_Template_Details",
+					"protocol": "https",
+					"host": [
+						"bulksms",
+						"bsnl",
+						"in"
+					],
+					"port": "5010",
+					"path": [
+						"api",
+						"Get_Content_Template_Details"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Reset_Named_Content_Template",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://bulksms.bsnl.in:5010/api/Get_Content_Template_Details",
+					"protocol": "https",
+					"host": [
+						"bulksms",
+						"bsnl",
+						"in"
+					],
+					"port": "5010",
+					"path": [
+						"api",
+						"Get_Content_Template_Details"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get_Send_Request_Sample",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://bulksms.bsnl.in:5010/api/Get_Content_Template_Details",
+					"protocol": "https",
+					"host": [
+						"bulksms",
+						"bsnl",
+						"in"
+					],
+					"port": "5010",
+					"path": [
+						"api",
+						"Get_Content_Template_Details"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Send_SMS",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://bulksms.bsnl.in:5010/api/Get_Content_Template_Details",
+					"protocol": "https",
+					"host": [
+						"bulksms",
+						"bsnl",
+						"in"
+					],
+					"port": "5010",
+					"path": [
+						"api",
+						"Get_Content_Template_Details"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Send_SMS_Bulk",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://bulksms.bsnl.in:5010/api/Get_Content_Template_Details",
+					"protocol": "https",
+					"host": [
+						"bulksms",
+						"bsnl",
+						"in"
+					],
+					"port": "5010",
+					"path": [
+						"api",
+						"Get_Content_Template_Details"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Send_SMS_Bulk_Individual",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://bulksms.bsnl.in:5010/api/Get_Content_Template_Details",
+					"protocol": "https",
+					"host": [
+						"bulksms",
+						"bsnl",
+						"in"
+					],
+					"port": "5010",
+					"path": [
+						"api",
+						"Get_Content_Template_Details"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Push_Message",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://bulksms.bsnl.in:5010/api/Get_Content_Template_Details",
+					"protocol": "https",
+					"host": [
+						"bulksms",
+						"bsnl",
+						"in"
+					],
+					"port": "5010",
+					"path": [
+						"api",
+						"Get_Content_Template_Details"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Message_Status_Report",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://bulksms.bsnl.in:5010/api/Get_Content_Template_Details",
+					"protocol": "https",
+					"host": [
+						"bulksms",
+						"bsnl",
+						"in"
+					],
+					"port": "5010",
+					"path": [
+						"api",
+						"Get_Content_Template_Details"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get_SMS_Count",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://bulksms.bsnl.in:5010/api/Get_Content_Template_Details",
+					"protocol": "https",
+					"host": [
+						"bulksms",
+						"bsnl",
+						"in"
+					],
+					"port": "5010",
+					"path": [
+						"api",
+						"Get_Content_Template_Details"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Schedule_SMS",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://bulksms.bsnl.in:5010/api/Get_Content_Template_Details",
+					"protocol": "https",
+					"host": [
+						"bulksms",
+						"bsnl",
+						"in"
+					],
+					"port": "5010",
+					"path": [
+						"api",
+						"Get_Content_Template_Details"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cancel_Schedule",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://bulksms.bsnl.in:5010/api/Get_Content_Template_Details",
+					"protocol": "https",
+					"host": [
+						"bulksms",
+						"bsnl",
+						"in"
+					],
+					"port": "5010",
+					"path": [
+						"api",
+						"Get_Content_Template_Details"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEwMDYzIDEiLCJuYmYiOjE2NDgxMTE0MzUsImV4cCI6MTY3OTY0NzQzNSwiaWF0IjoxNjQ4MTExNDM1LCJpc3MiOiJodHRwczovL2J1bGtzbXMuYnNubC5pbjo1MDEwIiwiYXVkIjoiMTAwNjMgMSJ9.Q7jbeDdWVe2OiumP280zJagvLPov7Ud8hlb7oTWT_8g\"",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "11493e97-7067-462d-b1ce-c7a022d87183",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "2051d7f0-3698-471e-a3f4-f3d476dffad6",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
