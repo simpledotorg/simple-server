@@ -38,8 +38,8 @@ FactoryBot.define do
       medical_history { build(:medical_history, :hypertension_no, patient_id: id) }
     end
 
-    trait :diabetes do
-      medical_history { build(:medical_history, :diabetes_yes, patient_id: id) }
+    trait :without_diabetes do
+      medical_history { build(:medical_history, :diabetes_no, patient_id: id) }
     end
 
     trait :hypertension do
