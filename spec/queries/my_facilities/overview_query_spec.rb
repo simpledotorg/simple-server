@@ -29,10 +29,10 @@ RSpec.describe OverviewQuery do
 
     let!(:blood_pressures_for_inactive_facility_with_bp_outside_period) do
       create_list(:blood_pressure,
-                  threshold_bps,
-                  user: user,
-                  facility: inactive_facility_with_bp_outside_period,
-                  recorded_at: date - 1.month)
+        threshold_bps,
+        user: user,
+        facility: inactive_facility_with_bp_outside_period,
+        recorded_at: date - 1.month)
     end
 
     before do
