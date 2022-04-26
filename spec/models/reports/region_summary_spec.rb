@@ -90,6 +90,11 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
         appts_scheduled_15_to_31_days
         appts_scheduled_32_to_62_days
         appts_scheduled_more_than_62_days
+        adjusted_bs_below_200_under_care
+        adjusted_random_bs_below_200_under_care
+        adjusted_post_prandial_bs_below_200_under_care
+        adjusted_fasting_bs_below_200_under_care
+        adjusted_hba1c_bs_below_200_under_care
       ].map(&:to_s)
       (3.months.ago.to_period..now.to_period).each do |period|
         expect(results["facility-1"][period].keys).to match_array(expected_keys)
@@ -258,6 +263,219 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       expect(facility_results[period]["adjusted_missed_visit_under_care_with_lost_to_follow_up"]).to eq(1)
       expect(facility_results[period]["adjusted_visited_no_bp_lost_to_follow_up"]).to eq(0)
       expect(facility_results[period]["lost_to_follow_up"]).to eq(1)
+    end
+  end
+
+  context "diabetes" do
+    let(:distict_with_facilities) { setup_district_with_facilities }
+    let(:region) { distict_with_facilities[:region] }
+    let(:facility_1) { distict_with_facilities[:facility_1] }
+    let(:facility_2) { distict_with_facilities[:facility_2] }
+    let(:period) { jan_2020..mar_2020 }
+
+    before :each do
+      Flipper.enable(:diabetes_management_reports)
+      facility_1.update(enable_diabetes_management: true)
+      facility_2.update(enable_diabetes_management: true)
+    end
+
+    it "returns the adjusted count of patients with bs <200 in a region" do
+      facility_1_patients = create_list(:patient, 4, :diabetes, assigned_facility: facility_1, recorded_at: jan_2019)
+      create(:blood_sugar, :with_encounter, :random, :bs_below_200, patient: facility_1_patients.first, facility: facility_1, recorded_at: jan_2020 + 3.months)
+      create(:blood_sugar, :with_encounter, :post_prandial, :bs_below_200, patient: facility_1_patients.second, facility: facility_1, recorded_at: jan_2020 + 2.months)
+      create(:blood_sugar, :with_encounter, :fasting, :bs_below_200, patient: facility_1_patients.third, facility: facility_1, recorded_at: jan_2020 + 2.months)
+      create(:blood_sugar, :with_encounter, :hba1c, :bs_below_200, patient: facility_1_patients.fourth, facility: facility_1, recorded_at: jan_2020 + 3.months)
+
+      facility_2_patients = create_list(:patient, 3, :diabetes, assigned_facility: facility_2, recorded_at: jan_2019)
+      create(:blood_sugar, :with_encounter, :random, :bs_below_200, patient: facility_2_patients.first, facility: facility_2, recorded_at: jan_2020 + 3.months)
+      create(:blood_sugar, :with_encounter, :post_prandial, :bs_below_200, patient: facility_2_patients.second, facility: facility_2, recorded_at: jan_2020 + 2.months)
+      create(:blood_sugar, :with_encounter, :fasting, :bs_below_200, patient: facility_2_patients.third, facility: facility_2, recorded_at: jan_2020 + 2.months)
+
+      refresh_views
+      facility_1_results = described_class.call(facility_1)[facility_1.region.slug]
+      facility_2_results = described_class.call(facility_2)[facility_2.region.slug]
+      region_results = described_class.call(region)[region.slug]
+      (("Jan 2019".to_period)..("Feb 2020".to_period)).each do |period|
+        expect(facility_1_results[period]).to include({
+          "adjusted_bs_below_200_under_care" => 0,
+          "adjusted_random_bs_below_200_under_care" => 0,
+          "adjusted_post_prandial_bs_below_200_under_care" => 0,
+          "adjusted_fasting_bs_below_200_under_care" => 0,
+          "adjusted_hba1c_bs_below_200_under_care" => 0
+        })
+        expect(facility_2_results[period]).to include({
+          "adjusted_bs_below_200_under_care" => 0,
+          "adjusted_random_bs_below_200_under_care" => 0,
+          "adjusted_post_prandial_bs_below_200_under_care" => 0,
+          "adjusted_fasting_bs_below_200_under_care" => 0,
+          "adjusted_hba1c_bs_below_200_under_care" => 0
+        })
+        expect(region_results[period]).to include({
+          "adjusted_bs_below_200_under_care" => 0,
+          "adjusted_random_bs_below_200_under_care" => 0,
+          "adjusted_post_prandial_bs_below_200_under_care" => 0,
+          "adjusted_fasting_bs_below_200_under_care" => 0,
+          "adjusted_hba1c_bs_below_200_under_care" => 0
+        })
+      end
+
+      expect(facility_1_results["Mar 2020".to_period]).to include({
+        "adjusted_bs_below_200_under_care" => 2,
+        "adjusted_random_bs_below_200_under_care" => 0,
+        "adjusted_post_prandial_bs_below_200_under_care" => 1,
+        "adjusted_fasting_bs_below_200_under_care" => 1,
+        "adjusted_hba1c_bs_below_200_under_care" => 0
+      })
+      expect(facility_2_results["Mar 2020".to_period]).to include({
+        "adjusted_bs_below_200_under_care" => 2,
+        "adjusted_random_bs_below_200_under_care" => 0,
+        "adjusted_post_prandial_bs_below_200_under_care" => 1,
+        "adjusted_fasting_bs_below_200_under_care" => 1,
+        "adjusted_hba1c_bs_below_200_under_care" => 0
+      })
+      expect(region_results["Mar 2020".to_period]).to include({
+        "adjusted_bs_below_200_under_care" => 4,
+        "adjusted_random_bs_below_200_under_care" => 0,
+        "adjusted_post_prandial_bs_below_200_under_care" => 2,
+        "adjusted_fasting_bs_below_200_under_care" => 2,
+        "adjusted_hba1c_bs_below_200_under_care" => 0
+      })
+
+      expect(facility_1_results["Apr 2020".to_period]).to include({
+        "adjusted_bs_below_200_under_care" => 4,
+        "adjusted_random_bs_below_200_under_care" => 1,
+        "adjusted_post_prandial_bs_below_200_under_care" => 1,
+        "adjusted_fasting_bs_below_200_under_care" => 1,
+        "adjusted_hba1c_bs_below_200_under_care" => 1
+      })
+      expect(facility_2_results["Apr 2020".to_period]).to include({
+        "adjusted_bs_below_200_under_care" => 3,
+        "adjusted_random_bs_below_200_under_care" => 1,
+        "adjusted_post_prandial_bs_below_200_under_care" => 1,
+        "adjusted_fasting_bs_below_200_under_care" => 1,
+        "adjusted_hba1c_bs_below_200_under_care" => 0
+      })
+      expect(region_results["Apr 2020".to_period]).to include({
+        "adjusted_bs_below_200_under_care" => 7,
+        "adjusted_random_bs_below_200_under_care" => 2,
+        "adjusted_post_prandial_bs_below_200_under_care" => 2,
+        "adjusted_fasting_bs_below_200_under_care" => 2,
+        "adjusted_hba1c_bs_below_200_under_care" => 1
+      })
+    end
+
+    it "returns the adjusted count of patients with missed visits in a region" do
+      facility_1_patients = create_list(:patient, 4, :diabetes, assigned_facility: facility_1, recorded_at: jan_2019)
+      create(:blood_sugar, :with_encounter, :random, :bs_below_200, patient: facility_1_patients.first, facility: facility_1, recorded_at: jan_2020 + 3.months)
+      create(:blood_sugar, :with_encounter, :post_prandial, :bs_below_200, patient: facility_1_patients.second, facility: facility_1, recorded_at: jan_2020 + 2.months)
+      create(:blood_sugar, :with_encounter, :fasting, :bs_below_200, patient: facility_1_patients.third, facility: facility_1, recorded_at: jan_2020 + 2.months)
+      create(:blood_sugar, :with_encounter, :hba1c, :bs_below_200, patient: facility_1_patients.fourth, facility: facility_1, recorded_at: jan_2020 + 3.months)
+
+      facility_2_patients = create_list(:patient, 3, :diabetes, assigned_facility: facility_2, recorded_at: jan_2019)
+      create(:blood_sugar, :with_encounter, :random, :bs_below_200, patient: facility_2_patients.first, facility: facility_2, recorded_at: jan_2020 + 3.months)
+      create(:blood_sugar, :with_encounter, :post_prandial, :bs_below_200, patient: facility_2_patients.second, facility: facility_2, recorded_at: jan_2020 + 2.months)
+      create(:blood_sugar, :with_encounter, :fasting, :bs_below_200, patient: facility_2_patients.third, facility: facility_2, recorded_at: jan_2020 + 2.months)
+
+      refresh_views
+      facility_1_results = described_class.call(facility_1)[facility_1.region.slug]
+      facility_2_results = described_class.call(facility_2)[facility_2.region.slug]
+      region_results = described_class.call(region)[region.slug]
+      (("Jan 2019".to_period)..("May 2020".to_period)).each do |period|
+        expect(facility_1_results[period]["adjusted_bs_missed_visit_under_care"]).to eq 0
+        expect(facility_2_results[period]["adjusted_bs_missed_visit_under_care"]).to eq 0
+        expect(region_results[period]["adjusted_bs_missed_visit_under_care"]).to eq 0
+      end
+
+      expect(facility_1_results["Jun 2020".to_period]["adjusted_bs_missed_visit_under_care"]).to eq 2
+      expect(facility_2_results["Jun 2020".to_period]["adjusted_bs_missed_visit_under_care"]).to eq 2
+      expect(region_results["Jun 2020".to_period]["adjusted_bs_missed_visit_under_care"]).to eq 4
+
+      expect(facility_1_results["Aug 2020".to_period]["adjusted_bs_missed_visit_under_care"]).to eq 4
+      expect(facility_2_results["Aug 2020".to_period]["adjusted_bs_missed_visit_under_care"]).to eq 3
+      expect(region_results["Aug 2020".to_period]["adjusted_bs_missed_visit_under_care"]).to eq 7
+    end
+
+    it "returns the adjusted count of patients with lost to follow up in a region" do
+      facility_1_patients = create_list(:patient, 4, :diabetes, assigned_facility: facility_1, recorded_at: jan_2019)
+      create(:blood_sugar, :with_encounter, :random, :bs_below_200, patient: facility_1_patients.first, facility: facility_1, recorded_at: jan_2020 + 3.months)
+      create(:blood_sugar, :with_encounter, :post_prandial, :bs_below_200, patient: facility_1_patients.second, facility: facility_1, recorded_at: jan_2020 + 2.months)
+      create(:blood_sugar, :with_encounter, :fasting, :bs_below_200, patient: facility_1_patients.third, facility: facility_1, recorded_at: jan_2020 + 2.months)
+      create(:blood_sugar, :with_encounter, :hba1c, :bs_below_200, patient: facility_1_patients.fourth, facility: facility_1, recorded_at: jan_2020 + 3.months)
+
+      facility_2_patients = create_list(:patient, 3, :diabetes, assigned_facility: facility_2, recorded_at: jan_2019)
+      create(:blood_sugar, :with_encounter, :random, :bs_below_200, patient: facility_2_patients.first, facility: facility_2, recorded_at: jan_2020 + 3.months)
+      create(:blood_sugar, :with_encounter, :post_prandial, :bs_below_200, patient: facility_2_patients.second, facility: facility_2, recorded_at: jan_2020 + 2.months)
+      create(:blood_sugar, :with_encounter, :fasting, :bs_below_200, patient: facility_2_patients.third, facility: facility_2, recorded_at: jan_2020 + 2.months)
+
+      refresh_views
+      facility_1_results = described_class.call(facility_1)[facility_1.region.slug]
+      facility_2_results = described_class.call(facility_2)[facility_2.region.slug]
+      region_results = described_class.call(region)[region.slug]
+      (("Jan 2019".to_period)..("Dec 2019".to_period)).each do |period|
+        expect(facility_1_results[period]["adjusted_bs_missed_visit_lost_to_follow_up"]).to eq 0
+        expect(facility_2_results[period]["adjusted_bs_missed_visit_lost_to_follow_up"]).to eq 0
+        expect(region_results[period]["adjusted_bs_missed_visit_lost_to_follow_up"]).to eq 0
+      end
+
+      (("Jan 2020".to_period)..("Feb 2020".to_period)).each do |period|
+        expect(facility_1_results[period]["adjusted_bs_missed_visit_lost_to_follow_up"]).to eq 4
+        expect(facility_2_results[period]["adjusted_bs_missed_visit_lost_to_follow_up"]).to eq 3
+        expect(region_results[period]["adjusted_bs_missed_visit_lost_to_follow_up"]).to eq 7
+      end
+
+      expect(facility_1_results["Mar 2020".to_period]["adjusted_bs_missed_visit_lost_to_follow_up"]).to eq 2
+      expect(facility_2_results["Mar 2020".to_period]["adjusted_bs_missed_visit_lost_to_follow_up"]).to eq 1
+      expect(region_results["Mar 2020".to_period]["adjusted_bs_missed_visit_lost_to_follow_up"]).to eq 3
+
+      expect(facility_1_results["Apr 2020".to_period]["adjusted_bs_missed_visit_lost_to_follow_up"]).to eq 0
+      expect(facility_2_results["Apr 2020".to_period]["adjusted_bs_missed_visit_lost_to_follow_up"]).to eq 0
+      expect(region_results["Apr 2020".to_period]["adjusted_bs_missed_visit_lost_to_follow_up"]).to eq 0
+
+      expect(facility_1_results["Mar 2021".to_period]["adjusted_bs_missed_visit_lost_to_follow_up"]).to eq 2
+      expect(facility_2_results["Mar 2021".to_period]["adjusted_bs_missed_visit_lost_to_follow_up"]).to eq 2
+      expect(region_results["Mar 2021".to_period]["adjusted_bs_missed_visit_lost_to_follow_up"]).to eq 4
+
+      expect(facility_1_results["Apr 2021".to_period]["adjusted_bs_missed_visit_lost_to_follow_up"]).to eq 4
+      expect(facility_2_results["Apr 2021".to_period]["adjusted_bs_missed_visit_lost_to_follow_up"]).to eq 3
+      expect(region_results["Apr 2021".to_period]["adjusted_bs_missed_visit_lost_to_follow_up"]).to eq 7
+    end
+
+    it "returns the adjusted count of patients who visited but did not have a BS measurement" do
+      facility_1_patients = create_list(:patient, 4, :diabetes, assigned_facility: facility_1, recorded_at: jan_2019)
+      create(:blood_pressure, :with_encounter, patient: facility_1_patients.first, facility: facility_1, recorded_at: jan_2020 + 3.months)
+      create(:appointment, patient: facility_1_patients.second, facility: facility_1, device_created_at: jan_2020 + 2.months)
+      create(:prescription_drug, patient: facility_1_patients.third, facility: facility_1, device_created_at: jan_2020 + 2.months)
+      create(:blood_sugar, :with_encounter, patient: facility_1_patients.fourth, facility: facility_1, recorded_at: jan_2020 + 3.months)
+
+      facility_2_patients = create_list(:patient, 3, :diabetes, assigned_facility: facility_2, recorded_at: jan_2019)
+      create(:blood_pressure, :with_encounter, patient: facility_2_patients.first, facility: facility_2, recorded_at: jan_2020 + 3.months)
+      create(:appointment, patient: facility_2_patients.second, facility: facility_2, device_created_at: jan_2020 + 2.months)
+
+      refresh_views
+      facility_1_results = described_class.call(facility_1)[facility_1.region.slug]
+      facility_2_results = described_class.call(facility_2)[facility_2.region.slug]
+      region_results = described_class.call(region)[region.slug]
+      (("Jan 2019".to_period)..("Feb 2019".to_period)).each do |period|
+        expect(facility_1_results[period]["adjusted_visited_no_bs_under_care"]).to eq 0
+        expect(facility_2_results[period]["adjusted_visited_no_bs_under_care"]).to eq 0
+        expect(region_results[period]["adjusted_visited_no_bs_under_care"]).to eq 0
+      end
+
+      expect(facility_1_results["Mar 2020".to_period]["adjusted_visited_no_bs_under_care"]).to eq 2
+      expect(facility_2_results["Mar 2020".to_period]["adjusted_visited_no_bs_under_care"]).to eq 1
+      expect(region_results["Mar 2020".to_period]["adjusted_visited_no_bs_under_care"]).to eq 3
+
+      expect(facility_1_results["Apr 2020".to_period]["adjusted_visited_no_bs_under_care"]).to eq 3
+      expect(facility_2_results["Apr 2020".to_period]["adjusted_visited_no_bs_under_care"]).to eq 2
+      expect(region_results["Apr 2020".to_period]["adjusted_visited_no_bs_under_care"]).to eq 5
+
+      expect(facility_1_results["Jun 2020".to_period]["adjusted_visited_no_bs_under_care"]).to eq 1
+      expect(facility_2_results["Jun 2020".to_period]["adjusted_visited_no_bs_under_care"]).to eq 1
+      expect(region_results["Jun 2020".to_period]["adjusted_visited_no_bs_under_care"]).to eq 2
+
+      expect(facility_1_results["Jul 2020".to_period]["adjusted_visited_no_bs_under_care"]).to eq 0
+      expect(facility_2_results["Jul 2020".to_period]["adjusted_visited_no_bs_under_care"]).to eq 0
+      expect(region_results["Jul 2020".to_period]["adjusted_visited_no_bs_under_care"]).to eq 0
     end
   end
 
