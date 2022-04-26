@@ -166,19 +166,6 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       expect(described_class.eligible_patients).to include(included_patient)
     end
 
-    it "doesn't include patients in Nagaland since english templates are pending DLT approval" do
-      facility = create(:facility, state: "Nagaland")
-      excluded_patient = create(:patient, age: 18, assigned_facility: facility)
-      create(:appointment, patient: excluded_patient, status: :scheduled)
-
-      included_patient = create(:patient, age: 18)
-      create(:appointment, patient: included_patient, status: :scheduled)
-
-      puts described_class.eligible_patients.to_sql
-      expect(described_class.eligible_patients).not_to include(excluded_patient)
-      expect(described_class.eligible_patients).to include(included_patient)
-    end
-
     it "doesn't include patients who are assigned in the excluded blocks list" do
       facility = create(:facility)
       patient = create(:patient, age: 18, assigned_facility: facility)
