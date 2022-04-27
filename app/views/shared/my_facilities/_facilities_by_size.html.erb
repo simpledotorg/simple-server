@@ -3,29 +3,20 @@
     Facilities using Simple
   </h2>
   <section id="facilities-by-size">
-    <table class="table table-compact table-hover">
+    <table class="table table-compact mb-0px mt-18px">
       <colgroup>
         <col>
-        <col style="width: 7em;" class="table-divider">
-        <col style="width: 7em;" class="table-divider">
+        <col class="table-divider w-120px">
+        <col class="table-divider w-120px">
       </colgroup>
       <thead>
       <tr>
         <th></th>
-        <th>Total</th>
+        <th>
+          Total
+        </th>
         <th>
           Inactive
-          <span class="p-relative t-1px">
-            <i
-              class="fas fa-question-circle fs-14px c-grey-dark"
-              data-toggle="tooltip"
-              data-placement="right"
-              data-trigger="hover click"
-              data-html="true"
-              title="Facilities with &lt;10 patients with a BP taken in the last 7 days"
-            >
-            </i>
-          </span>
         </th>
       </tr>
       </thead>
@@ -35,10 +26,10 @@
           All
         </td>
         <td class="text-right">
-          <%= number_with_delimiter(@facilities.count) %> <%= "facility".pluralize(@facilities.count) %>
+          <%= number_with_delimiter(@facilities.count) %>
         </td>
         <td class="text-right">
-          <%= number_with_delimiter(@inactive_facilities.count) %> <%= "facility".pluralize(@inactive_facilities.count) %>
+          <%= number_with_delimiter(@inactive_facilities.count) %>
         </td>
       </tr>
       <tr>
