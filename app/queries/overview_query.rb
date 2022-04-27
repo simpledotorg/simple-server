@@ -6,8 +6,8 @@ class OverviewQuery
   # Example: `Time.use_zone('timezone string') { bp_control_query_object.cohort_patients }`
   include DayHelper
 
-  INACTIVITY_THRESHOLD_DAYS = 7
-  INACTIVITY_THRESHOLD_BPS = 10
+  INACTIVITY_THRESHOLD_DAYS = 30
+  INACTIVITY_THRESHOLD_BPS = 1
 
   attr_reader :facilities
 
