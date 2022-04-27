@@ -78,6 +78,7 @@ class Api::V4::Schema
         properties: {
           month: {"$ref" => "#/definitions/month"},
           facility_id: {"$ref" => "#/definitions/uuid"},
+          drug_stock_form_url: {"$ref" => "#/definitions/non_empty_string"},
           drug_stocks: {
             type: :array,
             items: {"$ref" => "#/definitions/drug_stock"},
