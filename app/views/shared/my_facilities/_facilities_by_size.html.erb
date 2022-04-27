@@ -6,9 +6,8 @@
     <table class="table table-compact mb-0px mt-18px">
       <colgroup>
         <col>
-        <col class="table-divider">
-        <col class="table-divider">
-        <col class="table-divider">
+        <col class="table-divider w-120px">
+        <col class="table-divider w-120px">
       </colgroup>
       <thead>
       <tr>
@@ -18,9 +17,6 @@
         </th>
         <th>
           Inactive
-        </th>
-        <th>
-          Active
         </th>
       </tr>
       </thead>
@@ -35,9 +31,6 @@
         <td class="text-right">
           <%= number_with_delimiter(@inactive_facilities.count) %>
         </td>
-        <td class="text-right">
-            
-        </td>
       </tr>
       <tr>
         <td>
@@ -48,9 +41,6 @@
         </td>
         <td class="text-right">
           <%= number_with_delimiter(@facility_counts_by_size[:inactive]["large"].to_i) %>
-        </td>
-        <td class="text-right">
-          
         </td>
       </tr>
       <tr>
@@ -63,9 +53,6 @@
         <td class="text-right">
           <%= number_with_delimiter(@facility_counts_by_size[:inactive]["medium"].to_i) %>
         </td>
-        <td class="text-right">
-            
-        </td>
       </tr>
       <tr>
         <td>
@@ -77,9 +64,6 @@
         <td class="text-right">
           <%= number_with_delimiter(@facility_counts_by_size[:inactive]["small"].to_i) %>
         </td>
-        <td class="text-right">
-            
-        </td>
       </tr>
       <tr>
         <td>
@@ -90,9 +74,6 @@
         </td>
         <td class="text-right">
           <%= number_with_delimiter(@facility_counts_by_size[:inactive]["community"].to_i) %>
-        </td>
-        <td class="text-right">
-            
         </td>
       </tr>
       </tbody>

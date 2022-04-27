@@ -7,17 +7,9 @@
       Facilities with no BPs recorded in the last 30 days
     </p>
     <section id="facilities-inactive">
-      <table class="table table-compact mb-0px">
-        <tbody>
-          <% @inactive_facilities.sort_by(&:name).first(100).each do |facility| %>
-            <tr>
-              <td>
-                <%= link_to facility.name, reports_region_facility_path(facility), class: "d-block w-100" %>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
+      <% @inactive_facilities.sort_by(&:name).first(100).each do |facility| %>
+        <%= link_to facility.name, reports_region_facility_path(facility), class: "user-row d-block w-100" %>
+      <% end %>
     </section>
   </div>
 <% end %>
