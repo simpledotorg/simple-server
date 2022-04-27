@@ -3068,6 +3068,14 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
            FROM public.reporting_patient_states
           WHERE (reporting_patient_states.hypertension = 'yes'::text)
           GROUP BY reporting_patient_states.registration_facility_region_id, reporting_patient_states.month_date
+        ), registered_diabetes_patients AS (
+         SELECT reporting_patient_states.registration_facility_region_id AS region_id,
+            reporting_patient_states.month_date,
+            count(*) AS cumulative_diabetes_registrations,
+            count(*) FILTER (WHERE (reporting_patient_states.months_since_registration = (0)::double precision)) AS monthly_diabetes_registrations
+           FROM public.reporting_patient_states
+          WHERE (reporting_patient_states.diabetes = 'yes'::text)
+          GROUP BY reporting_patient_states.registration_facility_region_id, reporting_patient_states.month_date
         ), assigned_patients AS (
          SELECT reporting_patient_states.assigned_facility_region_id AS region_id,
             reporting_patient_states.month_date,
@@ -3077,6 +3085,16 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
             count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state <> 'dead'::text)) AS cumulative_assigned_patients
            FROM public.reporting_patient_states
           WHERE (reporting_patient_states.hypertension = 'yes'::text)
+          GROUP BY reporting_patient_states.assigned_facility_region_id, reporting_patient_states.month_date
+        ), assigned_diabetes_patients AS (
+         SELECT reporting_patient_states.assigned_facility_region_id AS region_id,
+            reporting_patient_states.month_date,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'under_care'::text)) AS diabetes_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text)) AS diabetes_lost_to_follow_up,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'dead'::text)) AS diabetes_dead,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state <> 'dead'::text)) AS cumulative_assigned_diabetic_patients
+           FROM public.reporting_patient_states
+          WHERE (reporting_patient_states.diabetes = 'yes'::text)
           GROUP BY reporting_patient_states.assigned_facility_region_id, reporting_patient_states.month_date
         ), adjusted_outcomes AS (
          SELECT reporting_patient_states.assigned_facility_region_id AS region_id,
@@ -3091,6 +3109,32 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
             count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text)) AS patients_lost_to_follow_up
            FROM public.reporting_patient_states
           WHERE ((reporting_patient_states.hypertension = 'yes'::text) AND (reporting_patient_states.months_since_registration >= (3)::double precision))
+          GROUP BY reporting_patient_states.assigned_facility_region_id, reporting_patient_states.month_date
+        ), adjusted_diabetes_outcomes AS (
+         SELECT reporting_patient_states.assigned_facility_region_id AS region_id,
+            reporting_patient_states.month_date,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'bs_below_200'::text) AND ((reporting_patient_states.blood_sugar_type)::text = 'random'::text))) AS random_bs_below_200_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'bs_below_200'::text) AND ((reporting_patient_states.blood_sugar_type)::text = 'post_prandial'::text))) AS post_prandial_bs_below_200_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'bs_below_200'::text) AND ((reporting_patient_states.blood_sugar_type)::text = 'fasting'::text))) AS fasting_bs_below_200_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'bs_below_200'::text) AND ((reporting_patient_states.blood_sugar_type)::text = 'hba1c'::text))) AS hba1c_bs_below_200_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'bs_below_200'::text))) AS bs_below_200_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'bs_200_to_300'::text) AND ((reporting_patient_states.blood_sugar_type)::text = 'random'::text))) AS random_bs_200_to_300_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'bs_200_to_300'::text) AND ((reporting_patient_states.blood_sugar_type)::text = 'post_prandial'::text))) AS post_prandial_bs_200_to_300_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'bs_200_to_300'::text) AND ((reporting_patient_states.blood_sugar_type)::text = 'fasting'::text))) AS fasting_bs_200_to_300_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'bs_200_to_300'::text) AND ((reporting_patient_states.blood_sugar_type)::text = 'hba1c'::text))) AS hba1c_bs_200_to_300_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'bs_200_to_300'::text))) AS bs_200_to_300_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'bs_over_300'::text) AND ((reporting_patient_states.blood_sugar_type)::text = 'random'::text))) AS random_bs_over_300_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'bs_over_300'::text) AND ((reporting_patient_states.blood_sugar_type)::text = 'post_prandial'::text))) AS post_prandial_bs_over_300_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'bs_over_300'::text) AND ((reporting_patient_states.blood_sugar_type)::text = 'fasting'::text))) AS fasting_bs_over_300_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'bs_over_300'::text) AND ((reporting_patient_states.blood_sugar_type)::text = 'hba1c'::text))) AS hba1c_bs_over_300_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'bs_over_300'::text))) AS bs_over_300_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'missed_visit'::text))) AS bs_missed_visit_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'visited_no_bs'::text))) AS visited_no_bs_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'missed_visit'::text))) AS bs_missed_visit_lost_to_follow_up,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'under_care'::text)) AS diabetes_patients_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text)) AS diabetes_patients_lost_to_follow_up
+           FROM public.reporting_patient_states
+          WHERE ((reporting_patient_states.diabetes = 'yes'::text) AND (reporting_patient_states.months_since_registration >= (3)::double precision))
           GROUP BY reporting_patient_states.assigned_facility_region_id, reporting_patient_states.month_date
         ), monthly_cohort_outcomes AS (
          SELECT reporting_patient_states.assigned_facility_region_id AS region_id,
@@ -3115,6 +3159,13 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
             count(DISTINCT reporting_patient_follow_ups.patient_id) AS follow_ups
            FROM public.reporting_patient_follow_ups
           WHERE (reporting_patient_follow_ups.hypertension = 'yes'::text)
+          GROUP BY reporting_patient_follow_ups.facility_id, reporting_patient_follow_ups.month_date
+        ), monthly_diabetes_follow_ups AS (
+         SELECT reporting_patient_follow_ups.facility_id,
+            reporting_patient_follow_ups.month_date,
+            count(DISTINCT reporting_patient_follow_ups.patient_id) AS follow_ups
+           FROM public.reporting_patient_follow_ups
+          WHERE (reporting_patient_follow_ups.diabetes = 'yes'::text)
           GROUP BY reporting_patient_follow_ups.facility_id, reporting_patient_follow_ups.month_date
         )
  SELECT cal.month_date,
@@ -3146,10 +3197,16 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
     rf.organization_slug,
     registered_patients.cumulative_registrations,
     registered_patients.monthly_registrations,
+    registered_diabetes_patients.cumulative_diabetes_registrations,
+    registered_diabetes_patients.monthly_diabetes_registrations,
     assigned_patients.under_care,
     assigned_patients.lost_to_follow_up,
     assigned_patients.dead,
     assigned_patients.cumulative_assigned_patients,
+    assigned_diabetes_patients.diabetes_under_care,
+    assigned_diabetes_patients.diabetes_lost_to_follow_up,
+    assigned_diabetes_patients.diabetes_dead,
+    assigned_diabetes_patients.cumulative_assigned_diabetic_patients,
     adjusted_outcomes.controlled_under_care AS adjusted_controlled_under_care,
     adjusted_outcomes.uncontrolled_under_care AS adjusted_uncontrolled_under_care,
     adjusted_outcomes.missed_visit_under_care AS adjusted_missed_visit_under_care,
@@ -3158,6 +3215,26 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
     adjusted_outcomes.visited_no_bp_lost_to_follow_up AS adjusted_visited_no_bp_lost_to_follow_up,
     adjusted_outcomes.patients_under_care AS adjusted_patients_under_care,
     adjusted_outcomes.patients_lost_to_follow_up AS adjusted_patients_lost_to_follow_up,
+    adjusted_diabetes_outcomes.random_bs_below_200_under_care AS adjusted_random_bs_below_200_under_care,
+    adjusted_diabetes_outcomes.fasting_bs_below_200_under_care AS adjusted_fasting_bs_below_200_under_care,
+    adjusted_diabetes_outcomes.post_prandial_bs_below_200_under_care AS adjusted_post_prandial_bs_below_200_under_care,
+    adjusted_diabetes_outcomes.hba1c_bs_below_200_under_care AS adjusted_hba1c_bs_below_200_under_care,
+    adjusted_diabetes_outcomes.bs_below_200_under_care AS adjusted_bs_below_200_under_care,
+    adjusted_diabetes_outcomes.random_bs_200_to_300_under_care AS adjusted_random_bs_200_to_300_under_care,
+    adjusted_diabetes_outcomes.fasting_bs_200_to_300_under_care AS adjusted_fasting_bs_200_to_300_under_care,
+    adjusted_diabetes_outcomes.post_prandial_bs_200_to_300_under_care AS adjusted_post_prandial_bs_200_to_300_under_care,
+    adjusted_diabetes_outcomes.hba1c_bs_200_to_300_under_care AS adjusted_hba1c_bs_200_to_300_under_care,
+    adjusted_diabetes_outcomes.bs_200_to_300_under_care AS adjusted_bs_200_to_300_under_care,
+    adjusted_diabetes_outcomes.random_bs_over_300_under_care AS adjusted_random_bs_over_300_under_care,
+    adjusted_diabetes_outcomes.fasting_bs_over_300_under_care AS adjusted_fasting_bs_over_300_under_care,
+    adjusted_diabetes_outcomes.post_prandial_bs_over_300_under_care AS adjusted_post_prandial_bs_over_300_under_care,
+    adjusted_diabetes_outcomes.hba1c_bs_over_300_under_care AS adjusted_hba1c_bs_over_300_under_care,
+    adjusted_diabetes_outcomes.bs_over_300_under_care AS adjusted_bs_over_300_under_care,
+    adjusted_diabetes_outcomes.bs_missed_visit_under_care AS adjusted_bs_missed_visit_under_care,
+    adjusted_diabetes_outcomes.visited_no_bs_under_care AS adjusted_visited_no_bs_under_care,
+    adjusted_diabetes_outcomes.bs_missed_visit_lost_to_follow_up AS adjusted_bs_missed_visit_lost_to_follow_up,
+    adjusted_diabetes_outcomes.diabetes_patients_under_care AS adjusted_diabetes_patients_under_care,
+    adjusted_diabetes_outcomes.diabetes_patients_lost_to_follow_up AS adjusted_diabetes_patients_lost_to_follow_up,
     monthly_cohort_outcomes.controlled AS monthly_cohort_controlled,
     monthly_cohort_outcomes.uncontrolled AS monthly_cohort_uncontrolled,
     monthly_cohort_outcomes.missed_visit AS monthly_cohort_missed_visit,
@@ -3165,19 +3242,24 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
     monthly_cohort_outcomes.patients AS monthly_cohort_patients,
     monthly_overdue_calls.call_results AS monthly_overdue_calls,
     monthly_follow_ups.follow_ups AS monthly_follow_ups,
+    monthly_diabetes_follow_ups.follow_ups AS monthly_diabetes_follow_ups,
     reporting_facility_appointment_scheduled_days.total_appts_scheduled,
     reporting_facility_appointment_scheduled_days.appts_scheduled_0_to_14_days,
     reporting_facility_appointment_scheduled_days.appts_scheduled_15_to_31_days,
     reporting_facility_appointment_scheduled_days.appts_scheduled_32_to_62_days,
     reporting_facility_appointment_scheduled_days.appts_scheduled_more_than_62_days
-   FROM ((((((((public.reporting_facilities rf
+   FROM ((((((((((((public.reporting_facilities rf
      JOIN public.reporting_months cal ON (true))
      LEFT JOIN registered_patients ON (((registered_patients.month_date = cal.month_date) AND (registered_patients.region_id = rf.facility_region_id))))
+     LEFT JOIN registered_diabetes_patients ON (((registered_diabetes_patients.month_date = cal.month_date) AND (registered_diabetes_patients.region_id = rf.facility_region_id))))
      LEFT JOIN assigned_patients ON (((assigned_patients.month_date = cal.month_date) AND (assigned_patients.region_id = rf.facility_region_id))))
+     LEFT JOIN assigned_diabetes_patients ON (((assigned_diabetes_patients.month_date = cal.month_date) AND (assigned_diabetes_patients.region_id = rf.facility_region_id))))
      LEFT JOIN adjusted_outcomes ON (((adjusted_outcomes.month_date = cal.month_date) AND (adjusted_outcomes.region_id = rf.facility_region_id))))
+     LEFT JOIN adjusted_diabetes_outcomes ON (((adjusted_diabetes_outcomes.month_date = cal.month_date) AND (adjusted_diabetes_outcomes.region_id = rf.facility_region_id))))
      LEFT JOIN monthly_cohort_outcomes ON (((monthly_cohort_outcomes.month_date = cal.month_date) AND (monthly_cohort_outcomes.region_id = rf.facility_region_id))))
      LEFT JOIN monthly_overdue_calls ON (((monthly_overdue_calls.month_date = cal.month_date) AND (monthly_overdue_calls.region_id = rf.facility_region_id))))
      LEFT JOIN monthly_follow_ups ON (((monthly_follow_ups.month_date = cal.month_date) AND (monthly_follow_ups.facility_id = rf.facility_id))))
+     LEFT JOIN monthly_diabetes_follow_ups ON (((monthly_diabetes_follow_ups.month_date = cal.month_date) AND (monthly_diabetes_follow_ups.facility_id = rf.facility_id))))
      LEFT JOIN public.reporting_facility_appointment_scheduled_days ON (((reporting_facility_appointment_scheduled_days.month_date = cal.month_date) AND (reporting_facility_appointment_scheduled_days.facility_id = rf.facility_id))))
   WITH NO DATA;
 
@@ -3393,6 +3475,20 @@ COMMENT ON COLUMN public.reporting_facility_states.monthly_registrations IS 'The
 
 
 --
+-- Name: COLUMN reporting_facility_states.cumulative_diabetes_registrations; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.cumulative_diabetes_registrations IS 'The total number of diabetic patients registered at the facility up to the end of the reporting month';
+
+
+--
+-- Name: COLUMN reporting_facility_states.monthly_diabetes_registrations; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.monthly_diabetes_registrations IS 'The number of diabetic patients registered at the facility in the reporting month';
+
+
+--
 -- Name: COLUMN reporting_facility_states.under_care; Type: COMMENT; Schema: public; Owner: -
 --
 
@@ -3410,7 +3506,7 @@ COMMENT ON COLUMN public.reporting_facility_states.lost_to_follow_up IS 'The num
 -- Name: COLUMN reporting_facility_states.dead; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.reporting_facility_states.dead IS 'The number of patients assigned to the facility as of the reporting month who are dead';
+COMMENT ON COLUMN public.reporting_facility_states.dead IS 'The number of hypertensive patients assigned to the facility as of the reporting month who are dead';
 
 
 --
@@ -3418,6 +3514,34 @@ COMMENT ON COLUMN public.reporting_facility_states.dead IS 'The number of patien
 --
 
 COMMENT ON COLUMN public.reporting_facility_states.cumulative_assigned_patients IS 'The total number of hypertensive patients assigned to the facility up to the end of the reporting month';
+
+
+--
+-- Name: COLUMN reporting_facility_states.diabetes_under_care; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.diabetes_under_care IS 'The number of patients assigned to the facility as of the reporting month where the patient had a blood sugar recorded within the last year, and is not dead';
+
+
+--
+-- Name: COLUMN reporting_facility_states.diabetes_lost_to_follow_up; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.diabetes_lost_to_follow_up IS 'The number of diabetic patients assigned to the facility as of the reporting month where the patient did not have a blood sugar recorded within the last year, and is not dead';
+
+
+--
+-- Name: COLUMN reporting_facility_states.diabetes_dead; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.diabetes_dead IS 'The number of diabetic patients assigned to the facility as of the reporting month who are dead';
+
+
+--
+-- Name: COLUMN reporting_facility_states.cumulative_assigned_diabetic_patients; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.cumulative_assigned_diabetic_patients IS 'The total number of diabetic patients assigned to the facility up to the end of the reporting month';
 
 
 --
@@ -3477,6 +3601,146 @@ COMMENT ON COLUMN public.reporting_facility_states.adjusted_patients_lost_to_fol
 
 
 --
+-- Name: COLUMN reporting_facility_states.adjusted_random_bs_below_200_under_care; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.adjusted_random_bs_below_200_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a random blood sugar < 200  mg/dL. Dead and lost to follow-up patients are excluded.';
+
+
+--
+-- Name: COLUMN reporting_facility_states.adjusted_fasting_bs_below_200_under_care; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.adjusted_fasting_bs_below_200_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a fasting blood sugar < 126  mg/dL. Dead and lost to follow-up patients are excluded.';
+
+
+--
+-- Name: COLUMN reporting_facility_states.adjusted_post_prandial_bs_below_200_under_care; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.adjusted_post_prandial_bs_below_200_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a post-prandial blood sugar < 200  mg/dL. Dead and lost to follow-up patients are excluded.';
+
+
+--
+-- Name: COLUMN reporting_facility_states.adjusted_hba1c_bs_below_200_under_care; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.adjusted_hba1c_bs_below_200_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a hba1c blood sugar < 7%. Dead and lost to follow-up patients are excluded.';
+
+
+--
+-- Name: COLUMN reporting_facility_states.adjusted_bs_below_200_under_care; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.adjusted_bs_below_200_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar value as of a month is categorized as bs_below_200. Dead and lost to follow-up patients are excluded.';
+
+
+--
+-- Name: COLUMN reporting_facility_states.adjusted_random_bs_200_to_300_under_care; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.adjusted_random_bs_200_to_300_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a random blood sugar >= 200  mg/dL and < 300 mg/dL. Dead and lost to follow-up patients are excluded.';
+
+
+--
+-- Name: COLUMN reporting_facility_states.adjusted_fasting_bs_200_to_300_under_care; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.adjusted_fasting_bs_200_to_300_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a fasting blood sugar >= 126 and < 200 mg/dL. Dead and lost to follow-up patients are excluded.';
+
+
+--
+-- Name: COLUMN reporting_facility_states.adjusted_post_prandial_bs_200_to_300_under_care; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.adjusted_post_prandial_bs_200_to_300_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a post-prandial blood sugar >= 200 and < 300 mg/dL. Dead and lost to follow-up patients are excluded.';
+
+
+--
+-- Name: COLUMN reporting_facility_states.adjusted_hba1c_bs_200_to_300_under_care; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.adjusted_hba1c_bs_200_to_300_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a hba1c blood sugar >= 7% and < 9%. Dead and lost to follow-up patients are excluded.';
+
+
+--
+-- Name: COLUMN reporting_facility_states.adjusted_bs_200_to_300_under_care; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.adjusted_bs_200_to_300_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar value as of a month is categorized as bs_200_to_300. Dead and lost to follow-up patients are excluded.';
+
+
+--
+-- Name: COLUMN reporting_facility_states.adjusted_random_bs_over_300_under_care; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.adjusted_random_bs_over_300_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a random blood sugar >= 300 mg/dL. Dead and lost to follow-up patients are excluded.';
+
+
+--
+-- Name: COLUMN reporting_facility_states.adjusted_fasting_bs_over_300_under_care; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.adjusted_fasting_bs_over_300_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a fasting blood sugar >= 200 mg/dL. Dead and lost to follow-up patients are excluded.';
+
+
+--
+-- Name: COLUMN reporting_facility_states.adjusted_post_prandial_bs_over_300_under_care; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.adjusted_post_prandial_bs_over_300_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a post-prandial blood sugar >= 300 mg/dL. Dead and lost to follow-up patients are excluded.';
+
+
+--
+-- Name: COLUMN reporting_facility_states.adjusted_hba1c_bs_over_300_under_care; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.adjusted_hba1c_bs_over_300_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a hba1c blood sugar >= 9%. Dead and lost to follow-up patients are excluded.';
+
+
+--
+-- Name: COLUMN reporting_facility_states.adjusted_bs_over_300_under_care; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.adjusted_bs_over_300_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar value as of a month is categorized as bs_over_300. Dead and lost to follow-up patients are excluded.';
+
+
+--
+-- Name: COLUMN reporting_facility_states.adjusted_bs_missed_visit_under_care; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.adjusted_bs_missed_visit_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, with no visit in the last 3 months. Dead and lost to follow-up patients are excluded.';
+
+
+--
+-- Name: COLUMN reporting_facility_states.adjusted_visited_no_bs_under_care; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.adjusted_visited_no_bs_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, with no blood sugar taken at their last visit in the last 3 months. Dead and lost to follow-up patients are excluded.';
+
+
+--
+-- Name: COLUMN reporting_facility_states.adjusted_bs_missed_visit_lost_to_follow_up; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.adjusted_bs_missed_visit_lost_to_follow_up IS 'adjusted_diabetes_missed_visit_lost_to_follow_up';
+
+
+--
+-- Name: COLUMN reporting_facility_states.adjusted_diabetes_patients_under_care; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.adjusted_diabetes_patients_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months';
+
+
+--
+-- Name: COLUMN reporting_facility_states.adjusted_diabetes_patients_lost_to_follow_up; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.adjusted_diabetes_patients_lost_to_follow_up IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, with no visit in the last year';
+
+
+--
 -- Name: COLUMN reporting_facility_states.monthly_cohort_controlled; Type: COMMENT; Schema: public; Owner: -
 --
 
@@ -3522,7 +3786,14 @@ COMMENT ON COLUMN public.reporting_facility_states.monthly_overdue_calls IS 'The
 -- Name: COLUMN reporting_facility_states.monthly_follow_ups; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.reporting_facility_states.monthly_follow_ups IS 'The number of follow-up patient visits at the facility in the reporting month';
+COMMENT ON COLUMN public.reporting_facility_states.monthly_follow_ups IS 'The number of hypertensive follow-up patient visits at the facility in the reporting month';
+
+
+--
+-- Name: COLUMN reporting_facility_states.monthly_diabetes_follow_ups; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.monthly_diabetes_follow_ups IS 'The number of diabetic follow-up patient visits at the facility in the reporting month';
 
 
 --
@@ -5744,6 +6015,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220408132514'),
 ('20220408135115'),
 ('20220411035535'),
-('20220412112538');
+('20220412112538'),
+('20220414134624');
 
 
