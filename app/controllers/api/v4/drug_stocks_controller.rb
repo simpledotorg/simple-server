@@ -10,7 +10,8 @@ class Api::V4::DrugStocksController < APIController
     @drug_stock_form_url = new_webview_drug_stock_url(
       user_id: current_user.id,
       access_token: current_user.access_token,
-      facility_id: current_facility.id
+      facility_id: current_facility.id,
+      hide_back_button: true
     )
   end
 

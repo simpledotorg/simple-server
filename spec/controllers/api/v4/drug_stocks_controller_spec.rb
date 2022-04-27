@@ -12,7 +12,7 @@ RSpec.describe Api::V4::DrugStocksController, type: :controller do
       month = Date.parse("2021-10-29")
       end_of_month = month.end_of_month
       drug_stocks = create_list(:drug_stock, 3, facility: facility, for_end_of_month: end_of_month)
-      expected_drug_stock_form_url = "http://test.host/webview/drug_stocks/new?access_token=#{user.access_token}&facility_id=#{facility.id}&user_id=#{user.id}"
+      expected_drug_stock_form_url = "http://test.host/webview/drug_stocks/new?access_token=#{user.access_token}&facility_id=#{facility.id}&hide_back_button=true&user_id=#{user.id}"
       expected_response = {
         "month" => "2021-10",
         "facility_id" => facility.id,
