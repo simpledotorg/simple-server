@@ -131,6 +131,11 @@ module Reports
       values_at(field)
     end
 
+    memoize def diabetes_missed_visits(with_ltfu: false)
+      field = with_ltfu ? :adjusted_bs_missed_visit_lost_to_follow_up : :adjusted_bs_missed_visit_under_care
+      values_at(field)
+    end
+
     memoize def missed_visits_rates(with_ltfu: false)
       region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
         treatment_outcome_rates(entry, with_ltfu)[__method__]
@@ -185,6 +190,10 @@ module Reports
       values_at(field)
     end
 
+    def visited_without_bs_taken
+      values_at(:adjusted_visited_no_bs_under_care)
+    end
+
     memoize def visited_without_bp_taken_rates(with_ltfu: false)
       region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
         treatment_outcome_rates(entry, with_ltfu)[__method__]
@@ -215,6 +224,12 @@ module Reports
       end
     end
 
+    memoize def bs_below_200_rates(with_ltfu: false)
+      region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
+        diabetes_treatment_outcome_rates(:bs_below_200, entry, with_ltfu)
+      end
+    end
+
     private
 
     def appts_scheduled_rates(entry)
@@ -235,10 +250,39 @@ module Reports
       })
     end
 
+    memoize def diabetes_under_care(blood_sugar_risk_state, blood_sugar_type = nil)
+      if blood_sugar_type
+        return values_at("adjusted_#{blood_sugar_type}_#{blood_sugar_risk_state}_under_care")
+      end
+      values_at("adjusted_#{blood_sugar_risk_state}_under_care")
+    end
+
+    memoize def diabetes_treatment_outcome_rates(blood_sugar_risk_state, entry, with_ltfu)
+      {
+        total: rounded_percentages({
+          under_care_rate: diabetes_under_care(blood_sugar_risk_state)[entry.region.slug][entry.period],
+          missed_visits_rate: diabetes_missed_visits(with_ltfu: with_ltfu)[entry.region.slug][entry.period],
+          visited_without_bs_taken_rate: visited_without_bs_taken[entry.region.slug][entry.period]
+        }),
+        breakdown: {
+          rbs_ppbs: diabetes_under_care(blood_sugar_risk_state, :random)[entry.region.slug][entry.period] +
+            diabetes_under_care(blood_sugar_risk_state, :post_prandial)[entry.region.slug][entry.period],
+          fasting: diabetes_under_care(blood_sugar_risk_state, :fasting)[entry.region.slug][entry.period],
+          hba1c: diabetes_under_care(blood_sugar_risk_state, :hba1c) [entry.region.slug][entry.period]
+        }
+      }
+    end
+
     memoize def earliest_patient_data_query_v2(region)
-      FacilityState.for_region(region)
-        .with_patients
-        .minimum(:month_date)
+      if region.diabetes_management_enabled?
+        FacilityState.for_region(region)
+          .with_htn_or_diabetes_patients
+          .minimum(:month_date)
+      else
+        FacilityState.for_region(region)
+          .with_patients
+          .minimum(:month_date)
+      end
     end
 
     # Calls RegionSummary for each region_type in our collection of regions -- this is necessary because

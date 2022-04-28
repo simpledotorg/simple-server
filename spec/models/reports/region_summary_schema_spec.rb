@@ -1,6 +1,8 @@
 require "rails_helper"
 
 describe Reports::RegionSummarySchema, type: :model do
+  using StringToPeriod
+
   let(:organization) { create(:organization, name: "org-1") }
   let(:user) { create(:admin, :manager, :with_access, resource: organization, organization: organization) }
 
@@ -140,6 +142,103 @@ describe Reports::RegionSummarySchema, type: :model do
       expect(schema.appts_scheduled_15_to_31_days_rates[facility.slug]).to eq({})
       expect(schema.appts_scheduled_32_to_62_days_rates[facility.slug]).to eq({})
       expect(schema.appts_scheduled_more_than_62_days_rates[facility.slug]).to eq({})
+    end
+  end
+
+  describe "diabetes" do
+    let(:distict_with_facilities) { setup_district_with_facilities }
+    let(:region) { distict_with_facilities[:region] }
+    let(:facility_1) { distict_with_facilities[:facility_1] }
+    let(:facility_2) { distict_with_facilities[:facility_2] }
+    let(:period) { jan_2020..mar_2020 }
+
+    before :each do
+      Flipper.enable(:diabetes_management_reports)
+      facility_1.update(enable_diabetes_management: true)
+      facility_2.update(enable_diabetes_management: true)
+    end
+
+    describe "#bs_below_200_rates" do
+      it "retuns the bs_below_200 rates over time for a region" do
+        facility_1_patients = create_list(:patient, 4, :diabetes, assigned_facility: facility_1, recorded_at: jan_2019)
+        create(:blood_sugar, :with_encounter, :random, :bs_below_200, patient: facility_1_patients.first, facility: facility_1, recorded_at: jan_2020 + 3.months)
+        create(:blood_sugar, :with_encounter, :post_prandial, :bs_below_200, patient: facility_1_patients.second, facility: facility_1, recorded_at: jan_2020 + 2.months)
+        create(:blood_sugar, :with_encounter, :fasting, :bs_below_200, patient: facility_1_patients.third, facility: facility_1, recorded_at: jan_2020 + 2.months)
+        create(:blood_pressure, :with_encounter, patient: facility_1_patients.fourth, facility: facility_1, recorded_at: jan_2020 + 3.months)
+
+        facility_2_patients = create_list(:patient, 3, :diabetes, assigned_facility: facility_2, recorded_at: jan_2019)
+        create(:blood_sugar, :with_encounter, :hba1c, :bs_below_200, patient: facility_2_patients.first, facility: facility_2, recorded_at: jan_2020 + 3.months)
+        create(:blood_sugar, :with_encounter, :post_prandial, :bs_below_200, patient: facility_2_patients.second, facility: facility_2, recorded_at: jan_2020 + 2.months)
+        create(:blood_sugar, :with_encounter, :fasting, :bs_below_200, patient: facility_2_patients.third, facility: facility_2, recorded_at: jan_2020 + 2.months)
+
+        refresh_views
+
+        schema = described_class.new([facility_1.region, facility_2.region, region], periods: range)
+        (("Jan 2019".to_period)..("Mar 2019".to_period)).each do |period|
+          [facility_1.region, facility_2.region, region].each do |r|
+            expect(schema.bs_below_200_rates[r.slug][period]).to eq({
+              total: {visited_without_bs_taken_rate: 0, missed_visits_rate: 0, under_care_rate: 0},
+              breakdown: {rbs_ppbs: 0, fasting: 0, hba1c: 0}
+            })
+            expect(schema.bs_below_200_rates(with_ltfu: true)[r.slug][period]).to eq({
+              total: {visited_without_bs_taken_rate: 0, missed_visits_rate: 0, under_care_rate: 0},
+              breakdown: {rbs_ppbs: 0, fasting: 0, hba1c: 0}
+            })
+          end
+        end
+
+        (("Apr 2019".to_period)..("Dec 2019".to_period)).each do |period|
+          [facility_1.region, facility_2.region, region].each do |r|
+            expect(schema.bs_below_200_rates[r.slug][period]).to eq({
+              total: {visited_without_bs_taken_rate: 0, missed_visits_rate: 100, under_care_rate: 0},
+              breakdown: {rbs_ppbs: 0, fasting: 0, hba1c: 0}
+            })
+            expect(schema.bs_below_200_rates(with_ltfu: true)[r.slug][period]).to eq({
+              total: {visited_without_bs_taken_rate: 0, missed_visits_rate: 0, under_care_rate: 0},
+              breakdown: {rbs_ppbs: 0, fasting: 0, hba1c: 0}
+            })
+          end
+        end
+
+        (("Jan 2020".to_period)..("Feb 2020".to_period)).each do |period|
+          [facility_1.region, facility_2.region, region].each do |r|
+            expect(schema.bs_below_200_rates[r.slug][period]).to eq({
+              total: {visited_without_bs_taken_rate: 0, missed_visits_rate: 0, under_care_rate: 0},
+              breakdown: {rbs_ppbs: 0, fasting: 0, hba1c: 0}
+            })
+            expect(schema.bs_below_200_rates(with_ltfu: true)[r.slug][period]).to eq({
+              total: {visited_without_bs_taken_rate: 0, missed_visits_rate: 100, under_care_rate: 0},
+              breakdown: {rbs_ppbs: 0, fasting: 0, hba1c: 0}
+            })
+          end
+        end
+
+        expect(schema.bs_below_200_rates[facility_1.region.slug]["Mar 2020".to_period]).to eq({
+          total: {visited_without_bs_taken_rate: 0, missed_visits_rate: 0, under_care_rate: 100},
+          breakdown: {rbs_ppbs: 1, fasting: 1, hba1c: 0}
+        })
+        expect(schema.bs_below_200_rates(with_ltfu: true)[facility_1.region.slug]["Mar 2020".to_period]).to eq({
+          total: {visited_without_bs_taken_rate: 0, missed_visits_rate: 50, under_care_rate: 50},
+          breakdown: {rbs_ppbs: 1, fasting: 1, hba1c: 0}
+        })
+        expect(schema.bs_below_200_rates[facility_2.region.slug]["Mar 2020".to_period]).to eq({
+          total: {visited_without_bs_taken_rate: 0, missed_visits_rate: 0, under_care_rate: 100},
+          breakdown: {rbs_ppbs: 1, fasting: 1, hba1c: 0}
+        })
+
+        expect(schema.bs_below_200_rates(with_ltfu: true)[facility_2.region.slug]["Mar 2020".to_period]).to eq({
+          total: {visited_without_bs_taken_rate: 0, missed_visits_rate: 33, under_care_rate: 67},
+          breakdown: {rbs_ppbs: 1, fasting: 1, hba1c: 0}
+        })
+        expect(schema.bs_below_200_rates[region.slug]["Mar 2020".to_period]).to eq({
+          total: {visited_without_bs_taken_rate: 0, missed_visits_rate: 0, under_care_rate: 100},
+          breakdown: {rbs_ppbs: 2, fasting: 2, hba1c: 0}
+        })
+        expect(schema.bs_below_200_rates(with_ltfu: true)[region.slug]["Mar 2020".to_period]).to eq({
+          total: {visited_without_bs_taken_rate: 0, missed_visits_rate: 43, under_care_rate: 57},
+          breakdown: {rbs_ppbs: 2, fasting: 2, hba1c: 0}
+        })
+      end
     end
   end
 end
