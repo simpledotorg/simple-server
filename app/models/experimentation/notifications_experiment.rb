@@ -40,14 +40,7 @@ module Experimentation
                                            .where("treatment_group_memberships.patient_id = patients.id")
                                            .where("end_time > ?", RECENT_EXPERIMENT_MEMBERSHIP_BUFFER.ago)
                                            .select(:patient_id))
-        .then { |patients| exclude_nagaland_patients(patients) }
         .then { |patients| exclude_bangladesh_blocks(patients) }
-    end
-
-    def self.exclude_nagaland_patients(patients)
-      return patients unless CountryConfig.current_country?("India")
-
-      patients.where.not(facilities: {state: "Nagaland"})
     end
 
     def self.exclude_bangladesh_blocks(patients)
