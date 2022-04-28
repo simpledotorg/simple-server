@@ -12,41 +12,27 @@ RSpec.describe OverviewQuery do
     let!(:inactive_facility_with_bp_outside_period) { create :facility }
 
     let!(:user) { create(:user, registration_facility: active_facility) }
-    let!(:patient) { create(:patient, registration_user: user, registration_facility: user.facility) }
-    let!(:patient_2) { create(:patient, registration_user: user, registration_facility: user.facility) }
     let!(:non_htn_patient) { create(:patient, registration_user: user, registration_facility: user.facility) }
 
-    date_range = (1..described_class::INACTIVITY_THRESHOLD_DAYS).map { |n| n.days.ago.beginning_of_day }
+    threshold_days = 30
+    threshold_bps = 1
+    date = threshold_days.days.ago.beginning_of_day + 1.day
 
     let!(:blood_pressures_for_active_facility) do
-      date_range.map { |date|
-        [create(:blood_pressure, :with_encounter, facility: active_facility, patient: patient, user: user, recorded_at: date),
-          create(:blood_pressure, :with_encounter, facility: active_facility, patient: patient_2, user: user, recorded_at: date)]
-      }.flatten
+      create_list(:blood_pressure, threshold_bps, facility: active_facility, recorded_at: date)
+      create(:blood_pressure, patient: non_htn_patient, facility: active_facility, recorded_at: date)
     end
 
     let!(:blood_pressures_for_inactive_facility) do
-      date_range.map { |date|
-        [create(:blood_pressure, :with_encounter, facility: inactive_facility, patient: patient, user: user, recorded_at: date),
-          create(:blood_pressure, :with_encounter, patient: non_htn_patient, user: user, facility: inactive_facility_with_bp_outside_period, recorded_at: date)]
-      }.flatten
+      create_list(:blood_pressure, threshold_bps - 1, facility: inactive_facility, recorded_at: date)
     end
 
     let!(:blood_pressures_for_inactive_facility_with_bp_outside_period) do
-      date_range.map { |date|
-        [create(:blood_pressure,
-          :with_encounter,
-          patient: patient,
-          user: user,
-          facility: inactive_facility_with_bp_outside_period,
-          recorded_at: date - 1.month),
-          create(:blood_pressure,
-            :with_encounter,
-            patient: patient_2,
-            user: user,
-            facility: inactive_facility_with_bp_outside_period,
-            recorded_at: date - 1.month)]
-      }.flatten
+      create_list(:blood_pressure,
+        threshold_bps,
+        user: user,
+        facility: inactive_facility_with_bp_outside_period,
+        recorded_at: date - 1.month)
     end
 
     before do

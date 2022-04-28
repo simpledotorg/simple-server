@@ -259,6 +259,301 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
     end
   end
 
+  context "Diabetes" do
+    context "registraions" do
+      describe "cumulative_diabetes_registrations" do
+        it "has the total number of diabetic registrations since the starting of time for every facility upto a given month" do
+          facility = create(:facility)
+          old_diabetes_patients = create_list(:patient, 2, :diabetes, registration_facility: facility, recorded_at: june_2021[:long_ago])
+          new_diabetic_patients = create_list(:patient, 3, :diabetes, registration_facility: facility, recorded_at: june_2021[:two_months_ago])
+          _non_diabetic_patients = create_list(:patient, 3, :without_diabetes, registration_facility: facility, recorded_at: june_2021[:two_months_ago])
+
+          refresh_views
+          with_reporting_time_zone do
+            expect(described_class
+                     .where(facility_id: facility.id)
+                     .where("month_date < ?", june_2021[:long_ago])
+                     .pluck(:cumulative_diabetes_registrations)).to all eq 0
+
+            expect(described_class
+                     .where(facility_id: facility.id)
+                     .where("month_date >= ?", june_2021[:long_ago])
+                     .where("month_date < ?", june_2021[:two_months_ago])
+                     .pluck(:cumulative_diabetes_registrations)).to all eq old_diabetes_patients.size
+
+            expect(described_class
+                     .where(facility_id: facility.id)
+                     .where("month_date >= ?", june_2021[:two_months_ago])
+                     .pluck(:cumulative_diabetes_registrations)).to all eq (old_diabetes_patients + new_diabetic_patients).size
+          end
+        end
+
+        it "does not count patients which have not been marked as diabetic" do
+          facility = create(:facility)
+          _non_diabetic_patients = create_list(:patient, 3, :without_diabetes, registration_facility: facility, recorded_at: june_2021[:two_months_ago])
+
+          refresh_views
+          with_reporting_time_zone do
+            expect(described_class
+                     .where(facility_id: facility.id)
+                     .pluck(:cumulative_diabetes_registrations)).to all be_nil
+          end
+        end
+      end
+
+      describe "monthly_diabetes_registrations" do
+        it "has the number of diabetes patients registered in a given month" do
+          facility = create(:facility)
+          old_diabetes_patients = create_list(:patient, 2, :diabetes, registration_facility: facility, recorded_at: june_2021[:under_12_months_ago])
+          new_diabetic_patients = create_list(:patient, 3, :diabetes, registration_facility: facility, recorded_at: june_2021[:two_months_ago])
+          _non_diabetic_patients = create_list(:patient, 3, :without_diabetes, registration_facility: facility, recorded_at: june_2021[:two_months_ago])
+
+          month_2020_07 = "2020-07-01"
+          month_2021_04 = "2021-04-01"
+
+          refresh_views
+          with_reporting_time_zone do
+            expect(described_class
+                     .where(facility_id: facility.id)
+                     .where("month_date < ?", month_2020_07)
+                     .pluck(:monthly_diabetes_registrations)).to all be_nil
+
+            expect(
+              described_class
+                .where(facility_id: facility.id)
+                .where(month_date: month_2020_07)
+                .pluck(:monthly_diabetes_registrations)
+            ).to eq [old_diabetes_patients.size]
+
+            expect(
+              described_class
+                .where(facility_id: facility.id)
+                .where("month_date > ?", month_2020_07)
+                .where("month_date < ?", month_2021_04)
+                .pluck(:monthly_diabetes_registrations)
+            ).to all eq 0
+
+            expect(
+              described_class
+                .where(facility_id: facility.id)
+                .where(month_date: month_2021_04)
+                .pluck(:monthly_diabetes_registrations)
+            ).to eq [new_diabetic_patients.size]
+          end
+        end
+
+        it "does not count patients who have not been marked as diabetic" do
+          facility = create(:facility)
+          _non_diabetic_patients = create_list(:patient, 3, :without_diabetes, registration_facility: facility, recorded_at: june_2021[:two_months_ago])
+
+          refresh_views
+          with_reporting_time_zone do
+            expect(described_class
+                     .where(facility_id: facility.id)
+                     .pluck(:monthly_diabetes_registrations)).to all be_nil
+          end
+        end
+      end
+    end
+
+    context "assigned patients by care states" do
+      describe "under care, lost to follow up and dead patients" do
+        it "has the number of assigned diabetic patients which are under care, lost to follow up or dead" do
+          facility = create(:facility)
+
+          # non diabetic patient
+          _non_diabetic_patient = create(:patient, :without_diabetes, assigned_facility: facility)
+
+          # ltfu diabetes patient
+          ltfu_diabetic_patients = create_list(:patient, 2, :diabetes, assigned_facility: facility, recorded_at: june_2021[:over_12_months_ago])
+          create(:blood_sugar, :with_encounter, patient: ltfu_diabetic_patients.first, recorded_at: june_2021[:over_12_months_ago])
+
+          # under care diabetes patients
+          under_care_diabetic_patients = create_list(:patient, 3, :diabetes, assigned_facility: facility, recorded_at: june_2021[:over_12_months_ago])
+          create(:blood_sugar, :with_encounter, patient: under_care_diabetic_patients.first, recorded_at: june_2021[:one_month_ago])
+          create(:blood_pressure, :with_encounter, patient: under_care_diabetic_patients.second, recorded_at: june_2021[:one_month_ago])
+          create(:appointment, patient: under_care_diabetic_patients.third, recorded_at: june_2021[:one_month_ago])
+
+          # dead patients
+          dead_diabetic_patients = create_list(:patient, 4, :diabetes, status: "dead", assigned_facility: facility, recorded_at: june_2021[:under_3_months_ago])
+
+          refresh_views
+          with_reporting_time_zone do
+            expect(described_class
+                     .where(facility: facility, month_date: june_2021[:now])
+                     .pluck(:diabetes_under_care, :diabetes_lost_to_follow_up, :diabetes_dead).first)
+              .to eq([under_care_diabetic_patients.count, ltfu_diabetic_patients.count, dead_diabetic_patients.count])
+          end
+        end
+
+        it "does not count patients which are marked as non diabetic" do
+          facility = create(:facility)
+
+          # non diabetic patient
+          _non_diabetic_patient = create(:patient, :without_diabetes, assigned_facility: facility)
+
+          # ltfu diabetes patient
+          ltfu_non_diabetic_patients = create_list(:patient, 2, :without_diabetes, assigned_facility: facility, recorded_at: june_2021[:over_12_months_ago])
+          create(:blood_sugar, :with_encounter, patient: ltfu_non_diabetic_patients.first, recorded_at: june_2021[:over_12_months_ago])
+
+          # under care diabetes patients
+          under_care_non_diabetic_patients = create_list(:patient, 3, :without_diabetes, assigned_facility: facility, recorded_at: june_2021[:over_12_months_ago])
+          create(:blood_sugar, :with_encounter, patient: under_care_non_diabetic_patients.first, recorded_at: june_2021[:one_month_ago])
+          create(:blood_pressure, :with_encounter, patient: under_care_non_diabetic_patients.second, recorded_at: june_2021[:one_month_ago])
+          create(:appointment, patient: under_care_non_diabetic_patients.third, recorded_at: june_2021[:one_month_ago])
+
+          # dead patients
+          _dead_non_diabetic_patients = create_list(:patient, 3, :without_diabetes, status: "dead", assigned_facility: facility, recorded_at: june_2021[:under_3_months_ago])
+
+          refresh_views
+          with_reporting_time_zone do
+            expect(described_class
+                     .where(facility: facility, month_date: june_2021[:now])
+                     .pluck(:diabetes_under_care, :diabetes_lost_to_follow_up, :diabetes_dead).first)
+              .to all be_nil
+          end
+        end
+      end
+
+      describe "cumulative_assigned_diabetes_patients" do
+        it "has the cumulative count of a facilities assigned diabetic patients as of a give month" do
+          facility = create(:facility)
+          create(:patient, :diabetes, assigned_facility: facility, recorded_at: june_2021[:now] - 2.years)
+          create(:patient, :diabetes, assigned_facility: facility, recorded_at: june_2021[:under_12_months_ago])
+          create(:patient, :diabetes, assigned_facility: facility, recorded_at: june_2021[:under_3_months_ago])
+          create(:patient, :diabetes, assigned_facility: facility, recorded_at: june_2021[:end_of_month])
+          create_list(:patient, 3, :diabetes, recorded_at: june_2021[:long_ago], assigned_facility: facility, status: "dead")
+
+          RefreshReportingViews.refresh_v2
+          with_reporting_time_zone do
+            expect(described_class.find_by(facility: facility, month_date: june_2021[:now] - 2.years).cumulative_assigned_diabetic_patients).to eq 1
+            expect(described_class.find_by(facility: facility, month_date: june_2021[:under_12_months_ago]).cumulative_assigned_diabetic_patients).to eq 2
+            expect(described_class.find_by(facility: facility, month_date: june_2021[:under_3_months_ago]).cumulative_assigned_diabetic_patients).to eq 3
+            expect(described_class.find_by(facility: facility, month_date: june_2021[:now]).cumulative_assigned_diabetic_patients).to eq 4
+          end
+        end
+
+        it "does not count non diabetic patients" do
+          facility = create(:facility)
+          create(:patient, :without_diabetes, assigned_facility: facility, recorded_at: june_2021[:now] - 2.years)
+          create(:patient, :without_diabetes, assigned_facility: facility, recorded_at: june_2021[:under_12_months_ago])
+          create(:patient, :without_diabetes, assigned_facility: facility, recorded_at: june_2021[:under_3_months_ago])
+          create(:patient, :without_diabetes, assigned_facility: facility, recorded_at: june_2021[:end_of_month])
+          create_list(:patient, 3, :without_diabetes, recorded_at: june_2021[:long_ago], assigned_facility: facility, status: "dead")
+
+          RefreshReportingViews.refresh_v2
+          with_reporting_time_zone do
+            expect(described_class.find_by(facility: facility, month_date: june_2021[:now] - 2.years).cumulative_assigned_diabetic_patients).to be_nil
+            expect(described_class.find_by(facility: facility, month_date: june_2021[:under_12_months_ago]).cumulative_assigned_diabetic_patients).to be_nil
+            expect(described_class.find_by(facility: facility, month_date: june_2021[:under_3_months_ago]).cumulative_assigned_diabetic_patients).to be_nil
+            expect(described_class.find_by(facility: facility, month_date: june_2021[:now]).cumulative_assigned_diabetic_patients).to be_nil
+          end
+        end
+      end
+    end
+
+    context "treatment outcomes in last 3 months" do
+      it "contains number of total under care patients at a facility, broken down by the blood sugar type and risk state" do
+        facility = create(:facility)
+        [:random, :post_prandial, :fasting, :hba1c].each do |blood_sugar_type|
+          create_list(:patient, 1, :diabetes, assigned_facility: facility, recorded_at: june_2021[:long_ago]).each do |patient|
+            create(:blood_sugar, :with_encounter, :bs_below_200, blood_sugar_type: blood_sugar_type, patient: patient, recorded_at: june_2021[:under_3_months_ago])
+          end
+        end
+
+        [:random, :post_prandial, :fasting, :hba1c].each do |blood_sugar_type|
+          create_list(:patient, 2, :diabetes, assigned_facility: facility, recorded_at: june_2021[:long_ago]).each do |patient|
+            create(:blood_sugar, :with_encounter, :bs_200_to_300, blood_sugar_type: blood_sugar_type, patient: patient, recorded_at: june_2021[:under_3_months_ago])
+          end
+        end
+
+        [:random, :post_prandial, :fasting, :hba1c].each do |blood_sugar_type|
+          create_list(:patient, 2, :diabetes, assigned_facility: facility, recorded_at: june_2021[:long_ago]).each do |patient|
+            create(:blood_sugar, :with_encounter, :bs_over_300, blood_sugar_type: blood_sugar_type, patient: patient, recorded_at: june_2021[:under_3_months_ago])
+          end
+        end
+
+        refresh_views
+        results = described_class.find_by(facility: facility, month_date: june_2021[:now])
+        expect(results.adjusted_random_bs_below_200_under_care).to eq 1
+        expect(results.adjusted_post_prandial_bs_below_200_under_care).to eq 1
+        expect(results.adjusted_fasting_bs_below_200_under_care).to eq 1
+        expect(results.adjusted_hba1c_bs_below_200_under_care).to eq 1
+        expect(results.adjusted_bs_below_200_under_care).to eq 4
+
+        expect(results.adjusted_random_bs_200_to_300_under_care).to eq 2
+        expect(results.adjusted_post_prandial_bs_200_to_300_under_care).to eq 2
+        expect(results.adjusted_fasting_bs_200_to_300_under_care).to eq 2
+        expect(results.adjusted_hba1c_bs_200_to_300_under_care).to eq 2
+        expect(results.adjusted_bs_200_to_300_under_care).to eq 8
+
+        expect(results.adjusted_random_bs_over_300_under_care).to eq 2
+        expect(results.adjusted_post_prandial_bs_over_300_under_care).to eq 2
+        expect(results.adjusted_fasting_bs_over_300_under_care).to eq 2
+        expect(results.adjusted_hba1c_bs_over_300_under_care).to eq 2
+        expect(results.adjusted_bs_over_300_under_care).to eq 8
+
+        expect(results.adjusted_diabetes_patients_under_care).to eq 20
+      end
+
+      it "contains number of total lost to follow up patients at a facility, broken down by the blood sugar type and risk state" do
+        facility = create(:facility)
+        create_list(:patient, 5, :diabetes, assigned_facility: facility, recorded_at: june_2021[:long_ago]).each do |patient|
+          create(:blood_sugar, :with_encounter, patient: patient, facility: facility, recorded_at: june_2021[:over_12_months_ago])
+        end
+        refresh_views
+        results = described_class.find_by(facility: facility, month_date: june_2021[:now])
+        expect(results.adjusted_diabetes_patients_lost_to_follow_up).to eq 5
+      end
+
+      it "contains number of total missed visits patients at a facility" do
+        facility = create(:facility)
+        create_list(:patient, 2, :diabetes, assigned_facility: facility, recorded_at: june_2021[:long_ago]).each do |patient|
+          create(:blood_sugar, :with_encounter, patient: patient, recorded_at: june_2021[:four_months_ago])
+        end
+
+        create_list(:patient, 3, :diabetes, assigned_facility: facility, recorded_at: june_2021[:long_ago]).each do |patient|
+          create(:blood_sugar, :with_encounter, patient: patient, recorded_at: june_2021[:over_12_months_ago])
+        end
+
+        refresh_views
+        results = described_class.find_by(facility: facility, month_date: june_2021[:now])
+        expect(results.adjusted_bs_missed_visit_under_care).to eq 2
+        expect(results.adjusted_bs_missed_visit_lost_to_follow_up).to eq 3
+      end
+
+      it "contains number of total visited but no BS measured patients at a facility" do
+        facility = create(:facility)
+        create_list(:patient, 2, :diabetes, assigned_facility: facility, recorded_at: june_2021[:long_ago]).each do |patient|
+          create(:blood_pressure, :with_encounter, patient: patient, recorded_at: june_2021[:under_3_months_ago])
+        end
+
+        refresh_views
+        results = described_class.find_by(facility: facility, month_date: june_2021[:now])
+        expect(results.adjusted_visited_no_bs_under_care).to eq 2
+      end
+    end
+
+    it "contains the number of monthly diabetes followup patients" do
+      facility = create(:facility)
+      patients = create_list(:patient, 2, :diabetes, assigned_facility: facility, recorded_at: june_2021[:long_ago])
+      create(:blood_sugar, :with_encounter, :bs_below_200, blood_sugar_type: :random, patient: patients.first, recorded_at: june_2021[:two_months_ago])
+      create(:blood_pressure, :with_encounter, patient: patients.second, recorded_at: june_2021[:one_month_ago])
+
+      refresh_views
+      with_reporting_time_zone do
+        expect(described_class
+                 .where(facility_id: facility.id)
+                 .where("month_date = ?", june_2021[:two_months_ago])
+                 .pluck(:monthly_diabetes_follow_ups)).to all eq 1
+        expect(described_class
+                 .where(facility_id: facility.id)
+                 .where("month_date = ?", june_2021[:one_month_ago])
+                 .pluck(:monthly_diabetes_follow_ups)).to all eq 1
+      end
+    end
+  end
+
   describe ".with_patients" do
     it "returns all rows where a facility has registered patients" do
       facility_1 = create(:facility)
