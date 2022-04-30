@@ -320,7 +320,7 @@ en.notifications.covid.medication_reminder.2:
   Non_Variable_Text_Length: '251'
   Max_Length_Permitted: '502'
   Template_Status: '1'
-  Is_Unicode: '0'
+  Is_Unicode: '1'
   Version: 2
   Is_Latest_Version: true
   Latest_Template_Version: en.notifications.covid.medication_reminder.2
@@ -346,7 +346,7 @@ en.notifications.set01.alarm.2:
   Non_Variable_Text_Length: '98'
   Max_Length_Permitted: '196'
   Template_Status: '1'
-  Is_Unicode: '0'
+  Is_Unicode: '1'
   Version: 2
   Is_Latest_Version: true
   Latest_Template_Version: en.notifications.set01.alarm.2
@@ -372,7 +372,7 @@ en.notifications.set01.basic.2:
   Non_Variable_Text_Length: '51'
   Max_Length_Permitted: '102'
   Template_Status: '1'
-  Is_Unicode: '0'
+  Is_Unicode: '1'
   Version: 2
   Is_Latest_Version: true
   Latest_Template_Version: en.notifications.set01.basic.2
@@ -398,7 +398,7 @@ en.notifications.set01.emotional_guilt.2:
   Non_Variable_Text_Length: '116'
   Max_Length_Permitted: '232'
   Template_Status: '1'
-  Is_Unicode: '0'
+  Is_Unicode: '1'
   Version: 2
   Is_Latest_Version: true
   Latest_Template_Version: en.notifications.set01.emotional_guilt.2
@@ -424,7 +424,7 @@ en.notifications.set01.emotional_relatives.2:
   Non_Variable_Text_Length: '130'
   Max_Length_Permitted: '260'
   Template_Status: '1'
-  Is_Unicode: '0'
+  Is_Unicode: '1'
   Version: 2
   Is_Latest_Version: true
   Latest_Template_Version: en.notifications.set01.emotional_relatives.2
@@ -450,7 +450,7 @@ en.notifications.set01.free.2:
   Non_Variable_Text_Length: '70'
   Max_Length_Permitted: '140'
   Template_Status: '1'
-  Is_Unicode: '0'
+  Is_Unicode: '1'
   Version: 2
   Is_Latest_Version: true
   Latest_Template_Version: en.notifications.set01.free.2
@@ -476,7 +476,7 @@ en.notifications.set01.gratitude.2:
   Non_Variable_Text_Length: '103'
   Max_Length_Permitted: '206'
   Template_Status: '1'
-  Is_Unicode: '0'
+  Is_Unicode: '1'
   Version: 2
   Is_Latest_Version: true
   Latest_Template_Version: en.notifications.set01.gratitude.2
@@ -502,7 +502,7 @@ en.notifications.set01.professional_request.2:
   Non_Variable_Text_Length: '109'
   Max_Length_Permitted: '218'
   Template_Status: '1'
-  Is_Unicode: '0'
+  Is_Unicode: '1'
   Version: 2
   Is_Latest_Version: true
   Latest_Template_Version: en.notifications.set01.professional_request.2
@@ -515,7 +515,7 @@ en.notifications.set01.response.2:
   Non_Variable_Text_Length: '104'
   Max_Length_Permitted: '208'
   Template_Status: '1'
-  Is_Unicode: '0'
+  Is_Unicode: '1'
   Version: 2
   Is_Latest_Version: true
   Latest_Template_Version: en.notifications.set01.response.2
@@ -539,7 +539,7 @@ en.notifications.set02.alarm.2:
   Non_Variable_Text_Length: '122'
   Max_Length_Permitted: '244'
   Template_Status: '1'
-  Is_Unicode: '0'
+  Is_Unicode: '1'
   Version: 2
   Is_Latest_Version: true
   Latest_Template_Version: en.notifications.set02.alarm.2
@@ -563,7 +563,7 @@ en.notifications.set02.basic.2:
   Non_Variable_Text_Length: '75'
   Max_Length_Permitted: '150'
   Template_Status: '1'
-  Is_Unicode: '0'
+  Is_Unicode: '1'
   Version: 2
   Is_Latest_Version: true
   Latest_Template_Version: en.notifications.set02.basic.2
@@ -587,7 +587,7 @@ en.notifications.set02.emotional_guilt.2:
   Non_Variable_Text_Length: '140'
   Max_Length_Permitted: '280'
   Template_Status: '1'
-  Is_Unicode: '0'
+  Is_Unicode: '1'
   Version: 2
   Is_Latest_Version: true
   Latest_Template_Version: en.notifications.set02.emotional_guilt.2
@@ -611,7 +611,7 @@ en.notifications.set02.emotional_relatives.2:
   Non_Variable_Text_Length: '154'
   Max_Length_Permitted: '308'
   Template_Status: '1'
-  Is_Unicode: '0'
+  Is_Unicode: '1'
   Version: 2
   Is_Latest_Version: true
   Latest_Template_Version: en.notifications.set02.emotional_relatives.2
@@ -635,7 +635,7 @@ en.notifications.set02.free.2:
   Non_Variable_Text_Length: '125'
   Max_Length_Permitted: '250'
   Template_Status: '1'
-  Is_Unicode: '0'
+  Is_Unicode: '1'
   Version: 2
   Is_Latest_Version: true
   Latest_Template_Version: en.notifications.set02.free.2
@@ -659,7 +659,7 @@ en.notifications.set02.gratitude.2:
   Non_Variable_Text_Length: '127'
   Max_Length_Permitted: '254'
   Template_Status: '1'
-  Is_Unicode: '0'
+  Is_Unicode: '1'
   Version: 2
   Is_Latest_Version: true
   Latest_Template_Version: en.notifications.set02.gratitude.2
@@ -683,7 +683,7 @@ en.notifications.set02.professional_request.2:
   Non_Variable_Text_Length: '133'
   Max_Length_Permitted: '266'
   Template_Status: '1'
-  Is_Unicode: '0'
+  Is_Unicode: '1'
   Version: 2
   Is_Latest_Version: true
   Latest_Template_Version: en.notifications.set02.professional_request.2
@@ -695,7 +695,7 @@ en.notifications.set02.response.2:
   Non_Variable_Text_Length: '128'
   Max_Length_Permitted: '256'
   Template_Status: '1'
-  Is_Unicode: '0'
+  Is_Unicode: '1'
   Version: 2
   Is_Latest_Version: true
   Latest_Template_Version: en.notifications.set02.response.2
@@ -719,7 +719,7 @@ en.notifications.set03.alarm.2:
   Non_Variable_Text_Length: '148'
   Max_Length_Permitted: '296'
   Template_Status: '1'
-  Is_Unicode: '0'
+  Is_Unicode: '1'
   Version: 2
   Is_Latest_Version: true
   Latest_Template_Version: en.notifications.set03.alarm.2
@@ -743,7 +743,7 @@ en.notifications.set03.basic.2: &2
   Non_Variable_Text_Length: '101'
   Max_Length_Permitted: '202'
   Template_Status: '1'
-  Is_Unicode: '0'
+  Is_Unicode: '1'
   Version: 2
   Is_Latest_Version: true
   Latest_Template_Version: en.notifications.set03.basic.2
@@ -767,7 +767,7 @@ en.notifications.set03.emotional_guilt.2:
   Non_Variable_Text_Length: '166'
   Max_Length_Permitted: '332'
   Template_Status: '1'
-  Is_Unicode: '0'
+  Is_Unicode: '1'
   Version: 2
   Is_Latest_Version: true
   Latest_Template_Version: en.notifications.set03.emotional_guilt.2
@@ -791,7 +791,7 @@ en.notifications.set03.emotional_relatives.2:
   Non_Variable_Text_Length: '180'
   Max_Length_Permitted: '360'
   Template_Status: '1'
-  Is_Unicode: '0'
+  Is_Unicode: '1'
   Version: 2
   Is_Latest_Version: true
   Latest_Template_Version: en.notifications.set03.emotional_relatives.2
@@ -815,7 +815,7 @@ en.notifications.set03.free.2:
   Non_Variable_Text_Length: '151'
   Max_Length_Permitted: '302'
   Template_Status: '1'
-  Is_Unicode: '0'
+  Is_Unicode: '1'
   Version: 2
   Is_Latest_Version: true
   Latest_Template_Version: en.notifications.set03.free.2
@@ -839,7 +839,7 @@ en.notifications.set03.gratitude.2:
   Non_Variable_Text_Length: '153'
   Max_Length_Permitted: '306'
   Template_Status: '1'
-  Is_Unicode: '0'
+  Is_Unicode: '1'
   Version: 2
   Is_Latest_Version: true
   Latest_Template_Version: en.notifications.set03.gratitude.2
@@ -863,7 +863,7 @@ en.notifications.set03.professional_request.2:
   Non_Variable_Text_Length: '159'
   Max_Length_Permitted: '318'
   Template_Status: '1'
-  Is_Unicode: '0'
+  Is_Unicode: '1'
   Version: 2
   Is_Latest_Version: true
   Latest_Template_Version: en.notifications.set03.professional_request.2
@@ -875,7 +875,7 @@ en.notifications.set03.response.2:
   Non_Variable_Text_Length: '154'
   Max_Length_Permitted: '308'
   Template_Status: '1'
-  Is_Unicode: '0'
+  Is_Unicode: '1'
   Version: 2
   Is_Latest_Version: true
   Latest_Template_Version: en.notifications.set03.response.2
@@ -2782,7 +2782,7 @@ test_message:
   Non_Variable_Text_Length: '0'
   Max_Length_Permitted: '0'
   Template_Status: '0'
-  Is_Unicode: '0'
+  Is_Unicode: '1'
   Version: 1
   Is_Latest_Version: false
   Latest_Template_Version: test_message.2
@@ -2792,7 +2792,7 @@ test_message.2:
   Non_Variable_Text_Length: '0'
   Max_Length_Permitted: '0'
   Template_Status: '0'
-  Is_Unicode: '0'
+  Is_Unicode: '1'
   Version: 2
   Is_Latest_Version: true
   Latest_Template_Version: test_message.2
