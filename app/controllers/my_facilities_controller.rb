@@ -31,10 +31,6 @@ class MyFacilitiesController < AdminController
 
     @facility_counts_by_size = {total: @facilities.group(:facility_size).count,
                                 inactive: @inactive_facilities.group(:facility_size).count}
-
-    @inactive_facilities_bp_counts =
-      {last_week: overview_query.total_bps_in_last_n_days(n: 7),
-       last_month: overview_query.total_bps_in_last_n_days(n: 30)}
   end
 
   def bp_controlled
