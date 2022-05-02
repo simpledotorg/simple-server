@@ -90,7 +90,7 @@ every :day, at: local("05:30 pm"), roles: [:cron] do
   runner "Messaging::Bsnl::Sms.get_message_statuses"
 end
 
-every :day, at: local("11:00 am"), roles: [:cron] do
+every :day, at: local("11:00 pm"), roles: [:cron] do
   runner "Messaging::Bsnl::Sms.get_message_statuses"
 end
 
