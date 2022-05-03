@@ -1,3 +1,6 @@
+require "sidekiq-unique-jobs"
+require "sidekiq/throttled"
+
 module SidekiqConfig
   DEFAULT_REDIS_POOL_SIZE = 12
 
@@ -16,6 +19,10 @@ end
 
 Sidekiq.configure_client do |config|
   config.redis = SidekiqConfig.connection_pool
+
+  config.client_middleware do |chain|
+    chain.add SidekiqUniqueJobs::Middleware::Client
+  end
 end
 
 SIDEKIQ_STATS_KEY = "worker"
@@ -23,12 +30,19 @@ SIDEKIQ_STATS_PREFIX = "#{SimpleServer.env}.#{CountryConfig.current[:abbreviatio
 
 Sidekiq.configure_server do |config|
   config.on(:shutdown) { Statsd.instance.close }
+
+  config.client_middleware do |chain|
+    chain.add SidekiqUniqueJobs::Middleware::Client
+  end
+
   config.server_middleware do |chain|
     chain.add SidekiqMiddleware::SetLocalTimeZone
     chain.add SidekiqMiddleware::FlushMetrics
+    chain.add SidekiqUniqueJobs::Middleware::Server
   end
   config.redis = SidekiqConfig.connection_pool
+
+  SidekiqUniqueJobs::Server.configure(config)
 end
 
-require "sidekiq/throttled"
 Sidekiq::Throttled.setup!

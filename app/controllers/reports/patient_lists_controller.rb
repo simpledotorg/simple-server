@@ -15,7 +15,8 @@ class Reports::PatientListsController < AdminController
       {facility_id: @region.source_id}
     end
 
-    PatientListDownloadJob.perform_later(
+
+    PatientListDownloadJob.perform_async(
       recipient_email,
       region_class,
       download_params
