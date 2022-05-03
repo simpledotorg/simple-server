@@ -226,7 +226,13 @@ module Reports
 
     memoize def bs_below_200_rates(with_ltfu: false)
       region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
-        diabetes_treatment_outcome_rates(:bs_below_200, entry, with_ltfu)
+        diabetes_treatment_outcome_rates(entry, with_ltfu)[__method__]
+      end
+    end
+
+    memoize def diabetes_treatment_outcome_breakdown(blood_sugar_risk_state)
+      region_period_cached_query(__method__, blood_sugar_risk_state: blood_sugar_risk_state) do |entry|
+        diabetes_treatment_outcome_breakdown_rates(entry, blood_sugar_risk_state)
       end
     end
 
@@ -241,7 +247,7 @@ module Reports
       })
     end
 
-    def treatment_outcome_rates(entry, with_ltfu)
+    memoize def treatment_outcome_rates(entry, with_ltfu)
       rounded_percentages({
         visited_without_bp_taken_rates: visited_without_bp_taken(with_ltfu: with_ltfu)[entry.region.slug][entry.period],
         missed_visits_rates: missed_visits(with_ltfu: with_ltfu)[entry.region.slug][entry.period],
@@ -250,27 +256,20 @@ module Reports
       })
     end
 
+    memoize def diabetes_treatment_outcome_breakdown_rates(entry, blood_sugar_risk_state)
+      rounded_percentages({
+        random: diabetes_under_care(blood_sugar_risk_state, :random)[entry.region.slug][entry.period],
+        post_prandial: diabetes_under_care(blood_sugar_risk_state, :post_prandial)[entry.region.slug][entry.period],
+        fasting: diabetes_under_care(blood_sugar_risk_state, :fasting)[entry.region.slug][entry.period],
+        hba1c: diabetes_under_care(blood_sugar_risk_state, :hba1c) [entry.region.slug][entry.period]
+      })
+    end
+
     memoize def diabetes_under_care(blood_sugar_risk_state, blood_sugar_type = nil)
       if blood_sugar_type
         return values_at("adjusted_#{blood_sugar_type}_#{blood_sugar_risk_state}_under_care")
       end
       values_at("adjusted_#{blood_sugar_risk_state}_under_care")
-    end
-
-    memoize def diabetes_treatment_outcome_rates(blood_sugar_risk_state, entry, with_ltfu)
-      {
-        total: rounded_percentages({
-          under_care_rate: diabetes_under_care(blood_sugar_risk_state)[entry.region.slug][entry.period],
-          missed_visits_rate: diabetes_missed_visits(with_ltfu: with_ltfu)[entry.region.slug][entry.period],
-          visited_without_bs_taken_rate: visited_without_bs_taken[entry.region.slug][entry.period]
-        }),
-        breakdown: {
-          rbs_ppbs: diabetes_under_care(blood_sugar_risk_state, :random)[entry.region.slug][entry.period] +
-            diabetes_under_care(blood_sugar_risk_state, :post_prandial)[entry.region.slug][entry.period],
-          fasting: diabetes_under_care(blood_sugar_risk_state, :fasting)[entry.region.slug][entry.period],
-          hba1c: diabetes_under_care(blood_sugar_risk_state, :hba1c) [entry.region.slug][entry.period]
-        }
-      }
     end
 
     memoize def earliest_patient_data_query_v2(region)
