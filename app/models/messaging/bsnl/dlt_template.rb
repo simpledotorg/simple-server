@@ -1,5 +1,6 @@
 class Messaging::Bsnl::DltTemplate
   MAX_VARIABLE_LENGTH = 30
+  DEFAULT_VERSION_NUMBER = 1
   TRIMMABLE_VARIABLES = %i[facility_name patient_name].freeze
   BSNL_TEMPLATES = YAML.load_file("config/data/bsnl_templates.yml")
   STATUSES = {
@@ -15,6 +16,8 @@ class Messaging::Bsnl::DltTemplate
   attr_reader :non_variable_text_length
   attr_reader :variable_length_permitted
   attr_reader :status
+  attr_reader :version
+  attr_reader :is_latest_version
 
   def initialize(dlt_template_name)
     @name = dlt_template_name
@@ -23,9 +26,29 @@ class Messaging::Bsnl::DltTemplate
     @status = STATUSES[details["Template_Status"]]
     @is_unicode = details["Is_Unicode"]
     @keys = details["Template_Keys"]
+    @version = details["Version"]
+    @is_latest_version = details["Is_Latest_Version"]
     @max_length_permitted = details["Max_Length_Permitted"].to_i
     @non_variable_text_length = details["Non_Variable_Text_Length"].to_i
     @variable_length_permitted = max_length_permitted - non_variable_text_length
+  end
+
+  def self.latest_name_of(dlt_template_name)
+    BSNL_TEMPLATES.dig(drop_version_number(dlt_template_name), "Latest_Template_Version")
+  end
+
+  def self.drop_version_number(dlt_template_name)
+    dlt_template_name.chomp(".#{version_number(dlt_template_name)}")
+  end
+
+  def self.version_number(dlt_template_name)
+    version = dlt_template_name.split(".").last
+
+    if numeric?(version)
+      version.to_i
+    else
+      DEFAULT_VERSION_NUMBER
+    end
   end
 
   def sanitised_variable_content(content)
@@ -106,6 +129,14 @@ class Messaging::Bsnl::DltTemplate
 
     content.to_h do |k, v|
       [k, v[0, lengths[k]]]
+    end
+  end
+
+  class << self
+    def numeric?(string)
+      !Float(string).nil?
+    rescue
+      false
     end
   end
 end

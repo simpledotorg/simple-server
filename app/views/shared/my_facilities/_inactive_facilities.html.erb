@@ -4,50 +4,12 @@
       Inactive facilities
     </h2>
     <p>
-      Facilities with &lt;10 patients with a BP taken
+      Facilities with no BPs recorded in the last 30 days
     </p>
     <section id="facilities-inactive">
-      <table class="table table-compact table-hover table-responsive-md analytics-table">
-        <colgroup>
-          <col>
-          <col style="width: 7em;" class="table-divider">
-          <col style="width: 7em;" class="table-divider">
-        </colgroup>
-        <thead>
-          <tr>
-            <th></th>
-            <th
-              class="row-label sort-label"
-              data-sort-default data-sort-method="number"
-              data-sort-column-key="week"
-            >
-              Patients in<br>last 7 days
-            </th>
-            <th
-              class="row-label sort-label"
-              data-sort-method="number"
-              data-sort-column-key="month"
-            >
-              Patients in<br> last 30 days
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @inactive_facilities.sort_by(&:name).first(100).each do |facility| %>
-            <tr>
-              <td>
-                <%= link_to facility.name, reports_region_facility_path(facility) %>
-              </td>
-              <td class="text-right" data-sort-column-key="week">
-                <%= number_with_delimiter(@inactive_facilities_bp_counts[:last_week][facility.id].to_i) %>
-              </td>
-              <td class="text-right" data-sort-column-key="month">
-                <%= number_with_delimiter(@inactive_facilities_bp_counts[:last_month][facility.id].to_i) %>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
+      <% @inactive_facilities.sort_by(&:name).first(100).each do |facility| %>
+        <%= link_to facility.name, reports_region_facility_path(facility), class: "user-row d-block w-100" %>
+      <% end %>
     </section>
   </div>
 <% end %>

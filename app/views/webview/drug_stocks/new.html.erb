@@ -18,11 +18,13 @@
     <div id="progress-start">
       <div id="drug-stock-form">
         <div class="mb-8px p-16px bgc-white bs-card">
-          <a href="simple://progress-tab" title="Go back to progress" class="d-block mb-24px">
-            <div class="d-inline-block">
-              <%= inline_file("chevron-left.svg") %>
-            </div>
-          </a>
+          <% unless params[:hide_back_button] %>
+            <a href="simple://progress-tab" title="Go back to progress" class="d-block mb-24px">
+              <div class="d-inline-block">
+                <%= inline_file("chevron-left.svg") %>
+              </div>
+            </a>
+          <% end %>
           <h2 class="m-0px mb-8px fw-bold c-black">
             Drug stock report
           </h2>
