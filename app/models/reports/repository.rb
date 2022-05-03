@@ -44,6 +44,8 @@ module Reports
       appts_scheduled_15_to_31_days_rates
       appts_scheduled_32_to_62_days_rates
       appts_scheduled_more_than_62_days_rates
+      bs_below_200_rates
+      diabetes_treatment_outcome_breakdown
     ]
 
     DELEGATED_COUNTS = %i[
@@ -70,6 +72,10 @@ module Reports
       appts_scheduled_15_to_31_days
       appts_scheduled_32_to_62_days
       appts_scheduled_more_than_62_days
+      adjusted_diabetes_patients_without_ltfu
+      adjusted_diabetes_patients_with_ltfu
+      adjusted_diabetes_patients
+      bs_below_200_patients
     ]
 
     def warm_cache

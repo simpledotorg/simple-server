@@ -26,6 +26,8 @@ module Reports
       appts_scheduled_15_to_31_days
       appts_scheduled_32_to_62_days
       appts_scheduled_more_than_62_days
+      cumulative_assigned_diabetic_patients
+      adjusted_diabetes_patients_under_care
       adjusted_bs_below_200_under_care
       adjusted_random_bs_below_200_under_care
       adjusted_post_prandial_bs_below_200_under_care
