@@ -90,11 +90,16 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
         appts_scheduled_15_to_31_days
         appts_scheduled_32_to_62_days
         appts_scheduled_more_than_62_days
+        cumulative_assigned_diabetic_patients
+        adjusted_diabetes_patients_under_care
         adjusted_bs_below_200_under_care
         adjusted_random_bs_below_200_under_care
         adjusted_post_prandial_bs_below_200_under_care
         adjusted_fasting_bs_below_200_under_care
         adjusted_hba1c_bs_below_200_under_care
+        adjusted_visited_no_bs_under_care
+        adjusted_bs_missed_visit_under_care
+        adjusted_bs_missed_visit_lost_to_follow_up
       ].map(&:to_s)
       (3.months.ago.to_period..now.to_period).each do |period|
         expect(results["facility-1"][period].keys).to match_array(expected_keys)
@@ -380,7 +385,21 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       facility_1_results = described_class.call(facility_1)[facility_1.region.slug]
       facility_2_results = described_class.call(facility_2)[facility_2.region.slug]
       region_results = described_class.call(region)[region.slug]
-      (("Jan 2019".to_period)..("May 2020".to_period)).each do |period|
+      (("Jan 2019".to_period)..("Mar 2019".to_period)).each do |period|
+        expect(facility_1_results[period]["adjusted_bs_missed_visit_under_care"]).to eq 0
+        expect(facility_2_results[period]["adjusted_bs_missed_visit_under_care"]).to eq 0
+        expect(region_results[period]["adjusted_bs_missed_visit_under_care"]).to eq 0
+      end
+
+      (("Apr 2019".to_period)..("Dec 2019".to_period)).each do |period|
+        print period
+        expect(facility_1_results[period]["adjusted_bs_missed_visit_under_care"]).to eq 4
+        expect(facility_2_results[period]["adjusted_bs_missed_visit_under_care"]).to eq 3
+        expect(region_results[period]["adjusted_bs_missed_visit_under_care"]).to eq 7
+      end
+
+      (("Jan 2020".to_period)..("May 2020".to_period)).each do |period|
+        print period
         expect(facility_1_results[period]["adjusted_bs_missed_visit_under_care"]).to eq 0
         expect(facility_2_results[period]["adjusted_bs_missed_visit_under_care"]).to eq 0
         expect(region_results[period]["adjusted_bs_missed_visit_under_care"]).to eq 0
