@@ -57,6 +57,10 @@ en:
   bs_below_200_copy:
     reports_card_subtitle: "Diabetes patients in %{region_name} with BS <200 at their last visit in the last 3 months"
     numerator: "Patients with RBS/PPBS <200, FBS <126, or HbA1c <7.0 at their last visit in the last 3 months."
+  bs_over_200_copy:
+    reports_card_subtitle: "Diabetes patients in %{region_name} with BS 200-299 or BS ≥300 at their last visit in the last 3 months"
+    bs_200_to_299_numerator: "Patients with RBS/PPBS 200-299, FBS 126-199, or HbA1c 7.0-8.9 at their last visit in the last 3 months."
+    bs_over_300_numerator: "Patients with RBS/PPBS ≥300, FBS ≥200, or HbA1c ≥9.0 at their last visit in the last 3 months."
   missed_visits_copy:
     reports_card_subtitle: "Hypertension patients with no visit in the last 3 months"
     numerator: "Patients with no visit in the last 3 months."

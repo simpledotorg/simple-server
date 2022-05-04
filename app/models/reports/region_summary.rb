@@ -39,6 +39,8 @@ module Reports
       adjusted_visited_no_bs_under_care
       adjusted_bs_missed_visit_under_care
       adjusted_bs_missed_visit_lost_to_follow_up
+      adjusted_bs_200_to_300_under_care
+      adjusted_bs_over_300_under_care
     ].sort.freeze
 
     UNDER_CARE_WITH_LTFU = %i[
