@@ -93,7 +93,7 @@ gem "sentry-sidekiq"
 gem "sidekiq-statsd"
 gem "sidekiq-throttled"
 gem "sidekiq"
-gem 'sidekiq-unique-jobs'
+gem "sidekiq-unique-jobs"
 gem "slack-notifier"
 gem "squid"
 gem "stackprof", require: false
