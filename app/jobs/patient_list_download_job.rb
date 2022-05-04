@@ -4,7 +4,7 @@ class PatientListDownloadJob
   sidekiq_options lock: :until_executed,
     lock_timeout: 15.minutes,
     lock_ttl: 15.minutes,
-    on_conflict: :reject
+    on_server_conflict: :reject
 
   def perform(recipient_email, model_type, params)
     case model_type

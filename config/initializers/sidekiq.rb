@@ -40,9 +40,13 @@ Sidekiq.configure_server do |config|
     chain.add SidekiqMiddleware::FlushMetrics
     chain.add SidekiqUniqueJobs::Middleware::Server
   end
+
   config.redis = SidekiqConfig.connection_pool
 
   SidekiqUniqueJobs::Server.configure(config)
 end
 
 Sidekiq::Throttled.setup!
+SidekiqUniqueJobs.configure do |config|
+  config.enabled = !Rails.env.test?
+end

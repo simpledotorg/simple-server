@@ -1,8 +1,11 @@
 require "rails_helper"
+require "sidekiq_unique_jobs/testing"
 
 RSpec.describe PatientListDownloadJob, type: :job do
   let!(:admin) { create(:admin) }
   let!(:facility) { create(:facility) }
+
+  specify { expect(described_class).to have_valid_sidekiq_options }
 
   it "should work for FacilityGroup" do
     facility_group = create(:facility_group)
