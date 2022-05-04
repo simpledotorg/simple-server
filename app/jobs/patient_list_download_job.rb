@@ -23,8 +23,6 @@ class PatientListDownloadJob
     exporter = PatientsWithHistoryExporter
     patients_csv = exporter.csv(patients)
 
-    sleep 20.seconds
-
     PatientListDownloadMailer.patient_list(recipient_email, model_type, model_name, patients_csv).deliver_now
   end
 end
