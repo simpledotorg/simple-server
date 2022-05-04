@@ -44,7 +44,13 @@ module Reports
         bs_below_200_patients: bs_below_200_patients[slug],
         bs_below_200_rates: bs_below_200_rates[slug],
         bs_below_200_with_ltfu_rates: bs_below_200_rates(with_ltfu: true)[slug],
-        bs_below_200_breakdown: diabetes_treatment_outcome_breakdown(:bs_below_200)[slug]
+        bs_below_200_breakdown: diabetes_treatment_outcome_breakdown(:bs_below_200)[slug],
+        bs_200_to_300_patients: bs_200_to_300_patients[slug],
+        bs_200_to_300_rates: bs_200_to_300_rates[slug],
+        bs_200_to_300_with_ltfu_rates: bs_200_to_300_rates(with_ltfu: true)[slug],
+        bs_over_300_patients: bs_over_300_patients[slug],
+        bs_over_300_rates: bs_over_300_rates[slug],
+        bs_over_300_with_ltfu_rates: bs_over_300_rates(with_ltfu: true)[slug]
       }
     end
 

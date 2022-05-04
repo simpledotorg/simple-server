@@ -16,6 +16,8 @@ Reports = function (withLtfu) {
   this.whiteColor = "rgba(255, 255, 255, 1)";
   this.orangeColor ="rgba(255, 122, 0, 1)";
   this.transparent = "rgba(0, 0, 0, 0)";
+  this.maroonColor = "rgba(150, 48, 48, 1)"
+  this.darkMaroonColor = "rgba(121,30,39,1)"
 
   this.initialize = () => {
     this.initializeCharts();
@@ -36,6 +38,7 @@ Reports = function (withLtfu) {
     this.setupVisitDetailsGraph(data);
     this.setupBSBelow200Graph(data);
     this.setupCumulativeDiabetesRegistrationsGraph(data);
+    this.setupBSOver200Graph(data);
   };
 
   this.setupControlledGraph = (data) => {
@@ -892,6 +895,147 @@ Reports = function (withLtfu) {
     }
   };
 
+  this.setupBSOver200Graph = (data) => {
+      console.log(data);
+      const adjustedPatients = withLtfu
+          ? data.adjustedDiabetesPatientCountsWithLtfu
+          : data.adjustedDiabetesPatientCounts;
+
+      const bs200to300Numerator = data.bs200to300Patients;
+      const bs200to300Rate = withLtfu
+          ? data.bs200to300WithLtfuRate
+          : data.bs200to300Rate;
+
+      const bsOver300Numerator = data.bsOver300Patients;
+      const bsOver300Rate = withLtfu
+          ? data.bsOver300WithLtfuRate
+          : data.bsOver300Rate;
+
+      const bsOver200GraphConfig = this.createBaseGraphConfig();
+
+      bsOver200GraphConfig.type = "bar";
+      bsOver200GraphConfig.data = {
+          labels: Object.keys(bsOver300Rate),
+          datasets: [
+              {
+                  label: "BS 200-299",
+                  backgroundColor: this.mediumRedColor,
+                  hoverBackgroundColor: this.darkRedColor,
+                  hoverBorderWidth: 2,
+                  data: Object.values(bs200to300Rate),
+              },
+              {
+                  label: "BS >=300",
+                  backgroundColor: this.maroonColor,
+                  hoverBackgroundColor: this.darkMaroonColor,
+                  hoverBorderWidth: 2,
+                  data: Object.values(bsOver300Rate),
+              }
+          ],
+      };
+
+      bsOver200GraphConfig.options.scales = {
+          xAxes: [
+              {
+                  stacked: true,
+                  display: true,
+                  gridLines: {
+                      display: false,
+                      drawBorder: true,
+                  },
+                  ticks: {
+                      autoSkip: false,
+                      fontColor: this.darkGreyColor,
+                      fontSize: 10,
+                      fontFamily: "Roboto",
+                      padding: 8,
+                      min: 0,
+                      beginAtZero: true,
+                  },
+              },
+          ],
+          yAxes: [
+              {
+                  stacked: true,
+                  display: true,
+                  gridLines: {
+                      display: true,
+                      drawBorder: false,
+                  },
+                  ticks: {
+                      autoSkip: false,
+                      fontColor: this.darkGreyColor,
+                      fontSize: 10,
+                      fontFamily: "Roboto",
+                      padding: 8,
+                      min: 0,
+                      beginAtZero: true,
+                      stepSize: 50,
+                      max: 100,
+                  },
+              },
+          ],
+      };
+      bsOver200GraphConfig.options.tooltips = {
+          mode: "x",
+          enabled: false,
+          custom: (tooltip) => {
+              let hoveredDatapoint = tooltip.dataPoints;
+              if (hoveredDatapoint)
+                  populateBSOver200Graph(hoveredDatapoint[0].label);
+              else populateBSOver200GraphDefault();
+          },
+      };
+
+      const populateBSOver200Graph = (period) => {
+          const cardNode = document.getElementById("bs-over-200");
+          const bs200to300rateNode = cardNode.querySelector("[data-bs-200-to-300-rate]");
+          const bsOver300rateNode = cardNode.querySelector("[data-bs-over-300-rate]");
+          const totalBS200to300PatientsNode = cardNode.querySelector("[data-total-bs-200-to-300-patients]");
+          const totalBSOver300PatientsNode = cardNode.querySelector("[data-total-bs-over-300-patients]");
+          const periodStartNodes = cardNode.querySelectorAll("[data-period-start]");
+          const periodEndNodes = cardNode.querySelectorAll("[data-period-end]");
+          const registrationsNodes = cardNode.querySelectorAll("[data-registrations]");
+          const registrationsPeriodEndNodes = cardNode.querySelectorAll(
+              "[data-registrations-period-end]"
+          );
+
+          const periodInfo = data.periodInfo[period];
+          const adjustedPatientCounts = adjustedPatients[period];
+
+          const totalBS200to300Patients = bs200to300Numerator[period];
+          const totalBSOver300Patients = bsOver300Numerator[period];
+
+          bs200to300rateNode.innerHTML = this.formatPercentage(bs200to300Rate[period]);
+          bsOver300rateNode.innerHTML = this.formatPercentage(bsOver300Rate[period]);
+          totalBS200to300PatientsNode.innerHTML = this.formatNumberWithCommas(totalBS200to300Patients);
+          totalBSOver300PatientsNode.innerHTML = this.formatNumberWithCommas(totalBSOver300Patients);
+          periodStartNodes.forEach((node) => node.innerHTML = periodInfo.bp_control_start_date);
+          periodEndNodes.forEach((node) => node.innerHTML = periodInfo.bp_control_end_date);
+          registrationsNodes.forEach((node) => node.innerHTML = this.formatNumberWithCommas(
+              adjustedPatientCounts
+          ));
+          registrationsPeriodEndNodes.forEach((node) => node.innerHTML =
+              periodInfo.bp_control_registration_date);
+      };
+
+      const populateBSOver200GraphDefault = () => {
+          const cardNode = document.getElementById("bs-over-200");
+          const mostRecentPeriod = cardNode.getAttribute("data-period");
+
+          populateBSOver200Graph(mostRecentPeriod);
+      };
+
+
+      const bsOver200GraphCanvas = document.getElementById(
+          "bsOver200PatientsTrend"
+      );
+      if (bsOver200GraphCanvas) {
+              new Chart(bsOver200GraphCanvas.getContext("2d"), bsOver200GraphConfig);
+              populateBSOver200GraphDefault();
+          }
+  };
+
   this.setupCumulativeDiabetesRegistrationsGraph = (data) => {
     const cumulativeDiabetesRegistrationsYAxis = this.createAxisMaxAndStepSize(
         data.cumulativeDiabetesRegistrations
@@ -1139,7 +1283,13 @@ Reports = function (withLtfu) {
       bsBelow200Patients: jsonData.bs_below_200_patients,
       bsBelow200Rate: jsonData.bs_below_200_rates,
       bsBelow200WithLtfuRate: jsonData.bs_below_200_with_ltfu_rates,
-      bsBelow200Breakdown: jsonData.bs_below_200_breakdown
+      bsBelow200Breakdown: jsonData.bs_below_200_breakdown,
+      bs200to300Patients: jsonData.bs_200_to_300_patients,
+      bs200to300Rate: jsonData.bs_200_to_300_rates,
+      bs200to300WithLtfuRate: jsonData.bs_200_to_300_with_ltfu_rates,
+      bsOver300Patients: jsonData.bs_over_300_patients,
+      bsOver300Rate: jsonData.bs_over_300_rates,
+      bsOver300WithLtfuRate: jsonData.bs_over_300_with_ltfu_rates
     };
   };
 
