@@ -99,6 +99,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
         adjusted_visited_no_bs_under_care
         adjusted_bs_missed_visit_under_care
         adjusted_bs_missed_visit_lost_to_follow_up
+        adjusted_bs_200_to_300_under_care
+        adjusted_bs_over_300_under_care
       ].map(&:to_s)
       (3.months.ago.to_period..now.to_period).each do |period|
         expect(results["facility-1"][period].keys).to match_array(expected_keys)
