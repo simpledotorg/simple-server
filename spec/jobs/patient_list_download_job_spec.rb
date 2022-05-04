@@ -1,8 +1,6 @@
 require "rails_helper"
 
 RSpec.describe PatientListDownloadJob, type: :job do
-  include ActiveJob::TestHelper
-
   let!(:admin) { create(:admin) }
   let!(:facility) { create(:facility) }
 
