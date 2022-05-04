@@ -85,8 +85,16 @@ module Reports
       values_at("monthly_registrations")
     end
 
+    memoize def monthly_diabetes_registrations
+      values_at("monthly_diabetes_registrations")
+    end
+
     memoize def cumulative_registrations
       values_at("cumulative_registrations")
+    end
+
+    memoize def cumulative_diabetes_registrations
+      values_at("cumulative_diabetes_registrations")
     end
 
     memoize def ltfu
@@ -185,6 +193,10 @@ module Reports
           results[region.slug] = counts
         end
       end
+    end
+
+    memoize def monthly_diabetes_followups
+      values_at("monthly_diabetes_follow_ups")
     end
 
     memoize def monthly_overdue_calls

@@ -55,6 +55,7 @@ module Reports
       controlled
       cumulative_assigned_patients
       cumulative_registrations
+      cumulative_diabetes_registrations
       earliest_patient_recorded_at
       earliest_patient_recorded_at_period
       under_care
@@ -63,9 +64,11 @@ module Reports
       missed_visits_with_ltfu
       missed_visits_without_ltfu
       monthly_registrations
+      monthly_diabetes_registrations
       uncontrolled
       visited_without_bp_taken
       monthly_overdue_calls
+      monthly_diabetes_followups
       total_appts_scheduled
       appts_scheduled_0_to_14_days
       appts_scheduled_15_to_31_days
