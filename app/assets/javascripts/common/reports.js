@@ -31,12 +31,13 @@ Reports = function (withLtfu) {
   this.initializeCharts = () => {
     const data = this.getReportingData();
 
+    console.log("ALL DATA", data);
     this.setupControlledGraph(data);
     this.setupUncontrolledGraph(data);
     this.setupMissedVisitsGraph(data);
     this.setupCumulativeRegistrationsGraph(data);
     this.setupVisitDetailsGraph(data);
-    this.setupBSBelow200Graph(data);
+    // this.setupBSBelow200Graph(data);
     this.setupCumulativeDiabetesRegistrationsGraph(data);
     this.setupBSOver200Graph(data);
   };
