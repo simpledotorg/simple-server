@@ -271,10 +271,10 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
   end
 
   context "diabetes" do
-    let(:distict_with_facilities) { setup_district_with_facilities }
-    let(:region) { distict_with_facilities[:region] }
-    let(:facility_1) { distict_with_facilities[:facility_1] }
-    let(:facility_2) { distict_with_facilities[:facility_2] }
+    let(:district_with_facilities) { setup_district_with_facilities }
+    let(:region) { district_with_facilities[:region] }
+    let(:facility_1) { district_with_facilities[:facility_1] }
+    let(:facility_2) { district_with_facilities[:facility_2] }
     let(:period) { jan_2020..mar_2020 }
 
     before :each do
