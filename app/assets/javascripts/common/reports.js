@@ -896,7 +896,6 @@ Reports = function (withLtfu) {
   };
 
   this.setupBSOver200Graph = (data) => {
-      console.log(data);
       const adjustedPatients = withLtfu
           ? data.adjustedDiabetesPatientCountsWithLtfu
           : data.adjustedDiabetesPatientCounts;
