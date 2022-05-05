@@ -881,11 +881,11 @@ Reports = function (withLtfu) {
       populateBSBelow200Graph(mostRecentPeriod);
     };
 
-    const bsBelow200GraphCanvar = document.getElementById(
+    const bsBelow200GraphCanvas = document.getElementById(
         "bsBelow200PatientsTrend"
     );
-    if (bsBelow200GraphCanvar) {
-      new Chart(bsBelow200GraphCanvar.getContext("2d"), bsBelow200GraphConfig);
+    if (bsBelow200GraphCanvas) {
+      new Chart(bsBelow200GraphCanvas.getContext("2d"), bsBelow200GraphConfig);
       populateBSBelow200GraphDefault();
     }
   };
