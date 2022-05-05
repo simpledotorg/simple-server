@@ -2,4 +2,79 @@
   <%= @region.name %> | Diabetes
 <% end %>
 
-<%= render "header", period_selector: false %>
+<%= render "header" %>
+
+<% control_graph_denominator_copy = @with_ltfu ? "diabetes_denominator_with_ltfu_copy" : "diabetes_denominator_copy" %>
+
+<div class="d-lg-flex flex-lg-wrap">
+  <div class="d-lg-flex w-lg-50 pr-lg-2">
+    <div id="bs-below-200"
+         data-period="<%= @period.to_s %>"
+         class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column
+                justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
+
+      <div class="pt-20px px-20px">
+        <div class="d-flex mb-8px">
+          <div class="d-flex flex-1">
+            <h3 class="mb-0px mr-8px">
+              BS <200
+            </h3>
+            <%= render "definition_tooltip",
+                       definitions: { "Numerator" => t("bs_below_200_copy.numerator"),
+                                      "Denominator" => t(control_graph_denominator_copy, region_name: @region.name) } %>
+          </div>
+          <%= render "reports/regions/ltfu_toggle", id: "controlledGraphLtfuToggle", enabled: @with_ltfu %>
+        </div>
+        <p class="c-grey-dark">
+          <%= t("bs_below_200_copy.reports_card_subtitle") %>
+        </p>
+        <div class="mb-12px d-lg-flex align-lg-center">
+          <p class="mb-0px fs-32px fw-bold mr-lg-12px c-green-dark minw-32px"
+             data-rate="">
+          </p>
+          <div>
+            <p class="m-0px c-black">
+              <span data-total-patients=""></span>
+              patients with a BS <200 from
+              <span data-period-start=""></span>
+              to
+              <span data-period-end=""></span>
+            </p>
+            <p class="m-0px c-grey-dark c-print-black">
+              of <span data-registrations=""></span>
+              patients registered till
+              <span data-registrations-period-end=""></span>
+            </p>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="p-relative mb-12px">
+          <div class="h-320px mr-16px mb-12px ml-13px">
+            <canvas id="bsBelow200PatientsTrend"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="p-relative px-20px mb-12px">
+          <p class="m-0px c-grey-dark c-print-black">
+            <span data-rbs-ppbs=""></span> RBS/PPBS
+            <span data-fasting=""></span> Fasting
+            <span data-hba1c=""></span> HbA1c
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="data-json" style="display: none;">
+  <%= raw @data.to_json %>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js" integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
+<script>
+    window.addEventListener("DOMContentLoaded", () => {
+        new Reports(<%= @with_ltfu %>).initialize();
+    });
+</script>

@@ -3,7 +3,7 @@ class Reports::RegionsController < AdminController
   include GraphicsDownload
   include RegionSearch
 
-  before_action :set_period, only: [:show, :cohort]
+  before_action :set_period, only: [:show, :cohort, :diabetes]
   before_action :set_page, only: [:details]
   before_action :set_per_page, only: [:details]
   before_action :find_region, except: [:index, :fastindex, :monthly_district_data_report]
@@ -128,6 +128,13 @@ class Reports::RegionsController < AdminController
     unless @region.diabetes_management_enabled?
       raise ActionController::RoutingError.new("Not Found")
     end
+
+    start_period = @period.advance(months: -(Reports::MAX_MONTHS_OF_DATA - 1))
+    range = Range.new(start_period, @period)
+    @repository = Reports::Repository.new(@region, periods: range)
+    @presenter = Reports::RepositoryPresenter.new(@repository)
+    @data = @presenter.call(@region)
+    @with_ltfu = with_ltfu?
 
     authorize { current_admin.accessible_facilities(:view_reports).any? }
   end

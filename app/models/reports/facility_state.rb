@@ -24,5 +24,9 @@ module Reports
     scope :with_patients, -> {
       where("cumulative_registrations > 0 OR cumulative_assigned_patients > 0 OR monthly_follow_ups > 0")
     }
+
+    scope :with_htn_or_diabetes_patients, -> {
+      where("cumulative_registrations > 0 OR cumulative_assigned_patients > 0 OR monthly_follow_ups > 0 OR cumulative_diabetes_registrations > 0 OR cumulative_assigned_diabetic_patients > 0 OR monthly_diabetes_follow_ups > 0")
+    }
   end
 end

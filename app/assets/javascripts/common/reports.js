@@ -33,6 +33,7 @@ Reports = function (withLtfu) {
     this.setupMissedVisitsGraph(data);
     this.setupCumulativeRegistrationsGraph(data);
     this.setupVisitDetailsGraph(data);
+    this.setupBSBelow200Graph(data);
   };
 
   this.setupControlledGraph = (data) => {
@@ -761,6 +762,134 @@ Reports = function (withLtfu) {
     }
   };
 
+  this.setupBSBelow200Graph = (data) => {
+    const adjustedPatients = withLtfu
+        ? data.adjustedDiabetesPatientCountsWithLtfu
+        : data.adjustedDiabetesPatientCounts;
+
+    const bsBelow200Numerator = data.bsBelow200Patients;
+    const bsBelow200Rate = withLtfu
+        ? data.bsBelow200WithLtfuRate
+        : data.bsBelow200Rate;
+
+    const bsBelow200GraphConfig = this.createBaseGraphConfig();
+    bsBelow200GraphConfig.data = {
+      labels: Object.keys(bsBelow200Rate),
+      datasets: [
+        {
+          label: "BS <200",
+          backgroundColor: this.lightGreenColor,
+          borderColor: this.mediumGreenColor,
+          borderWidth: 2,
+          pointBackgroundColor: this.whiteColor,
+          hoverBackgroundColor: this.whiteColor,
+          hoverBorderWidth: 2,
+          data: Object.values(bsBelow200Rate),
+        },
+      ],
+    };
+    bsBelow200GraphConfig.options.scales = {
+      xAxes: [
+        {
+          stacked: true,
+          display: true,
+          gridLines: {
+            display: false,
+            drawBorder: true,
+          },
+          ticks: {
+            autoSkip: false,
+            fontColor: this.darkGreyColor,
+            fontSize: 10,
+            fontFamily: "Roboto",
+            padding: 8,
+            min: 0,
+            beginAtZero: true,
+          },
+        },
+      ],
+      yAxes: [
+        {
+          stacked: false,
+          display: true,
+          gridLines: {
+            display: true,
+            drawBorder: false,
+          },
+          ticks: {
+            autoSkip: false,
+            fontColor: this.darkGreyColor,
+            fontSize: 10,
+            fontFamily: "Roboto",
+            padding: 8,
+            min: 0,
+            beginAtZero: true,
+            stepSize: 25,
+            max: 100,
+          },
+        },
+      ],
+    };
+    bsBelow200GraphConfig.options.tooltips = {
+      enabled: false,
+      custom: (tooltip) => {
+        let hoveredDatapoint = tooltip.dataPoints;
+        if (hoveredDatapoint)
+          populateBSBelow200Graph(hoveredDatapoint[0].label);
+        else populateBSBelow200GraphDefault();
+      },
+    };
+
+    const populateBSBelow200Graph = (period) => {
+      const cardNode = document.getElementById("bs-below-200");
+      const rateNode = cardNode.querySelector("[data-rate]");
+      const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
+      const periodStartNode = cardNode.querySelector("[data-period-start]");
+      const periodEndNode = cardNode.querySelector("[data-period-end]");
+      const registrationsNode = cardNode.querySelector("[data-registrations]");
+      const registrationsPeriodEndNode = cardNode.querySelector(
+          "[data-registrations-period-end]"
+      );
+      const rbsPPBSPercentNode = cardNode.querySelector("[data-rbs-ppbs]");
+      const fastingPercentNode = cardNode.querySelector("[data-fasting]");
+      const hba1cPercentNode = cardNode.querySelector("[data-hba1c]");
+
+      const rate = this.formatPercentage(bsBelow200Rate[period]);
+      const periodInfo = data.periodInfo[period];
+      const adjustedPatientCounts = adjustedPatients[period];
+      const totalPatients = bsBelow200Numerator[period];
+
+      rateNode.innerHTML = rate;
+      totalPatientsNode.innerHTML = this.formatNumberWithCommas(totalPatients);
+      periodStartNode.innerHTML = periodInfo.bp_control_start_date;
+      periodEndNode.innerHTML = periodInfo.bp_control_end_date;
+      registrationsNode.innerHTML = this.formatNumberWithCommas(
+          adjustedPatientCounts
+      );
+      registrationsPeriodEndNode.innerHTML =
+          periodInfo.bp_control_registration_date;
+      const breakdown = data.bsBelow200Breakdown[period]
+      rbsPPBSPercentNode.innerHTML = this.formatPercentage(breakdown["random"] + breakdown["post_prandial"]);
+      fastingPercentNode.innerHTML = this.formatPercentage(breakdown["fasting"]);
+      hba1cPercentNode.innerHTML = this.formatPercentage(breakdown["hba1c"]);
+    };
+
+    const populateBSBelow200GraphDefault = () => {
+      const cardNode = document.getElementById("bs-below-200");
+      const mostRecentPeriod = cardNode.getAttribute("data-period");
+
+      populateBSBelow200Graph(mostRecentPeriod);
+    };
+
+    const bsBelow200GraphCanvas = document.getElementById(
+        "bsBelow200PatientsTrend"
+    );
+    if (bsBelow200GraphCanvas) {
+      new Chart(bsBelow200GraphCanvas.getContext("2d"), bsBelow200GraphConfig);
+      populateBSBelow200GraphDefault();
+    }
+  };
+
   this.initializeTables = () => {
     const tableSortAscending = { descending: false };
     const regionComparisonTable = document.getElementById(
@@ -793,6 +922,12 @@ Reports = function (withLtfu) {
       visitButNoBPMeasure: jsonData.visited_without_bp_taken,
       visitButNoBPMeasureRate: jsonData.visited_without_bp_taken_rates,
       periodInfo: jsonData.period_info,
+      adjustedDiabetesPatientCounts: jsonData.adjusted_diabetes_patient_counts,
+      adjustedDiabetesPatientCountsWithLtfu: jsonData.adjusted_diabetes_patient_counts_with_ltfu,
+      bsBelow200Patients: jsonData.bs_below_200_patients,
+      bsBelow200Rate: jsonData.bs_below_200_rates,
+      bsBelow200WithLtfuRate: jsonData.bs_below_200_with_ltfu_rates,
+      bsBelow200Breakdown: jsonData.bs_below_200_breakdown
     };
   };
 
