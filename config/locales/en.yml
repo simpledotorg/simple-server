@@ -64,6 +64,10 @@ en:
   missed_visits_copy:
     reports_card_subtitle: "Hypertension patients with no visit in the last 3 months"
     numerator: "Patients with no visit in the last 3 months."
+  diabetes_missed_visits_copy:
+    reports_card_subtitle: "Diabetic patients in %{region_name} with no visit in the last 3 months"
+    numerator: "Diabetic patients with no visit in the last 3 months."
+    denominator: "Diabetes patients assigned to %{region_name}, registered before the last 3 months. Dead and lost to follow-up patients are excluded."
   visit_but_no_bp_taken_copy:
     numerator: "Patients with no BP taken at their last visit in the last 3 months."
   lost_to_follow_up_copy:
