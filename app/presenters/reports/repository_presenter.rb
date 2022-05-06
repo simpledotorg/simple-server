@@ -35,7 +35,13 @@ module Reports
         uncontrolled_patients: uncontrolled[slug],
         visited_without_bp_taken_rates: visited_without_bp_taken_rates[slug],
         visited_without_bp_taken_with_ltfu_rates: visited_without_bp_taken_rates(with_ltfu: true)[slug],
-        visited_without_bp_taken: visited_without_bp_taken[slug]
+        visited_without_bp_taken: visited_without_bp_taken[slug],
+        adjusted_diabetes_patient_counts_with_ltfu: adjusted_diabetes_patients_with_ltfu[slug],
+        adjusted_diabetes_patient_counts: adjusted_diabetes_patients_without_ltfu[slug],
+        bs_below_200_patients: bs_below_200_patients[slug],
+        bs_below_200_rates: bs_below_200_rates[slug],
+        bs_below_200_with_ltfu_rates: bs_below_200_rates(with_ltfu: true)[slug],
+        bs_below_200_breakdown: diabetes_treatment_outcome_breakdown(:bs_below_200)[slug]
       }
     end
 
