@@ -72,7 +72,7 @@ Haryana:
       '979467': 1
     hypertension_diuretic:
       new_patient_coefficient: 0.05
-      '429503': 0.5
+      '429503': 1
       '316049': 1
       '331132': 1
       'Chlor6.25': 1
