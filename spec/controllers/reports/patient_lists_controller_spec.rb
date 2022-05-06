@@ -21,7 +21,7 @@ RSpec.describe Reports::PatientListsController, type: :controller do
 
   context "show" do
     it "works for facility groups the admin has access to" do
-      expect(PatientListDownloadJob).to receive(:perform_later).with(
+      expect(PatientListDownloadJob).to receive(:perform_async).with(
         admin_with_pii.email,
         "facility_group",
         {id: facility_group.id}
@@ -33,7 +33,7 @@ RSpec.describe Reports::PatientListsController, type: :controller do
     end
 
     it "rejects attempts for facility groups admin does not have access to" do
-      expect(PatientListDownloadJob).to_not receive(:perform_later)
+      expect(PatientListDownloadJob).to_not receive(:perform_async)
       admin_with_pii.accesses.create!(resource: facility_group)
       sign_in(admin_with_pii.email_authentication)
       expect {
@@ -42,7 +42,7 @@ RSpec.describe Reports::PatientListsController, type: :controller do
     end
 
     it "rejects attempts for users w/o proper access" do
-      expect(PatientListDownloadJob).to_not receive(:perform_later)
+      expect(PatientListDownloadJob).to_not receive(:perform_async)
       admin_without_pii.accesses.create!(resource: facility_group)
       sign_in(admin_without_pii.email_authentication)
       expect {
@@ -51,7 +51,7 @@ RSpec.describe Reports::PatientListsController, type: :controller do
     end
 
     it "should queue line list with medication history" do
-      expect(PatientListDownloadJob).to receive(:perform_later).with(
+      expect(PatientListDownloadJob).to receive(:perform_async).with(
         admin_with_pii.email,
         "facility_group",
         {id: facility_group.id}
@@ -65,7 +65,7 @@ RSpec.describe Reports::PatientListsController, type: :controller do
       facility = create(:facility)
       facility.update(slug: "a-facility-slug")
       facility.region.update(slug: "a-facility-region-slug")
-      expect(PatientListDownloadJob).to receive(:perform_later)
+      expect(PatientListDownloadJob).to receive(:perform_async)
       admin_with_pii.accesses.create!(resource: facility)
       sign_in(admin_with_pii.email_authentication)
       get :show, params: {id: facility.region.slug, report_scope: "facility"}
