@@ -214,7 +214,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
 
     context "when region has diabetes management enabled" do
-      before :each do
+      before do
         Flipper.disable(:diabetes_management_reports)
       end
 
@@ -227,7 +227,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
 
       it "contains a link to the diabetes management reports if the feature flag is enabled for an individual user" do
-        enabled_user = create(:admin, full_name: "FOO")
+        enabled_user = create(:admin)
         @facility.update(enable_diabetes_management: true)
         Flipper.enable_actor(:diabetes_management_reports, enabled_user)
 
@@ -245,7 +245,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
 
       it "does not contain a link to the diabetes management reports if the feature flag is disabled for an other individual user" do
-        enabled_user = create(:admin, full_name: "FOO")
+        enabled_user = create(:admin)
         @facility.update(enable_diabetes_management: true)
         Flipper.enable_actor(:diabetes_management_reports, enabled_user)
 
