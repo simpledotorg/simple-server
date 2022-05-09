@@ -125,7 +125,7 @@ class Reports::RegionsController < AdminController
   end
 
   def diabetes
-    unless @region.diabetes_management_enabled?
+    unless current_admin.feature_enabled?(:diabetes_management_reports) && @region.diabetes_management_enabled?
       raise ActionController::RoutingError.new("Not Found")
     end
 
