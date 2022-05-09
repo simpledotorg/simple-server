@@ -54,6 +54,10 @@ every :day, at: local("11:00 pm"), roles: [:cron] do
   runner "Messaging::Bsnl::Sms.get_message_statuses"
 end
 
+every :day, at: local("11:45 pm"), roles: [:sidekiq] do
+  command "systemctl restart sidekiq --user"
+end
+
 every :day, at: local("12:00 am"), roles: [:whitelist_phone_numbers] do
   rake "exotel_tasks:whitelist_patient_phone_numbers"
 end
