@@ -159,7 +159,7 @@ describe Reports::RegionSummarySchema, type: :model do
     end
 
     describe "#bs_below_200_rates" do
-      it "retuns the bs_below_200 rates over time for a region" do
+      it "returns the bs_below_200 rates over time for a region" do
         facility_1_patients = create_list(:patient, 4, :diabetes, assigned_facility: facility_1, recorded_at: jan_2019)
         create(:blood_sugar, :with_encounter, :random, :bs_below_200, patient: facility_1_patients.first, facility: facility_1, recorded_at: jan_2020 + 3.months)
         create(:blood_sugar, :with_encounter, :post_prandial, :bs_below_200, patient: facility_1_patients.second, facility: facility_1, recorded_at: jan_2020 + 2.months)
@@ -189,6 +189,74 @@ describe Reports::RegionSummarySchema, type: :model do
 
         expect(schema.bs_below_200_rates[region.slug]["Mar 2020".to_period]).to eq(100)
         expect(schema.bs_below_200_rates(with_ltfu: true)[region.slug]["Mar 2020".to_period]).to eq(57)
+      end
+    end
+
+    describe "#bs_200_to_300_rates" do
+      it "returns the bs_200_to_300 rates over time for a region" do
+        facility_1_patients = create_list(:patient, 4, :diabetes, assigned_facility: facility_1, recorded_at: jan_2019)
+        create(:blood_sugar, :with_encounter, :random, :bs_200_to_300, patient: facility_1_patients.first, facility: facility_1, recorded_at: jan_2020 + 3.months)
+        create(:blood_sugar, :with_encounter, :post_prandial, :bs_200_to_300, patient: facility_1_patients.second, facility: facility_1, recorded_at: jan_2020 + 2.months)
+        create(:blood_sugar, :with_encounter, :fasting, :bs_200_to_300, patient: facility_1_patients.third, facility: facility_1, recorded_at: jan_2020 + 2.months)
+        create(:blood_pressure, :with_encounter, patient: facility_1_patients.fourth, facility: facility_1, recorded_at: jan_2020 + 3.months)
+
+        facility_2_patients = create_list(:patient, 3, :diabetes, assigned_facility: facility_2, recorded_at: jan_2019)
+        create(:blood_sugar, :with_encounter, :hba1c, :bs_200_to_300, patient: facility_2_patients.first, facility: facility_2, recorded_at: jan_2020 + 3.months)
+        create(:blood_sugar, :with_encounter, :post_prandial, :bs_200_to_300, patient: facility_2_patients.second, facility: facility_2, recorded_at: jan_2020 + 2.months)
+        create(:blood_sugar, :with_encounter, :fasting, :bs_200_to_300, patient: facility_2_patients.third, facility: facility_2, recorded_at: jan_2020 + 2.months)
+
+        refresh_views
+
+        schema = described_class.new([facility_1.region, facility_2.region, region], periods: range)
+        (("Jan 2019".to_period)..("Feb 2020".to_period)).each do |period|
+          [facility_1.region, facility_2.region, region].each do |r|
+            expect(schema.bs_200_to_300_rates[r.slug][period]).to eq(0)
+            expect(schema.bs_200_to_300_rates(with_ltfu: true)[r.slug][period]).to eq(0)
+          end
+        end
+
+        expect(schema.bs_200_to_300_rates[facility_1.region.slug]["Mar 2020".to_period]).to eq(100)
+        expect(schema.bs_200_to_300_rates(with_ltfu: true)[facility_1.region.slug]["Mar 2020".to_period]).to eq(50)
+
+        expect(schema.bs_200_to_300_rates[facility_2.region.slug]["Mar 2020".to_period]).to eq(100)
+        expect(schema.bs_200_to_300_rates(with_ltfu: true)[facility_2.region.slug]["Mar 2020".to_period]).to eq(67)
+
+        expect(schema.bs_200_to_300_rates[region.slug]["Mar 2020".to_period]).to eq(100)
+        expect(schema.bs_200_to_300_rates(with_ltfu: true)[region.slug]["Mar 2020".to_period]).to eq(57)
+      end
+    end
+
+    describe "#bs_over_300_rates" do
+      it "returns the bs_over_300 rates over time for a region" do
+        facility_1_patients = create_list(:patient, 4, :diabetes, assigned_facility: facility_1, recorded_at: jan_2019)
+        create(:blood_sugar, :with_encounter, :random, :bs_over_300, patient: facility_1_patients.first, facility: facility_1, recorded_at: jan_2020 + 3.months)
+        create(:blood_sugar, :with_encounter, :post_prandial, :bs_over_300, patient: facility_1_patients.second, facility: facility_1, recorded_at: jan_2020 + 2.months)
+        create(:blood_sugar, :with_encounter, :fasting, :bs_over_300, patient: facility_1_patients.third, facility: facility_1, recorded_at: jan_2020 + 2.months)
+        create(:blood_pressure, :with_encounter, patient: facility_1_patients.fourth, facility: facility_1, recorded_at: jan_2020 + 3.months)
+
+        facility_2_patients = create_list(:patient, 3, :diabetes, assigned_facility: facility_2, recorded_at: jan_2019)
+        create(:blood_sugar, :with_encounter, :hba1c, :bs_over_300, patient: facility_2_patients.first, facility: facility_2, recorded_at: jan_2020 + 3.months)
+        create(:blood_sugar, :with_encounter, :post_prandial, :bs_over_300, patient: facility_2_patients.second, facility: facility_2, recorded_at: jan_2020 + 2.months)
+        create(:blood_sugar, :with_encounter, :fasting, :bs_over_300, patient: facility_2_patients.third, facility: facility_2, recorded_at: jan_2020 + 2.months)
+
+        refresh_views
+
+        schema = described_class.new([facility_1.region, facility_2.region, region], periods: range)
+        (("Jan 2019".to_period)..("Feb 2020".to_period)).each do |period|
+          [facility_1.region, facility_2.region, region].each do |r|
+            expect(schema.bs_over_300_rates[r.slug][period]).to eq(0)
+            expect(schema.bs_over_300_rates(with_ltfu: true)[r.slug][period]).to eq(0)
+          end
+        end
+
+        expect(schema.bs_over_300_rates[facility_1.region.slug]["Mar 2020".to_period]).to eq(100)
+        expect(schema.bs_over_300_rates(with_ltfu: true)[facility_1.region.slug]["Mar 2020".to_period]).to eq(50)
+
+        expect(schema.bs_over_300_rates[facility_2.region.slug]["Mar 2020".to_period]).to eq(100)
+        expect(schema.bs_over_300_rates(with_ltfu: true)[facility_2.region.slug]["Mar 2020".to_period]).to eq(67)
+
+        expect(schema.bs_over_300_rates[region.slug]["Mar 2020".to_period]).to eq(100)
+        expect(schema.bs_over_300_rates(with_ltfu: true)[region.slug]["Mar 2020".to_period]).to eq(57)
       end
     end
 

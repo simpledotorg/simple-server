@@ -45,6 +45,8 @@ module Reports
       appts_scheduled_32_to_62_days_rates
       appts_scheduled_more_than_62_days_rates
       bs_below_200_rates
+      bs_200_to_300_rates
+      bs_over_300_rates
     ]
 
     DELEGATED_COUNTS = %i[
@@ -78,6 +80,8 @@ module Reports
       adjusted_diabetes_patients_with_ltfu
       adjusted_diabetes_patients
       bs_below_200_patients
+      bs_200_to_300_patients
+      bs_over_300_patients
     ]
 
     DELEGATED_BREAKDOWNS = %i[
@@ -87,7 +91,7 @@ module Reports
     def warm_cache
       DELEGATED_RATES.each do |method|
         public_send(method)
-        public_send(method, with_ltfu: true) unless method.in?([:ltfu_rates, :missed_visits_with_ltfu_rates, :bs_below_200_rates])
+        public_send(method, with_ltfu: true) unless method.in?([:ltfu_rates, :missed_visits_with_ltfu_rates])
       end
       hypertension_follow_ups
       if regions.all? { |region| region.facility_region? }
