@@ -1,22 +1,25 @@
 require "rails_helper"
+require "sidekiq_unique_jobs/testing"
 
 RSpec.describe PatientListDownloadJob, type: :job do
-  include ActiveJob::TestHelper
-
   let!(:admin) { create(:admin) }
   let!(:facility) { create(:facility) }
+
+  specify { expect(described_class).to have_valid_sidekiq_options }
 
   it "should work for FacilityGroup" do
     facility_group = create(:facility_group)
     facility = create(:facility, facility_group: facility_group)
     patients = create_list(:patient, 2, assigned_facility: facility)
     expect(PatientsWithHistoryExporter).to receive(:csv).with(a_collection_containing_exactly(*patients))
-    PatientListDownloadJob.perform_now(admin.email, "facility_group", {id: facility_group.id})
+    described_class.perform_async(admin.email, "facility_group", {id: facility_group.id})
+    described_class.drain
   end
 
   it "should queue a PatientsWithHistoryExporter export" do
     expect(PatientsWithHistoryExporter).to receive(:csv)
-    PatientListDownloadJob.perform_now(admin.email, "facility", {facility_id: facility.id})
+    described_class.perform_async(admin.email, "facility", {facility_id: facility.id})
+    described_class.drain
   end
 
   context "facilities" do
@@ -26,7 +29,8 @@ RSpec.describe PatientListDownloadJob, type: :job do
 
     it "should export only assigned patients" do
       expect(PatientsWithHistoryExporter).to receive(:csv).with(Patient.where(id: assigned_patients))
-      PatientListDownloadJob.perform_now(admin.email, "facility", {facility_id: facility.id})
+      described_class.perform_async(admin.email, "facility", {facility_id: facility.id})
+      described_class.drain
     end
   end
 end
