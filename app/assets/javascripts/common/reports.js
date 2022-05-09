@@ -1208,6 +1208,9 @@ Reports = function (withLtfu) {
       const monthlyFollowUpsNode = cardNode.querySelector(
           "[data-monthly-follow-ups]"
       );
+      const followupsMonthEndNode = cardNode.querySelector(
+          "[data-follow-ups-month-end]"
+      );
 
       const periodInfo = data.periodInfo[period];
       const cumulativeDiabetesRegistrations = data.cumulativeDiabetesRegistrations[period];
@@ -1222,6 +1225,7 @@ Reports = function (withLtfu) {
       monthlyFollowUpsNode.innerHTML=this.formatNumberWithCommas(monthlyDiabetesFollowups);
       registrationsPeriodEndNode.innerHTML = periodInfo.bp_control_end_date;
       registrationsMonthEndNode.innerHTML = period;
+      followupsMonthEndNode.innerHTML = period;
     };
 
     const populateCumulativeDiabetesRegistrationsGraphDefault = () => {

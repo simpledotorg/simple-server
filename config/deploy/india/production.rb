@@ -3,4 +3,4 @@ server "ec2-65-1-110-218.ap-south-1.compute.amazonaws.com", user: "deploy", role
 server "ec2-13-232-212-55.ap-south-1.compute.amazonaws.com", user: "deploy", roles: %w[web app db]
 server "ec2-3-110-217-131.ap-south-1.compute.amazonaws.com", user: "deploy", roles: %w[web app db]
 server "ec2-3-111-31-189.ap-south-1.compute.amazonaws.com", user: "deploy", roles: %w[web app db]
-server "ec2-13-235-67-15.ap-south-1.compute.amazonaws.com", user: "deploy", roles: %w[web sidekiq]
+server "ec2-3-109-203-111.ap-south-1.compute.amazonaws.com", user: "deploy", roles: %w[web sidekiq]
