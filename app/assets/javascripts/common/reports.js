@@ -39,7 +39,7 @@ Reports = function (withLtfu) {
     this.setupBSBelow200Graph(data);
     this.setupCumulativeDiabetesRegistrationsGraph(data);
     this.setupBSOver200Graph(data);
-      this.setupDiabetesMissedVisitsGraph(data);
+    this.setupDiabetesMissedVisitsGraph(data);
   };
 
   this.setupControlledGraph = (data) => {
@@ -1248,9 +1248,9 @@ Reports = function (withLtfu) {
   };
 
   this.setupDiabetesMissedVisitsGraph = (data) => {
-        const adjustedPatients = withLtfu
-            ? data.adjustedPatientCountsWithLtfu
-            : data.adjustedPatientCounts;
+        const adjustedDiabetesPatients = withLtfu
+            ? data.adjustedDiabetesPatientCountsWithLtfu
+            : data.adjustedDiabetesPatientCounts;
         const diabetesMissedVisitsGraphNumerator = withLtfu
             ? data.diabetesMissedVisitsWithLtfu
             : data.diabetesMissedVisits;
@@ -1339,7 +1339,7 @@ Reports = function (withLtfu) {
             );
 
             const periodInfo = data.periodInfo[period];
-            const adjustedPatientCounts = adjustedPatients[period];
+            const adjustedPatientCounts = adjustedDiabetesPatients[period];
             const totalPatients = diabetesMissedVisitsGraphNumerator[period];
 
             rateNode.innerHTML = this.formatPercentage(diabetesMissedVisitsGraphRate[period]);
