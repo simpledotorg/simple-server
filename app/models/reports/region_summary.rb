@@ -16,11 +16,14 @@ module Reports
       adjusted_visited_no_bp_under_care
       cumulative_assigned_patients
       cumulative_registrations
+      cumulative_diabetes_registrations
       lost_to_follow_up
       under_care
       monthly_registrations
+      monthly_diabetes_registrations
       monthly_overdue_calls
       monthly_follow_ups
+      monthly_diabetes_follow_ups
       total_appts_scheduled
       appts_scheduled_0_to_14_days
       appts_scheduled_15_to_31_days
