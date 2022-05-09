@@ -260,6 +260,68 @@ describe Reports::RegionSummarySchema, type: :model do
       end
     end
 
+    describe "#diabetes_missed_visits_rates" do
+      it "returns the adjusted count of patients with missed visits in a region" do
+        facility_1_patients = create_list(:patient, 4, :diabetes, assigned_facility: facility_1, recorded_at: jan_2019)
+        create(:blood_sugar, :with_encounter, :random, :bs_below_200, patient: facility_1_patients.first, facility: facility_1, recorded_at: jan_2020 + 3.months)
+        create(:blood_sugar, :with_encounter, :post_prandial, :bs_below_200, patient: facility_1_patients.second, facility: facility_1, recorded_at: jan_2020 + 2.months)
+        create(:blood_sugar, :with_encounter, :fasting, :bs_below_200, patient: facility_1_patients.third, facility: facility_1, recorded_at: jan_2020 + 2.months)
+        create(:blood_sugar, :with_encounter, :hba1c, :bs_below_200, patient: facility_1_patients.fourth, facility: facility_1, recorded_at: jan_2020 + 3.months)
+
+        facility_2_patients = create_list(:patient, 3, :diabetes, assigned_facility: facility_2, recorded_at: jan_2019)
+        create(:blood_sugar, :with_encounter, :random, :bs_below_200, patient: facility_2_patients.first, facility: facility_2, recorded_at: jan_2020 + 3.months)
+        create(:blood_sugar, :with_encounter, :post_prandial, :bs_below_200, patient: facility_2_patients.second, facility: facility_2, recorded_at: jan_2020 + 2.months)
+        create(:blood_sugar, :with_encounter, :fasting, :bs_below_200, patient: facility_2_patients.third, facility: facility_2, recorded_at: jan_2020 + 2.months)
+
+        refresh_views
+        schema = described_class.new([facility_1.region, facility_2.region, region], periods: range)
+        (("Jan 2019".to_period)..("Mar 2019".to_period)).each do |period|
+          [facility_1.region, facility_2.region, region].each do |r|
+            expect(schema.diabetes_missed_visits_rates[r.slug][period]).to eq 0
+            expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[r.slug][period]).to eq(0)
+          end
+        end
+
+        (("Apr 2019".to_period)..("Dec 2019".to_period)).each do |period|
+          expect(schema.diabetes_missed_visits_rates[facility_1.region.slug][period]).to eq(100)
+          expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_1.region.slug][period]).to eq(0)
+
+          expect(schema.diabetes_missed_visits_rates[facility_2.region.slug][period]).to eq(100)
+          expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_2.region.slug][period]).to eq(0)
+        end
+
+        (("Jan 2020".to_period)..("Feb 2020".to_period)).each do |period|
+          expect(schema.diabetes_missed_visits_rates[facility_1.region.slug][period]).to eq 0
+          expect(schema.diabetes_missed_visits_rates[facility_2.region.slug][period]).to eq 0
+        end
+
+        (("Jan 2020".to_period)..("Feb 2020".to_period)).each do |period|
+          expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_1.region.slug][period]).to eq 100
+          expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_2.region.slug][period]).to eq 100
+        end
+
+        expect(schema.diabetes_missed_visits_rates[facility_1.region.slug]["Apr 2020".to_period]).to eq(0)
+        expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_1.region.slug]["Apr 2020".to_period]).to eq(0)
+        expect(schema.diabetes_missed_visits_rates[facility_2.region.slug]["Apr 2020".to_period]).to eq(0)
+        expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_2.region.slug]["Apr 2020".to_period]).to eq(0)
+
+        expect(schema.diabetes_missed_visits_rates[facility_1.region.slug]["Mar 2020".to_period]).to eq(0)
+        expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_1.region.slug]["Mar 2020".to_period]).to eq(50)
+        expect(schema.diabetes_missed_visits_rates[facility_2.region.slug]["Mar 2020".to_period]).to eq(0)
+        expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_2.region.slug]["Mar 2020".to_period]).to eq(33)
+
+        expect(schema.diabetes_missed_visits_rates[facility_1.region.slug]["May 2020".to_period]).to eq(0)
+        expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_1.region.slug]["May 2020".to_period]).to eq(0)
+        expect(schema.diabetes_missed_visits_rates[facility_2.region.slug]["May 2020".to_period]).to eq(0)
+        expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_2.region.slug]["May 2020".to_period]).to eq(0)
+
+        expect(schema.diabetes_missed_visits_rates[facility_1.region.slug]["Jun 2020".to_period]).to eq 50
+        expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_1.region.slug]["Jun 2020".to_period]).to eq 0
+        expect(schema.diabetes_missed_visits_rates[facility_2.region.slug]["Jun 2020".to_period]).to eq 67
+        expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_2.region.slug]["Jun 2020".to_period]).to eq 0
+      end
+    end
+
     describe "diabetes_treatment_outcome_breakdown" do
       it "retuns the breakdown of differest blood sugar types for a diabetes outcome" do
         facility_1_patients = create_list(:patient, 4, :diabetes, assigned_facility: facility_1, recorded_at: jan_2019)
