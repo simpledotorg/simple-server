@@ -11,26 +11,6 @@ def local(time)
     .local_to_utc(Time.parse(time))
 end
 
-every :day, at: local("11:00 pm").utc, roles: [:cron] do
-  rake "appointment_notification:three_days_after_missed_visit"
-end
-
-every :day, at: local("11:45 pm"), roles: [:sidekiq] do
-  command "systemctl restart sidekiq --user"
-end
-
-every :day, at: local("12:00 am"), roles: [:whitelist_phone_numbers] do
-  rake "exotel_tasks:whitelist_patient_phone_numbers"
-end
-
-every :week, at: local("01:00 am"), roles: [:whitelist_phone_numbers] do
-  rake "exotel_tasks:update_all_patients_phone_number_details"
-end
-
-every :day, at: local("12:30am"), roles: [:cron] do
-  rake "db:refresh_reporting_views"
-end
-
 FOLLOW_UP_TIMES = [
   "08:00 am",
   "08:30 am",
@@ -60,8 +40,40 @@ every :day, at: FOLLOW_UP_TIMES, roles: [:cron] do
   rake "db:refresh_daily_follow_ups"
 end
 
+every :day, at: local("2:00 pm"), roles: [:cron] do
+  if CountryConfig.current_country?("India") && SimpleServer.env.production?
+    rake "bsnl:check_account_balance"
+  end
+end
+
+every :day, at: local("11:00 pm").utc, roles: [:cron] do
+  rake "appointment_notification:three_days_after_missed_visit"
+end
+
+every :day, at: local("11:00 pm"), roles: [:cron] do
+  runner "Messaging::Bsnl::Sms.get_message_statuses"
+end
+
+every :day, at: local("12:00 am"), roles: [:whitelist_phone_numbers] do
+  rake "exotel_tasks:whitelist_patient_phone_numbers"
+end
+
+every :day, at: local("12:30 am"), roles: [:cron] do
+  rake "db:refresh_reporting_views"
+end
+
+every :week, at: local("01:00 am"), roles: [:whitelist_phone_numbers] do
+  rake "exotel_tasks:update_all_patients_phone_number_details"
+end
+
 every :day, at: local("01:00 am"), roles: [:cron] do
   runner "MarkPatientMobileNumbers.call"
+end
+
+every :week, at: local("01:00 am"), roles: [:cron] do
+  if CountryConfig.current_country?("India") && SimpleServer.env.production?
+    rake "bsnl:refresh_sms_jwt"
+  end
 end
 
 every :day, at: local("02:00 am"), roles: [:cron] do
@@ -76,26 +88,34 @@ every :day, at: local("04:00 am"), roles: [:cron] do
   runner "Reports::RegionCacheWarmer.call"
 end
 
-every :day, at: local("05:00 am"), roles: [:cron] do
-  runner "DuplicatePassportAnalytics.call"
-end
-
-every :monday, at: local("6:00 am"), roles: [:cron] do
-  if Flipper.enabled?(:weekly_telemed_report)
-    rake "reports:telemedicine"
+every 1.month, at: local("04:00 am"), roles: [:cron] do
+  if Flipper.enabled?(:dhis2_export)
+    rake "dhis2:export"
   end
 end
 
-every :day, at: local("05:45 am"), roles: [:cron] do
-  runner "Experimentation::Runner.call;AppointmentNotification::ScheduleExperimentReminders.call"
+every :day, at: local("04:00 am"), roles: [:cron] do
+  if Flipper.enabled?(:maharashtra_dhis2_export)
+    rake "dhis2:maharashtra_export"
+  end
+end
+
+every :day, at: local("05:00 am"), roles: [:cron] do
+  runner "DuplicatePassportAnalytics.call"
 end
 
 every :day, at: local("05:30 pm"), roles: [:cron] do
   runner "Messaging::Bsnl::Sms.get_message_statuses"
 end
 
-every :day, at: local("11:00 pm"), roles: [:cron] do
-  runner "Messaging::Bsnl::Sms.get_message_statuses"
+every :day, at: local("05:45 am"), roles: [:cron] do
+  runner "Experimentation::Runner.call;AppointmentNotification::ScheduleExperimentReminders.call"
+end
+
+every :monday, at: local("06:00 am"), roles: [:cron] do
+  if Flipper.enabled?(:weekly_telemed_report)
+    rake "reports:telemedicine"
+  end
 end
 
 every 2.minutes, roles: [:cron] do
@@ -104,28 +124,4 @@ end
 
 every 30.minutes, roles: [:cron] do
   runner "RegionsIntegrityCheck.call"
-end
-
-every 1.month, at: local("4:00 am"), roles: [:cron] do
-  if Flipper.enabled?(:dhis2_export)
-    rake "dhis2:export"
-  end
-end
-
-every :day, at: local("4:00 am"), roles: [:cron] do
-  if Flipper.enabled?(:maharashtra_dhis2_export)
-    rake "dhis2:maharashtra_export"
-  end
-end
-
-every :week, at: local("01:00 am"), roles: [:cron] do
-  if CountryConfig.current_country?("India") && SimpleServer.env.production?
-    rake "bsnl:refresh_sms_jwt"
-  end
-end
-
-every :day, at: local("2:00 pm"), roles: [:cron] do
-  if CountryConfig.current_country?("India") && SimpleServer.env.production?
-    rake "bsnl:check_account_balance"
-  end
 end
