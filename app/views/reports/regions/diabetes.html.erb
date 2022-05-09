@@ -4,9 +4,10 @@
 
 <%= render "header" %>
 
-<% control_graph_denominator_copy = @with_ltfu ? "diabetes_denominator_with_ltfu_copy" : "diabetes_denominator_copy" %>
+<% denominator_copy = @with_ltfu ? "diabetes_denominator_with_ltfu_copy" : "diabetes_denominator_copy" %>
 
 <div class="d-lg-flex flex-lg-wrap">
+  <!-- BS <200 Graph -->
   <div class="d-lg-flex w-lg-50 pr-lg-2">
     <div id="bs-below-200"
          data-period="<%= @period.to_s %>"
@@ -21,12 +22,12 @@
             </h3>
             <%= render "definition_tooltip",
                        definitions: { "Numerator" => t("bs_below_200_copy.numerator"),
-                                      "Denominator" => t(control_graph_denominator_copy, region_name: @region.name) } %>
+                                      "Denominator" => t(denominator_copy, region_name: @region.name) } %>
           </div>
           <%= render "reports/regions/ltfu_toggle", id: "controlledGraphLtfuToggle", enabled: @with_ltfu %>
         </div>
         <p class="c-grey-dark">
-          <%= t("bs_below_200_copy.reports_card_subtitle") %>
+          <%= t("bs_below_200_copy.reports_card_subtitle", region_name: @region.name) %>
         </p>
         <div class="mb-12px d-lg-flex align-lg-center">
           <p class="mb-0px fs-32px fw-bold mr-lg-12px c-green-dark minw-32px"
@@ -64,6 +65,143 @@
             <span data-hba1c=""></span> HbA1c
           </p>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Registrations Graph -->
+  <div class="d-lg-flex w-lg-50 pl-lg-2">
+    <div id="cumulative-diabetes-registrations"
+         data-period="<%= @period.to_s %>"
+         class="mt-8px mx-0px mb-16px pb-4px bg-white br-4px bs-small d-lg-flex fd-lg-column
+                justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black">
+      <div class="pt-20px px-20px">
+        <div class="d-flex mb-8px">
+          <div class="d-flex flex-1">
+            <h3 class="mb-0px mr-8px">
+              Registrations and follow-ups
+            </h3>
+            <%= render "definition_tooltip",
+                       definitions: { "Total registered patients" => t("registered_diabetes_patients_copy.total_registered_patients", region_name: @region.name),
+                                      "Monthly registered patients" => t("registered_diabetes_patients_copy.monthly_registered_patients", region_name: @region.name),
+                                      "Monthly follow-up patients" => t("registered_diabetes_patients_copy.monthly_followup_patients", region_name: @region.name)} %>
+          </div>
+        </div>
+        <p class="c-grey-dark">
+          <%= t("registered_diabetes_patients_copy.reports_card_subtitle", region_name: @region.name) %>
+        </p>
+        <div class="d-flex align-center mb-24px">
+          <div class="flex-1 d-lg-flex align-lg-center">
+            <p class="mb-0px fs-32px fw-bold mr-lg-12px c-purple"
+               data-total-patients="">
+            </p>
+            <div>
+              <p class="m-0px c-black c-print-black">
+                total <%= "registration".pluralize(@data.dig(:cumulative_diabetes_registrations, @period)) %><br>till
+                <span data-registrations-period-end=""></span>
+              </p>
+            </div>
+          </div>
+          <div class="flex-1 d-lg-flex align-lg-center flex-lg-1">
+            <p class="mb-0px fs-32px fw-bold mr-lg-12px c-purple-medium"
+               data-monthly-registrations="">
+            </p>
+            <div>
+              <p class="m-0px c-black c-print-black">
+                new <%= "registration".pluralize(@data.dig(:diabetes_registrations, @period)) %><br>in
+                <span data-registrations-month-end=""></span>
+              </p>
+            </div>
+          </div>
+          <div class="flex-1 d-lg-flex align-lg-center flex-lg-1">
+            <p class="mb-0px fs-32px fw-bold mr-lg-12px c-orange"
+               data-monthly-follow-ups="">
+            </p>
+            <div>
+              <p class="m-0px c-black c-print-black">
+                follow-up <%= "patient".pluralize(@data.dig(:monthly_diabetes_followups, @period)) %><br>in
+                <span data-follow-ups-month-end=""></span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="h-320px mr-13px ml-13px pb-4px">
+        <canvas id="cumulativeDiabetesRegistrationsTrend"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- BS 200-299 or BS >= 300 Graph -->
+  <div class="d-lg-flex w-lg-50 pr-lg-2">
+    <div id="bs-over-200"
+         data-period="<%= @period.to_s %>"
+         class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column
+                justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
+
+      <div class="pt-20px px-20px">
+        <div class="d-flex mb-8px">
+          <div class="d-flex flex-1">
+            <h3 class="mb-0px mr-8px">
+              BS 200-299 or BS ≥300
+            </h3>
+            <%= render "definition_tooltip",
+                       definitions: { "BS 200-299 numerator" => t("bs_over_200_copy.bs_200_to_299_numerator"),
+                                     "BS ≥300 numerator" => t("bs_over_200_copy.bs_over_300_numerator"),
+                                      "Denominator" => t(denominator_copy, region_name: @region.name) } %>
+          </div>
+          <%= render "reports/regions/ltfu_toggle", id: "controlledGraphLtfuToggle", enabled: @with_ltfu %>
+        </div>
+        <p class="c-grey-dark">
+          <%= t("bs_over_200_copy.reports_card_subtitle", region_name: @region.name) %>
+        </p>
+        <div class="mb-12px d-lg-flex align-lg-center">
+          <p class="mb-0px fs-32px fw-bold mr-lg-12px c-red minw-32px"
+             data-bs-200-to-300-rate="">
+          </p>
+          <div>
+            <p class="m-0px c-black">
+              <span data-total-bs-200-to-300-patients=""></span>
+              patients with a BS 200-299 from
+              <span data-period-start=""></span>
+              to
+              <span data-period-end=""></span>
+            </p>
+            <p class="m-0px c-grey-dark c-print-black">
+              of <span data-registrations=""></span>
+              patients registered till
+              <span data-registrations-period-end=""></span>
+            </p>
+          </div>
+        </div>
+        <div class="mb-12px d-lg-flex align-lg-center">
+          <p class="mb-0px fs-32px fw-bold mr-lg-12px c-maroon minw-32px"
+             data-bs-over-300-rate="">
+          </p>
+          <div>
+            <p class="m-0px c-black">
+              <span data-total-bs-over-300-patients=""></span>
+              patients with a BS ≥300 from
+              <span data-period-start=""></span>
+              to
+              <span data-period-end=""></span>
+            </p>
+            <p class="m-0px c-grey-dark c-print-black">
+              of <span data-registrations=""></span>
+              patients registered till
+              <span data-registrations-period-end=""></span>
+            </p>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="p-relative mb-12px">
+          <div class="h-320px mr-16px mb-12px ml-13px">
+            <canvas id="bsOver200PatientsTrend"></canvas>
+          </div>
+        </div>
+      </div>
+      <div>
       </div>
     </div>
   </div>

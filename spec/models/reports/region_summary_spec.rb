@@ -17,10 +17,6 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
     with_reporting_time_zone { example.run }
   end
 
-  def refresh_views
-    RefreshReportingViews.refresh_v2
-  end
-
   context "API contract" do
     it "regions with no patient data an empty hash" do
       refresh_views
@@ -78,13 +74,16 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
         adjusted_visited_no_bp_under_care_with_lost_to_follow_up
         cumulative_assigned_patients
         cumulative_registrations
+        cumulative_diabetes_registrations
         facility_region_slug
         lost_to_follow_up
         under_care
         monthly_registrations
+        monthly_diabetes_registrations
         month_date
         monthly_overdue_calls
         monthly_follow_ups
+        monthly_diabetes_follow_ups
         total_appts_scheduled
         appts_scheduled_0_to_14_days
         appts_scheduled_15_to_31_days
@@ -100,6 +99,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
         adjusted_visited_no_bs_under_care
         adjusted_bs_missed_visit_under_care
         adjusted_bs_missed_visit_lost_to_follow_up
+        adjusted_bs_200_to_300_under_care
+        adjusted_bs_over_300_under_care
       ].map(&:to_s)
       (3.months.ago.to_period..now.to_period).each do |period|
         expect(results["facility-1"][period].keys).to match_array(expected_keys)
@@ -369,6 +370,104 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       })
     end
 
+    it "returns the adjusted count of patients with bs between 200 to 300 in a region" do
+      facility_1_patients = create_list(:patient, 4, :diabetes, assigned_facility: facility_1, recorded_at: jan_2019)
+      create(:blood_sugar, :with_encounter, :random, :bs_200_to_300, patient: facility_1_patients.first, facility: facility_1, recorded_at: jan_2020 + 3.months)
+      create(:blood_sugar, :with_encounter, :post_prandial, :bs_200_to_300, patient: facility_1_patients.second, facility: facility_1, recorded_at: jan_2020 + 2.months)
+      create(:blood_sugar, :with_encounter, :fasting, :bs_200_to_300, patient: facility_1_patients.third, facility: facility_1, recorded_at: jan_2020 + 2.months)
+      create(:blood_sugar, :with_encounter, :hba1c, :bs_200_to_300, patient: facility_1_patients.fourth, facility: facility_1, recorded_at: jan_2020 + 3.months)
+
+      facility_2_patients = create_list(:patient, 3, :diabetes, assigned_facility: facility_2, recorded_at: jan_2019)
+      create(:blood_sugar, :with_encounter, :random, :bs_200_to_300, patient: facility_2_patients.first, facility: facility_2, recorded_at: jan_2020 + 3.months)
+      create(:blood_sugar, :with_encounter, :post_prandial, :bs_200_to_300, patient: facility_2_patients.second, facility: facility_2, recorded_at: jan_2020 + 2.months)
+      create(:blood_sugar, :with_encounter, :fasting, :bs_200_to_300, patient: facility_2_patients.third, facility: facility_2, recorded_at: jan_2020 + 2.months)
+
+      refresh_views
+      facility_1_results = described_class.call(facility_1)[facility_1.region.slug]
+      facility_2_results = described_class.call(facility_2)[facility_2.region.slug]
+      region_results = described_class.call(region)[region.slug]
+      (("Jan 2019".to_period)..("Feb 2020".to_period)).each do |period|
+        expect(facility_1_results[period]).to include({
+          "adjusted_bs_200_to_300_under_care" => 0
+        })
+        expect(facility_2_results[period]).to include({
+          "adjusted_bs_200_to_300_under_care" => 0
+        })
+        expect(region_results[period]).to include({
+          "adjusted_bs_200_to_300_under_care" => 0
+        })
+      end
+
+      expect(facility_1_results["Mar 2020".to_period]).to include({
+        "adjusted_bs_200_to_300_under_care" => 2
+      })
+      expect(facility_2_results["Mar 2020".to_period]).to include({
+        "adjusted_bs_200_to_300_under_care" => 2
+      })
+      expect(region_results["Mar 2020".to_period]).to include({
+        "adjusted_bs_200_to_300_under_care" => 4
+      })
+
+      expect(facility_1_results["Apr 2020".to_period]).to include({
+        "adjusted_bs_200_to_300_under_care" => 4
+      })
+      expect(facility_2_results["Apr 2020".to_period]).to include({
+        "adjusted_bs_200_to_300_under_care" => 3
+      })
+      expect(region_results["Apr 2020".to_period]).to include({
+        "adjusted_bs_200_to_300_under_care" => 7
+      })
+    end
+
+    it "returns the adjusted count of patients with bs over 300 in a region" do
+      facility_1_patients = create_list(:patient, 4, :diabetes, assigned_facility: facility_1, recorded_at: jan_2019)
+      create(:blood_sugar, :with_encounter, :random, :bs_over_300, patient: facility_1_patients.first, facility: facility_1, recorded_at: jan_2020 + 3.months)
+      create(:blood_sugar, :with_encounter, :post_prandial, :bs_over_300, patient: facility_1_patients.second, facility: facility_1, recorded_at: jan_2020 + 2.months)
+      create(:blood_sugar, :with_encounter, :fasting, :bs_over_300, patient: facility_1_patients.third, facility: facility_1, recorded_at: jan_2020 + 2.months)
+      create(:blood_sugar, :with_encounter, :hba1c, :bs_over_300, patient: facility_1_patients.fourth, facility: facility_1, recorded_at: jan_2020 + 3.months)
+
+      facility_2_patients = create_list(:patient, 3, :diabetes, assigned_facility: facility_2, recorded_at: jan_2019)
+      create(:blood_sugar, :with_encounter, :random, :bs_over_300, patient: facility_2_patients.first, facility: facility_2, recorded_at: jan_2020 + 3.months)
+      create(:blood_sugar, :with_encounter, :post_prandial, :bs_over_300, patient: facility_2_patients.second, facility: facility_2, recorded_at: jan_2020 + 2.months)
+      create(:blood_sugar, :with_encounter, :fasting, :bs_over_300, patient: facility_2_patients.third, facility: facility_2, recorded_at: jan_2020 + 2.months)
+
+      refresh_views
+      facility_1_results = described_class.call(facility_1)[facility_1.region.slug]
+      facility_2_results = described_class.call(facility_2)[facility_2.region.slug]
+      region_results = described_class.call(region)[region.slug]
+      (("Jan 2019".to_period)..("Feb 2020".to_period)).each do |period|
+        expect(facility_1_results[period]).to include({
+          "adjusted_bs_over_300_under_care" => 0
+        })
+        expect(facility_2_results[period]).to include({
+          "adjusted_bs_over_300_under_care" => 0
+        })
+        expect(region_results[period]).to include({
+          "adjusted_bs_over_300_under_care" => 0
+        })
+      end
+
+      expect(facility_1_results["Mar 2020".to_period]).to include({
+        "adjusted_bs_over_300_under_care" => 2
+      })
+      expect(facility_2_results["Mar 2020".to_period]).to include({
+        "adjusted_bs_over_300_under_care" => 2
+      })
+      expect(region_results["Mar 2020".to_period]).to include({
+        "adjusted_bs_over_300_under_care" => 4
+      })
+
+      expect(facility_1_results["Apr 2020".to_period]).to include({
+        "adjusted_bs_over_300_under_care" => 4
+      })
+      expect(facility_2_results["Apr 2020".to_period]).to include({
+        "adjusted_bs_over_300_under_care" => 3
+      })
+      expect(region_results["Apr 2020".to_period]).to include({
+        "adjusted_bs_over_300_under_care" => 7
+      })
+    end
+
     it "returns the adjusted count of patients with missed visits in a region" do
       facility_1_patients = create_list(:patient, 4, :diabetes, assigned_facility: facility_1, recorded_at: jan_2019)
       create(:blood_sugar, :with_encounter, :random, :bs_below_200, patient: facility_1_patients.first, facility: facility_1, recorded_at: jan_2020 + 3.months)
@@ -495,6 +594,102 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       expect(facility_1_results["Jul 2020".to_period]["adjusted_visited_no_bs_under_care"]).to eq 0
       expect(facility_2_results["Jul 2020".to_period]["adjusted_visited_no_bs_under_care"]).to eq 0
       expect(region_results["Jul 2020".to_period]["adjusted_visited_no_bs_under_care"]).to eq 0
+    end
+
+    it "returns the number of cumulative diabetes registrations" do
+      create_list(:patient, 4, :diabetes, registration_facility: facility_1, recorded_at: jan_2019)
+      create_list(:patient, 3, :diabetes, registration_facility: facility_2, recorded_at: jan_2019)
+
+      create_list(:patient, 4, :diabetes, registration_facility: facility_1, recorded_at: jan_2019 + 3.months)
+      create_list(:patient, 3, :diabetes, registration_facility: facility_2, recorded_at: jan_2019 + 3.months)
+
+      refresh_views
+      facility_1_results = described_class.call(facility_1)[facility_1.region.slug]
+      facility_2_results = described_class.call(facility_2)[facility_2.region.slug]
+      region_results = described_class.call(region)[region.slug]
+
+      (("Jan 2019".to_period)..("Mar 2019".to_period)).each do |period|
+        expect(facility_1_results[period]["cumulative_diabetes_registrations"]).to eq 4
+        expect(facility_2_results[period]["cumulative_diabetes_registrations"]).to eq 3
+        expect(region_results[period]["cumulative_diabetes_registrations"]).to eq 7
+      end
+
+      (("Apr 2019".to_period)..("Mar 2020".to_period)).each do |period|
+        expect(facility_1_results[period]["cumulative_diabetes_registrations"]).to eq 8
+        expect(facility_2_results[period]["cumulative_diabetes_registrations"]).to eq 6
+        expect(region_results[period]["cumulative_diabetes_registrations"]).to eq 14
+      end
+    end
+
+    it "returns the number of monthly diabetes registrations" do
+      create_list(:patient, 4, :diabetes, registration_facility: facility_1, recorded_at: jan_2019)
+      create_list(:patient, 3, :diabetes, registration_facility: facility_2, recorded_at: jan_2019)
+
+      create_list(:patient, 5, :diabetes, registration_facility: facility_1, recorded_at: jan_2019 + 3.months)
+      create_list(:patient, 6, :diabetes, registration_facility: facility_2, recorded_at: jan_2019 + 3.months)
+
+      refresh_views
+      facility_1_results = described_class.call(facility_1)[facility_1.region.slug]
+      facility_2_results = described_class.call(facility_2)[facility_2.region.slug]
+      region_results = described_class.call(region)[region.slug]
+
+      expect(facility_1_results["Jan 2019".to_period]["monthly_diabetes_registrations"]).to eq 4
+      expect(facility_2_results["Jan 2019".to_period]["monthly_diabetes_registrations"]).to eq 3
+      expect(region_results["Jan 2019".to_period]["monthly_diabetes_registrations"]).to eq 7
+
+      (("Feb 2019".to_period)..("Mar 2019".to_period)).each do |period|
+        expect(facility_1_results[period]["monthly_diabetes_registrations"]).to eq 0
+        expect(facility_2_results[period]["monthly_diabetes_registrations"]).to eq 0
+        expect(region_results[period]["monthly_diabetes_registrations"]).to eq 0
+      end
+
+      expect(facility_1_results["Apr 2019".to_period]["monthly_diabetes_registrations"]).to eq 5
+      expect(facility_2_results["Apr 2019".to_period]["monthly_diabetes_registrations"]).to eq 6
+      expect(region_results["Apr 2019".to_period]["monthly_diabetes_registrations"]).to eq 11
+
+      (("May 2019".to_period)..("Mar 2020".to_period)).each do |period|
+        expect(facility_1_results[period]["monthly_diabetes_registrations"]).to eq 0
+        expect(facility_2_results[period]["monthly_diabetes_registrations"]).to eq 0
+        expect(region_results[period]["monthly_diabetes_registrations"]).to eq 0
+      end
+    end
+
+    it "returns the number of monthly diabetes follow ups" do
+      facility_1_patients = create_list(:patient, 4, :diabetes, assigned_facility: facility_1, recorded_at: jan_2019)
+      create(:blood_sugar, :with_encounter, :random, :bs_below_200, patient: facility_1_patients.first, facility: facility_1, recorded_at: jan_2020 + 3.months)
+      create(:blood_pressure, :with_encounter, patient: facility_1_patients.second, facility: facility_1, recorded_at: jan_2020 + 2.months)
+      create(:prescription_drug, patient: facility_1_patients.third, facility: facility_1, recorded_at: jan_2020 + 2.months)
+      create(:appointment, patient: facility_1_patients.fourth, facility: facility_1, recorded_at: jan_2020 + 3.months)
+
+      facility_2_patients = create_list(:patient, 3, :diabetes, assigned_facility: facility_2, recorded_at: jan_2019)
+      create(:blood_sugar, :with_encounter, :random, :bs_below_200, patient: facility_2_patients.first, facility: facility_2, recorded_at: jan_2020 + 3.months)
+      create(:blood_sugar, :with_encounter, :post_prandial, :bs_below_200, patient: facility_2_patients.second, facility: facility_2, recorded_at: jan_2020 + 2.months)
+      create(:blood_sugar, :with_encounter, :fasting, :bs_below_200, patient: facility_2_patients.third, facility: facility_2, recorded_at: jan_2020 + 2.months)
+
+      refresh_views
+      facility_1_results = described_class.call(facility_1)[facility_1.region.slug]
+      facility_2_results = described_class.call(facility_2)[facility_2.region.slug]
+      region_results = described_class.call(region)[region.slug]
+
+      (("Jan 2020".to_period)..("Feb 2020".to_period)).each do |period|
+        expect(facility_1_results[period]["monthly_diabetes_follow_ups"]).to eq 0
+        expect(facility_2_results[period]["monthly_diabetes_follow_ups"]).to eq 0
+        expect(region_results[period]["monthly_diabetes_follow_ups"]).to eq 0
+      end
+
+      expect(facility_1_results["Mar 2020".to_period]["monthly_diabetes_follow_ups"]).to eq 2
+      expect(facility_2_results["Mar 2020".to_period]["monthly_diabetes_follow_ups"]).to eq 2
+      expect(region_results["Mar 2020".to_period]["monthly_diabetes_follow_ups"]).to eq 4
+
+      expect(facility_1_results["Apr 2020".to_period]["monthly_diabetes_follow_ups"]).to eq 2
+      expect(facility_2_results["Apr 2020".to_period]["monthly_diabetes_follow_ups"]).to eq 1
+      expect(region_results["Apr 2020".to_period]["monthly_diabetes_follow_ups"]).to eq 3
+
+      (("May 2020".to_period)..("Mar 2021".to_period)).each do |period|
+        expect(facility_1_results[period]["monthly_diabetes_follow_ups"]).to eq 0
+        expect(facility_2_results[period]["monthly_diabetes_follow_ups"]).to eq 0
+        expect(region_results[period]["monthly_diabetes_follow_ups"]).to eq 0
+      end
     end
   end
 
