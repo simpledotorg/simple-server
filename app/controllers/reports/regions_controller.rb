@@ -54,7 +54,7 @@ class Reports::RegionsController < AdminController
     range = Range.new(start_period, @period)
     @repository = Reports::Repository.new(@region, periods: range)
     @presenter = Reports::RepositoryPresenter.new(@repository)
-    @data = @presenter.call(@region)
+    @overview_data = @presenter.call(@region)
     @with_ltfu = with_ltfu?
 
     @child_regions = @region.reportable_children
@@ -76,20 +76,13 @@ class Reports::RegionsController < AdminController
         cumulative_registrations: repo.cumulative_registrations[slug]
       }
     }
-    respond_to do |format|
-      format.html
-      format.js
-      format.json { render json: @data }
-    end
-  end
 
-  # We display two ranges of data on this page - the chart range is for the LTFU chart,
-  # and the period_range is the data we display in the detail tables.
-  def details
-    @period = Period.month(Time.current)
+    # ======================
+    # DETAILS
+    # ======================
+    @details_period = Period.month(Time.current)
+    @details_period_range = Range.new(@details_period.advance(months: -5), @details_period)
     months = -(Reports::MAX_MONTHS_OF_DATA - 1)
-    chart_range = (@period.advance(months: months)..@period)
-    @period_range = Range.new(@period.advance(months: -5), @period)
 
     regions = if @region.facility_region?
       [@region]
@@ -101,14 +94,63 @@ class Reports::RegionsController < AdminController
       regions.concat(@region.district_regions)
     end
 
-    @repository = Reports::Repository.new(regions, periods: @period_range)
-    chart_repo = Reports::Repository.new(@region, periods: chart_range)
+    @details_repository = Reports::Repository.new(regions, periods: @details_period_range)
 
-    @chart_data = {
-      patient_breakdown: PatientBreakdownService.call(region: @region, period: @period),
+    chart_range = (@details_period.advance(months: months)..@details_period)
+    chart_repo = Reports::Repository.new(@region, periods: chart_range)
+    @details_chart_data = {
+      patient_breakdown: PatientBreakdownService.call(region: @region, period: @details_period),
       ltfu_trend: ltfu_chart_data(chart_repo, chart_range),
-      **medications_dispensation_data
+      **medications_dispensation_data(region: @region, period: @details_period)
     }
+
+    if @region.facility_region?
+      @recent_blood_pressures = paginate(
+        @region.source.blood_pressures.for_recent_bp_log.includes(:patient, :facility)
+      )
+    end
+
+    # ======================
+
+    @data = {
+      **@overview_data,
+      **@details_chart_data
+    }
+
+    respond_to do |format|
+      format.html
+      format.js
+      format.json { render json: @data }
+    end
+  end
+
+  # We display two ranges of data on this page - the chart range is for the LTFU chart,
+  # and the period_range is the data we display in the detail tables.
+  def details
+    @details_period = Period.month(Time.current)
+    months = -(Reports::MAX_MONTHS_OF_DATA - 1)
+    @details_period_range = Range.new(@details_period.advance(months: -5), @details_period)
+
+    regions = if @region.facility_region?
+      [@region]
+    else
+      [@region, @region.reportable_children].flatten
+    end
+
+    if current_admin.feature_enabled?(:show_call_results) && @region.state_region?
+      regions.concat(@region.district_regions)
+    end
+
+    @repository = Reports::Repository.new(regions, periods: @details_period_range)
+
+    chart_range = (@details_period.advance(months: months)..@details_period)
+    chart_repo = Reports::Repository.new(@region, periods: chart_range)
+    @details_chart_data = {
+      patient_breakdown: PatientBreakdownService.call(region: @region, period: @details_period),
+      ltfu_trend: ltfu_chart_data(chart_repo, chart_range),
+      **medications_dispensation_data(region: @region, period: @details_period)
+    }
+    @data = @details_chart_data
 
     if @region.facility_region?
       @recent_blood_pressures = paginate(
@@ -235,9 +277,9 @@ class Reports::RegionsController < AdminController
     }
   end
 
-  def medications_dispensation_data
+  def medications_dispensation_data(region:, period:)
     if current_admin.feature_enabled?(:medications_dispensation)
-      {medications_dispensation: MedicationDispensationService.call(region: @region, period: @period)}
+      {medications_dispensation: MedicationDispensationService.call(region: region, period: period)}
     else
       {}
     end

@@ -21,7 +21,7 @@
           <div class="p-absolute t-0 l-0 pe-none d-flex align-center justify-center w-100pt h-100pt">
           </div>
           <div class="px-20px">
-            <% @chart_data[:medications_dispensation].each do |bucket, data| %>
+            <% @details_chart_data[:medications_dispensation].each do |bucket, data| %>
               <span class="mb-1 mr-2 text-nowrap">
                 <span class="legend-label" style="background-color: <%= data[:color] %>"></span><%= bucket %>
               </span>
@@ -34,7 +34,7 @@
 </div>
 
 <div id="data-json" style="display: none;">
-  <%= raw @chart_data.to_json %>
+  <%= raw @data.to_json %>
 </div>
 
 <script>
