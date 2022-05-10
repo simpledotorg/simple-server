@@ -50,7 +50,11 @@ module Reports
         bs_200_to_300_with_ltfu_rates: bs_200_to_300_rates(with_ltfu: true)[slug],
         bs_over_300_patients: bs_over_300_patients[slug],
         bs_over_300_rates: bs_over_300_rates[slug],
-        bs_over_300_with_ltfu_rates: bs_over_300_rates(with_ltfu: true)[slug]
+        bs_over_300_with_ltfu_rates: bs_over_300_rates(with_ltfu: true)[slug],
+        diabetes_missed_visits: diabetes_missed_visits[slug],
+        diabetes_missed_visits_with_ltfu: diabetes_missed_visits(with_ltfu: true)[slug],
+        diabetes_missed_visits_rates: diabetes_missed_visits_rates[slug],
+        diabetes_missed_visits_with_ltfu_rates: diabetes_missed_visits_rates(with_ltfu: true)[slug]
       }
     end
 
