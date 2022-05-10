@@ -21,7 +21,7 @@ module Reports
         controlled_patients: controlled[slug],
         cumulative_assigned_patients: cumulative_assigned_patients[slug],
         cumulative_registrations: cumulative_registrations[slug],
-        cumulative_diabetes_registrations: cumulative_registrations[slug],
+        cumulative_diabetes_registrations: cumulative_diabetes_registrations[slug],
         earliest_registration_period: earliest_patient_recorded_at_period[slug],
         ltfu_patients_rate: ltfu_rates[slug],
         ltfu_patients: ltfu[slug],
