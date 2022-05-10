@@ -1288,8 +1288,8 @@ Reports = function (withLtfu) {
 
   this.setupDiabetesMissedVisitsGraph = (data) => {
     const adjustedPatients = withLtfu
-      ? data.adjustedPatientCountsWithLtfu
-      : data.adjustedPatientCounts;
+      ? data.adjustedDiabetesPatientCountsWithLtfu
+      : data.adjustedDiabetesPatientCounts;
     const diabetesMissedVisitsGraphNumerator = withLtfu
       ? data.diabetesMissedVisitsWithLtfu
       : data.diabetesMissedVisits;
