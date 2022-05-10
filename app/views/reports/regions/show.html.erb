@@ -214,7 +214,6 @@
   <%= render "child_data_tables", data: @children_data, localized_region_type: @child_regions.first.localized_region_type %>
 <% end %>
 
-<%= render "overview_footnotes" %>
 
 <%= render "reports/regions/patient_breakdown_charts" %>
 <% if current_admin.feature_enabled?(:medications_dispensation) %>
@@ -230,7 +229,7 @@
     current_period: @period)) %>
 <% end %>
 
-<%= render "details_footnotes" %>
+<%= render "overview_footnotes" %>
 
 <div id="data-json" style="display: none;">
   <%= raw @data.to_json %>
