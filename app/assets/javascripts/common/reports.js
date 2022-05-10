@@ -974,7 +974,7 @@ Reports = function (withLtfu) {
             padding: 8,
             min: 0,
             beginAtZero: true,
-            stepSize: 50,
+            stepSize: 25,
             max: 100,
           },
         },
@@ -1180,7 +1180,7 @@ Reports = function (withLtfu) {
             drawBorder: false,
           },
           ticks: {
-            display: false,
+            display: true,
             autoSkip: false,
             fontColor: this.darkGreyColor,
             fontSize: 10,
@@ -1205,7 +1205,7 @@ Reports = function (withLtfu) {
             drawBorder: false,
           },
           ticks: {
-            display: true,
+            display: false,
             autoSkip: false,
             fontColor: this.darkGreyColor,
             fontSize: 10,
@@ -1213,8 +1213,8 @@ Reports = function (withLtfu) {
             padding: 8,
             min: 0,
             beginAtZero: true,
-            stepSize: monthlyDiabetesFollowupsYAxis.stepSize,
-            max: monthlyDiabetesFollowupsYAxis.max,
+            stepSize: cumulativeDiabetesRegistrationsYAxis.stepSize,
+            max: cumulativeDiabetesRegistrationsYAxis.max,
             callback: (label) => {
               return this.formatNumberWithCommas(label);
             },
