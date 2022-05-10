@@ -1370,8 +1370,8 @@ Reports = function (withLtfu) {
     };
 
   this.setupDiabetesVisitDetailsGraph = (data) => {
-    const visitDetailsGraphConfig = this.createBaseGraphConfig();
-    visitDetailsGraphConfig.type = "bar";
+    const diabetesVisitDetailsGraphConfig = this.createBaseGraphConfig();
+    diabetesVisitDetailsGraphConfig.type = "bar";
 
     const maxBarsToDisplay = 6;
     const barsToDisplay = Math.min(
@@ -1379,7 +1379,7 @@ Reports = function (withLtfu) {
         maxBarsToDisplay
     );
 
-    visitDetailsGraphConfig.data = {
+    diabetesVisitDetailsGraphConfig.data = {
       labels: Object.keys(data.bsBelow200Rate).slice(-barsToDisplay),
       datasets: [
         {
@@ -1421,7 +1421,7 @@ Reports = function (withLtfu) {
         },
       ],
     };
-    visitDetailsGraphConfig.options.scales = {
+    diabetesVisitDetailsGraphConfig.options.scales = {
       xAxes: [
         {
           stacked: true,
@@ -1461,7 +1461,7 @@ Reports = function (withLtfu) {
         },
       ],
     };
-    visitDetailsGraphConfig.options.tooltips = {
+    diabetesVisitDetailsGraphConfig.options.tooltips = {
       mode: "x",
       enabled: false,
       custom: (tooltip) => {
@@ -1513,12 +1513,8 @@ Reports = function (withLtfu) {
           "[data-adjusted-registrations]"
       );
 
-      const missedVisitsRate = this.formatPercentage(
-          data.missedVisitsRate[period]
-      );
-      const visitButNoBSMeasureRate = this.formatPercentage(
-          data.visitButNoBSMeasureRate[period]
-      );
+      const missedVisitsRate = this.formatPercentage(data.diabetesMissedVisitsRate[period]);
+      const visitButNoBSMeasureRate = this.formatPercentage(data.visitButNoBSMeasureRate[period]);
       const bsOver300Rate = this.formatPercentage(data.bsOver300Rate[period]);
       const bs200To300Rate = this.formatPercentage(data.bs200to300Rate[period]);
       const bsBelow200Rate = this.formatPercentage(data.bsBelow200Rate[period]);
@@ -1526,7 +1522,7 @@ Reports = function (withLtfu) {
       const periodInfo = data.periodInfo[period];
       const adjustedPatientCounts = data.adjustedDiabetesPatientCounts[period];
       const totalMissedVisits = data.diabetesMissedVisits[period];
-      const totalVisitButNoBPMeasure = data.visitButNoBSMeasure[period];
+      const totalVisitButNoBSMeasure = data.visitButNoBSMeasure[period];
       const totalBSOver300Patients = data.bsOver300Patients[period];
       const totalBS200To300Patients = data.bs200to300Patients[period];
       const totalBSBelow200Patients = data.bsBelow200Patients[period];
@@ -1536,20 +1532,12 @@ Reports = function (withLtfu) {
       bsOver300RateNode.innerHTML = bsOver300Rate;
       bs200To300RateNode.innerHTML = bs200To300Rate;
       bsBelow200RateNode.innerHTML = bsBelow200Rate;
-      missedVisitsPatientsNode.innerHTML =
-          this.formatNumberWithCommas(totalMissedVisits);
-      visitButNoBSMeasurePatientsNode.innerHTML = this.formatNumberWithCommas(
-          totalVisitButNoBPMeasure // FIXME
-      );
-      bsOver300PatientsNode.innerHTML = this.formatNumberWithCommas(
-          totalBSOver300Patients
-      );
-      bs200To300PatientsNode.innerHTML = this.formatNumberWithCommas(
-          totalBS200To300Patients
-      );
-      bsBelow200PatientsNode.innerHTML = this.formatNumberWithCommas(
-          totalBSBelow200Patients
-      );
+      missedVisitsPatientsNode.innerHTML = this.formatNumberWithCommas( totalMissedVisits );
+      visitButNoBSMeasurePatientsNode.innerHTML = this.formatNumberWithCommas( totalVisitButNoBSMeasure );
+      bsOver300PatientsNode.innerHTML = this.formatNumberWithCommas( totalBSOver300Patients );
+      bs200To300PatientsNode.innerHTML = this.formatNumberWithCommas( totalBS200To300Patients );
+      bsBelow200PatientsNode.innerHTML = this.formatNumberWithCommas( totalBSBelow200Patients );
+
       periodStartNodes.forEach(
           (node) => (node.innerHTML = periodInfo.bp_control_start_date)
       );
@@ -1572,12 +1560,12 @@ Reports = function (withLtfu) {
       populateDiabetesVisitDetailsGraph(mostRecentPeriod);
     };
 
-    const visitDetailsGraphCanvas =
-        document.getElementById("missedDiabetesVisitDetails");
-    if (visitDetailsGraphCanvas) {
+    const diabetesVisitDetailsGraphCanvas =
+        document.getElementById("diabetesVisitDetails");
+    if (diabetesVisitDetailsGraphCanvas) {
       new Chart(
-          visitDetailsGraphCanvas.getContext("2d"),
-          visitDetailsGraphConfig
+          diabetesVisitDetailsGraphCanvas.getContext("2d"),
+          diabetesVisitDetailsGraphConfig
       );
       populateDiabetesVisitDetailsGraphDefault();
     }
