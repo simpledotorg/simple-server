@@ -42,11 +42,11 @@ class ActivityService
   def registrations_relation
     case diagnosis
     when :hypertension
-      region.registered_hypertension_patients
+      region.registered_hypertension_patients.for_reports
     when :diabetes
-      region.registered_diabetes_patients
+      region.registered_diabetes_patients.excluding_dead
     when :all
-      region.registered_patients
+      region.registered_patients.excluding_dead
     else
       raise ArgumentError, "Unsupported diagnosis"
     end
