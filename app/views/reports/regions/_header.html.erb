@@ -32,7 +32,7 @@
         <%= link_to "Overview", url_params.merge(action: "show"), class: "nav-link #{active_action?("show")}" %>
         <%= link_to "Details", url_params.merge(action: "details"), class: "nav-link #{active_action?("details")}" %>
         <%= link_to "Cohort reports", reports_region_cohort_path(@region, report_scope: params[:report_scope]), class: "nav-link #{active_action?("cohort")}" %>
-        <% if @region.diabetes_management_enabled? %>
+        <% if current_admin.feature_enabled?(:diabetes_management_reports) && @region.diabetes_management_enabled? %>
           <%= link_to "Diabetes", reports_region_diabetes_path(@region, report_scope: params[:report_scope]), class: "nav-link #{active_action?("diabetes")}" %>
         <% end %>
         <% if @region.facility_region? && current_admin.feature_enabled?(:dashboard_progress_reports) %>
