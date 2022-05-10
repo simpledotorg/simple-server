@@ -1,41 +1,41 @@
 <div class="dropdown show mb-24px bs-small mb-lg-0">
   <a class="btn btn-sm dropdown-toggle c-black bg-white" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <i class="fa fa-arrow-circle-down w-16px ta-center mr-4px c-grey-medium"></i>
+    <i class="fa fa-arrow-circle-down w-16px ta-center mr-4px c-blue"></i>
     Downloads
   </a>
   <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
 
-    <h6 class="dropdown-header c-grey-medium">
+    <h6 class="dropdown-header c-grey-dark">
       CSV files
     </h6>
 
     <%= link_to(reports_region_download_path(@region, report_scope: params[:report_scope], period: :quarter, format: :csv), class: "dropdown-item") do %>
-      <i class="far fa-file w-16px ta-center mr-4px c-grey-medium"></i>
+      <i class="far fa-file w-16px ta-center mr-8px c-blue"></i>
       Quarterly cohort report
     <% end %>
 
     <%= link_to(reports_region_download_path(@region, report_scope: params[:report_scope], period: :month, format: :csv), class: "dropdown-item") do %>
-      <i class="far fa-file w-16px ta-center mr-4px c-grey-medium"></i>
+      <i class="far fa-file w-16px ta-center mr-8px c-blue"></i>
       Monthly cohort report
     <% end %>
 
     <% if @region.district_region? && current_admin.feature_enabled?(:monthly_district_report)%>
       <%= link_to(reports_region_monthly_district_report_path(@region, report_scope: params[:report_scope], period: params.dig(:period, :value), format: :zip), class: "dropdown-item") do %>
-        <i class="far fa-file w-16px ta-center mr-4px c-grey-medium"></i>
+        <i class="fa-regular fa-file-spreadsheet w-16px ta-center mr-8px c-blue"></i>
         Monthly district report
       <% end %>
     <% end %>
 
     <% if @region.district_region? && current_admin.feature_enabled?(:monthly_district_data_download) %>
       <%= link_to(reports_region_monthly_district_data_path(@region, report_scope: params[:report_scope], period: params.dig(:period, :value), format: :csv), class: "dropdown-item") do %>
-        <i class="far fa-file w-16px ta-center mr-4px c-grey-medium"></i>
+        <i class="fa-regular fa-file-spreadsheet w-16px ta-center mr-8px c-blue"></i>
         Monthly <%= I18n.t("region_type.facility") %> data
       <% end %>
     <% end %>
 
     <% if @region.state_region? && current_admin.feature_enabled?(:monthly_state_data_download) %>
       <%= link_to(reports_region_monthly_state_data_path(@region, report_scope: params[:report_scope], period: params.dig(:period, :value), format: :csv), class: "dropdown-item") do %>
-        <i class="far fa-file w-16px ta-center mr-4px c-grey-medium"></i>
+        <i class="fa-regular fa-file-spreadsheet w-16px ta-center mr-8px c-blue"></i>
         Monthly <%= @region.localized_child_region_type %> data
       <% end %>
     <% end %>
@@ -43,7 +43,7 @@
     <% if @region.region_type.in?(["district", "facility"]) %>
       <% if current_admin.can_access?(@region.source, :view_pii) %>
         <%= link_to(reports_patient_list_path(@region, report_scope: params[:report_scope]), class: "dropdown-item") do %>
-          <i class="far fa-file w-16px ta-center mr-4px c-grey-medium"></i>
+          <i class="fa-regular fa-list-ul w-16px ta-center mr-8px c-blue"></i>
           Patient line list
         <% end %>
       <% end %>
@@ -51,25 +51,25 @@
 
     <div class="dropdown-divider"></div>
 
-    <h6 class="dropdown-header c-grey-medium">
+    <h6 class="dropdown-header c-grey-dark">
       <%= "#{quarter_string(Date.current.prev_quarter)}" %> Snapshots
     </h6>
 
     <% previous_quarter_year, previous_quarter = previous_year_and_quarter %>
     <%= link_to(reports_graphics_path(@region, report_scope: params[:report_scope], quarter: previous_quarter, year: previous_quarter_year, format: "html"), class: "dropdown-item") do %>
-      <i class="far fa-window-maximize w-16px ta-center mr-4px c-grey-medium"></i>
+      <i class="far fa-window-maximize w-16px ta-center mr-8px c-blue"></i>
       View in webpage
     <% end %>
 
     <%= link_to(reports_graphics_path(@region, report_scope: params[:report_scope], quarter: previous_quarter, year: previous_quarter_year, format: "png"), class: "dropdown-item") do %>
-      <i class="far fa-image w-16px ta-center mr-4px c-grey-medium"></i>
+      <i class="far fa-image w-16px ta-center mr-8px c-blue"></i>
       Download as an image
     <% end %>
 
     <div class="dropdown-divider"></div>
 
     <p class="dropdown-item mb-0px c-pointer" onclick="window.print()">
-      <i class="fas fa-print w-16px ta-center mr-4px c-grey-medium"></i>
+      <i class="fas fa-print w-16px ta-center mr-8px c-blue"></i>
       Print page as PDF
     </p>
   </div>
