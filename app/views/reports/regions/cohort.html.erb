@@ -56,7 +56,7 @@
                     data-placement="top"
                     data-trigger="hover focus click"
                     title="<%= number_with_delimiter(cohort["controlled"]) %> <%= "patient".pluralize(cohort["controlled"]) %> visited with BP controlled"
-                    style="width: <%= controlled_percent %>%;"
+                    style="width: <%= controlled_percent %>%; min-width: 3em;"
                   >
                     <%= (cohort["controlled"] > 0 && controlled_percent == 0) ? "< 1" : controlled_percent %>%
                   </td>
@@ -66,7 +66,7 @@
                     data-placement="top"
                     data-trigger="hover focus click"
                     title="<%= number_with_delimiter(cohort["uncontrolled"]) %> <%= "patient".pluralize(cohort["uncontrolled"]) %> visited with BP not controlled"
-                    style="width: <%= uncontrolled_percent %>%;"
+                    style="width: <%= uncontrolled_percent %>%; min-width: 3em;"
                   >
                     <%= (cohort["uncontrolled"] > 1 && uncontrolled_percent == 0) ? "< 1" : uncontrolled_percent %>%
                   </td>
@@ -76,7 +76,7 @@
                     data-placement="top"
                     data-trigger="hover focus click"
                     title="<%= number_with_delimiter(cohort["missed_visits"]) %> <%= "patient".pluralize(cohort["missed_visits"]) %> missed visit"
-                    style="width: <%= missed_visits_percent %>%;"
+                    style="width: <%= missed_visits_percent %>%; min-width: 3em;"
                   >
                     <%= (cohort["missed_visits"] > 0 && missed_visits_percent == 0) ? "< 1" : missed_visits_percent %>%
                   </td>
@@ -86,7 +86,7 @@
                     data-placement="top"
                     data-trigger="hover focus click"
                     title="<%= number_with_delimiter(cohort["no_bp"]) %> <%= "patient".pluralize(cohort["no_bp"]) %> didn't have a BP taken"
-                    style="width: <%= no_bp_percent %>%;"
+                    style="width: <%= no_bp_percent %>%; min-width: 3em;"
                   >
                     <%= (cohort["no_bp"] > 0 && no_bp_percent == 0) ? "<1" : no_bp_percent %>%
                   </td>
