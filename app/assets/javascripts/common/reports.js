@@ -974,7 +974,7 @@ Reports = function (withLtfu) {
             padding: 8,
             min: 0,
             beginAtZero: true,
-            stepSize: 50,
+            stepSize: 25,
             max: 100,
           },
         },
@@ -1180,7 +1180,7 @@ Reports = function (withLtfu) {
             drawBorder: false,
           },
           ticks: {
-            display: false,
+            display: true,
             autoSkip: false,
             fontColor: this.darkGreyColor,
             fontSize: 10,
@@ -1205,7 +1205,7 @@ Reports = function (withLtfu) {
             drawBorder: false,
           },
           ticks: {
-            display: true,
+            display: false,
             autoSkip: false,
             fontColor: this.darkGreyColor,
             fontSize: 10,
@@ -1213,8 +1213,8 @@ Reports = function (withLtfu) {
             padding: 8,
             min: 0,
             beginAtZero: true,
-            stepSize: monthlyDiabetesFollowupsYAxis.stepSize,
-            max: monthlyDiabetesFollowupsYAxis.max,
+            stepSize: cumulativeDiabetesRegistrationsYAxis.stepSize,
+            max: cumulativeDiabetesRegistrationsYAxis.max,
             callback: (label) => {
               return this.formatNumberWithCommas(label);
             },
@@ -1287,9 +1287,9 @@ Reports = function (withLtfu) {
   };
 
   this.setupDiabetesMissedVisitsGraph = (data) => {
-    const adjustedPatients = withLtfu
-      ? data.adjustedPatientCountsWithLtfu
-      : data.adjustedPatientCounts;
+    const adjustedDiabetesPatients = withLtfu
+      ? data.adjustedDiabetesPatientCountsWithLtfu
+      : data.adjustedDiabetesPatientCounts;
     const diabetesMissedVisitsGraphNumerator = withLtfu
       ? data.diabetesMissedVisitsWithLtfu
       : data.diabetesMissedVisits;
@@ -1378,7 +1378,7 @@ Reports = function (withLtfu) {
       );
 
       const periodInfo = data.periodInfo[period];
-      const adjustedPatientCounts = adjustedPatients[period];
+      const adjustedPatientCounts = adjustedDiabetesPatients[period];
       const totalPatients = diabetesMissedVisitsGraphNumerator[period];
 
       rateNode.innerHTML = this.formatPercentage(
