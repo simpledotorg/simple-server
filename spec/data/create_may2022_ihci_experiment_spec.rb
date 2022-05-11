@@ -15,6 +15,10 @@ RSpec.describe CreateMay2022IhciExperiment do
     expect(experiment.start_time.to_date).to eq(Date.parse("May 13, 2022").to_date)
     expect(experiment.end_time.to_date).to eq(Date.parse("Jun 12, 2022").to_date)
     expect(experiment.max_patients_per_day).to eq(20000)
+
+    expect(experiment.reminder_templates.where("remind_on_in_days < 0").pluck(:message)).to all eq("notifications.set01.basic")
+    expect(experiment.reminder_templates.where("remind_on_in_days = 0").pluck(:message)).to all eq("notifications.set02.basic")
+    expect(experiment.reminder_templates.where("remind_on_in_days > 0").pluck(:message)).to all start_with("notifications.set03")
   end
 
   it "creates the stale experiment" do
@@ -30,5 +34,7 @@ RSpec.describe CreateMay2022IhciExperiment do
     expect(experiment.start_time.to_date).to eq(Date.parse("May 13, 2022").to_date)
     expect(experiment.end_time.to_date).to eq(Date.parse("Jun 12, 2022").to_date)
     expect(experiment.max_patients_per_day).to eq(15000)
+
+    expect(experiment.reminder_templates.pluck(:message)).to all start_with("notifications.set03")
   end
 end
