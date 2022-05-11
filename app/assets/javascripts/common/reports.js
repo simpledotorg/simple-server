@@ -1287,7 +1287,7 @@ Reports = function (withLtfu) {
   };
 
   this.setupDiabetesMissedVisitsGraph = (data) => {
-    const adjustedPatients = withLtfu
+    const adjustedDiabetesPatients = withLtfu
       ? data.adjustedDiabetesPatientCountsWithLtfu
       : data.adjustedDiabetesPatientCounts;
     const diabetesMissedVisitsGraphNumerator = withLtfu
@@ -1378,7 +1378,7 @@ Reports = function (withLtfu) {
       );
 
       const periodInfo = data.periodInfo[period];
-      const adjustedPatientCounts = adjustedPatients[period];
+      const adjustedPatientCounts = adjustedDiabetesPatients[period];
       const totalPatients = diabetesMissedVisitsGraphNumerator[period];
 
       rateNode.innerHTML = this.formatPercentage(
