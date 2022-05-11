@@ -60,9 +60,15 @@
       <div>
         <div class="p-relative px-20px mb-12px">
           <p class="m-0px c-grey-dark c-print-black">
-            <span data-rbs-ppbs=""></span> RBS/PPBS
-            <span data-fasting=""></span> Fasting
-            <span data-hba1c=""></span> HbA1c
+            <strong>
+              <span data-rbs-ppbs=""></span>
+            </strong> RBS/PPBS, &nbsp;
+            <strong>
+              <span data-fasting=""></span>
+            </strong> Fasting, &nbsp;
+            <strong>
+              <span data-hba1c=""></span>
+            </strong> HbA1c
           </p>
         </div>
       </div>
@@ -156,13 +162,13 @@
           <%= t("bs_over_200_copy.reports_card_subtitle", region_name: @region.name) %>
         </p>
         <div class="mb-12px d-lg-flex align-lg-center">
-          <p class="mb-0px fs-32px fw-bold mr-lg-12px c-red minw-32px"
-             data-bs-200-to-300-rate="">
+          <p class="mb-0px fs-32px fw-bold mr-lg-12px c-maroon minw-32px"
+             data-bs-over-300-rate="">
           </p>
           <div>
             <p class="m-0px c-black">
-              <span data-total-bs-200-to-300-patients=""></span>
-              patients with a BS 200-299 from
+              <span data-total-bs-over-300-patients=""></span>
+              patients with a BS ≥300 from
               <span data-period-start=""></span>
               to
               <span data-period-end=""></span>
@@ -175,13 +181,13 @@
           </div>
         </div>
         <div class="mb-12px d-lg-flex align-lg-center">
-          <p class="mb-0px fs-32px fw-bold mr-lg-12px c-maroon minw-32px"
-             data-bs-over-300-rate="">
+          <p class="mb-0px fs-32px fw-bold mr-lg-12px c-red minw-32px"
+             data-bs-200-to-300-rate="">
           </p>
           <div>
             <p class="m-0px c-black">
-              <span data-total-bs-over-300-patients=""></span>
-              patients with a BS ≥300 from
+              <span data-total-bs-200-to-300-patients=""></span>
+              patients with a BS 200-299 from
               <span data-period-start=""></span>
               to
               <span data-period-end=""></span>
