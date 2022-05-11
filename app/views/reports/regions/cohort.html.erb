@@ -56,7 +56,7 @@
                     data-placement="top"
                     data-trigger="hover focus click"
                     title="<%= number_with_delimiter(cohort["controlled"]) %> <%= "patient".pluralize(cohort["controlled"]) %> visited with BP controlled"
-                    style="<%= controlled_percent %>%;"
+                    style="width: <%= controlled_percent %>%;"
                   >
                     <%= (cohort["controlled"] > 0 && controlled_percent == 0) ? "< 1" : controlled_percent %>%
                   </td>
@@ -88,7 +88,7 @@
                     title="<%= number_with_delimiter(cohort["no_bp"]) %> <%= "patient".pluralize(cohort["no_bp"]) %> didn't have a BP taken"
                     style="width: <%= no_bp_percent %>%;"
                   >
-                    <%= (cohort["no_bp"] > 0 && no_bp_percent == 0) ? "< 1" : no_bp_percent %>%
+                    <%= (cohort["no_bp"] > 0 && no_bp_percent == 0) ? "<1" : no_bp_percent %>%
                   </td>
                 <% else %>
                   <td class="bar bar-none w-100pt">
