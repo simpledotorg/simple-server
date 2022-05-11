@@ -1,8 +1,6 @@
 require "rails_helper"
 
 RSpec.describe CreateAuditLogsWorker, type: :job do
-  include ActiveJob::TestHelper
-
   describe "#perform_later" do
     let!(:user) { create :user }
     let(:record_class) { "Patient" }
