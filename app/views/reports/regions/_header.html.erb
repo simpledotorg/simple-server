@@ -19,7 +19,7 @@
   </h1>
 
   <p class="d-none fw-bold d-print-block">
-    <%= @period %> Report — <% if params[:action] == "show" %>Overview<% elsif params[:action] == "cohort" %>Cohort Reports<% end %>
+    <%= @period %> Report — <% if params[:action] == "show" %>Overview<% elsif params[:action] == "details" %>Details<% elsif params[:action] == "cohort" %>Cohort Reports<% end %>
   </p>
   <%
     # We want to maintain the request params for Overview and Detail nav links, but _only_ in the
@@ -30,6 +30,7 @@
     <div class="d-flex order-2 order-lg-1">
       <nav class="nav">
         <%= link_to "Overview", url_params.merge(action: "show"), class: "nav-link #{active_action?("show")}" %>
+        <%= link_to "Details", url_params.merge(action: "details"), class: "nav-link #{active_action?("details")}" %>
         <%= link_to "Cohort reports", reports_region_cohort_path(@region, report_scope: params[:report_scope]), class: "nav-link #{active_action?("cohort")}" %>
         <% if @region.diabetes_management_enabled? %>
           <%= link_to "Diabetes", reports_region_diabetes_path(@region, report_scope: params[:report_scope]), class: "nav-link #{active_action?("diabetes")}" %>
