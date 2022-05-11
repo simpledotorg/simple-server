@@ -80,42 +80,42 @@ class Reports::RegionsController < AdminController
     # ======================
     # DETAILS
     # ======================
-    @details_period = Period.month(Time.current)
-    @details_period_range = Range.new(@details_period.advance(months: -5), @details_period)
-    months = -(Reports::MAX_MONTHS_OF_DATA - 1)
+    if current_admin.feature_enabled?(:diabetes_management_reports)
+      @details_period = Period.month(Time.current)
+      @details_period_range = Range.new(@details_period.advance(months: -5), @details_period)
+      months = -(Reports::MAX_MONTHS_OF_DATA - 1)
 
-    regions = if @region.facility_region?
-      [@region]
-    else
-      [@region, @region.reportable_children].flatten
-    end
+      regions = if @region.facility_region?
+        [@region]
+      else
+        [@region, @region.reportable_children].flatten
+      end
 
-    if current_admin.feature_enabled?(:show_call_results) && @region.state_region?
-      regions.concat(@region.district_regions)
-    end
+      if current_admin.feature_enabled?(:show_call_results) && @region.state_region?
+        regions.concat(@region.district_regions)
+      end
 
-    @details_repository = Reports::Repository.new(regions, periods: @details_period_range)
+      @details_repository = Reports::Repository.new(regions, periods: @details_period_range)
 
-    chart_range = (@details_period.advance(months: months)..@details_period)
-    chart_repo = Reports::Repository.new(@region, periods: chart_range)
-    @details_chart_data = {
-      patient_breakdown: PatientBreakdownService.call(region: @region, period: @details_period),
-      ltfu_trend: ltfu_chart_data(chart_repo, chart_range),
-      **medications_dispensation_data(region: @region, period: @details_period)
-    }
+      chart_range = (@details_period.advance(months: months)..@details_period)
+      chart_repo = Reports::Repository.new(@region, periods: chart_range)
+      @details_chart_data = {
+        patient_breakdown: PatientBreakdownService.call(region: @region, period: @details_period),
+        ltfu_trend: ltfu_chart_data(chart_repo, chart_range),
+        **medications_dispensation_data(region: @region, period: @details_period)
+      }
 
-    if @region.facility_region?
-      @recent_blood_pressures = paginate(
-        @region.source.blood_pressures.for_recent_bp_log.includes(:patient, :facility)
-      )
+      if @region.facility_region?
+        @recent_blood_pressures = paginate(
+          @region.source.blood_pressures.for_recent_bp_log.includes(:patient, :facility)
+        )
+      end
     end
 
     # ======================
 
-    @data = {
-      **@overview_data,
-      **@details_chart_data
-    }
+    @data = @overview_data
+    @data.merge!(@details_chart_data) if current_admin.feature_enabled?(:diabetes_management_reports)
 
     respond_to do |format|
       format.html

@@ -214,20 +214,22 @@
   <%= render "child_data_tables", data: @children_data, localized_region_type: @child_regions.first.localized_region_type %>
 <% end %>
 
+<% if current_admin.feature_enabled?(:diabetes_management_reports) %>
+  <%= render "reports/regions/patient_breakdown_charts" %>
+  <% if current_admin.feature_enabled?(:medications_dispensation) %>
+    <%= render "reports/regions/medications_dispensation" %>
+  <% end %>
 
-<%= render "reports/regions/patient_breakdown_charts" %>
-<% if current_admin.feature_enabled?(:medications_dispensation) %>
-  <%= render "reports/regions/medications_dispensation" %>
+  <% if @region.facility_region? %>
+    <%= render "facility_details" %>
+  <% else %>
+    <%= render(RegistrationsAndFollowUpsComponent.new(@region,
+      current_admin: current_admin,
+      repository: @details_repository,
+      current_period: @period)) %>
+  <% end %>
 <% end %>
 
-<% if @region.facility_region? %>
-  <%= render "facility_details" %>
-<% else %>
-  <%= render(RegistrationsAndFollowUpsComponent.new(@region,
-    current_admin: current_admin,
-    repository: @details_repository,
-    current_period: @period)) %>
-<% end %>
 
 <%= render "overview_footnotes" %>
 

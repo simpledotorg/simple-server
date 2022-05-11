@@ -85,7 +85,12 @@
           <% slug = resource.region.slug %>
           <tr>
             <td class="row-title">
-              <%= link_to resource.name, reports_region_path(resource.region, report_scope: resource.region_type) %>
+              <% if current_admin.feature_enabled?(:diabetes_management_reports) %>
+                <%= link_to resource.name, reports_region_path(resource.region, report_scope: resource.region_type) %>
+              <% else %>
+                <%= link_to resource.name, reports_region_details_path(resource.region, report_scope: resource.region_type) %>
+              <% end %>
+
             </td>
             <td class="ta-center">
               <%= number_or_dash_with_delimiter(repository.cumulative_assigned_patients[slug][current_period]) %>
@@ -164,7 +169,12 @@
           <% next unless repository.earliest_patient_recorded_at[resource.slug] %>
           <tr>
             <td class="row-title">
-              <%= link_to resource.name, reports_region_path(resource.region, report_scope: resource.region_type) %>
+              <% if current_admin.feature_enabled?(:diabetes_management_reports) %>
+                <%= link_to resource.name, reports_region_path(resource.region, report_scope: resource.region_type) %>
+              <% else %>
+                <%= link_to resource.name, reports_region_details_path(resource.region, report_scope: resource.region_type) %>
+              <% end %>
+
             </td>
             <% range.each do |period| %>
               <td class="ta-center">
