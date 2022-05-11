@@ -1287,131 +1287,125 @@ Reports = function (withLtfu) {
   };
 
   this.setupDiabetesMissedVisitsGraph = (data) => {
-    const adjustedPatients = withLtfu
-      ? data.adjustedPatientCountsWithLtfu
-      : data.adjustedPatientCounts;
-    const diabetesMissedVisitsGraphNumerator = withLtfu
-      ? data.diabetesMissedVisitsWithLtfu
-      : data.diabetesMissedVisits;
-    const diabetesMissedVisitsGraphRate = withLtfu
-      ? data.diabetesMissedVisitsWithLtfuRate
-      : data.diabetesMissedVisitsRate;
+        const adjustedDiabetesPatients = withLtfu
+            ? data.adjustedDiabetesPatientCountsWithLtfu
+            : data.adjustedDiabetesPatientCounts;
+        const diabetesMissedVisitsGraphNumerator = withLtfu
+            ? data.diabetesMissedVisitsWithLtfu
+            : data.diabetesMissedVisits;
+        const diabetesMissedVisitsGraphRate = withLtfu
+            ? data.diabetesMissedVisitsWithLtfuRate
+            : data.diabetesMissedVisitsRate;
 
-    const diabetesMissedVisitsConfig = this.createBaseGraphConfig();
-    diabetesMissedVisitsConfig.data = {
-      labels: Object.keys(diabetesMissedVisitsGraphRate),
-      datasets: [
-        {
-          label: "Missed visits",
-          backgroundColor: this.lightBlueColor,
-          borderColor: this.mediumBlueColor,
-          borderWidth: 2,
-          pointBackgroundColor: this.whiteColor,
-          hoverBackgroundColor: this.whiteColor,
-          hoverBorderWidth: 2,
-          data: Object.values(diabetesMissedVisitsGraphRate),
-          type: "line",
-        },
-      ],
+        const diabetesMissedVisitsConfig = this.createBaseGraphConfig();
+        diabetesMissedVisitsConfig.data = {
+            labels: Object.keys(diabetesMissedVisitsGraphRate),
+            datasets: [
+                {
+                    label: "Missed visits",
+                    backgroundColor: this.lightBlueColor,
+                    borderColor: this.mediumBlueColor,
+                    borderWidth: 2,
+                    pointBackgroundColor: this.whiteColor,
+                    hoverBackgroundColor: this.whiteColor,
+                    hoverBorderWidth: 2,
+                    data: Object.values(diabetesMissedVisitsGraphRate),
+                    type: "line",
+                },
+            ],
+        };
+        diabetesMissedVisitsConfig.options.scales = {
+            xAxes: [
+                {
+                    stacked: false,
+                    display: true,
+                    gridLines: {
+                        display: false,
+                        drawBorder: true,
+                    },
+                    ticks: {
+                        autoSkip: false,
+                        fontColor: this.darkGreyColor,
+                        fontSize: 10,
+                        fontFamily: "Roboto",
+                        padding: 8,
+                        min: 0,
+                        beginAtZero: true,
+                    },
+                },
+            ],
+            yAxes: [
+                {
+                    stacked: false,
+                    display: true,
+                    gridLines: {
+                        display: true,
+                        drawBorder: false,
+                    },
+                    ticks: {
+                        autoSkip: false,
+                        fontColor: this.darkGreyColor,
+                        fontSize: 10,
+                        fontFamily: "Roboto",
+                        padding: 8,
+                        min: 0,
+                        beginAtZero: true,
+                        stepSize: 25,
+                        max: 100,
+                    },
+                },
+            ],
+        };
+        diabetesMissedVisitsConfig.options.tooltips = {
+            enabled: false,
+            custom: (tooltip) => {
+                let hoveredDatapoint = tooltip.dataPoints;
+                if (hoveredDatapoint)
+                    populateDiabetesMissedVisitsGraph(hoveredDatapoint[0].label);
+                else populateDiabetesMissedVisitsGraphDefault();
+            },
+        };
+
+        const populateDiabetesMissedVisitsGraph = (period) => {
+            const cardNode = document.getElementById("diabetes-missed-visits");
+            const rateNode = cardNode.querySelector("[data-rate]");
+            const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
+            const periodStartNode = cardNode.querySelector("[data-period-start]");
+            const periodEndNode = cardNode.querySelector("[data-period-end]");
+            const registrationsNode = cardNode.querySelector("[data-registrations]");
+            const registrationsPeriodEndNode = cardNode.querySelector(
+                "[data-registrations-period-end]"
+            );
+
+            const periodInfo = data.periodInfo[period];
+            const adjustedPatientCounts = adjustedDiabetesPatients[period];
+            const totalPatients = diabetesMissedVisitsGraphNumerator[period];
+
+            rateNode.innerHTML = this.formatPercentage(diabetesMissedVisitsGraphRate[period]);
+            totalPatientsNode.innerHTML = this.formatNumberWithCommas(totalPatients);
+            periodStartNode.innerHTML = periodInfo.bp_control_start_date;
+            periodEndNode.innerHTML = periodInfo.bp_control_end_date;
+            registrationsNode.innerHTML = this.formatNumberWithCommas(
+                adjustedPatientCounts
+            );
+            registrationsPeriodEndNode.innerHTML =
+                periodInfo.bp_control_registration_date;
+        };
+
+        const populateDiabetesMissedVisitsGraphDefault = () => {
+            const cardNode = document.getElementById("diabetes-missed-visits");
+            const mostRecentPeriod = cardNode.getAttribute("data-period");
+
+            populateDiabetesMissedVisitsGraph(mostRecentPeriod);
+        };
+
+        const diabetesMissedVisitsGraphCanvas =
+            document.getElementById("diabetesMissedVisitsTrend");
+        if (diabetesMissedVisitsGraphCanvas) {
+            new Chart(diabetesMissedVisitsGraphCanvas.getContext("2d"), diabetesMissedVisitsConfig);
+            populateDiabetesMissedVisitsGraphDefault();
+        }
     };
-    diabetesMissedVisitsConfig.options.scales = {
-      xAxes: [
-        {
-          stacked: false,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: true,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-          },
-        },
-      ],
-      yAxes: [
-        {
-          stacked: false,
-          display: true,
-          gridLines: {
-            display: true,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: 25,
-            max: 100,
-          },
-        },
-      ],
-    };
-    diabetesMissedVisitsConfig.options.tooltips = {
-      enabled: false,
-      custom: (tooltip) => {
-        let hoveredDatapoint = tooltip.dataPoints;
-        if (hoveredDatapoint)
-          populateDiabetesMissedVisitsGraph(hoveredDatapoint[0].label);
-        else populateDiabetesMissedVisitsGraphDefault();
-      },
-    };
-
-    const populateDiabetesMissedVisitsGraph = (period) => {
-      const cardNode = document.getElementById("diabetes-missed-visits");
-      const rateNode = cardNode.querySelector("[data-rate]");
-      const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
-      const periodStartNode = cardNode.querySelector("[data-period-start]");
-      const periodEndNode = cardNode.querySelector("[data-period-end]");
-      const registrationsNode = cardNode.querySelector("[data-registrations]");
-      const registrationsPeriodEndNode = cardNode.querySelector(
-        "[data-registrations-period-end]"
-      );
-
-      const periodInfo = data.periodInfo[period];
-      const adjustedPatientCounts = adjustedPatients[period];
-      const totalPatients = diabetesMissedVisitsGraphNumerator[period];
-
-      rateNode.innerHTML = this.formatPercentage(
-        diabetesMissedVisitsGraphRate[period]
-      );
-      totalPatientsNode.innerHTML = this.formatNumberWithCommas(totalPatients);
-      periodStartNode.innerHTML = periodInfo.bp_control_start_date;
-      periodEndNode.innerHTML = periodInfo.bp_control_end_date;
-      registrationsNode.innerHTML = this.formatNumberWithCommas(
-        adjustedPatientCounts
-      );
-      registrationsPeriodEndNode.innerHTML =
-        periodInfo.bp_control_registration_date;
-    };
-
-    const populateDiabetesMissedVisitsGraphDefault = () => {
-      const cardNode = document.getElementById("diabetes-missed-visits");
-      const mostRecentPeriod = cardNode.getAttribute("data-period");
-
-      populateDiabetesMissedVisitsGraph(mostRecentPeriod);
-    };
-
-    const diabetesMissedVisitsGraphCanvas = document.getElementById(
-      "diabetesMissedVisitsTrend"
-    );
-    if (diabetesMissedVisitsGraphCanvas) {
-      new Chart(
-        diabetesMissedVisitsGraphCanvas.getContext("2d"),
-        diabetesMissedVisitsConfig
-      );
-      populateDiabetesMissedVisitsGraphDefault();
-    }
-  };
 
   this.initializeTables = () => {
     const tableSortAscending = { descending: false };
