@@ -23,30 +23,30 @@ en:
   name: "Name"
   phone_number: "Phone Number"
   registration_approval_email:
-    accessible_facilities: 'User will have access to data from'
-    organization: "Organization"
-    registration_facility: 'Registration Facility'
-    subject: 'New Registration: User %{full_name} is requesting access to %{org_name} facilities.'
-    allow_or_deny_access: "Allow or deny access"
-  reset_password_approval_email:
-    accessible_facilities: 'User will have access to data from'
+    accessible_facilities: "User will have access to data from"
     organization: "Organization"
     registration_facility: "Registration Facility"
-    subject: 'PIN Reset: User %{full_name} is requesting access.'
+    subject: "New Registration: User %{full_name} is requesting access to %{org_name} facilities."
+    allow_or_deny_access: "Allow or deny access"
+  reset_password_approval_email:
+    accessible_facilities: "User will have access to data from"
+    organization: "Organization"
+    registration_facility: "Registration Facility"
+    subject: "PIN Reset: User %{full_name} is requesting access."
     allow_or_deny_access: "Allow or deny access"
   anonymized_data_download_email:
-    accessible_facilities: 'Attached documents contain anonymized data from'
-    organization: 'Organization'
-    district_subject: 'Anonymized Data dump for District %{district_name}, requested by User %{recipient_name}'
-    facility_subject: 'Anonymized Data dump for Facility %{facility_name}, requested by User %{recipient_name}'
-    district_notice: 'You will soon be emailed a copy of the anonymized data for %{district_name}.'
-    facility_notice: 'You will soon be emailed a copy of the anonymized data for %{facility_name}.'
+    accessible_facilities: "Attached documents contain anonymized data from"
+    organization: "Organization"
+    district_subject: "Anonymized Data dump for District %{district_name}, requested by User %{recipient_name}"
+    facility_subject: "Anonymized Data dump for Facility %{facility_name}, requested by User %{recipient_name}"
+    district_notice: "You will soon be emailed a copy of the anonymized data for %{district_name}."
+    facility_notice: "You will soon be emailed a copy of the anonymized data for %{facility_name}."
   patient_list_email:
     subject: "Patient list for %{model_type} %{model_name} attached"
-    notice: 'You will soon be emailed a copy of the patient line list for %{model_type} %{model_name}.'
-    patient_list: 'Patient list'
-    requested: 'As you requested, please find the patient list for %{model_type} %{model_name} attached. It contains patient details for every patient registered in the %{model_type}.'
-    confidential: 'Please note that this information is confidential and should be kept private.'
+    notice: "You will soon be emailed a copy of the patient line list for %{model_type} %{model_name}."
+    patient_list: "Patient list"
+    requested: "As you requested, please find the patient list for %{model_type} %{model_name} attached. It contains patient details for every patient registered in the %{model_type}."
+    confidential: "Please note that this information is confidential and should be kept private."
     unrequested_html: 'If you did not request this or have questions, please immediately reply to <a href="mailto:help@simple.org">help@simple.org</a>'
   bp_controlled_copy:
     reports_card_subtitle: "Hypertension patients with BP <140/90 at their last visit in the last 3 months"
@@ -95,7 +95,7 @@ en:
     district_copy: "The approximate number of people in %{region_name} with hypertension."
     state_copy: "The sum of %{region_name}'s %{child_region_type} populations entered on the Dashboard. This number is only displayed if all %{child_region_type_plural} have a population."
   medications_dispensation_copy:
-    numerator: "Number of days till a patient's next scheduled appointment."
+    numerator: "Number of days until a patient's next scheduled appointment."
     denominator: "Total appointments scheduled for follow-up patients during a month."
 
   progress_tab:
@@ -137,8 +137,8 @@ en:
         title: "Follow-up patients"
         subtitle: "Patients that had a BP taken, a blood sugar taken, an appointment scheduled, or their medications updated at %{facility_name}."
       patients_initiated_on_treatment_card:
-        title: "Where is the \"Patients initiated on treatment\" data?"
-        main_text: "Use \"Registered patients\", it will always equal \"Patients initiated on treatment\" for patients registered on Simple."
+        title: 'Where is the "Patients initiated on treatment" data?'
+        main_text: 'Use "Registered patients", it will always equal "Patients initiated on treatment" for patients registered on Simple.'
       more_patient_data_coming_soon_card:
         title: "More patient data coming soon"
         main_text: "Daily registration and follow-up data broken down by disease and gender will be added soon."
@@ -206,11 +206,11 @@ en:
         cohort_bar_tooltip: "%{total_patients} %{patient_or_patients} with %{threshold}"
 
   admin:
-    reset_otp_alert: 'Are you sure you want to reset the OTP? This will invalidate the previous OTP and a SMS will be sent to the user with the new OTP'
-    disable_access_alert: 'Are you sure you want to disable the access for user?'
-    enable_access_alert: 'Are you sure you want to enable the access for user?'
-    allowed_access_to_user: '%{admin_name} allowed access'
-    denied_access_to_user: '%{admin_name} denied access'
+    reset_otp_alert: "Are you sure you want to reset the OTP? This will invalidate the previous OTP and a SMS will be sent to the user with the new OTP"
+    disable_access_alert: "Are you sure you want to disable the access for user?"
+    enable_access_alert: "Are you sure you want to enable the access for user?"
+    allowed_access_to_user: "%{admin_name} allowed access"
+    denied_access_to_user: "%{admin_name} denied access"
     dashboard_title: "Simple Dashboard"
     phi_download_alert: "You are about to download confidental patient data. Are you sure you want to proceed?"
     phi_anonymized_download_alert: "You are about to download confidential (anonymized) patient data. Are you sure you want to proceed?"
@@ -267,7 +267,7 @@ en:
       unlock_instructions:
         subject: "Unlock instructions"
     omniauth_callbacks:
-      failure: "Could not authenticate you from %{kind} because \"%{reason}\"."
+      failure: 'Could not authenticate you from %{kind} because "%{reason}".'
       success: "Successfully authenticated from %{kind} account."
     password_creation:
       needs_number: "Includes one number"
@@ -370,17 +370,60 @@ en:
 
         The comprehensive list of authentication mechanisms used is provided below. It lists the specific details of
         using access tokens and other request headers to authenticate with the API.
-      title: 'Simple Server'
+      title: "Simple Server"
       logo:
-        image: 'rtsl_logo.png'
-        background_color: '#FFFFFF'
+        image: "rtsl_logo.png"
+        background_color: "#FFFFFF"
       contact:
-        email: 'eng-backend@resolvetosavelives.org'
+        email: "eng-backend@resolvetosavelives.org"
       license:
-        name: 'MIT'
-        url: 'https://github.com/simpledotorg/simple-server/blob/master/LICENSE'
+        name: "MIT"
+        url: "https://github.com/simpledotorg/simple-server/blob/master/LICENSE"
 
   faker:
     name:
-      first_name: ['Ishita', 'Riya', 'Aditya', 'Shreya', 'Mahesh', 'Priya', 'Deepak', 'Rahul', 'Ankit', 'Tanvi', 'Amit', 'Yash', 'Abhishek', 'Tanya', 'Shyam', 'Vani', 'Divya', 'Rohit', 'Anjali', 'Priyanka']
-      last_name: ['Lamba', 'Bahl', 'Sodhi', 'Sardana', 'Puri', 'Chhabra', 'Khanna', 'Malhotra', 'Mehra', 'Garewal', 'Dhillon', 'Bharathi', 'Madhu', 'Bharathi', 'Manabi', 'Anjum', 'Vani', 'Riya', 'Shreya']
+      first_name:
+        [
+          "Ishita",
+          "Riya",
+          "Aditya",
+          "Shreya",
+          "Mahesh",
+          "Priya",
+          "Deepak",
+          "Rahul",
+          "Ankit",
+          "Tanvi",
+          "Amit",
+          "Yash",
+          "Abhishek",
+          "Tanya",
+          "Shyam",
+          "Vani",
+          "Divya",
+          "Rohit",
+          "Anjali",
+          "Priyanka",
+        ]
+      last_name:
+        [
+          "Lamba",
+          "Bahl",
+          "Sodhi",
+          "Sardana",
+          "Puri",
+          "Chhabra",
+          "Khanna",
+          "Malhotra",
+          "Mehra",
+          "Garewal",
+          "Dhillon",
+          "Bharathi",
+          "Madhu",
+          "Bharathi",
+          "Manabi",
+          "Anjum",
+          "Vani",
+          "Riya",
+          "Shreya",
+        ]
