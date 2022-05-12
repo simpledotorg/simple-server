@@ -17,7 +17,7 @@ RSpec.describe CreateAuditLogsWorker, type: :job do
                                              action: action,
                                              time: Time.current}.to_json)
       }.to change(Sidekiq::Queues["low"], :size).by(1)
-      CreateAuditLogsWorker.clear
+      CreateAuditLogsWorker.drain
     end
 
     it "Writes fetch audit logs for the given records" do
