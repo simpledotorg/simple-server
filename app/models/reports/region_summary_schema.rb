@@ -49,17 +49,35 @@ module Reports
       end
     end
 
+    memoize def adjusted_diabetes_patients_with_ltfu
+      cumulative_assigned_diabetic_patients.each_with_object({}) do |(entry, result), results|
+        values = periods.each_with_object(Hash.new(0)) { |period, region_result|
+          region_result[period] = result[period.adjusted_period]
+        }
+        results[entry] = values
+      end
+    end
+
     # Adjusted patient counts are the patient counts from three months ago (the adjusted period) that
     # are the basis for control rates. These counts DO NOT include lost to follow up.
     memoize def adjusted_patients_without_ltfu
       values_at("adjusted_patients_under_care")
     end
 
+    memoize def adjusted_diabetes_patients_without_ltfu
+      values_at("adjusted_diabetes_patients_under_care")
+    end
+
     alias_method :adjusted_patients, :adjusted_patients_without_ltfu
+    alias_method :adjusted_diabetes_patients, :adjusted_patients_without_ltfu
 
     # Return the running total of cumulative assigned patient counts. Note that this *includes* LTFU.
     memoize def cumulative_assigned_patients
       values_at("cumulative_assigned_patients")
+    end
+
+    memoize def cumulative_assigned_diabetic_patients
+      values_at("cumulative_assigned_diabetic_patients")
     end
 
     # Returns registration counts per region / period
@@ -67,8 +85,16 @@ module Reports
       values_at("monthly_registrations")
     end
 
+    memoize def monthly_diabetes_registrations
+      values_at("monthly_diabetes_registrations")
+    end
+
     memoize def cumulative_registrations
       values_at("cumulative_registrations")
+    end
+
+    memoize def cumulative_diabetes_registrations
+      values_at("cumulative_diabetes_registrations")
     end
 
     memoize def ltfu
@@ -131,9 +157,20 @@ module Reports
       values_at(field)
     end
 
+    memoize def diabetes_missed_visits(with_ltfu: false)
+      field = with_ltfu ? :adjusted_bs_missed_visit_lost_to_follow_up : :adjusted_bs_missed_visit_under_care
+      values_at(field)
+    end
+
     memoize def missed_visits_rates(with_ltfu: false)
       region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
         treatment_outcome_rates(entry, with_ltfu)[__method__]
+      end
+    end
+
+    memoize def diabetes_missed_visits_rates(with_ltfu: false)
+      region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
+        diabetes_treatment_outcome_rates(entry, with_ltfu)[:missed_visits_rates]
       end
     end
 
@@ -142,10 +179,10 @@ module Reports
         values_at("monthly_follow_ups")
       else
         group_field = case group_by
-          when /user_id\z/ then :user_id
-          when /gender\z/ then :patient_gender
-          when nil then nil
-          else raise(ArgumentError, "unknown group for follow ups #{group_by}")
+                      when /user_id\z/ then :user_id
+                      when /gender\z/ then :patient_gender
+                      when nil then nil
+                      else raise(ArgumentError, "unknown group for follow ups #{group_by}")
         end
         regions.each_with_object({}) do |region, results|
           query = Reports::PatientFollowUp.with_hypertension.where(facility_id: region.facility_ids)
@@ -162,6 +199,10 @@ module Reports
           results[region.slug] = counts
         end
       end
+    end
+
+    memoize def monthly_diabetes_followups
+      values_at("monthly_diabetes_follow_ups")
     end
 
     memoize def monthly_overdue_calls
@@ -183,6 +224,16 @@ module Reports
     def visited_without_bp_taken(with_ltfu: false)
       field = with_ltfu ? :adjusted_visited_no_bp_under_care_with_lost_to_follow_up : :adjusted_visited_no_bp_under_care
       values_at(field)
+    end
+
+    memoize def visited_without_bs_taken
+      values_at(:adjusted_visited_no_bs_under_care)
+    end
+
+    memoize def visited_without_bs_taken_rates(with_ltfu: false)
+      region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
+        diabetes_treatment_outcome_rates(entry, with_ltfu)[__method__]
+      end
     end
 
     memoize def visited_without_bp_taken_rates(with_ltfu: false)
@@ -215,6 +266,42 @@ module Reports
       end
     end
 
+    memoize def bs_below_200_patients
+      values_at("adjusted_bs_below_200_under_care")
+    end
+
+    memoize def bs_200_to_300_patients
+      values_at("adjusted_bs_200_to_300_under_care")
+    end
+
+    memoize def bs_over_300_patients
+      values_at("adjusted_bs_over_300_under_care")
+    end
+
+    memoize def bs_below_200_rates(with_ltfu: false)
+      region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
+        diabetes_treatment_outcome_rates(entry, with_ltfu)[__method__]
+      end
+    end
+
+    memoize def bs_200_to_300_rates(with_ltfu: false)
+      region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
+        diabetes_treatment_outcome_rates(entry, with_ltfu)[__method__]
+      end
+    end
+
+    memoize def bs_over_300_rates(with_ltfu: false)
+      region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
+        diabetes_treatment_outcome_rates(entry, with_ltfu)[__method__]
+      end
+    end
+
+    memoize def diabetes_treatment_outcome_breakdown(blood_sugar_risk_state)
+      region_period_cached_query(__method__, blood_sugar_risk_state: blood_sugar_risk_state) do |entry|
+        diabetes_treatment_outcome_breakdown_rates(entry, blood_sugar_risk_state)
+      end
+    end
+
     private
 
     def appts_scheduled_rates(entry)
@@ -226,7 +313,7 @@ module Reports
       })
     end
 
-    def treatment_outcome_rates(entry, with_ltfu)
+    memoize def treatment_outcome_rates(entry, with_ltfu)
       rounded_percentages({
         visited_without_bp_taken_rates: visited_without_bp_taken(with_ltfu: with_ltfu)[entry.region.slug][entry.period],
         missed_visits_rates: missed_visits(with_ltfu: with_ltfu)[entry.region.slug][entry.period],
@@ -235,10 +322,42 @@ module Reports
       })
     end
 
+    memoize def diabetes_treatment_outcome_rates(entry, with_ltfu)
+      rounded_percentages({
+        bs_below_200_rates: diabetes_under_care(:bs_below_200)[entry.region.slug][entry.period],
+        bs_200_to_300_rates: diabetes_under_care(:bs_200_to_300)[entry.region.slug][entry.period],
+        bs_over_300_rates: diabetes_under_care(:bs_over_300)[entry.region.slug][entry.period],
+        missed_visits_rates: diabetes_missed_visits(with_ltfu: with_ltfu)[entry.region.slug][entry.period],
+        visited_without_bs_taken_rates: visited_without_bs_taken[entry.region.slug][entry.period]
+      })
+    end
+
+    memoize def diabetes_treatment_outcome_breakdown_rates(entry, blood_sugar_risk_state)
+      rounded_percentages({
+        random: diabetes_under_care(blood_sugar_risk_state, :random)[entry.region.slug][entry.period],
+        post_prandial: diabetes_under_care(blood_sugar_risk_state, :post_prandial)[entry.region.slug][entry.period],
+        fasting: diabetes_under_care(blood_sugar_risk_state, :fasting)[entry.region.slug][entry.period],
+        hba1c: diabetes_under_care(blood_sugar_risk_state, :hba1c) [entry.region.slug][entry.period]
+      })
+    end
+
+    memoize def diabetes_under_care(blood_sugar_risk_state, blood_sugar_type = nil)
+      if blood_sugar_type
+        return values_at("adjusted_#{blood_sugar_type}_#{blood_sugar_risk_state}_under_care")
+      end
+      values_at("adjusted_#{blood_sugar_risk_state}_under_care")
+    end
+
     memoize def earliest_patient_data_query_v2(region)
-      FacilityState.for_region(region)
-        .with_patients
-        .minimum(:month_date)
+      if region.diabetes_management_enabled?
+        FacilityState.for_region(region)
+          .with_htn_or_diabetes_patients
+          .minimum(:month_date)
+      else
+        FacilityState.for_region(region)
+          .with_patients
+          .minimum(:month_date)
+      end
     end
 
     # Calls RegionSummary for each region_type in our collection of regions -- this is necessary because

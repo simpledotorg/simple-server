@@ -16,16 +16,31 @@ module Reports
       adjusted_visited_no_bp_under_care
       cumulative_assigned_patients
       cumulative_registrations
+      cumulative_diabetes_registrations
       lost_to_follow_up
       under_care
       monthly_registrations
+      monthly_diabetes_registrations
       monthly_overdue_calls
       monthly_follow_ups
+      monthly_diabetes_follow_ups
       total_appts_scheduled
       appts_scheduled_0_to_14_days
       appts_scheduled_15_to_31_days
       appts_scheduled_32_to_62_days
       appts_scheduled_more_than_62_days
+      cumulative_assigned_diabetic_patients
+      adjusted_diabetes_patients_under_care
+      adjusted_bs_below_200_under_care
+      adjusted_random_bs_below_200_under_care
+      adjusted_post_prandial_bs_below_200_under_care
+      adjusted_fasting_bs_below_200_under_care
+      adjusted_hba1c_bs_below_200_under_care
+      adjusted_visited_no_bs_under_care
+      adjusted_bs_missed_visit_under_care
+      adjusted_bs_missed_visit_lost_to_follow_up
+      adjusted_bs_200_to_300_under_care
+      adjusted_bs_over_300_under_care
     ].sort.freeze
 
     UNDER_CARE_WITH_LTFU = %i[
@@ -71,9 +86,15 @@ module Reports
     end
 
     def for_regions
-      FacilityState
+      query = FacilityState
         .where(id_field => regions.map(&:id))
-        .where("cumulative_registrations IS NOT NULL OR cumulative_assigned_patients IS NOT NULL OR monthly_follow_ups IS NOT NULL")
+
+      filter = "cumulative_registrations IS NOT NULL OR cumulative_assigned_patients IS NOT NULL OR monthly_follow_ups IS NOT NULL"
+      if regions.any?(&:diabetes_management_enabled?)
+        filter += " OR cumulative_diabetes_registrations IS NOT NULL OR cumulative_assigned_diabetic_patients IS NOT NULL OR monthly_diabetes_follow_ups IS NOT NULL"
+      end
+
+      query.where(filter)
     end
   end
 end

@@ -44,6 +44,11 @@ module Reports
       appts_scheduled_15_to_31_days_rates
       appts_scheduled_32_to_62_days_rates
       appts_scheduled_more_than_62_days_rates
+      bs_below_200_rates
+      bs_200_to_300_rates
+      bs_over_300_rates
+      diabetes_missed_visits_rates
+      visited_without_bs_taken_rates
     ]
 
     DELEGATED_COUNTS = %i[
@@ -54,6 +59,7 @@ module Reports
       controlled
       cumulative_assigned_patients
       cumulative_registrations
+      cumulative_diabetes_registrations
       earliest_patient_recorded_at
       earliest_patient_recorded_at_period
       under_care
@@ -62,14 +68,28 @@ module Reports
       missed_visits_with_ltfu
       missed_visits_without_ltfu
       monthly_registrations
+      monthly_diabetes_registrations
       uncontrolled
       visited_without_bp_taken
       monthly_overdue_calls
+      monthly_diabetes_followups
       total_appts_scheduled
       appts_scheduled_0_to_14_days
       appts_scheduled_15_to_31_days
       appts_scheduled_32_to_62_days
       appts_scheduled_more_than_62_days
+      adjusted_diabetes_patients_without_ltfu
+      adjusted_diabetes_patients_with_ltfu
+      adjusted_diabetes_patients
+      bs_below_200_patients
+      bs_200_to_300_patients
+      bs_over_300_patients
+      diabetes_missed_visits
+      visited_without_bs_taken
+    ]
+
+    DELEGATED_BREAKDOWNS = %i[
+      diabetes_treatment_outcome_breakdown
     ]
 
     def warm_cache
@@ -90,6 +110,7 @@ module Reports
 
     delegate(*DELEGATED_COUNTS, to: :schema)
     delegate(*DELEGATED_RATES, to: :schema)
+    delegate(*DELEGATED_BREAKDOWNS, to: :schema)
 
     alias_method :adjusted_patients, :adjusted_patients_without_ltfu
 

@@ -1,7 +1,5 @@
 require "rails_helper"
 describe AuditLog, type: :model do
-  include ActiveJob::TestHelper
-
   let(:user) { create :user }
   let(:record) { create :patient }
 
@@ -63,7 +61,7 @@ describe AuditLog, type: :model do
       expect {
         AuditLog.create_logs_async(user, records, action, Time.current)
       }.to change(CreateAuditLogsWorker.jobs, :size).by(1)
-      CreateAuditLogsWorker.clear
+      CreateAuditLogsWorker.drain
     end
 
     it "creates audit logs for user and records when the job is completed" do

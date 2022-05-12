@@ -1,6 +1,8 @@
 require "rails_helper"
 
 describe Reports::RegionSummarySchema, type: :model do
+  using StringToPeriod
+
   let(:organization) { create(:organization, name: "org-1") }
   let(:user) { create(:admin, :manager, :with_access, resource: organization, organization: organization) }
 
@@ -140,6 +142,255 @@ describe Reports::RegionSummarySchema, type: :model do
       expect(schema.appts_scheduled_15_to_31_days_rates[facility.slug]).to eq({})
       expect(schema.appts_scheduled_32_to_62_days_rates[facility.slug]).to eq({})
       expect(schema.appts_scheduled_more_than_62_days_rates[facility.slug]).to eq({})
+    end
+  end
+
+  describe "diabetes" do
+    let(:distict_with_facilities) { setup_district_with_facilities }
+    let(:region) { distict_with_facilities[:region] }
+    let(:facility_1) { distict_with_facilities[:facility_1] }
+    let(:facility_2) { distict_with_facilities[:facility_2] }
+    let(:period) { jan_2020..mar_2020 }
+
+    before :each do
+      Flipper.enable(:diabetes_management_reports)
+      facility_1.update(enable_diabetes_management: true)
+      facility_2.update(enable_diabetes_management: true)
+    end
+
+    describe "#bs_below_200_rates" do
+      it "returns the bs_below_200 rates over time for a region" do
+        facility_1_patients = create_list(:patient, 4, :diabetes, assigned_facility: facility_1, recorded_at: jan_2019)
+        create(:blood_sugar, :with_encounter, :random, :bs_below_200, patient: facility_1_patients.first, facility: facility_1, recorded_at: jan_2020 + 3.months)
+        create(:blood_sugar, :with_encounter, :post_prandial, :bs_below_200, patient: facility_1_patients.second, facility: facility_1, recorded_at: jan_2020 + 2.months)
+        create(:blood_sugar, :with_encounter, :fasting, :bs_below_200, patient: facility_1_patients.third, facility: facility_1, recorded_at: jan_2020 + 2.months)
+        create(:blood_pressure, :with_encounter, patient: facility_1_patients.fourth, facility: facility_1, recorded_at: jan_2020 + 3.months)
+
+        facility_2_patients = create_list(:patient, 3, :diabetes, assigned_facility: facility_2, recorded_at: jan_2019)
+        create(:blood_sugar, :with_encounter, :hba1c, :bs_below_200, patient: facility_2_patients.first, facility: facility_2, recorded_at: jan_2020 + 3.months)
+        create(:blood_sugar, :with_encounter, :post_prandial, :bs_below_200, patient: facility_2_patients.second, facility: facility_2, recorded_at: jan_2020 + 2.months)
+        create(:blood_sugar, :with_encounter, :fasting, :bs_below_200, patient: facility_2_patients.third, facility: facility_2, recorded_at: jan_2020 + 2.months)
+
+        refresh_views
+
+        schema = described_class.new([facility_1.region, facility_2.region, region], periods: range)
+        (("Jan 2019".to_period)..("Feb 2020".to_period)).each do |period|
+          [facility_1.region, facility_2.region, region].each do |r|
+            expect(schema.bs_below_200_rates[r.slug][period]).to eq(0)
+            expect(schema.bs_below_200_rates(with_ltfu: true)[r.slug][period]).to eq(0)
+          end
+        end
+
+        expect(schema.bs_below_200_rates[facility_1.region.slug]["Mar 2020".to_period]).to eq(100)
+        expect(schema.bs_below_200_rates(with_ltfu: true)[facility_1.region.slug]["Mar 2020".to_period]).to eq(50)
+
+        expect(schema.bs_below_200_rates[facility_2.region.slug]["Mar 2020".to_period]).to eq(100)
+        expect(schema.bs_below_200_rates(with_ltfu: true)[facility_2.region.slug]["Mar 2020".to_period]).to eq(67)
+
+        expect(schema.bs_below_200_rates[region.slug]["Mar 2020".to_period]).to eq(100)
+        expect(schema.bs_below_200_rates(with_ltfu: true)[region.slug]["Mar 2020".to_period]).to eq(57)
+      end
+    end
+
+    describe "#bs_200_to_300_rates" do
+      it "returns the bs_200_to_300 rates over time for a region" do
+        facility_1_patients = create_list(:patient, 4, :diabetes, assigned_facility: facility_1, recorded_at: jan_2019)
+        create(:blood_sugar, :with_encounter, :random, :bs_200_to_300, patient: facility_1_patients.first, facility: facility_1, recorded_at: jan_2020 + 3.months)
+        create(:blood_sugar, :with_encounter, :post_prandial, :bs_200_to_300, patient: facility_1_patients.second, facility: facility_1, recorded_at: jan_2020 + 2.months)
+        create(:blood_sugar, :with_encounter, :fasting, :bs_200_to_300, patient: facility_1_patients.third, facility: facility_1, recorded_at: jan_2020 + 2.months)
+        create(:blood_pressure, :with_encounter, patient: facility_1_patients.fourth, facility: facility_1, recorded_at: jan_2020 + 3.months)
+
+        facility_2_patients = create_list(:patient, 3, :diabetes, assigned_facility: facility_2, recorded_at: jan_2019)
+        create(:blood_sugar, :with_encounter, :hba1c, :bs_200_to_300, patient: facility_2_patients.first, facility: facility_2, recorded_at: jan_2020 + 3.months)
+        create(:blood_sugar, :with_encounter, :post_prandial, :bs_200_to_300, patient: facility_2_patients.second, facility: facility_2, recorded_at: jan_2020 + 2.months)
+        create(:blood_sugar, :with_encounter, :fasting, :bs_200_to_300, patient: facility_2_patients.third, facility: facility_2, recorded_at: jan_2020 + 2.months)
+
+        refresh_views
+
+        schema = described_class.new([facility_1.region, facility_2.region, region], periods: range)
+        (("Jan 2019".to_period)..("Feb 2020".to_period)).each do |period|
+          [facility_1.region, facility_2.region, region].each do |r|
+            expect(schema.bs_200_to_300_rates[r.slug][period]).to eq(0)
+            expect(schema.bs_200_to_300_rates(with_ltfu: true)[r.slug][period]).to eq(0)
+          end
+        end
+
+        expect(schema.bs_200_to_300_rates[facility_1.region.slug]["Mar 2020".to_period]).to eq(100)
+        expect(schema.bs_200_to_300_rates(with_ltfu: true)[facility_1.region.slug]["Mar 2020".to_period]).to eq(50)
+
+        expect(schema.bs_200_to_300_rates[facility_2.region.slug]["Mar 2020".to_period]).to eq(100)
+        expect(schema.bs_200_to_300_rates(with_ltfu: true)[facility_2.region.slug]["Mar 2020".to_period]).to eq(67)
+
+        expect(schema.bs_200_to_300_rates[region.slug]["Mar 2020".to_period]).to eq(100)
+        expect(schema.bs_200_to_300_rates(with_ltfu: true)[region.slug]["Mar 2020".to_period]).to eq(57)
+      end
+    end
+
+    describe "#bs_over_300_rates" do
+      it "returns the bs_over_300 rates over time for a region" do
+        facility_1_patients = create_list(:patient, 4, :diabetes, assigned_facility: facility_1, recorded_at: jan_2019)
+        create(:blood_sugar, :with_encounter, :random, :bs_over_300, patient: facility_1_patients.first, facility: facility_1, recorded_at: jan_2020 + 3.months)
+        create(:blood_sugar, :with_encounter, :post_prandial, :bs_over_300, patient: facility_1_patients.second, facility: facility_1, recorded_at: jan_2020 + 2.months)
+        create(:blood_sugar, :with_encounter, :fasting, :bs_over_300, patient: facility_1_patients.third, facility: facility_1, recorded_at: jan_2020 + 2.months)
+        create(:blood_pressure, :with_encounter, patient: facility_1_patients.fourth, facility: facility_1, recorded_at: jan_2020 + 3.months)
+
+        facility_2_patients = create_list(:patient, 3, :diabetes, assigned_facility: facility_2, recorded_at: jan_2019)
+        create(:blood_sugar, :with_encounter, :hba1c, :bs_over_300, patient: facility_2_patients.first, facility: facility_2, recorded_at: jan_2020 + 3.months)
+        create(:blood_sugar, :with_encounter, :post_prandial, :bs_over_300, patient: facility_2_patients.second, facility: facility_2, recorded_at: jan_2020 + 2.months)
+        create(:blood_sugar, :with_encounter, :fasting, :bs_over_300, patient: facility_2_patients.third, facility: facility_2, recorded_at: jan_2020 + 2.months)
+
+        refresh_views
+
+        schema = described_class.new([facility_1.region, facility_2.region, region], periods: range)
+        (("Jan 2019".to_period)..("Feb 2020".to_period)).each do |period|
+          [facility_1.region, facility_2.region, region].each do |r|
+            expect(schema.bs_over_300_rates[r.slug][period]).to eq(0)
+            expect(schema.bs_over_300_rates(with_ltfu: true)[r.slug][period]).to eq(0)
+          end
+        end
+
+        expect(schema.bs_over_300_rates[facility_1.region.slug]["Mar 2020".to_period]).to eq(100)
+        expect(schema.bs_over_300_rates(with_ltfu: true)[facility_1.region.slug]["Mar 2020".to_period]).to eq(50)
+
+        expect(schema.bs_over_300_rates[facility_2.region.slug]["Mar 2020".to_period]).to eq(100)
+        expect(schema.bs_over_300_rates(with_ltfu: true)[facility_2.region.slug]["Mar 2020".to_period]).to eq(67)
+
+        expect(schema.bs_over_300_rates[region.slug]["Mar 2020".to_period]).to eq(100)
+        expect(schema.bs_over_300_rates(with_ltfu: true)[region.slug]["Mar 2020".to_period]).to eq(57)
+      end
+    end
+
+    describe "#diabetes_missed_visits_rates" do
+      it "returns the percentage of patients with missed visits in a region" do
+        facility_1_patients = create_list(:patient, 4, :diabetes, assigned_facility: facility_1, recorded_at: jan_2019)
+        create(:blood_sugar, :with_encounter, :random, :bs_below_200, patient: facility_1_patients.first, facility: facility_1, recorded_at: jan_2020 + 3.months)
+        create(:blood_sugar, :with_encounter, :post_prandial, :bs_below_200, patient: facility_1_patients.second, facility: facility_1, recorded_at: jan_2020 + 2.months)
+        create(:blood_sugar, :with_encounter, :fasting, :bs_below_200, patient: facility_1_patients.third, facility: facility_1, recorded_at: jan_2020 + 2.months)
+        create(:blood_sugar, :with_encounter, :hba1c, :bs_below_200, patient: facility_1_patients.fourth, facility: facility_1, recorded_at: jan_2020 + 3.months)
+
+        facility_2_patients = create_list(:patient, 3, :diabetes, assigned_facility: facility_2, recorded_at: jan_2019)
+        create(:blood_sugar, :with_encounter, :random, :bs_below_200, patient: facility_2_patients.first, facility: facility_2, recorded_at: jan_2020 + 3.months)
+        create(:blood_sugar, :with_encounter, :post_prandial, :bs_below_200, patient: facility_2_patients.second, facility: facility_2, recorded_at: jan_2020 + 2.months)
+        create(:blood_sugar, :with_encounter, :fasting, :bs_below_200, patient: facility_2_patients.third, facility: facility_2, recorded_at: jan_2020 + 2.months)
+
+        refresh_views
+        schema = described_class.new([facility_1.region, facility_2.region, region], periods: range)
+        (("Jan 2019".to_period)..("Mar 2019".to_period)).each do |period|
+          [facility_1.region, facility_2.region, region].each do |r|
+            expect(schema.diabetes_missed_visits_rates[r.slug][period]).to eq 0
+            expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[r.slug][period]).to eq(0)
+          end
+        end
+
+        (("Apr 2019".to_period)..("Dec 2019".to_period)).each do |period|
+          expect(schema.diabetes_missed_visits_rates[facility_1.region.slug][period]).to eq(100)
+          expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_1.region.slug][period]).to eq(0)
+
+          expect(schema.diabetes_missed_visits_rates[facility_2.region.slug][period]).to eq(100)
+          expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_2.region.slug][period]).to eq(0)
+        end
+
+        (("Jan 2020".to_period)..("Feb 2020".to_period)).each do |period|
+          expect(schema.diabetes_missed_visits_rates[facility_1.region.slug][period]).to eq 0
+          expect(schema.diabetes_missed_visits_rates[facility_2.region.slug][period]).to eq 0
+        end
+
+        (("Jan 2020".to_period)..("Feb 2020".to_period)).each do |period|
+          expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_1.region.slug][period]).to eq 100
+          expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_2.region.slug][period]).to eq 100
+        end
+
+        expect(schema.diabetes_missed_visits_rates[facility_1.region.slug]["Apr 2020".to_period]).to eq(0)
+        expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_1.region.slug]["Apr 2020".to_period]).to eq(0)
+        expect(schema.diabetes_missed_visits_rates[facility_2.region.slug]["Apr 2020".to_period]).to eq(0)
+        expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_2.region.slug]["Apr 2020".to_period]).to eq(0)
+
+        expect(schema.diabetes_missed_visits_rates[facility_1.region.slug]["Mar 2020".to_period]).to eq(0)
+        expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_1.region.slug]["Mar 2020".to_period]).to eq(50)
+        expect(schema.diabetes_missed_visits_rates[facility_2.region.slug]["Mar 2020".to_period]).to eq(0)
+        expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_2.region.slug]["Mar 2020".to_period]).to eq(33)
+
+        expect(schema.diabetes_missed_visits_rates[facility_1.region.slug]["May 2020".to_period]).to eq(0)
+        expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_1.region.slug]["May 2020".to_period]).to eq(0)
+        expect(schema.diabetes_missed_visits_rates[facility_2.region.slug]["May 2020".to_period]).to eq(0)
+        expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_2.region.slug]["May 2020".to_period]).to eq(0)
+
+        expect(schema.diabetes_missed_visits_rates[facility_1.region.slug]["Jun 2020".to_period]).to eq 50
+        expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_1.region.slug]["Jun 2020".to_period]).to eq 0
+        expect(schema.diabetes_missed_visits_rates[facility_2.region.slug]["Jun 2020".to_period]).to eq 67
+        expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_2.region.slug]["Jun 2020".to_period]).to eq 0
+      end
+    end
+
+    describe "#visited_without_bs_taken_rates" do
+      it "returns the percentage of patients who visited without bs taken in a region" do
+        facility_1_patients = create_list(:patient, 4, :diabetes, assigned_facility: facility_1, recorded_at: jan_2019)
+        create(:blood_sugar, :with_encounter, patient: facility_1_patients.first, facility: facility_1, recorded_at: jan_2020 + 3.months)
+        create(:blood_pressure, :with_encounter, patient: facility_1_patients.second, facility: facility_1, recorded_at: jan_2020 + 2.months)
+        create(:prescription_drug, patient: facility_1_patients.third, facility: facility_1, recorded_at: jan_2020 + 2.months)
+        create(:appointment, patient: facility_1_patients.fourth, facility: facility_1, recorded_at: jan_2020 + 3.months)
+
+        facility_2_patients = create_list(:patient, 3, :diabetes, assigned_facility: facility_2, recorded_at: jan_2019)
+        create(:blood_pressure, :with_encounter, patient: facility_2_patients.first, facility: facility_2, recorded_at: jan_2020 + 3.months)
+        create(:prescription_drug, patient: facility_2_patients.second, facility: facility_2, recorded_at: jan_2020 + 2.months)
+        create(:appointment, patient: facility_2_patients.third, facility: facility_2, recorded_at: jan_2020 + 2.months)
+
+        refresh_views
+        schema = described_class.new([facility_1.region, facility_2.region, region], periods: range)
+
+        expect(schema.visited_without_bs_taken_rates[facility_1.region.slug]["Mar 2020".to_period]).to eq(100)
+        expect(schema.visited_without_bs_taken_rates(with_ltfu: true)[facility_1.region.slug]["Mar 2020".to_period]).to eq(50)
+        expect(schema.visited_without_bs_taken_rates[facility_2.region.slug]["Mar 2020".to_period]).to eq(100)
+        expect(schema.visited_without_bs_taken_rates(with_ltfu: true)[facility_2.region.slug]["Mar 2020".to_period]).to eq(67)
+        expect(schema.visited_without_bs_taken_rates[region.slug]["Mar 2020".to_period]).to eq(100)
+        expect(schema.visited_without_bs_taken_rates(with_ltfu: true)[region.slug]["Mar 2020".to_period]).to eq(57)
+
+        expect(schema.visited_without_bs_taken_rates[facility_1.region.slug]["Apr 2020".to_period]).to eq(75)
+        expect(schema.visited_without_bs_taken_rates(with_ltfu: true)[facility_1.region.slug]["Apr 2020".to_period]).to eq(75)
+        expect(schema.visited_without_bs_taken_rates[facility_2.region.slug]["Apr 2020".to_period]).to eq(100)
+        expect(schema.visited_without_bs_taken_rates(with_ltfu: true)[facility_2.region.slug]["Apr 2020".to_period]).to eq(100)
+        expect(schema.visited_without_bs_taken_rates[region.slug]["Apr 2020".to_period]).to eq(86)
+        expect(schema.visited_without_bs_taken_rates(with_ltfu: true)[region.slug]["Apr 2020".to_period]).to eq(86)
+
+        expect(schema.visited_without_bs_taken_rates[facility_1.region.slug]["May 2020".to_period]).to eq(75)
+        expect(schema.visited_without_bs_taken_rates(with_ltfu: true)[facility_1.region.slug]["May 2020".to_period]).to eq(75)
+        expect(schema.visited_without_bs_taken_rates[facility_2.region.slug]["May 2020".to_period]).to eq(100)
+        expect(schema.visited_without_bs_taken_rates(with_ltfu: true)[facility_2.region.slug]["May 2020".to_period]).to eq(100)
+        expect(schema.visited_without_bs_taken_rates[region.slug]["May 2020".to_period]).to eq(86)
+        expect(schema.visited_without_bs_taken_rates(with_ltfu: true)[region.slug]["May 2020".to_period]).to eq(86)
+      end
+    end
+
+    describe "diabetes_treatment_outcome_breakdown" do
+      it "retuns the breakdown of differest blood sugar types for a diabetes outcome" do
+        facility_1_patients = create_list(:patient, 4, :diabetes, assigned_facility: facility_1, recorded_at: jan_2019)
+        create(:blood_sugar, :with_encounter, :random, :bs_below_200, patient: facility_1_patients.first, facility: facility_1, recorded_at: jan_2020 + 3.months)
+        create(:blood_sugar, :with_encounter, :post_prandial, :bs_below_200, patient: facility_1_patients.second, facility: facility_1, recorded_at: jan_2020 + 2.months)
+        create(:blood_sugar, :with_encounter, :fasting, :bs_below_200, patient: facility_1_patients.third, facility: facility_1, recorded_at: jan_2020 + 2.months)
+        create(:blood_pressure, :with_encounter, patient: facility_1_patients.fourth, facility: facility_1, recorded_at: jan_2020 + 3.months)
+
+        facility_2_patients = create_list(:patient, 3, :diabetes, assigned_facility: facility_2, recorded_at: jan_2019)
+        create(:blood_sugar, :with_encounter, :hba1c, :bs_below_200, patient: facility_2_patients.first, facility: facility_2, recorded_at: jan_2020 + 3.months)
+        create(:blood_sugar, :with_encounter, :post_prandial, :bs_below_200, patient: facility_2_patients.second, facility: facility_2, recorded_at: jan_2020 + 2.months)
+        create(:blood_sugar, :with_encounter, :fasting, :bs_below_200, patient: facility_2_patients.third, facility: facility_2, recorded_at: jan_2020 + 2.months)
+
+        refresh_views
+
+        schema = described_class.new([facility_1.region, facility_2.region, region], periods: range)
+        expect(schema.diabetes_treatment_outcome_breakdown(:bs_below_200)[facility_1.region.slug]["Mar 2020".to_period])
+          .to eq({random: 0, post_prandial: 50, fasting: 50, hba1c: 0})
+        expect(schema.diabetes_treatment_outcome_breakdown(:bs_below_200)[facility_2.region.slug]["Mar 2020".to_period])
+          .to eq({random: 0, post_prandial: 50, fasting: 50, hba1c: 0})
+        expect(schema.diabetes_treatment_outcome_breakdown(:bs_below_200)[region.slug]["Mar 2020".to_period])
+          .to eq({random: 0, post_prandial: 50, fasting: 50, hba1c: 0})
+
+        expect(schema.diabetes_treatment_outcome_breakdown(:bs_below_200)[facility_1.region.slug]["Apr 2020".to_period])
+          .to eq({random: 33, post_prandial: 33, fasting: 34, hba1c: 0})
+        expect(schema.diabetes_treatment_outcome_breakdown(:bs_below_200)[facility_2.region.slug]["Apr 2020".to_period])
+          .to eq({random: 0, post_prandial: 33, fasting: 33, hba1c: 34})
+        expect(schema.diabetes_treatment_outcome_breakdown(:bs_below_200)[region.slug]["Apr 2020".to_period])
+          .to eq({random: 17, post_prandial: 33, fasting: 33, hba1c: 17})
+      end
     end
   end
 end

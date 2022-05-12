@@ -115,6 +115,9 @@
 .w-90px {
   width: 90px;
 }
+.w-120px {
+  width: 120px;
+}
 .w-200px {
   width: 200px;
 }
@@ -303,6 +306,9 @@
 .ta-center {
   text-align: center;
 }
+.ta-right {
+  text-align: right;
+}
 .c-grey-dark {
   color: $grey-dark;
 }
@@ -342,6 +348,15 @@
 .c-grey-dark:hover {
   color: $grey-dark;
 }
+
+.c-orange {
+  color: $orange;
+}
+
+.c-maroon {
+  color: $maroon;
+}
+
 .td-none {
   text-decoration: none;
 }
@@ -713,4 +728,11 @@
   position: relative;
   top: 2px;
   margin-right: 4px;
+}
+.graph-percent {
+  margin: 0 18px 0 0;
+  font-weight: bold;
+  min-width: 2em;
+  text-align: center;
+  display: inline-block;
 }

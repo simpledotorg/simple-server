@@ -1,4 +1,6 @@
 class RequestOtpSmsJob < ApplicationJob
+  queue_as :high
+
   def perform(user)
     handle_twilio_errors(user) do
       Messaging::Twilio::OtpSms.send_message(
