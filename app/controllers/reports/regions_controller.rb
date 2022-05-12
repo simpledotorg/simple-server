@@ -161,9 +161,11 @@ class Reports::RegionsController < AdminController
 
   def cohort
     authorize { current_admin.accessible_facilities(:view_reports).any? }
-    periods = @period.downto(5)
+    @monthly_period = Period.month(Time.current)
+    @quarterly_period = Period.quarter(Time.current)
 
-    @cohort_data = CohortService.new(region: @region, periods: periods).call
+    @monthly_cohort_data = CohortService.new(region: @region, periods: @monthly_period.downto(5)).call
+    @quarterly_cohort_data = CohortService.new(region: @region, periods: @quarterly_period.downto(5)).call
   end
 
   def diabetes
