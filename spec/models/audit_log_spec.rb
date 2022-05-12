@@ -1,7 +1,5 @@
 require "rails_helper"
 describe AuditLog, type: :model do
-  include ActiveJob::TestHelper
-
   let(:user) { create :user }
   let(:record) { create :patient }
 
