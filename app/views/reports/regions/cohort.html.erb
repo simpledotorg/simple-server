@@ -5,9 +5,5 @@
 <%= render "header"%>
 
 <div class="d-lg-flex">
-  <%= render Reports::CohortComponent.new(@monthly_period, @monthly_cohort_data) %>
-</div>
-
-<div class="d-lg-flex">
-  <%= render Reports::CohortComponent.new(@quarterly_period, @quarterly_cohort_data) %>
+  <%= render Reports::CohortComponent.new(@period, @cohort_data) %>
 </div>
