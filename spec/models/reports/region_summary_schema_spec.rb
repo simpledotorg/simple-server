@@ -261,7 +261,7 @@ describe Reports::RegionSummarySchema, type: :model do
     end
 
     describe "#diabetes_missed_visits_rates" do
-      it "returns the adjusted count of patients with missed visits in a region" do
+      it "returns the percentage of patients with missed visits in a region" do
         facility_1_patients = create_list(:patient, 4, :diabetes, assigned_facility: facility_1, recorded_at: jan_2019)
         create(:blood_sugar, :with_encounter, :random, :bs_below_200, patient: facility_1_patients.first, facility: facility_1, recorded_at: jan_2020 + 3.months)
         create(:blood_sugar, :with_encounter, :post_prandial, :bs_below_200, patient: facility_1_patients.second, facility: facility_1, recorded_at: jan_2020 + 2.months)
@@ -323,7 +323,7 @@ describe Reports::RegionSummarySchema, type: :model do
     end
 
     describe "#visited_without_bs_taken_rates" do
-      it "returns the adjusted count of patients with missed visits in a region" do
+      it "returns the percentage of patients who visited without bs taken in a region" do
         facility_1_patients = create_list(:patient, 4, :diabetes, assigned_facility: facility_1, recorded_at: jan_2019)
         create(:blood_sugar, :with_encounter, patient: facility_1_patients.first, facility: facility_1, recorded_at: jan_2020 + 3.months)
         create(:blood_pressure, :with_encounter, patient: facility_1_patients.second, facility: facility_1, recorded_at: jan_2020 + 2.months)
