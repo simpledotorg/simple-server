@@ -4,8 +4,8 @@ class Reports::RegionsController < AdminController
   include RegionSearch
 
   before_action :set_period, only: [:show, :cohort, :diabetes]
-  before_action :set_page, only: [:details]
-  before_action :set_per_page, only: [:details]
+  before_action :set_page, only: [:show, :details]
+  before_action :set_per_page, only: [:show, :details]
   before_action :find_region, except: [:index, :fastindex, :monthly_district_data_report]
   before_action :show_region_search
   around_action :set_reporting_time_zone
@@ -77,10 +77,10 @@ class Reports::RegionsController < AdminController
       }
     }
 
-    # ======================
-    # DETAILS
-    # ======================
     if current_admin.feature_enabled?(:diabetes_management_reports)
+      # ======================
+      # DETAILS
+      # ======================
       @details_period = Period.month(Time.current)
       @details_period_range = Range.new(@details_period.advance(months: -5), @details_period)
       months = -(Reports::MAX_MONTHS_OF_DATA - 1)
@@ -110,9 +110,16 @@ class Reports::RegionsController < AdminController
           @region.source.blood_pressures.for_recent_bp_log.includes(:patient, :facility)
         )
       end
-    end
 
-    # ======================
+      # ======================
+      # COHORT REPORTS
+      # ======================
+      @monthly_period = Period.month(Time.current)
+      @quarterly_period = Period.quarter(Time.current)
+
+      @monthly_cohort_data = CohortService.new(region: @region, periods: @monthly_period.downto(5)).call
+      @quarterly_cohort_data = CohortService.new(region: @region, periods: @quarterly_period.downto(5)).call
+    end
 
     @data = @overview_data
     @data.merge!(@details_chart_data) if current_admin.feature_enabled?(:diabetes_management_reports)

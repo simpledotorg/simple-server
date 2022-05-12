@@ -215,9 +215,10 @@
   <%= render "child_data_tables", data: @children_data, localized_region_type: @child_regions.first.localized_region_type %>
 <% end %>
 
-<h4 class="mt-5 mb-32px">Details</h4>
 
 <% if current_admin.feature_enabled?(:diabetes_management_reports) %>
+  <h4 class="mt-5 mb-32px">Details</h4>
+
   <%= render "reports/regions/patient_breakdown_charts" %>
   <% if current_admin.feature_enabled?(:medications_dispensation) %>
     <%= render "reports/regions/medications_dispensation" %>
@@ -232,6 +233,16 @@
       repository: @details_repository,
       current_period: @period)) %>
   <% end %>
+
+  <h4 class="mt-5 mb-32px">Cohort reports</h4>
+
+  <div class="d-lg-flex">
+    <%= render Reports::CohortComponent.new(@monthly_period, @monthly_cohort_data) %>
+  </div>
+
+  <div class="d-lg-flex">
+    <%= render Reports::CohortComponent.new(@quarterly_period, @quarterly_cohort_data) %>
+  </div>
 <% end %>
 
 
