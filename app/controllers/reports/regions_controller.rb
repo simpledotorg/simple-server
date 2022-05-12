@@ -137,6 +137,25 @@ class Reports::RegionsController < AdminController
     @with_ltfu = with_ltfu?
 
     authorize { current_admin.accessible_facilities(:view_reports).any? }
+
+    @child_regions = @region.reportable_children
+    repo = Reports::Repository.new(@child_regions, periods: @period)
+
+    @children_data = @child_regions.map { |region|
+      slug = region.slug
+      {
+        region: region,
+        bs_below_200_patients: repo.bs_below_200_patients[slug],
+        bs_below_200_breakdown: repo.diabetes_treatment_outcome_breakdown(:bs_below_200)[slug],
+        bs_below_200_breakdown_counts: repo.diabetes_treatment_outcome_breakdown_counts(:bs_below_200)[slug],
+        bs_200_to_300_patients: repo.bs_200_to_300_patients[slug],
+        bs_200_to_300_breakdown: repo.diabetes_treatment_outcome_breakdown(:bs_200_to_300)[slug],
+        bs_200_to_300_breakdown_counts: repo.diabetes_treatment_outcome_breakdown_counts(:bs_200_to_300)[slug],
+        bs_over_300_patients: repo.bs_over_300_patients[slug],
+        bs_over_300_breakdown: repo.diabetes_treatment_outcome_breakdown(:bs_over_300)[slug],
+        bs_over_300_breakdown_counts: repo.diabetes_treatment_outcome_breakdown_counts(:bs_over_300)[slug]
+      }
+    }
   end
 
   def download

@@ -1,0 +1,390 @@
+<div class="card mb-0">
+  <h3 class="mb-16px c-black">
+    <%= @period %> <%= localized_region_type %> performance
+  </h3>
+  <div class="table-responsive-md">
+    <table id="region-comparison-table" class="table-compact">
+      <colgroup>
+        <col>
+        <col class="table-divider">
+        <col>
+        <col class="table-divider">
+        <col>
+        <col class="table-divider">
+        <col>
+        <col class="table-divider">
+        <col>
+        <col class="table-divider">
+        <col>
+        <col class="table-divider">
+        <col>
+        <col class="table-divider">
+        <col>
+        <col class="table-divider">
+        <col>
+        <col class="table-divider">
+      </colgroup>
+      <thead>
+      <tr class="sorts" data-sort-method="thead">
+        <th class="row-label sort-label sort-label-small ta-left" data-sort-default>
+          <%= localized_region_type.capitalize %>
+        </th>
+        <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" colspan="2" class="sticky nowrap">
+          RBS/PPBS <200
+        </th>
+        <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" colspan="2" class="sticky nowrap">
+          RBS/PPBS
+          200-299
+        </th>
+        <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" colspan="2" class="sticky nowrap">
+          RBS/PPBS
+          ≥300
+        </th>
+        <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" colspan="2" class="sticky nowrap">
+          FBS <126
+        </th>
+        <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" colspan="2" class="sticky nowrap">
+          FBS 126-199
+        </th>
+        <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" colspan="2" class="sticky nowrap">
+          FBS ≥200
+        </th>
+        <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" colspan="2" class="sticky nowrap">
+          HbA1c <7.0
+        </th>
+        <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" colspan="2" class="sticky nowrap">
+          HbA1c 7.0-8.9
+        </th>
+        <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" colspan="2" class="sticky nowrap">
+          HbA1c ≥9.0
+        </th>
+      </tr>
+      </thead>
+      <tbody>
+        <tr class="row-total" data-sort-method="none">
+        <td class="type-title">
+          <%= @region.name %>
+        </td>
+        <td
+          class="type-percent"
+          data-sort-column-key="total-patients-<%= @period %>"
+          data-sort="<%= @data.dig(:bs_below_200_breakdown, @period, :random) + @data.dig(:bs_below_200_breakdown, @period, :post_prandial) %>"
+          data-toggle="tooltip"
+          title="<%= number_with_delimiter(
+                       @data.dig(:bs_below_200_breakdown_counts, @period, :random) + @data.dig(:bs_below_200_breakdown_counts, @period, :post_prandial)
+                     ) %> / <%= number_with_delimiter(@data.dig(:bs_below_200_patients, @period)) %> patients"
+        >
+          <em data-rate="<%= @data.dig(:bs_below_200_breakdown, @period, :random) + @data.dig(:bs_below_200_breakdown, @period, :post_prandial) %>" class="high-is-good">
+            <%= number_to_percentage(
+              (@data.dig(:bs_below_200_breakdown, @period, :random) + @data.dig(:bs_below_200_breakdown, @period, :post_prandial)) || 0, precision: 0)
+            %>
+              </em>
+              </td>
+        <td class="ta-left">
+          <%= @data.dig(:bs_below_200_breakdown_counts, @period, :random) + @data.dig(:bs_below_200_breakdown_counts, @period, :post_prandial) %>
+        </td>
+
+        <td
+          class="type-percent"
+          data-sort-column-key="total-patients-<%= @period %>"
+          data-sort="<%= @data.dig(:bs_200_to_300_breakdown, @period, :random) + @data.dig(:bs_200_to_300_breakdown, @period, :post_prandial) %>"
+          data-toggle="tooltip"
+          title="<%= number_with_delimiter(
+                       @data.dig(:bs_200_to_300_breakdown_counts, @period, :random) + @data.dig(:bs_200_to_300_breakdown_counts, @period, :post_prandial)
+                     ) %> / <%= number_with_delimiter(@data.dig(:bs_200_to_300_patients, @period)) %> patients"
+        >
+          <em data-rate="<%=
+            @data.dig(:bs_200_to_300_breakdown, @period, :random) + @data.dig(:bs_200_to_300_breakdown, @period, :post_prandial)
+          %>" class="high-is-good">
+            <%= number_to_percentage(
+                  (@data.dig(:bs_200_to_300_breakdown, @period, :random) + @data.dig(:bs_200_to_300_breakdown, @period, :post_prandial)) || 0, precision: 0
+                ) %>
+          </em>
+        </td>
+        <td class="ta-left">
+          <%= number_with_delimiter(
+                @data.dig(:bs_200_to_300_breakdown_counts, @period, :random) + @data.dig(:bs_200_to_300_breakdown_counts, @period, :post_prandial)
+              ) %>
+        </td>
+
+        <td
+          class="type-percent"
+          data-sort-column-key="total-patients-<%= @period %>"
+          data-sort="<%=
+            @data.dig(:bs_over_300_breakdown, @period, :random) + @data.dig(:bs_over_300_breakdown, @period, :post_prandial)
+          %>"
+          data-toggle="tooltip"
+          title="<%= number_with_delimiter(
+                       @data.dig(:bs_over_300_breakdown_counts, @period, :random) + @data.dig(:bs_over_300_breakdown_counts, @period, :post_prandial)
+                     ) %> / <%= number_with_delimiter(@data.dig(:bs_over_300_patients, @period)) %> patients"
+        >
+          <em data-rate="<%=
+            @data.dig(:bs_over_300_breakdown, @period, :random) + @data.dig(:bs_over_300_breakdown, @period, :post_prandial)
+          %>" class="high-is-good">
+            <%= number_to_percentage(
+                  (@data.dig(:bs_over_300_breakdown, @period, :random) + @data.dig(:bs_over_300_breakdown, @period, :post_prandial)) || 0, precision: 0
+                ) %>
+          </em>
+        </td>
+        <td class="ta-left">
+          <%= number_with_delimiter(
+                @data.dig(:bs_over_300_breakdown_counts, @period, :random) + @data.dig(:bs_over_300_breakdown_counts, @period, :post_prandial)
+              ) %>
+        </td>
+
+        <td
+          class="type-percent"
+          data-sort-column-key="total-patients-<%= @period %>"
+          data-sort="<%= @data.dig(:bs_below_200_breakdown, @period, :fasting) %>"
+          data-toggle="tooltip"
+          title="<%= number_with_delimiter(@data.dig(:bs_below_200_breakdown_counts, @period, :fasting)) %> / <%= number_with_delimiter(@data.dig(:bs_below_200_patients, @period)) %> patients"
+        >
+          <em data-rate="<%= @data.dig(:bs_below_200_breakdown, @period, :fasting) %>" class="high-is-good">
+            <%= number_to_percentage(@data.dig(:bs_below_200_breakdown, @period, :fasting) || 0, precision: 0) %>
+          </em>
+        </td>
+        <td class="ta-left">
+          <%= @data.dig(:bs_below_200_breakdown_counts, @period, :fasting) %>
+        </td>
+
+        <td
+          class="type-percent"
+          data-sort-column-key="total-patients-<%= @period %>"
+          data-sort="<%= @data.dig(:bs_200_to_300_breakdown, @period, :fasting) %>"
+          data-toggle="tooltip"
+          title="<%= number_with_delimiter(@data.dig(:bs_200_to_300_breakdown_counts, @period, :fasting)) %> / <%= number_with_delimiter(@data.dig(:bs_200_to_300_patients, @period)) %> patients"
+        >
+          <em data-rate="<%= @data.dig(:bs_200_to_300_breakdown, @period, :fasting) %>" class="high-is-good">
+            <%= number_to_percentage(@data.dig(:bs_200_to_300_breakdown, @period, :fasting) || 0, precision: 0) %>
+          </em>
+        </td>
+        <td class="ta-left">
+          <%= number_with_delimiter(@data.dig(:bs_200_to_300_breakdown_counts, @period, :fasting)) %>
+        </td>
+        <td
+          class="type-percent"
+          data-sort-column-key="total-patients-<%= @period %>"
+          data-sort="<%= @data.dig(:bs_over_300_breakdown, @period, :fasting) %>"
+          data-toggle="tooltip"
+          title="<%= number_with_delimiter(@data.dig(:bs_over_300_breakdown_counts, @period, :fasting)) %> / <%= number_with_delimiter(@data.dig(:bs_over_300_patients, @period)) %> patients"
+        >
+          <em data-rate="<%= @data.dig(:bs_over_300_breakdown, @period, :fasting) %>" class="high-is-good">
+            <%= number_to_percentage(@data.dig(:bs_over_300_breakdown, @period, :fasting) || 0, precision: 0) %>
+          </em>
+        </td>
+        <td class="ta-left">
+          <%= number_with_delimiter(@data.dig(:bs_over_300_breakdown_counts, @period, :fasting)) %>
+        </td>
+        <td
+          class="type-percent"
+          data-sort-column-key="total-patients-<%= @period %>"
+          data-sort="<%= @data.dig(:bs_below_200_breakdown, @period, :hba1c) %>"
+          data-toggle="tooltip"
+          title="<%= number_with_delimiter(@data.dig(:bs_below_200_breakdown_counts, @period, :hba1c)) %> / <%= number_with_delimiter(@data.dig(:bs_below_200_patients, @period)) %> patients"
+        >
+          <em data-rate="<%= @data.dig(:bs_below_200_breakdown, @period, :hba1c) %>" class="high-is-good">
+            <%= number_to_percentage(@data.dig(:bs_below_200_breakdown, @period, :hba1c) || 0, precision: 0) %>
+          </em>
+        </td>
+        <td class="ta-left">
+          <%= @data.dig(:bs_below_200_breakdown_counts, @period, :hba1c) %>
+        </td>
+
+        <td
+          class="type-percent"
+          data-sort-column-key="total-patients-<%= @period %>"
+          data-sort="<%= @data.dig(:bs_200_to_300_breakdown, @period, :hba1c) %>"
+          data-toggle="tooltip"
+          title="<%= number_with_delimiter(@data.dig(:bs_200_to_300_breakdown_counts, @period, :hba1c)) %> / <%= number_with_delimiter(@data.dig(:bs_200_to_300_patients, @period)) %> patients"
+        >
+          <em data-rate="<%= @data.dig(:bs_200_to_300_breakdown, @period, :hba1c) %>" class="high-is-good">
+            <%= number_to_percentage(@data.dig(:bs_200_to_300_breakdown, @period, :hba1c) || 0, precision: 0) %>
+          </em>
+        </td>
+        <td class="ta-left">
+          <%= number_with_delimiter(@data.dig(:bs_200_to_300_breakdown_counts, @period, :hba1c)) %>
+        </td>
+
+        <td
+          class="type-percent"
+          data-sort-column-key="total-patients-<%= @period %>"
+          data-sort="<%= @data.dig(:bs_over_300_breakdown, @period, :hba1c) %>"
+          data-toggle="tooltip"
+          title="<%= number_with_delimiter(@data.dig(:bs_over_300_breakdown_counts, @period, :hba1c)) %> / <%= number_with_delimiter(@data.dig(:bs_over_300_patients, @period)) %> patients"
+        >
+          <em data-rate="<%= @data.dig(:bs_over_300_breakdown, @period, :hba1c) %>" class="high-is-good">
+            <%= number_to_percentage(@data.dig(:bs_over_300_breakdown, @period, :hba1c) || 0, precision: 0) %>
+          </em>
+        </td>
+        <td class="ta-left">
+          <%= number_with_delimiter(@data.dig(:bs_over_300_breakdown_counts, @period, :hba1c)) %>
+        </td>
+      </tr>
+        <% data.each do |result| %>
+          <% child = result[:region] %>
+          <tr>
+            <td class="ta-left">
+              <%= link_to(reports_region_path(child, report_scope: child.region_type)) do %>
+                <%= child.name %>
+              <% end %>
+            </td>
+            <td
+              class="type-percent"
+              data-sort-column-key="total-patients-<%= @period %>"
+              data-sort="<%= result.dig(:bs_below_200_breakdown, @period, :random) + result.dig(:bs_below_200_breakdown, @period, :post_prandial) %>"
+              data-toggle="tooltip"
+              title="<%= number_with_delimiter(
+                           result.dig(:bs_below_200_breakdown_counts, @period, :random) + result.dig(:bs_below_200_breakdown_counts, @period, :post_prandial)
+                         ) %> / <%= number_with_delimiter(result.dig(:bs_below_200_patients, @period)) %> patients"
+            >
+              <em data-rate="<%= result.dig(:bs_below_200_breakdown, @period, :random) + result.dig(:bs_below_200_breakdown, @period, :post_prandial) %>" class="high-is-good">
+                <%= number_to_percentage(
+                      (result.dig(:bs_below_200_breakdown, @period, :random) + result.dig(:bs_below_200_breakdown, @period, :post_prandial)) || 0, precision: 0)
+                %>
+              </em>
+            </td>
+            <td class="ta-left">
+              <%= result.dig(:bs_below_200_breakdown_counts, @period, :random) + result.dig(:bs_below_200_breakdown_counts, @period, :post_prandial) %>
+            </td>
+
+            <td
+              class="type-percent"
+              data-sort-column-key="total-patients-<%= @period %>"
+              data-sort="<%= result.dig(:bs_200_to_300_breakdown, @period, :random) + result.dig(:bs_200_to_300_breakdown, @period, :post_prandial) %>"
+              data-toggle="tooltip"
+              title="<%= number_with_delimiter(
+                           result.dig(:bs_200_to_300_breakdown_counts, @period, :random) + result.dig(:bs_200_to_300_breakdown_counts, @period, :post_prandial)
+                         ) %> / <%= number_with_delimiter(result.dig(:bs_200_to_300_patients, @period)) %> patients"
+            >
+              <em data-rate="<%=
+                result.dig(:bs_200_to_300_breakdown, @period, :random) + result.dig(:bs_200_to_300_breakdown, @period, :post_prandial)
+              %>" class="high-is-good">
+                <%= number_to_percentage(
+                      (result.dig(:bs_200_to_300_breakdown, @period, :random) + result.dig(:bs_200_to_300_breakdown, @period, :post_prandial)) || 0, precision: 0
+                    ) %>
+              </em>
+            </td>
+            <td class="ta-left">
+              <%= number_with_delimiter(
+                    result.dig(:bs_200_to_300_breakdown_counts, @period, :random) + result.dig(:bs_200_to_300_breakdown_counts, @period, :post_prandial)
+                  ) %>
+            </td>
+
+            <td
+              class="type-percent"
+              data-sort-column-key="total-patients-<%= @period %>"
+              data-sort="<%=
+                result.dig(:bs_over_300_breakdown, @period, :random) + result.dig(:bs_over_300_breakdown, @period, :post_prandial)
+              %>"
+              data-toggle="tooltip"
+              title="<%= number_with_delimiter(
+                           result.dig(:bs_over_300_breakdown_counts, @period, :random) + result.dig(:bs_over_300_breakdown_counts, @period, :post_prandial)
+                         ) %> / <%= number_with_delimiter(result.dig(:bs_over_300_patients, @period)) %> patients"
+            >
+              <em data-rate="<%=
+                result.dig(:bs_over_300_breakdown, @period, :random) + result.dig(:bs_over_300_breakdown, @period, :post_prandial)
+              %>" class="high-is-good">
+                <%= number_to_percentage(
+                      (result.dig(:bs_over_300_breakdown, @period, :random) + result.dig(:bs_over_300_breakdown, @period, :post_prandial)) || 0, precision: 0
+                    ) %>
+              </em>
+            </td>
+            <td class="ta-left">
+              <%= number_with_delimiter(
+                    result.dig(:bs_over_300_breakdown_counts, @period, :random) + result.dig(:bs_over_300_breakdown_counts, @period, :post_prandial)
+                  ) %>
+            </td>
+
+            <td
+              class="type-percent"
+              data-sort-column-key="total-patients-<%= @period %>"
+              data-sort="<%= result.dig(:bs_below_200_breakdown, @period, :fasting) %>"
+              data-toggle="tooltip"
+              title="<%= number_with_delimiter(result.dig(:bs_below_200_breakdown_counts, @period, :fasting)) %> / <%= number_with_delimiter(result.dig(:bs_below_200_patients, @period)) %> patients"
+            >
+              <em data-rate="<%= result.dig(:bs_below_200_breakdown, @period, :fasting) %>" class="high-is-good">
+                <%= number_to_percentage(result.dig(:bs_below_200_breakdown, @period, :fasting) || 0, precision: 0) %>
+              </em>
+            </td>
+            <td class="ta-left">
+              <%= result.dig(:bs_below_200_breakdown_counts, @period, :fasting) %>
+            </td>
+
+            <td
+              class="type-percent"
+              data-sort-column-key="total-patients-<%= @period %>"
+              data-sort="<%= result.dig(:bs_200_to_300_breakdown, @period, :fasting) %>"
+              data-toggle="tooltip"
+              title="<%= number_with_delimiter(result.dig(:bs_200_to_300_breakdown_counts, @period, :fasting)) %> / <%= number_with_delimiter(result.dig(:bs_200_to_300_patients, @period)) %> patients"
+            >
+              <em data-rate="<%= result.dig(:bs_200_to_300_breakdown, @period, :fasting) %>" class="high-is-good">
+                <%= number_to_percentage(result.dig(:bs_200_to_300_breakdown, @period, :fasting) || 0, precision: 0) %>
+              </em>
+            </td>
+            <td class="ta-left">
+              <%= number_with_delimiter(result.dig(:bs_200_to_300_breakdown_counts, @period, :fasting)) %>
+            </td>
+            <td
+              class="type-percent"
+              data-sort-column-key="total-patients-<%= @period %>"
+              data-sort="<%= result.dig(:bs_over_300_breakdown, @period, :fasting) %>"
+              data-toggle="tooltip"
+              title="<%= number_with_delimiter(result.dig(:bs_over_300_breakdown_counts, @period, :fasting)) %> / <%= number_with_delimiter(result.dig(:bs_over_300_patients, @period)) %> patients"
+            >
+              <em data-rate="<%= result.dig(:bs_over_300_breakdown, @period, :fasting) %>" class="high-is-good">
+                <%= number_to_percentage(result.dig(:bs_over_300_breakdown, @period, :fasting) || 0, precision: 0) %>
+              </em>
+            </td>
+            <td class="ta-left">
+              <%= number_with_delimiter(result.dig(:bs_over_300_breakdown_counts, @period, :fasting)) %>
+            </td>
+            <td
+              class="type-percent"
+              data-sort-column-key="total-patients-<%= @period %>"
+              data-sort="<%= result.dig(:bs_below_200_breakdown, @period, :hba1c) %>"
+              data-toggle="tooltip"
+              title="<%= number_with_delimiter(result.dig(:bs_below_200_breakdown_counts, @period, :hba1c)) %> / <%= number_with_delimiter(result.dig(:bs_below_200_patients, @period)) %> patients"
+            >
+              <em data-rate="<%= result.dig(:bs_below_200_breakdown, @period, :hba1c) %>" class="high-is-good">
+                <%= number_to_percentage(result.dig(:bs_below_200_breakdown, @period, :hba1c) || 0, precision: 0) %>
+              </em>
+            </td>
+            <td class="ta-left">
+              <%= result.dig(:bs_below_200_breakdown_counts, @period, :hba1c) %>
+            </td>
+
+            <td
+              class="type-percent"
+              data-sort-column-key="total-patients-<%= @period %>"
+              data-sort="<%= result.dig(:bs_200_to_300_breakdown, @period, :hba1c) %>"
+              data-toggle="tooltip"
+              title="<%= number_with_delimiter(result.dig(:bs_200_to_300_breakdown_counts, @period, :hba1c)) %> / <%= number_with_delimiter(result.dig(:bs_200_to_300_patients, @period)) %> patients"
+            >
+              <em data-rate="<%= result.dig(:bs_200_to_300_breakdown, @period, :hba1c) %>" class="high-is-good">
+                <%= number_to_percentage(result.dig(:bs_200_to_300_breakdown, @period, :hba1c) || 0, precision: 0) %>
+              </em>
+            </td>
+            <td class="ta-left">
+              <%= number_with_delimiter(result.dig(:bs_200_to_300_breakdown_counts, @period, :hba1c)) %>
+            </td>
+
+            <td
+              class="type-percent"
+              data-sort-column-key="total-patients-<%= @period %>"
+              data-sort="<%= result.dig(:bs_over_300_breakdown, @period, :hba1c) %>"
+              data-toggle="tooltip"
+              title="<%= number_with_delimiter(result.dig(:bs_over_300_breakdown_counts, @period, :hba1c)) %> / <%= number_with_delimiter(result.dig(:bs_over_300_patients, @period)) %> patients"
+            >
+              <em data-rate="<%= result.dig(:bs_over_300_breakdown, @period, :hba1c) %>" class="high-is-good">
+                <%= number_to_percentage(result.dig(:bs_over_300_breakdown, @period, :hba1c) || 0, precision: 0) %>
+              </em>
+            </td>
+            <td class="ta-left">
+              <%= number_with_delimiter(result.dig(:bs_over_300_breakdown_counts, @period, :hba1c)) %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

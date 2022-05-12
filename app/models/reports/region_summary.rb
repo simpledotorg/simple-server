@@ -40,7 +40,15 @@ module Reports
       adjusted_bs_missed_visit_under_care
       adjusted_bs_missed_visit_lost_to_follow_up
       adjusted_bs_200_to_300_under_care
+      adjusted_random_bs_200_to_300_under_care
+      adjusted_post_prandial_bs_200_to_300_under_care
+      adjusted_fasting_bs_200_to_300_under_care
+      adjusted_hba1c_bs_200_to_300_under_care
       adjusted_bs_over_300_under_care
+      adjusted_random_bs_over_300_under_care
+      adjusted_post_prandial_bs_over_300_under_care
+      adjusted_fasting_bs_over_300_under_care
+      adjusted_hba1c_bs_over_300_under_care
     ].sort.freeze
 
     UNDER_CARE_WITH_LTFU = %i[

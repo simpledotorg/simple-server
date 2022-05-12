@@ -1664,6 +1664,8 @@ Reports = function (withLtfu) {
       bsBelow200Rate: jsonData.bs_below_200_rates,
       bsBelow200WithLtfuRate: jsonData.bs_below_200_with_ltfu_rates,
       bsBelow200Breakdown: jsonData.bs_below_200_breakdown,
+      bs200to300Breakdown: jsonData.bs_200_to_300_breakdown,
+      bsOver300Breakdown: jsonData.bs_over_300_breakdown,
       bs200to300Patients: jsonData.bs_200_to_300_patients,
       bs200to300Rate: jsonData.bs_200_to_300_rates,
       bs200to300WithLtfuRate: jsonData.bs_200_to_300_with_ltfu_rates,
