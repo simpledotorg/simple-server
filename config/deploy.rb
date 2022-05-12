@@ -36,7 +36,7 @@ append :linked_files, ".env.production"
 append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system", "public/packs", "node_modules"
 
 set :whenever_path, -> { release_path }
-set :whenever_roles, [:cron, :whitelist_phone_numbers]
+set :whenever_roles, [:cron, :whitelist_phone_numbers, :sidekiq]
 set :enable_confirmation, ENV["CONFIRM"] || "true"
 set :envs_for_confirmation_step, ["production", "staging"]
 

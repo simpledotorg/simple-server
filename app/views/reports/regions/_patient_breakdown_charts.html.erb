@@ -103,13 +103,13 @@
           <%= t("lost_to_follow_up_copy.reports_card_subtitle") %>
         </p>
         <div class="mb-12px d-lg-flex align-lg-center">
-          <p class="mb-0px fs-32px fw-bold
+          <p class="c-print-black graph-percent fs-28px
             <% current_ltfu_rate = @details_chart_data[:ltfu_trend][:ltfu_patients_rate][@details_period] %>
             <% if current_ltfu_rate %>
               c-blue-dark
             <% else %>
               c-grey-medium
-            <% end %> mr-lg-12px" data-rate="<%= number_to_percentage(current_ltfu_rate, precision: 0) %>">
+            <% end %>" data-rate="<%= number_to_percentage(current_ltfu_rate, precision: 0) %>">
             <% if current_ltfu_rate %>
               <%= number_to_percentage(current_ltfu_rate, precision: 0) %>
             <% else %>

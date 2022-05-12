@@ -64,8 +64,14 @@ en:
   missed_visits_copy:
     reports_card_subtitle: "Hypertension patients with no visit in the last 3 months"
     numerator: "Patients with no visit in the last 3 months."
+  diabetes_missed_visits_copy:
+    reports_card_subtitle: "Diabetes patients in %{region_name} with no visit in the last 3 months"
+    numerator: "Patients with no visit in the last 3 months."
+    denominator: "Diabetes patients assigned to %{region_name}, registered before the last 3 months. Dead and lost to follow-up patients are excluded."
   visit_but_no_bp_taken_copy:
     numerator: "Patients with no BP taken at their last visit in the last 3 months."
+  visit_but_no_bs_taken_copy:
+    numerator: "Patients with no BS taken at their last visit in the last 3 months."
   lost_to_follow_up_copy:
     reports_card_subtitle: "Hypertension patients with no visit in the last 12 months."
     numerator: "Patients with no visit in the last 12 months."
@@ -172,7 +178,7 @@ en:
         title: "Monthly follow-up patients"
         subtitle: "%{diagnosis} patients with a BP taken, a blood sugar taken, an appointment scheduled, or a medication updated at %{facility_name} during a month."
       patient_treatment_outcomes:
-        section_title: "Patient treatment outcomes"
+        section_title: "Patient treatment status"
         chart_tooltip: "%{number_of_patients} %{number_of_patient_or_patients} with %{threshold} between %{start_period} and %{end_period} of %{number_of_registered_patients} %{number_of_registered_patient_or_patients} registered till %{registration_period}."
         controlled_card:
           subtitle: "%{diagnosis} patients at %{facility_name} registered >3 months ago with %{controlled_threshold} at their last visit in the last 3 months."

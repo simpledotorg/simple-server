@@ -21,7 +21,7 @@ module Reports
         controlled_patients: controlled[slug],
         cumulative_assigned_patients: cumulative_assigned_patients[slug],
         cumulative_registrations: cumulative_registrations[slug],
-        cumulative_diabetes_registrations: cumulative_registrations[slug],
+        cumulative_diabetes_registrations: cumulative_diabetes_registrations[slug],
         earliest_registration_period: earliest_patient_recorded_at_period[slug],
         ltfu_patients_rate: ltfu_rates[slug],
         ltfu_patients: ltfu[slug],
@@ -50,7 +50,14 @@ module Reports
         bs_200_to_300_with_ltfu_rates: bs_200_to_300_rates(with_ltfu: true)[slug],
         bs_over_300_patients: bs_over_300_patients[slug],
         bs_over_300_rates: bs_over_300_rates[slug],
-        bs_over_300_with_ltfu_rates: bs_over_300_rates(with_ltfu: true)[slug]
+        bs_over_300_with_ltfu_rates: bs_over_300_rates(with_ltfu: true)[slug],
+        diabetes_missed_visits: diabetes_missed_visits[slug],
+        diabetes_missed_visits_with_ltfu: diabetes_missed_visits(with_ltfu: true)[slug],
+        diabetes_missed_visits_rates: diabetes_missed_visits_rates[slug],
+        diabetes_missed_visits_with_ltfu_rates: diabetes_missed_visits_rates(with_ltfu: true)[slug],
+        visited_without_bs_taken_rates: visited_without_bs_taken_rates[slug],
+        visited_without_bs_taken_with_ltfu_rates: visited_without_bs_taken_rates(with_ltfu: true)[slug],
+        visited_without_bs_taken: visited_without_bs_taken[slug]
       }
     end
 
