@@ -121,7 +121,7 @@ class MonthlyDistrictDataService
       Array.new(month_headers.size - 1, nil),
       "Follow-up patients",
       Array.new(month_headers.size - 1, nil),
-      "Treatment outcomes of patients under care",
+      "Treatment status of patients under care",
       Array.new(outcome_headers.size - 1, nil),
       medications_dispensation_section_header,
       "Drug availability",
