@@ -217,21 +217,22 @@
 
 
 <% if current_admin.feature_enabled?(:diabetes_management_reports) %>
-  <h4 class="mt-5 mb-32px">Details</h4>
-
-  <%= render "reports/regions/patient_breakdown_charts" %>
-  <% if current_admin.feature_enabled?(:medications_dispensation) %>
-    <%= render "reports/regions/medications_dispensation" %>
-  <% end %>
 
   <% if @region.facility_region? %>
     <%= render "facility_details" %>
   <% else %>
-    <h4 class="mt-5 mb-32px">Activity</h4>
     <%= render(RegistrationsAndFollowUpsComponent.new(@region,
       current_admin: current_admin,
       repository: @details_repository,
       current_period: @period)) %>
+  <% end %>
+  
+  <h4 class="mt-5 mb-32px">Details</h4>
+  <%= render "reports/regions/patient_breakdown_charts" %>
+  
+  <h4 class="mt-5 mb-32px">Medications</h4>
+  <% if current_admin.feature_enabled?(:medications_dispensation) %>
+    <%= render "reports/regions/medications_dispensation" %>
   <% end %>
 
   <h4 class="mt-5 mb-32px">Cohort reports</h4>
