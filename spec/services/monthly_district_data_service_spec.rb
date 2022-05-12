@@ -51,7 +51,7 @@ RSpec.describe MonthlyDistrictDataService, reporting_spec: true do
         [nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
           "New Registrations", nil, nil, nil, nil, nil,
           "Follow-up patients", nil, nil, nil, nil, nil,
-          "Treatment outcomes of patients under care", nil, nil, nil, nil,
+          "Treatment status of patients under care", nil, nil, nil, nil,
           "Drug availability", nil, nil]
       }
 
@@ -230,7 +230,7 @@ RSpec.describe MonthlyDistrictDataService, reporting_spec: true do
         [nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
           "New Registrations", nil, nil, nil, nil, nil,
           "Follow-up patients", nil, nil, nil, nil, nil,
-          "Treatment outcomes of patients under care", nil, nil, nil, nil,
+          "Treatment status of patients under care", nil, nil, nil, nil,
           "Days of patient medications", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
           "Drug availability", nil, nil]
       }

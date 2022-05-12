@@ -122,10 +122,10 @@ WITH
     ),
 
     monthly_diabetes_follow_ups AS (
-    SELECT facility_id, month_date, COUNT(distinct(patient_id)) as follow_ups
-    FROM reporting_patient_follow_ups
-    WHERE diabetes = 'yes'
-    GROUP BY facility_id, month_date
+        SELECT facility_id, month_date, COUNT(distinct(patient_id)) as follow_ups
+        FROM reporting_patient_follow_ups
+        WHERE diabetes = 'yes'
+        GROUP BY facility_id, month_date
     )
 
 SELECT

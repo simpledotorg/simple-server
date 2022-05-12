@@ -214,6 +214,10 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
 
     context "when region has diabetes management enabled" do
+      before do
+        Flipper.disable(:diabetes_management_reports)
+      end
+
       it "contains a link to the diabetes management reports if the feature flag is enabled" do
         @facility.update(enable_diabetes_management: true)
         Flipper.enable(:diabetes_management_reports)
@@ -222,9 +226,29 @@ RSpec.describe Reports::RegionsController, type: :controller do
         assert_select "a[href*='diabetes']", count: 1
       end
 
+      it "contains a link to the diabetes management reports if the feature flag is enabled for an individual user" do
+        enabled_user = create(:admin)
+        @facility.update(enable_diabetes_management: true)
+        Flipper.enable_actor(:diabetes_management_reports, enabled_user)
+
+        sign_in(enabled_user.email_authentication)
+        get :show, params: {id: @facility_region.slug, report_scope: "facility"}
+        assert_select "a[href*='diabetes']", count: 1
+      end
+
       it "does not contain a link to the diabetes management reports if the feature flag is disabled" do
         @facility.update(enable_diabetes_management: true)
         Flipper.disable(:diabetes_management_reports)
+        sign_in(cvho.email_authentication)
+        get :show, params: {id: @facility_region.slug, report_scope: "facility"}
+        assert_select "a[href*='diabetes']", count: 0
+      end
+
+      it "does not contain a link to the diabetes management reports if the feature flag is disabled for an other individual user" do
+        enabled_user = create(:admin)
+        @facility.update(enable_diabetes_management: true)
+        Flipper.enable_actor(:diabetes_management_reports, enabled_user)
+
         sign_in(cvho.email_authentication)
         get :show, params: {id: @facility_region.slug, report_scope: "facility"}
         assert_select "a[href*='diabetes']", count: 0

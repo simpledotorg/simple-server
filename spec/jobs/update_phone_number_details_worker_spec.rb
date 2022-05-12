@@ -55,7 +55,7 @@ RSpec.describe UpdatePhoneNumberDetailsWorker, type: :job do
       expect {
         UpdatePhoneNumberDetailsWorker.perform_async(patient_phone_number.id, account_sid, token)
       }.to change(Sidekiq::Queues["low"], :size).by(1)
-      UpdatePhoneNumberDetailsWorker.clear
+      UpdatePhoneNumberDetailsWorker.drain
     end
   end
 
