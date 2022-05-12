@@ -1,4 +1,4 @@
-<div id="visit-details"
+<div id="diabetes-visit-details"
      data-period="<%= @period.to_s %>"
      class="mt-8px mx-0px mb-16px p-20px py-lg-20px pr-lg-20px pl-lg-0px bg-white br-4px bs-small d-lg-flex fd-lg-column
             justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid pb-after-always b-print-black">
@@ -8,7 +8,7 @@
 
   <div class="d-flex fd-column fd-lg-row">
       <div class="pl-lg-12px w-lg-50 h-lg-auto minh-300px">
-        <canvas id="missedVisitDetails"></canvas>
+        <canvas id="diabetesVisitDetails"></canvas>
       </div>
       <div class="flex-lg-1 mt-24px ml-lg-24px mt-print-2cm">
         <div>
@@ -19,8 +19,8 @@
             <div>
               <%= render "visit_details_heading",
                     title: "Missed visits",
-                    numerator: t("missed_visits_copy.numerator"),
-                    denominator: t("denominator_copy", region_name: @region.name) %>
+                    numerator: t("diabetes_missed_visits_copy.numerator"),
+                    denominator: t("diabetes_denominator_copy", region_name: @region.name) %>
               <p class="m-0px c-black">
                 <span data-missed-visits-patients=""></span>
                 patients with no visit from
@@ -39,15 +39,41 @@
         </div>
         <div>
           <div class="mb-16px d-lg-flex align-lg-center">
-            <p class="mb-0px fs-32px fw-bold c-grey-dark mr-lg-24px" data-visit-but-no-bp-measure-rate=""></p>
+            <p class="mb-0px fs-32px fw-bold mr-lg-24px c-grey-dark " data-visit-but-no-bs-measure-rate=""></p>
             <div>
               <%= render "visit_details_heading",
-                   title: "Visit but no BP taken",
-                   numerator: t("visit_but_no_bp_taken_copy.numerator"),
-                   denominator: t("denominator_copy", region_name: @region.name) %>
+                   title: "Visit but no BS taken",
+                   numerator: t("visit_but_no_bs_taken_copy.numerator"),
+                   denominator: t("diabetes_denominator_copy", region_name: @region.name) %>
               <p class="m-0px c-black">
-                <span data-visit-but-no-bp-measure-patients=""></span>
-                patients with a visit but no BP taken from
+                <span data-visit-but-no-bs-measure-patients=""></span>
+                patients with a visit but no BS taken from
+                <span data-period-start=""></span>
+                to
+                <span data-period-end=""></span>
+              </p>
+              <p class="m-0px c-grey-dark c-print-black">
+                of
+                <span data-adjusted-registrations=""></span>
+                patients registered till
+                <span data-registrations-period-end=""></span>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="mb-16px d-lg-flex align-lg-center">
+            <p class="mb-0px fs-32px fw-bold mr-lg-24px c-print-black c-maroon"
+               data-bs-over-300-rate="">
+            </p>
+            <div>
+              <%= render "visit_details_heading",
+                   title: "BS ≥300",
+                   numerator: t("bs_over_200_copy.bs_over_300_numerator"),
+                   denominator: t("diabetes_denominator_copy", region_name: @region.name) %>
+              <p class="m-0px c-black">
+                <span data-bs-over-300-patients=""></span>
+                patients with BS ≥300 taken between
                 <span data-period-start=""></span>
                 to
                 <span data-period-end=""></span>
@@ -64,16 +90,16 @@
         <div>
           <div class="mb-16px d-lg-flex align-lg-center">
             <p class="mb-0px fs-32px fw-bold mr-lg-24px c-print-black c-red"
-               data-uncontrolled-rate="">
+               data-bs-200-to-300-rate="">
             </p>
             <div>
               <%= render "visit_details_heading",
-                   title: "BP not controlled",
-                   numerator: t("bp_not_controlled_copy.numerator"),
-                   denominator: t("denominator_copy", region_name: @region.name) %>
+                         title: "BS 200-299",
+                         numerator: t("bs_over_200_copy.bs_200_to_299_numerator"),
+                         denominator: t("diabetes_denominator_copy", region_name: @region.name) %>
               <p class="m-0px c-black">
-                <span data-uncontrolled-patients=""></span>
-                patients with not controlled BP from
+                <span data-bs-200-to-300-patients=""></span>
+                patients with BS 200-299 taken between
                 <span data-period-start=""></span>
                 to
                 <span data-period-end=""></span>
@@ -90,16 +116,16 @@
         <div>
           <div class="mb-16px d-lg-flex align-lg-center">
             <p class="mb-0px fs-32px fw-bold mr-lg-24px c-print-black c-green-dark"
-               data-controlled-rate="">
+               data-bs-below-200-rate="">
             </p>
             <div>
               <%= render "visit_details_heading",
-                   title: "BP controlled",
-                   numerator: t("bp_controlled_copy.numerator"),
-                   denominator: t("denominator_copy", region_name: @region.name) %>
+                   title: "BS <200",
+                   numerator: t("bs_below_200_copy.numerator"),
+                   denominator: t("diabetes_denominator_copy", region_name: @region.name) %>
               <p class="m-0px c-black">
-                <span data-controlled-patients=""></span>
-                patients with controlled BP from
+                <span data-bs-below-200-patients=""></span>
+                patients with BS <200 taken between
                 <span data-period-start=""></span>
                 to
                 <span data-period-end=""></span>

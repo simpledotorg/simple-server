@@ -54,7 +54,10 @@ module Reports
         diabetes_missed_visits: diabetes_missed_visits[slug],
         diabetes_missed_visits_with_ltfu: diabetes_missed_visits(with_ltfu: true)[slug],
         diabetes_missed_visits_rates: diabetes_missed_visits_rates[slug],
-        diabetes_missed_visits_with_ltfu_rates: diabetes_missed_visits_rates(with_ltfu: true)[slug]
+        diabetes_missed_visits_with_ltfu_rates: diabetes_missed_visits_rates(with_ltfu: true)[slug],
+        visited_without_bs_taken_rates: visited_without_bs_taken_rates[slug],
+        visited_without_bs_taken_with_ltfu_rates: visited_without_bs_taken_rates(with_ltfu: true)[slug],
+        visited_without_bs_taken: visited_without_bs_taken[slug]
       }
     end
 
