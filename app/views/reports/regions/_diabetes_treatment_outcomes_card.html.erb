@@ -3,7 +3,7 @@
      class="mt-8px mx-0px mb-16px p-20px py-lg-20px pr-lg-20px pl-lg-0px bg-white br-4px bs-small d-lg-flex fd-lg-column
             justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid pb-after-always b-print-black">
   <h3 class="mb-0px pl-lg-20px">
-    Treatment outcomes of diabetes patients under care
+    Treatment status of patients under care
   </h3>
 
   <div class="d-flex fd-column fd-lg-row">
@@ -13,7 +13,7 @@
       <div class="flex-lg-1 mt-24px ml-lg-24px mt-print-2cm">
         <div>
           <div class="mb-16px d-lg-flex align-lg-center">
-            <p class="rate mb-0px fs-32px fw-bold mr-lg-24px c-blue"
+            <p class="c-print-black c-blue graph-percent fs-28px"
                data-missed-visits-rate="">
             </p>
             <div>
@@ -39,7 +39,7 @@
         </div>
         <div>
           <div class="mb-16px d-lg-flex align-lg-center">
-            <p class="mb-0px fs-32px fw-bold mr-lg-24px c-grey-dark " data-visit-but-no-bs-measure-rate=""></p>
+            <p class="c-print-black c-grey-dark graph-percent fs-28px" data-visit-but-no-bs-measure-rate=""></p>
             <div>
               <%= render "visit_details_heading",
                    title: "Visit but no BS taken",
@@ -63,7 +63,7 @@
         </div>
         <div>
           <div class="mb-16px d-lg-flex align-lg-center">
-            <p class="mb-0px fs-32px fw-bold mr-lg-24px c-print-black c-maroon"
+            <p class="c-print-black c-maroon graph-percent fs-28px"
                data-bs-over-300-rate="">
             </p>
             <div>
@@ -89,7 +89,7 @@
         </div>
         <div>
           <div class="mb-16px d-lg-flex align-lg-center">
-            <p class="mb-0px fs-32px fw-bold mr-lg-24px c-print-black c-red"
+            <p class="c-print-black c-red graph-percent fs-28px"
                data-bs-200-to-300-rate="">
             </p>
             <div>
@@ -115,7 +115,7 @@
         </div>
         <div>
           <div class="mb-16px d-lg-flex align-lg-center">
-            <p class="mb-0px fs-32px fw-bold mr-lg-24px c-print-black c-green-dark"
+            <p class="c-print-black c-green-dark graph-percent fs-28px"
                data-bs-below-200-rate="">
             </p>
             <div>

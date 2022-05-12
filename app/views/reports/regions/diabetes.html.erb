@@ -30,7 +30,7 @@
           <%= t("bs_below_200_copy.reports_card_subtitle", region_name: @region.name) %>
         </p>
         <div class="mb-12px d-lg-flex align-lg-center">
-          <p class="mb-0px fs-32px fw-bold mr-lg-12px c-green-dark minw-32px"
+          <p class="c-print-black c-green-dark graph-percent fs-28px"
              data-rate="">
           </p>
           <div>
@@ -98,33 +98,33 @@
         </p>
         <div class="d-flex align-center mb-24px">
           <div class="flex-1 d-lg-flex align-lg-center">
-            <p class="mb-0px fs-32px fw-bold mr-lg-12px c-purple"
+            <p class="c-print-black c-purple graph-percent fs-24px"
                data-total-patients="">
             </p>
             <div>
-              <p class="m-0px c-black c-print-black">
+              <p class="m-0px c-black c-print-black fs-14px">
                 total <%= "registration".pluralize(@data.dig(:cumulative_diabetes_registrations, @period)) %><br>till
                 <span data-registrations-period-end=""></span>
               </p>
             </div>
           </div>
           <div class="flex-1 d-lg-flex align-lg-center flex-lg-1">
-            <p class="mb-0px fs-32px fw-bold mr-lg-12px c-purple-medium"
+            <p class="c-print-black c-purple-medium graph-percent fs-24px"
                data-monthly-registrations="">
             </p>
             <div>
-              <p class="m-0px c-black c-print-black">
+              <p class="m-0px c-black c-print-black fs-14px">
                 new <%= "registration".pluralize(@data.dig(:diabetes_registrations, @period)) %><br>in
                 <span data-registrations-month-end=""></span>
               </p>
             </div>
           </div>
           <div class="flex-1 d-lg-flex align-lg-center flex-lg-1">
-            <p class="mb-0px fs-32px fw-bold mr-lg-12px c-orange"
+            <p class="c-print-black c-orange graph-percent fs-24px"
                data-monthly-follow-ups="">
             </p>
             <div>
-              <p class="m-0px c-black c-print-black">
+              <p class="m-0px c-black c-print-black fs-14px">
                 follow-up <%= "patient".pluralize(@data.dig(:monthly_diabetes_followups, @period)) %><br>in
                 <span data-follow-ups-month-end=""></span>
               </p>
@@ -162,7 +162,7 @@
           <%= t("bs_over_200_copy.reports_card_subtitle", region_name: @region.name) %>
         </p>
         <div class="mb-12px d-lg-flex align-lg-center">
-          <p class="mb-0px fs-32px fw-bold mr-lg-12px c-maroon minw-32px"
+          <p class="c-print-black c-maroon graph-percent fs-28px"
              data-bs-over-300-rate="">
           </p>
           <div>
@@ -181,7 +181,7 @@
           </div>
         </div>
         <div class="mb-12px d-lg-flex align-lg-center">
-          <p class="mb-0px fs-32px fw-bold mr-lg-12px c-red minw-32px"
+          <p class="c-print-black c-red graph-percent fs-28px"
              data-bs-200-to-300-rate="">
           </p>
           <div>
@@ -234,7 +234,7 @@
           <%= t("diabetes_missed_visits_copy.reports_card_subtitle", region_name: @region.name) %>
         </p>
         <div class="mb-12px d-lg-flex align-lg-center">
-          <p class="mb-0px fs-32px fw-bold mr-lg-12px c-blue minw-32px"
+          <p class="c-print-black c-blue graph-percent fs-28px"
              data-rate="">
           </p>
           <div>

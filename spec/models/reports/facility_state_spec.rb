@@ -111,7 +111,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
     end
   end
 
-  context "treatment outcomes in the last 3 months" do
+  context "treatment status in the last 3 months" do
     it "computes totals for under care patients" do
       facility = create(:facility)
 
@@ -452,7 +452,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       end
     end
 
-    context "treatment outcomes in last 3 months" do
+    context "treatment status in last 3 months" do
       it "contains number of total under care patients at a facility, broken down by the blood sugar type and risk state" do
         facility = create(:facility)
         [:random, :post_prandial, :fasting, :hba1c].each do |blood_sugar_type|
