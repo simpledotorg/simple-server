@@ -211,8 +211,11 @@
 <%= render "treatment_outcomes_card" %>
 
 <% if @children_data.any? %>
+  <h4 class="mt-5 mb-32px">Compare performance</h4>
   <%= render "child_data_tables", data: @children_data, localized_region_type: @child_regions.first.localized_region_type %>
 <% end %>
+
+<h4 class="mt-5 mb-32px">Details</h4>
 
 <% if current_admin.feature_enabled?(:diabetes_management_reports) %>
   <%= render "reports/regions/patient_breakdown_charts" %>
@@ -223,6 +226,7 @@
   <% if @region.facility_region? %>
     <%= render "facility_details" %>
   <% else %>
+    <h4 class="mt-5 mb-32px">Activity</h4>
     <%= render(RegistrationsAndFollowUpsComponent.new(@region,
       current_admin: current_admin,
       repository: @details_repository,
