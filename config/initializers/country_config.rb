@@ -34,15 +34,15 @@ class CountryConfig
       supported_genders: %w[male female transgender],
       patient_line_list_show_zone: true,
       dhis2_data_elements: {
-        cumulative_assigned: "cc2oSjEbiqv",
-        cumulative_assigned_adjusted: "jQBsCW7wjqx",
-        controlled: "ItViYyHGgZf",
-        uncontrolled: "IH0SueuKSWe",
-        missed_visits: "N7rI9y9Kywp",
-        ltfu: "nso1TSN7ukq",
-        dead: "Qf8Wq8u6AkK",
-        cumulative_registrations: "BK2KRHKcTtU",
-        monthly_registrations: "GxLDDKPxjxx"
+        cumulative_assigned: "eNtDKQTRdto",
+        cumulative_assigned_adjusted: "jCn7IIHtlXf",
+        controlled: "oVfmtlxYhOH",
+        uncontrolled: "QO2eTU3dW18",
+        missed_visits: "w7NRchlv0Rb",
+        ltfu: "w91dERGRhJ4",
+        dead: "SyduEtVKvlF",
+        cumulative_registrations: "bdMBWIf2i1h",
+        monthly_registrations: "tI9g0mtCzOv"
       },
       appointment_reminders_channel: "Messaging::Twilio::ReminderSms"
     },
