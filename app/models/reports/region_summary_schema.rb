@@ -158,7 +158,7 @@ module Reports
     end
 
     memoize def diabetes_missed_visits(with_ltfu: false)
-      field = with_ltfu ? :adjusted_bs_missed_visit_lost_to_follow_up : :adjusted_bs_missed_visit_under_care
+      field = with_ltfu ? :adjusted_bs_missed_visit_under_care_with_lost_to_follow_up : :adjusted_bs_missed_visit_under_care
       values_at(field)
     end
 
