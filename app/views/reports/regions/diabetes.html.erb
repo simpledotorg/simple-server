@@ -7,7 +7,7 @@
 <% denominator_copy = @with_ltfu ? "diabetes_denominator_with_ltfu_copy" : "diabetes_denominator_copy" %>
 
 <div class="d-lg-flex flex-lg-wrap">
-  <!-- BS <200 Graph -->
+  <!-- Blood sugar <200 Graph -->
   <div class="d-lg-flex w-lg-50 pr-lg-2">
     <div id="bs-below-200"
          data-period="<%= @period.to_s %>"
@@ -18,7 +18,7 @@
         <div class="d-flex mb-8px">
           <div class="d-flex flex-1">
             <h3 class="mb-0px mr-8px">
-              BS <200
+              Blood sugar &lt;200
             </h3>
             <%= render "definition_tooltip",
                        definitions: { "Numerator" => t("bs_below_200_copy.numerator"),
@@ -36,7 +36,7 @@
           <div>
             <p class="m-0px c-black">
               <span data-total-patients=""></span>
-              patients with a BS <200 from
+              patients with a blood sugar &lt;200 from
               <span data-period-start=""></span>
               to
               <span data-period-end=""></span>
@@ -138,7 +138,7 @@
     </div>
   </div>
 
-  <!-- BS 200-299 or BS >= 300 Graph -->
+  <!-- Blood sugar 200-299 or blood sugar >= 300 Graph -->
   <div class="d-lg-flex w-lg-50 pr-lg-2">
     <div id="bs-over-200"
          data-period="<%= @period.to_s %>"
@@ -149,11 +149,11 @@
         <div class="d-flex mb-8px">
           <div class="d-flex flex-1">
             <h3 class="mb-0px mr-8px">
-              BS 200-299 or BS ≥300
+              Blood sugar 200-299 or &ge;300
             </h3>
             <%= render "definition_tooltip",
-                       definitions: { "BS 200-299 numerator" => t("bs_over_200_copy.bs_200_to_299_numerator"),
-                                     "BS ≥300 numerator" => t("bs_over_200_copy.bs_over_300_numerator"),
+                       definitions: { "Blood sugar 200-299 numerator" => t("bs_over_200_copy.bs_200_to_299_numerator"),
+                                     "Blood sugar ≥300 numerator" => t("bs_over_200_copy.bs_over_300_numerator"),
                                       "Denominator" => t(denominator_copy, region_name: @region.name) } %>
           </div>
           <%= render "reports/regions/ltfu_toggle", id: "controlledGraphLtfuToggle", enabled: @with_ltfu %>
@@ -168,7 +168,7 @@
           <div>
             <p class="m-0px c-black">
               <span data-total-bs-over-300-patients=""></span>
-              patients with a BS ≥300 from
+              patients with a blood sugar &ge;300 from
               <span data-period-start=""></span>
               to
               <span data-period-end=""></span>
@@ -187,7 +187,7 @@
           <div>
             <p class="m-0px c-black">
               <span data-total-bs-200-to-300-patients=""></span>
-              patients with a BS 200-299 from
+              patients with a blood sugar 200-299 from
               <span data-period-start=""></span>
               to
               <span data-period-end=""></span>
