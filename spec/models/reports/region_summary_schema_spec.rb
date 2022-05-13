@@ -284,10 +284,10 @@ describe Reports::RegionSummarySchema, type: :model do
 
         (("Apr 2019".to_period)..("Dec 2019".to_period)).each do |period|
           expect(schema.diabetes_missed_visits_rates[facility_1.region.slug][period]).to eq(100)
-          expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_1.region.slug][period]).to eq(0)
+          expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_1.region.slug][period]).to eq(100)
 
           expect(schema.diabetes_missed_visits_rates[facility_2.region.slug][period]).to eq(100)
-          expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_2.region.slug][period]).to eq(0)
+          expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_2.region.slug][period]).to eq(100)
         end
 
         (("Jan 2020".to_period)..("Feb 2020".to_period)).each do |period|
@@ -316,9 +316,9 @@ describe Reports::RegionSummarySchema, type: :model do
         expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_2.region.slug]["May 2020".to_period]).to eq(0)
 
         expect(schema.diabetes_missed_visits_rates[facility_1.region.slug]["Jun 2020".to_period]).to eq 50
-        expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_1.region.slug]["Jun 2020".to_period]).to eq 0
+        expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_1.region.slug]["Jun 2020".to_period]).to eq 50
         expect(schema.diabetes_missed_visits_rates[facility_2.region.slug]["Jun 2020".to_period]).to eq 67
-        expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_2.region.slug]["Jun 2020".to_period]).to eq 0
+        expect(schema.diabetes_missed_visits_rates(with_ltfu: true)[facility_2.region.slug]["Jun 2020".to_period]).to eq 67
       end
     end
 
