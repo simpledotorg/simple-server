@@ -1,6 +1,6 @@
 class BangladeshProductionDhis2OrgUnits < ActiveRecord::Migration[5.2]
   def up
-    if CountryConfig.current_country?("Bangladesh") && SimpleServer.env.production?
+    if false
       facility_org_unit_map = {
         "8bf07061-0681-4224-af29-f265baaf6437" => "fvfwpzISCWN",
         "58a7fedb-5c59-4e7c-a47e-a8942fc890f9" => "EM9kLDReivm",
