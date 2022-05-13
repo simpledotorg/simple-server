@@ -68,6 +68,9 @@ en:
     reports_card_subtitle: "Diabetes patients in %{region_name} with no visit in the last 3 months"
     numerator: "Patients with no visit in the last 3 months."
     denominator: "Diabetes patients assigned to %{region_name}, registered before the last 3 months. Dead and lost to follow-up patients are excluded."
+  bs_measurement_details_copy:
+    reports_card_subtitle: "BS measurements for diabetes patients in %{region_name} registered before %{period_registered} with a BS taken between %{period_start} to %{period_end}"
+    numerator: "The number of BS measurements, broken down by measurement type, for treatment outcomes of diabetes patients under care with a BS taken on the last visit within the last 3 months."
   visit_but_no_bp_taken_copy:
     numerator: "Patients with no BP taken at their last visit in the last 3 months."
   visit_but_no_bs_taken_copy:

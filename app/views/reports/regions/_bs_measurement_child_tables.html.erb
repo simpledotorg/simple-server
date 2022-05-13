@@ -1,7 +1,20 @@
 <div class="card mb-0">
-  <h3 class="mb-16px c-black">
-    <%= @period %> <%= localized_region_type %> performance
-  </h3>
+  <div class="d-flex mb-8px">
+    <div class="d-flex flex-1">
+      <h3 class="mb-0px mr-8px">
+        BS measurement details
+      </h3>
+      <%= render "definition_tooltip",
+                 definitions: { "BS measurement details" => t("bs_measurement_details_copy.numerator", region_name: @region.name)} %>
+    </div>
+  </div>
+  <p class="c-grey-dark">
+    <%= t("bs_measurement_details_copy.reports_card_subtitle",
+          region_name: @region.name,
+          period_registered: @data.dig(:period_info, @period, :bp_control_registration_date),
+          period_start: @data.dig(:period_info, @period, :bp_control_start_date),
+          period_end: @data.dig(:period_info, @period, :bp_control_end_date)) %>
+  </p>
   <div class="table-responsive-md">
     <table id="region-comparison-table" class="table-compact">
       <colgroup>
