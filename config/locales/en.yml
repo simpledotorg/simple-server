@@ -55,10 +55,10 @@ en:
     reports_card_subtitle: "Hypertension patients with BP ≥140/90 at their last visit in the last 3 months"
     numerator: "Patients with BP ≥140/90 at their last visit in the last 3 months."
   bs_below_200_copy:
-    reports_card_subtitle: "Diabetes patients in %{region_name} with BS <200 at their last visit in the last 3 months"
+    reports_card_subtitle: "Diabetes patients in %{region_name} with blood sugar <200 at their last visit in the last 3 months"
     numerator: "Patients with RBS/PPBS <200, FBS <126, or HbA1c <7.0 at their last visit in the last 3 months."
   bs_over_200_copy:
-    reports_card_subtitle: "Diabetes patients in %{region_name} with BS 200-299 or BS ≥300 at their last visit in the last 3 months"
+    reports_card_subtitle: "Diabetes patients in %{region_name} with blood sugar 200-299 or ≥300 at their last visit in the last 3 months"
     bs_200_to_299_numerator: "Patients with RBS/PPBS 200-299, FBS 126-199, or HbA1c 7.0-8.9 at their last visit in the last 3 months."
     bs_over_300_numerator: "Patients with RBS/PPBS ≥300, FBS ≥200, or HbA1c ≥9.0 at their last visit in the last 3 months."
   missed_visits_copy:
@@ -71,7 +71,7 @@ en:
   visit_but_no_bp_taken_copy:
     numerator: "Patients with no BP taken at their last visit in the last 3 months."
   visit_but_no_bs_taken_copy:
-    numerator: "Patients with no BS taken at their last visit in the last 3 months."
+    numerator: "Patients with no blood sugar taken at their last visit in the last 3 months."
   lost_to_follow_up_copy:
     reports_card_subtitle: "Hypertension patients with no visit in the last 12 months."
     numerator: "Patients with no visit in the last 12 months."
@@ -83,7 +83,7 @@ en:
     reports_card_subtitle: "Monthly and total diabetes patient registrations and follow-up visits in %{region_name}"
     monthly_registered_patients: "Diabetes patients registered during a month in %{region_name}."
     total_registered_patients: "Total diabetes patients registered in %{region_name}"
-    monthly_followup_patients: "Diabetes patients with a BP measure taken, a BS measure taken, an appointment scheduled, or their medications refilled during a month in %{region_name}."
+    monthly_followup_patients: "Diabetes patients with a BP measure taken, a blood sugar measure taken, an appointment scheduled, or their medications refilled during a month in %{region_name}."
   assigned_patients_copy:
     total_assigned_patients: "Hypertension patients assigned to %{region_name}. Dead patients are excluded."
   call_results_copy:
@@ -152,13 +152,13 @@ en:
       diagnosis_thresholds:
         hypertension_controlled_short: "BP controlled"
         hypertension_controlled_long: "BP <140/90"
-        diabetes_controlled_short: "BS <200"
+        diabetes_controlled_short: "Blood sugar <200"
         diabetes_controlled_long: "RBS/PPBS <200, FBS <126, or HbA1c <7.0"
         hypertension_uncontrolled_short: "BP not controlled"
         hypertension_uncontrolled_long: "BP ≥140/90"
-        diabetes_uncontrolled_short: "BS 200-299"
+        diabetes_uncontrolled_short: "Blood sugar 200-299"
         diabetes_uncontrolled_long: "RBS/PPBS 200-99, FBS 126-199, or HbA1c 7.0-8.9"
-        diabetes_very_uncontrolled_short: "BS ≥300"
+        diabetes_very_uncontrolled_short: "Blood sugar ≥300"
         diabetes_very_uncontrolled_long: "RBS/PPBS ≥300, FBS ≥200, or HbA1c ≥9.0"
         hypertension_visited_but_no_bp_taken_short: "Visited but no BP taken"
         hypertension_visited_but_no_bp_taken_long: "no BP taken"

@@ -46,6 +46,7 @@ module Reports
     UNDER_CARE_WITH_LTFU = %i[
       adjusted_missed_visit
       adjusted_visited_no_bp
+      adjusted_bs_missed_visit
     ].freeze
 
     attr_reader :id_field
