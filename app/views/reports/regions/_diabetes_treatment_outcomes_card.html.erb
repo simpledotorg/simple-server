@@ -42,12 +42,12 @@
             <p class="c-print-black c-grey-dark graph-percent fs-28px" data-visit-but-no-bs-measure-rate=""></p>
             <div>
               <%= render "visit_details_heading",
-                   title: "Visit but no BS taken",
+                   title: "Visit but no blood sugar taken",
                    numerator: t("visit_but_no_bs_taken_copy.numerator"),
                    denominator: t("diabetes_denominator_copy", region_name: @region.name) %>
               <p class="m-0px c-black">
                 <span data-visit-but-no-bs-measure-patients=""></span>
-                patients with a visit but no BS taken from
+                patients with a visit but no blood sugar taken from
                 <span data-period-start=""></span>
                 to
                 <span data-period-end=""></span>
@@ -68,12 +68,12 @@
             </p>
             <div>
               <%= render "visit_details_heading",
-                   title: "BS ≥300",
+                   title: "Blood sugar ≥300",
                    numerator: t("bs_over_200_copy.bs_over_300_numerator"),
                    denominator: t("diabetes_denominator_copy", region_name: @region.name) %>
               <p class="m-0px c-black">
                 <span data-bs-over-300-patients=""></span>
-                patients with BS ≥300 taken between
+                patients with blood sugar &ge;300 taken between
                 <span data-period-start=""></span>
                 to
                 <span data-period-end=""></span>
@@ -94,12 +94,12 @@
             </p>
             <div>
               <%= render "visit_details_heading",
-                         title: "BS 200-299",
+                         title: "Blood sugar 200-299",
                          numerator: t("bs_over_200_copy.bs_200_to_299_numerator"),
                          denominator: t("diabetes_denominator_copy", region_name: @region.name) %>
               <p class="m-0px c-black">
                 <span data-bs-200-to-300-patients=""></span>
-                patients with BS 200-299 taken between
+                patients with blood sugar 200-299 taken between
                 <span data-period-start=""></span>
                 to
                 <span data-period-end=""></span>
@@ -120,12 +120,12 @@
             </p>
             <div>
               <%= render "visit_details_heading",
-                   title: "BS <200",
+                   title: "Blood sugar <200",
                    numerator: t("bs_below_200_copy.numerator"),
                    denominator: t("diabetes_denominator_copy", region_name: @region.name) %>
               <p class="m-0px c-black">
                 <span data-bs-below-200-patients=""></span>
-                patients with BS <200 taken between
+                patients with blood sugar &lt;200 taken between
                 <span data-period-start=""></span>
                 to
                 <span data-period-end=""></span>
