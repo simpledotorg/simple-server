@@ -1,3 +1,14 @@
+<% if CountryConfig.current[:name] == "India" %>
+  <div class="alert alert-danger mb-48px" role="alert">
+    <h3 class="c-red-dark mt-8px">Maintenance: May 21-22</h3>
+    <p class="c-red-dark">The Simple Dashboard will be down for maintenance from the afternoon on Sat May 21 to the evening of Sun May 22.</p>
+    <ul class="c-red-dark">
+      <li>Healthcare workers can still record patients, but sync to the Simple Dashboard will be down.</li>
+      <li>The Simple Dashboard will be inaccessible.</li>
+    </ul>
+  </div>
+<% end %>
+
 <% content_for :title do %>
  Home
 <% end %>
