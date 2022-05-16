@@ -296,15 +296,15 @@ module Reports
       end
     end
 
-    memoize def diabetes_treatment_outcome_breakdown(blood_sugar_risk_state)
+    memoize def diabetes_treatment_outcome_breakdown_rates(blood_sugar_risk_state)
       region_period_cached_query(__method__, blood_sugar_risk_state: blood_sugar_risk_state) do |entry|
-        diabetes_treatment_outcome_breakdown_rates(entry, blood_sugar_risk_state)
+        diabetes_treatment_outcome_breakdown_rates_of_region(entry, blood_sugar_risk_state)
       end
     end
 
     memoize def diabetes_treatment_outcome_breakdown_counts(blood_sugar_risk_state)
       region_period_cached_query(__method__, blood_sugar_risk_state: blood_sugar_risk_state) do |entry|
-        diabetes_treatment_outcome_breakdown_by_counts(entry, blood_sugar_risk_state)
+        diabetes_treatment_outcome_breakdown_counts_of_region(entry, blood_sugar_risk_state)
       end
     end
 
@@ -338,13 +338,13 @@ module Reports
       })
     end
 
-    memoize def diabetes_treatment_outcome_breakdown_rates(entry, blood_sugar_risk_state)
+    memoize def diabetes_treatment_outcome_breakdown_rates_of_region(entry, blood_sugar_risk_state)
       rounded_percentages(
-        diabetes_treatment_outcome_breakdown_by_counts(entry, blood_sugar_risk_state)
+        diabetes_treatment_outcome_breakdown_counts_of_region(entry, blood_sugar_risk_state)
       )
     end
 
-    memoize def diabetes_treatment_outcome_breakdown_by_counts(entry, blood_sugar_risk_state)
+    memoize def diabetes_treatment_outcome_breakdown_counts_of_region(entry, blood_sugar_risk_state)
       {
         random: diabetes_under_care(blood_sugar_risk_state, :random)[entry.region.slug][entry.period],
         post_prandial: diabetes_under_care(blood_sugar_risk_state, :post_prandial)[entry.region.slug][entry.period],

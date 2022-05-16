@@ -89,7 +89,7 @@ module Reports
     ]
 
     DELEGATED_BREAKDOWNS = %i[
-      diabetes_treatment_outcome_breakdown
+      diabetes_treatment_outcome_breakdown_rates
       diabetes_treatment_outcome_breakdown_counts
     ]
 

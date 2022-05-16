@@ -361,7 +361,7 @@ describe Reports::RegionSummarySchema, type: :model do
       end
     end
 
-    describe "diabetes_treatment_outcome_breakdown" do
+    describe "diabetes_treatment_outcome_breakdown_rates" do
       it "returns the breakdown of different blood sugar types of the diabetes outcome - bs <200 " do
         facility_1_patients = create_list(:patient, 4, :diabetes, assigned_facility: facility_1, recorded_at: jan_2019)
         create(:blood_sugar, :with_encounter, :random, :bs_below_200, patient: facility_1_patients.first, facility: facility_1, recorded_at: jan_2020 + 3.months)
@@ -377,18 +377,18 @@ describe Reports::RegionSummarySchema, type: :model do
         refresh_views
 
         schema = described_class.new([facility_1.region, facility_2.region, region], periods: range)
-        expect(schema.diabetes_treatment_outcome_breakdown(:bs_below_200)[facility_1.region.slug]["Mar 2020".to_period])
+        expect(schema.diabetes_treatment_outcome_breakdown_rates(:bs_below_200)[facility_1.region.slug]["Mar 2020".to_period])
           .to eq({random: 0, post_prandial: 50, fasting: 50, hba1c: 0})
-        expect(schema.diabetes_treatment_outcome_breakdown(:bs_below_200)[facility_2.region.slug]["Mar 2020".to_period])
+        expect(schema.diabetes_treatment_outcome_breakdown_rates(:bs_below_200)[facility_2.region.slug]["Mar 2020".to_period])
           .to eq({random: 0, post_prandial: 50, fasting: 50, hba1c: 0})
-        expect(schema.diabetes_treatment_outcome_breakdown(:bs_below_200)[region.slug]["Mar 2020".to_period])
+        expect(schema.diabetes_treatment_outcome_breakdown_rates(:bs_below_200)[region.slug]["Mar 2020".to_period])
           .to eq({random: 0, post_prandial: 50, fasting: 50, hba1c: 0})
 
-        expect(schema.diabetes_treatment_outcome_breakdown(:bs_below_200)[facility_1.region.slug]["Apr 2020".to_period])
+        expect(schema.diabetes_treatment_outcome_breakdown_rates(:bs_below_200)[facility_1.region.slug]["Apr 2020".to_period])
           .to eq({random: 33, post_prandial: 33, fasting: 34, hba1c: 0})
-        expect(schema.diabetes_treatment_outcome_breakdown(:bs_below_200)[facility_2.region.slug]["Apr 2020".to_period])
+        expect(schema.diabetes_treatment_outcome_breakdown_rates(:bs_below_200)[facility_2.region.slug]["Apr 2020".to_period])
           .to eq({random: 0, post_prandial: 33, fasting: 33, hba1c: 34})
-        expect(schema.diabetes_treatment_outcome_breakdown(:bs_below_200)[region.slug]["Apr 2020".to_period])
+        expect(schema.diabetes_treatment_outcome_breakdown_rates(:bs_below_200)[region.slug]["Apr 2020".to_period])
           .to eq({random: 17, post_prandial: 33, fasting: 33, hba1c: 17})
       end
 
@@ -407,18 +407,18 @@ describe Reports::RegionSummarySchema, type: :model do
         refresh_views
 
         schema = described_class.new([facility_1.region, facility_2.region, region], periods: range)
-        expect(schema.diabetes_treatment_outcome_breakdown(:bs_200_to_300)[facility_1.region.slug]["Mar 2020".to_period])
+        expect(schema.diabetes_treatment_outcome_breakdown_rates(:bs_200_to_300)[facility_1.region.slug]["Mar 2020".to_period])
           .to eq({random: 0, post_prandial: 50, fasting: 50, hba1c: 0})
-        expect(schema.diabetes_treatment_outcome_breakdown(:bs_200_to_300)[facility_2.region.slug]["Mar 2020".to_period])
+        expect(schema.diabetes_treatment_outcome_breakdown_rates(:bs_200_to_300)[facility_2.region.slug]["Mar 2020".to_period])
           .to eq({random: 0, post_prandial: 50, fasting: 50, hba1c: 0})
-        expect(schema.diabetes_treatment_outcome_breakdown(:bs_200_to_300)[region.slug]["Mar 2020".to_period])
+        expect(schema.diabetes_treatment_outcome_breakdown_rates(:bs_200_to_300)[region.slug]["Mar 2020".to_period])
           .to eq({random: 0, post_prandial: 50, fasting: 50, hba1c: 0})
 
-        expect(schema.diabetes_treatment_outcome_breakdown(:bs_200_to_300)[facility_1.region.slug]["Apr 2020".to_period])
+        expect(schema.diabetes_treatment_outcome_breakdown_rates(:bs_200_to_300)[facility_1.region.slug]["Apr 2020".to_period])
           .to eq({random: 33, post_prandial: 33, fasting: 34, hba1c: 0})
-        expect(schema.diabetes_treatment_outcome_breakdown(:bs_200_to_300)[facility_2.region.slug]["Apr 2020".to_period])
+        expect(schema.diabetes_treatment_outcome_breakdown_rates(:bs_200_to_300)[facility_2.region.slug]["Apr 2020".to_period])
           .to eq({random: 0, post_prandial: 33, fasting: 33, hba1c: 34})
-        expect(schema.diabetes_treatment_outcome_breakdown(:bs_200_to_300)[region.slug]["Apr 2020".to_period])
+        expect(schema.diabetes_treatment_outcome_breakdown_rates(:bs_200_to_300)[region.slug]["Apr 2020".to_period])
           .to eq({random: 17, post_prandial: 33, fasting: 33, hba1c: 17})
       end
 
@@ -437,18 +437,18 @@ describe Reports::RegionSummarySchema, type: :model do
         refresh_views
 
         schema = described_class.new([facility_1.region, facility_2.region, region], periods: range)
-        expect(schema.diabetes_treatment_outcome_breakdown(:bs_over_300)[facility_1.region.slug]["Mar 2020".to_period])
+        expect(schema.diabetes_treatment_outcome_breakdown_rates(:bs_over_300)[facility_1.region.slug]["Mar 2020".to_period])
           .to eq({random: 0, post_prandial: 50, fasting: 50, hba1c: 0})
-        expect(schema.diabetes_treatment_outcome_breakdown(:bs_over_300)[facility_2.region.slug]["Mar 2020".to_period])
+        expect(schema.diabetes_treatment_outcome_breakdown_rates(:bs_over_300)[facility_2.region.slug]["Mar 2020".to_period])
           .to eq({random: 0, post_prandial: 50, fasting: 50, hba1c: 0})
-        expect(schema.diabetes_treatment_outcome_breakdown(:bs_over_300)[region.slug]["Mar 2020".to_period])
+        expect(schema.diabetes_treatment_outcome_breakdown_rates(:bs_over_300)[region.slug]["Mar 2020".to_period])
           .to eq({random: 0, post_prandial: 50, fasting: 50, hba1c: 0})
 
-        expect(schema.diabetes_treatment_outcome_breakdown(:bs_over_300)[facility_1.region.slug]["Apr 2020".to_period])
+        expect(schema.diabetes_treatment_outcome_breakdown_rates(:bs_over_300)[facility_1.region.slug]["Apr 2020".to_period])
           .to eq({random: 33, post_prandial: 33, fasting: 34, hba1c: 0})
-        expect(schema.diabetes_treatment_outcome_breakdown(:bs_over_300)[facility_2.region.slug]["Apr 2020".to_period])
+        expect(schema.diabetes_treatment_outcome_breakdown_rates(:bs_over_300)[facility_2.region.slug]["Apr 2020".to_period])
           .to eq({random: 0, post_prandial: 33, fasting: 33, hba1c: 34})
-        expect(schema.diabetes_treatment_outcome_breakdown(:bs_over_300)[region.slug]["Apr 2020".to_period])
+        expect(schema.diabetes_treatment_outcome_breakdown_rates(:bs_over_300)[region.slug]["Apr 2020".to_period])
           .to eq({random: 17, post_prandial: 33, fasting: 33, hba1c: 17})
       end
     end
