@@ -784,7 +784,7 @@ Reports = function (withLtfu) {
       labels: Object.keys(bsBelow200Rate),
       datasets: [
         {
-          label: "BS <200",
+          label: "Blood sugar <200",
           backgroundColor: this.lightGreenColor,
           borderColor: this.mediumGreenColor,
           borderWidth: 2,
@@ -875,7 +875,7 @@ Reports = function (withLtfu) {
       );
       registrationsPeriodEndNode.innerHTML =
         periodInfo.bp_control_registration_date;
-      const breakdown = data.bsBelow200Breakdown[period];
+      const breakdown = data.bsBelow200BreakdownRates[period];
       rbsPPBSPercentNode.innerHTML = this.formatPercentage(
         breakdown["random"] + breakdown["post_prandial"]
       );
@@ -923,14 +923,14 @@ Reports = function (withLtfu) {
       labels: Object.keys(bsOver300Rate),
       datasets: [
         {
-          label: "BS 200-299",
+          label: "Blood sugar 200-299",
           backgroundColor: this.mediumRedColor,
           hoverBackgroundColor: this.darkRedColor,
           hoverBorderWidth: 2,
           data: Object.values(bs200to300Rate),
         },
         {
-          label: "BS >=300",
+          label: "Blood sugar ≥300",
           backgroundColor: this.maroonColor,
           hoverBackgroundColor: this.darkMaroonColor,
           hoverBorderWidth: 2,
@@ -1428,28 +1428,28 @@ Reports = function (withLtfu) {
       labels: Object.keys(data.bsBelow200Rate).slice(-barsToDisplay),
       datasets: [
         {
-          label: "BS <200",
+          label: "Blood sugar <200",
           backgroundColor: this.mediumGreenColor,
           hoverBackgroundColor: this.darkGreenColor,
           data: Object.values(data.bsBelow200Rate).slice(-barsToDisplay),
           type: "bar",
         },
         {
-          label: "BS 200-299",
+          label: "Blood sugar 200-299",
           backgroundColor: this.mediumRedColor,
           hoverBackgroundColor: this.darkRedColor,
           data: Object.values(data.bs200to300Rate).slice(-barsToDisplay),
           type: "bar",
         },
         {
-          label: "BS ≥300",
+          label: "Blood sugar ≥300",
           backgroundColor: this.maroonColor,
           hoverBackgroundColor: this.darkMaroonColor,
           data: Object.values(data.bsOver300Rate).slice(-barsToDisplay),
           type: "bar",
         },
         {
-          label: "Visit but no BS measure",
+          label: "Visit but no blood sugar measure",
           backgroundColor: this.mediumGreyColor,
           hoverBackgroundColor: this.darkGreyColor,
           data: Object.values(data.visitButNoBSMeasureRate).slice(
@@ -1679,9 +1679,7 @@ Reports = function (withLtfu) {
       bsBelow200Patients: jsonData.bs_below_200_patients,
       bsBelow200Rate: jsonData.bs_below_200_rates,
       bsBelow200WithLtfuRate: jsonData.bs_below_200_with_ltfu_rates,
-      bsBelow200Breakdown: jsonData.bs_below_200_breakdown_rates,
-      bs200to300Breakdown: jsonData.bs_200_to_300_breakdown_rates,
-      bsOver300Breakdown: jsonData.bs_over_300_breakdown_rates,
+      bsBelow200BreakdownRates: jsonData.bs_below_200_breakdown_rates,
       bs200to300Patients: jsonData.bs_200_to_300_patients,
       bs200to300Rate: jsonData.bs_200_to_300_rates,
       bs200to300WithLtfuRate: jsonData.bs_200_to_300_with_ltfu_rates,
