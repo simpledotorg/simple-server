@@ -87,7 +87,7 @@
                        @data.dig(:bs_below_200_breakdown_counts, @period, :random) + @data.dig(:bs_below_200_breakdown_counts, @period, :post_prandial)
                      ) %> / <%= number_with_delimiter(@data.dig(:bs_below_200_patients, @period)) %> patients"
         >
-          <em data-rate="<%= @data.dig(:bs_below_200_breakdown_rates, @period, :random) + @data.dig(:bs_below_200_breakdown_rates, @period, :post_prandial) %>" >
+          <em data-rate="<%= @data.dig(:bs_below_200_breakdown_rates, @period, :random) + @data.dig(:bs_below_200_breakdown_rates, @period, :post_prandial) %>" class="bg-yellow" >
             <%= number_to_percentage(
               (@data.dig(:bs_below_200_breakdown_rates, @period, :random) + @data.dig(:bs_below_200_breakdown_rates, @period, :post_prandial)) || 0, precision: 0)
             %>
@@ -108,7 +108,7 @@
         >
           <em data-rate="<%=
             @data.dig(:bs_200_to_300_breakdown_rates, @period, :random) + @data.dig(:bs_200_to_300_breakdown_rates, @period, :post_prandial)
-          %>" >
+          %>" class="bg-yellow" >
             <%= number_to_percentage(
                   (@data.dig(:bs_200_to_300_breakdown_rates, @period, :random) + @data.dig(:bs_200_to_300_breakdown_rates, @period, :post_prandial)) || 0, precision: 0
                 ) %>
@@ -133,7 +133,7 @@
         >
           <em data-rate="<%=
             @data.dig(:bs_over_300_breakdown_rates, @period, :random) + @data.dig(:bs_over_300_breakdown_rates, @period, :post_prandial)
-          %>" >
+          %>" class="bg-yellow" >
             <%= number_to_percentage(
                   (@data.dig(:bs_over_300_breakdown_rates, @period, :random) + @data.dig(:bs_over_300_breakdown_rates, @period, :post_prandial)) || 0, precision: 0
                 ) %>
@@ -152,7 +152,7 @@
           data-toggle="tooltip"
           title="<%= number_with_delimiter(@data.dig(:bs_below_200_breakdown_counts, @period, :fasting)) %> / <%= number_with_delimiter(@data.dig(:bs_below_200_patients, @period)) %> patients"
         >
-          <em data-rate="<%= @data.dig(:bs_below_200_breakdown_rates, @period, :fasting) %>" >
+          <em data-rate="<%= @data.dig(:bs_below_200_breakdown_rates, @period, :fasting) %>" class="bg-yellow" >
             <%= number_to_percentage(@data.dig(:bs_below_200_breakdown_rates, @period, :fasting) || 0, precision: 0) %>
           </em>
         </td>
@@ -167,7 +167,7 @@
           data-toggle="tooltip"
           title="<%= number_with_delimiter(@data.dig(:bs_200_to_300_breakdown_counts, @period, :fasting)) %> / <%= number_with_delimiter(@data.dig(:bs_200_to_300_patients, @period)) %> patients"
         >
-          <em data-rate="<%= @data.dig(:bs_200_to_300_breakdown_rates, @period, :fasting) %>" >
+          <em data-rate="<%= @data.dig(:bs_200_to_300_breakdown_rates, @period, :fasting) %>" class="bg-yellow" >
             <%= number_to_percentage(@data.dig(:bs_200_to_300_breakdown_rates, @period, :fasting) || 0, precision: 0) %>
           </em>
         </td>
@@ -181,7 +181,7 @@
           data-toggle="tooltip"
           title="<%= number_with_delimiter(@data.dig(:bs_over_300_breakdown_counts, @period, :fasting)) %> / <%= number_with_delimiter(@data.dig(:bs_over_300_patients, @period)) %> patients"
         >
-          <em data-rate="<%= @data.dig(:bs_over_300_breakdown_rates, @period, :fasting) %>" >
+          <em data-rate="<%= @data.dig(:bs_over_300_breakdown_rates, @period, :fasting) %>" class="bg-yellow" >
             <%= number_to_percentage(@data.dig(:bs_over_300_breakdown_rates, @period, :fasting) || 0, precision: 0) %>
           </em>
         </td>
@@ -195,7 +195,7 @@
           data-toggle="tooltip"
           title="<%= number_with_delimiter(@data.dig(:bs_below_200_breakdown_counts, @period, :hba1c)) %> / <%= number_with_delimiter(@data.dig(:bs_below_200_patients, @period)) %> patients"
         >
-          <em data-rate="<%= @data.dig(:bs_below_200_breakdown_rates, @period, :hba1c) %>" >
+          <em data-rate="<%= @data.dig(:bs_below_200_breakdown_rates, @period, :hba1c) %>" class="bg-yellow" >
             <%= number_to_percentage(@data.dig(:bs_below_200_breakdown_rates, @period, :hba1c) || 0, precision: 0) %>
           </em>
         </td>
@@ -210,7 +210,7 @@
           data-toggle="tooltip"
           title="<%= number_with_delimiter(@data.dig(:bs_200_to_300_breakdown_counts, @period, :hba1c)) %> / <%= number_with_delimiter(@data.dig(:bs_200_to_300_patients, @period)) %> patients"
         >
-          <em data-rate="<%= @data.dig(:bs_200_to_300_breakdown_rates, @period, :hba1c) %>" >
+          <em data-rate="<%= @data.dig(:bs_200_to_300_breakdown_rates, @period, :hba1c) %> " class="bg-yellow" >
             <%= number_to_percentage(@data.dig(:bs_200_to_300_breakdown_rates, @period, :hba1c) || 0, precision: 0) %>
           </em>
         </td>
@@ -225,7 +225,7 @@
           data-toggle="tooltip"
           title="<%= number_with_delimiter(@data.dig(:bs_over_300_breakdown_counts, @period, :hba1c)) %> / <%= number_with_delimiter(@data.dig(:bs_over_300_patients, @period)) %> patients"
         >
-          <em data-rate="<%= @data.dig(:bs_over_300_breakdown_rates, @period, :hba1c) %>" >
+          <em data-rate="<%= @data.dig(:bs_over_300_breakdown_rates, @period, :hba1c) %>"  class="bg-yellow" >
             <%= number_to_percentage(@data.dig(:bs_over_300_breakdown_rates, @period, :hba1c) || 0, precision: 0) %>
           </em>
         </td>
