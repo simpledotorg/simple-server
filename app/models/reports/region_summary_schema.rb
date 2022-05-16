@@ -266,6 +266,14 @@ module Reports
       end
     end
 
+    memoize def diabetes_patients_with_bs_taken
+      region_period_cached_query(__method__) do |entry|
+        diabetes_under_care(:bs_below_200)[entry.region.slug][entry.period] +
+          diabetes_under_care(:bs_200_to_300)[entry.region.slug][entry.period] +
+          diabetes_under_care(:bs_over_300)[entry.region.slug][entry.period]
+      end
+    end
+
     memoize def bs_below_200_patients
       values_at("adjusted_bs_below_200_under_care")
     end
@@ -305,6 +313,27 @@ module Reports
     memoize def diabetes_treatment_outcome_breakdown_counts(blood_sugar_risk_state)
       region_period_cached_query(__method__, blood_sugar_risk_state: blood_sugar_risk_state) do |entry|
         diabetes_treatment_outcome_breakdown_counts_of_region(entry, blood_sugar_risk_state)
+      end
+    end
+
+    memoize def diabetes_patients_with_bs_taken_breakdown_rates
+      region_period_cached_query(__method__) do |entry|
+        rounded_percentages(
+          {
+            bs_below_200_random: diabetes_under_care(:bs_below_200, :random)[entry.region.slug][entry.period],
+            bs_below_200_post_prandial: diabetes_under_care(:bs_below_200, :post_prandial)[entry.region.slug][entry.period],
+            bs_below_200_fasting: diabetes_under_care(:bs_below_200, :fasting)[entry.region.slug][entry.period],
+            bs_below_200_hba1c: diabetes_under_care(:bs_below_200, :hba1c) [entry.region.slug][entry.period],
+            bs_200_to_300_random: diabetes_under_care(:bs_200_to_300, :random)[entry.region.slug][entry.period],
+            bs_200_to_300_post_prandial: diabetes_under_care(:bs_200_to_300, :post_prandial)[entry.region.slug][entry.period],
+            bs_200_to_300_fasting: diabetes_under_care(:bs_200_to_300, :fasting)[entry.region.slug][entry.period],
+            bs_200_to_300_hba1c: diabetes_under_care(:bs_200_to_300, :hba1c) [entry.region.slug][entry.period],
+            bs_over_300_random: diabetes_under_care(:bs_over_300, :random)[entry.region.slug][entry.period],
+            bs_over_300_post_prandial: diabetes_under_care(:bs_over_300, :post_prandial)[entry.region.slug][entry.period],
+            bs_over_300_fasting: diabetes_under_care(:bs_over_300, :fasting)[entry.region.slug][entry.period],
+            bs_over_300_hba1c: diabetes_under_care(:bs_over_300, :hba1c) [entry.region.slug][entry.period]
+          }
+        )
       end
     end
 

@@ -153,7 +153,9 @@ class Reports::RegionsController < AdminController
         bs_200_to_300_breakdown_counts: repo.diabetes_treatment_outcome_breakdown_counts(:bs_200_to_300)[slug],
         bs_over_300_patients: repo.bs_over_300_patients[slug],
         bs_over_300_breakdown_rates: repo.diabetes_treatment_outcome_breakdown_rates(:bs_over_300)[slug],
-        bs_over_300_breakdown_counts: repo.diabetes_treatment_outcome_breakdown_counts(:bs_over_300)[slug]
+        bs_over_300_breakdown_counts: repo.diabetes_treatment_outcome_breakdown_counts(:bs_over_300)[slug],
+        diabetes_patients_with_bs_taken: repo.diabetes_patients_with_bs_taken[slug],
+        diabetes_patients_with_bs_taken_breakdown_rates: repo.diabetes_patients_with_bs_taken_breakdown_rates[slug]
       }
     }
   end
