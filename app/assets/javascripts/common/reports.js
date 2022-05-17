@@ -875,7 +875,7 @@ Reports = function (withLtfu) {
       );
       registrationsPeriodEndNode.innerHTML =
         periodInfo.bp_control_registration_date;
-      const breakdown = data.bsBelow200Breakdown[period];
+      const breakdown = data.bsBelow200BreakdownRates[period];
       rbsPPBSPercentNode.innerHTML = this.formatPercentage(
         breakdown["random"] + breakdown["post_prandial"]
       );
@@ -1679,7 +1679,7 @@ Reports = function (withLtfu) {
       bsBelow200Patients: jsonData.bs_below_200_patients,
       bsBelow200Rate: jsonData.bs_below_200_rates,
       bsBelow200WithLtfuRate: jsonData.bs_below_200_with_ltfu_rates,
-      bsBelow200Breakdown: jsonData.bs_below_200_breakdown,
+      bsBelow200BreakdownRates: jsonData.bs_below_200_breakdown_rates,
       bs200to300Patients: jsonData.bs_200_to_300_patients,
       bs200to300Rate: jsonData.bs_200_to_300_rates,
       bs200to300WithLtfuRate: jsonData.bs_200_to_300_with_ltfu_rates,
