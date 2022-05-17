@@ -100,15 +100,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
         adjusted_bs_missed_visit_under_care
         adjusted_bs_missed_visit_lost_to_follow_up
         adjusted_bs_200_to_300_under_care
-        adjusted_random_bs_200_to_300_under_care
-        adjusted_post_prandial_bs_200_to_300_under_care
-        adjusted_fasting_bs_200_to_300_under_care
-        adjusted_hba1c_bs_200_to_300_under_care
         adjusted_bs_over_300_under_care
-        adjusted_random_bs_over_300_under_care
-        adjusted_post_prandial_bs_over_300_under_care
-        adjusted_fasting_bs_over_300_under_care
-        adjusted_hba1c_bs_over_300_under_care
         adjusted_bs_missed_visit_under_care_with_lost_to_follow_up
       ].map(&:to_s)
       (3.months.ago.to_period..now.to_period).each do |period|

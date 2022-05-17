@@ -265,10 +265,6 @@
 
 <%= render "diabetes_treatment_outcomes_card" %>
 
-<% if @children_data.any? %>
-  <%= render "bs_measurement_child_tables", data: @children_data, localized_region_type: @child_regions.first.localized_region_type %>
-<% end %>
-
 <div id="data-json" style="display: none;">
   <%= raw @data.to_json %>
 </div>

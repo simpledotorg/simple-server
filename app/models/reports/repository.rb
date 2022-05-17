@@ -86,13 +86,10 @@ module Reports
       bs_over_300_patients
       diabetes_missed_visits
       visited_without_bs_taken
-      diabetes_patients_with_bs_taken
     ]
 
     DELEGATED_BREAKDOWNS = %i[
-      diabetes_treatment_outcome_breakdown_rates
-      diabetes_treatment_outcome_breakdown_counts
-      diabetes_patients_with_bs_taken_breakdown_rates
+      diabetes_treatment_outcome_breakdown
     ]
 
     def warm_cache
