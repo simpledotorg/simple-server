@@ -158,7 +158,7 @@ module Reports
     end
 
     memoize def diabetes_missed_visits(with_ltfu: false)
-      field = with_ltfu ? :adjusted_bs_missed_visit_lost_to_follow_up : :adjusted_bs_missed_visit_under_care
+      field = with_ltfu ? :adjusted_bs_missed_visit_under_care_with_lost_to_follow_up : :adjusted_bs_missed_visit_under_care
       values_at(field)
     end
 
@@ -226,8 +226,14 @@ module Reports
       values_at(field)
     end
 
-    def visited_without_bs_taken
+    memoize def visited_without_bs_taken
       values_at(:adjusted_visited_no_bs_under_care)
+    end
+
+    memoize def visited_without_bs_taken_rates(with_ltfu: false)
+      region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
+        diabetes_treatment_outcome_rates(entry, with_ltfu)[__method__]
+      end
     end
 
     memoize def visited_without_bp_taken_rates(with_ltfu: false)

@@ -40,6 +40,7 @@ Reports = function (withLtfu) {
     this.setupCumulativeDiabetesRegistrationsGraph(data);
     this.setupBSOver200Graph(data);
     this.setupDiabetesMissedVisitsGraph(data);
+    this.setupDiabetesVisitDetailsGraph(data);
   };
 
   this.setupControlledGraph = (data) => {
@@ -783,7 +784,7 @@ Reports = function (withLtfu) {
       labels: Object.keys(bsBelow200Rate),
       datasets: [
         {
-          label: "BS <200",
+          label: "Blood sugar <200",
           backgroundColor: this.lightGreenColor,
           borderColor: this.mediumGreenColor,
           borderWidth: 2,
@@ -922,14 +923,14 @@ Reports = function (withLtfu) {
       labels: Object.keys(bsOver300Rate),
       datasets: [
         {
-          label: "BS 200-299",
+          label: "Blood sugar 200-299",
           backgroundColor: this.mediumRedColor,
           hoverBackgroundColor: this.darkRedColor,
           hoverBorderWidth: 2,
           data: Object.values(bs200to300Rate),
         },
         {
-          label: "BS >=300",
+          label: "Blood sugar ≥300",
           backgroundColor: this.maroonColor,
           hoverBackgroundColor: this.darkMaroonColor,
           hoverBorderWidth: 2,
@@ -974,7 +975,7 @@ Reports = function (withLtfu) {
             padding: 8,
             min: 0,
             beginAtZero: true,
-            stepSize: 50,
+            stepSize: 25,
             max: 100,
           },
         },
@@ -1155,7 +1156,7 @@ Reports = function (withLtfu) {
             drawBorder: false,
           },
           ticks: {
-            display: true,
+            display: false,
             autoSkip: false,
             fontColor: this.darkGreyColor,
             fontSize: 10,
@@ -1205,7 +1206,7 @@ Reports = function (withLtfu) {
             drawBorder: false,
           },
           ticks: {
-            display: true,
+            display: false,
             autoSkip: false,
             fontColor: this.darkGreyColor,
             fontSize: 10,
@@ -1213,8 +1214,8 @@ Reports = function (withLtfu) {
             padding: 8,
             min: 0,
             beginAtZero: true,
-            stepSize: monthlyDiabetesFollowupsYAxis.stepSize,
-            max: monthlyDiabetesFollowupsYAxis.max,
+            stepSize: cumulativeDiabetesRegistrationsYAxis.stepSize,
+            max: cumulativeDiabetesRegistrationsYAxis.max,
             callback: (label) => {
               return this.formatNumberWithCommas(label);
             },
@@ -1287,9 +1288,9 @@ Reports = function (withLtfu) {
   };
 
   this.setupDiabetesMissedVisitsGraph = (data) => {
-    const adjustedPatients = withLtfu
-      ? data.adjustedPatientCountsWithLtfu
-      : data.adjustedPatientCounts;
+    const adjustedDiabetesPatients = withLtfu
+      ? data.adjustedDiabetesPatientCountsWithLtfu
+      : data.adjustedDiabetesPatientCounts;
     const diabetesMissedVisitsGraphNumerator = withLtfu
       ? data.diabetesMissedVisitsWithLtfu
       : data.diabetesMissedVisits;
@@ -1378,7 +1379,7 @@ Reports = function (withLtfu) {
       );
 
       const periodInfo = data.periodInfo[period];
-      const adjustedPatientCounts = adjustedPatients[period];
+      const adjustedPatientCounts = adjustedDiabetesPatients[period];
       const totalPatients = diabetesMissedVisitsGraphNumerator[period];
 
       rateNode.innerHTML = this.formatPercentage(
@@ -1410,6 +1411,224 @@ Reports = function (withLtfu) {
         diabetesMissedVisitsConfig
       );
       populateDiabetesMissedVisitsGraphDefault();
+    }
+  };
+
+  this.setupDiabetesVisitDetailsGraph = (data) => {
+    const diabetesVisitDetailsGraphConfig = this.createBaseGraphConfig();
+    diabetesVisitDetailsGraphConfig.type = "bar";
+
+    const maxBarsToDisplay = 6;
+    const barsToDisplay = Math.min(
+      Object.keys(data.bsBelow200Rate).length,
+      maxBarsToDisplay
+    );
+
+    diabetesVisitDetailsGraphConfig.data = {
+      labels: Object.keys(data.bsBelow200Rate).slice(-barsToDisplay),
+      datasets: [
+        {
+          label: "Blood sugar <200",
+          backgroundColor: this.mediumGreenColor,
+          hoverBackgroundColor: this.darkGreenColor,
+          data: Object.values(data.bsBelow200Rate).slice(-barsToDisplay),
+          type: "bar",
+        },
+        {
+          label: "Blood sugar 200-299",
+          backgroundColor: this.mediumRedColor,
+          hoverBackgroundColor: this.darkRedColor,
+          data: Object.values(data.bs200to300Rate).slice(-barsToDisplay),
+          type: "bar",
+        },
+        {
+          label: "Blood sugar ≥300",
+          backgroundColor: this.maroonColor,
+          hoverBackgroundColor: this.darkMaroonColor,
+          data: Object.values(data.bsOver300Rate).slice(-barsToDisplay),
+          type: "bar",
+        },
+        {
+          label: "Visit but no blood sugar measure",
+          backgroundColor: this.mediumGreyColor,
+          hoverBackgroundColor: this.darkGreyColor,
+          data: Object.values(data.visitButNoBSMeasureRate).slice(
+            -barsToDisplay
+          ),
+          type: "bar",
+        },
+        {
+          label: "Missed visits",
+          backgroundColor: this.mediumBlueColor,
+          hoverBackgroundColor: this.darkBlueColor,
+          data: Object.values(data.diabetesMissedVisitsRate).slice(
+            -barsToDisplay
+          ),
+          type: "bar",
+        },
+      ],
+    };
+    diabetesVisitDetailsGraphConfig.options.scales = {
+      xAxes: [
+        {
+          stacked: true,
+          display: true,
+          gridLines: {
+            display: false,
+            drawBorder: false,
+          },
+          ticks: {
+            autoSkip: false,
+            fontColor: this.darkGreyColor,
+            fontSize: 10,
+            fontFamily: "Roboto",
+            padding: 8,
+            min: 0,
+            beginAtZero: true,
+          },
+        },
+      ],
+      yAxes: [
+        {
+          stacked: true,
+          display: false,
+          gridLines: {
+            display: false,
+            drawBorder: false,
+          },
+          ticks: {
+            autoSkip: false,
+            fontColor: this.darkGreyColor,
+            fontSize: 10,
+            fontFamily: "Roboto",
+            padding: 8,
+            min: 0,
+            beginAtZero: true,
+          },
+        },
+      ],
+    };
+    diabetesVisitDetailsGraphConfig.options.tooltips = {
+      mode: "x",
+      enabled: false,
+      custom: (tooltip) => {
+        let hoveredDatapoint = tooltip.dataPoints;
+        if (hoveredDatapoint)
+          populateDiabetesVisitDetailsGraph(hoveredDatapoint[0].label);
+        else populateDiabetesVisitDetailsGraphDefault();
+      },
+    };
+
+    const populateDiabetesVisitDetailsGraph = (period) => {
+      const cardNode = document.getElementById("diabetes-visit-details");
+      const missedVisitsRateNode = cardNode.querySelector(
+        "[data-missed-visits-rate]"
+      );
+      const visitButNoBSMeasureRateNode = cardNode.querySelector(
+        "[data-visit-but-no-bs-measure-rate]"
+      );
+      const bsBelow200RateNode = cardNode.querySelector(
+        "[data-bs-below-200-rate]"
+      );
+      const bs200To300RateNode = cardNode.querySelector(
+        "[data-bs-200-to-300-rate]"
+      );
+      const bsOver300RateNode = cardNode.querySelector(
+        "[data-bs-over-300-rate]"
+      );
+      const missedVisitsPatientsNode = cardNode.querySelector(
+        "[data-missed-visits-patients]"
+      );
+      const visitButNoBSMeasurePatientsNode = cardNode.querySelector(
+        "[data-visit-but-no-bs-measure-patients]"
+      );
+      const bsOver300PatientsNode = cardNode.querySelector(
+        "[data-bs-over-300-patients]"
+      );
+      const bs200To300PatientsNode = cardNode.querySelector(
+        "[data-bs-200-to-300-patients]"
+      );
+      const bsBelow200PatientsNode = cardNode.querySelector(
+        "[data-bs-below-200-patients]"
+      );
+      const periodStartNodes = cardNode.querySelectorAll("[data-period-start]");
+      const periodEndNodes = cardNode.querySelectorAll("[data-period-end]");
+      const registrationPeriodEndNodes = cardNode.querySelectorAll(
+        "[data-registrations-period-end]"
+      );
+      const adjustedPatientCountsNodes = cardNode.querySelectorAll(
+        "[data-adjusted-registrations]"
+      );
+
+      const missedVisitsRate = this.formatPercentage(
+        data.diabetesMissedVisitsRate[period]
+      );
+      const visitButNoBSMeasureRate = this.formatPercentage(
+        data.visitButNoBSMeasureRate[period]
+      );
+      const bsOver300Rate = this.formatPercentage(data.bsOver300Rate[period]);
+      const bs200To300Rate = this.formatPercentage(data.bs200to300Rate[period]);
+      const bsBelow200Rate = this.formatPercentage(data.bsBelow200Rate[period]);
+
+      const periodInfo = data.periodInfo[period];
+      const adjustedPatientCounts = data.adjustedDiabetesPatientCounts[period];
+      const totalMissedVisits = data.diabetesMissedVisits[period];
+      const totalVisitButNoBSMeasure = data.visitButNoBSMeasure[period];
+      const totalBSOver300Patients = data.bsOver300Patients[period];
+      const totalBS200To300Patients = data.bs200to300Patients[period];
+      const totalBSBelow200Patients = data.bsBelow200Patients[period];
+
+      missedVisitsRateNode.innerHTML = missedVisitsRate;
+      visitButNoBSMeasureRateNode.innerHTML = visitButNoBSMeasureRate;
+      bsOver300RateNode.innerHTML = bsOver300Rate;
+      bs200To300RateNode.innerHTML = bs200To300Rate;
+      bsBelow200RateNode.innerHTML = bsBelow200Rate;
+      missedVisitsPatientsNode.innerHTML =
+        this.formatNumberWithCommas(totalMissedVisits);
+      visitButNoBSMeasurePatientsNode.innerHTML = this.formatNumberWithCommas(
+        totalVisitButNoBSMeasure
+      );
+      bsOver300PatientsNode.innerHTML = this.formatNumberWithCommas(
+        totalBSOver300Patients
+      );
+      bs200To300PatientsNode.innerHTML = this.formatNumberWithCommas(
+        totalBS200To300Patients
+      );
+      bsBelow200PatientsNode.innerHTML = this.formatNumberWithCommas(
+        totalBSBelow200Patients
+      );
+
+      periodStartNodes.forEach(
+        (node) => (node.innerHTML = periodInfo.bp_control_start_date)
+      );
+      periodEndNodes.forEach(
+        (node) => (node.innerHTML = periodInfo.bp_control_end_date)
+      );
+      registrationPeriodEndNodes.forEach(
+        (node) => (node.innerHTML = periodInfo.bp_control_registration_date)
+      );
+      adjustedPatientCountsNodes.forEach(
+        (node) =>
+          (node.innerHTML = this.formatNumberWithCommas(adjustedPatientCounts))
+      );
+    };
+
+    const populateDiabetesVisitDetailsGraphDefault = () => {
+      const cardNode = document.getElementById("diabetes-visit-details");
+      const mostRecentPeriod = cardNode.getAttribute("data-period");
+
+      populateDiabetesVisitDetailsGraph(mostRecentPeriod);
+    };
+
+    const diabetesVisitDetailsGraphCanvas = document.getElementById(
+      "diabetesVisitDetails"
+    );
+    if (diabetesVisitDetailsGraphCanvas) {
+      new Chart(
+        diabetesVisitDetailsGraphCanvas.getContext("2d"),
+        diabetesVisitDetailsGraphConfig
+      );
+      populateDiabetesVisitDetailsGraphDefault();
     }
   };
 
@@ -1467,6 +1686,8 @@ Reports = function (withLtfu) {
       bsOver300Patients: jsonData.bs_over_300_patients,
       bsOver300Rate: jsonData.bs_over_300_rates,
       bsOver300WithLtfuRate: jsonData.bs_over_300_with_ltfu_rates,
+      visitButNoBSMeasure: jsonData.visited_without_bs_taken,
+      visitButNoBSMeasureRate: jsonData.visited_without_bs_taken_rates,
     };
   };
 
