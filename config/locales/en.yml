@@ -58,7 +58,7 @@ en:
     reports_card_subtitle: "Diabetes patients in %{region_name} with blood sugar <200 at their last visit in the last 3 months"
     numerator: "Patients with RBS/PPBS <200, FBS <126, or HbA1c <7.0 at their last visit in the last 3 months."
   bs_over_200_copy:
-    reports_card_subtitle: "Diabetes patients in %{region_name} with blood sugar 200-299 or ≥300 at their last visit in the last 3 months"
+    reports_card_subtitle: "Diabetes patients in %{region_name} with blood sugar 200-299 or blood sugar ≥300 at their last visit in the last 3 months"
     bs_200_to_299_numerator: "Patients with RBS/PPBS 200-299, FBS 126-199, or HbA1c 7.0-8.9 at their last visit in the last 3 months."
     bs_over_300_numerator: "Patients with RBS/PPBS ≥300, FBS ≥200, or HbA1c ≥9.0 at their last visit in the last 3 months."
   missed_visits_copy:
@@ -68,6 +68,9 @@ en:
     reports_card_subtitle: "Diabetes patients in %{region_name} with no visit in the last 3 months"
     numerator: "Patients with no visit in the last 3 months."
     denominator: "Diabetes patients assigned to %{region_name}, registered before the last 3 months. Dead and lost to follow-up patients are excluded."
+  bs_measurement_details_copy:
+    reports_card_subtitle: "Blood sugar measurements for diabetes patients in %{region_name} registered before %{period_registered} with a blood sugar taken between %{period_start} to %{period_end}"
+    numerator: "The number of blood sugar measurements, broken down by measurement type, for treatment outcomes of diabetes patients under care with a blood sugar taken on the last visit within the last 3 months."
   visit_but_no_bp_taken_copy:
     numerator: "Patients with no BP taken at their last visit in the last 3 months."
   visit_but_no_bs_taken_copy:
