@@ -93,6 +93,7 @@ module Reports
       diabetes_treatment_outcome_breakdown_rates
       diabetes_treatment_outcome_breakdown_counts
       diabetes_patients_with_bs_taken_breakdown_rates
+      diabetes_patients_with_bs_taken_breakdown_counts
     ]
 
     def warm_cache

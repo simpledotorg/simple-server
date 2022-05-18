@@ -316,24 +316,29 @@ module Reports
       end
     end
 
+    memoize def diabetes_patients_with_bs_taken_breakdown_counts
+      region_period_cached_query(__method__) do |entry|
+        bs_taken_breakdown_hash = {}
+        Reports::PatientBloodSugar.blood_sugar_risk_states.keys.each do |blood_sugar_risk_state|
+          BloodSugar.blood_sugar_types.keys.each do |blood_sugar_type|
+            bs_taken_breakdown_hash[[blood_sugar_risk_state.to_sym, blood_sugar_type.to_sym]] =
+              diabetes_under_care(blood_sugar_risk_state, blood_sugar_type)[entry.region.slug][entry.period]
+          end
+        end
+        bs_taken_breakdown_hash
+      end
+    end
+
     memoize def diabetes_patients_with_bs_taken_breakdown_rates
       region_period_cached_query(__method__) do |entry|
-        rounded_percentages(
-          {
-            bs_below_200_random: diabetes_under_care(:bs_below_200, :random)[entry.region.slug][entry.period],
-            bs_below_200_post_prandial: diabetes_under_care(:bs_below_200, :post_prandial)[entry.region.slug][entry.period],
-            bs_below_200_fasting: diabetes_under_care(:bs_below_200, :fasting)[entry.region.slug][entry.period],
-            bs_below_200_hba1c: diabetes_under_care(:bs_below_200, :hba1c) [entry.region.slug][entry.period],
-            bs_200_to_300_random: diabetes_under_care(:bs_200_to_300, :random)[entry.region.slug][entry.period],
-            bs_200_to_300_post_prandial: diabetes_under_care(:bs_200_to_300, :post_prandial)[entry.region.slug][entry.period],
-            bs_200_to_300_fasting: diabetes_under_care(:bs_200_to_300, :fasting)[entry.region.slug][entry.period],
-            bs_200_to_300_hba1c: diabetes_under_care(:bs_200_to_300, :hba1c) [entry.region.slug][entry.period],
-            bs_over_300_random: diabetes_under_care(:bs_over_300, :random)[entry.region.slug][entry.period],
-            bs_over_300_post_prandial: diabetes_under_care(:bs_over_300, :post_prandial)[entry.region.slug][entry.period],
-            bs_over_300_fasting: diabetes_under_care(:bs_over_300, :fasting)[entry.region.slug][entry.period],
-            bs_over_300_hba1c: diabetes_under_care(:bs_over_300, :hba1c) [entry.region.slug][entry.period]
-          }
-        )
+        bs_taken_breakdown_hash = {}
+        Reports::PatientBloodSugar.blood_sugar_risk_states.keys.each do |blood_sugar_risk_state|
+          BloodSugar.blood_sugar_types.keys.each do |blood_sugar_type|
+            bs_taken_breakdown_hash[[blood_sugar_risk_state.to_sym, blood_sugar_type.to_sym]] =
+              diabetes_under_care(blood_sugar_risk_state, blood_sugar_type)[entry.region.slug][entry.period]
+          end
+        end
+        rounded_percentages(bs_taken_breakdown_hash)
       end
     end
 
