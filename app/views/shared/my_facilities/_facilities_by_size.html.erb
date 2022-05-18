@@ -1,4 +1,10 @@
-<div class="card mb-3">
+<% if CountryConfig.current[:name] == "India" %>
+<div class="card">
+  <%= image_tag("2m-celebration-marigolds.svg", class: "img-responsive", alt: "user image") %>
+</div>
+<% end %>
+<!-- remove 'mt-4' from the line below when removing celebration element -->
+<div class="card mb-3 mt-4">
   <h2>
     Facilities using Simple
   </h2>
