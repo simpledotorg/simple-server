@@ -784,7 +784,7 @@ Reports = function (withLtfu) {
       labels: Object.keys(bsBelow200Rate),
       datasets: [
         {
-          label: "BS <200",
+          label: "Blood sugar <200",
           backgroundColor: this.lightGreenColor,
           borderColor: this.mediumGreenColor,
           borderWidth: 2,
@@ -923,14 +923,14 @@ Reports = function (withLtfu) {
       labels: Object.keys(bsOver300Rate),
       datasets: [
         {
-          label: "BS 200-299",
+          label: "Blood sugar 200-299",
           backgroundColor: this.mediumRedColor,
           hoverBackgroundColor: this.darkRedColor,
           hoverBorderWidth: 2,
           data: Object.values(bs200to300Rate),
         },
         {
-          label: "BS >=300",
+          label: "Blood sugar ≥300",
           backgroundColor: this.maroonColor,
           hoverBackgroundColor: this.darkMaroonColor,
           hoverBorderWidth: 2,
@@ -1428,28 +1428,28 @@ Reports = function (withLtfu) {
       labels: Object.keys(data.bsBelow200Rate).slice(-barsToDisplay),
       datasets: [
         {
-          label: "BS <200",
+          label: "Blood sugar <200",
           backgroundColor: this.mediumGreenColor,
           hoverBackgroundColor: this.darkGreenColor,
           data: Object.values(data.bsBelow200Rate).slice(-barsToDisplay),
           type: "bar",
         },
         {
-          label: "BS 200-299",
+          label: "Blood sugar 200-299",
           backgroundColor: this.mediumRedColor,
           hoverBackgroundColor: this.darkRedColor,
           data: Object.values(data.bs200to300Rate).slice(-barsToDisplay),
           type: "bar",
         },
         {
-          label: "BS ≥300",
+          label: "Blood sugar ≥300",
           backgroundColor: this.maroonColor,
           hoverBackgroundColor: this.darkMaroonColor,
           data: Object.values(data.bsOver300Rate).slice(-barsToDisplay),
           type: "bar",
         },
         {
-          label: "Visit but no BS measure",
+          label: "Visit but no blood sugar measure",
           backgroundColor: this.mediumGreyColor,
           hoverBackgroundColor: this.darkGreyColor,
           data: Object.values(data.visitButNoBSMeasureRate).slice(

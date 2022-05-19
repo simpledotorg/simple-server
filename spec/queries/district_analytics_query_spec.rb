@@ -56,9 +56,7 @@ RSpec.describe DistrictAnalyticsQuery do
             total_registered_patients: 6,
             registered_patients_by_period: {
               four_months_back => 3,
-              three_months_back => 3,
-              two_months_back => 0,
-              one_month_back => 0
+              three_months_back => 3
             },
             follow_up_patients_by_period: {
               three_months_back => 3,
@@ -71,9 +69,7 @@ RSpec.describe DistrictAnalyticsQuery do
             total_registered_patients: 6,
             registered_patients_by_period: {
               four_months_back => 3,
-              three_months_back => 3,
-              two_months_back => 0,
-              one_month_back => 0
+              three_months_back => 3
             },
             follow_up_patients_by_period: {
               three_months_back => 3,
@@ -83,13 +79,7 @@ RSpec.describe DistrictAnalyticsQuery do
           },
           facility_3.id => {
             total_assigned_patients: 6,
-            total_registered_patients: 0,
-            registered_patients_by_period: {
-              four_months_back => 0,
-              three_months_back => 0,
-              two_months_back => 0,
-              one_month_back => 0
-            }
+            total_registered_patients: 0
           }
         }
         refresh_views
@@ -112,18 +102,14 @@ RSpec.describe DistrictAnalyticsQuery do
                 {
                   registered_patients_by_period: {
                     four_months_back => 3,
-                    three_months_back => 3,
-                    two_months_back => 0,
-                    one_month_back => 0
+                    three_months_back => 3
                   }
                 },
               facility_2.id =>
                 {
                   registered_patients_by_period: {
                     four_months_back => 3,
-                    three_months_back => 3,
-                    two_months_back => 0,
-                    one_month_back => 0
+                    three_months_back => 3
                   }
                 }
             }
@@ -232,15 +218,14 @@ RSpec.describe DistrictAnalyticsQuery do
           facility_2.id =>
             {
               registered_patients_by_period: {
-                four_months_back => 1,
-                three_months_back => 0,
-                two_months_back => 0,
-                one_month_back => 0
+                four_months_back => 1
               }
             }
         }
 
-        expect(analytics.registered_patients_by_period).to eq(expected_result)
+        with_reporting_time_zone do
+          expect(analytics.registered_patients_by_period).to eq(expected_result)
+        end
       end
     end
 

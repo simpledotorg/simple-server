@@ -264,7 +264,7 @@ class Reports::RegionsController < AdminController
     @year = params[:year].to_i if params[:year].present?
 
     @cohort_analytics = @region.cohort_analytics(period: :quarter, prev_periods: 3)
-    @dashboard_analytics = @region.dashboard_analytics(period: :quarter, prev_periods: 4)
+    @dashboard_analytics = @region.dashboard_analytics(period: :quarter, prev_periods: 4, include_current_period: false)
 
     whatsapp_graphics_handler(
       @region.organization.name,
