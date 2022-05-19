@@ -597,37 +597,37 @@ describe Reports::RegionSummarySchema, type: :model do
 
         [facility_1.region, facility_2.region, region].each do |r|
           expect(schema.diabetes_patients_with_bs_taken_breakdown_rates[r.slug]["Apr 2020".to_period])
-            .to include(
-              bs_below_200_random: 25,
-              bs_below_200_post_prandial: 0,
-              bs_below_200_fasting: 0,
-              bs_below_200_hba1c: 0,
-              bs_200_to_300_random: 0,
-              bs_200_to_300_post_prandial: 25,
-              bs_200_to_300_fasting: 0,
-              bs_200_to_300_hba1c: 0,
-              bs_over_300_random: 0,
-              bs_over_300_post_prandial: 0,
-              bs_over_300_fasting: 25,
-              bs_over_300_hba1c: 25
+            .to eq(
+              [:bs_below_200, :random] => 25,
+              [:bs_below_200, :post_prandial] => 0,
+              [:bs_below_200, :fasting] => 0,
+              [:bs_below_200, :hba1c] => 0,
+              [:bs_200_to_300, :random] => 0,
+              [:bs_200_to_300, :post_prandial] => 25,
+              [:bs_200_to_300, :fasting] => 0,
+              [:bs_200_to_300, :hba1c] => 0,
+              [:bs_over_300, :random] => 0,
+              [:bs_over_300, :post_prandial] => 0,
+              [:bs_over_300, :fasting] => 25,
+              [:bs_over_300, :hba1c] => 25
             )
         end
 
         [facility_1.region, facility_2.region, region].each do |r|
           expect(schema.diabetes_patients_with_bs_taken_breakdown_rates[r.slug]["Jun 2020".to_period])
             .to include(
-              bs_below_200_random: 50,
-              bs_below_200_post_prandial: 0,
-              bs_below_200_fasting: 0,
-              bs_below_200_hba1c: 0,
-              bs_200_to_300_random: 0,
-              bs_200_to_300_post_prandial: 0,
-              bs_200_to_300_fasting: 0,
-              bs_200_to_300_hba1c: 0,
-              bs_over_300_random: 0,
-              bs_over_300_post_prandial: 0,
-              bs_over_300_fasting: 0,
-              bs_over_300_hba1c: 50
+              [:bs_below_200, :random] => 50,
+              [:bs_below_200, :post_prandial] => 0,
+              [:bs_below_200, :fasting] => 0,
+              [:bs_below_200, :hba1c] => 0,
+              [:bs_200_to_300, :random] => 0,
+              [:bs_200_to_300, :post_prandial] => 0,
+              [:bs_200_to_300, :fasting] => 0,
+              [:bs_200_to_300, :hba1c] => 0,
+              [:bs_over_300, :random] => 0,
+              [:bs_over_300, :post_prandial] => 0,
+              [:bs_over_300, :fasting] => 0,
+              [:bs_over_300, :hba1c] => 50
             )
         end
 
