@@ -15,9 +15,9 @@
 <% if @region.facility_region? %>
   <%= render "facility_details" %>
 <% else %>
-  <%= render(RegistrationsAndFollowUpsComponent.new(@region, 
-    current_admin: current_admin, 
-    repository: @repository, 
+  <%= render(RegistrationsAndFollowUpsComponent.new(@region,
+    current_admin: current_admin,
+    repository: @repository,
     current_period: @period)) %>
 <% end %>
 

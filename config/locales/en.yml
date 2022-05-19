@@ -125,7 +125,7 @@ en:
     district_copy: "The approximate number of people in %{region_name} with hypertension."
     state_copy: "The sum of %{region_name}'s %{child_region_type} populations entered on the Dashboard. This number is only displayed if all %{child_region_type_plural} have a population."
   medications_dispensation_copy:
-    numerator: "Number of days till a patient's next scheduled appointment."
+    numerator: "Number of days until a patient's next scheduled appointment."
     denominator: "Total appointments scheduled for follow-up patients during a month."
 
   progress_tab:
