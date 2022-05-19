@@ -1,0 +1,198 @@
+<div class="row mt-5 mb-64px">
+    <div class="col-lg-7">
+      <h4 class="mb-16px pb-8px">
+        Definitions
+      </h4>
+      <div class="mb-24px">
+        <p class="mb-8px fs-16px fw-bold c-grey-dark">
+          Total assigned patients
+        </p>
+        <div class="pl-16px">
+          <p class="mb-0px fs-14px c-grey-dark">
+            <%= t("diabetes_assigned_patients_copy.total_assigned_patients", region_name: @region.name) %>
+          </p>
+        </div>
+      </div>
+      <div class="mb-24px">
+        <p class="mb-8px fs-16px fw-bold c-grey-dark">
+          Total registered patients
+        </p>
+        <div class="pl-16px">
+          <p class="mb-0px fs-14px c-grey-dark">
+            <%= t("registered_diabetes_patients_copy.total_registered_patients", region_name: @region.name) %>
+          </p>
+        </div>
+      </div>
+      <div class="mb-24px">
+        <p class="mb-8px fs-16px fw-bold c-grey-dark">
+          Monthly registered patients
+        </p>
+        <div class="pl-16px">
+          <p class="mb-0px fs-14px c-grey-dark">
+            <%= t("registered_diabetes_patients_copy.monthly_registered_patients", region_name: @region.name) %>
+          </p>
+        </div>
+      </div>
+      <div class="mb-24px">
+        <p class="mb-8px fs-16px fw-bold c-grey-dark">
+          Monthly follow-up patients
+        </p>
+        <div class="pl-16px">
+          <p class="mb-0px fs-14px c-grey-dark">
+            <%= t("registered_diabetes_patients_copy.monthly_followup_patients", region_name: @region.name) %>
+          </p>
+        </div>
+      </div>
+      <div class="mb-24px">
+        <p class="mb-8px fs-16px fw-bold c-grey-dark">
+          BP <200
+        </p>
+        <div class="pl-16px">
+          <p class="mb-8px fs-14px c-grey-dark">
+            <strong>Numerator:</strong> <%= t("bs_below_200_copy.numerator") %>
+          </p>
+          <p class="mb-0px fs-14px c-grey-dark">
+            <strong>Denominator:</strong> <%= t("diabetes_denominator_copy", region_name: @region.name) %>
+          </p>
+        </div>
+      </div>
+      <div class="mb-24px">
+        <p class="mb-8px fs-16px fw-bold c-grey-dark">
+          BP 200-299
+        </p>
+        <div class="pl-16px">
+          <p class="mb-8px fs-14px c-grey-dark">
+            <strong>Numerator:</strong> <%= t("bs_over_200_copy.bs_200_to_299.numerator") %>
+          </p>
+          <p class="mb-0px fs-14px c-grey-dark">
+            <strong>Denominator:</strong> <%= t("diabetes_denominator_copy", region_name: @region.name) %>
+          </p>
+        </div>
+      </div>
+      <div class="mb-24px">
+        <p class="mb-8px fs-16px fw-bold c-grey-dark">
+          BP ≥300
+        </p>
+        <div class="pl-16px">
+          <p class="mb-8px fs-14px c-grey-dark">
+            <strong>Numerator:</strong> <%= t("bs_over_200_copy.bs_over_300.numerator") %>
+          </p>
+          <p class="mb-0px fs-14px c-grey-dark">
+            <strong>Denominator:</strong> <%= t("diabetes_denominator_copy", region_name: @region.name) %>
+          </p>
+        </div>
+      </div>
+      <div class="mb-24px">
+        <p class="mb-8px fs-16px fw-bold c-grey-dark">
+          Missed visits
+        </p>
+        <div class="pl-16px">
+          <p class="mb-8px fs-14px c-grey-dark">
+            <strong>Numerator:</strong> <%= t("diabetes_missed_visits_copy.numerator") %>
+          </p>
+          <p class="mb-0px fs-14px c-grey-dark">
+            <strong>Denominator</strong> <%= t("diabetes_denominator_copy", region_name: @region.name) %>
+          </p>
+        </div>
+      </div>
+      <div class="mb-24px">
+        <p class="mb-8px fs-16px fw-bold c-grey-dark">
+          Visit but no blood sugar taken
+        </p>
+        <div class="pl-16px">
+          <p class="mb-8px fs-14px c-grey-dark">
+            <strong>Numerator:</strong> <%= t("visit_but_no_bs_taken_copy.numerator") %>
+          </p>
+          <p class="mb-0px fs-14px c-grey-dark">
+            <strong>Denominator</strong> <%= t("diabetes_denominator_copy", region_name: @region.name) %>
+          </p>
+        </div>
+      </div>
+      <div class="mb-24px">
+        <p class="mb-8px fs-16px fw-bold c-grey-dark">
+          Patients under care
+        </p>
+        <div class="pl-16px">
+          <p class="mb-0px fs-14px c-grey-dark">
+            <%= t("diabetes_patients_under_care_copy") %>
+          </p>
+        </div>
+      </div>
+      <div class="mb-24px">
+        <p class="mb-8px fs-16px fw-bold c-grey-dark">
+          Lost to follow-up
+        </p>
+        <div class="pl-16px">
+          <p class="mb-8px fs-14px c-grey-dark">
+            <strong>Numerator:</strong> <%= t("diabetes_lost_to_follow_up_copy.numerator") %>
+          </p>
+          <p class="mb-0px fs-14px c-grey-dark">
+            <strong>Denominator</strong> <%= t("diabetes_ltfu_denominator_copy", region_name: @region.name) %>
+          </p>
+        </div>
+      </div>
+      <div class="mb-24px">
+        <p class="mb-8px fs-16px fw-bold c-grey-dark">
+          <% if @region.facility_region? %>
+            Follow-up patients per user
+          <% else %>
+            Follow-up patients
+          <% end %>
+        </p>
+        <div class="pl-16px">
+          <p class="mb-8px fs-14px c-grey-dark">
+            <%= t(:diabetes_follow_up_patients_copy, region_name: @region.name) %>
+          </p>
+        </div>
+      </div>
+      <% if @region.facility_region? %>
+        <div class="mb-0px">
+          <p class="mb-8px fs-16px fw-bold c-grey-dark">
+            Blood sugar measurements taken
+          </p>
+          <div class="pl-16px">
+            <p class="mb-8px fs-14px c-grey-dark">
+              <%= t("bp_measures_taken_copy", region_name: @region.name) %>
+            </p>
+          </div>
+        </div>
+      <% end %>
+      <% if @region.supports_diabetes_population_coverage %>
+        <div class="mb-24px">
+          <p class="mb-8px fs-16px fw-bold c-grey-dark">
+            Diabetes patient coverage
+          </p>
+          <div class="pl-16px">
+            <p class="mb-8px fs-14px c-grey-dark">
+              <%= t("diabetes_patient_coverage_copy") %>
+            </p>
+          </div>
+        </div>
+        <div class="mb-24px">
+          <p class="mb-8px fs-16px fw-bold c-grey-dark">
+            Total estimated diabetic population
+          </p>
+          <div class="pl-16px">
+            <p class="mb-8px fs-14px c-grey-dark">
+              <%= total_estimated_diabetic_population_copy(@region) %>
+            </p>
+          </div>
+        </div>
+        <% if current_admin.feature_enabled?(:medications_dispensation) %>
+          <div class="mb-0px">
+          <p class="mb-8px fs-16px fw-bold c-grey-dark">
+            Days of medications handed to follow-up patients
+          </p>
+          <div class="pl-16px">
+            <p class="mb-8px fs-14px c-grey-dark">
+              <strong>Numerator:</strong> <%= t("medications_dispensation_copy.numerator") %>
+            </p>
+            <p class="mb-0px fs-14px c-grey-dark">
+              <strong>Denominator</strong> <%= t("medications_dispensation_copy.denominator") %>
+            </p>
+          </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+</div>
