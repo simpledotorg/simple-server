@@ -877,12 +877,14 @@ Reports = function (withLtfu) {
         periodInfo.bp_control_registration_date;
       const breakdown = data.bsBelow200BreakdownRates[period];
       rbsPPBSPercentNode.innerHTML = this.formatPercentage(
-        breakdown["random"] + breakdown["post_prandial"]
+        breakdown ? breakdown["random"] + breakdown["post_prandial"] : 0
       );
       fastingPercentNode.innerHTML = this.formatPercentage(
-        breakdown["fasting"]
+        breakdown ? breakdown["fasting"] : 0
       );
-      hba1cPercentNode.innerHTML = this.formatPercentage(breakdown["hba1c"]);
+      hba1cPercentNode.innerHTML = this.formatPercentage(
+          breakdown ? breakdown["hba1c"] : 0
+      );
     };
 
     const populateBSBelow200GraphDefault = () => {

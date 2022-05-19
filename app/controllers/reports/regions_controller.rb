@@ -138,7 +138,7 @@ class Reports::RegionsController < AdminController
 
     authorize { current_admin.accessible_facilities(:view_reports).any? }
 
-    @child_regions = @region.reportable_children
+    @child_regions = @region.reportable_children.filter { |region| region.diabetes_management_enabled? }
     repo = Reports::Repository.new(@child_regions, periods: @period)
 
     @children_data = @child_regions.map { |region|
