@@ -193,9 +193,6 @@ class Reports::RegionsController < AdminController
       slug = region.slug
       {
         region: region,
-        bs_below_200_patients: repo.bs_below_200_patients[slug],
-        bs_200_to_300_patients: repo.bs_200_to_300_patients[slug],
-        bs_over_300_patients: repo.bs_over_300_patients[slug],
         diabetes_patients_with_bs_taken: repo.diabetes_patients_with_bs_taken[slug],
         diabetes_patients_with_bs_taken_breakdown_rates: repo.diabetes_patients_with_bs_taken_breakdown_rates[slug],
         diabetes_patients_with_bs_taken_breakdown_counts: repo.diabetes_patients_with_bs_taken_breakdown_counts[slug]

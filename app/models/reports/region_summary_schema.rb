@@ -306,13 +306,23 @@ module Reports
 
     memoize def diabetes_treatment_outcome_breakdown_rates(blood_sugar_risk_state)
       region_period_cached_query(__method__, blood_sugar_risk_state: blood_sugar_risk_state) do |entry|
-        diabetes_treatment_outcome_breakdown_rates_of_region(entry, blood_sugar_risk_state)
+        rounded_percentages({
+          random: diabetes_under_care(blood_sugar_risk_state, :random)[entry.region.slug][entry.period],
+          post_prandial: diabetes_under_care(blood_sugar_risk_state, :post_prandial)[entry.region.slug][entry.period],
+          fasting: diabetes_under_care(blood_sugar_risk_state, :fasting)[entry.region.slug][entry.period],
+          hba1c: diabetes_under_care(blood_sugar_risk_state, :hba1c) [entry.region.slug][entry.period]
+        })
       end
     end
 
     memoize def diabetes_treatment_outcome_breakdown_counts(blood_sugar_risk_state)
       region_period_cached_query(__method__, blood_sugar_risk_state: blood_sugar_risk_state) do |entry|
-        diabetes_treatment_outcome_breakdown_counts_of_region(entry, blood_sugar_risk_state)
+        {
+          random: diabetes_under_care(blood_sugar_risk_state, :random)[entry.region.slug][entry.period],
+          post_prandial: diabetes_under_care(blood_sugar_risk_state, :post_prandial)[entry.region.slug][entry.period],
+          fasting: diabetes_under_care(blood_sugar_risk_state, :fasting)[entry.region.slug][entry.period],
+          hba1c: diabetes_under_care(blood_sugar_risk_state, :hba1c) [entry.region.slug][entry.period]
+        }
       end
     end
 
@@ -370,21 +380,6 @@ module Reports
         missed_visits_rates: diabetes_missed_visits(with_ltfu: with_ltfu)[entry.region.slug][entry.period],
         visited_without_bs_taken_rates: visited_without_bs_taken[entry.region.slug][entry.period]
       })
-    end
-
-    memoize def diabetes_treatment_outcome_breakdown_rates_of_region(entry, blood_sugar_risk_state)
-      rounded_percentages(
-        diabetes_treatment_outcome_breakdown_counts_of_region(entry, blood_sugar_risk_state)
-      )
-    end
-
-    memoize def diabetes_treatment_outcome_breakdown_counts_of_region(entry, blood_sugar_risk_state)
-      {
-        random: diabetes_under_care(blood_sugar_risk_state, :random)[entry.region.slug][entry.period],
-        post_prandial: diabetes_under_care(blood_sugar_risk_state, :post_prandial)[entry.region.slug][entry.period],
-        fasting: diabetes_under_care(blood_sugar_risk_state, :fasting)[entry.region.slug][entry.period],
-        hba1c: diabetes_under_care(blood_sugar_risk_state, :hba1c) [entry.region.slug][entry.period]
-      }
     end
 
     memoize def diabetes_under_care(blood_sugar_risk_state, blood_sugar_type = nil)
