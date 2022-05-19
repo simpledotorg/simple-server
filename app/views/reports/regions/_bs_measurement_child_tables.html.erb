@@ -39,48 +39,102 @@
         <col>
       </colgroup>
       <thead>
+      <tr class="sorts">
+        <th class="sticky"></th>
+        <th colspan="2" class="sticky nowrap">
+          RBS/PPBS <200
+          <%= render "definition_tooltip",
+                     definitions: {
+                       "Numerator" => t("bs_below_200_copy.rbs_ppbs.numerator"),
+                       "Denominator" => t("bs_measurement_details_copy.assigned_patients_with_bs_measurement", region_name: @region.name)
+                     }
+          %>
+        </th>
+        <th colspan="2" class="sticky nowrap">
+          RBS/PPBS 200-299
+          <%= render "definition_tooltip",
+                     definitions: {
+                       "Numerator" => t("bs_below_200_copy.rbs_ppbs.numerator"),
+                       "Denominator" => t("bs_measurement_details_copy.assigned_patients_with_bs_measurement", region_name: @region.name)
+                     }
+          %>
+        </th>
+        <th colspan="2" class="sticky nowrap">
+          RBS/PPBS ≥300
+          <%= render "definition_tooltip",
+                     definitions: {
+                       "Numerator" => t("bs_below_200_copy.rbs_ppbs.numerator"),
+                       "Denominator" => t("bs_measurement_details_copy.assigned_patients_with_bs_measurement", region_name: @region.name)
+                     }
+          %>
+        </th>
+        <th colspan="2" class="sticky nowrap">
+          FBS <126
+          <%= render "definition_tooltip",
+                     definitions: {
+                       "Numerator" => t("bs_below_200_copy.rbs_ppbs.numerator"),
+                       "Denominator" => t("bs_measurement_details_copy.assigned_patients_with_bs_measurement", region_name: @region.name)
+                     }
+          %>
+        </th>
+        <th colspan="2" class="sticky nowrap">
+          FBS 126-199
+          <%= render "definition_tooltip",
+                     definitions: {
+                       "Numerator" => t("bs_below_200_copy.rbs_ppbs.numerator"),
+                       "Denominator" => t("bs_measurement_details_copy.assigned_patients_with_bs_measurement", region_name: @region.name)
+                     }
+          %>
+        </th>
+        <th colspan="2" class="sticky nowrap">
+          FBS ≥200
+          <%= render "definition_tooltip",
+                     definitions: {
+                       "Numerator" => t("bs_below_200_copy.rbs_ppbs.numerator"),
+                       "Denominator" => t("bs_measurement_details_copy.assigned_patients_with_bs_measurement", region_name: @region.name)
+                     }
+          %>
+        </th>
+        <th colspan="2" class="sticky nowrap">
+          HbA1c <7.0
+          <%= render "definition_tooltip",
+                     definitions: {
+                       "Numerator" => t("bs_below_200_copy.rbs_ppbs.numerator"),
+                       "Denominator" => t("bs_measurement_details_copy.assigned_patients_with_bs_measurement", region_name: @region.name)
+                     }
+          %>
+        </th>
+        <th colspan="2" class="sticky nowrap">
+          HbA1c 7.0-8.9
+          <%= render "definition_tooltip",
+                     definitions: {
+                       "Numerator" => t("bs_below_200_copy.rbs_ppbs.numerator"),
+                       "Denominator" => t("bs_measurement_details_copy.assigned_patients_with_bs_measurement", region_name: @region.name)
+                     }
+          %>
+        </th>
+        <th colspan="2" class="sticky nowrap">
+          HbA1c ≥9.0
+          <%= render "definition_tooltip",
+                     definitions: {
+                       "Numerator" => t("bs_below_200_copy.rbs_ppbs.numerator"),
+                       "Denominator" => t("bs_measurement_details_copy.assigned_patients_with_bs_measurement", region_name: @region.name)
+                     }
+          %>
+        </th>
+      </tr>
       <tr class="sorts" data-sort-method="thead">
         <th class="row-label sort-label sort-label-small ta-left" data-sort-default>
           <%= localized_region_type.capitalize %>
         </th>
-        <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" colspan="2" class="sticky nowrap">
-          RBS/PPBS <200
-        </th>
-        <th style="display: none" data-sort-method="none"></th>
-        <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" colspan="2" class="sticky nowrap">
-          RBS/PPBS
-          200-299
-        </th>
-        <th style="display: none" data-sort-method="none"></th>
-        <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" colspan="2" class="sticky nowrap">
-          RBS/PPBS
-          ≥300
-        </th>
-        <th style="display: none" data-sort-method="none"></th>
-        <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" colspan="2" class="sticky nowrap">
-          FBS <126
-        </th>
-        <th style="display: none" data-sort-method="none"></th>
-        <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" colspan="2" class="sticky nowrap">
-          FBS 126-199
-        </th>
-        <th style="display: none" data-sort-method="none"></th>
-        <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" colspan="2" class="sticky nowrap">
-          FBS ≥200
-        </th>
-        <th style="display: none" data-sort-method="none"></th>
-        <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" colspan="2" class="sticky nowrap">
-          HbA1c <7.0
-        </th>
-        <th style="display: none" data-sort-method="none"></th>
-        <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" colspan="2" class="sticky nowrap">
-          HbA1c 7.0-8.9
-        </th>
-        <th style="display: none" data-sort-method="none"></th>
-        <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" colspan="2" class="sticky nowrap">
-          HbA1c ≥9.0
-        </th>
-        <th style="display: none" data-sort-method="none"></th>
+        <% 9.times do %>
+          <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
+            Percent
+          </th>
+          <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
+            Total
+          </th>
+        <% end %>
       </tr>
       </thead>
       <tbody>
