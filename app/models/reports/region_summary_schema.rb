@@ -101,6 +101,10 @@ module Reports
       values_at("lost_to_follow_up")
     end
 
+    memoize def diabetes_ltfu
+      values_at("diabetes_lost_to_follow_up")
+    end
+
     memoize def under_care
       values_at("under_care")
     end
@@ -137,6 +141,13 @@ module Reports
       region_period_cached_query(__method__) do |entry|
         slug, period = entry.slug, entry.period
         percentage(ltfu[slug][period], cumulative_assigned_patients[slug][period])
+      end
+    end
+
+    memoize def diabetes_ltfu_rates
+      region_period_cached_query(__method__) do |entry|
+        slug, period = entry.slug, entry.period
+        percentage(diabetes_ltfu[slug][period], cumulative_assigned_diabetic_patients[slug][period])
       end
     end
 

@@ -23,6 +23,14 @@ class EstimatedPopulation < ApplicationRecord
     return rate if rate > 0.0
   end
 
+  def diabetes_patient_coverage_rate
+    population = region.estimated_diabetes_population.population.to_f
+    rate = (region.registered_patients.with_diabetes.count.to_f / population) * 100
+    return nil if rate.infinite?
+    return 100.0 if rate > 100.0
+    return rate if rate > 0.0
+  end
+
   memoize def show_coverage
     if region.district_region?
       !!region.estimated_population&.hypertension_patient_coverage_rate

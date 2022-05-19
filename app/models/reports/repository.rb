@@ -35,6 +35,7 @@ module Reports
     DELEGATED_RATES = %i[
       controlled_rates
       ltfu_rates
+      diabetes_ltfu_rates
       missed_visits_rate
       missed_visits_with_ltfu_rates
       missed_visits_without_ltfu_rates
@@ -59,11 +60,13 @@ module Reports
       controlled
       cumulative_assigned_patients
       cumulative_registrations
+      cumulative_assigned_diabetic_patients
       cumulative_diabetes_registrations
       earliest_patient_recorded_at
       earliest_patient_recorded_at_period
       under_care
       ltfu
+      diabetes_ltfu
       missed_visits
       missed_visits_with_ltfu
       missed_visits_without_ltfu
