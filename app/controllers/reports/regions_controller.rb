@@ -199,8 +199,20 @@ class Reports::RegionsController < AdminController
       }
     }
 
+    regions = if @region.facility_region?
+      [@region]
+    else
+      [@region, @region.reportable_children].flatten
+    end
+
+    if current_admin.feature_enabled?(:show_call_results) && @region.state_region?
+      regions.concat(@region.district_regions)
+    end
+
     months = -(Reports::MAX_MONTHS_OF_DATA - 1)
     @details_period = Period.month(Time.current)
+    @details_period_range = Range.new(@details_period.advance(months: -5), @details_period)
+    @details_repository = Reports::Repository.new(regions, periods: @details_period_range)
     chart_range = (@details_period.advance(months: months)..@details_period)
     chart_repo = Reports::Repository.new(@region, periods: chart_range)
     @details_chart_data = {

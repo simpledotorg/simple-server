@@ -187,6 +187,10 @@ module Reports
       schema.hypertension_follow_ups(group_by: group_by)
     end
 
+    memoize def diabetes_follow_ups(group_by: nil)
+      schema.diabetes_follow_ups(group_by: group_by)
+    end
+
     memoize def bp_measures_by_user
       items = regions.map { |region| RegionEntry.new(region, __method__, group_by: :user_id, period_type: period_type) }
       result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
