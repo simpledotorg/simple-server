@@ -71,16 +71,13 @@ class DistrictAnalyticsQuery
   end
 
   def registered_patients_by_period
-    @facilities.each_with_object({}) { |facility, result|
-      counts = period_to_dates(repository.monthly_registrations[facility.region.slug])
-      next unless counts&.any?
+    result = ActivityService.new(region, period: @period, group: Patient.arel_table[:registration_facility_id]).registrations
 
-      result[facility.id] = {registered_patients_by_period: counts}
-    }
+    group_by_date_and_facility(result, :registered_patients_by_period)
   end
 
   def follow_up_patients_by_period
-    result = ActivityService.new(region, group: BloodPressure.arel_table[:facility_id]).follow_ups
+    result = ActivityService.new(region, period: @period, group: BloodPressure.arel_table[:facility_id]).follow_ups
 
     group_by_date_and_facility(result, :follow_up_patients_by_period)
   end

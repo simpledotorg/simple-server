@@ -10,7 +10,7 @@
   <div class="table-responsive-md">
     <table class="analytics-table table-compact">
       <colgroup>
-          <col>
+          <col class="table-first-col">
           <col>
           <col class="table-divider">
           <col class="table-divider">
@@ -45,12 +45,12 @@
               Total registered<br>
               patients
           </th>
-          <% @period_range.each do |period| %>
+          <% @details_period_range.each do |period| %>
             <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
               <%= period %>
             </th>
           <% end %>
-          <% @period_range.each do |period| %>
+          <% @details_period_range.each do |period| %>
             <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
               <%= period %>
             </th>
@@ -68,12 +68,12 @@
             <td class="ta-center">
               <%= number_or_dash_with_delimiter(sum_registration_counts(@repository, @region.slug, resource.id)) %>
             </td>
-            <% @period_range.each do |period| %>
+            <% @details_period_range.each do |period| %>
               <td class="ta-center">
                 <%= number_or_dash_with_delimiter(@repository.monthly_registrations_by_user.dig(@region.slug, period, resource.id)) %>
               </td>
             <% end %>
-            <% @period_range.each do |period| %>
+            <% @details_period_range.each do |period| %>
               <td class="ta-center">
                 <%= val = @repository.hypertension_follow_ups(group_by: "blood_pressures.user_id").dig(@region.slug, period, resource.id)
                   number_or_dash_with_delimiter(val) %>
@@ -99,7 +99,7 @@
   <div class="table-responsive-md">
     <table class="analytics-table table-compact">
       <colgroup>
-          <col>
+          <col class="table-first-col">
           <col class="table-divider">
           <col>
           <col>
@@ -128,12 +128,12 @@
           <th class="row-label sort-label sort-label-small ta-center sticky" data-sort-default>
             Users
           </th>
-          <% @period_range.each do |period| %>
+          <% @details_period_range.each do |period| %>
             <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
               <%= period %>
             </th>
           <% end %>
-          <% @period_range.each do |period| %>
+          <% @details_period_range.each do |period| %>
             <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
               <%= period %>
             </th>
@@ -148,12 +148,12 @@
             <td class="row-title">
               <%= link_to resource.full_name, admin_user_path(resource, period: @period) %>
             </td>
-            <% @period_range.each do |period| %>
+            <% @details_period_range.each do |period| %>
               <td class="ta-center">
                 <%= number_or_dash_with_delimiter(@repository.overdue_calls_by_user.dig(@region.slug, period, resource.id)) %>
               </td>
             <% end %>
-            <% @period_range.each do |period| %>
+            <% @details_period_range.each do |period| %>
               <td class="ta-center">
                 <%= number_or_dash_with_delimiter(@repository.bp_measures_by_user.dig(@region.slug, period, resource.id)) %>
               </td>
@@ -212,12 +212,12 @@
             Total registered<br>
             patients
           </th>
-          <% @period_range.each do |period| %>
+          <% @details_period_range.each do |period| %>
             <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
               <%= period %>
             </th>
           <% end %>
-          <% @period_range.each do |period| %>
+          <% @details_period_range.each do |period| %>
             <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
               <%= period %>
             </th>
@@ -235,12 +235,12 @@
             <td class="ta-center">
               <%= number_or_dash_with_delimiter(sum_registration_counts(@repository, @region.slug, resource.id)) %>
             </td>
-            <% @period_range.each do |period| %>
+            <% @details_period_range.each do |period| %>
               <td class="ta-center">
                 <%= number_or_dash_with_delimiter(@repository.monthly_registrations_by_user.dig(@region.slug, period, resource.id)) %>
               </td>
             <% end %>
-            <% @period_range.each do |period| %>
+            <% @details_period_range.each do |period| %>
               <td class="ta-center">
                 <%= number_or_dash_with_delimiter(@repository.bp_measures_by_user.dig(@region.slug, period, resource.id)) %>
               </td>

@@ -416,11 +416,13 @@ bundle exec cap <environment> sidekiq:install
 You can now run a regular Capistrano deployment:
 
 ```bash
-bundle exec cap <environment> deploy
+FIRST_DEPLOY=true bundle exec cap <environment> deploy
 ```
 
 This may take a long time for the first deployment, since several dependencies (like Ruby) need to be installed.
 Subsequent deployments will be much faster.
+
+Note that `FIRST_DEPLOY=true` only needs to be specified on the first run. Any deployments afterwards don't need the flag.
 
 ### Deployment Resources
 

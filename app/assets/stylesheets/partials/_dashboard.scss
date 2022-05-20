@@ -256,12 +256,13 @@ th sup {
   col.table-divider {
     border-left: 1px solid $grey-mid;
   }
-
+  col.table-first-col {
+    width: 14em;
+  }
   td.type-grade {
     font-weight: bold;
     text-align: center;
   }
-
   td.grade-a {
     color: $green-dark;
   }

@@ -6,9 +6,9 @@
     <div>
       <p class="m-0px c-black">
         <span>
-          <%= number_with_delimiter(@chart_data[:patient_breakdown][:total_patients]) %>
+          <%= number_with_delimiter(@details_chart_data[:patient_breakdown][:total_patients]) %>
         </span>
-        <%= "patient".pluralize(@chart_data[:patient_breakdown][:total_patients]) %> registered
+        <%= "patient".pluralize(@details_chart_data[:patient_breakdown][:total_patients]) %> registered
       </p>
       <p class="m-0px c-grey-dark c-print-black">
         of
@@ -75,7 +75,7 @@
     </span>
   </p>
   <p class="mb-8px fw-bold">
-    <%= number_with_delimiter(@chart_data[:patient_breakdown][:total_patients]) %>
+    <%= number_with_delimiter(@details_chart_data[:patient_breakdown][:total_patients]) %>
   </p>
 </div>
 <div class="d-flex ai-center jc-between mb-16px">
