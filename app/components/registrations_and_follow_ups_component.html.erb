@@ -39,7 +39,7 @@
         </tr>
         <tr class="sorts" data-sort-method="thead">
           <th class="row-label sort-label sort-label-small ta-center sticky" data-sort-default>
-            <%= region.child_region_type.capitalize %>
+            <%= region.localized_child_region_type.capitalize %>
           </th>
           <th class="row-label sort-label sort-label-small ta-center sticky" data-sort-method="number">
             Total assigned patients
@@ -144,7 +144,7 @@
         </tr>
         <tr class="sorts" data-sort-method="thead">
           <th class="row-label sort-label sort-label-small ta-center sticky" data-sort-default>
-            <%= region.child_region_type.capitalize %>
+            <%= region.localized_child_region_type.capitalize %>
           </th>
           <% range.each do |period| %>
             <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
