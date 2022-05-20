@@ -1,7 +1,7 @@
 <div class="card pr-0 pr-md-3 pb-inside-avoid">
   <div class="d-flex flex-1 mb-8px">
     <h3 class="mb-16px mr-8px">
-      Registrations and follow-ups
+      Hypertension registrations and follow-ups
     </h3>
     <%= render "definition_tooltip",
                 definitions: { "Monthly registered patients" => t("registered_patients_copy.monthly_registered_patients", region_name: region.name),
@@ -10,7 +10,7 @@
   <div class="table-responsive-md">
     <table class="analytics-table table-compact">
       <colgroup>
-          <col>
+          <col class="table-first-col">
           <col class="table-divider">
           <col>
           <col class="table-divider">
@@ -121,13 +121,12 @@
       <h3 class="mb-0px mr-8px">
         Overdue patients contacted
       </h3>
-      <%= render "definition_tooltip",
-                 definitions: { "Overdue patients contacted" => t("call_results_copy.monthly_overdue_calls_made", region_name: region.name) } %>
     </div>
+    <p><%= t("call_results_copy.monthly_overdue_calls_made") %></p>
     <div class="table-responsive-md">
       <table class="analytics-table table-compact">
         <colgroup>
-          <col>
+          <col class="table-first-col">
           <col class="table-divider">
           <col>
           <col>
@@ -136,12 +135,6 @@
           <col>
         </colgroup>
         <thead>
-        <tr>
-          <th></th>
-          <th colspan="6">
-            Overdue Patients Contacted
-          </th>
-        </tr>
         <tr class="sorts" data-sort-method="thead">
           <th class="row-label sort-label sort-label-small ta-center sticky" data-sort-default>
             <%= region.localized_child_region_type.capitalize %>
