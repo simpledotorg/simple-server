@@ -1,5 +1,5 @@
 class MedicationDispensationService
-  MONTHS = -5
+  MONTHS = -2
 
   def self.call(*args)
     new(*args).call
