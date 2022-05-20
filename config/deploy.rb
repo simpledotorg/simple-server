@@ -48,3 +48,15 @@ Capistrano::DSL.stages.each do |stage|
   next unless fetch(:enable_confirmation) == "true"
   after stage, "deploy:confirmation" if fetch(:envs_for_confirmation_step).any? { |env| stage == env }
 end
+
+task "deploy:schema_load" do
+  on primary :db do
+    within release_path do
+      with rails_env: fetch(:rails_env) do
+        execute :rake, "db:schema:load"
+      end
+    end
+  end
+end
+
+before "deploy:migrate", "deploy:schema_load" if ENV["FIRST_DEPLOY"]
