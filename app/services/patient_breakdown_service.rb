@@ -19,7 +19,7 @@ class PatientBreakdownService
     Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: bust_cache?) {
       period_end = @period.end
       htn_patients = Patient.with_hypertension.where(assigned_facility: facilities)
-      diabetes_patients = Patient.with_hypertension.where(assigned_facility: facilities)
+      diabetes_patients = Patient.with_diabetes.where(assigned_facility: facilities)
 
       {hypertension: patients_breakdown(htn_patients, period_end),
        diabetes: patients_breakdown(diabetes_patients, period_end)}
@@ -43,7 +43,8 @@ class PatientBreakdownService
       not_ltfu_patients: patients.excluding_dead.not_ltfu_as_of(period_end).count,
       ltfu_transferred_patients: patients.ltfu_as_of(period_end).status_migrated.count,
       not_ltfu_transferred_patients: patients.not_ltfu_as_of(period_end).status_migrated.count,
-      total_patients: patients.count
+      total_patients: patients.count,
+      total_assigned_patients: patients.count
     }
   end
 end

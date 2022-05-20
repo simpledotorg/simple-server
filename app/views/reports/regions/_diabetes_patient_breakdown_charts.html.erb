@@ -21,29 +21,30 @@
           All diabetes patients in <%= @region.name %>
         </p>
         <div class="d-flex ai-center jc-between">
-          <p class="mb-8px">
-            Total registered patients
+          <p class="mb-8px fw-bold">
+            Total assigned patients
             <span class="p-relative t-1px">
-              <i
-                class="fas fa-question-circle fs-14px c-grey-dark"
-                data-toggle="tooltip"
-                data-placement="right"
-                data-trigger="hover click"
-                data-html="true"
-                title="<%= t('registered_diabetes_patients_copy.total_registered_patients', region_name: @region.name) %>"
-              >
-              </i>
-            </span>
+            <i
+              class="fas fa-question-circle fs-14px c-grey-dark"
+              data-toggle="tooltip"
+              data-placement="right"
+              data-trigger="hover click"
+              data-html="true"
+              title="<%= t('diabetes_assigned_patients_copy.total_assigned_patients', region_name: @region.name) %>"
+            >
+            </i>
+          </span>
           </p>
           <p class="mb-8px fw-bold">
             <%= number_with_delimiter(@details_chart_data[:patient_breakdown][:total_patients]) %>
           </p>
         </div>
       <% end %>
-      <div class="d-flex ai-center jc-between">
-        <p class="mb-8px">
-          Patients under care
-          <span class="p-relative t-1px">
+      <div class="ml-lg-8px">
+        <div class="d-flex ai-center jc-between">
+          <p class="mb-8px c-grey-dark">
+            Patients under care
+            <span class="p-relative t-1px">
             <i
               class="fas fa-question-circle fs-14px c-grey-dark"
               data-toggle="tooltip"
@@ -54,15 +55,15 @@
             >
             </i>
           </span>
-        </p>
-        <p class="mb-8px fw-bold">
-          <%= number_with_delimiter(@details_chart_data[:patient_breakdown][:not_ltfu_patients]) %>
-        </p>
-      </div>
-      <div class="d-flex ai-center jc-between">
-        <p class="mb-8px">
-          Lost to follow-up
-          <span class="p-relative t-1px">
+          </p>
+          <p class="mb-8px fw-bold">
+            <%= number_with_delimiter(@details_chart_data[:patient_breakdown][:not_ltfu_patients]) %>
+          </p>
+        </div>
+        <div class="d-flex ai-center jc-between">
+          <p class="mb-8px c-grey-dark">
+            Lost to follow-up
+            <span class="p-relative t-1px">
             <i
               class="fas fa-question-circle fs-14px c-grey-dark"
               data-toggle="tooltip"
@@ -73,17 +74,37 @@
             >
             </i>
           </span>
-        </p>
-        <p class="mb-8px fw-bold">
-          <%= number_with_delimiter(@details_chart_data[:patient_breakdown][:ltfu_patients]) %>
-        </p>
+          </p>
+          <p class="mb-8px fw-bold">
+            <%= number_with_delimiter(@details_chart_data[:patient_breakdown][:ltfu_patients]) %>
+          </p>
+        </div>
+        <div class="d-flex ai-center jc-between">
+          <p class="mb-8px c-grey-dark">
+            Dead patients
+          </p>
+          <p class="mb-8px fw-bold">
+            <%= number_with_delimiter(@details_chart_data[:patient_breakdown][:dead_patients]) %>
+          </p>
+        </div>
       </div>
       <div class="d-flex ai-center jc-between">
-        <p class="mb-8px">
-          Dead patients
+        <p class="mb-8px fw-bold">
+          Total registered patients
+          <span class="p-relative t-1px">
+              <i
+                class="fas fa-question-circle fs-14px c-grey-dark"
+                data-toggle="tooltip"
+                data-placement="right"
+                data-trigger="hover click"
+                data-html="true"
+                title="<%= t('registered_diabetes_patients_copy.total_registered_patients', region_name: @region.name) %>"
+              >
+              </i>
+            </span>
         </p>
         <p class="mb-8px fw-bold">
-          <%= number_with_delimiter(@details_chart_data[:patient_breakdown][:dead_patients]) %>
+          <%= number_with_delimiter(@data[:cumulative_diabetes_registrations][@period]) %>
         </p>
       </div>
     </div>
