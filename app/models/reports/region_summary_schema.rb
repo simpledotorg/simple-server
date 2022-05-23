@@ -266,6 +266,14 @@ module Reports
       end
     end
 
+    memoize def diabetes_patients_with_bs_taken
+      region_period_cached_query(__method__) do |entry|
+        diabetes_under_care(:bs_below_200)[entry.region.slug][entry.period] +
+          diabetes_under_care(:bs_200_to_300)[entry.region.slug][entry.period] +
+          diabetes_under_care(:bs_over_300)[entry.region.slug][entry.period]
+      end
+    end
+
     memoize def bs_below_200_patients
       values_at("adjusted_bs_below_200_under_care")
     end
@@ -296,9 +304,51 @@ module Reports
       end
     end
 
-    memoize def diabetes_treatment_outcome_breakdown(blood_sugar_risk_state)
+    memoize def diabetes_treatment_outcome_breakdown_rates(blood_sugar_risk_state)
       region_period_cached_query(__method__, blood_sugar_risk_state: blood_sugar_risk_state) do |entry|
-        diabetes_treatment_outcome_breakdown_rates(entry, blood_sugar_risk_state)
+        rounded_percentages({
+          random: diabetes_under_care(blood_sugar_risk_state, :random)[entry.region.slug][entry.period],
+          post_prandial: diabetes_under_care(blood_sugar_risk_state, :post_prandial)[entry.region.slug][entry.period],
+          fasting: diabetes_under_care(blood_sugar_risk_state, :fasting)[entry.region.slug][entry.period],
+          hba1c: diabetes_under_care(blood_sugar_risk_state, :hba1c) [entry.region.slug][entry.period]
+        })
+      end
+    end
+
+    memoize def diabetes_treatment_outcome_breakdown_counts(blood_sugar_risk_state)
+      region_period_cached_query(__method__, blood_sugar_risk_state: blood_sugar_risk_state) do |entry|
+        {
+          random: diabetes_under_care(blood_sugar_risk_state, :random)[entry.region.slug][entry.period],
+          post_prandial: diabetes_under_care(blood_sugar_risk_state, :post_prandial)[entry.region.slug][entry.period],
+          fasting: diabetes_under_care(blood_sugar_risk_state, :fasting)[entry.region.slug][entry.period],
+          hba1c: diabetes_under_care(blood_sugar_risk_state, :hba1c) [entry.region.slug][entry.period]
+        }
+      end
+    end
+
+    memoize def diabetes_patients_with_bs_taken_breakdown_counts
+      region_period_cached_query(__method__) do |entry|
+        bs_taken_breakdown_hash = {}
+        Reports::PatientBloodSugar.blood_sugar_risk_states.keys.each do |blood_sugar_risk_state|
+          BloodSugar.blood_sugar_types.keys.each do |blood_sugar_type|
+            bs_taken_breakdown_hash[[blood_sugar_risk_state.to_sym, blood_sugar_type.to_sym]] =
+              diabetes_under_care(blood_sugar_risk_state, blood_sugar_type)[entry.region.slug][entry.period]
+          end
+        end
+        bs_taken_breakdown_hash
+      end
+    end
+
+    memoize def diabetes_patients_with_bs_taken_breakdown_rates
+      region_period_cached_query(__method__) do |entry|
+        bs_taken_breakdown_hash = {}
+        Reports::PatientBloodSugar.blood_sugar_risk_states.keys.each do |blood_sugar_risk_state|
+          BloodSugar.blood_sugar_types.keys.each do |blood_sugar_type|
+            bs_taken_breakdown_hash[[blood_sugar_risk_state.to_sym, blood_sugar_type.to_sym]] =
+              diabetes_under_care(blood_sugar_risk_state, blood_sugar_type)[entry.region.slug][entry.period]
+          end
+        end
+        rounded_percentages(bs_taken_breakdown_hash)
       end
     end
 
@@ -329,15 +379,6 @@ module Reports
         bs_over_300_rates: diabetes_under_care(:bs_over_300)[entry.region.slug][entry.period],
         missed_visits_rates: diabetes_missed_visits(with_ltfu: with_ltfu)[entry.region.slug][entry.period],
         visited_without_bs_taken_rates: visited_without_bs_taken[entry.region.slug][entry.period]
-      })
-    end
-
-    memoize def diabetes_treatment_outcome_breakdown_rates(entry, blood_sugar_risk_state)
-      rounded_percentages({
-        random: diabetes_under_care(blood_sugar_risk_state, :random)[entry.region.slug][entry.period],
-        post_prandial: diabetes_under_care(blood_sugar_risk_state, :post_prandial)[entry.region.slug][entry.period],
-        fasting: diabetes_under_care(blood_sugar_risk_state, :fasting)[entry.region.slug][entry.period],
-        hba1c: diabetes_under_care(blood_sugar_risk_state, :hba1c) [entry.region.slug][entry.period]
       })
     end
 
