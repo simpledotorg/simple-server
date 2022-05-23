@@ -14,13 +14,13 @@
     <% if blood_sugar_type == :rbs_ppbs
          patients_percentage_in_category =
            row_data.dig(:diabetes_patients_with_bs_taken_breakdown_rates, period) == 0 ? 0 :
-             (row_data.dig(:diabetes_patients_with_bs_taken_breakdown_rates, period, [blood_sugar_risk_state, :random]) +
-               row_data.dig(:diabetes_patients_with_bs_taken_breakdown_rates, period, [blood_sugar_risk_state, :post_prandial]))
+             ((row_data.dig(:diabetes_patients_with_bs_taken_breakdown_rates, period, [blood_sugar_risk_state, :random]) || 0)+
+               (row_data.dig(:diabetes_patients_with_bs_taken_breakdown_rates, period, [blood_sugar_risk_state, :post_prandial]) || 0))
 
          patients_count_in_category =
            row_data.dig(:diabetes_patients_with_bs_taken_breakdown_counts, period) == 0 ? 0 :
-             (row_data.dig(:diabetes_patients_with_bs_taken_breakdown_counts, period, [blood_sugar_risk_state, :random]) +
-               row_data.dig(:diabetes_patients_with_bs_taken_breakdown_counts, period, [blood_sugar_risk_state, :post_prandial]))
+             ((row_data.dig(:diabetes_patients_with_bs_taken_breakdown_counts, period, [blood_sugar_risk_state, :random]) || 0) +
+               (row_data.dig(:diabetes_patients_with_bs_taken_breakdown_counts, period, [blood_sugar_risk_state, :post_prandial]) || 0))
        else
          patients_percentage_in_category =
            row_data.dig(:diabetes_patients_with_bs_taken_breakdown_rates, period) == 0 ? 0 :
