@@ -1,6 +1,6 @@
 module Reports
   REGISTRATION_BUFFER_IN_MONTHS = 3
-  MAX_MONTHS_OF_DATA = 24
+  MAX_MONTHS_OF_DATA = 18
   PERCENTAGE_PRECISION = 0
 
   # The default period we report on is the current month.
