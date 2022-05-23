@@ -152,8 +152,8 @@
               Blood sugar 200-299 or &ge;300
             </h3>
             <%= render "definition_tooltip",
-                       definitions: { "Blood sugar 200-299 numerator" => t("bs_over_200_copy.bs_200_to_299_numerator"),
-                                     "Blood sugar ≥300 numerator" => t("bs_over_200_copy.bs_over_300_numerator"),
+                       definitions: { "Blood sugar 200-299 numerator" => t("bs_over_200_copy.bs_200_to_299.numerator"),
+                                     "Blood sugar ≥300 numerator" => t("bs_over_200_copy.bs_over_300.numerator"),
                                       "Denominator" => t(denominator_copy, region_name: @region.name) } %>
           </div>
           <%= render "reports/regions/ltfu_toggle", id: "controlledGraphLtfuToggle", enabled: @with_ltfu %>
@@ -264,6 +264,10 @@
 </div>
 
 <%= render "diabetes_treatment_outcomes_card" %>
+
+<% if @children_data.any? %>
+  <%= render "bs_measurement_child_tables", children_data: @children_data, localized_region_type: @child_regions.first.localized_region_type %>
+<% end %>
 
 <div id="data-json" style="display: none;">
   <%= raw @data.to_json %>
