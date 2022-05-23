@@ -1,32 +1,4 @@
-<!-- celebration card -- dont forget to remove images once deleting-->
-<% if CountryConfig.current[:name] == "India" %>
-<div class="card relative">
-<div class="xstest"></div>
-  <%= image_tag("bunting-left-3.svg", class: "bunting-l-3", alt: "line-right-1") %>
-  <%= image_tag("bunting-left-2.svg", class: "bunting-l-2", alt: "line-right-1") %>
-  <%= image_tag("bunting-left-1.svg", class: "bunting-l-1", alt: "line-right-1") %>
-  <%= image_tag("bunting-right-3.svg", class: "bunting-r-3", alt: "line-right-1") %>
-  <%= image_tag("bunting-right-2.svg", class: "bunting-r-2", alt: "line-right-1") %>
-  <%= image_tag("bunting-right-1.svg", class: "bunting-r-1", alt: "line-right-1") %>
-  <%= image_tag("simple_logo.svg", class: "logo", alt: "line-right-1") %>
-  <%= image_tag("20lakh.svg", class: "lakh", alt: "line-right-1") %>
-  <div class="base">
-    <p class="p1 reg-patients-font marginbotton10">registered patients!</p>
-    <p class="p1 p-15px">20 lakh patients with hypertension and diabetes are now registered in Simple in India. Thank you for all your hard work registering and monitoring patients!</p>
-    <p class="p1 p2 p-15px comingsoon-wrap"><span class="comingsoon">COMING SOON</span>Diabetes reports are coming soon!</p>
-  </div>
-  <div class="card-footer cele-flex">
-    <p class="bold-font-cele">Share</p>
-    <div>
-    <a download="custom-filename.jpg" href="/path/to/image" title="ImageName">
-      Download image
-    </a>
-    </div>
-  </div>
-</div>
-<% end %>
-<!-- remove 'mt-4' from the line below when removing celebration element, and SCSS file and link to SCSS file -->
-<div class="card mb-3 mt-4">
+<div class="card mb-3">
   <h2>
     Facilities using Simple
   </h2>
