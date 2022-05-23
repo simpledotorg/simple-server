@@ -77,6 +77,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
         cumulative_diabetes_registrations
         facility_region_slug
         lost_to_follow_up
+        diabetes_lost_to_follow_up
         under_care
         monthly_registrations
         monthly_diabetes_registrations

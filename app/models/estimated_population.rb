@@ -1,6 +1,8 @@
 class EstimatedPopulation < ApplicationRecord
   include Memery
-  belongs_to :region
+
+  belongs_to :region, optional: true
+  belongs_to :diabetes_region, foreign_key: :region_id, class_name: "Region", optional: true
 
   validates :diagnosis, presence: true
   validates :population, presence: true
@@ -10,8 +12,16 @@ class EstimatedPopulation < ApplicationRecord
   validate :can_only_be_set_for_district_or_state
 
   def can_only_be_set_for_district_or_state
-    unless region.district_region? || region.state_region?
-      errors.add(:region, "can only set population for a district or a state")
+    if region.present?
+      unless region.district_region? || region.state_region?
+        return errors.add(:region, "can only set population for a district or a state")
+      end
+    end
+
+    if diabetes_region.present?
+      unless diabetes_region.district_region? || diabetes_region.state_region?
+        errors.add(:region, "can only set population for a district or a state")
+      end
     end
   end
 
