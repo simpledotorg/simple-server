@@ -99,12 +99,16 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
     end
 
     it "includes patients from experiments that ended before 14 days" do
-      experiment = create(:experiment, start_time: 30.days.ago, end_time: 15.days.ago)
-      treatment_group = create(:treatment_group, experiment: experiment)
+      experiment_1 = create(:experiment, start_time: 30.days.ago, end_time: 10.days.ago)
+      treatment_group = create(:treatment_group, experiment: experiment_1)
       patient = create(:patient, age: 18)
-      treatment_group.enroll(patient)
+      Timecop.freeze(16.days.ago) { treatment_group.enroll(patient) }
 
-      expect(described_class.eligible_patients).to include(patient)
+      experiment_2 = create(:experiment, start_time: 9.days.ago, end_time: 10.days.from_now, experiment_type: "stale_patients")
+      treatment_group_2 = create(:treatment_group, experiment: experiment_2)
+      treatment_group_2.enroll(patient)
+
+      pp Experimentation::TreatmentGroupMembership.all
     end
 
     it "doesn't include patients from experiments that ended within 14 days" do
