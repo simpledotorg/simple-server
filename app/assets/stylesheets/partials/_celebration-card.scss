@@ -1,0 +1,102 @@
+.celebration-card {
+  .base {
+    padding: 30px 4px;
+  }
+
+  .bunting-l {
+    position: absolute;
+    top: 0;
+    left: 0;
+    &-1 {
+      width: 47%;
+      @include media-breakpoint-down(xs) {
+        width: 55%;
+      }
+    }
+    &-2 {
+      width: 35%;
+      @include media-breakpoint-down(xs) {
+        width: 50%;
+      }
+    }
+    &-3 {
+      width: 35%;
+      @include media-breakpoint-down(xs) {
+        width: 45%;
+      }
+    }
+  }
+
+  .bunting-r {
+    position: absolute;
+    top: 0;
+    right: 0;
+    &-1 {
+      width: 40%;
+      @include media-breakpoint-down(xs) {
+        width: 40%;
+      }
+    }
+    &-2 {
+      width: 50%;
+      @include media-breakpoint-down(xs) {
+        width: 65%;
+      }
+    }
+    &-3 {
+      width: 35%;
+      @include media-breakpoint-down(xs) {
+        width: 52%;
+      }
+    }
+  }
+
+  .logo-simple-celebration {
+    width: 70px;
+    margin: auto;
+    margin-bottom: 20px;
+  }
+
+  .numbers-svg {
+    max-width: 340px;
+    margin: auto;
+  }
+
+  .paragraph-base {
+    max-width: 570px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .registed-repsonsive-font-size {
+    font-size: 28px;
+    @include media-breakpoint-down(xs) {
+      font-size: 24px;
+    }
+  }
+
+  .comingsoon {
+    @include media-breakpoint-down(xs) {
+      display: flex;
+      flex-direction: column;
+    }
+    align-items: center;
+    justify-content: center;
+    row-gap: 6px;
+
+    .highlight {
+      flex-grow: 0;
+      margin-right: 8px;
+      font-size: 9pt;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: #e6feed;
+      color: #287e30;
+      box-shadow: 0 1px 0 #8efca7;
+    }
+  }
+
+  .mb-16px {
+    margin-bottom: 16px;
+  }
+}
