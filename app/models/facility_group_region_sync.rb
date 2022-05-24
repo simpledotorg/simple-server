@@ -53,8 +53,8 @@ class FacilityGroupRegionSync < SimpleDelegator
     end
 
     region.save!
-    state_region.recalculate_state_population!
-    state_region.recalculate_state_diabetes_population!
+    state_region.recalculate_state_population! if district_estimated_population.present?
+    state_region.recalculate_state_diabetes_population! if district_estimated_diabetes_population.present?
   end
 
   def sync_block_regions
