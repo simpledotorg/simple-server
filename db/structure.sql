@@ -1735,27 +1735,36 @@ CREATE MATERIALIZED VIEW public.reporting_facility_appointment_scheduled_days AS
             a.appointment_type,
             a.user_id,
             a.creation_facility_id,
+            mh.hypertension,
+            mh.diabetes,
             (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, a.device_created_at)), 'YYYY-MM-01'::text))::date AS month_date
            FROM ((public.appointments a
              JOIN public.patients p ON ((p.id = a.patient_id)))
              JOIN public.medical_histories mh ON ((mh.patient_id = a.patient_id)))
-          WHERE ((a.scheduled_date >= date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, a.device_created_at)))) AND (a.device_created_at >= date_trunc('month'::text, (timezone('UTC'::text, now()) - '6 mons'::interval))) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, a.device_created_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) AND (p.deleted_at IS NULL) AND (a.deleted_at IS NULL) AND (mh.hypertension = 'yes'::text))
+          WHERE ((a.scheduled_date >= date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, a.device_created_at)))) AND (a.device_created_at >= date_trunc('month'::text, (timezone('UTC'::text, now()) - '6 mons'::interval))) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, a.device_created_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) AND (p.deleted_at IS NULL) AND (a.deleted_at IS NULL) AND ((mh.hypertension = 'yes'::text) OR (mh.diabetes = 'yes'::text)))
           ORDER BY a.patient_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, a.device_created_at)), 'YYYY-MM-01'::text))::date, a.device_created_at DESC
         ), scheduled_days_distribution AS (
          SELECT latest_appointments_per_patient_per_month.month_date,
             width_bucket((date_part('days'::text, ((latest_appointments_per_patient_per_month.scheduled_date)::timestamp without time zone - date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_appointments_per_patient_per_month.device_created_at))))))::integer, ARRAY[0, 15, 32, 63]) AS bucket,
             count(*) AS number_of_appointments,
+            latest_appointments_per_patient_per_month.hypertension,
+            latest_appointments_per_patient_per_month.diabetes,
             latest_appointments_per_patient_per_month.creation_facility_id AS facility_id
            FROM latest_appointments_per_patient_per_month
-          GROUP BY (width_bucket((date_part('days'::text, ((latest_appointments_per_patient_per_month.scheduled_date)::timestamp without time zone - date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_appointments_per_patient_per_month.device_created_at))))))::integer, ARRAY[0, 15, 32, 63])), latest_appointments_per_patient_per_month.creation_facility_id, latest_appointments_per_patient_per_month.month_date
+          GROUP BY (width_bucket((date_part('days'::text, ((latest_appointments_per_patient_per_month.scheduled_date)::timestamp without time zone - date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_appointments_per_patient_per_month.device_created_at))))))::integer, ARRAY[0, 15, 32, 63])), latest_appointments_per_patient_per_month.creation_facility_id, latest_appointments_per_patient_per_month.month_date, latest_appointments_per_patient_per_month.hypertension, latest_appointments_per_patient_per_month.diabetes
         )
  SELECT scheduled_days_distribution.facility_id,
     scheduled_days_distribution.month_date,
-    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 1)))::integer AS appts_scheduled_0_to_14_days,
-    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 2)))::integer AS appts_scheduled_15_to_31_days,
-    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 3)))::integer AS appts_scheduled_32_to_62_days,
-    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.bucket = 4)))::integer AS appts_scheduled_more_than_62_days,
-    (sum(scheduled_days_distribution.number_of_appointments))::integer AS total_appts_scheduled
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE ((scheduled_days_distribution.bucket = 1) AND (scheduled_days_distribution.hypertension = 'yes'::text))))::integer AS htn_appts_scheduled_0_to_14_days,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE ((scheduled_days_distribution.bucket = 2) AND (scheduled_days_distribution.hypertension = 'yes'::text))))::integer AS htn_appts_scheduled_15_to_31_days,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE ((scheduled_days_distribution.bucket = 3) AND (scheduled_days_distribution.hypertension = 'yes'::text))))::integer AS htn_appts_scheduled_32_to_62_days,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE ((scheduled_days_distribution.bucket = 4) AND (scheduled_days_distribution.hypertension = 'yes'::text))))::integer AS htn_appts_scheduled_more_than_62_days,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.hypertension = 'yes'::text)))::integer AS htn_total_appts_scheduled,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE ((scheduled_days_distribution.bucket = 1) AND (scheduled_days_distribution.diabetes = 'yes'::text))))::integer AS diabetes_appts_scheduled_0_to_14_days,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE ((scheduled_days_distribution.bucket = 2) AND (scheduled_days_distribution.diabetes = 'yes'::text))))::integer AS diabetes_appts_scheduled_15_to_31_days,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE ((scheduled_days_distribution.bucket = 3) AND (scheduled_days_distribution.diabetes = 'yes'::text))))::integer AS diabetes_appts_scheduled_32_to_62_days,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE ((scheduled_days_distribution.bucket = 4) AND (scheduled_days_distribution.diabetes = 'yes'::text))))::integer AS diabetes_appts_scheduled_more_than_62_days,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.diabetes = 'yes'::text)))::integer AS diabetes_total_appts_scheduled
    FROM scheduled_days_distribution
   GROUP BY scheduled_days_distribution.facility_id, scheduled_days_distribution.month_date
   WITH NO DATA;
@@ -2737,42 +2746,42 @@ COMMENT ON COLUMN public.reporting_patient_states.diastolic IS 'Diastolic of the
 -- Name: COLUMN reporting_patient_states.blood_sugar_id; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.reporting_patient_states.blood_sugar_id IS 'ID of the latest BS as of this month. Use this to join with the blood_sugars table.';
+COMMENT ON COLUMN public.reporting_patient_states.blood_sugar_id IS 'ID of the latest blood sugar as of this month. Use this to join with the blood_sugars table.';
 
 
 --
 -- Name: COLUMN reporting_patient_states.bs_facility_id; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.reporting_patient_states.bs_facility_id IS 'ID of the facility at which the latest BS was recorded as of this month';
+COMMENT ON COLUMN public.reporting_patient_states.bs_facility_id IS 'ID of the facility at which the latest blood sugar was recorded as of this month';
 
 
 --
 -- Name: COLUMN reporting_patient_states.bs_recorded_at; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.reporting_patient_states.bs_recorded_at IS 'Time (in UTC) at which the latest BS as of this month was recorded';
+COMMENT ON COLUMN public.reporting_patient_states.bs_recorded_at IS 'Time (in UTC) at which the latest blood sugar as of this month was recorded';
 
 
 --
 -- Name: COLUMN reporting_patient_states.blood_sugar_type; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.reporting_patient_states.blood_sugar_type IS 'Blood sugar type of the latest BS as of this month';
+COMMENT ON COLUMN public.reporting_patient_states.blood_sugar_type IS 'Blood sugar type of the latest measure as of this month';
 
 
 --
 -- Name: COLUMN reporting_patient_states.blood_sugar_value; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.reporting_patient_states.blood_sugar_value IS 'Blood sugar value of the latest BS as of this month';
+COMMENT ON COLUMN public.reporting_patient_states.blood_sugar_value IS 'Blood sugar value of the latest measure as of this month';
 
 
 --
 -- Name: COLUMN reporting_patient_states.blood_sugar_risk_state; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.reporting_patient_states.blood_sugar_risk_state IS 'Blood sugar risk state of the latest BS as of this month';
+COMMENT ON COLUMN public.reporting_patient_states.blood_sugar_risk_state IS 'Blood sugar risk state of the latest measure as of this month';
 
 
 --
@@ -2870,14 +2879,14 @@ COMMENT ON COLUMN public.reporting_patient_states.quarters_since_bp IS 'Number o
 -- Name: COLUMN reporting_patient_states.months_since_bs; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.reporting_patient_states.months_since_bs IS 'Number of months since the patient''s last BS recording. If a patient had a BS reading on 31st Jan, it would be 1 month since BS on 1st Feb.';
+COMMENT ON COLUMN public.reporting_patient_states.months_since_bs IS 'Number of months since the patient''s last blood sugar recording. If a patient had a blood sugar reading on 31st Jan, it would be 1 month since blood sugar on 1st Feb.';
 
 
 --
 -- Name: COLUMN reporting_patient_states.quarters_since_bs; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.reporting_patient_states.quarters_since_bs IS 'Number of quarters since the patient''s last BS recording. If a patient had a BS reading on 31st Jan, it would be 1 quarter since BS on 1st Jan.';
+COMMENT ON COLUMN public.reporting_patient_states.quarters_since_bs IS 'Number of quarters since the patient''s last blood sugar recording. If a patient had a blood sugar reading on 31st Jan, it would be 1 quarter since blood sugar on 1st Jan.';
 
 
 --
@@ -3243,11 +3252,16 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
     monthly_overdue_calls.call_results AS monthly_overdue_calls,
     monthly_follow_ups.follow_ups AS monthly_follow_ups,
     monthly_diabetes_follow_ups.follow_ups AS monthly_diabetes_follow_ups,
-    reporting_facility_appointment_scheduled_days.total_appts_scheduled,
-    reporting_facility_appointment_scheduled_days.appts_scheduled_0_to_14_days,
-    reporting_facility_appointment_scheduled_days.appts_scheduled_15_to_31_days,
-    reporting_facility_appointment_scheduled_days.appts_scheduled_32_to_62_days,
-    reporting_facility_appointment_scheduled_days.appts_scheduled_more_than_62_days
+    reporting_facility_appointment_scheduled_days.htn_total_appts_scheduled AS total_appts_scheduled,
+    reporting_facility_appointment_scheduled_days.htn_appts_scheduled_0_to_14_days AS appts_scheduled_0_to_14_days,
+    reporting_facility_appointment_scheduled_days.htn_appts_scheduled_15_to_31_days AS appts_scheduled_15_to_31_days,
+    reporting_facility_appointment_scheduled_days.htn_appts_scheduled_32_to_62_days AS appts_scheduled_32_to_62_days,
+    reporting_facility_appointment_scheduled_days.htn_appts_scheduled_more_than_62_days AS appts_scheduled_more_than_62_days,
+    reporting_facility_appointment_scheduled_days.diabetes_total_appts_scheduled,
+    reporting_facility_appointment_scheduled_days.diabetes_appts_scheduled_0_to_14_days,
+    reporting_facility_appointment_scheduled_days.diabetes_appts_scheduled_15_to_31_days,
+    reporting_facility_appointment_scheduled_days.diabetes_appts_scheduled_32_to_62_days,
+    reporting_facility_appointment_scheduled_days.diabetes_appts_scheduled_more_than_62_days
    FROM ((((((((((((public.reporting_facilities rf
      JOIN public.reporting_months cal ON (true))
      LEFT JOIN registered_patients ON (((registered_patients.month_date = cal.month_date) AND (registered_patients.region_id = rf.facility_region_id))))
@@ -4900,10 +4914,10 @@ CREATE INDEX index_encounters_on_patient_id_and_updated_at ON public.encounters 
 
 
 --
--- Name: index_estimated_populations_on_region_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_estimated_populations_on_region_id_and_diagnosis; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_estimated_populations_on_region_id ON public.estimated_populations USING btree (region_id);
+CREATE UNIQUE INDEX index_estimated_populations_on_region_id_and_diagnosis ON public.estimated_populations USING btree (region_id, diagnosis);
 
 
 --
@@ -6016,6 +6030,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220408135115'),
 ('20220411035535'),
 ('20220412112538'),
-('20220414134624');
+('20220414134624'),
+('20220519201430'),
+('20220524112732');
 
 
