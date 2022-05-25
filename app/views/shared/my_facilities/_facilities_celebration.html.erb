@@ -1,0 +1,29 @@
+<!-- celebration card -- dont forget to remove images once deleting-->
+<% if CountryConfig.current[:name] == "India" %>
+<div class="card relative celebration-card mb-4">
+  <%= image_tag("celebration-bunting-left-3.svg", class: "bunting-l bunting-l-3", alt: "") %>
+  <%= image_tag("celebration-bunting-left-2.svg", class: "bunting-l bunting-l-2", alt: "") %>
+  <%= image_tag("celebration-bunting-left-1.svg", class: "bunting-l bunting-l-1", alt: "") %>
+  <%= image_tag("celebration-bunting-right-3.svg", class: "bunting-r bunting-r-3", alt: "") %>
+  <%= image_tag("celebration-bunting-right-2.svg", class: "bunting-r bunting-r-2", alt: "") %>
+  <%= image_tag("celebration-bunting-right-1.svg", class: "bunting-r bunting-r-1", alt: "") %>
+
+
+  <div class="base">
+    <%= image_tag("simple_logo.svg", class: "logo-simple-celebration d-block mb-32px", alt: "Simple Logo") %>
+    <%= image_tag("celebration-20lakh.svg", class: "numbers-svg w-full d-block", alt: "2,000,000") %>
+
+    <p class="paragraph-base ta-center fw-bold registed-repsonsive-font-size mb-16px">registered patients!</p>
+    <p class="paragraph-base ta-center fs-16px mb-16px">20 lakh patients with hypertension and diabetes are now registered in Simple in India. Thank you for all your hard work registering and monitoring patients!</p>
+    <p class="paragraph-base comingsoon ta-center fs-16px w-100">
+      <span class="highlight fw-bold">COMING SOON</span>
+      Diabetes reports are coming soon!
+    </p>
+  </div>
+  <div class="card-footer">
+    <p class="fw-bold ta-center w-100 mt-12px">Share the news on social media:
+      <%= link_to "Download celebration image", image_path("social-20lakh-india.jpg"), alt: "Social media image link" %>
+    </p>
+  </div>
+</div>
+<% end %>
