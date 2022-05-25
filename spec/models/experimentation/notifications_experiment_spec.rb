@@ -98,7 +98,14 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       expect(described_class.eligible_patients).to include(not_enrolled_patient)
     end
 
-    it "includes patients from experiments that ended before 14 days" do
+    it "includes patients from a monitoring experiment" do
+      create(:experiment, start_time: 30.day.ago, end_time: 20.day.ago)
+      patient = create(:patient, age: 18)
+
+      expect(described_class.eligible_patients).to include(patient)
+    end
+
+    it "includes patients who were in an experiment before 15 days" do
       experiment_1 = create(:experiment, start_time: 30.days.ago, end_time: 10.days.ago)
       treatment_group = create(:treatment_group, experiment: experiment_1)
       patient = create(:patient, age: 18)
@@ -107,11 +114,9 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       experiment_2 = create(:experiment, start_time: 9.days.ago, end_time: 10.days.from_now, experiment_type: "stale_patients")
       treatment_group_2 = create(:treatment_group, experiment: experiment_2)
       treatment_group_2.enroll(patient)
-
-      pp Experimentation::TreatmentGroupMembership.all
     end
 
-    it "doesn't include patients from experiments that ended within 14 days" do
+    it "doesn't include patients who were in an experiment within 15 days" do
       experiment = create(:experiment, start_time: 30.days.ago, end_time: 10.days.ago)
       treatment_group = create(:treatment_group, experiment: experiment)
       patient = create(:patient, age: 18)
@@ -120,7 +125,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       expect(described_class.eligible_patients).not_to include(patient)
     end
 
-    it "doesn't include patients are in a future experiment" do
+    it "doesn't include patients who are in a future experiment" do
       future_experiment = create(:experiment, start_time: 10.days.from_now, end_time: 20.days.from_now)
       future_treatment_group = create(:treatment_group, experiment: future_experiment)
 
@@ -189,6 +194,12 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       allow(ENV).to receive(:fetch).with("EXPERIMENT_EXCLUDED_BLOCKS", "").and_return("")
 
       expect(described_class.eligible_patients).to include(eligible_patient)
+    end
+  end
+
+  context "for patients who are in subsequent experiments" do
+    it "both their visits should be tracked when monitor is called" do
+
     end
   end
 
