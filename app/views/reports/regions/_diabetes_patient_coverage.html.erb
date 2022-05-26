@@ -60,26 +60,7 @@
     <% end %>
 <% end %>
 <div class="d-flex ai-center jc-between">
-  <p class="mb-8px">
-    Total registered patients
-    <span class="p-relative t-1px">
-      <i
-        class="fas fa-question-circle fs-14px c-grey-dark"
-        data-toggle="tooltip"
-        data-placement="right"
-        data-trigger="hover click"
-        data-html="true"
-        title="<%= t('registered_diabetes_patients_copy.total_registered_patients', region_name: @region.name) %>"
-      >
-      </i>
-    </span>
-  </p>
   <p class="mb-8px fw-bold">
-    <%= number_with_delimiter(@details_chart_data[:patient_breakdown][:total_registered_patients]) %>
-  </p>
-</div>
-<div class="d-flex ai-center jc-between mb-16px">
-  <p class="mb-8px">
     Total est. diabetic population
     <span class="p-relative t-1px">
       <i
@@ -105,6 +86,22 @@
     <% end %>
   </p>
 </div>
-<p class="mb-12px fs-14px tt-uppercase fw-bold ls-2px">
-  Registered patients
-</p>
+<div class="d-flex ai-center jc-between">
+  <p class="mb-8px fw-bold">
+    Total registered patients
+    <span class="p-relative t-1px">
+      <i
+        class="fas fa-question-circle fs-14px c-grey-dark"
+        data-toggle="tooltip"
+        data-placement="right"
+        data-trigger="hover click"
+        data-html="true"
+        title="<%= t('registered_diabetes_patients_copy.total_registered_patients', region_name: @region.name) %>"
+      >
+      </i>
+    </span>
+  </p>
+  <p class="mb-8px fw-bold">
+    <%= number_with_delimiter(@details_chart_data[:patient_breakdown][:total_registered_patients]) %>
+  </p>
+</div>
