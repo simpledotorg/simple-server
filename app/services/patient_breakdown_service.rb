@@ -38,11 +38,11 @@ class PatientBreakdownService
     assigned_patients = patients.where(assigned_facility: facilities)
     registered_patients = patients.where(registration_facility: facilities)
     {
-      dead_patients: registered_patients.status_dead.count,
-      ltfu_patients: registered_patients.excluding_dead.ltfu_as_of(period_end).count,
-      not_ltfu_patients: registered_patients.excluding_dead.not_ltfu_as_of(period_end).count,
-      ltfu_transferred_patients: registered_patients.ltfu_as_of(period_end).status_migrated.count,
-      not_ltfu_transferred_patients: registered_patients.not_ltfu_as_of(period_end).status_migrated.count,
+      dead_patients: assigned_patients.status_dead.count,
+      ltfu_patients: assigned_patients.excluding_dead.ltfu_as_of(period_end).count,
+      not_ltfu_patients: assigned_patients.excluding_dead.not_ltfu_as_of(period_end).count,
+      ltfu_transferred_patients: assigned_patients.ltfu_as_of(period_end).status_migrated.count,
+      not_ltfu_transferred_patients: assigned_patients.not_ltfu_as_of(period_end).status_migrated.count,
       total_registered_patients: registered_patients.count,
       total_assigned_patients: assigned_patients.count
     }
