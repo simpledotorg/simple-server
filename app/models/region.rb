@@ -19,7 +19,7 @@ class Region < ApplicationRecord
   has_many :drug_stocks
   has_one :estimated_population, -> { where(diagnosis: EstimatedPopulation.diagnoses[:HTN]) }, autosave: true, inverse_of: :region
   has_one :estimated_diabetes_population, -> { where(diagnosis: EstimatedPopulation.diagnoses[:DM]) },
-    autosave: true, class_name: "EstimatedPopulation", inverse_of: :diabetes_region
+    autosave: true, class_name: "EstimatedPopulation", inverse_of: :region
 
   after_discard do
     estimated_population&.discard
