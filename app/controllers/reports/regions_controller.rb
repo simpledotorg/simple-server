@@ -3,7 +3,7 @@ class Reports::RegionsController < AdminController
   include GraphicsDownload
   include RegionSearch
 
-  before_action :set_period, only: [:show, :cohort, :diabetes]
+  before_action :set_period, only: [:show, :cohort, :diabetes, :details]
   before_action :set_page, only: [:show, :details]
   before_action :set_per_page, only: [:show, :details]
   before_action :find_region, except: [:index, :fastindex, :monthly_district_data_report]
