@@ -1,62 +1,62 @@
 <div class="d-lg-flex flex-lg-wrap">
   <div class="d-lg-flex w-lg-50 pr-lg-2">
-    <div id="patient-breakdown" data-period="<%= @details_period.to_s %>" class="mt-8px mx-0px mb-16px p-20px bg-white br-4px bs-small w-lg-full mt-lg-0 pb-inside-avoid b-print-black">
-      <% if @region.supports_htn_population_coverage %>
+    <div id="diabetes-patient-breakdown" data-period="<%= @details_period.to_s %>" class="mt-8px mx-0px mb-16px p-20px bg-white br-4px bs-small w-lg-full mt-lg-0 pb-inside-avoid b-print-black">
+      <% if @region.supports_diabetes_population_coverage %>
         <div class="d-flex flex-1 mb-8px">
           <h3 class="mb-0px mr-8px">
-            Hypertension coverage
+            Diabetes coverage
           </h3>
         </div>
         <p class="mb-16px c-grey-dark mr-lg-12px">
-          All individuals and patients with hypertension in <%= @region.name %>
+          All individuals and patients with diabetes in <%= @region.name %>
         </p>
-        <%= render "reports/regions/hypertension_patient_coverage" %>
+        <%= render "reports/regions/diabetes_patient_coverage" %>
       <% else %>
         <div class="d-flex flex-1 mb-8px">
           <h3 class="mb-0px mr-8px">
-            Hypertension patients
+            Diabetes patients
           </h3>
         </div>
         <p class="mb-24px c-grey-dark mr-lg-12px">
-          All patients with hypertension in <%= @region.name %>
+          All patients with diabetes in <%= @region.name %>
         </p>
         <div class="d-flex ai-center jc-between">
           <p class="mb-8px fw-bold">
             Total assigned patients
             <span class="p-relative t-1px">
-              <i
-                class="fas fa-question-circle fs-14px c-grey-dark"
-                data-toggle="tooltip"
-                data-placement="right"
-                data-trigger="hover click"
-                data-html="true"
-                title="<%= t('assigned_patients_copy.total_assigned_patients', region_name: @region.name) %>"
-              >
-              </i>
-            </span>
+            <i
+              class="fas fa-question-circle fs-14px c-grey-dark"
+              data-toggle="tooltip"
+              data-placement="right"
+              data-trigger="hover click"
+              data-html="true"
+              title="<%= t('diabetes_assigned_patients_copy.total_assigned_patients', region_name: @region.name) %>"
+            >
+            </i>
+          </span>
           </p>
           <p class="mb-8px fw-bold">
             <%= number_with_delimiter(@details_chart_data[:patient_breakdown][:total_assigned_patients]) %>
           </p>
         </div>
       <% end %>
-      <div class="ml-lg-8px c-grey-dark">
+      <div class="ml-lg-8px  c-grey-dark">
         <div class="d-flex ai-center jc-between">
           <p class="mb-8px">
             Patients under care
             <span class="p-relative t-1px">
-              <i
-                class="fas fa-question-circle fs-14px c-grey-dark"
-                data-toggle="tooltip"
-                data-placement="right"
-                data-trigger="hover click"
-                data-html="true"
-                title="<%= t('patients_under_care_copy') %>"
-              >
-              </i>
-            </span>
+            <i
+              class="fas fa-question-circle fs-14px"
+              data-toggle="tooltip"
+              data-placement="right"
+              data-trigger="hover click"
+              data-html="true"
+              title="<%= t('diabetes_patients_under_care_copy') %>"
+            >
+            </i>
+          </span>
           </p>
-          <p class="mb-8px fw-bold">
+          <p class="mb-8px">
             <%= number_with_delimiter(@details_chart_data[:patient_breakdown][:not_ltfu_patients]) %>
           </p>
         </div>
@@ -64,29 +64,29 @@
           <p class="mb-8px">
             Lost to follow-up
             <span class="p-relative t-1px">
-              <i
-                class="fas fa-question-circle fs-14px c-grey-dark"
-                data-toggle="tooltip"
-                data-placement="right"
-                data-trigger="hover click"
-                data-html="true"
-                title="<%= t('lost_to_follow_up_copy.reports_card_subtitle') %>"
-              >
-              </i>
-            </span>
+            <i
+              class="fas fa-question-circle fs-14px c-grey-dark"
+              data-toggle="tooltip"
+              data-placement="right"
+              data-trigger="hover click"
+              data-html="true"
+              title="<%= t('diabetes_lost_to_follow_up_copy.reports_card_subtitle') %>"
+            >
+            </i>
+          </span>
           </p>
-          <p class="mb-8px fw-bold">
+          <p class="mb-8px">
             <%= number_with_delimiter(@details_chart_data[:patient_breakdown][:ltfu_patients]) %>
           </p>
         </div>
         <div class="d-flex ai-center jc-between">
-        <p class="mb-8px">
-          Dead patients
-        </p>
-        <p class="mb-8px fw-bold">
-          <%= number_with_delimiter(@details_chart_data[:patient_breakdown][:dead_patients]) %>
-        </p>
-      </div>
+          <p class="mb-8px">
+            Dead patients
+          </p>
+          <p class="mb-8px">
+            <%= number_with_delimiter(@details_chart_data[:patient_breakdown][:dead_patients]) %>
+          </p>
+        </div>
       </div>
       <div class="d-flex ai-center jc-between">
         <p class="mb-8px fw-bold">
@@ -98,7 +98,7 @@
                 data-placement="right"
                 data-trigger="hover click"
                 data-html="true"
-                title="<%= t('registered_patients_copy.total_registered_patients', region_name: @region.name) %>"
+                title="<%= t('registered_diabetes_patients_copy.total_registered_patients', region_name: @region.name) %>"
               >
               </i>
             </span>
@@ -117,11 +117,11 @@
             Lost to follow-up
           </h3>
           <%= render "definition_tooltip",
-                    definitions: { "Numerator" => t("lost_to_follow_up_copy.numerator"),
-                                    "Denominator" => t("ltfu_denominator_copy", region_name: @region.name) } %>
+                    definitions: { "Numerator" => t("diabetes_lost_to_follow_up_copy.numerator"),
+                                    "Denominator" => t("diabetes_ltfu_denominator_copy", region_name: @region.name) } %>
         </div>
         <p class="c-grey-dark">
-          <%= t("lost_to_follow_up_copy.reports_card_subtitle") %>
+          <%= t("diabetes_lost_to_follow_up_copy.reports_card_subtitle") %>
         </p>
         <div class="mb-12px d-lg-flex align-lg-center">
           <p class="c-print-black graph-percent fs-28px

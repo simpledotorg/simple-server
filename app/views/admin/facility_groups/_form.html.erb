@@ -40,6 +40,12 @@
       <%= form.number_field :district_estimated_population, value: @facility_group&.estimated_population&.population, label: "Estimated hypertensive population", autocomplete: "off", 
         help: "Leave blank if unknown" %>
 
+      <%= form.number_field :district_estimated_diabetes_population,
+                            value: @facility_group&.estimated_diabetes_population&.population,
+                            label: "Estimated diabetic population",
+                            autocomplete: "off",
+                            help: "Leave blank if unknown" %>
+
       <div class="mt-3">
         <label><%= I18n.t("region_type.block").pluralize.capitalize %></label>
         <div class="input-group mb-2">

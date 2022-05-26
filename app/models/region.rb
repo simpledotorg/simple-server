@@ -17,7 +17,9 @@ class Region < ApplicationRecord
   auto_strip_attributes :name, squish: true, upcase_first: true
 
   has_many :drug_stocks
-  has_one :estimated_population, autosave: true
+  has_one :estimated_population, -> { where(diagnosis: EstimatedPopulation.diagnoses[:HTN]) }, autosave: true, inverse_of: :region
+  has_one :estimated_diabetes_population, -> { where(diagnosis: EstimatedPopulation.diagnoses[:DM]) },
+    autosave: true, class_name: "EstimatedPopulation", inverse_of: :region
 
   after_discard do
     estimated_population&.discard
@@ -144,6 +146,12 @@ class Region < ApplicationRecord
     population.update! population: new_total
   end
 
+  def recalculate_state_diabetes_population!
+    new_total = district_regions.includes(:estimated_diabetes_population).sum(:population)
+    population = estimated_diabetes_population || build_estimated_diabetes_population
+    population.update! population: new_total
+  end
+
   def syncable_patients
     case region_type
       when "block"
@@ -227,6 +235,10 @@ class Region < ApplicationRecord
 
   def supports_htn_population_coverage
     return true if region.district_region? || region.state_region?
+  end
+
+  def supports_diabetes_population_coverage
+    return true if CountryConfig.current[:enabled_diabetes_population_coverage] && (region.district_region? || region.state_region?)
   end
 
   private

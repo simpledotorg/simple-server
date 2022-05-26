@@ -1,7 +1,7 @@
-<% if @region.estimated_population&.show_coverage && accessible_region?(@region, :view_reports) %>
+<% if @region.estimated_diabetes_population&.show_coverage && accessible_region?(@region, :view_reports) %>
   <div class="mb-8px d-lg-flex align-lg-center">
-    <p class="mb-0px fs-32px fw-bold c-green-dark mr-lg-12px" id="<%= @region.estimated_population&.show_coverage %>">
-      <%= number_to_percentage(@region.estimated_population.hypertension_patient_coverage_rate, precision: 0) %>
+    <p class="mb-0px fs-32px fw-bold c-green-dark mr-lg-12px" id="<%= @region.estimated_diabetes_population&.show_coverage %>">
+      <%= number_to_percentage(@region.estimated_diabetes_population.diabetes_patient_coverage_rate, precision: 0) %>
     </p>
     <div>
       <p class="m-0px c-black">
@@ -13,32 +13,32 @@
       <p class="m-0px c-grey-dark c-print-black">
         of
         <span>
-          <%= number_with_delimiter(@region.estimated_population.population) %>
+          <%= number_with_delimiter(@region.estimated_diabetes_population.population) %>
         </span>
-        estimated people with hypertension in <%= @region.name %>
+        estimated people with diabetes in <%= @region.name %>
       </p>
     </div>
   </div>
-  <div class="d-flex h-24px mb-16px o-hidden <% if @region.estimated_population&.hypertension_patient_coverage_rate == 100.0 %>br-4px<% end %>">
+  <div class="d-flex h-24px mb-16px o-hidden <% if @region.estimated_diabetes_population&.diabetes_patient_coverage_rate == 100.0 %>br-4px<% end %>">
     <div
-      class="br-tl-4px br-bl-4px <% if @region.estimated_population&.show_coverage %>bg-green-dark<% else %>bg-grey-light<% end %>"
-      style="width: <% if @region.estimated_population&.show_coverage %><%= number_to_percentage(@region.estimated_population.hypertension_patient_coverage_rate, precision: 0) %><% else %>5%<% end %>;"
+      class="br-tl-4px br-bl-4px <% if @region.estimated_diabetes_population&.show_coverage %>bg-green-dark<% else %>bg-grey-light<% end %>"
+      style="width: <% if @region.estimated_diabetes_population&.show_coverage %><%= number_to_percentage(@region.estimated_diabetes_population.diabetes_patient_coverage_rate, precision: 0) %><% else %>5%<% end %>;"
     ></div>
     <div class="flex-1 br-tr-4px br-br-4px bg-grey-light"></div>
   </div>
-<% elsif !(@region.estimated_population&.show_coverage) %>
+<% elsif !(@region.estimated_diabetes_population&.show_coverage) %>
     <% if @region.district_region? %>
       <% if accessible_region?(@region, :manage) %>
         <div class="mb-16px p-12px br-4px bg-blue-light">
           <p class="m-0px fs-14px c-black">
-            Add the estimated hypertensive population to see the coverage rate.
+            Add the estimated diabetes population to see the coverage rate.
           </p>
           <%= link_to "+ Add population", edit_admin_facility_group_path(@region.source), :class => "fs-14px" %>
         </div>
       <% else %>
         <div class="mb-16px p-12px br-4px bg-yellow-light">
           <p class="m-0px fs-14px c-black">
-            Ask a Dashboard admin to add the est. hypertensive population for <%= @region.name %> to see the hypertension coverage rate.
+            Ask a Dashboard admin to add the est. diabetic population for <%= @region.name %> to see the diabetes coverage rate.
           </p>
         </div>
       <% end %>
@@ -46,22 +46,22 @@
       <% if current_admin.accessible_district_regions(:manage).to_set.superset?(@region.district_regions.to_set) %>
         <div class="mb-16px p-12px br-4px bg-blue-light">
           <p class="m-0px fs-14px c-black">
-            Add the estimated hypertensive population for all <%= @region.child_region_type.pluralize %> to see the coverage rate.
+            Add the estimated diabetic population for all <%= @region.child_region_type.pluralize %> to see the coverage rate.
           </p>
           <%= link_to "+ Add #{@region.child_region_type} populations", "/admin/facilities", :class => "fs-14px" %>
         </div>
         <% else %>
         <div class="mb-16px p-12px br-4px bg-yellow-light">
           <p class="m-0px fs-14px c-black">
-            Ask a Dashboard admin to add the est. hypertensive population for all districts in <%= @region.name %> to see the hypertension coverage rate.
+            Ask a Dashboard admin to add the est. diabetic population for all districts in <%= @region.name %> to see the diabetes coverage rate.
           </p>
         </div>
       <% end %>
     <% end %>
 <% end %>
-<div class="d-flex ai-center jc-between mb-16px fw-bold">
-  <p class="mb-8px">
-    Total est. population with hypertension
+<div class="d-flex ai-center jc-between">
+  <p class="mb-8px fw-bold">
+    Total est. population with diabetes
     <span class="p-relative t-1px">
       <i
         class="fas fa-question-circle fs-14px c-grey-dark"
@@ -69,18 +69,18 @@
         data-placement="right"
         data-trigger="hover click"
         data-html="true"
-        title="<%= total_estimated_hypertensive_population_copy(@region) %>"
+        title="<%= total_estimated_diabetic_population_copy(@region) %>"
       >
       </i>
     </span>
   </p>
   <p class="mb-8px">
-    <% if @region.estimated_population&.show_coverage %>
-      <span>
-        <%= number_with_delimiter(@region.estimated_population&.population) %>
+    <% if @region.estimated_diabetes_population&.show_coverage %>
+      <span class="fw-bold">
+        <%= number_with_delimiter(@region.estimated_diabetes_population&.population) %>
       </span>
     <% else %>
-      <span>
+      <span class="fw-bold">
         N/A
       </span>
     <% end %>
@@ -96,7 +96,7 @@
         data-placement="right"
         data-trigger="hover click"
         data-html="true"
-        title="<%= t('assigned_patients_copy.total_assigned_patients', region_name: @region.name) %>"
+        title="<%= t('diabetes_assigned_patients_copy.total_assigned_patients', region_name: @region.name) %>"
       >
       </i>
     </span>
