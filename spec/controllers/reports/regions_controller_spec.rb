@@ -379,7 +379,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
         sign_in(cvho.email_authentication)
         get :details, params: {id: @facility.region.slug, report_scope: "facility"}
         period_info = assigns(:details_chart_data)[:ltfu_trend][:period_info]
-        expect(period_info.keys.size).to eq(24)
+        expect(period_info.keys.size).to eq(18)
         period_info.each do |period, hsh|
           expect(hsh).to eq(period.to_hash)
         end
