@@ -80,7 +80,7 @@ Reports = function (withLtfu) {
           ticks: {
             autoSkip: false,
             fontColor: this.darkGreyColor,
-            fontSize: 10,
+            fontSize: 12,
             fontFamily: "Roboto",
             padding: 8,
             min: 0,
@@ -201,7 +201,7 @@ Reports = function (withLtfu) {
           ticks: {
             autoSkip: false,
             fontColor: this.darkGreyColor,
-            fontSize: 10,
+            fontSize: 12,
             fontFamily: "Roboto",
             padding: 8,
             min: 0,
@@ -327,7 +327,7 @@ Reports = function (withLtfu) {
           ticks: {
             autoSkip: false,
             fontColor: this.darkGreyColor,
-            fontSize: 10,
+            fontSize: 12,
             fontFamily: "Roboto",
             padding: 8,
             min: 0,
@@ -456,7 +456,7 @@ Reports = function (withLtfu) {
           ticks: {
             autoSkip: false,
             fontColor: this.darkGreyColor,
-            fontSize: 10,
+            fontSize: 12,
             fontFamily: "Roboto",
             padding: 8,
             min: 0,
@@ -629,7 +629,7 @@ Reports = function (withLtfu) {
           ticks: {
             autoSkip: false,
             fontColor: this.darkGreyColor,
-            fontSize: 10,
+            fontSize: 12,
             fontFamily: "Roboto",
             padding: 8,
             min: 0,
@@ -807,7 +807,7 @@ Reports = function (withLtfu) {
           ticks: {
             autoSkip: false,
             fontColor: this.darkGreyColor,
-            fontSize: 10,
+            fontSize: 12,
             fontFamily: "Roboto",
             padding: 8,
             min: 0,
@@ -953,7 +953,7 @@ Reports = function (withLtfu) {
           ticks: {
             autoSkip: false,
             fontColor: this.darkGreyColor,
-            fontSize: 10,
+            fontSize: 12,
             fontFamily: "Roboto",
             padding: 8,
             min: 0,
@@ -1139,7 +1139,7 @@ Reports = function (withLtfu) {
           ticks: {
             autoSkip: false,
             fontColor: this.darkGreyColor,
-            fontSize: 10,
+            fontSize: 12,
             fontFamily: "Roboto",
             padding: 8,
             min: 0,
@@ -1329,7 +1329,7 @@ Reports = function (withLtfu) {
           ticks: {
             autoSkip: false,
             fontColor: this.darkGreyColor,
-            fontSize: 10,
+            fontSize: 12,
             fontFamily: "Roboto",
             padding: 8,
             min: 0,
@@ -1482,7 +1482,7 @@ Reports = function (withLtfu) {
           ticks: {
             autoSkip: false,
             fontColor: this.darkGreyColor,
-            fontSize: 10,
+            fontSize: 12,
             fontFamily: "Roboto",
             padding: 8,
             min: 0,
