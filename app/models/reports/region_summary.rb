@@ -18,6 +18,7 @@ module Reports
       cumulative_registrations
       cumulative_diabetes_registrations
       lost_to_follow_up
+      diabetes_lost_to_follow_up
       under_care
       monthly_registrations
       monthly_diabetes_registrations
