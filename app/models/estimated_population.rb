@@ -11,10 +11,8 @@ class EstimatedPopulation < ApplicationRecord
   validate :can_only_be_set_for_district_or_state
 
   def can_only_be_set_for_district_or_state
-    if region.present?
-      unless region.district_region? || region.state_region?
-        errors.add(:region, "can only set population for a district or a state")
-      end
+    unless region.district_region? || region.state_region?
+      errors.add(:region, "can only set population for a district or a state")
     end
   end
 
