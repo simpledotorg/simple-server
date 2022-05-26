@@ -185,6 +185,19 @@ class Reports::RegionsController < AdminController
     @with_ltfu = with_ltfu?
 
     authorize { current_admin.accessible_facilities(:view_reports).any? }
+
+    @child_regions = @region.reportable_children.filter { |region| region.diabetes_management_enabled? }
+    repo = Reports::Repository.new(@child_regions, periods: @period)
+
+    @children_data = @child_regions.map { |region|
+      slug = region.slug
+      {
+        region: region,
+        diabetes_patients_with_bs_taken: repo.diabetes_patients_with_bs_taken[slug],
+        diabetes_patients_with_bs_taken_breakdown_rates: repo.diabetes_patients_with_bs_taken_breakdown_rates[slug],
+        diabetes_patients_with_bs_taken_breakdown_counts: repo.diabetes_patients_with_bs_taken_breakdown_counts[slug]
+      }
+    }
   end
 
   def download

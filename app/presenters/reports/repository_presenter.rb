@@ -44,7 +44,9 @@ module Reports
         bs_below_200_patients: bs_below_200_patients[slug],
         bs_below_200_rates: bs_below_200_rates[slug],
         bs_below_200_with_ltfu_rates: bs_below_200_rates(with_ltfu: true)[slug],
-        bs_below_200_breakdown: diabetes_treatment_outcome_breakdown(:bs_below_200)[slug],
+        bs_below_200_breakdown_rates: diabetes_treatment_outcome_breakdown_rates(:bs_below_200)[slug],
+        bs_200_to_300_breakdown_rates: diabetes_treatment_outcome_breakdown_rates(:bs_200_to_300)[slug],
+        bs_over_300_breakdown_rates: diabetes_treatment_outcome_breakdown_rates(:bs_over_300)[slug],
         bs_200_to_300_patients: bs_200_to_300_patients[slug],
         bs_200_to_300_rates: bs_200_to_300_rates[slug],
         bs_200_to_300_with_ltfu_rates: bs_200_to_300_rates(with_ltfu: true)[slug],
@@ -57,7 +59,10 @@ module Reports
         diabetes_missed_visits_with_ltfu_rates: diabetes_missed_visits_rates(with_ltfu: true)[slug],
         visited_without_bs_taken_rates: visited_without_bs_taken_rates[slug],
         visited_without_bs_taken_with_ltfu_rates: visited_without_bs_taken_rates(with_ltfu: true)[slug],
-        visited_without_bs_taken: visited_without_bs_taken[slug]
+        visited_without_bs_taken: visited_without_bs_taken[slug],
+        diabetes_patients_with_bs_taken: diabetes_patients_with_bs_taken[slug],
+        diabetes_patients_with_bs_taken_breakdown_rates: diabetes_patients_with_bs_taken_breakdown_rates[slug],
+        diabetes_patients_with_bs_taken_breakdown_counts: diabetes_patients_with_bs_taken_breakdown_counts[slug]
       }
     end
 
