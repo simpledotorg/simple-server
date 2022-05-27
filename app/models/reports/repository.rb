@@ -35,6 +35,7 @@ module Reports
     DELEGATED_RATES = %i[
       controlled_rates
       ltfu_rates
+      diabetes_ltfu_rates
       missed_visits_rate
       missed_visits_with_ltfu_rates
       missed_visits_without_ltfu_rates
@@ -59,11 +60,13 @@ module Reports
       controlled
       cumulative_assigned_patients
       cumulative_registrations
+      cumulative_assigned_diabetic_patients
       cumulative_diabetes_registrations
       earliest_patient_recorded_at
       earliest_patient_recorded_at_period
       under_care
       ltfu
+      diabetes_ltfu
       missed_visits
       missed_visits_with_ltfu
       missed_visits_without_ltfu
@@ -182,6 +185,10 @@ module Reports
     # Returns Follow ups per Region / Period. Takes an optional group_by clause (commonly used to group by user_id)
     memoize def hypertension_follow_ups(group_by: nil)
       schema.hypertension_follow_ups(group_by: group_by)
+    end
+
+    memoize def diabetes_follow_ups(group_by: nil)
+      schema.diabetes_follow_ups(group_by: group_by)
     end
 
     memoize def bp_measures_by_user

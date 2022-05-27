@@ -35,14 +35,24 @@
             </h5>
           </div>
           <div class="col-md-4">
-            <p class="subtitle">
-              Estimated hypertensive population:
-              <% if facility_group.region.estimated_population&.population %>
-                <%= number_with_delimiter(facility_group.region.estimated_population.population) %>
-              <% else %>
-                <%= link_to "Add", edit_admin_facility_group_path(facility_group) %>
-              <% end %>
-            </p>
+            <div class="subtitle">
+              <p>
+                Estimated hypertensive population:
+                <% if facility_group.region.estimated_population&.population %>
+                  <%= number_with_delimiter(facility_group.region.estimated_population.population) %>
+                <% else %>
+                  <%= link_to "Add", edit_admin_facility_group_path(facility_group) %>
+                <% end %>
+              </p>
+              <p>
+                Estimated diabetic population:
+                <% if facility_group.region.estimated_diabetes_population&.population %>
+                  <%= number_with_delimiter(facility_group.region.estimated_diabetes_population.population) %>
+                <% else %>
+                  <%= link_to "Add", edit_admin_facility_group_path(facility_group) %>
+                <% end %>
+              </p>
+            </div>
           </div>
           <% if current_admin.accessible_facility_groups(:manage).find_by_id(facility_group) %>
             <div class="col-md-4 text-md-right mb-16px mb-lg-0">

@@ -114,6 +114,7 @@ class Admin::FacilityGroupsController < AdminController
       :protocol_id,
       :enable_diabetes_management,
       :district_estimated_population,
+      :district_estimated_diabetes_population,
       new_block_names: [],
       remove_block_ids: []
     )
