@@ -14,11 +14,6 @@
       Quarterly cohort report
     <% end %>
 
-    <%= link_to(reports_region_download_path(@region, report_scope: params[:report_scope], period: :month, format: :csv), class: "dropdown-item") do %>
-      <i class="far fa-file w-16px ta-center mr-8px c-blue"></i>
-      Monthly cohort report
-    <% end %>
-
     <% if @region.district_region? && current_admin.feature_enabled?(:monthly_district_report)%>
       <%= link_to(reports_region_monthly_district_report_path(@region, report_scope: params[:report_scope], period: params.dig(:period, :value), format: :zip), class: "dropdown-item") do %>
         <i class="fa-regular fa-file-spreadsheet w-16px ta-center mr-8px c-blue"></i>

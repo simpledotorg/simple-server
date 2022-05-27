@@ -210,15 +210,30 @@
 
 <%= render "treatment_outcomes_card" %>
 
-<% if @children_data.any? %>
-  <h4 class="mt-5 mb-32px">Compare performance</h4>
-  <%= render "child_data_tables", data: @children_data, localized_region_type: @child_regions.first.localized_region_type %>
+<% if !current_admin.feature_enabled?(:diabetes_management_reports) %>
+  <% if @children_data.any? %>
+    <h4 class="mt-5 mb-32px">Compare performance</h4>
+    <%= render "child_data_tables", data: @children_data, localized_region_type: @child_regions.first.localized_region_type %>
+  <% end %>
 <% end %>
-
 
 <% if current_admin.feature_enabled?(:diabetes_management_reports) %>
 
+  <h4 class="mt-5 mb-32px">Details</h4>
+  <%= render "reports/regions/patient_breakdown_charts" %>
+  
+  <% if current_admin.feature_enabled?(:medications_dispensation) %>
+    <h4 class="mt-5 mb-32px">Medications</h4>
+    <%= render "reports/regions/medications_dispensation" %>
+  <% end %>
+  
+  <% if @children_data.any? %>
+    <h4 class="mt-5 mb-32px">Compare performance</h4>
+    <%= render "child_data_tables", data: @children_data, localized_region_type: @child_regions.first.localized_region_type %>
+  <% end %>
+  
   <% if @region.facility_region? %>
+    <h4 class="mt-5 mb-32px">Facility activity</h4>
     <%= render "facility_details" %>
   <% else %>
     <%= render(RegistrationsAndFollowUpsComponent.new(@region,
@@ -227,23 +242,18 @@
       current_period: @period)) %>
   <% end %>
 
-  <h4 class="mt-5 mb-32px">Details</h4>
-  <%= render "reports/regions/patient_breakdown_charts" %>
-
-  <% if current_admin.feature_enabled?(:medications_dispensation) %>
-    <h4 class="mt-5 mb-32px">Medications</h4>
-    <%= render "reports/regions/medications_dispensation" %>
-  <% end %>
-
   <h4 class="mt-5 mb-32px">Cohort reports</h4>
-
-  <div class="d-lg-flex">
-    <%= render Reports::CohortComponent.new(@monthly_period, @monthly_cohort_data) %>
-  </div>
 
   <div class="d-lg-flex">
     <%= render Reports::CohortComponent.new(@quarterly_period, @quarterly_cohort_data) %>
   </div>
+  
+  <% if @region.facility_region? %>
+    <h4 class="mt-5 mb-32px">BP Recording Activity</h4>
+    <%= render "shared/recent_bp_log",
+                blood_pressures: @recent_blood_pressures,
+                  display_model: :facility %>
+  <% end %>
 <% end %>
 
 
