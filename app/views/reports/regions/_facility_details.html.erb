@@ -38,10 +38,10 @@
           </th>
         </tr>
         <tr class="sorts" data-sort-method="thead">
-          <th class="row-label sort-label sort-label-small ta-center sticky" data-sort-default>
+          <th class="row-label sort-label sort-label-small sticky" data-sort-default>
             Users
           </th>
-          <th class="row-label sort-label sort-label-small ta-center sticky" data-sort-method="number">
+          <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
               Total registered<br>
               patients
           </th>
@@ -65,16 +65,16 @@
             <td class="row-title">
               <%= link_to resource.full_name, admin_user_path(resource, period: @period) %>
             </td>
-            <td class="ta-center">
+            <td class="ta-right">
               <%= number_or_dash_with_delimiter(sum_registration_counts(@repository, @region.slug, resource.id)) %>
             </td>
             <% @details_period_range.each do |period| %>
-              <td class="ta-center">
+              <td class="ta-right">
                 <%= number_or_dash_with_delimiter(@repository.monthly_registrations_by_user.dig(@region.slug, period, resource.id)) %>
               </td>
             <% end %>
             <% @details_period_range.each do |period| %>
-              <td class="ta-center">
+              <td class="ta-right">
                 <%= val = @repository.hypertension_follow_ups(group_by: "blood_pressures.user_id").dig(@region.slug, period, resource.id)
                   number_or_dash_with_delimiter(val) %>
               </td>
@@ -125,7 +125,7 @@
           </th>
         </tr>
         <tr class="sorts" data-sort-method="thead">
-          <th class="row-label sort-label sort-label-small ta-center sticky" data-sort-default>
+          <th class="row-label sort-label sort-label-small sticky" data-sort-default>
             Users
           </th>
           <% @details_period_range.each do |period| %>
@@ -149,12 +149,12 @@
               <%= link_to resource.full_name, admin_user_path(resource, period: @period) %>
             </td>
             <% @details_period_range.each do |period| %>
-              <td class="ta-center">
+              <td class="ta-right">
                 <%= number_or_dash_with_delimiter(@repository.overdue_calls_by_user.dig(@region.slug, period, resource.id)) %>
               </td>
             <% end %>
             <% @details_period_range.each do |period| %>
-              <td class="ta-center">
+              <td class="ta-right">
                 <%= number_or_dash_with_delimiter(@repository.bp_measures_by_user.dig(@region.slug, period, resource.id)) %>
               </td>
             <% end %>
