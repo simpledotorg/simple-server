@@ -270,9 +270,7 @@
 
 <h4 class="mt-5 mb-32px">Compare performance</h4>
 
-<% if @region.facility_region? %>
-  <%= render "facility_details" %>
-<% else %>
+<% if !@region.facility_region? %>
   <%= render(DiabetesRegistrationsAndFollowUpsComponent.new(@region,
     current_admin: current_admin,
     repository: @details_repository,
