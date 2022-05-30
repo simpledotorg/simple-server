@@ -7,6 +7,7 @@ blocks:
         - name: Deploy to Ethiopia Demo
           commands:
             - git clone https://github.com/simpledotorg/simple-standalone
+            - cd simple-standalone
             - make init
             - "make deploy hosts=ethiopia_demo branch=$SEMAPHORE_GIT_SHA"
       secrets:
