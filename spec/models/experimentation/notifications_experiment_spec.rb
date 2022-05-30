@@ -215,7 +215,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       Experimentation::NotificationsExperiment.find(experiment_1.id).mark_visits
       Experimentation::NotificationsExperiment.find(experiment_2.id).mark_visits
 
-      expect(membership_1.reload.visited_at).to eq(bp_1.recorded_at)
+      expect(membership_1.reload.visited_at).to eq(bp_1.reload.recorded_at)
       expect(membership_2.reload.visited_at).to eq(nil)
 
       bp_2 = create(:blood_pressure, recorded_at: 3.days.ago, patient: patient)
@@ -223,8 +223,8 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       Experimentation::NotificationsExperiment.find(experiment_1.id).mark_visits
       Experimentation::NotificationsExperiment.find(experiment_2.id).mark_visits
 
-      expect(membership_1.reload.visited_at).to eq(bp_1.recorded_at)
-      expect(membership_2.reload.visited_at).to eq(bp_2.recorded_at)
+      expect(membership_1.reload.visited_at).to eq(bp_1.reload.recorded_at)
+      expect(membership_2.reload.visited_at).to eq(bp_2.reload.recorded_at)
     end
   end
 
