@@ -270,9 +270,7 @@
   <%= render "bs_measurement_child_tables", children_data: @children_data, localized_region_type: @child_regions.first.localized_region_type %>
 <% end %>
 
-<% if @region.facility_region? %>
-  <%= render "facility_details" %>
-<% else %>
+<% if !@region.facility_region? %>
   <%= render(DiabetesRegistrationsAndFollowUpsComponent.new(@region,
     current_admin: current_admin,
     repository: @details_repository,
