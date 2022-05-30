@@ -1,32 +1,3 @@
-<% if CountryConfig.current[:name] == "India" && SimpleServer.env.production? %>
-  <div class="alert alert-danger mb-48px" role="alert">
-    <h3 class="c-red-dark mt-8px">Maintenance: May 28-29</h3>
-    <p class="c-red-dark">The Simple Dashboard will be down for maintenance from the afternoon on Sat May 28 to the evening of Sun May 29.</p>
-    <ul class="c-red-dark">
-      <li>Healthcare workers can still record patients, but sync to the Simple Dashboard will be down.</li>
-      <li>The Simple Dashboard will be inaccessible.</li>
-    </ul>
-  </div>
-<% elsif CountryConfig.current[:name] == "Bangladesh" && SimpleServer.env.production? %>
-  <div class="alert alert-danger mb-48px" role="alert">
-    <h3 class="c-red-dark mt-8px">Maintenance: May 31</h3>
-    <p class="c-red-dark">The Simple Dashboard will be down for maintenance from noon to midnight on Wed May 31.</p>
-    <ul class="c-red-dark">
-      <li>Healthcare workers can still record patients, but sync to the Simple Dashboard will be down.</li>
-      <li>The Simple Dashboard will be inaccessible.</li>
-    </ul>
-  </div>
-<% elsif CountryConfig.current[:name] == "Sri Lanka" && SimpleServer.env.production? %>
-  <div class="alert alert-danger mb-48px" role="alert">
-    <h3 class="c-red-dark mt-8px">Maintenance: May 30</h3>
-    <p class="c-red-dark">The Simple Dashboard will be down for maintenance from noon to midnight on Wed May 30.</p>
-    <ul class="c-red-dark">
-      <li>Healthcare workers can still record patients, but sync to the Simple Dashboard will be down.</li>
-      <li>The Simple Dashboard will be inaccessible.</li>
-    </ul>
-  </div>
-<% end %>
-
 <% content_for :title do %>
  Home
 <% end %>
