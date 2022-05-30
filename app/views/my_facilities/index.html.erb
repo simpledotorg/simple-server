@@ -1,41 +1,3 @@
-<% if CountryConfig.current[:name] == "India" && SimpleServer.env.production? %>
-  <div class="alert alert-danger mb-48px" role="alert">
-    <h3 class="c-red-dark mt-8px">Maintenance: May 28-29</h3>
-    <p class="c-red-dark">The Simple Dashboard will be down for maintenance from the afternoon on Sat May 28 to the evening of Sun May 29.</p>
-    <ul class="c-red-dark">
-      <li>Healthcare workers can still record patients, but sync to the Simple Dashboard will be down.</li>
-      <li>The Simple Dashboard will be inaccessible.</li>
-    </ul>
-  </div>
-<% elsif SimpleServer.env.sandbox? || SimpleServer.env.qa? %>
-  <div class="alert alert-danger mb-48px" role="alert">
-    <h3 class="c-red-dark mt-8px">Maintenance: May 24</h3>
-    <p class="c-red-dark">The Simple Dashboard will be down for maintenance from noon to midnight on Tue May 24.</p>
-    <ul class="c-red-dark">
-      <li>Healthcare workers can still record patients, but sync to the Simple Dashboard will be down.</li>
-      <li>The Simple Dashboard will be inaccessible.</li>
-    </ul>
-  </div>
-<% elsif CountryConfig.current[:name] == "India" && SimpleServer.env.demo? %>
-  <div class="alert alert-danger mb-48px" role="alert">
-    <h3 class="c-red-dark mt-8px">Maintenance: May 25</h3>
-    <p class="c-red-dark">The Simple Dashboard will be down for maintenance from noon to midnight on Wed May 25.</p>
-    <ul class="c-red-dark">
-      <li>Healthcare workers can still record patients, but sync to the Simple Dashboard will be down.</li>
-      <li>The Simple Dashboard will be inaccessible.</li>
-    </ul>
-  </div>
-<% elsif (CountryConfig.current[:name] == "Bangladesh" || CountryConfig.current[:name] == "Sri Lanka") && SimpleServer.env.demo? %>
-  <div class="alert alert-danger mb-48px" role="alert">
-    <h3 class="c-red-dark mt-8px">Maintenance: May 26</h3>
-    <p class="c-red-dark">The Simple Dashboard will be down for maintenance from noon to midnight on Thu May 26.</p>
-    <ul class="c-red-dark">
-      <li>Healthcare workers can still record patients, but sync to the Simple Dashboard will be down.</li>
-      <li>The Simple Dashboard will be inaccessible.</li>
-    </ul>
-  </div>
-<% end %>
-
 <% content_for :title do %>
  Home
 <% end %>
@@ -59,6 +21,7 @@
     <%= render "upcoming_improvements" %>
   </div>
   <div class="col-lg-6">
+    <%= render 'shared/my_facilities/facilities_celebration' %>
     <%= render 'shared/my_facilities/facilities_by_size' %>
     <%= render 'shared/my_facilities/inactive_facilities' %>
   </div>

@@ -12,9 +12,23 @@ class FacilityGroupRegionSync < SimpleDelegator
       reparent_to: state_region,
       region_type: Region.region_types[:district]
     )
-    region.build_estimated_population(population: district_estimated_population) if district_estimated_population.present?
+    if district_estimated_population.present?
+      region.build_estimated_population(
+        population: district_estimated_population,
+        diagnosis: EstimatedPopulation.diagnoses[:HTN]
+      )
+    end
+
+    if district_estimated_diabetes_population.present?
+      region.build_estimated_population(
+        population: district_estimated_diabetes_population,
+        diagnosis: EstimatedPopulation.diagnoses[:DM]
+      )
+    end
+
     region.save!
     state_region.recalculate_state_population! if district_estimated_population.present?
+    state_region.recalculate_state_diabetes_population! if district_estimated_diabetes_population.present?
   end
 
   def after_update
@@ -28,8 +42,19 @@ class FacilityGroupRegionSync < SimpleDelegator
         population.population = district_estimated_population
       end
     end
+
+    if district_estimated_diabetes_population
+      if district_estimated_diabetes_population.blank?
+        region&.estimated_diabetes_population&.mark_for_destruction
+      else
+        population = region.estimated_diabetes_population || region.build_estimated_diabetes_population
+        population.population = district_estimated_diabetes_population
+      end
+    end
+
     region.save!
-    state_region.recalculate_state_population!
+    state_region.recalculate_state_population! if district_estimated_population.present?
+    state_region.recalculate_state_diabetes_population! if district_estimated_diabetes_population.present?
   end
 
   def sync_block_regions

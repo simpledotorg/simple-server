@@ -4900,10 +4900,10 @@ CREATE INDEX index_encounters_on_patient_id_and_updated_at ON public.encounters 
 
 
 --
--- Name: index_estimated_populations_on_region_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_estimated_populations_on_region_id_and_diagnosis; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_estimated_populations_on_region_id ON public.estimated_populations USING btree (region_id);
+CREATE UNIQUE INDEX index_estimated_populations_on_region_id_and_diagnosis ON public.estimated_populations USING btree (region_id, diagnosis);
 
 
 --
@@ -6016,6 +6016,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220408135115'),
 ('20220411035535'),
 ('20220412112538'),
-('20220414134624');
+('20220414134624'),
+('20220519201430');
 
 

@@ -3,7 +3,7 @@ class Reports::RegionsController < AdminController
   include GraphicsDownload
   include RegionSearch
 
-  before_action :set_period, only: [:show, :cohort, :diabetes]
+  before_action :set_period, only: [:show, :cohort, :diabetes, :details]
   before_action :set_page, only: [:show, :details]
   before_action :set_per_page, only: [:show, :details]
   before_action :find_region, except: [:index, :fastindex, :monthly_district_data_report]
@@ -100,7 +100,7 @@ class Reports::RegionsController < AdminController
       chart_range = (@details_period.advance(months: months)..@details_period)
       chart_repo = Reports::Repository.new(@region, periods: chart_range)
       @details_chart_data = {
-        patient_breakdown: PatientBreakdownService.call(region: @region, period: @details_period),
+        patient_breakdown: PatientBreakdownService.call(region: @region, period: @details_period)[:hypertension],
         ltfu_trend: ltfu_chart_data(chart_repo, chart_range),
         **medications_dispensation_data(region: @region, period: @details_period)
       }
@@ -153,7 +153,7 @@ class Reports::RegionsController < AdminController
     chart_range = (@details_period.advance(months: months)..@details_period)
     chart_repo = Reports::Repository.new(@region, periods: chart_range)
     @details_chart_data = {
-      patient_breakdown: PatientBreakdownService.call(region: @region, period: @details_period),
+      patient_breakdown: PatientBreakdownService.call(region: @region, period: @details_period)[:hypertension],
       ltfu_trend: ltfu_chart_data(chart_repo, chart_range),
       **medications_dispensation_data(region: @region, period: @details_period)
     }
@@ -198,6 +198,30 @@ class Reports::RegionsController < AdminController
         diabetes_patients_with_bs_taken_breakdown_counts: repo.diabetes_patients_with_bs_taken_breakdown_counts[slug]
       }
     }
+
+    regions = if @region.facility_region?
+      [@region]
+    else
+      [@region, @region.reportable_children].flatten
+    end
+
+    if current_admin.feature_enabled?(:show_call_results) && @region.state_region?
+      regions.concat(@region.district_regions)
+    end
+
+    months = -(Reports::MAX_MONTHS_OF_DATA - 1)
+    @details_period = Period.month(Time.current)
+    @details_period_range = Range.new(@details_period.advance(months: -5), @details_period)
+    @details_repository = Reports::Repository.new(regions, periods: @details_period_range)
+    chart_range = (@details_period.advance(months: months)..@details_period)
+    chart_repo = Reports::Repository.new(@region, periods: chart_range)
+    @details_chart_data = {
+      patient_breakdown: PatientBreakdownService.call(region: @region, period: @details_period)[:diabetes],
+      ltfu_trend: diabetes_ltfu_chart_data(chart_repo, chart_range)
+      # **medications_dispensation_data(region: @region, period: @details_period)
+    }
+
+    @data.merge!(@details_chart_data)
   end
 
   def download
@@ -292,6 +316,15 @@ class Reports::RegionsController < AdminController
       cumulative_assigned_patients: repo.cumulative_assigned_patients[@region.slug],
       ltfu_patients: repo.ltfu[@region.slug],
       ltfu_patients_rate: repo.ltfu_rates[@region.slug],
+      period_info: range.each_with_object({}) { |period, hsh| hsh[period] = period.to_hash }
+    }
+  end
+
+  def diabetes_ltfu_chart_data(repo, range)
+    {
+      cumulative_assigned_patients: repo.cumulative_assigned_diabetic_patients[@region.slug],
+      ltfu_patients: repo.diabetes_ltfu[@region.slug],
+      ltfu_patients_rate: repo.diabetes_ltfu_rates[@region.slug],
       period_info: range.each_with_object({}) { |period, hsh| hsh[period] = period.to_hash }
     }
   end

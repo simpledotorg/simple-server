@@ -101,6 +101,10 @@ module Reports
       values_at("lost_to_follow_up")
     end
 
+    memoize def diabetes_ltfu
+      values_at("diabetes_lost_to_follow_up")
+    end
+
     memoize def under_care
       values_at("under_care")
     end
@@ -137,6 +141,13 @@ module Reports
       region_period_cached_query(__method__) do |entry|
         slug, period = entry.slug, entry.period
         percentage(ltfu[slug][period], cumulative_assigned_patients[slug][period])
+      end
+    end
+
+    memoize def diabetes_ltfu_rates
+      region_period_cached_query(__method__) do |entry|
+        slug, period = entry.slug, entry.period
+        percentage(diabetes_ltfu[slug][period], cumulative_assigned_diabetic_patients[slug][period])
       end
     end
 
@@ -186,6 +197,33 @@ module Reports
         end
         regions.each_with_object({}) do |region, results|
           query = Reports::PatientFollowUp.with_hypertension.where(facility_id: region.facility_ids)
+          counts = if group_field
+            grouped_counts = query.group(group_field).group_by_period(:month, :month_date, {format: Period.formatter(:month)}).count
+            grouped_counts.each_with_object({}) { |(key, count), result|
+              group, period = *key
+              result[period] ||= {}
+              result[period][group] = count
+            }
+          else
+            query.group_by_period(:month, :month_date, {format: Period.formatter(:month)}).select(:patient_id).distinct.count
+          end
+          results[region.slug] = counts
+        end
+      end
+    end
+
+    memoize def diabetes_follow_ups(group_by: nil)
+      if group_by.nil?
+        values_at("monthly_diabetes_follow_ups")
+      else
+        group_field = case group_by
+                      when /user_id\z/ then :user_id
+                      when /gender\z/ then :patient_gender
+                      when nil then nil
+                      else raise(ArgumentError, "unknown group for follow ups #{group_by}")
+        end
+        regions.each_with_object({}) do |region, results|
+          query = Reports::PatientFollowUp.with_diabetes.where(facility_id: region.facility_ids)
           counts = if group_field
             grouped_counts = query.group(group_field).group_by_period(:month, :month_date, {format: Period.formatter(:month)}).count
             grouped_counts.each_with_object({}) { |(key, count), result|
