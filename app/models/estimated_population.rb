@@ -1,5 +1,6 @@
 class EstimatedPopulation < ApplicationRecord
   include Memery
+
   belongs_to :region
 
   validates :diagnosis, presence: true
@@ -18,6 +19,14 @@ class EstimatedPopulation < ApplicationRecord
   def hypertension_patient_coverage_rate
     population = region.estimated_population.population.to_f
     rate = (region.registered_patients.with_hypertension.count.to_f / population) * 100
+    return nil if rate.infinite?
+    return 100.0 if rate > 100.0
+    return rate if rate > 0.0
+  end
+
+  def diabetes_patient_coverage_rate
+    population = region.estimated_diabetes_population.population.to_f
+    rate = (region.registered_patients.with_diabetes.count.to_f / population) * 100
     return nil if rate.infinite?
     return 100.0 if rate > 100.0
     return rate if rate > 0.0

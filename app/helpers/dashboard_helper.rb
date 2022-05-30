@@ -79,4 +79,12 @@ module DashboardHelper
       child_region_type: region.child_region_type,
       child_region_type_plural: region.child_region_type.pluralize)
   end
+
+  def total_estimated_diabetic_population_copy(region)
+    region_copy = "#{region.region_type}_copy"
+    t("total_estimated_diabetic_population.#{region_copy}",
+      region_name: region.name,
+      child_region_type: region.child_region_type,
+      child_region_type_plural: region.child_region_type.pluralize)
+  end
 end
