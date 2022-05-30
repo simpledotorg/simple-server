@@ -265,10 +265,10 @@
 
 <%= render "diabetes_treatment_outcomes_card" %>
 
-<% if @children_data.any? %>
-  <h4 class="mt-5 mb-32px">Compare performance</h4>
-  <%= render "bs_measurement_child_tables", children_data: @children_data, localized_region_type: @child_regions.first.localized_region_type %>
-<% end %>
+<h4 class="mt-5 mb-32px">Details</h4>
+<%= render "reports/regions/diabetes_patient_breakdown_charts" %>
+
+<h4 class="mt-5 mb-32px">Compare performance</h4>
 
 <% if !@region.facility_region? %>
   <%= render(DiabetesRegistrationsAndFollowUpsComponent.new(@region,
@@ -277,8 +277,9 @@
     current_period: @period)) %>
 <% end %>
 
-<h4 class="mt-5 mb-32px">Details</h4>
-<%= render "reports/regions/diabetes_patient_breakdown_charts" %>
+<% if @children_data.any? %>
+<%= render "bs_measurement_child_tables", children_data: @children_data, localized_region_type: @child_regions.first.localized_region_type %>
+<% end %>
 
 <%= render "reports/regions/diabetes_footnotes" %>
 
