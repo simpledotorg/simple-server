@@ -207,24 +207,24 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
 
       patient = create(:patient, age: 18)
 
-      membership_1 = treatment_group_1.enroll(patient, {experiment_inclusion_date: 26.days.ago })
-      membership_2 = treatment_group_2.enroll(patient, {experiment_inclusion_date: 13.days.ago })
+      experiment_1_membership = treatment_group_1.enroll(patient, {experiment_inclusion_date: 26.days.ago })
+      experiment_2_membership = treatment_group_2.enroll(patient, {experiment_inclusion_date: 13.days.ago })
 
-      bp_1 = create(:blood_pressure, recorded_at: 20.days.ago, patient: patient)
-
-      Experimentation::NotificationsExperiment.find(experiment_1.id).mark_visits
-      Experimentation::NotificationsExperiment.find(experiment_2.id).mark_visits
-
-      expect(membership_1.reload.visited_at).to eq(bp_1.reload.recorded_at)
-      expect(membership_2.reload.visited_at).to eq(nil)
-
-      bp_2 = create(:blood_pressure, recorded_at: 3.days.ago, patient: patient)
+      bp_during_experiment_1 = create(:blood_pressure, recorded_at: 20.days.ago, patient: patient)
 
       Experimentation::NotificationsExperiment.find(experiment_1.id).mark_visits
       Experimentation::NotificationsExperiment.find(experiment_2.id).mark_visits
 
-      expect(membership_1.reload.visited_at).to eq(bp_1.reload.recorded_at)
-      expect(membership_2.reload.visited_at).to eq(bp_2.reload.recorded_at)
+      expect(experiment_1_membership.reload.visited_at).to eq(bp_during_experiment_1.reload.recorded_at)
+      expect(experiment_2_membership.reload.visited_at).to eq(nil)
+
+      bp_during_experiment_2 = create(:blood_pressure, recorded_at: 3.days.ago, patient: patient)
+
+      Experimentation::NotificationsExperiment.find(experiment_1.id).mark_visits
+      Experimentation::NotificationsExperiment.find(experiment_2.id).mark_visits
+
+      expect(experiment_1_membership.reload.visited_at).to eq(bp_during_experiment_1.reload.recorded_at)
+      expect(experiment_2_membership.reload.visited_at).to eq(bp_during_experiment_2.reload.recorded_at)
     end
   end
 
