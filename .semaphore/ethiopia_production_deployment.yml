@@ -6,10 +6,9 @@ blocks:
       jobs:
         - name: Deploy to Ethiopia Production
           commands:
-            - git clone https://github.com/simpledotorg/deployment
-            - cd deployment/standalone
+            - git clone https://github.com/simpledotorg/simple-standalone
             - make init
-            - "make deploy hosts=ethiopia/production password_file=~/.ansible/vault_password_et branch=$SEMAPHORE_GIT_SHA"
+            - "make deploy hosts=ethiopia_production branch=$SEMAPHORE_GIT_SHA"
       secrets:
         - name: ansible-vault-passwords
         - name: semaphore-deploy-key
