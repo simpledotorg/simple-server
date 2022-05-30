@@ -29,7 +29,7 @@
       <!-- Patient registration and follow ups headers -->
         <tr>
           <th></th>
-          <th></th>
+          <th>Total</th>
           <th colspan="6">
             Monthly registered patients
           </th>
@@ -42,8 +42,7 @@
             Users
           </th>
           <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
-              Total registered<br>
-              patients
+              Registered patients
           </th>
           <% @details_period_range.each do |period| %>
             <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
@@ -196,7 +195,7 @@
         <!-- Healthcare worker activity headers -->
         <tr>
           <th></th>
-          <th></th>
+          <th>Total</th>
           <th colspan="6">
             Monthly registered patients
           </th>
@@ -209,8 +208,7 @@
             Users
           </th>
           <th class="row-label sort-label sort-label-small ta-center sticky" data-sort-method="number">
-            Total registered<br>
-            patients
+            Registered patients
           </th>
           <% @details_period_range.each do |period| %>
             <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
