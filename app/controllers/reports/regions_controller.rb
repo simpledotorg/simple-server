@@ -114,11 +114,8 @@ class Reports::RegionsController < AdminController
       # ======================
       # COHORT REPORTS
       # ======================
-      @monthly_period = Period.month(Time.current)
-      @quarterly_period = Period.quarter(Time.current)
-
-      @monthly_cohort_data = CohortService.new(region: @region, periods: @monthly_period.downto(5)).call
-      @quarterly_cohort_data = CohortService.new(region: @region, periods: @quarterly_period.downto(5)).call
+      @cohort_period = Period.quarter(Time.current)
+      @cohort_data = CohortService.new(region: @region, periods: @cohort_period.downto(5)).call
     end
 
     @data = @overview_data

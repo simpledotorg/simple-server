@@ -2,10 +2,10 @@
   <div class="d-flex mb-8px">
     <div class="d-flex flex-1">
       <h3 class="mb-0px mr-8px">
-        Blood sugar measurement details
+        Types of blood sugars measured
       </h3>
       <%= render "definition_tooltip",
-                 definitions: { "Blood sugar measurement details" => t("bs_measurement_details_copy.numerator", region_name: @region.name)} %>
+                 definitions: { "Types of blood sugars measured" => t("bs_measurement_details_copy.numerator", region_name: @region.name)} %>
     </div>
   </div>
   <p class="c-grey-dark">
@@ -42,7 +42,7 @@
       <tr class="sorts">
         <th class="sticky"></th>
         <th colspan="2" class="sticky nowrap">
-          RBS/PPBS <200
+          RBS <200
           <%= render "definition_tooltip",
                      definitions: {
                        "Numerator" => t("bs_below_200_copy.rbs_ppbs.numerator"),
@@ -51,7 +51,7 @@
           %>
         </th>
         <th colspan="2" class="sticky nowrap">
-          RBS/PPBS 200-299
+          RBS 200-299
           <%= render "definition_tooltip",
                      definitions: {
                        "Numerator" => t("bs_over_200_copy.bs_200_to_299.rbs_ppbs.numerator"),
@@ -60,7 +60,7 @@
           %>
         </th>
         <th colspan="2" class="sticky nowrap">
-          RBS/PPBS ≥300
+          RBS ≥300
           <%= render "definition_tooltip",
                      definitions: {
                        "Numerator" => t("bs_over_200_copy.bs_over_300.rbs_ppbs.numerator"),
