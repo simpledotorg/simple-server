@@ -199,7 +199,32 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
 
   context "for patients who are in subsequent experiments" do
     it "both their visits should be tracked when monitor is called" do
+      experiment_1 = create(:experiment, start_time: 30.days.ago, end_time: 15.days.ago)
+      experiment_2 = create(:experiment, start_time: 14.days.ago, end_time: 1.day.ago)
 
+      treatment_group_1 = create(:treatment_group, experiment: experiment_1)
+      treatment_group_2 = create(:treatment_group, experiment: experiment_2)
+
+      patient = create(:patient, age: 18)
+
+      membership_1 = treatment_group_1.enroll(patient, {experiment_inclusion_date: 26.days.ago })
+      membership_2 = treatment_group_2.enroll(patient, {experiment_inclusion_date: 13.days.ago })
+
+      bp_1 = create(:blood_pressure, recorded_at: 20.days.ago, patient: patient)
+
+      Experimentation::NotificationsExperiment.find(experiment_1.id).mark_visits
+      Experimentation::NotificationsExperiment.find(experiment_2.id).mark_visits
+
+      expect(membership_1.reload.visited_at).to eq(bp_1.recorded_at)
+      expect(membership_2.reload.visited_at).to eq(nil)
+
+      bp_2 = create(:blood_pressure, recorded_at: 3.days.ago, patient: patient)
+
+      Experimentation::NotificationsExperiment.find(experiment_1.id).mark_visits
+      Experimentation::NotificationsExperiment.find(experiment_2.id).mark_visits
+
+      expect(membership_1.reload.visited_at).to eq(bp_1.recorded_at)
+      expect(membership_2.reload.visited_at).to eq(bp_2.recorded_at)
     end
   end
 
