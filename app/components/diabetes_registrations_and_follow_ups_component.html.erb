@@ -29,7 +29,7 @@
       <thead>
         <tr>
           <th></th>
-          <th colspan="2"></th>
+          <th colspan="2">Totals</th>
           <th colspan="6">
             Monthly registered patients
           </th>
@@ -38,14 +38,14 @@
           </th>
         </tr>
         <tr class="sorts" data-sort-method="thead">
-          <th class="row-label sort-label sort-label-small ta-center sticky" data-sort-default>
+          <th class="row-label sort-label sort-label-small sticky" data-sort-default>
             <%= region.child_region_type.capitalize %>
           </th>
-          <th class="row-label sort-label sort-label-small ta-center sticky" data-sort-method="number">
-            Total assigned patients
+          <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
+            Registrations
           </th>
-          <th class="row-label sort-label sort-label-small ta-center sticky" data-sort-method="number">
-            Total registered patients
+          <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
+            Assigned patients
           </th>
           <% range.each do |period| %>
             <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
@@ -64,19 +64,19 @@
           <td class="row-title row-total">
             <%= region.name %>
           </td>
-          <td class="row-total ta-center">
-            <%= number_or_dash_with_delimiter(repository.cumulative_assigned_diabetic_patients[region.slug][current_period]) %>
-          </td>
-          <td class="row-total ta-center">
+          <td class="row-total ta-right">
             <%= number_or_dash_with_delimiter(repository.cumulative_diabetes_registrations[region.slug][current_period]) %>
           </td>
+          <td class="row-total ta-right">
+            <%= number_or_dash_with_delimiter(repository.cumulative_assigned_diabetic_patients[region.slug][current_period]) %>
+          </td>
           <% range.each do |period| %>
-            <td class="row-total ta-center">
+            <td class="row-total ta-right">
               <%= number_or_dash_with_delimiter(repository.monthly_diabetes_registrations[region.slug][period]) %>
             </td>
           <% end %>
           <% range.each do |period| %>
-            <td class="row-total ta-center">
+            <td class="row-total ta-right">
               <%= number_or_dash_with_delimiter(repository.diabetes_follow_ups[region.slug][period]) %>
             </td>
           <% end %>
@@ -92,19 +92,19 @@
               <% end %>
 
             </td>
-            <td class="ta-center">
-              <%= number_or_dash_with_delimiter(repository.cumulative_assigned_diabetic_patients[slug][current_period]) %>
-            </td>
-            <td class="ta-center">
+            <td class="ta-right">
               <%= number_or_dash_with_delimiter(repository.cumulative_diabetes_registrations[slug][current_period]) %>
             </td>
+            <td class="ta-right">
+              <%= number_or_dash_with_delimiter(repository.cumulative_assigned_diabetic_patients[slug][current_period]) %>
+            </td>
             <% range.each do |period| %>
-              <td class="ta-center">
+              <td class="ta-right">
                 <%= number_or_dash_with_delimiter(repository.monthly_diabetes_registrations[slug][period]) %>
               </td>
             <% end %>
             <% range.each do |period| %>
-              <td class="ta-center">
+              <td class="ta-right">
                 <%= number_or_dash_with_delimiter(repository.diabetes_follow_ups[slug][period]) %>
               </td>
             <% end %>
