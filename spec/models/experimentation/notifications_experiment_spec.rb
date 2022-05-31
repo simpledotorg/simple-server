@@ -197,8 +197,8 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
     end
   end
 
-  context "for patients who are in subsequent experiments" do
-    it "both their visits should be tracked when monitor is called" do
+  context "for patients who are in experiments which start one after the other" do
+    it "both their visits should be tracked separately" do
       experiment_1 = create(:experiment, start_time: 30.days.ago, end_time: 15.days.ago)
       experiment_2 = create(:experiment, start_time: 14.days.ago, end_time: 1.day.ago)
 
