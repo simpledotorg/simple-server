@@ -19,9 +19,9 @@
         <% if Flipper.enabled?(:new_progress_tab) %>
           <%= render partial: "api/v3/analytics/user_analytics/progress_period_card" %>
         <% else %>
-         <p class="fs-14px mt-8px">
-           <%= raw t("analytics.updated", time: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")) %>
-         </p>
+          <p class="fs-14px mt-8px">
+            <%= raw t("analytics.updated", time: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")) %>
+          </p>
          <%= content_tag :div,
                          id: "statistics",
                          data: { statistics: @service.daily_statistics },

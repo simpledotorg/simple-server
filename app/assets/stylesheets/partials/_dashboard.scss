@@ -23,6 +23,24 @@ Dashboard UI
   background: #fff;
 }
 
+.coming-soon {
+  background: $green-light;
+  color: $green-dark;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  padding: 64px;
+  margin-top: 1.5em;
+  font-size: 14px;
+  i {
+    font-size: 64px;
+    color: $green-dark;
+    opacity: 0.5;
+    display: block;
+    margin-bottom: 0.2em;
+  }
+}
+
 .update {
   position: relative;
   padding: 0.5em 16px 0 64px;
