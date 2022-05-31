@@ -207,8 +207,8 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
 
       patient = create(:patient, age: 18)
 
-      experiment_1_membership = treatment_group_1.enroll(patient, {experiment_inclusion_date: 26.days.ago })
-      experiment_2_membership = treatment_group_2.enroll(patient, {experiment_inclusion_date: 13.days.ago })
+      experiment_1_membership = treatment_group_1.enroll(patient, {experiment_inclusion_date: 26.days.ago})
+      experiment_2_membership = treatment_group_2.enroll(patient, {experiment_inclusion_date: 13.days.ago})
 
       bp_during_experiment_1 = create(:blood_pressure, recorded_at: 20.days.ago, patient: patient)
 
