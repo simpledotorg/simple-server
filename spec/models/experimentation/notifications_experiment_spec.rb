@@ -113,7 +113,6 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       patient = create(:patient, age: 18)
       Timecop.freeze(12.days.ago) { treatment_group.enroll(patient) }
 
-
       expect(described_class.eligible_patients).not_to include(patient)
     end
 
