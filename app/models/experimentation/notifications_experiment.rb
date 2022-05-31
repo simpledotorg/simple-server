@@ -38,9 +38,10 @@ module Experimentation
           recent_experiment_memberships: Experimentation::TreatmentGroupMembership
                                            .joins(treatment_group: :experiment)
                                            .where("treatment_group_memberships.patient_id = patients.id")
-                                           .where("end_time > ?", Time.now)
-                                           .where("treatment_group_memberships.created_at > ?", RECENT_EXPERIMENT_MEMBERSHIP_BUFFER.ago)
-                                           .select(:patient_id))
+                                           .where(
+                                             "end_time > ? OR treatment_group_memberships.created_at > ?",
+                                             Time.current, MONITORING_BUFFER.ago
+                                           ).select(:patient_id))
         .then { |patients| exclude_bangladesh_blocks(patients) }
     end
 

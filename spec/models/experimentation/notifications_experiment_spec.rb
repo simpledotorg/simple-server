@@ -98,22 +98,23 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       expect(described_class.eligible_patients).to include(not_enrolled_patient)
     end
 
-    it "includes patients from a monitoring experiment" do
-      create(:experiment, start_time: 30.day.ago, end_time: 20.day.ago)
-      patient = create(:patient, age: 18)
-
-      expect(described_class.eligible_patients).to include(patient)
-    end
-
-    it "includes patients who were in an experiment before 15 days" do
+    it "includes patients who were in an experiment before the monitoring buffer (15 days)" do
       experiment_1 = create(:experiment, start_time: 30.days.ago, end_time: 10.days.ago)
       treatment_group = create(:treatment_group, experiment: experiment_1)
       patient = create(:patient, age: 18)
       Timecop.freeze(16.days.ago) { treatment_group.enroll(patient) }
 
-      experiment_2 = create(:experiment, start_time: 9.days.ago, end_time: 10.days.from_now, experiment_type: "stale_patients")
-      treatment_group_2 = create(:treatment_group, experiment: experiment_2)
-      treatment_group_2.enroll(patient)
+      expect(described_class.eligible_patients).to include(patient)
+    end
+
+    it "doesn't include a patient who is being monitored currently by another experiment" do
+      experiment = create(:experiment, start_time: 20.days.ago, end_time: 10.days.ago)
+      treatment_group = create(:treatment_group, experiment: experiment)
+      patient = create(:patient, age: 18)
+      Timecop.freeze(12.days.ago) { treatment_group.enroll(patient) }
+
+
+      expect(described_class.eligible_patients).not_to include(patient)
     end
 
     it "doesn't include patients who are in a future experiment" do
@@ -142,16 +143,16 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
     end
 
     it "doesn't include patients twice if they were in multiple experiments that ended" do
-      experiment_1 = create(:experiment, start_time: 10.days.ago, end_time: 5.days.ago)
-      experiment_2 = create(:experiment, start_time: 30.days.ago, end_time: 15.days.ago)
+      experiment_1 = create(:experiment, start_time: 29.days.ago, end_time: 20.days.ago)
+      experiment_2 = create(:experiment, start_time: 60.days.ago, end_time: 30.days.ago)
 
       treatment_group_1 = create(:treatment_group, experiment: experiment_1)
       treatment_group_2 = create(:treatment_group, experiment: experiment_2)
 
       patient = create(:patient, age: 18)
 
-      treatment_group_1.enroll(patient)
-      treatment_group_2.enroll(patient)
+      Timecop.freeze(25.days.ago) { treatment_group_1.enroll(patient) }
+      Timecop.freeze(50.days.ago) { treatment_group_2.enroll(patient) }
 
       expect(described_class.eligible_patients).to contain_exactly(patient)
     end
@@ -186,37 +187,6 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       allow(ENV).to receive(:fetch).with("EXPERIMENT_EXCLUDED_BLOCKS", "").and_return("")
 
       expect(described_class.eligible_patients).to include(eligible_patient)
-    end
-  end
-
-  context "for patients who are in experiments which start one after the other" do
-    it "both their visits should be tracked separately" do
-      experiment_1 = create(:experiment, start_time: 30.days.ago, end_time: 15.days.ago)
-      experiment_2 = create(:experiment, start_time: 14.days.ago, end_time: 1.day.ago)
-
-      treatment_group_1 = create(:treatment_group, experiment: experiment_1)
-      treatment_group_2 = create(:treatment_group, experiment: experiment_2)
-
-      patient = create(:patient, age: 18)
-
-      experiment_1_membership = treatment_group_1.enroll(patient, {experiment_inclusion_date: 26.days.ago})
-      experiment_2_membership = treatment_group_2.enroll(patient, {experiment_inclusion_date: 13.days.ago})
-
-      bp_during_experiment_1 = create(:blood_pressure, recorded_at: 20.days.ago, patient: patient)
-
-      Experimentation::NotificationsExperiment.find(experiment_1.id).mark_visits
-      Experimentation::NotificationsExperiment.find(experiment_2.id).mark_visits
-
-      expect(experiment_1_membership.reload.visited_at).to eq(bp_during_experiment_1.reload.recorded_at)
-      expect(experiment_2_membership.reload.visited_at).to eq(nil)
-
-      bp_during_experiment_2 = create(:blood_pressure, recorded_at: 3.days.ago, patient: patient)
-
-      Experimentation::NotificationsExperiment.find(experiment_1.id).mark_visits
-      Experimentation::NotificationsExperiment.find(experiment_2.id).mark_visits
-
-      expect(experiment_1_membership.reload.visited_at).to eq(bp_during_experiment_1.reload.recorded_at)
-      expect(experiment_2_membership.reload.visited_at).to eq(bp_during_experiment_2.reload.recorded_at)
     end
   end
 
@@ -600,6 +570,37 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       experiment.mark_visits
 
       expect(Notification.status_cancelled).to contain_exactly(pending_notification, scheduled_notification)
+    end
+
+    context "for patients who are in experiments which start one after the other" do
+      it "both their visits should be tracked separately" do
+        experiment_1 = create(:experiment, start_time: 30.days.ago, end_time: 15.days.ago)
+        experiment_2 = create(:experiment, start_time: 14.days.ago, end_time: 1.day.ago)
+
+        treatment_group_1 = create(:treatment_group, experiment: experiment_1)
+        treatment_group_2 = create(:treatment_group, experiment: experiment_2)
+
+        patient = create(:patient, age: 18)
+
+        experiment_1_membership = treatment_group_1.enroll(patient, {experiment_inclusion_date: 26.days.ago})
+        experiment_2_membership = treatment_group_2.enroll(patient, {experiment_inclusion_date: 13.days.ago})
+
+        bp_during_experiment_1 = create(:blood_pressure, recorded_at: 20.days.ago, patient: patient)
+
+        Experimentation::NotificationsExperiment.find(experiment_1.id).mark_visits
+        Experimentation::NotificationsExperiment.find(experiment_2.id).mark_visits
+
+        expect(experiment_1_membership.reload.visited_at).to eq(bp_during_experiment_1.reload.recorded_at)
+        expect(experiment_2_membership.reload.visited_at).to eq(nil)
+
+        bp_during_experiment_2 = create(:blood_pressure, recorded_at: 3.days.ago, patient: patient)
+
+        Experimentation::NotificationsExperiment.find(experiment_1.id).mark_visits
+        Experimentation::NotificationsExperiment.find(experiment_2.id).mark_visits
+
+        expect(experiment_1_membership.reload.visited_at).to eq(bp_during_experiment_1.reload.recorded_at)
+        expect(experiment_2_membership.reload.visited_at).to eq(bp_during_experiment_2.reload.recorded_at)
+      end
     end
   end
 
