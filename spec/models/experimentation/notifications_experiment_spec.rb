@@ -89,12 +89,12 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       experiment = create(:experiment, start_time: 1.day.ago, end_time: 1.day.from_now)
       treatment_group = create(:treatment_group, experiment: experiment)
 
-      patient = create(:patient, age: 18)
+      enrolled_patient = create(:patient, age: 18)
       not_enrolled_patient = create(:patient, age: 18)
 
       treatment_group.enroll(patient)
 
-      expect(described_class.eligible_patients).not_to include(patient)
+      expect(described_class.eligible_patients).not_to include(enrolled_patient)
       expect(described_class.eligible_patients).to include(not_enrolled_patient)
     end
 
@@ -114,15 +114,6 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       experiment_2 = create(:experiment, start_time: 9.days.ago, end_time: 10.days.from_now, experiment_type: "stale_patients")
       treatment_group_2 = create(:treatment_group, experiment: experiment_2)
       treatment_group_2.enroll(patient)
-    end
-
-    it "doesn't include patients who were in an experiment within 15 days" do
-      experiment = create(:experiment, start_time: 30.days.ago, end_time: 10.days.ago)
-      treatment_group = create(:treatment_group, experiment: experiment)
-      patient = create(:patient, age: 18)
-      treatment_group.enroll(patient)
-
-      expect(described_class.eligible_patients).not_to include(patient)
     end
 
     it "doesn't include patients who are in a future experiment" do
@@ -153,6 +144,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
     it "doesn't include patients twice if they were in multiple experiments that ended" do
       experiment_1 = create(:experiment, start_time: 10.days.ago, end_time: 5.days.ago)
       experiment_2 = create(:experiment, start_time: 30.days.ago, end_time: 15.days.ago)
+
       treatment_group_1 = create(:treatment_group, experiment: experiment_1)
       treatment_group_2 = create(:treatment_group, experiment: experiment_2)
 
@@ -161,7 +153,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       treatment_group_1.enroll(patient)
       treatment_group_2.enroll(patient)
 
-      expect(described_class.eligible_patients).not_to include(patient)
+      expect(described_class.eligible_patients).to contain_exactly(patient)
     end
 
     it "doesn't include any patients whose assigned facility has been deleted" do

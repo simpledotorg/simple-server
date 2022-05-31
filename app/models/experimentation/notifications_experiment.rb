@@ -36,8 +36,10 @@ module Experimentation
         .where_current_age(">=", 18)
         .where("NOT EXISTS (:recent_experiment_memberships)",
           recent_experiment_memberships: Experimentation::TreatmentGroupMembership
+                                           .joins(treatment_group: :experiment)
                                            .where("treatment_group_memberships.patient_id = patients.id")
-                                           .where("created_at > ?", RECENT_EXPERIMENT_MEMBERSHIP_BUFFER.ago)
+                                           .where("end_time > ?", Time.now)
+                                           .where("treatment_group_memberships.created_at > ?", RECENT_EXPERIMENT_MEMBERSHIP_BUFFER.ago)
                                            .select(:patient_id))
         .then { |patients| exclude_bangladesh_blocks(patients) }
     end
