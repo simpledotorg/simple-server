@@ -4,6 +4,7 @@ module ExternalLinksHelper
   ETHIOPIA_OFFICE_HOURS_ZOOM_LINK = "https://vitalstrategies.zoom.us/j/93245696030?pwd=eGFmZnA5THd2Nmdhazl1TTRGYTFqdz09"
 
   DEPLOYMENT_CHECKLIST_LINK = "https://docs.google.com/document/d/1cleJkm09VRGUAafkpzC9U2ao9r4r8ewZjLPwfTTj57Q/edit?usp=sharing"
+  BP_PASSPORT_CREATOR_LINK = "https://drive.google.com/file/d/1fB9RFdrFC4NaU1CQUfEodC6IyXdQcs_A/view?usp=sharing"
 
   INDIA_SIMPLE_TRAINING_GUIDE_LINK = "https://docs.google.com/presentation/d/1YKlZfXpnX0tGk6NMO6JLuZY0l9O3P3zOxKXsWNJh7W0/edit#slide=id.g25f6af9dd6_0_0"
   BANGLADESH_SIMPLE_TRAINING_GUIDE_LINK = "https://docs.google.com/presentation/d/1Ce2LIPlnByn-6LPhgbKUkhoGold3R5ciXtFbVXFOhaU/edit#slide=id.g25f6af9dd6_0_0"
