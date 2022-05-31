@@ -92,7 +92,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       enrolled_patient = create(:patient, age: 18)
       not_enrolled_patient = create(:patient, age: 18)
 
-      treatment_group.enroll(patient)
+      treatment_group.enroll(enrolled_patient)
 
       expect(described_class.eligible_patients).not_to include(enrolled_patient)
       expect(described_class.eligible_patients).to include(not_enrolled_patient)
