@@ -268,18 +268,74 @@
 <h4 class="mt-5 mb-32px">Details</h4>
 <%= render "reports/regions/diabetes_patient_breakdown_charts" %>
 
-<h4 class="mt-5 mb-32px">Compare performance</h4>
+<% if current_admin.feature_enabled?(:medications_dispensation) %>
+<h4 class="mt-5 mb-32px">Medications</h4>
+<div id="medications-dispensation" class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black pb-1">
+  <div class="pt-20px px-20px">
+    <div class="mb-8px">
+      <h3 class="mb-8px mr-8px">
+        Days of medications dispensed to follow-up patients
+      </h3>
+      <p class="c-grey-dark">
+        Number of days until a patient’s next scheduled appointment
+      </p>
+      <p class="coming-soon"><i class="fa-solid fa-chart-simple"></i> Coming soon</p>
+    </div>
+  </div>
+</div>
+<% end %>
 
-<% if !@region.facility_region? %>
+<h4 class="mt-5 mb-32px">Compare performance</h4>
+<% if @children_data.any? %>
+  <%= render "bs_measurement_child_tables", children_data: @children_data, localized_region_type: @child_regions.first.localized_region_type %>
+<% end %>
+<% if @region.facility_region? %>
+  <div class="card mt-0 pr-0 pr-md-3 pb-inside-avoid">
+    <div>
+      <h3 class="mb-0px mr-8px">
+        Patient registrations and follow-ups
+      </h3>
+      <p class="coming-soon"><i class="fa-regular fa-table"></i> Coming soon</p>
+    </div>
+  </div>
+  <div class="card mt-0 pr-0 pr-md-3 pb-inside-avoid">
+    <div>
+      <h3 class="mb-0px mr-8px">
+        Healthcare worker activity
+      </h3>
+      <p class="coming-soon"><i class="fa-regular fa-table"></i>Coming soon</p>
+    </div>
+  </div>
+  <div class="card mt-0 pr-0 pr-md-3 pb-inside-avoid">
+    <div>
+      <h3 class="mb-8px mr-8px">
+        Recent blood sugar measures 
+      </h3>
+      <p>A log of blood sugar measures taken by healthcare workers</p>
+      <p class="coming-soon"><i class="fa-regular fa-table"></i> Coming soon</p>
+    </div>
+  </div>
+<% else %>
   <%= render(DiabetesRegistrationsAndFollowUpsComponent.new(@region,
     current_admin: current_admin,
     repository: @details_repository,
     current_period: @period)) %>
 <% end %>
 
-<% if @children_data.any? %>
-<%= render "bs_measurement_child_tables", children_data: @children_data, localized_region_type: @child_regions.first.localized_region_type %>
-<% end %>
+<h4 class="mt-5 mb-32px">Cohort reports</h4>
+<div id="medications-dispensation" class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black pb-1">
+  <div class="pt-20px px-20px">
+    <div class="mb-8px">
+      <h3 class="mb-8px mr-8px">
+        Quarterly report 
+      </h3>
+      <p class="c-grey-dark">
+        The result for all assigned diabetes patients registered in a quarter at their follow-up visit in the following quarter
+      </p>
+      <p class="coming-soon"><i class="fa-solid fa-chart-simple-horizontal"></i> Coming soon</p>
+    </div>
+  </div>
+</div>
 
 <%= render "reports/regions/diabetes_footnotes" %>
 
