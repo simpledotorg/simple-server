@@ -14,10 +14,13 @@ Reports = function (withLtfu) {
   this.mediumGreyColor = "rgba(173, 178, 184, 1)";
   this.lightGreyColor = "rgba(240, 242, 245, 0.9)";
   this.whiteColor = "rgba(255, 255, 255, 1)";
-  this.orangeColor = "rgba(255, 122, 0, 1)";
+  this.amberColor = "rgba(250, 190, 70, 1)";
+  this.darkAmberColor = "rgba(223, 165, 50, 1)";
   this.transparent = "rgba(0, 0, 0, 0)";
-  this.maroonColor = "rgba(150, 48, 48, 1)";
-  this.darkMaroonColor = "rgba(121,30,39,1)";
+  this.tealColor = "rgba(48, 184, 166, 1)";
+  this.darkTealColor = "rgba(34,140,125,1)";
+  this.maroonColor = "rgba(71, 0, 0, 1)";
+  this.darkMaroonColor = "rgba(60,0,0,1)";
 
   this.initialize = () => {
     this.initializeCharts();
@@ -883,7 +886,7 @@ Reports = function (withLtfu) {
         breakdown ? breakdown["fasting"] : 0
       );
       hba1cPercentNode.innerHTML = this.formatPercentage(
-          breakdown ? breakdown["hba1c"] : 0
+        breakdown ? breakdown["hba1c"] : 0
       );
     };
 
@@ -926,16 +929,14 @@ Reports = function (withLtfu) {
       datasets: [
         {
           label: "Blood sugar 200-299",
-          backgroundColor: this.mediumRedColor,
-          hoverBackgroundColor: this.darkRedColor,
-          hoverBorderWidth: 2,
+          backgroundColor: this.amberColor,
+          hoverBackgroundColor: this.darkAmberColor,
           data: Object.values(bs200to300Rate),
         },
         {
           label: "Blood sugar ≥300",
-          backgroundColor: this.maroonColor,
-          hoverBackgroundColor: this.darkMaroonColor,
-          hoverBorderWidth: 2,
+          backgroundColor: this.mediumRedColor,
+          hoverBackgroundColor: this.darkRedColor,
           data: Object.values(bsOver300Rate),
         },
       ],
@@ -1098,7 +1099,7 @@ Reports = function (withLtfu) {
           yAxisID: "monthlyDiabetesFollowups",
           label: "monthly diabetes followups",
           backgroundColor: this.transparent,
-          borderColor: this.orangeColor,
+          borderColor: this.darkTealColor,
           borderWidth: 2,
           pointBackgroundColor: this.whiteColor,
           hoverBackgroundColor: this.whiteColor,
