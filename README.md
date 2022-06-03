@@ -8,15 +8,15 @@ This is the backend for the Simple app to help track hypertensive patients acros
 ## Development
 
 We have a `bin/setup` script that does most of the work of getting things setup, but you need a few things in place first.
-If you are on a Mac, install [homebrew](https://brew.sh) and then install rbenv, redis, postgres@10, and yarn:
+If you are on a Mac, install [homebrew](https://brew.sh) and then install rbenv, redis, postgres@14, and yarn:
 
 ```
-brew install rbenv ruby-build redis yarn postgresql@10
+brew install rbenv ruby-build redis yarn postgresql@14
 ```
 
 After this is done, it is highly recommended to tune your local PostgreSQL installation, otherwise your server will get bogged down when doing things like refreshing materialized views.
-You can use [PGTune](https://pgtune.leopard.in.ua) to do this, it takes about 2 minutes. You can find your local postgresql.conf file at `/opt/homebrew/var/postgresql@10/postgresql.conf` on M1 Macs,
-and `/usr/local/var/postgresql@10/postgresql.conf` on Intel Macs.
+You can use [PGTune](https://pgtune.leopard.in.ua) to do this, it takes about 2 minutes. You can find your local postgresql.conf file at `/opt/homebrew/var/postgresql@14/postgresql.conf` on M1 Macs,
+and `/usr/local/var/postgresql@14/postgresql.conf` on Intel Macs.
 
 ### bin/setup
 

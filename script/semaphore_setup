@@ -9,7 +9,7 @@ source ~/.toolbox/toolbox
 
 export DD_PROFILING_NO_EXTENSION=true
 sem-version ruby 2.7.4
-sem-service start postgres 10
+sem-service start postgres 14
 wget -O /tmp/libpng12.deb http://mirrors.kernel.org/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1_amd64.deb
 sudo dpkg -i /tmp/libpng12.deb
 gem install semaphore_test_boosters

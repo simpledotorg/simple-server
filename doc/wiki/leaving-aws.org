@@ -19,7 +19,7 @@
 |---------------------------------------+-------------+------------------------------+------------------+-----+-------------------------+------------------|
 | Tool                                  | Currently   | Migrate by setting up        | Current AWS tier | VMs | New Tier (refer to 1.1) | Disk Size (SSDs) |
 |---------------------------------------+-------------+------------------------------+------------------+-----+-------------------------+------------------|
-| Master Postgres DB                    | RDS         | postgres 10 on a VM          | t2.medium        |   1 | Large                   | 100 GB           |
+| Master Postgres DB                    | RDS         | postgres 14 on a VM          | t2.medium        |   1 | Large                   | 100 GB           |
 | Secondary Postgres DB (hot-standby)   | RDS         | hot-standby postgres on a VM | t2.medium        |   1 | Large                   | 110 GB           |
 | Redis Server (master-only)            | ElastiCache | standalone redis on a VM     | t2.small         |   1 | Medium                  | 20 GB            |
 | Load-balancing server                 | ELB         | haproxy on a VM              | N/A              |   1 | Medium                  | 10 GB            |

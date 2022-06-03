@@ -30,7 +30,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
       end
 
       it "determines the current age of the patient given their dob, and prefers it even when age is present" do
-        patient = create(:patient, date_of_birth: Date.new(1941, 6, 1), age: 58, recorded_at: 2.years.ago, age_updated_at: 2.years.ago)
+        patient = create(:patient, date_of_birth: 80.years.ago, age: 58, recorded_at: 2.years.ago, age_updated_at: 2.years.ago)
         described_class.refresh
         with_reporting_time_zone do
           expect(described_class.where(patient_id: patient.id).pluck(:current_age)).to all eq(80)
