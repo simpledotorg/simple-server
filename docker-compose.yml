@@ -12,7 +12,7 @@ services:
       - NGROK_PORT=server:3000
 
   postgres:
-    image: postgres:10-alpine
+    image: postgres:14.3-alpine
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=root
