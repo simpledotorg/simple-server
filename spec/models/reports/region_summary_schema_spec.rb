@@ -76,9 +76,11 @@ describe Reports::RegionSummarySchema, type: :model do
   describe "appointment scheduled days percentages" do
     it "returns percentages of appointments scheduled across months in a given range" do
       facility = create(:facility)
-      patient = create(:patient, assigned_facility: facility, recorded_at: 1.month.ago)
+      htn_patient = create(:patient, assigned_facility: facility, recorded_at: 1.month.ago)
+      diabetes_patient = create(:patient, :diabetes, assigned_facility: facility, recorded_at: 1.month.ago)
       range = Period.month(2.month.ago)..Period.current
-      _appointment_scheduled_0_to_14_days = create(:appointment, patient: patient, facility: facility, scheduled_date: 10.days.from_now, device_created_at: Date.today)
+      _htn_appointment_scheduled_0_to_14_days = create(:appointment, patient: htn_patient, facility: facility, scheduled_date: 10.days.from_now, device_created_at: Date.today)
+      _diabetes_appointment_scheduled_0_to_14_days = create(:appointment, patient: diabetes_patient, facility: facility, scheduled_date: 10.days.from_now, device_created_at: Date.today)
 
       refresh_views
 
@@ -86,15 +88,23 @@ describe Reports::RegionSummarySchema, type: :model do
       expect(schema.appts_scheduled_0_to_14_days_rates[facility.slug][range.first]).to eq(0)
       expect(schema.appts_scheduled_0_to_14_days_rates[facility.slug][range.to_a.second]).to eq(0)
       expect(schema.appts_scheduled_0_to_14_days_rates[facility.slug][range.last]).to eq(100)
+
+      expect(schema.diabetes_appts_scheduled_0_to_14_days_rates[facility.slug][range.first]).to eq(0)
+      expect(schema.diabetes_appts_scheduled_0_to_14_days_rates[facility.slug][range.to_a.second]).to eq(0)
+      expect(schema.diabetes_appts_scheduled_0_to_14_days_rates[facility.slug][range.last]).to eq(100)
     end
 
     it "returns percentages of appointments scheduled in a month in the given range" do
       facility = create(:facility)
-      patient = create(:patient, assigned_facility: facility, recorded_at: 4.month.ago)
+      htn_patient = create(:patient, assigned_facility: facility, recorded_at: 4.month.ago)
+      diabetes_patient = create(:patient, :diabetes, assigned_facility: facility, recorded_at: 4.month.ago)
       range = Period.month(2.month.ago)..Period.current
-      _appointment_scheduled_0_to_14_days = create(:appointment, patient: patient, facility: facility, scheduled_date: 10.days.from_now, device_created_at: Date.today)
-      _appointment_scheduled_15_to_30_days = create(:appointment, patient: patient, facility: facility, scheduled_date: 1.month.ago + 16.days, device_created_at: 1.month.ago)
-      _appointment_scheduled_more_than_60_days = create(:appointment, patient: patient, facility: facility, scheduled_date: 2.month.ago + 70.days, device_created_at: 2.month.ago)
+      _appointment_scheduled_0_to_14_days = create(:appointment, patient: htn_patient, facility: facility, scheduled_date: 10.days.from_now, device_created_at: Date.today)
+      _appointment_scheduled_15_to_30_days = create(:appointment, patient: htn_patient, facility: facility, scheduled_date: 1.month.ago + 16.days, device_created_at: 1.month.ago)
+      _appointment_scheduled_more_than_60_days = create(:appointment, patient: htn_patient, facility: facility, scheduled_date: 2.month.ago + 70.days, device_created_at: 2.month.ago)
+      _diabetes_appointment_scheduled_0_to_14_days = create(:appointment, patient: diabetes_patient, facility: facility, scheduled_date: 10.days.from_now, device_created_at: Date.today)
+      _diabetes_appointment_scheduled_15_to_30_days = create(:appointment, patient: diabetes_patient, facility: facility, scheduled_date: 1.month.ago + 16.days, device_created_at: 1.month.ago)
+      _diabetes_appointment_scheduled_more_than_60_days = create(:appointment, patient: diabetes_patient, facility: facility, scheduled_date: 2.month.ago + 70.days, device_created_at: 2.month.ago)
 
       refresh_views
 
@@ -102,11 +112,15 @@ describe Reports::RegionSummarySchema, type: :model do
       expect(schema.appts_scheduled_0_to_14_days_rates[facility.slug][range.last]).to eq(100)
       expect(schema.appts_scheduled_15_to_31_days_rates[facility.slug][range.to_a.second]).to eq(100)
       expect(schema.appts_scheduled_more_than_62_days_rates[facility.slug][range.first]).to eq(100)
+      expect(schema.diabetes_appts_scheduled_0_to_14_days_rates[facility.slug][range.last]).to eq(100)
+      expect(schema.diabetes_appts_scheduled_15_to_31_days_rates[facility.slug][range.to_a.second]).to eq(100)
+      expect(schema.diabetes_appts_scheduled_more_than_62_days_rates[facility.slug][range.first]).to eq(100)
     end
 
     it "returns zeros when there is no appointment data in the month" do
       facility = create(:facility)
       create(:patient, assigned_facility: facility)
+      create(:patient, :diabetes, assigned_facility: facility)
       period = Period.current
 
       refresh_views
@@ -118,11 +132,20 @@ describe Reports::RegionSummarySchema, type: :model do
       expect(schema.appts_scheduled_32_to_62_days[facility.slug][period]).to eq(0)
       expect(schema.appts_scheduled_more_than_62_days[facility.slug][period]).to eq(0)
       expect(schema.total_appts_scheduled[facility.slug][period]).to eq(0)
+      expect(schema.diabetes_appts_scheduled_0_to_14_days[facility.slug][period]).to eq(0)
+      expect(schema.diabetes_appts_scheduled_15_to_31_days[facility.slug][period]).to eq(0)
+      expect(schema.diabetes_appts_scheduled_32_to_62_days[facility.slug][period]).to eq(0)
+      expect(schema.diabetes_appts_scheduled_more_than_62_days[facility.slug][period]).to eq(0)
+      expect(schema.diabetes_total_appts_scheduled[facility.slug][period]).to eq(0)
 
       expect(schema.appts_scheduled_0_to_14_days_rates[facility.slug][period]).to eq(0)
       expect(schema.appts_scheduled_15_to_31_days_rates[facility.slug][period]).to eq(0)
       expect(schema.appts_scheduled_32_to_62_days_rates[facility.slug][period]).to eq(0)
       expect(schema.appts_scheduled_more_than_62_days_rates[facility.slug][period]).to eq(0)
+      expect(schema.diabetes_appts_scheduled_0_to_14_days_rates[facility.slug][period]).to eq(0)
+      expect(schema.diabetes_appts_scheduled_15_to_31_days_rates[facility.slug][period]).to eq(0)
+      expect(schema.diabetes_appts_scheduled_32_to_62_days_rates[facility.slug][period]).to eq(0)
+      expect(schema.diabetes_appts_scheduled_more_than_62_days_rates[facility.slug][period]).to eq(0)
     end
 
     it "returns empty hashes when there is no registered patients, assigned patients or follow ups" do
@@ -137,11 +160,20 @@ describe Reports::RegionSummarySchema, type: :model do
       expect(schema.appts_scheduled_32_to_62_days[facility.slug]).to eq({})
       expect(schema.appts_scheduled_more_than_62_days[facility.slug]).to eq({})
       expect(schema.total_appts_scheduled[facility.slug]).to eq({})
+      expect(schema.diabetes_appts_scheduled_0_to_14_days[facility.slug]).to eq({})
+      expect(schema.diabetes_appts_scheduled_15_to_31_days[facility.slug]).to eq({})
+      expect(schema.diabetes_appts_scheduled_32_to_62_days[facility.slug]).to eq({})
+      expect(schema.diabetes_appts_scheduled_more_than_62_days[facility.slug]).to eq({})
+      expect(schema.diabetes_total_appts_scheduled[facility.slug]).to eq({})
 
       expect(schema.appts_scheduled_0_to_14_days_rates[facility.slug]).to eq({})
       expect(schema.appts_scheduled_15_to_31_days_rates[facility.slug]).to eq({})
       expect(schema.appts_scheduled_32_to_62_days_rates[facility.slug]).to eq({})
       expect(schema.appts_scheduled_more_than_62_days_rates[facility.slug]).to eq({})
+      expect(schema.diabetes_appts_scheduled_0_to_14_days_rates[facility.slug]).to eq({})
+      expect(schema.diabetes_appts_scheduled_15_to_31_days_rates[facility.slug]).to eq({})
+      expect(schema.diabetes_appts_scheduled_32_to_62_days_rates[facility.slug]).to eq({})
+      expect(schema.diabetes_appts_scheduled_more_than_62_days_rates[facility.slug]).to eq({})
     end
   end
 
