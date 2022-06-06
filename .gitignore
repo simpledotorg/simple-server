@@ -44,3 +44,7 @@ config/spring.rb
 /yarn-error.log
 yarn-debug.log*
 .yarn-integrity
+
+# OS generated files
+.DS_Store
+.DS_Store?
