@@ -106,6 +106,17 @@
       <div class="h-320px mr-13px ml-13px pb-4px">
         <canvas id="cumulativeRegistrationsTrend"></canvas>
       </div>
+      <% if current_admin.feature_enabled?(:diabetes_management_reports) %>
+        <% if @region.diabetes_management_enabled? %>
+        <div>
+          <div class="p-relative px-20px mb-12px">
+            <p class="m-0px c-grey-dark c-print-black">
+              <strong>00</strong> HTN-only, <strong class="ml-8px">00</strong> DM+HTN (Coming soon)
+            </p>
+          </div>
+        </div>
+        <% end %>
+      <% end %>
     </div>
   </div>
   <div class="d-lg-flex w-lg-50 pr-lg-2">

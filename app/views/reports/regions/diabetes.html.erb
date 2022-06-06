@@ -120,7 +120,7 @@
             </div>
           </div>
           <div class="flex-1 d-lg-flex align-lg-center flex-lg-1">
-            <p class="c-print-black c-orange graph-percent fs-24px"
+            <p class="c-print-black c-teal graph-percent fs-24px"
                data-monthly-follow-ups="">
             </p>
             <div>
@@ -134,6 +134,13 @@
       </div>
       <div class="h-320px mr-13px ml-13px pb-4px">
         <canvas id="cumulativeDiabetesRegistrationsTrend"></canvas>
+      </div>
+      <div>
+        <div class="p-relative px-20px mb-12px">
+          <p class="m-0px c-grey-dark c-print-black">
+            <strong>00</strong> DM-only, <strong class="ml-8px">00</strong> DM+HTN (Coming soon)
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -162,7 +169,7 @@
           <%= t("bs_over_200_copy.reports_card_subtitle", region_name: @region.name) %>
         </p>
         <div class="mb-12px d-lg-flex align-lg-center">
-          <p class="c-print-black c-maroon graph-percent fs-28px"
+          <p class="c-print-black c-red graph-percent fs-28px"
              data-bs-over-300-rate="">
           </p>
           <div>
@@ -181,7 +188,7 @@
           </div>
         </div>
         <div class="mb-12px d-lg-flex align-lg-center">
-          <p class="c-print-black c-red graph-percent fs-28px"
+          <p class="c-print-black c-amber graph-percent fs-28px"
              data-bs-200-to-300-rate="">
           </p>
           <div>
@@ -321,21 +328,6 @@
     repository: @details_repository,
     current_period: @period)) %>
 <% end %>
-
-<h4 class="mt-5 mb-32px">Cohort reports</h4>
-<div id="medications-dispensation" class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black pb-1">
-  <div class="pt-20px px-20px">
-    <div class="mb-8px">
-      <h3 class="mb-8px mr-8px">
-        Quarterly report 
-      </h3>
-      <p class="c-grey-dark">
-        The result for all assigned diabetes patients registered in a quarter at their follow-up visit in the following quarter
-      </p>
-      <p class="coming-soon"><i class="fa-solid fa-chart-simple-horizontal"></i> Coming soon</p>
-    </div>
-  </div>
-</div>
 
 <%= render "reports/regions/diabetes_footnotes" %>
 
