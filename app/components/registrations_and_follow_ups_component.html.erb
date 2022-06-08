@@ -154,7 +154,7 @@
             <%= region.name %>
           </td>
           <% range.each do |period| %>
-            <td class="row-total ta-center">
+            <td class="row-total ta-right">
               <%= number_or_dash_with_delimiter(repository.monthly_overdue_calls[region.slug][period]) %>
             </td>
           <% end %>
@@ -172,7 +172,7 @@
 
             </td>
             <% range.each do |period| %>
-              <td class="ta-center">
+              <td class="ta-right">
                 <%= number_or_dash_with_delimiter repository.monthly_overdue_calls[slug][period] %>
               </td>
             <% end %>

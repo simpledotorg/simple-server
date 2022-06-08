@@ -1,8 +1,9 @@
 <div class="align-right custom-control custom-switch">
-  <form method="get">
+  <form method="get" name="ltfu_form">
     <input type="checkbox"
            onChange="this.form.submit()"
            name="with_ltfu"
+           for="ltfu_form"
            class="custom-control-input"
            id="<%= id %>"
            <% if enabled %>checked<% end %>>
@@ -12,8 +13,8 @@
     </label>
     <% if params[:period].present? %>
       <!-- Preserve period selection in reports header -->
-      <input type="hidden" form="ltfu_form" name="period[type]" value="<%= params[:period]["type"] %>">
-      <input type="hidden" form="ltfu_form" name="period[value]" value="<%= params[:period]["value"] %>">
+      <input type="hidden" for="ltfu_form" name="period[type]" value="<%= params[:period]["type"] %>">
+      <input type="hidden" for="ltfu_form" name="period[value]" value="<%= params[:period]["value"] %>">
     <% end %>
   </form>
 </div>
