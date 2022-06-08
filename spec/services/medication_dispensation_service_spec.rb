@@ -41,7 +41,7 @@ RSpec.describe MedicationDispensationService, type: :model do
 
   it "returns bucketed days of medications data of diabetes patients" do
     Timecop.freeze("#{Date.today.end_of_month} 23:00 IST") do
-      facility = create(:facility)
+      facility = create(:facility, enable_diabetes_management: true)
       period = Period.current
       patient = create(:patient, :diabetes, recorded_at: 1.year.ago)
       _appointment_created_today = create(:appointment, patient: patient, facility: facility, scheduled_date: 10.days.from_now, device_created_at: Date.today)
