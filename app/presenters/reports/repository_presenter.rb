@@ -20,11 +20,13 @@ module Reports
         controlled_patients_with_ltfu_rate: controlled_rates(with_ltfu: true)[slug],
         controlled_patients: controlled[slug],
         cumulative_assigned_patients: cumulative_assigned_patients[slug],
+        cumulative_assigned_diabetes_patients: cumulative_assigned_diabetic_patients[slug],
         cumulative_registrations: cumulative_registrations[slug],
         cumulative_diabetes_registrations: cumulative_diabetes_registrations[slug],
         earliest_registration_period: earliest_patient_recorded_at_period[slug],
         ltfu_patients_rate: ltfu_rates[slug],
         ltfu_patients: ltfu[slug],
+        diabetes_ltfu_patients: diabetes_ltfu[slug],
         missed_visits_rate: missed_visits_without_ltfu_rates[slug],
         missed_visits_with_ltfu_rate: missed_visits_with_ltfu_rates[slug],
         missed_visits_with_ltfu: missed_visits_with_ltfu[slug],
@@ -63,7 +65,9 @@ module Reports
         visited_without_bs_taken: visited_without_bs_taken[slug],
         diabetes_patients_with_bs_taken: diabetes_patients_with_bs_taken[slug],
         diabetes_patients_with_bs_taken_breakdown_rates: diabetes_patients_with_bs_taken_breakdown_rates[slug],
-        diabetes_patients_with_bs_taken_breakdown_counts: diabetes_patients_with_bs_taken_breakdown_counts[slug]
+        diabetes_patients_with_bs_taken_breakdown_counts: diabetes_patients_with_bs_taken_breakdown_counts[slug],
+        diabetes_dead: diabetes_dead[slug],
+        diabetes_under_care: diabetes_under_care[slug]
       }
     end
 

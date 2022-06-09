@@ -73,6 +73,20 @@ FactoryBot.define do
     trait(:with_overdue_appointments) do
       appointments { build_list(:appointment, 2, :overdue, facility: registration_facility) }
     end
+
+    trait(:lost_to_follow_up) do
+      recorded_at { 2.years.ago }
+      appointments { build_list(:appointment, 1, facility: assigned_facility, device_created_at: 12.months.ago) }
+    end
+
+    trait(:under_care) do
+      recorded_at { 2.years.ago }
+      appointments { build_list(:appointment, 1, facility: assigned_facility, device_created_at: 2.months.ago) }
+    end
+
+    trait(:dead) do
+      status { "dead" }
+    end
   end
 end
 

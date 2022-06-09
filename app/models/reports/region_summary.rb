@@ -55,6 +55,8 @@ module Reports
       diabetes_appts_scheduled_15_to_31_days
       diabetes_appts_scheduled_32_to_62_days
       diabetes_appts_scheduled_more_than_62_days
+      diabetes_dead
+      diabetes_under_care
     ].sort.freeze
 
     UNDER_CARE_WITH_LTFU = %i[

@@ -1,0 +1,102 @@
+<div class="d-lg-flex flex-lg-wrap">
+  <div class="d-lg-flex w-lg-50 pr-lg-2">
+    <div id="diabetes-patient-breakdown" data-period="" class="mt-8px mx-0px mb-16px p-20px bg-white br-4px bs-small w-lg-full mt-lg-0 pb-inside-avoid b-print-black">
+        <div class="d-flex flex-1 mb-8px">
+          <h3 class="mb-0px mr-8px">
+            Diabetes patients
+          </h3>
+        </div>
+        <p class="mb-24px c-grey-dark mr-lg-12px">
+          All patients with diabetes in <%= @region.name %>
+        </p>
+        <div class="d-flex ai-center jc-between">
+          <p class="mb-8px fw-bold">
+            Total assigned patients
+            <span class="p-relative t-1px">
+            <i
+              class="fas fa-question-circle fs-14px c-grey-dark"
+              data-toggle="tooltip"
+              data-placement="right"
+              data-trigger="hover click"
+              data-html="true"
+              title="<%= t('diabetes_assigned_patients_copy.total_assigned_patients', region_name: @region.name)%>"
+            >
+            </i>
+          </span>
+          </p>
+          <p class="mb-8px fw-bold" id="total-assigned-excluding-dead-patients">
+            <%= number_with_delimiter(total_assigned_excluding_dead_patients) %>
+          </p>
+        </div>
+      <div class="ml-lg-8px  c-grey-dark">
+        <div class="d-flex ai-center jc-between">
+          <p class="mb-8px">
+            Patients under care
+            <span class="p-relative t-1px">
+            <i
+              class="fas fa-question-circle fs-14px"
+              data-toggle="tooltip"
+              data-placement="right"
+              data-trigger="hover click"
+              data-html="true"
+              title="<%= t('diabetes_patients_under_care_copy') %>"
+            >
+            </i>
+          </span>
+          </p>
+          <p class="mb-8px">
+            <%= number_with_delimiter(patients_under_care ) %>
+          </p>
+        </div>
+        <div class="d-flex ai-center jc-between">
+          <p class="mb-8px">
+            Lost to follow-up
+            <span class="p-relative t-1px">
+            <i
+              class="fas fa-question-circle fs-14px c-grey-dark"
+              data-toggle="tooltip"
+              data-placement="right"
+              data-trigger="hover click"
+              data-html="true"
+              title="<%= t('diabetes_lost_to_follow_up_copy.reports_card_subtitle') %>"
+            >
+            </i>
+          </span>
+          </p>
+          <p class="mb-8px">
+            <%= number_with_delimiter(ltfu_patients) %>
+          </p>
+        </div>
+        <div class="d-flex ai-center jc-between">
+          <p class="mb-8px">
+            Dead patients
+          </p>
+          <p class="mb-8px">
+            <%= number_with_delimiter(dead_patients) %>
+          </p>
+        </div>
+      </div>
+      <div class="d-flex ai-center jc-between">
+        <p class="mb-8px fw-bold">
+          Total registered patients
+          <span class="p-relative t-1px">
+              <i
+                class="fas fa-question-circle fs-14px c-grey-dark"
+                data-toggle="tooltip"
+                data-placement="right"
+                data-trigger="hover click"
+                data-html="true"
+                title="<%= t('registered_diabetes_patients_copy.total_registered_patients', region_name: @region.name)%>"
+              >
+              </i>
+            </span>
+        </p>
+        <p class="mb-8px fw-bold">
+          <%= number_with_delimiter(
+                total_registered_patients
+              ) %>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

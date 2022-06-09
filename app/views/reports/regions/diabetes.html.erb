@@ -291,7 +291,8 @@
 <%= render "diabetes_treatment_outcomes_card" %>
 
 <h4 class="mt-5 mb-32px">Details</h4>
-<%= render "reports/regions/diabetes_patient_breakdown_charts" %>
+<%#= render "reports/regions/diabetes_patient_breakdown_charts" %>
+<%= render(Dashboard::PatientBreakdownComponent.new(region: @region, data: @data, period: @latest_period)) %>
 
 <% if current_admin.feature_enabled?(:medications_dispensation) %>
 <h4 class="mt-5 mb-32px">Medications</h4>
