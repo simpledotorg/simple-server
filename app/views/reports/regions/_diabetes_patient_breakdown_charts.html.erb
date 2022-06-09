@@ -36,7 +36,9 @@
           </span>
           </p>
           <p class="mb-8px fw-bold">
-            <%= number_with_delimiter(@details_chart_data[:patient_breakdown][:total_assigned_patients]) %>
+            <%= number_with_delimiter(
+                  @details_chart_data[:patient_breakdown][:total_assigned_patients] - @details_chart_data[:patient_breakdown][:dead_patients]
+                ) %>
           </p>
         </div>
       <% end %>
