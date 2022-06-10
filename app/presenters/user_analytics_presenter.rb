@@ -25,6 +25,10 @@ class UserAnalyticsPresenter
     display_percentage(cohort[:no_bp], cohort[:registered])
   end
 
+  def cohort_missed_visits(cohort)
+    display_percentage(cohort[:missed_visits], cohort[:registered])
+  end
+
   def diabetes_enabled?
     current_facility.diabetes_enabled?
   end
