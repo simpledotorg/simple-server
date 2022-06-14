@@ -57,6 +57,7 @@ en:
     patients_with_controlled_bp: "Patients visited with BP &lt;140/90"
     patients_with_uncontrolled_bp: "Patients visited with BP &ge;140/90"
     patients_with_no_bp_measure: "Patients with no BP measure"
+    patients_with_missed_visits: "Patients with a missed visit"
     registered_in: "registered in"
     result_from_last_visit_in: "Result from last visit in"
     no_patients: "No patients"
