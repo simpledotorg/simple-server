@@ -11,6 +11,12 @@
       <%= link_to(my_facilities_drug_consumption_path(preserve_query_params(request.query_parameters, ["facility_group", "zone", "size", "for_end_of_month"])), class: "nav-link #{active_action?("drug_consumption")}") do %>
         HTN consumption
       <% end %>
+      <%= link_to(my_facilities_drug_consumption_path(preserve_query_params(request.query_parameters, ["facility_group", "zone", "size", "for_end_of_month"])), class: "nav-link #{active_action?("drug_consumption")}") do %>
+        DM Stock
+      <% end %>
+      <%= link_to(my_facilities_drug_consumption_path(preserve_query_params(request.query_parameters, ["facility_group", "zone", "size", "for_end_of_month"])), class: "nav-link #{active_action?("drug_consumption")}") do %>
+        DM consumption
+      <% end %>
     </nav>
   </div>
   <div class="d-flex actions order-1 mb-48px order-lg-2 mb-lg-0 text-grey">
