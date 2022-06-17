@@ -33,6 +33,6 @@ describe Dashboard::PatientBreakdownComponent, type: :component do
     render_inline(patient_breakdown_component)
 
     expect(page).to have_text("Total assigned patients")
-    expect(page.call("#total-assigned-excluding-dead-patients").text.to_i).to eq(5)
+    expect(page.find("#total-assigned-excluding-dead-patients").text.to_i).to eq(5)
   end
 end

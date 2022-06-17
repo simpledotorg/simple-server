@@ -116,6 +116,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
         diabetes_appts_scheduled_15_to_31_days
         diabetes_appts_scheduled_32_to_62_days
         diabetes_appts_scheduled_more_than_62_days
+        diabetes_dead
+        diabetes_under_care
       ].map(&:to_s)
       (3.months.ago.to_period..now.to_period).each do |period|
         expect(results[facility_1.region.slug][period].keys).to match_array(expected_keys)

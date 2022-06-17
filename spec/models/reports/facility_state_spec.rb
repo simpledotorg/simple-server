@@ -381,7 +381,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
           with_reporting_time_zone do
             expect(described_class
                      .where(facility: facility, month_date: june_2021[:now])
-                     .pluck(:adjusted_diabetes_under_care, :diabetes_lost_to_follow_up, :diabetes_dead).first)
+                     .pluck(:diabetes_under_care, :diabetes_lost_to_follow_up, :diabetes_dead).first)
               .to eq([under_care_diabetic_patients.count, ltfu_diabetic_patients.count, dead_diabetic_patients.count])
           end
         end
@@ -409,7 +409,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
           with_reporting_time_zone do
             expect(described_class
                      .where(facility: facility, month_date: june_2021[:now])
-                     .pluck(:adjusted_diabetes_under_care, :diabetes_lost_to_follow_up, :diabetes_dead).first)
+                     .pluck(:diabetes_under_care, :diabetes_lost_to_follow_up, :diabetes_dead).first)
               .to all be_nil
           end
         end
