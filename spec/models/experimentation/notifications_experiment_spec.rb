@@ -355,7 +355,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
         patient: patient,
         subject: nil)
       membership = create(:treatment_group_membership, treatment_group: treatment_group, patient: patient)
-      membership.record_notification(notification)
+      membership.record_notification("hello.set01", notification)
 
       successful_communication = create(:communication, notification: notification)
       create(:twilio_sms_delivery_detail, :delivered, communication: successful_communication)
@@ -389,7 +389,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
         patient: patient,
         subject: nil)
       membership = create(:treatment_group_membership, treatment_group: treatment_group, patient: patient)
-      membership.record_notification(notification)
+      membership.record_notification("hello.set01", notification)
 
       unsuccessful_communication = create(:communication, notification: notification)
       create(:twilio_sms_delivery_detail, :failed, communication: unsuccessful_communication)
@@ -416,7 +416,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
         patient: patient,
         subject: nil)
       membership = create(:treatment_group_membership, treatment_group: treatment_group, patient: patient)
-      membership.record_notification(notification)
+      membership.record_notification("hello.set01", notification)
 
       experiment.record_notification_results
 
@@ -439,7 +439,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
         patient: patient,
         subject: nil)
       membership = create(:treatment_group_membership, treatment_group: treatment_group, status: :evicted, patient: patient)
-      membership.record_notification(notification)
+      membership.record_notification("hello.set01", notification)
 
       successful_communication = create(:communication, notification: notification)
       create(:twilio_sms_delivery_detail, :delivered, communication: successful_communication)
@@ -460,7 +460,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
         patient: patient,
         subject: nil)
       membership = create(:treatment_group_membership, treatment_group: treatment_group, status: :evicted, patient: patient)
-      membership.record_notification(notification)
+      membership.record_notification("hello.set01", notification)
       patient.discard_data
 
       experiment.record_notification_results
