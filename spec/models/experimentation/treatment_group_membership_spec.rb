@@ -30,9 +30,10 @@ RSpec.describe Experimentation::TreatmentGroupMembership, type: :model do
       notification = create(:notification)
       membership = create(:treatment_group_membership)
 
-      membership.record_notification(notification)
+      membership.record_notification(notification.message, notification)
       expect(membership.reload.messages[notification.message]).to eq(
         {
+          message_name: notification.message,
           remind_on: notification.remind_on.to_s,
           notification_status: notification.status,
           notification_status_updated_at: notification.updated_at.to_s,
@@ -47,10 +48,10 @@ RSpec.describe Experimentation::TreatmentGroupMembership, type: :model do
       notification = create(:notification)
       membership = create(:treatment_group_membership)
 
-      membership.record_notification(notification)
+      membership.record_notification(notification.message, notification)
       notification_2 = create(:notification, message: "second notification")
 
-      membership.record_notification(notification_2)
+      membership.record_notification(notification_2.message, notification_2)
       expect(membership.reload.messages[notification.message]).to be_present
       expect(membership.reload.messages[notification_2.message]).to be_present
     end

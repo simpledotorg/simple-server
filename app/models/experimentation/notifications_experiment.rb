@@ -2,6 +2,7 @@ module Experimentation
   class NotificationsExperiment < Experiment
     include ActiveSupport::Benchmarkable
     BATCH_SIZE = 1000
+    NEW_MESSAGE_REPORTING_DATE = Date.parse("25 Jun 2022")
 
     default_scope { where(experiment_type: %w[current_patients stale_patients]) }
 
@@ -82,8 +83,8 @@ module Experimentation
     end
 
     def message_key
-      if start_time > Date.parse("20 Jun 2022")
-        "id"
+      if start_time > NEW_MESSAGE_REPORTING_DATE
+        "id::varchar"
       else
         "message"
       end
