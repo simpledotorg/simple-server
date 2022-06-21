@@ -1,4 +1,4 @@
-om-ET:
+om:
   date:
     month_names: [~, "Amajji", "Guraandhala", "Bitootessa", "Ebla", "Caamsaa", "Waxabajjii", "Adoolessa", "Hagayya", "Fulbaana", "Onkoloolessa", "Sadaasa", "Muddee"]
     abbr_month_names: [~, "Amajjii", "Guraandhala", "Bitootessa", "Ebla", "Caamsaa", "Waxabajjii", "Adooleessa", "Hagayya", "Fulbaana", "Onkoloolessa", "Sadaasa", "Mud"]
@@ -57,6 +57,7 @@ om-ET:
     patients_with_controlled_bp: "Dhukkubsattoota BP &lt;140/90 dhaan daawwataman"
     patients_with_uncontrolled_bp: "Dhukkubsattoota BP &ge;140/90 dhaan daawwataman"
     patients_with_no_bp_measure: "Dhukkubsattoota BP isaanii hin safaramin"
+    patients_with_missed_visits: "Dhukkubsatoota daawwiin irra darbe"
     registered_in: "Kan galmaa'an"
     result_from_last_visit_in: "Bu'aa daawwannaa yeroo darberra"
     no_patients: "Dhukkubsataan hin jiru"
