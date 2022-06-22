@@ -1,4 +1,4 @@
-hi-IN:
+hi_IN:
   notifications:
     set01:
       basic: "%{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए %{appointment_date} को %{facility_name} आएं।"
@@ -9,6 +9,14 @@ hi-IN:
       emotional_guilt: "अगर इलाज न किया जाए, तो हाई बी पी आपके पूरे समुदाय के लिए खतरनाक हो सकता है। %{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए %{appointment_date} को %{facility_name} आएं।"
       professional_request: "आपका डॉक्टर आपको अपने बी पी की जांच के लिए याद दिलाना चाहता है। %{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए %{appointment_date} को %{facility_name} आएं।"
       response: "%{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए %{appointment_date} को %{facility_name} आएं। इस लिंक पर क्लिक करके हमें बताएं कि आप आयेगे।"
+      short: "%{patient_name} अपने बीपी के लिए %{facility_name} में %{appointment_date} को विजिट करें।"
+      short_medicines: "%{patient_name} अपने बीपी और दवाइयों के लिए %{facility_name} में %{appointment_date} को विजिट करें।"
+      you_must: "%{patient_name} आपको बीपी के लिए %{appointment_date} को %{facility_name} में आना ही होगा।"
+      no_date: "%{patient_name} बीपी नापने के लिए कल %{facility_name} में आएं।"
+      official_short: "%{patient_name} अपने बीपी के लिए %{facility_name} में %{appointment_date} को विजिट करें। आपके डॉक्टर आपके अच्छे स्वस्थ्य के लिए इच्छुक हैं।"
+      official_short_medicines: "%{patient_name} अपने बीपी और दवाइयों के लिए %{facility_name} में %{appointment_date} को विजिट करें। आपके डॉक्टर आपके अच्छे स्वस्थ्य के लिए इच्छुक हैं।"
+      official_you_must: "%{patient_name} आपको बीपी के लिए %{appointment_date} को %{facility_name} में आना ही होगा। आपके डॉक्टर आपके अच्छे स्वस्थ्य के लिए इच्छुक हैं।"
+      official_no_date: "%{patient_name} बीपी नापने के लिए कल %{facility_name} में आएं। आपके डॉक्टर आपके अच्छे स्वस्थ्य के लिए इच्छुक हैं।"
     set02:
       basic: "हम आज आपके आने की उम्मीद कर रहे हैं। %{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए %{facility_name} आएं।"
       gratitude: "हम आज आपके आने की उम्मीद कर रहे हैं। । हाई बी पी के लिए नियमित दवाएं लेने के लिए धन्यवाद। %{patient_name}, कृप्या बीपी की जांच और दवाओं के लिए %{facility_name} आएं।"
@@ -18,6 +26,14 @@ hi-IN:
       emotional_guilt: "हम आज आपके आने की उम्मीद कर रहे हैं। अगर इलाज न किया जाए, तो हाई बी पी आपके पूरे समुदाय के लिए खतरनाक हो सकता है। । %{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए %{facility_name} आएं।"
       professional_request: "हम आज आपके आने की उम्मीद कर रहे हैं। आपका डॉक्टर आपको अपने बी पी की जांच के लिए याद दिलाना चाहता है। %{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए %{facility_name} आएं।"
       response: "हम आज आपके आने की उम्मीद कर रहे हैं। कृप्या बी पी की जांच और दवाओं के लिए %{facility_name} आएं। इस लिंक पर क्लिक करके हमें बताएं कि आप आयेगे।"
+      short: "%{patient_name} अपने बीपी के लिए आज %{facility_name} में विजिट करें।"
+      short_medicines: "%{patient_name} बीपी और दवाइयों के लिए आज ही %{facility_name} में विजिट करें।"
+      you_must: "%{patient_name} आपको बीपी नापने के लिए आज %{facility_name} में आना होगा।"
+      no_date: "%{patient_name} बीपी नापने के लिए आज %{facility_name} में आएं।"
+      official_short: "%{patient_name} अपने बीपी के लिए आज %{facility_name} में विजिट करें। आपके डॉक्टर आपके अच्छे स्वस्थ्य के लिए इच्छुक हैं।"
+      official_short_medicines: "%{patient_name} अपने बीपी और दवाइयों के लिए आज ही %{facility_name} में विजिट करें। आपके डॉक्टर आपके अच्छे स्वस्थ्य के लिए इच्छुक हैं।"
+      official_you_must: "%{patient_name} आपको बीपी नापने के लिए आज ही %{facility_name} में आना होगा। आपके डॉक्टर आपके अच्छे स्वस्थ्य के लिए इच्छुक हैं।"
+      official_no_date: "%{patient_name} बीपी नापने के लिए आज %{facility_name} में आएं। आपके डॉक्टर आपके अच्छे स्वस्थ्य के लिए इच्छुक हैं।"
     set03:
       basic: "आप अपने बी पी की जांच के लिए देरी से हो। %{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए जल्द से जल्द %{facility_name} आएं।"
       gratitude: "आप अपने बी पी की जांच के लिए देरी से हो। हाई बी पी के लिए नियमित दवाएं लेने के लिए धन्यवाद। %{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए जल्द से जल्द %{facility_name} आएं।"
@@ -27,6 +43,14 @@ hi-IN:
       emotional_guilt: "आप अपने बी पी की जांच के लिए देरी से हो। अगर इलाज न किया जाए, तो हाई बी पी आपके पूरे समुदाय के लिए खतरनाक हो सकता है । %{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए जल्द से जल्द %{facility_name} आएं। "
       professional_request: "आप अपने बी पी की जांच के लिए देरी से हो। आपका डॉक्टर आपको अपने बीपी की जांच के लिए याद दिलाना चाहता है। %{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए जल्द से जल्द %{facility_name} आएं।"
       response: "आप अपने बी पी की जांच के लिए देरी से हो। %{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए जल्द से जल्द %{facility_name} आएं। इस लिंक पर क्लिक करके हमें बताएं कि आप आयेगे।"
+      short: "आप अपने बीपी के लिए देर हुई है। %{patient_name} अपने बीपी के लिए जितना जल्दी हो सके %{facility_name} में विजिट करें।"
+      short_medicines: "आप अपने बीपी के लिए देर हुई है। %{patient_name} अपने बीपी और दवाइयों के लिए जितना जल्दी हो सके %{facility_name} में विजिट करें।"
+      you_must: "आपको जितना संभव हो उतना जल्दी बीपी के लिए %{facility_name} %{patient_name} आना चाहिए।"
+      no_date: "%{patient_name} बीपी नापने के लिए आज %{facility_name} में आएं।"
+      official_short: "आप अपने बीपी के लिए देर हुई है। %{patient_name} आपके बीपी के लिए जितना जल्दी हो सके %{facility_name} को विजिट करें। आपके डॉक्टर आपके अच्छे स्वस्थ्य के इच्छुक हैं।"
+      official_short_medicines: "आप अपने बीपी के लिए देर हुई है। आपको बीपी और %{patient_name} की दवाइयों के लिए जितना जल्दी हो सके %{facility_name} में आना चाहिए। आपके डॉक्टर आपके अच्छे स्वस्थ्य के इच्छुक हैं।"
+      official_you_must: "आपको जितना संभव हो उतना जल्दी बीपी के लिए %{facility_name} %{patient_name} आना चाहिए। आपके डॉक्टर आपके अच्छे स्वस्थ्य के इच्छुक हैं।"
+      official_no_date: "%{patient_name} बीपी नापने के लिए आज %{facility_name} में आएं। आपके डॉक्टर आपके अच्छे स्वस्थ्य के इच्छुक हैं।"
     set03_basic_repeated:
       first: "आप अपने बी पी की जांच के लिए देरी से हो। %{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए जल्द से जल्द %{facility_name} आएं।"
       second: "आप अपने बी पी की जांच के लिए देरी से हो। %{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए जल्द से जल्द %{facility_name} आएं।"
