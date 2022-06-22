@@ -124,15 +124,15 @@ describe Reports::RegionSummarySchema, type: :model do
       range = Period.month(2.month.ago)..Period.current
       today = Time.current.beginning_of_month
 
-      _appointment_scheduled_0_to_14_days = create(:appointment, patient: htn_patient, facility: facility, scheduled_date: 10.days.from_now, device_created_at: today + 3.day)
-      _appointment_scheduled_15_to_30_days = create(:appointment, patient: htn_patient, facility: facility, scheduled_date: 19.days.from_now, device_created_at: today + 4.day)
-      _appointment_scheduled_31_to_62_days = create(:appointment, patient: htn_patient, facility: facility, scheduled_date: 33.days.from_now, device_created_at: today + 1.day)
-      _appointment_scheduled_more_than_62_days = create(:appointment, patient: htn_patient, facility: facility, scheduled_date: 64.days.from_now, device_created_at: today + 2.day)
+      _appointment_scheduled_0_to_14_days = create(:appointment, patient: htn_patient, facility: facility, scheduled_date: today + 10.day, device_created_at: today + 3.day)
+      _appointment_scheduled_15_to_30_days = create(:appointment, patient: htn_patient, facility: facility, scheduled_date: today + 20.day, device_created_at: today + 4.day)
+      _appointment_scheduled_31_to_62_days = create(:appointment, patient: htn_patient, facility: facility, scheduled_date: today + 32.day, device_created_at: today + 1.day)
+      _appointment_scheduled_more_than_62_days = create(:appointment, patient: htn_patient, facility: facility, scheduled_date: today + 64.day, device_created_at: today + 2.day)
 
-      _diabetes_appointment_scheduled_0_to_14_days = create(:appointment, patient: diabetes_patient, facility: facility, scheduled_date: 10.days.from_now, device_created_at: today + 2.day)
-      _diabetes_appointment_scheduled_15_to_30_days = create(:appointment, patient: diabetes_patient, facility: facility, scheduled_date: 18.days.from_now, device_created_at: today + 3.day)
-      _diabetes_appointment_scheduled_31_to_62_days = create(:appointment, patient: diabetes_patient, facility: facility, scheduled_date: 36.days.from_now, device_created_at: today + 4.day)
-      _diabetes_appointment_scheduled_more_than_62_days = create(:appointment, patient: diabetes_patient, facility: facility, scheduled_date: 63.days.from_now, device_created_at: today + 1.day)
+      _diabetes_appointment_scheduled_0_to_14_days = create(:appointment, patient: diabetes_patient, facility: facility, scheduled_date: today + 10.day, device_created_at: today + 2.day)
+      _diabetes_appointment_scheduled_15_to_30_days = create(:appointment, patient: diabetes_patient, facility: facility, scheduled_date: today + 19.day, device_created_at: today + 3.day)
+      _diabetes_appointment_scheduled_31_to_62_days = create(:appointment, patient: diabetes_patient, facility: facility, scheduled_date: today + 36.day, device_created_at: today + 4.day)
+      _diabetes_appointment_scheduled_more_than_62_days = create(:appointment, patient: diabetes_patient, facility: facility, scheduled_date: today + 62.day, device_created_at: today + 1.day)
 
       refresh_views
 
