@@ -1,17 +1,12 @@
 <div class="d-lg-flex w-lg-50 pl-lg-2">
   <div id="ltfu-trend" data-period="<%= @period.to_s %>" class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black">
     <div class="pt-20px px-20px">
-      <div class="d-flex flex-1 mb-8px">
-        <h3 class="mb-0px mr-8px">
-          Lost to follow-up
-        </h3>
-        <%= render "definition_tooltip",
-                   definitions: { "Numerator" => t("diabetes_lost_to_follow_up_copy.numerator"),
-                                  "Denominator" => t("diabetes_ltfu_denominator_copy", region_name: @region.name) } %>
-      </div>
-      <p class="c-grey-dark">
-        <%= t("diabetes_lost_to_follow_up_copy.reports_card_subtitle") %>
-      </p>
+      <%= render Dashboard::Card::TitleComponent.new(
+        title: "Lost to follow-up",
+        subtitle: t("diabetes_lost_to_follow_up_copy.reports_card_subtitle"),
+        tooltip_definitions: { "Numerator" => t("diabetes_lost_to_follow_up_copy.numerator"),
+                               "Denominator" => t("diabetes_ltfu_denominator_copy", region_name: @region.name) }) %>
+
       <div class="mb-12px d-lg-flex align-lg-center">
         <p class="c-print-black graph-percent fs-28px
             <% current_ltfu_rate = ltfu_patient_rate %>
