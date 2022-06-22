@@ -1,10 +1,12 @@
 class Dashboard::PatientBreakdownComponent < ApplicationComponent
-  attr_reader :region, :data, :period
+  attr_reader :region, :data, :period, :population_coverage_data, :curent_admin
 
-  def initialize(region:, data:, period:)
+  def initialize(region:, data:, period:, population_coverage_data:, current_admin:)
     @region = region
     @data = data
     @period = period
+    @population_coverage_data = population_coverage_data
+    @current_admin = current_admin
   end
 
   # TODO: Remove dead patient count from assigned patient count

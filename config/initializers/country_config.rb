@@ -20,6 +20,7 @@ class CountryConfig
         controlled_male: "FSuHsnyPYcV.tY82VK3LTQq",
         controlled_female: "FSuHsnyPYcV.VHbljVQ8REF"
       },
+      enabled_diabetes_population_coverage: true,
       appointment_reminders_channel: "Messaging::Bsnl::Sms"
     },
     BD: {

@@ -34,7 +34,12 @@ class EstimatedPopulation < ApplicationRecord
 
   memoize def show_coverage
     if region.district_region?
-      !!region.estimated_population&.hypertension_patient_coverage_rate
+      case diagnosis
+      when "HTN"
+        !!region.estimated_population&.hypertension_patient_coverage_rate
+      when "DM"
+        !!region.estimated_diabetes_population&.diabetes_patient_coverage_rate
+      end
     elsif region.state_region?
       region.estimated_population&.population_available_for_all_districts?
     else
@@ -44,6 +49,11 @@ class EstimatedPopulation < ApplicationRecord
 
   def population_available_for_all_districts?
     state = region.state_region
-    state.district_regions.includes(:estimated_population).all? { |district| district.estimated_population }
+    case diagnosis
+    when "HTN"
+      state.district_regions.includes(:estimated_population).all? { |district| district.estimated_population }
+    when "DM"
+      state.district_regions.includes(:estimated_diabetes_population).all? { |district| district.estimated_diabetes_population }
+    end
   end
 end

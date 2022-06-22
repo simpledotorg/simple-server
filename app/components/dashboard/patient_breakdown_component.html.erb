@@ -1,7 +1,21 @@
 <div class="d-lg-flex flex-lg-wrap">
   <div class="d-lg-flex w-lg-50 pr-lg-2">
     <div id="diabetes-patient-breakdown" data-period="" class="mt-8px mx-0px mb-16px p-20px bg-white br-4px bs-small w-lg-full mt-lg-0 pb-inside-avoid b-print-black">
+      <% if @region.supports_diabetes_population_coverage %>
         <div class="d-flex flex-1 mb-8px">
+          <h3 class="mb-0px mr-8px">
+            Diabetes coverage
+          </h3>
+        </div>
+        <p class="mb-16px c-grey-dark mr-lg-12px">
+          All individuals and patients with diabetes in <%= @region.name %>
+        </p>
+        <%= render(Dashboard::PopulationCoverageComponent.new(
+          region: @region,
+          data: @population_coverage_data,
+          current_admin: @current_admin)) %>
+      <% else %>
+      <div class="d-flex flex-1 mb-8px">
           <h3 class="mb-0px mr-8px">
             Diabetes patients
           </h3>
@@ -28,6 +42,7 @@
             <%= number_with_delimiter(total_assigned_excluding_dead_patients) %>
           </p>
         </div>
+      <% end %>
       <div class="ml-lg-8px  c-grey-dark">
         <div class="d-flex ai-center jc-between">
           <p class="mb-8px">
