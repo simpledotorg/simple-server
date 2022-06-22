@@ -1,0 +1,23 @@
+<div class="d-lg-flex w-lg-50 pr-lg-2">
+  <div id="diabetes-patient-breakdown" data-period="" class="mt-8px mx-0px mb-16px p-20px bg-white br-4px bs-small w-lg-full mt-lg-0 pb-inside-avoid b-print-black">
+    <% if region.supports_diabetes_population_coverage %>
+      <%= render Dashboard::Card::TitleComponent.new(
+        title: "Diabetes coverage",
+        subtitle: "All individuals and patients with diabetes in #{region.name}") %>
+      <%= render(Dashboard::PopulationCoverageComponent.new(
+        region: region,
+        data: data,
+        current_admin: current_admin)) %>
+    <% else %>
+      <%= render Dashboard::Card::TitleComponent.new(
+        title: "Diabetes patients",
+        subtitle: "All patients with diabetes in #{region.name}") %>
+    <% end %>
+
+    <%= render(Dashboard::PatientBreakdownComponent.new(
+      region: region,
+      data: data,
+      period: period,
+    )) %>
+  </div>
+</div>

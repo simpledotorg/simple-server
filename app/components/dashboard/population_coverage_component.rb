@@ -25,4 +25,8 @@ class Dashboard::PopulationCoverageComponent < ApplicationComponent
   def total_assigned_patients
     data.dig(:patient_breakdown, :total_assigned_patients)
   end
+
+  def population_coverage_percentage
+    number_to_percentage(@region.estimated_diabetes_population.diabetes_patient_coverage_rate, precision: 0)
+  end
 end

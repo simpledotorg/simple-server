@@ -293,13 +293,12 @@
 <h4 class="mt-5 mb-32px">Details</h4>
 <%#= render "reports/regions/diabetes_patient_breakdown_charts" %>
 <div class="d-lg-flex flex-lg-wrap">
-  <%= render(Dashboard::PatientBreakdownComponent.new(
+  <%= render Dashboard::DiabetesCoverageCardComponent.new(
     region: @region,
     data: @data,
     period: @latest_period,
-    population_coverage_data: @details_chart_data,
-    current_admin: @current_admin
-  )) %>
+    current_admin: current_admin
+  ) %>
 
   <%= render(Dashboard::LostToFollowUpComponent.new(
     region: @region,
