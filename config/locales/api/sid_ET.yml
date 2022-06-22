@@ -1,28 +1,28 @@
-sid-ET:
+sid:
   date:
-    month_names: [~, "Janowari", "Febiraari", "marchi", "Apirile", "Meyi", "Juni", "Julayi", "Awugeste", "Septembere", "Oktobere", "Novembere", "Disembere"]
-    abbr_month_names: [~, "Janowari", "Febiraari", "marchi", "Apirile", "Meyi", "Juni", "Julayi", "Awugeste", "Septembere", "Oktobere", "Novembere", "Disembere"]
+    month_names: [~, "Arfaasa", "Ammajje", "Badheessa", "Dotteessa", "Onkoleessa", "Ella", "Maaja", "Woxawaajje", "Wocawaaro", "birra", "Bocaasa ", "Sadaasa"]
+    abbr_month_names: [~, "Arfaasa", "Ammajje", "Badheessa", "Dotteessa", "Onkoleessa", "Ella", "Maaja", "Woxawaajje", "Wocawaaro", "Birra", "Bocaasa", "Sadaasa"]
   today_str: "Techo"
   registration: "Haaro Borreesama"
   reset_password: "PIN/e Wirro hanafisiisi"
   login:
     error_messages:
       unknown_user: "Hakkoye horonsirassincho dianfoomo Buuxxe Wirro Wa’nnaali"
-      invalid_otp: "OTP/Ki Dixxaadino Wirro Wo’nnaala?"
+      invalid_otp: "OTP/Ki Dixaaddino. Wirro Wo’naala?"
       expired_otp: "OTP/KI ba’inote/yanna sa’inote Haaro Xa’mi."
       invalid_password: "Sa”ate Qaali Dixxaadino. Wirro Wo’nnaala?"
-      account_locked: "Harunseewo %{minutes} Geeshsha Xawwishshiki Cufamino. Agarte Wirro Wo’nnaali."
+      account_locked: "Harunseewo %{minutes} Geeshsha Xawwishshiki Cufamino. Agarte Wirro Wo’naali."
   communications:
     request_otp: "<#> %{otp} Tini Simple Huwatate Code/Fojote Borro/kiiro atete %{app_signature}\n"
     appointment_reminders:
-      sms: "Ninke Borro mini %{facility_name} nni yaa ki’neranna ki’ne wodani keeri daafira hedanno yaate. Ballo! Mundeete xiiwo xagga harunse. Mulekki leeltawo Cinaanchu uurrinshini xaggichokki gamba assiri. ANM woyi ASHA/ki ledo xaadi."
-      whatsapp: "Ninke Borro mini %{facility_name} nni yaa ki’neranna ki’ne wodani keeri daafira hedanno yaate. Ballo! Mundeete xiiwo xagga harunse. Mulekki leeltawo Cinaanchu uurrinshini xaggichokki gamba assiri. ANM woyi ASHA/ki ledo xaadi."
+      sms: "Ninke Borro mini %{facility_name} nni yaa ki’neranna ki’ne wodani keeri daafira hedanno yaate. Ballo! Mundeete xiiwo xagga harunse. Mulekki leeltawo Cinaanchu uurrinshini xaggichokki gamba assiri. "
+      whatsapp: "Ninke Borro mini %{facility_name} nni yaa ki’neranna ki’ne wodani keeri daafira hedanno yaate. Ballo! Mundeete xiiwo xagga harunse. Mulekki leeltawo Cinaanchu uurrinshini xaggichokki gamba assiri. "
     patient_request_otp: "<#> %{otp} Tini mundeekki xiiwo passporte Huwatate code/ti (Fojote kiiroti/borrooti)."
   dashboard:
     graphics:
       graphics_title_html: "<b>%{current_quarter_string}</b> te yannara borreessantu xagisiraanora <b>%{previous_quarter_string}</b> nni %{patients_in_previous_quarter} geya noote giddo mayi kalaqami?"
       report_name: "Jawa Mundeete xiiwo Reporte"
-      patients_controlled_in_quarter_html: "Xiwantino Xagisiraano &lt; Mundeete xiiwonni daa”atantu"
+      patients_controlled_in_quarter_html: "Xiwantino Xagisiraano lt nna Mundeete xiiwonni daa”atantu;"
       patients_uncontrolled_in_quarter_html: "Xiwantino Xagisiraano &ge; Mundeete xiiwonni daa”atantu"
       patients_defaulted_in_quarter_html: "Xagisiraano agaroonni harunso daa”antera dileeltino."
       new_patients_registered: "Haaro borreesuwa"
@@ -57,6 +57,7 @@ sid-ET:
     patients_with_controlled_bp: "Xiwantino Xagisiraano &lt; Mundeete xiiwonni daa”atantu."
     patients_with_uncontrolled_bp: "Xiwantino Xagisiraano &ge; Mundeete xiiwonni daa”atantu."
     patients_with_no_bp_measure: "Mundeete xiiwo bikkaanchi noonsaki Xagisiraano."
+    patients_with_missed_visits: "towaanyo iillitinonsakki xiwamaano"
     registered_in: "Giddo Borreessantino"
     result_from_last_visit_in: "Guma Tenneeti daa’antenni"
     no_patients: "Xagisiraano dino"
