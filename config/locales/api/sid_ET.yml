@@ -1,4 +1,4 @@
-sid-ET:
+sid:
   date:
     month_names: [~, "Janowari", "Febiraari", "marchi", "Apirile", "Meyi", "Juni", "Julayi", "Awugeste", "Septembere", "Oktobere", "Novembere", "Disembere"]
     abbr_month_names: [~, "Janowari", "Febiraari", "marchi", "Apirile", "Meyi", "Juni", "Julayi", "Awugeste", "Septembere", "Oktobere", "Novembere", "Disembere"]
@@ -57,6 +57,7 @@ sid-ET:
     patients_with_controlled_bp: "Xiwantino Xagisiraano &lt; Mundeete xiiwonni daa”atantu."
     patients_with_uncontrolled_bp: "Xiwantino Xagisiraano &ge; Mundeete xiiwonni daa”atantu."
     patients_with_no_bp_measure: "Mundeete xiiwo bikkaanchi noonsaki Xagisiraano."
+    patients_with_missed_visits: "towaanyo iillitinonsakki xiwamaano"
     registered_in: "Giddo Borreessantino"
     result_from_last_visit_in: "Guma Tenneeti daa’antenni"
     no_patients: "Xagisiraano dino"
