@@ -82,7 +82,7 @@ module Experimentation
       end
     end
 
-    def message_reporting_key
+    def messages_report_key
       if start_time > NEW_MESSAGE_REPORTING_DATE
         "reminder_templates.id::varchar"
       else
@@ -95,12 +95,12 @@ module Experimentation
       time(__method__) do
         treatment_group_memberships
           .joins(:patient, treatment_group: :reminder_templates)
-          .where("messages -> #{message_reporting_key} ->> 'notification_status' = ?", :pending)
-          .select("messages -> #{message_reporting_key} ->> 'notification_id' AS notification_id")
-          .select("#{message_reporting_key} message_reporting_key, treatment_group_memberships.*")
+          .where("messages -> #{messages_report_key} ->> 'notification_status' = ?", :pending)
+          .select("messages -> #{messages_report_key} ->> 'notification_id' AS notification_id")
+          .select("#{messages_report_key} messages_report_key, treatment_group_memberships.*")
           .in_batches(of: BATCH_SIZE).each_record do |membership|
           membership.record_notification_result(
-            membership.message_reporting_key,
+            membership.messages_report_key,
             notification_result(membership.notification_id)
           )
         end
@@ -121,7 +121,7 @@ module Experimentation
 
         treatment_group_memberships.status_enrolled
           .joins(treatment_group: :reminder_templates)
-          .where("messages -> #{message_reporting_key} ->> 'result' = 'failed'")
+          .where("messages -> #{messages_report_key} ->> 'result' = 'failed'")
           .evict(reason: "notification_failed")
 
         treatment_group_memberships.status_enrolled
@@ -172,7 +172,7 @@ module Experimentation
         memberships_to_notify(date)
           .select("reminder_templates.id reminder_template_id")
           .select("reminder_templates.message message, treatment_group_memberships.*")
-          .select("#{message_reporting_key} message_reporting_key, treatment_group_memberships.*")
+          .select("#{messages_report_key} messages_report_key, treatment_group_memberships.*")
           .in_batches(of: BATCH_SIZE)
           .each_record { |membership| schedule_notification(membership, date) }
       end
@@ -322,7 +322,7 @@ module Experimentation
           status: "pending",
           subject_id: membership.appointment_id,
           subject_type: "Appointment"
-        ).then { |notification| membership.record_notification(membership.message_reporting_key, notification) }
+        ).then { |notification| membership.record_notification(membership.messages_report_key, notification) }
     end
   end
 end
