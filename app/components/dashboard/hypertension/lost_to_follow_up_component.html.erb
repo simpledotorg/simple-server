@@ -1,0 +1,76 @@
+<div class="d-lg-flex w-lg-50 pl-lg-2">
+  <div id="ltfu-trend" data-period="<%= @period.to_s %>" class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black">
+    <div class="pt-20px px-20px">
+      <%= render Dashboard::Card::TitleComponent.new(
+        title: "Lost to follow-up",
+        subtitle: t("lost_to_follow_up_copy.reports_card_subtitle"),
+        tooltip_definitions: { "Numerator" => t("lost_to_follow_up_copy.numerator"),
+                               "Denominator" => t("ltfu_denominator_copy", region_name: @region.name) }) %>
+
+      <div class="mb-12px d-lg-flex align-lg-center">
+        <p class="c-print-black graph-percent fs-28px
+            <% current_ltfu_rate = ltfu_patient_rate %>
+            <% if current_ltfu_rate %>
+              c-blue-dark
+            <% else %>
+              c-grey-medium
+            <% end %>" data-rate="<%= number_to_percentage(current_ltfu_rate, precision: 0) %>">
+          <% if current_ltfu_rate %>
+            <%= number_to_percentage(current_ltfu_rate, precision: 0) %>
+          <% else %>
+            No data
+          <% end %>
+        </p>
+        <div>
+          <% if current_ltfu_patients %>
+            <p class="m-0px c-black">
+                <span data-total-patients="<%= number_with_delimiter(current_ltfu_patients) %>">
+                  <%= number_with_delimiter(current_ltfu_patients) %>
+                </span>
+              <%= "patient".pluralize(current_ltfu_patients) %> with no visit since
+              <span data-period-start="<%= @period.ltfu_since_date %>">
+                  <%= @period.ltfu_since_date %>
+                </span>
+            </p>
+            <p class="m-0px c-grey-dark c-print-black">
+              of
+              <% current_assigned = cumulative_assigned_patients %>
+              <span data-registrations="<%= number_with_delimiter(current_assigned) %>">
+                  <%= number_with_delimiter(current_assigned) %>
+                </span>
+              <%= "patient".pluralize(current_assigned) %> registered till
+
+              <span data-registrations-period-end="<%= @period.bp_control_range_end_date %>">
+                  <%= @period.bp_control_range_end_date %>
+                </span>
+            </p>
+          <% else %>
+            <p class="m-0px c-grey-medium c-print-black">
+              No lost to follow-up data available
+            </p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="p-relative mb-16px">
+        <div class="h-250px mr-16px mb-12px ml-13px">
+          <canvas id="ltfuPatients"></canvas>
+        </div>
+        <div class="p-absolute t-0 l-0 pe-none d-flex align-center justify-center w-100pt h-100pt">
+          <% unless current_ltfu_rate %>
+            <p class="c-grey-medium">
+              No data available
+            </p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    window.addEventListener("DOMContentLoaded", () => {
+        new PatientBreakdownReports().listen();
+    });
+</script>

@@ -227,6 +227,12 @@
     period: @latest_period,
     current_admin: current_admin
   ) %>
+
+  <%= render(Dashboard::Hypertension::LostToFollowUpComponent.new(
+    region: @region,
+    data: @details_chart_data,
+    period: @details_period
+  )) %>
 </div>
 
 <% if current_admin.feature_enabled?(:medications_dispensation) %>
