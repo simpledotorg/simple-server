@@ -20,14 +20,10 @@ module Experimentation
     }
 
     scope :upcoming, -> { where("start_time > ?", Time.current) }
-    scope :running, -> { where("start_time <= ? AND end_time >= ?", Time.current, Time.current) }
+    scope :enrolling, -> { where("start_time <= ? AND end_time >= ?", Time.current, Time.current) }
     scope :monitoring, -> { where("start_time <= ? AND end_time > ?", Time.current, Time.current - MONITORING_BUFFER) }
     scope :completed, -> { where("end_time < ?", Time.current - MONITORING_BUFFER) }
     scope :cancelled, -> { with_discarded.discarded }
-
-    def running?
-      start_time <= Time.current && end_time >= Time.current
-    end
 
     def random_treatment_group
       raise "random treatment group requested for experiment with no treatment groups" unless treatment_groups.any?
