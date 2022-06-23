@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Dashboard::DiabetesCoverageCardComponent, type: :component do
+RSpec.describe Dashboard::Diabetes::CoverageCardComponent, type: :component do
   pending "add some examples to (or delete) #{__FILE__}"
 
   # it "renders something useful" do

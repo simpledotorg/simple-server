@@ -1,4 +1,4 @@
-class Dashboard::LostToFollowUpComponent < ApplicationComponent
+class Dashboard::Diabetes::LostToFollowUpComponent < ApplicationComponent
   attr_reader :region, :data, :period
 
   def initialize(region:, data:, period:)

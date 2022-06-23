@@ -32,14 +32,16 @@ class EstimatedPopulation < ApplicationRecord
     return rate if rate > 0.0
   end
 
-  memoize def show_coverage
+  def patient_coverage_rate(registered_patients)
+    rate = (registered_patients.to_f / population) * 100
+    return nil if rate.infinite?
+    return 100.0 if rate > 100.0
+    return rate if rate > 0.0
+  end
+
+  memoize def show_coverage(registered_patients = 0)
     if region.district_region?
-      case diagnosis
-      when "HTN"
-        !!region.estimated_population&.hypertension_patient_coverage_rate
-      when "DM"
-        !!region.estimated_diabetes_population&.diabetes_patient_coverage_rate
-      end
+      patient_coverage_rate(registered_patients).present?
     elsif region.state_region?
       region.estimated_population&.population_available_for_all_districts?
     else

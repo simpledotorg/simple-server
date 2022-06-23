@@ -1,14 +1,6 @@
 require "rails_helper"
 
 describe Dashboard::PatientBreakdownComponent, type: :component do
-  before do
-    # Do nothing
-  end
-
-  after do
-    # Do nothing
-  end
-
   it "Number of patients who are under care and lost to follow up should add up to total number of assigned patients" do
     region_hash = setup_district_with_facilities
     facility_1 = region_hash[:facility_1]

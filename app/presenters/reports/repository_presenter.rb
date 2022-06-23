@@ -66,7 +66,9 @@ module Reports
         diabetes_patients_with_bs_taken: diabetes_patients_with_bs_taken[slug],
         diabetes_patients_with_bs_taken_breakdown_rates: diabetes_patients_with_bs_taken_breakdown_rates[slug],
         diabetes_patients_with_bs_taken_breakdown_counts: diabetes_patients_with_bs_taken_breakdown_counts[slug],
+        dead: dead[slug],
         diabetes_dead: diabetes_dead[slug],
+        under_care: under_care[slug],
         diabetes_under_care: diabetes_under_care[slug]
       }
     end

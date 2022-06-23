@@ -1,4 +1,4 @@
-class Dashboard::DiabetesCoverageCardComponent < ApplicationComponent
+class Dashboard::Diabetes::CoverageCardComponent < ApplicationComponent
   attr_reader :region
   attr_reader :data
   attr_reader :period

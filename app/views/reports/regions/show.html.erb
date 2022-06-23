@@ -220,7 +220,14 @@
 <%= render "treatment_outcomes_card" %>
 
 <h4 class="mt-5 mb-32px">Details</h4>
-<%= render "reports/regions/patient_breakdown_charts" %>
+<div class="d-lg-flex flex-lg-wrap">
+  <%= render Dashboard::Hypertension::CoverageCardComponent.new(
+    region: @region,
+    data: @data,
+    period: @latest_period,
+    current_admin: current_admin
+  ) %>
+</div>
 
 <% if current_admin.feature_enabled?(:medications_dispensation) %>
   <h4 class="mt-5 mb-32px">Medications</h4>

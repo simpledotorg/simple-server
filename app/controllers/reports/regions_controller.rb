@@ -55,6 +55,7 @@ class Reports::RegionsController < AdminController
     @repository = Reports::Repository.new(@region, periods: range)
     @presenter = Reports::RepositoryPresenter.new(@repository)
     @overview_data = @presenter.call(@region)
+    @latest_period = Period.current
     @with_ltfu = with_ltfu?
 
     @child_regions = @region.reportable_children
@@ -143,6 +144,7 @@ class Reports::RegionsController < AdminController
     end
 
     @repository = Reports::Repository.new(regions, periods: @details_period_range)
+    @presenter = Reports::RepositoryPresenter.new(@repository)
 
     chart_range = (@details_period.advance(months: months)..@details_period)
     chart_repo = Reports::Repository.new(@region, periods: chart_range)
@@ -151,7 +153,8 @@ class Reports::RegionsController < AdminController
       ltfu_trend: ltfu_chart_data(chart_repo, chart_range),
       **medications_dispensation_data(region: @region, period: @details_period, diagnosis: :hypertension)
     }
-    @data = @details_chart_data
+    @data = @presenter.call(@region)
+    @data = @data.merge(@details_chart_data)
 
     if @region.facility_region?
       @recent_blood_pressures = paginate(

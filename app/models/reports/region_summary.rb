@@ -55,7 +55,9 @@ module Reports
       diabetes_appts_scheduled_15_to_31_days
       diabetes_appts_scheduled_32_to_62_days
       diabetes_appts_scheduled_more_than_62_days
+      dead
       diabetes_dead
+      under_care
       diabetes_under_care
     ].sort.freeze
 
