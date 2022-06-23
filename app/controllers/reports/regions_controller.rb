@@ -102,7 +102,7 @@ class Reports::RegionsController < AdminController
       @details_chart_data = {
         patient_breakdown: PatientBreakdownService.call(region: @region, period: @details_period)[:hypertension],
         ltfu_trend: ltfu_chart_data(chart_repo, chart_range),
-        **medications_dispensation_data(region: @region, period: @details_period)
+        **medications_dispensation_data(region: @region, period: @details_period, diagnosis: :hypertension)
       }
 
       if @region.facility_region?
@@ -152,7 +152,7 @@ class Reports::RegionsController < AdminController
     @details_chart_data = {
       patient_breakdown: PatientBreakdownService.call(region: @region, period: @details_period)[:hypertension],
       ltfu_trend: ltfu_chart_data(chart_repo, chart_range),
-      **medications_dispensation_data(region: @region, period: @details_period)
+      **medications_dispensation_data(region: @region, period: @details_period, diagnosis: :hypertension)
     }
     @data = @details_chart_data
 
@@ -214,8 +214,8 @@ class Reports::RegionsController < AdminController
     chart_repo = Reports::Repository.new(@region, periods: chart_range)
     @details_chart_data = {
       patient_breakdown: PatientBreakdownService.call(region: @region, period: @details_period)[:diabetes],
-      ltfu_trend: diabetes_ltfu_chart_data(chart_repo, chart_range)
-      # **medications_dispensation_data(region: @region, period: @details_period)
+      ltfu_trend: diabetes_ltfu_chart_data(chart_repo, chart_range),
+      **medications_dispensation_data(region: @region, period: @details_period, diagnosis: :diabetes)
     }
 
     @data.merge!(@details_chart_data)
@@ -326,9 +326,9 @@ class Reports::RegionsController < AdminController
     }
   end
 
-  def medications_dispensation_data(region:, period:)
+  def medications_dispensation_data(region:, period:, diagnosis:)
     if current_admin.feature_enabled?(:medications_dispensation)
-      {medications_dispensation: MedicationDispensationService.call(region: region, period: period)}
+      {medications_dispensation: MedicationDispensationService.call(region: region, period: period, diagnosis: diagnosis)}
     else
       {}
     end
