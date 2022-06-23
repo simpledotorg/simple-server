@@ -117,6 +117,33 @@ describe Reports::RegionSummarySchema, type: :model do
       expect(schema.diabetes_appts_scheduled_more_than_62_days_rates[facility.slug][range.first]).to eq(100)
     end
 
+    it "returns percentages of appointments scheduled in a month in the given range for appointments created in a given month" do
+      facility = create(:facility, enable_diabetes_management: true)
+      htn_patients = create_list(:patient, 4, :hypertension, assigned_facility: facility, recorded_at: 4.month.ago)
+      diabetes_patients = create_list(:patient, 4, :diabetes, assigned_facility: facility, recorded_at: 4.month.ago)
+      range = Period.current..Period.month(2.months.from_now)
+      _appointment_scheduled_0_to_14_days = create(:appointment, patient: htn_patients.first, facility: facility, scheduled_date: 14.days.from_now)
+      _appointment_scheduled_15_to_31_days = create(:appointment, patient: htn_patients.second, facility: facility, scheduled_date: 15.days.from_now)
+      _appointment_scheduled_32_to_62_days = create(:appointment, patient: htn_patients.third, facility: facility, scheduled_date: 32.days.from_now)
+      _appointment_scheduled_more_than_62_days = create(:appointment, patient: htn_patients.fourth, facility: facility, scheduled_date: 63.days.from_now)
+      _diabetes_appointment_scheduled_0_to_14_days = create(:appointment, patient: diabetes_patients.first, facility: facility, scheduled_date: 14.days.from_now)
+      _diabetes_appointment_scheduled_15_to_31_days = create(:appointment, patient: diabetes_patients.second, facility: facility, scheduled_date: 15.days.from_now)
+      _diabetes_appointment_scheduled_32_to_62_days = create(:appointment, patient: diabetes_patients.third, facility: facility, scheduled_date: 32.days.from_now)
+      _diabetes_appointment_scheduled_more_than_62_days = create(:appointment, patient: diabetes_patients.fourth, facility: facility, scheduled_date: 63.days.from_now)
+
+      refresh_views
+
+      schema = described_class.new(Region.where(id: facility.region), periods: range)
+      expect(schema.appts_scheduled_0_to_14_days_rates[facility.slug][Period.current]).to eq(25)
+      expect(schema.appts_scheduled_15_to_31_days_rates[facility.slug][Period.current]).to eq(25)
+      expect(schema.appts_scheduled_32_to_62_days_rates[facility.slug][Period.current]).to eq(25)
+      expect(schema.appts_scheduled_more_than_62_days_rates[facility.slug][Period.current]).to eq(25)
+      expect(schema.diabetes_appts_scheduled_0_to_14_days_rates[facility.slug][Period.current]).to eq(25)
+      expect(schema.diabetes_appts_scheduled_15_to_31_days_rates[facility.slug][Period.current]).to eq(25)
+      expect(schema.diabetes_appts_scheduled_32_to_62_days_rates[facility.slug][Period.current]).to eq(25)
+      expect(schema.diabetes_appts_scheduled_more_than_62_days_rates[facility.slug][Period.current]).to eq(25)
+    end
+
     it "considers the latest appointment scheduled in case of multiple appointments in the same month " do
       facility = create(:facility, enable_diabetes_management: true)
       htn_patient = create(:patient, :hypertension, assigned_facility: facility, recorded_at: 4.month.ago)
