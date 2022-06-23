@@ -30,8 +30,8 @@ RSpec.describe Experimentation::TreatmentGroupMembership, type: :model do
       notification = create(:notification)
       membership = create(:treatment_group_membership)
 
-      membership.record_notification(notification.message, notification)
-      expect(membership.reload.messages[notification.message]).to eq(
+      membership.record_notification("message_reporting_key", notification)
+      expect(membership.reload.messages["message_reporting_key"]).to eq(
         {
           message_name: notification.message,
           remind_on: notification.remind_on.to_s,
@@ -48,12 +48,12 @@ RSpec.describe Experimentation::TreatmentGroupMembership, type: :model do
       notification = create(:notification)
       membership = create(:treatment_group_membership)
 
-      membership.record_notification(notification.message, notification)
+      membership.record_notification("message_reporting_key_1", notification)
       notification_2 = create(:notification, message: "second notification")
 
-      membership.record_notification(notification_2.message, notification_2)
-      expect(membership.reload.messages[notification.message]).to be_present
-      expect(membership.reload.messages[notification_2.message]).to be_present
+      membership.record_notification("message_reporting_key_2", notification_2)
+      expect(membership.reload.messages["message_reporting_key_1"]).to be_present
+      expect(membership.reload.messages["message_reporting_key_2"]).to be_present
     end
   end
 
@@ -87,12 +87,12 @@ RSpec.describe Experimentation::TreatmentGroupMembership, type: :model do
 
   describe "#record_notification_results" do
     it "records results of a notification by message" do
-      membership = create(:treatment_group_membership, messages: {"message" => {}})
+      membership = create(:treatment_group_membership, messages: {"message_reporting_key" => {}})
       delivery_result = {"delivery_result" => "This was delivered"}
 
-      membership.record_notification_result("message", delivery_result)
+      membership.record_notification_result("message_reporting_key", delivery_result)
 
-      expect(membership.messages["message"]).to eq delivery_result
+      expect(membership.messages["message_reporting_key"]).to eq delivery_result
     end
   end
 end
