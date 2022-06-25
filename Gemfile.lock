@@ -168,7 +168,7 @@ GEM
       dry-validation (= 0.11.1)
       rest-client
     diff-lcs (1.5.0)
-    diffy (3.4.0)
+    diffy (3.4.2)
     discard (1.2.1)
       activerecord (>= 4.2, < 8)
     docile (1.4.0)
