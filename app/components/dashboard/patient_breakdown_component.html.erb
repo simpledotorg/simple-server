@@ -3,7 +3,7 @@
     Total assigned patients
     <%= render Dashboard::Card::TooltipComponent.new(tooltips[:cumulative_assigned_patients]) %>
   </p>
-  <p class="mb-8px fw-bold" id="total-assigned-excluding-dead-patients">
+  <p class="mb-8px fw-bold" id="cumulative-assigned-patients">
     <%= number_with_delimiter(data[:cumulative_assigned_patients]) %>
   </p>
 </div>
@@ -13,7 +13,7 @@
       Patients under care
       <%= render Dashboard::Card::TooltipComponent.new(tooltips[:under_care_patients]) %>
     </p>
-    <p class="mb-8px">
+    <p class="mb-8px" id="under-care-patients">
       <%= number_with_delimiter(data[:under_care_patients] ) %>
     </p>
   </div>
@@ -22,7 +22,7 @@
       Lost to follow-up
       <%= render Dashboard::Card::TooltipComponent.new(tooltips[:ltfu_patients]) %>
     </p>
-    <p class="mb-8px">
+    <p class="mb-8px" id="ltfu-patients">
       <%= number_with_delimiter(data[:ltfu_patients]) %>
     </p>
   </div>
@@ -30,7 +30,7 @@
     <p class="mb-8px">
       Dead patients
     </p>
-    <p class="mb-8px">
+    <p class="mb-8px" id="dead-patients">
       <%= number_with_delimiter(data[:dead_patients]) %>
     </p>
   </div>
@@ -40,7 +40,7 @@
     Total registered patients
     <%= render Dashboard::Card::TooltipComponent.new(tooltips[:cumulative_registrations]) %>
   </p>
-  <p class="mb-8px fw-bold">
+  <p class="mb-8px fw-bold" id="cumulative-registrations">
     <%= number_with_delimiter(data[:cumulative_registrations]) %>
   </p>
 </div>

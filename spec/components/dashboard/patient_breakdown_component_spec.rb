@@ -19,12 +19,35 @@ describe Dashboard::PatientBreakdownComponent, type: :component do
     district_data = presenter.call(district)
     _facility_1_data = presenter.call(facility_1)
     _facility_2_data = presenter.call(facility_2)
+    period = Period.current
 
-    patient_breakdown_component = described_class.new(region: district, data: district_data, period: Period.current)
+    patient_breakdown_component = described_class.new(
+      region: district,
+      data: {
+        cumulative_assigned_patients: district_data.dig(:cumulative_assigned_diabetes_patients, period),
+        cumulative_registrations: district_data.dig(:cumulative_diabetes_registrations, period),
+        under_care_patients: district_data.dig(:diabetes_under_care, period),
+        ltfu_patients: district_data.dig(:diabetes_ltfu_patients, period),
+        dead_patients: district_data.dig(:diabetes_dead, period)
+      },
+      period: period,
+      tooltips: {}
+    )
 
     render_inline(patient_breakdown_component)
 
-    expect(page).to have_text("Total assigned patients")
-    expect(page.find("#total-assigned-excluding-dead-patients").text.to_i).to eq(5)
+    cumulative_assigned_patients = page.find("#cumulative-assigned-patients").text.to_i
+    cumulative_registrations = page.find("#cumulative-registrations").text.to_i
+    under_care_patients = page.find("#under-care-patients").text.to_i
+    ltfu_patients = page.find("#ltfu-patients").text.to_i
+    dead_patients = page.find("#dead-patients").text.to_i
+
+    expect(cumulative_assigned_patients).to eq(5)
+    expect(under_care_patients).to eq(3)
+    expect(ltfu_patients).to eq(2)
+    expect(dead_patients).to eq(1)
+    expect(cumulative_registrations).to eq(6)
+    expect(cumulative_assigned_patients).to eq(under_care_patients + ltfu_patients)
+    expect(under_care_patients + ltfu_patients).to eq(5)
   end
 end

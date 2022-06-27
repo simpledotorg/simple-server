@@ -1,17 +1,9 @@
-require 'rspec'
+require "rspec"
 
-describe 'Dashboard::Diabetes::LostToFollowUpComponent' do
-  before do
-    # Do nothing
-  end
-
-  after do
-    # Do nothing
-  end
-
-  context 'when condition' do
-    it 'succeeds' do
-      pending 'Not implemented'
+describe "Dashboard::Diabetes::LostToFollowUpComponent" do
+  context "when condition" do
+    it "succeeds" do
+      pending "Not implemented"
     end
   end
 end
