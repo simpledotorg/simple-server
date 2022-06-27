@@ -1,4 +1,4 @@
-ti-ET:
+ti:
   date:
     month_names: [~, "ጥሪ", "ለካቲት", "መጋቢት", "ሚያዝያ", "ግንቦት", "ሰነ", "ሓምለ", "ነሓሰ", "መስከረም", "ጥቕምቲ", "ሕዳር", "ታሕሳስ"]
     abbr_month_names: [~, "ጥሪ", "ለካቲት", "መጋቢት", "ሚያዝያ", "ግንቦት", "ሰነ", "ሓምለ", "ነሓሰ", "መስከረም", "ጥቅምቲ", "ሕዳር", "ታሕ"]
@@ -57,6 +57,7 @@ ti-ET:
     patients_with_controlled_bp: "ክትትል ዝተገበረሎም ሕሙማት BP &lt;140/90"
     patients_with_uncontrolled_bp: "ክትትል ዝተገበረሎም ሕሙማት BP &ge;140/90"
     patients_with_no_bp_measure: "ናይ BP ልክዒት ዘይብሎም ሕሙማት"
+    patients_with_missed_visits: "ምጉብናይ ዝሓለፎም ሕሙማት"
     registered_in: "ክኣትዉ ዝተመዝገቡ"
     result_from_last_visit_in: "ውጽኢት ናይ ዝሓለፈ ምብጻሕ"
     no_patients: "ተሓከምቲ የለውን"
