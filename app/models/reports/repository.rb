@@ -50,6 +50,10 @@ module Reports
       bs_over_300_rates
       diabetes_missed_visits_rates
       visited_without_bs_taken_rates
+      diabetes_appts_scheduled_0_to_14_days_rates
+      diabetes_appts_scheduled_15_to_31_days_rates
+      diabetes_appts_scheduled_32_to_62_days_rates
+      diabetes_appts_scheduled_more_than_62_days_rates
     ]
 
     DELEGATED_COUNTS = %i[
@@ -90,6 +94,11 @@ module Reports
       diabetes_missed_visits
       visited_without_bs_taken
       diabetes_patients_with_bs_taken
+      diabetes_total_appts_scheduled
+      diabetes_appts_scheduled_0_to_14_days
+      diabetes_appts_scheduled_15_to_31_days
+      diabetes_appts_scheduled_32_to_62_days
+      diabetes_appts_scheduled_more_than_62_days
     ]
 
     DELEGATED_BREAKDOWNS = %i[
