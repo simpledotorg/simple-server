@@ -1,4 +1,4 @@
-am-ET:
+am_ET:
   date:
     month_names: [~, "ጥር", "የካቲት", "መጋቢት", "ሚያዚያ", "ግንቦት", "ሰኔ", "ሃምሌ", "ነሃሴ", "መስከረም", "ጥቅምት", "ህዳር", "ታህሳስ"]
     abbr_month_names: [~, "ጥር", "የካቲ", "መጋ", "ሚያ", "ግን", "ሰኔ", "ሃም", "ነሃ", "መስከ", "ጥቅም", "ህዳር", "ታህ"]
@@ -57,6 +57,7 @@ am-ET:
     patients_with_controlled_bp: "ታካሚዎች በ BP &lt;140/90 ተጎብኝተዋል"
     patients_with_uncontrolled_bp: "ታካሚዎች በ BP &ge;140/90 ተጎብኝተዋል"
     patients_with_no_bp_measure: "የ BP ልኬት የሌላቸው ታካሚዎች"
+    patients_with_missed_visits: "ያመለጠ ጉብኝት ያላቸው ታካሚዎች"
     registered_in: "ውስጥ ተመዝግቧል"
     result_from_last_visit_in: "በ ውስጥ ካለፈው ጉብኝት ውጤት"
     no_patients: "ህመምተኞች የሉም"
