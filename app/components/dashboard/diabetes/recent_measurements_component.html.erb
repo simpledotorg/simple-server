@@ -1,15 +1,9 @@
 <div class="card w-full" id="recent-blood-sugars">
-  <h3 class="mb-8px">
-    Recent blood sugar measures
-  </h3>
-  <p class="c-grey-dark">
-    A log of blood sugar measures taken
-    <% if display_model == :facility %>
-      by healthcare workers at <%= @region.name %>
-    <% elsif display_model == :user %>
-      by this healthcare worker
-    <% end %>
-  </p>
+  <%= render Dashboard::Card::TitleComponent.new(
+    title: "Recent blood sugar measures",
+    subtitle: subtitle
+  ) %>
+
   <% if recent_blood_sugars.any? %>
     <div class="table-responsive-md table-compact pb-3">
       <table>
