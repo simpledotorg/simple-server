@@ -1,0 +1,78 @@
+<div class="card w-full" id="recent-blood-sugars">
+  <h3 class="mb-8px">
+    Recent blood sugar measures
+  </h3>
+  <p class="c-grey-dark">
+    A log of blood sugar measures taken
+    <% if display_model == :facility %>
+      by healthcare workers at <%= @region.name %>
+    <% elsif display_model == :user %>
+      by this healthcare worker
+    <% end %>
+  </p>
+  <% if recent_blood_sugars.any? %>
+    <div class="table-responsive-md table-compact pb-3">
+      <table>
+        <colgroup>
+          <col>
+          <col>
+          <col>
+          <col>
+          <col class="table-divider">
+        </colgroup>
+        <thead>
+        <tr>
+          <th colspan="4"></th>
+          <% if display_model == :facility %>
+            <th class="pl-1 pb-3">Recorded by</th>
+          <% end %>
+          <% if display_model == :user %>
+            <th class="pl-1 pb-3">Facility</th>
+          <% end %>
+        </tr>
+        </thead>
+        <% last_date = nil %>
+        <% recent_blood_sugars.each do |blood_sugar| %>
+          <% next if blood_sugar.patient.blank? %>
+          <% if print_date = (blood_sugar.recorded_at.to_date != last_date) %>
+            <% last_date = blood_sugar.recorded_at.to_date %>
+          <% end %>
+          <tr class="<%= "date-row" if print_date %>">
+            <td class="nowrap" style="width: 10em; <%= "border: none;" if !print_date %>">
+              <% if print_date %>
+                <strong>
+                  <%= l blood_sugar.recorded_at.to_date %>
+                </strong>
+              <% end %>
+            </td>
+            <td class="nowrap text-muted"><%= blood_sugar.recorded_at.strftime("%I:%M %p") %></td>
+            <td class="nowrap <%= risk_state_color_class(blood_sugar) %>">
+              <i class="fas fa-heart mr-2"></i> <%= blood_sugar.to_s %> <%= blood_sugar.blood_sugar_type.to_s.capitalize %></td>
+            <td class="nowrap">
+              <% if blood_sugar.recorded_at.to_date > blood_sugar.patient.recorded_at.to_date %>
+                <span class="patient-return text-muted">Follow-up patient</span>
+              <% else %>
+                <span class="patient-new">New registration</span>
+              <% end %>
+            </td>
+            <% if display_model == :facility %>
+              <td class="nowrap"><%= blood_sugar.user.present? ? link_to(blood_sugar.user.full_name, [:admin, blood_sugar.user]) : "unknown" %></td>
+            <% end %>
+            <% if display_model == :user %>
+              <td class="nowrap"><%= blood_sugar.facility.present? ? link_to(blood_sugar.facility.name, reports_region_facility_path(blood_sugar.facility)) : "unknown" %></td>
+            <% end %>
+          </tr>
+        <% end %>
+      </table>
+    </div>
+  <% else %>
+    <p class="text-muted mb-0">
+      <i class="fas fa-chevron-left"></i>
+      No blood sugars recorded
+      <i class="fas fa-chevron-right"></i>
+    </p>
+  <% end %>
+  <div>
+    <%= paginate recent_blood_sugars, params: { anchor: 'recent-blood-sugars' } %>
+  </div>
+</div>

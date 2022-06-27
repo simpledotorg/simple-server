@@ -1,4 +1,4 @@
-class Dashboard::Diabetes::HealthWorkerActivityComponent < ApplicationComponent
+class Dashboard::Diabetes::HealthcareWorkerActivityComponent < ApplicationComponent
   include Reports::RegionsHelper
   include DashboardHelper
 
