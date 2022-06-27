@@ -1,0 +1,86 @@
+<div class="card mt-0 pr-0 pr-md-3 pb-inside-avoid">
+  <div class="d-flex flex-1 mb-8px">
+    <h3 class="mb-0px mr-8px">
+      Patient registrations and follow-ups
+    </h3>
+    <%= render "definition_tooltip",
+               definitions: { "Monthly registered patients" => t("registered_patients_copy.monthly_registered_patients", region_name: region.name),
+                              "Follow-up patients per user" => t(:follow_up_patients_copy, region_name: region.name) } %>
+  </div>
+  <div class="table-responsive-md">
+    <table class="analytics-table table-compact">
+      <colgroup>
+        <col class="table-first-col">
+        <col>
+        <col class="table-divider">
+        <col class="table-divider">
+        <col>
+        <col>
+        <col>
+        <col>
+        <col class="table-divider">
+        <col>
+        <col>
+        <col>
+        <col>
+        <col>
+      </colgroup>
+      <thead>
+      <!-- Patient registration and follow ups headers -->
+      <tr>
+        <th></th>
+        <th>Total</th>
+        <th colspan="6">
+          Monthly registered patients
+        </th>
+        <th colspan="6">
+          Follow-up patients per user
+        </th>
+      </tr>
+      <tr class="sorts" data-sort-method="thead">
+        <th class="row-label sort-label sort-label-small sticky" data-sort-default>
+          Users
+        </th>
+        <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
+          Registered patients
+        </th>
+        <% period_range.each do |period| %>
+          <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
+            <%= period %>
+          </th>
+        <% end %>
+        <% period_range.each do |period| %>
+          <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
+            <%= period %>
+          </th>
+        <% end %>
+      </tr>
+      </thead>
+      <tbody>
+      <% current_admin.accessible_users(:view_reports).order(:full_name).each do |resource| %>
+        <% next unless sum_registration_counts(repository, region.slug, resource.id, :diabetes)&.nonzero? ||
+          sum_bp_measures(repository, region.slug, resource.id)&.nonzero? %>
+        <tr>
+          <td class="row-title">
+            <%= link_to resource.full_name, admin_user_path(resource, period: @period) %>
+          </td>
+          <td class="ta-right">
+            <%= number_or_dash_with_delimiter(sum_registration_counts(repository, region.slug, resource.id, :diabetes)) %>
+          </td>
+          <% period_range.each do |period| %>
+            <td class="ta-right">
+              <%= number_or_dash_with_delimiter(repository.monthly_registrations_by_user(diagnosis: :diabetes).dig(region.slug, period, resource.id)) %>
+            </td>
+          <% end %>
+          <% period_range.each do |period| %>
+            <td class="ta-right">
+              <%= val = repository.diabetes_follow_ups(group_by: "blood_sugars.user_id").dig(region.slug, period, resource.id)
+                  number_or_dash_with_delimiter(val) %>
+            </td>
+          <% end %>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

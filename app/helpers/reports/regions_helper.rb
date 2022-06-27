@@ -1,7 +1,7 @@
 module Reports::RegionsHelper
   def sum_registration_counts(repository, *keys)
-    slug, user_id = keys
-    repository.monthly_registrations_by_user.dig(slug)
+    slug, user_id, diagnosis = keys
+    repository.monthly_registrations_by_user(diagnosis: (diagnosis || :hypertension)).dig(slug)
       .map { |period, user_counts| user_counts.dig(user_id) }
       .flatten.compact.sum
   end

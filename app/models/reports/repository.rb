@@ -131,10 +131,15 @@ module Reports
     alias_method :adjusted_patients, :adjusted_patients_without_ltfu
 
     # Returns registration counts per region / period counted by registration_user
-    memoize def monthly_registrations_by_user
-      items = regions.map { |region| RegionEntry.new(region, __method__, group_by: :registration_user_id, period_type: period_type) }
+    memoize def monthly_registrations_by_user(diagnosis: :hypertension)
+      items = regions.map { |region|
+        RegionEntry.new(region, __method__,
+          group_by: :registration_user_id,
+          period_type: period_type,
+          diagnosis: diagnosis)
+      }
       result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
-        registered_patients_query.count(entry.region, period_type, group_by: :registration_user_id)
+        registered_patients_query.count(entry.region, period_type, group_by: :registration_user_id, diagnosis: diagnosis)
       end
       result.each_with_object({}) { |(region_entry, counts), hsh|
         hsh[region_entry.region.slug] = counts
