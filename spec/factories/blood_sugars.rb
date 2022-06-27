@@ -9,7 +9,7 @@ FactoryBot.define do
 
     association :facility, strategy: :create
     association :user, strategy: :create
-    association :patient, strategy: :create
+    association :patient, factory: [:patient, :diabetes], strategy: :create
 
     trait(:with_encounter) do
       after :build do |blood_sugar|

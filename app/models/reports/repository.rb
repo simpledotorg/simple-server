@@ -5,7 +5,7 @@ module Reports
     include Memery
     include Scientist
 
-    attr_reader :bp_measures_query
+    attr_reader :measures_query
     attr_reader :follow_ups_query
     attr_reader :period_type
     attr_reader :periods
@@ -24,7 +24,7 @@ module Reports
       @period_type = @periods.first.type
       raise ArgumentError, "Quarter periods not supported" if @period_type != :month
       @schema = RegionSummarySchema.new(@regions, periods: @periods)
-      @bp_measures_query = BPMeasuresQuery.new
+      @measures_query = MeasuresQuery.new
       @follow_ups_query = FollowUpsQuery.new
       @registered_patients_query = RegisteredPatientsQuery.new
       @overdue_calls_query = OverdueCallsQuery.new
@@ -208,7 +208,22 @@ module Reports
     memoize def bp_measures_by_user
       items = regions.map { |region| RegionEntry.new(region, __method__, group_by: :user_id, period_type: period_type) }
       result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
-        bp_measures_query.count(entry.region, period_type, group_by: :user_id)
+        measures_query.count(entry.region, period_type, group_by: :user_id)
+      end
+      result.each_with_object({}) { |(region_entry, counts), hsh|
+        hsh[region_entry.region.slug] = counts
+      }
+    end
+
+    memoize def blood_sugar_measures_by_user
+      items = regions.map { |region|
+        RegionEntry.new(region, __method__,
+          group_by: :user_id,
+          period_type: period_type,
+          diagnosis: :diabetes)
+      }
+      result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
+        measures_query.count(entry.region, period_type, diagnosis: :diabetes, group_by: :user_id)
       end
       result.each_with_object({}) { |(region_entry, counts), hsh|
         hsh[region_entry.region.slug] = counts
