@@ -3,6 +3,8 @@ module Experimentation
     include ActiveSupport::Benchmarkable
     BATCH_SIZE = 1000
     NEW_MESSAGE_REPORTING_DATE = Date.parse("25 Jun 2022")
+    NEW_MESSAGE_REPORTING_KEY = "reminder_templates.id::varchar".freeze
+    OLD_MESSAGE_REPORTING_KEY = "reminder_templates.message".freeze
 
     default_scope { where(experiment_type: %w[current_patients stale_patients]) }
 
@@ -84,9 +86,9 @@ module Experimentation
 
     def messages_report_key
       if start_time > NEW_MESSAGE_REPORTING_DATE
-        "reminder_templates.id::varchar"
+        NEW_MESSAGE_REPORTING_DATE
       else
-        "reminder_templates.message"
+        OLD_MESSAGE_REPORTING_KEY
       end
     end
 
