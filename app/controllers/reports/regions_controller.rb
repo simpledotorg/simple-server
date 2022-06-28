@@ -278,7 +278,12 @@ class Reports::RegionsController < AdminController
 
     @region ||= authorize { current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id]) }
     @period = Period.month(params[:period] || Date.current)
-    zip = MonthlyDistrictReport::Exporter.new(@region, @period).export
+    zip = MonthlyDistrictReport::Exporter.new(
+      facility_data: MonthlyDistrictReport::Hypertension::FacilityData.new(@region, @period),
+      block_data: MonthlyDistrictReport::Hypertension::BlockData.new(@region, @period),
+      district_data: MonthlyDistrictReport::Hypertension::DistrictData.new(@region, @period)
+    ).export
+
     report_date = @period.to_s.downcase
     filename = "monthly-district-report-#{@region.slug}-#{report_date}.zip"
 
