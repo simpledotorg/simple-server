@@ -57,7 +57,7 @@ Beyond that, the setup instructions are now the same for Intel or M1 macs, as yo
 For quick development and testing, the server can be run locally using Docker Compose and the command:
 
 ```
-docker compose up
+docker-compose up
 ```
 
 The Dockerfile and docker-compose.yml files replicate the steps detailed below for manual installation, including the running of ngrok for local android development.
