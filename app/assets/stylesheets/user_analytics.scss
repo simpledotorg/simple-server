@@ -48,7 +48,7 @@ body#progress {
     .cohort-controlled {
         background: $green;
         color: $white;
-        border-radius: 0 3px 3px 0;
+        border-radius: none;
     }
 
     .cohort-uncontrolled {
@@ -61,6 +61,12 @@ body#progress {
         background: $grey-light;
         color: $grey-darkest;
         border-radius: 3px 0 0 3px;
+    }
+
+    .cohort-missed-visits {
+        background: $blue;
+        color: $white;
+        border-radius: 0 3px 3px 0;
     }
 
     .cohort-none {
@@ -89,6 +95,10 @@ body#progress {
 
         &.red {
             background: $red;
+        }
+
+        &.blue {
+            background: $blue;
         }
     }
 

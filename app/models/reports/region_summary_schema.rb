@@ -137,6 +137,26 @@ module Reports
       values_at("appts_scheduled_more_than_62_days")
     end
 
+    memoize def diabetes_total_appts_scheduled
+      values_at("diabetes_total_appts_scheduled")
+    end
+
+    memoize def diabetes_appts_scheduled_0_to_14_days
+      values_at("diabetes_appts_scheduled_0_to_14_days")
+    end
+
+    memoize def diabetes_appts_scheduled_15_to_31_days
+      values_at("diabetes_appts_scheduled_15_to_31_days")
+    end
+
+    memoize def diabetes_appts_scheduled_32_to_62_days
+      values_at("diabetes_appts_scheduled_32_to_62_days")
+    end
+
+    memoize def diabetes_appts_scheduled_more_than_62_days
+      values_at("diabetes_appts_scheduled_more_than_62_days")
+    end
+
     memoize def ltfu_rates
       region_period_cached_query(__method__) do |entry|
         slug, period = entry.slug, entry.period
@@ -304,6 +324,30 @@ module Reports
       end
     end
 
+    memoize def diabetes_appts_scheduled_0_to_14_days_rates
+      region_period_cached_query(__method__) do |entry|
+        diabetes_appts_scheduled_rates(entry)[__method__]
+      end
+    end
+
+    memoize def diabetes_appts_scheduled_15_to_31_days_rates
+      region_period_cached_query(__method__) do |entry|
+        diabetes_appts_scheduled_rates(entry)[__method__]
+      end
+    end
+
+    memoize def diabetes_appts_scheduled_32_to_62_days_rates
+      region_period_cached_query(__method__) do |entry|
+        diabetes_appts_scheduled_rates(entry)[__method__]
+      end
+    end
+
+    memoize def diabetes_appts_scheduled_more_than_62_days_rates
+      region_period_cached_query(__method__) do |entry|
+        diabetes_appts_scheduled_rates(entry)[__method__]
+      end
+    end
+
     memoize def diabetes_patients_with_bs_taken
       region_period_cached_query(__method__) do |entry|
         diabetes_under_care(:bs_below_200)[entry.region.slug][entry.period] +
@@ -398,6 +442,15 @@ module Reports
         appts_scheduled_15_to_31_days_rates: appts_scheduled_15_to_31_days[entry.region.slug][entry.period],
         appts_scheduled_32_to_62_days_rates: appts_scheduled_32_to_62_days[entry.region.slug][entry.period],
         appts_scheduled_more_than_62_days_rates: appts_scheduled_more_than_62_days[entry.region.slug][entry.period]
+      })
+    end
+
+    def diabetes_appts_scheduled_rates(entry)
+      rounded_percentages({
+        diabetes_appts_scheduled_0_to_14_days_rates: diabetes_appts_scheduled_0_to_14_days[entry.region.slug][entry.period],
+        diabetes_appts_scheduled_15_to_31_days_rates: diabetes_appts_scheduled_15_to_31_days[entry.region.slug][entry.period],
+        diabetes_appts_scheduled_32_to_62_days_rates: diabetes_appts_scheduled_32_to_62_days[entry.region.slug][entry.period],
+        diabetes_appts_scheduled_more_than_62_days_rates: diabetes_appts_scheduled_more_than_62_days[entry.region.slug][entry.period]
       })
     end
 

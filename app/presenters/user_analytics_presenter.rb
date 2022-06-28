@@ -2,6 +2,7 @@ class UserAnalyticsPresenter
   include ApplicationHelper
   include DashboardHelper
   include ActionView::Helpers::NumberHelper
+  include Reports::Percentage
   include BustCache
 
   def initialize(current_facility)
@@ -14,26 +15,36 @@ class UserAnalyticsPresenter
   EXPIRE_STATISTICS_CACHE_IN = 15.minutes
 
   def cohort_controlled(cohort)
-    display_percentage(cohort[:controlled], cohort[:registered])
+    display_percentage(cohort_percentages(cohort)[:controlled])
   end
 
   def cohort_uncontrolled(cohort)
-    display_percentage(cohort[:uncontrolled], cohort[:registered])
+    display_percentage(cohort_percentages(cohort)[:uncontrolled])
   end
 
   def cohort_no_bp(cohort)
-    display_percentage(cohort[:no_bp], cohort[:registered])
+    display_percentage(cohort_percentages(cohort)[:no_bp])
+  end
+
+  def cohort_missed_visits(cohort)
+    display_percentage(cohort_percentages(cohort)[:missed_visits])
+  end
+
+  def cohort_percentages(cohort)
+    rounded_percentages({
+      controlled: cohort[:controlled],
+      uncontrolled: cohort[:uncontrolled],
+      no_bp: cohort[:no_bp],
+      missed_visits: cohort[:missed_visits]
+    })
   end
 
   def diabetes_enabled?
     current_facility.diabetes_enabled?
   end
 
-  def display_percentage(numerator, denominator)
-    return "0%" if denominator.nil? || denominator.zero? || numerator.nil?
-    percentage = (numerator * 100.0) / denominator
-
-    "#{percentage.round(0)}%"
+  def display_percentage(percentage)
+    "#{percentage}%"
   end
 
   def last_updated_at

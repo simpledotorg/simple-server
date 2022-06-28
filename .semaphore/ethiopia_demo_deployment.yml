@@ -1,28 +1,28 @@
-version: v1.0
-name: Ethiopia Demo Deployment
-blocks:
-  - name: Deploy to Ethiopia Demo
-    task:
-      jobs:
-        - name: Deploy to Ethiopia Demo
-          commands:
-            - git clone https://github.com/simpledotorg/simple-standalone
-            - cd simple-standalone
-            - make init
-            - "make deploy hosts=ethiopia_demo password_file=~/.ansible/vault_password_et branch=$SEMAPHORE_GIT_SHA"
-      secrets:
-        - name: ansible-vault-passwords
-        - name: semaphore-deploy-key
-      prologue:
-        commands:
-          - chmod 600 ~/.ssh/semaphore_id_rsa
-          - ssh-add ~/.ssh/semaphore_id_rsa
-agent:
-  machine:
-    type: e1-standard-2
-    os_image: ubuntu1804
-promotions:
-  - name: Ethiopia Production Deployment
-    pipeline_file: ethiopia_production_deployment.yml
-    auto_promote:
-      when: (branch = 'master' AND result = 'passed') OR (tag =~ '^release-.*' AND result = 'passed')
+# version: v1.0
+# name: Ethiopia Demo Deployment
+# blocks:
+#   - name: Deploy to Ethiopia Demo
+#     task:
+#       jobs:
+#         - name: Deploy to Ethiopia Demo
+#           commands:
+#             - git clone https://github.com/simpledotorg/simple-standalone
+#             - cd simple-standalone
+#             - make init
+#             - "make deploy hosts=ethiopia_demo password_file=~/.ansible/vault_password_et branch=$SEMAPHORE_GIT_SHA"
+#       secrets:
+#         - name: ansible-vault-passwords
+#         - name: semaphore-deploy-key
+#       prologue:
+#         commands:
+#           - chmod 600 ~/.ssh/semaphore_id_rsa
+#           - ssh-add ~/.ssh/semaphore_id_rsa
+# agent:
+#   machine:
+#     type: e1-standard-2
+#     os_image: ubuntu1804
+# promotions:
+#   - name: Ethiopia Production Deployment
+#     pipeline_file: ethiopia_production_deployment.yml
+#     auto_promote:
+#       when: (branch = 'master' AND result = 'passed') OR (tag =~ '^release-.*' AND result = 'passed')

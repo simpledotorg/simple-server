@@ -23,6 +23,9 @@
       <p class="left" style="color: #6C737A;">
         <span class="key-color grey"></span> <%= raw t("analytics.patients_with_no_bp_measure") %>
       </p>
+      <p class="left" style="color: #0075eb;">
+        <span class="key-color blue"></span> <%= raw t("analytics.patients_with_missed_visits") %>
+      </p>
     </div>
     <% @user_analytics.statistics.dig(:cohorts).each do |cohort| %>
       <div class="card cohort">
@@ -48,6 +51,9 @@
               </td>
               <td class="cohort-controlled" style="width: <%= @user_analytics.cohort_controlled(cohort) %>;">
                 <%= @user_analytics.cohort_controlled(cohort) %>
+              </td>
+              <td class="cohort-missed-visits" style="width: <%= @user_analytics.cohort_missed_visits(cohort) %>;">
+                <%= @user_analytics.cohort_missed_visits(cohort) %>
               </td>
             <% end %>
           </tr>
