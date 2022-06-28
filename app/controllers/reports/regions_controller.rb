@@ -258,6 +258,21 @@ class Reports::RegionsController < AdminController
     end
   end
 
+  def diabetes_monthly_district_data_report
+    @region ||= authorize { current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id]) }
+    @period = Period.month(params[:period] || Date.current)
+    @medications_dispensation_enabled = current_admin.feature_enabled?(:medications_dispensation)
+    csv = MonthlyDistrictDataService.new(@region, @period, medications_dispensation_enabled: @medications_dispensation_enabled).report
+    report_date = @period.to_s.downcase
+    filename = "monthly-facility-data-#{@region.slug}-#{report_date}.csv"
+
+    respond_to do |format|
+      format.csv do
+        send_data csv, filename: filename
+      end
+    end
+  end
+
   def monthly_state_data_report
     @region ||= authorize { current_admin.accessible_state_regions(:view_reports).find_by!(slug: report_params[:id]) }
     @period = Period.month(params[:period] || Date.current)
@@ -273,20 +288,54 @@ class Reports::RegionsController < AdminController
     end
   end
 
-  def monthly_district_report
+  def hypertension_monthly_district_report
+    return unless current_admin.feature_enabled?(:monthly_district_report)
+
+    @region ||= authorize { current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id]) }
+
+    @period = Period.month(params[:period] || Date.current)
+
+    monthly_district_report(MonthlyDistrictReport::Exporter.new(
+      facility_data: MonthlyDistrictReport::Hypertension::FacilityData.new(@region, @period),
+      block_data: MonthlyDistrictReport::Hypertension::BlockData.new(@region, @period),
+      district_data: MonthlyDistrictReport::Hypertension::DistrictData.new(@region, @period)
+    ),
+      @region,
+      @period)
+  end
+
+  def hypertension_monthly_district_report
     return unless current_admin.feature_enabled?(:monthly_district_report)
 
     @region ||= authorize { current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id]) }
     @period = Period.month(params[:period] || Date.current)
-    zip = MonthlyDistrictReport::Exporter.new(@region, @period).export
-    report_date = @period.to_s.downcase
-    filename = "monthly-district-report-#{@region.slug}-#{report_date}.zip"
 
-    respond_to do |format|
-      format.zip do
-        send_data zip, filename: filename
-      end
-    end
+    monthly_district_report(
+      MonthlyDistrictReport::Exporter.new(
+        facility_data: MonthlyDistrictReport::Diabetes::FacilityData.new(@region, @period),
+        block_data: MonthlyDistrictReport::Diabetes::BlockData.new(@region, @period),
+        district_data: MonthlyDistrictReport::Diabetes::DistrictData.new(@region, @period)
+      ),
+      @region,
+      @period
+    )
+  end
+
+  def diabetes_monthly_district_report
+    return unless current_admin.feature_enabled?(:monthly_district_report)
+
+    @region ||= authorize { current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id]) }
+    @period = Period.month(params[:period] || Date.current)
+
+    monthly_district_report(
+      MonthlyDistrictReport::Exporter.new(
+        facility_data: MonthlyDistrictReport::Hypertension::FacilityData.new(@region, @period),
+        block_data: MonthlyDistrictReport::Hypertension::BlockData.new(@region, @period),
+        district_data: MonthlyDistrictReport::Hypertension::DistrictData.new(@region, @period)
+      ),
+      @region,
+      @period
+    )
   end
 
   def whatsapp_graphics
@@ -307,6 +356,19 @@ class Reports::RegionsController < AdminController
   end
 
   private
+
+  def monthly_district_report(exporter, region, period)
+    zip = exporter.export
+
+    report_date = period.to_s.downcase
+    filename = "monthly-district-report-#{region.slug}-#{report_date}.zip"
+
+    respond_to do |format|
+      format.zip do
+        send_data zip, filename: filename
+      end
+    end
+  end
 
   def ltfu_chart_data(repo, range)
     {
