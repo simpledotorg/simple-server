@@ -57,6 +57,7 @@ so-ET:
     patients_with_controlled_bp: "Bukaanka booqday BP &lt;140/90"
     patients_with_uncontrolled_bp: "Bukaanka booqday BP &ge;140/90"
     patients_with_no_bp_measure: "Bukaanka aan qabin cabirka BP"
+    patients_with_missed_visits: "Bukaanada leh booqo la seegay"
     registered_in: "ka duwaan gashan"
     result_from_last_visit_in: "Natiijada booqashada ugu danbaysa"
     no_patients: "Tirada bukaanka"
