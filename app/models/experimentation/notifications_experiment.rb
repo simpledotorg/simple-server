@@ -93,7 +93,6 @@ module Experimentation
     end
 
     def record_notification_results
-      # TODO: Look at query performance
       time(__method__) do
         treatment_group_memberships
           .joins(:patient, treatment_group: :reminder_templates)
