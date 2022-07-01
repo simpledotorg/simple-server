@@ -46,30 +46,30 @@ class MonthlyDistrictReport::Hypertension::FacilityData
 
   def header_rows
     [[
-       "Sl.No",
-       "Facility size",
-       "Name of facility",
-       "Name of block",
-       "Total hypertension registrations",
-       "Hypertension patients under care",
-       "Hypertension patients registered this month",
-       "BP control % of all patients registered before 3 months"
-     ]]
+      "Sl.No",
+      "Facility size",
+      "Name of facility",
+      "Name of block",
+      "Total hypertension registrations",
+      "Hypertension patients under care",
+      "Hypertension patients registered this month",
+      "BP control % of all patients registered before 3 months"
+    ]]
   end
 
   def diabetes_header_rows
     [[
-       "Sl.No",
-       "Facility size",
-       "Name of facility",
-       "Name of block",
-       "Total diabetes registrations",
-       "Diabetes patients under care",
-       "Diabetes patients registered this month",
-       "Blood sugar < 200 % of all patients registered before 3 months",
-       "Blood sugar between 200 and 300 % of all patients registered before 3 months",
-       "Blood sugar over 300 % of all patients registered before 3 months"
-     ]]
+      "Sl.No",
+      "Facility size",
+      "Name of facility",
+      "Name of block",
+      "Total diabetes registrations",
+      "Diabetes patients under care",
+      "Diabetes patients registered this month",
+      "Blood sugar < 200 % of all patients registered before 3 months",
+      "Blood sugar between 200 and 300 % of all patients registered before 3 months",
+      "Blood sugar over 300 % of all patients registered before 3 months"
+    ]]
   end
 
   private

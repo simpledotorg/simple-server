@@ -19,35 +19,35 @@ class MonthlyDistrictReport::Hypertension::BlockData
   end
 
   def header_rows
-    [[# row 1
-       "Blocks",
-       "Total registrations",
-       "Total assigned patients",
-       "Total patients under care",
-       "Total patients lost to followup",
-       "Treatment outcome", *Array.new(3, nil),
-       "Total registered patients", *Array.new(5, nil),
-       "Patients under care", *Array.new(5, nil),
-       "New registered patients", *Array.new(5, nil),
-       "Patient follow-ups", *Array.new(5, nil),
-       "BP controlled rate", *Array.new(5, nil)
-     ],
-     [# row 2
-       nil, # "Blocks"
-       nil, # "Total registrations"
-       nil, # "Total assigned patients"
-       nil, # "Total patients under care"
-       nil, # "Total patients lost to followup"
-       "% BP controlled",
-       "% BP uncontrolled",
-       "% Missed Visits",
-       "% Visits, no BP taken",
-       *last_6_months.map { |period| format_period(period) }, # "Total registered patients"
-       *last_6_months.map { |period| format_period(period) }, # "Patients under care"
-       *last_6_months.map { |period| format_period(period) }, # "New registered patients"
-       *last_6_months.map { |period| format_period(period) }, # "Patient follow-ups"
-       *last_6_months.map { |period| format_period(period) } # "BP controlled rate"
-     ]]
+    [[ # row 1
+      "Blocks",
+      "Total registrations",
+      "Total assigned patients",
+      "Total patients under care",
+      "Total patients lost to followup",
+      "Treatment outcome", *Array.new(3, nil),
+      "Total registered patients", *Array.new(5, nil),
+      "Patients under care", *Array.new(5, nil),
+      "New registered patients", *Array.new(5, nil),
+      "Patient follow-ups", *Array.new(5, nil),
+      "BP controlled rate", *Array.new(5, nil)
+    ],
+      [ # row 2
+        nil, # "Blocks"
+        nil, # "Total registrations"
+        nil, # "Total assigned patients"
+        nil, # "Total patients under care"
+        nil, # "Total patients lost to followup"
+        "% BP controlled",
+        "% BP uncontrolled",
+        "% Missed Visits",
+        "% Visits, no BP taken",
+        *last_6_months.map { |period| format_period(period) }, # "Total registered patients"
+        *last_6_months.map { |period| format_period(period) }, # "Patients under care"
+        *last_6_months.map { |period| format_period(period) }, # "New registered patients"
+        *last_6_months.map { |period| format_period(period) }, # "Patient follow-ups"
+        *last_6_months.map { |period| format_period(period) } # "BP controlled rate"
+      ]]
   end
 
   private
