@@ -2,7 +2,7 @@ module Experimentation
   class NotificationsExperiment < Experiment
     include ActiveSupport::Benchmarkable
     BATCH_SIZE = 1000
-    NEW_MESSAGE_REPORTING_DATE = Date.parse("25 Jun 2022")
+    NEW_MESSAGE_REPORTING_DATE = Date.parse("30 Jun 2022")
     NEW_MESSAGE_REPORTING_KEY = "reminder_templates.id::varchar".freeze
     OLD_MESSAGE_REPORTING_KEY = "reminder_templates.message".freeze
 
@@ -86,7 +86,7 @@ module Experimentation
 
     def messages_report_key
       if start_time > NEW_MESSAGE_REPORTING_DATE
-        NEW_MESSAGE_REPORTING_DATE
+        NEW_MESSAGE_REPORTING_KEY
       else
         OLD_MESSAGE_REPORTING_KEY
       end
