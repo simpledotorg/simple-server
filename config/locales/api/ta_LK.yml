@@ -57,6 +57,7 @@ ta-LK:
     patients_with_controlled_bp: "&lt;140/90 பீபி அளவில் பார்வையிட்ட நோயாளர்கள்"
     patients_with_uncontrolled_bp: "&ge;140/90 பீபி அளவில் பார்வையிட்ட நோயாளர்கள்"
     patients_with_no_bp_measure: "பீபி அளவீடு இல்லாத நோயாளர்கள்"
+    patients_with_missed_visits: "வருகையைத் தவறவிட்ட நோயாளிகள்"
     registered_in: "இதில் பதிவு செய்யப்பட்டுள்ளது"
     result_from_last_visit_in: "கடைசி வருகையின் முடிவு"
     no_patients: "நோயாளர்கள் இல்லை"
