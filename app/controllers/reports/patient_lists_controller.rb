@@ -1,24 +1,29 @@
 class Reports::PatientListsController < AdminController
   def show
-    scope = if region_class == "facility_group"
-      authorize { current_admin.accessible_district_regions(:view_pii) }
-    else
-      authorize { current_admin.accessible_facility_regions(:view_pii) }
-    end
-
     @region = scope.find_by!(slug: params[:id])
-    recipient_email = current_admin.email
-    download_params = case region_class
-    when "facility_group"
-      {id: @region.source_id}
-    else
-      {facility_id: @region.source_id}
-    end
 
     PatientListDownloadJob.perform_async(
-      recipient_email,
+      current_admin.email,
       region_class,
-      download_params
+      download_params(region_class),
+      diagnosis: :all
+    )
+    redirect_back(
+      fallback_location: reports_region_path(@region, report_scope: params[:report_scope]),
+      notice: I18n.t("patient_list_email.notice",
+        model_type: filtered_params[:report_scope],
+        model_name: @region.name)
+    )
+  end
+
+  def diabetes
+    @region = scope.find_by!(slug: params[:id])
+
+    PatientListDownloadJob.perform_async(
+      current_admin.email,
+      region_class,
+      download_params(region_class),
+      diagnosis: :diabetes
     )
     redirect_back(
       fallback_location: reports_region_path(@region, report_scope: params[:report_scope]),
@@ -42,6 +47,23 @@ class Reports::PatientListsController < AdminController
       "facility"
     else
       raise ActiveRecord::RecordNotFound, "unknown report scope #{filtered_params[:report_scope].inspect}"
+    end
+  end
+
+  def scope
+    if region_class == "facility_group"
+      authorize { current_admin.accessible_district_regions(:view_pii) }
+    else
+      authorize { current_admin.accessible_facility_regions(:view_pii) }
+    end
+  end
+
+  def download_params(region_class)
+    case region_class
+    when "facility_group"
+      {id: @region.source_id}
+    else
+      {facility_id: @region.source_id}
     end
   end
 end

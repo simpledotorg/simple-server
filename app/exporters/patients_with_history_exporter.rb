@@ -19,10 +19,11 @@ class PatientsWithHistoryExporter
   }.with_indifferent_access.freeze
 
   def self.csv(*args)
-    new.csv(*args)
+    patients, diagnosis = *args
+    new.csv(patients, diagnosis: diagnosis)
   end
 
-  def csv(patients, display_blood_pressures: DEFAULT_DISPLAY_BLOOD_PRESSURES, display_medication_columns: DEFAULT_DISPLAY_MEDICATION_COLUMNS)
+  def csv(patients, diagnosis: :hypertension, display_blood_pressures: DEFAULT_DISPLAY_BLOOD_PRESSURES, display_medication_columns: DEFAULT_DISPLAY_MEDICATION_COLUMNS)
     @display_blood_pressures = display_blood_pressures
     @display_medication_columns = display_medication_columns
     summary = MaterializedPatientSummary.where(patient: patients)
