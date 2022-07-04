@@ -106,24 +106,14 @@
 
       <div class="ml-8px">
         <% if current_admin.feature_enabled?(:diabetes_management_reports) && action_name == "diabetes"%>
-          <%= render Dashboard::Downloads::DiabetesComponent.new(
+          <%= render Dashboard::Diabetes::DownloadsDropdownComponent.new(
             region: @region,
-            current_admin: current_admin,
-            monthly_district_report_path: reports_region_monthly_district_report_path(@region, report_scope: params[:report_scope], period: params.dig(:period, :value), format: :zip),
-            monthly_district_data_path: reports_region_monthly_district_data_path(@region, report_scope: params[:report_scope], period: params.dig(:period, :value), format: :csv),
-            monthly_state_data_path: reports_region_monthly_district_data_path(@region, report_scope: params[:report_scope], period: params.dig(:period, :value), format: :csv),
-            patient_list_path: diabetes_reports_patient_list_path(@region, report_scope: params[:report_scope])
+            current_admin: current_admin
           ) %>
         <% else %>
-          <%= render Dashboard::Downloads::HypertensionComponent.new(
+          <%= render Dashboard::Hypertension::DownloadsDropdownComponent.new(
             region: @region,
-            current_admin: current_admin,
-            quarterly_cohort_report_path: reports_region_download_path(@region, report_scope: params[:report_scope], period: :quarter, format: :csv),
-            monthly_cohort_report_path: reports_region_download_path(@region, report_scope: params[:report_scope], period: :quarter, format: :csv),
-            monthly_district_report_path: reports_region_monthly_district_report_path(@region, report_scope: params[:report_scope], period: params.dig(:period, :value), format: :zip),
-            monthly_district_data_path: reports_region_monthly_district_data_path(@region, report_scope: params[:report_scope], period: params.dig(:period, :value), format: :csv),
-            monthly_state_data_path: reports_region_monthly_district_data_path(@region, report_scope: params[:report_scope], period: params.dig(:period, :value), format: :csv),
-            patient_list_path: reports_patient_list_path(@region, report_scope: params[:report_scope])
+            current_admin: current_admin
           ) %>
         <% end %>
       </div>

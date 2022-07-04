@@ -13,21 +13,21 @@
     <% end %>
 
     <% if region.district_region? && current_admin.feature_enabled?(:monthly_district_report)%>
-      <%= link_to(monthly_district_report_path, class: "dropdown-item") do %>
+      <%= link_to(reports_region_monthly_district_report_path(region, report_scope: params[:report_scope], period: params.dig(:period, :value), format: :zip), class: "dropdown-item") do %>
         <i class="fa-regular fa-file-spreadsheet w-16px ta-center mr-8px c-blue"></i>
         Monthly district report
       <% end %>
     <% end %>
 
     <% if region.district_region? && current_admin.feature_enabled?(:monthly_district_data_download) %>
-      <%= link_to(monthly_district_data_path, class: "dropdown-item") do %>
+      <%= link_to(reports_region_monthly_district_data_path(region, report_scope: params[:report_scope], period: params.dig(:period, :value), format: :csv), class: "dropdown-item") do %>
         <i class="fa-regular fa-file-spreadsheet w-16px ta-center mr-8px c-blue"></i>
         Monthly <%= I18n.t("region_type.facility") %> data
       <% end %>
     <% end %>
 
     <% if region.state_region? && current_admin.feature_enabled?(:monthly_state_data_download) %>
-      <%= link_to(monthly_state_data_path, class: "dropdown-item") do %>
+      <%= link_to(reports_region_monthly_district_data_path(region, report_scope: params[:report_scope], period: params.dig(:period, :value), format: :csv), class: "dropdown-item") do %>
         <i class="fa-regular fa-file-spreadsheet w-16px ta-center mr-8px c-blue"></i>
         Monthly <%= region.localized_child_region_type %> data
       <% end %>
@@ -35,7 +35,7 @@
 
     <% if region.region_type.in?(["district", "facility"]) %>
       <% if current_admin.can_access?(region.source, :view_pii) %>
-        <%= link_to(patient_list_path, class: "dropdown-item") do %>
+        <%= link_to(diabetes_reports_patient_list_path(region, report_scope: params[:report_scope]), class: "dropdown-item") do %>
           <i class="fa-regular fa-list-ul w-16px ta-center mr-8px c-blue"></i>
           Patient line list
         <% end %>
