@@ -24,7 +24,7 @@ FactoryBot.define do
     end_time { 3.week.from_now }
   end
 
-  trait :running do
+  trait :enrolling do
     start_time { 1.week.ago }
     end_time { 1.week.from_now }
   end

@@ -2,6 +2,9 @@ module Experimentation
   class NotificationsExperiment < Experiment
     include ActiveSupport::Benchmarkable
     BATCH_SIZE = 1000
+    NEW_MESSAGE_REPORTING_DATE = Date.parse("30 Jun 2022")
+    NEW_MESSAGE_REPORTING_KEY = "reminder_templates.id::varchar".freeze
+    OLD_MESSAGE_REPORTING_KEY = "reminder_templates.message".freeze
 
     default_scope { where(experiment_type: %w[current_patients stale_patients]) }
 
@@ -21,7 +24,7 @@ module Experimentation
     # See https://docs.google.com/document/d/1IMXu_ca9xKU8Xox_3v403ZdvNGQzczLWljy7LQ6RQ6A for more details.
     def self.conduct_daily(date)
       time(__method__) do
-        running.each { |experiment| experiment.enroll_patients(date) }
+        enrolling.each { |experiment| experiment.enroll_patients(date) }
         monitoring.each { |experiment| experiment.monitor }
         notifying.each { |experiment| experiment.schedule_notifications(date) }
       end
@@ -81,17 +84,24 @@ module Experimentation
       end
     end
 
+    def messages_report_key
+      if start_time > NEW_MESSAGE_REPORTING_DATE
+        NEW_MESSAGE_REPORTING_KEY
+      else
+        OLD_MESSAGE_REPORTING_KEY
+      end
+    end
+
     def record_notification_results
-      # TODO: Look at query performance
       time(__method__) do
         treatment_group_memberships
           .joins(:patient, treatment_group: :reminder_templates)
-          .where("messages -> reminder_templates.message ->> 'notification_status' = ?", :pending)
-          .select("messages -> reminder_templates.message ->> 'notification_id' AS notification_id")
-          .select("reminder_templates.message, treatment_group_memberships.*")
+          .where("messages -> #{messages_report_key} ->> 'notification_status' = ?", :pending)
+          .select("messages -> #{messages_report_key} ->> 'notification_id' AS notification_id")
+          .select("#{messages_report_key} messages_report_key, treatment_group_memberships.*")
           .in_batches(of: BATCH_SIZE).each_record do |membership|
           membership.record_notification_result(
-            membership.message,
+            membership.messages_report_key,
             notification_result(membership.notification_id)
           )
         end
@@ -112,7 +122,7 @@ module Experimentation
 
         treatment_group_memberships.status_enrolled
           .joins(treatment_group: :reminder_templates)
-          .where("messages -> reminder_templates.message ->> 'result' = 'failed'")
+          .where("messages -> #{messages_report_key} ->> 'result' = 'failed'")
           .evict(reason: "notification_failed")
 
         treatment_group_memberships.status_enrolled
@@ -163,6 +173,7 @@ module Experimentation
         memberships_to_notify(date)
           .select("reminder_templates.id reminder_template_id")
           .select("reminder_templates.message message, treatment_group_memberships.*")
+          .select("#{messages_report_key} messages_report_key")
           .in_batches(of: BATCH_SIZE)
           .each_record { |membership| schedule_notification(membership, date) }
       end
@@ -312,7 +323,7 @@ module Experimentation
           status: "pending",
           subject_id: membership.appointment_id,
           subject_type: "Appointment"
-        ).then { |notification| membership.record_notification(notification) }
+        ).then { |notification| membership.record_notification(membership.messages_report_key, notification) }
     end
   end
 end
