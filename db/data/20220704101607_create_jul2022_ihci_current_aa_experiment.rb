@@ -10,20 +10,20 @@ class CreateJul2022IhciCurrentAaExperiment < ActiveRecord::Migration[5.2]
     ).tap do |experiment|
       _control_group = experiment.treatment_groups.create!(description: "control")
 
-      double_group_1 = experiment.treatment_groups.create!(description: "basic_double_3_7-I")
+      double_group_1 = experiment.treatment_groups.create!(description: "basic_double_3_7_I")
       double_group_1.reminder_templates.create!(message: "notifications.set03_basic_repeated.first", remind_on_in_days: 3)
       double_group_1.reminder_templates.create!(message: "notifications.set03_basic_repeated.second", remind_on_in_days: 7)
 
-      double_group_2 = experiment.treatment_groups.create!(description: "basic_double_3_7-II")
+      double_group_2 = experiment.treatment_groups.create!(description: "basic_double_3_7_II")
       double_group_2.reminder_templates.create!(message: "notifications.set03_basic_repeated.first", remind_on_in_days: 3)
       double_group_2.reminder_templates.create!(message: "notifications.set03_basic_repeated.second", remind_on_in_days: 7)
 
-      triple_group_1 = experiment.treatment_groups.create!(description: "basic_triple_1_3_7-I")
+      triple_group_1 = experiment.treatment_groups.create!(description: "basic_triple_1_3_7_I")
       triple_group_1.reminder_templates.create!(message: "notifications.set03_basic_repeated.first", remind_on_in_days: 1)
       triple_group_1.reminder_templates.create!(message: "notifications.set03_basic_repeated.second", remind_on_in_days: 3)
       triple_group_1.reminder_templates.create!(message: "notifications.set03_basic_repeated.third", remind_on_in_days: 7)
 
-      triple_group_2 = experiment.treatment_groups.create!(description: "basic_triple_1_3_7-II")
+      triple_group_2 = experiment.treatment_groups.create!(description: "basic_triple_1_3_7_II")
       triple_group_2.reminder_templates.create!(message: "notifications.set03_basic_repeated.first", remind_on_in_days: 1)
       triple_group_2.reminder_templates.create!(message: "notifications.set03_basic_repeated.second", remind_on_in_days: 3)
       triple_group_2.reminder_templates.create!(message: "notifications.set03_basic_repeated.third", remind_on_in_days: 7)
