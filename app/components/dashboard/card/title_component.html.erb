@@ -1,0 +1,11 @@
+<div class="d-flex flex-1 mb-8px">
+  <h3 class="mb-0px mr-8px">
+    <%= title %>
+  </h3>
+  <%= render Dashboard::Card::TooltipComponent.new(tooltip_definitions) %>
+</div>
+<% if subtitle.present? %>
+  <p class="mb-16px c-grey-dark mr-lg-12px">
+    <%= subtitle %>
+  </p>
+<% end %>

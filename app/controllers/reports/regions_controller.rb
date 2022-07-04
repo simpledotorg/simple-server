@@ -4,8 +4,8 @@ class Reports::RegionsController < AdminController
   include RegionSearch
 
   before_action :set_period, only: [:show, :cohort, :diabetes, :details]
-  before_action :set_page, only: [:show, :details]
-  before_action :set_per_page, only: [:show, :details]
+  before_action :set_page, only: [:show, :details, :diabetes]
+  before_action :set_per_page, only: [:show, :details, :diabetes]
   before_action :find_region, except: [:index, :fastindex, :monthly_district_data_report]
   before_action :show_region_search
   around_action :set_reporting_time_zone
@@ -102,7 +102,7 @@ class Reports::RegionsController < AdminController
       @details_chart_data = {
         patient_breakdown: PatientBreakdownService.call(region: @region, period: @details_period)[:hypertension],
         ltfu_trend: ltfu_chart_data(chart_repo, chart_range),
-        **medications_dispensation_data(region: @region, period: @details_period)
+        **medications_dispensation_data(region: @region, period: @details_period, diagnosis: :hypertension)
       }
 
       if @region.facility_region?
@@ -152,7 +152,7 @@ class Reports::RegionsController < AdminController
     @details_chart_data = {
       patient_breakdown: PatientBreakdownService.call(region: @region, period: @details_period)[:hypertension],
       ltfu_trend: ltfu_chart_data(chart_repo, chart_range),
-      **medications_dispensation_data(region: @region, period: @details_period)
+      **medications_dispensation_data(region: @region, period: @details_period, diagnosis: :hypertension)
     }
     @data = @details_chart_data
 
@@ -214,11 +214,17 @@ class Reports::RegionsController < AdminController
     chart_repo = Reports::Repository.new(@region, periods: chart_range)
     @details_chart_data = {
       patient_breakdown: PatientBreakdownService.call(region: @region, period: @details_period)[:diabetes],
-      ltfu_trend: diabetes_ltfu_chart_data(chart_repo, chart_range)
-      # **medications_dispensation_data(region: @region, period: @details_period)
+      ltfu_trend: diabetes_ltfu_chart_data(chart_repo, chart_range),
+      **medications_dispensation_data(region: @region, period: @details_period, diagnosis: :diabetes)
     }
 
     @data.merge!(@details_chart_data)
+
+    if @region.facility_region?
+      @recent_blood_sugars = paginate(
+        @region.source.blood_sugars.for_recent_measures_log.includes(:patient, :facility)
+      )
+    end
   end
 
   def download
@@ -326,9 +332,9 @@ class Reports::RegionsController < AdminController
     }
   end
 
-  def medications_dispensation_data(region:, period:)
+  def medications_dispensation_data(region:, period:, diagnosis:)
     if current_admin.feature_enabled?(:medications_dispensation)
-      {medications_dispensation: MedicationDispensationService.call(region: region, period: period)}
+      {medications_dispensation: MedicationDispensationService.call(region: region, period: period, diagnosis: diagnosis)}
     else
       {}
     end

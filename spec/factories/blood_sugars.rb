@@ -9,7 +9,7 @@ FactoryBot.define do
 
     association :facility, strategy: :create
     association :user, strategy: :create
-    association :patient, strategy: :create
+    association :patient, factory: [:patient, :diabetes], strategy: :create
 
     trait(:with_encounter) do
       after :build do |blood_sugar|
@@ -20,8 +20,8 @@ FactoryBot.define do
     trait :with_hba1c do
       blood_sugar_type { BloodSugar.blood_sugar_types.keys.sample }
       blood_sugar_value do
-        threshold = BloodSugar::THRESHOLDS[:high][blood_sugar_type]
-        rand(threshold * 0.9..threshold * 1.1).round(2)
+        threshold = BloodSugar::THRESHOLDS[:bs_over_300][blood_sugar_type]
+        (threshold.first * rand(0.9..1.1)).round(2)
       end
     end
 

@@ -140,6 +140,26 @@ RSpec.describe Reports::Repository, type: :model do
       expect(repo.monthly_registrations_by_user[facility_1.slug][july_2020.to_period]).to be_nil
     end
 
+    it "can count diabetes registrations and cumulative diabetes registrations by user" do
+      facilities = FactoryBot.create_list(:facility, 2, facility_group: facility_group_1).sort_by(&:slug)
+      facility_1 = facilities.first
+      user_2 = create(:user)
+
+      default_attrs = {registration_facility: facility_1, assigned_facility: facility_1, registration_user: user}
+      jan_1_2018 = Period.month("January 1 2018")
+      _facility_1_registered_before_repository_range = create_list(:patient, 2, :diabetes, default_attrs.merge(recorded_at: jan_1_2018.value))
+      _facility_1_registered_in_jan_2019 = create_list(:patient, 2, :diabetes, default_attrs.merge(recorded_at: jan_2019))
+      _facility_1_registered_in_august_2018 = create_list(:patient, 2, :diabetes, default_attrs.merge(recorded_at: Time.zone.parse("August 10th 2018")))
+      _user_2_registered = create(:patient, :diabetes, full_name: "other user", recorded_at: jan_2019, registration_facility: facility_1, registration_user: user_2)
+
+      refresh_views
+
+      repo = Reports::Repository.new(facility_1.region, periods: (july_2018.to_period..july_2020.to_period))
+      expect(repo.monthly_registrations_by_user(diagnosis: :diabetes)[facility_1.slug][jan_2019.to_period][user.id]).to eq(2)
+      expect(repo.monthly_registrations_by_user(diagnosis: :diabetes)[facility_1.slug][jan_2019.to_period][user_2.id]).to eq(1)
+      expect(repo.monthly_registrations_by_user(diagnosis: :diabetes)[facility_1.slug][july_2020.to_period]).to be_nil
+    end
+
     it "can count registrations and cumulative registrations by gender" do
       facility_1 = FactoryBot.create(:facility, facility_group: facility_group_1)
 
