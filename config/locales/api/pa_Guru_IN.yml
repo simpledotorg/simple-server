@@ -57,6 +57,7 @@ pa-Guru-IN:
     patients_with_controlled_bp: "&lt;140/90 ਬੀਪੀ ਵਾਲੇ ਮਰੀਜ਼ਾਂ ਨੇ ਦੌਰਾ ਕੀਤਾ"
     patients_with_uncontrolled_bp: "&ge;140/90 ਬੀਪੀ ਵਾਲੇ ਮਰੀਜ਼ਾਂ ਨੇ ਦੌਰਾ ਕੀਤਾ"
     patients_with_no_bp_measure: "ਬਿਨਾਂ ਬੀਪੀ ਵਾਲੇ ਮਰੀਜ਼"
+    patients_with_missed_visits: "ਮੁਲਕਾਤ ਮਿਸ ਕਰਨ ਵਾਲੇ ਮਰੀਜ਼"
     registered_in: "ਰਜਿਸਟਰ ਕੀਤੇ ਗਏ"
     result_from_last_visit_in: "ਆਖਰੀ ਦੌਰੇ ਦਾ ਨਤੀਜਾ"
     no_patients: "ਕੋਈ ਮਰੀਜ਼ ਨਹੀਂ"
