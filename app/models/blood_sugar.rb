@@ -31,19 +31,40 @@ class BloodSugar < ApplicationRecord
 
   scope :for_v3, -> { where(blood_sugar_type: V3_TYPES) }
   scope :for_sync, -> { with_discarded }
+  scope :for_recent_measures_log, -> do
+    recorded_date = "DATE(recorded_at at time zone 'UTC' at time zone '#{CountryConfig.current[:time_zone]}')"
+    order(Arel.sql("#{recorded_date} DESC, recorded_at ASC"))
+  end
 
   THRESHOLDS = {
-    high: {random: 300,
-           post_prandial: 300,
-           fasting: 200,
-           hba1c: 9.0}
+    bs_below_200:
+      {random: 0..200, post_prandial: 0..200, fasting: 0..126, hba1c: 0..7},
+    bs_200_to_300:
+      {random: 200..300, post_prandial: 200..300, fasting: 126..200, hba1c: 7..9},
+    bs_over_300: {
+      random: 300..Float::INFINITY,
+      post_prandial: 300..Float::INFINITY,
+      fasting: 200..Float::INFINITY,
+      hba1c: 9..Float::INFINITY
+    }
   }.with_indifferent_access.freeze
 
   def diabetic?
-    blood_sugar_value >= THRESHOLDS[:high][blood_sugar_type]
+    blood_sugar_value >= THRESHOLDS[:bs_over_300][blood_sugar_type].first
   end
 
   def to_s
-    "#{blood_sugar_value} #{BLOOD_SUGAR_UNITS[blood_sugar_type]}"
+    "#{blood_sugar_value.round(2)} #{BLOOD_SUGAR_UNITS[blood_sugar_type]}"
+  end
+
+  def risk_state
+    risk_state = nil
+    THRESHOLDS.each do |state, threshold|
+      if threshold[blood_sugar_type].include?(blood_sugar_value)
+        risk_state = state
+        break
+      end
+    end
+    risk_state.to_sym
   end
 end
