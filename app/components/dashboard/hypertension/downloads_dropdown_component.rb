@@ -24,7 +24,7 @@ class Dashboard::Hypertension::DownloadsDropdownComponent < ApplicationComponent
   end
 
   def monthly_district_data_path
-    reports_region_monthly_district_data_path(
+    reports_region_hypertension_monthly_district_data_path(
       @region,
       report_scope: report_scope,
       period: period.attributes,
@@ -35,7 +35,6 @@ class Dashboard::Hypertension::DownloadsDropdownComponent < ApplicationComponent
   def patient_line_list_path
     reports_patient_list_path(@region, report_scope: report_scope)
   end
-
 
   def graphics_path(format)
     previous_quarter_year, previous_quarter = previous_year_and_quarter
