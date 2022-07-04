@@ -78,7 +78,7 @@ module Experimentation
       existing_memberships =
         self.class
           .joins(treatment_group: :experiment)
-          .merge(Experiment.running)
+          .merge(Experiment.enrolling)
           .where(patient_id: patient_id)
           .where.not(experiments: {id: id})
 

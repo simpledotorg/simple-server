@@ -57,6 +57,7 @@ hi-IN:
     patients_with_controlled_bp: "बीपी &lt;140/90 के साथ रोगियों ने विज़िट किया"
     patients_with_uncontrolled_bp: "बीपी &ge;140/90 के साथ रोगियों ने विज़िट किया"
     patients_with_no_bp_measure: "जिन रोगियों का बीपी का माप नहीं है"
+    patients_with_missed_visits: "विजिट के लिए अनुपस्थित मरीज"
     registered_in: "इसमें रजिस्टर किए गए"
     result_from_last_visit_in: "इसमें पिछली विज़िट के परिणाम"
     no_patients: "कोई रोगी नहीं"

@@ -24,7 +24,7 @@ module Experimentation
     # See https://docs.google.com/document/d/1IMXu_ca9xKU8Xox_3v403ZdvNGQzczLWljy7LQ6RQ6A for more details.
     def self.conduct_daily(date)
       time(__method__) do
-        running.each { |experiment| experiment.enroll_patients(date) }
+        enrolling.each { |experiment| experiment.enroll_patients(date) }
         monitoring.each { |experiment| experiment.monitor }
         notifying.each { |experiment| experiment.schedule_notifications(date) }
       end

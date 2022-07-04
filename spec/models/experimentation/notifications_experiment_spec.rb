@@ -3,14 +3,14 @@ require "rails_helper"
 RSpec.describe Experimentation::NotificationsExperiment, type: :model do
   describe "scopes" do
     context "experiment state" do
-      it "is notifying while the experiment is running" do
-        experiment = create(:experiment, :with_treatment_group_and_template, :running)
+      it "is notifying while the experiment is enrolling" do
+        experiment = create(:experiment, :with_treatment_group_and_template, :enrolling)
 
         expect(described_class.notifying.pluck(:id)).to contain_exactly(experiment.id)
       end
 
       it "is not notifying if no reminder templates are present in the experiment" do
-        create(:experiment, :with_treatment_group, :running)
+        create(:experiment, :with_treatment_group, :enrolling)
 
         expect(described_class.notifying.pluck(:id)).to be_empty
       end
@@ -74,7 +74,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
 
   describe ".conduct_daily" do
     it "calls enroll, monitor and schedule notifications on experiments" do
-      create(:experiment, :with_treatment_group_and_template, :running, experiment_type: "current_patients")
+      create(:experiment, :with_treatment_group_and_template, :enrolling, experiment_type: "current_patients")
       experiment = Experimentation::CurrentPatientExperiment.first
       expect_any_instance_of(experiment.class).to receive :enroll_patients
       expect_any_instance_of(experiment.class).to receive :monitor
@@ -85,7 +85,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
   end
 
   describe ".eligible_patients" do
-    it "doesn't include patients from a running experiment" do
+    it "doesn't include patients from an active experiment" do
       experiment = create(:experiment, start_time: 1.day.ago, end_time: 1.day.from_now)
       treatment_group = create(:treatment_group, experiment: experiment)
 
@@ -127,16 +127,16 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       expect(described_class.eligible_patients).not_to include(patient)
     end
 
-    it "doesn't include patients who were once in a completed experiment but are now in a running experiment" do
-      running_experiment = create(:experiment, start_time: 1.day.ago, end_time: 1.day.from_now)
+    it "doesn't include patients who were once in a completed experiment but are now in an active experiment" do
+      active_experiment = create(:experiment, start_time: 1.day.ago, end_time: 1.day.from_now)
       old_experiment = create(:experiment, start_time: 30.days.ago, end_time: 15.days.ago)
-      running_treatment_group = create(:treatment_group, experiment: running_experiment)
+      active_treatment_group = create(:treatment_group, experiment: active_experiment)
       old_treatment_group = create(:treatment_group, experiment: old_experiment)
 
       patient = create(:patient, age: 18)
 
       old_treatment_group.enroll(patient)
-      running_treatment_group.enroll(patient)
+      active_treatment_group.enroll(patient)
 
       expect(described_class.eligible_patients).not_to include(patient)
     end

@@ -6,18 +6,13 @@ class RegisteredPatientsQuery
   #
   # Returns a count of registered patients over the past last days
   def count_daily(region, last:, diagnosis: :hypertension)
-    scope = case diagnosis
-    when :all then region.registered_patients
-    when :hypertension then region.registered_hypertension_patients
-    when :diabetes then region.registered_diabetes_patients
-    else raise ArgumentError, "unknown diagnosis #{diagnosis}"
-    end
-    scope.group_by_period(:day, :recorded_at, last: last).count
+    registered_patients_with_diagnosis(region, diagnosis)
+      .group_by_period(:day, :recorded_at, last: last)
+      .count
   end
 
-  def count(region, period_type, group_by: nil)
-    query = region.registered_patients
-      .with_hypertension
+  def count(region, period_type, group_by: nil, diagnosis: :hypertension)
+    query = registered_patients_with_diagnosis(region, diagnosis)
       .group_by_period(period_type, :recorded_at, {format: Period.formatter(period_type)})
 
     if group_by.present?
@@ -29,6 +24,15 @@ class RegisteredPatientsQuery
   end
 
   private
+
+  def registered_patients_with_diagnosis(region, diagnosis)
+    case diagnosis
+    when :all then region.registered_patients
+    when :hypertension then region.registered_hypertension_patients
+    when :diabetes then region.registered_diabetes_patients
+    else raise ArgumentError, "unknown diagnosis #{diagnosis}"
+    end
+  end
 
   def sum_groups_per_period(result)
     result.each_with_object({}) { |(key, count), hsh|

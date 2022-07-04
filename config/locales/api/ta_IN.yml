@@ -57,6 +57,7 @@ ta-IN:
     patients_with_controlled_bp: "வந்த நோயாளிகளின் பிபி &lt;140/90"
     patients_with_uncontrolled_bp: "வந்த நோயாளிகளின் பிபி &ge;140/90"
     patients_with_no_bp_measure: "பிபி பதிவு இல்லாத நோயாளிகளின்"
+    patients_with_missed_visits: "வருகையைத் தவறவிட்ட நோயாளிகள்"
     registered_in: "பதிவு செய்த"
     result_from_last_visit_in: "கடைசி வருகையின் போதான முடிவு"
     no_patients: "நோயாளிகள் இல்லை"
