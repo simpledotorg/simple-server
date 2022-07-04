@@ -173,7 +173,7 @@ module Experimentation
         memberships_to_notify(date)
           .select("reminder_templates.id reminder_template_id")
           .select("reminder_templates.message message, treatment_group_memberships.*")
-          .select("#{messages_report_key} messages_report_key, treatment_group_memberships.*")
+          .select("#{messages_report_key} messages_report_key")
           .in_batches(of: BATCH_SIZE)
           .each_record { |membership| schedule_notification(membership, date) }
       end
