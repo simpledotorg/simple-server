@@ -286,31 +286,26 @@
   <%= render "bs_measurement_child_tables", children_data: @children_data, localized_region_type: @child_regions.first.localized_region_type %>
 <% end %>
 <% if @region.facility_region? %>
-  <div class="card mt-0 pr-0 pr-md-3 pb-inside-avoid">
-    <div>
-      <h3 class="mb-0px mr-8px">
-        Patient registrations and follow-ups
-      </h3>
-      <p class="coming-soon"><i class="fa-regular fa-table"></i> Coming soon</p>
-    </div>
-  </div>
-  <div class="card mt-0 pr-0 pr-md-3 pb-inside-avoid">
-    <div>
-      <h3 class="mb-0px mr-8px">
-        Healthcare worker activity
-      </h3>
-      <p class="coming-soon"><i class="fa-regular fa-table"></i>Coming soon</p>
-    </div>
-  </div>
-  <div class="card mt-0 pr-0 pr-md-3 pb-inside-avoid">
-    <div>
-      <h3 class="mb-8px mr-8px">
-        Recent blood sugar measures 
-      </h3>
-      <p>A log of blood sugar measures taken by healthcare workers</p>
-      <p class="coming-soon"><i class="fa-regular fa-table"></i> Coming soon</p>
-    </div>
-  </div>
+  <%= render Dashboard::Diabetes::RegistrationsAndFollowUpsByUserComponent.new(
+    region: @region,
+    repository: @repository,
+    period_range: @details_period_range,
+    current_admin: current_admin
+  ) %>
+
+  <%= render Dashboard::Diabetes::HealthcareWorkerActivityComponent.new(
+    region: @region,
+    repository: @repository,
+    period_range: @details_period_range,
+    current_admin: current_admin
+  ) %>
+
+  <%= render Dashboard::Diabetes::RecentMeasurementsComponent.new(
+    region: @region,
+    recent_blood_sugars: @recent_blood_sugars,
+    display_model: :facility,
+    page: @page
+  ) %>
 <% else %>
   <%= render(DiabetesRegistrationsAndFollowUpsComponent.new(@region,
     current_admin: current_admin,

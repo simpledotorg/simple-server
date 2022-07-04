@@ -48,6 +48,10 @@ class Admin::UsersController < AdminController
     @recent_blood_pressures = paginate(
       @user.blood_pressures.for_recent_bp_log.includes(:patient, :facility)
     )
+
+    @recent_blood_sugars = paginate(
+      @user.blood_sugars.for_recent_measures_log.includes(:patient, :facility)
+    )
   end
 
   def edit
