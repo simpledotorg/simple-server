@@ -5,6 +5,5 @@ module Experimentation
 
     validates :message, presence: true
     validates :remind_on_in_days, presence: true, numericality: {only_integer: true}
-    validates :message, uniqueness: {scope: :treatment_group, message: "already exists in this treatment group"}
   end
 end
