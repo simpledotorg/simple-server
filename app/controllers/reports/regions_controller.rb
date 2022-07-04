@@ -4,8 +4,8 @@ class Reports::RegionsController < AdminController
   include RegionSearch
 
   before_action :set_period, only: [:show, :cohort, :diabetes, :details]
-  before_action :set_page, only: [:show, :details]
-  before_action :set_per_page, only: [:show, :details]
+  before_action :set_page, only: [:show, :details, :diabetes]
+  before_action :set_per_page, only: [:show, :details, :diabetes]
   before_action :find_region, except: [:index, :fastindex, :monthly_district_data_report]
   before_action :show_region_search
   around_action :set_reporting_time_zone
@@ -219,6 +219,12 @@ class Reports::RegionsController < AdminController
     }
 
     @data.merge!(@details_chart_data)
+
+    if @region.facility_region?
+      @recent_blood_sugars = paginate(
+        @region.source.blood_sugars.for_recent_measures_log.includes(:patient, :facility)
+      )
+    end
   end
 
   def download

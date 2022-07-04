@@ -1,10 +1,10 @@
 require "rails_helper"
 
-RSpec.describe BPMeasuresQuery do
+RSpec.describe MeasuresQuery do
   let(:user_1) { create(:user) }
   let(:user_2) { create(:user) }
 
-  it "returns counts of BPs per period" do
+  it "returns counts of BPs per period by default" do
     facility = create(:facility)
     Timecop.freeze("May 5th 2021") do
       create(:blood_pressure, facility: facility, recorded_at: 4.months.ago, user: user_1)
@@ -16,6 +16,36 @@ RSpec.describe BPMeasuresQuery do
 
       }
       expect(described_class.new.count(facility, :month)).to eq(expected)
+    end
+  end
+
+  it "returns counts of BPs per period when diagnosis is hypertension" do
+    facility = create(:facility)
+    Timecop.freeze("May 5th 2021") do
+      create(:blood_pressure, facility: facility, recorded_at: 4.months.ago, user: user_1)
+      create(:blood_pressure, facility: facility, recorded_at: 2.months.ago, user: user_2)
+      expected = {
+        Period.month("January 2021") => 1,
+        Period.month("February 2021") => 0,
+        Period.month("March 2021") => 1
+
+      }
+      expect(described_class.new.count(facility, :month, diagnosis: :hypertension)).to eq(expected)
+    end
+  end
+
+  it "returns counts of Blood sugars per period" do
+    facility = create(:facility)
+    Timecop.freeze("May 5th 2021") do
+      create(:blood_sugar, facility: facility, recorded_at: 4.months.ago, user: user_1)
+      create(:blood_sugar, facility: facility, recorded_at: 2.months.ago, user: user_2)
+      expected = {
+        Period.month("January 2021") => 1,
+        Period.month("February 2021") => 0,
+        Period.month("March 2021") => 1
+
+      }
+      expect(described_class.new.count(facility, :month, diagnosis: :diabetes)).to eq(expected)
     end
   end
 
