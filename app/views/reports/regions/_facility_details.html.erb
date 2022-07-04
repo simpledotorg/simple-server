@@ -59,7 +59,7 @@
       <tbody>
         <% current_admin.accessible_users(:view_reports).order(:full_name).each do |resource| %>
           <% next unless sum_registration_counts(@repository, slug: @region.slug, user_id: resource.id, diagnosis: :hypertension)&.nonzero? ||
-                         sum_bp_measures(@repository, @region.slug, resource.id)&.nonzero? %>
+                         sum_bp_measures(@repository, slug: @region.slug, user_id: resource.id)&.nonzero? %>
           <tr>
             <td class="row-title">
               <%= link_to resource.full_name, admin_user_path(resource, period: @period) %>
@@ -141,8 +141,8 @@
       </thead>
       <tbody>
         <% current_admin.accessible_users(:view_reports).order(:full_name).each do |resource| %>
-          <% next unless sum_overdue_calls(@repository, @region.slug, resource.id)&.nonzero? ||
-                         sum_bp_measures(@repository, @region.slug, resource.id)&.nonzero? %>
+          <% next unless sum_overdue_calls(@repository, slug: @region.slug, user_id: resource.id)&.nonzero? ||
+                         sum_bp_measures(@repository, slug: @region.slug, user_id: resource.id)&.nonzero? %>
           <tr>
             <td class="row-title">
               <%= link_to resource.full_name, admin_user_path(resource, period: @period) %>
@@ -225,7 +225,7 @@
         <tbody>
         <% current_admin.accessible_users(:view_reports).order(:full_name).each do |resource| %>
           <% next unless sum_registration_counts(@repository, slug: @region.slug,  user_id: resource.id, diagnosis: :hypertension)&.nonzero? ||
-            sum_bp_measures(@repository, @region.slug, resource.id)&.nonzero? %>
+            sum_bp_measures(@repository, slug: @region.slug, user_id: resource.id)&.nonzero? %>
           <tr>
             <td class="row-title">
               <%= link_to resource.full_name, admin_user_path(resource, period: @period) %>

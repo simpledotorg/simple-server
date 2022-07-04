@@ -13,8 +13,8 @@ class Dashboard::Card::TooltipComponent < ApplicationComponent
     return definitions.to_s if !definitions.is_a? Hash
 
     definitions.collect do |name, description|
-      content_tag :p, class: 'mb-4px' do
-        content_tag(:strong, name) <<  ": #{description}"
+      content_tag :p, class: "mb-4px" do
+        content_tag(:strong, name) << ": #{description}"
       end
     end.join
   end
