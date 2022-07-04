@@ -25,7 +25,6 @@ class RegisteredPatientsQuery
 
   private
 
-  # TODO: Why not materialized views?
   def registered_patients_with_diagnosis(region, diagnosis)
     case diagnosis
     when :all then region.registered_patients

@@ -5,13 +5,6 @@
     data-placement="right"
     data-trigger="hover click"
     data-html="true"
-    <% if definitions.is_a? String %>
-      title="<%= definitions %>"
-    <% else %>
-      title="<% definitions.each do |name, description| %>
-               <p class='mb-4px'><strong><%= name %>:</strong> <%= description %></p>
-             <% end %>"
-    <% end %>
-  >
+    title="<%= tooltip_content %>">
   </i>
 </span>

@@ -41,7 +41,7 @@
             </td>
             <td class="nowrap text-muted"><%= blood_sugar.recorded_at.strftime("%I:%M %p") %></td>
             <td class="nowrap <%= risk_state_color_class(blood_sugar) %>">
-              <i class="fas fa-heart mr-2"></i> <%= blood_sugar.to_s %> <%= blood_sugar.blood_sugar_type.to_s.capitalize %></td>
+              <i class="fas fa-heart mr-2"></i> <%= blood_sugar.to_s %> <%= blood_sugar.blood_sugar_type.to_s.humanize %></td>
             <td class="nowrap">
               <% if blood_sugar.recorded_at.to_date > blood_sugar.patient.recorded_at.to_date %>
                 <span class="patient-return text-muted">Follow-up patient</span>

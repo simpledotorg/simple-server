@@ -9,7 +9,6 @@ class Dashboard::Diabetes::RecentMeasurementsComponent < ApplicationComponent
     @recent_blood_sugars = recent_blood_sugars
     @display_model = display_model
     @page = page
-    @recent_blood_sugars.first.risk_state
   end
 
   private
