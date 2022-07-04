@@ -108,11 +108,15 @@
         <% if current_admin.feature_enabled?(:diabetes_management_reports) && action_name == "diabetes"%>
           <%= render Dashboard::Diabetes::DownloadsDropdownComponent.new(
             region: @region,
+            period: @period,
+            report_scope: params[:report_scope],
             current_admin: current_admin
           ) %>
         <% else %>
           <%= render Dashboard::Hypertension::DownloadsDropdownComponent.new(
             region: @region,
+            period: @period,
+            report_scope: params[:report_scope],
             current_admin: current_admin
           ) %>
         <% end %>
