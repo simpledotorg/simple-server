@@ -1,116 +1,21 @@
-class MonthlyDistrictDataService
-  attr_reader :region, :period, :months, :repo, :dashboard_analytics
-  def initialize(region, period, medications_dispensation_enabled: false)
+class MonthlyDistrictData::Hypertension
+  include MonthlyDistrictData::Utils
+
+  attr_reader :region
+  attr_reader :period
+  attr_reader :months
+  attr_reader :medication_dispensation_enabled
+  attr_reader :medication_dispensation_months
+  attr_reader :repo
+
+  def initialize(region:, period:, medication_dispensation_enabled: false)
     @region = region
     @period = period
     @months = period.downto(5).reverse
+    @medication_dispensation_enabled = medication_dispensation_enabled
     @medication_dispensation_months = period.downto(2).reverse
     regions = region.facility_regions.to_a << region
     @repo = Reports::Repository.new(regions, periods: @months)
-    @medications_dispensation_enabled = medications_dispensation_enabled
-  end
-
-  def report
-    CSV.generate(headers: true) do |csv|
-      csv << ["Monthly #{localized_facility} data for #{region.name} #{period.to_date.strftime("%B %Y")}"]
-      csv << section_row
-      csv << sub_section_row if @medications_dispensation_enabled
-      csv << header_row
-      csv << district_row
-
-      csv << [] # Empty row
-      facility_size_rows.each do |row|
-        csv << row
-      end
-
-      csv << [] # Empty row
-      facility_rows.each do |row|
-        csv << row
-      end
-    end
-  end
-
-  private
-
-  def localized_district
-    I18n.t("region_type.district")
-  end
-
-  def localized_block
-    I18n.t("region_type.block")
-  end
-
-  def localized_facility
-    I18n.t("region_type.facility")
-  end
-
-  def region_headers
-    [
-      "#",
-      localized_block.capitalize,
-      localized_facility.capitalize,
-      "#{localized_facility.capitalize} type",
-      "#{localized_facility.capitalize} size"
-    ]
-  end
-
-  def summary_headers
-    [
-      "Estimated hypertensive population",
-      "Total registrations",
-      "Total assigned patients",
-      "Lost to follow-up patients",
-      "Dead patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})",
-      "Patients under care as of #{period.end.strftime("%e-%b-%Y")}"
-    ]
-  end
-
-  def month_headers
-    months.map { |month| month.value.strftime("%b-%Y") }
-  end
-
-  def outcome_headers
-    [
-      "Patients under care as of #{period.adjusted_period.end.strftime("%e-%b-%Y")}",
-      "Patients with BP controlled",
-      "Patients with BP not controlled",
-      "Patients with a missed visit",
-      "Patients with a visit but no BP taken"
-    ]
-  end
-
-  def medications_dispensation_section_header
-    if @medications_dispensation_enabled
-      ["Days of patient medications",
-        Array.new((medications_dispensation_headers.size * @medication_dispensation_months.size) - 1, nil)]
-    else
-      []
-    end
-  end
-
-  def medications_dispensation_headers
-    if @medications_dispensation_enabled
-      [
-        "Patients with 0 to 14 days of medications",
-        "Patients with 15 to 31 days of medications",
-        "Patients with 32 to 62 days of medications",
-        "Patients with 62+ days of medications"
-      ]
-    else
-      []
-    end
-  end
-
-  def medications_dispensation_month_headers
-    @medication_dispensation_months.map(&:to_s)
-  end
-
-  def drug_headers
-    [
-      "Amlodipine",
-      "ARBs/ACE Inhibitors",
-      "Diuretic"
-    ]
   end
 
   def section_row
@@ -146,7 +51,7 @@ class MonthlyDistrictDataService
       month_headers,
       month_headers,
       outcome_headers,
-      *(medications_dispensation_headers * @medication_dispensation_months.size),
+      *(medications_dispensation_headers * medication_dispensation_months.size),
       drug_headers
     ].flatten
   end
@@ -200,6 +105,74 @@ class MonthlyDistrictDataService
 
       row_data.values
     end
+  end
+
+  private
+
+  def region_headers
+    [
+      "#",
+      localized_block.capitalize,
+      localized_facility.capitalize,
+      "#{localized_facility.capitalize} type",
+      "#{localized_facility.capitalize} size"
+    ]
+  end
+
+  def summary_headers
+    [
+      "Estimated hypertensive population",
+      "Total registrations",
+      "Total assigned patients",
+      "Lost to follow-up patients",
+      "Dead patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})",
+      "Patients under care as of #{period.end.strftime("%e-%b-%Y")}"
+    ]
+  end
+
+  def outcome_headers
+    [
+      "Patients under care as of #{period.adjusted_period.end.strftime("%e-%b-%Y")}",
+      "Patients with BP controlled",
+      "Patients with BP not controlled",
+      "Patients with a missed visit",
+      "Patients with a visit but no BP taken"
+    ]
+  end
+
+  def medications_dispensation_section_header
+    if medication_dispensation_enabled
+      ["Days of patient medications",
+        Array.new((medications_dispensation_headers.size * medication_dispensation_months.size) - 1, nil)]
+    else
+      []
+    end
+  end
+
+  def medications_dispensation_headers
+    if medication_dispensation_enabled
+      [
+        "Patients with 0 to 14 days of medications",
+        "Patients with 15 to 31 days of medications",
+        "Patients with 32 to 62 days of medications",
+        "Patients with 62+ days of medications"
+      ]
+    else
+      []
+    end
+  end
+
+  def medications_dispensation_month_headers
+    return [] unless medication_dispensation_enabled
+    medication_dispensation_months.map(&:to_s)
+  end
+
+  def drug_headers
+    [
+      "Amlodipine",
+      "ARBs/ACE Inhibitors",
+      "Diuretic"
+    ]
   end
 
   def region_data(subregion)

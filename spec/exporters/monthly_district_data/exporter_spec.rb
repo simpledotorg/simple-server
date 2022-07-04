@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe MonthlyDistrictDataService, reporting_spec: true do
+RSpec.describe MonthlyDistrictData::Exporter, reporting_spec: true do
   around do |example|
     # This is in the style of ReportingHelpers::freeze_time_for_reporting_specs.
     # Since FacilityAppointmentScheduledDays only keeps the last 6 months of data, the date cannot be a

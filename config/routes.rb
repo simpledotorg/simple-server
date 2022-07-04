@@ -199,12 +199,14 @@ Rails.application.routes.draw do
     get "regions/:report_scope/:id/monthly_district_report",
       to: "regions#hypertension_monthly_district_report", as: :region_hypertension_monthly_district_report
     get "regions/:report_scope/:id/monthly_district_data_report",
-      to: "regions#monthly_district_data_report", as: :region_monthly_district_data
+      to: "regions#hypertension_monthly_district_data_report", as: :region_hypertension_monthly_district_data
     get "regions/:report_scope/:id/graphics", to: "regions#whatsapp_graphics", as: :graphics
 
     get "regions/:report_scope/:id/diabetes", to: "regions#diabetes", as: :region_diabetes
     get "regions/:report_scope/:id/diabetes/monthly_district_report",
       to: "regions#diabetes_monthly_district_report", as: :region_diabetes_monthly_district_report
+    get "regions/:report_scope/:id/diabetes/monthly_district_data_report",
+      to: "regions#diabetes_monthly_district_data_report", as: :region_diabetes_monthly_district_data
   end
 
   resource :regions_search, controller: "regions_search"

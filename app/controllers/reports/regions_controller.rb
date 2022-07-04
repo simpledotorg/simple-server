@@ -3,10 +3,10 @@ class Reports::RegionsController < AdminController
   include GraphicsDownload
   include RegionSearch
 
-  before_action :set_period, only: [:show, :cohort, :diabetes, :details, :hypertension_monthly_district_report, :diabetes_monthly_district_report]
+  before_action :set_period, except: [:index, :fastindex]
   before_action :set_page, only: [:show, :details, :diabetes]
   before_action :set_per_page, only: [:show, :details, :diabetes]
-  before_action :find_region, except: [:index, :fastindex, :monthly_district_data_report]
+  before_action :find_region, except: [:index, :fastindex]
   before_action :show_region_search
   around_action :set_reporting_time_zone
   after_action :log_cache_metrics
@@ -249,11 +249,25 @@ class Reports::RegionsController < AdminController
     end
   end
 
-  def monthly_district_data_report
-    @region ||= authorize { current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id]) }
-    @period = Period.month(params[:period] || Date.current)
+  def hypertension_monthly_district_data_report
     @medications_dispensation_enabled = current_admin.feature_enabled?(:medications_dispensation)
-    csv = MonthlyDistrictDataService.new(@region, @period, medications_dispensation_enabled: @medications_dispensation_enabled).report
+    csv = MonthlyDistrictData::Exporter.new(
+      @region, @period, medications_dispensation_enabled: @medications_dispensation_enabled,
+                        exporter: MonthlyDistrictData::Hypertension.new(region: @region, period: @period)
+    ).report
+    report_date = @period.to_s.downcase
+    filename = "monthly-facility-data-#{@region.slug}-#{report_date}.csv"
+
+    respond_to do |format|
+      format.csv do
+        send_data csv, filename: filename
+      end
+    end
+  end
+
+  def diabetes_monthly_district_data_report
+    @medications_dispensation_enabled = current_admin.feature_enabled?(:medications_dispensation)
+    csv = MonthlyDistrictData::Exporter.new(@region, @period, medications_dispensation_enabled: @medications_dispensation_enabled).report
     report_date = @period.to_s.downcase
     filename = "monthly-facility-data-#{@region.slug}-#{report_date}.csv"
 

@@ -62,7 +62,7 @@ class MonthlyDistrictReport::Diabetes::BlockData
       "Blocks" => block.name,
       "Total diabetes registrations" => repo.cumulative_diabetes_registrations[block.slug][report_month],
       "Total assigned diabetes patients" => repo.cumulative_assigned_diabetic_patients[block.slug][report_month],
-      "Total diabetes patients under care" => repo.adjusted_diabetes_patients[block.slug][report_month],
+      "Total diabetes patients under care" => repo.diabetes_under_care[block.slug][report_month],
       "Total diabetes patients lost to followup" => repo.diabetes_ltfu[block.slug][report_month],
       "% Blood Sugar Below 200" => percentage_string(repo.bs_below_200_rates[block.slug][report_month]), # "% BS <200",
       "% Blood Sugar between 200 and 300" => percentage_string(repo.bs_200_to_300_rates[block.slug][report_month]), # "% 200 <= BS < 300",

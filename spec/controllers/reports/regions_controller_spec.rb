@@ -583,7 +583,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
         facility
         sign_in(cvho.email_authentication)
 
-        expect_any_instance_of(MonthlyDistrictDataService).to receive(:report).and_call_original
+        expect_any_instance_of(MonthlyDistrictData::Exporter).to receive(:report).and_call_original
         get :monthly_district_data_report, params: {id: region.slug, report_scope: "district", format: "csv"}
         expect(response.status).to eq(200)
         expect(response.body).to include("Monthly facility data for #{region.name} #{Date.current.strftime("%B %Y")}")
@@ -598,7 +598,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       sign_in(cvho.email_authentication)
 
       period = Period.month("July 2018")
-      expect(MonthlyDistrictDataService).to receive(:new).with(region, period, medications_dispensation_enabled: false).and_call_original
+      expect(MonthlyDistrictData::Exporter).to receive(:new).with(region, period, medications_dispensation_enabled: false).and_call_original
       get :monthly_district_data_report,
         params: {id: region.slug, report_scope: "district", format: "csv", period: period.value}
     end
