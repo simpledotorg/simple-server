@@ -13,15 +13,15 @@ RSpec.describe Experimentation::Experiment, type: :model do
   describe "scopes" do
     context "experiment state" do
       specify do
-        running = create(:experiment, :running)
+        enrolling = create(:experiment, :enrolling)
         upcoming = create(:experiment, :upcoming)
         monitoring = create(:experiment, :monitoring)
         completed = create(:experiment, :completed)
         cancelled = create(:experiment, :cancelled, start_time: 5.months.ago, end_time: 4.months.ago)
 
-        expect(described_class.running).to contain_exactly(running)
+        expect(described_class.enrolling).to contain_exactly(enrolling)
         expect(described_class.upcoming).to contain_exactly(upcoming)
-        expect(described_class.monitoring).to contain_exactly(running, monitoring)
+        expect(described_class.monitoring).to contain_exactly(enrolling, monitoring)
         expect(described_class.completed).to contain_exactly(completed)
         expect(described_class.cancelled).to contain_exactly(cancelled)
       end
@@ -34,13 +34,13 @@ RSpec.describe Experimentation::Experiment, type: :model do
     it { should validate_presence_of(:experiment_type) }
 
     it "there can only be one active experiment of a particular type at a time" do
-      create(:experiment, :running, experiment_type: "current_patients")
-      create(:experiment, :running, experiment_type: "stale_patients")
+      create(:experiment, :enrolling, experiment_type: "current_patients")
+      create(:experiment, :enrolling, experiment_type: "stale_patients")
 
-      experiment_3 = build(:experiment, :running, experiment_type: "current_patients")
+      experiment_3 = build(:experiment, :enrolling, experiment_type: "current_patients")
       expect(experiment_3).to be_invalid
 
-      experiment_4 = build(:experiment, :running, experiment_type: "stale_patients")
+      experiment_4 = build(:experiment, :enrolling, experiment_type: "stale_patients")
       expect(experiment_4).to be_invalid
     end
 
