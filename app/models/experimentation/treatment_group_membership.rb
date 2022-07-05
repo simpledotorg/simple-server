@@ -19,10 +19,11 @@ module Experimentation
       update_all(status: :evicted, status_updated_at: Time.current, status_reason: reason)
     end
 
-    def record_notification(notification)
+    def record_notification(messages_report_key, notification)
       reload # this is to reload the `messages` field to avoid staleness while updating.
       self.messages ||= {}
-      self.messages[notification.message] = {
+      self.messages[messages_report_key] = {
+        message_name: notification.message,
         remind_on: notification.remind_on,
         notification_status: notification.status,
         notification_id: notification.id,
@@ -33,8 +34,8 @@ module Experimentation
       save!
     end
 
-    def record_notification_result(message, delivery_result)
-      reload.messages[message].merge!(delivery_result)
+    def record_notification_result(messages_report_key, delivery_result)
+      reload.messages[messages_report_key].merge!(delivery_result)
       save!
     end
 
