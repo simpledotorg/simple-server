@@ -252,8 +252,11 @@ class Reports::RegionsController < AdminController
   def hypertension_monthly_district_data_report
     @medications_dispensation_enabled = current_admin.feature_enabled?(:medications_dispensation)
     csv = MonthlyDistrictData::Exporter.new(
-      @region, @period, medications_dispensation_enabled: @medications_dispensation_enabled,
-                        exporter: MonthlyDistrictData::Hypertension.new(region: @region, period: @period)
+      exporter: MonthlyDistrictData::Hypertension.new(
+        region: @region,
+        period: @period,
+        medications_dispensation_enabled: @medications_dispensation_enabled
+      )
     ).report
     report_date = @period.to_s.downcase
     filename = "monthly-facility-data-#{@region.slug}-#{report_date}.csv"
@@ -267,7 +270,13 @@ class Reports::RegionsController < AdminController
 
   def diabetes_monthly_district_data_report
     @medications_dispensation_enabled = current_admin.feature_enabled?(:medications_dispensation)
-    csv = MonthlyDistrictData::Exporter.new(@region, @period, medications_dispensation_enabled: @medications_dispensation_enabled).report
+    csv = MonthlyDistrictData::Exporter.new(
+      exporter: MonthlyDistrictReport::Diabetes.new(
+        region: @region,
+        period: @period,
+        medications_dispensation_enabled: @medications_dispensation_enabled
+      )
+    ).report
     report_date = @period.to_s.downcase
     filename = "monthly-facility-data-#{@region.slug}-#{report_date}.csv"
 

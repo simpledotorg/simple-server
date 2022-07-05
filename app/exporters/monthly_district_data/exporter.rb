@@ -3,15 +3,8 @@ class MonthlyDistrictData::Exporter
 
   attr_reader :region, :period, :months, :repo, :dashboard_analytics, :exporter
 
-  def initialize(region, period, exporter:, medications_dispensation_enabled: false)
-    @region = region
-    @period = period
-    @months = period.downto(5).reverse
-    @medication_dispensation_months = period.downto(2).reverse
+  def initialize(exporter:)
     @exporter = exporter
-    regions = region.facility_regions.to_a << region
-    @repo = Reports::Repository.new(regions, periods: @months)
-    @medications_dispensation_enabled = medications_dispensation_enabled
   end
 
   def report
