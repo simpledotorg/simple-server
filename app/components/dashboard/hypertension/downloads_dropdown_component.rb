@@ -32,6 +32,15 @@ class Dashboard::Hypertension::DownloadsDropdownComponent < ApplicationComponent
     )
   end
 
+  def monthly_state_data_path
+    reports_region_hypertension_monthly_state_data_path(
+      @region,
+      report_scope: report_scope,
+      period: period.attributes,
+      format: :csv
+    )
+  end
+
   def patient_line_list_path
     reports_patient_list_path(@region, report_scope: report_scope)
   end

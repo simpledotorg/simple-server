@@ -1,5 +1,5 @@
 class MonthlyDistrictReport::Diabetes::FacilityData
-  include Utils
+  include MonthlyDistrictReport::Utils
   attr_reader :repo, :district, :month
 
   def initialize(district, period_month)

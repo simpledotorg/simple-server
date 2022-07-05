@@ -249,7 +249,7 @@ class Reports::RegionsController < AdminController
     end
   end
 
-  def hypertension_monthly_district_data_report
+  def hypertension_monthly_district_data
     @medications_dispensation_enabled = current_admin.feature_enabled?(:medications_dispensation)
     csv = MonthlyDistrictData::Exporter.new(
       exporter: MonthlyDistrictData::Hypertension.new(
@@ -268,10 +268,10 @@ class Reports::RegionsController < AdminController
     end
   end
 
-  def diabetes_monthly_district_data_report
+  def diabetes_monthly_district_data
     @medications_dispensation_enabled = current_admin.feature_enabled?(:medications_dispensation)
     csv = MonthlyDistrictData::Exporter.new(
-      exporter: MonthlyDistrictReport::Diabetes.new(
+      exporter: MonthlyDistrictData::Diabetes.new(
         region: @region,
         period: @period,
         medications_dispensation_enabled: @medications_dispensation_enabled
@@ -287,11 +287,15 @@ class Reports::RegionsController < AdminController
     end
   end
 
-  def monthly_state_data_report
-    @region ||= authorize { current_admin.accessible_state_regions(:view_reports).find_by!(slug: report_params[:id]) }
-    @period = Period.month(params[:period] || Date.current)
+  def hypertension_monthly_state_data
     @medications_dispensation_enabled = current_admin.feature_enabled?(:medications_dispensation)
-    csv = MonthlyStateDataService.new(@region, @period, medications_dispensation_enabled: @medications_dispensation_enabled).report
+    csv = MonthlyStateData::Exporter.new(
+      exporter: MonthlyStateData::Hypertension.new(
+        region: @region,
+        period: @period,
+        medications_dispensation_enabled: @medications_dispensation_enabled
+      )
+    ).report
     report_date = @period.to_s.downcase
     filename = "monthly-district-data-#{@region.slug}-#{report_date}.csv"
 

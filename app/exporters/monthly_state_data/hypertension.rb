@@ -1,6 +1,5 @@
-class MonthlyDistrictData::Hypertension
-  include MonthlyDistrictData::Utils
-
+class MonthlyStateData::Hypertension
+  include MonthlyStateData::Utils
   attr_reader :region
   attr_reader :period
   attr_reader :months
@@ -12,24 +11,87 @@ class MonthlyDistrictData::Hypertension
     @region = region
     @period = period
     @months = period.downto(5).reverse
-    @medications_dispensation_enabled = medications_dispensation_enabled
-    @medications_dispensation_months = period.downto(2).reverse
-    regions = region.facility_regions.to_a << region
+    @medication_dispensation_months = period.downto(2).reverse
+    regions = region.district_regions.to_a << region
     @repo = Reports::Repository.new(regions, periods: @months)
+    @medications_dispensation_enabled = medications_dispensation_enabled
+  end
+
+  def region_headers
+    [
+      "#",
+      localized_state.capitalize,
+      localized_district.capitalize
+    ]
+  end
+
+  def summary_headers
+    [
+      "Estimated hypertensive population",
+      "Total registrations",
+      "Total assigned patients",
+      "Lost to follow-up patients",
+      "Dead patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})",
+      "Patients under care as of #{period.end.strftime("%e-%b-%Y")}"
+    ]
+  end
+
+  def outcome_headers
+    [
+      "Patients under care as of #{period.adjusted_period.end.strftime("%e-%b-%Y")}",
+      "Patients with BP controlled",
+      "Patients with BP not controlled",
+      "Patients with a missed visit",
+      "Patients with a visit but no BP taken"
+    ]
+  end
+
+  def medications_dispensation_section_header
+    if @medications_dispensation_enabled
+      ["Days of patient medications",
+        Array.new((medications_dispensation_headers.size * @medication_dispensation_months.size) - 1, nil)]
+    else
+      []
+    end
+  end
+
+  def medications_dispensation_headers
+    if @medications_dispensation_enabled
+      [
+        "Patients with 0 to 14 days of medications",
+        "Patients with 15 to 31 days of medications",
+        "Patients with 32 to 62 days of medications",
+        "Patients with 62+ days of medications"
+      ]
+    else
+      []
+    end
+  end
+
+  def medications_dispensation_month_headers
+    @medication_dispensation_months.map(&:to_s)
+  end
+
+  def drug_headers
+    [
+      "Amlodipine",
+      "ARBs/ACE Inhibitors",
+      "Diuretic"
+    ]
   end
 
   def section_row
     [
       # These just add empty spacer columns
       Array.new(region_headers.size + summary_headers.size, nil),
-      "New hypertension registrations",
+      "New Registrations",
       Array.new(month_headers.size - 1, nil),
-      "Hypertension follow-up patients",
+      "Follow-up patients",
       Array.new(month_headers.size - 1, nil),
-      "Treatment status of hypertension patients under care",
+      "Treatment status of patients under care",
       Array.new(outcome_headers.size - 1, nil),
       medications_dispensation_section_header,
-      "Hypertension drug availability",
+      "Drug availability",
       Array.new(drug_headers.size - 1, nil)
     ].flatten
   end
@@ -51,128 +113,31 @@ class MonthlyDistrictData::Hypertension
       month_headers,
       month_headers,
       outcome_headers,
-      *(medications_dispensation_headers * medications_dispensation_months.size),
+      *(medications_dispensation_headers * @medication_dispensation_months.size),
       drug_headers
     ].flatten
   end
 
-  def district_row
+  def state_row
     row_data = {
-      index: "All #{localized_facility.pluralize}",
-      block: nil,
-      facility: nil,
-      facility_type: nil,
-      facility_size: "All"
+      index: "All #{localized_district.pluralize}",
+      state: region.name,
+      district: nil
     }.merge(region_data(region))
 
     row_data.values
   end
 
-  def facility_size_rows
-    size_data = Hash.new { |hash, key| hash[key] = {} }
-
-    region.facility_regions.sort_by { |f| [f.block_region.name, f.name] }.map.with_index do |facility, index|
-      facility_data = region_data(facility)
-
-      # Sum each data key for all facilities in this size
-      size_data[facility.source.facility_size].update(facility_data) do |key, old_value, new_value|
-        old_value.nil? ? new_value : old_value + new_value
-      end
-    end
-
-    size_data.sort.map do |size, summed_data|
-      row_data = {
-        index: "#{size.capitalize} #{localized_facility.pluralize}",
-        block: nil,
-        facility: nil,
-        facility_type: nil,
-        facility_size: size.capitalize
-      }.merge(summed_data)
-
-      row_data.values
-    end
-  end
-
-  def facility_rows
-    region.facility_regions.sort_by { |f| [f.block_region.name, f.name] }.map.with_index do |facility, index|
+  def district_rows
+    region.district_regions.sort_by(&:name).map.with_index do |district, index|
       row_data = {
         index: index + 1,
-        block: facility.block_region.name,
-        facility: facility.name,
-        facility_type: facility.source.facility_type,
-        facility_size: facility.source.facility_size.capitalize
-      }.merge(region_data(facility))
+        state: region.name,
+        district: district.name
+      }.merge(region_data(district))
 
       row_data.values
     end
-  end
-
-  private
-
-  def region_headers
-    [
-      "#",
-      localized_block.capitalize,
-      localized_facility.capitalize,
-      "#{localized_facility.capitalize} type",
-      "#{localized_facility.capitalize} size"
-    ]
-  end
-
-  def summary_headers
-    [
-      "Estimated hypertensive population",
-      "Total hypertension registrations",
-      "Total assigned hypertension patients",
-      "Hypertension lost to follow-up patients",
-      "Dead hypertensive patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})",
-      "Hypertension patients under care as of #{period.end.strftime("%e-%b-%Y")}"
-    ]
-  end
-
-  def outcome_headers
-    [
-      "Patients under care as of #{period.adjusted_period.end.strftime("%e-%b-%Y")}",
-      "Patients with BP controlled",
-      "Patients with BP not controlled",
-      "Patients with a missed visit",
-      "Patients with a visit but no BP taken"
-    ]
-  end
-
-  def medications_dispensation_section_header
-    if medications_dispensation_enabled
-      ["Days of patient medications",
-        Array.new((medications_dispensation_headers.size * medications_dispensation_months.size) - 1, nil)]
-    else
-      []
-    end
-  end
-
-  def medications_dispensation_headers
-    if medications_dispensation_enabled
-      [
-        "Patients with 0 to 14 days of medications",
-        "Patients with 15 to 31 days of medications",
-        "Patients with 32 to 62 days of medications",
-        "Patients with 62+ days of medications"
-      ]
-    else
-      []
-    end
-  end
-
-  def medications_dispensation_month_headers
-    return [] unless medications_dispensation_enabled
-    medications_dispensation_months.map(&:to_s)
-  end
-
-  def drug_headers
-    [
-      "Amlodipine",
-      "ARBs/ACE Inhibitors",
-      "Diuretic"
-    ]
   end
 
   def region_data(subregion)
@@ -197,7 +162,7 @@ class MonthlyDistrictData::Hypertension
     }
 
     medications_dispensation_by_month = if @medications_dispensation_enabled
-      @medications_dispensation_months.each_with_object({}) { |month, hsh|
+      @medication_dispensation_months.each_with_object({}) { |month, hsh|
         hsh["patients_with_0_to_14_days_of_medications_#{month}".to_sym] = repo.appts_scheduled_0_to_14_days[subregion.slug][month]
         hsh["patients_with_15_to_31_days_of_medications_#{month}".to_sym] = repo.appts_scheduled_15_to_31_days[subregion.slug][month]
         hsh["patients_with_32_to_62_days_of_medications_#{month}".to_sym] = repo.appts_scheduled_32_to_62_days[subregion.slug][month]
