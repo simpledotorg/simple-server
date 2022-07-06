@@ -6,7 +6,8 @@
 
   <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
 
-    <% unless region.region_type.in?(%w[block]) %>
+    <!--    TODO: Remove facility from the array when patient list is available-->
+    <% unless region.region_type.in?(%w[block facility]) %>
       <h6 class="dropdown-header c-grey-dark">
         CSV files
       </h6>
@@ -33,16 +34,17 @@
       <% end %>
     <% end %>
 
-    <% if region.region_type.in?(["district", "facility"]) %>
-      <% if current_admin.can_access?(region.source, :view_pii) %>
-        <%= link_to(patient_line_list_path, class: "dropdown-item") do %>
-          <i class="fa-regular fa-list-ul w-16px ta-center mr-8px c-blue"></i>
-          Patient line list
-        <% end %>
-      <% end %>
-    <% end %>
+    <%# if region.region_type.in?(["district", "facility"]) %>
+      <%# if current_admin.can_access?(region.source, :view_pii) %>
+        <%#= link_to(patient_line_list_path, class: "dropdown-item") do %>
+<!--          <i class="fa-regular fa-list-ul w-16px ta-center mr-8px c-blue"></i>-->
+<!--          Patient line list-->
+        <%# end %>
+      <%# end %>
+    <%# end %>
 
-    <% unless region.region_type.in?(%w[block]) %>
+<!--    TODO: Remove facility from the array when patient list is available-->
+    <% unless region.region_type.in?(%w[block facility]) %>
      <div class="dropdown-divider"></div>
     <% end %>
 
