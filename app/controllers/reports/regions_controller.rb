@@ -306,6 +306,25 @@ class Reports::RegionsController < AdminController
     end
   end
 
+  def diabetes_monthly_state_data
+    @medications_dispensation_enabled = current_admin.feature_enabled?(:medications_dispensation)
+    csv = MonthlyStateData::Exporter.new(
+      exporter: MonthlyStateData::Diabetes.new(
+        region: @region,
+        period: @period,
+        medications_dispensation_enabled: @medications_dispensation_enabled
+      )
+    ).report
+    report_date = @period.to_s.downcase
+    filename = "monthly-district-data-#{@region.slug}-#{report_date}.csv"
+
+    respond_to do |format|
+      format.csv do
+        send_data csv, filename: filename
+      end
+    end
+  end
+
   def hypertension_monthly_district_report
     return unless current_admin.feature_enabled?(:monthly_district_report)
 

@@ -10,6 +10,15 @@ class Dashboard::Diabetes::DownloadsDropdownComponent < ApplicationComponent
     @current_admin = current_admin
   end
 
+  def monthly_state_data_path
+    reports_region_diabetes_monthly_state_data_path(
+      @region,
+      report_scope: report_scope,
+      period: period.attributes,
+      format: :csv
+    )
+  end
+
   def monthly_district_report_path
     reports_region_diabetes_monthly_district_report_path(
       region,

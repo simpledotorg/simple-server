@@ -27,7 +27,7 @@
     <% end %>
 
     <% if region.state_region? && current_admin.feature_enabled?(:monthly_state_data_download) %>
-      <%= link_to(monthly_district_data_path, class: "dropdown-item") do %>
+      <%= link_to(monthly_state_data_path, class: "dropdown-item") do %>
         <i class="fa-regular fa-file-spreadsheet w-16px ta-center mr-8px c-blue"></i>
         Monthly <%= region.localized_child_region_type %> data
       <% end %>

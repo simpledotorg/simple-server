@@ -1,4 +1,4 @@
-class MonthlyStateData::Hypertension
+class MonthlyStateData::Diabetes
   include MonthlyStateData::Utils
   attr_reader :region
   attr_reader :period
@@ -27,22 +27,23 @@ class MonthlyStateData::Hypertension
 
   def summary_headers
     [
-      "Estimated hypertensive population",
-      "Total hypertension registrations",
-      "Total assigned hypertension patients",
-      "Lost to follow-up hypertension patients",
-      "Dead hypertensive patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})",
-      "hypertension patients under care as of #{period.end.strftime("%e-%b-%Y")}"
+      "Estimated diabetic population",
+      "Total diabetes registrations",
+      "Total assigned diabetes patients",
+      "Diabetes lost to follow-up patients",
+      "Dead diabetic patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})",
+      "Diabetes patients under care as of #{period.end.strftime("%e-%b-%Y")}"
     ]
   end
 
   def outcome_headers
     [
       "Patients under care as of #{period.adjusted_period.end.strftime("%e-%b-%Y")}",
-      "Patients with BP controlled",
-      "Patients with BP not controlled",
+      "Patients with blood sugar < 200",
+      "Patients with blood sugar 200-299",
+      "Patients with blood sugar ≥ 300",
       "Patients with a missed visit",
-      "Patients with a visit but no BP taken"
+      "Patients with a visit but no blood sugar taken"
     ]
   end
 
@@ -84,14 +85,14 @@ class MonthlyStateData::Hypertension
     [
       # These just add empty spacer columns
       Array.new(region_headers.size + summary_headers.size, nil),
-      "New hypertension egistrations",
+      "New diabetes registrations",
       Array.new(month_headers.size - 1, nil),
-      "Hypertension follow-up patients",
+      "Diabetes follow-up patients",
       Array.new(month_headers.size - 1, nil),
-      "Treatment status of hypertension patients under care",
+      "Treatment status of diabetes patients under care",
       Array.new(outcome_headers.size - 1, nil),
       medications_dispensation_section_header,
-      "Hypertension drug availability",
+      "Diabetes drug availability",
       Array.new(drug_headers.size - 1, nil)
     ].flatten
   end
@@ -141,39 +142,40 @@ class MonthlyStateData::Hypertension
   end
 
   def region_data(subregion)
-    total_registrations_count = repo.cumulative_registrations.dig(subregion.slug, period)
-    assigned_patients_count = repo.cumulative_assigned_patients.dig(subregion.slug, period)
-    ltfu_count = repo.ltfu.dig(subregion.slug, period)
-    dead_count = subregion.assigned_patients.with_hypertension.status_dead.count
-    adjusted_patients_under_care_count = repo.adjusted_patients.dig(subregion.slug, period)
-    controlled_count = repo.controlled.dig(subregion.slug, period)
-    uncontrolled_count = repo.uncontrolled.dig(subregion.slug, period)
-    missed_visits_count = repo.missed_visits.dig(subregion.slug, period)
-    no_bp_taken_count = repo.visited_without_bp_taken.dig(subregion.slug, period)
+    total_registrations_count = repo.cumulative_diabetes_registrations.dig(subregion.slug, period)
+    assigned_patients_count = repo.cumulative_assigned_diabetic_patients.dig(subregion.slug, period)
+    ltfu_count = repo.diabetes_ltfu.dig(subregion.slug, period)
+    dead_count = subregion.assigned_patients.with_diabetes.status_dead.count
+    adjusted_patients_under_care_count = repo.adjusted_diabetes_patients.dig(subregion.slug, period)
+    bs_below_200_count = repo.bs_below_200_patients.dig(subregion.slug, period)
+    bs_200_to_300_count = repo.bs_200_to_300_patients.dig(subregion.slug, period)
+    bs_over_300_count = repo.bs_over_300_patients.dig(subregion.slug, period)
+    missed_visits_count = repo.diabetes_missed_visits.dig(subregion.slug, period)
+    no_bs_taken_count = repo.visited_without_bs_taken.dig(subregion.slug, period)
 
-    monthly_registrations = repo.monthly_registrations[subregion.slug]
+    monthly_registrations = repo.monthly_diabetes_registrations[subregion.slug]
     registrations_by_month = months.each_with_object({}) { |month, hsh|
       hsh["registrations_#{month.value}".to_sym] = monthly_registrations[month]
     }
 
-    monthly_follow_ups = repo.hypertension_follow_ups[subregion.slug]
+    monthly_follow_ups = repo.diabetes_follow_ups[subregion.slug]
     follow_ups_by_month = months.each_with_object({}) { |month, hsh|
       hsh["follow_ups_#{month.value}".to_sym] = monthly_follow_ups[month] || 0
     }
 
     medications_dispensation_by_month = if medications_dispensation_enabled
       medications_dispensation_months.each_with_object({}) { |month, hsh|
-        hsh["patients_with_0_to_14_days_of_medications_#{month}".to_sym] = repo.appts_scheduled_0_to_14_days[subregion.slug][month]
-        hsh["patients_with_15_to_31_days_of_medications_#{month}".to_sym] = repo.appts_scheduled_15_to_31_days[subregion.slug][month]
-        hsh["patients_with_32_to_62_days_of_medications_#{month}".to_sym] = repo.appts_scheduled_32_to_62_days[subregion.slug][month]
-        hsh["patients_with_62+_days_of_medications_#{month}".to_sym] = repo.appts_scheduled_more_than_62_days[subregion.slug][month]
+        hsh["patients_with_0_to_14_days_of_medications_#{month}".to_sym] = repo.diabetes_appts_scheduled_0_to_14_days[subregion.slug][month]
+        hsh["patients_with_15_to_31_days_of_medications_#{month}".to_sym] = repo.diabetes_appts_scheduled_15_to_31_days[subregion.slug][month]
+        hsh["patients_with_32_to_62_days_of_medications_#{month}".to_sym] = repo.diabetes_appts_scheduled_32_to_62_days[subregion.slug][month]
+        hsh["patients_with_62+_days_of_medications_#{month}".to_sym] = repo.diabetes_appts_scheduled_more_than_62_days[subregion.slug][month]
       }
     else
       {}
     end
 
     {
-      estimated_hypertension_population: nil,
+      estimated_diabetes_population: nil,
       total_registrations: total_registrations_count,
       total_assigned: assigned_patients_count,
       ltfu: ltfu_count,
@@ -182,10 +184,11 @@ class MonthlyStateData::Hypertension
       **registrations_by_month,
       **follow_ups_by_month,
       adjusted_patients_under_care: adjusted_patients_under_care_count,
-      controlled_count: controlled_count,
-      uncontrolled_count: uncontrolled_count,
+      bs_below_200_count: bs_below_200_count,
+      bs_200_to_300_count: bs_200_to_300_count,
+      bs_over_300_count: bs_over_300_count,
       missed_visits: missed_visits_count,
-      no_bp_taken: no_bp_taken_count,
+      no_bs_taken: no_bs_taken_count,
       **medications_dispensation_by_month,
       amlodipine: nil,
       arbs_and_ace_inhibitors: nil,
