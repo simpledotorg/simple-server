@@ -1,0 +1,22 @@
+<div class="d-lg-flex w-lg-50 pr-lg-2">
+  <div id="bs-below-200"
+       data-period="<%= period.to_s %>"
+       class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column
+                justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
+
+    <div class="pt-20px px-20px">
+      <%= render Dashboard::Card::TitleComponent.new(
+        title: "Blood sugar &lt;200".html_safe,
+        subtitle: t("bs_below_200_copy.reports_card_subtitle", region_name: region.name),
+        tooltip_definitions:
+          { "Numerator" => t("bs_below_200_copy.numerator"),
+            "Denominator" => t(denominator_copy, region_name: region.name) }
+
+      ) do |c| %>
+        <%= c.ltfu_toggle(id: 'controlledGraphLtfuToggle', enabled: with_ltfu) %>
+      <% end %>
+    </div>
+
+
+  </div>
+</div>

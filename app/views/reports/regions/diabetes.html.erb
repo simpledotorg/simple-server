@@ -8,6 +8,8 @@
 <% denominator_copy = @with_ltfu ? "diabetes_denominator_with_ltfu_copy" : "diabetes_denominator_copy" %>
 
 <div class="d-lg-flex flex-lg-wrap">
+
+  <%= render Dashboard::Diabetes::BsBelow200Component.new(region: @region, period: @period, with_ltfu: @with_ltfu) %>
   <!-- Blood sugar <200 Graph -->
   <div class="d-lg-flex w-lg-50 pr-lg-2">
     <div id="bs-below-200"
