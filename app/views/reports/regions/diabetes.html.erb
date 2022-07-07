@@ -9,7 +9,7 @@
 
 <div class="d-lg-flex flex-lg-wrap">
   <%= render Dashboard::Diabetes::BsBelow200GraphComponent.new(data: @data, region: @region, period: @period, with_ltfu: @with_ltfu) %>
-  <%= render Dashboard::Diabetes::RegistrationsAndFollowUpsGraphComponent.new(region: @region, period: @period) %>
+  <%= render Dashboard::Diabetes::RegistrationsAndFollowUpsGraphComponent.new(data: @data, region: @region, period: @period) %>
   <%= render Dashboard::Diabetes::BsOver200GraphComponent.new(region: @region, period: @period, with_ltfu: @with_ltfu) %>
 
   <!-- Missed Visits Graph -->

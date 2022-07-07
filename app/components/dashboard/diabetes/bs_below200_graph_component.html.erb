@@ -1,9 +1,8 @@
 <div id="bs-below-200" class="d-lg-flex w-lg-50 pr-lg-2">
   <%= render Dashboard::Card::GraphComponent.new(id: "bsBelow200PatientsTrend", data: graph_data, period: period) do |c| %>
     <%= c.title(title: "Blood sugar &lt;200".html_safe, subtitle: t("bs_below_200_copy.reports_card_subtitle", region_name: region.name)) do |title| %>
-      <%= title.tooltip(
-            { "Numerator" => t("bs_below_200_copy.numerator"),
-              "Denominator" => t(denominator_copy, region_name: region.name) }) %>
+      <%= title.tooltip({ "Numerator" => t("bs_below_200_copy.numerator"),
+                          "Denominator" => t(denominator_copy, region_name: region.name) }) %>
       <%= title.ltfu_toggle(id: 'controlledGraphLtfuToggle', enabled: with_ltfu) %>
     <% end %>
 

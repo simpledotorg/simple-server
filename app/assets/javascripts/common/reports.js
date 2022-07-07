@@ -50,23 +50,39 @@ const formatValue = (format, value) => {
   }
 }
 
+const createAxisMaxAndStepSize = (data) => {
+  const maxDataValue = Math.max(...Object.values(data));
+  const maxAxisValue = Math.round(maxDataValue * 1.15);
+  const axisStepSize = Math.round(maxAxisValue / 2);
+
+  return {
+    max: maxAxisValue,
+    stepSize: axisStepSize,
+  };
+};
+
 NewReports = function (id, data) {
   const container = document.querySelector(`#${id}`);
   const graphCanvas = container.querySelector('canvas')
   const defaultPeriod = container.getAttribute("data-period");
   const dataKeyNodes = container.querySelectorAll("[data-key]")
 
-  console.log(data);
   const populateDynamicComponents = (period) => {
     dataKeyNodes.forEach(dataNode => {
       const format = dataNode.dataset.format;
       const key = dataNode.dataset.key;
 
-      console.log(period);
-      console.log(key, data[key]);
+      if(!data[key]) {
+        throw `${key}: Key not present in data.`
+      }
+
       dataNode.innerHTML = formatValue(format, data[key][period]);
     })
   };
+
+  if(!ReportsConfig[id]) {
+    throw `Config for ${id} is not defined`;
+  }
 
   const graphConfig = ReportsConfig[id](data);
   if(!graphConfig) {
@@ -180,6 +196,144 @@ const ReportsConfig = {
       ],
     };
     return config;
+  },
+  cumulativeDiabetesRegistrationsTrend: function(data) {
+    const cumulativeDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(data.cumulativeDiabetesRegistrations);
+    const monthlyDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(data.monthlyDiabetesRegistrations);
+
+    const config = createBaseGraphConfig();
+    config.type = "bar";
+    config.data = {
+      labels: Object.keys(data.cumulativeDiabetesRegistrations),
+      datasets: [
+        {
+          yAxisID: "cumulativeDiabetesRegistrations",
+          label: "cumulative diabetes registrations",
+          backgroundColor: COLORS['transparent'],
+          borderColor: COLORS['darkPurple'],
+          borderWidth: 2,
+          pointBackgroundColor: COLORS['white'],
+          hoverBackgroundColor: COLORS['white'],
+          hoverBorderWidth: 2,
+          data: Object.values(data.cumulativeDiabetesRegistrations),
+          type: "line",
+        },
+        {
+          yAxisID: "monthlyDiabetesFollowups",
+          label: "monthly diabetes followups",
+          backgroundColor: COLORS['transparent'],
+          borderColor: COLORS['darkTeal'],
+          borderWidth: 2,
+          pointBackgroundColor: COLORS['white'],
+          hoverBackgroundColor: COLORS['white'],
+          hoverBorderWidth: 2,
+          data: Object.values(data.monthlyDiabetesFollowups),
+          type: "line",
+        },
+        {
+          yAxisID: "monthlyDiabetesRegistrations",
+          label: "monthly diabetes registrations",
+          backgroundColor: COLORS['lightPurple'],
+          hoverBackgroundColor: COLORS['darkPurple'],
+          data: Object.values(data.monthlyDiabetesRegistrations),
+          type: "bar",
+        },
+      ],
+    };
+    config.options.scales = {
+      xAxes: [
+        {
+          stacked: true,
+          display: true,
+          gridLines: {
+            display: false,
+            drawBorder: false,
+          },
+          ticks: {
+            autoSkip: false,
+            fontColor: COLORS['darkGrey'],
+            fontSize: 12,
+            fontFamily: "Roboto",
+            padding: 8,
+            min: 0,
+            beginAtZero: true,
+          },
+        },
+      ],
+      yAxes: [
+        {
+          id: "cumulativeDiabetesRegistrations",
+          position: "left",
+          stacked: true,
+          display: true,
+          gridLines: {
+            display: false,
+            drawBorder: false,
+          },
+          ticks: {
+            display: false,
+            autoSkip: false,
+            fontColor: COLORS['darkGrey'],
+            fontSize: 10,
+            fontFamily: "Roboto",
+            padding: 8,
+            min: 0,
+            beginAtZero: true,
+            stepSize: cumulativeDiabetesRegistrationsYAxis.stepSize,
+            max: cumulativeDiabetesRegistrationsYAxis.max,
+            callback: formatNumberWithCommas
+          },
+        },
+        {
+          id: "monthlyDiabetesRegistrations",
+          position: "right",
+          stacked: true,
+          display: true,
+          gridLines: {
+            display: true,
+            drawBorder: false,
+          },
+          ticks: {
+            display: false,
+            autoSkip: false,
+            fontColor: COLORS['darkGrey'],
+            fontSize: 10,
+            fontFamily: "Roboto",
+            padding: 8,
+            min: 0,
+            beginAtZero: true,
+            stepSize: monthlyDiabetesRegistrationsYAxis.stepSize,
+            max: monthlyDiabetesRegistrationsYAxis.max,
+            callback: formatNumberWithCommas
+          },
+        },
+        {
+          id: "monthlyDiabetesFollowups",
+          position: "right",
+          stacked: true,
+          display: true,
+          gridLines: {
+            display: false,
+            drawBorder: false,
+          },
+          ticks: {
+            display: false,
+            autoSkip: false,
+            fontColor: COLORS['darkGrey'],
+            fontSize: 10,
+            fontFamily: "Roboto",
+            padding: 8,
+            min: 0,
+            beginAtZero: true,
+            stepSize: cumulativeDiabetesRegistrationsYAxis.stepSize,
+            max: cumulativeDiabetesRegistrationsYAxis.max,
+            callback: formatNumberWithCommas
+          },
+        },
+      ],
+    };
+
+    return config;
   }
 }
 
@@ -225,7 +379,7 @@ Reports = function (withLtfu) {
     this.setupCumulativeRegistrationsGraph(data);
     this.setupVisitDetailsGraph(data);
     // this.setupBSBelow200Graph(data);
-    this.setupCumulativeDiabetesRegistrationsGraph(data);
+    //this.setupCumulativeDiabetesRegistrationsGraph(data);
     this.setupBSOver200Graph(data);
     this.setupDiabetesMissedVisitsGraph(data);
     this.setupDiabetesVisitDetailsGraph(data);
@@ -1114,230 +1268,6 @@ Reports = function (withLtfu) {
     if (bsOver200GraphCanvas) {
       new Chart(bsOver200GraphCanvas.getContext("2d"), bsOver200GraphConfig);
       populateBSOver200GraphDefault();
-    }
-  };
-
-  this.setupCumulativeDiabetesRegistrationsGraph = (data) => {
-    const cumulativeDiabetesRegistrationsYAxis = this.createAxisMaxAndStepSize(
-      data.cumulativeDiabetesRegistrations
-    );
-    const monthlyDiabetesRegistrationsYAxis = this.createAxisMaxAndStepSize(
-      data.monthlyDiabetesRegistrations
-    );
-    const monthlyDiabetesFollowupsYAxis = this.createAxisMaxAndStepSize(
-      data.monthlyDiabetesFollowups
-    );
-
-    const cumulativeDiabetesRegistrationsGraphConfig =
-      this.createBaseGraphConfig();
-    cumulativeDiabetesRegistrationsGraphConfig.type = "bar";
-    cumulativeDiabetesRegistrationsGraphConfig.data = {
-      labels: Object.keys(data.cumulativeDiabetesRegistrations),
-      datasets: [
-        {
-          yAxisID: "cumulativeDiabetesRegistrations",
-          label: "cumulative diabetes registrations",
-          backgroundColor: this.transparent,
-          borderColor: this.darkPurpleColor,
-          borderWidth: 2,
-          pointBackgroundColor: this.whiteColor,
-          hoverBackgroundColor: this.whiteColor,
-          hoverBorderWidth: 2,
-          data: Object.values(data.cumulativeDiabetesRegistrations),
-          type: "line",
-        },
-        {
-          yAxisID: "monthlyDiabetesFollowups",
-          label: "monthly diabetes followups",
-          backgroundColor: this.transparent,
-          borderColor: this.darkTealColor,
-          borderWidth: 2,
-          pointBackgroundColor: this.whiteColor,
-          hoverBackgroundColor: this.whiteColor,
-          hoverBorderWidth: 2,
-          data: Object.values(data.monthlyDiabetesFollowups),
-          type: "line",
-        },
-        {
-          yAxisID: "monthlyDiabetesRegistrations",
-          label: "monthly diabetes registrations",
-          backgroundColor: this.lightPurpleColor,
-          hoverBackgroundColor: this.darkPurpleColor,
-          data: Object.values(data.monthlyDiabetesRegistrations),
-          type: "bar",
-        },
-      ],
-    };
-    cumulativeDiabetesRegistrationsGraphConfig.options.tooltips = {
-      enabled: false,
-      custom: (tooltip) => {
-        let hoveredDatapoint = tooltip.dataPoints;
-        if (hoveredDatapoint)
-          populateCumulativeDiabetesRegistrationsGraph(
-            hoveredDatapoint[0].label
-          );
-        else populateCumulativeDiabetesRegistrationsGraphDefault();
-      },
-    };
-    cumulativeDiabetesRegistrationsGraphConfig.options.scales = {
-      xAxes: [
-        {
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 12,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-          },
-        },
-      ],
-      yAxes: [
-        {
-          id: "cumulativeDiabetesRegistrations",
-          position: "left",
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: false,
-          },
-          ticks: {
-            display: false,
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: cumulativeDiabetesRegistrationsYAxis.stepSize,
-            max: cumulativeDiabetesRegistrationsYAxis.max,
-            callback: (label) => {
-              return this.formatNumberWithCommas(label);
-            },
-          },
-        },
-        {
-          id: "monthlyDiabetesRegistrations",
-          position: "right",
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: true,
-            drawBorder: false,
-          },
-          ticks: {
-            display: false,
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: monthlyDiabetesRegistrationsYAxis.stepSize,
-            max: monthlyDiabetesRegistrationsYAxis.max,
-            callback: (label) => {
-              return this.formatNumberWithCommas(label);
-            },
-          },
-        },
-        {
-          id: "monthlyDiabetesFollowups",
-          position: "right",
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: false,
-          },
-          ticks: {
-            display: false,
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: cumulativeDiabetesRegistrationsYAxis.stepSize,
-            max: cumulativeDiabetesRegistrationsYAxis.max,
-            callback: (label) => {
-              return this.formatNumberWithCommas(label);
-            },
-          },
-        },
-      ],
-    };
-
-    const populateCumulativeDiabetesRegistrationsGraph = (period) => {
-      const cardNode = document.getElementById(
-        "cumulative-diabetes-registrations"
-      );
-      const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
-      const registrationsPeriodEndNode = cardNode.querySelector(
-        "[data-registrations-period-end]"
-      );
-      const monthlyRegistrationsNode = cardNode.querySelector(
-        "[data-monthly-registrations]"
-      );
-      const registrationsMonthEndNode = cardNode.querySelector(
-        "[data-registrations-month-end]"
-      );
-      const monthlyFollowUpsNode = cardNode.querySelector(
-        "[data-monthly-follow-ups]"
-      );
-      const followupsMonthEndNode = cardNode.querySelector(
-        "[data-follow-ups-month-end]"
-      );
-
-      const periodInfo = data.periodInfo[period];
-      const cumulativeDiabetesRegistrations =
-        data.cumulativeDiabetesRegistrations[period];
-      const monthlyDiabetesRegistrations =
-        data.monthlyDiabetesRegistrations[period];
-      const monthlyDiabetesFollowups = data.monthlyDiabetesFollowups[period];
-
-      monthlyRegistrationsNode.innerHTML = this.formatNumberWithCommas(
-        monthlyDiabetesRegistrations
-      );
-      totalPatientsNode.innerHTML = this.formatNumberWithCommas(
-        cumulativeDiabetesRegistrations
-      );
-      monthlyFollowUpsNode.innerHTML = this.formatNumberWithCommas(
-        monthlyDiabetesFollowups
-      );
-      registrationsPeriodEndNode.innerHTML = periodInfo.bp_control_end_date;
-      registrationsMonthEndNode.innerHTML = period;
-      followupsMonthEndNode.innerHTML = period;
-    };
-
-    const populateCumulativeDiabetesRegistrationsGraphDefault = () => {
-      const cardNode = document.getElementById(
-        "cumulative-diabetes-registrations"
-      );
-      const mostRecentPeriod = cardNode.getAttribute("data-period");
-
-      populateCumulativeDiabetesRegistrationsGraph(mostRecentPeriod);
-    };
-
-    const cumulativeDiabetesRegistrationsGraphCanvas = document.getElementById(
-      "cumulativeDiabetesRegistrationsTrend"
-    );
-    if (cumulativeDiabetesRegistrationsGraphCanvas) {
-      new Chart(
-        cumulativeDiabetesRegistrationsGraphCanvas.getContext("2d"),
-        cumulativeDiabetesRegistrationsGraphConfig
-      );
-      populateCumulativeDiabetesRegistrationsGraphDefault();
     }
   };
 

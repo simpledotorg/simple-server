@@ -1,65 +1,49 @@
-<div class="d-lg-flex w-lg-50 pl-lg-2">
-  <div id="cumulative-diabetes-registrations"
-       data-period="<%= period.to_s %>"
-       class="mt-8px mx-0px mb-16px pb-4px bg-white br-4px bs-small d-lg-flex fd-lg-column
-                justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black">
+<div id="bs-below-200" class="d-lg-flex w-lg-50 pr-lg-2">
+  <%= render Dashboard::Card::GraphComponent.new(id: "cumulativeDiabetesRegistrationsTrend", data: graph_data, period: period) do |c| %>
+    <%= c.title(title: "Registrations and follow-ups", subtitle:t("registered_diabetes_patients_copy.reports_card_subtitle", region_name: region.name)) do |title| %>
+      <%= title.tooltip({ "Total registered patients" => t("registered_diabetes_patients_copy.total_registered_patients", region_name: region.name),
+                      "Monthly registered patients" => t("registered_diabetes_patients_copy.monthly_registered_patients", region_name: region.name),
+                      "Monthly follow-up patients" => t("registered_diabetes_patients_copy.monthly_followup_patients", region_name: region.name) }) %>
+    <% end %>
 
-    <div class="pt-20px px-20px">
-      <%= render Dashboard::Card::TitleComponent.new(
-        title: "Registrations and follow-ups",
-        subtitle:t("registered_diabetes_patients_copy.reports_card_subtitle", region_name: region.name)) do |c| %>
-        <%= c.tooltip({ "Total registered patients" => t("registered_diabetes_patients_copy.total_registered_patients", region_name: region.name),
-                        "Monthly registered patients" => t("registered_diabetes_patients_copy.monthly_registered_patients", region_name: region.name),
-                        "Monthly follow-up patients" => t("registered_diabetes_patients_copy.monthly_followup_patients", region_name: region.name) }) %>
-      <% end %>
-
+    <%= c.summary do %>
       <div class="d-flex align-center mb-24px">
         <div class="flex-1 d-lg-flex align-lg-center">
-          <p class="c-print-black c-purple graph-percent fs-24px"
-             data-total-patients="">
-          </p>
+          <p class="c-print-black c-purple graph-percent fs-24px" data-key="cumulativeDiabetesRegistrations" data-format="numberWithCommas"></p>
           <div>
             <p class="m-0px c-black c-print-black fs-14px">
               total registrations<br>till
-              <span data-registrations-period-end=""></span>
+              <span data-key="endDate"></span>
             </p>
           </div>
         </div>
         <div class="flex-1 d-lg-flex align-lg-center flex-lg-1">
-          <p class="c-print-black c-purple-medium graph-percent fs-24px"
-             data-monthly-registrations="">
-          </p>
+          <p class="c-print-black c-purple-medium graph-percent fs-24px" data-key="monthlyDiabetesRegistrations" data-format="numberWithCommas"></p>
           <div>
             <p class="m-0px c-black c-print-black fs-14px">
               new registrations<br>in
-              <span data-registrations-month-end=""></span>
+              <span data-key="periodName"></span>
             </p>
           </div>
         </div>
         <div class="flex-1 d-lg-flex align-lg-center flex-lg-1">
-          <p class="c-print-black c-teal graph-percent fs-24px"
-             data-monthly-follow-ups="">
-          </p>
+          <p class="c-print-black c-teal graph-percent fs-24px" data-key="monthlyDiabetesFollowups" data-format="numberWithCommas"></p>
           <div>
             <p class="m-0px c-black c-print-black fs-14px">
               follow-up patients<br>in
-              <span data-follow-ups-month-end=""></span>
+              <span data-key="periodName"></span>
             </p>
           </div>
         </div>
       </div>
-    </div>
+    <% end %>
 
-    <div class="h-320px mr-13px ml-13px pb-4px">
-      <canvas id="cumulativeDiabetesRegistrationsTrend"></canvas>
-    </div>
-
-    <div>
+    <%= c.footer do %>
       <div class="p-relative px-20px mb-12px">
         <p class="m-0px c-grey-dark c-print-black">
           <strong>00</strong> DM-only, <strong class="ml-8px">00</strong> DM+HTN (Coming soon)
         </p>
       </div>
-    </div>
-  </div>
+    <% end %>
+  <% end %>
 </div>
