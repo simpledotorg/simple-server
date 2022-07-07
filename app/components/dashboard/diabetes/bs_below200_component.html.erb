@@ -13,7 +13,50 @@
                 "Denominator" => t(denominator_copy, region_name: region.name) }) %>
         <%= c.ltfu_toggle(id: 'controlledGraphLtfuToggle', enabled: with_ltfu) %>
       <% end %>
+
+      <div class="mb-12px d-lg-flex align-lg-center">
+        <p class="c-print-black c-green-dark graph-percent fs-28px"
+           data-rate="">
+        </p>
+        <div>
+          <p class="m-0px c-black">
+            <span data-total-patients=""></span>
+            patients with a blood sugar &lt;200 from
+            <span data-period-start=""></span>
+            to
+            <span data-period-end=""></span>
+          </p>
+          <p class="m-0px c-grey-dark c-print-black">
+            of <span data-registrations=""></span>
+            patients registered till
+            <span data-registrations-period-end=""></span>
+          </p>
+        </div>
+      </div>
     </div>
 
+    <div>
+      <div class="p-relative mb-12px">
+        <div class="h-320px mr-16px mb-12px ml-13px">
+          <canvas id="bsBelow200PatientsTrend"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="p-relative px-20px mb-12px">
+        <p class="m-0px c-grey-dark c-print-black">
+          <strong>
+            <span data-rbs-ppbs=""></span>
+          </strong> RBS/PPBS, &nbsp;
+          <strong>
+            <span data-fasting=""></span>
+          </strong> Fasting, &nbsp;
+          <strong>
+            <span data-hba1c=""></span>
+          </strong> HbA1c
+        </p>
+      </div>
+    </div>
   </div>
 </div>
