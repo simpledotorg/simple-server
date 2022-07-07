@@ -1,62 +1,46 @@
-<div class="d-lg-flex w-lg-50 pr-lg-2">
-  <div id="bs-below-200"
-       data-period="<%= period.to_s %>"
-       class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column
-                justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
+<div id="bs-below-200" class="d-lg-flex w-lg-50 pr-lg-2">
+  <%= render Dashboard::Card::GraphComponent.new(id: "bsBelow200PatientsTrend", data: graph_data, period: period) do |c| %>
+    <%= c.title(title: "Blood sugar &lt;200".html_safe, subtitle: t("bs_below_200_copy.reports_card_subtitle", region_name: region.name)) do |title| %>
+      <%= title.tooltip(
+            { "Numerator" => t("bs_below_200_copy.numerator"),
+              "Denominator" => t(denominator_copy, region_name: region.name) }) %>
+      <%= title.ltfu_toggle(id: 'controlledGraphLtfuToggle', enabled: with_ltfu) %>
+    <% end %>
 
-    <div class="pt-20px px-20px">
-      <%= render Dashboard::Card::TitleComponent.new(
-        title: "Blood sugar &lt;200".html_safe,
-        subtitle: t("bs_below_200_copy.reports_card_subtitle", region_name: region.name)) do |c| %>
-        <%= c.tooltip(
-              { "Numerator" => t("bs_below_200_copy.numerator"),
-                "Denominator" => t(denominator_copy, region_name: region.name) }) %>
-        <%= c.ltfu_toggle(id: 'controlledGraphLtfuToggle', enabled: with_ltfu) %>
-      <% end %>
-
+    <%= c.summary do %>
       <div class="mb-12px d-lg-flex align-lg-center">
-        <p class="c-print-black c-green-dark graph-percent fs-28px"
-           data-rate="">
-        </p>
+        <p class="c-print-black c-green-dark graph-percent fs-28px" data-key="bsBelow200Rate" data-format="percentage"></p>
         <div>
           <p class="m-0px c-black">
-            <span data-total-patients=""></span>
+            <span data-key="bsBelow200Numerator" data-format="numberWithCommas"></span>
             patients with a blood sugar &lt;200 from
-            <span data-period-start=""></span>
+            <span data-key="startDate"></span>
             to
-            <span data-period-end=""></span>
+            <span data-key="endDate"></span>
           </p>
           <p class="m-0px c-grey-dark c-print-black">
-            of <span data-registrations=""></span>
+            of <span data-key="adjustedPatients" data-format="numberWithCommas"></span>
             patients registered till
-            <span data-registrations-period-end=""></span>
+            <span data-key="registrationDate"></span>
           </p>
         </div>
       </div>
-    </div>
+    <% end %>
 
-    <div>
-      <div class="p-relative mb-12px">
-        <div class="h-320px mr-16px mb-12px ml-13px">
-          <canvas id="bsBelow200PatientsTrend"></canvas>
-        </div>
-      </div>
-    </div>
-
-    <div>
+    <%= c.footer do %>
       <div class="p-relative px-20px mb-12px">
         <p class="m-0px c-grey-dark c-print-black">
           <strong>
-            <span data-rbs-ppbs=""></span>
+            <span data-key="rbsPpbsBreakdownRates" data-format="percentage"></span>
           </strong> RBS/PPBS, &nbsp;
           <strong>
-            <span data-fasting=""></span>
+            <span data-key="fbsBreakdownRates" data-format="percentage"></span>
           </strong> Fasting, &nbsp;
           <strong>
-            <span data-hba1c=""></span>
+            <span data-key="hba1cBreakdownRates" data-format="percentage"></span>
           </strong> HbA1c
         </p>
       </div>
-    </div>
-  </div>
+    <% end %>
+  <% end %>
 </div>

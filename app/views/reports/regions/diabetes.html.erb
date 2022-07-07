@@ -8,7 +8,7 @@
 <% denominator_copy = @with_ltfu ? "diabetes_denominator_with_ltfu_copy" : "diabetes_denominator_copy" %>
 
 <div class="d-lg-flex flex-lg-wrap">
-  <%= render Dashboard::Diabetes::BsBelow200GraphComponent.new(region: @region, period: @period, with_ltfu: @with_ltfu) %>
+  <%= render Dashboard::Diabetes::BsBelow200GraphComponent.new(data: @data, region: @region, period: @period, with_ltfu: @with_ltfu) %>
   <%= render Dashboard::Diabetes::RegistrationsAndFollowUpsGraphComponent.new(region: @region, period: @period) %>
   <%= render Dashboard::Diabetes::BsOver200GraphComponent.new(region: @region, period: @period, with_ltfu: @with_ltfu) %>
 
