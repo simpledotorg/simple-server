@@ -59,7 +59,7 @@ def mock_block_repo(repo, district, month)
   })
 end
 
-describe MonthlyDistrictReport::BlockData do
+describe MonthlyDistrictReport::Hypertension::BlockData do
   context "#header_rows" do
     it "returns a list of header rows with the correct number of columns" do
       district = setup_district_with_facilities
@@ -84,10 +84,10 @@ describe MonthlyDistrictReport::BlockData do
       expect(rows[0].count).to eq 39
 
       expect(rows[0]["Blocks"]).to eq "Test Block 1"
-      expect(rows[0]["Total registrations"]).to eq 42
-      expect(rows[0]["Total assigned patients"]).to eq 32
-      expect(rows[0]["Total patients under care"]).to eq 12
-      expect(rows[0]["Total patients lost to followup"]).to eq 3
+      expect(rows[0]["Total hypertension registrations"]).to eq 42
+      expect(rows[0]["Total assigned hypertension patients"]).to eq 32
+      expect(rows[0]["Total hypertension patients under care"]).to eq 12
+      expect(rows[0]["Total hypertension patients lost to followup"]).to eq 3
       expect(rows[0]["% BP controlled"]).to eq "40%"
       expect(rows[0]["% BP uncontrolled"]).to eq "20%"
       expect(rows[0]["% Missed Visits"]).to eq "30%"
@@ -100,10 +100,10 @@ describe MonthlyDistrictReport::BlockData do
       expect(periods.map { |period| rows[0]["controlled_rates - #{period}"] }).to eq %w[2% 10% 21% 24% 22% 40%]
 
       expect(rows[1]["Blocks"]).to eq "Test Block 2"
-      expect(rows[1]["Total registrations"]).to eq 23
-      expect(rows[1]["Total assigned patients"]).to eq 12
-      expect(rows[1]["Total patients under care"]).to eq 24
-      expect(rows[1]["Total patients lost to followup"]).to eq 4
+      expect(rows[1]["Total hypertension registrations"]).to eq 23
+      expect(rows[1]["Total assigned hypertension patients"]).to eq 12
+      expect(rows[1]["Total hypertension patients under care"]).to eq 24
+      expect(rows[1]["Total hypertension patients lost to followup"]).to eq 4
       expect(rows[1]["% BP controlled"]).to eq "35%"
       expect(rows[1]["% BP uncontrolled"]).to eq "15%"
       expect(rows[1]["% Missed Visits"]).to eq "40%"

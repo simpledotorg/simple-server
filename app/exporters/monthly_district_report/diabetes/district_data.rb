@@ -94,10 +94,10 @@ class MonthlyDistrictReport::Diabetes::DistrictData
       "Total diabetes registrations" => repo.cumulative_diabetes_registrations[district.slug][report_month], # "Total diabetes registrations"
       "Total assigned diabetes patients" => repo.cumulative_assigned_diabetic_patients[district.slug][report_month], # "Total diabetes assigned patients"
       "Total diabetes patients under care" => repo.diabetes_under_care[district.slug][report_month], # "Total diabetes patients under care"
-      "% Blood Sugar Below 200" => percentage_string(repo.bs_below_200_rates[district.slug][report_month]), # "% BS <200",
-      "% Blood Sugar between 200 and 300" => percentage_string(repo.bs_200_to_300_rates[district.slug][report_month]), # "% 200 <= BS < 300",
-      "% Blood Sugar Over 300" => percentage_string(repo.bs_over_300_rates[district.slug][report_month]), # "% BS >=300",
-      "% Missed Visits" => percentage_string(repo.diabetes_missed_visits_rates[district.slug][report_month]), # "% Missed Visits",
+      "% Blood sugar below 200" => percentage_string(repo.bs_below_200_rates[district.slug][report_month]), # "% BS <200",
+      "% Blood sugar between 200 and 300" => percentage_string(repo.bs_200_to_300_rates[district.slug][report_month]), # "% 200 <= BS < 300",
+      "% Blood sugar over 300" => percentage_string(repo.bs_over_300_rates[district.slug][report_month]), # "% BS >=300",
+      "% Diabetes missed visits" => percentage_string(repo.diabetes_missed_visits_rates[district.slug][report_month]), # "% Missed Visits",
       "% Visits, no blood sugar taken" => percentage_string(repo.visited_without_bs_taken_rates[district.slug][report_month]), # "% Visits, no Blood sugar taken",
       **last_6_months_data(repo.cumulative_diabetes_registrations, :cumulative_diabetes_registrations), # "Total registered diabetes patients",
       **last_6_months_data(repo.diabetes_under_care, :diabetes_under_care), # "Patients under care",

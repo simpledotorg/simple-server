@@ -21,15 +21,15 @@ class MonthlyDistrictReport::Hypertension::BlockData
   def header_rows
     [[ # row 1
       "Blocks",
-      "Total registrations",
-      "Total assigned patients",
-      "Total patients under care",
-      "Total patients lost to followup",
+      "Total hypertension registrations",
+      "Total assigned hypertension patients",
+      "Total hypertension patients under care",
+      "Total hypertension patients lost to followup",
       "Treatment outcome", *Array.new(3, nil),
-      "Total registered patients", *Array.new(5, nil),
-      "Patients under care", *Array.new(5, nil),
-      "New registered patients", *Array.new(5, nil),
-      "Patient follow-ups", *Array.new(5, nil),
+      "Total registered hypertension patients", *Array.new(5, nil),
+      "Hypertension patients under care", *Array.new(5, nil),
+      "New registered hypertension patients", *Array.new(5, nil),
+      "Hypertension patient follow-ups", *Array.new(5, nil),
       "BP controlled rate", *Array.new(5, nil)
     ],
       [ # row 2
@@ -55,10 +55,10 @@ class MonthlyDistrictReport::Hypertension::BlockData
   def row_data(block)
     {
       "Blocks" => block.name,
-      "Total registrations" => repo.cumulative_registrations[block.slug][report_month],
-      "Total assigned patients" => repo.cumulative_assigned_patients[block.slug][report_month],
-      "Total patients under care" => repo.adjusted_patients[block.slug][report_month],
-      "Total patients lost to followup" => repo.ltfu[block.slug][report_month],
+      "Total hypertension registrations" => repo.cumulative_registrations[block.slug][report_month],
+      "Total assigned hypertension patients" => repo.cumulative_assigned_patients[block.slug][report_month],
+      "Total hypertension patients under care" => repo.adjusted_patients[block.slug][report_month],
+      "Total hypertension patients lost to followup" => repo.ltfu[block.slug][report_month],
       "% BP controlled" => percentage_string(repo.controlled_rates[block.slug][report_month]),
       "% BP uncontrolled" => percentage_string(repo.uncontrolled_rates[block.slug][report_month]),
       "% Missed Visits" => percentage_string(repo.missed_visits_rate[block.slug][report_month]),

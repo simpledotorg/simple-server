@@ -22,7 +22,7 @@ def mock_facility_repo(repo, district, month)
   })
 end
 
-describe MonthlyDistrictReport::FacilityData do
+describe MonthlyDistrictReport::Diabetes::FacilityData do
   around(:example) do |example|
     previous_locale = I18n.locale
     I18n.locale = :en_IN
@@ -63,18 +63,18 @@ describe MonthlyDistrictReport::FacilityData do
       expect(rows[0]["Facility size"]).to eq "HWC/SC"
       expect(rows[0]["Name of facility"]).to eq "Test Facility 1"
       expect(rows[0]["Name of block"]).to eq "Test Block 1"
-      expect(rows[0]["Total registrations"]).to eq 42
-      expect(rows[0]["Patients under care"]).to eq 12
-      expect(rows[0]["Registrations this month"]).to eq 1
+      expect(rows[0]["Total diabetes registrations"]).to eq 42
+      expect(rows[0]["Diabetes patients under care"]).to eq 12
+      expect(rows[0]["Diabetes patients registered this month"]).to eq 1
       expect(rows[0]["BP control % of all patients registered before 3 months"]).to eq "30%"
 
       expect(rows[1]["Sl.No"]).to eq 2
       expect(rows[1]["Facility size"]).to eq "PHC"
       expect(rows[1]["Name of facility"]).to eq "Test Facility 2"
       expect(rows[1]["Name of block"]).to eq "Test Block 2"
-      expect(rows[1]["Total registrations"]).to eq 23
-      expect(rows[1]["Patients under care"]).to eq 24
-      expect(rows[1]["Registrations this month"]).to eq 2
+      expect(rows[1]["Total diabetes registrations"]).to eq 23
+      expect(rows[1]["Diabetes patients under care"]).to eq 24
+      expect(rows[1]["Diabetes patients registered this month"]).to eq 2
       expect(rows[1]["BP control % of all patients registered before 3 months"]).to eq "40%"
     end
 

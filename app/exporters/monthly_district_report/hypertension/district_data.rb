@@ -21,12 +21,12 @@ class MonthlyDistrictReport::Hypertension::DistrictData
       "Total CHCs",
       "Total PHCs",
       "Total HWCs/SCs",
-      "Total registrations",
-      "Total assigned patients",
-      "Total patients under care",
-      "Treatment outcome", *Array.new(3, nil),
-      "Total registered patients", *Array.new(5, nil),
-      "Patients under care", *Array.new(5, nil),
+      "Total hypertension registrations",
+      "Total assigned hypertension patients",
+      "Total hypertension patients under care",
+      "Treatment outcome for hypertension patients under care", *Array.new(3, nil),
+      "Total registered hypertension patients", *Array.new(5, nil),
+      "Hypertension patients under care", *Array.new(5, nil),
       "New registrations (DH/SDH/CHC)", *Array.new(5, nil),
       "New registrations (PHC)", *Array.new(5, nil),
       "New registrations (HWC/SC)", *Array.new(5, nil),
@@ -82,9 +82,9 @@ class MonthlyDistrictReport::Hypertension::DistrictData
       "Total CHCs" => facility_counts_by_size.fetch("medium", 0), # "Total CHCs"
       "Total PHCs" => facility_counts_by_size.fetch("small", 0), # "Total PHCs"
       "Total HWCs/SCs" => facility_counts_by_size.fetch("community", 0), # "Total HWCs/SCs"
-      "Total registrations" => repo.cumulative_registrations[district.slug][report_month], # "Total registrations"
-      "Total assigned patients" => repo.cumulative_assigned_patients[district.slug][report_month], # "Total assigned patients"
-      "Total patients under care" => repo.under_care[district.slug][report_month], # "Total patients under care"
+      "Total hypertension registrations" => repo.cumulative_registrations[district.slug][report_month], # "Total registrations"
+      "Total assigned hypertension patients" => repo.cumulative_assigned_patients[district.slug][report_month], # "Total assigned patients"
+      "Total hypertension patients under care" => repo.under_care[district.slug][report_month], # "Total patients under care"
       "% BP controlled" => percentage_string(repo.controlled_rates[district.slug][report_month]), # "% BP controlled",
       "% BP uncontrolled" => percentage_string(repo.uncontrolled_rates[district.slug][report_month]), # "% BP uncontrolled",
       "% Missed Visits" => percentage_string(repo.missed_visits_rate[district.slug][report_month]), # "% Missed Visits",
