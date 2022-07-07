@@ -7,16 +7,13 @@
     <div class="pt-20px px-20px">
       <%= render Dashboard::Card::TitleComponent.new(
         title: "Blood sugar &lt;200".html_safe,
-        subtitle: t("bs_below_200_copy.reports_card_subtitle", region_name: region.name),
-        tooltip_definitions:
-          { "Numerator" => t("bs_below_200_copy.numerator"),
-            "Denominator" => t(denominator_copy, region_name: region.name) }
-
-      ) do |c| %>
+        subtitle: t("bs_below_200_copy.reports_card_subtitle", region_name: region.name)) do |c| %>
+        <%= c.tooltip(
+              { "Numerator" => t("bs_below_200_copy.numerator"),
+                "Denominator" => t(denominator_copy, region_name: region.name) }) %>
         <%= c.ltfu_toggle(id: 'controlledGraphLtfuToggle', enabled: with_ltfu) %>
       <% end %>
     </div>
-
 
   </div>
 </div>

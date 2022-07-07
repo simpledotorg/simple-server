@@ -1,9 +1,9 @@
 <div class="card mt-0 pr-0 pr-md-3 pb-inside-avoid">
-  <%= render Dashboard::Card::TitleComponent.new(
-    title: "Healthcare worker activity",
-    tooltip_definitions: {
+  <%= render Dashboard::Card::TitleComponent.new(title: "Healthcare worker activity") do |c| %>
+    <%= c.tooltip({
       "Blood sugar measures taken" => t("bs_measures_taken_copy", region_name: region.name)
     }) %>
+    <% end %>
 
   <div class="table-responsive-md">
     <table class="analytics-table table-compact">
