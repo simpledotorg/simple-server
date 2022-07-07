@@ -214,9 +214,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
 
     context "when region has diabetes management enabled" do
-      before do
-        Flipper.disable(:diabetes_management_reports)
-      end
 
       it "contains a link to the diabetes management reports if the feature flag is enabled" do
         @facility.update(enable_diabetes_management: true)

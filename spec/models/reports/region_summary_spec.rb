@@ -294,12 +294,6 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
     let(:facility_2) { district_with_facilities[:facility_2] }
     let(:period) { jan_2020..mar_2020 }
 
-    before :each do
-      Flipper.enable(:diabetes_management_reports)
-      facility_1.update(enable_diabetes_management: true)
-      facility_2.update(enable_diabetes_management: true)
-    end
-
     it "returns the adjusted count of patients with bs <200 in a region" do
       facility_1_patients = create_list(:patient, 4, :diabetes, assigned_facility: facility_1, recorded_at: jan_2019)
       create(:blood_sugar, :with_encounter, :random, :bs_below_200, patient: facility_1_patients.first, facility: facility_1, recorded_at: jan_2020 + 3.months)

@@ -242,12 +242,6 @@ describe Reports::RegionSummarySchema, type: :model do
     let(:facility_2) { distict_with_facilities[:facility_2] }
     let(:period) { jan_2020..mar_2020 }
 
-    before :each do
-      Flipper.enable(:diabetes_management_reports)
-      facility_1.update(enable_diabetes_management: true)
-      facility_2.update(enable_diabetes_management: true)
-    end
-
     describe "#bs_below_200_rates" do
       it "returns the bs_below_200 rates over time for a region" do
         facility_1_patients = create_list(:patient, 4, :diabetes, assigned_facility: facility_1, recorded_at: jan_2019)
