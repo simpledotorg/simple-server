@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Dashboard::Diabetes::BsBelow200Component, type: :component do
+RSpec.describe Dashboard::Diabetes::RegistrationsAndFollowUpsGraphComponent, type: :component do
   pending "add some examples to (or delete) #{__FILE__}"
 
   # it "renders something useful" do

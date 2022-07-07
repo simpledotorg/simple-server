@@ -1,4 +1,4 @@
-class Dashboard::Diabetes::BsBelow200Component < ApplicationComponent
+class Dashboard::Diabetes::BsBelow200GraphComponent < ApplicationComponent
   attr_reader :region
   attr_reader :period
   attr_reader :with_ltfu
