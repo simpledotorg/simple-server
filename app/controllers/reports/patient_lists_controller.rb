@@ -5,8 +5,7 @@ class Reports::PatientListsController < AdminController
     PatientListDownloadJob.perform_async(
       current_admin.email,
       region_class,
-      download_params(region_class),
-      diagnosis: :all
+      download_params(region_class)
     )
     redirect_back(
       fallback_location: reports_region_path(@region, report_scope: params[:report_scope]),
