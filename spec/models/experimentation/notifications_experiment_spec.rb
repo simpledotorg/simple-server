@@ -316,15 +316,15 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       create(:experiment, experiment_type: "current_patients")
       experiment = Experimentation::CurrentPatientExperiment.first
       treatment_group = create(:treatment_group, experiment: experiment)
-      create(:reminder_template, message: "1", treatment_group: treatment_group, remind_on_in_days: 0)
-      create(:reminder_template, message: "2", treatment_group: treatment_group, remind_on_in_days: 0)
+      template_1 = create(:reminder_template, message: "1", treatment_group: treatment_group, remind_on_in_days: 0)
+      template_2 = create(:reminder_template, message: "2", treatment_group: treatment_group, remind_on_in_days: 0)
       patient = create(:patient)
       create(:appointment, scheduled_date: Date.today, status: :scheduled, patient: patient)
       experiment.enroll_patients(Date.today)
 
       experiment.schedule_notifications(Date.today)
       expect(Notification.pluck(:patient_id)).to contain_exactly(patient.id, patient.id) # Once for each reminder template
-      expect(Experimentation::TreatmentGroupMembership.pluck(:messages).map(&:keys)).to contain_exactly(["1", "2"])
+      expect(Experimentation::TreatmentGroupMembership.pluck(:messages).flat_map(&:keys)).to contain_exactly(template_1.id, template_2.id)
     end
 
     it "doesn't create duplicate notifications if a notification has already been created" do
@@ -671,27 +671,10 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       appointment = create(:appointment, status: :scheduled, patient: patient)
       experiment = Experimentation::NotificationsExperiment.find(create(:experiment).id)
       treatment_group = create(:treatment_group, experiment: experiment)
-      create(:reminder_template, treatment_group: treatment_group, message: "hello.set01")
+      template = create(:reminder_template, treatment_group: treatment_group, message: "hello.set01")
       membership = treatment_group.enroll(patient, appointment_id: appointment.id, messages: {})
 
-      membership.messages["hello.set01"] = {result: :failed}
-      membership.save!
-
-      experiment.evict_patients
-
-      expect(experiment.treatment_group_memberships.status_enrolled.count).to eq 0
-      expect(experiment.treatment_group_memberships.status_evicted.pluck(:patient_id)).to contain_exactly(patient.id)
-    end
-
-    it "evicts patients whose notification has failed" do
-      patient = create(:patient)
-      appointment = create(:appointment, status: :scheduled, patient: patient)
-      experiment = Experimentation::NotificationsExperiment.find(create(:experiment).id)
-      treatment_group = create(:treatment_group, experiment: experiment)
-      create(:reminder_template, treatment_group: treatment_group, message: "hello.set01")
-      membership = treatment_group.enroll(patient, appointment_id: appointment.id, messages: {})
-
-      membership.messages["hello.set01"] = {result: :failed}
+      membership.messages[template.id] = {result: :failed}
       membership.save!
 
       experiment.evict_patients
