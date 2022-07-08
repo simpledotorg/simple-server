@@ -5,10 +5,10 @@ module MonthlyDistrictData
     attr_reader :region, :period, :exporter, :medications_dispensation_enabled
 
     def initialize(exporter:)
+      @region = exporter.region
+      @period = exporter.period
+      @medications_dispensation_enabled = exporter.medications_dispensation_enabled
       @exporter = exporter
-      @region = @exporter.region
-      @period = @exporter.period
-      @medications_dispensation_enabled = @exporter.medications_dispensation_enabled
     end
 
     def report

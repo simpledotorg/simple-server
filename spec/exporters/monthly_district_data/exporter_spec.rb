@@ -46,11 +46,13 @@ RSpec.describe MonthlyDistrictData::Exporter, reporting_spec: true do
   describe "#report" do
     context "when medications_dispensed is disabled" do
       let(:service) {
-        described_class.new(exporter: MonthlyDistrictData::Hypertension.new(
-          region: region,
-          period: period,
-          medications_dispensation_enabled: false
-        ))
+        described_class.new(
+          exporter: MonthlyDistrictData::Diabetes.new(
+            region: region,
+            period: period,
+            medications_dispensation_enabled: false
+          )
+        )
       }
 
       let(:sections) {

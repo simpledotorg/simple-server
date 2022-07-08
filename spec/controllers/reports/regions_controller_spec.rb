@@ -621,14 +621,16 @@ RSpec.describe Reports::RegionsController, type: :controller do
       sign_in(cvho.email_authentication)
 
       period = Period.month("July 2018")
+
       exporter = MonthlyDistrictData::Hypertension.new(
         region: region,
         period: period,
         medications_dispensation_enabled: false
       )
+      allow(MonthlyDistrictData::Hypertension).to receive(:new).and_return(exporter)
       expect(MonthlyDistrictData::Exporter).to receive(:new).with(exporter: exporter).and_call_original
       get :hypertension_monthly_district_data,
-        params: {id: region.slug, report_scope: "district", format: "csv", period: period.value}
+        params: {id: region.slug, report_scope: "district", format: "csv", period: period.attributes}
     end
   end
 
@@ -685,9 +687,10 @@ RSpec.describe Reports::RegionsController, type: :controller do
         period: period,
         medications_dispensation_enabled: false
       )
+      allow(MonthlyDistrictData::Diabetes).to receive(:new).and_return(exporter)
       expect(MonthlyDistrictData::Exporter).to receive(:new).with(exporter: exporter).and_call_original
       get :diabetes_monthly_district_data,
-        params: {id: region.slug, report_scope: "district", format: "csv", period: period.value}
+        params: {id: region.slug, report_scope: "district", format: "csv", period: period.attributes}
     end
   end
 
@@ -739,13 +742,15 @@ RSpec.describe Reports::RegionsController, type: :controller do
       sign_in(cvho.email_authentication)
 
       period = Period.month("July 2018")
-      expect(MonthlyStateData::Exporter).to receive(:new).with(exporter: MonthlyStateData::Hypertension.new(
+      exporter = MonthlyStateData::Hypertension.new(
         region: region,
         period: period,
         medications_dispensation_enabled: false
-      )).and_call_original
+      )
+      allow(MonthlyStateData::Hypertension).to receive(:new).and_return(exporter)
+      expect(MonthlyStateData::Exporter).to receive(:new).with(exporter: exporter).and_call_original
       get :hypertension_monthly_state_data,
-        params: {id: region.slug, report_scope: "state", format: "csv", period: period.value}
+        params: {id: region.slug, report_scope: "state", format: "csv", period: period.attributes}
     end
   end
   describe "#diabetes_monthly_state_data" do
@@ -796,13 +801,15 @@ RSpec.describe Reports::RegionsController, type: :controller do
       sign_in(cvho.email_authentication)
 
       period = Period.month("July 2018")
-      expect(MonthlyStateData::Exporter).to receive(:new).with(exporter: MonthlyStateData::Diabetes.new(
+      exporter = MonthlyStateData::Diabetes.new(
         region: region,
         period: period,
         medications_dispensation_enabled: false
-      )).and_call_original
+      )
+      allow(MonthlyStateData::Diabetes).to receive(:new).and_return(exporter)
+      expect(MonthlyStateData::Exporter).to receive(:new).with(exporter: exporter).and_call_original
       get :diabetes_monthly_state_data,
-        params: {id: region.slug, report_scope: "state", format: "csv", period: period.value}
+        params: {id: region.slug, report_scope: "state", format: "csv", period: period.attributes}
     end
   end
 
