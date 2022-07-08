@@ -498,7 +498,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       @facility = create(:facility, facility_group: @facility_group)
     end
 
-    it "retrieves the monthly district report" do
+    it "retrieves the hypertension monthly district report" do
       Flipper.enable(:monthly_district_report)
 
       district = @facility_group.region
@@ -507,7 +507,30 @@ RSpec.describe Reports::RegionsController, type: :controller do
       files = []
       Timecop.freeze("June 1 2020") do
         sign_in(cvho.email_authentication)
-        get :monthly_district_report, params: {id: district.slug, report_scope: "district", format: "zip"}
+        get :hypertension_monthly_district_report, params: {id: district.slug, report_scope: "district", format: "zip"}
+      end
+      expect(response).to be_successful
+
+      Zip::File.open_buffer(response.body) do |zip|
+        zip.map do |entry|
+          files << entry.name
+        end
+      end
+
+      expect(files).to match_array(%w[facility_data.csv block_data.csv district_data.csv])
+      expect(response.headers["Content-Disposition"]).to include("filename=\"monthly-district-report-#{district.slug}-jun-2020.zip\"")
+    end
+
+    it "retrieves the diabetes monthly district report" do
+      Flipper.enable(:monthly_district_report)
+
+      district = @facility_group.region
+      refresh_views
+
+      files = []
+      Timecop.freeze("June 1 2020") do
+        sign_in(cvho.email_authentication)
+        get :diabetes_monthly_district_report, params: {id: district.slug, report_scope: "district", format: "zip"}
       end
       expect(response).to be_successful
 
@@ -550,7 +573,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
   end
 
-  describe "#monthly_district_data_report" do
+  describe "#hypertension_monthly_district_data" do
     let(:facility_group) { create(:facility_group, organization: organization) }
     let(:facility) { create(:facility, facility_group: facility_group) }
     let(:region) { facility.region.district_region }
@@ -558,7 +581,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
     it "returns 401 when user is not authorized" do
       facility
 
-      get :monthly_district_data_report, params: {id: region.slug, report_scope: "district", format: "csv"}
+      get :hypertension_monthly_district_data, params: {id: region.slug, report_scope: "district", format: "csv"}
       expect(response.status).to eq(401)
     end
 
@@ -566,7 +589,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       facility
       sign_in(cvho.email_authentication)
 
-      get :monthly_district_data_report, params: {id: "not-found", report_scope: "district", format: "csv"}
+      get :hypertension_monthly_district_data, params: {id: "not-found", report_scope: "district", format: "csv"}
       expect(response.status).to eq(302)
     end
 
@@ -574,7 +597,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       facility
       sign_in(cvho.email_authentication)
 
-      get :monthly_district_data_report, params: {id: facility.slug, report_scope: "district", format: "csv"}
+      get :hypertension_monthly_district_data, params: {id: facility.slug, report_scope: "district", format: "csv"}
       expect(response.status).to eq(302)
     end
 
@@ -584,7 +607,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
         sign_in(cvho.email_authentication)
 
         expect_any_instance_of(MonthlyDistrictData::Exporter).to receive(:report).and_call_original
-        get :monthly_district_data_report, params: {id: region.slug, report_scope: "district", format: "csv"}
+        get :hypertension_monthly_district_data, params: {id: region.slug, report_scope: "district", format: "csv"}
         expect(response.status).to eq(200)
         expect(response.body).to include("Monthly facility data for #{region.name} #{Date.current.strftime("%B %Y")}")
         report_date = Date.current.strftime("%b-%Y").downcase
@@ -598,21 +621,26 @@ RSpec.describe Reports::RegionsController, type: :controller do
       sign_in(cvho.email_authentication)
 
       period = Period.month("July 2018")
-      expect(MonthlyDistrictData::Exporter).to receive(:new).with(region, period, medications_dispensation_enabled: false).and_call_original
-      get :monthly_district_data_report,
+      exporter = MonthlyDistrictData::Hypertension.new(
+        region: region,
+        period: period,
+        medications_dispensation_enabled: false
+      )
+      expect(MonthlyDistrictData::Exporter).to receive(:new).with(exporter: exporter).and_call_original
+      get :hypertension_monthly_district_data,
         params: {id: region.slug, report_scope: "district", format: "csv", period: period.value}
     end
   end
 
-  describe "#monthly_state_data_report" do
+  describe "#diabetes_monthly_district_data" do
     let(:facility_group) { create(:facility_group, organization: organization) }
     let(:facility) { create(:facility, facility_group: facility_group) }
-    let(:region) { facility.region.state_region }
+    let(:region) { facility.region.district_region }
 
     it "returns 401 when user is not authorized" do
       facility
 
-      get :monthly_state_data_report, params: {id: region.slug, report_scope: "state", format: "csv"}
+      get :diabetes_monthly_district_data, params: {id: region.slug, report_scope: "district", format: "csv"}
       expect(response.status).to eq(401)
     end
 
@@ -620,15 +648,15 @@ RSpec.describe Reports::RegionsController, type: :controller do
       facility
       sign_in(cvho.email_authentication)
 
-      get :monthly_state_data_report, params: {id: "not-found", report_scope: "state", format: "csv"}
+      get :diabetes_monthly_district_data, params: {id: "not-found", report_scope: "district", format: "csv"}
       expect(response.status).to eq(302)
     end
 
-    it "returns 302 if region is not state" do
+    it "returns 302 if region is not district" do
       facility
       sign_in(cvho.email_authentication)
 
-      get :monthly_state_data_report, params: {id: facility.slug, report_scope: "state", format: "csv"}
+      get :diabetes_monthly_district_data, params: {id: facility.slug, report_scope: "district", format: "csv"}
       expect(response.status).to eq(302)
     end
 
@@ -637,8 +665,67 @@ RSpec.describe Reports::RegionsController, type: :controller do
         facility
         sign_in(cvho.email_authentication)
 
-        expect_any_instance_of(MonthlyStateDataService).to receive(:report).and_call_original
-        get :monthly_state_data_report, params: {id: region.slug, report_scope: "state", format: "csv"}
+        expect_any_instance_of(MonthlyDistrictData::Exporter).to receive(:report).and_call_original
+        get :diabetes_monthly_district_data, params: {id: region.slug, report_scope: "district", format: "csv"}
+        expect(response.status).to eq(200)
+        expect(response.body).to include("Monthly facility data for #{region.name} #{Date.current.strftime("%B %Y")}")
+        report_date = Date.current.strftime("%b-%Y").downcase
+        expected_filename = "monthly-facility-data-#{region.slug}-#{report_date}.csv"
+        expect(response.headers["Content-Disposition"]).to include(%(filename="#{expected_filename}"))
+      end
+    end
+
+    it "passes the provided period to the csv service" do
+      facility
+      sign_in(cvho.email_authentication)
+
+      period = Period.month("July 2018")
+      exporter = MonthlyDistrictData::Diabetes.new(
+        region: region,
+        period: period,
+        medications_dispensation_enabled: false
+      )
+      expect(MonthlyDistrictData::Exporter).to receive(:new).with(exporter: exporter).and_call_original
+      get :diabetes_monthly_district_data,
+        params: {id: region.slug, report_scope: "district", format: "csv", period: period.value}
+    end
+  end
+
+  describe "#hypertension_monthly_state_data" do
+    let(:facility_group) { create(:facility_group, organization: organization) }
+    let(:facility) { create(:facility, facility_group: facility_group) }
+    let(:region) { facility.region.state_region }
+
+    it "returns 401 when user is not authorized" do
+      facility
+
+      get :hypertension_monthly_state_data, params: {id: region.slug, report_scope: "state", format: "csv"}
+      expect(response.status).to eq(401)
+    end
+
+    it "returns 302 found with invalid region" do
+      facility
+      sign_in(cvho.email_authentication)
+
+      get :hypertension_monthly_state_data, params: {id: "not-found", report_scope: "state", format: "csv"}
+      expect(response.status).to eq(302)
+    end
+
+    it "returns 302 if region is not state" do
+      facility
+      sign_in(cvho.email_authentication)
+
+      get :hypertension_monthly_state_data, params: {id: facility.slug, report_scope: "state", format: "csv"}
+      expect(response.status).to eq(302)
+    end
+
+    it "calls csv service and returns 200 with csv data" do
+      Timecop.freeze("June 15th 2020") do
+        facility
+        sign_in(cvho.email_authentication)
+
+        expect_any_instance_of(MonthlyStateData::Exporter).to receive(:report).and_call_original
+        get :hypertension_monthly_state_data, params: {id: region.slug, report_scope: "state", format: "csv"}
         expect(response.status).to eq(200)
         expect(response.body).to include("Monthly district data for #{region.name} #{Date.current.strftime("%B %Y")}")
         report_date = Date.current.strftime("%b-%Y").downcase
@@ -652,8 +739,69 @@ RSpec.describe Reports::RegionsController, type: :controller do
       sign_in(cvho.email_authentication)
 
       period = Period.month("July 2018")
-      expect(MonthlyStateDataService).to receive(:new).with(region, period, medications_dispensation_enabled: false).and_call_original
-      get :monthly_state_data_report,
+      expect(MonthlyStateData::Exporter).to receive(:new).with(exporter: MonthlyStateData::Hypertension.new(
+        region: region,
+        period: period,
+        medications_dispensation_enabled: false
+      )).and_call_original
+      get :hypertension_monthly_state_data,
+        params: {id: region.slug, report_scope: "state", format: "csv", period: period.value}
+    end
+  end
+  describe "#diabetes_monthly_state_data" do
+    let(:facility_group) { create(:facility_group, organization: organization) }
+    let(:facility) { create(:facility, facility_group: facility_group) }
+    let(:region) { facility.region.state_region }
+
+    it "returns 401 when user is not authorized" do
+      facility
+
+      get :diabetes_monthly_state_data, params: {id: region.slug, report_scope: "state", format: "csv"}
+      expect(response.status).to eq(401)
+    end
+
+    it "returns 302 found with invalid region" do
+      facility
+      sign_in(cvho.email_authentication)
+
+      get :diabetes_monthly_state_data, params: {id: "not-found", report_scope: "state", format: "csv"}
+      expect(response.status).to eq(302)
+    end
+
+    it "returns 302 if region is not state" do
+      facility
+      sign_in(cvho.email_authentication)
+
+      get :diabetes_monthly_state_data, params: {id: facility.slug, report_scope: "state", format: "csv"}
+      expect(response.status).to eq(302)
+    end
+
+    it "calls csv service and returns 200 with csv data" do
+      Timecop.freeze("June 15th 2020") do
+        facility
+        sign_in(cvho.email_authentication)
+
+        expect_any_instance_of(MonthlyStateData::Exporter).to receive(:report).and_call_original
+        get :diabetes_monthly_state_data, params: {id: region.slug, report_scope: "state", format: "csv"}
+        expect(response.status).to eq(200)
+        expect(response.body).to include("Monthly district data for #{region.name} #{Date.current.strftime("%B %Y")}")
+        report_date = Date.current.strftime("%b-%Y").downcase
+        expected_filename = "monthly-district-data-#{region.slug}-#{report_date}.csv"
+        expect(response.headers["Content-Disposition"]).to include(%(filename="#{expected_filename}"))
+      end
+    end
+
+    it "passes the provided period to the csv service" do
+      facility
+      sign_in(cvho.email_authentication)
+
+      period = Period.month("July 2018")
+      expect(MonthlyStateData::Exporter).to receive(:new).with(exporter: MonthlyStateData::Diabetes.new(
+        region: region,
+        period: period,
+        medications_dispensation_enabled: false
+      )).and_call_original
+      get :diabetes_monthly_state_data,
         params: {id: region.slug, report_scope: "state", format: "csv", period: period.value}
     end
   end
