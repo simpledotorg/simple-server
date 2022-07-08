@@ -45,14 +45,20 @@ RSpec.describe MonthlyDistrictData::Exporter, reporting_spec: true do
 
   describe "#report" do
     context "when medications_dispensed is disabled" do
-      let(:service) { described_class.new(region, period, medications_dispensation_enabled: false) }
+      let(:service) {
+        described_class.new(exporter: MonthlyDistrictData::Hypertension.new(
+          region: region,
+          period: period,
+          medications_dispensation_enabled: false
+        ))
+      }
 
       let(:sections) {
         [nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
-          "New Registrations", nil, nil, nil, nil, nil,
-          "Follow-up patients", nil, nil, nil, nil, nil,
-          "Treatment status of patients under care", nil, nil, nil, nil,
-          "Drug availability", nil, nil]
+          "New hypertension registrations", nil, nil, nil, nil, nil,
+          "Hypertension follow-up patients", nil, nil, nil, nil, nil,
+          "Treatment status of hypertension patients under care", nil, nil, nil, nil,
+          "Hypertension drug availability", nil, nil]
       }
 
       let(:headers) {
@@ -63,11 +69,11 @@ RSpec.describe MonthlyDistrictData::Exporter, reporting_spec: true do
           "Facility type",
           "Facility size",
           "Estimated hypertensive population",
-          "Total registrations",
-          "Total assigned patients",
-          "Lost to follow-up patients",
-          "Dead patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})",
-          "Patients under care as of #{period.end.strftime("%e-%b-%Y")}", *(months * 2),
+          "Total hypertension registrations",
+          "Total assigned hypertension patients",
+          "Hypertension lost to follow-up patients",
+          "Dead hypertensive patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})",
+          "Hypertension patients under care as of #{period.end.strftime("%e-%b-%Y")}", *(months * 2),
           "Patients under care as of #{period.adjusted_period.end.strftime("%e-%b-%Y")}",
           "Patients with BP controlled",
           "Patients with BP not controlled",
@@ -121,10 +127,10 @@ RSpec.describe MonthlyDistrictData::Exporter, reporting_spec: true do
         expect(csv[row_index][1..3].uniq).to eq([nil])
         expect(find_in_csv(csv, row_index, "Facility size")).to eq("All")
         expect(find_in_csv(csv, row_index, "Estimated hypertensive population")).to eq(nil)
-        expect(find_in_csv(csv, row_index, "Total registrations")).to eq("3")
-        expect(find_in_csv(csv, row_index, "Total assigned patients")).to eq("3")
-        expect(find_in_csv(csv, row_index, "Lost to follow-up patients")).to eq("1")
-        dead = find_in_csv(csv, row_index, "Dead patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})")
+        expect(find_in_csv(csv, row_index, "Total hypertension registrations")).to eq("3")
+        expect(find_in_csv(csv, row_index, "Total assigned hypertension patients")).to eq("3")
+        expect(find_in_csv(csv, row_index, "Hypertension lost to follow-up patients")).to eq("1")
+        dead = find_in_csv(csv, row_index, "Dead hypertensive patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})")
         expect(dead).to eq("0")
         expect(find_in_csv(csv, row_index, "Patients under care as of #{period.adjusted_period.end.strftime("%e-%b-%Y")}")).to eq("2")
         new_registrations = csv[row_index][11..16]
@@ -135,7 +141,7 @@ RSpec.describe MonthlyDistrictData::Exporter, reporting_spec: true do
         expect(find_in_csv(csv, row_index, "Patients with BP not controlled")).to eq("0")
         expect(find_in_csv(csv, row_index, "Patients with a missed visit")).to eq("0")
         expect(find_in_csv(csv, row_index, "Patients with a visit but no BP taken")).to eq("1")
-        expect(find_in_csv(csv, row_index, "Patients under care as of #{period.end.strftime("%e-%b-%Y")}")).to eq("2")
+        expect(find_in_csv(csv, row_index, "Hypertension patients under care as of #{period.end.strftime("%e-%b-%Y")}")).to eq("2")
         expect(csv[row_index][28..30].uniq).to eq([nil])
       end
 
@@ -156,10 +162,10 @@ RSpec.describe MonthlyDistrictData::Exporter, reporting_spec: true do
         expect(csv[row_index][1..3].uniq).to eq([nil])
         expect(find_in_csv(csv, row_index, "Facility size")).to eq("Community")
         expect(find_in_csv(csv, row_index, "Estimated hypertensive population")).to eq(nil)
-        expect(find_in_csv(csv, row_index, "Total registrations")).to eq("3")
-        expect(find_in_csv(csv, row_index, "Total assigned patients")).to eq("3")
-        expect(find_in_csv(csv, row_index, "Lost to follow-up patients")).to eq("1")
-        dead = find_in_csv(csv, row_index, "Dead patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})")
+        expect(find_in_csv(csv, row_index, "Total hypertension registrations")).to eq("3")
+        expect(find_in_csv(csv, row_index, "Total assigned hypertension patients")).to eq("3")
+        expect(find_in_csv(csv, row_index, "Hypertension lost to follow-up patients")).to eq("1")
+        dead = find_in_csv(csv, row_index, "Dead hypertensive patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})")
         expect(dead).to eq("0")
         expect(find_in_csv(csv, row_index, "Patients under care as of #{period.adjusted_period.end.strftime("%e-%b-%Y")}")).to eq("2")
         new_registrations = csv[row_index][11..16]
@@ -170,7 +176,7 @@ RSpec.describe MonthlyDistrictData::Exporter, reporting_spec: true do
         expect(find_in_csv(csv, row_index, "Patients with BP not controlled")).to eq("0")
         expect(find_in_csv(csv, row_index, "Patients with a missed visit")).to eq("0")
         expect(find_in_csv(csv, row_index, "Patients with a visit but no BP taken")).to eq("1")
-        expect(find_in_csv(csv, row_index, "Patients under care as of #{period.end.strftime("%e-%b-%Y")}")).to eq("2")
+        expect(find_in_csv(csv, row_index, "Hypertension patients under care as of #{period.end.strftime("%e-%b-%Y")}")).to eq("2")
         expect(csv[row_index][28..30].uniq).to eq([nil])
       end
 
@@ -192,10 +198,10 @@ RSpec.describe MonthlyDistrictData::Exporter, reporting_spec: true do
         expect(find_in_csv(csv, row_index, "Facility type")).to eq(facility1.source.facility_type)
         expect(find_in_csv(csv, row_index, "Facility size")).to eq(facility1.source.facility_size.capitalize)
         expect(find_in_csv(csv, row_index, "Estimated hypertensive population")).to eq(nil)
-        expect(find_in_csv(csv, row_index, "Total registrations")).to eq("2")
-        expect(find_in_csv(csv, row_index, "Total assigned patients")).to eq("2")
-        expect(find_in_csv(csv, row_index, "Lost to follow-up patients")).to eq("1")
-        dead = find_in_csv(csv, row_index, "Dead patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})")
+        expect(find_in_csv(csv, row_index, "Total hypertension registrations")).to eq("2")
+        expect(find_in_csv(csv, row_index, "Total assigned hypertension patients")).to eq("2")
+        expect(find_in_csv(csv, row_index, "Hypertension lost to follow-up patients")).to eq("1")
+        dead = find_in_csv(csv, row_index, "Dead hypertensive patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})")
         expect(dead).to eq("0")
         expect(find_in_csv(csv, row_index, "Patients under care as of #{period.adjusted_period.end.strftime("%e-%b-%Y")}")).to eq("1")
         new_registrations = csv[row_index][11..16]
@@ -207,13 +213,17 @@ RSpec.describe MonthlyDistrictData::Exporter, reporting_spec: true do
         expect(find_in_csv(csv, row_index, "Patients with a missed visit")).to eq("0")
         expect(find_in_csv(csv, row_index, "Patients with a visit but no BP taken")).to eq("1")
         expect(find_in_csv(csv, row_index, "Patients with a visit but no BP taken")).to eq("1")
-        expect(find_in_csv(csv, row_index, "Patients under care as of #{period.end.strftime("%e-%b-%Y")}")).to eq("1")
+        expect(find_in_csv(csv, row_index, "Hypertension patients under care as of #{period.end.strftime("%e-%b-%Y")}")).to eq("1")
         expect(csv[row_index][28..30].uniq).to eq([nil])
       end
 
       it "scopes the report to the provided period" do
         old_period = Period.current
-        result = described_class.new(region, old_period, medications_dispensation_enabled: false).report
+        result = described_class.new(exporter: MonthlyDistrictData::Hypertension.new(
+          region: region,
+          period: old_period,
+          medications_dispensation_enabled: false
+        )).report
         csv = CSV.parse(result)
         column_headers = csv[2]
         first_month_index = 11
@@ -224,15 +234,21 @@ RSpec.describe MonthlyDistrictData::Exporter, reporting_spec: true do
     end
 
     context "when medications_dispensed is enabled" do
-      let(:service) { described_class.new(region, period, medications_dispensation_enabled: true) }
+      let(:service) {
+        described_class.new(exporter: MonthlyDistrictData::Hypertension.new(
+          region: region,
+          period: period,
+          medications_dispensation_enabled: true
+        ))
+      }
 
       let(:sections) {
         [nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
-          "New Registrations", nil, nil, nil, nil, nil,
-          "Follow-up patients", nil, nil, nil, nil, nil,
-          "Treatment status of patients under care", nil, nil, nil, nil,
+          "New hypertension registrations", nil, nil, nil, nil, nil,
+          "Hypertension follow-up patients", nil, nil, nil, nil, nil,
+          "Treatment status of hypertension patients under care", nil, nil, nil, nil,
           "Days of patient medications", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
-          "Drug availability", nil, nil]
+          "Hypertension drug availability", nil, nil]
       }
 
       let(:sub_sections) {
@@ -253,11 +269,11 @@ RSpec.describe MonthlyDistrictData::Exporter, reporting_spec: true do
           "Facility type",
           "Facility size",
           "Estimated hypertensive population",
-          "Total registrations",
-          "Total assigned patients",
-          "Lost to follow-up patients",
-          "Dead patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})",
-          "Patients under care as of #{period.end.strftime("%e-%b-%Y")}", *(months * 2),
+          "Total hypertension registrations",
+          "Total assigned hypertension patients",
+          "Hypertension lost to follow-up patients",
+          "Dead hypertensive patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})",
+          "Hypertension patients under care as of #{period.end.strftime("%e-%b-%Y")}", *(months * 2),
           "Patients under care as of #{period.adjusted_period.end.strftime("%e-%b-%Y")}",
           "Patients with BP controlled",
           "Patients with BP not controlled",
@@ -313,10 +329,10 @@ RSpec.describe MonthlyDistrictData::Exporter, reporting_spec: true do
         expect(csv[row_index][1..3].uniq).to eq([nil])
         expect(find_in_csv(csv, row_index, "Facility size")).to eq("All")
         expect(find_in_csv(csv, row_index, "Estimated hypertensive population")).to eq(nil)
-        expect(find_in_csv(csv, row_index, "Total registrations")).to eq("3")
-        expect(find_in_csv(csv, row_index, "Total assigned patients")).to eq("3")
-        expect(find_in_csv(csv, row_index, "Lost to follow-up patients")).to eq("1")
-        dead = find_in_csv(csv, row_index, "Dead patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})")
+        expect(find_in_csv(csv, row_index, "Total hypertension registrations")).to eq("3")
+        expect(find_in_csv(csv, row_index, "Total assigned hypertension patients")).to eq("3")
+        expect(find_in_csv(csv, row_index, "Hypertension lost to follow-up patients")).to eq("1")
+        dead = find_in_csv(csv, row_index, "Dead hypertensive patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})")
         expect(dead).to eq("0")
         expect(find_in_csv(csv, row_index, "Patients under care as of #{period.adjusted_period.end.strftime("%e-%b-%Y")}")).to eq("2")
         new_registrations = csv[row_index][11..16]
@@ -327,7 +343,7 @@ RSpec.describe MonthlyDistrictData::Exporter, reporting_spec: true do
         expect(find_in_csv(csv, row_index, "Patients with BP not controlled")).to eq("0")
         expect(find_in_csv(csv, row_index, "Patients with a missed visit")).to eq("0")
         expect(find_in_csv(csv, row_index, "Patients with a visit but no BP taken")).to eq("1")
-        expect(find_in_csv(csv, row_index, "Patients under care as of #{period.end.strftime("%e-%b-%Y")}")).to eq("2")
+        expect(find_in_csv(csv, row_index, "Hypertension patients under care as of #{period.end.strftime("%e-%b-%Y")}")).to eq("2")
         expect(csv[row_index][31]).to eq("1")
         expect(csv[row_index][34]).to eq("1")
         expect(csv[row_index][36]).to eq("2")
@@ -351,10 +367,10 @@ RSpec.describe MonthlyDistrictData::Exporter, reporting_spec: true do
         expect(csv[row_index][1..3].uniq).to eq([nil])
         expect(find_in_csv(csv, row_index, "Facility size")).to eq("Community")
         expect(find_in_csv(csv, row_index, "Estimated hypertensive population")).to eq(nil)
-        expect(find_in_csv(csv, row_index, "Total registrations")).to eq("3")
-        expect(find_in_csv(csv, row_index, "Total assigned patients")).to eq("3")
-        expect(find_in_csv(csv, row_index, "Lost to follow-up patients")).to eq("1")
-        dead = find_in_csv(csv, row_index, "Dead patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})")
+        expect(find_in_csv(csv, row_index, "Total hypertension registrations")).to eq("3")
+        expect(find_in_csv(csv, row_index, "Total assigned hypertension patients")).to eq("3")
+        expect(find_in_csv(csv, row_index, "Hypertension lost to follow-up patients")).to eq("1")
+        dead = find_in_csv(csv, row_index, "Dead hypertensive patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})")
         expect(dead).to eq("0")
         expect(find_in_csv(csv, row_index, "Patients under care as of #{period.adjusted_period.end.strftime("%e-%b-%Y")}")).to eq("2")
         new_registrations = csv[row_index][11..16]
@@ -365,7 +381,7 @@ RSpec.describe MonthlyDistrictData::Exporter, reporting_spec: true do
         expect(find_in_csv(csv, row_index, "Patients with BP not controlled")).to eq("0")
         expect(find_in_csv(csv, row_index, "Patients with a missed visit")).to eq("0")
         expect(find_in_csv(csv, row_index, "Patients with a visit but no BP taken")).to eq("1")
-        expect(find_in_csv(csv, row_index, "Patients under care as of #{period.end.strftime("%e-%b-%Y")}")).to eq("2")
+        expect(find_in_csv(csv, row_index, "Hypertension patients under care as of #{period.end.strftime("%e-%b-%Y")}")).to eq("2")
         expect(csv[row_index][31]).to eq("1")
         expect(csv[row_index][34]).to eq("1")
         expect(csv[row_index][36]).to eq("2")
@@ -390,10 +406,10 @@ RSpec.describe MonthlyDistrictData::Exporter, reporting_spec: true do
         expect(find_in_csv(csv, row_index, "Facility type")).to eq(facility1.source.facility_type)
         expect(find_in_csv(csv, row_index, "Facility size")).to eq(facility1.source.facility_size.capitalize)
         expect(find_in_csv(csv, row_index, "Estimated hypertensive population")).to eq(nil)
-        expect(find_in_csv(csv, row_index, "Total registrations")).to eq("2")
-        expect(find_in_csv(csv, row_index, "Total assigned patients")).to eq("2")
-        expect(find_in_csv(csv, row_index, "Lost to follow-up patients")).to eq("1")
-        dead = find_in_csv(csv, row_index, "Dead patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})")
+        expect(find_in_csv(csv, row_index, "Total hypertension registrations")).to eq("2")
+        expect(find_in_csv(csv, row_index, "Total assigned hypertension patients")).to eq("2")
+        expect(find_in_csv(csv, row_index, "Hypertension lost to follow-up patients")).to eq("1")
+        dead = find_in_csv(csv, row_index, "Dead hypertensive patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})")
         expect(dead).to eq("0")
         expect(find_in_csv(csv, row_index, "Patients under care as of #{period.adjusted_period.end.strftime("%e-%b-%Y")}")).to eq("1")
         new_registrations = csv[row_index][11..16]
@@ -405,7 +421,7 @@ RSpec.describe MonthlyDistrictData::Exporter, reporting_spec: true do
         expect(find_in_csv(csv, row_index, "Patients with a missed visit")).to eq("0")
         expect(find_in_csv(csv, row_index, "Patients with a visit but no BP taken")).to eq("1")
         expect(find_in_csv(csv, row_index, "Patients with a visit but no BP taken")).to eq("1")
-        expect(find_in_csv(csv, row_index, "Patients under care as of #{period.end.strftime("%e-%b-%Y")}")).to eq("1")
+        expect(find_in_csv(csv, row_index, "Hypertension patients under care as of #{period.end.strftime("%e-%b-%Y")}")).to eq("1")
         expect(csv[row_index][31]).to eq("1")
         expect(csv[row_index][36]).to eq("1")
         expect(csv[row_index][40..42].uniq).to eq([nil])
@@ -413,7 +429,13 @@ RSpec.describe MonthlyDistrictData::Exporter, reporting_spec: true do
 
       it "scopes the report to the provided period" do
         old_period = Period.current
-        result = described_class.new(region, old_period, medications_dispensation_enabled: true).report
+        result = described_class.new(
+          exporter: MonthlyDistrictData::Hypertension.new(
+            region: region,
+            period: old_period,
+            medications_dispensation_enabled: true
+          )
+        ).report
         csv = CSV.parse(result)
         column_headers = csv[3]
         first_month_index = 11

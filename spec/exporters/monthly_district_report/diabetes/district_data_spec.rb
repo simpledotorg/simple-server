@@ -86,10 +86,11 @@ describe MonthlyDistrictReport::Diabetes::DistrictData do
 
       periods.each do |period|
         district[:region].facilities.each do |facility|
-          create(:patient, registration_facility: facility, registration_user: user, recorded_at: period.value)
+          facility.update(enable_diabetes_management: true)
+          create(:patient, :diabetes, registration_facility: facility, registration_user: user, recorded_at: period.value)
           patient = Patient.where(registration_facility: facility).order(:recorded_at).first
           if patient
-            create(:blood_pressure, patient: patient, facility: facility, user: user, recorded_at: period.value)
+            create(:blood_sugar, patient: patient, facility: facility, user: user, recorded_at: period.value)
           end
         end
       end
@@ -131,7 +132,7 @@ describe MonthlyDistrictReport::Diabetes::DistrictData do
       expect(periods.drop(3).map { |period| rows[0]["cumulative_diabetes_under_care_community - #{period}"] }).to eq [4, 5, 6]
       expect(periods.drop(3).map { |period| rows[0]["cumulative_assigned_diabetes_patients_community_percentage - #{period}"] }).to eq %w[40% 45% 50%]
       expect(periods.drop(3).map { |period| rows[0]["monthly_diabetes_follow_ups_community_percentage - #{period}"] }).to eq %w[25% 25% 25%]
-      expect(periods.drop(3).map { |period| rows[0]["cumulative_assigned_diabetic_patients_community - #{period}"] }).to eq [4, 5, 6]
+      expect(periods.drop(3).map { |period| rows[0]["cumulative_assigned_diabetes_patients_community - #{period}"] }).to eq [4, 5, 6]
     end
 
     it "only include active facilities" do

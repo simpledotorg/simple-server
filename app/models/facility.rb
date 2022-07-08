@@ -70,7 +70,7 @@ class Facility < ApplicationRecord
 
   scope :active, ->(month_date: Date.today) {
     joins(:facility_states)
-      .merge(Reports::FacilityState.with_patients)
+      .merge(Reports::FacilityState.with_htn_or_diabetes_patients)
       .merge(Reports::FacilityState.where(month_date: month_date.at_beginning_of_month))
       .distinct
   }
