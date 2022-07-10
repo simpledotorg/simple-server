@@ -65,7 +65,7 @@ const createAxisMaxAndStepSize = (data) => {
   };
 };
 
-NewReports = function (id, data) {
+ReportsGraph = function (id, data) {
   const container = document.querySelector(`#${id}`);
   const graphCanvas = container.querySelector('canvas')
   const defaultPeriod = container.getAttribute("data-period");
@@ -84,24 +84,26 @@ NewReports = function (id, data) {
     })
   };
 
-  if(!ReportsConfig[id]) {
+  if(!ReportsGraphConfig[id]) {
     throw `Config for ${id} is not defined`;
   }
 
-  const graphConfig = ReportsConfig[id](data);
+  const graphConfig = ReportsGraphConfig[id](data);
   if(!graphConfig) {
     throw `Graph config not known for ${id}`
   }
 
-  graphConfig.options.tooltips = {
-    enabled: false,
-    custom: (tooltip) => {
-      let hoveredDatapoint = tooltip.dataPoints;
-      if (hoveredDatapoint)
-        populateDynamicComponents(hoveredDatapoint[0].label);
-      else populateDynamicComponents(defaultPeriod);
-    },
-  };
+  if(!graphConfig.options.tooltips) {
+    graphConfig.options.tooltips = {
+      enabled: false,
+      custom: (tooltip) => {
+        let hoveredDatapoint = tooltip.dataPoints;
+        if (hoveredDatapoint)
+          populateDynamicComponents(hoveredDatapoint[0].label);
+        else populateDynamicComponents(defaultPeriod);
+      },
+    };
+  }
 
   if(graphCanvas) {
     // Assumes ChartJS is already imported
@@ -138,7 +140,7 @@ const createBaseGraphConfig = () => {
   };
 };
 
-const ReportsConfig = {
+const ReportsGraphConfig = {
   bsBelow200PatientsTrend: function(data) {
     const config = createBaseGraphConfig();
     config.data = {
@@ -563,6 +565,121 @@ const ReportsConfig = {
 
     return config;
   },
+  MedicationsDispensation: function(data) {
+    const config = createBaseGraphConfig();
+    const graphPeriods = Object.keys(Object.values(data)[0]["counts"])
+
+    let datasets = Object.keys(data).map(function (bucket, index) {
+      return {
+        label: bucket,
+        data: Object.values(data[bucket]["percentages"]),
+        numerators: data[bucket]["counts"],
+        denominators: data[bucket]["totals"],
+        borderColor: data[bucket]["color"],
+        backgroundColor: data[bucket]["color"],
+      };
+    });
+
+    // This is a plugin and is expected to be loaded before creating this graph
+    config.plugins = [ChartDataLabels];
+    config.type = "bar";
+    config.data = {
+      labels: graphPeriods,
+      datasets: datasets,
+    };
+
+    config.options.scales = {
+      xAxes: [
+        {
+          stacked: false,
+          display: true,
+          gridLines: {
+            display: false,
+            drawBorder: true,
+          },
+          ticks: {
+            autoSkip: false,
+            fontColor: COLORS['darkGrey'],
+            fontSize: 12,
+            fontFamily: "Roboto Condensed",
+            padding: 0,
+            min: 0,
+            beginAtZero: true,
+          },
+        },
+      ],
+      yAxes: [
+        {
+          stacked: false,
+          display: true,
+          minBarLength: 4,
+          gridLines: {
+            display: true,
+            drawBorder: false,
+          },
+          ticks: {
+            display: false,
+            autoSkip: false,
+            fontColor: COLORS['darkGrey'],
+            fontSize: 12,
+            fontFamily: "Roboto Condensed",
+            padding: 8,
+            min: 0,
+            beginAtZero: true,
+            stepSize: 25,
+            max: 100,
+          },
+        },
+      ],
+    };
+
+    config.options.plugins = {
+      datalabels: {
+        align: "end",
+        color: "black",
+        anchor: "end",
+        offset: 1,
+        font: {
+          family: "Roboto Condensed",
+          size: 12,
+        },
+        formatter: function (value) {
+          return value + "%";
+        },
+      },
+    };
+
+    config.options.tooltips = {
+      displayColors: false,
+      xAlign: "center",
+      yAlign: "top",
+      xPadding: 6,
+      yPadding: 6,
+      caretSize: 3,
+      caretPadding: 1,
+      callbacks: {
+        title: function () {
+          return "";
+        },
+        label: function (tooltipItem, data) {
+          let numerators = Object.values(
+              data.datasets[tooltipItem.datasetIndex].numerators
+          );
+          let denominators = Object.values(
+              data.datasets[tooltipItem.datasetIndex].denominators
+          );
+          return (
+              formatNumberWithCommas(numerators[tooltipItem.index]) +
+              " of " +
+              formatNumberWithCommas(denominators[tooltipItem.index]) +
+              " follow-up patients"
+          );
+        },
+      },
+    };
+
+    return config;
+  }
 }
 
 Reports = function (withLtfu) {
