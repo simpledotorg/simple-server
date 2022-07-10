@@ -5,65 +5,17 @@
 
 <%= render "header" %>
 
-<% denominator_copy = @with_ltfu ? "diabetes_denominator_with_ltfu_copy" : "diabetes_denominator_copy" %>
+<% graph_args = { data: @data, region: @region, period: @period } %>
+<% graph_args_with_ltfu = { data: @data, region: @region, period: @period, with_ltfu: @with_ltfu } %>
 
 <div class="d-lg-flex flex-lg-wrap">
-  <%= render Dashboard::Diabetes::BsBelow200GraphComponent.new(data: @data, region: @region, period: @period, with_ltfu: @with_ltfu) %>
-  <%= render Dashboard::Diabetes::RegistrationsAndFollowUpsGraphComponent.new(data: @data, region: @region, period: @period) %>
-  <%= render Dashboard::Diabetes::BsOver200GraphComponent.new(data: @data, region: @region, period: @period, with_ltfu: @with_ltfu) %>
-
-  <!-- Missed Visits Graph -->
-  <div class="d-lg-flex w-lg-50 pl-lg-2">
-    <div id="diabetes-missed-visits"
-         data-period="<%= @period.to_s %>"
-         class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column
-          justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black">
-      <div class="pt-20px px-20px">
-        <div class="d-flex mb-8px">
-          <div class="d-flex flex-1">
-            <h3 class="mb-0px mr-8px">
-              Missed visits
-            </h3>
-            <%= render "definition_tooltip",
-                       definitions: { "Numerator" => t("diabetes_missed_visits_copy.numerator"),
-                                      "Denominator" => t("diabetes_missed_visits_copy.denominator", region_name: @region.name) } %>
-          </div>
-          <%= render "reports/regions/ltfu_toggle", id: "diabetesMissedVisitsGraphLtfuToggle", enabled: @with_ltfu %>
-        </div>
-        <p class="c-grey-dark">
-          <%= t("diabetes_missed_visits_copy.reports_card_subtitle", region_name: @region.name) %>
-        </p>
-        <div class="mb-12px d-lg-flex align-lg-center">
-          <p class="c-print-black c-blue graph-percent fs-28px"
-             data-rate="">
-          </p>
-          <div>
-            <p class="m-0px c-black">
-              <span data-total-patients=""></span>
-              patients with no visit from
-              <span data-period-start=""></span>
-              to
-              <span data-period-end=""></span>
-            </p>
-            <p class="m-0px c-grey-dark c-print-black">
-              of
-              <span data-registrations=""></span>
-              patients registered till
-              <span data-registrations-period-end=""></span>
-            </p>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div class="h-320px mr-16px mb-16px ml-13px">
-          <canvas id="diabetesMissedVisitsTrend"></canvas>
-        </div>
-      </div>
-    </div>
-  </div>
+  <%= render Dashboard::Diabetes::BsBelow200GraphComponent.new(graph_args_with_ltfu) %>
+  <%= render Dashboard::Diabetes::RegistrationsAndFollowUpsGraphComponent.new(graph_args) %>
+  <%= render Dashboard::Diabetes::BsOver200GraphComponent.new(graph_args_with_ltfu) %>
+  <%= render Dashboard::Diabetes::MissedVisitsGraphComponent.new(graph_args_with_ltfu) %>
 </div>
 
-<%= render "diabetes_treatment_outcomes_card" %>
+<%= render Dashboard::Diabetes::TreatmentOutcomesCardComponent.new(graph_args) %>
 
 <h4 class="mt-5 mb-32px">Details</h4>
 <%= render "reports/regions/diabetes_patient_breakdown_charts" %>

@@ -7,7 +7,6 @@ class Dashboard::Card::GraphComponent < ApplicationComponent
   renders_one :summary
   renders_one :footer
 
-
   def initialize(id:, data:, period:)
     @id = id
     @data = data

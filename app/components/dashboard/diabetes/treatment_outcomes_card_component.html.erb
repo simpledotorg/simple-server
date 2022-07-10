@@ -1,0 +1,47 @@
+<div id="diabetes-visit-details"
+     class="pt-20px px-20px mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column
+          justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
+
+  <%= render Dashboard::Card::TitleComponent.new(title: 'Treatment status of patients under care') %>
+
+  <div id="diabetesVisitDetails" class="d-flex fd-column fd-lg-row" data-period="<%= period.to_s %>">
+    <div class="pl-lg-12px w-lg-50 h-lg-auto minh-300px">
+      <canvas></canvas>
+    </div>
+    <div class="flex-lg-1 mt-24px ml-lg-24px mt-print-2cm">
+      <% treatment_outcomes.each do |treatment_outcome| %>
+        <div>
+          <div class="mb-16px d-lg-flex align-lg-center">
+            <p class="c-print-black <%= treatment_outcome[:class] %> graph-percent fs-28px"
+               data-key="<%= treatment_outcome[:key] %>"
+               data-format="percentage"></p>
+            <div>
+              <div class="d-flex flex-1">
+                <p class="mb-0px mr-6px fw-bold">
+                  <%= treatment_outcome[:title] %>
+                </p>
+                <%= render Dashboard::Card::TooltipComponent.new(treatment_outcome[:tooltip]) %>
+              </div>
+
+              <p class="m-0px c-black">
+                <span data-key="<%= treatment_outcome[:key] %>" data-format="numberWithCommas"></span>
+                patients with no visit from
+                <span data-key="startDate"></span>
+                to
+                <span data-key="endDate"></span>
+              </p>
+              <p class="m-0px c-grey-dark c-print-black">
+                of
+                <span data-key="adjustedDiabetesPatientCounts" data-format="numberWithCommas"></span>
+                patients registered till
+                <span data-key="registrationDate"></span>
+              </p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <script> NewReports("diabetesVisitDetails", <%= graph_data.to_json.html_safe %>)</script>
+</div>

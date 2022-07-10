@@ -1,7 +1,7 @@
 <div id="bs-over-200" class="d-lg-flex w-lg-50 pr-lg-2">
   <%= render Dashboard::Card::GraphComponent.new(id: "bsOver200PatientsTrend", data: graph_data, period: period) do |c| %>
     <%= c.title(
-      title: " Blood sugar 200-299 or &ge;300".html_safe,
+      title: "Blood sugar 200-299 or &ge;300".html_safe,
       subtitle: t("bs_over_200_copy.reports_card_subtitle", region_name: @region.name)) do |title| %>
       <%= title.tooltip({ "Blood sugar 200-299 numerator" => t("bs_over_200_copy.bs_200_to_299.numerator"),
                           "Blood sugar ≥300 numerator" => t("bs_over_200_copy.bs_over_300.numerator"),

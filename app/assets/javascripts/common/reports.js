@@ -404,6 +404,165 @@ const ReportsConfig = {
     };
     return config;
   },
+  diabetesMissedVisitsTrend: function(data) {
+    const config = createBaseGraphConfig();
+    config.data = {
+      labels: Object.keys(data.diabetesMissedVisitsGraphRate),
+      datasets: [
+        {
+          label: "Missed visits",
+          backgroundColor: COLORS['lightBlue'],
+          borderColor: COLORS['mediumBlue'],
+          borderWidth: 2,
+          pointBackgroundColor: COLORS['white'],
+          hoverBackgroundColor: COLORS['white'],
+          hoverBorderWidth: 2,
+          data: Object.values(data.diabetesMissedVisitsGraphRate),
+          type: "line",
+        },
+      ],
+    };
+    config.options.scales = {
+      xAxes: [
+        {
+          stacked: false,
+          display: true,
+          gridLines: {
+            display: false,
+            drawBorder: true,
+          },
+          ticks: {
+            autoSkip: false,
+            fontColor: COLORS['darkGrey'],
+            fontSize: 12,
+            fontFamily: "Roboto",
+            padding: 8,
+            min: 0,
+            beginAtZero: true,
+          },
+        },
+      ],
+      yAxes: [
+        {
+          stacked: false,
+          display: true,
+          gridLines: {
+            display: true,
+            drawBorder: false,
+          },
+          ticks: {
+            autoSkip: false,
+            fontColor: COLORS['darkGrey'],
+            fontSize: 10,
+            fontFamily: "Roboto",
+            padding: 8,
+            min: 0,
+            beginAtZero: true,
+            stepSize: 25,
+            max: 100,
+          },
+        },
+      ],
+    };
+    return config;
+  },
+  diabetesVisitDetails: function(data) {
+    const config = createBaseGraphConfig();
+    config.type = "bar";
+
+    const maxBarsToDisplay = 6;
+    const barsToDisplay = Math.min(
+        Object.keys(data.bsBelow200Rate).length,
+        maxBarsToDisplay
+    );
+
+    config.data = {
+      labels: Object.keys(data.bsBelow200Rate).slice(-barsToDisplay),
+      datasets: [
+        {
+          label: "Blood sugar <200",
+          backgroundColor: COLORS['mediumGreen'],
+          hoverBackgroundColor: COLORS['darkGreen'],
+          data: Object.values(data.bsBelow200Rate).slice(-barsToDisplay),
+          type: "bar",
+        },
+        {
+          label: "Blood sugar 200-299",
+          backgroundColor: COLORS['amber'],
+          hoverBackgroundColor: COLORS['darkAmber'],
+          data: Object.values(data.bs200to300Rate).slice(-barsToDisplay),
+          type: "bar",
+        },
+        {
+          label: "Blood sugar ≥300",
+          backgroundColor: COLORS['mediumRed'],
+          hoverBackgroundColor: COLORS['darkRed'],
+          data: Object.values(data.bsOver300Rate).slice(-barsToDisplay),
+          type: "bar",
+        },
+        {
+          label: "Visit but no blood sugar measure",
+          backgroundColor: COLORS['mediumGrey'],
+          hoverBackgroundColor: COLORS['darkGrey'],
+          data: Object.values(data.visitButNoBSMeasureRate).slice(
+              -barsToDisplay
+          ),
+          type: "bar",
+        },
+        {
+          label: "Missed visits",
+          backgroundColor: COLORS['mediumBlue'],
+          hoverBackgroundColor: COLORS['darkBlue'],
+          data: Object.values(data.diabetesMissedVisitsRate).slice(
+              -barsToDisplay
+          ),
+          type: "bar",
+        },
+      ],
+    };
+    config.options.scales = {
+      xAxes: [
+        {
+          stacked: true,
+          display: true,
+          gridLines: {
+            display: false,
+            drawBorder: false,
+          },
+          ticks: {
+            autoSkip: false,
+            fontColor: COLORS['darkGrey'],
+            fontSize: 12,
+            fontFamily: "Roboto",
+            padding: 8,
+            min: 0,
+            beginAtZero: true,
+          },
+        },
+      ],
+      yAxes: [
+        {
+          stacked: true,
+          display: false,
+          gridLines: {
+            display: false,
+            drawBorder: false,
+          },
+          ticks: {
+            autoSkip: false,
+            fontColor: COLORS['darkGrey'],
+            fontSize: 10,
+            fontFamily: "Roboto",
+            padding: 8,
+            min: 0,
+            beginAtZero: true,
+          },
+        },
+      ],
+    };
+
+    return config;
+  },
 }
 
 Reports = function (withLtfu) {
@@ -447,11 +606,6 @@ Reports = function (withLtfu) {
     this.setupMissedVisitsGraph(data);
     this.setupCumulativeRegistrationsGraph(data);
     this.setupVisitDetailsGraph(data);
-    // this.setupBSBelow200Graph(data);
-    // this.setupCumulativeDiabetesRegistrationsGraph(data);
-    // this.setupBSOver200Graph(data);
-    this.setupDiabetesMissedVisitsGraph(data);
-    this.setupDiabetesVisitDetailsGraph(data);
   };
 
   this.setupControlledGraph = (data) => {
@@ -1177,511 +1331,6 @@ Reports = function (withLtfu) {
         visitDetailsGraphConfig
       );
       populateVisitDetailsGraphDefault();
-    }
-  };
-
-  this.setupBSOver200Graph = (data) => {
-    const adjustedPatients = withLtfu
-      ? data.adjustedDiabetesPatientCountsWithLtfu
-      : data.adjustedDiabetesPatientCounts;
-
-    const bs200to300Numerator = data.bs200to300Patients;
-    const bs200to300Rate = withLtfu
-      ? data.bs200to300WithLtfuRate
-      : data.bs200to300Rate;
-
-    const bsOver300Numerator = data.bsOver300Patients;
-    const bsOver300Rate = withLtfu
-      ? data.bsOver300WithLtfuRate
-      : data.bsOver300Rate;
-
-    const bsOver200GraphConfig = this.createBaseGraphConfig();
-
-    bsOver200GraphConfig.type = "bar";
-    bsOver200GraphConfig.data = {
-      labels: Object.keys(bsOver300Rate),
-      datasets: [
-        {
-          label: "Blood sugar 200-299",
-          backgroundColor: this.amberColor,
-          hoverBackgroundColor: this.darkAmberColor,
-          data: Object.values(bs200to300Rate),
-        },
-        {
-          label: "Blood sugar ≥300",
-          backgroundColor: this.mediumRedColor,
-          hoverBackgroundColor: this.darkRedColor,
-          data: Object.values(bsOver300Rate),
-        },
-      ],
-    };
-
-    bsOver200GraphConfig.options.scales = {
-      xAxes: [
-        {
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: true,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 12,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-          },
-        },
-      ],
-      yAxes: [
-        {
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: true,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: 25,
-            max: 100,
-          },
-        },
-      ],
-    };
-    bsOver200GraphConfig.options.tooltips = {
-      mode: "x",
-      enabled: false,
-      custom: (tooltip) => {
-        let hoveredDatapoint = tooltip.dataPoints;
-        if (hoveredDatapoint) populateBSOver200Graph(hoveredDatapoint[0].label);
-        else populateBSOver200GraphDefault();
-      },
-    };
-
-    const populateBSOver200Graph = (period) => {
-      const cardNode = document.getElementById("bs-over-200");
-      const bs200to300rateNode = cardNode.querySelector(
-        "[data-bs-200-to-300-rate]"
-      );
-      const bsOver300rateNode = cardNode.querySelector(
-        "[data-bs-over-300-rate]"
-      );
-      const totalBS200to300PatientsNode = cardNode.querySelector(
-        "[data-total-bs-200-to-300-patients]"
-      );
-      const totalBSOver300PatientsNode = cardNode.querySelector(
-        "[data-total-bs-over-300-patients]"
-      );
-      const periodStartNodes = cardNode.querySelectorAll("[data-period-start]");
-      const periodEndNodes = cardNode.querySelectorAll("[data-period-end]");
-      const registrationsNodes = cardNode.querySelectorAll(
-        "[data-registrations]"
-      );
-      const registrationsPeriodEndNodes = cardNode.querySelectorAll(
-        "[data-registrations-period-end]"
-      );
-
-      const periodInfo = data.periodInfo[period];
-      const adjustedPatientCounts = adjustedPatients[period];
-
-      const totalBS200to300Patients = bs200to300Numerator[period];
-      const totalBSOver300Patients = bsOver300Numerator[period];
-
-      bs200to300rateNode.innerHTML = this.formatPercentage(
-        bs200to300Rate[period]
-      );
-      bsOver300rateNode.innerHTML = this.formatPercentage(
-        bsOver300Rate[period]
-      );
-      totalBS200to300PatientsNode.innerHTML = this.formatNumberWithCommas(
-        totalBS200to300Patients
-      );
-      totalBSOver300PatientsNode.innerHTML = this.formatNumberWithCommas(
-        totalBSOver300Patients
-      );
-      periodStartNodes.forEach(
-        (node) => (node.innerHTML = periodInfo.bp_control_start_date)
-      );
-      periodEndNodes.forEach(
-        (node) => (node.innerHTML = periodInfo.bp_control_end_date)
-      );
-      registrationsNodes.forEach(
-        (node) =>
-          (node.innerHTML = this.formatNumberWithCommas(adjustedPatientCounts))
-      );
-      registrationsPeriodEndNodes.forEach(
-        (node) => (node.innerHTML = periodInfo.bp_control_registration_date)
-      );
-    };
-
-    const populateBSOver200GraphDefault = () => {
-      const cardNode = document.getElementById("bs-over-200");
-      const mostRecentPeriod = cardNode.getAttribute("data-period");
-
-      populateBSOver200Graph(mostRecentPeriod);
-    };
-
-    const bsOver200GraphCanvas = document.getElementById(
-      "bsOver200PatientsTrend"
-    );
-    if (bsOver200GraphCanvas) {
-      new Chart(bsOver200GraphCanvas.getContext("2d"), bsOver200GraphConfig);
-      populateBSOver200GraphDefault();
-    }
-  };
-
-  this.setupDiabetesMissedVisitsGraph = (data) => {
-    const adjustedDiabetesPatients = withLtfu
-      ? data.adjustedDiabetesPatientCountsWithLtfu
-      : data.adjustedDiabetesPatientCounts;
-    const diabetesMissedVisitsGraphNumerator = withLtfu
-      ? data.diabetesMissedVisitsWithLtfu
-      : data.diabetesMissedVisits;
-    const diabetesMissedVisitsGraphRate = withLtfu
-      ? data.diabetesMissedVisitsWithLtfuRate
-      : data.diabetesMissedVisitsRate;
-
-    const diabetesMissedVisitsConfig = this.createBaseGraphConfig();
-    diabetesMissedVisitsConfig.data = {
-      labels: Object.keys(diabetesMissedVisitsGraphRate),
-      datasets: [
-        {
-          label: "Missed visits",
-          backgroundColor: this.lightBlueColor,
-          borderColor: this.mediumBlueColor,
-          borderWidth: 2,
-          pointBackgroundColor: this.whiteColor,
-          hoverBackgroundColor: this.whiteColor,
-          hoverBorderWidth: 2,
-          data: Object.values(diabetesMissedVisitsGraphRate),
-          type: "line",
-        },
-      ],
-    };
-    diabetesMissedVisitsConfig.options.scales = {
-      xAxes: [
-        {
-          stacked: false,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: true,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 12,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-          },
-        },
-      ],
-      yAxes: [
-        {
-          stacked: false,
-          display: true,
-          gridLines: {
-            display: true,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: 25,
-            max: 100,
-          },
-        },
-      ],
-    };
-    diabetesMissedVisitsConfig.options.tooltips = {
-      enabled: false,
-      custom: (tooltip) => {
-        let hoveredDatapoint = tooltip.dataPoints;
-        if (hoveredDatapoint)
-          populateDiabetesMissedVisitsGraph(hoveredDatapoint[0].label);
-        else populateDiabetesMissedVisitsGraphDefault();
-      },
-    };
-
-    const populateDiabetesMissedVisitsGraph = (period) => {
-      const cardNode = document.getElementById("diabetes-missed-visits");
-      const rateNode = cardNode.querySelector("[data-rate]");
-      const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
-      const periodStartNode = cardNode.querySelector("[data-period-start]");
-      const periodEndNode = cardNode.querySelector("[data-period-end]");
-      const registrationsNode = cardNode.querySelector("[data-registrations]");
-      const registrationsPeriodEndNode = cardNode.querySelector(
-        "[data-registrations-period-end]"
-      );
-
-      const periodInfo = data.periodInfo[period];
-      const adjustedPatientCounts = adjustedDiabetesPatients[period];
-      const totalPatients = diabetesMissedVisitsGraphNumerator[period];
-
-      rateNode.innerHTML = this.formatPercentage(
-        diabetesMissedVisitsGraphRate[period]
-      );
-      totalPatientsNode.innerHTML = this.formatNumberWithCommas(totalPatients);
-      periodStartNode.innerHTML = periodInfo.bp_control_start_date;
-      periodEndNode.innerHTML = periodInfo.bp_control_end_date;
-      registrationsNode.innerHTML = this.formatNumberWithCommas(
-        adjustedPatientCounts
-      );
-      registrationsPeriodEndNode.innerHTML =
-        periodInfo.bp_control_registration_date;
-    };
-
-    const populateDiabetesMissedVisitsGraphDefault = () => {
-      const cardNode = document.getElementById("diabetes-missed-visits");
-      const mostRecentPeriod = cardNode.getAttribute("data-period");
-
-      populateDiabetesMissedVisitsGraph(mostRecentPeriod);
-    };
-
-    const diabetesMissedVisitsGraphCanvas = document.getElementById(
-      "diabetesMissedVisitsTrend"
-    );
-    if (diabetesMissedVisitsGraphCanvas) {
-      new Chart(
-        diabetesMissedVisitsGraphCanvas.getContext("2d"),
-        diabetesMissedVisitsConfig
-      );
-      populateDiabetesMissedVisitsGraphDefault();
-    }
-  };
-
-  this.setupDiabetesVisitDetailsGraph = (data) => {
-    const diabetesVisitDetailsGraphConfig = this.createBaseGraphConfig();
-    diabetesVisitDetailsGraphConfig.type = "bar";
-
-    const maxBarsToDisplay = 6;
-    const barsToDisplay = Math.min(
-      Object.keys(data.bsBelow200Rate).length,
-      maxBarsToDisplay
-    );
-
-    diabetesVisitDetailsGraphConfig.data = {
-      labels: Object.keys(data.bsBelow200Rate).slice(-barsToDisplay),
-      datasets: [
-        {
-          label: "Blood sugar <200",
-          backgroundColor: this.mediumGreenColor,
-          hoverBackgroundColor: this.darkGreenColor,
-          data: Object.values(data.bsBelow200Rate).slice(-barsToDisplay),
-          type: "bar",
-        },
-        {
-          label: "Blood sugar 200-299",
-          backgroundColor: this.amberColor,
-          hoverBackgroundColor: this.darkAmberColor,
-          data: Object.values(data.bs200to300Rate).slice(-barsToDisplay),
-          type: "bar",
-        },
-        {
-          label: "Blood sugar ≥300",
-          backgroundColor: this.mediumRedColor,
-          hoverBackgroundColor: this.darkRedColor,
-          data: Object.values(data.bsOver300Rate).slice(-barsToDisplay),
-          type: "bar",
-        },
-        {
-          label: "Visit but no blood sugar measure",
-          backgroundColor: this.mediumGreyColor,
-          hoverBackgroundColor: this.darkGreyColor,
-          data: Object.values(data.visitButNoBSMeasureRate).slice(
-            -barsToDisplay
-          ),
-          type: "bar",
-        },
-        {
-          label: "Missed visits",
-          backgroundColor: this.mediumBlueColor,
-          hoverBackgroundColor: this.darkBlueColor,
-          data: Object.values(data.diabetesMissedVisitsRate).slice(
-            -barsToDisplay
-          ),
-          type: "bar",
-        },
-      ],
-    };
-    diabetesVisitDetailsGraphConfig.options.scales = {
-      xAxes: [
-        {
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 12,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-          },
-        },
-      ],
-      yAxes: [
-        {
-          stacked: true,
-          display: false,
-          gridLines: {
-            display: false,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-          },
-        },
-      ],
-    };
-    diabetesVisitDetailsGraphConfig.options.tooltips = {
-      mode: "x",
-      enabled: false,
-      custom: (tooltip) => {
-        let hoveredDatapoint = tooltip.dataPoints;
-        if (hoveredDatapoint)
-          populateDiabetesVisitDetailsGraph(hoveredDatapoint[0].label);
-        else populateDiabetesVisitDetailsGraphDefault();
-      },
-    };
-
-    const populateDiabetesVisitDetailsGraph = (period) => {
-      const cardNode = document.getElementById("diabetes-visit-details");
-      const missedVisitsRateNode = cardNode.querySelector(
-        "[data-missed-visits-rate]"
-      );
-      const visitButNoBSMeasureRateNode = cardNode.querySelector(
-        "[data-visit-but-no-bs-measure-rate]"
-      );
-      const bsBelow200RateNode = cardNode.querySelector(
-        "[data-bs-below-200-rate]"
-      );
-      const bs200To300RateNode = cardNode.querySelector(
-        "[data-bs-200-to-300-rate]"
-      );
-      const bsOver300RateNode = cardNode.querySelector(
-        "[data-bs-over-300-rate]"
-      );
-      const missedVisitsPatientsNode = cardNode.querySelector(
-        "[data-missed-visits-patients]"
-      );
-      const visitButNoBSMeasurePatientsNode = cardNode.querySelector(
-        "[data-visit-but-no-bs-measure-patients]"
-      );
-      const bsOver300PatientsNode = cardNode.querySelector(
-        "[data-bs-over-300-patients]"
-      );
-      const bs200To300PatientsNode = cardNode.querySelector(
-        "[data-bs-200-to-300-patients]"
-      );
-      const bsBelow200PatientsNode = cardNode.querySelector(
-        "[data-bs-below-200-patients]"
-      );
-      const periodStartNodes = cardNode.querySelectorAll("[data-period-start]");
-      const periodEndNodes = cardNode.querySelectorAll("[data-period-end]");
-      const registrationPeriodEndNodes = cardNode.querySelectorAll(
-        "[data-registrations-period-end]"
-      );
-      const adjustedPatientCountsNodes = cardNode.querySelectorAll(
-        "[data-adjusted-registrations]"
-      );
-
-      const missedVisitsRate = this.formatPercentage(
-        data.diabetesMissedVisitsRate[period]
-      );
-      const visitButNoBSMeasureRate = this.formatPercentage(
-        data.visitButNoBSMeasureRate[period]
-      );
-      const bsOver300Rate = this.formatPercentage(data.bsOver300Rate[period]);
-      const bs200To300Rate = this.formatPercentage(data.bs200to300Rate[period]);
-      const bsBelow200Rate = this.formatPercentage(data.bsBelow200Rate[period]);
-
-      const periodInfo = data.periodInfo[period];
-      const adjustedPatientCounts = data.adjustedDiabetesPatientCounts[period];
-      const totalMissedVisits = data.diabetesMissedVisits[period];
-      const totalVisitButNoBSMeasure = data.visitButNoBSMeasure[period];
-      const totalBSOver300Patients = data.bsOver300Patients[period];
-      const totalBS200To300Patients = data.bs200to300Patients[period];
-      const totalBSBelow200Patients = data.bsBelow200Patients[period];
-
-      missedVisitsRateNode.innerHTML = missedVisitsRate;
-      visitButNoBSMeasureRateNode.innerHTML = visitButNoBSMeasureRate;
-      bsOver300RateNode.innerHTML = bsOver300Rate;
-      bs200To300RateNode.innerHTML = bs200To300Rate;
-      bsBelow200RateNode.innerHTML = bsBelow200Rate;
-      missedVisitsPatientsNode.innerHTML =
-        this.formatNumberWithCommas(totalMissedVisits);
-      visitButNoBSMeasurePatientsNode.innerHTML = this.formatNumberWithCommas(
-        totalVisitButNoBSMeasure
-      );
-      bsOver300PatientsNode.innerHTML = this.formatNumberWithCommas(
-        totalBSOver300Patients
-      );
-      bs200To300PatientsNode.innerHTML = this.formatNumberWithCommas(
-        totalBS200To300Patients
-      );
-      bsBelow200PatientsNode.innerHTML = this.formatNumberWithCommas(
-        totalBSBelow200Patients
-      );
-
-      periodStartNodes.forEach(
-        (node) => (node.innerHTML = periodInfo.bp_control_start_date)
-      );
-      periodEndNodes.forEach(
-        (node) => (node.innerHTML = periodInfo.bp_control_end_date)
-      );
-      registrationPeriodEndNodes.forEach(
-        (node) => (node.innerHTML = periodInfo.bp_control_registration_date)
-      );
-      adjustedPatientCountsNodes.forEach(
-        (node) =>
-          (node.innerHTML = this.formatNumberWithCommas(adjustedPatientCounts))
-      );
-    };
-
-    const populateDiabetesVisitDetailsGraphDefault = () => {
-      const cardNode = document.getElementById("diabetes-visit-details");
-      const mostRecentPeriod = cardNode.getAttribute("data-period");
-
-      populateDiabetesVisitDetailsGraph(mostRecentPeriod);
-    };
-
-    const diabetesVisitDetailsGraphCanvas = document.getElementById(
-      "diabetesVisitDetails"
-    );
-    if (diabetesVisitDetailsGraphCanvas) {
-      new Chart(
-        diabetesVisitDetailsGraphCanvas.getContext("2d"),
-        diabetesVisitDetailsGraphConfig
-      );
-      populateDiabetesVisitDetailsGraphDefault();
     }
   };
 

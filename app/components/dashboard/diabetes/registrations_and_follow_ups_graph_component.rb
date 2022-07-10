@@ -10,10 +10,10 @@ class Dashboard::Diabetes::RegistrationsAndFollowUpsGraphComponent < Application
   end
 
   def graph_data
-    { cumulativeDiabetesRegistrations: data[:cumulative_diabetes_registrations],
-      monthlyDiabetesRegistrations: data[:diabetes_registrations],
-      monthlyDiabetesFollowups: data[:monthly_diabetes_followups],
-      **period_data }
+    {cumulativeDiabetesRegistrations: data[:cumulative_diabetes_registrations],
+     monthlyDiabetesRegistrations: data[:diabetes_registrations],
+     monthlyDiabetesFollowups: data[:monthly_diabetes_followups],
+     **period_data}
   end
 
   private
