@@ -1,4 +1,4 @@
-<div id="bs-below-200" class="d-lg-flex w-lg-50 pr-lg-2">
+<div id="cumulative-diabetes-registrations-trend" class="d-lg-flex w-lg-50 pl-lg-2">
   <%= render Dashboard::Card::GraphComponent.new(id: "cumulativeDiabetesRegistrationsTrend", data: graph_data, period: period) do |c| %>
     <%= c.title(title: "Registrations and follow-ups", subtitle:t("registered_diabetes_patients_copy.reports_card_subtitle", region_name: region.name)) do |title| %>
       <%= title.tooltip({ "Total registered patients" => t("registered_diabetes_patients_copy.total_registered_patients", region_name: region.name),

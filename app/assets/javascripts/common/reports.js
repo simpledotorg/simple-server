@@ -40,13 +40,17 @@ const formatNumberWithCommas = (value) => {
 };
 
 const formatValue = (format, value) => {
+  if (!format) {
+    return value;
+  }
+
   switch (format) {
     case "percentage":
       return formatPercentage(value)
     case "numberWithCommas":
       return formatNumberWithCommas(value)
     default:
-      return value;
+      throw `Unknown format ${format}`;
   }
 }
 
@@ -65,7 +69,7 @@ NewReports = function (id, data) {
   const container = document.querySelector(`#${id}`);
   const graphCanvas = container.querySelector('canvas')
   const defaultPeriod = container.getAttribute("data-period");
-  const dataKeyNodes = container.querySelectorAll("[data-key]")
+  const dataKeyNodes = container.querySelectorAll("[data-key]");
 
   const populateDynamicComponents = (period) => {
     dataKeyNodes.forEach(dataNode => {
@@ -334,7 +338,72 @@ const ReportsConfig = {
     };
 
     return config;
-  }
+  },
+  bsOver200PatientsTrend: function(data) {
+    const config = createBaseGraphConfig();
+    config.type = "bar";
+    config.data = {
+      labels: Object.keys(data.bsOver300Rate),
+      datasets: [
+        {
+          label: "Blood sugar 200-299",
+          backgroundColor: COLORS['amber'],
+          hoverBackgroundColor: COLORS['darkAmber'],
+          data: Object.values(data.bs200to300Rate),
+        },
+        {
+          label: "Blood sugar ≥300",
+          backgroundColor: COLORS['mediumRed'],
+          hoverBackgroundColor: COLORS['darkRed'],
+          data: Object.values(data.bsOver300Rate),
+        },
+      ],
+    };
+
+    config.options.scales = {
+      xAxes: [
+        {
+          stacked: true,
+          display: true,
+          gridLines: {
+            display: false,
+            drawBorder: true,
+          },
+          ticks: {
+            autoSkip: false,
+            fontColor: COLORS['darkGrey'],
+            fontSize: 12,
+            fontFamily: "Roboto",
+            padding: 8,
+            min: 0,
+            beginAtZero: true,
+          },
+        },
+      ],
+      yAxes: [
+        {
+          stacked: true,
+          display: true,
+          gridLines: {
+            display: true,
+            drawBorder: false,
+          },
+          ticks: {
+            autoSkip: false,
+            fontColor: COLORS['darkGrey'],
+            fontSize: 10,
+            fontFamily: "Roboto",
+            padding: 8,
+            min: 0,
+            beginAtZero: true,
+            stepSize: 25,
+            max: 100,
+          },
+        },
+      ],
+    };
+    return config;
+  },
 }
 
 Reports = function (withLtfu) {
@@ -379,8 +448,8 @@ Reports = function (withLtfu) {
     this.setupCumulativeRegistrationsGraph(data);
     this.setupVisitDetailsGraph(data);
     // this.setupBSBelow200Graph(data);
-    //this.setupCumulativeDiabetesRegistrationsGraph(data);
-    this.setupBSOver200Graph(data);
+    // this.setupCumulativeDiabetesRegistrationsGraph(data);
+    // this.setupBSOver200Graph(data);
     this.setupDiabetesMissedVisitsGraph(data);
     this.setupDiabetesVisitDetailsGraph(data);
   };
