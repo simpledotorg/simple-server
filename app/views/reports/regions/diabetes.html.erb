@@ -5,29 +5,32 @@
 
 <%= render "header" %>
 
-<% graph_args = { data: @data, region: @region, period: @period } %>
-<% graph_args_with_ltfu = { data: @data, region: @region, period: @period, with_ltfu: @with_ltfu } %>
+<% args = { data: @data, region: @region, period: @period } %>
+<% args_with_ltfu = { data: @data, region: @region, period: @period, with_ltfu: @with_ltfu } %>
 
 <div class="d-lg-flex flex-lg-wrap">
-  <%= render Dashboard::Diabetes::BsBelow200GraphComponent.new(graph_args_with_ltfu) %>
-  <%= render Dashboard::Diabetes::RegistrationsAndFollowUpsGraphComponent.new(graph_args) %>
-  <%= render Dashboard::Diabetes::BsOver200GraphComponent.new(graph_args_with_ltfu) %>
-  <%= render Dashboard::Diabetes::MissedVisitsGraphComponent.new(graph_args_with_ltfu) %>
+  <%= render Dashboard::Diabetes::BsBelow200GraphComponent.new(args_with_ltfu) %>
+  <%= render Dashboard::Diabetes::RegistrationsAndFollowUpsGraphComponent.new(args) %>
+  <%= render Dashboard::Diabetes::BsOver200GraphComponent.new(args_with_ltfu) %>
+  <%= render Dashboard::Diabetes::MissedVisitsGraphComponent.new(args_with_ltfu) %>
 </div>
 
-<%= render Dashboard::Diabetes::TreatmentOutcomesCardComponent.new(graph_args) %>
+<%= render Dashboard::Diabetes::TreatmentOutcomesCardComponent.new(args) %>
 
 <h4 class="mt-5 mb-32px">Details</h4>
 <%= render "reports/regions/diabetes_patient_breakdown_charts" %>
 
 <% if current_admin.feature_enabled?(:medications_dispensation) %>
 <h4 class="mt-5 mb-32px">Medications</h4>
-  <%= render Dashboard::MedicationDispensationComponent.new(graph_args) %>
+  <%= render Dashboard::MedicationDispensationComponent.new(args) %>
 <% end %>
 
 <h4 class="mt-5 mb-32px">Compare performance</h4>
 <% if @children_data.any? %>
-  <%= render "bs_measurement_child_tables", children_data: @children_data, localized_region_type: @child_regions.first.localized_region_type %>
+  <%= render Dashboard::Diabetes::MeasurementChildComparisonTableComponent.new(args.merge(
+      children_data: @children_data,
+      localized_region_type: @child_regions.first.localized_region_type
+    )) %>
 <% end %>
 <% if @region.facility_region? %>
   <%= render Dashboard::Diabetes::RegistrationsAndFollowUpsByUserComponent.new(

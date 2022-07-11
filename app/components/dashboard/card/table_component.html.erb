@@ -1,0 +1,26 @@
+<table id="<%= id %>" class="table-compact">
+  <% column_groups.each do |column_group| %>
+    <%= column_group %>
+  <% end %>
+  <thead>
+    <tr class="sorts">
+      <th class="sticky"></th>
+      <% headers.each do |header| %>
+        <%= header %>
+      <% end %>
+    </tr>
+
+    <tr class="sorts" data-sort-method="thead">
+      <% sub_headers.each do |sub_header| %>
+        <%= sub_header %>
+      <% end %>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% rows.each do |row| %>
+      <%= row %>
+    <% end %>
+  </tbody>
+</table>
+<script> ReportsTable("<%= id %>>")</script>

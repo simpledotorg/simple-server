@@ -65,7 +65,16 @@ const createAxisMaxAndStepSize = (data) => {
   };
 };
 
-ReportsGraph = function (id, data) {
+function ReportsTable (id) {
+  const tableSortAscending = { descending: false };
+  const table = document.getElementById(id);
+
+  if (table) {
+    new Tablesort(table, tableSortAscending);
+  }
+};
+
+function ReportsGraph (id, data) {
   const container = document.querySelector(`#${id}`);
   const graphCanvas = container.querySelector('canvas')
   const defaultPeriod = container.getAttribute("data-period");
