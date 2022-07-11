@@ -21,16 +21,16 @@
 <%= render "reports/regions/diabetes_patient_breakdown_charts" %>
 
 <% if current_admin.feature_enabled?(:medications_dispensation) %>
-<h4 class="mt-5 mb-32px">Medications</h4>
+  <h4 class="mt-5 mb-32px">Medications</h4>
   <%= render Dashboard::MedicationDispensationComponent.new(args) %>
 <% end %>
 
 <h4 class="mt-5 mb-32px">Compare performance</h4>
 <% if @children_data.any? %>
   <%= render Dashboard::Diabetes::MeasurementChildComparisonTableComponent.new(args.merge(
-      children_data: @children_data,
-      localized_region_type: @child_regions.first.localized_region_type
-    )) %>
+    children_data: @children_data,
+    localized_region_type: @child_regions.first.localized_region_type
+  )) %>
 <% end %>
 <% if @region.facility_region? %>
   <%= render Dashboard::Diabetes::RegistrationsAndFollowUpsByUserComponent.new(
@@ -54,19 +54,10 @@
     page: @page
   ) %>
 <% else %>
-  <%= render(DiabetesRegistrationsAndFollowUpsComponent.new(@region,
-    current_admin: current_admin,
+  <%= render Dashboard::Diabetes::RegistrationsAndFollowUpsTableComponent.new(
+    region: @region,
     repository: @details_repository,
-    current_period: @period)) %>
+    period: @period) %>
 <% end %>
 
 <%= render "reports/regions/diabetes_footnotes" %>
-
-<div id="data-json" style="display: none;">
-  <%= raw @data.to_json %>
-</div>
-<script>
-    window.addEventListener("DOMContentLoaded", () => {
-        new Reports(<%= @with_ltfu %>).initialize();
-    });
-</script>

@@ -26,7 +26,7 @@
         <%= table.header(table_header[:title], colspan: 2, tooltip: table_header[:tooltip]) %>
       <% end %>
 
-      <%= table.sub_header(localized_region_type.capitalize, sort_default: true) %>
+      <%= table.sub_header(localized_region_type.capitalize, sort_default: true, sort_method: :string) %>
       <% table_headers.each do %>
         <%= table.sub_header("Percent") %>
         <%= table.sub_header("Total") %>

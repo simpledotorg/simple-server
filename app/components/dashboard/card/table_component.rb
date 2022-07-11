@@ -10,11 +10,10 @@ class Dashboard::Card::TableComponent < ApplicationComponent
     end
   end
 
-  renders_many :sub_headers, ->(title, colspan: 1, sort_method: 'number', sort_default: false) do
-    content_tag :th, colspan: colspan, class: "row-label sort-label sort-label-small ta-left", data: {
-      sort_default: sort_default,
-      sort_method: sort_method
-    } do
+  renders_many :sub_headers, ->(title, colspan: 1, sort_method: "number", sort_default: false) do
+    data = { sort_method: sort_method }
+    data[:sort_default] = true if sort_default
+    content_tag :th, colspan: colspan, class: "row-label sort-label sort-label-small ta-left", data: data do
       title
     end
   end
