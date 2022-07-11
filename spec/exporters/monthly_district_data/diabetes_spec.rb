@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe MonthlyDistrictData::Hypertension do
+describe MonthlyDistrictData::Diabetes do
   around do |example|
     # This is in the style of ReportingHelpers::freeze_time_for_reporting_specs.
     # Since FacilityAppointmentScheduledDays only keeps the last 6 months of data, the date cannot be a
@@ -12,31 +12,31 @@ describe MonthlyDistrictData::Hypertension do
 
   let(:organization) { FactoryBot.create(:organization) }
   let(:facility_group) { create(:facility_group, organization: organization) }
-  let(:facility1) { create(:facility, name: "Facility 1", block: "Block 1 - alphabetically first", facility_group: facility_group, facility_size: :community) }
-  let(:facility2) { create(:facility, name: "Facility 2", block: "Block 2 - alphabetically second", facility_group: facility_group, facility_size: :community) }
+  let(:facility1) { create(:facility, name: "Facility 1", block: "Block 1 - alphabetically first", facility_group: facility_group, facility_size: :community, enable_diabetes_management: true) }
+  let(:facility2) { create(:facility, name: "Facility 2", block: "Block 2 - alphabetically second", facility_group: facility_group, facility_size: :community, enable_diabetes_management: true) }
   let(:region) { facility1.region.district_region }
   let(:period) { Period.month(Date.today) }
   let(:missed_visit_patient) do
-    patient = create(:patient, :hypertension, recorded_at: 3.months.ago, assigned_facility: facility1, registration_facility: facility1)
+    patient = create(:patient, :diabetes, recorded_at: 3.months.ago, assigned_facility: facility1, registration_facility: facility1)
     create(:appointment, creation_facility: facility1, scheduled_date: 2.months.ago, patient: patient)
     patient
   end
   let(:follow_up_patient) do
-    patient = create(:patient, :hypertension, recorded_at: 3.months.ago, assigned_facility: facility2, registration_facility: facility2)
+    patient = create(:patient, :diabetes, recorded_at: 3.months.ago, assigned_facility: facility2, registration_facility: facility2)
     create(:appointment, creation_facility: facility2, scheduled_date: 2.month.ago, patient: patient)
-    create(:bp_with_encounter, :under_control, facility: facility2, patient: patient, recorded_at: 2.months.ago)
+    create(:blood_sugar_with_encounter, :bs_below_200, facility: facility2, patient: patient, recorded_at: 2.months.ago)
     patient
   end
-  let(:patient_without_hypertension) do
-    create(:patient, :without_hypertension, recorded_at: 3.months.ago, assigned_facility: facility1, registration_facility: facility1)
+  let(:patient_without_diabetes) do
+    create(:patient, :without_diabetes, recorded_at: 3.months.ago, assigned_facility: facility1, registration_facility: facility1)
   end
-  let(:ltfu_patient) { create(:patient, :hypertension, recorded_at: 2.years.ago, assigned_facility: facility1, registration_facility: facility1) }
+  let(:ltfu_patient) { create(:patient, :diabetes, recorded_at: 2.years.ago, assigned_facility: facility1, registration_facility: facility1) }
 
   let(:medications_dispensed_patients) {
-    create(:appointment, facility: facility1, scheduled_date: 10.days.from_now, device_created_at: Date.today, patient: create(:patient, recorded_at: 1.year.ago))
-    create(:appointment, facility: facility2, scheduled_date: 10.days.from_now, device_created_at: Date.today, patient: create(:patient, recorded_at: 1.year.ago))
-    create(:appointment, facility: facility2, scheduled_date: Date.today, device_created_at: 32.days.ago, patient: create(:patient, recorded_at: 1.year.ago))
-    create(:appointment, facility: facility1, scheduled_date: Date.today, device_created_at: 63.days.ago, patient: create(:patient, recorded_at: 1.year.ago))
+    create(:appointment, facility: facility1, scheduled_date: 10.days.from_now, device_created_at: Date.today, patient: create(:patient, :diabetes, recorded_at: 1.year.ago))
+    create(:appointment, facility: facility2, scheduled_date: 10.days.from_now, device_created_at: Date.today, patient: create(:patient, :diabetes, recorded_at: 1.year.ago))
+    create(:appointment, facility: facility2, scheduled_date: Date.today, device_created_at: 32.days.ago, patient: create(:patient, :diabetes, recorded_at: 1.year.ago))
+    create(:appointment, facility: facility1, scheduled_date: Date.today, device_created_at: 63.days.ago, patient: create(:patient, :diabetes, recorded_at: 1.year.ago))
   }
 
   let(:months) {
@@ -46,10 +46,10 @@ describe MonthlyDistrictData::Hypertension do
   context "when medication dispensation is disabled" do
     let(:sections) {
       [nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
-        "New hypertension registrations", nil, nil, nil, nil, nil,
-        "Hypertension follow-up patients", nil, nil, nil, nil, nil,
-        "Treatment status of hypertension patients under care", nil, nil, nil, nil,
-        "Hypertension drug availability", nil, nil]
+        "New diabetes registrations", nil, nil, nil, nil, nil,
+        "Diabetes follow-up patients", nil, nil, nil, nil, nil,
+        "Treatment status of diabetes patients under care", nil, nil, nil, nil, nil,
+        "Diabetes drug availability", nil, nil]
     }
 
     let(:headers) {
@@ -59,18 +59,19 @@ describe MonthlyDistrictData::Hypertension do
         "Facility",
         "Facility type",
         "Facility size",
-        "Estimated hypertensive population",
-        "Total hypertension registrations",
-        "Total assigned hypertension patients",
-        "Hypertension lost to follow-up patients",
-        "Dead hypertensive patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})",
-        "Hypertension patients under care as of #{period.end.strftime("%e-%b-%Y")}",
+        "Estimated diabetic population",
+        "Total diabetes registrations",
+        "Total assigned diabetes patients",
+        "Diabetes lost to follow-up patients",
+        "Dead diabetic patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})",
+        "Diabetes patients under care as of #{period.end.strftime("%e-%b-%Y")}",
         *(months * 2),
         "Patients under care as of #{period.adjusted_period.end.strftime("%e-%b-%Y")}",
-        "Patients with BP controlled",
-        "Patients with BP not controlled",
+        "Patients with blood sugar < 200",
+        "Patients with blood sugar 200-299",
+        "Patients with blood sugar ≥ 300",
         "Patients with a missed visit",
-        "Patients with a visit but no BP taken",
+        "Patients with a visit but no blood sugar taken",
         "Amlodipine",
         "ARBs/ACE Inhibitors",
         "Diuretic"
@@ -95,15 +96,15 @@ describe MonthlyDistrictData::Hypertension do
       it "returns district row" do
         missed_visit_patient
         follow_up_patient
-        patient_without_hypertension
+        patient_without_diabetes
         ltfu_patient
         medications_dispensed_patients
 
         RefreshReportingViews.refresh_v2
 
-        expected_district_row = ["All facilities", nil, nil, nil, "All", nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 2, 1, 0, 0, 1, nil, nil, nil]
+        expected_district_row = ["All facilities", nil, nil, nil, "All", nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 0, 1, 0, 0, 0, 1, nil, nil, nil]
         district_row = data_service.district_row
-        expect(district_row.count).to eq(31)
+        expect(district_row.count).to eq(32)
         expect(district_row).to eq(expected_district_row)
       end
     end
@@ -112,16 +113,16 @@ describe MonthlyDistrictData::Hypertension do
       it "provides accurate numbers for facility sizes" do
         missed_visit_patient
         follow_up_patient
-        patient_without_hypertension
+        patient_without_diabetes
         ltfu_patient
         medications_dispensed_patients
 
         RefreshReportingViews.refresh_v2
 
-        expected_facility_size_rows = [["Community facilities", nil, nil, nil, "Community", nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 2, 1, 0, 0, 1, nil, nil, nil]]
+        expected_facility_size_rows = [["Community facilities", nil, nil, nil, "Community", nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 0, 1, 0, 0, 0, 1, nil, nil, nil]]
         facility_size_rows = data_service.facility_size_rows
         expect(facility_size_rows.count).to eq(1)
-        expect(facility_size_rows.first&.count).to eq(31)
+        expect(facility_size_rows.first&.count).to eq(32)
         expect(facility_size_rows).to eq(expected_facility_size_rows)
       end
     end
@@ -129,18 +130,19 @@ describe MonthlyDistrictData::Hypertension do
     describe "#facility_rows" do
       it "provides accurate numbers for individual facilities" do
         missed_visit_patient
-        patient_without_hypertension
+        follow_up_patient
+        patient_without_diabetes
         ltfu_patient
         medications_dispensed_patients
 
         RefreshReportingViews.refresh_v2
 
-        expected_facility_rows = [[1, "Block 1 - alphabetically first", "Facility 1", "PHC", "Community", nil, 2, 2, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 2, 1, 0, 0, 0, 1, nil, nil, nil],
-          [2, "Block 2 - alphabetically second", "Facility 2", "PHC", "Community", nil, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, nil, nil, nil]]
+        expected_facility_rows = [[1, "Block 1 - alphabetically first", "Facility 1", "PHC", "Community", nil, 2, 2, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 1, nil, nil, nil],
+          [2, "Block 2 - alphabetically second", "Facility 2", "PHC", "Community", nil, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 2, 0, 1, 0, 0, 0, 0, nil, nil, nil]]
         facility_rows = data_service.facility_rows
         expect(facility_rows.count).to eq(2)
-        expect(facility_rows.first&.count).to eq(31)
-        expect(facility_rows.second&.count).to eq(31)
+        expect(facility_rows.first&.count).to eq(32)
+        expect(facility_rows.second&.count).to eq(32)
         expect(facility_rows).to eq(expected_facility_rows)
       end
     end
@@ -163,16 +165,16 @@ describe MonthlyDistrictData::Hypertension do
   context "when medication dispensation is enabled" do
     let(:sections) {
       [nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
-        "New hypertension registrations", nil, nil, nil, nil, nil,
-        "Hypertension follow-up patients", nil, nil, nil, nil, nil,
-        "Treatment status of hypertension patients under care", nil, nil, nil, nil,
+        "New diabetes registrations", nil, nil, nil, nil, nil,
+        "Diabetes follow-up patients", nil, nil, nil, nil, nil,
+        "Treatment status of diabetes patients under care", nil, nil, nil, nil, nil,
         "Days of patient medications", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
-        "Hypertension drug availability", nil, nil]
+        "Diabetes drug availability", nil, nil]
     }
 
     let(:sub_sections) {
       [
-        nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
+        nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
         months[3].to_s, nil, nil, nil,
         months[4].to_s, nil, nil, nil,
         months[5].to_s, nil, nil, nil,
@@ -187,17 +189,18 @@ describe MonthlyDistrictData::Hypertension do
         "Facility",
         "Facility type",
         "Facility size",
-        "Estimated hypertensive population",
-        "Total hypertension registrations",
-        "Total assigned hypertension patients",
-        "Hypertension lost to follow-up patients",
-        "Dead hypertensive patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})",
-        "Hypertension patients under care as of #{period.end.strftime("%e-%b-%Y")}", *(months * 2),
+        "Estimated diabetic population",
+        "Total diabetes registrations",
+        "Total assigned diabetes patients",
+        "Diabetes lost to follow-up patients",
+        "Dead diabetic patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})",
+        "Diabetes patients under care as of #{period.end.strftime("%e-%b-%Y")}", *(months * 2),
         "Patients under care as of #{period.adjusted_period.end.strftime("%e-%b-%Y")}",
-        "Patients with BP controlled",
-        "Patients with BP not controlled",
+        "Patients with blood sugar < 200",
+        "Patients with blood sugar 200-299",
+        "Patients with blood sugar ≥ 300",
         "Patients with a missed visit",
-        "Patients with a visit but no BP taken",
+        "Patients with a visit but no blood sugar taken",
         *(["Patients with 0 to 14 days of medications", "Patients with 15 to 31 days of medications", "Patients with 32 to 62 days of medications", "Patients with 62+ days of medications"] * 3),
         "Amlodipine",
         "ARBs/ACE Inhibitors",
@@ -229,15 +232,15 @@ describe MonthlyDistrictData::Hypertension do
       it "returns district row" do
         missed_visit_patient
         follow_up_patient
-        patient_without_hypertension
+        patient_without_diabetes
         ltfu_patient
         medications_dispensed_patients
 
         RefreshReportingViews.refresh_v2
 
-        expected_district_row = ["All facilities", nil, nil, nil, "All", nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 2, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 2, 0, 0, 0, nil, nil, nil]
+        expected_district_row = ["All facilities", nil, nil, nil, "All", nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 2, 0, 0, 0, nil, nil, nil]
         district_row = data_service.district_row
-        expect(district_row.count).to eq(43)
+        expect(district_row.count).to eq(44)
         expect(district_row).to eq(expected_district_row)
       end
     end
@@ -246,16 +249,16 @@ describe MonthlyDistrictData::Hypertension do
       it "provides accurate numbers for facility sizes" do
         missed_visit_patient
         follow_up_patient
-        patient_without_hypertension
+        patient_without_diabetes
         ltfu_patient
         medications_dispensed_patients
 
         RefreshReportingViews.refresh_v2
 
-        expected_facility_size_rows = [["Community facilities", nil, nil, nil, "Community", nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 2, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 2, 0, 0, 0, nil, nil, nil]]
+        expected_facility_size_rows = [["Community facilities", nil, nil, nil, "Community", nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 2, 0, 0, 0, nil, nil, nil]]
         facility_size_rows = data_service.facility_size_rows
         expect(facility_size_rows.count).to eq(1)
-        expect(facility_size_rows.first&.count).to eq(43)
+        expect(facility_size_rows.first&.count).to eq(44)
         expect(facility_size_rows).to eq(expected_facility_size_rows)
       end
     end
@@ -263,18 +266,19 @@ describe MonthlyDistrictData::Hypertension do
     describe "#facility_rows" do
       it "provides accurate numbers for individual facilities" do
         missed_visit_patient
-        patient_without_hypertension
+        follow_up_patient
+        patient_without_diabetes
         ltfu_patient
         medications_dispensed_patients
 
         RefreshReportingViews.refresh_v2
 
-        expected_facility_rows = [[1, "Block 1 - alphabetically first", "Facility 1", "PHC", "Community", nil, 2, 2, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 2, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, nil, nil, nil],
-          [2, "Block 2 - alphabetically second", "Facility 2", "PHC", "Community", nil, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, nil, nil, nil]]
+        expected_facility_rows = [[1, "Block 1 - alphabetically first", "Facility 1", "PHC", "Community", nil, 2, 2, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, nil, nil, nil],
+          [2, "Block 2 - alphabetically second", "Facility 2", "PHC", "Community", nil, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, nil, nil, nil]]
         facility_rows = data_service.facility_rows
         expect(facility_rows.count).to eq(2)
-        expect(facility_rows.first&.count).to eq(43)
-        expect(facility_rows.second&.count).to eq(43)
+        expect(facility_rows.first&.count).to eq(44)
+        expect(facility_rows.second&.count).to eq(44)
         expect(facility_rows).to eq(expected_facility_rows)
       end
     end
