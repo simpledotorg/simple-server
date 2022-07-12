@@ -5,66 +5,68 @@
            "Follow-up patients per user" => t(:diabetes_follow_up_patients_copy, region_name: region.name) }) %>
   <% end %>
 
-  <%= render Dashboard::Card::TableComponent.new(id: 'registrationsAndFollowUpsByUserTable') do |table| %>
-    <%= table.column_group do %>
-      <colgroup>
-        <col class="table-first-col">
-        <col>
-        <col class="table-divider">
-        <col class="table-divider">
-        <col>
-        <col>
-        <col>
-        <col>
-        <col class="table-divider">
-        <col>
-        <col>
-        <col>
-        <col>
-        <col>
-      </colgroup>
-    <% end %>
+  <div class="table-responsive-md">
+    <%= render Dashboard::Card::TableComponent.new(id: 'registrationsAndFollowUpsByUserTable') do |table| %>
+      <%= table.column_group do %>
+        <colgroup>
+          <col class="table-first-col">
+          <col>
+          <col class="table-divider">
+          <col class="table-divider">
+          <col>
+          <col>
+          <col>
+          <col>
+          <col class="table-divider">
+          <col>
+          <col>
+          <col>
+          <col>
+          <col>
+        </colgroup>
+      <% end %>
 
-    <%= table.header("Total") %>
-    <%= table.header("Monthly registered patients", colspan: 6) %>
-    <%= table.header("Follow-up patients per user", colspan: 6) %>
+      <%= table.header("Total") %>
+      <%= table.header("Monthly registered patients", colspan: 6) %>
+      <%= table.header("Follow-up patients per user", colspan: 6) %>
 
-    <%= table.sub_header("Users", sort_default: true, sort_method: :string) %>
-    <%= table.sub_header("Registered patients") %>
+      <%= table.sub_header("Users", sort_default: true, sort_method: :string) %>
+      <%= table.sub_header("Registered patients") %>
 
-    <% period_range.each do |period| %>
-      <%= table.sub_header(period.to_s) %>
-    <% end %>
+      <% period_range.each do |period| %>
+        <%= table.sub_header(period.to_s) %>
+      <% end %>
 
-    <% period_range.each do |period| %>
-      <%= table.sub_header(period.to_s) %>
-    <% end %>
+      <% period_range.each do |period| %>
+        <%= table.sub_header(period.to_s) %>
+      <% end %>
 
-    <% current_admin.accessible_users(:view_reports).order(:full_name).each do |user| %>
-      <% next unless show_user_row?(user) %>
-      <%= table.row do %>
-        <tr>
-          <td class="row-title">
-            <%= link_to user.full_name, admin_user_path(user, period: @period) %>
-          </td>
-
-          <td class="ta-right">
-            <%= number_or_dash_with_delimiter(user_registrations_count(user)) %>
-          </td>
-
-          <% period_range.each do |period| %>
-            <td class="ta-right">
-              <%= number_or_dash_with_delimiter(registrations_by_user_in_period(user, period)) %>
+      <% current_admin.accessible_users(:view_reports).order(:full_name).each do |user| %>
+        <% next unless show_user_row?(user) %>
+        <%= table.row do %>
+          <tr>
+            <td class="row-title">
+              <%= link_to user.full_name, admin_user_path(user, period: @period) %>
             </td>
-          <% end %>
 
-          <% period_range.each do |period| %>
             <td class="ta-right">
-              <%= number_or_dash_with_delimiter(follow_up_patients_by_user_in_period(user, period)) %>
+              <%= number_or_dash_with_delimiter(user_registrations_count(user)) %>
             </td>
-          <% end %>
-        </tr>
+
+            <% period_range.each do |period| %>
+              <td class="ta-right">
+                <%= number_or_dash_with_delimiter(registrations_by_user_in_period(user, period)) %>
+              </td>
+            <% end %>
+
+            <% period_range.each do |period| %>
+              <td class="ta-right">
+                <%= number_or_dash_with_delimiter(follow_up_patients_by_user_in_period(user, period)) %>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
       <% end %>
     <% end %>
-  <% end %>
+  </div>
 </div>
