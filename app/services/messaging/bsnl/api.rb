@@ -11,7 +11,7 @@ class Messaging::Bsnl::Api
 
   def initialize
     unless credentials.values.all?
-      raise Messaging::Bsnl::Error.new("Missing BSNL credentials")
+      raise Messaging::Bsnl::CredentialsError.new("Missing BSNL credentials")
     end
   end
 

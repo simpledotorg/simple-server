@@ -64,13 +64,13 @@ class Messaging::Bsnl::DltTemplate
     missing_keys = find_missing_keys(content)
     return content unless missing_keys.present?
 
-    raise Messaging::Bsnl::Error.new(
+    raise Messaging::Bsnl::MissingVariablesError.new(
       "Variables #{missing_keys.to_sentence} not provided to #{name}"
     )
   end
 
   def check_approved
-    raise Messaging::Bsnl::Error.new("Template #{name} is pending naming") unless approved?
+    raise Messaging::Bsnl::TemplateError.new("Template #{name} is pending naming") unless approved?
   end
 
   def approved?
@@ -94,7 +94,7 @@ class Messaging::Bsnl::DltTemplate
     variable_length = content.values.map(&:size).sum
     return content unless variable_length > variable_length_permitted
 
-    raise Messaging::Bsnl::Error.new(
+    raise Messaging::Bsnl::VariablesLengthError.new(
       "Variables #{content.values} exceeded #{name}'s variable limit"
     )
   end
@@ -103,7 +103,7 @@ class Messaging::Bsnl::DltTemplate
 
   def template_details(dlt_template_name)
     details = BSNL_TEMPLATES.dig(dlt_template_name)
-    raise Messaging::Bsnl::Error.new("Template #{dlt_template_name} not found") unless details
+    raise Messaging::Bsnl::TemplateError.new("Template #{dlt_template_name} not found") unless details
 
     details
   end

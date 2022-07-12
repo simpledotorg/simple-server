@@ -1,3 +1,7 @@
 class Messaging::Error < StandardError
-  attr_reader :message, :reason
+  def initialize(message)
+    @message = message
+  end
+
+  attr_reader :message
 end
