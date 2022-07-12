@@ -225,7 +225,7 @@ bn-IN.notifications.set03.alarm:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.set03.alarm
-bn-IN.notifications.set03.basic: &1
+bn-IN.notifications.set03.basic:
   Template_Id: '1407164904409201619'
   Template_Keys:
   - facility_name
@@ -309,9 +309,6 @@ bn-IN.notifications.set03.response:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.set03.response
-bn-IN.notifications.set03_basic_repeated.first: *1
-bn-IN.notifications.set03_basic_repeated.second: *1
-bn-IN.notifications.set03_basic_repeated.third: *1
 en.notifications.covid.medication_reminder.2:
   Template_Id: '1407165001269262073'
   Template_Keys:
@@ -735,7 +732,7 @@ en.notifications.set03.basic:
   Version: 1
   Is_Latest_Version: false
   Latest_Template_Version: en.notifications.set03.basic.2
-en.notifications.set03.basic.2: &2
+en.notifications.set03.basic.2:
   Template_Id: '1407165001242755867'
   Template_Keys:
   - facility_name
@@ -879,9 +876,6 @@ en.notifications.set03.response.2:
   Version: 2
   Is_Latest_Version: true
   Latest_Template_Version: en.notifications.set03.response.2
-en.notifications.set03_basic_repeated.first: *2
-en.notifications.set03_basic_repeated.second: *2
-en.notifications.set03_basic_repeated.third: *2
 hi-IN.notifications.covid.medication_reminder:
   Template_Id: '1407164904210999916'
   Template_Keys:
@@ -1105,7 +1099,7 @@ hi-IN.notifications.set03.alarm:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.set03.alarm
-hi-IN.notifications.set03.basic: &3
+hi-IN.notifications.set03.basic:
   Template_Id: '1407164786881633140'
   Template_Keys:
   - facility_name
@@ -1189,9 +1183,6 @@ hi-IN.notifications.set03.response:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.set03.response
-hi-IN.notifications.set03_basic_repeated.first: *3
-hi-IN.notifications.set03_basic_repeated.second: *3
-hi-IN.notifications.set03_basic_repeated.third: *3
 kn-IN.notifications.covid.medication_reminder:
   Template_Id: '1407164904338588930'
   Template_Keys:
@@ -1416,7 +1407,7 @@ kn-IN.notifications.set03.alarm:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.set03.alarm
-kn-IN.notifications.set03.basic: &4
+kn-IN.notifications.set03.basic:
   Template_Id: '1407164904322024423'
   Template_Keys:
   - facility_name
@@ -1500,9 +1491,6 @@ kn-IN.notifications.set03.response:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.set03.response
-kn-IN.notifications.set03_basic_repeated.first: *4
-kn-IN.notifications.set03_basic_repeated.second: *4
-kn-IN.notifications.set03_basic_repeated.third: *4
 mr-IN.notifications.covid.medication_reminder:
   Template_Id: '1407164904254274076'
   Template_Keys:
@@ -1729,7 +1717,7 @@ mr-IN.notifications.set03.alarm:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.set03.alarm
-mr-IN.notifications.set03.basic: &5
+mr-IN.notifications.set03.basic:
   Template_Id: '1407164904237286715'
   Template_Keys:
   - facility_name
@@ -1840,9 +1828,6 @@ mr-IN.notifications.set03.response:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.set03.response
-mr-IN.notifications.set03_basic_repeated.first: *5
-mr-IN.notifications.set03_basic_repeated.second: *5
-mr-IN.notifications.set03_basic_repeated.third: *5
 pa-Guru-IN.notifications.covid.medication_reminder:
   Template_Id: '1407164904375888288'
   Template_Keys:
@@ -2067,7 +2052,7 @@ pa-Guru-IN.notifications.set03.alarm:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.set03.alarm
-pa-Guru-IN.notifications.set03.basic: &6
+pa-Guru-IN.notifications.set03.basic:
   Template_Id: '1407164904363654344'
   Template_Keys:
   - facility_name
@@ -2151,9 +2136,6 @@ pa-Guru-IN.notifications.set03.response:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.set03.response
-pa-Guru-IN.notifications.set03_basic_repeated.first: *6
-pa-Guru-IN.notifications.set03_basic_repeated.second: *6
-pa-Guru-IN.notifications.set03_basic_repeated.third: *6
 ta-IN.notifications.covid.medication_reminder:
   Template_Id: '1407164904296563463'
   Template_Keys:
@@ -2378,7 +2360,7 @@ ta-IN.notifications.set03.alarm:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.set03.alarm
-ta-IN.notifications.set03.basic: &7
+ta-IN.notifications.set03.basic:
   Template_Id: '1407164904279853117'
   Template_Keys:
   - facility_name
@@ -2462,9 +2444,6 @@ ta-IN.notifications.set03.response:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.set03.response
-ta-IN.notifications.set03_basic_repeated.first: *7
-ta-IN.notifications.set03_basic_repeated.second: *7
-ta-IN.notifications.set03_basic_repeated.third: *7
 te-IN.notifications.covid.medication_reminder:
   Template_Id: '1407164904168867232'
   Template_Keys:
@@ -2689,7 +2668,7 @@ te-IN.notifications.set03.alarm:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.set03.alarm
-te-IN.notifications.set03.basic: &8
+te-IN.notifications.set03.basic:
   Template_Id: '1407164904152458131'
   Template_Keys:
   - facility_name
@@ -2773,9 +2752,6 @@ te-IN.notifications.set03.response:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.set03.response
-te-IN.notifications.set03_basic_repeated.first: *8
-te-IN.notifications.set03_basic_repeated.second: *8
-te-IN.notifications.set03_basic_repeated.third: *8
 test_message:
   Template_Id: '1407164914557014154'
   Template_Keys: []
