@@ -5,8 +5,8 @@
            "Follow-up patients per user" => t(:diabetes_follow_up_patients_copy, region_name: region.name) }) %>
   <% end %>
 
-  <div class="table-responsive-md">
-    <table class="analytics-table table-compact">
+  <%= render Dashboard::Card::TableComponent.new(id: 'registrationsAndFollowUpsByUserTable') do |table| %>
+    <%= table.column_group do %>
       <colgroup>
         <col class="table-first-col">
         <col>
@@ -23,62 +23,48 @@
         <col>
         <col>
       </colgroup>
-      <thead>
-      <!-- Patient registration and follow ups headers -->
-      <tr>
-        <th></th>
-        <th>Total</th>
-        <th colspan="6">
-          Monthly registered patients
-        </th>
-        <th colspan="6">
-          Follow-up patients per user
-        </th>
-      </tr>
-      <tr class="sorts" data-sort-method="thead">
-        <th class="row-label sort-label sort-label-small sticky" data-sort-default>
-          Users
-        </th>
-        <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
-          Registered patients
-        </th>
-        <% period_range.each do |period| %>
-          <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
-            <%= period %>
-          </th>
-        <% end %>
-        <% period_range.each do |period| %>
-          <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
-            <%= period %>
-          </th>
-        <% end %>
-      </tr>
-      </thead>
-      <tbody>
-      <% current_admin.accessible_users(:view_reports).order(:full_name).each do |resource| %>
-        <% next unless sum_registration_counts(repository, slug: region.slug, user_id: resource.id, diagnosis: :diabetes)&.nonzero? ||
-          sum_blood_sugar_measures(repository, slug: region.slug, user_id: resource.id)&.nonzero? %>
+    <% end %>
+
+    <%= table.header("Total") %>
+    <%= table.header("Monthly registered patients", colspan: 6) %>
+    <%= table.header("Follow-up patients per user", colspan: 6) %>
+
+    <%= table.sub_header("Users", sort_default: true, sort_method: :string) %>
+    <%= table.sub_header("Registered patients") %>
+
+    <% period_range.each do |period| %>
+      <%= table.sub_header(period.to_s) %>
+    <% end %>
+
+    <% period_range.each do |period| %>
+      <%= table.sub_header(period.to_s) %>
+    <% end %>
+
+    <% current_admin.accessible_users(:view_reports).order(:full_name).each do |user| %>
+      <% next unless show_user_row?(user) %>
+      <%= table.row do %>
         <tr>
           <td class="row-title">
-            <%= link_to resource.full_name, admin_user_path(resource, period: @period) %>
+            <%= link_to user.full_name, admin_user_path(user, period: @period) %>
           </td>
+
           <td class="ta-right">
-            <%= number_or_dash_with_delimiter(sum_registration_counts(repository, slug: region.slug, user_id: resource.id, diagnosis: :diabetes)) %>
+            <%= number_or_dash_with_delimiter(user_registrations_count(user)) %>
           </td>
+
           <% period_range.each do |period| %>
             <td class="ta-right">
-              <%= number_or_dash_with_delimiter(repository.monthly_registrations_by_user(diagnosis: :diabetes).dig(region.slug, period, resource.id)) %>
+              <%= number_or_dash_with_delimiter(registrations_by_user_in_period(user, period)) %>
             </td>
           <% end %>
+
           <% period_range.each do |period| %>
             <td class="ta-right">
-              <%= val = repository.diabetes_follow_ups(group_by: "blood_sugars.user_id").dig(region.slug, period, resource.id)
-                  number_or_dash_with_delimiter(val) %>
+              <%= number_or_dash_with_delimiter(follow_up_patients_by_user_in_period(user, period)) %>
             </td>
           <% end %>
         </tr>
       <% end %>
-      </tbody>
-    </table>
-  </div>
+    <% end %>
+  <% end %>
 </div>

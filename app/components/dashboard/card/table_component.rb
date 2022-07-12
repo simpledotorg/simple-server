@@ -14,7 +14,7 @@ class Dashboard::Card::TableComponent < ApplicationComponent
     data = { sort_method: sort_method }
     data[:sort_default] = true if sort_default
     content_tag :th, colspan: colspan, class: "row-label sort-label sort-label-small ta-left", data: data do
-      title
+      title + " " # Need the extra space between the text and sort arrow
     end
   end
 
