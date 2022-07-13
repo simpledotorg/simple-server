@@ -13,7 +13,7 @@ class GetBsnlAccountBalance
   end
 
   def print
-    puts recharge_details.map { |r| "#{r['SMS_Balance_Count']} segments valid until #{r['Balance_Expiry_Time'].to_date}" }
+    puts recharge_details.map { |r| "#{r["SMS_Balance_Count"]} segments valid until #{r["Balance_Expiry_Time"].to_date}" }
   end
 
   def alert
