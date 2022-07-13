@@ -20,8 +20,13 @@ namespace :bsnl do
     GetBsnlTemplateDetails.new.write_to_config
   end
 
+  desc "Fetch BSNL account balance"
+  task get_account_balance: :environment do
+    GetBsnlAccountBalance.new.print
+  end
+
   desc "Fetch BSNL account balances and alert if we're running low or close to expiry"
-  task check_account_balance: :environment do
-    GetBsnlAccountBalance.new.call
+  task alert_on_low_balance: :environment do
+    GetBsnlAccountBalance.new.alert
   end
 end
