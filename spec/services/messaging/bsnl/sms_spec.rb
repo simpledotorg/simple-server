@@ -53,7 +53,7 @@ RSpec.describe Messaging::Bsnl::Sms do
           dlt_template_name: template.name,
           variable_content: {}
         )
-      }.to raise_error(an_instance_of(Messaging::Bsnl::Error)) do |error|
+      }.to raise_error(an_instance_of(Messaging::Bsnl::ApiError)) do |error|
         expect(error.reason).to be_nil
         expect(/An error happened. Error sending SMS for a.template.name/).to match(error.message)
       end

@@ -50,7 +50,7 @@ RSpec.describe BsnlSmsStatusJob, type: :job do
       )
 
       described_class.perform_async(message_id)
-      expect { described_class.drain }.to raise_error(Messaging::Bsnl::Error)
+      expect { described_class.drain }.to raise_error(Messaging::Bsnl::FetchStatusError)
     end
   end
 end

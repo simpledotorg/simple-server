@@ -4,7 +4,7 @@ RSpec.describe Messaging::Bsnl::Api do
   it "raises an error if configuration is missing" do
     stub_request(:post, "https://bulksms.bsnl.in:5010/api/Get_Content_Template_Details").to_return(body: {"Content_Template_Ids" => ["A list of template details"]}.to_json)
 
-    expect { described_class.new }.to raise_error(Messaging::Bsnl::Error)
+    expect { described_class.new }.to raise_error(Messaging::Bsnl::CredentialsError)
   end
 
   describe "#send_sms" do
