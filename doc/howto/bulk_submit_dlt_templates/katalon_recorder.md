@@ -14,6 +14,9 @@ These are the commands to add in the test suite. You'll have to copy-paste these
 | sendKeys    | xpath=//input[@type='search']                                  | ${KEY_ENTER} |
 | click       | name=vcTemplateName                                            |              |
 | type        | name=vcTemplateName                                            | ${name}      |
+| click       | id=select2-id_iTemplateMessageType-container                   |              |
+| type        | xpath=//span/span/input                                        | region       |
+| sendKeys    | xpath=//span/span/input                                        | ${KEY_ENTER} |
 | click       | id=id_vcTemplateMessage                                        |              |
 | type        | id=id_vcTemplateMessage                                        | ${message}   |
 | click       | id=createtemp                                                  |              |
