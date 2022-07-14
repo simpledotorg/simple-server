@@ -17,6 +17,68 @@ class MonthlyStateData::Diabetes
     @medications_dispensation_enabled = medications_dispensation_enabled
   end
 
+  def section_row
+    [
+      # These just add empty spacer columns
+      Array.new(region_headers.size + summary_headers.size, nil),
+      "New diabetes registrations",
+      Array.new(month_headers.size - 1, nil),
+      "Diabetes follow-up patients",
+      Array.new(month_headers.size - 1, nil),
+      "Treatment status of diabetes patients under care",
+      Array.new(outcome_headers.size - 1, nil),
+      medications_dispensation_section_header,
+      "Diabetes drug availability",
+      Array.new(drug_headers.size - 1, nil)
+    ].flatten
+  end
+
+  def sub_section_row
+    [
+      Array.new(region_headers.size + summary_headers.size + month_headers.size * 2 + outcome_headers.size, nil),
+      medications_dispensation_month_headers.map do |month|
+        [month, Array.new(medications_dispensation_headers.size - 1, nil)]
+      end,
+      Array.new(drug_headers.size, nil)
+    ].flatten
+  end
+
+  def header_row
+    [
+      region_headers,
+      summary_headers,
+      month_headers,
+      month_headers,
+      outcome_headers,
+      *(medications_dispensation_headers * medications_dispensation_months.size),
+      drug_headers
+    ].flatten
+  end
+
+  def state_row
+    row_data = {
+      index: "All #{localized_district.pluralize}",
+      state: region.name,
+      district: nil
+    }.merge(region_data(region))
+
+    row_data.values
+  end
+
+  def district_rows
+    region.district_regions.sort_by(&:name).map.with_index do |district, index|
+      row_data = {
+        index: index + 1,
+        state: region.name,
+        district: district.name
+      }.merge(region_data(district))
+
+      row_data.values
+    end
+  end
+
+  private
+
   def region_headers
     [
       "#",
@@ -79,66 +141,6 @@ class MonthlyStateData::Diabetes
       "ARBs/ACE Inhibitors",
       "Diuretic"
     ]
-  end
-
-  def section_row
-    [
-      # These just add empty spacer columns
-      Array.new(region_headers.size + summary_headers.size, nil),
-      "New diabetes registrations",
-      Array.new(month_headers.size - 1, nil),
-      "Diabetes follow-up patients",
-      Array.new(month_headers.size - 1, nil),
-      "Treatment status of diabetes patients under care",
-      Array.new(outcome_headers.size - 1, nil),
-      medications_dispensation_section_header,
-      "Diabetes drug availability",
-      Array.new(drug_headers.size - 1, nil)
-    ].flatten
-  end
-
-  def sub_section_row
-    [
-      Array.new(region_headers.size + summary_headers.size + month_headers.size * 2 + outcome_headers.size, nil),
-      medications_dispensation_month_headers.map do |month|
-        [month, Array.new(medications_dispensation_headers.size - 1, nil)]
-      end,
-      Array.new(drug_headers.size, nil)
-    ].flatten
-  end
-
-  def header_row
-    [
-      region_headers,
-      summary_headers,
-      month_headers,
-      month_headers,
-      outcome_headers,
-      *(medications_dispensation_headers * medications_dispensation_months.size),
-      drug_headers
-    ].flatten
-  end
-
-  def state_row
-    row_data = {
-      index: "All #{localized_district.pluralize}",
-      state: region.name,
-      district: nil
-    }.merge(region_data(region))
-
-    row_data.values
-  end
-
-  def district_rows
-    region.district_regions.sort_by(&:name).map.with_index do |district, index|
-      row_data = {
-        index: index + 1,
-        state: region.name,
-        district: district.name
-      }.merge(region_data(district))
-
-      row_data.values
-    end
   end
 
   def region_data(subregion)

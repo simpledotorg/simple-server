@@ -17,74 +17,11 @@ class MonthlyStateData::Hypertension
     @medications_dispensation_enabled = medications_dispensation_enabled
   end
 
-  def region_headers
-    [
-      "#",
-      localized_state.capitalize,
-      localized_district.capitalize
-    ]
-  end
-
-  def summary_headers
-    [
-      "Estimated hypertensive population",
-      "Total hypertension registrations",
-      "Total assigned hypertension patients",
-      "Lost to follow-up hypertension patients",
-      "Dead hypertensive patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})",
-      "hypertension patients under care as of #{period.end.strftime("%e-%b-%Y")}"
-    ]
-  end
-
-  def outcome_headers
-    [
-      "Patients under care as of #{period.adjusted_period.end.strftime("%e-%b-%Y")}",
-      "Patients with BP controlled",
-      "Patients with BP not controlled",
-      "Patients with a missed visit",
-      "Patients with a visit but no BP taken"
-    ]
-  end
-
-  def medications_dispensation_section_header
-    if medications_dispensation_enabled
-      ["Days of patient medications",
-        Array.new((medications_dispensation_headers.size * medications_dispensation_months.size) - 1, nil)]
-    else
-      []
-    end
-  end
-
-  def medications_dispensation_headers
-    if medications_dispensation_enabled
-      [
-        "Patients with 0 to 14 days of medications",
-        "Patients with 15 to 31 days of medications",
-        "Patients with 32 to 62 days of medications",
-        "Patients with 62+ days of medications"
-      ]
-    else
-      []
-    end
-  end
-
-  def medications_dispensation_month_headers
-    medications_dispensation_months.map(&:to_s)
-  end
-
-  def drug_headers
-    [
-      "Amlodipine",
-      "ARBs/ACE Inhibitors",
-      "Diuretic"
-    ]
-  end
-
   def section_row
     [
       # These just add empty spacer columns
       Array.new(region_headers.size + summary_headers.size, nil),
-      "New hypertension egistrations",
+      "New hypertension registrations",
       Array.new(month_headers.size - 1, nil),
       "Hypertension follow-up patients",
       Array.new(month_headers.size - 1, nil),
@@ -138,6 +75,71 @@ class MonthlyStateData::Hypertension
 
       row_data.values
     end
+  end
+
+  private
+
+  def region_headers
+    [
+      "#",
+      localized_state.capitalize,
+      localized_district.capitalize
+    ]
+  end
+
+  def summary_headers
+    [
+      "Estimated hypertensive population",
+      "Total hypertension registrations",
+      "Total assigned hypertension patients",
+      "Hypertension lost to follow-up patients",
+      "Dead hypertensive patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})",
+      "Hypertension patients under care as of #{period.end.strftime("%e-%b-%Y")}"
+    ]
+  end
+
+  def outcome_headers
+    [
+      "Patients under care as of #{period.adjusted_period.end.strftime("%e-%b-%Y")}",
+      "Patients with BP controlled",
+      "Patients with BP not controlled",
+      "Patients with a missed visit",
+      "Patients with a visit but no BP taken"
+    ]
+  end
+
+  def medications_dispensation_section_header
+    if medications_dispensation_enabled
+      ["Days of patient medications",
+        Array.new((medications_dispensation_headers.size * medications_dispensation_months.size) - 1, nil)]
+    else
+      []
+    end
+  end
+
+  def medications_dispensation_headers
+    if medications_dispensation_enabled
+      [
+        "Patients with 0 to 14 days of medications",
+        "Patients with 15 to 31 days of medications",
+        "Patients with 32 to 62 days of medications",
+        "Patients with 62+ days of medications"
+      ]
+    else
+      []
+    end
+  end
+
+  def medications_dispensation_month_headers
+    medications_dispensation_months.map(&:to_s)
+  end
+
+  def drug_headers
+    [
+      "Amlodipine",
+      "ARBs/ACE Inhibitors",
+      "Diuretic"
+    ]
   end
 
   def region_data(subregion)
