@@ -110,7 +110,7 @@ module Reports
     end
 
     memoize def diabetes_under_care
-      values_at("under_care")
+      values_at("diabetes_under_care")
     end
 
     memoize def controlled
