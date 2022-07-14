@@ -46,7 +46,7 @@ Messaging::Bsnl::DltTemplate.latest_name_of("en.notifications.set01.basic.2")
 ```
 
 If you need to upload a lot of strings refer to this [Video walkthrough](https://drive.google.com/drive/folders/1kh-XSykRj6w5dGrjZh7sZXjSgvdAGtjU)
-and use the scripts under [this directory](bulk_submit_dlt_templates).
+and use the scripts [here](bulk_submit_dlt_templates).
 
 - Submissions to DLT are usually approved within 2 weekdays.
 - Once approved, the template should show up on the bulksms dashboard in a few hours. You will need to then name the variables as done in this [video]().
