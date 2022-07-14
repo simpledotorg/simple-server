@@ -32,7 +32,7 @@
         <% if @region.diabetes_management_enabled? %>
           <%= link_to "Hypertension", url_params.merge(action: "show"), class: "nav-link #{active_action?("show")}" %>
         <% else %>
-          <span class="nav-link">Hypertension report</span>
+          <h3>Hypertension report</h3>
         <% end %>
         <% if @region.diabetes_management_enabled? %>
           <%= link_to "Diabetes", reports_region_diabetes_path(@region, report_scope: params[:report_scope]), class: "nav-link #{active_action?("diabetes")}" %>
