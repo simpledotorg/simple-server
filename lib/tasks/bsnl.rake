@@ -20,6 +20,11 @@ namespace :bsnl do
     GetBsnlTemplateDetails.new.write_to_config
   end
 
+  desc "List pending notification strings to be uploaded to DLT and BSNL dashboard"
+  task notification_strings_summary: :environment do
+    GetBsnlTemplateDetails.new.notification_strings_summary
+  end
+
   desc "Fetch BSNL account balance"
   task get_account_balance: :environment do
     GetBsnlAccountBalance.new.print
