@@ -20,4 +20,5 @@ These are the commands to add in the test suite. You'll have to copy-paste these
 | click       | id=id_vcTemplateMessage                                        |              |
 | type        | id=id_vcTemplateMessage                                        | ${message}   |
 | click       | id=createtemp                                                  |              |
+| pause       |                                                                | 2000         |
 | endLoadVars |                                                                |              |
