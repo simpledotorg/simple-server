@@ -19,8 +19,7 @@ class PatientsWithHistoryExporter
   }.with_indifferent_access.freeze
 
   def self.csv(*args)
-    patients = *args
-    new.csv(patients)
+    new.csv(*args)
   end
 
   def csv(patients, display_blood_pressures: DEFAULT_DISPLAY_BLOOD_PRESSURES, display_medication_columns: DEFAULT_DISPLAY_MEDICATION_COLUMNS)
