@@ -34,17 +34,16 @@
       <% end %>
     <% end %>
 
-    <%# if region.region_type.in?(["district", "facility"]) %>
-      <%# if current_admin.can_access?(region.source, :view_pii) %>
-        <%#= link_to(patient_line_list_path, class: "dropdown-item") do %>
-<!--          <i class="fa-regular fa-list-ul w-16px ta-center mr-8px c-blue"></i>-->
-<!--          Patient line list-->
-        <%# end %>
-      <%# end %>
-    <%# end %>
+    <% if region.region_type.in?(["district", "facility"]) %>
+      <% if current_admin.can_access?(region.source, :view_pii) %>
+        <%= link_to(patient_line_list_path, class: "dropdown-item") do %>
+          <i class="fa-regular fa-list-ul w-16px ta-center mr-8px c-blue"></i>
+          Patient line list
+        <% end %>
+      <% end %>
+    <% end %>
 
-<!--    TODO: Remove facility from the array when patient list is available-->
-    <% unless region.region_type.in?(%w[block facility]) %>
+    <% unless region.region_type.in?(%w[block]) %>
      <div class="dropdown-divider"></div>
     <% end %>
 
