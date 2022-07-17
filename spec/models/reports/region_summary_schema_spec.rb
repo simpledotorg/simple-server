@@ -46,8 +46,8 @@ describe Reports::RegionSummarySchema, type: :model do
 
     expect(result[facility_group_1.slug][jan_2020.to_period]).to include("cumulative_assigned_patients" => 5)
     expect(result[facility_group_1.slug][jan_2020.to_period]).to include("adjusted_controlled_under_care" => 3)
-    expect(result[facility_1.slug][jan_2020.to_period]).to include("adjusted_controlled_under_care" => 2)
-    expect(result[facility_2.slug][jan_2020.to_period]).to include("adjusted_controlled_under_care" => 1)
+    expect(result[facility_1.region.slug][jan_2020.to_period]).to include("adjusted_controlled_under_care" => 2)
+    expect(result[facility_2.region.slug][jan_2020.to_period]).to include("adjusted_controlled_under_care" => 1)
   end
 
   it "can return earliest patient recorded at" do
@@ -56,7 +56,7 @@ describe Reports::RegionSummarySchema, type: :model do
     refresh_views
 
     schema = described_class.new([facility.region], periods: range)
-    expect(schema.earliest_patient_recorded_at["facility-1"]).to eq(jan_2020)
+    expect(schema.earliest_patient_recorded_at[facility.region.slug]).to eq(jan_2020)
   end
 
   it "has cache key" do
@@ -243,7 +243,6 @@ describe Reports::RegionSummarySchema, type: :model do
     let(:period) { jan_2020..mar_2020 }
 
     before :each do
-      Flipper.enable(:diabetes_management_reports)
       facility_1.update(enable_diabetes_management: true)
       facility_2.update(enable_diabetes_management: true)
     end

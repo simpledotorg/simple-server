@@ -34,7 +34,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
         described_class.call(facility_1)
       end
       expected_range = (jan_2020.to_period..Time.current.to_period)
-      expect(results["facility-1"].keys).to eq(expected_range.entries)
+      expect(results[facility_1.region.slug].keys).to eq(expected_range.entries)
     end
 
     context "explicit range provided" do
@@ -46,7 +46,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
           refresh_views
           described_class.call([facility_1, facility_2], range: explicit_range)
         end
-        expect(results["facility-1"].keys).to eq(expected_range.entries)
+        expect(results[facility_1.region.slug].keys).to eq(expected_range.entries)
       end
     end
 
@@ -118,8 +118,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
         diabetes_appts_scheduled_more_than_62_days
       ].map(&:to_s)
       (3.months.ago.to_period..now.to_period).each do |period|
-        expect(results["facility-1"][period].keys).to match_array(expected_keys)
-        counts = results["facility-1"][period].except("facility_region_slug", "month_date")
+        expect(results[facility_1.region.slug][period].keys).to match_array(expected_keys)
+        counts = results[facility_1.region.slug][period].except("facility_region_slug", "month_date")
         expect(counts.values).to all(be_an(Integer))
       end
     end
@@ -214,7 +214,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       "February 1st 2020" => {"monthly_follow_ups" => 2},
       "March 1st 2020" => {"monthly_follow_ups" => 2}
     }.transform_keys!(&:to_period)
-    facility_1_results = described_class.call(facility_1, range: range)["facility-1"].transform_values { |values| values.slice("monthly_follow_ups") }
+    facility_1_results = described_class.call(facility_1, range: range)[facility_1.region.slug].transform_values { |values| values.slice("monthly_follow_ups") }
     expect(facility_1_results).to eq(expected_facility_1_follow_ups)
 
     expected_facility_2_follow_ups = {
@@ -225,7 +225,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       "February 1st 2020" => {"monthly_follow_ups" => 0},
       "March 1st 2020" => {"monthly_follow_ups" => 0}
     }.transform_keys!(&:to_period)
-    facility_2_results = described_class.call([facility_2, facility_1], range: range)["facility-2"].transform_values { |values| values.slice("monthly_follow_ups") }
+    facility_2_results = described_class.call([facility_2, facility_1], range: range)[facility_2.region.slug].transform_values { |values| values.slice("monthly_follow_ups") }
     expect(facility_2_results).to eq(expected_facility_2_follow_ups)
 
     district_results = described_class.call(facility_group_1, range: range)[facility_group_1.region.slug].transform_values { |values| values.slice("monthly_follow_ups") }
@@ -295,7 +295,6 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
     let(:period) { jan_2020..mar_2020 }
 
     before :each do
-      Flipper.enable(:diabetes_management_reports)
       facility_1.update(enable_diabetes_management: true)
       facility_2.update(enable_diabetes_management: true)
     end
