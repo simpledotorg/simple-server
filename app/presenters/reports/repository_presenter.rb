@@ -47,6 +47,7 @@ module Reports
         bs_below_200_breakdown_rates: diabetes_treatment_outcome_breakdown_rates(:bs_below_200)[slug],
         bs_200_to_300_breakdown_rates: diabetes_treatment_outcome_breakdown_rates(:bs_200_to_300)[slug],
         bs_over_300_breakdown_rates: diabetes_treatment_outcome_breakdown_rates(:bs_over_300)[slug],
+        bs_over_200_breakdown_rates: diabetes_blood_sugar_over_200_breakdown_rates[slug],
         bs_200_to_300_patients: bs_200_to_300_patients[slug],
         bs_200_to_300_rates: bs_200_to_300_rates[slug],
         bs_200_to_300_with_ltfu_rates: bs_200_to_300_rates(with_ltfu: true)[slug],

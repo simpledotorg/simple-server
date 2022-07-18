@@ -1017,12 +1017,9 @@ Reports = function (withLtfu) {
         "[data-registrations-period-end]"
       );
 
-      const bs200T0300RbsPPBSPercentNode = cardNode.querySelector("[data-over-300-rbs-ppbs]");
-      const bsOver300RbsPPBSPercentNode = cardNode.querySelector("[data-bs-200-to-300-rbs-ppbs]");
-      const bs200T0300FastingPercentNode = cardNode.querySelector("[data-over-300-fasting]");
-      const bsOver300FastingPercentNode = cardNode.querySelector("[data-bs-200-to-300-fasting]");
-      const bs200T0300Hba1cPercentNode = cardNode.querySelector("[data-over-300-hba1c]");
-      const bsOver300Hba1cPercentNode = cardNode.querySelector("[data-bs-200-to-300-rbs-hba1c]");
+      const rbsPPBSPercentNode = cardNode.querySelector("[data-rbs-ppbs]");
+      const fastingPercentNode = cardNode.querySelector("[data-fasting]");
+      const hba1cPercentNode = cardNode.querySelector("[data-hba1c]");
 
       const periodInfo = data.periodInfo[period];
       const adjustedPatientCounts = adjustedPatients[period];
@@ -1056,26 +1053,16 @@ Reports = function (withLtfu) {
         (node) => (node.innerHTML = periodInfo.bp_control_registration_date)
       );
 
-      const bs200To300breakdown = data.bs200To300BreakdownRates[period];
-      const bsOver300breakdown = data.bsOver300BreakdownRates[period];
+      const breakdown = data.bsOver200BreakdownRates[period];
 
-      bs200T0300RbsPPBSPercentNode.innerHTML = this.formatPercentage(
-          bs200To300breakdown ? bs200To300breakdown["random"] + bs200To300breakdown["post_prandial"] : 0
+      rbsPPBSPercentNode.innerHTML = this.formatPercentage(
+          breakdown["random"] + breakdown["post_prandial"]
       );
-      bsOver300RbsPPBSPercentNode.innerHTML = this.formatPercentage(
-          bsOver300breakdown ? bsOver300breakdown["random"] + bsOver300breakdown["post_prandial"] : 0
+      fastingPercentNode.innerHTML = this.formatPercentage(
+          breakdown["fasting"]
       );
-      bs200T0300FastingPercentNode.innerHTML = this.formatPercentage(
-          bs200To300breakdown ? bs200To300breakdown["fasting"] : 0
-      );
-      bsOver300FastingPercentNode.innerHTML = this.formatPercentage(
-          bsOver300breakdown ? bsOver300breakdown["fasting"] : 0
-      );
-      bs200T0300Hba1cPercentNode.innerHTML = this.formatPercentage(
-          bs200To300breakdown ? bs200To300breakdown["hba1c"] : 0
-      );
-      bsOver300Hba1cPercentNode.innerHTML = this.formatPercentage(
-          bsOver300breakdown ? bsOver300breakdown["hba1c"] : 0
+      hba1cPercentNode.innerHTML = this.formatPercentage(
+          breakdown["hba1c"]
       );
     };
 
@@ -1712,8 +1699,7 @@ Reports = function (withLtfu) {
       bsBelow200Rate: jsonData.bs_below_200_rates,
       bsBelow200WithLtfuRate: jsonData.bs_below_200_with_ltfu_rates,
       bsBelow200BreakdownRates: jsonData.bs_below_200_breakdown_rates,
-      bs200To300BreakdownRates: jsonData.bs_200_to_300_breakdown_rates,
-      bsOver300BreakdownRates: jsonData.bs_over_300_breakdown_rates,
+      bsOver200BreakdownRates: jsonData.bs_over_200_breakdown_rates,
       bs200to300Patients: jsonData.bs_200_to_300_patients,
       bs200to300Rate: jsonData.bs_200_to_300_rates,
       bs200to300WithLtfuRate: jsonData.bs_200_to_300_with_ltfu_rates,
