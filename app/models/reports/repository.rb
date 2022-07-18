@@ -106,7 +106,6 @@ module Reports
       diabetes_blood_sugar_over_200_breakdown_rates
       diabetes_patients_with_bs_taken_breakdown_rates
       diabetes_patients_with_bs_taken_breakdown_counts
-      diabetes_patients_with_bs_taken_breakdown_counts
     ]
 
     def warm_cache
