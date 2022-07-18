@@ -109,12 +109,12 @@ describe Reports::RegionSummarySchema, type: :model do
       refresh_views
 
       schema = described_class.new(Region.where(id: facility.region), periods: range)
-      expect(schema.appts_scheduled_0_to_14_days_rates[facility.slug][range.last]).to eq(100)
-      expect(schema.appts_scheduled_15_to_31_days_rates[facility.slug][range.to_a.second]).to eq(100)
-      expect(schema.appts_scheduled_more_than_62_days_rates[facility.slug][range.first]).to eq(100)
-      expect(schema.diabetes_appts_scheduled_0_to_14_days_rates[facility.slug][range.last]).to eq(100)
-      expect(schema.diabetes_appts_scheduled_15_to_31_days_rates[facility.slug][range.to_a.second]).to eq(100)
-      expect(schema.diabetes_appts_scheduled_more_than_62_days_rates[facility.slug][range.first]).to eq(100)
+      expect(schema.appts_scheduled_0_to_14_days_rates[facility.region.slug][range.last]).to eq(100)
+      expect(schema.appts_scheduled_15_to_31_days_rates[facility.region.slug][range.to_a.second]).to eq(100)
+      expect(schema.appts_scheduled_more_than_62_days_rates[facility.region.slug][range.first]).to eq(100)
+      expect(schema.diabetes_appts_scheduled_0_to_14_days_rates[facility.region.slug][range.last]).to eq(100)
+      expect(schema.diabetes_appts_scheduled_15_to_31_days_rates[facility.region.slug][range.to_a.second]).to eq(100)
+      expect(schema.diabetes_appts_scheduled_more_than_62_days_rates[facility.region.slug][range.first]).to eq(100)
     end
 
     it "returns percentages of appointments scheduled in a month in the given range for appointments created in a given month" do

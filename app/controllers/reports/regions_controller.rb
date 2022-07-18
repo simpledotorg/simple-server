@@ -116,7 +116,7 @@ class Reports::RegionsController < AdminController
     @cohort_period = Period.quarter(Time.current)
     @cohort_data = CohortService.new(region: @region, periods: @cohort_period.downto(5)).call
 
-    @data = @overview_data
+    @data = @overview_data.merge(@details_chart_data)
 
     respond_to do |format|
       format.html
