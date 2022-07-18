@@ -176,6 +176,7 @@ class Reports::RegionsController < AdminController
     @presenter = Reports::RepositoryPresenter.new(@repository)
     @data = @presenter.call(@region)
     @with_ltfu = with_ltfu?
+    @latest_period = Period.current
 
     authorize { current_admin.accessible_facilities(:view_reports).any? }
 

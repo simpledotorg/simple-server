@@ -39,7 +39,7 @@ class Dashboard::PopulationCoverageComponent < ApplicationComponent
   end
 
   def population_coverage_percentage
-    number_to_percentage(@region.estimated_diabetes_population.diabetes_patient_coverage_rate, precision: 0)
+    number_to_percentage(region.estimated_diabetes_population.diabetes_patient_coverage_rate, precision: 0)
   end
 
   def total_estimated_population_tooltip_copy
