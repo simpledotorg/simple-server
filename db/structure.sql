@@ -3085,6 +3085,14 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
            FROM public.reporting_patient_states
           WHERE (reporting_patient_states.diabetes = 'yes'::text)
           GROUP BY reporting_patient_states.registration_facility_region_id, reporting_patient_states.month_date
+        ), registered_hypertension_and_diabetes_patients AS (
+         SELECT reporting_patient_states.registration_facility_region_id AS region_id,
+            reporting_patient_states.month_date,
+            count(*) AS cumulative_hypertension_and_diabetes_registrations,
+            count(*) FILTER (WHERE (reporting_patient_states.months_since_registration = (0)::double precision)) AS monthly_hypertension_and_diabetes_registrations
+           FROM public.reporting_patient_states
+          WHERE ((reporting_patient_states.hypertension = 'yes'::text) AND (reporting_patient_states.diabetes = 'yes'::text))
+          GROUP BY reporting_patient_states.registration_facility_region_id, reporting_patient_states.month_date
         ), assigned_patients AS (
          SELECT reporting_patient_states.assigned_facility_region_id AS region_id,
             reporting_patient_states.month_date,
@@ -3208,6 +3216,8 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
     registered_patients.monthly_registrations,
     registered_diabetes_patients.cumulative_diabetes_registrations,
     registered_diabetes_patients.monthly_diabetes_registrations,
+    registered_hypertension_and_diabetes_patients.cumulative_hypertension_and_diabetes_registrations,
+    registered_hypertension_and_diabetes_patients.monthly_hypertension_and_diabetes_registrations,
     assigned_patients.under_care,
     assigned_patients.lost_to_follow_up,
     assigned_patients.dead,
@@ -3262,10 +3272,11 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
     reporting_facility_appointment_scheduled_days.diabetes_appts_scheduled_15_to_31_days,
     reporting_facility_appointment_scheduled_days.diabetes_appts_scheduled_32_to_62_days,
     reporting_facility_appointment_scheduled_days.diabetes_appts_scheduled_more_than_62_days
-   FROM ((((((((((((public.reporting_facilities rf
+   FROM (((((((((((((public.reporting_facilities rf
      JOIN public.reporting_months cal ON (true))
      LEFT JOIN registered_patients ON (((registered_patients.month_date = cal.month_date) AND (registered_patients.region_id = rf.facility_region_id))))
      LEFT JOIN registered_diabetes_patients ON (((registered_diabetes_patients.month_date = cal.month_date) AND (registered_diabetes_patients.region_id = rf.facility_region_id))))
+     LEFT JOIN registered_hypertension_and_diabetes_patients ON (((registered_hypertension_and_diabetes_patients.month_date = cal.month_date) AND (registered_hypertension_and_diabetes_patients.region_id = rf.facility_region_id))))
      LEFT JOIN assigned_patients ON (((assigned_patients.month_date = cal.month_date) AND (assigned_patients.region_id = rf.facility_region_id))))
      LEFT JOIN assigned_diabetes_patients ON (((assigned_diabetes_patients.month_date = cal.month_date) AND (assigned_diabetes_patients.region_id = rf.facility_region_id))))
      LEFT JOIN adjusted_outcomes ON (((adjusted_outcomes.month_date = cal.month_date) AND (adjusted_outcomes.region_id = rf.facility_region_id))))
@@ -6067,4 +6078,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220412112538'),
 ('20220414134624'),
 ('20220519201430'),
-('20220524112732');
+('20220524112732'),
+('20220718091454');
+
+

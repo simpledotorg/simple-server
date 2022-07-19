@@ -89,12 +89,20 @@ module Reports
       values_at("monthly_diabetes_registrations")
     end
 
+    memoize def monthly_hypertension_and_diabetes_registrations
+      values_at("monthly_hypertension_and_diabetes_registrations")
+    end
+
     memoize def cumulative_registrations
       values_at("cumulative_registrations")
     end
 
     memoize def cumulative_diabetes_registrations
       values_at("cumulative_diabetes_registrations")
+    end
+
+    memoize def cumulative_hypertension_and_diabetes_registrations
+      values_at("cumulative_hypertension_and_diabetes_registrations")
     end
 
     memoize def ltfu

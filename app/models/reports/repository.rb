@@ -66,6 +66,7 @@ module Reports
       cumulative_registrations
       cumulative_assigned_diabetic_patients
       cumulative_diabetes_registrations
+      cumulative_hypertension_and_diabetes_registrations
       earliest_patient_recorded_at
       earliest_patient_recorded_at_period
       under_care
@@ -76,6 +77,7 @@ module Reports
       missed_visits_without_ltfu
       monthly_registrations
       monthly_diabetes_registrations
+      monthly_hypertension_and_diabetes_registrations
       uncontrolled
       visited_without_bp_taken
       monthly_overdue_calls
