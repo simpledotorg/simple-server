@@ -10,23 +10,20 @@ RSpec.describe MonthlyDistrictData::Exporter, reporting_spec: true do
     end
   end
 
-  let(:organization) { FactoryBot.create(:organization) }
-  let(:facility_group) { create(:facility_group, organization: organization) }
-  let(:facility1) { create(:facility, name: "Facility 1", block: "Block 1 - alphabetically first", facility_group: facility_group, facility_size: :community) }
-  let(:facility2) { create(:facility, name: "Facility 2", block: "Block 2 - alphabetically second", facility_group: facility_group, facility_size: :community) }
-  let(:region) { facility1.region.district_region }
-  let(:period) { Period.month(Date.today) }
-
   describe "#report" do
     before do
-      facility1
-      facility2
+      @organization = FactoryBot.create(:organization)
+      @facility_group = create(:facility_group, organization: @organization)
+      @facility1 = create(:facility, name: "Facility 1", block: "Block 1 - alphabetically first", facility_group: @facility_group, facility_size: :community)
+      @facility2 = create(:facility, name: "Facility 2", block: "Block 2 - alphabetically second", facility_group: @facility_group, facility_size: :community)
+      @region = @facility1.region.district_region
+      @period = Period.month(Date.today)
     end
     context "Hypertension" do
       let(:service) {
         described_class.new(exporter: MonthlyDistrictData::Hypertension.new(
-          region: region,
-          period: period,
+          region: @region,
+          period: @period,
           medications_dispensation_enabled: false
         ))
       }
@@ -52,7 +49,7 @@ RSpec.describe MonthlyDistrictData::Exporter, reporting_spec: true do
       it "includes the section name, headers, district data and facility data" do
         result = service.report
         csv = CSV.parse(result)
-        expect(csv[0]).to eq(["Monthly facility data for #{region.name} #{period.to_date.strftime("%B %Y")}"])
+        expect(csv[0]).to eq(["Monthly facility data for #{@region.name} #{@period.to_date.strftime("%B %Y")}"])
         expect(csv[1]).to eq(sections)
         expect(csv[2]).to eq(headers)
         expect(csv[3][0]).to eq("All facilities")
@@ -67,8 +64,8 @@ RSpec.describe MonthlyDistrictData::Exporter, reporting_spec: true do
     context "Diabetes" do
       let(:service) {
         described_class.new(exporter: MonthlyDistrictData::Diabetes.new(
-          region: region,
-          period: period,
+          region: @region,
+          period: @period,
           medications_dispensation_enabled: false
         ))
       }
@@ -91,7 +88,7 @@ RSpec.describe MonthlyDistrictData::Exporter, reporting_spec: true do
       it "includes the section name and headers" do
         result = service.report
         csv = CSV.parse(result)
-        expect(csv[0]).to eq(["Monthly facility data for #{region.name} #{period.to_date.strftime("%B %Y")}"])
+        expect(csv[0]).to eq(["Monthly facility data for #{@region.name} #{@period.to_date.strftime("%B %Y")}"])
         expect(csv[1]).to eq(sections)
         expect(csv[2]).to eq(headers)
         expect(csv[3][0]).to eq("All facilities")

@@ -252,7 +252,7 @@ class Reports::RegionsController < AdminController
       )
     ).report
     report_date = @period.to_s.downcase
-    filename = "monthly-facility-data-#{@region.slug}-#{report_date}.csv"
+    filename = "monthly-facility-hypertension-data-#{@region.slug}-#{report_date}.csv"
 
     respond_to do |format|
       format.csv do
@@ -271,7 +271,7 @@ class Reports::RegionsController < AdminController
       )
     ).report
     report_date = @period.to_s.downcase
-    filename = "monthly-facility-data-#{@region.slug}-#{report_date}.csv"
+    filename = "monthly-facility-diabetes-data-#{@region.slug}-#{report_date}.csv"
 
     respond_to do |format|
       format.csv do
@@ -290,7 +290,7 @@ class Reports::RegionsController < AdminController
       )
     ).report
     report_date = @period.to_s.downcase
-    filename = "monthly-district-data-#{@region.slug}-#{report_date}.csv"
+    filename = "monthly-district-hypertension-data-#{@region.slug}-#{report_date}.csv"
 
     respond_to do |format|
       format.csv do
@@ -309,7 +309,7 @@ class Reports::RegionsController < AdminController
       )
     ).report
     report_date = @period.to_s.downcase
-    filename = "monthly-district-data-#{@region.slug}-#{report_date}.csv"
+    filename = "monthly-district-diabetes-data-#{@region.slug}-#{report_date}.csv"
 
     respond_to do |format|
       format.csv do
@@ -327,7 +327,8 @@ class Reports::RegionsController < AdminController
       district_data: MonthlyDistrictReport::Hypertension::DistrictData.new(@region, @period)
     ),
       @region,
-      @period)
+      @period,
+      diagnosis: :hypertension)
   end
 
   def diabetes_monthly_district_report
@@ -340,7 +341,8 @@ class Reports::RegionsController < AdminController
         district_data: MonthlyDistrictReport::Diabetes::DistrictData.new(@region, @period)
       ),
       @region,
-      @period
+      @period,
+      diagnosis: :diabetes
     )
   end
 
@@ -363,11 +365,11 @@ class Reports::RegionsController < AdminController
 
   private
 
-  def monthly_district_report(exporter, region, period)
+  def monthly_district_report(exporter, region, period, diagnosis:)
     zip = exporter.export
 
     report_date = period.to_s.downcase
-    filename = "monthly-district-report-#{region.slug}-#{report_date}.zip"
+    filename = "monthly-district-#{diagnosis}-report-#{region.slug}-#{report_date}.zip"
 
     respond_to do |format|
       format.zip do
