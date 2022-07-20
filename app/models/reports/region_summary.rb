@@ -17,11 +17,13 @@ module Reports
       cumulative_assigned_patients
       cumulative_registrations
       cumulative_diabetes_registrations
+      cumulative_hypertension_and_diabetes_registrations
       lost_to_follow_up
       diabetes_lost_to_follow_up
       under_care
       monthly_registrations
       monthly_diabetes_registrations
+      monthly_hypertension_and_diabetes_registrations
       monthly_overdue_calls
       monthly_follow_ups
       monthly_diabetes_follow_ups
@@ -50,6 +52,11 @@ module Reports
       adjusted_post_prandial_bs_over_300_under_care
       adjusted_fasting_bs_over_300_under_care
       adjusted_hba1c_bs_over_300_under_care
+      diabetes_total_appts_scheduled
+      diabetes_appts_scheduled_0_to_14_days
+      diabetes_appts_scheduled_15_to_31_days
+      diabetes_appts_scheduled_32_to_62_days
+      diabetes_appts_scheduled_more_than_62_days
     ].sort.freeze
 
     UNDER_CARE_WITH_LTFU = %i[

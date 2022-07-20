@@ -543,8 +543,17 @@ Reports = function (withLtfu) {
         "[data-registrations-month-end]"
       );
 
+      const hypertensionOnlyRegistrationsNode = cardNode.querySelector(
+          "[data-hypertension-only-registrations]"
+      );
+
+      const hypertensionAndDiabetesOnlyRegistrationsNode = cardNode.querySelector(
+          "[data-hypertension-and-diabetes-registrations]"
+      );
+
       const periodInfo = data.periodInfo[period];
       const cumulativeRegistrations = data.cumulativeRegistrations[period];
+      const cumulativeHypertensionAndDiabetesRegistrations = data.cumulativeHypertensionAndDiabetesRegistrations[period];
       const monthlyRegistrations = data.monthlyRegistrations[period];
 
       monthlyRegistrationsNode.innerHTML =
@@ -554,6 +563,15 @@ Reports = function (withLtfu) {
       );
       registrationsPeriodEndNode.innerHTML = periodInfo.bp_control_end_date;
       registrationsMonthEndNode.innerHTML = period;
+
+
+      hypertensionOnlyRegistrationsNode.innerHTML = this.formatNumberWithCommas(
+          cumulativeRegistrations - cumulativeHypertensionAndDiabetesRegistrations
+      );
+
+      hypertensionAndDiabetesOnlyRegistrationsNode.innerHTML = this.formatNumberWithCommas(
+          cumulativeHypertensionAndDiabetesRegistrations
+      );
     };
 
     const populateCumulativeRegistrationsGraphDefault = () => {
@@ -1017,6 +1035,10 @@ Reports = function (withLtfu) {
         "[data-registrations-period-end]"
       );
 
+      const rbsPPBSPercentNode = cardNode.querySelector("[data-rbs-ppbs]");
+      const fastingPercentNode = cardNode.querySelector("[data-fasting]");
+      const hba1cPercentNode = cardNode.querySelector("[data-hba1c]");
+
       const periodInfo = data.periodInfo[period];
       const adjustedPatientCounts = adjustedPatients[period];
 
@@ -1047,6 +1069,18 @@ Reports = function (withLtfu) {
       );
       registrationsPeriodEndNodes.forEach(
         (node) => (node.innerHTML = periodInfo.bp_control_registration_date)
+      );
+
+      const breakdown = data.bsOver200BreakdownRates[period];
+
+      rbsPPBSPercentNode.innerHTML = this.formatPercentage(
+          breakdown["random"] + breakdown["post_prandial"]
+      );
+      fastingPercentNode.innerHTML = this.formatPercentage(
+          breakdown["fasting"]
+      );
+      hba1cPercentNode.innerHTML = this.formatPercentage(
+          breakdown["hba1c"]
       );
     };
 
@@ -1247,10 +1281,19 @@ Reports = function (withLtfu) {
       const followupsMonthEndNode = cardNode.querySelector(
         "[data-follow-ups-month-end]"
       );
+      const diabetesOnlyRegistrationsNode = cardNode.querySelector(
+          "[data-diabetes-only-registrations]"
+      );
+
+      const hypertensionAndDiabetesOnlyRegistrationsNode = cardNode.querySelector(
+          "[data-hypertension-and-diabetes-registrations]"
+      );
 
       const periodInfo = data.periodInfo[period];
       const cumulativeDiabetesRegistrations =
         data.cumulativeDiabetesRegistrations[period];
+      const cumulativeHypertensionAndDiabetesRegistrations =
+          data.cumulativeHypertensionAndDiabetesRegistrations[period];
       const monthlyDiabetesRegistrations =
         data.monthlyDiabetesRegistrations[period];
       const monthlyDiabetesFollowups = data.monthlyDiabetesFollowups[period];
@@ -1267,6 +1310,14 @@ Reports = function (withLtfu) {
       registrationsPeriodEndNode.innerHTML = periodInfo.bp_control_end_date;
       registrationsMonthEndNode.innerHTML = period;
       followupsMonthEndNode.innerHTML = period;
+
+      diabetesOnlyRegistrationsNode.innerHTML = this.formatNumberWithCommas(
+          cumulativeDiabetesRegistrations - cumulativeHypertensionAndDiabetesRegistrations
+      );
+
+      hypertensionAndDiabetesOnlyRegistrationsNode.innerHTML = this.formatNumberWithCommas(
+          cumulativeHypertensionAndDiabetesRegistrations
+      );
     };
 
     const populateCumulativeDiabetesRegistrationsGraphDefault = () => {
@@ -1668,8 +1719,8 @@ Reports = function (withLtfu) {
       adjustedPatientCounts: jsonData.adjusted_patient_counts,
       adjustedPatientCountsWithLtfu: jsonData.adjusted_patient_counts_with_ltfu,
       cumulativeRegistrations: jsonData.cumulative_registrations,
-      cumulativeDiabetesRegistrations:
-        jsonData.cumulative_diabetes_registrations,
+      cumulativeDiabetesRegistrations: jsonData.cumulative_diabetes_registrations,
+      cumulativeHypertensionAndDiabetesRegistrations: jsonData.cumulative_hypertension_and_diabetes_registrations,
       uncontrolledPatients: jsonData.uncontrolled_patients,
       uncontrolledRate: jsonData.uncontrolled_patients_rate,
       uncontrolledWithLtfuRate: jsonData.uncontrolled_patients_with_ltfu_rate,
@@ -1683,6 +1734,7 @@ Reports = function (withLtfu) {
       bsBelow200Rate: jsonData.bs_below_200_rates,
       bsBelow200WithLtfuRate: jsonData.bs_below_200_with_ltfu_rates,
       bsBelow200BreakdownRates: jsonData.bs_below_200_breakdown_rates,
+      bsOver200BreakdownRates: jsonData.bs_over_200_breakdown_rates,
       bs200to300Patients: jsonData.bs_200_to_300_patients,
       bs200to300Rate: jsonData.bs_200_to_300_rates,
       bs200to300WithLtfuRate: jsonData.bs_200_to_300_with_ltfu_rates,

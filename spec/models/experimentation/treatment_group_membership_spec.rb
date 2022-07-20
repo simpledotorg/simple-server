@@ -9,8 +9,8 @@ RSpec.describe Experimentation::TreatmentGroupMembership, type: :model do
 
   describe "validations" do
     it "should validate that a patient is allowed only in only one active experiment at a time" do
-      experiment_1 = create(:experiment, :running, experiment_type: "current_patients")
-      experiment_2 = create(:experiment, :running, experiment_type: "stale_patients")
+      experiment_1 = create(:experiment, :enrolling, experiment_type: "current_patients")
+      experiment_2 = create(:experiment, :enrolling, experiment_type: "stale_patients")
 
       treatment_group_1 = create(:treatment_group, experiment: experiment_1)
       treatment_group_2 = create(:treatment_group, experiment: experiment_2)
@@ -30,9 +30,10 @@ RSpec.describe Experimentation::TreatmentGroupMembership, type: :model do
       notification = create(:notification)
       membership = create(:treatment_group_membership)
 
-      membership.record_notification(notification)
-      expect(membership.reload.messages[notification.message]).to eq(
+      membership.record_notification("messages_report_key", notification)
+      expect(membership.reload.messages["messages_report_key"]).to eq(
         {
+          message_name: notification.message,
           remind_on: notification.remind_on.to_s,
           notification_status: notification.status,
           notification_status_updated_at: notification.updated_at.to_s,
@@ -47,12 +48,12 @@ RSpec.describe Experimentation::TreatmentGroupMembership, type: :model do
       notification = create(:notification)
       membership = create(:treatment_group_membership)
 
-      membership.record_notification(notification)
+      membership.record_notification("messages_report_key_1", notification)
       notification_2 = create(:notification, message: "second notification")
 
-      membership.record_notification(notification_2)
-      expect(membership.reload.messages[notification.message]).to be_present
-      expect(membership.reload.messages[notification_2.message]).to be_present
+      membership.record_notification("messages_report_key_2", notification_2)
+      expect(membership.reload.messages["messages_report_key_1"]).to be_present
+      expect(membership.reload.messages["messages_report_key_2"]).to be_present
     end
   end
 
@@ -86,12 +87,12 @@ RSpec.describe Experimentation::TreatmentGroupMembership, type: :model do
 
   describe "#record_notification_results" do
     it "records results of a notification by message" do
-      membership = create(:treatment_group_membership, messages: {"message" => {}})
+      membership = create(:treatment_group_membership, messages: {"messages_report_key" => {}})
       delivery_result = {"delivery_result" => "This was delivered"}
 
-      membership.record_notification_result("message", delivery_result)
+      membership.record_notification_result("messages_report_key", delivery_result)
 
-      expect(membership.messages["message"]).to eq delivery_result
+      expect(membership.messages["messages_report_key"]).to eq delivery_result
     end
   end
 end

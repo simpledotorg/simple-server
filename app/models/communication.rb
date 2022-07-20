@@ -30,10 +30,6 @@ class Communication < ApplicationRecord
   DEFAULT_MESSAGING_START_HOUR = 14
   DEFAULT_MESSAGING_END_HOUR = 16
 
-  scope :with_delivery_detail, -> {
-    joins("inner join twilio_sms_delivery_details delivery_detail on delivery_detail.id = communications.detailable_id")
-  }
-
   def self.messaging_start_hour
     @messaging_start_hour ||= ENV.fetch("APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_START", DEFAULT_MESSAGING_START_HOUR).to_i
   end

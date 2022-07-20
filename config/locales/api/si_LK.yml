@@ -57,6 +57,7 @@ si-LK:
     patients_with_controlled_bp: "හමුවූ රුපී &lt;140/90 සහිත රෝගීන්"
     patients_with_uncontrolled_bp: "හමුවූ රුපී &ge;140/90 සහිත රෝගීන්"
     patients_with_no_bp_measure: "රුපී මිනුම රහිත රෝගීන්"
+    patients_with_missed_visits: "පැමිණීමක් මග හැරී ඇති රෝගීන්"
     registered_in: "ලියාපදිංචි විය"
     result_from_last_visit_in: "අවසාන හමුවේ සිට ප්‍රතිඵලය"
     no_patients: "කිසිදු රෝගියෙකු නැත"

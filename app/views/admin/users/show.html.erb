@@ -51,4 +51,13 @@
   <%= render 'shared/recent_bp_log',
              blood_pressures: @recent_blood_pressures,
              display_model: :user %>
+
+  <% if @recent_blood_sugars.present? %>
+    <%= render Dashboard::Diabetes::RecentMeasurementsComponent.new(
+      user: @user,
+      recent_blood_sugars: @recent_blood_sugars,
+      display_model: :user,
+      page: @page
+    ) %>
+  <% end %>
 <% end %>

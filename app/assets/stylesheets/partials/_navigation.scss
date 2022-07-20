@@ -245,12 +245,20 @@ TABBED NAVIGATION
     padding-right: 0;
     margin-right: 22px;
     color: $grey-dark;
-    
+
     &:hover {
       color: $grey-darkest;
     }
   }
-  
+
+  span.nav-link {
+    color: $grey-darkest;
+
+    &:hover {
+      color: $grey-darkest;
+    }
+  }
+
   .nav-link.active {
     color: $red;
     border-bottom: 2px solid $red;

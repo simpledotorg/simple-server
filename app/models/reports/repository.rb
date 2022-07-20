@@ -5,7 +5,7 @@ module Reports
     include Memery
     include Scientist
 
-    attr_reader :bp_measures_query
+    attr_reader :measures_query
     attr_reader :follow_ups_query
     attr_reader :period_type
     attr_reader :periods
@@ -24,7 +24,7 @@ module Reports
       @period_type = @periods.first.type
       raise ArgumentError, "Quarter periods not supported" if @period_type != :month
       @schema = RegionSummarySchema.new(@regions, periods: @periods)
-      @bp_measures_query = BPMeasuresQuery.new
+      @measures_query = MeasuresQuery.new
       @follow_ups_query = FollowUpsQuery.new
       @registered_patients_query = RegisteredPatientsQuery.new
       @overdue_calls_query = OverdueCallsQuery.new
@@ -50,6 +50,10 @@ module Reports
       bs_over_300_rates
       diabetes_missed_visits_rates
       visited_without_bs_taken_rates
+      diabetes_appts_scheduled_0_to_14_days_rates
+      diabetes_appts_scheduled_15_to_31_days_rates
+      diabetes_appts_scheduled_32_to_62_days_rates
+      diabetes_appts_scheduled_more_than_62_days_rates
     ]
 
     DELEGATED_COUNTS = %i[
@@ -62,6 +66,7 @@ module Reports
       cumulative_registrations
       cumulative_assigned_diabetic_patients
       cumulative_diabetes_registrations
+      cumulative_hypertension_and_diabetes_registrations
       earliest_patient_recorded_at
       earliest_patient_recorded_at_period
       under_care
@@ -72,6 +77,7 @@ module Reports
       missed_visits_without_ltfu
       monthly_registrations
       monthly_diabetes_registrations
+      monthly_hypertension_and_diabetes_registrations
       uncontrolled
       visited_without_bp_taken
       monthly_overdue_calls
@@ -90,11 +96,16 @@ module Reports
       diabetes_missed_visits
       visited_without_bs_taken
       diabetes_patients_with_bs_taken
+      diabetes_total_appts_scheduled
+      diabetes_appts_scheduled_0_to_14_days
+      diabetes_appts_scheduled_15_to_31_days
+      diabetes_appts_scheduled_32_to_62_days
+      diabetes_appts_scheduled_more_than_62_days
     ]
 
     DELEGATED_BREAKDOWNS = %i[
       diabetes_treatment_outcome_breakdown_rates
-      diabetes_treatment_outcome_breakdown_counts
+      diabetes_blood_sugar_over_200_breakdown_rates
       diabetes_patients_with_bs_taken_breakdown_rates
       diabetes_patients_with_bs_taken_breakdown_counts
     ]
@@ -122,10 +133,15 @@ module Reports
     alias_method :adjusted_patients, :adjusted_patients_without_ltfu
 
     # Returns registration counts per region / period counted by registration_user
-    memoize def monthly_registrations_by_user
-      items = regions.map { |region| RegionEntry.new(region, __method__, group_by: :registration_user_id, period_type: period_type) }
+    memoize def monthly_registrations_by_user(diagnosis: :hypertension)
+      items = regions.map { |region|
+        RegionEntry.new(region, __method__,
+          group_by: :registration_user_id,
+          period_type: period_type,
+          diagnosis: diagnosis)
+      }
       result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
-        registered_patients_query.count(entry.region, period_type, group_by: :registration_user_id)
+        registered_patients_query.count(entry.region, period_type, group_by: :registration_user_id, diagnosis: diagnosis)
       end
       result.each_with_object({}) { |(region_entry, counts), hsh|
         hsh[region_entry.region.slug] = counts
@@ -194,7 +210,22 @@ module Reports
     memoize def bp_measures_by_user
       items = regions.map { |region| RegionEntry.new(region, __method__, group_by: :user_id, period_type: period_type) }
       result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
-        bp_measures_query.count(entry.region, period_type, group_by: :user_id)
+        measures_query.count(entry.region, period_type, diagnosis: :hypertension, group_by: :user_id)
+      end
+      result.each_with_object({}) { |(region_entry, counts), hsh|
+        hsh[region_entry.region.slug] = counts
+      }
+    end
+
+    memoize def blood_sugar_measures_by_user
+      items = regions.map { |region|
+        RegionEntry.new(region, __method__,
+          group_by: :user_id,
+          period_type: period_type,
+          diagnosis: :diabetes)
+      }
+      result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
+        measures_query.count(entry.region, period_type, diagnosis: :diabetes, group_by: :user_id)
       end
       result.each_with_object({}) { |(region_entry, counts), hsh|
         hsh[region_entry.region.slug] = counts

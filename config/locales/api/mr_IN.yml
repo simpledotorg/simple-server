@@ -57,6 +57,7 @@ mr-IN:
     patients_with_controlled_bp: "&lt;140/90 पेक्षा कमी बीपी असलेल्या रुग्णांनी भेट दिली"
     patients_with_uncontrolled_bp: "&ge;140/90 पेक्षा जास्त बीपी असलेल्या रूग्णांनी भेट दिली"
     patients_with_no_bp_measure: "बीपी उपाय नसलेले रुग्ण"
+    patients_with_missed_visits: "भेटी चुकवलेले रुग्ण"
     registered_in: "मध्ये नोंदणीकृत"
     result_from_last_visit_in: "मधील शेवटच्या भेटीचा निकाल"
     no_patients: "रुग्ण नाहीत"

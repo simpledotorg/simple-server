@@ -1,7 +1,6 @@
-class BPMeasuresQuery
+class MeasuresQuery
   def count(region, period_type, diagnosis: :hypertension, group_by: nil)
-    query = BloodPressure
-      .joins(:patient).merge(Patient.with_hypertension)
+    query = measures_for_diagnosis(diagnosis)
       .group_by_period(period_type, :recorded_at, {format: Period.formatter(period_type)})
       .where(facility: region.facilities)
     if group_by.present?
@@ -18,5 +17,17 @@ class BPMeasuresQuery
       hsh[period] ||= {}
       hsh[period][field_id] = count
     }
+  end
+
+  private
+
+  def measures_for_diagnosis(diagnosis)
+    case diagnosis
+    when :hypertension
+      BloodPressure.joins(:patient).merge(Patient.with_hypertension)
+    when :diabetes
+      BloodSugar.joins(:patient).merge(Patient.with_diabetes)
+    else raise ArgumentError, "unknown diagnosis #{diagnosis}"
+    end
   end
 end
