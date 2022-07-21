@@ -2,33 +2,60 @@ module MonthlyDistrictData
   class Exporter
     include MonthlyDistrictData::Utils
 
-    attr_reader :region, :period, :exporter, :medications_dispensation_enabled
+    attr_reader :region, :period, :months, :medications_dispensation_enabled, :medications_dispensation_months, :repo
 
-    def initialize(exporter:)
-      @region = exporter.region
-      @period = exporter.period
-      @medications_dispensation_enabled = exporter.medications_dispensation_enabled
-      @exporter = exporter
+    def initialize(region:, period:, medications_dispensation_enabled: false)
+      @region = region
+      @period = period
+      @months = period.downto(5).reverse
+      @medications_dispensation_enabled = medications_dispensation_enabled
+      @medications_dispensation_months = period.downto(2).reverse
+      regions = region.facility_regions.to_a << region
+      @repo = Reports::Repository.new(regions, periods: @months)
     end
 
     def report
       CSV.generate(headers: true) do |csv|
         csv << ["Monthly #{localized_facility} data for #{region.name} #{period.to_date.strftime("%B %Y")}"]
-        csv << exporter.section_row
-        csv << exporter.sub_section_row if medications_dispensation_enabled
-        csv << exporter.header_row
-        csv << exporter.district_row
+        csv << section_row
+        csv << sub_section_row if medications_dispensation_enabled
+        csv << header_row
+        csv << district_row
 
         csv << [] # Empty row
-        exporter.facility_size_rows.each do |row|
+        facility_size_rows.each do |row|
           csv << row
         end
 
         csv << [] # Empty row
-        exporter.facility_rows.each do |row|
+        facility_rows.each do |row|
           csv << row
         end
       end
+    end
+
+    def section_row
+      raise NotImplementedError
+    end
+
+    def sub_section_row
+      raise NotImplementedError
+    end
+
+    def header_row
+      raise NotImplementedError
+    end
+
+    def district_row
+      raise NotImplementedError
+    end
+
+    def facility_size_rows
+      raise NotImplementedError
+    end
+
+    def facility_rows
+      raise NotImplementedError
     end
   end
 end

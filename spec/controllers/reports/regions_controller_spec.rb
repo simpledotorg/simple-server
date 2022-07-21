@@ -551,7 +551,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
     it "calls csv service and returns 200 with csv data" do
       Timecop.freeze("June 15th 2020") do
-        expect_any_instance_of(MonthlyDistrictData::Exporter).to receive(:report).and_call_original
+        expect_any_instance_of(MonthlyDistrictData::HypertensionDataExporter).to receive(:report).and_call_original
         get :hypertension_monthly_district_data, params: {id: @region.slug, report_scope: "district", format: "csv"}
         expect(response.status).to eq(200)
         expect(response.body).to include("Monthly facility data for #{@region.name} #{Date.current.strftime("%B %Y")}")
@@ -564,15 +564,10 @@ RSpec.describe Reports::RegionsController, type: :controller do
     it "passes the provided period to the csv service" do
       period = Period.month("July 2018")
 
-      exporter = MonthlyDistrictData::Hypertension.new(
-        region: @region,
+      expect(MonthlyDistrictData::HypertensionDataExporter).to receive(:new).with(region: @region,
         period: period,
-        medications_dispensation_enabled: false
-      )
-      # Here we are mocking the :new method to receive a 'MonthlyDistrictData::Hypertension' object.
-      # This is to make sure that object being passed to the exporter at the time of the actual request is same as the object that is being passed.
-      allow(MonthlyDistrictData::Hypertension).to receive(:new).and_return(exporter)
-      expect(MonthlyDistrictData::Exporter).to receive(:new).with(exporter: exporter).and_call_original
+        medications_dispensation_enabled: false)
+        .and_call_original
       get :hypertension_monthly_district_data,
         params: {id: @region.slug, report_scope: "district", format: "csv", period: period.attributes}
     end
@@ -605,7 +600,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
     it "calls csv service and returns 200 with csv data" do
       Timecop.freeze("June 15th 2020") do
-        expect_any_instance_of(MonthlyDistrictData::Exporter).to receive(:report).and_call_original
+        expect_any_instance_of(MonthlyDistrictData::DiabetesDataExporter).to receive(:report).and_call_original
         get :diabetes_monthly_district_data, params: {id: @region.slug, report_scope: "district", format: "csv"}
         expect(response.status).to eq(200)
         expect(response.body).to include("Monthly facility data for #{@region.name} #{Date.current.strftime("%B %Y")}")
@@ -617,15 +612,11 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
     it "passes the provided period to the csv service" do
       period = Period.month("July 2018")
-      exporter = MonthlyDistrictData::Diabetes.new(
-        region: @region,
+
+      expect(MonthlyDistrictData::DiabetesDataExporter).to receive(:new).with(region: @region,
         period: period,
-        medications_dispensation_enabled: false
-      )
-      # Here we are mocking the :new method to receive a 'MonthlyDistrictData::Diabetes' object.
-      # This is to make sure that object being passed to the exporter at the time of the actual request is same as the object that is being passed.
-      allow(MonthlyDistrictData::Diabetes).to receive(:new).and_return(exporter)
-      expect(MonthlyDistrictData::Exporter).to receive(:new).with(exporter: exporter).and_call_original
+        medications_dispensation_enabled: false)
+        .and_call_original
       get :diabetes_monthly_district_data,
         params: {id: @region.slug, report_scope: "district", format: "csv", period: period.attributes}
     end
@@ -670,13 +661,11 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
     it "passes the provided period to the csv service" do
       period = Period.month("July 2018")
-      exporter = MonthlyStateData::Hypertension.new(
-        region: @region,
+
+      expect(MonthlyStateData::HypertensionDataExporter).to receive(:new).with(region: @region,
         period: period,
-        medications_dispensation_enabled: false
-      )
-      allow(MonthlyStateData::Hypertension).to receive(:new).and_return(exporter)
-      expect(MonthlyStateData::Exporter).to receive(:new).with(exporter: exporter).and_call_original
+        medications_dispensation_enabled: false)
+        .and_call_original
       get :hypertension_monthly_state_data,
         params: {id: @region.slug, report_scope: "state", format: "csv", period: period.attributes}
     end
@@ -721,13 +710,11 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
     it "passes the provided period to the csv service" do
       period = Period.month("July 2018")
-      exporter = MonthlyStateData::Diabetes.new(
-        region: @region,
+
+      expect(MonthlyStateData::DiabetesDataExporter).to receive(:new).with(region: @region,
         period: period,
-        medications_dispensation_enabled: false
-      )
-      allow(MonthlyStateData::Diabetes).to receive(:new).and_return(exporter)
-      expect(MonthlyStateData::Exporter).to receive(:new).with(exporter: exporter).and_call_original
+        medications_dispensation_enabled: false)
+        .and_call_original
       get :diabetes_monthly_state_data,
         params: {id: @region.slug, report_scope: "state", format: "csv", period: period.attributes}
     end

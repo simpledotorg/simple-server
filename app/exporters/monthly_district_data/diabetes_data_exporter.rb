@@ -1,21 +1,7 @@
-class MonthlyDistrictData::Diabetes
-  include MonthlyDistrictData::Utils
-
-  attr_reader :region
-  attr_reader :period
-  attr_reader :months
-  attr_reader :medications_dispensation_enabled
-  attr_reader :medications_dispensation_months
-  attr_reader :repo
+class MonthlyDistrictData::DiabetesDataExporter < MonthlyDistrictData::Exporter
 
   def initialize(region:, period:, medications_dispensation_enabled: false)
-    @region = region
-    @period = period
-    @months = period.downto(5).reverse
-    @medications_dispensation_enabled = medications_dispensation_enabled
-    @medications_dispensation_months = period.downto(2).reverse
-    regions = region.facility_regions.to_a << region
-    @repo = Reports::Repository.new(regions, periods: @months)
+    super
   end
 
   def section_row

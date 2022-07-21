@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe MonthlyDistrictData::Diabetes do
+describe MonthlyDistrictData::DiabetesDataExporter do c
   around do |example|
     # This is in the style of ReportingHelpers::freeze_time_for_reporting_specs.
     # Since FacilityAppointmentScheduledDays only keeps the last 6 months of data, the date cannot be a
@@ -9,6 +9,7 @@ describe MonthlyDistrictData::Diabetes do
       example.run
     end
   end
+
   before do
     @organization = FactoryBot.create(:organization)
     @facility_group = create(:facility_group, organization: @organization)
@@ -74,24 +75,53 @@ describe MonthlyDistrictData::Diabetes do
       ]
     }
 
-    let(:data_service) { described_class.new(region: @region, period: @period, medications_dispensation_enabled: false) }
+    let(:exporter) { described_class.new(region: @region, period: @period, medications_dispensation_enabled: false) }
+
+    def find_in_csv(csv_data, row_index, column_name)
+      headers = csv_data[2]
+      column = headers.index(column_name)
+      csv_data[row_index][column]
+    end
+
+    describe "#report" do
+      it "produces valid csv data" do
+        result = exporter.report
+        expect {
+          CSV.parse(result)
+        }.not_to raise_error
+      end
+
+      it "includes the section name, headers, district data and facility data" do
+        result = exporter.report
+        csv = CSV.parse(result)
+        expect(csv[0]).to eq(["Monthly facility data for #{@region.name} #{@period.to_date.strftime("%B %Y")}"])
+        expect(csv[1]).to eq(sections)
+        expect(csv[2]).to eq(headers)
+        expect(csv[3][0]).to eq("All facilities")
+        expect(csv[3][4]).to eq("All")
+        expect(csv[5][0]).to eq("Community facilities")
+        expect(csv[5][4]).to eq("Community")
+        expect(csv[7].slice(0, 5)).to eq(["1", "Block 1 - alphabetically first", "Facility 1", "PHC", "Community"])
+        expect(csv[8].slice(0, 5)).to eq(["2", "Block 2 - alphabetically second", "Facility 2", "PHC", "Community"])
+      end
+    end
 
     describe "#header_row" do
       it "returns header row" do
-        expect(data_service.header_row).to eq(headers)
+        expect(exporter.header_row).to eq(headers)
       end
     end
 
     describe "#section_row" do
       it "returns section row" do
-        expect(data_service.section_row).to eq(sections)
+        expect(exporter.section_row).to eq(sections)
       end
     end
 
     describe "#district_row" do
       it "returns district row" do
         expected_district_row = ["All facilities", nil, nil, nil, "All", nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 0, 1, 0, 0, 0, 1, nil, nil, nil]
-        district_row = data_service.district_row
+        district_row = exporter.district_row
         expect(district_row.count).to eq(32)
         expect(district_row).to eq(expected_district_row)
       end
@@ -100,7 +130,7 @@ describe MonthlyDistrictData::Diabetes do
     describe "#facility_size_rows" do
       it "provides accurate numbers for facility sizes" do
         expected_facility_size_rows = [["Community facilities", nil, nil, nil, "Community", nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 0, 1, 0, 0, 0, 1, nil, nil, nil]]
-        facility_size_rows = data_service.facility_size_rows
+        facility_size_rows = exporter.facility_size_rows
         expect(facility_size_rows.count).to eq(1)
         expect(facility_size_rows.first&.count).to eq(32)
         expect(facility_size_rows).to eq(expected_facility_size_rows)
@@ -111,7 +141,7 @@ describe MonthlyDistrictData::Diabetes do
       it "provides accurate numbers for individual facilities" do
         expected_facility_rows = [[1, "Block 1 - alphabetically first", "Facility 1", "PHC", "Community", nil, 2, 2, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 1, nil, nil, nil],
           [2, "Block 2 - alphabetically second", "Facility 2", "PHC", "Community", nil, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 2, 0, 1, 0, 0, 0, 0, nil, nil, nil]]
-        facility_rows = data_service.facility_rows
+        facility_rows = exporter.facility_rows
         expect(facility_rows.count).to eq(2)
         expect(facility_rows.first&.count).to eq(32)
         expect(facility_rows.second&.count).to eq(32)
@@ -181,30 +211,60 @@ describe MonthlyDistrictData::Diabetes do
       ]
     }
 
-    let(:data_service) { described_class.new(region: @region, period: @period, medications_dispensation_enabled: true) }
+    let(:exporter) { described_class.new(region: @region, period: @period, medications_dispensation_enabled: true) }
+
+    def find_in_csv(csv_data, row_index, column_name)
+      headers = csv_data[2]
+      column = headers.index(column_name)
+      csv_data[row_index][column]
+    end
+
+    describe "#report" do
+      it "produces valid csv data" do
+        result = exporter.report
+        expect {
+          CSV.parse(result)
+        }.not_to raise_error
+      end
+
+      it "includes the section name, headers, district data and facility data" do
+        result = exporter.report
+        csv = CSV.parse(result)
+        expect(csv[0]).to eq(["Monthly facility data for #{@region.name} #{@period.to_date.strftime("%B %Y")}"])
+        expect(csv[1]).to eq(sections)
+        expect(csv[2]).to eq(sub_sections)
+        expect(csv[3]).to eq(headers)
+        expect(csv[4][0]).to eq("All facilities")
+        expect(csv[4][4]).to eq("All")
+        expect(csv[6][0]).to eq("Community facilities")
+        expect(csv[6][4]).to eq("Community")
+        expect(csv[8].slice(0, 5)).to eq(["1", "Block 1 - alphabetically first", "Facility 1", "PHC", "Community"])
+        expect(csv[9].slice(0, 5)).to eq(["2", "Block 2 - alphabetically second", "Facility 2", "PHC", "Community"])
+      end
+    end
 
     describe "#header_row" do
       it "returns header row" do
-        expect(data_service.header_row).to eq(headers)
+        expect(exporter.header_row).to eq(headers)
       end
     end
 
     describe "#section_row" do
       it "returns section row" do
-        expect(data_service.section_row).to eq(sections)
+        expect(exporter.section_row).to eq(sections)
       end
     end
 
     describe "#sub-section_row" do
       it "returns sub-section row" do
-        expect(data_service.sub_section_row).to eq(sub_sections)
+        expect(exporter.sub_section_row).to eq(sub_sections)
       end
     end
 
     describe "#district_row" do
       it "returns district row" do
         expected_district_row = ["All facilities", nil, nil, nil, "All", nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 2, 0, 0, 0, nil, nil, nil]
-        district_row = data_service.district_row
+        district_row = exporter.district_row
         expect(district_row.count).to eq(44)
         expect(district_row).to eq(expected_district_row)
       end
@@ -213,7 +273,7 @@ describe MonthlyDistrictData::Diabetes do
     describe "#facility_size_rows" do
       it "provides accurate numbers for facility sizes" do
         expected_facility_size_rows = [["Community facilities", nil, nil, nil, "Community", nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 2, 0, 0, 0, nil, nil, nil]]
-        facility_size_rows = data_service.facility_size_rows
+        facility_size_rows = exporter.facility_size_rows
         expect(facility_size_rows.count).to eq(1)
         expect(facility_size_rows.first&.count).to eq(44)
         expect(facility_size_rows).to eq(expected_facility_size_rows)
@@ -224,7 +284,7 @@ describe MonthlyDistrictData::Diabetes do
       it "provides accurate numbers for individual facilities" do
         expected_facility_rows = [[1, "Block 1 - alphabetically first", "Facility 1", "PHC", "Community", nil, 2, 2, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, nil, nil, nil],
           [2, "Block 2 - alphabetically second", "Facility 2", "PHC", "Community", nil, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, nil, nil, nil]]
-        facility_rows = data_service.facility_rows
+        facility_rows = exporter.facility_rows
         expect(facility_rows.count).to eq(2)
         expect(facility_rows.first&.count).to eq(44)
         expect(facility_rows.second&.count).to eq(44)
