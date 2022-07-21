@@ -27,9 +27,10 @@ class NameUnnamedTemplatesOnBulkSms
     bsnl_templates = YAML.load_file("config/data/bsnl_templates.yml")
 
     pending = bsnl_templates.select { |_, details| details["Template_Status"] == "0" }.map { |template_name, details| [details["Template_Id"], template_name] }
-    ids = pending.to_h.map { |k, v| [v[0..-3], k] }.to_h
-    res = all_strings.map { |k, v| [k, v, ids[k]] }.select { |a| a.third.present? }
-    list = res.map { |a| [a.third, a.second.gsub("%{", "{#").gsub("}", "#}")] }
+    pending_ids = pending.to_h.map { |k, v| [v[0..-3], k] }.to_h
+    result = all_strings.map { |k, v| [k, v, pending_ids[k]] }.select { |a| a.third.present? }
+
+    list = result.map { |a| [a.third, a.second.gsub("%{", "{#").gsub("}", "#}")] }
     api = Messaging::Bsnl::Api.new
 
     list.map do |id, string|
