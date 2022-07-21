@@ -29,11 +29,11 @@ hi-IN:
       short: "%{patient_name} अपने बीपी की जांच के लिए आज %{facility_name} आएँ।"
       short_medicines: "%{patient_name} अपने बीपी की जांच और दवाइयो के लिए आज %{facility_name} आएँ।"
       you_must: "%{patient_name} अपने बीपी की जांच के लिए %{facility_name} में आज अवश्य आएँ। "
-      no_date: "%{patient_name} अपने बीपी की जांच के लिए आज %{facility_name} आएँ।"
+      no_date: "%{patient_name}, अपने बीपी की जांच के लिए आज %{facility_name} आएँ।"
       official_short: "%{patient_name} अपने बीपी की जांच के लिए आज %{facility_name} आएँ। आपके डॉक्टर आपके अच्छे स्वास्थ्य की कामना करते हैं।"
       official_short_medicines: "%{patient_name} अपने बीपी की जांच और दवाइयों के लिए आज %{facility_name} आएँ। आपके डॉक्टर आपके अच्छे स्वास्थ्य की कामना करते हैं।"
       official_you_must: "%{patient_name} अपने बीपी की जांच के लिए %{facility_name} में आज अवश्य आएँ। आपके डॉक्टर आपके अच्छे स्वास्थ्य की कामना करते हैं।"
-      official_no_date: "%{patient_name} अपने बीपी की जांच के लिए आज %{facility_name} आएँ। आपके डॉक्टर आपके अच्छे स्वास्थ्य की कामना करते हैं।"
+      official_no_date: "%{patient_name}, अपने बीपी की जांच के लिए आज %{facility_name} आएँ। आपके डॉक्टर आपके अच्छे स्वास्थ्य की कामना करते हैं।"
     set03:
       basic: "आप अपने बी पी की जांच के लिए देरी से हो। %{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए जल्द से जल्द %{facility_name} आएं।"
       gratitude: "आप अपने बी पी की जांच के लिए देरी से हो। हाई बी पी के लिए नियमित दवाएं लेने के लिए धन्यवाद। %{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए जल्द से जल्द %{facility_name} आएं।"
