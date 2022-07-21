@@ -20,6 +20,7 @@ RSpec.describe Messaging::Bsnl::Sms do
 
     it "only includes messages sent in the last 2 days" do
       # BSNL only keeps delivery receipts for 2 days
+      create(:bsnl_delivery_detail, :created, created_at: 30.days.ago)
       create(:bsnl_delivery_detail, :created, created_at: 3.days.ago)
       create(:bsnl_delivery_detail, :created, created_at: 1.days.ago)
 
