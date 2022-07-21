@@ -28,7 +28,7 @@ hi-IN:
       response: "हम आज आपके आने की उम्मीद कर रहे हैं। कृप्या बी पी की जांच और दवाओं के लिए %{facility_name} आएं। इस लिंक पर क्लिक करके हमें बताएं कि आप आयेगे।"
       short: "%{patient_name} अपने बीपी की जांच के लिए आज %{facility_name} आएँ।"
       short_medicines: "%{patient_name} अपने बीपी की जांच और दवाइयो के लिए आज %{facility_name} आएँ।"
-      you_must: "%{patient_name} अपने बीपी की जांच के लिए %{facility_name} में आज अवश्य आएँ। "
+      you_must: "%{patient_name} अपने बीपी की जांच के लिए %{facility_name} में आज अवश्य आएँ।"
       no_date: "%{patient_name}, अपने बीपी की जांच के लिए आज %{facility_name} आएँ।"
       official_short: "%{patient_name} अपने बीपी की जांच के लिए आज %{facility_name} आएँ। आपके डॉक्टर आपके अच्छे स्वास्थ्य की कामना करते हैं।"
       official_short_medicines: "%{patient_name} अपने बीपी की जांच और दवाइयों के लिए आज %{facility_name} आएँ। आपके डॉक्टर आपके अच्छे स्वास्थ्य की कामना करते हैं।"
