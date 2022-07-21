@@ -12,8 +12,16 @@ class NotificationStringsForKatalon
   end
 
   def self.for_katalon
-    all_strings.flat_map(&:to_a).to_h.sort_by(&:first).map { |k, v| { "name" => k.to_s, "message" => v } }.to_json
+    all_strings.flat_map(&:to_a).to_h.sort_by(&:first).
+      map do |k, v|
+      {
+        "name" => k.to_s,
+        "message" => v.gsub("%{patient_name}", "{#var#}").gsub("%{facility_name}", "{#var#}").gsub("%{appointment_date}", "{#var#}")
+      }
+    end
   end
+
+  puts for_katalon
 end
 
 class NameUnnamedTemplatesOnBulkSms
