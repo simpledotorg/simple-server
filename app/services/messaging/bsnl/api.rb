@@ -68,7 +68,15 @@ class Messaging::Bsnl::Api
     request.body = body.to_json if body
     request["Authorization"] = "Bearer #{credentials[:jwt]}"
 
-    hsh_or_string(http.request(request).body)
+    response = http.request(request)
+
+    unless response.is_a?(Net::HTTPSuccess)
+      raise Messaging::Bsnl::ApiError.new(
+        "API returned #{response.code} with #{response.body}"
+      )
+    end
+
+    hsh_or_string(response.body)
   end
 
   def hsh_or_string(string)
