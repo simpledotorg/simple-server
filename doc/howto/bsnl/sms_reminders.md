@@ -52,8 +52,7 @@ and use the scripts [here](bulk_submit_dlt_templates).
 - Once approved, the template should show up on the bulksms dashboard in a few hours. You will need to then name the variables as done in this [video]().
 - The templates are ready to use. See section on Maintaining template IDs to start using these templates from `simple-server`.
 
-### Maintaining template IDs
-After a new template has been added to the bulk SMS portal, we need to pull in it's details to the simple codebase in order to use it.
+After a new template has been added to the bulksms, we need to pull in it's details to the simple codebase in order to use it.
 We have a script to help with it.
 
 **Note:** You will need production credentials to run the script.
@@ -74,3 +73,10 @@ BSNL_JWT_TOKEN=eyJhxxxx
 
 - The script pulls all templates listed on IHCI's DLT platform. Although, it runs the validations only for reminder notifications specified in `locale/notifications` and will need tweaks to support other kinds of messages.
 - You can run `bundle exec rake bsnl:notification_strings_summary` to keep track of the statuses of all the notification strings when you're uploading a lot of notification templates.
+
+#### Resources
+
+- [DLT Portal](https://www.ucc-bsnl.co.in/dashboard/)
+- [BSNL Bulk SMS Portal](https://bulksms.bsnl.in/)
+- [BSNL Bulk SMS API docs](https://drive.google.com/file/d/1wmatrkuGxSKP3hYhzNTWwgLq8ae3Mk7b/view?usp=sharing)
+- [BSNL Bulk SMS API Postman collection](https://drive.google.com/file/d/1JaUWkiZ8Q4I3_Emryuwechx9mpG-pl0H/view?usp=sharing)
