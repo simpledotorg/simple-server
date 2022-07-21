@@ -7,4 +7,3 @@ languagewise_strings = Dir.glob("config/locales/notifications/*").map do |file_n
 end
 
 languagewise_strings.flat_map(&:to_a).to_h.sort_by(&:first).map { |k, v| {"name" => k.to_s, "message" => v} }.to_json
-
