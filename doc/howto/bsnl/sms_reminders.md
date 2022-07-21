@@ -49,10 +49,9 @@ If you need to upload a lot of strings refer to this [Video walkthrough](https:/
 and use the scripts [here](bulk_submit_dlt_templates).
 
 - Submissions to DLT are usually approved within 2 weekdays.
-- Once approved, the template should show up on the bulksms dashboard in a few hours. You will need to then name the variables as done in this [video]().
-- The templates are ready to use. See section on Maintaining template IDs to start using these templates from `simple-server`.
+- Once approved, the template should show up on the bulksms dashboard in a few hours.
 
-After a new template has been added to the bulksms, we need to pull in it's details to the simple codebase in order to use it.
+After a new template has been added to bulksms, we need to pull in it's details to the simple codebase in order to use it.
 We have a script to help with it.
 
 **Note:** You will need production credentials to run the script.
@@ -67,7 +66,10 @@ BSNL_JWT_TOKEN=eyJhxxxx
 - This will pull the latest configuration from BSNL and save it to `config/data/bsnl_templates.yml`. This will also output a summary of any actions to be taken, go through them carefully.
 - Commit and push changes in this file (if there are any).
 - Remove the credentials from `.env.development.local`.
-- You are all set to use the new reminder message.
+
+[Video walkthrough of variable naming](https://drive.google.com/file/d/1gNP731inHZgXGXchUGx1OfV6uxWxgbxS/view?usp=sharing).
+
+You are all set to use the new reminder message once the templates have been named and pulled into simple-server.
 
 #### Additional notes
 
