@@ -4,14 +4,12 @@ class NotificationStringsForKatalon
   # This will print all notification strings in the format the Katalon Recorder needs.
   # You can filter the output or tweak these commands to include only the ones you want to upload.
   # Katalon Recorder: https://chrome.google.com/webstore/detail/katalon-recorder-selenium/ljdobmomdgdljniojadhoplhkpialdid
-  def self.all_strings
+  def self.call
     include I18n::Backend::Flatten
-    Dir.glob("config/locales/notifications/*").map do |file_name|
+    all_strings = Dir.glob("config/locales/notifications/*").map do |file_name|
       flatten_translations(nil, YAML.safe_load(File.open(file_name)), nil, false)
     end
-  end
 
-  def self.for_katalon
     all_strings.flat_map(&:to_a).to_h.sort_by(&:first).
       map do |k, v|
       {
@@ -20,12 +18,10 @@ class NotificationStringsForKatalon
       }
     end
   end
-
-  puts for_katalon
 end
 
 class NameUnnamedTemplatesOnBulkSms
-  def self.perform
+  def self.call
     include I18n::Backend::Flatten
 
     all_strings = Dir.glob("config/locales/notifications/*").map do |file_name|
@@ -38,11 +34,11 @@ class NameUnnamedTemplatesOnBulkSms
     pending_ids = pending.to_h.map { |k, v| [v[0..-3], k] }.to_h
     result = all_strings.map { |k, v| [k, v, pending_ids[k]] }.select { |a| a.third.present? }
 
-    list = result.map { |a| [a.third, a.second.gsub("%{", "{#").gsub("}", "#}")] }
+    list = result.map { |a| [a.first, a.third, a.second.gsub("%{", "{#").gsub("}", "#}")] }
     api = Messaging::Bsnl::Api.new
 
-    list.map do |id, string|
-      api.name_template_variables(id, string)
+    list.map do |name, id, string|
+      [name, api.name_template_variables(id, string)]
     end
   end
 end
