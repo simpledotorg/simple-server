@@ -91,6 +91,69 @@ bn-IN.notifications.set01.gratitude:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.set01.gratitude
+bn-IN.notifications.set01.no_date.2:
+  Template_Id: '1407165789808170577'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '51'
+  Max_Length_Permitted: '102'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 2
+  Is_Latest_Version: true
+  Latest_Template_Version: bn-IN.notifications.set01.no_date.2
+bn-IN.notifications.set01.official_no_date.2:
+  Template_Id: '1407165789808587264'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '105'
+  Max_Length_Permitted: '210'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 2
+  Is_Latest_Version: true
+  Latest_Template_Version: bn-IN.notifications.set01.official_no_date.2
+bn-IN.notifications.set01.official_short.2:
+  Template_Id: '1407165789809012696'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '115'
+  Max_Length_Permitted: '230'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 2
+  Is_Latest_Version: true
+  Latest_Template_Version: bn-IN.notifications.set01.official_short.2
+bn-IN.notifications.set01.official_short_medicines.2:
+  Template_Id: '1407165789809437655'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '121'
+  Max_Length_Permitted: '242'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 2
+  Is_Latest_Version: true
+  Latest_Template_Version: bn-IN.notifications.set01.official_short_medicines.2
+bn-IN.notifications.set01.official_you_must.2:
+  Template_Id: '1407165789809893161'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '123'
+  Max_Length_Permitted: '246'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 2
+  Is_Latest_Version: true
+  Latest_Template_Version: bn-IN.notifications.set01.official_you_must.2
 bn-IN.notifications.set01.professional_request:
   Template_Id: '1407164904390280799'
   Template_Keys:
@@ -117,6 +180,45 @@ bn-IN.notifications.set01.response:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.set01.response
+bn-IN.notifications.set01.short.2:
+  Template_Id: '1407165789810321322'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '67'
+  Max_Length_Permitted: '134'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 2
+  Is_Latest_Version: true
+  Latest_Template_Version: bn-IN.notifications.set01.short.2
+bn-IN.notifications.set01.short_medicines.2:
+  Template_Id: '1407165789811255890'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '79'
+  Max_Length_Permitted: '158'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 2
+  Is_Latest_Version: true
+  Latest_Template_Version: bn-IN.notifications.set01.short_medicines.2
+bn-IN.notifications.set01.you_must.2:
+  Template_Id: '1407165789811682191'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '72'
+  Max_Length_Permitted: '144'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 2
+  Is_Latest_Version: true
+  Latest_Template_Version: bn-IN.notifications.set01.you_must.2
 bn-IN.notifications.set02.alarm:
   Template_Id: '1407164904401819806'
   Template_Keys:
@@ -189,6 +291,66 @@ bn-IN.notifications.set02.gratitude:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.set02.gratitude
+bn-IN.notifications.set02.no_date.2:
+  Template_Id: '1407165789812091667'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '46'
+  Max_Length_Permitted: '92'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 2
+  Is_Latest_Version: true
+  Latest_Template_Version: bn-IN.notifications.set02.no_date.2
+bn-IN.notifications.set02.official_no_date.2:
+  Template_Id: '1407165789812557030'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '94'
+  Max_Length_Permitted: '188'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 2
+  Is_Latest_Version: true
+  Latest_Template_Version: bn-IN.notifications.set02.official_no_date.2
+bn-IN.notifications.set02.official_short.2:
+  Template_Id: '1407165789813020037'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '111'
+  Max_Length_Permitted: '222'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 2
+  Is_Latest_Version: true
+  Latest_Template_Version: bn-IN.notifications.set02.official_short.2
+bn-IN.notifications.set02.official_short_medicines.2:
+  Template_Id: '1407165789813545652'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '117'
+  Max_Length_Permitted: '234'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 2
+  Is_Latest_Version: true
+  Latest_Template_Version: bn-IN.notifications.set02.official_short_medicines.2
+bn-IN.notifications.set02.official_you_must.2:
+  Template_Id: '1407165789814016938'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '116'
+  Max_Length_Permitted: '232'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 2
+  Is_Latest_Version: true
+  Latest_Template_Version: bn-IN.notifications.set02.official_you_must.2
 bn-IN.notifications.set02.professional_request:
   Template_Id: '1407164904406258467'
   Template_Keys:
@@ -213,6 +375,42 @@ bn-IN.notifications.set02.response:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.set02.response
+bn-IN.notifications.set02.short.2:
+  Template_Id: '1407165789814518129'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '63'
+  Max_Length_Permitted: '126'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 2
+  Is_Latest_Version: true
+  Latest_Template_Version: bn-IN.notifications.set02.short.2
+bn-IN.notifications.set02.short_medicines.2:
+  Template_Id: '1407165789814979977'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '69'
+  Max_Length_Permitted: '138'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 2
+  Is_Latest_Version: true
+  Latest_Template_Version: bn-IN.notifications.set02.short_medicines.2
+bn-IN.notifications.set02.you_must.2:
+  Template_Id: '1407165789815414755'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '59'
+  Max_Length_Permitted: '118'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 2
+  Is_Latest_Version: true
+  Latest_Template_Version: bn-IN.notifications.set02.you_must.2
 bn-IN.notifications.set03.alarm:
   Template_Id: '1407164904413741621'
   Template_Keys:
@@ -285,6 +483,66 @@ bn-IN.notifications.set03.gratitude:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.set03.gratitude
+bn-IN.notifications.set03.no_date.2:
+  Template_Id: '1407165789815833925'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '45'
+  Max_Length_Permitted: '90'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 2
+  Is_Latest_Version: true
+  Latest_Template_Version: bn-IN.notifications.set03.no_date.2
+bn-IN.notifications.set03.official_no_date.2:
+  Template_Id: '1407165789816293482'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '89'
+  Max_Length_Permitted: '178'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 2
+  Is_Latest_Version: true
+  Latest_Template_Version: bn-IN.notifications.set03.official_no_date.2
+bn-IN.notifications.set03.official_short.2:
+  Template_Id: '1407165789816775457'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '141'
+  Max_Length_Permitted: '282'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 2
+  Is_Latest_Version: true
+  Latest_Template_Version: bn-IN.notifications.set03.official_short.2
+bn-IN.notifications.set03.official_short_medicines.2:
+  Template_Id: '1407165789817264416'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '193'
+  Max_Length_Permitted: '386'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 2
+  Is_Latest_Version: true
+  Latest_Template_Version: bn-IN.notifications.set03.official_short_medicines.2
+bn-IN.notifications.set03.official_you_must.2:
+  Template_Id: '1407165789817735812'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '122'
+  Max_Length_Permitted: '244'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 2
+  Is_Latest_Version: true
+  Latest_Template_Version: bn-IN.notifications.set03.official_you_must.2
 bn-IN.notifications.set03.professional_request:
   Template_Id: '1407164904418305677'
   Template_Keys:
@@ -309,6 +567,42 @@ bn-IN.notifications.set03.response:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: bn-IN.notifications.set03.response
+bn-IN.notifications.set03.short.2:
+  Template_Id: '1407165789818175326'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '93'
+  Max_Length_Permitted: '186'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 2
+  Is_Latest_Version: true
+  Latest_Template_Version: bn-IN.notifications.set03.short.2
+bn-IN.notifications.set03.short_medicines.2:
+  Template_Id: '1407165789818674922'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '146'
+  Max_Length_Permitted: '292'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 2
+  Is_Latest_Version: true
+  Latest_Template_Version: bn-IN.notifications.set03.short_medicines.2
+bn-IN.notifications.set03.you_must.2:
+  Template_Id: '1407165789819118557'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '74'
+  Max_Length_Permitted: '148'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 2
+  Is_Latest_Version: true
+  Latest_Template_Version: bn-IN.notifications.set03.you_must.2
 en.notifications.covid.medication_reminder.2:
   Template_Id: '1407165001269262073'
   Template_Keys:
@@ -966,6 +1260,69 @@ hi-IN.notifications.set01.gratitude:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.set01.gratitude
+hi-IN.notifications.set01.no_date.1:
+  Template_Id: '1407165780888723010'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '38'
+  Max_Length_Permitted: '76'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: hi-IN.notifications.set01.no_date.1
+hi-IN.notifications.set01.official_no_date.1:
+  Template_Id: '1407165789833965201'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '90'
+  Max_Length_Permitted: '180'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: hi-IN.notifications.set01.official_no_date.1
+hi-IN.notifications.set01.official_short.1:
+  Template_Id: '1407165789834426023'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '91'
+  Max_Length_Permitted: '182'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: hi-IN.notifications.set01.official_short.1
+hi-IN.notifications.set01.official_short_medicines.1:
+  Template_Id: '1407165789834897564'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '101'
+  Max_Length_Permitted: '202'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: hi-IN.notifications.set01.official_short_medicines.1
+hi-IN.notifications.set01.official_you_must.1:
+  Template_Id: '1407165789835376739'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '97'
+  Max_Length_Permitted: '194'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: hi-IN.notifications.set01.official_you_must.1
 hi-IN.notifications.set01.professional_request:
   Template_Id: '1407164786769683386'
   Template_Keys:
@@ -992,6 +1349,45 @@ hi-IN.notifications.set01.response:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.set01.response
+hi-IN.notifications.set01.short.1:
+  Template_Id: '1407165789835830257'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '39'
+  Max_Length_Permitted: '78'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: hi-IN.notifications.set01.short.1
+hi-IN.notifications.set01.short_medicines.1:
+  Template_Id: '1407165789836288736'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '50'
+  Max_Length_Permitted: '100'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: hi-IN.notifications.set01.short_medicines.1
+hi-IN.notifications.set01.you_must.1:
+  Template_Id: '1407165789836732627'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '45'
+  Max_Length_Permitted: '90'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: hi-IN.notifications.set01.you_must.1
 hi-IN.notifications.set02.alarm:
   Template_Id: '1407164786854655569'
   Template_Keys:
@@ -1064,6 +1460,66 @@ hi-IN.notifications.set02.gratitude:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.set02.gratitude
+hi-IN.notifications.set02.no_date.1:
+  Template_Id: '1407165839615508906'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '35'
+  Max_Length_Permitted: '70'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: hi-IN.notifications.set02.no_date.1
+hi-IN.notifications.set02.official_no_date.1:
+  Template_Id: '1407165839618709736'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '87'
+  Max_Length_Permitted: '174'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: hi-IN.notifications.set02.official_no_date.1
+hi-IN.notifications.set02.official_short.1:
+  Template_Id: '1407165789837207709'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '86'
+  Max_Length_Permitted: '172'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: hi-IN.notifications.set02.official_short.1
+hi-IN.notifications.set02.official_short_medicines.1:
+  Template_Id: '1407165789837675217'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '97'
+  Max_Length_Permitted: '194'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: hi-IN.notifications.set02.official_short_medicines.1
+hi-IN.notifications.set02.official_you_must.1:
+  Template_Id: '1407165789838155679'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '96'
+  Max_Length_Permitted: '192'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: hi-IN.notifications.set02.official_you_must.1
 hi-IN.notifications.set02.professional_request:
   Template_Id: '1407164786871299569'
   Template_Keys:
@@ -1087,6 +1543,42 @@ hi-IN.notifications.set02.response:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.set02.response
+hi-IN.notifications.set02.short.1:
+  Template_Id: '1407165789838592817'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '34'
+  Max_Length_Permitted: '68'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: hi-IN.notifications.set02.short.1
+hi-IN.notifications.set02.short_medicines.1:
+  Template_Id: '1407165789839064274'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '44'
+  Max_Length_Permitted: '88'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: hi-IN.notifications.set02.short_medicines.1
+hi-IN.notifications.set02.you_must.1:
+  Template_Id: '1407165789839520325'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '44'
+  Max_Length_Permitted: '88'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: hi-IN.notifications.set02.you_must.1
 hi-IN.notifications.set03.alarm:
   Template_Id: '1407164786900357171'
   Template_Keys:
@@ -1159,6 +1651,66 @@ hi-IN.notifications.set03.gratitude:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.set03.gratitude
+hi-IN.notifications.set03.no_date.1:
+  Template_Id: '1407165789839976372'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '37'
+  Max_Length_Permitted: '74'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: hi-IN.notifications.set03.no_date.1
+hi-IN.notifications.set03.official_no_date.1:
+  Template_Id: '1407165789840498758'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '89'
+  Max_Length_Permitted: '178'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: hi-IN.notifications.set03.official_no_date.1
+hi-IN.notifications.set03.official_short.1:
+  Template_Id: '1407165789841592316'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '122'
+  Max_Length_Permitted: '244'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: hi-IN.notifications.set03.official_short.1
+hi-IN.notifications.set03.official_short_medicines.1:
+  Template_Id: '1407165789842108975'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '132'
+  Max_Length_Permitted: '264'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: hi-IN.notifications.set03.official_short_medicines.1
+hi-IN.notifications.set03.official_you_must.1:
+  Template_Id: '1407165789842609648'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '97'
+  Max_Length_Permitted: '194'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: hi-IN.notifications.set03.official_you_must.1
 hi-IN.notifications.set03.professional_request:
   Template_Id: '1407164786921074167'
   Template_Keys:
@@ -1183,6 +1735,42 @@ hi-IN.notifications.set03.response:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: hi-IN.notifications.set03.response
+hi-IN.notifications.set03.short.1:
+  Template_Id: '1407165789843083858'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '70'
+  Max_Length_Permitted: '140'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: hi-IN.notifications.set03.short.1
+hi-IN.notifications.set03.short_medicines.1:
+  Template_Id: '1407165789843563230'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '80'
+  Max_Length_Permitted: '160'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: hi-IN.notifications.set03.short_medicines.1
+hi-IN.notifications.set03.you_must.1:
+  Template_Id: '1407165789844020254'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '45'
+  Max_Length_Permitted: '90'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: hi-IN.notifications.set03.you_must.1
 kn-IN.notifications.covid.medication_reminder:
   Template_Id: '1407164904338588930'
   Template_Keys:
@@ -1273,6 +1861,69 @@ kn-IN.notifications.set01.gratitude:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.set01.gratitude
+kn-IN.notifications.set01.no_date.1:
+  Template_Id: '1407165789844488291'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '32'
+  Max_Length_Permitted: '64'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: kn-IN.notifications.set01.no_date.1
+kn-IN.notifications.set01.official_no_date.1:
+  Template_Id: '1407165789844954251'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '85'
+  Max_Length_Permitted: '170'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: kn-IN.notifications.set01.official_no_date.1
+kn-IN.notifications.set01.official_short.1:
+  Template_Id: '1407165789845438682'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '96'
+  Max_Length_Permitted: '192'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: kn-IN.notifications.set01.official_short.1
+kn-IN.notifications.set01.official_short_medicines.1:
+  Template_Id: '1407165789845955465'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '109'
+  Max_Length_Permitted: '218'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: kn-IN.notifications.set01.official_short_medicines.1
+kn-IN.notifications.set01.official_you_must.1:
+  Template_Id: '1407165789846434549'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '89'
+  Max_Length_Permitted: '178'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: kn-IN.notifications.set01.official_you_must.1
 kn-IN.notifications.set01.professional_request:
   Template_Id: '1407164904307052976'
   Template_Keys:
@@ -1299,6 +1950,45 @@ kn-IN.notifications.set01.response:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.set01.response
+kn-IN.notifications.set01.short.1:
+  Template_Id: '1407165789846886225'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '43'
+  Max_Length_Permitted: '86'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: kn-IN.notifications.set01.short.1
+kn-IN.notifications.set01.short_medicines.1:
+  Template_Id: '1407165789847350683'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '57'
+  Max_Length_Permitted: '114'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: kn-IN.notifications.set01.short_medicines.1
+kn-IN.notifications.set01.you_must.1:
+  Template_Id: '1407165789847821496'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '39'
+  Max_Length_Permitted: '78'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: kn-IN.notifications.set01.you_must.1
 kn-IN.notifications.set02.alarm:
   Template_Id: '1407164904314461120'
   Template_Keys:
@@ -1371,6 +2061,66 @@ kn-IN.notifications.set02.gratitude:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.set02.gratitude
+kn-IN.notifications.set02.no_date.1:
+  Template_Id: '1407165789848288585'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '32'
+  Max_Length_Permitted: '64'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: kn-IN.notifications.set02.no_date.1
+kn-IN.notifications.set02.official_no_date.1:
+  Template_Id: '1407165789848762366'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '85'
+  Max_Length_Permitted: '170'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: kn-IN.notifications.set02.official_no_date.1
+kn-IN.notifications.set02.official_short.1:
+  Template_Id: '1407165789849252862'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '89'
+  Max_Length_Permitted: '178'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: kn-IN.notifications.set02.official_short.1
+kn-IN.notifications.set02.official_short_medicines.1:
+  Template_Id: '1407165789849746071'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '102'
+  Max_Length_Permitted: '204'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: kn-IN.notifications.set02.official_short_medicines.1
+kn-IN.notifications.set02.official_you_must.1:
+  Template_Id: '1407165789850222782'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '88'
+  Max_Length_Permitted: '176'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: kn-IN.notifications.set02.official_you_must.1
 kn-IN.notifications.set02.professional_request:
   Template_Id: '1407164904319066360'
   Template_Keys:
@@ -1395,6 +2145,42 @@ kn-IN.notifications.set02.response:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.set02.response
+kn-IN.notifications.set02.short.1:
+  Template_Id: '1407165789850673414'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '36'
+  Max_Length_Permitted: '72'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: kn-IN.notifications.set02.short.1
+kn-IN.notifications.set02.short_medicines.1:
+  Template_Id: '1407165789851150083'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '49'
+  Max_Length_Permitted: '98'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: kn-IN.notifications.set02.short_medicines.1
+kn-IN.notifications.set02.you_must.1:
+  Template_Id: '1407165789851601232'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '35'
+  Max_Length_Permitted: '70'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: kn-IN.notifications.set02.you_must.1
 kn-IN.notifications.set03.alarm:
   Template_Id: '1407164904326638699'
   Template_Keys:
@@ -1467,6 +2253,66 @@ kn-IN.notifications.set03.gratitude:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.set03.gratitude
+kn-IN.notifications.set03.no_date.1:
+  Template_Id: '1407165838488789931'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '33'
+  Max_Length_Permitted: '66'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: kn-IN.notifications.set03.no_date.1
+kn-IN.notifications.set03.official_no_date.1:
+  Template_Id: '1407165839408816342'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '86'
+  Max_Length_Permitted: '172'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: kn-IN.notifications.set03.official_no_date.1
+kn-IN.notifications.set03.official_short.1:
+  Template_Id: '1407165789852975857'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '141'
+  Max_Length_Permitted: '282'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: kn-IN.notifications.set03.official_short.1
+kn-IN.notifications.set03.official_short_medicines.1:
+  Template_Id: '1407165789853499030'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '154'
+  Max_Length_Permitted: '308'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: kn-IN.notifications.set03.official_short_medicines.1
+kn-IN.notifications.set03.official_you_must.1:
+  Template_Id: '1407165789854033697'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '100'
+  Max_Length_Permitted: '200'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: kn-IN.notifications.set03.official_you_must.1
 kn-IN.notifications.set03.professional_request:
   Template_Id: '1407164904505830306'
   Template_Keys:
@@ -1491,6 +2337,42 @@ kn-IN.notifications.set03.response:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: kn-IN.notifications.set03.response
+kn-IN.notifications.set03.short.1:
+  Template_Id: '1407165789854548519'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '88'
+  Max_Length_Permitted: '176'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: kn-IN.notifications.set03.short.1
+kn-IN.notifications.set03.short_medicines.1:
+  Template_Id: '1407165789855056729'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '101'
+  Max_Length_Permitted: '202'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: kn-IN.notifications.set03.short_medicines.1
+kn-IN.notifications.set03.you_must.1:
+  Template_Id: '1407165789855507401'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '44'
+  Max_Length_Permitted: '88'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: kn-IN.notifications.set03.you_must.1
 mr-IN.notifications.covid.medication_reminder:
   Template_Id: '1407164904254274076'
   Template_Keys:
@@ -1581,6 +2463,69 @@ mr-IN.notifications.set01.gratitude:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.set01.gratitude
+mr-IN.notifications.set01.no_date.1:
+  Template_Id: '1407165789855961360'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '34'
+  Max_Length_Permitted: '68'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: mr-IN.notifications.set01.no_date.1
+mr-IN.notifications.set01.official_no_date.1:
+  Template_Id: '1407165789856424681'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '88'
+  Max_Length_Permitted: '176'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: mr-IN.notifications.set01.official_no_date.1
+mr-IN.notifications.set01.official_short.1:
+  Template_Id: '1407165789856893164'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '96'
+  Max_Length_Permitted: '192'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: mr-IN.notifications.set01.official_short.1
+mr-IN.notifications.set01.official_short_medicines.1:
+  Template_Id: '1407165789857380211'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '106'
+  Max_Length_Permitted: '212'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: mr-IN.notifications.set01.official_short_medicines.1
+mr-IN.notifications.set01.official_you_must.1:
+  Template_Id: '1407165789857863979'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '100'
+  Max_Length_Permitted: '200'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: mr-IN.notifications.set01.official_you_must.1
 mr-IN.notifications.set01.professional_request:
   Template_Id: '1407164904222183038'
   Template_Keys:
@@ -1607,6 +2552,45 @@ mr-IN.notifications.set01.response:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.set01.response
+mr-IN.notifications.set01.short.1:
+  Template_Id: '1407165789858326688'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '43'
+  Max_Length_Permitted: '86'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: mr-IN.notifications.set01.short.1
+mr-IN.notifications.set01.short_medicines.1:
+  Template_Id: '1407165789858799051'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '55'
+  Max_Length_Permitted: '110'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: mr-IN.notifications.set01.short_medicines.1
+mr-IN.notifications.set01.you_must.1:
+  Template_Id: '1407165789859282748'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '55'
+  Max_Length_Permitted: '110'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: mr-IN.notifications.set01.you_must.1
 mr-IN.notifications.set02.alarm:
   Template_Id: '1407164904229690119'
   Template_Keys:
@@ -1680,6 +2664,66 @@ mr-IN.notifications.set02.gratitude:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.set02.gratitude
+mr-IN.notifications.set02.no_date.1:
+  Template_Id: '1407165789859739807'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '30'
+  Max_Length_Permitted: '60'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: mr-IN.notifications.set02.no_date.1
+mr-IN.notifications.set02.official_no_date.1:
+  Template_Id: '1407165789860236986'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '83'
+  Max_Length_Permitted: '166'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: mr-IN.notifications.set02.official_no_date.1
+mr-IN.notifications.set02.official_short.1:
+  Template_Id: '1407165789860730334'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '91'
+  Max_Length_Permitted: '182'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: mr-IN.notifications.set02.official_short.1
+mr-IN.notifications.set02.official_short_medicines.1:
+  Template_Id: '1407165789861216353'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '102'
+  Max_Length_Permitted: '204'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: mr-IN.notifications.set02.official_short_medicines.1
+mr-IN.notifications.set02.official_you_must.1:
+  Template_Id: '1407165789861731259'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '85'
+  Max_Length_Permitted: '170'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: mr-IN.notifications.set02.official_you_must.1
 mr-IN.notifications.set02.professional_request:
   Template_Id: '1407164904234312697'
   Template_Keys:
@@ -1705,6 +2749,42 @@ mr-IN.notifications.set02.response:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.set02.response
+mr-IN.notifications.set02.short.1:
+  Template_Id: '1407165789862200808'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '40'
+  Max_Length_Permitted: '80'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: mr-IN.notifications.set02.short.1
+mr-IN.notifications.set02.short_medicines.1:
+  Template_Id: '1407165789862676232'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '55'
+  Max_Length_Permitted: '110'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: mr-IN.notifications.set02.short_medicines.1
+mr-IN.notifications.set02.you_must.1:
+  Template_Id: '1407165789863150789'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '41'
+  Max_Length_Permitted: '82'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: mr-IN.notifications.set02.you_must.1
 mr-IN.notifications.set03.alarm:
   Template_Id: '1407164904242320044'
   Template_Keys:
@@ -1790,6 +2870,66 @@ mr-IN.notifications.set03.gratitude:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.set03.gratitude
+mr-IN.notifications.set03.no_date.1:
+  Template_Id: '1407165839411041904'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '31'
+  Max_Length_Permitted: '62'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: mr-IN.notifications.set03.no_date.1
+mr-IN.notifications.set03.official_no_date.1:
+  Template_Id: '1407165789864098236'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '81'
+  Max_Length_Permitted: '162'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: mr-IN.notifications.set03.official_no_date.1
+mr-IN.notifications.set03.official_short.1:
+  Template_Id: '1407165789864630425'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '154'
+  Max_Length_Permitted: '308'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: mr-IN.notifications.set03.official_short.1
+mr-IN.notifications.set03.official_short_medicines.1:
+  Template_Id: '1407165789865168895'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '162'
+  Max_Length_Permitted: '324'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: mr-IN.notifications.set03.official_short_medicines.1
+mr-IN.notifications.set03.official_you_must.1:
+  Template_Id: '1407165789865655355'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '89'
+  Max_Length_Permitted: '178'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: mr-IN.notifications.set03.official_you_must.1
 mr-IN.notifications.set03.professional_request:
   Template_Id: '1407164904246963088'
   Template_Keys:
@@ -1828,6 +2968,42 @@ mr-IN.notifications.set03.response:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: mr-IN.notifications.set03.response
+mr-IN.notifications.set03.short.1:
+  Template_Id: '1407165789866147628'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '84'
+  Max_Length_Permitted: '168'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: mr-IN.notifications.set03.short.1
+mr-IN.notifications.set03.short_medicines.1:
+  Template_Id: '1407165789866653992'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '97'
+  Max_Length_Permitted: '194'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: mr-IN.notifications.set03.short_medicines.1
+mr-IN.notifications.set03.you_must.1:
+  Template_Id: '1407165789867124312'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '44'
+  Max_Length_Permitted: '88'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: mr-IN.notifications.set03.you_must.1
 pa-Guru-IN.notifications.covid.medication_reminder:
   Template_Id: '1407164904375888288'
   Template_Keys:
@@ -1918,6 +3094,69 @@ pa-Guru-IN.notifications.set01.gratitude:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.set01.gratitude
+pa-Guru-IN.notifications.set01.no_date.1:
+  Template_Id: '1407165789867594098'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '29'
+  Max_Length_Permitted: '58'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: pa-Guru-IN.notifications.set01.no_date.1
+pa-Guru-IN.notifications.set01.official_no_date.1:
+  Template_Id: '1407165789868088442'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '76'
+  Max_Length_Permitted: '152'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: pa-Guru-IN.notifications.set01.official_no_date.1
+pa-Guru-IN.notifications.set01.official_short.1:
+  Template_Id: '1407165789868570555'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '75'
+  Max_Length_Permitted: '150'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: pa-Guru-IN.notifications.set01.official_short.1
+pa-Guru-IN.notifications.set01.official_short_medicines.1:
+  Template_Id: '1407165789869057765'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '86'
+  Max_Length_Permitted: '172'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: pa-Guru-IN.notifications.set01.official_short_medicines.1
+pa-Guru-IN.notifications.set01.official_you_must.1:
+  Template_Id: '1407165789869567868'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '85'
+  Max_Length_Permitted: '170'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: pa-Guru-IN.notifications.set01.official_you_must.1
 pa-Guru-IN.notifications.set01.professional_request:
   Template_Id: '1407164904348822754'
   Template_Keys:
@@ -1944,6 +3183,42 @@ pa-Guru-IN.notifications.set01.response:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.set01.response
+pa-Guru-IN.notifications.set01.short.1:
+  Template_Id: '1407165789870055314'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '27'
+  Max_Length_Permitted: '54'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: pa-Guru-IN.notifications.set01.short.1
+pa-Guru-IN.notifications.set01.short_medicines:
+  Template_Id: '1407165839637175123'
+  Template_Keys: []
+  Non_Variable_Text_Length: '0'
+  Max_Length_Permitted: '0'
+  Template_Status: '0'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: pa-Guru-IN.notifications.set01.short_medicines
+pa-Guru-IN.notifications.set01.you_must.1:
+  Template_Id: '1407165789871302229'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '38'
+  Max_Length_Permitted: '76'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: pa-Guru-IN.notifications.set01.you_must.1
 pa-Guru-IN.notifications.set02.alarm:
   Template_Id: '1407164904356156678'
   Template_Keys:
@@ -2016,6 +3291,66 @@ pa-Guru-IN.notifications.set02.gratitude:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.set02.gratitude
+pa-Guru-IN.notifications.set02.no_date.1:
+  Template_Id: '1407165789871830943'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '26'
+  Max_Length_Permitted: '52'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: pa-Guru-IN.notifications.set02.no_date.1
+pa-Guru-IN.notifications.set02.official_no_date.1:
+  Template_Id: '1407165789872323083'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '74'
+  Max_Length_Permitted: '148'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: pa-Guru-IN.notifications.set02.official_no_date.1
+pa-Guru-IN.notifications.set02.official_short.1:
+  Template_Id: '1407165789872845129'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '74'
+  Max_Length_Permitted: '148'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: pa-Guru-IN.notifications.set02.official_short.1
+pa-Guru-IN.notifications.set02.official_short_medicines.1:
+  Template_Id: '1407165789873348563'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '88'
+  Max_Length_Permitted: '176'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: pa-Guru-IN.notifications.set02.official_short_medicines.1
+pa-Guru-IN.notifications.set02.official_you_must.1:
+  Template_Id: '1407165789873861460'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '92'
+  Max_Length_Permitted: '184'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: pa-Guru-IN.notifications.set02.official_you_must.1
 pa-Guru-IN.notifications.set02.professional_request:
   Template_Id: '1407164904360695446'
   Template_Keys:
@@ -2040,6 +3375,42 @@ pa-Guru-IN.notifications.set02.response:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.set02.response
+pa-Guru-IN.notifications.set02.short.1:
+  Template_Id: '1407165789874339535'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '26'
+  Max_Length_Permitted: '52'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: pa-Guru-IN.notifications.set02.short.1
+pa-Guru-IN.notifications.set02.short_medicines.1:
+  Template_Id: '1407165789874835814'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '40'
+  Max_Length_Permitted: '80'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: pa-Guru-IN.notifications.set02.short_medicines.1
+pa-Guru-IN.notifications.set02.you_must.1:
+  Template_Id: '1407165789875328045'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '40'
+  Max_Length_Permitted: '80'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: pa-Guru-IN.notifications.set02.you_must.1
 pa-Guru-IN.notifications.set03.alarm:
   Template_Id: '1407164904368184493'
   Template_Keys:
@@ -2112,6 +3483,66 @@ pa-Guru-IN.notifications.set03.gratitude:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.set03.gratitude
+pa-Guru-IN.notifications.set03.no_date.1:
+  Template_Id: '1407165839584856711'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '27'
+  Max_Length_Permitted: '54'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: pa-Guru-IN.notifications.set03.no_date.1
+pa-Guru-IN.notifications.set03.official_no_date.1:
+  Template_Id: '1407165839591223015'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '75'
+  Max_Length_Permitted: '150'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: pa-Guru-IN.notifications.set03.official_no_date.1
+pa-Guru-IN.notifications.set03.official_short.1:
+  Template_Id: '1407165789876853011'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '138'
+  Max_Length_Permitted: '276'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: pa-Guru-IN.notifications.set03.official_short.1
+pa-Guru-IN.notifications.set03.official_short_medicines.1:
+  Template_Id: '1407165789877411147'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '149'
+  Max_Length_Permitted: '298'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: pa-Guru-IN.notifications.set03.official_short_medicines.1
+pa-Guru-IN.notifications.set03.official_you_must.1:
+  Template_Id: '1407165789877962294'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '100'
+  Max_Length_Permitted: '200'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: pa-Guru-IN.notifications.set03.official_you_must.1
 pa-Guru-IN.notifications.set03.professional_request:
   Template_Id: '1407164904372791004'
   Template_Keys:
@@ -2136,6 +3567,42 @@ pa-Guru-IN.notifications.set03.response:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: pa-Guru-IN.notifications.set03.response
+pa-Guru-IN.notifications.set03.short.1:
+  Template_Id: '1407165789878469771'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '90'
+  Max_Length_Permitted: '180'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: pa-Guru-IN.notifications.set03.short.1
+pa-Guru-IN.notifications.set03.short_medicines.1:
+  Template_Id: '1407165789879023129'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '101'
+  Max_Length_Permitted: '202'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: pa-Guru-IN.notifications.set03.short_medicines.1
+pa-Guru-IN.notifications.set03.you_must.1:
+  Template_Id: '1407165789879516723'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '52'
+  Max_Length_Permitted: '104'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: pa-Guru-IN.notifications.set03.you_must.1
 ta-IN.notifications.covid.medication_reminder:
   Template_Id: '1407164904296563463'
   Template_Keys:
@@ -2226,6 +3693,69 @@ ta-IN.notifications.set01.gratitude:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.set01.gratitude
+ta-IN.notifications.set01.no_date.1:
+  Template_Id: '1407165789880025191'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '56'
+  Max_Length_Permitted: '112'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: ta-IN.notifications.set01.no_date.1
+ta-IN.notifications.set01.official_no_date.1:
+  Template_Id: '1407165789880570745'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '107'
+  Max_Length_Permitted: '214'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: ta-IN.notifications.set01.official_no_date.1
+ta-IN.notifications.set01.official_short.1:
+  Template_Id: '1407165789881117063'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '109'
+  Max_Length_Permitted: '218'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: ta-IN.notifications.set01.official_short.1
+ta-IN.notifications.set01.official_short_medicines.1:
+  Template_Id: '1407165789881695157'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '136'
+  Max_Length_Permitted: '272'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: ta-IN.notifications.set01.official_short_medicines.1
+ta-IN.notifications.set01.official_you_must.1:
+  Template_Id: '1407165789882251782'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '118'
+  Max_Length_Permitted: '236'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: ta-IN.notifications.set01.official_you_must.1
 ta-IN.notifications.set01.professional_request:
   Template_Id: '1407164904264528345'
   Template_Keys:
@@ -2252,6 +3782,45 @@ ta-IN.notifications.set01.response:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.set01.response
+ta-IN.notifications.set01.short.1:
+  Template_Id: '1407165789882763644'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '60'
+  Max_Length_Permitted: '120'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: ta-IN.notifications.set01.short.1
+ta-IN.notifications.set01.short_medicines.1:
+  Template_Id: '1407165789883292252'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '86'
+  Max_Length_Permitted: '172'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: ta-IN.notifications.set01.short_medicines.1
+ta-IN.notifications.set01.you_must.1:
+  Template_Id: '1407165789883828372'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '67'
+  Max_Length_Permitted: '134'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: ta-IN.notifications.set01.you_must.1
 ta-IN.notifications.set02.alarm:
   Template_Id: '1407164904272219152'
   Template_Keys:
@@ -2324,6 +3893,66 @@ ta-IN.notifications.set02.gratitude:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.set02.gratitude
+ta-IN.notifications.set02.no_date.1:
+  Template_Id: '1407165839654067976'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '58'
+  Max_Length_Permitted: '116'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: ta-IN.notifications.set02.no_date.1
+ta-IN.notifications.set02.official_no_date.1:
+  Template_Id: '1407165789884360606'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '109'
+  Max_Length_Permitted: '218'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: ta-IN.notifications.set02.official_no_date.1
+ta-IN.notifications.set02.official_short.1:
+  Template_Id: '1407165789884905623'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '108'
+  Max_Length_Permitted: '216'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: ta-IN.notifications.set02.official_short.1
+ta-IN.notifications.set02.official_short_medicines.1:
+  Template_Id: '1407165789885459980'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '135'
+  Max_Length_Permitted: '270'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: ta-IN.notifications.set02.official_short_medicines.1
+ta-IN.notifications.set02.official_you_must.1:
+  Template_Id: '1407165789886022771'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '117'
+  Max_Length_Permitted: '234'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: ta-IN.notifications.set02.official_you_must.1
 ta-IN.notifications.set02.professional_request:
   Template_Id: '1407164904276831211'
   Template_Keys:
@@ -2348,6 +3977,42 @@ ta-IN.notifications.set02.response:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.set02.response
+ta-IN.notifications.set02.short.1:
+  Template_Id: '1407165789886534249'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '57'
+  Max_Length_Permitted: '114'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: ta-IN.notifications.set02.short.1
+ta-IN.notifications.set02.short_medicines.1:
+  Template_Id: '1407165789887060627'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '84'
+  Max_Length_Permitted: '168'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: ta-IN.notifications.set02.short_medicines.1
+ta-IN.notifications.set02.you_must.1:
+  Template_Id: '1407165789887579504'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '66'
+  Max_Length_Permitted: '132'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: ta-IN.notifications.set02.you_must.1
 ta-IN.notifications.set03.alarm:
   Template_Id: '1407164904284409297'
   Template_Keys:
@@ -2420,6 +4085,66 @@ ta-IN.notifications.set03.gratitude:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.set03.gratitude
+ta-IN.notifications.set03.no_date.1:
+  Template_Id: '1407165839602314370'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '56'
+  Max_Length_Permitted: '112'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: ta-IN.notifications.set03.no_date.1
+ta-IN.notifications.set03.official_no_date.1:
+  Template_Id: '1407165839605382927'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '107'
+  Max_Length_Permitted: '214'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: ta-IN.notifications.set03.official_no_date.1
+ta-IN.notifications.set03.official_short.1:
+  Template_Id: '1407165789889135919'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '128'
+  Max_Length_Permitted: '256'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: ta-IN.notifications.set03.official_short.1
+ta-IN.notifications.set03.official_short_medicines.1:
+  Template_Id: '1407165789889700878'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '154'
+  Max_Length_Permitted: '308'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: ta-IN.notifications.set03.official_short_medicines.1
+ta-IN.notifications.set03.official_you_must.1:
+  Template_Id: '1407165789890261122'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '119'
+  Max_Length_Permitted: '238'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: ta-IN.notifications.set03.official_you_must.1
 ta-IN.notifications.set03.professional_request:
   Template_Id: '1407164904289082499'
   Template_Keys:
@@ -2444,6 +4169,42 @@ ta-IN.notifications.set03.response:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: ta-IN.notifications.set03.response
+ta-IN.notifications.set03.short.1:
+  Template_Id: '1407165789890791917'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '77'
+  Max_Length_Permitted: '154'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: ta-IN.notifications.set03.short.1
+ta-IN.notifications.set03.short_medicines.1:
+  Template_Id: '1407165789891338051'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '99'
+  Max_Length_Permitted: '198'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: ta-IN.notifications.set03.short_medicines.1
+ta-IN.notifications.set03.you_must.1:
+  Template_Id: '1407165789891875635'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '68'
+  Max_Length_Permitted: '136'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: ta-IN.notifications.set03.you_must.1
 te-IN.notifications.covid.medication_reminder:
   Template_Id: '1407164904168867232'
   Template_Keys:
@@ -2534,6 +4295,69 @@ te-IN.notifications.set01.gratitude:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.set01.gratitude
+te-IN.notifications.set01.no_date.1:
+  Template_Id: '1407165789892387315'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '52'
+  Max_Length_Permitted: '104'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: te-IN.notifications.set01.no_date.1
+te-IN.notifications.set01.official_no_date.1:
+  Template_Id: '1407165789892922129'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '103'
+  Max_Length_Permitted: '206'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: te-IN.notifications.set01.official_no_date.1
+te-IN.notifications.set01.official_short.1:
+  Template_Id: '1407165789893481640'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '91'
+  Max_Length_Permitted: '182'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: te-IN.notifications.set01.official_short.1
+te-IN.notifications.set01.official_short_medicines.1:
+  Template_Id: '1407165789894031908'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '103'
+  Max_Length_Permitted: '206'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: te-IN.notifications.set01.official_short_medicines.1
+te-IN.notifications.set01.official_you_must.1:
+  Template_Id: '1407165789894610139'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '100'
+  Max_Length_Permitted: '200'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: te-IN.notifications.set01.official_you_must.1
 te-IN.notifications.set01.professional_request:
   Template_Id: '1407164904138867728'
   Template_Keys:
@@ -2560,6 +4384,45 @@ te-IN.notifications.set01.response:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.set01.response
+te-IN.notifications.set01.short.1:
+  Template_Id: '1407165789895133125'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '40'
+  Max_Length_Permitted: '80'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: te-IN.notifications.set01.short.1
+te-IN.notifications.set01.short_medicines.1:
+  Template_Id: '1407165789895666882'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '52'
+  Max_Length_Permitted: '104'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: te-IN.notifications.set01.short_medicines.1
+te-IN.notifications.set01.you_must.1:
+  Template_Id: '1407165789896216168'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '49'
+  Max_Length_Permitted: '98'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: te-IN.notifications.set01.you_must.1
 te-IN.notifications.set02.alarm:
   Template_Id: '1407164904469467810'
   Template_Keys:
@@ -2632,6 +4495,66 @@ te-IN.notifications.set02.gratitude:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.set02.gratitude
+te-IN.notifications.set02.no_date.1:
+  Template_Id: '1407165789896768052'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '45'
+  Max_Length_Permitted: '90'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: te-IN.notifications.set02.no_date.1
+te-IN.notifications.set02.official_no_date.1:
+  Template_Id: '1407165789897319562'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '96'
+  Max_Length_Permitted: '192'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: te-IN.notifications.set02.official_no_date.1
+te-IN.notifications.set02.official_short.1:
+  Template_Id: '1407165789897889903'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '96'
+  Max_Length_Permitted: '192'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: te-IN.notifications.set02.official_short.1
+te-IN.notifications.set02.official_short_medicines.1:
+  Template_Id: '1407165789898453568'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '108'
+  Max_Length_Permitted: '216'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: te-IN.notifications.set02.official_short_medicines.1
+te-IN.notifications.set02.official_you_must.1:
+  Template_Id: '1407165789899025283'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '105'
+  Max_Length_Permitted: '210'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: te-IN.notifications.set02.official_you_must.1
 te-IN.notifications.set02.professional_request:
   Template_Id: '1407164904149504813'
   Template_Keys:
@@ -2656,6 +4579,42 @@ te-IN.notifications.set02.response:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.set02.response
+te-IN.notifications.set02.short.1:
+  Template_Id: '1407165789899550774'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '45'
+  Max_Length_Permitted: '90'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: te-IN.notifications.set02.short.1
+te-IN.notifications.set02.short_medicines.1:
+  Template_Id: '1407165789900081135'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '57'
+  Max_Length_Permitted: '114'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: te-IN.notifications.set02.short_medicines.1
+te-IN.notifications.set02.you_must.1:
+  Template_Id: '1407165789900692328'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '54'
+  Max_Length_Permitted: '108'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: te-IN.notifications.set02.you_must.1
 te-IN.notifications.set03.alarm:
   Template_Id: '1407164904156940566'
   Template_Keys:
@@ -2728,6 +4687,66 @@ te-IN.notifications.set03.gratitude:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.set03.gratitude
+te-IN.notifications.set03.no_date:
+  Template_Id: '1407165839632056232'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '46'
+  Max_Length_Permitted: '92'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: te-IN.notifications.set03.no_date
+te-IN.notifications.set03.official_no_date:
+  Template_Id: '1407165839634360378'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '97'
+  Max_Length_Permitted: '194'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: te-IN.notifications.set03.official_no_date
+te-IN.notifications.set03.official_short.1:
+  Template_Id: '1407165789902845359'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '134'
+  Max_Length_Permitted: '268'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: te-IN.notifications.set03.official_short.1
+te-IN.notifications.set03.official_short_medicines.1:
+  Template_Id: '1407165789903446830'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '146'
+  Max_Length_Permitted: '292'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: te-IN.notifications.set03.official_short_medicines.1
+te-IN.notifications.set03.official_you_must.1:
+  Template_Id: '1407165789904016116'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '113'
+  Max_Length_Permitted: '226'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: te-IN.notifications.set03.official_you_must.1
 te-IN.notifications.set03.professional_request:
   Template_Id: '1407164904161583943'
   Template_Keys:
@@ -2752,6 +4771,42 @@ te-IN.notifications.set03.response:
   Version: 1
   Is_Latest_Version: true
   Latest_Template_Version: te-IN.notifications.set03.response
+te-IN.notifications.set03.short.1:
+  Template_Id: '1407165789904600684'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '83'
+  Max_Length_Permitted: '166'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: te-IN.notifications.set03.short.1
+te-IN.notifications.set03.short_medicines.1:
+  Template_Id: '1407165789905207180'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '95'
+  Max_Length_Permitted: '190'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: te-IN.notifications.set03.short_medicines.1
+te-IN.notifications.set03.you_must.1:
+  Template_Id: '1407165789905782416'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '62'
+  Max_Length_Permitted: '124'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: te-IN.notifications.set03.you_must.1
 test_message:
   Template_Id: '1407164914557014154'
   Template_Keys: []
@@ -2761,7 +4816,7 @@ test_message:
   Is_Unicode: '1'
   Version: 1
   Is_Latest_Version: false
-  Latest_Template_Version: test_message.2
+  Latest_Template_Version: test_message.8
 test_message.2:
   Template_Id: '1407165001163549514'
   Template_Keys: []
@@ -2770,5 +4825,35 @@ test_message.2:
   Template_Status: '0'
   Is_Unicode: '1'
   Version: 2
+  Is_Latest_Version: false
+  Latest_Template_Version: test_message.8
+test_message.3:
+  Template_Id: '1407165779077012895'
+  Template_Keys: []
+  Non_Variable_Text_Length: '0'
+  Max_Length_Permitted: '0'
+  Template_Status: '0'
+  Is_Unicode: '0'
+  Version: 3
+  Is_Latest_Version: false
+  Latest_Template_Version: test_message.8
+test_message.6:
+  Template_Id: '1407165823035684592'
+  Template_Keys: []
+  Non_Variable_Text_Length: '0'
+  Max_Length_Permitted: '0'
+  Template_Status: '0'
+  Is_Unicode: '1'
+  Version: 6
+  Is_Latest_Version: false
+  Latest_Template_Version: test_message.8
+test_message.8:
+  Template_Id: '1407165838483515295'
+  Template_Keys: []
+  Non_Variable_Text_Length: '0'
+  Max_Length_Permitted: '0'
+  Template_Status: '0'
+  Is_Unicode: '1'
+  Version: 8
   Is_Latest_Version: true
-  Latest_Template_Version: test_message.2
+  Latest_Template_Version: test_message.8
