@@ -46,14 +46,10 @@ en:
       short: "You are late for your BP. Visit %{facility_name} as soon as possible for your BP %{patient_name}."
       short_medicines: "You are late for your BP. Visit %{facility_name} as soon as possible for your BP and medicines %{patient_name}."
       you_must: "You must come as soon as possible for a BP at %{facility_name} %{patient_name}."
-      no_date: "Come today to %{facility_name} for a BP measure %{patient_name}."
+      no_date: "Come today to %{facility_name} for a BP measure, %{patient_name}."
       official_short: "You are late for your BP. Visit %{facility_name} as soon as possible for your BP %{patient_name} . Your doctor wishes for your good health."
       official_short_medicines: "You are late for your BP. Visit %{facility_name} as soon as possible for your BP and medicines %{patient_name}. Your doctor wishes for your good health."
       official_you_must: "You must come as soon as possible for a BP at %{facility_name} %{patient_name}. Your doctor wishes for your good health."
-      official_no_date: "Come today to %{facility_name} for a BP measure %{patient_name}. Your doctor wishes for your good health."
-    set03_basic_repeated:
-      first: "You are late for your BP measure. %{patient_name}, please visit %{facility_name} as soon as possible for a BP measure and medicines."
-      second: "You are late for your BP measure. %{patient_name}, please visit %{facility_name} as soon as possible for a BP measure and medicines."
-      third: "You are late for your BP measure. %{patient_name}, please visit %{facility_name} as soon as possible for a BP measure and medicines."
+      official_no_date: "Come today to %{facility_name} for a BP measure, %{patient_name}. Your doctor wishes for your good health."
     covid:
       medication_reminder: "Dear %{patient_name}: Our staff at %{facility_name} are thinking of you and your heart health during this COVID emergency. It is very important to continue your BP medicines. Collect your free medicine from the nearest sub center or health wellness center. Contact your ANM or ASHA."
