@@ -27,9 +27,5 @@ so-ET:
       emotional_guilt: "Waxaad ka daahday qiyaastaada BP. Marka aan la dawayn, cadaadiska sare ee dhiigu kharash badan waxa uu ku yahay dhammaan bulshadda %{patient_name}, fadlan booqo %{facility_name} sida ug dhakhsaha badan ee suuragalka ah wixii ah qiyaasta iyo dawooyinka BP."
       professional_request: "Waxaad ka daahday qiyaastaada BP. Dhakhtarkaagu waxa uu rabaa inuu ku xasuusiyo in BP gaaga la qiyaaso. %{patient_name}, fadlan booqo%{facility_name} sida ug dhakhsaha badan ee suuragalka ah wixii ah qiyaasta iyo dawooyinka BP."
       response: "Waxaad ka daahday qiyaastaada BP. %{patient_name}, fadlan booqo%{facility_name} sida ug dhakhsaha badan ee suuragalka ah wixii ah qiyaasta iyo dawooyinka BP. Riix linkigan si aad noo ogaysiiso inaad soo xaadiri doonto:"
-    set03_basic_repeated:
-      first: "Waxaad ka daahday qiyaastaada BP %{patient_name}, fadlan booqo%{facility_name}sida ug dhakhsaha badan ee suuragalka ah wixii ah qiyaasta iyo dawooyinka BP."
-      second: "Waxaad ka daahday qiyaastaada BP %{patient_name}, fadlan booqo%{facility_name}sida ug dhakhsaha badan ee suuragalka ah wixii ah qiyaasta iyo dawooyinka BP."
-      third: "Waxaad ka daahday qiyaastaada BP %{patient_name}, fadlan booqo%{facility_name}sida ug dhakhsaha badan ee suuragalka ah wixii ah qiyaasta iyo dawooyinka BP."
     covid:
       medication_reminder: "Gacaliye %{patient_name}: Shaqaalahayaga jooga xaga %{facility_name} way kaa fekeriyaan adiga iyo caafimaadkaaga wadnaha muddada gurmadkan COVID. Aad ayay muhiim u tahay in la sii wado dawooyinkaaga BP. Ka qaado dawooyinkaaga blaashka ah xarunta hoose ee ugu dhow ama xarunta fayo qabka caafimaadkaaga. La xidhiidh ANM kaaga ama ASHA."
