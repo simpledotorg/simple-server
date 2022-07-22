@@ -7,6 +7,8 @@ RSpec.describe BsnlSmsStatusJob, type: :job do
       allow(ENV).to receive(:[]).with("BSNL_IHCI_HEADER").and_return("ABCDEF")
       allow(ENV).to receive(:[]).with("BSNL_IHCI_ENTITY_ID").and_return("123")
       Configuration.create(name: "bsnl_sms_jwt", value: "a jwt token")
+      stub_request(:post, "https://bulksms.bsnl.in:5010/api/Message_Status_Report")
+        .to_return(body: {"Message_Status" => "A status"}.to_json)
 
       described_class.perform_async("non-existent-message-id")
       expect { described_class.drain }.to raise_error(ActiveRecord::RecordNotFound)
