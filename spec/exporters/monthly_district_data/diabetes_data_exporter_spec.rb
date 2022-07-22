@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe MonthlyDistrictData::DiabetesDataExporter do c
+describe MonthlyDistrictData::DiabetesDataExporter do
   around do |example|
     # This is in the style of ReportingHelpers::freeze_time_for_reporting_specs.
     # Since FacilityAppointmentScheduledDays only keeps the last 6 months of data, the date cannot be a

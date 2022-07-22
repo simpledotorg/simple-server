@@ -10,8 +10,8 @@ RSpec.describe PatientListDownloadJob, type: :job do
   it "should work for FacilityGroup" do
     facility_group = create(:facility_group)
     facility = create(:facility, facility_group: facility_group)
-    patients = create_list(:patient, 2, assigned_facility: facility)
-    expect(PatientsWithHistoryExporter).to receive(:csv).with(a_collection_containing_exactly(*patients))
+    patient = create(:patient, assigned_facility: facility)
+    expect(PatientsWithHistoryExporter).to receive(:csv).with(a_collection_containing_exactly(patient))
     described_class.perform_async(admin.email, "facility_group", {id: facility_group.id})
     described_class.drain
   end

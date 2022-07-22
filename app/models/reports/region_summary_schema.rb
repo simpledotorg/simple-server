@@ -413,8 +413,8 @@ module Reports
       region_period_cached_query(__method__) do |entry|
         bs_over_200_counts = BloodSugar.blood_sugar_types.keys.map do |blood_sugar_type|
           [blood_sugar_type,
-            diabetes_under_care(:bs_200_to_300, blood_sugar_type)[entry.region.slug][entry.period] +
-              diabetes_under_care(:bs_over_300, blood_sugar_type)[entry.region.slug][entry.period]]
+            adjusted_diabetes_under_care(:bs_200_to_300, blood_sugar_type)[entry.region.slug][entry.period] +
+              adjusted_diabetes_under_care(:bs_over_300, blood_sugar_type)[entry.region.slug][entry.period]]
         end
         rounded_percentages(bs_over_200_counts.to_h)
       end

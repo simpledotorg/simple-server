@@ -1,5 +1,4 @@
 class MonthlyDistrictData::DiabetesDataExporter < MonthlyDistrictData::Exporter
-
   def initialize(region:, period:, medications_dispensation_enabled: false)
     super
   end
