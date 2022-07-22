@@ -29,15 +29,13 @@
   <div class="d-flex fd-column fd-lg-row justify-lg-between mb-24px d-print-none">
     <div class="d-flex order-2 order-lg-1">
       <nav class="nav">
-        <% if current_admin.feature_enabled?(:diabetes_management_reports) %>
+        <% if @region.diabetes_management_enabled? %>
           <%= link_to "Hypertension", url_params.merge(action: "show"), class: "nav-link #{active_action?("show")}" %>
-          <% if @region.diabetes_management_enabled? %>
-            <%= link_to "Diabetes", reports_region_diabetes_path(@region, report_scope: params[:report_scope]), class: "nav-link #{active_action?("diabetes")}" %>
-          <% end %>
         <% else %>
-          <%= link_to "Overview", url_params.merge(action: "show"), class: "nav-link #{active_action?("show")}" %>
-          <%= link_to "Details", url_params.merge(action: "details"), class: "nav-link #{active_action?("details")}" %>
-          <%= link_to "Cohort reports", reports_region_cohort_path(@region, report_scope: params[:report_scope]), class: "nav-link #{active_action?("cohort")}" %>
+          <span class="nav-link">Hypertension report</span>
+        <% end %>
+        <% if @region.diabetes_management_enabled? %>
+          <%= link_to "Diabetes", reports_region_diabetes_path(@region, report_scope: params[:report_scope]), class: "nav-link #{active_action?("diabetes")}" %>
         <% end %>
         <% if @region.facility_region? && current_admin.feature_enabled?(:dashboard_progress_reports) %>
             <%= link_to "Progress", reports_progress_path(@region), :class => "nav-link" %>
@@ -105,7 +103,7 @@
       <% end %>
 
       <div class="ml-8px">
-        <% if current_admin.feature_enabled?(:diabetes_management_reports) && action_name == "diabetes"%>
+        <% if action_name == "diabetes"%>
           <div class="dropdown show mb-24px bs-small mb-lg-0">
             <a class="btn btn-sm dropdown-toggle c-grey-medium bg-white disabled" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <i class="fa fa-arrow-circle-down w-16px ta-center mr-4px c-grey-medium"></i>
