@@ -75,6 +75,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
         cumulative_assigned_patients
         cumulative_registrations
         cumulative_diabetes_registrations
+        cumulative_hypertension_and_diabetes_registrations
         facility_region_slug
         lost_to_follow_up
         diabetes_lost_to_follow_up
@@ -82,6 +83,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
         diabetes_under_care
         monthly_registrations
         monthly_diabetes_registrations
+        monthly_hypertension_and_diabetes_registrations
         month_date
         monthly_overdue_calls
         monthly_follow_ups

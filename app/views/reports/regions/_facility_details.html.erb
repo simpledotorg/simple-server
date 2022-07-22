@@ -63,7 +63,7 @@
           <tr>
             <td class="row-title">
               <%= link_to resource.full_name, admin_user_path(resource, period: @period) %>
-            </td>,
+            </td>
             <td class="ta-right">
               <%= number_or_dash_with_delimiter(sum_registration_counts(@repository, slug: @region.slug, user_id: resource.id, diagnosis: :hypertension)) %>
             </td>

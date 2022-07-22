@@ -17,12 +17,14 @@ module Reports
       cumulative_assigned_patients
       cumulative_registrations
       cumulative_diabetes_registrations
+      cumulative_hypertension_and_diabetes_registrations
       lost_to_follow_up
       diabetes_lost_to_follow_up
       under_care
       diabetes_under_care
       monthly_registrations
       monthly_diabetes_registrations
+      monthly_hypertension_and_diabetes_registrations
       monthly_overdue_calls
       monthly_follow_ups
       monthly_diabetes_follow_ups
