@@ -136,10 +136,12 @@
       <div class="h-320px mr-13px ml-13px pb-4px">
         <canvas id="cumulativeDiabetesRegistrationsTrend"></canvas>
       </div>
+
       <div>
         <div class="p-relative px-20px mb-12px">
           <p class="m-0px c-grey-dark c-print-black">
-            <strong>00</strong> DM-only, <strong class="ml-8px">00</strong> DM+HTN (Coming soon)
+            <strong data-diabetes-only-registrations=""></strong> DM-only,
+            <strong class="ml-8px" data-hypertension-and-diabetes-registrations="">00</strong> DM+HTN
           </p>
         </div>
       </div>
@@ -215,6 +217,23 @@
           </div>
         </div>
       </div>
+
+      <div>
+        <div class="p-relative px-20px mb-12px">
+          <p class="m-0px c-grey-dark c-print-black">
+            <strong>
+              <span data-rbs-ppbs=""></span>
+            </strong> RBS/PPBS, &nbsp;
+            <strong>
+              <span data-fasting=""></span>
+            </strong> Fasting, &nbsp;
+            <strong>
+              <span data-hba1c=""></span>
+            </strong> HbA1c
+          </p>
+        </div>
+      </div>
+
       <div>
       </div>
     </div>

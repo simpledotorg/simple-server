@@ -106,16 +106,15 @@
       <div class="h-320px mr-13px ml-13px pb-4px">
         <canvas id="cumulativeRegistrationsTrend"></canvas>
       </div>
-      <% if current_admin.feature_enabled?(:diabetes_management_reports) %>
-        <% if @region.diabetes_management_enabled? %>
+      <% if @region.diabetes_management_enabled? %>
         <div>
           <div class="p-relative px-20px mb-12px">
             <p class="m-0px c-grey-dark c-print-black">
-              <strong>00</strong> HTN-only, <strong class="ml-8px">00</strong> DM+HTN (Coming soon)
+              <strong data-hypertension-only-registrations=""></strong> HTN-only,
+              <strong class="ml-8px" data-hypertension-and-diabetes-registrations="">00</strong> DM+HTN
             </p>
           </div>
         </div>
-        <% end %>
       <% end %>
     </div>
   </div>
@@ -221,52 +220,41 @@
 
 <%= render "treatment_outcomes_card" %>
 
-<% if !current_admin.feature_enabled?(:diabetes_management_reports) %>
-  <% if @children_data.any? %>
-    <h4 class="mt-5 mb-32px">Compare performance</h4>
-    <%= render "child_data_tables", data: @children_data, localized_region_type: @child_regions.first.localized_region_type %>
-  <% end %>
+<h4 class="mt-5 mb-32px">Details</h4>
+<%= render "reports/regions/patient_breakdown_charts" %>
+
+<% if current_admin.feature_enabled?(:medications_dispensation) %>
+  <h4 class="mt-5 mb-32px">Medications</h4>
+  <%= render "reports/regions/medications_dispensation" %>
 <% end %>
 
-<% if current_admin.feature_enabled?(:diabetes_management_reports) %>
-
-  <h4 class="mt-5 mb-32px">Details</h4>
-  <%= render "reports/regions/patient_breakdown_charts" %>
-
-  <% if current_admin.feature_enabled?(:medications_dispensation) %>
-    <h4 class="mt-5 mb-32px">Medications</h4>
-    <%= render "reports/regions/medications_dispensation" %>
-  <% end %>
-
-  <% if @children_data.any? %>
-    <h4 class="mt-5 mb-32px">Compare performance</h4>
-    <%= render "child_data_tables", data: @children_data, localized_region_type: @child_regions.first.localized_region_type %>
-  <% end %>
-
-  <% if @region.facility_region? %>
-    <h4 class="mt-5 mb-32px">Facility activity</h4>
-    <%= render "facility_details" %>
-  <% else %>
-    <%= render(RegistrationsAndFollowUpsComponent.new(@region,
-      current_admin: current_admin,
-      repository: @details_repository,
-      current_period: @period)) %>
-  <% end %>
-
-  <h4 class="mt-5 mb-32px">Cohort reports</h4>
-
-  <div class="d-lg-flex">
-    <%= render Reports::CohortComponent.new(@cohort_period, @cohort_data) %>
-  </div>
-
-  <% if @region.facility_region? %>
-    <h4 class="mt-5 mb-32px">BP Recording Activity</h4>
-    <%= render "shared/recent_bp_log",
-                blood_pressures: @recent_blood_pressures,
-                display_model: :facility %>
-  <% end %>
+<% if @children_data.any? %>
+  <h4 class="mt-5 mb-32px">Compare performance</h4>
+  <%= render "child_data_tables", data: @children_data, localized_region_type: @child_regions.first.localized_region_type %>
 <% end %>
 
+<% if @region.facility_region? %>
+  <h4 class="mt-5 mb-32px">Facility activity</h4>
+  <%= render "facility_details" %>
+<% else %>
+  <%= render(RegistrationsAndFollowUpsComponent.new(@region,
+    current_admin: current_admin,
+    repository: @details_repository,
+    current_period: @period)) %>
+<% end %>
+
+<h4 class="mt-5 mb-32px">Cohort reports</h4>
+
+<div class="d-lg-flex">
+  <%= render Reports::CohortComponent.new(@cohort_period, @cohort_data) %>
+</div>
+
+<% if @region.facility_region? %>
+  <h4 class="mt-5 mb-32px">BP Recording Activity</h4>
+  <%= render "shared/recent_bp_log",
+              blood_pressures: @recent_blood_pressures,
+              display_model: :facility %>
+<% end %>
 
 <%= render "overview_footnotes" %>
 

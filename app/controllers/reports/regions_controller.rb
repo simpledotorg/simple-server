@@ -77,49 +77,46 @@ class Reports::RegionsController < AdminController
       }
     }
 
-    if current_admin.feature_enabled?(:diabetes_management_reports)
-      # ======================
-      # DETAILS
-      # ======================
-      @details_period = Period.month(Time.current)
-      @details_period_range = Range.new(@details_period.advance(months: -5), @details_period)
-      months = -(Reports::MAX_MONTHS_OF_DATA - 1)
+    # ======================
+    # DETAILS
+    # ======================
+    @details_period = Period.month(Time.current)
+    @details_period_range = Range.new(@details_period.advance(months: -5), @details_period)
+    months = -(Reports::MAX_MONTHS_OF_DATA - 1)
 
-      regions = if @region.facility_region?
-        [@region]
-      else
-        [@region, @region.reportable_children].flatten
-      end
-
-      if current_admin.feature_enabled?(:show_call_results) && @region.state_region?
-        regions.concat(@region.district_regions)
-      end
-
-      @details_repository = Reports::Repository.new(regions, periods: @details_period_range)
-
-      chart_range = (@details_period.advance(months: months)..@details_period)
-      chart_repo = Reports::Repository.new(@region, periods: chart_range)
-      @details_chart_data = {
-        patient_breakdown: PatientBreakdownService.call(region: @region, period: @details_period)[:hypertension],
-        ltfu_trend: ltfu_chart_data(chart_repo, chart_range),
-        **medications_dispensation_data(region: @region, period: @details_period, diagnosis: :hypertension)
-      }
-
-      if @region.facility_region?
-        @recent_blood_pressures = paginate(
-          @region.source.blood_pressures.for_recent_bp_log.includes(:patient, :facility)
-        )
-      end
-
-      # ======================
-      # COHORT REPORTS
-      # ======================
-      @cohort_period = Period.quarter(Time.current)
-      @cohort_data = CohortService.new(region: @region, periods: @cohort_period.downto(5)).call
+    regions = if @region.facility_region?
+      [@region]
+    else
+      [@region, @region.reportable_children].flatten
     end
 
-    @data = @overview_data
-    @data.merge!(@details_chart_data) if current_admin.feature_enabled?(:diabetes_management_reports)
+    if current_admin.feature_enabled?(:show_call_results) && @region.state_region?
+      regions.concat(@region.district_regions)
+    end
+
+    @details_repository = Reports::Repository.new(regions, periods: @details_period_range)
+
+    chart_range = (@details_period.advance(months: months)..@details_period)
+    chart_repo = Reports::Repository.new(@region, periods: chart_range)
+    @details_chart_data = {
+      patient_breakdown: PatientBreakdownService.call(region: @region, period: @details_period)[:hypertension],
+      ltfu_trend: ltfu_chart_data(chart_repo, chart_range),
+      **medications_dispensation_data(region: @region, period: @details_period, diagnosis: :hypertension)
+    }
+
+    if @region.facility_region?
+      @recent_blood_pressures = paginate(
+        @region.source.blood_pressures.for_recent_bp_log.includes(:patient, :facility)
+      )
+    end
+
+    # ======================
+    # COHORT REPORTS
+    # ======================
+    @cohort_period = Period.quarter(Time.current)
+    @cohort_data = CohortService.new(region: @region, periods: @cohort_period.downto(5)).call
+
+    @data = @overview_data.merge(@details_chart_data)
 
     respond_to do |format|
       format.html
@@ -170,10 +167,6 @@ class Reports::RegionsController < AdminController
   end
 
   def diabetes
-    unless current_admin.feature_enabled?(:diabetes_management_reports) && @region.diabetes_management_enabled?
-      raise ActionController::RoutingError.new("Not Found")
-    end
-
     start_period = @period.advance(months: -(Reports::MAX_MONTHS_OF_DATA - 1))
     range = Range.new(start_period, @period)
     @repository = Reports::Repository.new(@region, periods: range)
