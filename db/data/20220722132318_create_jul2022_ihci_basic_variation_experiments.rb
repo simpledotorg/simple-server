@@ -1,6 +1,6 @@
 class CreateJul2022IhciBasicVariationExperiments < ActiveRecord::Migration[5.2]
   REMINDERS = %w[short short_medicines you_must no_date
-                 official_short official_short_medicines official_you_must official_no_date]
+    official_short official_short_medicines official_you_must official_no_date]
 
   def up
     return unless CountryConfig.current_country?("India") && SimpleServer.env.production?

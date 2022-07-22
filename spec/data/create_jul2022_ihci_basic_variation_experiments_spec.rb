@@ -16,7 +16,7 @@ RSpec.describe CreateJul2022IhciBasicVariationExperiments do
     expect(experiment.end_time.to_date).to eq(Date.parse("Aug 22, 2022").to_date)
     expect(experiment.max_patients_per_day).to eq(20000)
 
-    expect(experiment.reminder_templates.count).to eq(8*2)
+    expect(experiment.reminder_templates.count).to eq(8 * 2)
     expect(experiment.reminder_templates.where("remind_on_in_days = 0").pluck(:message)).to all start_with("notifications.set02")
     expect(experiment.reminder_templates.where("remind_on_in_days > 0").pluck(:message)).to all start_with("notifications.set03")
   end
@@ -35,7 +35,7 @@ RSpec.describe CreateJul2022IhciBasicVariationExperiments do
     expect(experiment.end_time.to_date).to eq(Date.parse("Aug 22, 2022").to_date)
     expect(experiment.max_patients_per_day).to eq(20000)
 
-    expect(experiment.reminder_templates.count).to eq(8*2)
+    expect(experiment.reminder_templates.count).to eq(8 * 2)
     expect(experiment.reminder_templates.where("remind_on_in_days = 0").pluck(:message)).to all start_with("notifications.set02")
     expect(experiment.reminder_templates.where("remind_on_in_days > 0").pluck(:message)).to all start_with("notifications.set03")
   end
