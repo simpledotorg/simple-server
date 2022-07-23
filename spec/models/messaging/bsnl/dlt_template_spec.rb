@@ -56,12 +56,12 @@ RSpec.describe Messaging::Bsnl::DltTemplate do
     it "finds the name of the latest version of a template if only versioned templates are present" do
       stub_const("Messaging::Bsnl::DltTemplate::BSNL_TEMPLATES", {
         "en.a.template.name.1" => {"Template_Id" => "a template id",
-                                 "Template_Keys" => %w[key_1 key_2],
-                                 "Non_Variable_Text_Length" => "10",
-                                 "Max_Length_Permitted" => "20",
-                                 "Version" => 1,
-                                 "Is_Latest_Version" => true,
-                                 "Latest_Template_Version" => "en.a.template.name.3"}
+                                   "Template_Keys" => %w[key_1 key_2],
+                                   "Non_Variable_Text_Length" => "10",
+                                   "Max_Length_Permitted" => "20",
+                                   "Version" => 1,
+                                   "Is_Latest_Version" => true,
+                                   "Latest_Template_Version" => "en.a.template.name.3"}
       })
 
       expect(described_class.latest_name_of("en.a.template.name")).to eq("en.a.template.name.3")
