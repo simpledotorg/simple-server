@@ -13,7 +13,6 @@ This is a how-to on interacting with the BSNL and DLT dashboards and maintaining
 - Upload the notification template to the DLT dashboard. The name should follow the format: `locale.locale_key`. Some examples:
   - `en.notifications.set01.basic`
   - `hi-IN.notifications.set03.basic`
-  - `ti-ET.notifications.set03.basic_repeated.first`
 
   The locale name needs to be hyphenated (`hi-IN` and not `hi_IN`). This format is used to associate the templates on BSNL to locale keys so it's an important step.
 - The template should show up on the BSNL dashboard in a few hours. You will need to name the variables
@@ -30,7 +29,14 @@ After the new template has been added to the BSNL dashboard, we need to pull in 
 ```
 BSNL_IHCI_ENTITY_ID=140xxxx
 BSNL_IHCI_HEADER=IHCxxx
-BSNL_JWT_TOKEN=eyJhxxxx
+```
+- Get the JWT token from india production with
+```
+Configuration.fetch("bsnl_sms_jwt")
+```
+- Create a configuration var locally with this JWT token.
+```
+Configuration.create(name: "bsnl_sms_jwt", value: "eyJhxxxx")
 ```
 - Run `bundle exec rake bsnl:get_template_details`.
 - This should pull the latest configuration from BSNL and save it to `config/data/bsnl_templates.yml`. This will also output a summary of any actions to be taken, go through them carefully.
