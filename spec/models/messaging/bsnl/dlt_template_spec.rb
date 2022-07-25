@@ -34,7 +34,7 @@ RSpec.describe Messaging::Bsnl::DltTemplate do
     stub_template(existing_template_name)
     missing_template_name = "en.a.missing.template"
 
-    expect { described_class.new(missing_template_name) }.to raise_error(Messaging::Bsnl::Error)
+    expect { described_class.new(missing_template_name) }.to raise_error(Messaging::Bsnl::TemplateError)
   end
 
   describe ".latest_name_of" do
@@ -115,7 +115,7 @@ RSpec.describe Messaging::Bsnl::DltTemplate do
       template = described_class.new(template_name)
 
       expect { template.check_variables_presence({key_1: "Value 1"}) }
-        .to raise_error(an_instance_of(Messaging::Bsnl::Error)) do |error|
+        .to raise_error(an_instance_of(Messaging::Bsnl::MissingVariablesError)) do |error|
         expect(error.reason).to be_nil
         expect(/Variables key_2 not provided to #{template_name}/).to match(error.message)
       end
@@ -126,7 +126,7 @@ RSpec.describe Messaging::Bsnl::DltTemplate do
       stub_template(template_name)
       template = described_class.new(template_name)
 
-      expect { template.check_variables_presence({key_1: "Value 1", key_2: "Value 2"}) }.not_to raise_error(Messaging::Bsnl::Error)
+      expect { template.check_variables_presence({key_1: "Value 1", key_2: "Value 2"}) }.not_to raise_error(Messaging::Bsnl::MissingVariablesError)
     end
   end
 

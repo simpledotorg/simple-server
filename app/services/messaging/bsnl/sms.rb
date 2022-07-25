@@ -43,7 +43,7 @@ class Messaging::Bsnl::Sms < Messaging::Channel
   def raise_api_errors(response, template)
     error = response["Error"]
     if error.present?
-      raise Messaging::Bsnl::Error.new("#{error} Error sending SMS for #{template.name}")
+      raise Messaging::Bsnl::ApiError.new("#{error} Error sending SMS for #{template.name}")
     end
   end
 
