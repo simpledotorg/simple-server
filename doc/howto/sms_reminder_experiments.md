@@ -14,19 +14,23 @@ To start an SMS experiment you'll need to gather the following information:
   `reminder_templates` of each group.
   For current patients, the `remind_on` of reminder templates is set relative to the date
   they are expected to return. For stale patients, it's the date of enrollment.
-- If your experiment has new translations you'll need to get them [approved by DLT](doc/howto/bsnl/sms_reminders.md) and make sure they're present in
+- If the experiment has new messages and translations you'll need to get them [approved by DLT](doc/howto/bsnl/sms_reminders.md) and make sure they're present in
   [config](../config/data/bsnl_templates.yml).
 
 ## Setup
 - Enable the `experiment` and `notifications` flipper flags.
 - Create a data migration in the style of [this data migration](db/data/20220412130957_create_apr2022_ihci_experiment.rb).
-It should setup the `experiment`, it's `treatment_groups` and it's `reminder_templates`.
+It should setup the `experiment`, its `treatment_groups` and `reminder_templates`.
 - Put a guard clause to make sure the migration runs only in the env you want. Write a spec for the migration.
 
-<TODO>
-caution about overlap that causes enrollments to drop
-revisit calculation shared with Dr Reena
-</TODO>
+Note about consecutive experiments:
+
+If an experiment sends notifications in advance, it will enroll patients from the future.
+This can mean for an experiment starting right after, all the patients in the second experiment might've already been enrolled
+in the first one. To avoid this, make sure there's at least a gap of these many days (only if this value is positive)
+```
+ earliest_remind_on of 2nd experiment - earliest_remind_on of 1st experiment
+```
 
 ## Running the experiment
 
