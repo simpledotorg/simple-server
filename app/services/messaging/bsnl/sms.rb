@@ -4,7 +4,7 @@ class Messaging::Bsnl::Sms < Messaging::Channel
   end
 
   def self.get_message_statuses
-    BsnlDeliveryDetail.in_progress.find_each do |detailable|
+    BsnlDeliveryDetail.where("created_at > ?", 2.days.ago).in_progress.find_each do |detailable|
       BsnlSmsStatusJob.perform_async(detailable.message_id)
     end
   end
@@ -43,7 +43,7 @@ class Messaging::Bsnl::Sms < Messaging::Channel
   def raise_api_errors(response, template)
     error = response["Error"]
     if error.present?
-      raise Messaging::Bsnl::Error.new("#{error} Error sending SMS for #{template.name}")
+      raise Messaging::Bsnl::ApiError.new("#{error} Error sending SMS for #{template.name}")
     end
   end
 

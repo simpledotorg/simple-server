@@ -3,7 +3,7 @@ require "tasks/scripts/refresh_bsnl_sms_jwt"
 require "tasks/scripts/get_bsnl_template_details"
 require "tasks/scripts/get_bsnl_account_balance"
 
-# Usage instructions at: doc/howto/manage_bsnl_sms_reminders.md
+# Usage instructions at: doc/howto/bsnl/sms_reminders.md
 namespace :bsnl do
   desc "Fetch a fresh JWT for BSNL Bulk SMS and overwrite the old token"
   task refresh_sms_jwt: :environment do

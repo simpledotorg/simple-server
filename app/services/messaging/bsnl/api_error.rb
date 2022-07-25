@@ -1,4 +1,4 @@
-class Messaging::Bsnl::Error < Messaging::Error
+class Messaging::Bsnl::ApiError < Messaging::Error
   ERROR_CODE_REASONS = {/Invalid Mobile Number/ => :invalid_phone_number}
 
   def initialize(message)
