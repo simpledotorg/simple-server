@@ -39,9 +39,43 @@ class GetBsnlTemplateDetails
     templates_pending_naming = template_details.select { |template_detail| template_detail["Template_Status"] == "0" }
 
     if templates_pending_naming.any?
-      error "⚠️  These templates need to be named on the BSNL dashboard:"
+      error "⚠️  These templates need to be named on bulksms.bsnl.in:"
       puts_list templates_pending_naming.map { |template_detail| template_detail["Template_Name"] }
     end
+  end
+
+  def notification_strings_summary
+    uploaded_templates = []
+    remaining_templates = []
+
+    summary = locale_keys_by_language.map do |language, locale_keys|
+      uploaded_for_language = 0
+      locale_keys.each do |locale_key|
+        if template_names.include?(locale_key)
+          uploaded_templates << locale_key
+          uploaded_for_language += 1
+        else
+          remaining_templates << locale_key
+        end
+      end
+
+      {language: language,
+       uploaded_count: uploaded_for_language,
+       total_count: locale_keys.count}
+    end
+
+    info "✔ Found #{uploaded_templates.count}/#{locale_keys_by_language.values.flatten.count} templates on bulksms.bsnl.in:"
+    puts_list(summary.sort_by { |item| item[:uploaded_count] }.reverse.map do |item|
+      "#{item[:uploaded_count]}/#{item[:total_count]} uploaded from #{item[:language]}"
+    end)
+
+    info "✔ These messages have been uploaded to bulksms.bsnl.in:"
+    puts_list uploaded_templates.sort
+
+    error "˟ These messages have not been uploaded to bulksms.bsnl.in:"
+    puts_list remaining_templates.sort
+
+    show_templates_pending_naming
   end
 
   private
@@ -76,7 +110,7 @@ class GetBsnlTemplateDetails
       version = template_detail["Version"]
       name_without_version = Messaging::Bsnl::DltTemplate.drop_version_number(template_name)
 
-      if version > latest_versions[name_without_version]
+      if version >= latest_versions[name_without_version]
         latest_versions[name_without_version] = version
         latest_version_names[name_without_version] = template_name
       end
@@ -89,6 +123,12 @@ class GetBsnlTemplateDetails
           "Is_Latest_Version" => (template_detail["Version"] == latest_versions[name_without_version]),
           "Latest_Template_Version" => latest_version_names[name_without_version]
         )]
+    end
+  end
+
+  def locale_keys_by_language
+    Dir.glob("config/locales/notifications/*").to_h do |file_name|
+      [file_name, flatten_translations(nil, YAML.safe_load(File.open(file_name)), nil, false).keys.map(&:to_s)]
     end
   end
 end
