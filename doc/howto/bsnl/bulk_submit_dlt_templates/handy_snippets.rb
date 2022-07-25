@@ -10,8 +10,8 @@ class NotificationStringsForKatalon
       flatten_translations(nil, YAML.safe_load(File.open(file_name)), nil, false)
     end
 
-    all_strings.flat_map(&:to_a).to_h.sort_by(&:first).
-      map do |k, v|
+    all_strings.flat_map(&:to_a).to_h.sort_by(&:first)
+      .map do |k, v|
       {
         "name" => k.to_s,
         "message" => v.gsub("%{patient_name}", "{#var#}").gsub("%{facility_name}", "{#var#}").gsub("%{appointment_date}", "{#var#}")
@@ -44,4 +44,3 @@ class NameUnnamedTemplatesOnBulkSms
     end
   end
 end
-
