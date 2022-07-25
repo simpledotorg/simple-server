@@ -110,7 +110,7 @@ class GetBsnlTemplateDetails
       version = template_detail["Version"]
       name_without_version = Messaging::Bsnl::DltTemplate.drop_version_number(template_name)
 
-      if version > latest_versions[name_without_version]
+      if version >= latest_versions[name_without_version]
         latest_versions[name_without_version] = version
         latest_version_names[name_without_version] = template_name
       end

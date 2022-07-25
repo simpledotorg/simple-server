@@ -3207,7 +3207,7 @@ pa-Guru-IN.notifications.set01.short_medicines:
   Is_Unicode: '1'
   Version: 1
   Is_Latest_Version: true
-  Latest_Template_Version: pa-Guru-IN.notifications.set01.short_medicines
+  Latest_Template_Version: pa-Guru-IN.notifications.set01.short_medicines.1
 pa-Guru-IN.notifications.set01.short_medicines.1:
   Template_Id: '1407165849208789223'
   Template_Keys:
@@ -3220,7 +3220,7 @@ pa-Guru-IN.notifications.set01.short_medicines.1:
   Is_Unicode: '1'
   Version: 1
   Is_Latest_Version: true
-  Latest_Template_Version: pa-Guru-IN.notifications.set01.short_medicines
+  Latest_Template_Version: pa-Guru-IN.notifications.set01.short_medicines.1
 pa-Guru-IN.notifications.set01.you_must.1:
   Template_Id: '1407165789871302229'
   Template_Keys:
