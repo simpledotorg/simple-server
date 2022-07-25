@@ -60,8 +60,8 @@ We have a script to help with it.
 ```
 BSNL_IHCI_ENTITY_ID=140xxxx
 BSNL_IHCI_HEADER=IHCxxx
-BSNL_JWT_TOKEN=eyJhxxxx
 ```
+- Create a `Configuration` object with the key as `bsnl_sms_jwt` and copy the value from production. 
 - Run `bundle exec rake bsnl:get_template_details`.
 - This will pull the latest configuration from BSNL and save it to `config/data/bsnl_templates.yml`. This will also output a summary of any actions to be taken, go through them carefully.
 - Commit and push changes in this file (if there are any).
