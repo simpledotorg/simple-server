@@ -105,7 +105,7 @@ class PatientsWithHistoryExporter
 
   def measurement_headers
     [
-      26.times.map { nil }, # Non-measurement related headers
+      25.times.map { nil }, # Non-measurement related headers
       (1..display_blood_pressures).map { |i| ["Blood Pressure #{i}"] + (blood_pressure_headers(0).length - 1).times.map { nil } },
       (1..display_blood_sugars).map { |i| ["Blood Sugar #{i}"] + (blood_sugar_headers(0).length - 1).times.map { nil } }
     ].flatten

@@ -115,7 +115,7 @@ describe MonthlyStateData::DiabetesDataExporter do
 
     describe "#state_row" do
       it "provides accurate numbers for the state" do
-        expected_state_row = ["All districts", @state.name, nil, nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 0, 1, 0, 0, 0, 1, nil, nil, nil]
+        expected_state_row = ["All districts", @state.name, nil, nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 2, 1, 0, 0, 0, 1, nil, nil, nil]
         state_row = exporter.state_row
         expect(state_row.count).to eq(30)
         expect(state_row).to eq(expected_state_row)
@@ -124,7 +124,7 @@ describe MonthlyStateData::DiabetesDataExporter do
 
     describe "#district_rows" do
       it "provides accurate numbers for individual districts" do
-        expected_district_rows = [[1, @state.name.to_s, @district.name.to_s, nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 0, 1, 0, 0, 0, 1, nil, nil, nil]]
+        expected_district_rows = [[1, @state.name.to_s, @district.name.to_s, nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 2, 1, 0, 0, 0, 1, nil, nil, nil]]
         district_rows = exporter.district_rows
         expect(district_rows[0].count).to eq(30)
         expect(district_rows).to eq(expected_district_rows)
@@ -239,7 +239,7 @@ describe MonthlyStateData::DiabetesDataExporter do
 
     describe "#state_row" do
       it "provides accurate numbers for the state" do
-        expected_state_row = ["All districts", @state.name, nil, nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 2, 0, 0, 0, nil, nil, nil]
+        expected_state_row = ["All districts", @state.name, nil, nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 2, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 2, 0, 0, 0, nil, nil, nil]
         state_row = exporter.state_row
         expect(state_row.count).to eq(42)
         expect(state_row).to eq(expected_state_row)
@@ -248,7 +248,7 @@ describe MonthlyStateData::DiabetesDataExporter do
 
     describe "#district_rows" do
       it "provides accurate numbers for individual facilities" do
-        expected_district_rows = [[1, @state.name.to_s, @district.name.to_s, nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 2, 0, 0, 0, nil, nil, nil]]
+        expected_district_rows = [[1, @state.name.to_s, @district.name.to_s, nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 2, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 2, 0, 0, 0, nil, nil, nil]]
         district_rows = exporter.district_rows
         expect(district_rows[0].count).to eq(42)
         expect(district_rows).to eq(expected_district_rows)

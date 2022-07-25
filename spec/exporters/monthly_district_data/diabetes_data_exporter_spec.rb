@@ -120,7 +120,7 @@ describe MonthlyDistrictData::DiabetesDataExporter do
 
     describe "#district_row" do
       it "returns district row" do
-        expected_district_row = ["All facilities", nil, nil, nil, "All", nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 0, 1, 0, 0, 0, 1, nil, nil, nil]
+        expected_district_row = ["All facilities", nil, nil, nil, "All", nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 2, 1, 0, 0, 0, 1, nil, nil, nil]
         district_row = exporter.district_row
         expect(district_row.count).to eq(32)
         expect(district_row).to eq(expected_district_row)
@@ -129,7 +129,7 @@ describe MonthlyDistrictData::DiabetesDataExporter do
 
     describe "#facility_size_rows" do
       it "provides accurate numbers for facility sizes" do
-        expected_facility_size_rows = [["Community facilities", nil, nil, nil, "Community", nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 0, 1, 0, 0, 0, 1, nil, nil, nil]]
+        expected_facility_size_rows = [["Community facilities", nil, nil, nil, "Community", nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 2, 1, 0, 0, 0, 1, nil, nil, nil]]
         facility_size_rows = exporter.facility_size_rows
         expect(facility_size_rows.count).to eq(1)
         expect(facility_size_rows.first&.count).to eq(32)
@@ -139,8 +139,8 @@ describe MonthlyDistrictData::DiabetesDataExporter do
 
     describe "#facility_rows" do
       it "provides accurate numbers for individual facilities" do
-        expected_facility_rows = [[1, "Block 1 - alphabetically first", "Facility 1", "PHC", "Community", nil, 2, 2, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 1, nil, nil, nil],
-          [2, "Block 2 - alphabetically second", "Facility 2", "PHC", "Community", nil, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 2, 0, 1, 0, 0, 0, 0, nil, nil, nil]]
+        expected_facility_rows = [[1, "Block 1 - alphabetically first", "Facility 1", "PHC", "Community", nil, 2, 2, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 2, 1, 0, 0, 0, 0, 1, nil, nil, nil],
+          [2, "Block 2 - alphabetically second", "Facility 2", "PHC", "Community", nil, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 2, 1, 1, 0, 0, 0, 0, nil, nil, nil]]
         facility_rows = exporter.facility_rows
         expect(facility_rows.count).to eq(2)
         expect(facility_rows.first&.count).to eq(32)
@@ -263,7 +263,7 @@ describe MonthlyDistrictData::DiabetesDataExporter do
 
     describe "#district_row" do
       it "returns district row" do
-        expected_district_row = ["All facilities", nil, nil, nil, "All", nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 2, 0, 0, 0, nil, nil, nil]
+        expected_district_row = ["All facilities", nil, nil, nil, "All", nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 2, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 2, 0, 0, 0, nil, nil, nil]
         district_row = exporter.district_row
         expect(district_row.count).to eq(44)
         expect(district_row).to eq(expected_district_row)
@@ -272,7 +272,7 @@ describe MonthlyDistrictData::DiabetesDataExporter do
 
     describe "#facility_size_rows" do
       it "provides accurate numbers for facility sizes" do
-        expected_facility_size_rows = [["Community facilities", nil, nil, nil, "Community", nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 2, 0, 0, 0, nil, nil, nil]]
+        expected_facility_size_rows = [["Community facilities", nil, nil, nil, "Community", nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 2, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 2, 0, 0, 0, nil, nil, nil]]
         facility_size_rows = exporter.facility_size_rows
         expect(facility_size_rows.count).to eq(1)
         expect(facility_size_rows.first&.count).to eq(44)
@@ -282,8 +282,8 @@ describe MonthlyDistrictData::DiabetesDataExporter do
 
     describe "#facility_rows" do
       it "provides accurate numbers for individual facilities" do
-        expected_facility_rows = [[1, "Block 1 - alphabetically first", "Facility 1", "PHC", "Community", nil, 2, 2, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, nil, nil, nil],
-          [2, "Block 2 - alphabetically second", "Facility 2", "PHC", "Community", nil, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, nil, nil, nil]]
+        expected_facility_rows = [[1, "Block 1 - alphabetically first", "Facility 1", "PHC", "Community", nil, 2, 2, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 2, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, nil, nil, nil],
+          [2, "Block 2 - alphabetically second", "Facility 2", "PHC", "Community", nil, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, nil, nil, nil]]
         facility_rows = exporter.facility_rows
         expect(facility_rows.count).to eq(2)
         expect(facility_rows.first&.count).to eq(44)

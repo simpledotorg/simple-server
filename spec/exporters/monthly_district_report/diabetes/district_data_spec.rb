@@ -44,15 +44,14 @@ describe MonthlyDistrictReport::Diabetes::DistrictData do
     it "returns a hash with the required keys and values" do
       district = setup[:district_region]
       facility_1 = district[:facility_1]
-      create(:facility, name: "Test Facility 3", facility_group: district[:region].source, facility_size: "medium", zone: "Test Block 3")
-      create(:facility, name: "Test Facility 4", facility_group: district[:region].source, facility_size: "large", zone: "Test Block 4")
+      create(:facility, name: "Test Facility 3", facility_group: district[:region].source, facility_size: "medium", zone: "Test Block 3", enable_diabetes_management: true)
+      create(:facility, name: "Test Facility 4", facility_group: district[:region].source, facility_size: "large", zone: "Test Block 4", enable_diabetes_management: true)
       month = Period.current
       periods = Range.new(month.advance(months: -5), month)
       user = create(:user, registration_facility: facility_1)
 
       periods.each do |period|
         district[:region].facilities.each do |facility|
-          facility.update(enable_diabetes_management: true)
           create(:patient, :diabetes, registration_facility: facility, registration_user: user, recorded_at: period.value)
           patient = Patient.where(registration_facility: facility).order(:recorded_at).first
           if patient
