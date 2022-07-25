@@ -69,7 +69,7 @@ module Reports
     end
 
     alias_method :adjusted_patients, :adjusted_patients_without_ltfu
-    alias_method :adjusted_diabetes_patients, :adjusted_patients_without_ltfu
+    alias_method :adjusted_diabetes_patients, :adjusted_diabetes_patients_without_ltfu
 
     # Return the running total of cumulative assigned patient counts. Note that this *includes* LTFU.
     memoize def cumulative_assigned_patients

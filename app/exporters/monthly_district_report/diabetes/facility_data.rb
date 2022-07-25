@@ -22,7 +22,7 @@ class MonthlyDistrictReport::Diabetes::FacilityData
         "Diabetes patients under care" => repo.adjusted_diabetes_patients[facility_region.slug][month],
         "Diabetes patients registered this month" => repo.monthly_diabetes_registrations[facility_region.slug][month],
         "Blood sugar below 200 % of all patients registered before 3 months" => percentage_string(repo.bs_below_200_rates[facility_region.slug][month]),
-        "Blood sugar between 200 and 300 % of all patients registered before 3 months" => percentage_string(repo.bs_below_200_rates[facility_region.slug][month]),
+        "Blood sugar between 200 and 300 % of all patients registered before 3 months" => percentage_string(repo.bs_200_to_300_rates[facility_region.slug][month]),
         "Blood sugar over 300 % of all patients registered before 3 months" => percentage_string(repo.bs_over_300_rates[facility_region.slug][month])
       }
     end
