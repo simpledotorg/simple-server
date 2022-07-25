@@ -29,8 +29,8 @@ An experiment that sends notifications in advance enrolls patients who have appo
 For an experiment starting right after, this can mean that all the patients might've already been enrolled
 in the first one. Make sure there's at least a gap of these many days (only if this value is positive) to avoid this
 ```ruby
- experiment_1 = Experimentation::Experiment.find("<old experiment's id>")
- experiment_2 = Experimentation::Experiment.find("<new experiment's id>")
+ experiment_1 = Experimentation::Experiment.find("old experiment's id")
+ experiment_2 = Experimentation::Experiment.find("new experiment's id")
  experiment_1.earliest_remind_on - experiment_2.earliest_remind_on
 ```
 
@@ -62,7 +62,7 @@ so it's viewable by other people.
 ### Cancelling an experiment
  
 ```ruby
-Experimentation::NotificationsExperiment.find("<experiment id>").cancel
+Experimentation::NotificationsExperiment.find("experiment id").cancel
 ```
 
 ## In the long run
