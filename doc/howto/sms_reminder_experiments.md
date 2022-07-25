@@ -12,7 +12,6 @@ To start an SMS experiment you'll need to gather the following information:
     - You will probably also need a `control` group as a baseline in addition to all the groups that will receive messages.
 - The content and frequency of messages in each treatment group. This will be captured in the
   `reminder_templates` of each group.
-  
   For current patients, the `remind_on` of reminder templates is set relative to the date
   they are expected to return. For stale patients, it's the date of enrollment.
 - If your experiment has new translations you'll need to get them [approved by DLT](doc/howto/bsnl/sms_reminders.md) and make sure they're present in
@@ -39,8 +38,11 @@ When an experiment starts, you should
   Make sure to dig in what's up by looking at sentry logs.
 - Check on BSNL bulk balance every once in a while (`rake:get_account_balance`) and recharge. 
 
-- Note that depending on the cadence, notifications may go out for a few days after the experiment has "ended".
+
+Notes:
+- Depending on the cadence, notifications may go out for a few days after the experiment has "ended".
 - Visits are monitored until 15 days from the last enrollment date (set in `MONITORING_BUFFER`) and
+
 ### Important links
 
 - [IHCI metabase dashboard](https://metabase.simple.org/dashboard/54-notifications-experiment-generic-dashboard)
