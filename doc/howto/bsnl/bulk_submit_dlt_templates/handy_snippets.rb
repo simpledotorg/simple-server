@@ -22,6 +22,8 @@ end
 
 class NameUnnamedTemplatesOnBulkSms
   def self.call
+    # Make sure to run rake bsnl:get_template_details before
+    # and after this.
     include I18n::Backend::Flatten
 
     all_strings = Dir.glob("config/locales/notifications/*").map do |file_name|

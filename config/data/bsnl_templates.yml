@@ -3198,10 +3198,25 @@ pa-Guru-IN.notifications.set01.short.1:
   Latest_Template_Version: pa-Guru-IN.notifications.set01.short.1
 pa-Guru-IN.notifications.set01.short_medicines:
   Template_Id: '1407165839637175123'
-  Template_Keys: []
-  Non_Variable_Text_Length: '0'
-  Max_Length_Permitted: '0'
-  Template_Status: '0'
+  Template_Keys:
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '58'
+  Max_Length_Permitted: '116'
+  Template_Status: '1'
+  Is_Unicode: '1'
+  Version: 1
+  Is_Latest_Version: true
+  Latest_Template_Version: pa-Guru-IN.notifications.set01.short_medicines
+pa-Guru-IN.notifications.set01.short_medicines.1:
+  Template_Id: '1407165849208789223'
+  Template_Keys:
+  - appointment_date
+  - facility_name
+  - patient_name
+  Non_Variable_Text_Length: '39'
+  Max_Length_Permitted: '78'
+  Template_Status: '1'
   Is_Unicode: '1'
   Version: 1
   Is_Latest_Version: true
