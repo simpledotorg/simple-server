@@ -1,35 +1,36 @@
 require "rails_helper"
 
-def setup
-  organization = FactoryBot.create(:organization)
-  facility_group = create(:facility_group, name: "Test District", organization: organization)
-  facility1 = create(:facility, name: "Facility 1", block: "Block 1 - alphabetically first", facility_group: facility_group, facility_size: "community", enable_diabetes_management: true)
-  facility2 = create(:facility, name: "Facility 2", block: "Block 2 - alphabetically second", facility_group: facility_group, facility_size: "small", enable_diabetes_management: true)
-  create(:patient, :diabetes, recorded_at: 3.months.ago, assigned_facility: facility1, registration_facility: facility1)
-
-  follow_up_patient = create(:patient, :diabetes, recorded_at: 3.months.ago, assigned_facility: facility2, registration_facility: facility2)
-  create(:appointment, creation_facility: facility2, scheduled_date: 2.month.ago, patient: follow_up_patient)
-  create(:blood_sugar_with_encounter, :bs_below_200, facility: facility2, patient: follow_up_patient, recorded_at: 2.months.ago)
-
-  create(:patient, :without_diabetes, recorded_at: 2.months.ago, assigned_facility: facility1, registration_facility: facility1)
-
-  create(:patient, :diabetes, recorded_at: 2.years.ago, assigned_facility: facility1, registration_facility: facility1)
-
-  # medications_dispensed_patients
-  create(:appointment, facility: facility1, scheduled_date: 10.days.from_now, device_created_at: Date.today, patient: create(:patient, :diabetes, recorded_at: 4.months.ago, registration_facility: facility1))
-  create(:appointment, facility: facility2, scheduled_date: 10.days.from_now, device_created_at: Date.today, patient: create(:patient, :diabetes, recorded_at: 4.months.ago, registration_facility: facility2))
-  create(:appointment, facility: facility2, scheduled_date: Date.today, device_created_at: 32.days.ago, patient: create(:patient, :diabetes, recorded_at: 4.months.ago, registration_facility: facility2))
-  create(:appointment, facility: facility1, scheduled_date: Date.today, device_created_at: 63.days.ago, patient: create(:patient, :diabetes, recorded_at: 4.months.ago, registration_facility: facility1))
-
-  RefreshReportingViews.refresh_v2
-
-  {district_region:
-      {region: facility_group.region,
-       facility_1: facility1,
-       facility_2: facility2}}
-end
-
 describe MonthlyDistrictReport::Diabetes::DistrictData do
+  def setup_district_data
+    puts "In diabetes", self.class
+    organization = FactoryBot.create(:organization)
+    facility_group = create(:facility_group, name: "Test District", organization: organization)
+    facility1 = create(:facility, name: "Facility 1", block: "Block 1 - alphabetically first", facility_group: facility_group, facility_size: "community", enable_diabetes_management: true)
+    facility2 = create(:facility, name: "Facility 2", block: "Block 2 - alphabetically second", facility_group: facility_group, facility_size: "small", enable_diabetes_management: true)
+    patient1 = create(:patient, :diabetes, recorded_at: 3.months.ago, assigned_facility: facility1, registration_facility: facility1)
+    puts(patient1)
+    follow_up_patient = create(:patient, :diabetes, recorded_at: 3.months.ago, assigned_facility: facility2, registration_facility: facility2)
+    create(:appointment, creation_facility: facility2, scheduled_date: 2.month.ago, patient: follow_up_patient)
+    create(:blood_sugar_with_encounter, :bs_below_200, facility: facility2, patient: follow_up_patient, recorded_at: 2.months.ago)
+    puts(follow_up_patient)
+
+    create(:patient, :without_diabetes, recorded_at: 2.months.ago, assigned_facility: facility1, registration_facility: facility1)
+
+    patient2 = create(:patient, :diabetes, recorded_at: 2.years.ago, assigned_facility: facility1, registration_facility: facility1)
+    puts(patient2)
+    # medications_dispensed_patients
+    create(:appointment, facility: facility1, scheduled_date: 10.days.from_now, device_created_at: Date.today, patient: create(:patient, :diabetes, recorded_at: 4.months.ago, registration_facility: facility1))
+    create(:appointment, facility: facility2, scheduled_date: 10.days.from_now, device_created_at: Date.today, patient: create(:patient, :diabetes, recorded_at: 4.months.ago, registration_facility: facility2))
+    create(:appointment, facility: facility2, scheduled_date: Date.today, device_created_at: 32.days.ago, patient: create(:patient, :diabetes, recorded_at: 4.months.ago, registration_facility: facility2))
+    create(:appointment, facility: facility1, scheduled_date: Date.today, device_created_at: 63.days.ago, patient: create(:patient, :diabetes, recorded_at: 4.months.ago, registration_facility: facility1))
+
+    RefreshReportingViews.refresh_v2
+
+    {region: facility_group.region,
+     facility_1: facility1,
+     facility_2: facility2}
+  end
+
   context "#header_rows" do
     it "returns a list of header rows with the correct number of columns" do
       district = setup_district_with_facilities
@@ -42,7 +43,7 @@ describe MonthlyDistrictReport::Diabetes::DistrictData do
 
   context "#content_rows" do
     it "returns a hash with the required keys and values" do
-      district = setup[:district_region]
+      district = setup
       facility_1 = district[:facility_1]
       create(:facility, name: "Test Facility 3", facility_group: district[:region].source, facility_size: "medium", zone: "Test Block 3", enable_diabetes_management: true)
       create(:facility, name: "Test Facility 4", facility_group: district[:region].source, facility_size: "large", zone: "Test Block 4", enable_diabetes_management: true)
@@ -52,6 +53,7 @@ describe MonthlyDistrictReport::Diabetes::DistrictData do
 
       periods.each do |period|
         district[:region].facilities.each do |facility|
+          puts Patient.with_diabetes.count
           create(:patient, :diabetes, registration_facility: facility, registration_user: user, recorded_at: period.value)
           patient = Patient.where(registration_facility: facility).order(:recorded_at).first
           if patient
@@ -71,6 +73,7 @@ describe MonthlyDistrictReport::Diabetes::DistrictData do
       expect(rows[0]["Total CHCs"]).to eq 1
       expect(rows[0]["Total PHCs"]).to eq 1
       expect(rows[0]["Total HWCs/SCs"]).to eq 1
+      expect(periods.map { |period| rows[0]["cumulative_diabetes_registrations - #{period}"] }).to eq [5, 13, 19, 23, 27, 31]
       expect(rows[0]["Total diabetes registrations"]).to eq 31
       expect(rows[0]["Total assigned diabetes patients"]).to eq 31
       expect(rows[0]["Total diabetes patients under care"]).to eq 30
@@ -80,7 +83,6 @@ describe MonthlyDistrictReport::Diabetes::DistrictData do
       expect(rows[0]["% Diabetes missed visits"]).to eq "72%"
       expect(rows[0]["% Visits, no blood sugar taken"]).to eq "22%"
 
-      expect(periods.map { |period| rows[0]["cumulative_diabetes_registrations - #{period}"] }).to eq [5, 13, 19, 23, 27, 31]
       expect(periods.map { |period| rows[0]["diabetes_under_care - #{period}"] }).to eq [4, 12, 18, 22, 26, 30]
       expect(periods.map { |period| rows[0]["monthly_diabetes_registrations_large_medium - #{period}"] }).to eq [2, 2, 2, 2, 2, 2]
       expect(periods.map { |period| rows[0]["monthly_diabetes_registrations_small - #{period}"] }).to eq [1, 3, 2, 1, 1, 1]

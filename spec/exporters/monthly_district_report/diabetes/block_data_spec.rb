@@ -1,6 +1,6 @@
 require "rails_helper"
 
-def setup
+def setup_district_data
   organization = FactoryBot.create(:organization)
   facility_group = create(:facility_group, organization: organization)
   facility1 = create(:facility, name: "Facility 1", block: "Block 1 - alphabetically first", facility_group: facility_group, facility_size: :community, enable_diabetes_management: true)
@@ -24,7 +24,7 @@ def setup
 
   RefreshReportingViews.refresh_v2
 
-  {district_region: facility_group.region}
+  {region: facility_group.region}
 end
 
 describe MonthlyDistrictReport::Diabetes::BlockData do
@@ -43,7 +43,7 @@ describe MonthlyDistrictReport::Diabetes::BlockData do
     it "returns a hash with the required keys and values" do
       month = Period.month(Period.current)
       periods = Range.new(month.advance(months: -5), month)
-      region = setup[:district_region]
+      region = setup_district_data[:region]
 
       rows = described_class.new(region, month).content_rows
 

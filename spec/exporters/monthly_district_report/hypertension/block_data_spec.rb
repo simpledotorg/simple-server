@@ -1,6 +1,6 @@
 require "rails_helper"
 
-def setup
+def setup_district_data
   organization = FactoryBot.create(:organization)
   facility_group = create(:facility_group, organization: organization)
   facility1 = create(:facility, name: "Test Facility 1", block: "Test Block 1", facility_group: facility_group)
@@ -24,8 +24,7 @@ def setup
 
   RefreshReportingViews.refresh_v2
 
-  {district_region:
-     {region: facility_group.region}}
+  {region: facility_group.region}
 end
 
 describe MonthlyDistrictReport::Hypertension::BlockData do
@@ -41,12 +40,12 @@ describe MonthlyDistrictReport::Hypertension::BlockData do
 
   context "#content_rows" do
     it "returns a hash with the required keys and values" do
-      district = setup[:district_region]
+      district_data = setup_district_data
       today = Date.today
       month = Period.month(today)
       periods = Range.new(month.advance(months: -5), month)
 
-      rows = described_class.new(district[:region], month).content_rows
+      rows = described_class.new(district_data[:region], month).content_rows
 
       expect(rows[0].count).to eq 39
 
