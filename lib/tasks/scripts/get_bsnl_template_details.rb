@@ -2,12 +2,6 @@ class GetBsnlTemplateDetails
   include I18n::Backend::Flatten
   include Memery
   CONFIG_FILE = "config/data/bsnl_templates.yml"
-  DUPLICATE_TEMPLATES = {
-    "notifications.set03_basic_repeated.first" => "notifications.set03.basic",
-    "notifications.set03_basic_repeated.second" => "notifications.set03.basic",
-    "notifications.set03_basic_repeated.third" => "notifications.set03.basic"
-  }
-
   attr_reader :template_details, :template_names
 
   def initialize
@@ -28,7 +22,7 @@ class GetBsnlTemplateDetails
   end
 
   def massaged_template_details
-    template_details.to_h do |template|
+    template_details.map do |template|
       template_name = template["Template_Name"]
       [
         template_name,
@@ -38,9 +32,7 @@ class GetBsnlTemplateDetails
           "Template_Status", "Is_Unicode"
         )
       ]
-    end.then { |hsh| add_version_info(hsh) }
-      .then { |hsh| insert_duplicate_templates(hsh) }
-      .then { |hsh| hsh.sort_by(&:first).to_h }
+    end.then { |hsh| add_version_info(hsh).sort_by(&:first).to_h }
   end
 
   def show_templates_pending_naming
@@ -98,20 +90,5 @@ class GetBsnlTemplateDetails
           "Latest_Template_Version" => latest_version_names[name_without_version]
         )]
     end
-  end
-
-  def insert_duplicate_templates(config)
-    DUPLICATE_TEMPLATES.each do |duplicate_template_name, original_template_name|
-      matching_templates = config.select do |template_name, template_details|
-        template_name.match?(original_template_name) && template_details["Is_Latest_Version"]
-      end
-
-      matching_templates.each do |template_name, details|
-        locale_name = template_name.split(".").first
-
-        config["#{locale_name}.#{duplicate_template_name}"] = details
-      end
-    end
-    config
   end
 end

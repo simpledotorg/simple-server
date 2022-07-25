@@ -34,7 +34,9 @@ class Messaging::Bsnl::DltTemplate
   end
 
   def self.latest_name_of(dlt_template_name)
-    BSNL_TEMPLATES.dig(drop_version_number(dlt_template_name), "Latest_Template_Version")
+    BSNL_TEMPLATES
+      .transform_keys { |template_name| drop_version_number(template_name) }
+      .dig(drop_version_number(dlt_template_name), "Latest_Template_Version")
   end
 
   def self.drop_version_number(dlt_template_name)
