@@ -7,7 +7,7 @@ To start an SMS experiment you'll need to gather the following information:
 - The `type` of experiment - it can target either "Current" patients or "Stale" patients.
 - The number of `max_patients_per_day` that will be enrolled per day.
 - `start_time` - enrollments will begin at this time.
-- `end_time` - enrollments will stop at this time .
+- `end_time` - enrollments will stop at this time.
 - `treatment_groups` - Each treatment group will have a different content or frequency of messages sent to it.
     - You will probably also need a `control` group as a baseline in addition to all the groups that will receive messages.
 - The content and frequency of messages in each treatment group. This will be captured in the
@@ -45,7 +45,8 @@ When an experiment starts, you should
 - Run `rake:get_account_balance` every once in a while, check the balance and recharge if needed. 
 
 
-Notes:
+**Notes**
+
 - Depending on the cadence, notifications may go out for a few days after the experiment has "ended".
 - Visits are monitored and patients are evicted until 15 days (`MONITORING_BUFFER`) from the last enrollment date.
 
