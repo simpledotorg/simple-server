@@ -23,29 +23,31 @@ To start an SMS experiment you'll need to gather the following information:
 It should setup the `experiment`, its `treatment_groups` and `reminder_templates`.
 - Put a guard clause to make sure the migration runs only in the env you want. Write a spec for the migration.
 
-Note about consecutive experiments:
+**Note about consecutive experiments**
 
-If an experiment sends notifications in advance, it will enroll patients from the future.
-This can mean for an experiment starting right after, all the patients in the second experiment might've already been enrolled
-in the first one. To avoid this, make sure there's at least a gap of these many days (only if this value is positive)
-```
- earliest_remind_on of 2nd experiment - earliest_remind_on of 1st experiment
+An experiment that sends notifications in advance enrolls patients who have appointments in the future.
+For an experiment starting right after, this can mean that all the patients might've already been enrolled
+in the first one. Make sure there's at least a gap of these many days (only if this value is positive) to avoid this
+```ruby
+ experiment_1 = Experimentation::Experiment.find("<old experiment's id>")
+ experiment_2 = Experimentation::Experiment.find("<new experiment's id>")
+ experiment_1.earliest_remind_on - experiment_2.earliest_remind_on
 ```
 
 ## Running the experiment
 
-A cron in `schedule.rb` does the orchestration of the experiment. It runs a set of tasks everyday.
+A cron in `schedule.rb` orchestrates the experiment. It runs a set of tasks everyday.
 When an experiment starts, you should
 - Check in on the metabase dashboards every once in a while.
-- We get a daily summary on #ab-testing-stats. Check on the Pending notifications report everyday. 
-  This number should always be 0. If not, that points to an issue in the system. 
+- We get a daily summary on slack on #ab-testing-stats. Check on the "Pending notifications" report everyday. 
+  This number should always be 0. If not, this points to an issue in the system. 
   Make sure to dig in what's up by looking at sentry logs.
-- Check on BSNL bulk balance every once in a while (`rake:get_account_balance`) and recharge. 
+- Run `rake:get_account_balance` every once in a while, check the balance and recharge if needed. 
 
 
 Notes:
 - Depending on the cadence, notifications may go out for a few days after the experiment has "ended".
-- Visits are monitored until 15 days from the last enrollment date (set in `MONITORING_BUFFER`) and
+- Visits are monitored and patients are evicted until 15 days (`MONITORING_BUFFER`) from the last enrollment date.
 
 ### Important links
 
@@ -60,7 +62,7 @@ so it's viewable by other people.
 ### Cancelling an experiment
  
 ```ruby
-Experimentation::NotificationsExperiment.find("<experiment_id>").cancel
+Experimentation::NotificationsExperiment.find("<experiment id>").cancel
 ```
 
 ## In the long run
