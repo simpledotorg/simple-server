@@ -1,33 +1,33 @@
 require "rails_helper"
 
-def setup_district_data
-  organization = FactoryBot.create(:organization)
-  facility_group = create(:facility_group, organization: organization)
-  facility1 = create(:facility, name: "Facility 1", block: "Block 1 - alphabetically first", facility_group: facility_group, facility_size: :community, enable_diabetes_management: true)
-  facility2 = create(:facility, name: "Facility 2", block: "Block 2 - alphabetically second", facility_group: facility_group, facility_size: :community, enable_diabetes_management: true)
-
-  create(:patient, :diabetes, recorded_at: 3.months.ago, assigned_facility: facility1, registration_facility: facility1)
-
-  follow_up_patient = create(:patient, :diabetes, recorded_at: 3.months.ago, assigned_facility: facility2, registration_facility: facility2)
-  create(:appointment, creation_facility: facility2, scheduled_date: 2.month.ago, patient: follow_up_patient)
-  create(:blood_sugar_with_encounter, :bs_below_200, facility: facility2, patient: follow_up_patient, recorded_at: 2.months.ago)
-
-  create(:patient, :without_diabetes, recorded_at: 2.months.ago, assigned_facility: facility1, registration_facility: facility1)
-
-  create(:patient, :diabetes, recorded_at: 2.years.ago, assigned_facility: facility1, registration_facility: facility1)
-
-  # medications_dispensed_patients
-  create(:appointment, facility: facility1, scheduled_date: 10.days.from_now, device_created_at: Date.today, patient: create(:patient, :diabetes, recorded_at: 4.months.ago, registration_facility: facility1))
-  create(:appointment, facility: facility2, scheduled_date: 10.days.from_now, device_created_at: Date.today, patient: create(:patient, :diabetes, recorded_at: 4.months.ago, registration_facility: facility2))
-  create(:appointment, facility: facility2, scheduled_date: Date.today, device_created_at: 32.days.ago, patient: create(:patient, :diabetes, recorded_at: 4.months.ago, registration_facility: facility2))
-  create(:appointment, facility: facility1, scheduled_date: Date.today, device_created_at: 63.days.ago, patient: create(:patient, :diabetes, recorded_at: 4.months.ago, registration_facility: facility1))
-
-  RefreshReportingViews.refresh_v2
-
-  {region: facility_group.region}
-end
-
 describe MonthlyDistrictReport::Diabetes::BlockData do
+  def setup_district_data
+    organization = FactoryBot.create(:organization)
+    facility_group = create(:facility_group, organization: organization)
+    facility1 = create(:facility, name: "Facility 1", block: "Block 1 - alphabetically first", facility_group: facility_group, facility_size: :community, enable_diabetes_management: true)
+    facility2 = create(:facility, name: "Facility 2", block: "Block 2 - alphabetically second", facility_group: facility_group, facility_size: :community, enable_diabetes_management: true)
+
+    create(:patient, :diabetes, recorded_at: 3.months.ago, assigned_facility: facility1, registration_facility: facility1)
+
+    follow_up_patient = create(:patient, :diabetes, recorded_at: 3.months.ago, assigned_facility: facility2, registration_facility: facility2)
+    create(:appointment, creation_facility: facility2, scheduled_date: 2.month.ago, patient: follow_up_patient)
+    create(:blood_sugar_with_encounter, :bs_below_200, facility: facility2, patient: follow_up_patient, recorded_at: 2.months.ago)
+
+    create(:patient, :without_diabetes, recorded_at: 2.months.ago, assigned_facility: facility1, registration_facility: facility1)
+
+    create(:patient, :diabetes, recorded_at: 2.years.ago, assigned_facility: facility1, registration_facility: facility1)
+
+    # medications_dispensed_patients
+    create(:appointment, facility: facility1, scheduled_date: 10.days.from_now, device_created_at: Date.today, patient: create(:patient, :diabetes, recorded_at: 4.months.ago, registration_facility: facility1))
+    create(:appointment, facility: facility2, scheduled_date: 10.days.from_now, device_created_at: Date.today, patient: create(:patient, :diabetes, recorded_at: 4.months.ago, registration_facility: facility2))
+    create(:appointment, facility: facility2, scheduled_date: Date.today, device_created_at: 32.days.ago, patient: create(:patient, :diabetes, recorded_at: 4.months.ago, registration_facility: facility2))
+    create(:appointment, facility: facility1, scheduled_date: Date.today, device_created_at: 63.days.ago, patient: create(:patient, :diabetes, recorded_at: 4.months.ago, registration_facility: facility1))
+
+    RefreshReportingViews.refresh_v2
+
+    {region: facility_group.region}
+  end
+
   context "#header_rows" do
     it "returns a list of header rows with the correct number of columns" do
       district = setup_district_with_facilities
@@ -89,7 +89,7 @@ describe MonthlyDistrictReport::Diabetes::BlockData do
 
     it "orders the rows by block names" do
       month = Period.month("2021-09-01".to_date)
-      region = setup[:district_region]
+      region = setup_district_data[:region]
       rows = described_class.new(region, month).content_rows
 
       expect(rows.map { |row| row["Blocks"] }).to match_array ["Block 1 - alphabetically first", "Block 2 - alphabetically second"]

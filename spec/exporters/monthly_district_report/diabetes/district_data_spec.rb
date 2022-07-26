@@ -43,16 +43,16 @@ describe MonthlyDistrictReport::Diabetes::DistrictData do
 
   context "#content_rows" do
     it "returns a hash with the required keys and values" do
-      district = setup
-      facility_1 = district[:facility_1]
-      create(:facility, name: "Test Facility 3", facility_group: district[:region].source, facility_size: "medium", zone: "Test Block 3", enable_diabetes_management: true)
-      create(:facility, name: "Test Facility 4", facility_group: district[:region].source, facility_size: "large", zone: "Test Block 4", enable_diabetes_management: true)
+      district_data = setup_district_data
+      facility_1 = district_data[:facility_1]
+      create(:facility, name: "Test Facility 3", facility_group: district_data[:region].source, facility_size: "medium", zone: "Test Block 3", enable_diabetes_management: true)
+      create(:facility, name: "Test Facility 4", facility_group: district_data[:region].source, facility_size: "large", zone: "Test Block 4", enable_diabetes_management: true)
       month = Period.current
       periods = Range.new(month.advance(months: -5), month)
       user = create(:user, registration_facility: facility_1)
 
       periods.each do |period|
-        district[:region].facilities.each do |facility|
+        district_data[:region].facilities.each do |facility|
           puts Patient.with_diabetes.count
           create(:patient, :diabetes, registration_facility: facility, registration_user: user, recorded_at: period.value)
           patient = Patient.where(registration_facility: facility).order(:recorded_at).first
@@ -64,7 +64,7 @@ describe MonthlyDistrictReport::Diabetes::DistrictData do
 
       RefreshReportingViews.refresh_v2
 
-      rows = described_class.new(district[:region], month).content_rows
+      rows = described_class.new(district_data[:region], month).content_rows
       expect(rows[0].count).to eq 101
 
       expect(rows[0]["District"]).to eq "Test District"
@@ -103,15 +103,15 @@ describe MonthlyDistrictReport::Diabetes::DistrictData do
     end
 
     it "only include active facilities" do
-      district = setup_district_with_facilities
-      create(:facility, name: "Test Facility 3", facility_group: district[:region].source, facility_size: "medium", zone: "Test Block 3")
-      inactive_facility = create(:facility, name: "Test Facility 4", facility_group: district[:region].source, facility_size: "large", zone: "Test Block 4")
+      district_data = setup_district_with_facilities
+      create(:facility, name: "Test Facility 3", facility_group: district_data[:region].source, facility_size: "medium", zone: "Test Block 3")
+      inactive_facility = create(:facility, name: "Test Facility 4", facility_group: district_data[:region].source, facility_size: "large", zone: "Test Block 4")
       month = Period.month("2021-09-01".to_date)
       periods = Range.new(month.advance(months: -5), month)
-      user = create(:user, registration_facility: district[:facility_1])
+      user = create(:user, registration_facility: district_data[:facility_1])
 
       periods.each do |period|
-        district[:region].facilities.each do |facility|
+        district_data[:region].facilities.each do |facility|
           unless facility.id == inactive_facility.id
             create(:patient, registration_facility: facility, registration_user: user, recorded_at: period.value)
             patient = Patient.where(registration_facility: facility).order(:recorded_at).first
@@ -124,7 +124,7 @@ describe MonthlyDistrictReport::Diabetes::DistrictData do
 
       RefreshReportingViews.refresh_v2
 
-      rows = described_class.new(district[:region], month).content_rows
+      rows = described_class.new(district_data[:region], month).content_rows
       expect(rows[0].count).to eq 101
 
       expect(rows[0]["District"]).to eq "Test District"
