@@ -21,6 +21,7 @@ module Reports
       lost_to_follow_up
       diabetes_lost_to_follow_up
       under_care
+      diabetes_under_care
       monthly_registrations
       monthly_diabetes_registrations
       monthly_hypertension_and_diabetes_registrations

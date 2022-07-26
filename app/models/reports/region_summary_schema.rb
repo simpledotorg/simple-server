@@ -69,7 +69,7 @@ module Reports
     end
 
     alias_method :adjusted_patients, :adjusted_patients_without_ltfu
-    alias_method :adjusted_diabetes_patients, :adjusted_patients_without_ltfu
+    alias_method :adjusted_diabetes_patients, :adjusted_diabetes_patients_without_ltfu
 
     # Return the running total of cumulative assigned patient counts. Note that this *includes* LTFU.
     memoize def cumulative_assigned_patients
@@ -115,6 +115,10 @@ module Reports
 
     memoize def under_care
       values_at("under_care")
+    end
+
+    memoize def diabetes_under_care
+      values_at("diabetes_under_care")
     end
 
     memoize def controlled
@@ -358,9 +362,9 @@ module Reports
 
     memoize def diabetes_patients_with_bs_taken
       region_period_cached_query(__method__) do |entry|
-        diabetes_under_care(:bs_below_200)[entry.region.slug][entry.period] +
-          diabetes_under_care(:bs_200_to_300)[entry.region.slug][entry.period] +
-          diabetes_under_care(:bs_over_300)[entry.region.slug][entry.period]
+        adjusted_diabetes_under_care(:bs_below_200)[entry.region.slug][entry.period] +
+          adjusted_diabetes_under_care(:bs_200_to_300)[entry.region.slug][entry.period] +
+          adjusted_diabetes_under_care(:bs_over_300)[entry.region.slug][entry.period]
       end
     end
 
@@ -397,10 +401,10 @@ module Reports
     memoize def diabetes_treatment_outcome_breakdown_rates(blood_sugar_risk_state)
       region_period_cached_query(__method__, blood_sugar_risk_state: blood_sugar_risk_state) do |entry|
         rounded_percentages({
-          random: diabetes_under_care(blood_sugar_risk_state, :random)[entry.region.slug][entry.period],
-          post_prandial: diabetes_under_care(blood_sugar_risk_state, :post_prandial)[entry.region.slug][entry.period],
-          fasting: diabetes_under_care(blood_sugar_risk_state, :fasting)[entry.region.slug][entry.period],
-          hba1c: diabetes_under_care(blood_sugar_risk_state, :hba1c) [entry.region.slug][entry.period]
+          random: adjusted_diabetes_under_care(blood_sugar_risk_state, :random)[entry.region.slug][entry.period],
+          post_prandial: adjusted_diabetes_under_care(blood_sugar_risk_state, :post_prandial)[entry.region.slug][entry.period],
+          fasting: adjusted_diabetes_under_care(blood_sugar_risk_state, :fasting)[entry.region.slug][entry.period],
+          hba1c: adjusted_diabetes_under_care(blood_sugar_risk_state, :hba1c) [entry.region.slug][entry.period]
         })
       end
     end
@@ -409,8 +413,8 @@ module Reports
       region_period_cached_query(__method__) do |entry|
         bs_over_200_counts = BloodSugar.blood_sugar_types.keys.map do |blood_sugar_type|
           [blood_sugar_type,
-            diabetes_under_care(:bs_200_to_300, blood_sugar_type)[entry.region.slug][entry.period] +
-              diabetes_under_care(:bs_over_300, blood_sugar_type)[entry.region.slug][entry.period]]
+            adjusted_diabetes_under_care(:bs_200_to_300, blood_sugar_type)[entry.region.slug][entry.period] +
+              adjusted_diabetes_under_care(:bs_over_300, blood_sugar_type)[entry.region.slug][entry.period]]
         end
         rounded_percentages(bs_over_200_counts.to_h)
       end
@@ -419,10 +423,10 @@ module Reports
     memoize def diabetes_treatment_outcome_breakdown_counts(blood_sugar_risk_state)
       region_period_cached_query(__method__, blood_sugar_risk_state: blood_sugar_risk_state) do |entry|
         {
-          random: diabetes_under_care(blood_sugar_risk_state, :random)[entry.region.slug][entry.period],
-          post_prandial: diabetes_under_care(blood_sugar_risk_state, :post_prandial)[entry.region.slug][entry.period],
-          fasting: diabetes_under_care(blood_sugar_risk_state, :fasting)[entry.region.slug][entry.period],
-          hba1c: diabetes_under_care(blood_sugar_risk_state, :hba1c) [entry.region.slug][entry.period]
+          random: adjusted_diabetes_under_care(blood_sugar_risk_state, :random)[entry.region.slug][entry.period],
+          post_prandial: adjusted_diabetes_under_care(blood_sugar_risk_state, :post_prandial)[entry.region.slug][entry.period],
+          fasting: adjusted_diabetes_under_care(blood_sugar_risk_state, :fasting)[entry.region.slug][entry.period],
+          hba1c: adjusted_diabetes_under_care(blood_sugar_risk_state, :hba1c) [entry.region.slug][entry.period]
         }
       end
     end
@@ -433,7 +437,7 @@ module Reports
         Reports::PatientBloodSugar.blood_sugar_risk_states.keys.each do |blood_sugar_risk_state|
           BloodSugar.blood_sugar_types.keys.each do |blood_sugar_type|
             bs_taken_breakdown_hash[[blood_sugar_risk_state.to_sym, blood_sugar_type.to_sym]] =
-              diabetes_under_care(blood_sugar_risk_state, blood_sugar_type)[entry.region.slug][entry.period]
+              adjusted_diabetes_under_care(blood_sugar_risk_state, blood_sugar_type)[entry.region.slug][entry.period]
           end
         end
         bs_taken_breakdown_hash
@@ -446,7 +450,7 @@ module Reports
         Reports::PatientBloodSugar.blood_sugar_risk_states.keys.each do |blood_sugar_risk_state|
           BloodSugar.blood_sugar_types.keys.each do |blood_sugar_type|
             bs_taken_breakdown_hash[[blood_sugar_risk_state.to_sym, blood_sugar_type.to_sym]] =
-              diabetes_under_care(blood_sugar_risk_state, blood_sugar_type)[entry.region.slug][entry.period]
+              adjusted_diabetes_under_care(blood_sugar_risk_state, blood_sugar_type)[entry.region.slug][entry.period]
           end
         end
         rounded_percentages(bs_taken_breakdown_hash)
@@ -484,15 +488,15 @@ module Reports
 
     memoize def diabetes_treatment_outcome_rates(entry, with_ltfu)
       rounded_percentages({
-        bs_below_200_rates: diabetes_under_care(:bs_below_200)[entry.region.slug][entry.period],
-        bs_200_to_300_rates: diabetes_under_care(:bs_200_to_300)[entry.region.slug][entry.period],
-        bs_over_300_rates: diabetes_under_care(:bs_over_300)[entry.region.slug][entry.period],
+        bs_below_200_rates: adjusted_diabetes_under_care(:bs_below_200)[entry.region.slug][entry.period],
+        bs_200_to_300_rates: adjusted_diabetes_under_care(:bs_200_to_300)[entry.region.slug][entry.period],
+        bs_over_300_rates: adjusted_diabetes_under_care(:bs_over_300)[entry.region.slug][entry.period],
         missed_visits_rates: diabetes_missed_visits(with_ltfu: with_ltfu)[entry.region.slug][entry.period],
         visited_without_bs_taken_rates: visited_without_bs_taken[entry.region.slug][entry.period]
       })
     end
 
-    memoize def diabetes_under_care(blood_sugar_risk_state, blood_sugar_type = nil)
+    memoize def adjusted_diabetes_under_care(blood_sugar_risk_state, blood_sugar_type = nil)
       if blood_sugar_type
         return values_at("adjusted_#{blood_sugar_type}_#{blood_sugar_risk_state}_under_care")
       end

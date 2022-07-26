@@ -70,6 +70,7 @@ module Reports
       earliest_patient_recorded_at
       earliest_patient_recorded_at_period
       under_care
+      diabetes_under_care
       ltfu
       diabetes_ltfu
       missed_visits
