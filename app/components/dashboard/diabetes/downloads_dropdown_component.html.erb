@@ -42,30 +42,30 @@
       <% end %>
     <% end %>
 
-    <% unless region.region_type.in?(%w[block]) %>
-     <div class="dropdown-divider"></div>
-    <% end %>
+    <%# unless region.region_type.in?(%w[block]) %>
+<!--     <div class="dropdown-divider"></div>-->
+    <%# end %>
 
-    <h6 class="dropdown-header c-grey-dark">
-      <%= "#{quarter_string(Date.current.prev_quarter)}" %> Snapshots
-    </h6>
+<!--    <h6 class="dropdown-header c-grey-dark">-->
+<!--      <%#= "#{quarter_string(Date.current.prev_quarter)}" %> Snapshots-->
+<!--    </h6>-->
 
-    <% previous_quarter_year, previous_quarter = previous_year_and_quarter %>
-    <%= link_to(reports_graphics_path(region, report_scope: report_scope, quarter: previous_quarter, year: previous_quarter_year, format: "html"), class: "dropdown-item") do %>
-      <i class="far fa-window-maximize w-16px ta-center mr-8px c-blue"></i>
-      View in webpage
-    <% end %>
+    <%# previous_quarter_year, previous_quarter = previous_year_and_quarter %>
+    <%#= link_to(reports_graphics_path(region, report_scope: report_scope, quarter: previous_quarter, year: previous_quarter_year, format: "html"), class: "dropdown-item") do %>
+<!--      <i class="far fa-window-maximize w-16px ta-center mr-8px c-blue"></i>-->
+<!--      View in webpage-->
+    <%# end %>
 
-    <%= link_to(reports_graphics_path(region, report_scope: report_scope, quarter: previous_quarter, year: previous_quarter_year, format: "png"), class: "dropdown-item") do %>
-      <i class="far fa-image w-16px ta-center mr-8px c-blue"></i>
-      Download as an image
-    <% end %>
+    <%#= link_to(reports_graphics_path(region, report_scope: report_scope, quarter: previous_quarter, year: previous_quarter_year, format: "png"), class: "dropdown-item") do %>
+<!--      <i class="far fa-image w-16px ta-center mr-8px c-blue"></i>-->
+<!--      Download as an image-->
+    <%# end %>
 
-    <div class="dropdown-divider"></div>
+<!--    <div class="dropdown-divider"></div>-->
 
-    <p class="dropdown-item mb-0px c-pointer" onclick="window.print()">
-      <i class="fas fa-print w-16px ta-center mr-8px c-blue"></i>
-      Print page as PDF
-    </p>
+<!--    <p class="dropdown-item mb-0px c-pointer" onclick="window.print()">-->
+<!--      <i class="fas fa-print w-16px ta-center mr-8px c-blue"></i>-->
+<!--      Print page as PDF-->
+<!--    </p>-->
   </div>
 </div>
