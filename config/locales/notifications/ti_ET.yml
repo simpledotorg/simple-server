@@ -27,9 +27,5 @@ ti-ET:
       emotional_guilt: "ንናይ BP ዓቐንኩም ደንጒኹም ኣለኹም። እንድሕር ዘይተሓኩምኩም፣ ልዑል BP ንኹሉ ማሕበረሰብኩም ልዑል ወጻኢ ኣለዎ። %{patient_name}፣ ብኽብረትኩም %{facility_name} ብቕልጡፍ ይጎብንዩ ንBP ዓቐንን መድሓኒታትን።"
       professional_request: "ንናይ BP ዓቐንኩም ደንጒኹም ኣለኹም። ዶክተርኩም BPኹም ክትዕቀኑ ከዘኻኽረኩም ይደሊ እዩ። %{patient_name}፣ ብኽብረትኩም %{facility_name} ብቕልጡፍ ይጎብንዩ ንBP ዓቐንን መድሓኒታትን።"
       response: "ንናይ BP ዓቐንኩም ደንጒኹም ኣለኹም። %{patient_name}፣ ብኽብረትኩም %{facility_name} ብቕልጡፍ ይጎብንዩ ንBP ዓቐንን መድሓኒታትን። እዛ መላገቢ ብምጥዋቕ ከም ትሳተፉ ኣፍሉጥና፡"
-    set03_basic_repeated:
-      first: "ንናይ BP ዓቐንኩም ደንጒኹም ኣለኹም። %{patient_name}፣ ብኽብረትኩም %{facility_name} ብቕልጡፍ ይጎብንዩ ንBP ዓቐንን መድሓኒታትን።"
-      second: "ንናይ BP ዓቐንኩም ደንጒኹም ኣለኹም። %{patient_name}፣ ብኽብረትኩም %{facility_name} ብቕልጡፍ ይጎብንዩ ንBP ዓቐንን መድሓኒታትን።"
-      third: "ንናይ BP ዓቐንኩም ደንጒኹም ኣለኹም። %{patient_name}፣ ብኽብረትኩም %{facility_name} ብቕልጡፍ ይጎብንዩ ንBP ዓቐንን መድሓኒታትን።"
     covid:
       medication_reminder: "ክቡር %{patient_name}፡ ኣብ %{facility_name} ዝርከቡ ሰራሕተኛታትና ኣብዚ ናይ ኮቪድ ህጹጽ ግዜ ብዛዕባኹምን ብዛዕባ ጥዕና ልብኹምን ይሓስቡ ኣለዉ እዮም። ናይ BP መድሓኒታትኩም ክትቅጽሉሉ ኣገዳሲ እዩ። ነጻ መድሓኒትኩም ካብ ቐረባ ንኡስ ማእኸል ወይ ማእኸል ድሕነት ጥዕና ከይድኩም ርኸቡ። ምስ ናትኩም ANM ወይ ASHA ተራኸቡ። "

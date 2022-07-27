@@ -104,14 +104,19 @@
 
       <div class="ml-8px">
         <% if action_name == "diabetes"%>
-          <div class="dropdown show mb-24px bs-small mb-lg-0">
-            <a class="btn btn-sm dropdown-toggle c-grey-medium bg-white disabled" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <i class="fa fa-arrow-circle-down w-16px ta-center mr-4px c-grey-medium"></i>
-              Downloads (DM)
-            </a>
-          </div>
+          <%= render Dashboard::Diabetes::DownloadsDropdownComponent.new(
+            region: @region,
+            period: @period,
+            report_scope: params[:report_scope],
+            current_admin: current_admin
+          ) %>
         <% else %>
-          <%= render "hypertension_downloads" %>
+          <%= render Dashboard::Hypertension::DownloadsDropdownComponent.new(
+            region: @region,
+            period: @period,
+            report_scope: params[:report_scope],
+            current_admin: current_admin
+          ) %>
         <% end %>
       </div>
     </div>
