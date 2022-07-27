@@ -10,7 +10,7 @@ class CPHCEnrollment::Request
   end
 
   def post
-    puts "Payload: #{payload.as_json}"
+    puts "Payload: #{payload.as_json.to_json}"
     HTTP.headers(headers)
         .auth(user[:user_authorization])
         .post(path, json: payload.as_json)

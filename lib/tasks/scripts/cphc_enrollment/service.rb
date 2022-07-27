@@ -45,8 +45,14 @@ class CPHCEnrollment::Service
     enroll_patient(patient)
     update_medical_history(patient.medical_history)
     patient.blood_pressures.each do |blood_pressure|
-      update_blood_pressures(blood_pressure)
+      update_blood_pressure(blood_pressure)
     end
+
+    patient.blood_sugars.each do |blood_sugar|
+      update_blood_sugar(blood_sugar)
+    end
+
+    puts "DONE!!"
   end
 
   def enroll_patient(patient)
@@ -64,10 +70,19 @@ class CPHCEnrollment::Service
     end
   end
 
-  def update_blood_pressures(blood_pressure)
+  def update_blood_pressure(blood_pressure)
     make_cphc_request(:blood_pressure_id, blood_pressure.id) do
       patient = blood_pressure.patient
       payload = CPHCEnrollment::BloodPressurePayload.new(blood_pressure)
+      CPHCEnrollment::Request.new(path: vitals_path(patient.id), user: user, payload: payload).post
+    end
+  end
+
+  def update_blood_sugar(blood_sugar)
+    puts "Sending Blood Sugar"
+    make_cphc_request(:blood_sugar_id, blood_sugar.id) do
+      patient = blood_sugar.patient
+      payload = CPHCEnrollment::BloodSugarPayload.new(blood_sugar)
       CPHCEnrollment::Request.new(path: vitals_path(patient.id), user: user, payload: payload).post
     end
   end
