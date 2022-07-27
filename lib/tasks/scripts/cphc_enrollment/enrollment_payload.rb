@@ -4,13 +4,16 @@ class CPHCEnrollment::EnrollmentPayload
   def initialize(patient, location_finder:)
     @patient = patient
     @location_finder = location_finder
+    @cphc_location = nil
   end
 
   def cphc_location
+    return @cphc_location if @cphc_location.present?
+
     simple_facility_hash = location_finder.simple_facility("facility_id" => @patient.assigned_facility.id)
-    cphc_location_hash = location_finder.find_cphc_location("facility_name" => simple_facility_hash["facility_name"])
-    puts "Found CPHC location for facility_name #{simple_facility_hash["facility_name"]}" if cphc_location_hash
-    cphc_location_hash
+    @cphc_location = location_finder.find_cphc_location("facility_name" => simple_facility_hash["facility_name"])
+    puts "Found CPHC location for facility_name #{simple_facility_hash["facility_name"]}" if @cphc_location
+    @cphc_location
   end
 
   def facilities_hashes(file_name)

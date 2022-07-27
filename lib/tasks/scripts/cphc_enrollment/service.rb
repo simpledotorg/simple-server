@@ -26,34 +26,49 @@ class CPHCEnrollment::Service
     @registry = CPHCEnrollment::CPHCRegistry.new
   end
 
-  def medical_history_path(simple_patient_id)
+  def initial_assessment_path(simple_patient_id)
     individual_id = registry.find_cphc_id(:patient_id, simple_patient_id)
     throw "Unknown patient - individual mapping" unless individual_id
-    "https://ncd-staging.nhp.gov.in/cphm/php/individual/#{individual_id}/initialAssessment/patientHistory"
+    "https://ncd-staging.nhp.gov.in/cphm/php/individual/#{individual_id}/initialAssessment"
+  end
+
+  def medical_history_path(simple_patient_id)
+    "#{initial_assessment_path(simple_patient_id)}/patientHistory"
+  end
+
+  def vitals_path(simple_patient_id)
+    "#{initial_assessment_path(simple_patient_id)}/vitals"
   end
 
   def call(patient)
     @patient = patient
     enroll_patient(patient)
     update_medical_history(patient.medical_history)
+    patient.blood_pressures.each do |blood_pressure|
+      update_blood_pressures(blood_pressure)
+    end
   end
 
   def enroll_patient(patient)
-    response = make_cphc_request do
+    make_cphc_request(:patient_id, patient.id) do
       enrollment_payload = CPHCEnrollment::EnrollmentPayload.new(patient, location_finder: @location_finder)
       CPHCEnrollment::Request.new(path: CPHC_ENROLLMENT_PATH, user: user, payload: enrollment_payload).post
     end
-
-    response_body = JSON.parse(response.body)
-
-    registry.add(:patient_id, patient.id, response_body["individualId"])
   end
 
   def update_medical_history(medical_history)
-    make_cphc_request do
+    make_cphc_request(:medical_history_id, medical_history.id) do
       patient = medical_history.patient
       payload = CPHCEnrollment::MedicalHistoryPayload.new(medical_history)
       CPHCEnrollment::Request.new(path: medical_history_path(patient.id), user: user, payload: payload).post
+    end
+  end
+
+  def update_blood_pressures(blood_pressure)
+    make_cphc_request(:blood_pressure_id, blood_pressure.id) do
+      patient = blood_pressure.patient
+      payload = CPHCEnrollment::BloodPressurePayload.new(blood_pressure)
+      CPHCEnrollment::Request.new(path: vitals_path(patient.id), user: user, payload: payload).post
     end
   end
 
@@ -98,7 +113,7 @@ class CPHCEnrollment::Service
     @wait ||= Selenium::WebDriver::Wait.new(timeout: 59)
   end
 
-  def make_cphc_request(&block)
+  def make_cphc_request(registry_key, simple_id, &block)
     if @is_authorized
       response = yield
 
@@ -107,16 +122,21 @@ class CPHCEnrollment::Service
         @is_authorized = false
         puts "The request was unauthorized. Pleas check the config and try again."
       when 200
-        puts "Result Successful successfully"
+        puts "Request completed successfully"
+        response_body = JSON.parse(response.body)
+        if registry_key == :patient_id
+          registry.add(registry_key, simple_id, response_body["individualId"])
+        else
+          registry.add(registry_key, simple_id)
+        end
       else
-        puts "Request Failed: #{patient.full_name}"
+        puts "Request Failed: #{registry_key}, #{simple_id}"
       end
 
-      puts JSON.parse(response.body)
       response
     else
       sign_in(auto_fill: true)
-      yield
+      make_cphc_request(registry_key, simple_id, &block)
     end
   end
 end
