@@ -141,6 +141,7 @@ group :development do
   gem "spring-commands-rspec"
   gem "spring", "3.1.1"
   gem "web-console", ">= 3.3.0"
+  gem "selenium-webdriver"
 end
 
 group :test do
