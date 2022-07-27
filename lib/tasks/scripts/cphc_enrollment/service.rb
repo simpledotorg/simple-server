@@ -17,33 +17,43 @@ class CPHCEnrollment::Service
 
   attr_reader :patient
   attr_reader :auth_token
+  attr_reader :registry
 
   def initialize
     @auth_token = nil
     @is_authorized = false
     @location_finder = CPHCEnrollment::RandomLocationFinder.build
+    @registry = CPHCEnrollment::CPHCRegistry.new
   end
 
-  def self.call(patient)
-    new.call(patient)
+  def medical_history_path(simple_patient_id)
+    individual_id = registry.find_cphc_id(:patient_id, simple_patient_id)
+    throw "Unknown patient - individual mapping" unless individual_id
+    "https://ncd-staging.nhp.gov.in/cphm/php/individual/#{individual_id}/initialAssessment/patientHistory"
   end
 
   def call(patient)
+    @patient = patient
     enroll_patient(patient)
     update_medical_history(patient.medical_history)
   end
 
   def enroll_patient(patient)
-    make_cphc_request do
+    response = make_cphc_request do
       enrollment_payload = CPHCEnrollment::EnrollmentPayload.new(patient, location_finder: @location_finder)
       CPHCEnrollment::Request.new(path: CPHC_ENROLLMENT_PATH, user: user, payload: enrollment_payload).post
     end
+
+    response_body = JSON.parse(response.body)
+
+    registry.add(:patient_id, patient.id, response_body["individualId"])
   end
 
   def update_medical_history(medical_history)
     make_cphc_request do
-      enrollment_payload = CPHCEnrollment::EnrollmentPayload.new(patient, location_finder: @location_finder)
-      CPHCEnrollment::Request.new(path: CPHC_ENROLLMENT_PATH, user: user, payload: enrollment_payload).post
+      patient = medical_history.patient
+      payload = CPHCEnrollment::MedicalHistoryPayload.new(medical_history)
+      CPHCEnrollment::Request.new(path: medical_history_path(patient.id), user: user, payload: payload).post
     end
   end
 
@@ -102,7 +112,7 @@ class CPHCEnrollment::Service
         puts "Request Failed: #{patient.full_name}"
       end
 
-      puts response.body
+      puts JSON.parse(response.body)
       response
     else
       sign_in(auto_fill: true)

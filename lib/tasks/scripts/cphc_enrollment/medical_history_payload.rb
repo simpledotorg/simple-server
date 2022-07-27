@@ -7,14 +7,12 @@ class CPHCEnrollment::MedicalHistoryPayload
 
   def as_json
     {
-      "assesDate": medical_history.recorded_at.strftime("%d-%m-%Y"),
-      "diabts": medical_history.diabetes,
-      "hypertsn": medical_history.hypertension,
-      "heartAtck": medical_history.prior_hearth_attack,
-      "strk": medical_history.prior_stroke,
-      "diabetesReportVerified": medical_history.diagnosed_with_diabetes,
-      "hypertensionReportVerified": medical_history.diagnosed_with_hypertension
+      "assesDate": medical_history.device_created_at.strftime("%d-%m-%Y"),
+      "diabts": medical_history.diabetes == "yes",
+      "hypertsn": medical_history.hypertension == "yes",
+      "heartAtck": medical_history.prior_heart_attack == "yes",
+      "strk": medical_history.prior_stroke == "yes",
+      "hypertensionReportVerified": medical_history.diagnosed_with_hypertension == "yes"
     }
-
   end
 end

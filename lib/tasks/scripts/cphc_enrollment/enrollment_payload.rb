@@ -42,7 +42,7 @@ class CPHCEnrollment::EnrollmentPayload
         gender: gender,
 
         # The enrollment API require patient phone numbers to be 9 digits long
-        mobileNumber: patient.phone_numbers.first&.number.delete(" ").reverse[-1..9].reverse,
+        mobileNumber: patient.phone_numbers.first&.number.delete(" ").reverse[0..9].reverse,
         additionalDetails: {
           enrollmentDate: patient.recorded_at.strftime("%d-%m-%Y"),
 
