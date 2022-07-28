@@ -60,8 +60,6 @@ module Reports
       diabetes_appts_scheduled_more_than_62_days
       dead
       diabetes_dead
-      under_care
-      diabetes_under_care
     ].sort.freeze
 
     UNDER_CARE_WITH_LTFU = %i[
