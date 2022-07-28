@@ -1,18 +1,25 @@
 require "rails_helper"
 
 RSpec.describe Messaging::Bsnl::Api do
-  it "raises an error if configuration is missing" do
-    stub_request(:post, "https://bulksms.bsnl.in:5010/api/Get_Content_Template_Details").to_return(body: {"Content_Template_Ids" => ["A list of template details"]}.to_json)
+  def stub_credentials
+    allow(ENV).to receive(:[]).and_call_original
+    allow(ENV).to receive(:[]).with("BSNL_IHCI_HEADER").and_return("ABCDEF")
+    allow(ENV).to receive(:[]).with("BSNL_IHCI_ENTITY_ID").and_return("123")
+    Configuration.create(name: "bsnl_sms_jwt", value: "a jwt token")
+  end
 
-    expect { described_class.new }.to raise_error(Messaging::Bsnl::Error)
+  describe "#new" do
+    it "raises an error if configuration is missing" do
+      stub_request(:post, "https://bulksms.bsnl.in:5010/api/Get_Content_Template_Details").to_return(body: {"Content_Template_Ids" => ["A list of template details"]}.to_json)
+
+      expect { described_class.new }.to raise_error(Messaging::Bsnl::CredentialsError)
+    end
   end
 
   describe "#send_sms" do
     it "strips +91 from recipient_number because BSNL expects 10 digit mobile numbers" do
-      allow(ENV).to receive(:[]).and_call_original
-      allow(ENV).to receive(:[]).with("BSNL_IHCI_HEADER").and_return("ABCDEF")
-      allow(ENV).to receive(:[]).with("BSNL_IHCI_ENTITY_ID").and_return("123")
-      Configuration.create(name: "bsnl_sms_jwt", value: "a jwt token")
+      stub_credentials
+
       mock_template = double("DltTemplate")
       allow(mock_template).to receive(:is_unicode).and_return "1"
       allow(mock_template).to receive(:id).and_return "1234"
@@ -30,14 +37,23 @@ RSpec.describe Messaging::Bsnl::Api do
         "Template_Keys_and_Values" => {}
       })).to have_been_made
     end
+
+    it "raises an exception if the API sends a non-200 response" do
+      stub_credentials
+      mock_template = double("DltTemplate")
+      allow(mock_template).to receive(:is_unicode).and_return "1"
+      allow(mock_template).to receive(:id).and_return "1234"
+
+      stub_request(:post, "https://bulksms.bsnl.in:5010/api/Send_Sms").to_return(status: 401, body: "a response")
+      expect {
+        described_class.new.send_sms(recipient_number: "+911111111111", dlt_template: mock_template, key_values: {})
+      }.to raise_error(Messaging::Bsnl::ApiError, "API returned 401 with a response")
+    end
   end
 
   describe "#get_template_details" do
     it "gets all the templates added to DLT" do
-      allow(ENV).to receive(:[]).with("BSNL_IHCI_HEADER").and_return("ABCDEF")
-      allow(ENV).to receive(:[]).with("BSNL_IHCI_ENTITY_ID").and_return("123")
-      Configuration.create(name: "bsnl_sms_jwt", value: "a jwt token")
-
+      stub_credentials
       stub_request(:post, "https://bulksms.bsnl.in:5010/api/Get_Content_Template_Details").to_return(body: {"Content_Template_Ids" => ["A list of template details"]}.to_json)
       expect(described_class.new.get_template_details).to contain_exactly("A list of template details")
     end
@@ -45,9 +61,7 @@ RSpec.describe Messaging::Bsnl::Api do
 
   describe "#name_template_variables" do
     it "names the variables for a DLT template" do
-      allow(ENV).to receive(:[]).with("BSNL_IHCI_HEADER").and_return("ABCDEF")
-      allow(ENV).to receive(:[]).with("BSNL_IHCI_ENTITY_ID").and_return("123")
-      Configuration.create(name: "bsnl_sms_jwt", value: "a jwt token")
+      stub_credentials
       template_id = "a template id"
       message_with_named_vars = "message with {#var1#} and {#var2#}"
 
@@ -63,10 +77,7 @@ RSpec.describe Messaging::Bsnl::Api do
 
   describe "#get_message_status_report" do
     it "gets the message's status" do
-      allow(ENV).to receive(:[]).with("BSNL_IHCI_HEADER").and_return("ABCDEF")
-      allow(ENV).to receive(:[]).with("BSNL_IHCI_ENTITY_ID").and_return("123")
-      Configuration.create(name: "bsnl_sms_jwt", value: "a jwt token")
-
+      stub_credentials
       stub_request(:post, "https://bulksms.bsnl.in:5010/api/Message_Status_Report").to_return(body: {a: :hash}.to_json)
       expect(described_class.new.get_message_status_report(123123)).to eq({"a" => "hash"})
     end
@@ -74,10 +85,7 @@ RSpec.describe Messaging::Bsnl::Api do
 
   describe "#get account balance" do
     it "fetches our BSNL account balances" do
-      allow(ENV).to receive(:[]).with("BSNL_IHCI_HEADER").and_return("ABCDEF")
-      allow(ENV).to receive(:[]).with("BSNL_IHCI_ENTITY_ID").and_return("123")
-      Configuration.create(name: "bsnl_sms_jwt", value: "a jwt token")
-
+      stub_credentials
       stub_request(:post, "https://bulksms.bsnl.in:5010/api/Get_SMS_Count").to_return(body: {"Recharge_Details" => ["A list of recharge details"]}.to_json)
       expect(described_class.new.get_account_balance).to eq(["A list of recharge details"])
     end

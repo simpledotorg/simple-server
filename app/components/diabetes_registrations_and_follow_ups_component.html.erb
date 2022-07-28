@@ -1,0 +1,116 @@
+<div class="card pr-0 pr-md-3 pb-inside-avoid">
+  <div class="d-flex flex-1 mb-8px">
+    <h3 class="mb-16px mr-8px">
+      Diabetes patient registrations and follow-ups
+    </h3>
+    <%= render "definition_tooltip",
+                definitions: { "Monthly registered patients" => t("registered_diabetes_patients_copy.monthly_registered_patients", region_name: region.name),
+                              "Follow-up patients" => t(:diabetes_follow_up_patients_copy, region_name: region.name) } %>
+  </div>
+  <div class="table-responsive-md">
+    <table class="analytics-table table-compact">
+      <colgroup>
+          <col>
+          <col class="table-divider">
+          <col>
+          <col class="table-divider">
+          <col>
+          <col>
+          <col>
+          <col>
+          <col>
+          <col class="table-divider">
+          <col>
+          <col>
+          <col>
+          <col>
+          <col>
+      </colgroup>
+      <thead>
+        <tr>
+          <th></th>
+          <th colspan="2">Totals</th>
+          <th colspan="6">
+            Monthly registered patients
+          </th>
+          <th colspan="6">
+            Follow-up patients
+          </th>
+        </tr>
+        <tr class="sorts" data-sort-method="thead">
+          <th class="row-label sort-label sort-label-small sticky" data-sort-default>
+            <%= region.child_region_type.capitalize %>
+          </th>
+          <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
+            Registrations
+          </th>
+          <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
+            Assigned patients
+          </th>
+          <% range.each do |period| %>
+            <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
+              <%= period.to_s(:mon_year_multiline) %>
+            </th>
+          <% end %>
+          <% range.each do |period| %>
+            <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
+              <%= period.to_s(:mon_year_multiline) %>
+            </th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="row-title row-total" data-sort-method="none">
+          <td class="row-title row-total">
+            <%= region.name %>
+          </td>
+          <td class="row-total ta-right">
+            <%= number_or_dash_with_delimiter(repository.cumulative_diabetes_registrations[region.slug][current_period]) %>
+          </td>
+          <td class="row-total ta-right">
+            <%= number_or_dash_with_delimiter(repository.cumulative_assigned_diabetic_patients[region.slug][current_period]) %>
+          </td>
+          <% range.each do |period| %>
+            <td class="row-total ta-right">
+              <%= number_or_dash_with_delimiter(repository.monthly_diabetes_registrations[region.slug][period]) %>
+            </td>
+          <% end %>
+          <% range.each do |period| %>
+            <td class="row-total ta-right">
+              <%= number_or_dash_with_delimiter(repository.diabetes_follow_ups[region.slug][period]) %>
+            </td>
+          <% end %>
+        </tr>
+        <% region.reportable_children.filter { |child| child.diabetes_management_enabled? }.each do |resource| %>
+          <% slug = resource.region.slug %>
+          <tr>
+            <td class="row-title">
+              <% if current_admin.feature_enabled?(:diabetes_management_reports) %>
+                <%= link_to resource.name, reports_region_path(resource.region, report_scope: resource.region_type) %>
+              <% else %>
+                <%= link_to resource.name, reports_region_details_path(resource.region, report_scope: resource.region_type) %>
+              <% end %>
+
+            </td>
+            <td class="ta-right">
+              <%= number_or_dash_with_delimiter(repository.cumulative_diabetes_registrations[slug][current_period]) %>
+            </td>
+            <td class="ta-right">
+              <%= number_or_dash_with_delimiter(repository.cumulative_assigned_diabetic_patients[slug][current_period]) %>
+            </td>
+            <% range.each do |period| %>
+              <td class="ta-right">
+                <%= number_or_dash_with_delimiter(repository.monthly_diabetes_registrations[slug][period]) %>
+              </td>
+            <% end %>
+            <% range.each do |period| %>
+              <td class="ta-right">
+                <%= number_or_dash_with_delimiter(repository.diabetes_follow_ups[slug][period]) %>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

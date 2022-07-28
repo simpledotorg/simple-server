@@ -214,59 +214,11 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
 
     context "when region has diabetes management enabled" do
-      before do
-        Flipper.disable(:diabetes_management_reports)
-      end
-
-      it "contains a link to the diabetes management reports if the feature flag is enabled" do
+      it "contains a link to the diabetes management reports" do
         @facility.update(enable_diabetes_management: true)
-        Flipper.enable(:diabetes_management_reports)
         sign_in(cvho.email_authentication)
         get :show, params: {id: @facility_region.slug, report_scope: "facility"}
         assert_select "a[href*='diabetes']", count: 1
-      end
-
-      it "contains a link to the diabetes management reports if the feature flag is enabled for an individual user" do
-        enabled_user = create(:admin)
-        @facility.update(enable_diabetes_management: true)
-        Flipper.enable_actor(:diabetes_management_reports, enabled_user)
-
-        sign_in(enabled_user.email_authentication)
-        get :show, params: {id: @facility_region.slug, report_scope: "facility"}
-        assert_select "a[href*='diabetes']", count: 1
-      end
-
-      it "does not contain a link to the diabetes management reports if the feature flag is disabled" do
-        @facility.update(enable_diabetes_management: true)
-        Flipper.disable(:diabetes_management_reports)
-        sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility_region.slug, report_scope: "facility"}
-        assert_select "a[href*='diabetes']", count: 0
-      end
-
-      it "does not contain a link to the diabetes management reports if the feature flag is disabled for an other individual user" do
-        enabled_user = create(:admin)
-        @facility.update(enable_diabetes_management: true)
-        Flipper.enable_actor(:diabetes_management_reports, enabled_user)
-
-        sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility_region.slug, report_scope: "facility"}
-        assert_select "a[href*='diabetes']", count: 0
-      end
-    end
-
-    context "when region has diabetes management disabled" do
-      it "does not contain a link to the diabetes management report" do
-        @facility.update(enable_diabetes_management: false)
-        sign_in(cvho.email_authentication)
-
-        Flipper.enable(:diabetes_management_reports)
-        get :show, params: {id: @facility_region.slug, report_scope: "facility"}
-        assert_select "a[href*='diabetes']", count: 0
-
-        Flipper.disable(:diabetes_management_reports)
-        get :show, params: {id: @facility_region.slug, report_scope: "facility"}
-        assert_select "a[href*='diabetes']", count: 0
       end
     end
   end
@@ -496,9 +448,10 @@ RSpec.describe Reports::RegionsController, type: :controller do
     before do
       @facility_group = create(:facility_group, organization: organization)
       @facility = create(:facility, facility_group: @facility_group)
+      sign_in(cvho.email_authentication)
     end
 
-    it "retrieves the monthly district report" do
+    it "retrieves the hypertension monthly district report" do
       Flipper.enable(:monthly_district_report)
 
       district = @facility_group.region
@@ -506,8 +459,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
       files = []
       Timecop.freeze("June 1 2020") do
-        sign_in(cvho.email_authentication)
-        get :monthly_district_report, params: {id: district.slug, report_scope: "district", format: "zip"}
+        get :hypertension_monthly_district_report, params: {id: district.slug, report_scope: "district", format: "zip"}
       end
       expect(response).to be_successful
 
@@ -518,7 +470,29 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
 
       expect(files).to match_array(%w[facility_data.csv block_data.csv district_data.csv])
-      expect(response.headers["Content-Disposition"]).to include("filename=\"monthly-district-report-#{district.slug}-jun-2020.zip\"")
+      expect(response.headers["Content-Disposition"]).to include("filename=\"monthly-district-hypertension-report-#{district.slug}-jun-2020.zip\"")
+    end
+
+    it "retrieves the diabetes monthly district report" do
+      Flipper.enable(:monthly_district_report)
+
+      district = @facility_group.region
+      refresh_views
+
+      files = []
+      Timecop.freeze("June 1 2020") do
+        get :diabetes_monthly_district_report, params: {id: district.slug, report_scope: "district", format: "zip"}
+      end
+      expect(response).to be_successful
+
+      Zip::File.open_buffer(response.body) do |zip|
+        zip.map do |entry|
+          files << entry.name
+        end
+      end
+
+      expect(files).to match_array(%w[facility_data.csv block_data.csv district_data.csv])
+      expect(response.headers["Content-Disposition"]).to include("filename=\"monthly-district-diabetes-report-#{district.slug}-jun-2020.zip\"")
     end
   end
 
@@ -550,111 +524,199 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
   end
 
-  describe "#monthly_district_data_report" do
-    let(:facility_group) { create(:facility_group, organization: organization) }
-    let(:facility) { create(:facility, facility_group: facility_group) }
-    let(:region) { facility.region.district_region }
+  describe "#hypertension_monthly_district_data" do
+    before do
+      @facility_group = create(:facility_group, organization: organization)
+      @facility = create(:facility, facility_group: @facility_group)
+      @region = @facility.region.district_region
+      sign_in(cvho.email_authentication)
+    end
 
     it "returns 401 when user is not authorized" do
-      facility
+      sign_out(cvho.email_authentication)
 
-      get :monthly_district_data_report, params: {id: region.slug, report_scope: "district", format: "csv"}
+      get :hypertension_monthly_district_data, params: {id: @region.slug, report_scope: "district", format: "csv"}
       expect(response.status).to eq(401)
     end
 
     it "returns 302 found with invalid region" do
-      facility
-      sign_in(cvho.email_authentication)
-
-      get :monthly_district_data_report, params: {id: "not-found", report_scope: "district", format: "csv"}
+      get :hypertension_monthly_district_data, params: {id: "not-found", report_scope: "district", format: "csv"}
       expect(response.status).to eq(302)
     end
 
     it "returns 302 if region is not district" do
-      facility
-      sign_in(cvho.email_authentication)
-
-      get :monthly_district_data_report, params: {id: facility.slug, report_scope: "district", format: "csv"}
+      get :hypertension_monthly_district_data, params: {id: @facility.slug, report_scope: "district", format: "csv"}
       expect(response.status).to eq(302)
     end
 
     it "calls csv service and returns 200 with csv data" do
       Timecop.freeze("June 15th 2020") do
-        facility
-        sign_in(cvho.email_authentication)
-
-        expect_any_instance_of(MonthlyDistrictDataService).to receive(:report).and_call_original
-        get :monthly_district_data_report, params: {id: region.slug, report_scope: "district", format: "csv"}
+        expect_any_instance_of(MonthlyDistrictData::HypertensionDataExporter).to receive(:report).and_call_original
+        get :hypertension_monthly_district_data, params: {id: @region.slug, report_scope: "district", format: "csv"}
         expect(response.status).to eq(200)
-        expect(response.body).to include("Monthly facility data for #{region.name} #{Date.current.strftime("%B %Y")}")
+        expect(response.body).to include("Monthly facility data for #{@region.name} #{Date.current.strftime("%B %Y")}")
         report_date = Date.current.strftime("%b-%Y").downcase
-        expected_filename = "monthly-facility-data-#{region.slug}-#{report_date}.csv"
+        expected_filename = "monthly-facility-hypertension-data-#{@region.slug}-#{report_date}.csv"
         expect(response.headers["Content-Disposition"]).to include(%(filename="#{expected_filename}"))
       end
     end
 
     it "passes the provided period to the csv service" do
-      facility
-      sign_in(cvho.email_authentication)
-
       period = Period.month("July 2018")
-      expect(MonthlyDistrictDataService).to receive(:new).with(region, period, medications_dispensation_enabled: false).and_call_original
-      get :monthly_district_data_report,
-        params: {id: region.slug, report_scope: "district", format: "csv", period: period.value}
+
+      expect(MonthlyDistrictData::HypertensionDataExporter).to receive(:new).with(region: @region,
+        period: period,
+        medications_dispensation_enabled: false)
+        .and_call_original
+      get :hypertension_monthly_district_data,
+        params: {id: @region.slug, report_scope: "district", format: "csv", period: period.attributes}
     end
   end
 
-  describe "#monthly_state_data_report" do
-    let(:facility_group) { create(:facility_group, organization: organization) }
-    let(:facility) { create(:facility, facility_group: facility_group) }
-    let(:region) { facility.region.state_region }
+  describe "#diabetes_monthly_district_data" do
+    before do
+      @facility_group = create(:facility_group, organization: organization)
+      @facility = create(:facility, facility_group: @facility_group)
+      @region = @facility.region.district_region
+      sign_in(cvho.email_authentication)
+    end
 
     it "returns 401 when user is not authorized" do
-      facility
+      sign_out(cvho.email_authentication)
 
-      get :monthly_state_data_report, params: {id: region.slug, report_scope: "state", format: "csv"}
+      get :diabetes_monthly_district_data, params: {id: @region.slug, report_scope: "district", format: "csv"}
       expect(response.status).to eq(401)
     end
 
     it "returns 302 found with invalid region" do
-      facility
-      sign_in(cvho.email_authentication)
-
-      get :monthly_state_data_report, params: {id: "not-found", report_scope: "state", format: "csv"}
+      get :diabetes_monthly_district_data, params: {id: "not-found", report_scope: "district", format: "csv"}
       expect(response.status).to eq(302)
     end
 
-    it "returns 302 if region is not state" do
-      facility
-      sign_in(cvho.email_authentication)
-
-      get :monthly_state_data_report, params: {id: facility.slug, report_scope: "state", format: "csv"}
+    it "returns 302 if region is not district" do
+      get :diabetes_monthly_district_data, params: {id: @facility.slug, report_scope: "district", format: "csv"}
       expect(response.status).to eq(302)
     end
 
     it "calls csv service and returns 200 with csv data" do
       Timecop.freeze("June 15th 2020") do
-        facility
-        sign_in(cvho.email_authentication)
-
-        expect_any_instance_of(MonthlyStateDataService).to receive(:report).and_call_original
-        get :monthly_state_data_report, params: {id: region.slug, report_scope: "state", format: "csv"}
+        expect_any_instance_of(MonthlyDistrictData::DiabetesDataExporter).to receive(:report).and_call_original
+        get :diabetes_monthly_district_data, params: {id: @region.slug, report_scope: "district", format: "csv"}
         expect(response.status).to eq(200)
-        expect(response.body).to include("Monthly district data for #{region.name} #{Date.current.strftime("%B %Y")}")
+        expect(response.body).to include("Monthly facility data for #{@region.name} #{Date.current.strftime("%B %Y")}")
         report_date = Date.current.strftime("%b-%Y").downcase
-        expected_filename = "monthly-district-data-#{region.slug}-#{report_date}.csv"
+        expected_filename = "monthly-facility-diabetes-data-#{@region.slug}-#{report_date}.csv"
         expect(response.headers["Content-Disposition"]).to include(%(filename="#{expected_filename}"))
       end
     end
 
     it "passes the provided period to the csv service" do
-      facility
-      sign_in(cvho.email_authentication)
-
       period = Period.month("July 2018")
-      expect(MonthlyStateDataService).to receive(:new).with(region, period, medications_dispensation_enabled: false).and_call_original
-      get :monthly_state_data_report,
-        params: {id: region.slug, report_scope: "state", format: "csv", period: period.value}
+
+      expect(MonthlyDistrictData::DiabetesDataExporter).to receive(:new).with(region: @region,
+        period: period,
+        medications_dispensation_enabled: false)
+        .and_call_original
+      get :diabetes_monthly_district_data,
+        params: {id: @region.slug, report_scope: "district", format: "csv", period: period.attributes}
+    end
+  end
+
+  describe "#hypertension_monthly_state_data" do
+    before do
+      @facility_group = create(:facility_group, organization: organization)
+      @facility = create(:facility, facility_group: @facility_group)
+      @region = @facility.region.state_region
+      sign_in(cvho.email_authentication)
+    end
+
+    it "returns 401 when user is not authorized" do
+      sign_out(cvho.email_authentication)
+
+      get :hypertension_monthly_state_data, params: {id: @region.slug, report_scope: "state", format: "csv"}
+      expect(response.status).to eq(401)
+    end
+
+    it "returns 302 found with invalid region" do
+      get :hypertension_monthly_state_data, params: {id: "not-found", report_scope: "state", format: "csv"}
+      expect(response.status).to eq(302)
+    end
+
+    it "returns 302 if region is not state" do
+      get :hypertension_monthly_state_data, params: {id: @facility.slug, report_scope: "state", format: "csv"}
+      expect(response.status).to eq(302)
+    end
+
+    it "calls csv service and returns 200 with csv data" do
+      Timecop.freeze("June 15th 2020") do
+        expect_any_instance_of(MonthlyStateData::Exporter).to receive(:report).and_call_original
+        get :hypertension_monthly_state_data, params: {id: @region.slug, report_scope: "state", format: "csv"}
+        expect(response.status).to eq(200)
+        expect(response.body).to include("Monthly district data for #{@region.name} #{Date.current.strftime("%B %Y")}")
+        report_date = Date.current.strftime("%b-%Y").downcase
+        expected_filename = "monthly-district-hypertension-data-#{@region.slug}-#{report_date}.csv"
+        expect(response.headers["Content-Disposition"]).to include(%(filename="#{expected_filename}"))
+      end
+    end
+
+    it "passes the provided period to the csv service" do
+      period = Period.month("July 2018")
+
+      expect(MonthlyStateData::HypertensionDataExporter).to receive(:new).with(region: @region,
+        period: period,
+        medications_dispensation_enabled: false)
+        .and_call_original
+      get :hypertension_monthly_state_data,
+        params: {id: @region.slug, report_scope: "state", format: "csv", period: period.attributes}
+    end
+  end
+
+  describe "#diabetes_monthly_state_data" do
+    before do
+      @facility_group = create(:facility_group, organization: organization)
+      @facility = create(:facility, facility_group: @facility_group)
+      @region = @facility.region.state_region
+      sign_in(cvho.email_authentication)
+    end
+
+    it "returns 401 when user is not authorized" do
+      sign_out(cvho.email_authentication)
+
+      get :diabetes_monthly_state_data, params: {id: @region.slug, report_scope: "state", format: "csv"}
+      expect(response.status).to eq(401)
+    end
+
+    it "returns 302 found with invalid region" do
+      get :diabetes_monthly_state_data, params: {id: "not-found", report_scope: "state", format: "csv"}
+      expect(response.status).to eq(302)
+    end
+
+    it "returns 302 if region is not state" do
+      get :diabetes_monthly_state_data, params: {id: @facility.slug, report_scope: "state", format: "csv"}
+      expect(response.status).to eq(302)
+    end
+
+    it "calls csv service and returns 200 with csv data" do
+      Timecop.freeze("June 15th 2020") do
+        expect_any_instance_of(MonthlyStateData::Exporter).to receive(:report).and_call_original
+        get :diabetes_monthly_state_data, params: {id: @region.slug, report_scope: "state", format: "csv"}
+        expect(response.status).to eq(200)
+        expect(response.body).to include("Monthly district data for #{@region.name} #{Date.current.strftime("%B %Y")}")
+        report_date = Date.current.strftime("%b-%Y").downcase
+        expected_filename = "monthly-district-diabetes-data-#{@region.slug}-#{report_date}.csv"
+        expect(response.headers["Content-Disposition"]).to include(%(filename="#{expected_filename}"))
+      end
+    end
+
+    it "passes the provided period to the csv service" do
+      period = Period.month("July 2018")
+
+      expect(MonthlyStateData::DiabetesDataExporter).to receive(:new).with(region: @region,
+        period: period,
+        medications_dispensation_enabled: false)
+        .and_call_original
+      get :diabetes_monthly_state_data,
+        params: {id: @region.slug, report_scope: "state", format: "csv", period: period.attributes}
     end
   end
 
@@ -664,33 +726,12 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
     before do
       sign_in(cvho.email_authentication)
-      Flipper.enable(:diabetes_management_reports)
     end
 
-    context "when diabetes management is disabled in the region" do
-      it "raises a routing error" do
-        facility.update(enable_diabetes_management: false)
+    it "return diabetes reports page" do
+      get :diabetes, params: {id: facility_region.slug, report_scope: "facility"}
 
-        expect {
-          get :diabetes, params: {id: facility_region.slug, report_scope: "facility"}
-        }.to raise_error(ActionController::RoutingError)
-      end
-    end
-
-    context "when diabetes management is enabled in the region" do
-      it "return diabetes reports page" do
-        get :diabetes, params: {id: facility_region.slug, report_scope: "facility"}
-
-        expect(response).to have_http_status(:ok)
-      end
-
-      it "raises a routing error when feature flag is disabled" do
-        Flipper.disable(:diabetes_management_reports)
-
-        expect {
-          get :diabetes, params: {id: facility_region.slug, report_scope: "facility"}
-        }.to raise_error(ActionController::RoutingError)
-      end
+      expect(response).to have_http_status(:ok)
     end
   end
 end

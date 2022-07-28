@@ -7,4 +7,6 @@ class Messaging::Twilio::Error < Messaging::Error
     @message = "Error while calling Twilio API: #{message}"
     @reason = ERROR_CODE_REASONS[error_code]
   end
+
+  attr_reader :message, :reason
 end

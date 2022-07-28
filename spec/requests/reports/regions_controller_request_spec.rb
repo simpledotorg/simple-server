@@ -31,7 +31,7 @@ RSpec.describe "RegionsControllers", type: :request do
         expect(response.body).to include("CC Brooklyn")
         doc = Nokogiri::HTML(response.body)
         json = doc.search("#data-json")
-        data = Oj.load(json.text)
+        data = Oj.load(json.first.text)
 
         # spot check for now
         keys = ["adjusted_patient_counts", "uncontrolled_patients_rate"]
