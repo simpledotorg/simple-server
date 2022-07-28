@@ -50,6 +50,10 @@ FactoryBot.define do
       medical_history { build(:medical_history, :diabetes_yes, patient_id: id) }
     end
 
+    trait :hypertension_and_diabetes do
+      medical_history { build(:medical_history, :hypertension_yes, :diabetes_yes, patient_id: id) }
+    end
+
     trait :without_medical_history do
       medical_history { nil }
     end

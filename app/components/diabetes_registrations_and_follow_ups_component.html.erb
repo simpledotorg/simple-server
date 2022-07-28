@@ -85,12 +85,7 @@
           <% slug = resource.region.slug %>
           <tr>
             <td class="row-title">
-              <% if current_admin.feature_enabled?(:diabetes_management_reports) %>
-                <%= link_to resource.name, reports_region_path(resource.region, report_scope: resource.region_type) %>
-              <% else %>
-                <%= link_to resource.name, reports_region_details_path(resource.region, report_scope: resource.region_type) %>
-              <% end %>
-
+              <%= link_to resource.name, reports_region_path(resource.region, report_scope: resource.region_type) %>
             </td>
             <td class="ta-right">
               <%= number_or_dash_with_delimiter(repository.cumulative_diabetes_registrations[slug][current_period]) %>
