@@ -12,7 +12,6 @@ class Dashboard::Hypertension::DownloadsDropdownComponent < ApplicationComponent
 
   def region_download_path
     reports_region_download_path(
-      region,
       report_scope: report_scope,
       period: :quarter,
       format: :csv
