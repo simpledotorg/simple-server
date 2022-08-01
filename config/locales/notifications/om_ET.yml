@@ -1,4 +1,4 @@
-om-ET:
+om:
   notifications:
     set01:
       basic: "%{patient_name}, maaloo %{facility_name} gaafa %{appointment_date} irratti safaraa fi dawaadhaf akka argamtan. "
@@ -9,6 +9,14 @@ om-ET:
       emotional_guilt: "Yoo hin yaalamnee, BP ol aanaan hawaasa keetiif gatii ol aanaa ta'uu danda'a. %{patient_name}, maaloo %{facility_name} gaafa %{appointment_date} safaraa fi dawaawwan BP tiif argama."
       professional_request: "Haakimni kee BP'n kee safaramuu beekuu barbaada. %{patient_name}, maaloo %{facility_name} tti gaafa %{appointment_date} safaraa fi dawaawwan BP tiif argama. "
       response: "%{patient_name}, maaloo %{facility_name} tti gaafa %{appointment_date} safaraa fi dawaawwan BP tiif argama. akka dhuftu nu beeksisuudhaaf geessituu irratti cuqaasi:"
+      short: " %{patient_name}BP keetiif %{facility_name}%{appointment_date}irratti ilaali."
+      short_medicines: "Dawaa %{patient_name}BP keetiif %{facility_name}%{appointment_date}irratti ilaali."
+      you_must: "BP dhaaf dirqama %{facility_name}%{patient_name} tti %{appointment_date}irratti dhufuu qabda."
+      no_date: "Safara BP %{patient_name} tiif boru %{facility_name} tti koottu"
+      official_short: " %{patient_name}BP keetiif %{facility_name}%{appointment_date}irratti ilaali. Haakimni kee fayyaa gaarii siif hawwa."
+      official_short_medicines: "Dawaa %{patient_name}BP keetiif %{facility_name}%{appointment_date}irratti ilaali. Haakimni kee fayyaa gaarii siif hawwa."
+      official_you_must: "BP dhaaf dirqama %{facility_name}%{patient_name} tti %{appointment_date}irratti dhufuu qabda. Haakimni kee fayyaa gaarii siif hawwa."
+      official_no_date: "Safara BP %{patient_name} tiif boru %{facility_name} tti koottu. Haakimni kee fayyaa gaarii siif hawwa."
     set02:
       basic: "Har'a si eegna. %{patient_name}, maaloo gaafa %{facility_name} safaraa fi dawaa BP tiif argama."
       gratitude: "Har'a isin eegna. Dawaawwan BP ol ka'aa fudhachuu keessaniif galatooma. %{patient_name}, maaloo %{facility_name}tti safaraa fi dawaawwan BPtiif argama."
@@ -18,6 +26,14 @@ om-ET:
       emotional_guilt: "Yoo hin yaalamnee, BP ol aanaan hawaasa keetiif gatii ol aanaa ta'uu danda'a. %{patient_name}, maaloo gaafa %{facility_name} safaraa fi dawaawwan BP tiif argama."
       professional_request: "Har'a si eegna. Haakimni kee akka BP kee safaratti si yaadachiisuu barbaada. %{patient_name}, maaloo safaraa fi dawaa BP tiif dafii %{facility_name} daawwadhu."
       response: "Har'a si eegna. %{patient_name}, maaloo safaraa fi dawaa BP tiif dafii %{facility_name} daawwadhu. akka dhuftu akka nuti beeknuuf geessituu kana irratti cuqaasi."
+      short: "Safara kee BP %{patient_name} tiif har'a %{facility_name}dhaqi."
+      short_medicines: "Safara kee BP fi dawaa dhaaf %{patient_name} tiif har'a %{facility_name}dhaqi."
+      you_must: "BP dhaaf har'a dirqama %{facility_name}%{patient_name} tti dhufuu qabda."
+      no_date: "Safara BP tiif %{patient_name}har'a %{facility_name}tti koottu."
+      official_short: " %{patient_name}BP keetiif %{facility_name}irratti ilaali. Haakimni kee fayyaa gaarii siif hawwa."
+      official_short_medicines: " %{patient_name}BP fi dawaawwan keetiif  har'a%{facility_name}irratti ilaali. Haakimni kee fayyaa gaarii siif hawwa."
+      official_you_must: "BP dhaaf har'a dirqama %{facility_name}%{patient_name} irratti dhufuu qabda. Haakimni kee fayyaa gaarii siif hawwa."
+      official_no_date: "Safara BP %{patient_name} tiif har'a %{facility_name} tti koottu. Haakimni kee fayyaa gaarii siif hawwa."
     set03:
       basic: "Safara BP irraa barfattee jirta. %{patient_name}, maaloo safaraa fi dawaa BP tiif dafii %{facility_name} daawwadhu. "
       gratitude: "Har'a si eegna. Dhaabbiidhaan dawaa BP ol ka'aadhaf fudhachuu keetif galatoomi. maaloo safara BP fi dawaatif saffisaan %{patient_name}, maaloo %{facility_name} irratti daawwadhu."
@@ -27,5 +43,13 @@ om-ET:
       emotional_guilt: "Safara BP irraa barfattee jirta. Yoo hin yaalamne ta'e, BP ol ka'aan hawaasa hunda gatii baasisuu mala. %{patient_name}, maaloo safaraa fi dawaa BP tiif dafii %{facility_name} daawwadhu."
       professional_request: "Safara BP irraa barfattee jirta. Haakimni kee akka BP kee safaratti si yaadachiisuu barbaada. %{patient_name}, maaloo safaraa fi dawaa BP tiif dafii %{facility_name} daawwadhu."
       response: "Safara BP irraa barfattee jirta. %{patient_name}, maaloo safaraa fi dawaa BP tiif dafii %{facility_name} daawwadhu. akka dhuftu akka nnuti beeknuuf geessituu kana irratti cuqaasi."
+      short: "Beellama kee BP dhaatif barfattee jirta. BP kee %{patient_name}tiif dafii %{facility_name} ilaali."
+      short_medicines: "Beellama kee BP fi dawaawwan keetif barfattee jirta. BP kee %{patient_name}tiif dafii %{facility_name} ilaali."
+      you_must: "BP dhaaf hanga danda'ameen daddaffiin dirqama %{facility_name}%{patient_name} tti dhufuu qabda."
+      no_date: ""
+      official_short: "Beellama kee BP dhaatif barfattee jirta. BP kee %{patient_name}tiif dafii %{facility_name} ilaali. Haakimni kee fayyaa gaarii siif hawwa."
+      official_short_medicines: "Beellama kee BP fi dawaawwaniitif barfattee jirta. BP kee %{patient_name}tiif dafii %{facility_name} ilaali. Haakimni kee fayyaa gaarii siif hawwa."
+      official_you_must: "BP dhaaf hanga danda'ameen daddaffiidhan dirqama %{facility_name}%{patient_name} irratti dhufuu qabda. Haakimni kee fayyaa gaarii siif hawwa."
+      official_no_date: ""
     covid:
       medication_reminder: "Kabajamoo %{patient_name}: Hojjattootni keenya kan %{facility_name} yeroo fayyaa hatattamaa COVUD kanatti waa'ee fayyaa onnee keetii yaadu. Dawaa BPP itti fufuun kee baayyee murteessaadha. Jiddugala fayyaa dhihoo fi eeggumsa fayyaa irraa dawaawwan kee fudhadhu. ANM yookan ASHA kee qunnami."
