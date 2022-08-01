@@ -41,50 +41,52 @@ describe MonthlyDistrictReport::Diabetes::BlockData do
 
   context "#content_rows" do
     it "returns a hash with the required keys and values" do
-      month = Period.month(Period.current)
-      periods = Range.new(month.advance(months: -5), month)
-      region = setup_district_data[:region]
+      Timecop.freeze("2022-07-31") do
+        month = Period.month(Period.current)
+        periods = Range.new(month.advance(months: -5), month)
+        region = setup_district_data[:region]
 
-      rows = described_class.new(region, month).content_rows
+        rows = described_class.new(region, month).content_rows
 
-      expect(rows[0].count).to eq 52
+        expect(rows[0].count).to eq 52
 
-      expect(rows[0]["Blocks"]).to eq "Block 1 - alphabetically first"
-      expect(rows[0]["Total diabetes registrations"]).to eq 4
-      expect(rows[0]["Total assigned diabetes patients"]).to eq 4
-      expect(rows[0]["Total diabetes patients under care"]).to eq 3
-      expect(rows[0]["Total diabetes patients lost to followup"]).to eq 1
-      expect(rows[0]["% Blood sugar below 200"]).to eq "0%"
-      expect(rows[0]["% Blood sugar between 200 and 300"]).to eq "0%"
-      expect(rows[0]["% Blood sugar over 300"]).to eq "0%"
-      expect(rows[0]["% Diabetes missed Visits"]).to eq "33%"
-      expect(rows[0]["% Visits, no blood sugar taken"]).to eq "67%"
+        expect(rows[0]["Blocks"]).to eq "Block 1 - alphabetically first"
+        expect(rows[0]["Total diabetes registrations"]).to eq 4
+        expect(rows[0]["Total assigned diabetes patients"]).to eq 4
+        expect(rows[0]["Total diabetes patients under care"]).to eq 3
+        expect(rows[0]["Total diabetes patients lost to followup"]).to eq 1
+        expect(rows[0]["% Blood sugar below 200"]).to eq "0%"
+        expect(rows[0]["% Blood sugar between 200 and 300"]).to eq "0%"
+        expect(rows[0]["% Blood sugar over 300"]).to eq "0%"
+        expect(rows[0]["% Diabetes missed Visits"]).to eq "33%"
+        expect(rows[0]["% Visits, no blood sugar taken"]).to eq "67%"
 
-      expect(periods.map { |period| rows[0]["cumulative_diabetes_registrations - #{period}"] }).to eq [1, 3, 4, 4, 4, 4]
-      expect(periods.map { |period| rows[0]["diabetes_under_care - #{period}"] }).to eq [0, 2, 3, 3, 3, 3]
-      expect(periods.map { |period| rows[0]["monthly_diabetes_registrations - #{period}"] }).to eq [0, 2, 1, 0, 0, 0]
-      expect(periods.map { |period| rows[0]["diabetes_follow_ups - #{period}"] }).to eq [0, 0, 0, 1, 0, 1]
-      expect(periods.map { |period| rows[0]["bs_below_200_rates - #{period}"] }).to eq %w[0% 0% 0% 0% 0% 0%]
-      expect(periods.map { |period| rows[0]["bs_200_to_300_rates - #{period}"] }).to eq %w[0% 0% 0% 0% 0% 0%]
-      expect(periods.map { |period| rows[0]["bs_over_300_rates - #{period}"] }).to eq %w[0% 0% 0% 0% 0% 0%]
+        expect(periods.map { |period| rows[0]["cumulative_diabetes_registrations - #{period}"] }).to eq [1, 3, 4, 4, 4, 4]
+        expect(periods.map { |period| rows[0]["diabetes_under_care - #{period}"] }).to eq [0, 2, 3, 3, 3, 3]
+        expect(periods.map { |period| rows[0]["monthly_diabetes_registrations - #{period}"] }).to eq [0, 2, 1, 0, 0, 0]
+        expect(periods.map { |period| rows[0]["diabetes_follow_ups - #{period}"] }).to eq [0, 0, 0, 1, 0, 1]
+        expect(periods.map { |period| rows[0]["bs_below_200_rates - #{period}"] }).to eq %w[0% 0% 0% 0% 0% 0%]
+        expect(periods.map { |period| rows[0]["bs_200_to_300_rates - #{period}"] }).to eq %w[0% 0% 0% 0% 0% 0%]
+        expect(periods.map { |period| rows[0]["bs_over_300_rates - #{period}"] }).to eq %w[0% 0% 0% 0% 0% 0%]
 
-      expect(rows[1]["Blocks"]).to eq "Block 2 - alphabetically second"
-      expect(rows[1]["Total diabetes registrations"]).to eq 3
-      expect(rows[1]["Total assigned diabetes patients"]).to eq 3
-      expect(rows[1]["Total diabetes patients under care"]).to eq 3
-      expect(rows[1]["Total diabetes patients lost to followup"]).to eq 0
-      expect(rows[1]["% Blood sugar below 200"]).to eq "33%"
-      expect(rows[1]["% Blood sugar between 200 and 300"]).to eq "0%"
-      expect(rows[1]["% Blood sugar over 300"]).to eq "0%"
-      expect(rows[1]["% Diabetes missed Visits"]).to eq "0%"
-      expect(rows[1]["% Visits, no blood sugar taken"]).to eq "67%"
-      expect(periods.map { |period| rows[1]["cumulative_diabetes_registrations - #{period}"] }).to eq [0, 2, 3, 3, 3, 3]
-      expect(periods.map { |period| rows[1]["diabetes_under_care - #{period}"] }).to eq [0, 2, 3, 3, 3, 3]
-      expect(periods.map { |period| rows[1]["bs_below_200_rates - #{period}"] }).to eq %w[0% 0% 0% 0% 0% 33%]
-      expect(periods.map { |period| rows[1]["bs_200_to_300_rates - #{period}"] }).to eq %w[0% 0% 0% 0% 0% 0%]
-      expect(periods.map { |period| rows[1]["bs_over_300_rates - #{period}"] }).to eq %w[0% 0% 0% 0% 0% 0%]
-      expect(periods.map { |period| rows[1]["monthly_diabetes_registrations - #{period}"] }).to eq [0, 2, 1, 0, 0, 0]
-      expect(periods.map { |period| rows[1]["diabetes_follow_ups - #{period}"] }).to eq [0, 0, 0, 1, 1, 2]
+        expect(rows[1]["Blocks"]).to eq "Block 2 - alphabetically second"
+        expect(rows[1]["Total diabetes registrations"]).to eq 3
+        expect(rows[1]["Total assigned diabetes patients"]).to eq 3
+        expect(rows[1]["Total diabetes patients under care"]).to eq 3
+        expect(rows[1]["Total diabetes patients lost to followup"]).to eq 0
+        expect(rows[1]["% Blood sugar below 200"]).to eq "33%"
+        expect(rows[1]["% Blood sugar between 200 and 300"]).to eq "0%"
+        expect(rows[1]["% Blood sugar over 300"]).to eq "0%"
+        expect(rows[1]["% Diabetes missed Visits"]).to eq "0%"
+        expect(rows[1]["% Visits, no blood sugar taken"]).to eq "67%"
+        expect(periods.map { |period| rows[1]["cumulative_diabetes_registrations - #{period}"] }).to eq [0, 2, 3, 3, 3, 3]
+        expect(periods.map { |period| rows[1]["diabetes_under_care - #{period}"] }).to eq [0, 2, 3, 3, 3, 3]
+        expect(periods.map { |period| rows[1]["bs_below_200_rates - #{period}"] }).to eq %w[0% 0% 0% 0% 0% 33%]
+        expect(periods.map { |period| rows[1]["bs_200_to_300_rates - #{period}"] }).to eq %w[0% 0% 0% 0% 0% 0%]
+        expect(periods.map { |period| rows[1]["bs_over_300_rates - #{period}"] }).to eq %w[0% 0% 0% 0% 0% 0%]
+        expect(periods.map { |period| rows[1]["monthly_diabetes_registrations - #{period}"] }).to eq [0, 2, 1, 0, 0, 0]
+        expect(periods.map { |period| rows[1]["diabetes_follow_ups - #{period}"] }).to eq [0, 0, 0, 1, 1, 2]
+      end
     end
 
     it "orders the rows by block names" do
