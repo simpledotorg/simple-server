@@ -72,7 +72,7 @@ function ReportsTable (id) {
   if (table) {
     new Tablesort(table, tableSortAscending);
   }
-};
+}
 
 function ReportsGraph (id, data) {
   const container = document.querySelector(`#${id}`);
@@ -119,7 +119,7 @@ function ReportsGraph (id, data) {
     new Chart(graphCanvas.getContext("2d"), graphConfig);
     populateDynamicComponents(defaultPeriod);
   }
-};
+}
 
 const createBaseGraphConfig = () => {
   return {
