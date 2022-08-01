@@ -1,4 +1,4 @@
-hi-IN:
+hi_IN:
   notifications:
     set01:
       basic: "%{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए %{appointment_date} को %{facility_name} आएं।"
