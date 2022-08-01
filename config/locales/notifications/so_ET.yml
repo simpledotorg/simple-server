@@ -1,4 +1,4 @@
-so-ET:
+so:
   notifications:
     set01:
       basic: "%{patient_name}, fadlan booqo %{facility_name} ee %{appointment_date} ee qiyaasta iyo dawooyinka."
@@ -9,6 +9,14 @@ so-ET:
       emotional_guilt: "Marka aan la dawayn, cadaadiska sare ee dhiiga BP waxa uu ku tagaa kharash badan dhammaan bulshadda%{patient_name}, fadlan booqo%{facility_name} taariikhda %{appointment_date} wixii ah qiyaasta iyo dawooyinka BP/"
       professional_request: "Dhakhtarkaagu waxa uu rabaa inuu ku xasuusiyo adigu inaad hesho BP la qiyaasay. %{patient_name}, fadlan booqo %{facility_name} taariikhda %{appointment_date} wixii ah qiyaasta iyo dawooyinka BP."
       response: "%{patient_name}, fadlan booqo%{facility_name} taariikhda %{appointment_date} wixii ah qiyaasta iyo dawooyinka BP. Riix linkiga siaad noo o gaysiiso inaad soo xaadiri doonto:"
+      short: "Booqo%{facility_name} ku saabsan %{appointment_date}  BP gaaga %{patient_name}."
+      short_medicines: "Booqo %{facility_name} ku saabsan %{appointment_date} BP gaaga iyo dawooyinka%{patient_name}."
+      you_must: "Waa inaad u timaado %{appointment_date} BP ga wakhtiga %{facility_name} %{patient_name}."
+      no_date: "Kaalay beri %{facility_name} wixii ah qiyaasta BP %{patient_name}."
+      official_short: "Booqo %{facility_name} ku saabsan %{appointment_date} wixii ah BP %{patient_name}. Dakhtarkaagu waxa uu kula rabaa caafimaad wanaagsan."
+      official_short_medicines: "Booqo %{facility_name} ku saabsan %{appointment_date} wixii ah BP gaaga iyo dawooyinka%{patient_name}. Dhakhtarkaagu waxa uu kula rabaa caafimaad wanaagsan."
+      official_you_must: "Waa inaad u timaado %{appointment_date} BP xaga%{facility_name} %{patient_name}. Dhakhtarkaagu waxa uu kula rabaa caafimaad wanaagsan."
+      official_no_date: "U kaalay beri %{facility_name} fqiyaasta BP %{patient_name}. Your doctor wishes for your good health Dhakhtarkaagu waxa uu kula rabaa caafimaadkaaga wanaagsan."
     set02:
       basic: "Waxaanu filaynaa maanta. %{patient_name}, fadlan booqo %{facility_name} wixii ah qiyaasta iyo dawooyinka BP."
       gratitude: "Waanu ku filaynaa maanta. Waad ku mahad san tahay qaadashada dawooyinka caadiga ah ee Dhiig karta Sare. %{patient_name}, fadlan booqo%{facility_name} wixii ah qiyaasta iyo dawooyinka BP."
@@ -18,6 +26,14 @@ so-ET:
       emotional_guilt: "Waanu ku filaynaa maanta. Marka aan la dawayn, cadaadiska sare ee dhiigu kharash badan waxa uu ku yahay dhammaan bulshadda %{patient_name}, fadlan booqo %{facility_name}wixii ah qiyaasta iyo dawooyinka BP."
       professional_request: "Waanu ku filaynaa maanta. Dhakhtarkaagu waxa uu rabaa inuu ku xasuusiyo in BP gaaga la qiyaaso. %{patient_name}, fadlan booqo%{facility_name} wixii ah qiyaasta iyo dawooyinka BP."
       response: "Waanu ku filaynaa maanta. %{patient_name}, fadlan booqo %{facility_name} wixii ah qiyaasta iyo dawooyinka BP. Riix linkigan si aad noo ogaysiiso inaad soo xaadiri doonto"
+      short: "Booqo %{facility_name} maanta BP gaaga %{patient_name}."
+      short_medicines: "Booqo %{facility_name} maanta BP gaaga iyo dawooyinka %{patient_name}."
+      you_must: "Waxaad maanta u iman kartaa BP saacada %{facility_name} %{patient_name}."
+      no_date: "Maanta kaalay %{facility_name} wixii ah qiyaasta BP %{patient_name}."
+      official_short: "Booqo %{facility_name} maanta BP gaaga %{patient_name}. Dhakhtarkaagu waxa uu  kula rabaa caafimaadkaaga wanaagsan."
+      official_short_medicines: "Booqo %{facility_name} maanta BP gaaga iyo dawooyinka %{patient_name}. Dhakhtarkaagu waxa uu kula rabaa caafimaadkaaga wanaagsan."
+      official_you_must: "Waa inaad maantau timaadoBP saacada%{facility_name} %{patient_name}.D hakhtarkaagu waxa uu kula rabaa caafimaadkaaga wanaagsan."
+      official_no_date: "Maanta u kaalay %{facility_name} wixii ah qiyaasta BP %{patient_name}. Dhakhtarkaagu waxa uu kula rabaa caafimaadkaaga wanaagsan."
     set03:
       basic: "Waxaad ka daahday qiyaastaada BP %{patient_name}, fadlan booqo%{facility_name}sida ug dhakhsaha badan ee suuragalka ah wixii ah qiyaasta iyo dawooyinka BP."
       gratitude: "Waxaad ka daahday qiyaastaada BP. Waad ku mahad san tahay qaadashada dawooyinka caadiga ah ee BP sare %{patient_name}, fadlan booqo%{facility_name}sida ug dhakhsaha badan ee suuragalka ah wixii ah qiyaasta iyo dawooyinka BP.."
@@ -27,5 +43,13 @@ so-ET:
       emotional_guilt: "Waxaad ka daahday qiyaastaada BP. Marka aan la dawayn, cadaadiska sare ee dhiigu kharash badan waxa uu ku yahay dhammaan bulshadda %{patient_name}, fadlan booqo %{facility_name} sida ug dhakhsaha badan ee suuragalka ah wixii ah qiyaasta iyo dawooyinka BP."
       professional_request: "Waxaad ka daahday qiyaastaada BP. Dhakhtarkaagu waxa uu rabaa inuu ku xasuusiyo in BP gaaga la qiyaaso. %{patient_name}, fadlan booqo%{facility_name} sida ug dhakhsaha badan ee suuragalka ah wixii ah qiyaasta iyo dawooyinka BP."
       response: "Waxaad ka daahday qiyaastaada BP. %{patient_name}, fadlan booqo%{facility_name} sida ug dhakhsaha badan ee suuragalka ah wixii ah qiyaasta iyo dawooyinka BP. Riix linkigan si aad noo ogaysiiso inaad soo xaadiri doonto:"
+      short: "Waxaad ka daahday Booqashada BP gaaga %{facility_name} sida degdega ah ee suuragalka ah BP gaaga %{patient_name}."
+      short_medicines: "Waxaad ka daahday BP Booqashadaada %{facility_name} sida degdega ah ee suuragalka ah ee BP gaaga iyo dawooyinka %{patient_name}."
+      you_must: "Waa inaad timaado sida degdega ah ee suuragalka ah ee BP saacada %{facility_name} %{patient_name}."
+      no_date: ""
+      official_short: "Waxaad ka daahday Booqshada BP gaaga %{facility_name} sida degdega ah ee suuraglka ah BP gaaga%{patient_name} . Dhakhtarkaagu waxa uu kula rabaa caafimaadkaaga wanaagsan.."
+      official_short_medicines: "Waxaad ka daahday Booqashada BP gaaga %{facility_name} sida ugu dhakhsaha badan ee suuragalka ah BP gaaga iyo dawooyinka %{patient_name}. Dhakhtarkaagu waxa uu kula rabaa caafimaadkaaga wanaagsan.."
+      official_you_must: "Waa inaad u timaadaa sida dhakhsaha ah ee suuragalka BP saacada %{facility_name} %{patient_name}. Dhakhtarkaagu waxa uu kula rabaa caafimaadkaaga wanaagsan.."
+      official_no_date: ""
     covid:
       medication_reminder: "Gacaliye %{patient_name}: Shaqaalahayaga jooga xaga %{facility_name} way kaa fekeriyaan adiga iyo caafimaadkaaga wadnaha muddada gurmadkan COVID. Aad ayay muhiim u tahay in la sii wado dawooyinkaaga BP. Ka qaado dawooyinkaaga blaashka ah xarunta hoose ee ugu dhow ama xarunta fayo qabka caafimaadkaaga. La xidhiidh ANM kaaga ama ASHA."
