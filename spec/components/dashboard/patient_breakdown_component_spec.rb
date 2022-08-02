@@ -7,6 +7,11 @@ describe Dashboard::PatientBreakdownComponent, type: :component do
     facility_2 = region_hash[:facility_2]
     district = region_hash[:region]
 
+    # Enable diabetes management
+    [facility_1, facility_2].each { |facility|
+      facility.update(enable_diabetes_management: true)
+    }
+
     create_list(:patient, 3, :diabetes, :under_care, assigned_facility: facility_1, registration_facility: facility_1)
     create_list(:patient, 2, :diabetes, :lost_to_follow_up, assigned_facility: facility_2, registration_facility: facility_2)
     create_list(:patient, 1, :diabetes, :dead, assigned_facility: facility_1, registration_facility: facility_1)
