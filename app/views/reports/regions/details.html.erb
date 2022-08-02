@@ -22,7 +22,7 @@
   )) %>
 </div>
 <% if current_admin.feature_enabled?(:medications_dispensation) %>
-  <%= render "reports/regions/medications_dispensation" %>
+  <%= render Dashboard::MedicationDispensationComponent.new(data: @data, region: @region, period: @period) %>
 <% end %>
 
 <% if @region.facility_region? %>

@@ -236,10 +236,10 @@
   )) %>
 </div>
 
-<% if current_admin.feature_enabled?(:medications_dispensation) %>
-  <h4 class="mt-5 mb-32px">Medications</h4>
-  <%= render "reports/regions/medications_dispensation" %>
-<% end %>
+  <% if current_admin.feature_enabled?(:medications_dispensation) %>
+    <h4 class="mt-5 mb-32px">Medications</h4>
+    <%= render Dashboard::MedicationDispensationComponent.new(data: @data, region: @region, period: @period) %>
+  <% end %>
 
 <% if @children_data.any? %>
   <h4 class="mt-5 mb-32px">Compare performance</h4>
