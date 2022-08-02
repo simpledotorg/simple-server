@@ -1,65 +1,56 @@
 <div class="card mt-0 pr-0 pr-md-3 pb-inside-avoid">
-  <%= render Dashboard::Card::TitleComponent.new(
-    title: "Healthcare worker activity",
-    tooltip_definitions: {
-      "Blood sugar measures taken" => t("bs_measures_taken_copy", region_name: region.name)
-    }) %>
+  <%= render Dashboard::Card::TitleComponent.new(title: "Healthcare worker activity") do |c| %>
+    <%= c.tooltip({
+                    "Blood sugar measures taken" => t("bs_measures_taken_copy", region_name: region.name)
+                  }) %>
+  <% end %>
 
   <div class="table-responsive-md">
-    <table class="analytics-table table-compact">
-      <colgroup>
-        <col>
-        <col>
-        <col class="table-divider">
-        <col class="table-divider">
-        <col>
-        <col>
-        <col>
-        <col>
-        <col>
-      </colgroup>
-      <thead>
-      <!-- Healthcare worker activity headers -->
-      <tr>
-        <th></th>
-        <th>Total</th>
-        <th colspan="6">
-          Blood sugars measures taken
-        </th>
-      </tr>
-      <tr class="sorts" data-sort-method="thead">
-        <th class="row-label sort-label sort-label-small ta-center sticky" data-sort-default>
-          Users
-        </th>
-        <th class="row-label sort-label sort-label-small ta-center sticky" data-sort-method="number">
-          Registered patients
-        </th>
-        <% period_range.each do |period| %>
-          <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
-            <%= period %>
-          </th>
-        <% end %>
-      </tr>
-      </thead>
-      <tbody>
-      <% current_admin.accessible_users(:view_reports).order(:full_name).each do |resource| %>
-        <% next unless sum_registration_counts(repository, slug: region.slug, user_id: resource.id, diagnosis: :diabetes)&.nonzero? ||
-          sum_blood_sugar_measures(repository, slug: region.slug, user_id: resource.id)&.nonzero? %>
-        <tr>
-          <td class="row-title">
-            <%= link_to resource.full_name, admin_user_path(resource, period: @period) %>
-          </td>
-          <td class="ta-center">
-            <%= number_or_dash_with_delimiter(sum_registration_counts(repository, slug: region.slug, user_id: resource.id, diagnosis: :diabetes)) %>
-          </td>
-          <% period_range.each do |period| %>
-            <td class="ta-center">
-              <%= number_or_dash_with_delimiter(repository.blood_sugar_measures_by_user.dig(region.slug, period, resource.id)) %>
-            </td>
-          <% end %>
-        </tr>
+    <%= render Dashboard::Card::TableComponent.new(id: "measurementChildComparisonTable") do |table| %>
+      <% table.column_group do %>
+        <colgroup>
+          <col>
+          <col>
+          <col class="table-divider">
+          <col class="table-divider">
+          <col>
+          <col>
+          <col>
+          <col>
+          <col>
+        </colgroup>
       <% end %>
-      </tbody>
-    </table>
+
+      <%= table.header("Total") %>
+      <%= table.header("Blood sugars measures taken", colspan: 6) %>
+
+      <% table.sub_header("Users", sort_default: true, sort_method: :string) %>
+      <% table.sub_header("Registered patients", sort_method: :string) %>
+      <% period_range.each do |period| %>
+        <%= table.sub_header(period.to_s) %>>
+      <% end %>
+
+      <% current_admin.accessible_users(:view_reports).order(:full_name).each do |user| %>
+        <% next unless show_user_row?(user) %>
+
+        <%= table.row do %>
+          <tr>
+            <td class="row-title">
+              <%= link_to user.full_name, admin_user_path(user, period: @period) %>
+            </td>
+
+            <td class="ta-center">
+              <%= number_or_dash_with_delimiter(user_registrations_count(user)) %>
+            </td>
+
+            <% period_range.each do |period| %>
+              <td class="ta-right">
+                <%= number_or_dash_with_delimiter(blood_sugar_measures_taken_by_user_in_period(user, period)) %>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
+      <% end %>
+    <% end %>
   </div>
 </div>
