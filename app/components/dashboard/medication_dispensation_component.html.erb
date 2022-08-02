@@ -26,5 +26,5 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@1"></script>
-  <script> ReportsGraph("MedicationsDispensation", <%= graph_data.to_json.html_safe %>)</script>
+  <script> DashboardReports().ReportsGraph("MedicationsDispensation", <%= graph_data.to_json.html_safe %>)</script>
 </div>
