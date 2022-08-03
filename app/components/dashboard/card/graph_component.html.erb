@@ -1,0 +1,19 @@
+<div
+  id="<%= id.to_s %>"
+  data-period="<%= period.to_s %>"
+  class="pt-20px px-20px mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column
+         justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
+  <div>
+    <%= title %>
+    <%= summary %>
+  </div>
+  <div class="p-relative mb-12px">
+    <div class="h-320px mr-16px mb-12px ml-13px">
+      <canvas></canvas>
+    </div>
+    <%= footer %>
+  </div>
+
+
+  <script> DashboardReports().ReportsGraph("<%= id %>", <%= data.to_json.html_safe %>)</script>
+</div>
