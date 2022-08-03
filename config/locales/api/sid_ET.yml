@@ -1,4 +1,4 @@
-sid:
+sid-ET:
   date:
     month_names: [~, "Arfaasa", "Ammajje", "Badheessa", "Dotteessa", "Onkoleessa", "Ella", "Maaja", "Woxawaajje", "Wocawaaro", "birra", "Bocaasa ", "Sadaasa"]
     abbr_month_names: [~, "Arfaasa", "Ammajje", "Badheessa", "Dotteessa", "Onkoleessa", "Ella", "Maaja", "Woxawaajje", "Wocawaaro", "Birra", "Bocaasa", "Sadaasa"]
@@ -111,11 +111,11 @@ sid:
         chapter_7_html: "7: Hassiisseeme sonubba"
         chapter_8_html: "8: Duucha woyte Xa'mantino xa'mubba"
         chapter_9_html: "9: Hiittoonni kaa’lo afira dandiinayiro"
-        chapter_10_html: "10: Shota horonsirateyi hanafi"
+        chapter_10_html: "10: Simple horonsirateyi hanafi"
       teleconsultation:
         heading_html: Telenniha amaalete qajeelsha
-        contents_html: Hosipitaalleki Shota gari Telete-amaale horonsidhawoha ikkiro kuni qajeelshi ateraati.
-        english_video_link_html: Telete amaale Shota
+        contents_html: Hosipitaalleki Simple gari Telete-amaale horonsidhawoha ikkiro kuni qajeelshi ateraati.
+        english_video_link_html: Telete amaale Simple
         english_video_link_language_html: Ingilezete afoo
         hindi_video_link_html: सिम्पल द्वारा टेली-मेडिसिन
         hindi_video_link_language_html: Hindete afoo
@@ -126,15 +126,15 @@ sid:
         video_link_subtitle_html: Hindete afoo Ingilezete afiinni cinaancho handaara
       film:
         heading_html: Simple filme
-        link_html: '<a href="https://www.youtube.com/watch?v=C26CoyeExmU">"Shota heeshsho giddo mitto barra"</a> hindete Punjab, India giddo noo nersite Mundeete xiiwo noonsa xiwamaasine xagisate shotuyi hiitoonni horonsidhannoro leellishanno filme'
+        link_html: '<a href="https://www.youtube.com/watch?v=C26CoyeExmU">"Simple heeshsho giddo mitto barra"</a> hindete Punjab, India giddo noo nersite Mundeete xiiwo noonsa xiwamaasine xagisate shotuyi hiitoonni horonsidhannoro leellishanno filme'
     start:
       heading_html: Hanafa
       getting_started_video:
         heading_html: Viidio lai
         contents_html: Ontu/5 dhiqqeessi giddo Simple qara coyibba affe
       who_to_record:
-        heading_html: "Shotate ayi hinkiili?"
-        contents_1_html: Borreessate Shota Horonsiri <i>mittu mittunku Jawa Mundeete xiiwo noonsarira</i> woyi jawa Mundeete xiiwora xagga adhitayi noorira.
+        heading_html: "Simple ayi hinkiili?"
+        contents_1_html: Borreessate Simple Horonsiri <i>mittu mittunku Jawa Mundeete xiiwo noonsarira</i> woyi jawa Mundeete xiiwora xagga adhitayi noorira.
         contents_2_html: Xagisiraanchu layirara higiro mittu gari xiwamaancho hasi nna haaro Mundeete xiiwo eessi.
       step_1:
         label_html: Deerra 1
