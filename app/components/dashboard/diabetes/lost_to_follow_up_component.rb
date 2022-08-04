@@ -7,15 +7,26 @@ class Dashboard::Diabetes::LostToFollowUpComponent < ApplicationComponent
     @period = period
   end
 
-  def cumulative_assigned_patients
-    data.dig(:ltfu_trend, :cumulative_assigned_patients, period)
+  def graph_data
+    {
+      ltfuPatients: data.dig(:ltfu_trend, :ltfu_patients),
+      ltfuPatientsRate: data.dig(:ltfu_trend, :ltfu_patients_rate),
+      cumulativeAssignedPatients: data.dig(:ltfu_trend, :cumulative_assigned_patients),
+      **period_data
+    }
   end
 
-  def ltfu_patient_rate
-    data.dig(:ltfu_trend, :ltfu_patients_rate, period)
+  private
+
+  def period_data
+    {
+      startDate: period_info(:bp_control_start_date),
+      endDate: period_info(:bp_control_end_date),
+      registrationDate: period_info(:bp_control_registration_date)
+    }
   end
 
-  def current_ltfu_patients
-    data.dig(:ltfu_trend, :ltfu_patients, period)
+  def period_info(key)
+    data[:period_info].map { |k, v| [k, v[key]] }.to_h
   end
 end

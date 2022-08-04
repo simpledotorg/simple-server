@@ -26,11 +26,7 @@
     current_admin: current_admin
   ) %>
 
-  <%= render(Dashboard::Diabetes::LostToFollowUpComponent.new(
-    region: @region,
-    data: @details_chart_data,
-    period: @details_period
-  )) %>
+  <%= render(Dashboard::Diabetes::LostToFollowUpComponent.new(args)) %>
 </div>
 <% if current_admin.feature_enabled?(:medications_dispensation) %>
   <h4 class="mt-5 mb-32px">Medications</h4>

@@ -633,6 +633,68 @@ DashboardReports = () => {
       };
 
       return config;
+    },
+    lostToFollowUpTrend: function(data) {
+      const config = createBaseGraphConfig();
+      config.data = {
+          labels: Object.keys(data.ltfuPatientsRate),
+          datasets: [
+              {
+                  label: "Lost to follow-up",
+                  backgroundColor: COLORS['lightblue'],
+                  borderColor: COLORS['darkBlue'],
+                  borderWidth: 2,
+                  pointBackgroundColor: COLORS['white'],
+                  hoverBackgroundColor: COLORS['white'],
+                  hoverBorderWidth: 2,
+                  data: Object.values(data.ltfuPatientsRate),
+                  type: "line",
+              },
+          ],
+      };
+      config.options.scales = {
+          xAxes: [
+              {
+                  stacked: false,
+                  display: true,
+                  gridLines: {
+                      display: false,
+                      drawBorder: true,
+                  },
+                  ticks: {
+                      autoSkip: false,
+                      fontColor: COLORS['darkGrey'],
+                      fontSize: 12,
+                      fontFamily: "Roboto",
+                      padding: 8,
+                      min: 0,
+                      beginAtZero: true,
+                  },
+              },
+          ],
+          yAxes: [
+              {
+                  stacked: false,
+                  display: true,
+                  gridLines: {
+                      display: true,
+                      drawBorder: false,
+                  },
+                  ticks: {
+                      autoSkip: false,
+                      fontColor: COLORS['darkGrey'],
+                      fontSize: 10,
+                      fontFamily: "Roboto",
+                      padding: 8,
+                      min: 0,
+                      beginAtZero: true,
+                      stepSize: 25,
+                      max: 100,
+                  },
+              },
+          ],
+      };
+      return config;
     }
   }
 
