@@ -310,6 +310,7 @@ class Facility < ApplicationRecord
       "telangana" => "te-IN",
       "uttar pradesh" => "hi-IN",
       "west bengal" => "bn-IN"
-    }
+    },
+    "sri lanka" => {"default" => "si-LK"}
   }.freeze
 end
