@@ -641,7 +641,7 @@ DashboardReports = () => {
           datasets: [
               {
                   label: "Lost to follow-up",
-                  backgroundColor: COLORS['lightblue'],
+                  backgroundColor: COLORS['lightBlue'],
                   borderColor: COLORS['darkBlue'],
                   borderWidth: 2,
                   pointBackgroundColor: COLORS['white'],
@@ -767,7 +767,7 @@ Reports = function (withLtfu) {
   this.lightPurpleColor = "rgba(169, 128, 239, 0.5)";
   this.darkBlueColor = "rgba(12, 57, 102, 1)";
   this.mediumBlueColor = "rgba(0, 117, 235, 1)";
-  this.lightBlueColor = "rgba(233, 243, 255, 0.75";
+  this.lightBlueColor = "rgba(233, 243, 255, 0.75)";
   this.darkGreyColor = "rgba(108, 115, 122, 1)";
   this.mediumGreyColor = "rgba(173, 178, 184, 1)";
   this.lightGreyColor = "rgba(240, 242, 245, 0.9)";
