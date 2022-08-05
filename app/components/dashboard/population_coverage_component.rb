@@ -16,12 +16,8 @@ class Dashboard::PopulationCoverageComponent < ApplicationComponent
   end
 
   def accessible_region?(region, action)
-    case region.region_type
-    when "facility"
-      true
-    else
-      helpers.accessible_region?(region, action)
-    end
+    return true if region.region_type == "facility"
+    helpers.accessible_region?(region, action)
   end
 
   def cumulative_registrations
