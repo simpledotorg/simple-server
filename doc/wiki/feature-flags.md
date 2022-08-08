@@ -24,5 +24,5 @@ to facility the launch of a new feature, and may reference the Simple team's int
 | organization_reports | Yes | When enabled, the Simple Dashboard will allow users to view a top-level report for the whole organization. |
 | skip_api_validation | Yes | When enabled, Simple Server will not perform JSON validation of incoming API requests. This makes the API endpoints much more performant, but should only be enabled if all API clients are trusted (Simple app only). |
 | sync_encounters | Yes | When enabled, encounters can be synced between app and server like any other standard sync resource. |
-| weekly_telemed_report | Yes | When enabled, a weekly report on telemedicine activity in Simple will be sent via email to the configured recipients. |
+| monthly_telemed_report | Yes | When enabled, a monthly report on telemedicine activity in Simple will be sent via email to the configured recipients. |
 | whatsapp_appointment_reminders | Yes | When enabled, patient reminder messages will be attempted via Whatsapp first, before falling back to SMS. |
