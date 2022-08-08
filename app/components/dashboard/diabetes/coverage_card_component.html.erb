@@ -6,7 +6,8 @@
         subtitle: "All individuals and patients with diabetes in #{region.name}") %>
       <%= render(Dashboard::PopulationCoverageComponent.new(
         region: region,
-        data: { cumulative_registrations: data.dig(:cumulative_diabetes_registrations, period) },
+        cumulative_registrations: data.dig(:cumulative_diabetes_registrations, period),
+        tooltip_copy: total_estimated_diabetic_population_copy(region),
         diagnosis: :diabetes,
         estimated_population: @region.estimated_diabetes_population,
         current_admin: current_admin)) %>

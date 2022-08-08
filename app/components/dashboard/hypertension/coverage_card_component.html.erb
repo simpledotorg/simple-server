@@ -6,9 +6,8 @@
         subtitle: "All individuals and patients with Hypertension in #{region.name}") %>
       <%= render(Dashboard::PopulationCoverageComponent.new(
         region: region,
-        data: {
-          cumulative_registrations: data.dig(:cumulative_registrations, period)
-        },
+        cumulative_registrations: data.dig(:cumulative_registrations, period),
+        tooltip_copy: total_estimated_hypertensive_population_copy(region),
         diagnosis: :hypertension,
         estimated_population: @region.estimated_population,
         current_admin: current_admin)) %>
