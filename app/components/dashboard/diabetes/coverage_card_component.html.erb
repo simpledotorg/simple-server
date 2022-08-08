@@ -1,0 +1,37 @@
+<div class="d-lg-flex w-lg-50 pr-lg-2">
+  <div id="diabetes-patient-breakdown" data-period="" class="mt-8px mx-0px mb-16px p-20px bg-white br-4px bs-small w-lg-full mt-lg-0 pb-inside-avoid b-print-black">
+    <% if region.supports_diabetes_population_coverage %>
+      <%= render Dashboard::Card::TitleComponent.new(
+        title: "Diabetes coverage",
+        subtitle: "All individuals and patients with diabetes in #{region.name}") %>
+      <%= render(Dashboard::PopulationCoverageComponent.new(
+        region: region,
+        data: { cumulative_registrations: data.dig(:cumulative_diabetes_registrations, period) },
+        diagnosis: :diabetes,
+        estimated_population: @region.estimated_diabetes_population,
+        current_admin: current_admin)) %>
+    <% else %>
+      <%= render Dashboard::Card::TitleComponent.new(
+        title: "Diabetes patients",
+        subtitle: "All patients with diabetes in #{region.name}") %>
+    <% end %>
+
+    <%= render(Dashboard::PatientBreakdownComponent.new(
+      region: region,
+      data: {
+        cumulative_assigned_patients: data.dig(:cumulative_assigned_diabetes_patients, period),
+        cumulative_registrations: data.dig(:cumulative_diabetes_registrations, period),
+        under_care_patients: data.dig(:diabetes_under_care, period),
+        ltfu_patients: data.dig(:diabetes_ltfu_patients, period),
+        dead_patients: data.dig(:diabetes_dead, period)
+      },
+      tooltips: {
+        cumulative_assigned_patients: t('diabetes_assigned_patients_copy.total_assigned_patients', region_name: region.name),
+        cumulative_registrations: t('registered_diabetes_patients_copy.total_registered_patients', region_name: region.name),
+        under_care_patients: t('diabetes_patients_under_care_copy'),
+        ltfu_patients:  t('diabetes_lost_to_follow_up_copy.reports_card_subtitle')
+      },
+      period: period,
+    )) %>
+  </div>
+</div>
