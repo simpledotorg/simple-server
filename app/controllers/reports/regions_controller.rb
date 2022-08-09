@@ -55,6 +55,7 @@ class Reports::RegionsController < AdminController
     @repository = Reports::Repository.new(@region, periods: range)
     @presenter = Reports::RepositoryPresenter.new(@repository)
     @overview_data = @presenter.call(@region)
+    @latest_period = Period.current
     @with_ltfu = with_ltfu?
 
     @child_regions = @region.reportable_children
@@ -80,8 +81,7 @@ class Reports::RegionsController < AdminController
     # ======================
     # DETAILS
     # ======================
-    @details_period = Period.month(Time.current)
-    @details_period_range = Range.new(@details_period.advance(months: -5), @details_period)
+    @details_period_range = Range.new(@period.advance(months: -5), @period)
     months = -(Reports::MAX_MONTHS_OF_DATA - 1)
 
     regions = if @region.facility_region?
@@ -96,12 +96,11 @@ class Reports::RegionsController < AdminController
 
     @details_repository = Reports::Repository.new(regions, periods: @details_period_range)
 
-    chart_range = (@details_period.advance(months: months)..@details_period)
+    chart_range = (@period.advance(months: months)..@period)
     chart_repo = Reports::Repository.new(@region, periods: chart_range)
     @details_chart_data = {
-      patient_breakdown: PatientBreakdownService.call(region: @region, period: @details_period)[:hypertension],
       ltfu_trend: ltfu_chart_data(chart_repo, chart_range),
-      **medications_dispensation_data(region: @region, period: @details_period, diagnosis: :hypertension)
+      **medications_dispensation_data(region: @region, period: @period, diagnosis: :hypertension)
     }
 
     if @region.facility_region?
@@ -128,9 +127,8 @@ class Reports::RegionsController < AdminController
   # We display two ranges of data on this page - the chart range is for the LTFU chart,
   # and the period_range is the data we display in the detail tables.
   def details
-    @details_period = Period.month(Time.current)
     months = -(Reports::MAX_MONTHS_OF_DATA - 1)
-    @details_period_range = Range.new(@details_period.advance(months: -5), @details_period)
+    @details_period_range = Range.new(@period.advance(months: -5), @period)
 
     regions = if @region.facility_region?
       [@region]
@@ -143,15 +141,16 @@ class Reports::RegionsController < AdminController
     end
 
     @repository = Reports::Repository.new(regions, periods: @details_period_range)
+    @presenter = Reports::RepositoryPresenter.new(@repository)
 
-    chart_range = (@details_period.advance(months: months)..@details_period)
+    chart_range = (@period.advance(months: months)..@period)
     chart_repo = Reports::Repository.new(@region, periods: chart_range)
     @details_chart_data = {
-      patient_breakdown: PatientBreakdownService.call(region: @region, period: @details_period)[:hypertension],
       ltfu_trend: ltfu_chart_data(chart_repo, chart_range),
-      **medications_dispensation_data(region: @region, period: @details_period, diagnosis: :hypertension)
+      **medications_dispensation_data(region: @region, period: @period, diagnosis: :hypertension)
     }
-    @data = @details_chart_data
+    @data = @presenter.call(@region)
+    @data = @data.merge(@details_chart_data)
 
     if @region.facility_region?
       @recent_blood_pressures = paginate(
@@ -173,6 +172,7 @@ class Reports::RegionsController < AdminController
     @presenter = Reports::RepositoryPresenter.new(@repository)
     @data = @presenter.call(@region)
     @with_ltfu = with_ltfu?
+    @latest_period = Period.current
 
     authorize { current_admin.accessible_facilities(:view_reports).any? }
 
@@ -200,15 +200,13 @@ class Reports::RegionsController < AdminController
     end
 
     months = -(Reports::MAX_MONTHS_OF_DATA - 1)
-    @details_period = Period.month(Time.current)
-    @details_period_range = Range.new(@details_period.advance(months: -5), @details_period)
+    @details_period_range = Range.new(@period.advance(months: -5), @period)
     @details_repository = Reports::Repository.new(regions, periods: @details_period_range)
-    chart_range = (@details_period.advance(months: months)..@details_period)
+    chart_range = (@period.advance(months: months)..@period)
     chart_repo = Reports::Repository.new(@region, periods: chart_range)
     @details_chart_data = {
-      patient_breakdown: PatientBreakdownService.call(region: @region, period: @details_period)[:diabetes],
       ltfu_trend: diabetes_ltfu_chart_data(chart_repo, chart_range),
-      **medications_dispensation_data(region: @region, period: @details_period, diagnosis: :diabetes)
+      **medications_dispensation_data(region: @region, period: @period, diagnosis: :diabetes)
     }
 
     @data.merge!(@details_chart_data)

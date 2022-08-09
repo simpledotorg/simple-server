@@ -113,6 +113,14 @@ module Reports
       values_at("diabetes_lost_to_follow_up")
     end
 
+    memoize def dead
+      values_at("dead")
+    end
+
+    memoize def diabetes_dead
+      values_at("diabetes_dead")
+    end
+
     memoize def under_care
       values_at("under_care")
     end
