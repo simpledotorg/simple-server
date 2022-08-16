@@ -3,7 +3,12 @@
   <%= @region.name %> | Diabetes
 <% end %>
 
-<%= render "header" %>
+<%= render Dashboard::HeaderComponent.new(
+  region: @region,
+  period: @period,
+  current_admin: current_admin,
+  with_ltfu: @with_ltfu
+) %>
 
 <% args = { data: @data, region: @region, period: @period } %>
 <% args_with_ltfu = { data: @data, region: @region, period: @period, with_ltfu: @with_ltfu } %>

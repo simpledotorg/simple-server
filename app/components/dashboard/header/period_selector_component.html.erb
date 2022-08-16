@@ -1,0 +1,33 @@
+<div class="dropdown show mb-24px mb-lg-0 w-100 w-lg-auto">
+  <a class="d-block d-lg-inline-block btn btn-sm dropdown-toggle c-black bg-white bs-small"
+     href="#"
+     role="button"
+     id="dropdownMenuLink"
+     data-toggle="dropdown"
+     aria-haspopup="true"
+     aria-expanded="false">
+    <i class="far fa-calendar mr-4px c-blue"></i>
+    <%= current_period %>
+  </a>
+
+  <div class="dropdown-menu dropdown-menu-right w-100pt" aria-labelledby="dropdownMenuLink">
+    <%= form_for(current_period, url: request.params, method: :get, enforce_utf8: false) do |f| %>
+      <%= f.hidden_field :type, { id: "dropdown-period-type" } %>
+
+      <% periods.each do |period| %>
+        <button class="dropdown-item query-filter-month <%= 'active' if period == current_period %>"
+                name="period[value]"
+                type="submit"
+                data-period-type="month"
+                value="<%= period.value %>">
+          <%= period.value.to_s(:mon_year) %>
+        </button>
+      <% end %>
+
+      <% if @with_ltfu %>
+        <!-- Preserve LTFU selection -->
+        <input type="hidden" name="with_ltfu" value="true">
+      <% end %>
+    <% end %>
+  </div>
+</div>

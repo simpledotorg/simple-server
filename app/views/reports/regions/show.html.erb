@@ -4,7 +4,12 @@
  <%= @region.name %> | Hypertension
 <% end %>
 
-<%= render "header" %>
+<%= render Dashboard::HeaderComponent.new(
+  region: @region,
+  period: @period,
+  current_admin: current_admin,
+  with_ltfu: @with_ltfu
+) %>
 
 <% control_graph_denominator_copy = @with_ltfu ? "denominator_with_ltfu_copy" : "denominator_copy" %>
 
