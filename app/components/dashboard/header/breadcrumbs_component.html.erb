@@ -1,0 +1,11 @@
+<nav class="breadcrumb mb-0px pb-16px">
+  <%= link_to "All reports", dashboard_districts_path %>
+
+  <% ancestors.each do |ancestor| %>
+    <i class="fas fa-chevron-right"></i>
+    <%= ancestor_link(ancestor) %>
+  <% end %>
+
+  <i class="fas fa-chevron-right"></i>
+  <%= region.name %>
+</nav>

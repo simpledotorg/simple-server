@@ -1,0 +1,51 @@
+<div class="dashboard mt-n3 mt-md-0">
+  <%= render Dashboard::Header::BreadcrumbsComponent.new(region: region, current_admin: current_admin) %>
+
+  <h1 class="mb-3 mt-32px page-header">
+    <%= region.name %>
+  </h1>
+
+  <p class="d-none fw-bold d-print-block">
+    <%= period %> Report
+  </p>
+
+  <div class="d-flex fd-column fd-lg-row justify-lg-between mb-24px d-print-none">
+    <div class="d-flex order-2 order-lg-1">
+      <nav class="nav">
+        <% if show_diabetes_link? %>
+          <%= link_to "Hypertension", url_params.merge(action: "show"), class: "nav-link #{active_action?("show")}" %>
+          <%= link_to "Diabetes", reports_region_diabetes_path, class: "nav-link #{active_action?("diabetes")}" %>
+        <% else %>
+          <span class="nav-link">Hypertension report</span>
+        <% end %>
+
+        <% if show_progress_tab_link? %>
+          <%= link_to "Progress", reports_progress_path(@region), :class => "nav-link" %>
+        <% end %>
+      </nav>
+    </div>
+    <div class="d-flex actions order-1 mb-16px order-lg-2 mb-lg-0">
+      <% if show_period_selector? %>
+        <%= render Dashboard::Header::PeriodSelectorComponent.new(current_period: period, with_ltfu: with_ltfu) %>
+      <% end %>
+
+      <div class="ml-8px">
+        <% if action_name == "diabetes"%>
+          <%= render Dashboard::Diabetes::DownloadsDropdownComponent.new(
+            region: @region,
+            period: @period,
+            report_scope: params[:report_scope],
+            current_admin: current_admin
+          ) %>
+        <% else %>
+          <%= render Dashboard::Hypertension::DownloadsDropdownComponent.new(
+            region: @region,
+            period: @period,
+            report_scope: params[:report_scope],
+            current_admin: current_admin
+          ) %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
