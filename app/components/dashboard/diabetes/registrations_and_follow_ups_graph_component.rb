@@ -13,6 +13,8 @@ class Dashboard::Diabetes::RegistrationsAndFollowUpsGraphComponent < Application
     {cumulativeDiabetesRegistrations: data[:cumulative_diabetes_registrations],
      monthlyDiabetesRegistrations: data[:diabetes_registrations],
      monthlyDiabetesFollowups: data[:monthly_diabetes_followups],
+     cumulativeHypertensionAndDiabetesRegistrations: data[:cumulative_hypertension_and_diabetes_registrations],
+     cumulativeDiabetesOnlyRegistrations: cumulativeDiabetesOnlyRegistrations,
      **period_data}
   end
 
@@ -29,5 +31,14 @@ class Dashboard::Diabetes::RegistrationsAndFollowUpsGraphComponent < Application
 
   def period_info(key)
     data[:period_info].map { |k, v| [k, v[key]] }.to_h
+  end
+
+  def cumulativeDiabetesOnlyRegistrations
+    cumulative_diabetes_registrations = data[:cumulative_diabetes_registrations]
+    cumulative_hypertension_and_diabetes_registrations = data[:cumulative_hypertension_and_diabetes_registrations]
+
+    cumulative_hypertension_and_diabetes_registrations.map do |period, value|
+      [period, cumulative_diabetes_registrations[period] - value]
+    end.to_h
   end
 end
