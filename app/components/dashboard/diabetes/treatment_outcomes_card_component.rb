@@ -18,11 +18,17 @@ class Dashboard::Diabetes::TreatmentOutcomesCardComponent < ApplicationComponent
      visitButNoBSMeasureRate: data[:visited_without_bs_taken_rates],
      diabetesMissedVisitsRate: data[:diabetes_missed_visits_rates],
      adjustedDiabetesPatientCounts: data[:adjusted_diabetes_patient_counts],
+     bsBelow200Patients: data[:bs_below_200_patients],
+     bs200to300Patients: data[:bs_200_to_300_patients],
+     bsOver300Patients: data[:bs_over_300_patients],
+     diabetesMissedVisits: data[:diabetes_missed_visits],
+     visitButNoBSMeasure: data[:visited_without_bs_taken],
      **period_data}
   end
 
   def treatment_outcomes
     [{key: "diabetesMissedVisitsRate",
+      count: "diabetesMissedVisits",
       class: "c-blue",
       title: "Missed visits",
       tooltip: {
@@ -30,6 +36,7 @@ class Dashboard::Diabetes::TreatmentOutcomesCardComponent < ApplicationComponent
         denominator: t("diabetes_denominator_copy", region_name: @region.name)
       }},
       {key: "visitButNoBSMeasureRate",
+       count: "visitButNoBSMeasure",
        class: "c-grey-dark",
        title: "Visit but no blood sugar taken",
        tooltip: {
@@ -37,6 +44,7 @@ class Dashboard::Diabetes::TreatmentOutcomesCardComponent < ApplicationComponent
          denominator: t("diabetes_denominator_copy", region_name: @region.name)
        }},
       {key: "bsOver300Rate",
+       count: "bsOver300Patients",
        class: "c-red",
        title: "Blood sugar &ge;300".html_safe,
        tooltip: {
@@ -44,11 +52,13 @@ class Dashboard::Diabetes::TreatmentOutcomesCardComponent < ApplicationComponent
          denominator: t("diabetes_denominator_copy", region_name: @region.name)
        }},
       {key: "bs200to300Rate",
+       count: "bs200to300Patients",
        title: "Blood sugar 200-299",
        class: "c-amber",
        tooltip: {numerator: t("bs_over_200_copy.bs_200_to_299.numerator"),
                  denominator: t("diabetes_denominator_copy", region_name: @region.name)}},
       {key: "bsBelow200Rate",
+       count: "bsBelow200Patients",
        class: "c-green-dark",
        title: "Blood sugar &lt;200".html_safe,
        tooltip: {numerator: t("bs_below_200_copy.numerator"),
