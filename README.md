@@ -53,30 +53,30 @@ Then rerun bundler and everything will work. This is being tracked over in https
 Beyond that, the setup instructions are now the same for Intel or M1 macs, as you can install homebrew normally and go from there.
 
 #### Docker Compose
+Dev environment setup using docker and docker-compose
 
-For quick development and testing, the server can be run locally using Docker Compose and the command:
+##### Prerequisite 
+- [Docker](https://docs.docker.com/engine/install/)
+- [Docker compose](https://docs.docker.com/compose/install/)
 
+##### Setup
 ```
-docker compose up
+docker-compose up
 ```
 
-The Dockerfile and docker-compose.yml files replicate the steps detailed below for manual installation, including the running of ngrok for local android development.
-
-Once the Docker Compose server is running, the logs should provide the ngrok URL. For example: `SIMPLE_SERVER_HOST=91a705dde8c1.ngrok.io`. This is the value that should be used when setting up the Android app as described in the section below.
-
-After a successful docker installation, an admin dashboard account is automatically created.
-
-The default username and password for the dashboard account is:
-
-```bash
+After a successful docker-compose initialisation, an admin dashboard account is automatically created.
+```
 username: admin@simple.org
 password: Resolve2SaveLives
 ```
 
-To remove the server and clear the volumes of database data, run the command:
+Open http://localhost:3000 in your browser to view the simple dashboard
 
+Use below Ngrok [guide](#developing-with-the-android-app) for Android development setup
+
+##### Teardown
 ```
-docker compose down --volumes
+docker-compose down --volumes
 ```
 
 #### Manual Setup
