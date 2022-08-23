@@ -19,7 +19,7 @@ class Dashboard::Diabetes::TreatmentOutcomesCardComponent < ApplicationComponent
      diabetesMissedVisitsRate: data[:diabetes_missed_visits_rates],
      adjustedDiabetesPatientCounts: data[:adjusted_diabetes_patient_counts],
      bsBelow200Patients: data[:bs_below_200_patients],
-     bs200To300Patients: data[:bs_200_to_300_patients],
+     bs200to300Patients: data[:bs_200_to_300_patients],
      bsOver300Patients: data[:bs_over_300_patients],
      diabetesMissedVisits: data[:diabetes_missed_visits],
      visitButNoBSMeasure: data[:visited_without_bs_taken],
