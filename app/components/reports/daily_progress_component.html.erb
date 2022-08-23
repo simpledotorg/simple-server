@@ -1,4 +1,4 @@
-<% if Flipper.enabled?(:new_progress_tab) %>
+<% if Flipper.enabled?(:new_progress_tab, current_user) || Flipper.enabled?(:new_progress_tab) %>
   <div id="progress-daily-report" class="d-none">
     <div class="mb-8px pt-16px pb-16px bgc-white bs-card">
       <a

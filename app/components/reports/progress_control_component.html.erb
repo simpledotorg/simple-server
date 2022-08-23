@@ -1,4 +1,4 @@
-<% if Flipper.enabled?(:new_progress_tab) %>
+<% if Flipper.enabled?(:new_progress_tab, current_user) || Flipper.enabled?(:new_progress_tab) %>
   <div class="mb-8px p-16px bgc-white bs-card">
     <div class="p-relative d-flex ai-center mb-8px" data-element-type="header">
       <div class="d-flex ai-center" data-element-type="header-title">

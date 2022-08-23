@@ -4,12 +4,13 @@ class Reports::ProgressControlComponent < ViewComponent::Base
   include AssetsHelper
   include ActionView::Helpers::NumberHelper
 
-  attr_reader :control_range, :repository
+  attr_reader :control_range, :repository, :current_user
 
-  def initialize(service)
+  def initialize(service, current_user)
     @repository = service.control_rates_repository
     @control_range = repository.range
     @region = service.region
+    @current_user = current_user
   end
 
   def control_summary
