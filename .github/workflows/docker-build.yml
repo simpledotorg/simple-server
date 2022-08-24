@@ -7,7 +7,7 @@ on:
     branches: [ docker-build ]
 
 jobs:
-  echo:
+  docker_build_push:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
