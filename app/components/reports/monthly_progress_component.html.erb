@@ -1,4 +1,4 @@
-<% if Flipper.enabled?(:new_progress_tab) %>
+<% if Flipper.enabled?(:new_progress_tab, current_user) || Flipper.enabled?(:new_progress_tab) %>
   <div data-element="monthly_<%= @dimension.indicator %>_table" data-dimension-field="<%= @dimension.field %>" class="<% if @dimension.field == 'monthly_registrations_all' || @dimension.field == 'monthly_follow_ups_all' %>d-block<% else %>d-none<% end %>">
     <div class="d-flex ai-center jc-space-between pb-3px bb-grey-mid mb-4px">
       <h3 class="m-0px p-0px ta-left fw-medium fs-16px c-grey-darkest">

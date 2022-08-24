@@ -26,7 +26,7 @@
       <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.section_title") %>
     </h3>
   </div>
-  <%= render(Reports::ProgressControlComponent.new(@service)) %>
+  <%= render(Reports::ProgressControlComponent.new(@service, @current_user)) %>
   <%= render(Reports::ProgressUncontrolledComponent.new(@service)) %>
   <%= render(Reports::ProgressMissedVisitsComponent.new(@service)) %>
   <% if @drug_stocks_query %>
