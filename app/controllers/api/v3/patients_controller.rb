@@ -17,7 +17,7 @@ class Api::V3::PatientsController < Api::V3::SyncController
 
   def records_to_sync
     @records_to_sync ||=
-      Patient.where(id: current_sync_region.syncable_patients)
+      current_sync_region.syncable_patients
         .updated_on_server_since(processed_since, limit)
         .for_sync
   end
