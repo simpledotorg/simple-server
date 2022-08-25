@@ -8,6 +8,7 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
 
   def show
     @current_user = current_user
+    @region = current_facility
     @period = Period.month(Date.current)
     @user_analytics = UserAnalyticsPresenter.new(current_facility)
     @service = Reports::FacilityProgressService.new(current_facility, @period)
@@ -27,8 +28,10 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
     end
 
     respond_to do |format|
-      if Flipper.enabled?(:new_progress_tab, current_user) || Flipper.enabled?(:new_progress_tab)
+      if Flipper.enabled?(:new_progress_tab_v2, current_user) || Flipper.enabled?(:new_progress_tab_v2)
         format.html { render :show_v2 }
+      elsif Flipper.enabled?(:new_progress_tab_v1, current_user) || Flipper.enabled?(:new_progress_tab_v1)
+        format.html { render :show_v1 }
       else
         format.html { render :show }
       end
