@@ -16,7 +16,7 @@ RSpec.describe Reports::ProgressControlComponent, type: :component do
       end
       refresh_views
       service = Reports::FacilityProgressService.new(facility, Period.current)
-      component = described_class.new(service)
+      component = described_class.new(service, user)
       expect(component.control_summary).to eq("2 of 2 patients")
     end
   end

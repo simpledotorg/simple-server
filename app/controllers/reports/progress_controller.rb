@@ -7,14 +7,15 @@ class Reports::ProgressController < AdminController
   before_action :find_region
 
   def show
+    @current_user = current_user
     @current_facility = @region
     @user_analytics = UserAnalyticsPresenter.new(@region)
     @service = Reports::FacilityProgressService.new(current_facility, @period)
 
     @total_follow_ups_dimension = Reports::FacilityProgressDimension.new(:follow_ups, diagnosis: :all, gender: :all)
     @total_registrations_dimension = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :all, gender: :all)
-    @total_follow_ups = Reports::MonthlyProgressComponent.new(@total_follow_ups_dimension, service: @service).total_count
-    @total_registrations = Reports::MonthlyProgressComponent.new(@total_registrations_dimension, service: @service).total_count
+    @total_follow_ups = Reports::MonthlyProgressComponent.new(@total_follow_ups_dimension, service: @service, current_user: @current_user).total_count
+    @total_registrations = Reports::MonthlyProgressComponent.new(@total_registrations_dimension, service: @service, current_user: @current_user).total_count
     @drug_stocks = DrugStock.latest_for_facilities_grouped_by_protocol_drug(current_facility, @for_end_of_month)
 
     @is_diabetes_enabled = current_facility.diabetes_enabled?
@@ -26,7 +27,13 @@ class Reports::ProgressController < AdminController
       @drugs_by_category = @drug_stocks_query.protocol_drugs_by_category
     end
 
-    render "api/v3/analytics/user_analytics/show"
+    if Flipper.enabled?(:new_progress_tab_v2, @current_user) || Flipper.enabled?(:new_progress_tab_v2)
+      render "api/v3/analytics/user_analytics/show_v2"
+    elsif Flipper.enabled?(:new_progress_tab_v1, @current_user) || Flipper.enabled?(:new_progress_tab_v1)
+      render "api/v3/analytics/user_analytics/show_v1"
+    else
+      render "api/v3/analytics/user_analytics/show"
+    end
   end
 
   helper_method :current_facility, :current_user, :current_facility_group

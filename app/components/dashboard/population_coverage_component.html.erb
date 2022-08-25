@@ -61,17 +61,7 @@
 <div class="d-flex ai-center jc-between">
   <p class="mb-8px fw-bold">
     Total est. population with <%= diagnosis %>
-    <span class="p-relative t-1px">
-      <i
-        class="fas fa-question-circle fs-14px c-grey-dark"
-        data-toggle="tooltip"
-        data-placement="right"
-        data-trigger="hover click"
-        data-html="true"
-        title="<%= total_estimated_population_tooltip_copy %>"
-      >
-      </i>
-    </span>
+    <%= render Dashboard::Card::TooltipComponent.new(tooltip_copy) %>
   </p>
   <p class="mb-8px">
     <% if show_coverage %>

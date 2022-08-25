@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Reports::ProgressControlComponent < ViewComponent::Base
+class Reports::ProgressControlComponentV1 < ViewComponent::Base
   include AssetsHelper
   include ActionView::Helpers::NumberHelper
 
@@ -11,6 +11,10 @@ class Reports::ProgressControlComponent < ViewComponent::Base
     @control_range = repository.range
     @region = service.region
     @current_user = current_user
+  end
+
+  def render?
+    Flipper.enabled?(:new_progress_tab_v1, current_user) || Flipper.enabled?(:new_progress_tab_v1)
   end
 
   def control_summary

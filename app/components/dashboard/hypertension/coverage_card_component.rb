@@ -1,4 +1,6 @@
 class Dashboard::Hypertension::CoverageCardComponent < ApplicationComponent
+  include DashboardHelper
+
   attr_reader :region
   attr_reader :data
   attr_reader :period

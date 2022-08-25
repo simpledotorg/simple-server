@@ -7,14 +7,16 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
   layout false
 
   def show
+    @current_user = current_user
+    @region = current_facility
     @period = Period.month(Date.current)
     @user_analytics = UserAnalyticsPresenter.new(current_facility)
     @service = Reports::FacilityProgressService.new(current_facility, @period)
 
     @total_follow_ups_dimension = Reports::FacilityProgressDimension.new(:follow_ups, diagnosis: :all, gender: :all)
     @total_registrations_dimension = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :all, gender: :all)
-    @total_follow_ups = Reports::MonthlyProgressComponent.new(@total_follow_ups_dimension, service: @service).total_count
-    @total_registrations = Reports::MonthlyProgressComponent.new(@total_registrations_dimension, service: @service).total_count
+    @total_follow_ups = Reports::MonthlyProgressComponent.new(@total_follow_ups_dimension, service: @service, current_user: @current_user).total_count
+    @total_registrations = Reports::MonthlyProgressComponent.new(@total_registrations_dimension, service: @service, current_user: @current_user).total_count
 
     @is_diabetes_enabled = current_facility.diabetes_enabled?
 
@@ -26,8 +28,10 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
     end
 
     respond_to do |format|
-      if Flipper.enabled?(:new_progress_tab)
+      if Flipper.enabled?(:new_progress_tab_v2, current_user) || Flipper.enabled?(:new_progress_tab_v2)
         format.html { render :show_v2 }
+      elsif Flipper.enabled?(:new_progress_tab_v1, current_user) || Flipper.enabled?(:new_progress_tab_v1)
+        format.html { render :show_v1 }
       else
         format.html { render :show }
       end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Reports::DailyProgressComponent < ViewComponent::Base
+class Reports::DailyProgressComponentV1 < ViewComponent::Base
   include AssetsHelper
 
   # We use 29 here because we also show today, so its 30 days including today
@@ -19,6 +19,10 @@ class Reports::DailyProgressComponent < ViewComponent::Base
   end
 
   delegate :daily_follow_ups, :daily_registrations, to: :service
+
+  def render?
+    Flipper.enabled?(:new_progress_tab_v1, current_user) || Flipper.enabled?(:new_progress_tab_v1)
+  end
 
   def last_30_days
     (@start..@now).to_a.reverse
