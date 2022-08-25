@@ -5,7 +5,7 @@ module Api::V3::SyncToUser
     def records_to_sync
       @records_to_sync ||=
         model_sync_scope
-          .where(patient: current_sync_region.syncable_patients)
+          .where("patient_id = ANY (array(?))", current_sync_region.syncable_patients.select(:id))
           .updated_on_server_since(processed_since, limit)
     end
 
