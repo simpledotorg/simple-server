@@ -27,7 +27,13 @@ class Reports::ProgressController < AdminController
       @drugs_by_category = @drug_stocks_query.protocol_drugs_by_category
     end
 
-    render "api/v3/analytics/user_analytics/show"
+    if Flipper.enabled?(:new_progress_tab_v2, @current_user) || Flipper.enabled?(:new_progress_tab_v2)
+      render "api/v3/analytics/user_analytics/show_v2"
+    elsif Flipper.enabled?(:new_progress_tab_v1, @current_user) || Flipper.enabled?(:new_progress_tab_v1)
+      render "api/v3/analytics/user_analytics/show_v1"
+    else
+      render "api/v3/analytics/user_analytics/show"
+    end
   end
 
   helper_method :current_facility, :current_user, :current_facility_group

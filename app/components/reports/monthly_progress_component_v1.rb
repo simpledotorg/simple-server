@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Reports::MonthlyProgressComponent < ViewComponent::Base
+class Reports::MonthlyProgressComponentV1 < ViewComponent::Base
   include AssetsHelper
   include DashboardHelper
   attr_reader :dimension
@@ -18,6 +18,10 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
     @current_user = current_user
   end
 
+  def render?
+    Flipper.enabled?(:new_progress_tab_v1, current_user) || Flipper.enabled?(:new_progress_tab_v1)
+  end
+
   def diagnosis_group_class
     classes = []
     classes << dimension.diagnosis unless dimension.diagnosis == :all
@@ -31,6 +35,11 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
       options[:style] = "display:none"
     end
     tag.table(options, &block)
+  end
+
+  # The default diagnosis is the one we display at the top level on initial page load
+  def default_diagnosis
+    :all
   end
 
   def total_count
