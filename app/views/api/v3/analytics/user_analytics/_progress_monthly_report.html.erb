@@ -29,7 +29,7 @@
     </p>
     <%= render partial: "api/v3/analytics/user_analytics/progress_monthly_period_dropdown", locals: { element_id: "registrations" } %>
     <% @service.dimension_combinations_for(:registrations).each do |dimension| %>
-      <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service, current_user: @current_user)) %>
+      <%= render(Reports::MonthlyProgressComponentV1.new(dimension, service: @service, current_user: @current_user)) %>
     <% end %>
   </div>
   <div class="mb-8px p-16px bgc-white br-4px bs-card">
@@ -43,7 +43,7 @@
     </p>
     <%= render partial: "api/v3/analytics/user_analytics/progress_monthly_period_dropdown", locals: { element_id: "follow_ups" } %>
     <% @service.dimension_combinations_for(:follow_ups).each do |dimension| %>
-      <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service, current_user: @current_user)) %>
+      <%= render(Reports::MonthlyProgressComponentV1.new(dimension, service: @service, current_user: @current_user)) %>
     <% end %>
   </div>
 </div>
