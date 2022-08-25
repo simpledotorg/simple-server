@@ -16,8 +16,10 @@ class Api::V4::MedicationsController < Api::V4::SyncController
   end
 
   def response_process_token
-    {processed_since: processed_until(records_to_sync),
-     resync_token: resync_token}
+    {
+      processed_since: processed_until(records_to_sync),
+      resync_token: resync_token
+    }
   end
 
   def processed_until(records)
