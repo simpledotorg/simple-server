@@ -46,17 +46,28 @@ RSpec.describe Api::V3::FacilitiesController, type: :controller do
           .to eq(expected_records.map(&:id).to_set)
 
         response_process_token = parse_process_token(response_body)
-        expect(response_process_token[:other_facilities_processed_since].to_time.to_i)
+        expect(response_process_token[:processed_since].to_time.to_i)
           .to eq(expected_records.map(&:updated_at).max.to_i)
+      end
+
+      context "for an old process token" do
+        it "Returns an empty list when there is nothing to sync" do
+          sync_time = 10.minutes.ago
+          get :sync_to_user, params: { process_token: make_process_token(other_facilities_processed_since: sync_time) }
+          response_body = JSON(response.body)
+          response_process_token = parse_process_token(response_body)
+          expect(response_body[response_key].count).to eq 0
+          expect(response_process_token[:processed_since].to_time.to_i).to eq sync_time.to_i
+        end
       end
 
       it "Returns an empty list when there is nothing to sync" do
         sync_time = 10.minutes.ago
-        get :sync_to_user, params: {process_token: make_process_token(other_facilities_processed_since: sync_time)}
+        get :sync_to_user, params: {process_token: make_process_token(processed_since: sync_time)}
         response_body = JSON(response.body)
         response_process_token = parse_process_token(response_body)
         expect(response_body[response_key].count).to eq 0
-        expect(response_process_token[:other_facilities_processed_since].to_time.to_i).to eq sync_time.to_i
+        expect(response_process_token[:processed_since].to_time.to_i).to eq sync_time.to_i
       end
 
       describe "batching" do

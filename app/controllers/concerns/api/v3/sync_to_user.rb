@@ -37,7 +37,7 @@ module Api::V3::SyncToUser
 
       process_token[:processed_since].try(:to_time) ||
         [process_token[:other_facilities_processed_since].try(:to_time),
-         process_token[:current_facilities_processed_since].try(:to_time)].min ||
+         process_token[:current_facilities_processed_since].try(:to_time)].compact.min ||
         Time.new(0)
     end
 

@@ -242,9 +242,35 @@ RSpec.shared_examples "a working V3 sync controller sending records" do
         .to eq(model.all.pluck(:id).to_set)
     end
 
+    context "for an old process token" do
+      it "Returns new records added since last sync" do
+        expected_records = create_record_list(5, updated_at: 5.minutes.ago)
+        get :sync_to_user, params: { process_token: make_process_token(other_facilities_processed_since: 10.minutes.ago) }
+
+        response_body = JSON(response.body)
+        expect(response_body[response_key].count).to eq 5
+
+        expect(response_body[response_key].map { |record| record["id"] }.to_set)
+          .to eq(expected_records.map(&:id).to_set)
+
+        response_process_token = parse_process_token(response_body)
+        expect(response_process_token[:processed_since].to_time.to_i)
+          .to eq(expected_records.map(&:updated_at).max.to_i)
+      end
+
+      it "Returns an empty list when there is nothing to sync" do
+        sync_time = 10.minutes.ago
+        get :sync_to_user, params: { process_token: make_process_token(other_facilities_processed_since: sync_time) }
+        response_body = JSON(response.body)
+        response_process_token = parse_process_token(response_body)
+        expect(response_body[response_key].count).to eq 0
+        expect(response_process_token[:processed_since].to_time.to_i).to eq sync_time.to_i
+      end
+    end
+
     it "Returns new records added since last sync" do
       expected_records = create_record_list(5, updated_at: 5.minutes.ago)
-      get :sync_to_user, params: {process_token: make_process_token(other_facilities_processed_since: 10.minutes.ago)}
+      get :sync_to_user, params: { process_token: make_process_token(processed_since: 10.minutes.ago) }
 
       response_body = JSON(response.body)
       expect(response_body[response_key].count).to eq 5
@@ -253,17 +279,17 @@ RSpec.shared_examples "a working V3 sync controller sending records" do
         .to eq(expected_records.map(&:id).to_set)
 
       response_process_token = parse_process_token(response_body)
-      expect(response_process_token[:other_facilities_processed_since].to_time.to_i)
+      expect(response_process_token[:processed_since].to_time.to_i)
         .to eq(expected_records.map(&:updated_at).max.to_i)
     end
 
     it "Returns an empty list when there is nothing to sync" do
       sync_time = 10.minutes.ago
-      get :sync_to_user, params: {process_token: make_process_token(other_facilities_processed_since: sync_time)}
+      get :sync_to_user, params: { process_token: make_process_token(processed_since: sync_time) }
       response_body = JSON(response.body)
       response_process_token = parse_process_token(response_body)
       expect(response_body[response_key].count).to eq 0
-      expect(response_process_token[:other_facilities_processed_since].to_time.to_i).to eq sync_time.to_i
+      expect(response_process_token[:processed_since].to_time.to_i).to eq sync_time.to_i
     end
 
     describe "batching" do
