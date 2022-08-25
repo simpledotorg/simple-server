@@ -53,7 +53,7 @@ RSpec.describe Api::V3::FacilitiesController, type: :controller do
       context "for an old process token" do
         it "Returns an empty list when there is nothing to sync" do
           sync_time = 10.minutes.ago
-          get :sync_to_user, params: { process_token: make_process_token(other_facilities_processed_since: sync_time) }
+          get :sync_to_user, params: {process_token: make_process_token(other_facilities_processed_since: sync_time)}
           response_body = JSON(response.body)
           response_process_token = parse_process_token(response_body)
           expect(response_body[response_key].count).to eq 0

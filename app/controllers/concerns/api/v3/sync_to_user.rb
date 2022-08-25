@@ -2,17 +2,17 @@ module Api::V3::SyncToUser
   extend ActiveSupport::Concern
 
   included do
-    private
-
-    def model_sync_scope
-      model.for_sync
-    end
-
     def records_to_sync
       @records_to_sync ||=
         model_sync_scope
           .where(patient: current_sync_region.syncable_patients)
           .updated_on_server_since(processed_since, limit)
+    end
+
+    private
+
+    def model_sync_scope
+      model.for_sync
     end
 
     def processed_until(records)
@@ -37,7 +37,7 @@ module Api::V3::SyncToUser
 
       process_token[:processed_since].try(:to_time) ||
         [process_token[:other_facilities_processed_since].try(:to_time),
-         process_token[:current_facilities_processed_since].try(:to_time)].compact.min ||
+          process_token[:current_facilities_processed_since].try(:to_time)].compact.min ||
         Time.new(0)
     end
 

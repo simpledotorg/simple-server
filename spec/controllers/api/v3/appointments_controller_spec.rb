@@ -280,37 +280,6 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
       end
     end
 
-    context "patient prioritisation" do
-      it "syncs records for patients in the request facility first" do
-        request_2_facility = create(:facility, facility_group: request_facility_group)
-        create_record_list(2, facility: request_facility, updated_at: 3.minutes.ago)
-        create_record_list(2, facility: request_facility, updated_at: 5.minutes.ago)
-        create_record_list(2, facility: request_2_facility, updated_at: 7.minutes.ago)
-        create_record_list(2, facility: request_2_facility, updated_at: 10.minutes.ago)
-
-        # GET request 1
-        set_authentication_headers
-        get :sync_to_user, params: {limit: 4}
-        response_1_body = JSON(response.body)
-
-        response_1_record_ids = response_1_body["appointments"].map { |r| r["id"] }
-        response_1_records = model.where(id: response_1_record_ids)
-        expect(response_1_records.count).to eq 4
-        expect(response_1_records.map(&:facility).to_set).to eq Set[request_facility]
-
-        reset_controller
-
-        # GET request 2
-        get :sync_to_user, params: {limit: 4, process_token: response_1_body["process_token"]}
-        response_2_body = JSON(response.body)
-
-        response_2_record_ids = response_2_body["appointments"].map { |r| r["id"] }
-        response_2_records = model.where(id: response_2_record_ids)
-        expect(response_2_records.count).to eq 4
-        expect(response_2_records.map(&:facility).to_set).to eq Set[request_facility, request_2_facility]
-      end
-    end
-
     context "handles appointment_type correctly" do
       before :each do
         set_authentication_headers
