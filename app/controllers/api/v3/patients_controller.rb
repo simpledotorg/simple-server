@@ -27,12 +27,10 @@ class Api::V3::PatientsController < Api::V3::SyncController
     time(__method__) do
       other_facilities_limit = limit - current_facility_records.size
       @other_facility_records ||=
-        Patient
-          .where(id: current_sync_region.syncable_patients)
+        current_sync_region.syncable_patients
           .where.not(registration_facility: current_facility)
           .for_sync
           .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
-          .order(:id) # needed for performance, see https://stackoverflow.com/questions/21385555/postgresql-query-very-slow-with-limit-1/27237698
     end
   end
 
