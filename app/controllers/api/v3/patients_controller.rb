@@ -13,28 +13,14 @@ class Api::V3::PatientsController < Api::V3::SyncController
     {request_user_id: current_user.id, request_facility_id: current_facility.id}
   end
 
-  def current_facility_records
-    time(__method__) do
-      @current_facility_records ||=
-        current_facility
-          .prioritized_patients
-          .for_sync
-          .updated_on_server_since(current_facility_processed_since, limit)
-    end
-  end
-
-  def other_facility_records
-    time(__method__) do
-      other_facilities_limit = limit - current_facility_records.size
-      @other_facility_records ||=
-        current_sync_region.syncable_patients
-          .where.not(registration_facility: current_facility)
-          .for_sync
-          .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
-    end
-  end
-
   private
+
+  def records_to_sync
+    @records_to_sync ||=
+      current_sync_region.syncable_patients
+        .updated_on_server_since(processed_since, limit)
+        .for_sync
+  end
 
   def unscope_associations
     Address.unscoped do

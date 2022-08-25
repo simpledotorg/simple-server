@@ -8,16 +8,6 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
 
   private
 
-  def current_facility_records
-    []
-  end
-
-  def other_facility_records
-    Facility
-      .with_discarded
-      .updated_on_server_since(other_facilities_processed_since, limit)
-  end
-
   def disable_audit_logs?
     true
   end
@@ -30,7 +20,7 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
 
   def response_process_token
     {
-      other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since,
+      processed_since: processed_until(records_to_sync) || processed_since,
       resync_token: resync_token
     }
   end
@@ -40,7 +30,9 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
   end
 
   def records_to_sync
-    other_facility_records
+    Facility
+      .with_discarded
+      .updated_on_server_since(processed_since, limit)
       .with_block_region_id
       .includes(:facility_group)
       .where.not(facility_group: nil)

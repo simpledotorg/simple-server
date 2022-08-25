@@ -7,14 +7,6 @@ class Api::V4::MedicationsController < Api::V4::SyncController
 
   private
 
-  def current_facility_records
-    []
-  end
-
-  def other_facility_records
-    Medication.all
-  end
-
   def disable_audit_logs?
     true
   end
@@ -24,7 +16,7 @@ class Api::V4::MedicationsController < Api::V4::SyncController
   end
 
   def response_process_token
-    {other_facilities_processed_since: processed_until(other_facility_records),
+    {processed_since: processed_until(records_to_sync),
      resync_token: resync_token}
   end
 
@@ -37,6 +29,6 @@ class Api::V4::MedicationsController < Api::V4::SyncController
   end
 
   def records_to_sync
-    other_facility_records
+    Medication.all
   end
 end

@@ -7,14 +7,10 @@ class Api::V3::ProtocolsController < Api::V3::SyncController
 
   private
 
-  def current_facility_records
-    []
-  end
-
-  def other_facility_records
+  def records_to_sync
     Protocol
       .with_discarded
-      .updated_on_server_since(other_facilities_processed_since, limit)
+      .updated_on_server_since(processed_since, limit)
   end
 
   def disable_audit_logs?
@@ -27,7 +23,7 @@ class Api::V3::ProtocolsController < Api::V3::SyncController
 
   def response_process_token
     {
-      other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since,
+      processed_since: processed_until(records_to_sync) || processed_since,
       resync_token: resync_token
     }
   end

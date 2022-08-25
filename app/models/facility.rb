@@ -262,10 +262,6 @@ class Facility < ApplicationRecord
     end
   end
 
-  def prioritized_patients
-    registered_patients.with_discarded
-  end
-
   def self.localized_facility_size(facility_size, pluralize: false)
     return unless facility_size
     sizes_key = pluralize ? "pluralized_facility_size" : "facility_size"

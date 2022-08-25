@@ -2,30 +2,6 @@ module Api::V3::SyncToUser
   extend ActiveSupport::Concern
 
   included do
-    def current_facility_records
-      time(__method__) do
-        @current_facility_records ||=
-          model_sync_scope
-            .where(patient: current_facility.prioritized_patients.select(:id))
-            .updated_on_server_since(current_facility_processed_since, limit)
-      end
-    end
-
-    # this is performance-critical code, be careful while refactoring it
-    def other_facility_records
-      time(__method__) do
-        other_facilities_limit = limit - current_facility_records.size
-        @other_facility_records ||=
-          model_sync_scope
-            .where("patient_id = ANY (array(?))",
-              current_sync_region
-                .syncable_patients
-                .where.not(registration_facility: current_facility)
-                .select(:id))
-            .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
-      end
-    end
-
     private
 
     def model_sync_scope
@@ -33,7 +9,10 @@ module Api::V3::SyncToUser
     end
 
     def records_to_sync
-      current_facility_records + other_facility_records
+      @records_to_sync ||=
+        model_sync_scope
+          .where(patient: current_sync_region.syncable_patients)
+          .updated_on_server_since(processed_since, limit)
     end
 
     def processed_until(records)
@@ -43,8 +22,7 @@ module Api::V3::SyncToUser
     def response_process_token
       {
         current_facility_id: current_facility.id,
-        current_facility_processed_since: processed_until(current_facility_records) || current_facility_processed_since,
-        other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since,
+        processed_since: processed_until(records_to_sync) || processed_since,
         resync_token: resync_token,
         sync_region_id: current_sync_region.id
       }
@@ -54,22 +32,13 @@ module Api::V3::SyncToUser
       Base64.encode64(process_token.to_json)
     end
 
-    def other_facilities_processed_since
+    def processed_since
       return Time.new(0) if force_resync?
-      process_token[:other_facilities_processed_since].try(:to_time) || Time.new(0)
-    end
 
-    def current_facility_processed_since
-      if force_resync?
+      process_token[:processed_since].try(:to_time) ||
+        [process_token[:other_facilities_processed_since].try(:to_time),
+         process_token[:current_facilities_processed_since].try(:to_time)].min ||
         Time.new(0)
-      elsif process_token[:current_facility_processed_since].blank?
-        other_facilities_processed_since
-      elsif process_token[:current_facility_id] != current_facility.id
-        [process_token[:current_facility_processed_since].to_time,
-          other_facilities_processed_since].min
-      else
-        process_token[:current_facility_processed_since].to_time
-      end
     end
 
     def force_resync?
