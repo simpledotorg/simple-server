@@ -155,8 +155,8 @@ class Region < ApplicationRecord
   def syncable_patients
     case region_type
       when "block"
-        registered_patients.with_discarded
-          .union(assigned_patients.with_discarded)
+        registered_patients.with_discarded.select(:id)
+          .union(assigned_patients.with_discarded.select(:id))
       else
         registered_patients.with_discarded
     end
