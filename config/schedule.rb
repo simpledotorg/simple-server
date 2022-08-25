@@ -117,7 +117,7 @@ every :day, at: local("05:45 am"), roles: [:cron] do
 end
 
 every 1.month, at: local("06:00 am"), roles: [:cron] do
-  if Flipper.enabled?(:monthly_telemed_report)
+  if Flipper.enabled?(:automated_telemed_report)
     rake "reports:telemedicine"
   end
 end

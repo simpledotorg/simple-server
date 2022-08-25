@@ -11,7 +11,7 @@ class TelemedReportMailer < ApplicationMailer
       content: report_csv
     }
 
-    if Flipper.enabled?(:weekly_telemed_report) && @recipient_emails
+    if Flipper.enabled?(:automated_telemed_report) && @recipient_emails
       mail(to: @recipient_emails, subject: @subject)
     end
   end
