@@ -452,7 +452,7 @@ RSpec.shared_examples "a working sync controller that supports region level sync
           block_records = [
             create_record(patient: patient_in_request_facility, facility: request_facility),
             create_record(patient: patient_in_same_block, facility: facility_in_same_block),
-            create_record(patient: patient_assigned_to_block, facility: facility_in_same_block),
+            create_record(patient: patient_assigned_to_block, facility: facility_in_same_block)
           ]
 
           non_block_records = [
@@ -514,7 +514,7 @@ RSpec.shared_examples "a working sync controller that supports region level sync
           block_records = [
             *create_record_list(2, patient: patient_in_request_facility, facility: request_facility),
             *create_record_list(2, patient: patient_in_same_block, facility: facility_in_same_block),
-            *create_record_list(2, patient: patient_assigned_to_block, facility: facility_in_same_block),
+            *create_record_list(2, patient: patient_assigned_to_block, facility: facility_in_same_block)
           ]
 
           non_block_records = [
