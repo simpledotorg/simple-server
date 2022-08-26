@@ -1,6 +1,6 @@
 task :support_pg_extensions_in_heroku do
   # https://devcenter.heroku.com/changelog-items/2446
-  next unless ENV["SIMPLE_SERVER_ENV"] == "android_review" || ENV["SIMPLE_SERVER_ENV"] == "review"
+  next unless ENV["SIMPLE_SERVER_ENV"].in?(%w[android_review review])
 
   path = "db/structure.sql"
   f = File.open(path)
