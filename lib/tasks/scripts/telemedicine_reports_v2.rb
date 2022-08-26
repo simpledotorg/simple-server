@@ -13,7 +13,7 @@ class TelemedicineReportsV2
   end
 
   def generate
-    if Flipper.enabled?(:weekly_telemed_report)
+    if Flipper.enabled?(:automated_telemed_report)
       assemble_report_data
       email_report
     end
