@@ -13,6 +13,7 @@ task :support_pg_extensions_in_heroku do
   contents.gsub! "public.ltree", "heroku_ext.ltree"
   contents.gsub! "public.gen_random_uuid()", "heroku_ext.gen_random_uuid()"
   contents.gsub! "public.subpath", "heroku_ext.subpath"
+  contents.gsub! "public.=", "heroku_ext.="
 
   IO.write(path, contents)
 end
