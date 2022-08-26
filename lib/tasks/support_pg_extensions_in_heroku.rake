@@ -12,6 +12,7 @@ task :support_pg_extensions_in_heroku do
   contents.gsub! "CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;", "CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA heroku_ext;"
   contents.gsub! "public.ltree", "heroku_ext.ltree"
   contents.gsub! "public.gen_random_uuid()", "heroku_ext.gen_random_uuid()"
+  contents.gsub! "public.subpath()", "heroku_ext.subpath()"
 
   IO.write(path, contents)
 end
