@@ -17,7 +17,7 @@ jobs:
         name: Build & push Docker image
         with:
           image: simpledotorg/server
-          tags: v1, latest
+          tags: $GITHUB_SHA, latest
           registry: docker.io
           dockerfile: Prod.Dockerfile
           username: ${{ secrets.DOCKER_USERNAME }}
