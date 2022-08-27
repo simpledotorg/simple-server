@@ -8,12 +8,16 @@ class CPHCEnrollment::EnrollmentPayload
   end
 
   def cphc_location
-    return @cphc_location if @cphc_location.present?
-
-    simple_facility_hash = location_finder.simple_facility("facility_id" => @patient.assigned_facility.id)
-    @cphc_location = location_finder.find_cphc_location("facility_name" => simple_facility_hash["facility_name"])
-    puts "Found CPHC location for facility_name #{simple_facility_hash["facility_name"]}" if @cphc_location
-    @cphc_location
+    {"district_id" => 10101,
+     "district_name" => "Kupwara",
+     "taluka_id" => 101003,
+     "taluka_name" => "Handwara",
+     "phc_id" => 1010006,
+     "phc_name" => "jk1phc2",
+     "subcenter_id" => 10100005,
+     "subcenter_name" => "jk1phc2sub2",
+     "village_id" => 101000008,
+     "village_name" => "jk1village1"}
   end
 
   def facilities_hashes(file_name)

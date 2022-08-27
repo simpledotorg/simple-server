@@ -22,7 +22,7 @@ class CPHCEnrollment::Service
   def initialize
     @auth_token = nil
     @is_authorized = false
-    @location_finder = CPHCEnrollment::RandomLocationFinder.build
+    # @location_finder = CPHCEnrollment::RandomLocationFinder.build
     @registry = CPHCEnrollment::CPHCRegistry.new
   end
 
@@ -40,6 +40,10 @@ class CPHCEnrollment::Service
     "#{initial_assessment_path(simple_patient_id)}/vitals"
   end
 
+  def prescription_drugs_path(simple_patient_id)
+    "#{initial_assessment_path(simple_patient_id)}/currentMedication"
+  end
+
   def call(patient)
     @patient = patient
     enroll_patient(patient)
@@ -51,6 +55,8 @@ class CPHCEnrollment::Service
     patient.blood_sugars.each do |blood_sugar|
       update_blood_sugar(blood_sugar)
     end
+
+    update_prescription_drugs(patient.current_prescription_drugs)
 
     puts "DONE!!"
   end
@@ -87,10 +93,24 @@ class CPHCEnrollment::Service
     end
   end
 
+  def update_prescription_drugs(prescription_drugs)
+    patient_id = prescription_drugs.first.patient_id if prescription_drugs.present?
+
+    return unless patient_id
+
+    make_cphc_request(:prescription_drugs, prescription_drugs.map(&:id)) do
+      CPHCEnrollment::Request.new(
+        path: prescription_drugs_path(patient_id),
+        user: user,
+        payload: CPHCEnrollment::PrescriptionDrugsPayload.new(prescription_drugs)
+      ).post
+    end
+  end
+
   def sign_in(auto_fill: false)
     driver.navigate.to(CPHC_SIGN_IN_URL)
     if auto_fill
-      driver.find_element(class: "close", data: {dismiss: "close"}).click
+      driver.find_element(class: "close", data: { dismiss: "close" }).click
       driver.find_element(id: "username").send_keys(CPHC_API_USER_ID)
       driver.find_element(id: "password").send_keys(CPHC_API_PASSWORD)
     end
@@ -108,10 +128,10 @@ class CPHCEnrollment::Service
   end
 
   def user
-    {user_id: CPHC_API_USER_ID,
-     facility_type_id: FACILITY_TYPE_ID["DH"],
-     state_code: CPHC_USER_STATE_CODE,
-     user_authorization: "Bearer #{auth_token}"}
+    { user_id: CPHC_API_USER_ID,
+      facility_type_id: FACILITY_TYPE_ID["DH"],
+      state_code: CPHC_USER_STATE_CODE,
+      user_authorization: "Bearer #{auth_token}" }
   end
 
   def driver
@@ -145,9 +165,10 @@ class CPHCEnrollment::Service
           registry.add(registry_key, simple_id)
         end
       else
-        puts "Request Failed: #{registry_key}, #{simple_id}"
+        puts "Request Failed: #{registry_key}, #{simple_id}: #{response}"
       end
 
+      puts "Success  #{response}"
       response
     else
       sign_in(auto_fill: true)
