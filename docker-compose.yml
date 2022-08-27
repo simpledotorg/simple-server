@@ -1,30 +1,15 @@
 version: "3"
 
 services:
-  ngrok:
-    container_name: ngrok
-    expose:
-      - "4040"
-    ports:
-      - "4040:4040"
-    image: wernight/ngrok
-    environment:
-      - NGROK_PORT=server:3000
-
   postgres:
     image: postgres:14.3-alpine
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=root
+      - POSTGRES_PASSWORD=password
     volumes:
       - postgresqldata:/var/lib/postgresql/data
     expose:
       - "5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
 
   redis:
     image: redis:5-alpine
@@ -37,28 +22,16 @@ services:
     build: .
     volumes:
       - .:/myapp
-    command: >
-      sh -c "sleep 10 &&
-             export SIMPLE_SERVER_HOST=`(curl --silent --show-error ngrok:4040/api/tunnels | jq -r '.tunnels[0].public_url' | sed -E 's/https?:..//')` &&
-             rails db:setup &&
-             printenv | grep 'SIMPLE_SERVER_HOST' &&
-             rails server -b 0.0.0.0"
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rake db:setup; bundle exec rails s -p 3000 -b '0.0.0.0'"
     expose:
       - "3000"
     ports:
       - "3000:3000"
     depends_on:
-      - ngrok
       - redis
       - postgres
-    environment:
-      - SIMPLE_SERVER_DATABASE_HOST=postgres
-      - SIMPLE_SERVER_DATABASE_USERNAME=postgres
-      - SIMPLE_SERVER_DATABASE_PASSWORD=root
-      - SIMPLE_SERVER_HOST_PROTOCOL=https
-      - CALL_SESSION_REDIS_HOST=redis
-      - RAILS_CACHE_REDIS_URL=redis://
-      - SIDEKIQ_REDIS_HOST=redis
+    env_file:
+     - .env.docker
 
 volumes:
   postgresqldata:
