@@ -59,6 +59,12 @@ Dev environment setup using docker and docker-compose
 - [Docker](https://docs.docker.com/engine/install/)
 - [Docker compose](https://docs.docker.com/compose/install/)
 
+###### Install docker and docker-compose on Mac
+```
+brew install docker
+brew install docker-compose
+```
+
 ##### Setup
 ```
 docker-compose up
@@ -74,7 +80,7 @@ Open http://localhost:3000 in your browser to view the simple dashboard
 
 Use below Ngrok [guide](#developing-with-the-android-app) for Android development setup
 
-##### Teardown
+##### Teardown (delete docker containers and volumes)
 ```
 docker-compose down --volumes
 ```
