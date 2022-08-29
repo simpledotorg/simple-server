@@ -124,11 +124,6 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
       let!(:patient_in_request_facility) { create(:patient, :without_medical_history, registration_facility: request_facility) }
       let!(:patient_in_same_block) { create(:patient, :without_medical_history, registration_facility: facility_in_same_block) }
       let!(:patient_assigned_to_block) { create(:patient, :without_medical_history, assigned_facility: facility_in_same_block) }
-      let!(:appointment_in_block) { create(:appointment, facility: facility_in_same_block) }
-      let!(:patient_with_appointment_in_block) {
-        appointment_in_block.update(patient: create(:patient, :without_medical_history))
-        appointment_in_block.patient
-      }
       let!(:patient_in_other_block) { create(:patient, :without_medical_history, registration_facility: facility_in_other_block) }
       let!(:patient_in_other_facility_group) { create(:patient, :without_medical_history, registration_facility: facility_in_other_group) }
 
@@ -212,7 +207,7 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
               get :sync_to_user, params: {process_token: process_token}
 
               response_record_ids = JSON(response.body)[response_key].map { |r| r["id"] }
-              expect(response_record_ids).to match_array Appointment.where.not(id: appointment_in_block).pluck(:id)
+              expect(response_record_ids).to match_array Appointment.pluck(:id)
             end
           end
         end
@@ -225,9 +220,7 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
               block_records = [
                 *create_record_list(2, patient: patient_in_request_facility, facility: request_facility),
                 *create_record_list(2, patient: patient_in_same_block, facility: facility_in_same_block),
-                *create_record_list(2, patient: patient_assigned_to_block, facility: facility_in_same_block),
-                *create_record_list(2, patient: patient_with_appointment_in_block, facility: facility_in_same_block),
-                *appointment_in_block
+                *create_record_list(2, patient: patient_assigned_to_block, facility: facility_in_same_block)
               ]
 
               non_block_records = [
@@ -249,8 +242,7 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
                 current_facility_processed_since: Time.current,
                 other_facilities_processed_since: Time.current)
               block_records = Timecop.travel(15.minutes.ago) {
-                [*create_record_list(10, patient: patient_in_same_block, facility: facility_in_same_block),
-                  appointment_in_block]
+                [*create_record_list(10, patient: patient_in_same_block, facility: facility_in_same_block)]
               }
               non_block_records = Timecop.travel(15.minutes.ago) { create_record_list(2, facility: facility_in_other_block) }
 
@@ -269,9 +261,7 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
               block_records = [
                 *create_record_list(2, patient: patient_in_request_facility, facility: request_facility),
                 *create_record_list(2, patient: patient_in_same_block, facility: facility_in_same_block),
-                *create_record_list(2, patient: patient_assigned_to_block, facility: facility_in_same_block),
-                *create_record_list(2, patient: patient_with_appointment_in_block, facility: facility_in_same_block),
-                *appointment_in_block
+                *create_record_list(2, patient: patient_assigned_to_block, facility: facility_in_same_block)
               ]
 
               non_block_records = [
