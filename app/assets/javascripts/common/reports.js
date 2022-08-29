@@ -95,6 +95,68 @@ DashboardReports = () => {
   };
 
   const ReportsGraphConfig = {
+    controlledPatientsTrend: function(data) {
+      const config = createBaseGraphConfig();
+      config.data = {
+        labels: Object.keys(data.controlRate),
+        datasets: [
+          {
+            label: "BP controlled",
+            backgroundColor: COLORS.lightGreen,
+            borderColor: COLORS.mediumGreen,
+            borderWidth: 2,
+            pointBackgroundColor: COLORS.white,
+            hoverBackgroundColor: COLORS.white,
+            hoverBorderWidth: 2,
+            data: Object.values(data.controlRate),
+          },
+        ],
+      };
+      config.options.scales = {
+        xAxes: [
+          {
+            stacked: true,
+            display: true,
+            gridLines: {
+              display: false,
+              drawBorder: true,
+            },
+            ticks: {
+              autoSkip: false,
+              fontColor: COLORS.darkGrey,
+              fontSize: 12,
+              fontFamily: "Roboto",
+              padding: 8,
+              min: 0,
+              beginAtZero: true,
+            },
+          },
+        ],
+        yAxes: [
+          {
+            stacked: false,
+            display: true,
+            gridLines: {
+              display: true,
+              drawBorder: false,
+            },
+            ticks: {
+              autoSkip: false,
+              fontColor: COLORS.darkGrey,
+              fontSize: 10,
+              fontFamily: "Roboto",
+              padding: 8,
+              min: 0,
+              beginAtZero: true,
+              stepSize: 25,
+              max: 100,
+            },
+          },
+        ],
+      };
+
+      return config;
+    },
     bsBelow200PatientsTrend: function(data) {
       const config = createBaseGraphConfig();
       config.data = {
@@ -792,131 +854,10 @@ Reports = function (withLtfu) {
   this.initializeCharts = () => {
     const data = this.getReportingData();
 
-    this.setupControlledGraph(data);
     this.setupUncontrolledGraph(data);
     this.setupMissedVisitsGraph(data);
     this.setupCumulativeRegistrationsGraph(data);
     this.setupVisitDetailsGraph(data);
-  };
-
-  this.setupControlledGraph = (data) => {
-    const adjustedPatients = withLtfu
-      ? data.adjustedPatientCountsWithLtfu
-      : data.adjustedPatientCounts;
-    const controlledGraphNumerator = data.controlledPatients;
-    const controlledGraphRate = withLtfu
-      ? data.controlWithLtfuRate
-      : data.controlRate;
-
-    const controlledGraphConfig = this.createBaseGraphConfig();
-    controlledGraphConfig.data = {
-      labels: Object.keys(controlledGraphRate),
-      datasets: [
-        {
-          label: "BP controlled",
-          backgroundColor: this.lightGreenColor,
-          borderColor: this.mediumGreenColor,
-          borderWidth: 2,
-          pointBackgroundColor: this.whiteColor,
-          hoverBackgroundColor: this.whiteColor,
-          hoverBorderWidth: 2,
-          data: Object.values(controlledGraphRate),
-        },
-      ],
-    };
-    controlledGraphConfig.options.scales = {
-      xAxes: [
-        {
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: true,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 12,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-          },
-        },
-      ],
-      yAxes: [
-        {
-          stacked: false,
-          display: true,
-          gridLines: {
-            display: true,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: 25,
-            max: 100,
-          },
-        },
-      ],
-    };
-    controlledGraphConfig.options.tooltips = {
-      enabled: false,
-      custom: (tooltip) => {
-        let hoveredDatapoint = tooltip.dataPoints;
-        if (hoveredDatapoint)
-          populateControlledGraph(hoveredDatapoint[0].label);
-        else populateControlledGraphDefault();
-      },
-    };
-
-    const populateControlledGraph = (period) => {
-      const cardNode = document.getElementById("bp-controlled");
-      const rateNode = cardNode.querySelector("[data-rate]");
-      const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
-      const periodStartNode = cardNode.querySelector("[data-period-start]");
-      const periodEndNode = cardNode.querySelector("[data-period-end]");
-      const registrationsNode = cardNode.querySelector("[data-registrations]");
-      const registrationsPeriodEndNode = cardNode.querySelector(
-        "[data-registrations-period-end]"
-      );
-
-      const rate = this.formatPercentage(controlledGraphRate[period]);
-      const periodInfo = data.periodInfo[period];
-      const adjustedPatientCounts = adjustedPatients[period];
-      const totalPatients = controlledGraphNumerator[period];
-
-      rateNode.innerHTML = rate;
-      totalPatientsNode.innerHTML = this.formatNumberWithCommas(totalPatients);
-      periodStartNode.innerHTML = periodInfo.bp_control_start_date;
-      periodEndNode.innerHTML = periodInfo.bp_control_end_date;
-      registrationsNode.innerHTML = this.formatNumberWithCommas(
-        adjustedPatientCounts
-      );
-      registrationsPeriodEndNode.innerHTML =
-        periodInfo.bp_control_registration_date;
-    };
-
-    const populateControlledGraphDefault = () => {
-      const cardNode = document.getElementById("bp-controlled");
-      const mostRecentPeriod = cardNode.getAttribute("data-period");
-
-      populateControlledGraph(mostRecentPeriod);
-    };
-
-    const controlledGraphCanvas = document.getElementById(
-      "controlledPatientsTrend"
-    );
-    if (controlledGraphCanvas) {
-      new Chart(controlledGraphCanvas.getContext("2d"), controlledGraphConfig);
-      populateControlledGraphDefault();
-    }
   };
 
   this.setupUncontrolledGraph = (data) => {
