@@ -156,9 +156,7 @@ class Region < ApplicationRecord
     case region_type
       when "block"
         registered_patients.with_discarded
-          .select(:id, :registration_facility_id)
-          .or(assigned_patients.with_discarded.select(:id, :registration_facility_id))
-          .union(appointed_patients.with_discarded.select(:id, :registration_facility_id))
+          .union(assigned_patients.with_discarded)
       else
         registered_patients.with_discarded
     end
@@ -170,10 +168,6 @@ class Region < ApplicationRecord
 
   def assigned_patients
     Patient.where(assigned_facility: facility_regions.pluck(:source_id))
-  end
-
-  def appointed_patients
-    Patient.joins(:appointments).where(appointments: {facility: facility_regions.pluck(:source_id)})
   end
 
   def diabetes_management_enabled?
