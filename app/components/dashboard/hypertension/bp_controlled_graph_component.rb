@@ -1,8 +1,5 @@
 class Dashboard::Hypertension::BpControlledGraphComponent < ApplicationComponent
-  attr_reader :period
-  attr_reader :region
-  attr_reader :data
-  attr_reader :with_ltfu
+  attr_reader :period, :region, :data, :with_ltfu
 
   def initialize(data:, region:, period:, with_ltfu:)
     @data = data
@@ -30,6 +27,7 @@ class Dashboard::Hypertension::BpControlledGraphComponent < ApplicationComponent
   def denominator_copy
     with_ltfu ? "denominator_with_ltfu_copy" : "denominator_copy"
   end
+
 
   private
 
