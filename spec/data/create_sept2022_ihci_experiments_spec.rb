@@ -12,8 +12,8 @@ RSpec.describe CreateSept2022IhciExperiments do
 
     expect(experiment).to be_current_patients
     expect(experiment.name).to eq("Current Patient Sept 2022 Basic Variations")
-    expect(experiment.start_time.to_date).to eq(Date.parse("Aug 30, 2022").to_date)
-    expect(experiment.end_time.to_date).to eq(Date.parse("Sep 29, 2022").to_date)
+    expect(experiment.start_time.to_date).to eq(Date.parse("Aug 31, 2022").to_date)
+    expect(experiment.end_time.to_date).to eq(Date.parse("Sep 30, 2022").to_date)
     expect(experiment.max_patients_per_day).to eq(20000)
 
     expect(experiment.reminder_templates.count).to eq(2)
@@ -31,8 +31,8 @@ RSpec.describe CreateSept2022IhciExperiments do
 
     expect(experiment).to be_stale_patients
     expect(experiment.name).to eq("Stale Patient Sept 2022 Basic Variations")
-    expect(experiment.start_time.to_date).to eq(Date.parse("Aug 30, 2022").to_date)
-    expect(experiment.end_time.to_date).to eq(Date.parse("Sep 29, 2022").to_date)
+    expect(experiment.start_time.to_date).to eq(Date.parse("Aug 31, 2022").to_date)
+    expect(experiment.end_time.to_date).to eq(Date.parse("Sep 30, 2022").to_date)
     expect(experiment.max_patients_per_day).to eq(20000)
 
     expect(experiment.reminder_templates.count).to eq(2)

@@ -14,8 +14,8 @@ class CreateSept2022IhciExperiments < ActiveRecord::Migration[5.2]
     ActiveRecord::Base.transaction do
       Experimentation::Experiment.current_patients.create!(
         name: "Current Patient Sept 2022 Basic Variations",
-        start_time: Date.parse("30 Aug 2022").beginning_of_day,
-        end_time: Date.parse("29 Sep 2022").end_of_day,
+        start_time: Date.parse("31 Aug 2022").beginning_of_day,
+        end_time: Date.parse("30 Sep 2022").end_of_day,
         max_patients_per_day: 20_000
       ).tap do |experiment|
         group = experiment.treatment_groups.create!(description: "official_short_cascade")
@@ -29,8 +29,8 @@ class CreateSept2022IhciExperiments < ActiveRecord::Migration[5.2]
     ActiveRecord::Base.transaction do
       Experimentation::Experiment.stale_patients.create!(
         name: "Stale Patient Sept 2022 Basic Variations",
-        start_time: Date.parse("30 Aug 2022").beginning_of_day,
-        end_time: Date.parse("29 Sep 2022").end_of_day,
+        start_time: Date.parse("31 Aug 2022").beginning_of_day,
+        end_time: Date.parse("30 Sep 2022").end_of_day,
         max_patients_per_day: 20_000
       ).tap do |experiment|
         group = experiment.treatment_groups.create!(description: "official_short_cascade")
