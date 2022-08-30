@@ -1,10 +1,10 @@
-class Dashboard::Hypertension::BpControlledGraphComponent < ApplicationComponent
-  attr_reader :period, :region, :data, :with_ltfu
+class Dashboard::Hypertension::BpUncontrolledGraphComponent < ApplicationComponent
+  attr_reader :data, :region, :period, :with_ltfu
 
   def initialize(data:, region:, period:, with_ltfu:)
     @data = data
-    @period = period
     @region = region
+    @period = period
     @with_ltfu = with_ltfu
   end
 
@@ -12,24 +12,22 @@ class Dashboard::Hypertension::BpControlledGraphComponent < ApplicationComponent
     if with_ltfu
       return {
         adjustedPatientCounts: data[:adjusted_patient_counts_with_ltfu],
-        controlledPatients: data[:controlled_patients],
-        controlRate: data[:controlled_patients_with_ltfu_rate],
+        uncontrolledPatients: data[:uncontrolled_patients],
+        uncontrolledRate: data[:uncontrolled_patients_with_ltfu_rate],
         **period_data
       }
     end
 
     {adjustedPatientCounts: data[:adjusted_patient_counts],
-     controlledPatients: data[:controlled_patients],
-     controlRate: data[:controlled_patients_rate],
+     uncontrolledPatients: data[:uncontrolled_patients],
+     uncontrolledRate: data[:uncontrolled_patients_rate],
      **period_data}
   end
+
 
   def denominator_copy
     with_ltfu ? "denominator_with_ltfu_copy" : "denominator_copy"
   end
-
-
-  private
 
   def period_data
     {

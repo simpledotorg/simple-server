@@ -268,6 +268,69 @@ DashboardReports = () => {
 
       return config;
     },
+    uncontrolledPatientsTrend: function(data) {
+      const config = createBaseGraphConfig();
+      config.data = {
+        labels: Object.keys(data.uncontrolledRate),
+        datasets: [
+          {
+            label: "BP uncontrolled",
+            backgroundColor: COLORS.lightRed,
+            borderColor: COLORS.mediumRed,
+            borderWidth: 2,
+            pointBackgroundColor: COLORS.white,
+            hoverBackgroundColor: COLORS.white,
+            hoverBorderWidth: 2,
+            data: Object.values(data.uncontrolledRate),
+            type: "line",
+          },
+        ],
+      };
+      config.options.scales = {
+        xAxes: [
+          {
+            stacked: false,
+            display: true,
+            gridLines: {
+              display: false,
+              drawBorder: true,
+            },
+            ticks: {
+              autoSkip: false,
+              fontColor: COLORS.darkGrey,
+              fontSize: 12,
+              fontFamily: "Roboto",
+              padding: 8,
+              min: 0,
+              beginAtZero: true,
+            },
+          },
+        ],
+        yAxes: [
+          {
+            stacked: false,
+            display: true,
+            gridLines: {
+              display: true,
+              drawBorder: false,
+            },
+            ticks: {
+              autoSkip: false,
+              fontColor: COLORS.darkGrey,
+              fontSize: 10,
+              fontFamily: "Roboto",
+              padding: 8,
+              min: 0,
+              beginAtZero: true,
+              stepSize: 25,
+              max: 100,
+            },
+          },
+        ],
+      };
+
+      return config;
+    },
     bsBelow200PatientsTrend: function(data) {
       const config = createBaseGraphConfig();
       config.data = {
@@ -965,135 +1028,8 @@ Reports = function (withLtfu) {
   this.initializeCharts = () => {
     const data = this.getReportingData();
 
-    // this.setupControlledGraph(data);
-    this.setupUncontrolledGraph(data);
     this.setupMissedVisitsGraph(data);
-    // this.setupCumulativeRegistrationsGraph(data);
     this.setupVisitDetailsGraph(data);
-  };
-
-  this.setupUncontrolledGraph = (data) => {
-    const adjustedPatients = withLtfu
-      ? data.adjustedPatientCountsWithLtfu
-      : data.adjustedPatientCounts;
-    const uncontrolledGraphNumerator = data.uncontrolledPatients;
-    const uncontrolledGraphRate = withLtfu
-      ? data.uncontrolledWithLtfuRate
-      : data.uncontrolledRate;
-
-    const uncontrolledGraphConfig = this.createBaseGraphConfig();
-    uncontrolledGraphConfig.data = {
-      labels: Object.keys(uncontrolledGraphRate),
-      datasets: [
-        {
-          label: "BP uncontrolled",
-          backgroundColor: this.lightRedColor,
-          borderColor: this.mediumRedColor,
-          borderWidth: 2,
-          pointBackgroundColor: this.whiteColor,
-          hoverBackgroundColor: this.whiteColor,
-          hoverBorderWidth: 2,
-          data: Object.values(uncontrolledGraphRate),
-          type: "line",
-        },
-      ],
-    };
-    uncontrolledGraphConfig.options.scales = {
-      xAxes: [
-        {
-          stacked: false,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: true,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 12,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-          },
-        },
-      ],
-      yAxes: [
-        {
-          stacked: false,
-          display: true,
-          gridLines: {
-            display: true,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: 25,
-            max: 100,
-          },
-        },
-      ],
-    };
-    uncontrolledGraphConfig.options.tooltips = {
-      enabled: false,
-      custom: (tooltip) => {
-        let hoveredDatapoint = tooltip.dataPoints;
-        if (hoveredDatapoint)
-          populateUncontrolledGraph(hoveredDatapoint[0].label);
-        else populateUncontrolledGraphDefault();
-      },
-    };
-
-    const populateUncontrolledGraph = (period) => {
-      const cardNode = document.getElementById("bp-uncontrolled");
-      const rateNode = cardNode.querySelector("[data-rate]");
-      const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
-      const periodStartNode = cardNode.querySelector("[data-period-start]");
-      const periodEndNode = cardNode.querySelector("[data-period-end]");
-      const registrationsNode = cardNode.querySelector("[data-registrations]");
-      const registrationsPeriodEndNode = cardNode.querySelector(
-        "[data-registrations-period-end]"
-      );
-
-      const rate = this.formatPercentage(uncontrolledGraphRate[period]);
-      const periodInfo = data.periodInfo[period];
-      const adjustedPatientCounts = adjustedPatients[period];
-      const totalPatients = uncontrolledGraphNumerator[period];
-
-      rateNode.innerHTML = rate;
-      totalPatientsNode.innerHTML = this.formatNumberWithCommas(totalPatients);
-      periodStartNode.innerHTML = periodInfo.bp_control_start_date;
-      periodEndNode.innerHTML = periodInfo.bp_control_end_date;
-      registrationsNode.innerHTML = this.formatNumberWithCommas(
-        adjustedPatientCounts
-      );
-      registrationsPeriodEndNode.innerHTML =
-        periodInfo.bp_control_registration_date;
-    };
-
-    const populateUncontrolledGraphDefault = () => {
-      const cardNode = document.getElementById("bp-uncontrolled");
-      const mostRecentPeriod = cardNode.getAttribute("data-period");
-
-      populateUncontrolledGraph(mostRecentPeriod);
-    };
-
-    const uncontrolledGraphCanvas = document.getElementById(
-      "uncontrolledPatientsTrend"
-    );
-    if (uncontrolledGraphCanvas) {
-      new Chart(
-        uncontrolledGraphCanvas.getContext("2d"),
-        uncontrolledGraphConfig
-      );
-      populateUncontrolledGraphDefault();
-    }
   };
 
   this.setupMissedVisitsGraph = (data) => {

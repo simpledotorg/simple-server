@@ -19,57 +19,8 @@
 <div class="d-lg-flex flex-lg-wrap">
   <%= render Dashboard::Hypertension::BpControlledGraphComponent.new(args_with_ltfu) %>
   <%= render Dashboard::Hypertension::CumulativeRegistrationsGraphComponent.new(args) %>
+  <%= render Dashboard::Hypertension::BpUncontrolledGraphComponent.new(args_with_ltfu) %>
 
-  <div class="d-lg-flex w-lg-50 pr-lg-2">
-    <div id="bp-uncontrolled"
-         data-period="<%= @period.to_s %>"
-         class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column
-          justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black">
-      <div class="pt-20px px-20px">
-        <div class="d-flex mb-8px">
-            <div class="d-flex flex-1">
-              <h3 class="mb-0px mr-8px">
-                BP not controlled
-              </h3>
-              <%= render "definition_tooltip",
-                         definitions: { "Numerator" => t("bp_not_controlled_copy.numerator"),
-                                        "Denominator" => t(control_graph_denominator_copy, region_name: @region.name) } %>
-            </div>
-            <%= render "reports/regions/ltfu_toggle", id: "uncontrolledGraphLtfuToggle", enabled: @with_ltfu %>
-        </div>
-        <p class="c-grey-dark">
-          <%= t("bp_not_controlled_copy.reports_card_subtitle") %>
-        </p>
-        <div class="mb-12px d-lg-flex align-lg-center">
-          <p class="c-print-black c-red graph-percent fs-28px"
-             data-rate="">
-          </p>
-          <div>
-            <p class="m-0px c-black">
-              <span data-total-patients=""></span>
-              patients with uncontrolled BP from
-              <span data-period-start=""></span>
-              to
-              <span data-period-end=""></span>
-            </p>
-            <p class="m-0px c-grey-dark c-print-black">
-              of
-              <span data-registrations=""></span>
-              patients registered till
-              <span data-registrations-period-end=""></span>
-            </p>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div class="p-relative mb-16px">
-          <div class="h-320px mr-16px mb-12px ml-13px">
-            <canvas id="uncontrolledPatientsTrend"></canvas>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
   <div class="d-lg-flex w-lg-50 pl-lg-2">
     <div id="missed-visits"
          data-period="<%= @period.to_s %>"
