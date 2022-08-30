@@ -47,4 +47,8 @@ module ProgressTabHelper
       multiplier_index + 1
     end
   end
+
+  def render_monthly_report_footnote?
+    CountryConfig.current_country?("India")
+  end
 end
