@@ -1,13 +1,14 @@
-<div id="diabetes-visit-details"
+<div id="visit-details"
      class="pt-20px px-20px mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column
-          justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
+            justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
 
   <%= render Dashboard::Card::TitleComponent.new(title: 'Treatment status of patients under care') %>
 
-  <div id="diabetesVisitDetails" class="d-flex fd-column fd-lg-row" data-period="<%= period.to_s %>">
+  <div id="hypertensionVisitDetails" class="d-flex fd-column fd-lg-row" data-period="<%= period.to_s %>">
     <div class="py-lg-20px w-lg-50 h-lg-auto minh-300px">
       <canvas></canvas>
     </div>
+
     <div class="flex-lg-1 mt-24px ml-lg-24px mt-print-2cm">
       <% treatment_outcomes.each do |treatment_outcome| %>
         <div>
@@ -32,7 +33,7 @@
               </p>
               <p class="m-0px c-grey-dark c-print-black">
                 of
-                <span data-key="adjustedDiabetesPatientCounts" data-format="numberWithCommas"></span>
+                <span data-key="adjustedPatientCounts" data-format="numberWithCommas"></span>
                 patients registered till
                 <span data-key="registrationDate"></span>
               </p>
@@ -43,5 +44,5 @@
     </div>
   </div>
 
-  <script> DashboardReports().ReportsGraph("diabetesVisitDetails", <%= graph_data.to_json.html_safe %>)</script>
+  <script> DashboardReports().ReportsGraph("hypertensionVisitDetails", <%= graph_data.to_json.html_safe %>)</script>
 </div>
