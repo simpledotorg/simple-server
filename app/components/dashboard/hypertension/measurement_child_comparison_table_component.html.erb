@@ -1,0 +1,122 @@
+<div class="card mb-3">
+  <%= render Dashboard::Card::TitleComponent.new(title: "Hypertension indicators: #{period}") %>
+
+  <div class="table-responsive-md">
+    <%= render Dashboard::Card::TableComponent.new(id: 'regionComparisonTable') do |table| %>
+      <% table.column_group do %>
+        <colgroup>
+          <col class="table-first-col">
+          <col class="table-divider">
+          <col>
+          <col class="table-divider">
+          <col>
+          <col class="table-divider">
+          <col>
+          <col class="table-divider">
+          <col>
+        </colgroup>
+      <% end %>
+
+      <% table.sub_header("District") %>
+
+      <% table.header("Registration", colspan: 2, tooltip: {
+        "Total registered patients" => t("registered_patients_copy.total_registered_patients", region_name: region.name),
+        "Monthly registered patients" => t("registered_patients_copy.monthly_registered_patients", region_name: region.name)
+      }) %>
+      <% table.sub_header("Total") %>
+      <% table.sub_header(period.to_s) %>
+
+
+      <% table.header("BP controlled", colspan: 2, tooltip: {
+        "Numerator" => t("bp_controlled_copy.numerator"),
+        "Denominator" => t("denominator_copy", region_name: region.name)
+      }) %>
+      <% table.sub_header("Percent") %>
+      <% table.sub_header("Total") %>
+
+
+      <% table.header("BP not controlled", colspan: 2, tooltip: {
+        "Numerator" => t("bp_not_controlled_copy.numerator"),
+        "Denominator" => t("denominator_copy", region_name: region.name)
+      }) %>
+      <% table.sub_header("Percent") %>
+      <% table.sub_header("Total") %>
+
+      <% table.header("Missed visits", colspan: 2, tooltip: {
+        "Numerator" => t("missed_visits_copy.numerator"),
+        "Denominator" => t("denominator_copy", region_name: region.name)
+      }) %>
+      <% table.sub_header("Percent") %>
+      <% table.sub_header("Total") %>
+
+      <% table.row do %>
+        <tr class="row-total" data-sort-method="none">
+          <td class="type-title">
+            <%= region.name %>
+          </td>
+          <td class="ta-right">
+            <%= number_with_delimiter(row_data(data).dig(:registrations, :cumulative)) %>
+          </td>
+          <td class="ta-right">
+            <%= number_with_delimiter(row_data(data).dig(:registrations, :current_month)) %>
+          </td>
+
+          <% [:controlled, :uncontrolled, :missed_visits].each do |key| %>
+            <td
+              class="type-percent"
+              data-sort-column-key="total-patients-<%= period %>"
+              data-sort="<%= row_data(data).dig(key, :percent) %>"
+              data-toggle="tooltip"
+              title="<%= number_with_delimiter(row_data(data).dig(key, :total)) %> / <%= number_with_delimiter(data.dig(:adjusted_patient_counts, period)) %> patients"
+            >
+              <em data-rate="<%= row_data(data).dig(key, :percent) %>" class="high-is-good">
+                <%= number_to_percentage(row_data(data).dig(key, :percent) || 0, precision: 0) %>
+              </em>
+            </td>
+            <td class="ta-right">
+              <%= number_with_delimiter(row_data(data).dig(key, :total), precision: 0) %>
+            </td>
+          <% end %>
+
+        </tr>
+      <% end %>
+
+      <% children_data.each do |child_data| %>
+        <% table.row do %>
+          <tr>
+            <td class="ta-left">
+              <%= link_to(reports_region_path(child_data[:region], report_scope: child_data[:region].region_type)) do %>
+                <%= child_data[:region].name %>
+              <% end %>
+            </td>
+
+            <td class="ta-right">
+              <%= number_with_delimiter(row_data(child_data).dig(:registrations, :cumulative)) %>
+            </td>
+            <td class="ta-right">
+              <%= number_with_delimiter(row_data(child_data).dig(:registrations, :current_month)) %>
+            </td>
+
+            <% [:controlled, :uncontrolled, :missed_visits].each do |key| %>
+              <td
+                class="type-percent"
+                data-sort-column-key="total-patients-<%= period %>"
+                data-sort="<%= row_data(child_data).dig(key, :percent) %>"
+                data-toggle="tooltip"
+                title="<%= number_with_delimiter(row_data(child_data).dig(key, :total)) %> / <%= number_with_delimiter(child_data.dig(:adjusted_patient_counts, period)) %> patients"
+              >
+                <em data-rate="<%= row_data(child_data).dig(key, :percent) %>" class="high-is-good">
+                  <%= number_to_percentage(row_data(child_data).dig(key, :percent) || 0, precision: 0) %>
+                </em>
+              </td>
+              <td class="ta-right">
+                <%= number_with_delimiter(row_data(child_data).dig(key, :total), precision: 0) %>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
+      <% end %> %>
+
+    <% end %>
+  </div>
+</div>

@@ -1,7 +1,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js" integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
 
 <% content_for :title do %>
- <%= @region.name %> | Hypertension
+  <%= @region.name %> | Hypertension
 <% end %>
 
 <%= render Dashboard::HeaderComponent.new(
@@ -32,27 +32,34 @@
     current_admin: current_admin
   ) %>
 
-  <%= render(Dashboard::Hypertension::LostToFollowUpComponent.new(data: @data, region: @region, period: @period)) %>
+  <%= render(Dashboard::Hypertension::LostToFollowUpComponent.new(args)) %>
 </div>
 
-  <% if current_admin.feature_enabled?(:medications_dispensation) %>
-    <h4 class="mt-5 mb-32px">Medications</h4>
-    <%= render Dashboard::MedicationDispensationComponent.new(data: @data, region: @region, period: @period) %>
-  <% end %>
+<% if current_admin.feature_enabled?(:medications_dispensation) %>
+  <h4 class="mt-5 mb-32px">Medications</h4>
+  <%= render Dashboard::MedicationDispensationComponent.new(args) %>
+<% end %>
 
 <% if @children_data.any? %>
   <h4 class="mt-5 mb-32px">Compare performance</h4>
-  <%= render "child_data_tables", data: @children_data, localized_region_type: @child_regions.first.localized_region_type %>
+  <%= render Dashboard::Hypertension::MeasurementChildComparisonTableComponent.new(
+    data: @data,
+    children_data: @children_data,
+    region: @region,
+    period: @period,
+    localized_region_type: @child_regions.first.localized_region_type
+  ) %>
+
+  <%= render(RegistrationsAndFollowUpsComponent.new(
+    @region,
+    current_admin: current_admin,
+    repository: @details_repository,
+    current_period: @period)) %>
 <% end %>
 
 <% if @region.facility_region? %>
   <h4 class="mt-5 mb-32px">Facility activity</h4>
   <%= render "facility_details" %>
-<% else %>
-  <%= render(RegistrationsAndFollowUpsComponent.new(@region,
-    current_admin: current_admin,
-    repository: @details_repository,
-    current_period: @period)) %>
 <% end %>
 
 <h4 class="mt-5 mb-32px">Cohort reports</h4>
@@ -64,17 +71,8 @@
 <% if @region.facility_region? %>
   <h4 class="mt-5 mb-32px">BP Recording Activity</h4>
   <%= render "shared/recent_bp_log",
-              blood_pressures: @recent_blood_pressures,
-              display_model: :facility %>
+             blood_pressures: @recent_blood_pressures,
+             display_model: :facility %>
 <% end %>
 
 <%= render "overview_footnotes" %>
-
-<div id="data-json" style="display: none;">
-  <%= raw @data.to_json %>
-</div>
-<script>
-  window.addEventListener("DOMContentLoaded", () => {
-    new Reports(<%= @with_ltfu %>).initialize();
-  });
-</script>
