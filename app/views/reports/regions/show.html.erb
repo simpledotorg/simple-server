@@ -67,6 +67,12 @@
 
 <% if @region.facility_region? %>
   <h4 class="mt-5 mb-32px">Facility activity</h4>
+  <%= render Dashboard::Hypertension::RegistrationsAndFollowUpsByUserComponent.new(
+    region: @region,
+    period: @period,
+    repository: @details_repository,
+    current_admin: current_admin) %>
+
   <%= render "facility_details" %>
 <% end %>
 

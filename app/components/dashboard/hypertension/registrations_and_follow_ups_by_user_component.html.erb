@@ -1,0 +1,69 @@
+<div class="card mt-0 pr-0 pr-md-3 pb-inside-avoid">
+  <%= render Dashboard::Card::TitleComponent.new(title: 'Patient registrations and follow-ups') do |title| %>
+    <% title.tooltip({ "Monthly registered patients" => t("registered_patients_copy.monthly_registered_patients", region_name: region.name),
+                       "Follow-up patients per user" => t(:follow_up_patients_copy, region_name: region.name) }) %>
+  <% end %>
+
+  <div class="table-responsive-md">
+    <%= render Dashboard::Card::TableComponent.new(id: 'registrationsAndFollowUpsByUser') do |table| %>
+      <% table.column_group do %>
+        <colgroup>
+          <col class="table-first-col">
+          <col>
+          <col class="table-divider">
+          <col class="table-divider">
+          <col>
+          <col>
+          <col>
+          <col>
+          <col class="table-divider">
+          <col>
+          <col>
+          <col>
+          <col>
+          <col>
+        </colgroup>
+      <% end %>
+
+      <% table.sub_header("Users") %>
+
+      <% table.header("Totals") %>
+      <% table.sub_header("Registered Patients") %>
+
+      <% table.header("Monthly Registered Users", colspan: 6) %>
+      <% range.each do |period| %>
+        <% table.sub_header(period.to_s) %>
+      <% end %>
+
+      <% table.header("Follow-up patients per user", colspan: 6) %>
+      <% range.each do |period| %>
+        <% table.sub_header(period.to_s) %>
+      <% end %>
+
+      <% current_admin.accessible_users(:view_reports).order(:full_name).filter { |user| show_user_in_region?(user) }.each do |user| %>
+        <% table.row do %>
+          <tr>
+            <td class="row-title">
+              <%= link_to user.full_name, admin_user_path(user, period: @period) %>
+            </td>
+            <td class="ta-right">
+              <%= number_or_dash_with_delimiter(registrations_by_user(user)) %>
+            </td>
+
+            <% range.each do |period| %>
+              <td class="ta-right">
+                <%= number_or_dash_with_delimiter(monthly_registrations_by_user(user, period)) %>
+              </td>
+            <% end %>
+
+            <% range.each do |period| %>
+              <td class="ta-right">
+                <%= number_or_dash_with_delimiter(monthly_follow_ups_by_user(user, period)) %>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+</div>
