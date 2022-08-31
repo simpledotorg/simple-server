@@ -85,7 +85,7 @@
 <h4 class="mt-5 mb-32px">Cohort reports</h4>
 
 <div class="d-lg-flex">
-  <%= render Reports::CohortComponent.new(@cohort_period, @cohort_data) %>
+  <%= render Dashboard::Hypertension::CohortComponent.new(@cohort_period, @cohort_data) %>
 </div>
 
 <% if @region.facility_region? %>

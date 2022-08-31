@@ -1,6 +1,4 @@
-# frozen_string_literal: true
-
-class Reports::CohortComponent < ViewComponent::Base
+class Dashboard::Hypertension::CohortComponent < ApplicationComponent
   include AssetsHelper
 
   attr_reader :period, :cohort_data
