@@ -16,7 +16,7 @@ class Dashboard::Hypertension::RegistrationsAndFollowUpsByUserComponent < Applic
   end
 
   def show_user_in_region?(user)
-    registrations_by_user(user).nonzero? && bp_measures_by_user(user).nonzero?
+    registrations_by_user(user).nonzero? || bp_measures_by_user(user).nonzero?
   end
 
   def registrations_by_user(user)

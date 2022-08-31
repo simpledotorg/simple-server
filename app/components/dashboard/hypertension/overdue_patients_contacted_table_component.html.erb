@@ -18,7 +18,8 @@
         </colgroup>
       <% end %>
 
-      <% table.sub_header(region.localized_child_region_type.capitalize) %>
+      <% table.sub_header(region.localized_child_region_type.capitalize, sort_default: true, sort_method: :string) %>
+
       <% range.each do |period| %>
         <% table.sub_header(period.to_s) %>
       <% end %>

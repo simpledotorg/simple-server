@@ -1,0 +1,107 @@
+<div class="card mt-0 pr-0 pr-md-3 pb-inside-avoid">
+  <%= render Dashboard::Card::TitleComponent.new(title: 'Healthcare worker activity') do |title| %>
+    <% if show_overdue_call_results? %>
+      <% title.tooltip({ "Overdue patients contacted" => t("call_results_copy.monthly_overdue_calls_made", region_name: region.name),
+                         "BP measures taken" => t("bp_measures_taken_copy", region_name: region.name) }) %>
+    <% else %>
+      <% title.tooltip({ "Monthly registered patients" => t("registered_patients_copy.monthly_registered_patients", region_name: region.name),
+                         "BP measures taken" => t("bp_measures_taken_copy", region_name: region.name) }) %>
+    <% end %>
+  <% end %>
+
+  <div class="table-responsive-md">
+    <%= render Dashboard::Card::TableComponent.new(id: "healthWorkerActivityTable") do |table| %>
+      <% if show_overdue_call_results? %>
+        <% table.column_group do %>
+          <colgroup>
+            <col class="table-first-col">
+            <col class="table-divider">
+            <col>
+            <col>
+            <col>
+            <col>
+            <col>
+            <col class="table-divider">
+            <col>
+            <col>
+            <col>
+            <col>
+            <col>
+          </colgroup>
+        <% end %>
+      <% else %>
+        <% table.column_group do %>
+          <colgroup>
+            <col>
+            <col>
+            <col class="table-divider">
+            <col class="table-divider">
+            <col>
+            <col>
+            <col>
+            <col>
+            <col class="table-divider">
+            <col>
+            <col>
+            <col>
+            <col>
+            <col>
+          </colgroup>
+        <% end %>
+      <% end %>
+
+      <% table.sub_header("Users", sort_default: true, sort_method: :string) %>
+
+      <% if show_overdue_call_results? %>
+        <% table.header("Overdue Patients Contacted", colspan: 6) %>
+        <% range.each do |period| %>
+          <% table.sub_header(period.to_s) %>
+        <% end %>
+      <% else %>
+        <% table.header("Total") %>
+        <% table.header("Monthly registered patients", colspan: 6) %>
+        <% range.each do |period| %>
+          <% table.sub_header(period.to_s) %>
+        <% end %>
+      <% end %>
+
+      <% table.header("BP measures taken", colspan: 6) %>
+      <% range.each do |period| %>
+        <% table.sub_header(period.to_s) %>
+      <% end %>
+
+      <% users_in_region.each do |user| %>
+        <% table.row do %>
+          <tr>
+            <td class="row-title">
+              <%= link_to user.full_name, admin_user_path(user, period: period) %>
+            </td>
+
+            <% if show_overdue_call_results? %>
+              <% range.each do |period| %>
+                <td class="ta-center">
+                  <%= number_or_dash_with_delimiter(monthly_overdue_patients_contacted_by_user(user, period)) %>
+                </td>
+              <% end %>
+            <% else %>
+              <td class="ta-center">
+                <%= number_or_dash_with_delimiter(registrations_by_user(user)) %>
+              </td>
+              <% range.each do |period| %>
+                <td class="ta-center">
+                  <%= number_or_dash_with_delimiter(monthly_registrations_by_user(user, period)) %>
+                </td>
+              <% end %>
+            <% end %>
+
+            <% range.each do |period| %>
+              <td class="ta-center">
+                <%= number_or_dash_with_delimiter(monthly_bp_measures_by_user(user, period)) %>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

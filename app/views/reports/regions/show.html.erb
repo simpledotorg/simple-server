@@ -71,9 +71,15 @@
     region: @region,
     period: @period,
     repository: @details_repository,
-    current_admin: current_admin) %>
+    current_admin: current_admin
+  ) %>
 
-  <%= render "facility_details" %>
+  <%= render Dashboard::Hypertension::HealthWorkerActivityComponent.new(
+    region: @region,
+    period: @period,
+    repository: @details_repository,
+    current_admin: current_admin
+  ) %>
 <% end %>
 
 <h4 class="mt-5 mb-32px">Cohort reports</h4>
