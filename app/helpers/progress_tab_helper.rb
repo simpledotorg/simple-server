@@ -48,7 +48,7 @@ module ProgressTabHelper
     end
   end
 
-  def render_monthly_report_footnote?
+  def render_patient_initiated_on_treatment?
     CountryConfig.current_country?("India")
   end
 end
