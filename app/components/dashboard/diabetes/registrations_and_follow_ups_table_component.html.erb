@@ -55,7 +55,7 @@
         <% table.row do %>
           <tr>
             <td class="row-title">
-              <%= link_to child.name, reports_region_path(child.region, report_scope: child.region_type) %>
+              <%= link_to child.name, reports_region_diabetes_path(child.region, report_scope: child.region_type) %>
             </td>
             <% row_data(region: child).each do |cell_value| %>
               <td class="row-total ta-right">

@@ -23,7 +23,7 @@ class Dashboard::Hypertension::MeasurementChildComparisonTableComponent < Applic
       },
       uncontrolled: {
         percent: region_data.dig(:uncontrolled_patients_rate, @period),
-        total: region_data.dig(:uncontrolled_patients, @period),
+        total: region_data.dig(:uncontrolled_patients, @period)
       },
       missed_visits: {
         percent: region_data.dig(:missed_visits_rate, @period),

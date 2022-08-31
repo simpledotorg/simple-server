@@ -18,7 +18,6 @@ class Dashboard::Hypertension::TreatmentOutcomesCardComponent < ApplicationCompo
      visitButNoBPMeasure: data[:visited_without_bp_taken],
      visitButNoBPMeasureRate: data[:visited_without_bp_taken_rates],
      **period_data}
-
   end
 
   def treatment_outcomes
@@ -52,8 +51,8 @@ class Dashboard::Hypertension::TreatmentOutcomesCardComponent < ApplicationCompo
        class: "c-amber",
        tooltip: {
          "Numerator" => t("bp_controlled_copy.numerator"),
-         "Denominator" => t("denominator_copy", region_name: @region.name)}
-      }]
+         "Denominator" => t("denominator_copy", region_name: @region.name)
+       }}]
   end
 
   def period_data

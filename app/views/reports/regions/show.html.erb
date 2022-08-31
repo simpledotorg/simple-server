@@ -50,11 +50,11 @@
     localized_region_type: @child_regions.first.localized_region_type
   ) %>
 
-  <%= render(RegistrationsAndFollowUpsComponent.new(
-    @region,
-    current_admin: current_admin,
-    repository: @details_repository,
-    current_period: @period)) %>
+  <%= render Dashboard::Hypertension::RegistrationsAndFollowUpsTableComponent.new(
+    region: @region,
+    period: @period,
+    repository: @details_repository
+  ) %>
 <% end %>
 
 <% if @region.facility_region? %>

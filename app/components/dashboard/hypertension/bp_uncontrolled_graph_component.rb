@@ -24,7 +24,6 @@ class Dashboard::Hypertension::BpUncontrolledGraphComponent < ApplicationCompone
      **period_data}
   end
 
-
   def denominator_copy
     with_ltfu ? "denominator_with_ltfu_copy" : "denominator_copy"
   end

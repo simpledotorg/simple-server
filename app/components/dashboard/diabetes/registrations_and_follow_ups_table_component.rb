@@ -17,8 +17,8 @@ class Dashboard::Diabetes::RegistrationsAndFollowUpsTableComponent < Application
 
   def row_data(region:)
     [repository.cumulative_diabetes_registrations[region.slug][period],
-      repository.cumulative_assigned_diabetic_patients[region.slug][period],
-      *range.map { |range_period| repository.monthly_diabetes_registrations[region.slug][range_period] },
-      *range.map { |range_period| repository.diabetes_follow_ups[region.slug][range_period] }]
+     repository.cumulative_assigned_diabetic_patients[region.slug][period],
+     *range.map { |range_period| repository.monthly_diabetes_registrations[region.slug][range_period] },
+     *range.map { |range_period| repository.diabetes_follow_ups[region.slug][range_period] }]
   end
 end
