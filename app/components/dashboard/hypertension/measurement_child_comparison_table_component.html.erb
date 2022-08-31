@@ -17,7 +17,7 @@
         </colgroup>
       <% end %>
 
-      <% table.sub_header("District") %>
+      <% table.sub_header(region.localized_child_region_type.capitalize) %>
 
       <% table.header("Registration", colspan: 2, tooltip: {
         "Total registered patients" => t("registered_patients_copy.total_registered_patients", region_name: region.name),

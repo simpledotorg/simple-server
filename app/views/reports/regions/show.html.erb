@@ -55,6 +55,14 @@
     period: @period,
     repository: @details_repository
   ) %>
+
+  <% if current_admin.feature_enabled?(:show_call_results) %>
+    <%= render Dashboard::Hypertension::OverduePatientsContactedTableComponent.new(
+      region: @region,
+      period: @period,
+      repository: @details_repository
+    ) %>
+  <% end %>
 <% end %>
 
 <% if @region.facility_region? %>
