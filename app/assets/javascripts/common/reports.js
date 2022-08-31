@@ -331,6 +331,69 @@ DashboardReports = () => {
 
       return config;
     },
+    missedVisitsTrend: function(data) {
+      const config = createBaseGraphConfig();
+      config.data = {
+        labels: Object.keys(data.missedVisitsRate),
+        datasets: [
+          {
+            label: "Missed visits",
+            backgroundColor: COLORS.lightBlue,
+            borderColor: COLORS.mediumBlue,
+            borderWidth: 2,
+            pointBackgroundColor: COLORS.white,
+            hoverBackgroundColor: COLORS.white,
+            hoverBorderWidth: 2,
+            data: Object.values(data.missedVisitsRate),
+            type: "line",
+          },
+        ],
+      };
+      config.options.scales = {
+        xAxes: [
+          {
+            stacked: false,
+            display: true,
+            gridLines: {
+              display: false,
+              drawBorder: true,
+            },
+            ticks: {
+              autoSkip: false,
+              fontColor: COLORS.darkGrey,
+              fontSize: 12,
+              fontFamily: "Roboto",
+              padding: 8,
+              min: 0,
+              beginAtZero: true,
+            },
+          },
+        ],
+        yAxes: [
+          {
+            stacked: false,
+            display: true,
+            gridLines: {
+              display: true,
+              drawBorder: false,
+            },
+            ticks: {
+              autoSkip: false,
+              fontColor: COLORS.darkGrey,
+              fontSize: 10,
+              fontFamily: "Roboto",
+              padding: 8,
+              min: 0,
+              beginAtZero: true,
+              stepSize: 25,
+              max: 100,
+            },
+          },
+        ],
+      };
+
+      return config;
+    },
     bsBelow200PatientsTrend: function(data) {
       const config = createBaseGraphConfig();
       config.data = {
@@ -1028,212 +1091,7 @@ Reports = function (withLtfu) {
   this.initializeCharts = () => {
     const data = this.getReportingData();
 
-    this.setupMissedVisitsGraph(data);
     this.setupVisitDetailsGraph(data);
-  };
-
-  this.setupMissedVisitsGraph = (data) => {
-    const adjustedPatients = withLtfu
-      ? data.adjustedPatientCountsWithLtfu
-      : data.adjustedPatientCounts;
-    const missedVisitsGraphNumerator = withLtfu
-      ? data.missedVisitsWithLtfu
-      : data.missedVisits;
-    const missedVisitsGraphRate = withLtfu
-      ? data.missedVisitsWithLtfuRate
-      : data.missedVisitsRate;
-
-    const missedVisitsConfig = this.createBaseGraphConfig();
-    missedVisitsConfig.data = {
-      labels: Object.keys(missedVisitsGraphRate),
-      datasets: [
-        {
-          label: "Missed visits",
-          backgroundColor: this.lightBlueColor,
-          borderColor: this.mediumBlueColor,
-          borderWidth: 2,
-          pointBackgroundColor: this.whiteColor,
-          hoverBackgroundColor: this.whiteColor,
-          hoverBorderWidth: 2,
-          data: Object.values(missedVisitsGraphRate),
-          type: "line",
-        },
-      ],
-    };
-    missedVisitsConfig.options.scales = {
-      xAxes: [
-        {
-          stacked: false,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: true,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 12,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-          },
-        },
-      ],
-      yAxes: [
-        {
-          stacked: false,
-          display: true,
-          gridLines: {
-            display: true,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: 25,
-            max: 100,
-          },
-        },
-      ],
-    };
-    missedVisitsConfig.options.tooltips = {
-      enabled: false,
-      custom: (tooltip) => {
-        let hoveredDatapoint = tooltip.dataPoints;
-        if (hoveredDatapoint)
-          populateMissedVisitsGraph(hoveredDatapoint[0].label);
-        else populateMissedVisitsGraphDefault();
-      },
-    };
-
-    const populateMissedVisitsGraph = (period) => {
-      const cardNode = document.getElementById("missed-visits");
-      const rateNode = cardNode.querySelector("[data-rate]");
-      const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
-      const periodStartNode = cardNode.querySelector("[data-period-start]");
-      const periodEndNode = cardNode.querySelector("[data-period-end]");
-      const registrationsNode = cardNode.querySelector("[data-registrations]");
-      const registrationsPeriodEndNode = cardNode.querySelector(
-        "[data-registrations-period-end]"
-      );
-
-      const rate = this.formatPercentage(missedVisitsGraphRate[period]);
-      const periodInfo = data.periodInfo[period];
-      const adjustedPatientCounts = adjustedPatients[period];
-      const totalPatients = missedVisitsGraphNumerator[period];
-
-      rateNode.innerHTML = rate;
-      totalPatientsNode.innerHTML = this.formatNumberWithCommas(totalPatients);
-      periodStartNode.innerHTML = periodInfo.bp_control_start_date;
-      periodEndNode.innerHTML = periodInfo.bp_control_end_date;
-      registrationsNode.innerHTML = this.formatNumberWithCommas(
-        adjustedPatientCounts
-      );
-      registrationsPeriodEndNode.innerHTML =
-        periodInfo.bp_control_registration_date;
-    };
-
-    const populateMissedVisitsGraphDefault = () => {
-      const cardNode = document.getElementById("missed-visits");
-      const mostRecentPeriod = cardNode.getAttribute("data-period");
-
-      populateMissedVisitsGraph(mostRecentPeriod);
-    };
-
-    const missedVisitsGraphCanvas =
-      document.getElementById("missedVisitsTrend");
-    if (missedVisitsGraphCanvas) {
-      new Chart(missedVisitsGraphCanvas.getContext("2d"), missedVisitsConfig);
-      populateMissedVisitsGraphDefault();
-    }
-  };
-
-  this.setupCumulativeRegistrationsGraph = (data) => {
-    const cumulativeRegistrationsYAxis = this.createAxisMaxAndStepSize(
-      data.cumulativeRegistrations
-    );
-    const monthlyRegistrationsYAxis = this.createAxisMaxAndStepSize(
-      data.monthlyRegistrations
-    );
-
-
-    cumulativeRegistrationsGraphConfig.options.tooltips = {
-      enabled: false,
-      custom: (tooltip) => {
-        let hoveredDatapoint = tooltip.dataPoints;
-        if (hoveredDatapoint)
-          populateCumulativeRegistrationsGraph(hoveredDatapoint[0].label);
-        else populateCumulativeRegistrationsGraphDefault();
-      },
-    };
-
-    const populateCumulativeRegistrationsGraph = (period) => {
-      const cardNode = document.getElementById("cumulative-registrations");
-      const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
-      const registrationsPeriodEndNode = cardNode.querySelector(
-        "[data-registrations-period-end]"
-      );
-      const monthlyRegistrationsNode = cardNode.querySelector(
-        "[data-monthly-registrations]"
-      );
-      const registrationsMonthEndNode = cardNode.querySelector(
-        "[data-registrations-month-end]"
-      );
-
-      const hypertensionOnlyRegistrationsNode = cardNode.querySelector(
-          "[data-hypertension-only-registrations]"
-      );
-
-      const hypertensionAndDiabetesOnlyRegistrationsNode = cardNode.querySelector(
-          "[data-hypertension-and-diabetes-registrations]"
-      );
-
-      const periodInfo = data.periodInfo[period];
-      const cumulativeRegistrations = data.cumulativeRegistrations[period];
-      const cumulativeHypertensionAndDiabetesRegistrations = data.cumulativeHypertensionAndDiabetesRegistrations[period];
-      const monthlyRegistrations = data.monthlyRegistrations[period];
-
-      monthlyRegistrationsNode.innerHTML =
-        this.formatNumberWithCommas(monthlyRegistrations);
-      totalPatientsNode.innerHTML = this.formatNumberWithCommas(
-        cumulativeRegistrations
-      );
-      registrationsPeriodEndNode.innerHTML = periodInfo.bp_control_end_date;
-      registrationsMonthEndNode.innerHTML = period;
-
-
-      hypertensionOnlyRegistrationsNode.innerHTML = this.formatNumberWithCommas(
-          cumulativeRegistrations - cumulativeHypertensionAndDiabetesRegistrations
-      );
-
-      hypertensionAndDiabetesOnlyRegistrationsNode.innerHTML = this.formatNumberWithCommas(
-          cumulativeHypertensionAndDiabetesRegistrations
-      );
-    };
-
-    const populateCumulativeRegistrationsGraphDefault = () => {
-      const cardNode = document.getElementById("cumulative-registrations");
-      const mostRecentPeriod = cardNode.getAttribute("data-period");
-
-      populateCumulativeRegistrationsGraph(mostRecentPeriod);
-    };
-
-    const cumulativeRegistrationsGraphCanvas = document.getElementById(
-      "cumulativeRegistrationsTrend"
-    );
-    if (cumulativeRegistrationsGraphCanvas) {
-      new Chart(
-        cumulativeRegistrationsGraphCanvas.getContext("2d"),
-        cumulativeRegistrationsGraphConfig
-      );
-      populateCumulativeRegistrationsGraphDefault();
-    }
   };
 
   this.setupVisitDetailsGraph = (data) => {

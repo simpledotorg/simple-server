@@ -1,0 +1,32 @@
+<div id="missed-visits" class="d-lg-flex w-lg-50 pl-lg-2">
+  <%= render Dashboard::Card::GraphComponent.new(id: "missedVisitsTrend", data: graph_data, period: period) do |c| %>
+    <%= c.title(title: "Missed visits".html_safe, subtitle: t("missed_visits_copy.reports_card_subtitle")) do |title| %>
+      <%= title.tooltip({ "Numerator" => t("missed_visits_copy.numerator"),
+                          "Denominator" => t(denominator_copy, region_name: region.name) }) %>
+      <%= title.ltfu_toggle(id: 'controlledGraphLtfuToggle', enabled: with_ltfu) %>
+    <% end %>
+
+    <% c.summary do %>
+      <div class="mb-12px d-lg-flex align-lg-center">
+        <p class="c-print-black c-blue graph-percent fs-28px"
+           data-key="missedVisitsRate" data-format="percentage">
+        </p>
+        <div>
+          <p class="m-0px c-black">
+            <span data-key="missedVisits" data-format="numberWithCommas"></span>
+            patients with no visit from
+            <span data-key="startDate"></span>
+            to
+            <span data-key="endDate"></span>
+          </p>
+          <p class="m-0px c-grey-dark c-print-black">
+            of
+            <span data-key="adjustedPatientCounts"></span>
+            patients registered till
+            <span data-key="registrationDate"></span>
+          </p>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</div>
