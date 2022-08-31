@@ -1,0 +1,72 @@
+<div class="card w-full" id="recent-bps">
+  <%= render Dashboard::Card::TitleComponent.new(
+    title: "Recent BPs",
+    subtitle: subtitle
+  ) %>
+
+  <% if recent_blood_pressures.any? %>
+    <div class="table-responsive-md table-compact pb-3">
+      <table>
+        <colgroup>
+          <col>
+          <col>
+          <col>
+          <col>
+          <col class="table-divider">
+        </colgroup>
+        <thead>
+        <tr>
+          <th colspan="4"></th>
+          <% if display_model == :facility %>
+            <th class="pl-1 pb-3">Recorded by</th>
+          <% end %>
+          <% if display_model == :user %>
+            <th class="pl-1 pb-3">Facility</th>
+          <% end %>
+        </tr>
+        </thead>
+        <% last_date = nil %>
+        <% recent_blood_pressures.each do |bp| %>
+          <% next if bp.patient.blank? %>
+          <% if print_date = (bp.recorded_at.to_date != last_date) %>
+            <% last_date = bp.recorded_at.to_date %>
+          <% end %>
+          <tr class="<%= "date-row" if print_date %>">
+            <td class="nowrap" style="width: 10em; <%= "border: none;" if !print_date %>">
+              <% if print_date %>
+                <strong>
+                  <%= l bp.recorded_at.to_date %>
+                </strong>
+              <% end %>
+            </td>
+            <td class="nowrap text-muted"><%= bp.recorded_at.strftime("%I:%M %p") %></td>
+            <td class="nowrap <%= bp.hypertensive? ? "bp-uncontrolled" : "bp-controlled text-muted" %>">
+              <i class="fas fa-heart mr-2"></i> <%= bp.to_s %></td>
+            <td class="nowrap">
+              <% if bp.recorded_at.to_date > bp.patient.recorded_at.to_date %>
+                <span class="patient-return text-muted">Follow-up patient</span>
+              <% else %>
+                <span class="patient-new">New registration</span>
+              <% end %>
+            </td>
+            <% if display_model == :facility %>
+              <td class="nowrap"><%= bp.user.present? ? link_to(bp.user.full_name, [:admin, bp.user]) : "unknown" %></td>
+            <% end %>
+            <% if display_model == :user %>
+              <td class="nowrap"><%= bp.facility.present? ? link_to(bp.facility.name, reports_region_facility_path(bp.facility)) : "unknown" %></td>
+            <% end %>
+          </tr>
+        <% end %>
+      </table>
+    </div>
+  <% else %>
+    <p class="text-muted mb-0">
+      <i class="fas fa-chevron-left"></i>
+      No BPs recorded
+      <i class="fas fa-chevron-right"></i>
+    </p>
+  <% end %>
+  <div>
+    <%= paginate recent_blood_pressures, params: { anchor: 'recent-bps' } %>
+  </div>
+</div>

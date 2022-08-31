@@ -48,9 +48,12 @@
 </div>
 
 <% if current_admin.accessible_users(:view_pii).include?(@user) %>
-  <%= render 'shared/recent_bp_log',
-             blood_pressures: @recent_blood_pressures,
-             display_model: :user %>
+  <%= render Dashboard::Hypertension::RecentMeasurementsComponent.new(
+    user: @user,
+    recent_blood_pressures: @recent_blood_pressures,
+    display_model: :user,
+    page: @page
+  ) %>
 
   <% if @recent_blood_sugars.present? %>
     <%= render Dashboard::Diabetes::RecentMeasurementsComponent.new(
