@@ -4,8 +4,8 @@ class Reports::RegionsController < AdminController
   include RegionSearch
 
   before_action :set_period, except: [:index, :fastindex]
-  before_action :set_page, only: [:show, :details, :diabetes]
-  before_action :set_per_page, only: [:show, :details, :diabetes]
+  before_action :set_page, only: [:show, :diabetes]
+  before_action :set_per_page, only: [:show, :diabetes]
   before_action :find_region, except: [:index, :fastindex]
   before_action :show_region_search
   around_action :set_reporting_time_zone
@@ -122,47 +122,6 @@ class Reports::RegionsController < AdminController
       format.js
       format.json { render json: @data }
     end
-  end
-
-  # We display two ranges of data on this page - the chart range is for the LTFU chart,
-  # and the period_range is the data we display in the detail tables.
-  def details
-    months = -(Reports::MAX_MONTHS_OF_DATA - 1)
-    @details_period_range = Range.new(@period.advance(months: -5), @period)
-
-    regions = if @region.facility_region?
-      [@region]
-    else
-      [@region, @region.reportable_children].flatten
-    end
-
-    if current_admin.feature_enabled?(:show_call_results) && @region.state_region?
-      regions.concat(@region.district_regions)
-    end
-
-    @repository = Reports::Repository.new(regions, periods: @details_period_range)
-    @presenter = Reports::RepositoryPresenter.new(@repository)
-
-    chart_range = (@period.advance(months: months)..@period)
-    chart_repo = Reports::Repository.new(@region, periods: chart_range)
-    @details_chart_data = {
-      ltfu_trend: ltfu_chart_data(chart_repo, chart_range),
-      **medications_dispensation_data(region: @region, period: @period, diagnosis: :hypertension)
-    }
-    @data = @presenter.call(@region)
-    @data = @data.merge(@details_chart_data)
-
-    if @region.facility_region?
-      @recent_blood_pressures = paginate(
-        @region.source.blood_pressures.for_recent_bp_log.includes(:patient, :facility)
-      )
-    end
-  end
-
-  def cohort
-    authorize { current_admin.accessible_facilities(:view_reports).any? }
-
-    @cohort_data = CohortService.new(region: @region, periods: @period.downto(5)).call
   end
 
   def diabetes

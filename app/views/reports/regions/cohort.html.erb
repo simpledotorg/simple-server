@@ -1,9 +1,0 @@
-<% content_for :title do %>
- <%= @region.name %> | Cohort
-<% end %>
-
-<%= render "header"%>
-
-<div class="d-lg-flex">
-  <%= render Dashboard::Hypertension::CohortComponent.new(@period, @cohort_data) %>
-</div>

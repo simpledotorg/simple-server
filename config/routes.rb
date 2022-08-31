@@ -187,8 +187,6 @@ Rails.application.routes.draw do
     resources :regions, only: [:index]
     get "regions/fastindex", to: "regions#fastindex"
     get "regions/:report_scope/:id", to: "regions#show", as: :region
-    get "regions/:report_scope/:id/details", to: "regions#details", as: :region_details
-    get "regions/:report_scope/:id/cohort", to: "regions#cohort", as: :region_cohort
     get "regions/:report_scope/:id/download", to: "regions#download", as: :region_download
     get "regions/:report_scope/:id/monthly_state_data_report",
       to: "regions#hypertension_monthly_state_data", as: :region_hypertension_monthly_state_data
