@@ -1,6 +1,8 @@
 # Dockerfile development version
 FROM ruby:2.7.4
 
+SHELL ["/bin/bash", "-c"] 
+
 ENV BUNDLE_VERSION 2.2.29
 
 ## Install dependencies
@@ -22,9 +24,6 @@ WORKDIR $INSTALL_PATH
 # Copy application files
 COPY . .
 
-# Remove all default config files
-RUN rm -f .env.*
-
 # Configure rails env
 ENV RAILS_ENV production
 ENV RAILS_SERVE_STATIC_FILES true
@@ -34,7 +33,11 @@ ENV RAILS_LOG_TO_STDOUT true
 RUN gem install bundler -v $BUNDLE_VERSION
 RUN bundle config --global frozen 1
 RUN bundle install --without development test
+RUN source .env.dockerbuild && bundle exec rake assets:precompile
 RUN yarn install
+
+# Remove all default config files
+RUN rm -f .env.*
 
 EXPOSE 3000
 ENTRYPOINT ["/opt/app/bin/docker-entrypoint"]
