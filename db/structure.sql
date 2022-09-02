@@ -829,11 +829,11 @@ CREATE TABLE public.patient_phone_numbers (
 
 CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
  SELECT p.recorded_at,
-    concat(date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))), ' Q', date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) AS registration_quarter,
+    concat(date_part('year'::text, ((p.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))), ' Q', EXTRACT(quarter FROM ((p.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))) AS registration_quarter,
     p.full_name,
         CASE
             WHEN (p.date_of_birth IS NOT NULL) THEN date_part('year'::text, age((p.date_of_birth)::timestamp with time zone))
-            ELSE floor(((p.age)::double precision + date_part('year'::text, age(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.age_updated_at))))))
+            ELSE floor(((p.age)::double precision + date_part('year'::text, age(((p.age_updated_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))))
         END AS current_age,
     p.gender,
     p.status,
@@ -855,7 +855,7 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
     latest_blood_pressure.systolic AS latest_blood_pressure_systolic,
     latest_blood_pressure.diastolic AS latest_blood_pressure_diastolic,
     latest_blood_pressure.recorded_at AS latest_blood_pressure_recorded_at,
-    concat(date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_blood_pressure.recorded_at))), ' Q', date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_blood_pressure.recorded_at)))) AS latest_blood_pressure_quarter,
+    concat(date_part('year'::text, ((latest_blood_pressure.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))), ' Q', EXTRACT(quarter FROM ((latest_blood_pressure.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))) AS latest_blood_pressure_quarter,
     latest_blood_pressure_facility.name AS latest_blood_pressure_facility_name,
     latest_blood_pressure_facility.facility_type AS latest_blood_pressure_facility_type,
     latest_blood_pressure_facility.district AS latest_blood_pressure_district,
@@ -864,7 +864,7 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
     latest_blood_sugar.blood_sugar_type AS latest_blood_sugar_type,
     latest_blood_sugar.blood_sugar_value AS latest_blood_sugar_value,
     latest_blood_sugar.recorded_at AS latest_blood_sugar_recorded_at,
-    concat(date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_blood_sugar.recorded_at))), ' Q', date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_blood_sugar.recorded_at)))) AS latest_blood_sugar_quarter,
+    concat(date_part('year'::text, ((latest_blood_sugar.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))), ' Q', EXTRACT(quarter FROM ((latest_blood_sugar.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))) AS latest_blood_sugar_quarter,
     latest_blood_sugar_facility.name AS latest_blood_sugar_facility_name,
     latest_blood_sugar_facility.facility_type AS latest_blood_sugar_facility_type,
     latest_blood_sugar_facility.district AS latest_blood_sugar_district,
@@ -916,7 +916,8 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
             medical_histories.diagnosed_with_hypertension,
             medical_histories.deleted_at,
             medical_histories.user_id,
-            medical_histories.hypertension
+            medical_histories.hypertension,
+            medical_histories.receiving_treatment_for_diabetes
            FROM public.medical_histories
           WHERE (medical_histories.deleted_at IS NULL)) mh ON ((mh.patient_id = p.id)))
      LEFT JOIN ( SELECT DISTINCT ON (patient_phone_numbers.patient_id) patient_phone_numbers.id,
@@ -996,9 +997,9 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
             appointments.user_id,
             appointments.creation_facility_id
            FROM public.appointments
-          WHERE (((appointments.status)::text = 'scheduled'::text) AND (appointments.deleted_at IS NULL))
-          ORDER BY appointments.patient_id, appointments.scheduled_date DESC) next_scheduled_appointment ON ((next_scheduled_appointment.patient_id = p.id)))
-     LEFT JOIN public.facilities next_scheduled_appointment_facility ON ((next_scheduled_appointment_facility.id = next_scheduled_appointment.facility_id)))
+          WHERE (appointments.deleted_at IS NULL)
+          ORDER BY appointments.patient_id, appointments.device_created_at DESC) next_scheduled_appointment ON (((next_scheduled_appointment.patient_id = p.id) AND ((next_scheduled_appointment.status)::text = 'scheduled'::text))))
+     LEFT JOIN public.facilities next_scheduled_appointment_facility ON (((next_scheduled_appointment_facility.id = next_scheduled_appointment.facility_id) AND ((next_scheduled_appointment.status)::text = 'scheduled'::text))))
   WHERE (p.deleted_at IS NULL)
   WITH NO DATA;
 
@@ -6080,6 +6081,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220519201430'),
 ('20220524112732'),
 ('20220718091454'),
-('20220902104533');
+('20220902104533'),
+('20220902114057');
 
 

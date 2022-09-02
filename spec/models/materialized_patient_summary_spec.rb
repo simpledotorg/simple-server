@@ -168,6 +168,13 @@ describe MaterializedPatientSummary, type: :model do
       expect(patient_summary.next_scheduled_appointment_scheduled_date).to eq(next_appointment.scheduled_date)
     end
 
+    it "includes next appointment date based on device_created_at" do
+      create(:appointment, patient: patient, user: user, facility: facility,
+             device_created_at: 10.days.ago, scheduled_date: next_appointment.scheduled_date - 10.days)
+
+      expect(patient_summary.next_scheduled_appointment_scheduled_date).to eq(next_appointment.scheduled_date)
+    end
+
     it "includes next appointment facility details", :aggregate_failures do
       expect(patient_summary.next_scheduled_appointment_facility_name).to eq(next_appointment.facility.name)
       expect(patient_summary.next_scheduled_appointment_facility_type).to eq(next_appointment.facility.facility_type)
