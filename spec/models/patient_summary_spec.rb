@@ -21,7 +21,8 @@ describe PatientSummary, type: :model do
 
     let!(:old_passport) { create(:patient_business_identifier, patient: patient, device_created_at: old_date) }
 
-    let!(:next_appointment) { create(:appointment, patient: patient) }
+    let!(:scheduled_appointment) { create(:appointment, patient: patient, scheduled_date: 60.days.from_now) }
+    let!(:next_appointment) { create(:appointment, patient: patient, scheduled_date: 30.days.from_now) }
 
     let(:med_history) { create(:medical_history, patient: patient) }
 
@@ -110,6 +111,7 @@ describe PatientSummary, type: :model do
       end
 
       it "includes next appointment date" do
+        expect(patient_summary.next_appointment_id).to eq(next_appointment.id)
         expect(patient_summary.next_appointment_scheduled_date).to eq(next_appointment.scheduled_date)
       end
 

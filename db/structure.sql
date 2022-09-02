@@ -1145,7 +1145,7 @@ CREATE MATERIALIZED VIEW public.patient_registrations_per_day_per_facilities AS
 
 CREATE VIEW public.patient_summaries AS
  SELECT p.recorded_at,
-    concat(date_part('year'::text, p.recorded_at), ' Q', date_part('quarter'::text, p.recorded_at)) AS registration_quarter,
+    concat(date_part('year'::text, p.recorded_at), ' Q', EXTRACT(quarter FROM p.recorded_at)) AS registration_quarter,
     p.full_name,
         CASE
             WHEN (p.date_of_birth IS NOT NULL) THEN date_part('year'::text, age((p.date_of_birth)::timestamp with time zone))
@@ -1166,7 +1166,7 @@ CREATE VIEW public.patient_summaries AS
     latest_blood_pressure.systolic AS latest_blood_pressure_systolic,
     latest_blood_pressure.diastolic AS latest_blood_pressure_diastolic,
     latest_blood_pressure.recorded_at AS latest_blood_pressure_recorded_at,
-    concat(date_part('year'::text, latest_blood_pressure.recorded_at), ' Q', date_part('quarter'::text, latest_blood_pressure.recorded_at)) AS latest_blood_pressure_quarter,
+    concat(date_part('year'::text, latest_blood_pressure.recorded_at), ' Q', EXTRACT(quarter FROM latest_blood_pressure.recorded_at)) AS latest_blood_pressure_quarter,
     latest_blood_pressure_facility.name AS latest_blood_pressure_facility_name,
     latest_blood_pressure_facility.facility_type AS latest_blood_pressure_facility_type,
     latest_blood_pressure_facility.district AS latest_blood_pressure_district,
@@ -1174,7 +1174,7 @@ CREATE VIEW public.patient_summaries AS
     latest_blood_sugar.blood_sugar_type AS latest_blood_sugar_type,
     latest_blood_sugar.blood_sugar_value AS latest_blood_sugar_value,
     latest_blood_sugar.recorded_at AS latest_blood_sugar_recorded_at,
-    concat(date_part('year'::text, latest_blood_sugar.recorded_at), ' Q', date_part('quarter'::text, latest_blood_sugar.recorded_at)) AS latest_blood_sugar_quarter,
+    concat(date_part('year'::text, latest_blood_sugar.recorded_at), ' Q', EXTRACT(quarter FROM latest_blood_sugar.recorded_at)) AS latest_blood_sugar_quarter,
     latest_blood_sugar_facility.name AS latest_blood_sugar_facility_name,
     latest_blood_sugar_facility.facility_type AS latest_blood_sugar_facility_type,
     latest_blood_sugar_facility.district AS latest_blood_sugar_district,
@@ -1287,7 +1287,7 @@ CREATE VIEW public.patient_summaries AS
             a.creation_facility_id
            FROM public.appointments a
           WHERE (a.patient_id = p.id)
-          ORDER BY a.scheduled_date DESC
+          ORDER BY a.device_created_at DESC
          LIMIT 1) next_appointment ON (true))
      LEFT JOIN public.facilities next_appointment_facility ON ((next_appointment_facility.id = next_appointment.facility_id)))
   WHERE (p.deleted_at IS NULL);
@@ -6079,6 +6079,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220414134624'),
 ('20220519201430'),
 ('20220524112732'),
-('20220718091454');
+('20220718091454'),
+('20220902104533');
 
 
