@@ -3,10 +3,10 @@ class Reports::RegionsController < AdminController
   include GraphicsDownload
   include RegionSearch
 
-  before_action :set_period, only: [:show, :cohort, :diabetes, :details]
+  before_action :set_period, except: [:index, :fastindex]
   before_action :set_page, only: [:show, :details, :diabetes]
   before_action :set_per_page, only: [:show, :details, :diabetes]
-  before_action :find_region, except: [:index, :fastindex, :monthly_district_data_report]
+  before_action :find_region, except: [:index, :fastindex]
   before_action :show_region_search
   around_action :set_reporting_time_zone
   after_action :log_cache_metrics
@@ -55,6 +55,7 @@ class Reports::RegionsController < AdminController
     @repository = Reports::Repository.new(@region, periods: range)
     @presenter = Reports::RepositoryPresenter.new(@repository)
     @overview_data = @presenter.call(@region)
+    @latest_period = Period.current
     @with_ltfu = with_ltfu?
 
     @child_regions = @region.reportable_children
@@ -80,8 +81,7 @@ class Reports::RegionsController < AdminController
     # ======================
     # DETAILS
     # ======================
-    @details_period = Period.month(Time.current)
-    @details_period_range = Range.new(@details_period.advance(months: -5), @details_period)
+    @details_period_range = Range.new(@period.advance(months: -5), @period)
     months = -(Reports::MAX_MONTHS_OF_DATA - 1)
 
     regions = if @region.facility_region?
@@ -96,12 +96,11 @@ class Reports::RegionsController < AdminController
 
     @details_repository = Reports::Repository.new(regions, periods: @details_period_range)
 
-    chart_range = (@details_period.advance(months: months)..@details_period)
+    chart_range = (@period.advance(months: months)..@period)
     chart_repo = Reports::Repository.new(@region, periods: chart_range)
     @details_chart_data = {
-      patient_breakdown: PatientBreakdownService.call(region: @region, period: @details_period)[:hypertension],
       ltfu_trend: ltfu_chart_data(chart_repo, chart_range),
-      **medications_dispensation_data(region: @region, period: @details_period, diagnosis: :hypertension)
+      **medications_dispensation_data(region: @region, period: @period, diagnosis: :hypertension)
     }
 
     if @region.facility_region?
@@ -128,9 +127,8 @@ class Reports::RegionsController < AdminController
   # We display two ranges of data on this page - the chart range is for the LTFU chart,
   # and the period_range is the data we display in the detail tables.
   def details
-    @details_period = Period.month(Time.current)
     months = -(Reports::MAX_MONTHS_OF_DATA - 1)
-    @details_period_range = Range.new(@details_period.advance(months: -5), @details_period)
+    @details_period_range = Range.new(@period.advance(months: -5), @period)
 
     regions = if @region.facility_region?
       [@region]
@@ -143,15 +141,16 @@ class Reports::RegionsController < AdminController
     end
 
     @repository = Reports::Repository.new(regions, periods: @details_period_range)
+    @presenter = Reports::RepositoryPresenter.new(@repository)
 
-    chart_range = (@details_period.advance(months: months)..@details_period)
+    chart_range = (@period.advance(months: months)..@period)
     chart_repo = Reports::Repository.new(@region, periods: chart_range)
     @details_chart_data = {
-      patient_breakdown: PatientBreakdownService.call(region: @region, period: @details_period)[:hypertension],
       ltfu_trend: ltfu_chart_data(chart_repo, chart_range),
-      **medications_dispensation_data(region: @region, period: @details_period, diagnosis: :hypertension)
+      **medications_dispensation_data(region: @region, period: @period, diagnosis: :hypertension)
     }
-    @data = @details_chart_data
+    @data = @presenter.call(@region)
+    @data = @data.merge(@details_chart_data)
 
     if @region.facility_region?
       @recent_blood_pressures = paginate(
@@ -173,6 +172,7 @@ class Reports::RegionsController < AdminController
     @presenter = Reports::RepositoryPresenter.new(@repository)
     @data = @presenter.call(@region)
     @with_ltfu = with_ltfu?
+    @latest_period = Period.current
 
     authorize { current_admin.accessible_facilities(:view_reports).any? }
 
@@ -200,15 +200,13 @@ class Reports::RegionsController < AdminController
     end
 
     months = -(Reports::MAX_MONTHS_OF_DATA - 1)
-    @details_period = Period.month(Time.current)
-    @details_period_range = Range.new(@details_period.advance(months: -5), @details_period)
+    @details_period_range = Range.new(@period.advance(months: -5), @period)
     @details_repository = Reports::Repository.new(regions, periods: @details_period_range)
-    chart_range = (@details_period.advance(months: months)..@details_period)
+    chart_range = (@period.advance(months: months)..@period)
     chart_repo = Reports::Repository.new(@region, periods: chart_range)
     @details_chart_data = {
-      patient_breakdown: PatientBreakdownService.call(region: @region, period: @details_period)[:diabetes],
       ltfu_trend: diabetes_ltfu_chart_data(chart_repo, chart_range),
-      **medications_dispensation_data(region: @region, period: @details_period, diagnosis: :diabetes)
+      **medications_dispensation_data(region: @region, period: @period, diagnosis: :diabetes)
     }
 
     @data.merge!(@details_chart_data)
@@ -242,13 +240,15 @@ class Reports::RegionsController < AdminController
     end
   end
 
-  def monthly_district_data_report
-    @region ||= authorize { current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id]) }
-    @period = Period.month(params[:period] || Date.current)
+  def hypertension_monthly_district_data
     @medications_dispensation_enabled = current_admin.feature_enabled?(:medications_dispensation)
-    csv = MonthlyDistrictDataService.new(@region, @period, medications_dispensation_enabled: @medications_dispensation_enabled).report
+    csv = MonthlyDistrictData::HypertensionDataExporter.new(
+      region: @region,
+      period: @period,
+      medications_dispensation_enabled: @medications_dispensation_enabled
+    ).report
     report_date = @period.to_s.downcase
-    filename = "monthly-facility-data-#{@region.slug}-#{report_date}.csv"
+    filename = "monthly-facility-hypertension-data-#{@region.slug}-#{report_date}.csv"
 
     respond_to do |format|
       format.csv do
@@ -257,13 +257,15 @@ class Reports::RegionsController < AdminController
     end
   end
 
-  def monthly_state_data_report
-    @region ||= authorize { current_admin.accessible_state_regions(:view_reports).find_by!(slug: report_params[:id]) }
-    @period = Period.month(params[:period] || Date.current)
+  def diabetes_monthly_district_data
     @medications_dispensation_enabled = current_admin.feature_enabled?(:medications_dispensation)
-    csv = MonthlyStateDataService.new(@region, @period, medications_dispensation_enabled: @medications_dispensation_enabled).report
+    csv = MonthlyDistrictData::DiabetesDataExporter.new(
+      region: @region,
+      period: @period,
+      medications_dispensation_enabled: @medications_dispensation_enabled
+    ).report
     report_date = @period.to_s.downcase
-    filename = "monthly-district-data-#{@region.slug}-#{report_date}.csv"
+    filename = "monthly-facility-diabetes-data-#{@region.slug}-#{report_date}.csv"
 
     respond_to do |format|
       format.csv do
@@ -272,20 +274,66 @@ class Reports::RegionsController < AdminController
     end
   end
 
-  def monthly_district_report
+  def hypertension_monthly_state_data
+    @medications_dispensation_enabled = current_admin.feature_enabled?(:medications_dispensation)
+    csv = MonthlyStateData::HypertensionDataExporter.new(
+      region: @region,
+      period: @period,
+      medications_dispensation_enabled: @medications_dispensation_enabled
+    ).report
+    report_date = @period.to_s.downcase
+    filename = "monthly-district-hypertension-data-#{@region.slug}-#{report_date}.csv"
+
+    respond_to do |format|
+      format.csv do
+        send_data csv, filename: filename
+      end
+    end
+  end
+
+  def diabetes_monthly_state_data
+    @medications_dispensation_enabled = current_admin.feature_enabled?(:medications_dispensation)
+    csv = MonthlyStateData::DiabetesDataExporter.new(
+      region: @region,
+      period: @period,
+      medications_dispensation_enabled: @medications_dispensation_enabled
+    ).report
+    report_date = @period.to_s.downcase
+    filename = "monthly-district-diabetes-data-#{@region.slug}-#{report_date}.csv"
+
+    respond_to do |format|
+      format.csv do
+        send_data csv, filename: filename
+      end
+    end
+  end
+
+  def hypertension_monthly_district_report
     return unless current_admin.feature_enabled?(:monthly_district_report)
 
-    @region ||= authorize { current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id]) }
-    @period = Period.month(params[:period] || Date.current)
-    zip = MonthlyDistrictReport::Exporter.new(@region, @period).export
-    report_date = @period.to_s.downcase
-    filename = "monthly-district-report-#{@region.slug}-#{report_date}.zip"
+    monthly_district_report(MonthlyDistrictReport::Exporter.new(
+      facility_data: MonthlyDistrictReport::Hypertension::FacilityData.new(@region, @period),
+      block_data: MonthlyDistrictReport::Hypertension::BlockData.new(@region, @period),
+      district_data: MonthlyDistrictReport::Hypertension::DistrictData.new(@region, @period)
+    ),
+      @region,
+      @period,
+      diagnosis: :hypertension)
+  end
 
-    respond_to do |format|
-      format.zip do
-        send_data zip, filename: filename
-      end
-    end
+  def diabetes_monthly_district_report
+    return unless current_admin.feature_enabled?(:monthly_district_report)
+
+    monthly_district_report(
+      MonthlyDistrictReport::Exporter.new(
+        facility_data: MonthlyDistrictReport::Diabetes::FacilityData.new(@region, @period),
+        block_data: MonthlyDistrictReport::Diabetes::BlockData.new(@region, @period),
+        district_data: MonthlyDistrictReport::Diabetes::DistrictData.new(@region, @period)
+      ),
+      @region,
+      @period,
+      diagnosis: :diabetes
+    )
   end
 
   def whatsapp_graphics
@@ -306,6 +354,19 @@ class Reports::RegionsController < AdminController
   end
 
   private
+
+  def monthly_district_report(exporter, region, period, diagnosis:)
+    zip = exporter.export
+
+    report_date = period.to_s.downcase
+    filename = "monthly-district-#{diagnosis}-report-#{region.slug}-#{report_date}.zip"
+
+    respond_to do |format|
+      format.zip do
+        send_data zip, filename: filename
+      end
+    end
+  end
 
   def ltfu_chart_data(repo, range)
     {

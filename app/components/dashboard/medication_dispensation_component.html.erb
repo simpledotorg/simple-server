@@ -1,0 +1,30 @@
+<div id="medications-dispensation" class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black pb-1">
+  <div class="pt-20px px-20px">
+    <%= render Dashboard::Card::TitleComponent.new(
+      title: 'Days of medications dispensed to follow-up patients',
+      subtitle: 'Number of days until a patient’s next scheduled appointment') do |c| %>
+      <%= c.tooltip({ "Numerator" => t("medications_dispensation_copy.numerator"),
+                      "Denominator" => t("medications_dispensation_copy.denominator") }) %>
+    <% end %>
+  </div>
+
+  <div>
+    <div id="MedicationsDispensation" class="p-relative mb-16px" data-period="<%= period.to_s %>">
+      <div class="h-250px mr-16px mb-12px ml-13px">
+        <canvas></canvas>
+      </div>
+      <div class="p-absolute t-0 l-0 pe-none d-flex align-center justify-center w-100pt h-100pt">
+      </div>
+      <div class="ml-3 accessmr-16px d-lg-flex align-lg-center justify-lg-end mt-lg-0px pt-lg-16px">
+        <% graph_data.each do |bucket, data| %>
+          <span class="mr-3 text-nowrap">
+            <span class="legend-label" style="background-color: <%= data[:color] %>"></span><%= bucket %>
+          </span>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@1"></script>
+  <script> DashboardReports().ReportsGraph("MedicationsDispensation", <%= graph_data.to_json.html_safe %>)</script>
+</div>

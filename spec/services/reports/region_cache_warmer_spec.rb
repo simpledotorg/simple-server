@@ -87,21 +87,4 @@ RSpec.describe Reports::RegionCacheWarmer, type: :model do
       repo.controlled_rates(with_ltfu: true)
     end
   end
-
-  context "#warm_patient_breakdown" do
-    it "refreshes the patient breakdown cache" do
-      facility = create(:facility)
-      create(:patient, assigned_facility: facility, recorded_at: 1.month.ago)
-      create(:patient, status: :dead, assigned_facility: facility)
-
-      period = Period.month(Time.current.beginning_of_month)
-      described_class.new(period: period).call
-
-      expect(Patient).to receive(:with_hypertension).never
-
-      result_1 = PatientBreakdownService.call(region: facility.region, period: period)
-      result_2 = PatientBreakdownService.call(region: facility.region, period: period)
-      expect(result_1).to eq(result_2)
-    end
-  end
 end

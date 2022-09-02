@@ -7,9 +7,9 @@ RSpec.describe PatientsWithHistoryExporter, type: :model do
     with_reporting_time_zone { example.run }
   end
 
-  let!(:facility) { create(:facility) }
-  let!(:registration_facility) { create(:facility) }
-  let!(:patient) {
+  let(:facility) { create(:facility, enable_diabetes_management: true) }
+  let(:registration_facility) { create(:facility) }
+  let(:patient) {
     create(:patient,
       assigned_facility: facility,
       registration_facility: registration_facility,
@@ -17,16 +17,23 @@ RSpec.describe PatientsWithHistoryExporter, type: :model do
       status: "dead",
       address: create(:address, village_or_colony: Faker::Address.city)) # need a different village and zone
   }
-  let!(:user) { patient.registration_user }
+  let(:user) { patient.registration_user }
   let!(:bp_1) { create(:blood_pressure, :with_encounter, :critical, recorded_at: 2.months.ago, facility: facility, patient: patient, user: user) }
-  let!(:blood_sugar) { create(:blood_sugar, :fasting, :with_encounter, recorded_at: 2.months.ago, facility: facility, patient: patient, user: user) }
-  let!(:bp_1_follow_up) { create(:appointment, :overdue, device_created_at: 2.months.ago, scheduled_date: 40.days.ago, creation_facility: facility, patient: patient, user: user) }
+  let!(:bp_1_follow_up) { create(:appointment, :overdue, device_created_at: 2.months.ago, scheduled_date: 40.days.ago, facility: facility, patient: patient, user: user) }
   let!(:bp_2) { create(:blood_pressure, :with_encounter, recorded_at: 3.months.ago, facility: facility, patient: patient, user: user) }
-  let!(:old_blood_sugar) { create(:blood_sugar, :with_encounter, recorded_at: 3.months.ago, facility: facility, patient: patient, user: user) }
-  let!(:bp_2_follow_up) { create(:appointment, device_created_at: 3.months.ago, scheduled_date: 2.months.ago, creation_facility: facility, patient: patient, user: user) }
+  let!(:bp_2_follow_up) { create(:appointment, device_created_at: 3.months.ago, scheduled_date: 2.months.ago, facility: facility, patient: patient, user: user) }
   let!(:bp_3) { create(:blood_pressure, :with_encounter, recorded_at: 4.months.ago, facility: facility, patient: patient, user: user) }
-  let!(:bp_3_follow_up) { create(:appointment, device_created_at: 4.month.ago, scheduled_date: 3.months.ago, creation_facility: facility, patient: patient, user: user) }
+  let!(:bp_3_follow_up) { create(:appointment, device_created_at: 4.month.ago, scheduled_date: 3.months.ago, facility: facility, patient: patient, user: user) }
   let!(:bp_4) { create(:blood_pressure, :with_encounter, recorded_at: 5.months.ago, facility: facility, patient: patient, user: user) }
+
+  let!(:blood_sugar_1) { create(:blood_sugar, :fasting, :with_encounter, recorded_at: 2.months.ago, facility: facility, patient: patient, user: user) }
+  let(:blood_sugar_1_follow_up) { create(:appointment, :overdue, device_created_at: 2.months.ago, scheduled_date: 40.days.ago, facility: facility, patient: patient, user: user) }
+  let!(:blood_sugar_2) { create(:blood_sugar, :with_encounter, recorded_at: 3.months.ago, facility: facility, patient: patient, user: user) }
+  let(:blood_sugar_2_follow_up) { create(:appointment, device_created_at: 3.months.ago, scheduled_date: 2.months.ago, facility: facility, patient: patient, user: user) }
+  let!(:blood_sugar_3) { create(:blood_sugar, :with_encounter, recorded_at: 4.months.ago, facility: facility, patient: patient, user: user) }
+  let(:blood_sugar_3_follow_up) { create(:appointment, device_created_at: 4.month.ago, scheduled_date: 3.months.ago, facility: facility, patient: patient, user: user) }
+  let(:blood_sugar_4) { create(:blood_sugar, :with_encounter, recorded_at: 5.months.ago, facility: facility, patient: patient, user: user) }
+
   let(:old_prescription_drug) { create(:prescription_drug, device_created_at: 5.months.ago, facility: facility, patient: patient) }
   let!(:prescription_drugs) do
     [
@@ -141,9 +148,39 @@ RSpec.describe PatientsWithHistoryExporter, type: :model do
       "BP 3 Medication 5",
       "BP 3 Dosage 5",
       "BP 3 Other Medications",
-      "Latest Blood Sugar Date",
-      "Latest Blood Sugar Value",
-      "Latest Blood Sugar Type"
+      "Blood sugar 1 Date",
+      "Blood sugar 1 Quarter",
+      "Blood sugar 1 Type",
+      "Blood sugar 1 Value",
+      "Blood sugar 1 Facility Name",
+      "Blood sugar 1 Facility Type",
+      "Blood sugar 1 Facility District",
+      "Blood sugar 1 Facility State",
+      "Blood sugar 1 Follow-up Facility",
+      "Blood sugar 1 Follow-up Date",
+      "Blood sugar 1 Follow up Days",
+      "Blood sugar 2 Date",
+      "Blood sugar 2 Quarter",
+      "Blood sugar 2 Type",
+      "Blood sugar 2 Value",
+      "Blood sugar 2 Facility Name",
+      "Blood sugar 2 Facility Type",
+      "Blood sugar 2 Facility District",
+      "Blood sugar 2 Facility State",
+      "Blood sugar 2 Follow-up Facility",
+      "Blood sugar 2 Follow-up Date",
+      "Blood sugar 2 Follow up Days",
+      "Blood sugar 3 Date",
+      "Blood sugar 3 Quarter",
+      "Blood sugar 3 Type",
+      "Blood sugar 3 Value",
+      "Blood sugar 3 Facility Name",
+      "Blood sugar 3 Facility Type",
+      "Blood sugar 3 Facility District",
+      "Blood sugar 3 Facility State",
+      "Blood sugar 3 Follow-up Facility",
+      "Blood sugar 3 Follow-up Date",
+      "Blood sugar 3 Follow up Days"
     ]
   end
   let(:fields) do
@@ -243,16 +280,62 @@ RSpec.describe PatientsWithHistoryExporter, type: :model do
       nil,
       nil,
       nil,
-      I18n.l(blood_sugar.recorded_at.to_date),
-      "#{blood_sugar.blood_sugar_value} mg/dL",
-      "Fasting"
+      I18n.l(blood_sugar_1.recorded_at.to_date),
+      quarter_string(blood_sugar_1.recorded_at.to_date),
+      blood_sugar_1.blood_sugar_type,
+      blood_sugar_1.blood_sugar_value,
+      blood_sugar_1.facility.name,
+      blood_sugar_1.facility.facility_type,
+      blood_sugar_1.facility.district,
+      blood_sugar_1.facility.state,
+      blood_sugar_1_follow_up.facility.name,
+      I18n.l(blood_sugar_1_follow_up.scheduled_date.to_date),
+      blood_sugar_1_follow_up.follow_up_days,
+      I18n.l(blood_sugar_2.recorded_at.to_date),
+      quarter_string(blood_sugar_2.recorded_at.to_date),
+      blood_sugar_2.blood_sugar_type,
+      blood_sugar_2.blood_sugar_value,
+      blood_sugar_2.facility.name,
+      blood_sugar_2.facility.facility_type,
+      blood_sugar_2.facility.district,
+      blood_sugar_2.facility.state,
+      blood_sugar_2_follow_up.facility.name,
+      I18n.l(blood_sugar_2_follow_up.scheduled_date.to_date),
+      blood_sugar_2_follow_up.follow_up_days,
+      I18n.l(blood_sugar_3.recorded_at.to_date),
+      quarter_string(blood_sugar_3.recorded_at.to_date),
+      blood_sugar_3.blood_sugar_type,
+      blood_sugar_3.blood_sugar_value,
+      blood_sugar_3.facility.name,
+      blood_sugar_3.facility.facility_type,
+      blood_sugar_3.facility.district,
+      blood_sugar_3.facility.state,
+      blood_sugar_3_follow_up.facility.name,
+      I18n.l(blood_sugar_3_follow_up.scheduled_date.to_date),
+      blood_sugar_3_follow_up.follow_up_days
     ]
+  end
+  let(:measurement_headers) do
+    [
+      25.times.map { nil }, # Non-measurement related headers
+      "Blood Pressure 1",
+      22.times.map { nil },
+      "Blood Pressure 2",
+      22.times.map { nil },
+      "Blood Pressure 3",
+      22.times.map { nil },
+      "Blood Sugar 1",
+      10.times.map { nil },
+      "Blood Sugar 2",
+      10.times.map { nil },
+      "Blood Sugar 3",
+      10.times.map { nil }
+    ].flatten
   end
 
   before do
     allow(patient).to receive(:high_risk?).and_return(true)
     allow(Rails.application.config.country).to receive(:[]).with(:patient_line_list_show_zone).and_return(true)
-    blood_sugar.update!(encounter: bp_1.encounter)
     patient.medical_history.update!(hypertension: "no", diabetes: "yes")
     MaterializedPatientSummary.refresh
   end
@@ -262,7 +345,7 @@ RSpec.describe PatientsWithHistoryExporter, type: :model do
       Timecop.freeze do
         timestamp = ["Report generated at:", Time.current]
 
-        expect(subject.csv(Patient.all).to_s.strip).to eq((timestamp.to_csv + headers.to_csv + fields.to_csv).to_s.strip)
+        expect(subject.csv(Patient.all, display_blood_sugars: 3).to_s.strip).to eq((timestamp.to_csv + measurement_headers.to_csv + headers.to_csv + fields.to_csv).to_s.strip)
       end
     end
 
@@ -270,7 +353,7 @@ RSpec.describe PatientsWithHistoryExporter, type: :model do
       Timecop.freeze do
         timestamp = ["Report generated at:", Time.current]
 
-        expect(subject.csv(Patient.none)).to eq(timestamp.to_csv + headers.to_csv)
+        expect(subject.csv(Patient.none)).to eq(timestamp.to_csv + measurement_headers.to_csv + headers.to_csv)
       end
     end
 
@@ -279,16 +362,6 @@ RSpec.describe PatientsWithHistoryExporter, type: :model do
 
       expect(subject.csv_headers).not_to include("Patient #{Address.human_attribute_name :zone}")
       expect(subject.csv_fields(MaterializedPatientSummary.find_by(id: patient))).not_to include(patient.address.zone)
-    end
-
-    it "includes blood sugars from other visits" do
-      blood_sugar.destroy
-      _other_blood_sugar = create(:blood_sugar, :fasting, :with_encounter, facility: facility, patient: patient)
-      MaterializedPatientSummary.refresh
-
-      patient_summary = MaterializedPatientSummary.find_by(id: patient)
-      expect(subject.csv_fields(patient_summary)).to include("#{blood_sugar.blood_sugar_value} mg/dL")
-      expect(subject.csv_fields(patient_summary)).to include("Fasting")
     end
   end
 end

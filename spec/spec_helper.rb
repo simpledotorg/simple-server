@@ -4,6 +4,7 @@ require "webmock/rspec"
 require "sidekiq/testing"
 require "flipper_helper"
 require "reporting_helpers"
+require "capybara/rspec"
 
 WebMock.allow_net_connect!
 

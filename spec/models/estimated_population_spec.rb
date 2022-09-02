@@ -211,8 +211,11 @@ RSpec.describe EstimatedPopulation, type: :model do
 
       create_list(:patient, 15, :hypertension, registration_facility: facility, registration_user: user)
       create_list(:patient, 5, :diabetes, registration_facility: facility, registration_user: user)
+      refresh_views
+      repo = Reports::Repository.new(facility, periods: Period.current)
+      registered_htn_patients = repo.cumulative_registrations[facility.slug][Period.current]
 
-      expect(facility_group.region.estimated_population.show_coverage).to eq(true)
+      expect(facility_group.region.estimated_population.show_coverage(registered_htn_patients)).to eq(true)
     end
 
     it "returns true if a state has populations for all child districts" do
@@ -234,8 +237,10 @@ RSpec.describe EstimatedPopulation, type: :model do
       district = Region.create!(name: "District", region_type: "district", reparent_to: state)
 
       EstimatedPopulation.create!(population: 100, diagnosis: "HTN", region_id: district.id)
+      repo = Reports::Repository.new(district, periods: Period.current)
+      registered_htn_patients = repo.cumulative_registrations[district.slug][Period.current]
 
-      expect(district.estimated_population.show_coverage).to eq(false)
+      expect(district.estimated_population.show_coverage(registered_htn_patients)).to eq(false)
     end
 
     it "returns false if a state does not have all child district populations" do

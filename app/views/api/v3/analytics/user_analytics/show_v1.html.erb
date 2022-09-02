@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" style="scroll-behavior: auto;">
+  <head>
+    <meta charset="utf-8">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,shrink-to-fit=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+    <title>
+      <%= raw t("analytics.page_title") %>
+    </title>
+    <%= inline_stylesheet("user_analytics.css") %>
+  </head>
+  <body class="bgc-grey-lightest">
+    <div id="progress-start">
+      <div class="mb-8px">
+        <%= render partial: "api/v3/analytics/user_analytics/progress_period_card" %>
+
+        <%= render partial: "api/v3/analytics/user_analytics/progress_reports_card" %>
+
+        <% if current_facility_group.region.feature_enabled?(:drug_stocks) && controller_name == "user_analytics" %>
+          <div class="mb-16px p-16px bgc-white br-4px bs-card">
+            <div class="d-flex ai-flex-start jc-space-between mb-16px">
+              <div class="f-1">
+                <h3 class="m-0px mb-8px fw-bold fs-24px">
+                  Drug stock report
+                </h3>
+                <p class="m-0px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+                  Submit <%= current_facility.name %>'s drug stock report for end of <%= @period.to_s(:mon_year) %>
+                </p>
+              </div>
+              <div>
+                <%= inline_svg("drug-stock.svg") %>
+              </div>
+            </div>
+            <%= link_to "Enter drug stock", new_webview_drug_stock_url(user_id: current_user.id,
+              access_token: current_user.access_token,
+              facility_id: current_facility.id),
+              style: "font-weight: 500;",
+              class: "d-block p-16px ta-center fs-16px fw-regular tt-uppercase ls-1_25px c-blue b-none bb-blue-mid br-1px bgc-blue-light bs-secondary-button"
+            %>
+          </div>
+        <% end %>
+
+        <div class="mb-8px pt-16px pb-16px bgc-white bs-card">
+          <h1 class="m-0px mb-24px pr-16px pl-16px fw-bold fs-24px">
+            <%= t("progress_tab.achievements_card.title") %>
+          </h1>
+          <div class="mb-24px">
+            <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
+              <span class="fw-bold"><%= number_with_delimiter(@total_follow_ups) %></span> <%= t("progress_tab.achievements_card.follow_up_visits_section_title", visit_or_visits: "visit".pluralize(@total_follow_ups)) %>
+            </p>
+            <div class="d-flex ai-center jc-space-between pt-4px pb-4px pr-16px pl-16px">
+              <% follow_up_badge_goals = create_badge_array(@total_follow_ups) %>
+              <% follow_up_badge_goals.each do |badge| %>
+                <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
+                  locals: { value: badge["goal_value"],
+                            is_goal_completed: badge["is_goal_completed"],
+                            text_color: "c-lavander",
+                            circle_color: "bgc-lavander",
+                            badge_color: "bgc-lavander-light",
+                            icon_completed: "refresh-arrow-white.svg",
+                            icon_goal: "refresh-arrow-grey.svg"
+                } %>
+              <% end %>
+            </div>
+          </div>
+          <div>
+            <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
+              <span class="fw-bold"><%= number_with_delimiter(@total_registrations) %></span> <%= t("progress_tab.achievements_card.registered_patients_title", patient_or_patients: "patient".pluralize(@total_registrations)) %>
+            </p>
+            <div class="d-flex ai-center jc-space-between pt-4px pb-4px pr-16px pl-16px">
+              <% registered_patients_badge_goals = create_badge_array(@total_registrations) %>
+              <% registered_patients_badge_goals.each do |badge| %>
+                <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
+                  locals: { value: badge["goal_value"],
+                            is_goal_completed: badge["is_goal_completed"],
+                            text_color: "c-yellow-dark-new",
+                            circle_color: "bgc-yellow-new",
+                            badge_color: "bgc-yellow-light",
+                            icon_completed: "face-yellow-darkest.svg",
+                            icon_goal: "face-grey.svg"
+                } %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <%= render(Reports::DailyProgressComponentV1.new(@service, @user_analytics.last_updated_at, @current_user)) %>
+    <%= render partial: "api/v3/analytics/user_analytics/progress_monthly_report" %>
+    <%= render partial: "api/v3/analytics/user_analytics/progress_hypertension_report" %>
+
+  </body>
+  <%= inline_js("standalone/user_analytics.js") %>
+</html>

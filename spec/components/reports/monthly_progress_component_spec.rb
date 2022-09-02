@@ -21,10 +21,10 @@ RSpec.describe Reports::MonthlyProgressComponent, type: :component do
     refresh_views
 
     dimension = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :all, gender: :all)
-    component = described_class.new(dimension, service: service)
+    component = described_class.new(dimension, service: service, current_user: user)
     expect(component.total_count).to eq(2)
     dimension = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :hypertension, gender: :female)
-    component = described_class.new(dimension, service: service)
+    component = described_class.new(dimension, service: service, current_user: user)
     expect(component.total_count).to eq(1)
   end
 
@@ -35,7 +35,7 @@ RSpec.describe Reports::MonthlyProgressComponent, type: :component do
     Timecop.freeze(jan_2022) do
       refresh_views
       dimension = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :all, gender: :all)
-      component = described_class.new(dimension, service: service)
+      component = described_class.new(dimension, service: service, current_user: user)
 
       expect(component.total_count).to eq(1)
       expect(component.monthly_count(november_2021_period)).to eq(1)
@@ -49,12 +49,12 @@ RSpec.describe Reports::MonthlyProgressComponent, type: :component do
     Timecop.freeze(jan_2022) do
       refresh_views
       male = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :hypertension, gender: :male)
-      male_component = described_class.new(male, service: service)
+      male_component = described_class.new(male, service: service, current_user: user)
       expect(male_component.monthly_count(november_2021_period)).to eq(0)
       expect(male_component.monthly_count(december_2021_period)).to be_nil
 
       female = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :hypertension, gender: :female)
-      female_component = described_class.new(female, service: service)
+      female_component = described_class.new(female, service: service, current_user: user)
       expect(female_component.monthly_count(november_2021_period)).to eq(1)
       expect(female_component.monthly_count(december_2021_period)).to be_nil
     end
@@ -62,11 +62,11 @@ RSpec.describe Reports::MonthlyProgressComponent, type: :component do
 
   it "returns valid diagnosis gender classes" do
     dimension = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :hypertension, gender: :male)
-    component = described_class.new(dimension, service: service)
+    component = described_class.new(dimension, service: service, current_user: user)
     expect(component.diagnosis_group_class).to eq("hypertension:male")
 
     dimension = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :diabetes, gender: :all)
-    component = described_class.new(dimension, service: service)
+    component = described_class.new(dimension, service: service, current_user: user)
     expect(component.diagnosis_group_class).to eq("diabetes:all")
   end
 end

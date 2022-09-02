@@ -483,6 +483,11 @@ RSpec.describe Facility, type: :model do
       facility = create(:facility, country: "Pakistan")
       expect(facility.locale).to eq "en"
     end
+
+    it "is Sinhala for Sri Lanka" do
+      facility = create(:facility, country: "Sri Lanka")
+      expect(facility.locale).to eq "si-LK"
+    end
   end
 
   describe "#localized_facility_size" do

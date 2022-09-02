@@ -500,18 +500,13 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
               patient_in_request_facility = create(:patient, :without_medical_history, registration_facility: request_facility)
               patient_in_same_block = create(:patient, :without_medical_history, registration_facility: facility_in_same_block)
               patient_assigned_to_block = create(:patient, :without_medical_history, assigned_facility: facility_in_same_block)
-              patient_with_appointment_in_block =
-                create(:patient, :without_medical_history)
-                  .yield_self { |patient| create(:appointment, patient: patient, facility: facility_in_same_block) }
-                  .yield_self { |appointment| appointment.patient }
               patient_in_other_block = create(:patient, :without_medical_history, registration_facility: facility_in_other_block)
               patient_in_other_facility_group = create(:patient, :without_medical_history, registration_facility: facility_in_other_group)
 
               block_records =
                 [patient_in_request_facility,
                   patient_in_same_block,
-                  patient_assigned_to_block,
-                  patient_with_appointment_in_block]
+                  patient_assigned_to_block]
 
               non_block_records =
                 [patient_in_other_block,
@@ -549,10 +544,6 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
               patient_in_request_facility = create(:patient, :without_medical_history, registration_facility: request_facility)
               patient_in_same_block = create(:patient, :without_medical_history, registration_facility: facility_in_same_block)
               patient_assigned_to_block = create(:patient, :without_medical_history, assigned_facility: facility_in_same_block)
-              patient_with_appointment_in_block =
-                create(:patient, :without_medical_history)
-                  .yield_self { |patient| create(:appointment, patient: patient, facility: facility_in_same_block) }
-                  .yield_self { |appointment| appointment.patient }
               patient_in_other_block = create(:patient, :without_medical_history, registration_facility: facility_in_other_block)
               patient_in_other_facility_group = create(:patient, :without_medical_history, registration_facility: facility_in_other_group)
 
@@ -561,8 +552,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
               block_records =
                 [patient_in_request_facility,
                   patient_in_same_block,
-                  patient_assigned_to_block,
-                  patient_with_appointment_in_block]
+                  patient_assigned_to_block]
 
               non_block_records =
                 [patient_in_other_block,

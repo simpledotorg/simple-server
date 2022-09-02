@@ -110,7 +110,8 @@
         <div>
           <div class="p-relative px-20px mb-12px">
             <p class="m-0px c-grey-dark c-print-black">
-              <strong>00</strong> HTN-only, <strong class="ml-8px">00</strong> DM+HTN (Coming soon)
+              <strong data-hypertension-only-registrations=""></strong> HTN-only,
+              <strong class="ml-8px" data-hypertension-and-diabetes-registrations="">00</strong> DM+HTN
             </p>
           </div>
         </div>
@@ -220,12 +221,21 @@
 <%= render "treatment_outcomes_card" %>
 
 <h4 class="mt-5 mb-32px">Details</h4>
-<%= render "reports/regions/patient_breakdown_charts" %>
+<div class="d-lg-flex flex-lg-wrap">
+  <%= render Dashboard::Hypertension::CoverageCardComponent.new(
+    region: @region,
+    data: @data,
+    period: @period,
+    current_admin: current_admin
+  ) %>
 
-<% if current_admin.feature_enabled?(:medications_dispensation) %>
-  <h4 class="mt-5 mb-32px">Medications</h4>
-  <%= render "reports/regions/medications_dispensation" %>
-<% end %>
+  <%= render(Dashboard::Hypertension::LostToFollowUpComponent.new(data: @data, region: @region, period: @period)) %>
+</div>
+
+  <% if current_admin.feature_enabled?(:medications_dispensation) %>
+    <h4 class="mt-5 mb-32px">Medications</h4>
+    <%= render Dashboard::MedicationDispensationComponent.new(data: @data, region: @region, period: @period) %>
+  <% end %>
 
 <% if @children_data.any? %>
   <h4 class="mt-5 mb-32px">Compare performance</h4>

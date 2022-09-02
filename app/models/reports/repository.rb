@@ -66,9 +66,11 @@ module Reports
       cumulative_registrations
       cumulative_assigned_diabetic_patients
       cumulative_diabetes_registrations
+      cumulative_hypertension_and_diabetes_registrations
       earliest_patient_recorded_at
       earliest_patient_recorded_at_period
       under_care
+      diabetes_under_care
       ltfu
       diabetes_ltfu
       missed_visits
@@ -76,6 +78,7 @@ module Reports
       missed_visits_without_ltfu
       monthly_registrations
       monthly_diabetes_registrations
+      monthly_hypertension_and_diabetes_registrations
       uncontrolled
       visited_without_bp_taken
       monthly_overdue_calls
@@ -99,6 +102,10 @@ module Reports
       diabetes_appts_scheduled_15_to_31_days
       diabetes_appts_scheduled_32_to_62_days
       diabetes_appts_scheduled_more_than_62_days
+      dead
+      diabetes_dead
+      under_care
+      diabetes_under_care
     ]
 
     DELEGATED_BREAKDOWNS = %i[
@@ -106,6 +113,7 @@ module Reports
       diabetes_treatment_outcome_breakdown_counts
       diabetes_patients_with_bs_taken_breakdown_rates
       diabetes_patients_with_bs_taken_breakdown_counts
+      diabetes_blood_sugar_over_200_breakdown_rates
     ]
 
     def warm_cache
