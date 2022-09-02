@@ -86,5 +86,38 @@ RSpec.describe Reports::RegionCacheWarmer, type: :model do
       repo.controlled_rates
       repo.controlled_rates(with_ltfu: true)
     end
+
+    it "caches all the result of repository methods" do
+      facility_1 = create(:facility, facility_group: facility_group)
+      user = create(:user, organization: facility_group.organization)
+      patient = create(:patient, registration_facility: facility_1, recorded_at: 2.months.ago, registration_user: user)
+      create(:bp_with_encounter, :under_control, facility: facility_1, patient: patient, recorded_at: 15.days.ago)
+      create(:blood_sugar_with_encounter, :bs_below_200, facility: facility_1, patient: patient, recorded_at: 15.days.ago)
+
+      cache_keys = Rails.cache.instance_variable_get(:@data).keys
+      expect(cache_keys).to be_empty
+
+      RefreshReportingViews.call
+
+      described_class.call
+      _repo = Reports::Repository.new(facility_1, periods: Period.current)
+      cache_keys = Rails.cache.instance_variable_get(:@data).keys
+
+      expect(cache_keys).to_not be_empty
+
+      expected_keys_in_cache = [
+        /bp_measures_by_user/,
+        /blood_sugar_measures_by_user/,
+        /monthly_registrations_by_user\/group_by\/registration_user_id\/period_type\/month\/diagnosis\/hypertension/,
+        /monthly_registrations_by_user\/group_by\/registration_user_id\/period_type\/month\/diagnosis\/diabetes/,
+        /monthly_registrations_by_gender/,
+        /controlled_by_gender/,
+        /overdue_calls_by_user/
+      ]
+
+      expected_keys_in_cache.each do |expected_key|
+        expect(cache_keys.any? { |key| key.match(expected_key) }).to be_truthy
+      end
+    end
   end
 end
