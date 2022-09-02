@@ -32,11 +32,12 @@ ENV RAILS_LOG_TO_STDOUT true
 # Build
 RUN gem install bundler -v $BUNDLE_VERSION
 RUN bundle config --global frozen 1
-RUN bundle install --without development test
-RUN source .env.dockerbuild && bundle exec rake assets:precompile
+RUN bundle config set --local without 'development test'
+RUN bundle install
 RUN yarn install
+RUN set -a && source .env.development && set +a && bundle exec rake assets:precompile
 
-# Remove all default config files
+# Remove all default .env config files
 RUN rm -f .env.*
 
 EXPOSE 3000
