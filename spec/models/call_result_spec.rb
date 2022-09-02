@@ -3,6 +3,8 @@ require "rails_helper"
 describe CallResult, type: :model do
   describe "Associations" do
     it { should belong_to(:appointment).optional }
+    it { should belong_to(:patient).optional }
+    it { should belong_to(:facility).optional }
     it { should belong_to(:user) }
   end
 
