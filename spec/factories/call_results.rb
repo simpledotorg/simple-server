@@ -3,6 +3,8 @@ FactoryBot.define do
     id { SecureRandom.uuid }
     association :user
     association :appointment
+    association :patient
+    association :facility
     remove_reason { nil }
     result_type { CallResult.result_types.except(:removed_from_overdue_list).keys.sample }
     device_created_at { Time.current }

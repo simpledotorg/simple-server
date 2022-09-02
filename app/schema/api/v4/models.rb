@@ -367,6 +367,8 @@ class Api::V4::Models
        properties: {
          id: {"$ref" => "#/definitions/uuid"},
          user_id: {"$ref" => "#/definitions/uuid"},
+         patient_id: {"$ref" => "#/definitions/uuid"},
+         facility_id: {"$ref" => "#/definitions/uuid"},
          appointment_id: {"$ref" => "#/definitions/uuid"},
          remove_reason: nullable_enum(CallResult.remove_reasons.keys),
          result_type: {type: :string, enum: CallResult.result_types.keys},

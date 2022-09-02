@@ -358,7 +358,9 @@ CREATE TABLE public.call_results (
     device_updated_at timestamp without time zone NOT NULL,
     deleted_at timestamp without time zone,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    patient_id uuid,
+    facility_id uuid
 );
 
 
@@ -4821,6 +4823,20 @@ CREATE INDEX index_bp_months_patient_recorded_at ON public.latest_blood_pressure
 
 
 --
+-- Name: index_call_results_deleted_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_call_results_deleted_at ON public.call_results USING btree (deleted_at);
+
+
+--
+-- Name: index_call_results_patient_id_and_updated_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_call_results_patient_id_and_updated_at ON public.call_results USING btree (patient_id, updated_at);
+
+
+--
 -- Name: index_communications_on_appointment_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -6082,6 +6098,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220524112732'),
 ('20220718091454'),
 ('20220902104533'),
-('20220902114057');
+('20220902114057'),
+('20220902125119');
 
 

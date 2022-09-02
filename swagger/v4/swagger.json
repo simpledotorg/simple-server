@@ -1284,6 +1284,12 @@
         "user_id": {
           "$ref": "#/definitions/uuid"
         },
+        "patient_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "facility_id": {
+          "$ref": "#/definitions/uuid"
+        },
         "appointment_id": {
           "$ref": "#/definitions/uuid"
         },

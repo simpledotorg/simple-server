@@ -23,6 +23,8 @@ class Api::V4::CallResultsController < Api::V4::SyncController
       call_result_params.permit(
         :id,
         :user_id,
+        :patient_id,
+        :facility_id,
         :appointment_id,
         :remove_reason,
         :result_type,
