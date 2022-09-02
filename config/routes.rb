@@ -243,6 +243,7 @@ Rails.application.routes.draw do
     end
 
     resources :patient_imports, only: [:new, :create]
+    resources :patient_reminders, only: [:index, :edit, :update]
 
     resources :protocols do
       resources :protocol_drugs

@@ -98,6 +98,12 @@
           <% end %>
         <% end %>
 
+        <% if current_admin.power_user?  %>
+          <%= link_to (admin_patient_reminders_path), class: "sub-nav-link #{active_controller?("admin/patient_reminders")}", id: "patient-reminder-messages" do %>
+            Patient reminder messages
+          <% end %>
+        <% end %>
+
         <% if current_admin.power_user? %>
         <div class="nav-divider"></div>
         <% end %>
