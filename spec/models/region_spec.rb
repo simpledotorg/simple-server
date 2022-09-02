@@ -492,43 +492,6 @@ RSpec.describe Region, type: :model do
       expect(organization.region.facility_regions.find_by(source: facility_4).syncable_patients)
         .to be_empty
     end
-
-    it "accounts for patients who have an appointment in the facility of the region" do
-      patient_from_f1 = create(:patient, registration_facility: facility_1)
-      patient_from_f2 = create(:patient)
-      create(:appointment, patient: patient_from_f2, facility: facility_2)
-      patient_from_f3 = create(:patient)
-      create(:appointment, patient: patient_from_f3, facility: facility_3)
-      patient_elsewhere = create(:patient)
-
-      expect(Region.root.syncable_patients)
-        .to contain_exactly(patient_from_f1, patient_from_f2, patient_from_f3, patient_elsewhere)
-
-      expect(Region.organization_regions.find_by(source: organization).syncable_patients)
-        .to contain_exactly(patient_from_f1)
-
-      expect(organization.region.state_regions.find_by(name: "Maharashtra").syncable_patients)
-        .to contain_exactly(patient_from_f1)
-
-      expect(organization.region.district_regions.find_by(source: facility_group).syncable_patients)
-        .to contain_exactly(patient_from_f1)
-
-      expect(organization.region.block_regions.find_by(name: "M1").syncable_patients)
-        .to contain_exactly(patient_from_f1)
-      expect(organization.region.block_regions.find_by(name: "M2").syncable_patients)
-        .to contain_exactly(patient_from_f2, patient_from_f3)
-      expect(organization.region.block_regions.find_by(name: "P1").syncable_patients)
-        .to be_empty
-
-      expect(organization.region.facility_regions.find_by(source: facility_1).syncable_patients)
-        .to contain_exactly(patient_from_f1)
-      expect(organization.region.facility_regions.find_by(source: facility_2).syncable_patients)
-        .to be_empty
-      expect(organization.region.facility_regions.find_by(source: facility_3).syncable_patients)
-        .to be_empty
-      expect(organization.region.facility_regions.find_by(source: facility_4).syncable_patients)
-        .to be_empty
-    end
   end
 
   describe "#diabetes_management_enabled?" do

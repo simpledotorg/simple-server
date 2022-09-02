@@ -335,11 +335,6 @@ RSpec.shared_examples "a working sync controller that supports region level sync
   let!(:patient_in_request_facility) { create(:patient, :without_medical_history, registration_facility: request_facility) }
   let!(:patient_in_same_block) { create(:patient, :without_medical_history, registration_facility: facility_in_same_block) }
   let!(:patient_assigned_to_block) { create(:patient, :without_medical_history, assigned_facility: facility_in_same_block) }
-  let!(:patient_with_appointment_in_block) {
-    create(:patient, :without_medical_history)
-      .yield_self { |patient| create(:appointment, patient: patient, facility: facility_in_same_block) }
-      .yield_self { |appointment| appointment.patient }
-  }
   let!(:patient_in_other_block) { create(:patient, :without_medical_history, registration_facility: facility_in_other_block) }
   let!(:patient_in_other_facility_group) { create(:patient, :without_medical_history, registration_facility: facility_in_other_group) }
 
@@ -457,8 +452,7 @@ RSpec.shared_examples "a working sync controller that supports region level sync
           block_records = [
             create_record(patient: patient_in_request_facility, facility: request_facility),
             create_record(patient: patient_in_same_block, facility: facility_in_same_block),
-            create_record(patient: patient_assigned_to_block, facility: facility_in_same_block),
-            create_record(patient: patient_with_appointment_in_block, facility: facility_in_same_block)
+            create_record(patient: patient_assigned_to_block, facility: facility_in_same_block)
           ]
 
           non_block_records = [
@@ -520,8 +514,7 @@ RSpec.shared_examples "a working sync controller that supports region level sync
           block_records = [
             *create_record_list(2, patient: patient_in_request_facility, facility: request_facility),
             *create_record_list(2, patient: patient_in_same_block, facility: facility_in_same_block),
-            *create_record_list(2, patient: patient_assigned_to_block, facility: facility_in_same_block),
-            *create_record_list(2, patient: patient_with_appointment_in_block, facility: facility_in_same_block)
+            *create_record_list(2, patient: patient_assigned_to_block, facility: facility_in_same_block)
           ]
 
           non_block_records = [
