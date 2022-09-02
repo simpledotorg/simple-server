@@ -22,3 +22,15 @@ jobs:
           dockerfile: Prod.Dockerfile
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+  deploy_simple_server:
+    needs: docker_build_push
+    runs-on: ubuntu-latest
+    container:
+      image: argoproj/argocd:v2.4.11
+    steps:
+      - name: Argocd login
+        run: argocd login ${{ secrets.ARGOCD_ENDPOINT }} --username ${{ secrets.ARGOCD_USERNAME }} --password ${{ secrets.ARGOCD_PASSWORD }} --insecure --config /home/argocd/.config/argocd/config
+      - name: Argocd set simple server image
+        run: argocd app set server --helm-set image=simpledotorg/server:$GITHUB_SHA --config /home/argocd/.config/argocd/config
+      - name: Argocd wait for sync
+        run: argocd app wait server --config /home/argocd/.config/argocd/config
