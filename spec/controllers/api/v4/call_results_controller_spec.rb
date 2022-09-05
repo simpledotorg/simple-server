@@ -18,11 +18,15 @@ RSpec.describe Api::V4::CallResultsController, type: :controller do
   end
 
   def create_record(options = {result_type: :agreed_to_visit})
-    create(:call_result, options)
+    facility = options[:facility] || create(:facility, facility_group: request_facility_group)
+    patient = create(:patient, registration_facility: facility)
+    create(:call_result, {patient: patient}.merge(options))
   end
 
   def create_record_list(n, options = {result_type: :agreed_to_visit})
-    create_list(:call_result, n, options)
+    facility = options[:facility] || create(:facility, facility_group: request_facility_group)
+    patient = create(:patient, registration_facility: facility)
+    create_list(:call_result, n, {patient: patient}.merge(options))
   end
 
   it_behaves_like "a sync controller that authenticates user requests: sync_from_user"
@@ -31,5 +35,26 @@ RSpec.describe Api::V4::CallResultsController, type: :controller do
   describe "POST sync: send data from device to server;" do
     it_behaves_like "a working sync controller creating records"
     it_behaves_like "a working sync controller updating records"
+
+    it "sets the patient_id if it's not supplied" do
+
+    end
+
+    it "sets the facility_id if it's not supplied" do
+
+    end
+
+    it "doesn't override the patient_id if it's supplied already" do
+
+    end
+
+    it "doesn't override the facility_id if it's supplied already" do
+
+    end
+  end
+
+  describe "GET sync: send data from server to device;" do
+    it_behaves_like "a working V3 sync controller sending records"
+    it_behaves_like "a working sync controller that supports region level sync"
   end
 end

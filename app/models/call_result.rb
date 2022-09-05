@@ -11,6 +11,8 @@ class CallResult < ApplicationRecord
   validates :result_type, presence: true
   validates :appointment_id, presence: true
 
+  scope :for_sync, -> { with_discarded }
+
   enum result_type: {
     agreed_to_visit: "agreed_to_visit",
     remind_to_call_later: "remind_to_call_later",

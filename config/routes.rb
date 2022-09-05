@@ -144,6 +144,7 @@ Rails.application.routes.draw do
       end
 
       scope :call_results do
+        get "/sync", to: "call_results#sync_to_user"
         post "/sync", to: "call_results#sync_from_user"
       end
 

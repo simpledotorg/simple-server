@@ -84,7 +84,7 @@ module Seed
       results = []
       Facility.find_in_batches(batch_size: 100) do |facilities|
         options = parallel_options(progress)
-        batch_result = Parallel.map(facilities, options) { |facility|
+        batch_result = facilities.map { |facility|
           registration_user_ids = facility.users.pluck(:id)
           raise "No facility users found to use for registration" if registration_user_ids.blank?
 
