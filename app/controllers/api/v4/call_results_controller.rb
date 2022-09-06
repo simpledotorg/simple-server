@@ -10,7 +10,7 @@ class Api::V4::CallResultsController < Api::V4::SyncController
   private
 
   def metadata(call_result_params)
-    { facility_id: call_result_params["facility_id"] || current_facility.id }
+    {facility_id: call_result_params["facility_id"] || current_facility.id}
   end
 
   def transform_to_response(call_result)
@@ -24,8 +24,8 @@ class Api::V4::CallResultsController < Api::V4::SyncController
       {errors_hash: validator.errors_hash}
     else
       transformed_params = Api::V4::CallResultTransformer
-                             .from_request(call_result_params)
-                             .merge(metadata(call_result_params))
+        .from_request(call_result_params)
+        .merge(metadata(call_result_params))
       call_result = CallResult.merge(transformed_params)
 
       {record: call_result}

@@ -37,19 +37,15 @@ RSpec.describe Api::V4::CallResultsController, type: :controller do
     it_behaves_like "a working sync controller updating records"
 
     it "sets the patient_id if it's not supplied" do
-
     end
 
     it "sets the facility_id if it's not supplied" do
-
     end
 
     it "doesn't override the patient_id if it's supplied already" do
-
     end
 
     it "doesn't override the facility_id if it's supplied already" do
-
     end
   end
 
