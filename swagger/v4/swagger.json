@@ -264,6 +264,73 @@
             "description": "user is not allowed to sync"
           }
         }
+      },
+      "get": {
+        "summary": "Syncs call results data from server to device.",
+        "tags": [
+          "Call Results"
+        ],
+        "security": [
+          {
+            "access_token": [
+
+            ],
+            "user_id": [
+
+            ],
+            "facility_id": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "process_token",
+            "type": "string",
+            "format": "byte",
+            "description": "Token containing all the information needed to process batch requests from the user",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "call result received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "call_results": {
+                  "$ref": "#/definitions/call_results"
+                },
+                "process_token": {
+                  "$ref": "#/definitions/process_token"
+                }
+              },
+              "required": [
+                "call_results",
+                "process_token"
+              ]
+            }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
       }
     },
     "/drug_stocks": {
