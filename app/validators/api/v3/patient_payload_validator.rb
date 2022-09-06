@@ -18,6 +18,7 @@ class Api::V3::PatientPayloadValidator < Api::V3::PayloadValidator
     :business_identifiers,
     :contacted_by_counsellor,
     :could_not_contact_reason,
+    :could_not_contact_reasons,
     :call_result,
     :reminder_consent,
     :deleted_reason,
