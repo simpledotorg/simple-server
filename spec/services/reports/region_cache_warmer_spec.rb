@@ -88,11 +88,11 @@ RSpec.describe Reports::RegionCacheWarmer, type: :model do
     end
 
     it "caches all the result of repository methods" do
-      facility_1 = create(:facility, facility_group: facility_group)
+      facility = create(:facility, facility_group: facility_group)
       user = create(:user, organization: facility_group.organization)
-      patient = create(:patient, registration_facility: facility_1, recorded_at: 2.months.ago, registration_user: user)
-      create(:bp_with_encounter, :under_control, facility: facility_1, patient: patient, recorded_at: 15.days.ago)
-      create(:blood_sugar_with_encounter, :bs_below_200, facility: facility_1, patient: patient, recorded_at: 15.days.ago)
+      patient = create(:patient, registration_facility: facility, recorded_at: 2.months.ago, registration_user: user)
+      create(:bp_with_encounter, :under_control, facility: facility, patient: patient, recorded_at: 15.days.ago)
+      create(:blood_sugar_with_encounter, :bs_below_200, facility: facility, patient: patient, recorded_at: 15.days.ago)
 
       cache_keys = Rails.cache.instance_variable_get(:@data).keys
       expect(cache_keys).to be_empty
@@ -100,7 +100,7 @@ RSpec.describe Reports::RegionCacheWarmer, type: :model do
       RefreshReportingViews.call
 
       described_class.call
-      _repo = Reports::Repository.new(facility_1, periods: Period.current)
+      Reports::Repository.new(facility, periods: Period.current)
       cache_keys = Rails.cache.instance_variable_get(:@data).keys
 
       expect(cache_keys).to_not be_empty
@@ -116,7 +116,7 @@ RSpec.describe Reports::RegionCacheWarmer, type: :model do
       ]
 
       expected_keys_in_cache.each do |expected_key|
-        expect(cache_keys.any? { |key| key.match(expected_key) }).to be_truthy
+        expect(cache_keys.any? { |key| key.match(expected_key) }).to eq true
       end
     end
   end
