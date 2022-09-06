@@ -1,11 +1,11 @@
 class JsonLogger < Ougai::Logger
   include ActiveSupport::LoggerThreadSafeLevel
-  include LoggerSilence
+  include ActiveSupport::LoggerSilence
 
   def initialize(*args)
     super
     @before_log = lambda do |data|
-      correlation = Datadog.tracer.active_correlation
+      correlation = Datadog::Tracing.correlation
       datadog_trace_info = {
         dd: {
           # To preserve precision during JSON serialization, use strings for large numbers
