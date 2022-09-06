@@ -1,0 +1,31 @@
+<div class="page-header">
+  <h1 class="page-title">
+    <%= @configuration.name %>
+  </h1>
+</div>
+
+<div class="card">
+  <div class="row">
+    <div class="col-12">
+      <p>
+        Enter the desired patient reminder message for the <%= params[:id] %> language below. This message will be sent
+        to patients if they miss their expected follow-up date.
+      </p>
+
+      <%= bootstrap_form_with(
+            model: @configuration,
+            url: admin_patient_reminder_path(params[:id]),
+            method: :put,
+            local: true) do |f| %>
+      <%= f.text_area :value, label: "Reminder message" %>
+
+      <p>If left blank, the default message shown below will be sent to patients.</p>
+
+      <p><i><%= default_message(params[:id])%></i></p>
+
+      <%= f.submit "Save", class: "btn btn-primary" %>
+      <%= link_to 'Reset to default', admin_patient_reminder_path(params[:id]), method: :delete, class: "btn btn-danger" %>
+      <% end %>
+    </div>
+  </div>
+</div>

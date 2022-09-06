@@ -1,1 +1,21 @@
-<%= @languages %>
+<div class="page-header">
+  <h1 class="page-title">
+    Patient Reminders
+  </h1>
+  <p>Configure the reminder messages that are sent to patients if they miss their appointment.</p>
+</div>
+
+<% @languages.each do |language| %>
+  <div class="card">
+    <div class="row">
+      <div class="col-8">
+        <h3><%= language %></h3>
+        <p><%= @messages[language] %></p>
+      </div>
+      <div class="col-4 text-right">
+        <%= link_to 'Edit', edit_admin_patient_reminder_path(language), class: "btn btn-sm btn-outline-primary" %>
+        <%= link_to 'Reset to default', admin_patient_reminder_path(language), method: :delete, class: "btn btn-sm btn-outline-danger" %>
+      </div>
+    </div>
+  </div>
+<% end %>
