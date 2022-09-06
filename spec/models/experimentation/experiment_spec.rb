@@ -30,7 +30,7 @@ RSpec.describe Experimentation::Experiment, type: :model do
 
   describe "validations" do
     it { should validate_presence_of(:name) }
-    it { experiment.should validate_uniqueness_of(:name) }
+    it { should validate_uniqueness_of(:name) }
     it { should validate_presence_of(:experiment_type) }
 
     it "there can only be one active experiment of a particular type at a time" do
