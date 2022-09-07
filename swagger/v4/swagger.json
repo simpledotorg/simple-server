@@ -268,7 +268,7 @@
       "get": {
         "summary": "Syncs call results data from server to device.",
         "tags": [
-          "Call Results"
+          "Call Result"
         ],
         "security": [
           {

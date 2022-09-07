@@ -37,7 +37,7 @@ describe "CallResults v4 API", swagger_doc: "v4/swagger.json" do
     end
 
     get "Syncs call results data from server to device." do
-      tags "Call Results"
+      tags "Call Result"
       security [access_token: [], user_id: [], facility_id: []]
       parameter name: "HTTP_X_USER_ID", in: :header, type: :uuid
       parameter name: "HTTP_X_FACILITY_ID", in: :header, type: :uuid
