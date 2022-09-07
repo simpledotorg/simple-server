@@ -1,5 +1,5 @@
 class Admin::PatientRemindersController < AdminController
-  helper_method :default_message, :configured_message
+  helper_method :default_message, :configured_message, :language_names
 
   before_action :set_configuration, only: [:edit, :update, :destroy]
 
@@ -7,9 +7,9 @@ class Admin::PatientRemindersController < AdminController
     authorize { current_admin.power_user? }
 
     @languages = languages
-    @messages = @languages.map do |language|
-      [language, configured_message(language) || default_message(language)]
-    end.to_h
+    @messages = @languages.each_with_object({}) do |language, hash|
+      hash[language] = configured_message(language) || default_message(language)
+    end
   end
 
   def edit
@@ -53,6 +53,26 @@ class Admin::PatientRemindersController < AdminController
       default,
       *country_languages
     ].uniq
+  end
+
+  def language_names
+    {
+      "en" => "English",
+      "bn-BD" => "Bangla",
+      "am-ET" => "Amharic",
+      "om-ET" => "Oromo",
+      "sid-ET" => "Sidama",
+      "so-ET" => "Somali",
+      "ti-ET" => "Tigrinya",
+      "bn-IN" => "Bengali",
+      "hi-IN" => "Hindi",
+      "kn-IN" => "Kannada",
+      "mr-IN" => "Marathi",
+      "pa-Guru-IN" => "Punjabi",
+      "ta-IN" => "Tamil",
+      "te-IN" => "Telugu",
+      "si-LK" => "Sinhala"
+    }
   end
 
   def patient_reminder_key(language)

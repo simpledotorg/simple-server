@@ -1,6 +1,6 @@
 <div class="page-header">
   <h1 class="page-title">
-    <%= @configuration.name %>
+    <%= language_names[params[:id]] %>
   </h1>
 </div>
 
@@ -8,7 +8,7 @@
   <div class="row">
     <div class="col-12">
       <p>
-        Enter the desired patient reminder message for the <%= params[:id] %> language below. This message will be sent
+        Enter the desired patient reminder message for the <%= language_names[params[:id]] %> language below. This message will be sent
         to patients if they miss their expected follow-up date.
       </p>
 
@@ -23,16 +23,16 @@
 
         <h4>Facility name</h4>
         <p>
-          <span class="btn btn-outline" style="font-family: Monospace">%{facility_name}</span>
+          <span class="btn btn-outline"><code>%{facility_name}</code></span>
           <span class="input-group-append">Copy code</span>
         </p>
         <h4>Patient name</h4>
         <p>
-          <span class="btn btn-outline" style="font-family: Monospace">%{patient_name}</span>
+          <span class="btn btn-outline"><code>%{patient_name}</code></span>
         </p>
         <h4>Appointment date</h4>
         <p>
-          <span class="btn btn-outline" style="font-family: Monospace">%{appointment_date}</span>
+          <span class="btn btn-outline"><code>%{appointment_date}</code></span>
         </p>
 
         <p>If left blank, the default message shown below will be sent to patients.</p>

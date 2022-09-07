@@ -1,15 +1,18 @@
 <div class="page-header">
   <h1 class="page-title">
-    Patient Reminders
+    Patient reminders
   </h1>
-  <p>Configure the reminder messages that are sent to patients if they miss their appointment.</p>
+  <p>
+    Manage the SMS reminder messages that are sent to overdue patients. Leave variables like <code>%{facility_name}</code>
+    and <code>%{patient_name}</code> exactly formatted as they will be replaced with data when the message is sent.
+  </p>
 </div>
 
 <% @languages.each do |language| %>
   <div class="card">
     <div class="row">
       <div class="col-8">
-        <h3><%= language %></h3>
+        <h3><%= language_names[language] %></h3>
         <p><%= @messages[language] %></p>
       </div>
       <div class="col-4 text-right">
