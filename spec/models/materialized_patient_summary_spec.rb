@@ -181,6 +181,13 @@ describe MaterializedPatientSummary, type: :model do
       expect(patient_summary.next_scheduled_appointment_district).to eq(next_appointment.facility.district)
       expect(patient_summary.next_scheduled_appointment_state).to eq(next_appointment.facility.state)
     end
+
+    it "doesn't include next appointment if there's no scheduled appointment" do
+      next_appointment.update(status: :visited)
+      refresh_view
+
+      expect(patient_summary.reload.days_overdue).to eq(0)
+    end
   end
 
   describe "Risk level" do
