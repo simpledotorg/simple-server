@@ -39,23 +39,33 @@ class Notification < ApplicationRecord
   end
 
   def message_data
-    return {} unless patient
-    facility = subject&.facility || patient.assigned_facility
+    @message_data ||= begin
+      return {} unless patient
+      facility = subject&.facility || patient.assigned_facility
 
-    {
-      variable_content: {facility_name: facility.short_name,
-                         patient_name: patient.full_name,
-                         appointment_date: subject&.scheduled_date&.strftime("%d-%m-%Y")},
-      locale: facility.locale
-    }
+      {
+        variable_content: {facility_name: facility.short_name,
+          patient_name: patient.full_name,
+          appointment_date: subject&.scheduled_date&.strftime("%d-%m-%Y")},
+        locale: facility.locale
+      }
+    end
   end
 
   def localized_message
-    I18n.t(message, **message_data[:variable_content], locale: message_data[:locale])
+    if configured_message?
+      ::Configuration.fetch(configured_message_key) % **message_data[:variable_content]
+    else
+      I18n.t(message, **message_data[:variable_content], locale: message_data[:locale])
+    end
   end
 
   def dlt_template_name
-    Messaging::Bsnl::DltTemplate.latest_name_of("#{message_data[:locale]}.#{message}")
+    if configured_message?
+      Messaging::Bsnl::DltTemplate.latest_name_of("#{message_data[:locale]}.configurations.#{configured_message}")
+    else
+      Messaging::Bsnl::DltTemplate.latest_name_of("#{message_data[:locale]}.#{message}")
+    end
   end
 
   def self.cancel
@@ -84,5 +94,13 @@ class Notification < ApplicationRecord
     else
       :failed
     end
+  end
+
+  def configured_message_key
+    "#{configured_message}.#{message_data[:locale]}"
+  end
+
+  def configured_message?
+    configured_message && ::Configuration.fetch(configured_message_key)
   end
 end

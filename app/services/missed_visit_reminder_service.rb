@@ -33,6 +33,7 @@ class MissedVisitReminderService
       remind_on: remind_on,
       status: "scheduled",
       message: "communications.appointment_reminders.#{communication_type}",
+      configured_message: "appointment_reminders",
       purpose: "missed_visit_reminder"
     )
   end
