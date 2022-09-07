@@ -13,9 +13,16 @@
         <p><%= @messages[language] %></p>
       </div>
       <div class="col-4 text-right">
+        <% if configured_message(language) %>
+          <%= link_to 'Reset to default', admin_patient_reminder_path(language), method: :delete, class: "btn btn-sm btn-outline-danger" %>
+        <% end %>
         <%= link_to 'Edit', edit_admin_patient_reminder_path(language), class: "btn btn-sm btn-outline-primary" %>
-        <%= link_to 'Reset to default', admin_patient_reminder_path(language), method: :delete, class: "btn btn-sm btn-outline-danger" %>
       </div>
     </div>
+    <% if configured_message(language) %>
+      <div class="card-footer">
+        Default message: <%= default_message(language) %>
+      </div>
+    <% end %>
   </div>
 <% end %>

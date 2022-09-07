@@ -400,6 +400,14 @@ h6.dropdown-header {
   letter-spacing: 0.2em;
 }
 
+.btn-outline {
+  border-color: $grey-mid;
+  background: #fff;
+  &:hover {
+    background-color: $grey-lightest;
+  }
+}
+
 .btn-outline-primary {
   border-color: #a3c6ea;
   background: #fff;

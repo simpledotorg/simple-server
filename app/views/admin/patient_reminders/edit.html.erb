@@ -17,15 +17,37 @@
             url: admin_patient_reminder_path(params[:id]),
             method: :put,
             local: true) do |f| %>
-      <%= f.text_area :value, label: "Reminder message" %>
+        <%= f.text_area :value, label: "Reminder message: 160 characters remaining" %>
 
-      <p>If left blank, the default message shown below will be sent to patients.</p>
+        <h3>Personalization options</h3>
 
-      <p><i><%= default_message(params[:id])%></i></p>
+        <h4>Facility name</h4>
+        <p>
+          <span class="btn btn-outline" style="font-family: Monospace">%{facility_name}</span>
+          <span class="input-group-append">Copy code</span>
+        </p>
+        <h4>Patient name</h4>
+        <p>
+          <span class="btn btn-outline" style="font-family: Monospace">%{patient_name}</span>
+        </p>
+        <h4>Appointment date</h4>
+        <p>
+          <span class="btn btn-outline" style="font-family: Monospace">%{appointment_date}</span>
+        </p>
 
-      <%= f.submit "Save", class: "btn btn-primary" %>
-      <%= link_to 'Reset to default', admin_patient_reminder_path(params[:id]), method: :delete, class: "btn btn-danger" %>
+        <p>If left blank, the default message shown below will be sent to patients.</p>
+
+        <p><i><%= default_message(params[:id])%></i></p>
+
+        <%= f.submit "Save", class: "btn btn-primary" %>
+        <%= link_to 'Reset to default', admin_patient_reminder_path(params[:id]), method: :delete, class: "btn btn-danger" %>
       <% end %>
     </div>
   </div>
 </div>
+
+<style media="screen">
+  .patient_reminder_message_code {
+
+  }
+</style>

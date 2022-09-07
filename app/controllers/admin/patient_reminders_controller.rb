@@ -1,5 +1,5 @@
 class Admin::PatientRemindersController < AdminController
-  helper_method :default_message
+  helper_method :default_message, :configured_message
 
   before_action :set_configuration, only: [:edit, :update, :destroy]
 
