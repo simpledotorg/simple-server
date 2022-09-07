@@ -1031,7 +1031,8 @@ CREATE TABLE public.notifications (
     updated_at timestamp without time zone NOT NULL,
     subject_type character varying,
     subject_id uuid,
-    purpose character varying NOT NULL
+    purpose character varying NOT NULL,
+    configured_message character varying
 );
 
 
@@ -3511,6 +3512,20 @@ COMMENT ON COLUMN public.reporting_facility_states.cumulative_diabetes_registrat
 --
 
 COMMENT ON COLUMN public.reporting_facility_states.monthly_diabetes_registrations IS 'The number of diabetic patients registered at the facility in the reporting month';
+
+
+--
+-- Name: COLUMN reporting_facility_states.cumulative_hypertension_and_diabetes_registrations; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.cumulative_hypertension_and_diabetes_registrations IS 'The total number of patients registered at the facility with both hypertension and diabetes up to the end of the reporting month';
+
+
+--
+-- Name: COLUMN reporting_facility_states.monthly_hypertension_and_diabetes_registrations; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.monthly_hypertension_and_diabetes_registrations IS 'The number of patients registered at the facility with both hypertensio and diabetes in the reporting month';
 
 
 --
@@ -6079,6 +6094,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220414134624'),
 ('20220519201430'),
 ('20220524112732'),
-('20220718091454');
+('20220718091454'),
+('20220907041326');
 
 
