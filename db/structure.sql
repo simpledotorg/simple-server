@@ -103,6 +103,42 @@ CREATE TABLE public.addresses (
 
 
 --
+-- Name: alpha_sms_delivery_details; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.alpha_sms_delivery_details (
+    id bigint NOT NULL,
+    request_id character varying NOT NULL,
+    request_status character varying,
+    result character varying,
+    recipient_number character varying NOT NULL,
+    delivered_on timestamp without time zone,
+    deleted_at timestamp without time zone,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: alpha_sms_delivery_details_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.alpha_sms_delivery_details_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: alpha_sms_delivery_details_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.alpha_sms_delivery_details_id_seq OWNED BY public.alpha_sms_delivery_details.id;
+
+
+--
 -- Name: appointments; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -4153,6 +4189,13 @@ CREATE TABLE public.users (
 
 
 --
+-- Name: alpha_sms_delivery_details id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.alpha_sms_delivery_details ALTER COLUMN id SET DEFAULT nextval('public.alpha_sms_delivery_details_id_seq'::regclass);
+
+
+--
 -- Name: bsnl_delivery_details id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -4229,6 +4272,14 @@ ALTER TABLE ONLY public.accesses
 
 ALTER TABLE ONLY public.addresses
     ADD CONSTRAINT addresses_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: alpha_sms_delivery_details alpha_sms_delivery_details_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.alpha_sms_delivery_details
+    ADD CONSTRAINT alpha_sms_delivery_details_pkey PRIMARY KEY (id);
 
 
 --
@@ -6082,6 +6133,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220524112732'),
 ('20220718091454'),
 ('20220902104533'),
-('20220902114057');
+('20220902114057'),
+('20220902125119'),
+('20220908044630');
 
 
