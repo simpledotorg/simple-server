@@ -125,6 +125,11 @@ RSpec.describe AdminController, type: :controller do
   context "flipper info" do
     before {
       routes.draw { get "authorized" => "admin#authorized" }
+      Datadog.configure { |c| c.tracing.enabled = true }
+    }
+
+    after {
+      Datadog.configure { |c| c.tracing.enabled = ENV["DATADOG_ENABLED"] }
     }
 
     it "sends enabled features as datadog tag" do
@@ -132,10 +137,10 @@ RSpec.describe AdminController, type: :controller do
       Flipper.enable(:enabled_2)
       Flipper.disable(:disabled)
 
-      trace = Datadog::Tracing.trace('test_trace')
+      trace = Datadog::Tracing.trace("test_trace")
 
-      expect(trace).to receive(:set_tags).with({"features.enabled_1"=>"enabled", "features.enabled_2"=>"enabled"})
-      expect(trace).to receive(:set_tags).with(hash_including("usr.access_level"=>"manager", "usr.sync_approval_status"=>"denied"))
+      expect(trace).to receive(:set_tags).with({"features.enabled_1" => "enabled", "features.enabled_2" => "enabled"})
+      expect(trace).to receive(:set_tags).with(hash_including("usr.access_level" => "manager", "usr.sync_approval_status" => "denied"))
       get :authorized
     end
   end
