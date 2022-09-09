@@ -15,8 +15,8 @@ en:
   communications:
     request_otp: "<#> %{otp} is your Simple verification code\n%{app_signature}"
     appointment_reminders:
-      sms: "Our staff at %{facility_name} are thinking of you and your heart health. Please continue your blood pressure medicines. Collect your medicine from the nearest sub centre."
-      whatsapp: "Our staff at %{facility_name} are thinking of you and your heart health. Please continue your blood pressure medicines. Collect your medicine from the nearest sub centre."
+      sms: "You are late for your BP. Visit %{facility_name} as soon as possible for your BP %{patient_name} . Your doctor wishes for your good health."
+      whatsapp: "You are late for your BP. Visit %{facility_name} as soon as possible for your BP %{patient_name} . Your doctor wishes for your good health."
     patient_request_otp: "<#> %{otp} is your BP Passport verification code\n%{app_signature}"
   dashboard:
     graphics:
