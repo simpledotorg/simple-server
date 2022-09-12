@@ -1351,10 +1351,10 @@
           "$ref": "#/definitions/uuid"
         },
         "patient_id": {
-          "$ref": "#/definitions/uuid"
+          "$ref": "#/definitions/nullable_uuid"
         },
         "facility_id": {
-          "$ref": "#/definitions/uuid"
+          "$ref": "#/definitions/nullable_uuid"
         },
         "appointment_id": {
           "$ref": "#/definitions/uuid"
