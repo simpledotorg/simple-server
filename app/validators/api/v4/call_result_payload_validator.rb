@@ -3,6 +3,8 @@ class Api::V4::CallResultPayloadValidator < Api::V3::PayloadValidator
     :id,
     :user_id,
     :appointment_id,
+    :patient_id,
+    :facility_id,
     :remove_reason,
     :result_type,
     :deleted_at,
