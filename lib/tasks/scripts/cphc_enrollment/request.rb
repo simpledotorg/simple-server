@@ -1,6 +1,6 @@
 require "http"
-class CPHCEnrollment::Request
 
+class CPHCEnrollment::Request
   attr_reader :path, :user, :payload
 
   def initialize(path:, user:, payload:)
@@ -10,15 +10,15 @@ class CPHCEnrollment::Request
   end
 
   def post
-    puts "Payload: #{payload.as_json.to_json}"
     HTTP.headers(headers)
-        .auth(user[:user_authorization])
-        .post(path, json: payload.as_json)
+      .auth(user[:user_authorization])
+      .post(path, json: payload.as_json)
   end
 
   def headers
     {txnUser: user[:user_id],
      facilityTypeId: user[:facility_type_id],
-     statecode: user[:state_code]}
+     statecode: user[:state_code],
+     isCdssFacility: false}
   end
 end

@@ -1,9 +1,8 @@
 class CPHCEnrollment::EnrollmentPayload
-  attr_reader :patient, :location_finder, :cphc_facility
+  attr_reader :patient, :cphc_facility
 
-  def initialize(patient, location_finder:)
+  def initialize(patient)
     @patient = patient
-    @location_finder = location_finder
     @cphc_location = nil
   end
 
@@ -48,7 +47,7 @@ class CPHCEnrollment::EnrollmentPayload
         age: patient.age,
         gender: gender,
 
-        # The enrollment API require patient phone numbers to be 9 digits long
+        # The enrollment API require patient phone numbers to be 10 digits long
         mobileNumber: patient.phone_numbers.first&.number.delete(" ").reverse[0..9].reverse,
         additionalDetails: {
           enrollmentDate: patient.recorded_at.strftime("%d-%m-%Y"),
@@ -62,7 +61,7 @@ class CPHCEnrollment::EnrollmentPayload
       },
       familyInfo: {
         additionalDetails: {
-          idOther: "ihci-simple-patient-bp-passport-id",
+          idOther: "ihci-bp-passport-id",
           idOtherVal: bp_passport_id
         },
         addressInfo: {

@@ -6,14 +6,11 @@ class CPHCEnrollment::BloodSugarPayload
   end
 
   def as_json
-    sugar_vitals = {
-      assesDate: blood_sugar.recorded_at.strftime("%d-%m-%Y"),
-      # TODO: Adding these by default for now
-    }
-
     {
-      vitalsDate: blood_sugar.recorded_at,
-      sugarVitals: sugar_vitals.merge(blood_sugar_type_payload)
+      isVitalsEdited: true,
+      exam: {
+        assessDate: blood_sugar.recorded_at.strftime("%d-%m-%Y")
+      }.merge(blood_sugar_type_payload)
     }
   end
 
@@ -21,13 +18,13 @@ class CPHCEnrollment::BloodSugarPayload
     value = blood_sugar.blood_sugar_value
     case blood_sugar.blood_sugar_type.to_sym
     when :random
-      {"rndBldGlc" => value.to_i ,
+      {"rbs" => value.to_i,
        :mthdOfBldTstRbsCapillaryVenous => "rbgCapillary"}
     when :post_prandial
-      {"postPradBldGlc" => value.to_i,
+      {"ppbg" => value.to_i,
        :mthdOfBldTstPpbgCapillaryVenous => "ppbgCapillary"}
     when :fasting
-      {"fastngBldGlc" => value.to_i}
+      {"fbs" => value.to_i}
     when :hba1c
       {"hba1c" => value.to_f}
     else

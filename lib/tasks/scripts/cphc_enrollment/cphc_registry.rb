@@ -5,22 +5,13 @@ class CPHCEnrollment::CPHCRegistry
     @registry = {}
   end
 
-  def add(key, simple_id, cphc_id = nil)
-    if cphc_id.present?
-      @registry[key] ||= {}
-      @registry[key][simple_id] = cphc_id
-    else
-      @registry[key] ||= []
-      @registry[key].append(simple_id)
-    end
-    cphc_id
+  def update(patient_id, updates)
+    hash = @registry[patient_id] || {}
+    @registry[patient_id] = hash.merge(updates)
   end
 
-  def find_cphc_id(key, simple_id)
-    registry.dig(key, simple_id)
-  end
-
-  def find_or_add(key, simple_id, cphc_id)
-    find_cphc_id(key, simple_id) || add(key, simple_id, cphc_id)
+  def get(patient_id, keys)
+    throw "Patient: #{patient_id} not found in the registry" unless @registry[patient_id]
+    @registry[patient_id].dig(*keys)
   end
 end

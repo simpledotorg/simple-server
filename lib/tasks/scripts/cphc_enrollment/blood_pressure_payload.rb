@@ -7,11 +7,11 @@ class CPHCEnrollment::BloodPressurePayload
 
   def as_json
     {
-      "vitalsDate": blood_pressure.recorded_at,
-      "bpVitals": {
-        "assesDate": blood_pressure.recorded_at.strftime("%d-%m-%Y"),
-        "sys": blood_pressure.systolic,
-        "diast": blood_pressure.diastolic
+      "isVitalsEdited" => true,
+      "exam" => {
+        "assessDate" => blood_pressure.recorded_at.strftime("%d-%m-%Y"),
+        "sys" => blood_pressure.systolic,
+        "diast" => blood_pressure.diastolic,
       }
     }
   end
