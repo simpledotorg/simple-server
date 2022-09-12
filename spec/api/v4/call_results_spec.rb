@@ -47,7 +47,7 @@ describe "CallResults v4 API", swagger_doc: "v4/swagger.json" do
 
       before :each do
         Timecop.travel(10.minutes.ago) do
-          create_list(:blood_sugar, 3)
+          create_list(:call_result, 3)
         end
       end
 
