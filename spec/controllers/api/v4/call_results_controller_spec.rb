@@ -63,8 +63,8 @@ RSpec.describe Api::V4::CallResultsController, type: :controller do
 
       it "leaves the patient_id nil if the appointment does not exist" do
         call_results =
-          [build_call_result_payload(build(:call_result, patient_id: nil)),
-            build_call_result_payload(build(:call_result)).except(:patient_id)]
+          [build_call_result_payload(build(:call_result, appointment_id: SecureRandom.uuid, patient_id: nil)),
+            build_call_result_payload(build(:call_result, appointment_id: SecureRandom.uuid)).except(:patient_id)]
 
         set_authentication_headers
 
