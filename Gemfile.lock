@@ -98,7 +98,7 @@ GEM
       redis (>= 1.0, <= 5.0)
     builder (3.2.4)
     byebug (11.1.3)
-    capistrano (3.16.0)
+    capistrano (3.17.1)
       airbrussh (>= 1.0.0)
       i18n
       rake (>= 10.0.0)
@@ -609,7 +609,7 @@ GEM
     squid (1.4.1)
       activesupport (>= 4.0)
       prawn (~> 2.2)
-    sshkit (1.21.2)
+    sshkit (1.21.3)
       net-scp (>= 1.1.2)
       net-ssh (>= 2.8.0)
     sshkit-interactive (0.3.0)
@@ -688,7 +688,7 @@ DEPENDENCIES
   bootstrap-select-rails
   bootstrap_form (>= 4.5.0)
   byebug
-  capistrano (= 3.16.0)
+  capistrano (~> 3.17)
   capistrano-db-tasks
   capistrano-multiconfig
   capistrano-passenger (= 0.2.1)
