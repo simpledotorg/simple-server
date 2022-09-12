@@ -50,7 +50,7 @@ RSpec.describe Api::V4::CallResultsController, type: :controller do
         appointment = create(:appointment, patient: patient)
         call_results =
           [build_call_result_payload(build(:call_result, appointment: appointment, patient_id: nil)),
-           build_call_result_payload(build(:call_result, appointment: appointment)).except(:patient_id)]
+            build_call_result_payload(build(:call_result, appointment: appointment)).except(:patient_id)]
 
         set_authentication_headers
 
@@ -64,7 +64,7 @@ RSpec.describe Api::V4::CallResultsController, type: :controller do
       it "leaves the patient_id nil if the appointment is not present in DB" do
         call_results =
           [build_call_result_payload(build(:call_result, patient_id: nil)),
-           build_call_result_payload(build(:call_result)).except(:patient_id)]
+            build_call_result_payload(build(:call_result)).except(:patient_id)]
 
         set_authentication_headers
 
@@ -82,7 +82,7 @@ RSpec.describe Api::V4::CallResultsController, type: :controller do
         appointment = create(:appointment, patient: patient)
         call_results =
           [build_call_result_payload(build(:call_result, appointment: appointment, facility_id: nil)),
-           build_call_result_payload(build(:call_result, appointment: appointment)).except(:facility_id)]
+            build_call_result_payload(build(:call_result, appointment: appointment)).except(:facility_id)]
 
         set_authentication_headers
 

@@ -34,7 +34,6 @@ RSpec.describe Api::V4::CallResultTransformer do
           fallback_facility_id: fallback_id
         )["facility_id"]).to eq(fallback_id)
       end
-
     end
 
     context "when facility_id is supplied in payload" do

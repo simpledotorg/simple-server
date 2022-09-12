@@ -19,8 +19,10 @@ class Api::V4::CallResultsController < Api::V4::SyncController
     if validator.check_invalid?
       {errors_hash: validator.errors_hash}
     else
-      transformed_params = Api::V4::CallResultTransformer
-        .from_request(call_result_params, fallback_facility_id: current_facility.id)
+      transformed_params = Api::V4::CallResultTransformer.from_request(
+        call_result_params,
+        fallback_facility_id: current_facility.id
+      )
       call_result = CallResult.merge(transformed_params)
 
       {record: call_result}
