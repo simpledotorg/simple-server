@@ -87,4 +87,17 @@ namespace :deploy do
       exit
     end
   end
+
+  namespace :assets do
+    desc "Run assets:precompile using the rails binary"
+    task :precompile do
+      on release_roles(fetch(:assets_roles)) do
+        within release_path do
+          with rails_env: fetch(:rails_env), rails_groups: fetch(:rails_assets_groups) do
+            execute :rails, "assets:precompile"
+          end
+        end
+      end
+    end
+  end
 end
