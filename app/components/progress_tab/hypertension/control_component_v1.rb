@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Reports::ProgressControlComponentV1 < ViewComponent::Base
+class ProgressTab::Hypertension::ControlComponentV1 < ApplicationComponent
   include AssetsHelper
   include ActionView::Helpers::NumberHelper
 

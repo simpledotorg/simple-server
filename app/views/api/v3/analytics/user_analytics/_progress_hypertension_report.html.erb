@@ -26,9 +26,9 @@
       <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.section_title") %>
     </h3>
   </div>
-  <%= render(Reports::ProgressControlComponentV1.new(@service, @current_user)) %>
+  <%= render(ProgressTab::Hypertension::ControlComponentV1.new(@service, @current_user)) %>
   <%= render(ProgressTab::Hypertension::UncontrolledComponent.new(@service)) %>
-  <%= render(Reports::ProgressMissedVisitsComponent.new(@service)) %>
+  <%= render(ProgressTab::Hypertension::MissedVisitsComponent.new(@service)) %>
   <% if @drug_stocks_query %>
     <div class="mt-48px mb-16px pr-16px pl-16px">
       <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey-dark">
