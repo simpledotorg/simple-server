@@ -10,6 +10,13 @@ RSpec.describe Api::V4::CallResultTransformer do
         )["patient_id"]).to eq(appointment.patient_id)
       end
 
+      it "includes discarded appointments while filling up fallback patient_id" do
+        appointment = create(:appointment, deleted_at: Time.now)
+        expect(Api::V4::CallResultTransformer.from_request(
+          {"appointment_id" => appointment.id, "patient_id" => nil}
+        )["patient_id"]).to eq(appointment.patient_id)
+      end
+
       it "returns the hash as is if the appointment is missing" do
         expect(Api::V4::CallResultTransformer.from_request(
           {"appointment_id" => SecureRandom.uuid, "patient_id" => nil}
