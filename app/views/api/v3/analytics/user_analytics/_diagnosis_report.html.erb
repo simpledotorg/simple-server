@@ -40,20 +40,7 @@
     <% end %>
   </div>
 
-  <div class="mb-8px p-16px bgc-white bs-card">
-    <div class="d-flex ai-center jc-space-between mb-8px">
-      <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
-        <%= t("progress_tab.diagnosis_report.total_registered_patients.title") %>
-      </h2>
-      <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
-        <%= diagnosis_data["registered_patients"]["total"]  %>
-      </p>
-    </div>
-    <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-      <%= t("progress_tab.diagnosis_report.total_registered_patients.subtitle", facility_name: current_facility.name, diagnosis: report_diagnosis.downcase) %>
-    </p>
-    <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph", locals: { data: diagnosis_data["registered_patients"]["breakdown"], data_type: diagnosis_data["registered_patients"]["data_type"], graph_css_color: "bgc-purple-new", show_tooltip: false } %>
-  </div>
+  <%= render(Reports::ProgressTotalRegistrationsComponent.new(@service, @period)) %>
 
   <div class="mb-8px p-16px bgc-white bs-card">
     <div class="d-flex ai-center jc-space-between mb-8px">
