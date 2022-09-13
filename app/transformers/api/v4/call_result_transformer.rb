@@ -11,7 +11,7 @@ class Api::V4::CallResultTransformer < Api::V4::Transformer
     def add_fallback_patient_id(payload)
       return payload if payload["patient_id"].present?
 
-      appointment = Appointment.find_by(id: payload["appointment_id"])
+      appointment = Appointment.with_discarded.find_by(id: payload["appointment_id"])
       payload.merge("patient_id" => appointment&.patient_id)
     end
 
