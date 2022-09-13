@@ -1,6 +1,6 @@
-require "capistrano/bundler"
 require "capistrano/multiconfig"
 require "capistrano/deploy"
+require "capistrano/bundler"
 require "capistrano/rails/console"
 
 require "capistrano/scm/git"
