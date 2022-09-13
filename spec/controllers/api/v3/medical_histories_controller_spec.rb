@@ -95,10 +95,7 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
       }
     end
 
-    before :each do
-      request.env["HTTP_X_USER_ID"] = request_user.id
-      request.env["HTTP_X_FACILITY_ID"] = request_facility.id
-    end
+    before { set_authentication_headers }
 
     context "with a pre-existing medical history" do
       let(:patient) { create(:patient) }
