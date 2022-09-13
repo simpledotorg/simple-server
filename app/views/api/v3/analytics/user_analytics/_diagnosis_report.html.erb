@@ -334,10 +334,10 @@
       <% diagnosis_data["quarterly_cohort_reports"]["table_breakdown"].each_with_index do |cohort, index| %>
         <div class="<% if diagnosis_data["quarterly_cohort_reports"]["table_breakdown"].length - 1 > index %>mb-24px<% end %>">
           <p class="m-0px mb-2px p-0px ta-left fw-regular fs-16px c-black">
-            <%= t("progress_tab.diagnosis_report.cohort_report.cohort_title", start_period: cohort["start_period"], end_period: cohort["end_period"]) %>
+            <%= t("progress_tab.diagnosis_report.cohort_report.cohort_title", period: cohort[:period]) %>
           </p>
           <p class="m-0px mb-8px p-0px ta-left fw-reguar fs-16px c-grey-dark">
-            <%= t("progress_tab.diagnosis_report.cohort_report.cohort_subtitle", number_of_patients: cohort["total_patients"], patient_or_patients: "patient".pluralize(cohort["total_patients"]), registration_period: cohort["registration_period"]) %>
+            <%= t("progress_tab.diagnosis_report.cohort_report.cohort_subtitle", number_of_patients: cohort[:total_patients], patient_or_patients: "patient".pluralize(cohort[:total_patients]), registration_period: cohort[:registration_period]) %>
           </p>
           <%= render partial: "api/v3/analytics/user_analytics/data_stacked_bar_graph", locals: { data: cohort } %>
         </div>
