@@ -39,6 +39,7 @@
                            include_bottom_border: index == diagnosis_data["assigned_patients"]["breakdown"].length - 1 ? false : true } %>
     <% end %>
   </div>
+
   <div class="mb-8px p-16px bgc-white bs-card">
     <div class="d-flex ai-center jc-space-between mb-8px">
       <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
@@ -53,6 +54,7 @@
     </p>
     <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph", locals: { data: diagnosis_data["registered_patients"]["breakdown"], data_type: diagnosis_data["registered_patients"]["data_type"], graph_css_color: "bgc-purple-new", show_tooltip: false } %>
   </div>
+
   <div class="mb-8px p-16px bgc-white bs-card">
     <div class="d-flex ai-center jc-space-between mb-8px">
       <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
@@ -67,11 +69,13 @@
     </p>
     <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph", locals: { data: diagnosis_data["monthly_follow_up_patients"]["breakdown"], data_type: diagnosis_data["monthly_follow_up_patients"]["data_type"], graph_css_color: "bgc-blue-new", show_tooltip: false } %>
   </div>
+
   <div class="mt-48px mb-8px pr-16px pl-16px">
     <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey-dark">
       <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.section_title") %>
     </h3>
   </div>
+
   <div class="mb-8px p-16px bgc-white bs-card">
     <div class="p-relative d-flex ai-center mb-8px" data-element-type="header">
       <div class="d-flex ai-center" data-element-type="header-title">
@@ -109,6 +113,7 @@
     <% controlled_tooltip_threshold = report_diagnosis == "Hypertension" ? t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_controlled_long") : t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_controlled_long") %>
     <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph", locals: { data: diagnosis_data["controlled"]["breakdown"], data_type: diagnosis_data["controlled"]["data_type"], graph_css_color: "bgc-green-new", show_tooltip: true, threshold: controlled_tooltip_threshold } %>
   </div>
+
   <div class="mb-8px p-16px bgc-white bs-card">
     <div class="p-relative d-flex ai-center mb-8px" data-element-type="header">
       <div class="d-flex ai-center" data-element-type="header-title">
@@ -146,6 +151,7 @@
     <% uncontrolled_tooltip_threshold = report_diagnosis == "Hypertension" ? t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_uncontrolled_long") : t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_uncontrolled_long") %>
     <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph", locals: { data: diagnosis_data["uncontrolled"]["breakdown"], data_type: diagnosis_data["uncontrolled"]["data_type"], graph_css_color: "bgc-yellow-new", show_tooltip: true, threshold: uncontrolled_tooltip_threshold } %>
   </div>
+
   <% if report_diagnosis == "Diabetes" %>
     <div class="mb-8px p-16px bgc-white bs-card">
       <div class="p-relative d-flex ai-center mb-8px" data-element-type="header">
@@ -182,6 +188,7 @@
       <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph", locals: { data: diagnosis_data["very_uncontrolled"]["breakdown"], data_type: diagnosis_data["very_uncontrolled"]["data_type"], graph_css_color: "bgc-yellow-dark-new", show_tooltip: true, threshold: t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_very_uncontrolled_long") } %>
     </div>
   <% end %>
+
   <div class="mb-8px p-16px bgc-white bs-card">
     <div class="p-relative d-flex ai-center mb-8px" data-element-type="header">
       <div class="d-flex ai-center" data-element-type="header-title">
@@ -216,6 +223,7 @@
     </p>
     <%= render partial: "api/v3/analytics/user_analytics/data_bar_graph", locals: { data: diagnosis_data["missed_visits"]["breakdown"], data_type: diagnosis_data["missed_visits"]["data_type"], graph_css_color: "bgc-red-new", show_tooltip: true, threshold: t("progress_tab.diagnosis_report.diagnosis_thresholds.missed_visits_long") } %>
   </div>
+
   <% if report_diagnosis == "Hypertension" %>
     <div class="mt-48px mb-8px pr-16px pl-16px">
       <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey-dark">
@@ -323,8 +331,8 @@
           </p>
         </div>
       </div>
-      <% diagnosis_data["quarterly_cohort_reports"]["breakdown"].each_with_index do |cohort, index| %>
-        <div class="<% if diagnosis_data["quarterly_cohort_reports"]["breakdown"].length - 1 > index %>mb-24px<% end %>">
+      <% diagnosis_data["quarterly_cohort_reports"]["table_breakdown"].each_with_index do |cohort, index| %>
+        <div class="<% if diagnosis_data["quarterly_cohort_reports"]["table_breakdown"].length - 1 > index %>mb-24px<% end %>">
           <p class="m-0px mb-2px p-0px ta-left fw-regular fs-16px c-black">
             <%= t("progress_tab.diagnosis_report.cohort_report.cohort_title", start_period: cohort["start_period"], end_period: cohort["end_period"]) %>
           </p>
