@@ -53,7 +53,7 @@ RSpec.describe CohortService, type: :model do
     periods = Period.month("April 1st 2020").downto(5)
     [facility, facility_group].each do |region|
       result = CohortService.new(region: region, periods: periods).call
-      jan_registered_results = result.find { |r| r["patients_registered"] == "Jan-2020" }.except(:period)
+      jan_registered_results = result.find { |r| r["registration_period"] == "Jan-2020" }.except(:period)
       expect(jan_registered_results).to eq({
         "controlled" => 1,
         "no_bp" => 1,
@@ -63,11 +63,11 @@ RSpec.describe CohortService, type: :model do
         "no_bp_rate" => 33,
         "missed_visits_rate" => 0,
         "uncontrolled_rate" => 34,
-        "patients_registered" => "Jan-2020",
+        "registration_period" => "Jan-2020",
         "registered" => 3,
         "results_in" => "Feb/Mar"
       })
-      feb_registered_results = result.find { |r| r["patients_registered"] == "Feb-2020" }.except(:period)
+      feb_registered_results = result.find { |r| r["registration_period"] == "Feb-2020" }.except(:period)
       expect(feb_registered_results).to eq({
         "controlled" => 1,
         "no_bp" => 0,
@@ -77,7 +77,7 @@ RSpec.describe CohortService, type: :model do
         "no_bp_rate" => 0,
         "missed_visits_rate" => 50,
         "uncontrolled_rate" => 0,
-        "patients_registered" => "Feb-2020",
+        "registration_period" => "Feb-2020",
         "registered" => 2,
         "results_in" => "Mar/Apr"
       })
@@ -164,7 +164,7 @@ RSpec.describe CohortService, type: :model do
         "missed_visits_rate" => 13,
         "no_bp" => 1,
         "no_bp_rate" => 12,
-        "patients_registered" => "Q2-2020",
+        "registration_period" => "Q2-2020",
         "period" => Period.quarter("September 1st 2020"),
         "registered" => 8,
         "results_in" => "Q3-2020",
@@ -178,7 +178,7 @@ RSpec.describe CohortService, type: :model do
         "missed_visits_rate" => 17,
         "no_bp" => 1,
         "no_bp_rate" => 16,
-        "patients_registered" => "Q1-2020",
+        "registration_period" => "Q1-2020",
         "period" => Period.quarter("June 1st 2020"),
         "registered" => 6,
         "results_in" => "Q2-2020",
@@ -217,7 +217,7 @@ RSpec.describe CohortService, type: :model do
       "missed_visits_rate" => 100,
       "no_bp" => 0,
       "no_bp_rate" => 0,
-      "patients_registered" => "Q2-2020",
+      "registration_period" => "Q2-2020",
       "period" => Period.quarter("September 2020"),
       "registered" => 1,
       "results_in" => "Q3-2020",
@@ -231,7 +231,7 @@ RSpec.describe CohortService, type: :model do
       "missed_visits_rate" => 0,
       "no_bp" => 0,
       "no_bp_rate" => 0,
-      "patients_registered" => "Q1-2020",
+      "registration_period" => "Q1-2020",
       "period" => Period.quarter("June 2020"),
       "registered" => 3,
       "results_in" => "Q2-2020",

@@ -57,7 +57,7 @@ class CohortService
         missed_visits_rate: cohort_reports_rates(result)[:missed_visits_rate],
         uncontrolled_rate: cohort_reports_rates(result)[:uncontrolled_rate],
         period: result.period,
-        patients_registered: registration_period.to_s,
+        registration_period: registration_period.to_s,
         registered: result.cohort_patients,
         results_in: result.period.to_s(:cohort)
       }.with_indifferent_access
