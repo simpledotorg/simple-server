@@ -892,6 +892,7 @@ footer p {
 .c-red-new { color: $red-new; }
 .c-lavander { color: $lavander; }
 .c-purple { color: $purple; }
+.c-indigo { color: #4454FF}
 .c-grey-mid { color: $grey-mid; }
 .c-grey { color: $grey; }
 .c-grey-dark { color: $grey-dark; }
@@ -922,6 +923,8 @@ footer p {
 .bgc-red { background-color: $red; }
 .bgc-red-new { background-color: $red-new; }
 .bgc-red-dark-new { background-color: $red-dark-new; }
+.bgc-indigo { background-color: #515FFF;}
+.bgc-indigo-light { background-color: #ECEDFC}
 .bgc-purple-light { background-color: $purple-light; }
 .bgc-purple-new { background-color: $purple-new; }
 .bgc-lavander-light { background-color: $lavander-light; } 
@@ -960,11 +963,28 @@ footer p {
 .bs-card { box-shadow: 0px 2px 4px $transparent-black-10; }
 .bs-fixed-card { box-shadow: 0px -2px 8px $transparent-black-10; }
 .bs-primary-button {
-  box-shadow: 0 2px 2px $transparent-black-16;
+  // box-shadow: 0 2px 2px $transparent-black-16;
 }
 .bs-secondary-button {
-  box-shadow: 0 2px 2px $transparent-black-16;
+  // box-shadow: 0 2px 2px $transparent-black-16;
+  box-shadow: 0px 2px 0px #9CC8F3, 0px 2px 2px $transparent-black-16;
 }
+.bs-blue-green-light-button {
+  box-shadow: 0px 2px 0px #8DCCCE, 0px 2px 2px rgba(0, 0, 0, 0.25);
+}
+.bs-blue-light-button {
+  box-shadow: 0px 2px 0px #8FC2F5, 0px 2px 2px rgba(0, 0, 0, 0.25);
+}
+.bs-indigo-light-button {
+box-shadow: 0px 2px 0px #AAAAFD, 0px 2px 2px rgba(0, 0, 0, 0.25);
+}
+.bs-red-light-button {
+  box-shadow: 0px 2px 0px #FF9DAE, 0px 2px 2px rgba(0, 0, 0, 0.25);
+}
+.bs-purple-light-button {
+  box-shadow: 0px 2px 0px #CAA8FF, 0px 2px 2px rgba(0, 0, 0, 0.25);
+}
+
 .bs-tooltip { box-shadow: 0px 2px 8px $transparent-black-10; }
 /* FORM FIELDS */
 .bs-border-box { box-sizing: border-box; }

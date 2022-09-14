@@ -33,7 +33,7 @@
               <%= t("progress_tab.daily_report_title") %>
             </p>
           </a>
-          <a class="f-1 d-flex fd-column ai-center jc-center td-none h-96px mr-4px ml-4px p-12px bgc-blue-light br-8px" href="#" onclick="goToPage('home-page', 'monthly-report-page'); return false;">
+          <a class="f-1 d-flex fd-column ai-center jc-center td-none h-96px mr-4px ml-4px p-12px bgc-blue-light bs-blue-light-button br-8px" href="#" onclick="goToPage('home-page', 'monthly-report-page'); return false;">
             <div class="p-relative d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px o-hidden">
               <div class="p-absolute t-0 l-0 w-100 h-6px bgc-blue"></div>
             </div>
@@ -41,11 +41,11 @@
               <%= t("progress_tab.monthly_report_title") %>
             </p>
           </a>
-          <a class="f-1 d-flex fd-column ai-center jc-center td-none h-96px ml-10px p-12px bgc-navy-light br-8px" href="#" onclick="goToPage('home-page', 'yearly-report-page'); return false;">
+          <a class="f-1 d-flex fd-column ai-center jc-center td-none h-96px ml-10px p-12px bgc-indigo-light bs-indigo-light-button br-8px" href="#" onclick="goToPage('home-page', 'yearly-report-page'); return false;">
             <div class="p-relative d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px o-hidden">
-              <div class="p-absolute t-0 l-0 w-100 h-6px bgc-navy"></div>
+              <div class="p-absolute t-0 l-0 w-100 h-6px bgc-indigo"></div>
             </div>
-            <p class="m-0px p-0px ta-center fw-medium fs-16px c-navy">
+            <p class="m-0px p-0px ta-center fw-medium fs-16px c-indigo">
               <%= t("progress_tab.yearly_report_title") %>
             </p>
           </a>
@@ -60,7 +60,7 @@
         </p>
         <div class="d-flex ai-center jc-space-between">
           <a
-            class="f-1 d-flex fd-column ai-center jc-center h-96px mr-8px p-12px td-none bgc-red-light br-8px"
+            class="f-1 d-flex fd-column ai-center jc-center h-96px mr-8px p-12px td-none bgc-red-light bs-red-light-button br-8px"
             href="#"
             onclick="goToPage('home-page', 'hypertension-report'); return false;"
           >
@@ -72,7 +72,7 @@
             </p>
           </a>
           <a
-            class="f-1 d-flex fd-column ai-center jc-center h-96px ml-8px p-12px td-none bgc-purple-light br-8px"
+            class="f-1 d-flex fd-column ai-center jc-center h-96px ml-8px p-12px td-none bgc-purple-light bs-purple-light-button br-8px"
             href="#"
             onclick="goToPage('home-page', 'diabetes-report'); return false;"
           >
@@ -103,7 +103,7 @@
           access_token: current_user.access_token,
           facility_id: current_facility.id),
           style: "font-weight: 500;",
-          class: "d-block p-16px ta-center fs-16px fw-regular tt-uppercase ls-1_25px c-blue b-none br-1px bgc-blue-light bs-secondary-button"
+          class: "d-block p-16px ta-center fs-16px fw-regular tt-uppercase ls-1_25px c-blue b-none bgc-blue-light bs-secondary-button br-2px"
         %>
       </div>
       <div class="mb-8px pt-16px pb-16px bgc-white bs-card">
