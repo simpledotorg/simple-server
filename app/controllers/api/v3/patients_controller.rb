@@ -56,18 +56,8 @@ class Api::V3::PatientsController < Api::V3::SyncController
     else
       transformed_params = Api::V3::PatientTransformer.from_nested_request(single_patient_params)
       patient = MergePatientService.new(transformed_params, request_metadata: request_metadata).merge
-      log_identical_record_info(patient) if patient.merge_status == :identical
       {record: patient}
     end
-  end
-
-  def log_identical_record_info(patient)
-    # This is to investigate large number of identical records being synced by the app.
-    # Remove once we figure it out.
-    logger.info(event: "identical patient record synced",
-      user_id: current_user.id,
-      patient_id: patient.id,
-      sync_region_id: current_sync_region.id)
   end
 
   def transform_to_response(patient)

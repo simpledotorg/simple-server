@@ -125,7 +125,9 @@ module Reports
       if regions.all? { |region| region.facility_region? }
         hypertension_follow_ups(group_by: "blood_pressures.user_id")
         bp_measures_by_user
-        monthly_registrations_by_user
+        blood_sugar_measures_by_user
+        monthly_registrations_by_user(diagnosis: :hypertension)
+        monthly_registrations_by_user(diagnosis: :diabetes)
         monthly_registrations_by_gender
         controlled_by_gender
         overdue_calls_by_user

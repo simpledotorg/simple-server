@@ -264,6 +264,73 @@
             "description": "user is not allowed to sync"
           }
         }
+      },
+      "get": {
+        "summary": "Syncs call results data from server to device.",
+        "tags": [
+          "Call Result"
+        ],
+        "security": [
+          {
+            "access_token": [
+
+            ],
+            "user_id": [
+
+            ],
+            "facility_id": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "process_token",
+            "type": "string",
+            "format": "byte",
+            "description": "Token containing all the information needed to process batch requests from the user",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "call result received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "call_results": {
+                  "$ref": "#/definitions/call_results"
+                },
+                "process_token": {
+                  "$ref": "#/definitions/process_token"
+                }
+              },
+              "required": [
+                "call_results",
+                "process_token"
+              ]
+            }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
       }
     },
     "/drug_stocks": {
@@ -300,7 +367,7 @@
             "name": "date",
             "in": "query",
             "type": "date",
-            "description": "Any date in the requested month - eg. 2021-10-29"
+            "description": "Any date in the requested month in YYYY-MM-DD format - eg. 2021-10-29"
           }
         ],
         "responses": {
@@ -310,11 +377,13 @@
               "type": "object",
               "properties": {
                 "month": {
-                  "$ref": "#/definitions/month",
-                  "description": "Month of the drug stock report - eg. '2021-10'"
+                  "$ref": "#/definitions/month"
                 },
                 "facility_id": {
                   "$ref": "#/definitions/uuid"
+                },
+                "drug_stock_form_url": {
+                  "$ref": "#/definitions/non_empty_string"
                 },
                 "drug_stocks": {
                   "type": "array",
@@ -325,9 +394,6 @@
                 }
               }
             }
-          },
-          "404": {
-            "description": "No drug stock report has been submitted for the specified month"
           }
         }
       }
@@ -1284,6 +1350,12 @@
         "user_id": {
           "$ref": "#/definitions/uuid"
         },
+        "patient_id": {
+          "$ref": "#/definitions/nullable_uuid"
+        },
+        "facility_id": {
+          "$ref": "#/definitions/nullable_uuid"
+        },
         "appointment_id": {
           "$ref": "#/definitions/uuid"
         },
@@ -1806,7 +1878,7 @@
     },
     "month": {
       "type": "string",
-      "pattern": "[1-9]{4}\\-[0-9]{2}"
+      "pattern": "[1-9]{1}[0-9]{1}\\-[0-9]{2}"
     },
     "non_empty_string": {
       "type": "string",
