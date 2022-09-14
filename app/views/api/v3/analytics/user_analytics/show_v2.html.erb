@@ -6,13 +6,13 @@
     <meta name="MobileOptimized" content="320">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,shrink-to-fit=no"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
-    <title>
-      <%= raw t("analytics.page_title") %>
-    </title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+    <title>
+      <%= raw t("analytics.page_title") %>
+    </title>
     <%= inline_stylesheet("user_analytics.css") %>
   </head>
   <body>
@@ -22,7 +22,10 @@
           <%= t("progress_tab.registrations_and_follow_ups_card.title") %>
         </h1>
         <div class="d-flex ai-center jc-space-between">
-          <a class="f-1 d-flex fd-column ai-center jc-center td-none h-96px mr-10px p-12px bgc-blue-green-light br-8px" href="#" onclick="goToPage('home-page', 'daily-report-page'); return false;">
+          <a class="f-1 d-flex fd-column ai-center jc-center td-none h-96px mr-10px p-12px bgc-blue-green-light br-8px"
+             href="#"
+             onclick="goToPage('home-page', 'daily-report-page'); return false;">
+
             <div class="p-relative d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px o-hidden">
               <div class="p-absolute t-0 l-0 w-100 h-6px bgc-blue-green"></div>
             </div>
@@ -174,7 +177,7 @@
                  periods: @period_reports_data["daily_periods"],
                  registered_patients: @period_reports_data["daily_registered_patients"],
                  follow_up_patients: @period_reports_data["daily_follow_up_patients"]
-               } 
+               }
     %>
     <%= render partial: "api/v3/analytics/user_analytics/period_report",
                locals: {
@@ -196,6 +199,7 @@
                  follow_up_patients: @period_reports_data["yearly_follow_up_patients"]
                }
     %>
+
     <%= render partial: "api/v3/analytics/user_analytics/diagnosis_report",
                locals: {
                  page_id: "hypertension-report",
@@ -204,8 +208,8 @@
                  subtitle: t("progress_tab.last_updated_at", date: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")),
                  diagnosis_data: @hypertension_reports_data
                }
-    
     %>
+
     <%= render partial: "api/v3/analytics/user_analytics/diagnosis_report",
                locals: {
                  page_id: "diabetes-report",
@@ -214,8 +218,7 @@
                  subtitle: t("progress_tab.last_updated_at", date: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")),
                  diagnosis_data: @diabetes_reports_data
                }
-    
     %>
-    <%= inline_js "standalone/progress_tab.js" %>
   </body>
+  <%= inline_js("standalone/progress_tab.js") %>
 </html>

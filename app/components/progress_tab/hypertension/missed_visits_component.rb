@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Reports::ProgressMissedVisitsComponent < ViewComponent::Base
+class ProgressTab::Hypertension::MissedVisitsComponent < ApplicationComponent
   include AssetsHelper
   include ActionView::Helpers::NumberHelper
 

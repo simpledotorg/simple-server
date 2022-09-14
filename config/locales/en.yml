@@ -142,6 +142,8 @@ en:
     denominator: "Total appointments scheduled for follow-up patients during a month."
 
   progress_tab:
+    registrations_and_follow_ups_card:
+      title: "Registrations and follow-ups"
     daily_report_title: "Daily"
     monthly_report_title: "Monthly"
     yearly_report_title: "Yearly"
