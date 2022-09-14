@@ -51,6 +51,9 @@ RSpec.describe Reports::DailyFollowUp, {type: :model, reporting_spec: true} do
     expect(follow_ups.count).to eq(3)
     expect(follow_ups.with_hypertension.count).to eq(2)
     expect(follow_ups.with_diabetes.count).to eq(2)
+    expect(follow_ups.with_diabetes_only.count).to eq(1)
+    expect(follow_ups.with_hypertension_only.count).to eq(1)
+    expect(follow_ups.with_hypertension_and_diabetes.count).to eq(1)
   end
 
   it "contains records for patient BPs" do
