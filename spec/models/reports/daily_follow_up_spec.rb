@@ -50,10 +50,15 @@ RSpec.describe Reports::DailyFollowUp, {type: :model, reporting_spec: true} do
     follow_ups = described_class.where(facility: facility)
     expect(follow_ups.count).to eq(3)
     expect(follow_ups.with_hypertension.count).to eq(2)
+    expect(follow_ups.with_hypertension.map(&:patient_id)).to contain_exactly(patient_1.id, patient_2.id)
     expect(follow_ups.with_diabetes.count).to eq(2)
+    expect(follow_ups.with_diabetes.map(&:patient_id)).to contain_exactly(patient_3.id, patient_2.id)
     expect(follow_ups.with_diabetes_only.count).to eq(1)
+    expect(follow_ups.with_diabetes_only.map(&:patient_id)).to contain_exactly(patient_3.id)
     expect(follow_ups.with_hypertension_only.count).to eq(1)
+    expect(follow_ups.with_hypertension_only.map(&:patient_id)).to contain_exactly(patient_1.id)
     expect(follow_ups.with_hypertension_and_diabetes.count).to eq(1)
+    expect(follow_ups.with_hypertension_and_diabetes.map(&:patient_id)).to contain_exactly(patient_2.id)
   end
 
   it "contains records for patient BPs" do
