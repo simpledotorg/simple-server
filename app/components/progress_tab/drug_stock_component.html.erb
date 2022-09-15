@@ -10,7 +10,9 @@
       <%= protocol_drug_labels[category][:full] %>
     </h3>
     <p class="m-0px mb-16px p-0px ta-left fw-regular fs-16px lh-150 <%= patient_days_css_class(patient_days, prefix: "c") %>">
-      <%= patient_days %> days of drug stock
+      <% unless patient_days == "error" %>
+        <%= patient_days %> days of drug stock
+      <%end %>
     </p>
     <% drugs.each_with_index do |drug, index| %>
       <% drug_stock = drug_stocks_query.drugs_in_stock_by_facility_id.dig([current_facility.id, drug.rxnorm_code]) %>
