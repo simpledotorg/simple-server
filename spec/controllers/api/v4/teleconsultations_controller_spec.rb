@@ -3,11 +3,6 @@ require "rails_helper"
 RSpec.describe Api::V4::TeleconsultationsController, type: :controller do
   let(:request_user) { create(:user, teleconsultation_facilities: [create(:facility)]) }
   let(:request_facility) { create(:facility, facility_group: request_user.facility.facility_group) }
-  before :each do
-    request.env["X_USER_ID"] = request_user.id
-    request.env["X_FACILITY_ID"] = request_facility.id
-    request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
-  end
 
   let(:model) { Teleconsultation }
 
@@ -43,7 +38,7 @@ RSpec.describe Api::V4::TeleconsultationsController, type: :controller do
     end
 
     it "does not allow sync_from_user requests to the controller with invalid user_id and access_token" do
-      request.env["X_USER_ID"] = "invalid user id"
+      request.env["HTTP_X_USER_ID"] = "invalid user id"
       request.env["HTTP_AUTHORIZATION"] = "invalid access token"
       post :sync_from_user, params: empty_payload
 

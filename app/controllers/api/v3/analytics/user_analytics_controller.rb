@@ -27,6 +27,10 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
       @drugs_by_category = @drug_stocks_query.protocol_drugs_by_category
     end
 
+    @period_reports_data = Reports::ReportsFakeFacilityProgressService.new(@current_facility.name).period_reports
+    @hypertension_reports_data = Reports::ReportsFakeFacilityProgressService.new(@current_facility.name).hypertension_reports
+    @diabetes_reports_data = Reports::ReportsFakeFacilityProgressService.new(@current_facility.name).diabetes_reports
+
     respond_to do |format|
       if Flipper.enabled?(:new_progress_tab_v2, current_user) || Flipper.enabled?(:new_progress_tab_v2)
         format.html { render :show_v2 }

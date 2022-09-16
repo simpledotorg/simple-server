@@ -2,13 +2,16 @@ class CallResult < ApplicationRecord
   include Mergeable
   belongs_to :appointment, optional: true
   belongs_to :user
-  has_one :patient, through: :appointment
+  belongs_to :patient, optional: true
+  belongs_to :facility, optional: true
 
   validate :remove_reason_present_if_removed_from_overdue_list
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
   validates :result_type, presence: true
   validates :appointment_id, presence: true
+
+  scope :for_sync, -> { with_discarded }
 
   enum result_type: {
     agreed_to_visit: "agreed_to_visit",

@@ -42,6 +42,8 @@ describe Patient, type: :model do
     it { is_expected.to have_many(:encounters) }
     it { is_expected.to have_many(:observations).through(:encounters) }
 
+    it { is_expected.to have_many(:call_results) }
+
     it { is_expected.to belong_to(:address).optional }
     it { is_expected.to belong_to(:registration_facility).class_name("Facility").optional }
     it { is_expected.to belong_to(:registration_user).class_name("User") }

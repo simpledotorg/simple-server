@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Reports::ProgressControlComponentV1 < ViewComponent::Base
+class ProgressTab::Hypertension::ControlComponent < ApplicationComponent
   include AssetsHelper
   include ActionView::Helpers::NumberHelper
 
@@ -14,7 +14,8 @@ class Reports::ProgressControlComponentV1 < ViewComponent::Base
   end
 
   def render?
-    Flipper.enabled?(:new_progress_tab_v1, current_user) || Flipper.enabled?(:new_progress_tab_v1)
+    Flipper.enabled?(:new_progress_tab_v2, current_user) || Flipper.enabled?(:new_progress_tab_v2) ||
+      Flipper.enabled?(:new_progress_tab_v1, current_user) || Flipper.enabled?(:new_progress_tab_v1)
   end
 
   def control_summary
