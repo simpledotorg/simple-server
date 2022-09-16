@@ -7,7 +7,7 @@ class Messaging::AlphaSms::Api
   }
 
   def initialize
-    unless api_key
+    if api_key.blank?
       raise Messaging::AlphaSms::Error.new("Missing Alpha SMS credentials")
     end
   end
