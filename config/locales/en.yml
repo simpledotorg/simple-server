@@ -50,58 +50,58 @@ en:
     unrequested_html: 'If you did not request this or have questions, please immediately reply to <a href="mailto:help@simple.org">help@simple.org</a>'
   bp_controlled_copy:
     reports_card_subtitle: "Hypertension patients with BP <140/90 at their last visit in the last 3 months"
-    numerator: "Patients with BP <140/90 at their last visit in the last 3 months."
+    numerator: "Patients with BP <140/90 at their last visit in the last 3 months"
   bp_not_controlled_copy:
     reports_card_subtitle: "Hypertension patients with BP ≥140/90 at their last visit in the last 3 months"
-    numerator: "Patients with BP ≥140/90 at their last visit in the last 3 months."
+    numerator: "Patients with BP ≥140/90 at their last visit in the last 3 months"
   bs_below_200_copy:
     reports_card_subtitle: "Diabetes patients in %{region_name} with blood sugar <200 at their last visit in the last 3 months"
-    numerator: "Patients with RBS/PPBS <200, FBS <126, or HbA1c <7.0 at their last visit in the last 3 months."
+    numerator: "Patients with RBS/PPBS <200, FBS <126, or HbA1c <7.0 at their last visit in the last 3 months"
     rbs_ppbs:
-      numerator: "Patients with RBS/PPBS <200 at their last visit in the last 3 months."
+      numerator: "Patients with RBS/PPBS <200 at their last visit in the last 3 months"
     fasting:
-      numerator: "Patients with FBS <126 at their last visit in the last 3 months."
+      numerator: "Patients with FBS <126 at their last visit in the last 3 months"
     hba1c:
-      numerator: "Patients with HbA1c <7.0 at their last visit in the last 3 months."
+      numerator: "Patients with HbA1c <7.0 at their last visit in the last 3 months"
   bs_over_200_copy:
     reports_card_subtitle: "Diabetes patients in %{region_name} with blood sugar 200-299 or blood sugar ≥300 at their last visit in the last 3 months"
     bs_200_to_299:
-      numerator: "Patients with RBS/PPBS 200-299, FBS 126-199, or HbA1c 7.0-8.9 at their last visit in the last 3 months."
+      numerator: "Patients with RBS/PPBS 200-299, FBS 126-199, or HbA1c 7.0-8.9 at their last visit in the last 3 months"
       rbs_ppbs:
-        numerator: "Patients with RBS/PPBS 200-299 at their last visit in the last 3 months."
+        numerator: "Patients with RBS/PPBS 200-299 at their last visit in the last 3 months"
       fasting:
-        numerator: "Patients with FBS 126-199 at their last visit in the last 3 months."
+        numerator: "Patients with FBS 126-199 at their last visit in the last 3 months"
       hba1c:
-        numerator: "Patients with HbA1c 7.0-8.9 at their last visit in the last 3 months."
+        numerator: "Patients with HbA1c 7.0-8.9 at their last visit in the last 3 months"
     bs_over_300:
-      numerator: "Patients with RBS/PPBS ≥300, FBS ≥200, or HbA1c ≥9.0 at their last visit in the last 3 months."
+      numerator: "Patients with RBS/PPBS ≥300, FBS ≥200, or HbA1c ≥9.0 at their last visit in the last 3 months"
       rbs_ppbs:
-        numerator: "Patients with RBS/PPBS ≥300 at their last visit in the last 3 months."
+        numerator: "Patients with RBS/PPBS ≥300 at their last visit in the last 3 months"
       fasting:
-        numerator: "Patients with FBS ≥200 at their last visit in the last 3 months."
+        numerator: "Patients with FBS ≥200 at their last visit in the last 3 months"
       hba1c:
-        numerator: "Patients with HbA1c ≥9.0 at their last visit in the last 3 months."
+        numerator: "Patients with HbA1c ≥9.0 at their last visit in the last 3 months"
   missed_visits_copy:
     reports_card_subtitle: "Hypertension patients with no visit in the last 3 months"
-    numerator: "Patients with no visit in the last 3 months."
+    numerator: "Patients with no visit in the last 3 months"
   diabetes_missed_visits_copy:
     reports_card_subtitle: "Diabetes patients in %{region_name} with no visit in the last 3 months"
-    numerator: "Patients with no visit in the last 3 months."
+    numerator: "Patients with no visit in the last 3 months"
     denominator: "Diabetes patients assigned to %{region_name}, registered before the last 3 months. Dead and lost to follow-up patients are excluded."
   bs_measurement_details_copy:
     reports_card_subtitle: "Blood sugar measurements for diabetes patients in %{region_name} registered before %{period_registered} with a blood sugar taken between %{period_start} to %{period_end}"
     numerator: "The number of blood sugar measurements, broken down by measurement type, for treatment outcomes of diabetes patients under care with a blood sugar taken on the last visit within the last 3 months. "
     assigned_patients_with_bs_measurement: "Diabetes patients assigned to %{region_name} who had a Blood sugar measurement in the last 3 months. Dead and lost to follow-up patients are excluded."
   visit_but_no_bp_taken_copy:
-    numerator: "Patients with no BP taken at their last visit in the last 3 months."
+    numerator: "Patients with no BP taken at their last visit in the last 3 months"
   visit_but_no_bs_taken_copy:
-    numerator: "Patients with no blood sugar taken at their last visit in the last 3 months."
+    numerator: "Patients with no blood sugar taken at their last visit in the last 3 months"
   lost_to_follow_up_copy:
-    reports_card_subtitle: "Hypertension patients with no visit in the last 12 months."
-    numerator: "Patients with no visit in the last 12 months."
+    reports_card_subtitle: "Hypertension patients with no visit in the last 12 months"
+    numerator: "Patients with no visit in the last 12 month"
   diabetes_lost_to_follow_up_copy:
-    reports_card_subtitle: "Diabetes patients with no visit in the last 12 months."
-    numerator: "Patients with no visit in the last 12 months."
+    reports_card_subtitle: "Diabetes patients with no visit in the last 12 months"
+    numerator: "Patients with no visit in the last 12 months"
   registered_patients_copy:
     reports_card_subtitle: "Monthly and total hypertension patients registered in %{region_name}"
     monthly_registered_patients: "Hypertension patients registered during a month in %{region_name}."
@@ -110,35 +110,35 @@ en:
     reports_card_subtitle: "Monthly and total diabetes patient registrations and follow-up visits in %{region_name}"
     monthly_registered_patients: "Diabetes patients registered during a month in %{region_name}."
     total_registered_patients: "Total diabetes patients registered in %{region_name}"
-    monthly_followup_patients: "Diabetes patients with a BP measure taken, a blood sugar measure taken, an appointment scheduled, or their medications refilled during a month in %{region_name}."
+    monthly_followup_patients: "Diabetes patients with a BP measure taken, a blood sugar measure taken, an appointment scheduled, or their medications refilled during a month in %{region_name}"
   assigned_patients_copy:
     total_assigned_patients: "Hypertension patients assigned to %{region_name}. Dead patients are excluded."
   diabetes_assigned_patients_copy:
     total_assigned_patients: "Diabetes patients assigned to %{region_name}. Dead patients are excluded."
   call_results_copy:
-    monthly_overdue_calls_made: "The number of calls made to overdue diabetes and hypertension patients in a month."
+    monthly_overdue_calls_made: "The number of calls made to overdue diabetes and hypertension patients in a month"
   denominator_copy: "Hypertension patients assigned to %{region_name}, registered before the last 3 months. Dead and lost to follow-up patients are excluded."
   denominator_with_ltfu_copy: "Hypertension patients assigned to %{region_name}, registered before the last 3 months. Dead patients are excluded."
   diabetes_denominator_copy: "Diabetes patients assigned to %{region_name}, registered before the last 3 months. Dead and lost to follow-up patients are excluded."
   diabetes_denominator_with_ltfu_copy: "Diabetes patients assigned to %{region_name}, registered before the last 3 months. Dead patients are excluded."
   ltfu_denominator_copy: "Hypertension patients assigned to %{region_name}. Dead patients are excluded."
   diabetes_ltfu_denominator_copy: "Diabetes patients assigned to %{region_name}. Dead patients are excluded."
-  follow_up_patients_copy: "Hypertension patients with a BP measure taken, a blood sugar taken, an appointment scheduled, or their medications refilled during a month in %{region_name}."
-  diabetes_follow_up_patients_copy: "Diabetes patients with a BP measure taken, a blood sugar taken, an appointment scheduled, or their medications refilled during a month in %{region_name}."
-  patients_under_care_copy: "Hypertension patients with a visit in the last 12 months."
-  diabetes_patients_under_care_copy: "Diabetes patients with a visit in the last 12 months."
-  bp_measures_taken_copy: "All BP measures taken in a month by healthcare workers at %{region_name}."
-  bs_measures_taken_copy: "All blood sugar measurements taken in a month by healthcare workers at %{region_name}."
-  hypertension_patient_coverage_copy: "Total registered patients diagnosed with hypertension divided by the region's estimated hypertensive population."
-  diabetes_patient_coverage_copy: "Total registered patients diagnosed with diabetes divided by the region's estimated diabetic population."
+  follow_up_patients_copy: "Hypertension patients with a BP measure taken, a blood sugar taken, an appointment scheduled, or their medications refilled during a month in %{region_name}"
+  diabetes_follow_up_patients_copy: "Diabetes patients with a BP measure taken, a blood sugar taken, an appointment scheduled, or their medications refilled during a month in %{region_name}"
+  patients_under_care_copy: "Hypertension patients with a visit in the last 12 months"
+  diabetes_patients_under_care_copy: "Diabetes patients with a visit in the last 12 months"
+  bp_measures_taken_copy: "All BP measures taken in a month by healthcare workers at %{region_name}"
+  bs_measures_taken_copy: "All blood sugar measurements taken in a month by healthcare workers at %{region_name}"
+  hypertension_patient_coverage_copy: "Total registered patients diagnosed with hypertension divided by the region's estimated hypertensive population"
+  diabetes_patient_coverage_copy: "Total registered patients diagnosed with diabetes divided by the region's estimated diabetic population"
   total_estimated_hypertensive_population:
-    district_copy: "The approximate number of people in %{region_name} with hypertension."
+    district_copy: "The approximate number of people in %{region_name} with hypertension"
     state_copy: "The sum of %{region_name}'s %{child_region_type} populations entered on the Dashboard. This number is only displayed if all %{child_region_type_plural} have a population."
   total_estimated_diabetic_population:
-    district_copy: "The approximate number of people in %{region_name} with diabetes."
+    district_copy: "The approximate number of people in %{region_name} with diabetes"
     state_copy: "The sum of %{region_name}'s %{child_region_type} populations entered on the Dashboard. This number is only displayed if all %{child_region_type_plural} have a population."
   medications_dispensation_copy:
-    numerator: "Number of days until a patient's next scheduled appointment."
+    numerator: "Number of days until a patient's next scheduled appointment"
     denominator: "Total appointments scheduled for follow-up patients during a month."
 
   progress_tab:
@@ -237,7 +237,7 @@ en:
         missed_visits_card:
           subtitle: "%{diagnosis} patients at %{facility_name} registered >3 months ago with no visit in the last 3 months."
           help_tooltip:
-            numerator: "%{diagnosis} patients with no visit in the last 3 months."
+            numerator: "%{diagnosis} patients with no visit in the last 3 months"
             denominator: "%{diagnosis} patients assigned to %{facility_name}, registered before the last 3 months. Dead and lost to follow-up patients are excluded."
       drug_stock_report:
         section_title: "Drug stock report"
