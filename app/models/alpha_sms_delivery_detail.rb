@@ -17,11 +17,12 @@ class AlphaSmsDeliveryDetail < DeliveryDetail
     #  Fill this in based on request_status
   end
 
-  def self.create_with_communication!(request_id:, recipient_number:)
+  def self.create_with_communication!(request_id:, recipient_number:, message:)
     ActiveRecord::Base.transaction do
       delivery_detail = create!(
         message_id: request_id,
-        recipient_number: recipient_number
+        recipient_number: recipient_number,
+        message: message
       )
 
       Communication.create!(
