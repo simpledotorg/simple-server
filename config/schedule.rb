@@ -95,18 +95,18 @@ end
 every :day, at: local("04:00 am"), roles: [:cron] do
   runner "Reports::RegionCacheWarmer.call"
 end
-#
-# every 1.month, at: local("04:00 am"), roles: [:cron] do
-#   if Flipper.enabled?(:dhis2_export)
-#     rake "dhis2:export"
-#   end
-# end
-#
-# every :day, at: local("04:00 am"), roles: [:cron] do
-#   if Flipper.enabled?(:maharashtra_dhis2_export)
-#     rake "dhis2:maharashtra_export"
-#   end
-# end
+
+every 1.month, at: local("04:00 am"), roles: [:cron] do
+  if Flipper.enabled?(:dhis2_export)
+    rake "dhis2:export"
+  end
+end
+
+every :day, at: local("04:00 am"), roles: [:cron] do
+  if Flipper.enabled?(:maharashtra_dhis2_export)
+    rake "dhis2:maharashtra_export"
+  end
+end
 
 every :day, at: local("05:00 am"), roles: [:cron] do
   runner "DuplicatePassportAnalytics.call"
