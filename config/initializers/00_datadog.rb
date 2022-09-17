@@ -13,7 +13,7 @@ Datadog.configure do |c|
   c.tracing.instrument :rack, headers: {request: %w[X-USER-ID X-FACILITY-ID X-SYNC-REGION-ID X-APP-VERSION], response: %w[Content-Type X-Request-ID]}
   c.tracing.instrument :rake
   c.tracing.instrument :rails, analytics_enabled: true
-  c.tracing.instrument :sidekiq, analytics_enabled: true, analytics_sample_rate: 0.005
+  c.tracing.instrument :sidekiq, analytics_enabled: true, service_name: "sidekiq", analytics_sample_rate: 0.005
 end
 
 require "statsd"
