@@ -9,7 +9,7 @@ module Seed
     include ActionView::Helpers::NumberHelper
     include ConsoleLogger
     SIZES = Facility.facility_sizes
-    SUMMARY_COUNTS = [:patient, :blood_pressure, :blood_sugar, :appointment, :facility, :facility_group]
+    SUMMARY_COUNTS = [:patient, :blood_pressure, :blood_sugar, :appointment, :facility, :facility_group, :prescription_drug]
 
     attr_reader :config
     attr_reader :logger
@@ -41,6 +41,9 @@ module Seed
       total_counts[:facility] = result&.ids&.size || 0
       UserSeeder.call(config: config)
       seed_drug_stocks
+
+      ProtocolSeeder.call(config: config)
+      Seed::DrugLookupTablesSeeder.truncate_and_import
 
       announce "Starting to seed patient data for #{Facility.count} facilities..."
 
@@ -97,6 +100,9 @@ module Seed
             appt_result = create_appts(patient_info, facility: facility, user_ids: registration_user_ids)
             result[:appointment] = appt_result.ids.size
           end
+          prescription_drugs_result = PrescriptionDrugSeeder.call(config: config, facility: facility, user_ids: registration_user_ids)
+          result.merge!(prescription_drugs_result) { |key, count1, count2| count1 + count2 }
+
           result
         }
         results.concat batch_result
