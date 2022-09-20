@@ -183,8 +183,6 @@ SELECT
     rf.block_region_id,
     rf.district_region_id,
     rf.state_region_id,
-    daily_registered_patients.visit_date,
-    daily_registered_patients.day_of_year,
     daily_follow_ups.visit_date,
     daily_follow_ups.day_of_year,
 
