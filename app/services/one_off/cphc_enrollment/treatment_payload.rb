@@ -1,4 +1,4 @@
-class CPHCEnrollment::TreatmentPayload
+class OneOff::CPHCEnrollment::TreatmentPayload
   attr_reader :blood_pressure, :encounter_id, :patient, :prescription_drugs, :appointment
 
   def initialize(blood_pressure, prescription_drugs, appointment, encounter_id)

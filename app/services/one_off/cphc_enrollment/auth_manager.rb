@@ -1,6 +1,6 @@
 require "selenium-webdriver"
 
-class CPHCEnrollment::AuthManager
+class OneOff::CPHCEnrollment::AuthManager
   attr_reader :auth_token, :is_authorized
 
   CPHC_API_USER_ID = "deo_h_174".freeze

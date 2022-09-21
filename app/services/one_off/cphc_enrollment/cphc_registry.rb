@@ -1,4 +1,4 @@
-class CPHCEnrollment::CPHCRegistry
+class OneOff::CPHCEnrollment::CPHCRegistry
   attr_reader :registry
 
   def initialize

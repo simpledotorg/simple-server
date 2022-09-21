@@ -1,4 +1,4 @@
-class CPHCEnrollment::BloodSugarPayload
+class OneOff::CPHCEnrollment::BloodSugarPayload
   attr_reader :blood_sugar
 
   def initialize(blood_sugar)

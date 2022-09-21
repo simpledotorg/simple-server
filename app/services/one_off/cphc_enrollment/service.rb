@@ -1,4 +1,4 @@
-class CPHCEnrollment::Service
+class OneOff::CPHCEnrollment::Service
   CPHC_BASE_PATH = "https://ncd-staging.nhp.gov.in/cphm"
   CPHC_ENROLLMENT_PATH = "#{CPHC_BASE_PATH}/enrollment/individual"
 

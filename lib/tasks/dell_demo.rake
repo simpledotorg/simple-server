@@ -1,3 +1,6 @@
+require "./lib/tasks/scripts/cphc_enrollment"
+require "./lib/tasks/scripts/cphc_enrollment/demo"
+
 namespace :dell_demo do
   desc 'Take a batch of patients from Simple Server
         and push them to the Dell NCD staging server through the Enrollment API'
@@ -168,5 +171,13 @@ namespace :dell_demo do
         raise err
       end
     end
+  end
+
+  desc "CPHC Migrion Demo"
+  task migration_demo: :environment do
+    count = 500
+    offset = 0
+
+    CPHCEnrollment::Demo.new.start(count, offset)
   end
 end
