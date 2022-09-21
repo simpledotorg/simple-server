@@ -1,5 +1,5 @@
 class OneOff::CPHCEnrollment::Service
-  CPHC_BASE_PATH = "https://ncd-staging.nhp.gov.in/cphm"
+  CPHC_BASE_PATH = "#{ENV["CPHC_BASE_URL"]}/cphm"
   CPHC_ENROLLMENT_PATH = "#{CPHC_BASE_PATH}/enrollment/individual"
 
   CONFIG = {
@@ -12,20 +12,20 @@ class OneOff::CPHCEnrollment::Service
   }
 
   attr_reader :patient
-  attr_reader :auth_manager
+  attr_reader :user
   attr_reader :individual_id
   attr_reader :hypertension_examination_id
   attr_reader :diabetes_examination_id
 
-  def initialize
-    @auth_manager = CPHCEnrollment::AuthManager.new
+  def initialize(patient, user)
+    @patient = patient
+    @user = user
     @individual_id = nil
     @hypertension_examination_id = nil
     @diabetes_examination_id = nil
   end
 
-  def call(patient)
-    @patient = patient
+  def call
     enroll_patient
     patient.encounters.each do |encounter|
       add_encounter(encounter)
@@ -34,7 +34,7 @@ class OneOff::CPHCEnrollment::Service
   end
 
   def enroll_patient
-    response = make_post_request(CPHC_ENROLLMENT_PATH, CPHCEnrollment::EnrollmentPayload.new(patient))
+    response = make_post_request(CPHC_ENROLLMENT_PATH, OneOff::CPHCEnrollment::EnrollmentPayload.new(patient))
     @individual_id = JSON.parse(response.body)["individualId"]
   end
 
@@ -67,7 +67,7 @@ class OneOff::CPHCEnrollment::Service
   def add_blood_pressure(blood_pressure)
     response = make_post_request(
       measurement_path(:hypertension, hypertension_examination_id),
-      CPHCEnrollment::BloodPressurePayload.new(blood_pressure)
+      OneOff::CPHCEnrollment::BloodPressurePayload.new(blood_pressure)
     )
     measurement_id = JSON.parse(response.body)["encounterId"]
     encounter_date = blood_pressure.device_created_at.to_date
@@ -88,12 +88,12 @@ class OneOff::CPHCEnrollment::Service
 
     make_post_request(
       diagnosis_path(:hypertension, hypertension_examination_id),
-      CPHCEnrollment::HypertensionDiagnosisPayload.new(blood_pressure, measurement_id)
+      OneOff::CPHCEnrollment::HypertensionDiagnosisPayload.new(blood_pressure, measurement_id)
     )
 
     make_post_request(
       treatment_path(:hypertension, hypertension_examination_id),
-      CPHCEnrollment::TreatmentPayload.new(
+      OneOff::CPHCEnrollment::TreatmentPayload.new(
         blood_pressure,
         prescription_drugs,
         appointment,
@@ -103,29 +103,24 @@ class OneOff::CPHCEnrollment::Service
   end
 
   def add_blood_sugar(blood_sugar)
-    facility_type_id = CPHCEnrollment::FACILITY_TYPE_ID["DH"]
+    facility_type_id = OneOff::CPHCEnrollment::FACILITY_TYPE_ID["DH"]
     response = make_post_request(
       measurement_path(:diabetes, diabetes_examination_id, facility_type_id),
-      CPHCEnrollment::BloodSugarPayload.new(blood_sugar)
+      OneOff::CPHCEnrollment::BloodSugarPayload.new(blood_sugar)
     )
 
     measurement_id = JSON.parse(response.body)["encounterId"]
 
     make_post_request(
       diagnosis_path(:diabetes, diabetes_examination_id, facility_type_id),
-      CPHCEnrollment::DiabetesDiagnosisPayload.new(blood_sugar, measurement_id)
+      OneOff::CPHCEnrollment::DiabetesDiagnosisPayload.new(blood_sugar, measurement_id)
     )
   end
 
   def make_post_request(path, payload)
-    unless auth_manager.is_authorized
-      auth_manager.sign_in(auto_fill: true)
-      return make_post_request(path, payload)
-    end
-
-    response = CPHCEnrollment::Request.new(
+    response = OneOff::CPHCEnrollment::Request.new(
       path: path,
-      user: auth_manager.user,
+      user: user,
       payload: payload
     ).post
 

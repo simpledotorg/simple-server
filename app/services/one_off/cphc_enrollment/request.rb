@@ -1,6 +1,6 @@
 require "http"
 
-class CPHCEnrollment::Request
+class OneOff::CPHCEnrollment::Request
   attr_reader :path, :user, :payload
 
   def initialize(path:, user:, payload:)

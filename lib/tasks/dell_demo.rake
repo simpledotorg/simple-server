@@ -1,6 +1,3 @@
-require "./lib/tasks/scripts/cphc_enrollment"
-require "./lib/tasks/scripts/cphc_enrollment/demo"
-
 namespace :dell_demo do
   desc 'Take a batch of patients from Simple Server
         and push them to the Dell NCD staging server through the Enrollment API'
@@ -175,9 +172,14 @@ namespace :dell_demo do
 
   desc "CPHC Migrion Demo"
   task migration_demo: :environment do
-    count = 500
+    count = 1000
     offset = 0
 
-    CPHCEnrollment::Demo.new.start(count, offset)
+    auth_manager = OneOff::CPHCEnrollment::AuthManager.new
+    auth_manager.sign_in(auto_fill: true)
+
+    Patient.all.limit(count).offset(offset).each do |patient|
+      CPHCMigrationJob.perform_later(patient, auth_manager.user)
+    end
   end
 end

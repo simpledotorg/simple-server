@@ -1,4 +1,4 @@
-class CPHCEnrollment::EnrollmentPayload
+class OneOff::CPHCEnrollment::EnrollmentPayload
   attr_reader :patient, :cphc_facility
 
   def initialize(patient)
@@ -7,16 +7,16 @@ class CPHCEnrollment::EnrollmentPayload
   end
 
   def cphc_location
-    {"district_id" => 10101,
-     "district_name" => "Kupwara",
-     "taluka_id" => 101003,
-     "taluka_name" => "Handwara",
-     "phc_id" => 1010006,
-     "phc_name" => "jk1phc2",
-     "subcenter_id" => 10100005,
-     "subcenter_name" => "jk1phc2sub2",
-     "village_id" => 101000008,
-     "village_name" => "jk1village1"}
+    {"district_id" => ENV["CPHC_DISTRICT_ID"],
+     "district_name" => ENV["CPHC_DISTRICT_NAME"],
+     "taluka_id" => ENV["CPHC_TALUKA_ID"],
+     "taluka_name" => ENV["CPHC_TALUKA_NAME"],
+     "phc_id" => ENV["CPHC_PHC_ID"],
+     "phc_name" => ENV["CPHC_PHC_NAME"],
+     "subcenter_id" => ENV["CPHC_SUBCENTER_ID"],
+     "subcenter_name" => ENV["CPHC_SUBCENTER_NAME"],
+     "village_id" => ENV["CPHC_VILLAGE_ID"],
+     "village_name" => ENV["CPHC_VILLAGE_NAME"]}
   end
 
   def facilities_hashes(file_name)
@@ -53,10 +53,10 @@ class CPHCEnrollment::EnrollmentPayload
           enrollmentDate: patient.recorded_at.strftime("%d-%m-%Y"),
 
           # Consent to get sms from NCD Program
-          smsConsentNcd: patient.reminder_consent_granted?, # TODO: Check if we want to send this
+          smsConsentNcd: patient.reminder_consent_granted?,
 
           # Consent to get sms from MHealth Program
-          smsConsentMProg: false # TODO: Do we have this? Is this always true?
+          smsConsentMProg: false
         }
       },
       familyInfo: {
@@ -65,14 +65,14 @@ class CPHCEnrollment::EnrollmentPayload
           idOtherVal: bp_passport_id
         },
         addressInfo: {
-          addressDetails: "Street Details: #{patient.address.street_address}",
+          addressDetails: "Street Details: #{patient.address.street_address} #{patient.address.village_or_colony}",
           subcenterName: cphc_location["subcenter_name"],
           subcenterId: cphc_location["subcenter_id"],
           village: cphc_location["village_name"],
           villageId: cphc_location["village_id"],
           phc: cphc_location["phc_name"],
           phcId: cphc_location["phc_id"],
-          villageOther: nil # TODO: Use if village not present in the cphc facility dump
+          villageOther: nil
         }
       }
     }

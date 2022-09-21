@@ -24,9 +24,9 @@ class OneOff::CPHCEnrollment::BloodSugarPayload
       {"ppbg" => value.to_i,
        :mthdOfBldTstPpbgCapillaryVenous => "ppbgCapillary"}
     when :fasting
-      {"fbs" => value.to_i}
+      {"fbs" => value.to_s}
     when :hba1c
-      {"hba1c" => value.to_f}
+      {"hba1c" => value.to_s}
     else
       throw "Unknown blood sugar type #{blood_sugar.blood_sugar_type}"
     end

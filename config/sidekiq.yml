@@ -1,9 +1,10 @@
-:concurrency: 15
+:concurrency: 3
 :pidfile: ./tmp/pids/sidekiq.pid
 :logfile: ./log/sidekiq.log
 
 :queues:
   - [tracer, 4]
+  - [cphc_migration, 4]
   - [high, 3]
   - [default, 2]
   - [low, 1]

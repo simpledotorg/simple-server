@@ -3,10 +3,10 @@ require "selenium-webdriver"
 class OneOff::CPHCEnrollment::AuthManager
   attr_reader :auth_token, :is_authorized
 
-  CPHC_API_USER_ID = "deo_h_174".freeze
-  CPHC_API_PASSWORD = "Password@123".freeze
-  CPHC_USER_STATE_CODE = 100
-  CPHC_SIGN_IN_URL = "https://ncd-staging.nhp.gov.in/#/login".freeze
+  CPHC_API_USER_ID = ENV["CPHC_API_USER_ID"]
+  CPHC_API_PASSWORD = ENV["CPHC_API_PASSWORD"]
+  CPHC_USER_STATE_CODE = ENV["CPHC_USER_STATE_CODE"]
+  CPHC_SIGN_IN_URL = "#{ENV["CPHC_BASE_URL"]}/#/login"
 
   def initialize
     @auth_token = nil
@@ -35,7 +35,7 @@ class OneOff::CPHCEnrollment::AuthManager
 
   def user
     {user_id: CPHC_API_USER_ID,
-     facility_type_id: CPHCEnrollment::FACILITY_TYPE_ID["DH"],
+     facility_type_id: OneOff::CPHCEnrollment::FACILITY_TYPE_ID["DH"],
      state_code: CPHC_USER_STATE_CODE,
      user_authorization: "Bearer #{auth_token}"}
   end
