@@ -11,7 +11,7 @@ class Messaging::AlphaSms::Error < Messaging::Error
                         416 => :invalid_phone_number,
                         417 => :balance_error}
 
-    def initialize(message, error_code=nil)
+  def initialize(message, error_code = nil)
     @message = "Error while calling Alpha SMS API: #{message}"
     @reason = ERROR_CODE_REASONS[error_code]
   end
