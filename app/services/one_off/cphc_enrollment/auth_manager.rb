@@ -8,9 +8,9 @@ class OneOff::CPHCEnrollment::AuthManager
   CPHC_USER_STATE_CODE = ENV["CPHC_USER_STATE_CODE"]
   CPHC_SIGN_IN_URL = "#{ENV["CPHC_BASE_URL"]}/#/login"
 
-  def initialize
-    @auth_token = nil
-    @is_authorized = false
+  def initialize(auth_token: nil)
+    @auth_token = auth_token
+    @is_authorized = auth_token.present?
   end
 
   def sign_in(auto_fill: false)
@@ -35,7 +35,7 @@ class OneOff::CPHCEnrollment::AuthManager
 
   def user
     {user_id: CPHC_API_USER_ID,
-     facility_type_id: OneOff::CPHCEnrollment::FACILITY_TYPE_ID["DH"],
+     facility_type_id: ENV["CPHC_FACILITY_TYPE_ID"],
      state_code: CPHC_USER_STATE_CODE,
      user_authorization: "Bearer #{auth_token}"}
   end

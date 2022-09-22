@@ -172,8 +172,13 @@ namespace :dell_demo do
 
   desc "CPHC Migrion Demo"
   task :migration_demo, [:facility_id] => :environment do |_t, args|
-    auth_manager = OneOff::CPHCEnrollment::AuthManager.new
-    auth_manager.sign_in(auto_fill: true)
+    auth_token = ENV["CPHC_AUTH_TOKEN"]
+    if auth_token.present?
+      OneOff::CPHCEnrollment::AuthManager.new(auth_token: auth_token)
+    else
+      OneOff::CPHCEnrollment::AuthManager.new
+      auth_manager.sign_in(auto_fill: true)
+    end
 
     Patient.where(assigned_facility_id: Facility.find(args[:facility_id])).each do |patient|
       CPHCMigrationJob.perform_later(patient, auth_manager.user)
