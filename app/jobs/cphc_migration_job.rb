@@ -1,10 +1,7 @@
 class CPHCMigrationJob < ApplicationJob
   queue_as :cphc_migration
 
-  def perform(patient_id, user_id)
-    OneOff::CPHCEnrollment::Service.new(
-      Patient.find(patient_id),
-      User.find(user_id)
-    ).call
+  def perform(patient, user)
+    OneOff::CPHCEnrollment::Service.new(patient, user).call
   end
 end
