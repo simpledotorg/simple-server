@@ -12,7 +12,7 @@ class OneOff::CPHCEnrollment::Request
   def post
     HTTP.headers(headers)
       .auth(user[:user_authorization])
-      .post(path, json: payload.as_json)
+      .post(path, json: payload.payload_as_json)
   end
 
   def headers

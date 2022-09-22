@@ -38,7 +38,7 @@ class OneOff::CPHCEnrollment::EnrollmentPayload
     end
   end
 
-  def as_json
+  def payload_as_json
     bp_passport_id = patient.business_identifiers.where(identifier_type: :simple_bp_passport).order(device_created_at: :desc).first&.identifier
     phone_number = patient.phone_numbers.first&.number
     {

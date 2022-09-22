@@ -5,7 +5,7 @@ class OneOff::CPHCEnrollment::BloodPressurePayload
     @blood_pressure = blood_pressure
   end
 
-  def as_json
+  def payload_as_json
     {
       "isVitalsEdited" => true,
       "exam" => {
