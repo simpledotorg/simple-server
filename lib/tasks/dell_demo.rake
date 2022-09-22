@@ -171,14 +171,11 @@ namespace :dell_demo do
   end
 
   desc "CPHC Migrion Demo"
-  task migration_demo: :environment do
-    count = 1000
-    offset = 0
-
+  task :migration_demo, [:facility_id] => :environment do |_t, args|
     auth_manager = OneOff::CPHCEnrollment::AuthManager.new
     auth_manager.sign_in(auto_fill: true)
 
-    Patient.all.limit(count).offset(offset).each do |patient|
+    Patient.where(assigned_facility_id: Facility.find(args[:facility_id])).each do |patient|
       CPHCMigrationJob.perform_later(patient, auth_manager.user)
     end
   end

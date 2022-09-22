@@ -11,8 +11,6 @@ class OneOff::CPHCEnrollment::TreatmentPayload
 
   def as_json
     medical_history = patient.medical_history
-    encounter_date = blood_pressure.device_created_at.to_date
-    range = encounter_date.beginning_of_day..encounter_date.end_of_day
 
     treatment_date = blood_pressure.recorded_at.strftime("%d-%m-%Y")
 

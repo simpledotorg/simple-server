@@ -40,6 +40,7 @@ class OneOff::CPHCEnrollment::EnrollmentPayload
 
   def as_json
     bp_passport_id = patient.business_identifiers.where(identifier_type: :simple_bp_passport).order(device_created_at: :desc).first.id
+    phone_number = patient.phone_numbers.first&.number
     {
       individualInfo: {
         name: patient.full_name,
@@ -48,7 +49,7 @@ class OneOff::CPHCEnrollment::EnrollmentPayload
         gender: gender,
 
         # The enrollment API require patient phone numbers to be 10 digits long
-        mobileNumber: patient.phone_numbers.first&.number.delete(" ").reverse[0..9].reverse,
+        mobileNumber: phone_number && phone_number.delete(" ").reverse[0..9].reverse,
         additionalDetails: {
           enrollmentDate: patient.recorded_at.strftime("%d-%m-%Y"),
 
