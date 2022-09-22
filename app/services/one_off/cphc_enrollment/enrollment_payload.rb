@@ -39,7 +39,7 @@ class OneOff::CPHCEnrollment::EnrollmentPayload
   end
 
   def as_json
-    bp_passport_id = patient.business_identifiers.where(identifier_type: :simple_bp_passport).order(device_created_at: :desc).first.id
+    bp_passport_id = patient.business_identifiers.where(identifier_type: :simple_bp_passport).order(device_created_at: :desc).first&.id
     phone_number = patient.phone_numbers.first&.number
     {
       individualInfo: {
@@ -61,10 +61,7 @@ class OneOff::CPHCEnrollment::EnrollmentPayload
         }
       },
       familyInfo: {
-        additionalDetails: {
-          idOther: "ihci-bp-passport-id",
-          idOtherVal: bp_passport_id
-        },
+        **bp_passport_info(bp_passport_id),
         addressInfo: {
           addressDetails: "Street Details: #{patient.address.street_address} #{patient.address.village_or_colony}",
           subcenterName: cphc_location["subcenter_name"],
@@ -75,6 +72,17 @@ class OneOff::CPHCEnrollment::EnrollmentPayload
           phcId: cphc_location["phc_id"],
           villageOther: nil
         }
+      }
+    }
+  end
+
+  def bp_passport_info(bp_passport_id)
+    return {} if bp_passport_id.blank?
+
+    {
+      additionalDetails: {
+        idOther: "ihci-bp-passport-id",
+        idOtherVal: bp_passport_id
       }
     }
   end
