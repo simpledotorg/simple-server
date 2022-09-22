@@ -31,7 +31,7 @@
       <div class="card cohort">
         <h6>
           <%= cohort[:registered] %> <%= raw t("analytics.patient", count: cohort[:registered]) %>
-          <%= raw t("analytics.registered_in") %> <%= cohort[:patients_registered] %>
+          <%= raw t("analytics.registered_in") %> <%= cohort[:registration_period] %>
         </h6>
         <div style="font-size: 16px; margin: 8px 0 12px 0;">
           <%= raw t("analytics.result_from_last_visit_in") %> <%= cohort[:results_in] %>

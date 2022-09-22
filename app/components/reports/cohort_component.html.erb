@@ -26,7 +26,7 @@
           </h6>
           <p class="mb-2 fs-14px c-grey-dark c-print-black">
             <% unless cohort["registered"] == 0 %>
-              <%= number_with_delimiter(cohort["registered"]) %> <%= "patient".pluralize(cohort["registered"]) %> registered in <%= cohort["patients_registered"] %>
+              <%= number_with_delimiter(cohort["registered"]) %> <%= "patient".pluralize(cohort["registered"]) %> registered in <%= cohort["registration_period"] %>
             <% else %>
               <span class="fw-bold">
                 No data

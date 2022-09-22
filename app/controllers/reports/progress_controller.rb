@@ -27,6 +27,10 @@ class Reports::ProgressController < AdminController
       @drugs_by_category = @drug_stocks_query.protocol_drugs_by_category
     end
 
+    @period_reports_data = Reports::ReportsFakeFacilityProgressService.new(@current_facility.name).period_reports
+    @hypertension_reports_data = Reports::ReportsFakeFacilityProgressService.new(@current_facility.name).hypertension_reports
+    @diabetes_reports_data = Reports::ReportsFakeFacilityProgressService.new(@current_facility.name).diabetes_reports
+
     if Flipper.enabled?(:new_progress_tab_v2, @current_user) || Flipper.enabled?(:new_progress_tab_v2)
       render "api/v3/analytics/user_analytics/show_v2"
     elsif Flipper.enabled?(:new_progress_tab_v1, @current_user) || Flipper.enabled?(:new_progress_tab_v1)

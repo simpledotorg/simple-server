@@ -359,7 +359,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
       expect(response).to be_successful
       data = assigns(:cohort_data)
-      dec_cohort = data.find { |hsh| hsh["patients_registered"] == "Dec-2019" }
+      dec_cohort = data.find { |hsh| hsh["registration_period"] == "Dec-2019" }
       expect(dec_cohort["registered"]).to eq(1)
     end
 

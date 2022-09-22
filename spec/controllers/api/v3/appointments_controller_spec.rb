@@ -11,12 +11,6 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
   let(:update_payload) { ->(appointment) { updated_appointment_payload appointment } }
   let(:number_of_schema_errors_in_invalid_payload) { 2 }
 
-  before :each do
-    request.env["X_USER_ID"] = request_user.id
-    request.env["X_FACILITY_ID"] = request_facility.id
-    request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
-  end
-
   def create_record(options = {})
     facility = options[:facility] || create(:facility, facility_group: request_facility_group)
     patient = create(:patient, registration_facility: facility)
