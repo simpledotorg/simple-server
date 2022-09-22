@@ -1,13 +1,14 @@
 class AlphaSmsDeliveryDetail < DeliveryDetail
+  SUCCESSFUL_REQUEST_STATUS = "Sent"
   validates :request_id, presence: true
   validates :recipient_number, presence: true
 
   def unsuccessful?
-    request_status != "Sent"
+    request_status != SUCCESSFUL_REQUEST_STATUS
   end
 
   def successful?
-    request_status == "Sent"
+    request_status == SUCCESSFUL_REQUEST_STATUS
   end
 
   def in_progress?

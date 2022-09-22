@@ -2,7 +2,7 @@ class Messaging::AlphaSms::Api
   HOST = "api.sms.net.bd"
   URL_PATHS = {
     send_sms: "/sendsms",
-    request_report: "/report/request/",
+    request_report: "/report/request",
     user_balance: "/user/balance"
   }
 
