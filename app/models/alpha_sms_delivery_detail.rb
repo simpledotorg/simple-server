@@ -1,20 +1,17 @@
 class AlphaSmsDeliveryDetail < DeliveryDetail
   validates :request_id, presence: true
   validates :recipient_number, presence: true
-  # creation API: msg: "Request successfully submited"
-  # status API: msg: "Success"
-  #             data: request_status: "Complete"
 
   def unsuccessful?
-  #  Fill this in based on request_status
+    request_status != "Sent"
   end
 
   def successful?
-    #  Fill this in based on request_status
+    request_status == "Sent"
   end
 
   def in_progress?
-    #  Fill this in based on request_status
+    false
   end
 
   def self.create_with_communication!(request_id:, recipient_number:, message:)

@@ -49,10 +49,9 @@ RSpec.describe Messaging::AlphaSms::Sms do
     end
 
     it "calls the block passed to it with the communication created" do
-      mock_api = double("BsnlApiDouble")
+      mock_api = double("AlphaSmsApiDouble")
       allow(Messaging::AlphaSms::Api).to receive(:new).and_return(mock_api)
       allow(mock_api).to receive(:send_sms)
-      mock_message_id = "123456"
       allow(mock_api).to receive(:send_sms).and_return({"error" => 0,
                                                         "msg" => "Request successfully submitted",
                                                         "data" => {"request_id" => 1111111}})
