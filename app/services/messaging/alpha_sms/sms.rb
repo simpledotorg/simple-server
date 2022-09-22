@@ -25,7 +25,7 @@ class Messaging::AlphaSms::Sms < Messaging::Channel
 
   def raise_api_errors(response)
     error_code = response["error"]
-    if error_code.present?
+    if error_code.present? && !error_code.zero?
       raise Messaging::AlphaSms::Error.new(response["msg"], error_code)
     end
   end

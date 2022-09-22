@@ -20,7 +20,7 @@ class AlphaSmsDeliveryDetail < DeliveryDetail
   def self.create_with_communication!(request_id:, recipient_number:, message:)
     ActiveRecord::Base.transaction do
       delivery_detail = create!(
-        message_id: request_id,
+        request_id: request_id,
         recipient_number: recipient_number,
         message: message
       )
