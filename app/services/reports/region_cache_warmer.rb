@@ -36,7 +36,6 @@ module Reports
         Region::REGION_TYPES.reject { |t| t == "root" }.each do |region_type|
           Datadog.tracer.trace("region_cache_warmer.warm_repository_cache", resource: region_type) do |span|
             Region.public_send("#{region_type}_regions").find_in_batches do |batch|
-              warm_patient_breakdown_caches(batch)
               warm_repository_caches(batch)
             end
             Statsd.instance.flush
@@ -52,15 +51,6 @@ module Reports
       repo = Repository.new(regions, periods: range)
       repo.warm_cache
       Statsd.instance.increment("region_cache_warmer.#{region_type}.warm_repository_cache.region_count", regions.count)
-    end
-
-    def warm_patient_breakdown_caches(batch)
-      batch.each do |region|
-        Statsd.instance.time("region_cache_warmer.patient_breakdown_service.time") do
-          PatientBreakdownService.call(region: region, period: period)
-          Statsd.instance.increment("patient_breakdown_service.#{region.region_type}.cache")
-        end
-      end
     end
 
     private

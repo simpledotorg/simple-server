@@ -11,6 +11,8 @@ describe Reports::RegionSummarySchema, type: :model do
   let(:facility) { create(:facility, name: "facility-1", facility_group: facility_group_1) }
 
   let(:jan_2019) { Time.zone.parse("January 1st, 2019 00:00:00+00:00") }
+  let(:feb_2019) { Time.zone.parse("February 1st, 2019 00:00:00+00:00") }
+  let(:mar_2019) { Time.zone.parse("March 1st, 2019 00:00:00+00:00") }
   let(:jan_2020) { Time.zone.parse("January 1st, 2020 00:00:00+00:00") }
   let(:july_2018) { Period.month("July 1 2018") }
   let(:june_2020) { Period.month("June 1 2020") }
@@ -725,6 +727,54 @@ describe Reports::RegionSummarySchema, type: :model do
             .to eq(0)
         end
       end
+    end
+  end
+
+  describe "hypertension and diabetes" do
+    let(:distict_with_facilities) { setup_district_with_facilities }
+    let(:region) { distict_with_facilities[:region] }
+    let(:facility_1) { distict_with_facilities[:facility_1] }
+    let(:facility_2) { distict_with_facilities[:facility_2] }
+
+    it "returns the number of patients registered who have both hypertension and diabetes" do
+      create(:patient, :diabetes, registration_facility: facility_1, recorded_at: jan_2019)
+      create(:patient, :hypertension, registration_facility: facility_1, recorded_at: jan_2019)
+      create(:patient, :hypertension_and_diabetes, registration_facility: facility_1, recorded_at: jan_2019)
+      create(:patient, :hypertension_and_diabetes, registration_facility: facility_1, recorded_at: feb_2019)
+
+      create(:patient, :diabetes, registration_facility: facility_2, recorded_at: jan_2019)
+      create(:patient, :hypertension, registration_facility: facility_2, recorded_at: jan_2019)
+      create(:patient, :hypertension_and_diabetes, registration_facility: facility_2, recorded_at: jan_2019)
+      create(:patient, :hypertension_and_diabetes, registration_facility: facility_2, recorded_at: feb_2019)
+      create(:patient, :hypertension_and_diabetes, registration_facility: facility_2, recorded_at: mar_2019)
+
+      refresh_views
+
+      schema = described_class.new([facility_1.region, facility_2.region, region], periods: range)
+
+      expect(schema.monthly_hypertension_and_diabetes_registrations[facility_1.region.slug][("Jan 2019".to_period)]).to eq(1)
+      expect(schema.monthly_hypertension_and_diabetes_registrations[facility_1.region.slug][("Feb 2019".to_period)]).to eq(1)
+      expect(schema.monthly_hypertension_and_diabetes_registrations[facility_1.region.slug][("Mar 2019".to_period)]).to eq(0)
+
+      expect(schema.cumulative_hypertension_and_diabetes_registrations[facility_1.region.slug][("Jan 2019".to_period)]).to eq(1)
+      expect(schema.cumulative_hypertension_and_diabetes_registrations[facility_1.region.slug][("Feb 2019".to_period)]).to eq(2)
+      expect(schema.cumulative_hypertension_and_diabetes_registrations[facility_1.region.slug][("Mar 2019".to_period)]).to eq(2)
+
+      expect(schema.monthly_hypertension_and_diabetes_registrations[facility_2.region.slug][("Jan 2019".to_period)]).to eq(1)
+      expect(schema.monthly_hypertension_and_diabetes_registrations[facility_2.region.slug][("Feb 2019".to_period)]).to eq(1)
+      expect(schema.monthly_hypertension_and_diabetes_registrations[facility_2.region.slug][("Mar 2019".to_period)]).to eq(1)
+
+      expect(schema.cumulative_hypertension_and_diabetes_registrations[facility_2.region.slug][("Jan 2019".to_period)]).to eq(1)
+      expect(schema.cumulative_hypertension_and_diabetes_registrations[facility_2.region.slug][("Feb 2019".to_period)]).to eq(2)
+      expect(schema.cumulative_hypertension_and_diabetes_registrations[facility_2.region.slug][("Mar 2019".to_period)]).to eq(3)
+
+      expect(schema.monthly_hypertension_and_diabetes_registrations[region.slug][("Jan 2019".to_period)]).to eq(2)
+      expect(schema.monthly_hypertension_and_diabetes_registrations[region.slug][("Feb 2019".to_period)]).to eq(2)
+      expect(schema.monthly_hypertension_and_diabetes_registrations[region.slug][("Mar 2019".to_period)]).to eq(1)
+
+      expect(schema.cumulative_hypertension_and_diabetes_registrations[region.slug][("Jan 2019".to_period)]).to eq(2)
+      expect(schema.cumulative_hypertension_and_diabetes_registrations[region.slug][("Feb 2019".to_period)]).to eq(4)
+      expect(schema.cumulative_hypertension_and_diabetes_registrations[region.slug][("Mar 2019".to_period)]).to eq(5)
     end
   end
 end

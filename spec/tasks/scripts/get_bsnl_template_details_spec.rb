@@ -58,37 +58,7 @@ RSpec.describe GetBsnlTemplateDetails do
              "Is_Unicode" => "0",
              "Version" => 2,
              "Is_Latest_Version" => true,
-             "Latest_Template_Version" => "en.notifications.set03.basic.2"},
-         "en.notifications.set03_basic_repeated.first" =>
-           {"Template_Id" => "1",
-            "Template_Keys" => [],
-            "Non_Variable_Text_Length" => "0",
-            "Max_Length_Permitted" => "0",
-            "Template_Status" => "0",
-            "Is_Unicode" => "0",
-            "Version" => 2,
-            "Is_Latest_Version" => true,
-            "Latest_Template_Version" => "en.notifications.set03.basic.2"},
-         "en.notifications.set03_basic_repeated.second" =>
-           {"Template_Id" => "1",
-            "Template_Keys" => [],
-            "Non_Variable_Text_Length" => "0",
-            "Max_Length_Permitted" => "0",
-            "Template_Status" => "0",
-            "Is_Unicode" => "0",
-            "Version" => 2,
-            "Is_Latest_Version" => true,
-            "Latest_Template_Version" => "en.notifications.set03.basic.2"},
-         "en.notifications.set03_basic_repeated.third" =>
-           {"Template_Id" => "1",
-            "Template_Keys" => [],
-            "Non_Variable_Text_Length" => "0",
-            "Max_Length_Permitted" => "0",
-            "Template_Status" => "0",
-            "Is_Unicode" => "0",
-            "Version" => 2,
-            "Is_Latest_Version" => true,
-            "Latest_Template_Version" => "en.notifications.set03.basic.2"}}
+             "Latest_Template_Version" => "en.notifications.set03.basic.2"}}
       )
     end
   end

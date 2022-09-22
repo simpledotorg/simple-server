@@ -75,12 +75,15 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
         cumulative_assigned_patients
         cumulative_registrations
         cumulative_diabetes_registrations
+        cumulative_hypertension_and_diabetes_registrations
         facility_region_slug
         lost_to_follow_up
         diabetes_lost_to_follow_up
         under_care
+        diabetes_under_care
         monthly_registrations
         monthly_diabetes_registrations
+        monthly_hypertension_and_diabetes_registrations
         month_date
         monthly_overdue_calls
         monthly_follow_ups
@@ -116,6 +119,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
         diabetes_appts_scheduled_15_to_31_days
         diabetes_appts_scheduled_32_to_62_days
         diabetes_appts_scheduled_more_than_62_days
+        diabetes_dead
+        dead
       ].map(&:to_s)
       (3.months.ago.to_period..now.to_period).each do |period|
         expect(results[facility_1.region.slug][period].keys).to match_array(expected_keys)

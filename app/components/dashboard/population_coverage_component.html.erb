@@ -1,0 +1,77 @@
+<% if show_coverage && accessible_region?(@region, :view_reports) %>
+  <div class="mb-8px d-lg-flex align-lg-center">
+    <p class="mb-0px fs-32px fw-bold c-green-dark mr-lg-12px" id="<%= show_coverage %>">
+      <%= number_to_percentage(patient_coverage_rate, precision: 0) %>
+    </p>
+    <div>
+      <p class="m-0px c-black">
+        <span>
+          <%= number_with_delimiter(cumulative_registrations) %>
+        </span>
+        <%= "patient".pluralize(cumulative_registrations) %> registered
+      </p>
+      <p class="m-0px c-grey-dark c-print-black">
+        of
+        <span>
+          <%= number_with_delimiter(estimated_population.population) %>
+        </span>
+        estimated people with <%= diagnosis %> in <%= @region.name %>
+      </p>
+    </div>
+  </div>
+  <div class="d-flex h-24px mb-16px o-hidden <% if patient_coverage_rate == 100.0 %>br-4px<% end %>">
+    <div
+      class="br-tl-4px br-bl-4px bg-green-dark"
+      style="width: <%= population_coverage_percentage %>"></div>
+    <div class="flex-1 br-tr-4px br-br-4px bg-grey-light"></div>
+  </div>
+<% elsif !(show_coverage) %>
+  <% if @region.district_region? %>
+    <% if accessible_region?(@region, :manage) %>
+      <div class="mb-16px p-12px br-4px bg-blue-light">
+        <p class="m-0px fs-14px c-black">
+          Add the estimated <%= diagnosis %> population to see the coverage rate.
+        </p>
+        <%= link_to "+ Add population", edit_admin_facility_group_path(@region.source), :class => "fs-14px" %>
+      </div>
+    <% else %>
+      <div class="mb-16px p-12px br-4px bg-yellow-light">
+        <p class="m-0px fs-14px c-black">
+          Ask a Dashboard admin to add the est. population with <%= diagnosis %> for <%= @region.name %> to see the <%= diagnosis %> coverage rate.
+        </p>
+      </div>
+    <% end %>
+  <% elsif @region.state_region? %>
+    <% if current_admin.accessible_district_regions(:manage).to_set.superset?(@region.district_regions.to_set) %>
+      <div class="mb-16px p-12px br-4px bg-blue-light">
+        <p class="m-0px fs-14px c-black">
+          Add the estimated population of <%= diagnosis %> patients for all <%= @region.child_region_type.pluralize %> to see the coverage rate.
+        </p>
+        <%= link_to "+ Add #{@region.child_region_type} populations", "/admin/facilities", :class => "fs-14px" %>
+      </div>
+    <% else %>
+      <div class="mb-16px p-12px br-4px bg-yellow-light">
+        <p class="m-0px fs-14px c-black">
+          Ask a Dashboard admin to add the est. population with <%= diagnosis %> for all districts in <%= @region.name %> to see the <%= diagnosis %> coverage rate.
+        </p>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>
+<div class="d-flex ai-center jc-between">
+  <p class="mb-8px fw-bold">
+    Total est. population with <%= diagnosis %>
+    <%= render Dashboard::Card::TooltipComponent.new(tooltip_copy) %>
+  </p>
+  <p class="mb-8px">
+    <% if show_coverage %>
+      <span class="fw-bold">
+        <%= number_with_delimiter(estimated_population&.population) %>
+      </span>
+    <% else %>
+      <span class="fw-bold">
+        N/A
+      </span>
+    <% end %>
+  </p>
+</div>

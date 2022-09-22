@@ -7,9 +7,20 @@
 
 <%= render "header", period_selector: false %>
 
-<%= render "reports/regions/patient_breakdown_charts" %>
+<% args = { data: @data, region: @region, period: @period } %>
+
+<div class="d-lg-flex flex-lg-wrap">
+  <%= render Dashboard::Hypertension::CoverageCardComponent.new(
+    region: @region,
+    data: @data,
+    period: @period,
+    current_admin: current_admin
+  ) %>
+
+  <%= render(Dashboard::Hypertension::LostToFollowUpComponent.new(args)) %>
+</div>
 <% if current_admin.feature_enabled?(:medications_dispensation) %>
-  <%= render "reports/regions/medications_dispensation" %>
+  <%= render Dashboard::MedicationDispensationComponent.new(data: @data, region: @region, period: @period) %>
 <% end %>
 
 <% if @region.facility_region? %>

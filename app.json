@@ -9,6 +9,7 @@
   "scripts": {
     "postdeploy": "./bin/heroku-setup"
   },
+  "stack": "heroku-20",
   "env": {
     "SECRET_KEY_BASE": {
       "description": "A secret key for verifying the integrity of signed cookies.",

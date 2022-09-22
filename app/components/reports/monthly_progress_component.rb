@@ -7,13 +7,15 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
   attr_reader :range
   attr_reader :monthly_counts
   attr_reader :total_counts
+  attr_reader :current_user
 
-  def initialize(dimension, service:)
+  def initialize(dimension, service:, current_user:)
     @dimension = dimension
     @monthly_counts = service.monthly_counts
     @total_counts = service.total_counts
     @region = service.region
     @range = service.range.reverse_each
+    @current_user = current_user
   end
 
   def diagnosis_group_class
@@ -23,21 +25,12 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
     classes.compact.join(":")
   end
 
-  def display?
-    dimension.diagnosis == :all && dimension.gender == :all
-  end
-
   def table(&block)
     options = {class: ["progress-table", dimension.indicator, diagnosis_group_class]}
     if !display?
       options[:style] = "display:none"
     end
     tag.table(options, &block)
-  end
-
-  # The default diagnosis is the one we display at the top level on initial page load
-  def default_diagnosis
-    :all
   end
 
   def total_count
@@ -51,5 +44,11 @@ class Reports::MonthlyProgressComponent < ViewComponent::Base
     else
       0
     end
+  end
+
+  private
+
+  def display?
+    dimension.diagnosis == :all && dimension.gender == :all
   end
 end

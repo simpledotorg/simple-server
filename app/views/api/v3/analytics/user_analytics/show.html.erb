@@ -16,40 +16,37 @@
   <body class="bgc-grey-lightest">
     <div id="progress-start">
       <div class="mb-8px">
-        <% if Flipper.enabled?(:new_progress_tab) %>
-          <%= render partial: "api/v3/analytics/user_analytics/progress_period_card" %>
-        <% else %>
-          <p class="fs-14px mt-8px">
-            <%= raw t("analytics.updated", time: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")) %>
-          </p>
-         <%= content_tag :div,
-                         id: "statistics",
-                         data: { statistics: @service.daily_statistics },
-                         style: "display: none" do %>
-         <% end %>
-          <%= render(Reports::DailyProgressComponent.new(@service, @user_analytics.last_updated_at)) %>
-          <div class="mb-8px p-16px bgc-white bs-card">
-            <div class="d-flex ai-center">
-              <h3 class="m-0px mr-4px fw-bold fs-24px c-black">
-                <%= raw t("analytics.registered_patients") %>
-              </h3>
-              <a
-                class="d-flex ai-center w-32px h-32px"
-                href="#"
-                onclick="openWindow('progress-registrations-help', 'progress-start'); return false"
-              >
-                <%= inline_file("help-circle.svg") %>
-              </a>
-            </div>
-            <% registrations_table_name = 'registrations' %>
-            <%= render partial: 'api/v3/analytics/user_analytics/gender_filter',
-                      locals: { data_table_name: registrations_table_name,
-                                is_diabetes_enabled: current_facility.diabetes_enabled? } %>
-            <% @service.dimension_combinations_for(:registrations).each do |dimension| %>
-              <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service)) %>
-            <% end %>
+        <p class="fs-14px mt-8px">
+          <%= raw t("analytics.updated", time: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")) %>
+        </p>
+        <%= content_tag :div,
+                        id: "statistics",
+                        data: { statistics: @service.daily_statistics },
+                        style: "display: none" do %>
+        <% end %>
+        <%= render(Reports::DailyProgressComponent.new(@service, @user_analytics.last_updated_at, @current_user)) %>
+        <div class="mb-8px p-16px bgc-white bs-card">
+          <div class="d-flex ai-center">
+            <h3 class="m-0px mr-4px fw-bold fs-24px c-black">
+              <%= raw t("analytics.registered_patients") %>
+            </h3>
+            <a
+              class="d-flex ai-center w-32px h-32px"
+              href="#"
+              onclick="openWindow('progress-registrations-help', 'progress-start'); return false"
+            >
+              <%= inline_file("help-circle.svg") %>
+            </a>
           </div>
-          <div class="mb-8px p-16px bgc-white bs-card">
+          <% registrations_table_name = 'registrations' %>
+          <%= render partial: 'api/v3/analytics/user_analytics/gender_filter',
+                    locals: { data_table_name: registrations_table_name,
+                              is_diabetes_enabled: current_facility.diabetes_enabled? } %>
+          <% @service.dimension_combinations_for(:registrations).each do |dimension| %>
+            <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service, current_user: @current_user)) %>
+          <% end %>
+        </div>
+        <div class="mb-8px p-16px bgc-white bs-card">
             <div class="d-flex ai-center">
               <h3 class="m-0px mr-4px fw-bold fs-24px c-black">
                 <%= raw t("analytics.follow_up_patients") %>
@@ -67,13 +64,10 @@
                       locals: { data_table_name: follow_ups_table_name,
                                 is_diabetes_enabled: current_facility.diabetes_enabled? } %>
             <% @service.dimension_combinations_for(:follow_ups).each do |dimension| %>
-              <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service)) %>
+              <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service, current_user: @current_user)) %>
             <% end %>
           </div>
-        <% end %>
-        <% if Flipper.enabled?(:new_progress_tab) %>
-          <%= render partial: "api/v3/analytics/user_analytics/progress_reports_card" %> 
-        <% end %>
+
         <% if current_facility_group.region.feature_enabled?(:drug_stocks) && controller_name == "user_analytics" %>
           <div class="mb-16px p-16px bgc-white br-4px bs-card">
             <div class="d-flex ai-flex-start jc-space-between mb-16px">
@@ -90,21 +84,20 @@
               </div>
             </div>
             <%= link_to "Enter drug stock", new_webview_drug_stock_url(user_id: current_user.id,
-              access_token: current_user.access_token,
-              facility_id: current_facility.id),
-              style: "font-weight: 500;",
-              class: "d-block p-16px ta-center fs-16px fw-regular tt-uppercase ls-1_25px c-blue b-none bb-blue-mid br-1px bgc-blue-light bs-secondary-button"
+                                                                       access_token: current_user.access_token,
+                                                                       facility_id: current_facility.id),
+                        style: "font-weight: 500;",
+                        class: "d-block p-16px ta-center fs-16px fw-regular tt-uppercase ls-1_25px c-blue b-none bb-blue-mid br-1px bgc-blue-light bs-secondary-button"
             %>
           </div>
         <% end %>
-        <% unless Flipper.enabled?(:new_progress_tab) %>
-          <%= render(Reports::ProgressControlComponent.new(@service)) %>
-          <div class="card">
-            <a href="#" onclick="openWindow('progress-cohort-report', 'progress-start'); return false" class="nav-next">
-              Cohort report
-            </a>
-          </div>
-        <% end %>
+
+        <%= render(Reports::ProgressControlComponent.new(@service, @current_user)) %>
+        <div class="card">
+          <a href="#" onclick="openWindow('progress-cohort-report', 'progress-start'); return false" class="nav-next">
+            Cohort report
+          </a>
+        </div>
         <div class="mb-8px pt-16px pb-16px bgc-white bs-card">
           <h1 class="m-0px mb-24px pr-16px pl-16px fw-bold fs-24px">
             <%= t("progress_tab.achievements_card.title") %>
@@ -150,16 +143,11 @@
         </div>
       </div>
     </div>
-    <% if Flipper.enabled?(:new_progress_tab) %>
-      <%= render(Reports::DailyProgressComponent.new(@service, @user_analytics.last_updated_at)) %>
-      <%= render partial: "api/v3/analytics/user_analytics/progress_monthly_report" %>
-      <%= render partial: "api/v3/analytics/user_analytics/progress_hypertension_report" %>
-    <% else %>
+
       <%= render partial: "api/v3/analytics/user_analytics/progress_controlled_help" %>
       <%= render partial: "api/v3/analytics/user_analytics/progress_cohort_report" %>
-      <%= render partial: "api/v3/analytics/user_analytics/progress_registrations_help" %> 
-      <%= render partial: "api/v3/analytics/user_analytics/progress_follow_ups_help" %> 
-    <% end %>
+      <%= render partial: "api/v3/analytics/user_analytics/progress_registrations_help" %>
+      <%= render partial: "api/v3/analytics/user_analytics/progress_follow_ups_help" %>
   </body>
   <%= inline_js("standalone/user_analytics.js") %>
 </html>

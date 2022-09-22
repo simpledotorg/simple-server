@@ -42,7 +42,7 @@ class BsnlSmsStatusJob
   def raise_api_errors(message_id, response)
     error = response["Error"]
     if error.present?
-      raise Messaging::Bsnl::Error.new("Error fetching message status for #{message_id}: #{error}")
+      raise Messaging::Bsnl::FetchStatusError.new("Error fetching message status for #{message_id}: #{error}")
     end
   end
 

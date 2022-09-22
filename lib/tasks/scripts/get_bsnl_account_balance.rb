@@ -12,7 +12,11 @@ class GetBsnlAccountBalance
     @total_balance_remaining = recharge_details.map { |recharge_detail| recharge_detail["SMS_Balance_Count"].to_i }.sum
   end
 
-  def call
+  def print
+    puts recharge_details.map { |r| "#{r["SMS_Balance_Count"]} segments valid until #{r["Balance_Expiry_Time"].to_date}" }
+  end
+
+  def alert
     if expiry_date < BALANCE_EXPIRY_ALERT_DAYS.days.from_now
       raise Messaging::Bsnl::BalanceError.new("Account balance is going to expire in less than #{BALANCE_EXPIRY_ALERT_DAYS} days. Please extend validity before #{expiry_date.strftime("%d-%b-%y")}")
     end

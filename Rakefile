@@ -8,6 +8,7 @@ def is_running_migration?
   Rake.application.top_level_tasks.include?("db:migrate")
 end
 
+Rake::Task["db:structure:load"].enhance [:support_pg_extensions_in_heroku]
 Rake::Task["db:schema:load"].clear
 task "db:schema:load" do
   Rake::Task["db:structure:load"].invoke

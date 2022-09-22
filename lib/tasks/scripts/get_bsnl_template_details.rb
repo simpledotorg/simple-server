@@ -2,12 +2,6 @@ class GetBsnlTemplateDetails
   include I18n::Backend::Flatten
   include Memery
   CONFIG_FILE = "config/data/bsnl_templates.yml"
-  DUPLICATE_TEMPLATES = {
-    "notifications.set03_basic_repeated.first" => "notifications.set03.basic",
-    "notifications.set03_basic_repeated.second" => "notifications.set03.basic",
-    "notifications.set03_basic_repeated.third" => "notifications.set03.basic"
-  }
-
   attr_reader :template_details, :template_names
 
   def initialize
@@ -28,7 +22,7 @@ class GetBsnlTemplateDetails
   end
 
   def massaged_template_details
-    template_details.to_h do |template|
+    template_details.map do |template|
       template_name = template["Template_Name"]
       [
         template_name,
@@ -38,18 +32,50 @@ class GetBsnlTemplateDetails
           "Template_Status", "Is_Unicode"
         )
       ]
-    end.then { |hsh| add_version_info(hsh) }
-      .then { |hsh| insert_duplicate_templates(hsh) }
-      .then { |hsh| hsh.sort_by(&:first).to_h }
+    end.then { |hsh| add_version_info(hsh).sort_by(&:first).to_h }
   end
 
   def show_templates_pending_naming
     templates_pending_naming = template_details.select { |template_detail| template_detail["Template_Status"] == "0" }
 
     if templates_pending_naming.any?
-      error "⚠️  These templates need to be named on the BSNL dashboard:"
+      error "⚠️  These templates need to be named on bulksms.bsnl.in:"
       puts_list templates_pending_naming.map { |template_detail| template_detail["Template_Name"] }
     end
+  end
+
+  def notification_strings_summary
+    uploaded_templates = []
+    remaining_templates = []
+
+    summary = locale_keys_by_language.map do |language, locale_keys|
+      uploaded_for_language = 0
+      locale_keys.each do |locale_key|
+        if template_names.include?(locale_key)
+          uploaded_templates << locale_key
+          uploaded_for_language += 1
+        else
+          remaining_templates << locale_key
+        end
+      end
+
+      {language: language,
+       uploaded_count: uploaded_for_language,
+       total_count: locale_keys.count}
+    end
+
+    info "✔ Found #{uploaded_templates.count}/#{locale_keys_by_language.values.flatten.count} templates on bulksms.bsnl.in:"
+    puts_list(summary.sort_by { |item| item[:uploaded_count] }.reverse.map do |item|
+      "#{item[:uploaded_count]}/#{item[:total_count]} uploaded from #{item[:language]}"
+    end)
+
+    info "✔ These messages have been uploaded to bulksms.bsnl.in:"
+    puts_list uploaded_templates.sort
+
+    error "˟ These messages have not been uploaded to bulksms.bsnl.in:"
+    puts_list remaining_templates.sort
+
+    show_templates_pending_naming
   end
 
   private
@@ -84,7 +110,7 @@ class GetBsnlTemplateDetails
       version = template_detail["Version"]
       name_without_version = Messaging::Bsnl::DltTemplate.drop_version_number(template_name)
 
-      if version > latest_versions[name_without_version]
+      if version >= latest_versions[name_without_version]
         latest_versions[name_without_version] = version
         latest_version_names[name_without_version] = template_name
       end
@@ -100,18 +126,9 @@ class GetBsnlTemplateDetails
     end
   end
 
-  def insert_duplicate_templates(config)
-    DUPLICATE_TEMPLATES.each do |duplicate_template_name, original_template_name|
-      matching_templates = config.select do |template_name, template_details|
-        template_name.match?(original_template_name) && template_details["Is_Latest_Version"]
-      end
-
-      matching_templates.each do |template_name, details|
-        locale_name = template_name.split(".").first
-
-        config["#{locale_name}.#{duplicate_template_name}"] = details
-      end
+  def locale_keys_by_language
+    Dir.glob("config/locales/notifications/*").to_h do |file_name|
+      [file_name, flatten_translations(nil, YAML.safe_load(File.open(file_name)), nil, false).keys.map(&:to_s)]
     end
-    config
   end
 end

@@ -355,7 +355,6 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
         patient: patient,
         subject: nil)
       membership = create(:treatment_group_membership, treatment_group: treatment_group, patient: patient)
-      allow_any_instance_of(described_class).to receive(:messages_report_key).and_return("reminder_templates.id::varchar")
       membership.record_notification(reminder_template.id, notification)
 
       successful_communication = create(:communication, notification: notification)
@@ -390,7 +389,6 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
         patient: patient,
         subject: nil)
       membership = create(:treatment_group_membership, treatment_group: treatment_group, patient: patient)
-      allow_any_instance_of(described_class).to receive(:messages_report_key).and_return("reminder_templates.id::varchar")
       membership.record_notification(reminder_template.id, notification)
 
       unsuccessful_communication = create(:communication, notification: notification)
@@ -418,9 +416,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
         patient: patient,
         subject: nil)
       membership = create(:treatment_group_membership, treatment_group: treatment_group, patient: patient)
-      allow_any_instance_of(described_class).to receive(:messages_report_key).and_return("reminder_templates.id::varchar")
       membership.record_notification(reminder_template.id, notification)
-
       experiment.record_notification_results
 
       expect(membership.reload.messages[reminder_template.id]).to include(
@@ -442,7 +438,6 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
         patient: patient,
         subject: nil)
       membership = create(:treatment_group_membership, treatment_group: treatment_group, status: :evicted, patient: patient)
-      allow_any_instance_of(described_class).to receive(:messages_report_key).and_return("reminder_templates.id::varchar")
       membership.record_notification(reminder_template.id, notification)
 
       successful_communication = create(:communication, notification: notification)
@@ -719,42 +714,6 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
 
       create(:experiment)
       described_class.first.monitor
-    end
-  end
-
-  describe "recording notifications and results end-to-end" do
-    it "records notification results under the locale key for experiments before 30th June" do
-      Timecop.freeze(Date.parse("30 June 2022") - 1.day) do
-        experiment = create(:experiment, start_time: Date.today, end_time: 10.days.from_now, experiment_type: "current_patients")
-        treatment_group = create(:treatment_group, experiment: experiment)
-        patient = create(:patient)
-
-        membership = treatment_group.enroll(patient)
-        reminder_template = create(:reminder_template, message: "message_locale_key", treatment_group: treatment_group, remind_on_in_days: 0)
-
-        allow_any_instance_of(Experimentation::CurrentPatientExperiment).to receive(:memberships_to_notify).and_return(Experimentation::TreatmentGroupMembership.joins(treatment_group: :reminder_templates).all)
-        Experimentation::CurrentPatientExperiment.find(experiment.id).schedule_notifications(5.days.from_now)
-
-        expect(membership.reload.messages["message_locale_key"]).to be_present
-        expect(membership.reload.messages[reminder_template.id]).to be_nil
-      end
-    end
-
-    it "records notification results under the reminder template ID for experiments before 30th June" do
-      Timecop.freeze(Date.parse("30 June 2022") + 1.day) do
-        experiment = create(:experiment, start_time: Date.today, end_time: 10.days.from_now, experiment_type: "current_patients")
-        treatment_group = create(:treatment_group, experiment: experiment)
-        patient = create(:patient)
-
-        membership = treatment_group.enroll(patient)
-        reminder_template = create(:reminder_template, message: "message_locale_key", treatment_group: treatment_group, remind_on_in_days: 0)
-
-        allow_any_instance_of(Experimentation::CurrentPatientExperiment).to receive(:memberships_to_notify).and_return(Experimentation::TreatmentGroupMembership.joins(treatment_group: :reminder_templates).all)
-        Experimentation::CurrentPatientExperiment.find(experiment.id).schedule_notifications(Date.today)
-
-        expect(membership.reload.messages[reminder_template.id]).to be_present
-        expect(membership.reload.messages["message_locale_key"]).to be_blank
-      end
     end
   end
 end

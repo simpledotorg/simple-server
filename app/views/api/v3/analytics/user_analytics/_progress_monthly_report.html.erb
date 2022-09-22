@@ -29,7 +29,7 @@
     </p>
     <%= render partial: "api/v3/analytics/user_analytics/progress_monthly_period_dropdown", locals: { element_id: "registrations" } %>
     <% @service.dimension_combinations_for(:registrations).each do |dimension| %>
-      <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service)) %>
+      <%= render(Reports::MonthlyProgressComponentV1.new(dimension, service: @service, current_user: @current_user)) %>
     <% end %>
   </div>
   <div class="mb-8px p-16px bgc-white br-4px bs-card">
@@ -43,7 +43,21 @@
     </p>
     <%= render partial: "api/v3/analytics/user_analytics/progress_monthly_period_dropdown", locals: { element_id: "follow_ups" } %>
     <% @service.dimension_combinations_for(:follow_ups).each do |dimension| %>
-      <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service)) %>
+      <%= render(Reports::MonthlyProgressComponentV1.new(dimension, service: @service, current_user: @current_user)) %>
     <% end %>
   </div>
+
+  <% if render_patient_initiated_on_treatment? %>
+    <div class="p-relative mb-8px p-16px bgc-yellow-lightest br-4px bs-card">
+      <h1 class="m-0px mb-8px p-0px pr-48px ta-left fw-medium fs-18px lh-135 c-black">
+        <%= t("progress_tab.period_report.patients_initiated_on_treatment_card.title") %>
+      </h1>
+      <p class="m-0px p-0px ta-left fw-normal fs-16px lh-165 c-black">
+        <%= t("progress_tab.period_report.patients_initiated_on_treatment_card.main_text") %>
+      </p>
+      <div class="p-absolute t-8px r-8px w-48px h-48px">
+        <%= inline_svg("exclamation-mark.svg") %>
+      </div>
+    </div>
+  <% end %>
 </div>

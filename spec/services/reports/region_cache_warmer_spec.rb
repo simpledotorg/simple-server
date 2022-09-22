@@ -86,22 +86,38 @@ RSpec.describe Reports::RegionCacheWarmer, type: :model do
       repo.controlled_rates
       repo.controlled_rates(with_ltfu: true)
     end
-  end
 
-  context "#warm_patient_breakdown" do
-    it "refreshes the patient breakdown cache" do
-      facility = create(:facility)
-      create(:patient, assigned_facility: facility, recorded_at: 1.month.ago)
-      create(:patient, status: :dead, assigned_facility: facility)
+    it "caches all the result of repository methods" do
+      facility = create(:facility, facility_group: facility_group)
+      user = create(:user, organization: facility_group.organization)
+      patient = create(:patient, registration_facility: facility, recorded_at: 2.months.ago, registration_user: user)
+      create(:bp_with_encounter, :under_control, facility: facility, patient: patient, recorded_at: 15.days.ago)
+      create(:blood_sugar_with_encounter, :bs_below_200, facility: facility, patient: patient, recorded_at: 15.days.ago)
 
-      period = Period.month(Time.current.beginning_of_month)
-      described_class.new(period: period).call
+      cache_keys = Rails.cache.instance_variable_get(:@data).keys
+      expect(cache_keys).to be_empty
 
-      expect(Patient).to receive(:with_hypertension).never
+      RefreshReportingViews.call
 
-      result_1 = PatientBreakdownService.call(region: facility.region, period: period)
-      result_2 = PatientBreakdownService.call(region: facility.region, period: period)
-      expect(result_1).to eq(result_2)
+      described_class.call
+      Reports::Repository.new(facility, periods: Period.current)
+      cache_keys = Rails.cache.instance_variable_get(:@data).keys
+
+      expect(cache_keys).to_not be_empty
+
+      expected_keys_in_cache = [
+        /bp_measures_by_user/,
+        /blood_sugar_measures_by_user/,
+        /monthly_registrations_by_user\/group_by\/registration_user_id\/period_type\/month\/diagnosis\/hypertension/,
+        /monthly_registrations_by_user\/group_by\/registration_user_id\/period_type\/month\/diagnosis\/diabetes/,
+        /monthly_registrations_by_gender/,
+        /controlled_by_gender/,
+        /overdue_calls_by_user/
+      ]
+
+      expected_keys_in_cache.each do |expected_key|
+        expect(cache_keys.any? { |key| key.match(expected_key) }).to eq true
+      end
     end
   end
 end

@@ -1,16 +1,28 @@
+# Dockerfile development version
 FROM ruby:2.7.4
 
-RUN apt-get update && apt-get install -y yarn redis-server postgresql-client nodejs jq
+ENV BUNDLE_VERSION 2.2.29
 
-# throw errors if Gemfile has been modified since Gemfile.lock
-RUN bundle config --global frozen 1
+## Install dependencies
+# Yarn
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg -o /root/yarn-pubkey.gpg && apt-key add /root/yarn-pubkey.gpg
+RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list
+RUN apt-get update && apt-get install -y --no-install-recommends yarn
+# Redis and Postgres
+RUN apt-get update && apt-get install -y redis-server postgresql-client jq
+# Node
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
+RUN apt-get update && apt-get install -y --no-install-recommends nodejs
 
-WORKDIR /usr/src/app
+# Default directory
+ENV INSTALL_PATH /opt/app
+RUN mkdir -p $INSTALL_PATH
+WORKDIR $INSTALL_PATH
 
-COPY Gemfile Gemfile.lock ./
-
+# Copy application files
 COPY . .
 
-RUN gem install bundler -v 2.2.29
-RUN bundle _2.2.29_ install
-RUN rake yarn:install
+# Install gems
+RUN gem install bundler -v $BUNDLE_VERSION
+RUN bundle install
+RUN yarn install

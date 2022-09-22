@@ -358,7 +358,9 @@ CREATE TABLE public.call_results (
     device_updated_at timestamp without time zone NOT NULL,
     deleted_at timestamp without time zone,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    patient_id uuid,
+    facility_id uuid
 );
 
 
@@ -829,11 +831,11 @@ CREATE TABLE public.patient_phone_numbers (
 
 CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
  SELECT p.recorded_at,
-    concat(date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))), ' Q', date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) AS registration_quarter,
+    concat(date_part('year'::text, ((p.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))), ' Q', EXTRACT(quarter FROM ((p.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))) AS registration_quarter,
     p.full_name,
         CASE
             WHEN (p.date_of_birth IS NOT NULL) THEN date_part('year'::text, age((p.date_of_birth)::timestamp with time zone))
-            ELSE floor(((p.age)::double precision + date_part('year'::text, age(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.age_updated_at))))))
+            ELSE floor(((p.age)::double precision + date_part('year'::text, age(((p.age_updated_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))))
         END AS current_age,
     p.gender,
     p.status,
@@ -855,7 +857,7 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
     latest_blood_pressure.systolic AS latest_blood_pressure_systolic,
     latest_blood_pressure.diastolic AS latest_blood_pressure_diastolic,
     latest_blood_pressure.recorded_at AS latest_blood_pressure_recorded_at,
-    concat(date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_blood_pressure.recorded_at))), ' Q', date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_blood_pressure.recorded_at)))) AS latest_blood_pressure_quarter,
+    concat(date_part('year'::text, ((latest_blood_pressure.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))), ' Q', EXTRACT(quarter FROM ((latest_blood_pressure.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))) AS latest_blood_pressure_quarter,
     latest_blood_pressure_facility.name AS latest_blood_pressure_facility_name,
     latest_blood_pressure_facility.facility_type AS latest_blood_pressure_facility_type,
     latest_blood_pressure_facility.district AS latest_blood_pressure_district,
@@ -864,7 +866,7 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
     latest_blood_sugar.blood_sugar_type AS latest_blood_sugar_type,
     latest_blood_sugar.blood_sugar_value AS latest_blood_sugar_value,
     latest_blood_sugar.recorded_at AS latest_blood_sugar_recorded_at,
-    concat(date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_blood_sugar.recorded_at))), ' Q', date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_blood_sugar.recorded_at)))) AS latest_blood_sugar_quarter,
+    concat(date_part('year'::text, ((latest_blood_sugar.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))), ' Q', EXTRACT(quarter FROM ((latest_blood_sugar.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))) AS latest_blood_sugar_quarter,
     latest_blood_sugar_facility.name AS latest_blood_sugar_facility_name,
     latest_blood_sugar_facility.facility_type AS latest_blood_sugar_facility_type,
     latest_blood_sugar_facility.district AS latest_blood_sugar_district,
@@ -916,7 +918,8 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
             medical_histories.diagnosed_with_hypertension,
             medical_histories.deleted_at,
             medical_histories.user_id,
-            medical_histories.hypertension
+            medical_histories.hypertension,
+            medical_histories.receiving_treatment_for_diabetes
            FROM public.medical_histories
           WHERE (medical_histories.deleted_at IS NULL)) mh ON ((mh.patient_id = p.id)))
      LEFT JOIN ( SELECT DISTINCT ON (patient_phone_numbers.patient_id) patient_phone_numbers.id,
@@ -996,9 +999,9 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
             appointments.user_id,
             appointments.creation_facility_id
            FROM public.appointments
-          WHERE (((appointments.status)::text = 'scheduled'::text) AND (appointments.deleted_at IS NULL))
-          ORDER BY appointments.patient_id, appointments.scheduled_date DESC) next_scheduled_appointment ON ((next_scheduled_appointment.patient_id = p.id)))
-     LEFT JOIN public.facilities next_scheduled_appointment_facility ON ((next_scheduled_appointment_facility.id = next_scheduled_appointment.facility_id)))
+          WHERE (appointments.deleted_at IS NULL)
+          ORDER BY appointments.patient_id, appointments.device_created_at DESC) next_scheduled_appointment ON (((next_scheduled_appointment.patient_id = p.id) AND ((next_scheduled_appointment.status)::text = 'scheduled'::text))))
+     LEFT JOIN public.facilities next_scheduled_appointment_facility ON (((next_scheduled_appointment_facility.id = next_scheduled_appointment.facility_id) AND ((next_scheduled_appointment.status)::text = 'scheduled'::text))))
   WHERE (p.deleted_at IS NULL)
   WITH NO DATA;
 
@@ -1145,7 +1148,7 @@ CREATE MATERIALIZED VIEW public.patient_registrations_per_day_per_facilities AS
 
 CREATE VIEW public.patient_summaries AS
  SELECT p.recorded_at,
-    concat(date_part('year'::text, p.recorded_at), ' Q', date_part('quarter'::text, p.recorded_at)) AS registration_quarter,
+    concat(date_part('year'::text, p.recorded_at), ' Q', EXTRACT(quarter FROM p.recorded_at)) AS registration_quarter,
     p.full_name,
         CASE
             WHEN (p.date_of_birth IS NOT NULL) THEN date_part('year'::text, age((p.date_of_birth)::timestamp with time zone))
@@ -1166,7 +1169,7 @@ CREATE VIEW public.patient_summaries AS
     latest_blood_pressure.systolic AS latest_blood_pressure_systolic,
     latest_blood_pressure.diastolic AS latest_blood_pressure_diastolic,
     latest_blood_pressure.recorded_at AS latest_blood_pressure_recorded_at,
-    concat(date_part('year'::text, latest_blood_pressure.recorded_at), ' Q', date_part('quarter'::text, latest_blood_pressure.recorded_at)) AS latest_blood_pressure_quarter,
+    concat(date_part('year'::text, latest_blood_pressure.recorded_at), ' Q', EXTRACT(quarter FROM latest_blood_pressure.recorded_at)) AS latest_blood_pressure_quarter,
     latest_blood_pressure_facility.name AS latest_blood_pressure_facility_name,
     latest_blood_pressure_facility.facility_type AS latest_blood_pressure_facility_type,
     latest_blood_pressure_facility.district AS latest_blood_pressure_district,
@@ -1174,7 +1177,7 @@ CREATE VIEW public.patient_summaries AS
     latest_blood_sugar.blood_sugar_type AS latest_blood_sugar_type,
     latest_blood_sugar.blood_sugar_value AS latest_blood_sugar_value,
     latest_blood_sugar.recorded_at AS latest_blood_sugar_recorded_at,
-    concat(date_part('year'::text, latest_blood_sugar.recorded_at), ' Q', date_part('quarter'::text, latest_blood_sugar.recorded_at)) AS latest_blood_sugar_quarter,
+    concat(date_part('year'::text, latest_blood_sugar.recorded_at), ' Q', EXTRACT(quarter FROM latest_blood_sugar.recorded_at)) AS latest_blood_sugar_quarter,
     latest_blood_sugar_facility.name AS latest_blood_sugar_facility_name,
     latest_blood_sugar_facility.facility_type AS latest_blood_sugar_facility_type,
     latest_blood_sugar_facility.district AS latest_blood_sugar_district,
@@ -1287,7 +1290,7 @@ CREATE VIEW public.patient_summaries AS
             a.creation_facility_id
            FROM public.appointments a
           WHERE (a.patient_id = p.id)
-          ORDER BY a.scheduled_date DESC
+          ORDER BY a.device_created_at DESC
          LIMIT 1) next_appointment ON (true))
      LEFT JOIN public.facilities next_appointment_facility ON ((next_appointment_facility.id = next_appointment.facility_id)))
   WHERE (p.deleted_at IS NULL);
@@ -3085,6 +3088,14 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
            FROM public.reporting_patient_states
           WHERE (reporting_patient_states.diabetes = 'yes'::text)
           GROUP BY reporting_patient_states.registration_facility_region_id, reporting_patient_states.month_date
+        ), registered_hypertension_and_diabetes_patients AS (
+         SELECT reporting_patient_states.registration_facility_region_id AS region_id,
+            reporting_patient_states.month_date,
+            count(*) AS cumulative_hypertension_and_diabetes_registrations,
+            count(*) FILTER (WHERE (reporting_patient_states.months_since_registration = (0)::double precision)) AS monthly_hypertension_and_diabetes_registrations
+           FROM public.reporting_patient_states
+          WHERE ((reporting_patient_states.hypertension = 'yes'::text) AND (reporting_patient_states.diabetes = 'yes'::text))
+          GROUP BY reporting_patient_states.registration_facility_region_id, reporting_patient_states.month_date
         ), assigned_patients AS (
          SELECT reporting_patient_states.assigned_facility_region_id AS region_id,
             reporting_patient_states.month_date,
@@ -3208,6 +3219,8 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
     registered_patients.monthly_registrations,
     registered_diabetes_patients.cumulative_diabetes_registrations,
     registered_diabetes_patients.monthly_diabetes_registrations,
+    registered_hypertension_and_diabetes_patients.cumulative_hypertension_and_diabetes_registrations,
+    registered_hypertension_and_diabetes_patients.monthly_hypertension_and_diabetes_registrations,
     assigned_patients.under_care,
     assigned_patients.lost_to_follow_up,
     assigned_patients.dead,
@@ -3262,10 +3275,11 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
     reporting_facility_appointment_scheduled_days.diabetes_appts_scheduled_15_to_31_days,
     reporting_facility_appointment_scheduled_days.diabetes_appts_scheduled_32_to_62_days,
     reporting_facility_appointment_scheduled_days.diabetes_appts_scheduled_more_than_62_days
-   FROM ((((((((((((public.reporting_facilities rf
+   FROM (((((((((((((public.reporting_facilities rf
      JOIN public.reporting_months cal ON (true))
      LEFT JOIN registered_patients ON (((registered_patients.month_date = cal.month_date) AND (registered_patients.region_id = rf.facility_region_id))))
      LEFT JOIN registered_diabetes_patients ON (((registered_diabetes_patients.month_date = cal.month_date) AND (registered_diabetes_patients.region_id = rf.facility_region_id))))
+     LEFT JOIN registered_hypertension_and_diabetes_patients ON (((registered_hypertension_and_diabetes_patients.month_date = cal.month_date) AND (registered_hypertension_and_diabetes_patients.region_id = rf.facility_region_id))))
      LEFT JOIN assigned_patients ON (((assigned_patients.month_date = cal.month_date) AND (assigned_patients.region_id = rf.facility_region_id))))
      LEFT JOIN assigned_diabetes_patients ON (((assigned_diabetes_patients.month_date = cal.month_date) AND (assigned_diabetes_patients.region_id = rf.facility_region_id))))
      LEFT JOIN adjusted_outcomes ON (((adjusted_outcomes.month_date = cal.month_date) AND (adjusted_outcomes.region_id = rf.facility_region_id))))
@@ -4809,6 +4823,20 @@ CREATE INDEX index_bp_months_patient_recorded_at ON public.latest_blood_pressure
 
 
 --
+-- Name: index_call_results_deleted_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_call_results_deleted_at ON public.call_results USING btree (deleted_at);
+
+
+--
+-- Name: index_call_results_patient_id_and_updated_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_call_results_patient_id_and_updated_at ON public.call_results USING btree (patient_id, updated_at);
+
+
+--
 -- Name: index_communications_on_appointment_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -6067,4 +6095,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220412112538'),
 ('20220414134624'),
 ('20220519201430'),
-('20220524112732');
+('20220524112732'),
+('20220718091454'),
+('20220902104533'),
+('20220902114057'),
+('20220902125119');

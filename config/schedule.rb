@@ -42,7 +42,7 @@ end
 
 every :day, at: local("2:00 pm"), roles: [:cron] do
   if CountryConfig.current_country?("India") && SimpleServer.env.production?
-    rake "bsnl:check_account_balance"
+    rake "bsnl:alert_on_low_balance"
   end
 end
 
@@ -116,8 +116,8 @@ every :day, at: local("05:45 am"), roles: [:cron] do
   runner "Experimentation::Runner.call;AppointmentNotification::ScheduleExperimentReminders.call"
 end
 
-every :monday, at: local("06:00 am"), roles: [:cron] do
-  if Flipper.enabled?(:weekly_telemed_report)
+every 1.month, at: local("06:00 am"), roles: [:cron] do
+  if Flipper.enabled?(:automated_telemed_report)
     rake "reports:telemedicine"
   end
 end

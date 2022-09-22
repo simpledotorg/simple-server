@@ -1,0 +1,89 @@
+<div class="card mb-0">
+  <%= render Dashboard::Card::TitleComponent.new(
+    title: "Types of blood sugars measured",
+    subtitle: t("bs_measurement_details_copy.reports_card_subtitle",
+                region_name: @region.name,
+                period_registered: @data.dig(:period_info, @period, :bp_control_registration_date),
+                period_start: @data.dig(:period_info, @period, :bp_control_start_date),
+                period_end: @data.dig(:period_info, @period, :bp_control_end_date))
+  ) do |c| %>
+    <%= c.tooltip({ "Types of blood sugars measured" => t("bs_measurement_details_copy.numerator", region_name: @region.name) }) %>
+  <% end %>
+
+  <div class="table-responsive-md">
+    <%= render Dashboard::Card::TableComponent.new(id: "measurementChildComparisonTable") do |table| %>
+      <% table.column_group do %>
+        <colgroup>
+          <col>
+          <% 9.times do %>
+            <col class="table-divider">
+            <col>
+          <% end %>
+        </colgroup>
+      <% end %>
+
+      <% table_headers.each do |table_header| %>
+        <%= table.header(table_header[:title], colspan: 2, tooltip: table_header[:tooltip]) %>
+      <% end %>
+
+      <%= table.sub_header(localized_region_type.capitalize, sort_default: true, sort_method: :string) %>
+      <% table_headers.each do %>
+        <%= table.sub_header("Percent") %>
+        <%= table.sub_header("Total") %>
+      <% end %>
+
+      <%= table.row do %>
+        <tr class="row-total" data-sort-method="none">
+          <td class="type-title">
+            <%= region.name %>
+          </td>
+          <% row_data(data).each do |total| %>
+            <td
+              class="type-percent"
+              data-sort-column-key="bs-patients-breakdown-<%= period %>"
+              data-sort="<%= total[:rate] %>"
+              data-toggle="tooltip"
+              title="<%= number_with_delimiter(total[:count]) %> / <%= number_with_delimiter(total[:patients_with_blood_sugar_measured]) %> patients">
+              <em data-rate="<%= total[:rate] %>" class="bg-yellow">
+                <%= number_to_percentage(total[:rate] || 0, precision: 0) %>
+              </em>
+            </td>
+
+            <td class="ta-left">
+              <%= number_or_dash_with_delimiter(total[:count]) %>
+            </td>
+          <% end %>
+        </tr>
+      <% end %>
+
+      <% children_data.each do |child_data| %>
+        <%= table.row do %>
+          <tr>
+            <td class="ta-left">
+              <%= link_to(reports_region_diabetes_path(child_data[:region], report_scope: child_data[:region].region_type)) do %>
+                <%= child_data[:region].name %>
+              <% end %>
+            </td>
+
+            <% row_data(child_data).each do |total| %>
+              <td
+                class="type-percent"
+                data-sort-column-key="bs-patients-breakdown-<%= period %>"
+                data-sort="<%= total[:rate] %>"
+                data-toggle="tooltip"
+                title="<%= number_with_delimiter(total[:count]) %> / <%= number_with_delimiter(total[:patients_with_blood_sugar_measured]) %> patients">
+                <em data-rate="<%= total[:rate] %>">
+                  <%= number_to_percentage(total[:rate] || 0, precision: 0) %>
+                </em>
+              </td>
+
+              <td class="ta-left">
+                <%= number_or_dash_with_delimiter(total[:count]) %>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

@@ -4,6 +4,7 @@ class PatientsWithHistoryExporter
   include QuarterHelper
 
   DEFAULT_DISPLAY_BLOOD_PRESSURES = 3
+  DEFAULT_DISPLAY_BLOOD_SUGARS = 3
   DEFAULT_DISPLAY_MEDICATION_COLUMNS = 5
   BATCH_SIZE = 1000
   PATIENT_STATUS_DESCRIPTIONS = {active: "Active",
@@ -22,13 +23,20 @@ class PatientsWithHistoryExporter
     new.csv(*args)
   end
 
-  def csv(patients, display_blood_pressures: DEFAULT_DISPLAY_BLOOD_PRESSURES, display_medication_columns: DEFAULT_DISPLAY_MEDICATION_COLUMNS)
+  def csv(
+    patients,
+    display_blood_pressures: DEFAULT_DISPLAY_BLOOD_PRESSURES,
+    display_blood_sugars: DEFAULT_DISPLAY_BLOOD_SUGARS,
+    display_medication_columns: DEFAULT_DISPLAY_MEDICATION_COLUMNS
+  )
     @display_blood_pressures = display_blood_pressures
+    @display_blood_sugars = display_blood_sugars
     @display_medication_columns = display_medication_columns
     summary = MaterializedPatientSummary.where(patient: patients)
 
     CSV.generate(headers: true) do |csv|
       csv << timestamp
+      csv << measurement_headers
       csv << csv_headers
 
       summary.in_batches(of: BATCH_SIZE).each do |batch|
@@ -46,7 +54,8 @@ class PatientsWithHistoryExporter
         :latest_blood_sugar,
         :latest_bp_passport,
         {appointments: :facility},
-        {latest_blood_pressures: :facility}
+        {latest_blood_pressures: :facility},
+        {latest_blood_sugars: :facility}
       )
   end
 
@@ -85,43 +94,31 @@ class PatientsWithHistoryExporter
       "Diagnosed with Diabetes",
       "Risk Level",
       "Days Overdue For Next Follow-up",
-      (1..display_blood_pressures).map do |i|
-        [
-          "BP #{i} Date",
-          "BP #{i} Quarter",
-          "BP #{i} Systolic",
-          "BP #{i} Diastolic",
-          "BP #{i} Facility Name",
-          "BP #{i} Facility Type",
-          "BP #{i} Facility District",
-          "BP #{i} Facility State",
-          "BP #{i} Follow-up Facility",
-          "BP #{i} Follow-up Date",
-          "BP #{i} Follow up Days",
-          "BP #{i} Medication Titrated",
-          "BP #{i} Medication 1",
-          "BP #{i} Dosage 1",
-          "BP #{i} Medication 2",
-          "BP #{i} Dosage 2",
-          "BP #{i} Medication 3",
-          "BP #{i} Dosage 3",
-          "BP #{i} Medication 4",
-          "BP #{i} Dosage 4",
-          "BP #{i} Medication 5",
-          "BP #{i} Dosage 5",
-          "BP #{i} Other Medications"
-        ]
-      end,
-      "Latest Blood Sugar Date",
-      "Latest Blood Sugar Value",
-      "Latest Blood Sugar Type"
-    ].flatten.compact
+      (1..display_blood_pressures).map { |i| blood_pressure_headers(i) },
+      display_blood_sugars == 0 ?
+        ["Latest Blood Sugar Date",
+          "Latest Blood Sugar Value",
+          "Latest Blood Sugar Type"] :
+        (1..display_blood_sugars).map { |i| blood_sugar_headers(i) }
+    ].compact.flatten
+  end
+
+  def measurement_headers
+    [
+      25.times.map { nil }, # Non-measurement related headers
+      (1..display_blood_pressures).map { |i| ["Blood Pressure #{i}"] + (blood_pressure_headers(0).length - 1).times.map { nil } },
+      (1..display_blood_sugars).map { |i| ["Blood Sugar #{i}"] + (blood_sugar_headers(0).length - 1).times.map { nil } }
+    ].flatten
   end
 
   def csv_fields(patient_summary)
     latest_bps = patient_summary
       .latest_blood_pressures
       .first(display_blood_pressures + 1)
+
+    latest_blood_sugars = patient_summary
+      .latest_blood_sugars
+      .first(display_blood_sugars + 1)
 
     all_medications = fetch_medication_history(patient_summary, latest_bps.map(&:recorded_at))
     zone_column_index = csv_headers.index(zone_column)
@@ -156,28 +153,12 @@ class PatientsWithHistoryExporter
       patient_summary.diabetes,
       ("High" if patient_summary.risk_level > 0),
       patient_summary.days_overdue.to_i,
-      (1..display_blood_pressures).map do |i|
-        bp = latest_bps[i - 1]
-        previous_bp = latest_bps[i]
-        appointment = appointment_created_on(patient_appointments, bp&.recorded_at)
-
-        [bp&.recorded_at.presence && I18n.l(bp&.recorded_at&.to_date),
-          bp&.recorded_at.presence && quarter_string(bp&.recorded_at&.to_date),
-          bp&.systolic,
-          bp&.diastolic,
-          bp&.facility&.name,
-          bp&.facility&.facility_type,
-          bp&.facility&.district,
-          bp&.facility&.state,
-          appointment&.facility&.name,
-          appointment&.scheduled_date.presence && I18n.l(appointment&.scheduled_date&.to_date),
-          appointment&.follow_up_days,
-          medication_updated?(all_medications, bp&.recorded_at, previous_bp&.recorded_at),
-          *formatted_medications(all_medications, bp&.recorded_at)]
-      end,
-      latest_blood_sugar_date(patient_summary),
-      patient_summary.latest_blood_sugar.to_s,
-      latest_blood_sugar_type(patient_summary)
+      (1..display_blood_pressures).map { |i| bp_fields(latest_bps, i, patient_appointments: patient_appointments, all_medications: all_medications) },
+      display_blood_sugars == 0 ?
+        [latest_blood_sugar_date(patient_summary),
+          patient_summary.latest_blood_sugar.to_s,
+          latest_blood_sugar_type(patient_summary)] :
+        (1..display_blood_sugars).map { |i| blood_sugar_fields(latest_blood_sugars, i, patient_appointments: patient_appointments) }
     ].flatten
 
     csv_fields.insert(zone_column_index, patient_summary.block) if zone_column_index
@@ -185,6 +166,87 @@ class PatientsWithHistoryExporter
   end
 
   private
+
+  def blood_pressure_headers(i)
+    [
+      "BP #{i} Date",
+      "BP #{i} Quarter",
+      "BP #{i} Systolic",
+      "BP #{i} Diastolic",
+      "BP #{i} Facility Name",
+      "BP #{i} Facility Type",
+      "BP #{i} Facility District",
+      "BP #{i} Facility State",
+      "BP #{i} Follow-up Facility",
+      "BP #{i} Follow-up Date",
+      "BP #{i} Follow up Days",
+      "BP #{i} Medication Titrated",
+      "BP #{i} Medication 1",
+      "BP #{i} Dosage 1",
+      "BP #{i} Medication 2",
+      "BP #{i} Dosage 2",
+      "BP #{i} Medication 3",
+      "BP #{i} Dosage 3",
+      "BP #{i} Medication 4",
+      "BP #{i} Dosage 4",
+      "BP #{i} Medication 5",
+      "BP #{i} Dosage 5",
+      "BP #{i} Other Medications"
+    ]
+  end
+
+  def blood_sugar_headers(i)
+    [
+      "Blood sugar #{i} Date",
+      "Blood sugar #{i} Quarter",
+      "Blood sugar #{i} Type",
+      "Blood sugar #{i} Value",
+      "Blood sugar #{i} Facility Name",
+      "Blood sugar #{i} Facility Type",
+      "Blood sugar #{i} Facility District",
+      "Blood sugar #{i} Facility State",
+      "Blood sugar #{i} Follow-up Facility",
+      "Blood sugar #{i} Follow-up Date",
+      "Blood sugar #{i} Follow up Days"
+    ]
+  end
+
+  def bp_fields(latest_bps, i, patient_appointments:, all_medications:)
+    bp = latest_bps[i - 1]
+    previous_bp = latest_bps[i]
+    appointment = appointment_created_on(patient_appointments, bp&.recorded_at)
+
+    [bp&.recorded_at.presence && I18n.l(bp&.recorded_at&.to_date),
+      bp&.recorded_at.presence && quarter_string(bp&.recorded_at&.to_date),
+      bp&.systolic,
+      bp&.diastolic,
+      bp&.facility&.name,
+      bp&.facility&.facility_type,
+      bp&.facility&.district,
+      bp&.facility&.state,
+      appointment&.facility&.name,
+      appointment&.scheduled_date.presence && I18n.l(appointment&.scheduled_date&.to_date),
+      appointment&.follow_up_days,
+      medication_updated?(all_medications, bp&.recorded_at, previous_bp&.recorded_at),
+      *formatted_medications(all_medications, bp&.recorded_at)]
+  end
+
+  def blood_sugar_fields(latest_blood_sugars, i, patient_appointments:)
+    blood_sugar = latest_blood_sugars[i - 1]
+    appointment = appointment_created_on(patient_appointments, blood_sugar&.recorded_at)
+
+    [blood_sugar&.recorded_at.presence && I18n.l(blood_sugar&.recorded_at&.to_date),
+      blood_sugar&.recorded_at.presence && quarter_string(blood_sugar&.recorded_at&.to_date),
+      blood_sugar&.blood_sugar_type,
+      blood_sugar&.blood_sugar_value,
+      blood_sugar&.facility&.name,
+      blood_sugar&.facility&.facility_type,
+      blood_sugar&.facility&.district,
+      blood_sugar&.facility&.state,
+      appointment&.facility&.name,
+      appointment&.scheduled_date.presence && I18n.l(appointment&.scheduled_date&.to_date),
+      appointment&.follow_up_days]
+  end
 
   def zone_column
     "Patient #{Address.human_attribute_name :zone}"
@@ -222,6 +284,10 @@ class PatientsWithHistoryExporter
 
   def display_blood_pressures
     @display_blood_pressures || DEFAULT_DISPLAY_BLOOD_PRESSURES
+  end
+
+  def display_blood_sugars
+    @display_blood_sugars || DEFAULT_DISPLAY_BLOOD_SUGARS
   end
 
   def display_medication_columns
