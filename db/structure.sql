@@ -110,9 +110,8 @@ CREATE TABLE public.alpha_sms_delivery_details (
     id bigint NOT NULL,
     request_id character varying NOT NULL,
     request_status character varying,
-    result character varying,
     recipient_number character varying NOT NULL,
-    delivered_on timestamp without time zone,
+    message character varying,
     deleted_at timestamp without time zone,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
