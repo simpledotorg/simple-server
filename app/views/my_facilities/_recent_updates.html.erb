@@ -7,7 +7,7 @@
   </p>
   <section class="update">
     <div class="update-date">
-      Aug <b class="d-block">2022</b>
+      Sep <b class="d-block">2022</b>
     </div>
     <p>
       <b>Simple app:</b> The following improvements have been made to the <b>Overdue Tab</b>.
@@ -16,8 +16,10 @@
     </p>
     <ul class="mb-0px">
       <li>Search for patients by their name or village</li>
-      <li>Create village-wise lists to share with ASHA and ANM workers</li>
-      <li>See overdue patients who were previously marked as 'Agreed to call', 'Remind to call', or 'Remove' from overdue list</li>
+      <% if CountryConfig.current[:name] == "India" %>
+        <li>Create village-wise lists to share with ASHA and ANM workers</li>
+        <li>See overdue patients who were previously marked as 'Agreed to call', 'Remind to call', or 'Remove' from overdue list</li>
+      <% end %>
       <li>Patients who are lost to follow-up will also be seen in the overdue section</li>
     </ul>
     <p class="d-block bg-grey-lightest br-4px" style="margin-top: 8px; padding: 6px 10px;">
