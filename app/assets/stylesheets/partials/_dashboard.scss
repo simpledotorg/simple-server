@@ -563,6 +563,28 @@ td.type-percent {
   }
 }
 
+.split-bars, :root {
+  .bar-controlled {
+    background-color: $green-dark-new;
+    color: $white;
+  }
+
+  .bar-uncontrolled {
+    background-color: $yellow-dark-new;
+    color: $white;
+  }
+
+  .bar-no-bp {
+    background: $orange-dark-new;
+    color: $white;
+  }
+
+  .bar-missed-visits {
+    background-color: $red-dark-new;
+    color: $white;
+  }
+}
+
 .split-row-first .split-bars .bar {
   background-image: asset-url("diagonal-stripe.png");
   background-size: 120px;
