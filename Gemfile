@@ -91,6 +91,7 @@ gem "view_component"
 gem "webpacker", "6.0.0.rc.6"
 gem "whenever", require: false
 gem "wkhtmltoimage-binary"
+gem "selenium-webdriver"
 
 group :development, :test do
   gem "active_record_query_trace", require: false
@@ -127,7 +128,6 @@ group :development do
   gem "spring-commands-rspec"
   gem "spring", "3.1.1"
   gem "web-console", ">= 3.3.0"
-  gem "selenium-webdriver"
 end
 
 group :test do
