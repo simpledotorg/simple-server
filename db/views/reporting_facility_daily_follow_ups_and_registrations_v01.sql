@@ -144,10 +144,10 @@ WITH follow_up_blood_pressures AS (
              count(*) FILTER (WHERE diabetes = 'yes' and patient_gender = 'female') AS daily_registrations_dm_female,
              count(*) FILTER (WHERE diabetes = 'yes' and patient_gender = 'male') AS daily_registrations_dm_male,
              count(*) FILTER (WHERE diabetes = 'yes' and patient_gender = 'transgender') AS daily_registrations_dm_transgender,
-             count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes') AS daily_registrations_htn_and_dm_only_all,
-             count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'female') AS daily_registrations_htn_and_dm_only_female,
-             count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'male') AS daily_registrations_htn_and_dm_only_male,
-             count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'transgender') AS daily_registrations_htn_and_dm_only_transgender
+             count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes') AS daily_registrations_htn_and_dm_all,
+             count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'female') AS daily_registrations_htn_and_dm_female,
+             count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'male') AS daily_registrations_htn_and_dm_male,
+             count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'transgender') AS daily_registrations_htn_and_dm_transgender
          FROM registered_patients_with_medical_histories
          GROUP BY facility_id, date(visited_at), day_of_year
      ),
@@ -167,14 +167,17 @@ WITH follow_up_blood_pressures AS (
              count(*) FILTER (WHERE diabetes = 'yes' and patient_gender = 'female') AS daily_follow_ups_dm_female,
              count(*) FILTER (WHERE diabetes = 'yes' and patient_gender = 'male') AS daily_follow_ups_dm_male,
              count(*) FILTER (WHERE diabetes = 'yes' and patient_gender = 'transgender') AS daily_follow_ups_dm_transgender,
-             count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes') AS daily_follow_ups_htn_and_dm_only_all,
-             count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'female') AS daily_follow_ups_htn_and_dm_only_female,
-             count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'male') AS daily_follow_ups_htn_and_dm_only_male,
-             count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'transgender') AS daily_follow_ups_htn_and_dm_only_transgender
+             count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes') AS daily_follow_ups_htn_and_dm_all,
+             count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'female') AS daily_follow_ups_htn_and_dm_female,
+             count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'male') AS daily_follow_ups_htn_and_dm_male,
+             count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'transgender') AS daily_follow_ups_htn_and_dm_transgender
          FROM all_follow_ups_with_medical_histories
          GROUP BY facility_id, date(visited_at), day_of_year
-     )
+     ),
 
+     last_30_days AS (
+         SELECT generate_series(current_timestamp - interval '30 day', current_timestamp, interval  '1 day'):: date as date
+     )
 
 SELECT
     rf.facility_region_slug,
@@ -183,10 +186,9 @@ SELECT
     rf.block_region_id,
     rf.district_region_id,
     rf.state_region_id,
-    daily_follow_ups.visit_date,
-    daily_follow_ups.day_of_year,
-
-
+    last_30_days.date AS visit_date,
+    cast(EXTRACT(DOY FROM last_30_days.date AT TIME ZONE 'UTC' at time zone (SELECT current_setting('TIMEZONE'))) as integer)
+                      AS day_of_year,
     daily_registered_patients.daily_registrations_all,
     daily_registered_patients.daily_registrations_htn_all,
     daily_registered_patients.daily_registrations_htn_male,
@@ -196,11 +198,10 @@ SELECT
     daily_registered_patients.daily_registrations_dm_male,
     daily_registered_patients.daily_registrations_dm_female,
     daily_registered_patients.daily_registrations_dm_transgender,
-    daily_registered_patients.daily_registrations_htn_and_dm_only_all,
-    daily_registered_patients.daily_registrations_htn_and_dm_only_male,
-    daily_registered_patients.daily_registrations_htn_and_dm_only_female,
-    daily_registered_patients.daily_registrations_htn_and_dm_only_transgender,
-
+    daily_registered_patients.daily_registrations_htn_and_dm_all,
+    daily_registered_patients.daily_registrations_htn_and_dm_male,
+    daily_registered_patients.daily_registrations_htn_and_dm_female,
+    daily_registered_patients.daily_registrations_htn_and_dm_transgender,
     daily_follow_ups.daily_follow_ups_all,
     daily_follow_ups.daily_follow_ups_htn_all,
     daily_follow_ups.daily_follow_ups_htn_female,
@@ -210,13 +211,18 @@ SELECT
     daily_follow_ups.daily_follow_ups_dm_female,
     daily_follow_ups.daily_follow_ups_dm_male,
     daily_follow_ups.daily_follow_ups_dm_transgender,
-    daily_follow_ups.daily_follow_ups_htn_and_dm_only_all,
-    daily_follow_ups.daily_follow_ups_htn_and_dm_only_male,
-    daily_follow_ups.daily_follow_ups_htn_and_dm_only_female,
-    daily_follow_ups.daily_follow_ups_htn_and_dm_only_transgender
+    daily_follow_ups.daily_follow_ups_htn_and_dm_all,
+    daily_follow_ups.daily_follow_ups_htn_and_dm_male,
+    daily_follow_ups.daily_follow_ups_htn_and_dm_female,
+    daily_follow_ups.daily_follow_ups_htn_and_dm_transgender
+
 FROM reporting_facilities rf
-         LEFT OUTER JOIN daily_registered_patients
-                         ON daily_registered_patients.facility_id = rf.facility_id
-         LEFT OUTER JOIN daily_follow_ups
-                         ON daily_follow_ups.facility_id = daily_registered_patients.facility_id and daily_follow_ups.visit_date = daily_registered_patients.visit_date
-ORDER BY daily_follow_ups.day_of_year
+ INNER JOIN last_30_days
+-- ensure a row for every facility and day combination
+        ON TRUE
+ LEFT OUTER JOIN daily_registered_patients
+        ON daily_registered_patients.visit_date = last_30_days.date
+            AND daily_registered_patients.facility_id = rf.facility_id
+ LEFT OUTER JOIN daily_follow_ups
+        ON daily_follow_ups.visit_date = last_30_days.date
+            AND daily_follow_ups.facility_id = rf.facility_id

@@ -23,15 +23,15 @@ module Reports
     # probably matters the most health care workers as they see patients
     # throughout the day and expect to see those reflected in the daily counts.
     def last_updated_at
-      RefreshReportingViews.last_updated_at_daily_follow_ups
+      RefreshReportingViews.last_updated_at_facility_daily_follow_ups_and_registrations
     end
 
     def daily_registrations(date)
-      daily_registrations_grouped_by_day[date.to_date] || 0
+      repository.daily_follow_ups_and_registrations[facility.region.slug][date]&.daily_registrations_all || 0
     end
 
     def daily_follow_ups(date)
-      daily_follow_ups_grouped_by_day[date.to_date] || 0
+      repository.daily_follow_ups_and_registrations[facility.region.slug][date]&.daily_follow_ups_all || 0
     end
 
     def daily_statistics
@@ -83,14 +83,21 @@ module Reports
     attr_reader :diabetes_enabled
 
     memoize def daily_registrations_grouped_by_day
-      diagnosis = diabetes_enabled ? :all : :hypertension
-      RegisteredPatientsQuery.new.count_daily(facility, diagnosis: diagnosis, last: 30)
+      field = diabetes_enabled ? :daily_registrations_all : :daily_registrations_htn_all
+      records = Reports::FacilityDailyFollowUpsAndRegistrations.for_region(region).where("visit_date > ?", 30.days.ago)
+      result = records.each_with_object({}) do |record, hsh|
+        hsh[record.period] = record[field]
+      end
+      result.tap { |hsh| hsh.default = 0 }
     end
 
     memoize def daily_follow_ups_grouped_by_day
-      scope = Reports::DailyFollowUp.with_hypertension
-      scope = scope.or(Reports::DailyFollowUp.with_diabetes) if diabetes_enabled
-      scope.where(facility: facility).group_by_day(:visited_at, last: 30).count
+      field = diabetes_enabled ? :daily_follow_ups_all : :daily_follow_ups_htn_all
+      records = Reports::FacilityDailyFollowUpsAndRegistrations.for_region(region).where("visit_date > ?", 30.days.ago)
+      result = records.each_with_object({}) do |record, hsh|
+        hsh[record.period] = record[field]
+      end
+      result.tap { |hsh| hsh.default = 0 }
     end
 
     def create_dimension(*args)

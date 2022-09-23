@@ -264,6 +264,16 @@ module Reports
       end
     end
 
+    def daily_follow_ups_and_registrations
+      regions.each_with_object({}) do |region, result|
+        records = Reports::FacilityDailyFollowUpAndRegistration.for_region(region).where("visit_date > ?", 30.days.ago)
+        records_per_period = records.each_with_object({}) do |record, hsh|
+          hsh[record.period] = record
+        end
+        result[region.slug] = records_per_period
+      end
+    end
+
     def period_info(region)
       start_period = [earliest_patient_recorded_at_period[region.slug], periods.begin].compact.max
       calc_range = (start_period..periods.end)

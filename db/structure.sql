@@ -831,11 +831,11 @@ CREATE TABLE public.patient_phone_numbers (
 
 CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
  SELECT p.recorded_at,
-    concat(date_part('year'::text, ((p.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))), ' Q', EXTRACT(quarter FROM ((p.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))) AS registration_quarter,
+    concat(date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))), ' Q', date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) AS registration_quarter,
     p.full_name,
         CASE
             WHEN (p.date_of_birth IS NOT NULL) THEN date_part('year'::text, age((p.date_of_birth)::timestamp with time zone))
-            ELSE floor(((p.age)::double precision + date_part('year'::text, age(((p.age_updated_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))))
+            ELSE floor(((p.age)::double precision + date_part('year'::text, age(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.age_updated_at))))))
         END AS current_age,
     p.gender,
     p.status,
@@ -857,7 +857,7 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
     latest_blood_pressure.systolic AS latest_blood_pressure_systolic,
     latest_blood_pressure.diastolic AS latest_blood_pressure_diastolic,
     latest_blood_pressure.recorded_at AS latest_blood_pressure_recorded_at,
-    concat(date_part('year'::text, ((latest_blood_pressure.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))), ' Q', EXTRACT(quarter FROM ((latest_blood_pressure.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))) AS latest_blood_pressure_quarter,
+    concat(date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_blood_pressure.recorded_at))), ' Q', date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_blood_pressure.recorded_at)))) AS latest_blood_pressure_quarter,
     latest_blood_pressure_facility.name AS latest_blood_pressure_facility_name,
     latest_blood_pressure_facility.facility_type AS latest_blood_pressure_facility_type,
     latest_blood_pressure_facility.district AS latest_blood_pressure_district,
@@ -866,7 +866,7 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
     latest_blood_sugar.blood_sugar_type AS latest_blood_sugar_type,
     latest_blood_sugar.blood_sugar_value AS latest_blood_sugar_value,
     latest_blood_sugar.recorded_at AS latest_blood_sugar_recorded_at,
-    concat(date_part('year'::text, ((latest_blood_sugar.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))), ' Q', EXTRACT(quarter FROM ((latest_blood_sugar.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))) AS latest_blood_sugar_quarter,
+    concat(date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_blood_sugar.recorded_at))), ' Q', date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_blood_sugar.recorded_at)))) AS latest_blood_sugar_quarter,
     latest_blood_sugar_facility.name AS latest_blood_sugar_facility_name,
     latest_blood_sugar_facility.facility_type AS latest_blood_sugar_facility_type,
     latest_blood_sugar_facility.district AS latest_blood_sugar_district,
@@ -1148,7 +1148,7 @@ CREATE MATERIALIZED VIEW public.patient_registrations_per_day_per_facilities AS
 
 CREATE VIEW public.patient_summaries AS
  SELECT p.recorded_at,
-    concat(date_part('year'::text, p.recorded_at), ' Q', EXTRACT(quarter FROM p.recorded_at)) AS registration_quarter,
+    concat(date_part('year'::text, p.recorded_at), ' Q', date_part('quarter'::text, p.recorded_at)) AS registration_quarter,
     p.full_name,
         CASE
             WHEN (p.date_of_birth IS NOT NULL) THEN date_part('year'::text, age((p.date_of_birth)::timestamp with time zone))
@@ -1169,7 +1169,7 @@ CREATE VIEW public.patient_summaries AS
     latest_blood_pressure.systolic AS latest_blood_pressure_systolic,
     latest_blood_pressure.diastolic AS latest_blood_pressure_diastolic,
     latest_blood_pressure.recorded_at AS latest_blood_pressure_recorded_at,
-    concat(date_part('year'::text, latest_blood_pressure.recorded_at), ' Q', EXTRACT(quarter FROM latest_blood_pressure.recorded_at)) AS latest_blood_pressure_quarter,
+    concat(date_part('year'::text, latest_blood_pressure.recorded_at), ' Q', date_part('quarter'::text, latest_blood_pressure.recorded_at)) AS latest_blood_pressure_quarter,
     latest_blood_pressure_facility.name AS latest_blood_pressure_facility_name,
     latest_blood_pressure_facility.facility_type AS latest_blood_pressure_facility_type,
     latest_blood_pressure_facility.district AS latest_blood_pressure_district,
@@ -1177,7 +1177,7 @@ CREATE VIEW public.patient_summaries AS
     latest_blood_sugar.blood_sugar_type AS latest_blood_sugar_type,
     latest_blood_sugar.blood_sugar_value AS latest_blood_sugar_value,
     latest_blood_sugar.recorded_at AS latest_blood_sugar_recorded_at,
-    concat(date_part('year'::text, latest_blood_sugar.recorded_at), ' Q', EXTRACT(quarter FROM latest_blood_sugar.recorded_at)) AS latest_blood_sugar_quarter,
+    concat(date_part('year'::text, latest_blood_sugar.recorded_at), ' Q', date_part('quarter'::text, latest_blood_sugar.recorded_at)) AS latest_blood_sugar_quarter,
     latest_blood_sugar_facility.name AS latest_blood_sugar_facility_name,
     latest_blood_sugar_facility.facility_type AS latest_blood_sugar_facility_type,
     latest_blood_sugar_facility.district AS latest_blood_sugar_district,
@@ -1416,115 +1416,6 @@ CREATE TABLE public.reminder_templates (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
-
-
---
--- Name: reporting_daily_follow_ups; Type: MATERIALIZED VIEW; Schema: public; Owner: -
---
-
-CREATE MATERIALIZED VIEW public.reporting_daily_follow_ups AS
- WITH follow_up_blood_pressures AS (
-         SELECT DISTINCT ON (p.id, bp.facility_id, ((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))))::integer)) p.id AS patient_id,
-            (p.gender)::public.gender_enum AS patient_gender,
-            bp.id AS visit_id,
-            'BloodPressure'::text AS visit_type,
-            bp.facility_id,
-            bp.user_id,
-            bp.recorded_at AS visited_at,
-            (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))))::integer AS day_of_year
-           FROM (public.patients p
-             JOIN public.blood_pressures bp ON (((p.id = bp.patient_id) AND (date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))) > date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
-          WHERE ((p.deleted_at IS NULL) AND (bp.recorded_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
-        ), follow_up_blood_sugars AS (
-         SELECT DISTINCT ON (p.id, bs.facility_id, ((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))))::integer)) p.id AS patient_id,
-            (p.gender)::public.gender_enum AS patient_gender,
-            bs.id AS visit_id,
-            'BloodSugar'::text AS visit_type,
-            bs.facility_id,
-            bs.user_id,
-            bs.recorded_at AS visited_at,
-            (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))))::integer AS day_of_year
-           FROM (public.patients p
-             JOIN public.blood_sugars bs ON (((p.id = bs.patient_id) AND (date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))) > date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
-          WHERE ((p.deleted_at IS NULL) AND (bs.recorded_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
-        ), follow_up_prescription_drugs AS (
-         SELECT DISTINCT ON (p.id, pd.facility_id, ((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at))))::integer)) p.id AS patient_id,
-            (p.gender)::public.gender_enum AS patient_gender,
-            pd.id AS visit_id,
-            'PrescriptionDrug'::text AS visit_type,
-            pd.facility_id,
-            pd.user_id,
-            pd.device_created_at AS visited_at,
-            (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at))))::integer AS day_of_year
-           FROM (public.patients p
-             JOIN public.prescription_drugs pd ON (((p.id = pd.patient_id) AND (date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at))) > date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
-          WHERE ((p.deleted_at IS NULL) AND (pd.device_created_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
-        ), follow_up_appointments AS (
-         SELECT DISTINCT ON (p.id, app.creation_facility_id, ((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at))))::integer)) p.id AS patient_id,
-            (p.gender)::public.gender_enum AS patient_gender,
-            app.id AS visit_id,
-            'Appointment'::text AS visit_type,
-            app.creation_facility_id AS facility_id,
-            app.user_id,
-            app.device_created_at AS visited_at,
-            (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at))))::integer AS day_of_year
-           FROM (public.patients p
-             JOIN public.appointments app ON (((p.id = app.patient_id) AND (date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at))) > date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
-          WHERE ((p.deleted_at IS NULL) AND (app.device_created_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
-        ), all_follow_ups AS (
-         SELECT follow_up_blood_pressures.patient_id,
-            follow_up_blood_pressures.patient_gender,
-            follow_up_blood_pressures.visit_id,
-            follow_up_blood_pressures.visit_type,
-            follow_up_blood_pressures.facility_id,
-            follow_up_blood_pressures.user_id,
-            follow_up_blood_pressures.visited_at,
-            follow_up_blood_pressures.day_of_year
-           FROM follow_up_blood_pressures
-        UNION
-         SELECT follow_up_blood_sugars.patient_id,
-            follow_up_blood_sugars.patient_gender,
-            follow_up_blood_sugars.visit_id,
-            follow_up_blood_sugars.visit_type,
-            follow_up_blood_sugars.facility_id,
-            follow_up_blood_sugars.user_id,
-            follow_up_blood_sugars.visited_at,
-            follow_up_blood_sugars.day_of_year
-           FROM follow_up_blood_sugars
-        UNION
-         SELECT follow_up_prescription_drugs.patient_id,
-            follow_up_prescription_drugs.patient_gender,
-            follow_up_prescription_drugs.visit_id,
-            follow_up_prescription_drugs.visit_type,
-            follow_up_prescription_drugs.facility_id,
-            follow_up_prescription_drugs.user_id,
-            follow_up_prescription_drugs.visited_at,
-            follow_up_prescription_drugs.day_of_year
-           FROM follow_up_prescription_drugs
-        UNION
-         SELECT follow_up_appointments.patient_id,
-            follow_up_appointments.patient_gender,
-            follow_up_appointments.visit_id,
-            follow_up_appointments.visit_type,
-            follow_up_appointments.facility_id,
-            follow_up_appointments.user_id,
-            follow_up_appointments.visited_at,
-            follow_up_appointments.day_of_year
-           FROM follow_up_appointments
-        )
- SELECT DISTINCT ON (all_follow_ups.day_of_year, all_follow_ups.facility_id, all_follow_ups.patient_id) all_follow_ups.patient_id,
-    all_follow_ups.patient_gender,
-    all_follow_ups.facility_id,
-    mh.diabetes,
-    mh.hypertension,
-    all_follow_ups.user_id,
-    all_follow_ups.visit_id,
-    all_follow_ups.visit_type,
-    all_follow_ups.visited_at,
-    all_follow_ups.day_of_year
-   FROM (all_follow_ups
-     JOIN public.medical_histories mh ON ((all_follow_ups.patient_id = mh.patient_id)))
-  WITH NO DATA;
 
 
 --
@@ -1770,6 +1661,430 @@ CREATE MATERIALIZED VIEW public.reporting_facility_appointment_scheduled_days AS
     (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.diabetes = 'yes'::text)))::integer AS diabetes_total_appts_scheduled
    FROM scheduled_days_distribution
   GROUP BY scheduled_days_distribution.facility_id, scheduled_days_distribution.month_date
+  WITH NO DATA;
+
+
+--
+-- Name: reporting_facility_daily_follow_ups_and_registrations; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+--
+
+CREATE MATERIALIZED VIEW public.reporting_facility_daily_follow_ups_and_registrations AS
+ WITH follow_up_blood_pressures AS (
+         SELECT DISTINCT ON (p.id, bp.facility_id, ((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))))::integer)) p.id AS patient_id,
+            (p.gender)::public.gender_enum AS patient_gender,
+            bp.id AS visit_id,
+            'BloodPressure'::text AS visit_type,
+            bp.facility_id,
+            bp.user_id,
+            bp.recorded_at AS visited_at,
+            (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))))::integer AS day_of_year
+           FROM (public.patients p
+             JOIN public.blood_pressures bp ON (((p.id = bp.patient_id) AND (date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))) > date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
+          WHERE ((p.deleted_at IS NULL) AND (bp.recorded_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
+        ), follow_up_blood_sugars AS (
+         SELECT DISTINCT ON (p.id, bs.facility_id, ((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))))::integer)) p.id AS patient_id,
+            (p.gender)::public.gender_enum AS patient_gender,
+            bs.id AS visit_id,
+            'BloodSugar'::text AS visit_type,
+            bs.facility_id,
+            bs.user_id,
+            bs.recorded_at AS visited_at,
+            (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))))::integer AS day_of_year
+           FROM (public.patients p
+             JOIN public.blood_sugars bs ON (((p.id = bs.patient_id) AND (date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))) > date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
+          WHERE ((p.deleted_at IS NULL) AND (bs.recorded_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
+        ), follow_up_prescription_drugs AS (
+         SELECT DISTINCT ON (p.id, pd.facility_id, ((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at))))::integer)) p.id AS patient_id,
+            (p.gender)::public.gender_enum AS patient_gender,
+            pd.id AS visit_id,
+            'PrescriptionDrug'::text AS visit_type,
+            pd.facility_id,
+            pd.user_id,
+            pd.device_created_at AS visited_at,
+            (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at))))::integer AS day_of_year
+           FROM (public.patients p
+             JOIN public.prescription_drugs pd ON (((p.id = pd.patient_id) AND (date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at))) > date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
+          WHERE ((p.deleted_at IS NULL) AND (pd.device_created_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
+        ), follow_up_appointments AS (
+         SELECT DISTINCT ON (p.id, app.creation_facility_id, ((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at))))::integer)) p.id AS patient_id,
+            (p.gender)::public.gender_enum AS patient_gender,
+            app.id AS visit_id,
+            'Appointment'::text AS visit_type,
+            app.creation_facility_id AS facility_id,
+            app.user_id,
+            app.device_created_at AS visited_at,
+            (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at))))::integer AS day_of_year
+           FROM (public.patients p
+             JOIN public.appointments app ON (((p.id = app.patient_id) AND (date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at))) > date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
+          WHERE ((p.deleted_at IS NULL) AND (app.device_created_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
+        ), registered_patients AS (
+         SELECT DISTINCT ON (p.id, p.assigned_facility_id, ((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))))::integer)) p.id AS patient_id,
+            (p.gender)::public.gender_enum AS patient_gender,
+            p.id AS visit_id,
+            'Registration'::text AS visit_type,
+            p.assigned_facility_id AS facility_id,
+            p.registration_user_id AS user_id,
+            p.recorded_at AS visited_at,
+            (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))))::integer AS day_of_year
+           FROM public.patients p
+          WHERE ((p.deleted_at IS NULL) AND (p.recorded_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
+        ), all_follow_ups AS (
+         SELECT follow_up_blood_pressures.patient_id,
+            follow_up_blood_pressures.patient_gender,
+            follow_up_blood_pressures.visit_id,
+            follow_up_blood_pressures.visit_type,
+            follow_up_blood_pressures.facility_id,
+            follow_up_blood_pressures.user_id,
+            follow_up_blood_pressures.visited_at,
+            follow_up_blood_pressures.day_of_year
+           FROM follow_up_blood_pressures
+        UNION
+         SELECT follow_up_blood_sugars.patient_id,
+            follow_up_blood_sugars.patient_gender,
+            follow_up_blood_sugars.visit_id,
+            follow_up_blood_sugars.visit_type,
+            follow_up_blood_sugars.facility_id,
+            follow_up_blood_sugars.user_id,
+            follow_up_blood_sugars.visited_at,
+            follow_up_blood_sugars.day_of_year
+           FROM follow_up_blood_sugars
+        UNION
+         SELECT follow_up_prescription_drugs.patient_id,
+            follow_up_prescription_drugs.patient_gender,
+            follow_up_prescription_drugs.visit_id,
+            follow_up_prescription_drugs.visit_type,
+            follow_up_prescription_drugs.facility_id,
+            follow_up_prescription_drugs.user_id,
+            follow_up_prescription_drugs.visited_at,
+            follow_up_prescription_drugs.day_of_year
+           FROM follow_up_prescription_drugs
+        UNION
+         SELECT follow_up_appointments.patient_id,
+            follow_up_appointments.patient_gender,
+            follow_up_appointments.visit_id,
+            follow_up_appointments.visit_type,
+            follow_up_appointments.facility_id,
+            follow_up_appointments.user_id,
+            follow_up_appointments.visited_at,
+            follow_up_appointments.day_of_year
+           FROM follow_up_appointments
+        ), all_follow_ups_with_medical_histories AS (
+         SELECT DISTINCT ON (all_follow_ups.day_of_year, all_follow_ups.facility_id, all_follow_ups.patient_id) all_follow_ups.patient_id,
+            all_follow_ups.patient_gender,
+            all_follow_ups.facility_id,
+            mh.diabetes,
+            mh.hypertension,
+            all_follow_ups.user_id,
+            all_follow_ups.visit_id,
+            all_follow_ups.visit_type,
+            all_follow_ups.visited_at,
+            all_follow_ups.day_of_year
+           FROM (all_follow_ups
+             JOIN public.medical_histories mh ON ((all_follow_ups.patient_id = mh.patient_id)))
+        ), registered_patients_with_medical_histories AS (
+         SELECT DISTINCT ON (registered_patients.day_of_year, registered_patients.facility_id, registered_patients.patient_id) registered_patients.patient_id,
+            registered_patients.patient_gender,
+            registered_patients.facility_id,
+            mh.diabetes,
+            mh.hypertension,
+            registered_patients.user_id,
+            registered_patients.visit_id,
+            registered_patients.visit_type,
+            registered_patients.visited_at,
+            registered_patients.day_of_year
+           FROM (registered_patients
+             JOIN public.medical_histories mh ON ((registered_patients.patient_id = mh.patient_id)))
+        ), daily_registered_patients AS (
+         SELECT DISTINCT ON (registered_patients_with_medical_histories.facility_id, (date(registered_patients_with_medical_histories.visited_at))) registered_patients_with_medical_histories.facility_id,
+            date(registered_patients_with_medical_histories.visited_at) AS visit_date,
+            registered_patients_with_medical_histories.day_of_year,
+            count(*) AS daily_registrations_all,
+            count(*) FILTER (WHERE (registered_patients_with_medical_histories.hypertension = 'yes'::text)) AS daily_registrations_htn_all,
+            count(*) FILTER (WHERE ((registered_patients_with_medical_histories.hypertension = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'female'::public.gender_enum))) AS daily_registrations_htn_female,
+            count(*) FILTER (WHERE ((registered_patients_with_medical_histories.hypertension = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'male'::public.gender_enum))) AS daily_registrations_htn_male,
+            count(*) FILTER (WHERE ((registered_patients_with_medical_histories.hypertension = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'transgender'::public.gender_enum))) AS daily_registrations_htn_transgender,
+            count(*) FILTER (WHERE (registered_patients_with_medical_histories.diabetes = 'yes'::text)) AS daily_registrations_dm_all,
+            count(*) FILTER (WHERE ((registered_patients_with_medical_histories.diabetes = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'female'::public.gender_enum))) AS daily_registrations_dm_female,
+            count(*) FILTER (WHERE ((registered_patients_with_medical_histories.diabetes = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'male'::public.gender_enum))) AS daily_registrations_dm_male,
+            count(*) FILTER (WHERE ((registered_patients_with_medical_histories.diabetes = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'transgender'::public.gender_enum))) AS daily_registrations_dm_transgender,
+            count(*) FILTER (WHERE ((registered_patients_with_medical_histories.hypertension = 'yes'::text) AND (registered_patients_with_medical_histories.diabetes = 'yes'::text))) AS daily_registrations_htn_and_dm_all,
+            count(*) FILTER (WHERE ((registered_patients_with_medical_histories.hypertension = 'yes'::text) AND (registered_patients_with_medical_histories.diabetes = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'female'::public.gender_enum))) AS daily_registrations_htn_and_dm_female,
+            count(*) FILTER (WHERE ((registered_patients_with_medical_histories.hypertension = 'yes'::text) AND (registered_patients_with_medical_histories.diabetes = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'male'::public.gender_enum))) AS daily_registrations_htn_and_dm_male,
+            count(*) FILTER (WHERE ((registered_patients_with_medical_histories.hypertension = 'yes'::text) AND (registered_patients_with_medical_histories.diabetes = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'transgender'::public.gender_enum))) AS daily_registrations_htn_and_dm_transgender
+           FROM registered_patients_with_medical_histories
+          GROUP BY registered_patients_with_medical_histories.facility_id, (date(registered_patients_with_medical_histories.visited_at)), registered_patients_with_medical_histories.day_of_year
+        ), daily_follow_ups AS (
+         SELECT DISTINCT ON (all_follow_ups_with_medical_histories.facility_id, (date(all_follow_ups_with_medical_histories.visited_at))) all_follow_ups_with_medical_histories.facility_id,
+            date(all_follow_ups_with_medical_histories.visited_at) AS visit_date,
+            all_follow_ups_with_medical_histories.day_of_year,
+            count(*) AS daily_follow_ups_all,
+            count(*) FILTER (WHERE (all_follow_ups_with_medical_histories.hypertension = 'yes'::text)) AS daily_follow_ups_htn_all,
+            count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.hypertension = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'female'::public.gender_enum))) AS daily_follow_ups_htn_female,
+            count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.hypertension = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'male'::public.gender_enum))) AS daily_follow_ups_htn_male,
+            count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.hypertension = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'transgender'::public.gender_enum))) AS daily_follow_ups_htn_transgender,
+            count(*) FILTER (WHERE (all_follow_ups_with_medical_histories.diabetes = 'yes'::text)) AS daily_follow_ups_dm_all,
+            count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.diabetes = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'female'::public.gender_enum))) AS daily_follow_ups_dm_female,
+            count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.diabetes = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'male'::public.gender_enum))) AS daily_follow_ups_dm_male,
+            count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.diabetes = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'transgender'::public.gender_enum))) AS daily_follow_ups_dm_transgender,
+            count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.hypertension = 'yes'::text) AND (all_follow_ups_with_medical_histories.diabetes = 'yes'::text))) AS daily_follow_ups_htn_and_dm_all,
+            count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.hypertension = 'yes'::text) AND (all_follow_ups_with_medical_histories.diabetes = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'female'::public.gender_enum))) AS daily_follow_ups_htn_and_dm_female,
+            count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.hypertension = 'yes'::text) AND (all_follow_ups_with_medical_histories.diabetes = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'male'::public.gender_enum))) AS daily_follow_ups_htn_and_dm_male,
+            count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.hypertension = 'yes'::text) AND (all_follow_ups_with_medical_histories.diabetes = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'transgender'::public.gender_enum))) AS daily_follow_ups_htn_and_dm_transgender
+           FROM all_follow_ups_with_medical_histories
+          GROUP BY all_follow_ups_with_medical_histories.facility_id, (date(all_follow_ups_with_medical_histories.visited_at)), all_follow_ups_with_medical_histories.day_of_year
+        ), last_30_days AS (
+         SELECT (generate_series((CURRENT_TIMESTAMP - '30 days'::interval), CURRENT_TIMESTAMP, '1 day'::interval))::date AS date
+        )
+ SELECT rf.facility_region_slug,
+    rf.facility_id,
+    rf.facility_region_id,
+    rf.block_region_id,
+    rf.district_region_id,
+    rf.state_region_id,
+    last_30_days.date AS visit_date,
+    (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, (last_30_days.date)::timestamp with time zone))))::integer AS day_of_year,
+    daily_registered_patients.daily_registrations_all,
+    daily_registered_patients.daily_registrations_htn_all,
+    daily_registered_patients.daily_registrations_htn_male,
+    daily_registered_patients.daily_registrations_htn_female,
+    daily_registered_patients.daily_registrations_htn_transgender,
+    daily_registered_patients.daily_registrations_dm_all,
+    daily_registered_patients.daily_registrations_dm_male,
+    daily_registered_patients.daily_registrations_dm_female,
+    daily_registered_patients.daily_registrations_dm_transgender,
+    daily_registered_patients.daily_registrations_htn_and_dm_all,
+    daily_registered_patients.daily_registrations_htn_and_dm_male,
+    daily_registered_patients.daily_registrations_htn_and_dm_female,
+    daily_registered_patients.daily_registrations_htn_and_dm_transgender,
+    daily_follow_ups.daily_follow_ups_all,
+    daily_follow_ups.daily_follow_ups_htn_all,
+    daily_follow_ups.daily_follow_ups_htn_female,
+    daily_follow_ups.daily_follow_ups_htn_male,
+    daily_follow_ups.daily_follow_ups_htn_transgender,
+    daily_follow_ups.daily_follow_ups_dm_all,
+    daily_follow_ups.daily_follow_ups_dm_female,
+    daily_follow_ups.daily_follow_ups_dm_male,
+    daily_follow_ups.daily_follow_ups_dm_transgender,
+    daily_follow_ups.daily_follow_ups_htn_and_dm_all,
+    daily_follow_ups.daily_follow_ups_htn_and_dm_male,
+    daily_follow_ups.daily_follow_ups_htn_and_dm_female,
+    daily_follow_ups.daily_follow_ups_htn_and_dm_transgender
+   FROM (((public.reporting_facilities rf
+     JOIN last_30_days ON (true))
+     LEFT JOIN daily_registered_patients ON (((daily_registered_patients.visit_date = last_30_days.date) AND (daily_registered_patients.facility_id = rf.facility_id))))
+     LEFT JOIN daily_follow_ups ON (((daily_follow_ups.visit_date = last_30_days.date) AND (daily_follow_ups.facility_id = rf.facility_id))))
+  WITH NO DATA;
+
+
+--
+-- Name: reporting_facility_state_daily_dimensions; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+--
+
+CREATE MATERIALIZED VIEW public.reporting_facility_state_daily_dimensions AS
+ WITH follow_up_blood_pressures AS (
+         SELECT DISTINCT ON (p.id, bp.facility_id, ((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))))::integer)) p.id AS patient_id,
+            (p.gender)::public.gender_enum AS patient_gender,
+            bp.id AS visit_id,
+            'BloodPressure'::text AS visit_type,
+            bp.facility_id,
+            bp.user_id,
+            bp.recorded_at AS visited_at,
+            (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))))::integer AS day_of_year
+           FROM (public.patients p
+             JOIN public.blood_pressures bp ON (((p.id = bp.patient_id) AND (date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))) > date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
+          WHERE ((p.deleted_at IS NULL) AND (bp.recorded_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
+        ), follow_up_blood_sugars AS (
+         SELECT DISTINCT ON (p.id, bs.facility_id, ((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))))::integer)) p.id AS patient_id,
+            (p.gender)::public.gender_enum AS patient_gender,
+            bs.id AS visit_id,
+            'BloodSugar'::text AS visit_type,
+            bs.facility_id,
+            bs.user_id,
+            bs.recorded_at AS visited_at,
+            (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))))::integer AS day_of_year
+           FROM (public.patients p
+             JOIN public.blood_sugars bs ON (((p.id = bs.patient_id) AND (date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))) > date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
+          WHERE ((p.deleted_at IS NULL) AND (bs.recorded_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
+        ), follow_up_prescription_drugs AS (
+         SELECT DISTINCT ON (p.id, pd.facility_id, ((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at))))::integer)) p.id AS patient_id,
+            (p.gender)::public.gender_enum AS patient_gender,
+            pd.id AS visit_id,
+            'PrescriptionDrug'::text AS visit_type,
+            pd.facility_id,
+            pd.user_id,
+            pd.device_created_at AS visited_at,
+            (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at))))::integer AS day_of_year
+           FROM (public.patients p
+             JOIN public.prescription_drugs pd ON (((p.id = pd.patient_id) AND (date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at))) > date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
+          WHERE ((p.deleted_at IS NULL) AND (pd.device_created_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
+        ), follow_up_appointments AS (
+         SELECT DISTINCT ON (p.id, app.creation_facility_id, ((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at))))::integer)) p.id AS patient_id,
+            (p.gender)::public.gender_enum AS patient_gender,
+            app.id AS visit_id,
+            'Appointment'::text AS visit_type,
+            app.creation_facility_id AS facility_id,
+            app.user_id,
+            app.device_created_at AS visited_at,
+            (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at))))::integer AS day_of_year
+           FROM (public.patients p
+             JOIN public.appointments app ON (((p.id = app.patient_id) AND (date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at))) > date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
+          WHERE ((p.deleted_at IS NULL) AND (app.device_created_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
+        ), registered_patients AS (
+         SELECT DISTINCT ON (p.id, p.assigned_facility_id, ((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))))::integer)) p.id AS patient_id,
+            (p.gender)::public.gender_enum AS patient_gender,
+            p.id AS visit_id,
+            'Registration'::text AS visit_type,
+            p.assigned_facility_id AS facility_id,
+            p.registration_user_id AS user_id,
+            p.recorded_at AS visited_at,
+            (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))))::integer AS day_of_year
+           FROM public.patients p
+          WHERE ((p.deleted_at IS NULL) AND (p.recorded_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
+        ), all_follow_ups AS (
+         SELECT follow_up_blood_pressures.patient_id,
+            follow_up_blood_pressures.patient_gender,
+            follow_up_blood_pressures.visit_id,
+            follow_up_blood_pressures.visit_type,
+            follow_up_blood_pressures.facility_id,
+            follow_up_blood_pressures.user_id,
+            follow_up_blood_pressures.visited_at,
+            follow_up_blood_pressures.day_of_year
+           FROM follow_up_blood_pressures
+        UNION
+         SELECT follow_up_blood_sugars.patient_id,
+            follow_up_blood_sugars.patient_gender,
+            follow_up_blood_sugars.visit_id,
+            follow_up_blood_sugars.visit_type,
+            follow_up_blood_sugars.facility_id,
+            follow_up_blood_sugars.user_id,
+            follow_up_blood_sugars.visited_at,
+            follow_up_blood_sugars.day_of_year
+           FROM follow_up_blood_sugars
+        UNION
+         SELECT follow_up_prescription_drugs.patient_id,
+            follow_up_prescription_drugs.patient_gender,
+            follow_up_prescription_drugs.visit_id,
+            follow_up_prescription_drugs.visit_type,
+            follow_up_prescription_drugs.facility_id,
+            follow_up_prescription_drugs.user_id,
+            follow_up_prescription_drugs.visited_at,
+            follow_up_prescription_drugs.day_of_year
+           FROM follow_up_prescription_drugs
+        UNION
+         SELECT follow_up_appointments.patient_id,
+            follow_up_appointments.patient_gender,
+            follow_up_appointments.visit_id,
+            follow_up_appointments.visit_type,
+            follow_up_appointments.facility_id,
+            follow_up_appointments.user_id,
+            follow_up_appointments.visited_at,
+            follow_up_appointments.day_of_year
+           FROM follow_up_appointments
+        ), all_follow_ups_with_medical_histories AS (
+         SELECT DISTINCT ON (all_follow_ups.day_of_year, all_follow_ups.facility_id, all_follow_ups.patient_id) all_follow_ups.patient_id,
+            all_follow_ups.patient_gender,
+            all_follow_ups.facility_id,
+            mh.diabetes,
+            mh.hypertension,
+            all_follow_ups.user_id,
+            all_follow_ups.visit_id,
+            all_follow_ups.visit_type,
+            all_follow_ups.visited_at,
+            all_follow_ups.day_of_year
+           FROM (all_follow_ups
+             JOIN public.medical_histories mh ON ((all_follow_ups.patient_id = mh.patient_id)))
+        ), registered_patients_with_medical_histories AS (
+         SELECT DISTINCT ON (registered_patients.day_of_year, registered_patients.facility_id, registered_patients.patient_id) registered_patients.patient_id,
+            registered_patients.patient_gender,
+            registered_patients.facility_id,
+            mh.diabetes,
+            mh.hypertension,
+            registered_patients.user_id,
+            registered_patients.visit_id,
+            registered_patients.visit_type,
+            registered_patients.visited_at,
+            registered_patients.day_of_year
+           FROM (registered_patients
+             JOIN public.medical_histories mh ON ((registered_patients.patient_id = mh.patient_id)))
+        ), daily_registered_patients AS (
+         SELECT DISTINCT ON (registered_patients_with_medical_histories.facility_id, (date(registered_patients_with_medical_histories.visited_at))) registered_patients_with_medical_histories.facility_id,
+            date(registered_patients_with_medical_histories.visited_at) AS visit_date,
+            registered_patients_with_medical_histories.day_of_year,
+            count(*) AS daily_registrations_all,
+            count(*) FILTER (WHERE (registered_patients_with_medical_histories.hypertension = 'yes'::text)) AS daily_registrations_htn_all,
+            count(*) FILTER (WHERE ((registered_patients_with_medical_histories.hypertension = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'female'::public.gender_enum))) AS daily_registrations_htn_female,
+            count(*) FILTER (WHERE ((registered_patients_with_medical_histories.hypertension = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'male'::public.gender_enum))) AS daily_registrations_htn_male,
+            count(*) FILTER (WHERE ((registered_patients_with_medical_histories.hypertension = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'transgender'::public.gender_enum))) AS daily_registrations_htn_transgender,
+            count(*) FILTER (WHERE (registered_patients_with_medical_histories.diabetes = 'yes'::text)) AS daily_registrations_dm_all,
+            count(*) FILTER (WHERE ((registered_patients_with_medical_histories.diabetes = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'female'::public.gender_enum))) AS daily_registrations_dm_female,
+            count(*) FILTER (WHERE ((registered_patients_with_medical_histories.diabetes = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'male'::public.gender_enum))) AS daily_registrations_dm_male,
+            count(*) FILTER (WHERE ((registered_patients_with_medical_histories.diabetes = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'transgender'::public.gender_enum))) AS daily_registrations_dm_transgender,
+            count(*) FILTER (WHERE ((registered_patients_with_medical_histories.hypertension = 'yes'::text) AND (registered_patients_with_medical_histories.diabetes = 'yes'::text))) AS daily_registrations_htn_and_dm_all,
+            count(*) FILTER (WHERE ((registered_patients_with_medical_histories.hypertension = 'yes'::text) AND (registered_patients_with_medical_histories.diabetes = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'female'::public.gender_enum))) AS daily_registrations_htn_and_dm_female,
+            count(*) FILTER (WHERE ((registered_patients_with_medical_histories.hypertension = 'yes'::text) AND (registered_patients_with_medical_histories.diabetes = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'male'::public.gender_enum))) AS daily_registrations_htn_and_dm_male,
+            count(*) FILTER (WHERE ((registered_patients_with_medical_histories.hypertension = 'yes'::text) AND (registered_patients_with_medical_histories.diabetes = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'transgender'::public.gender_enum))) AS daily_registrations_htn_and_dm_transgender
+           FROM registered_patients_with_medical_histories
+          GROUP BY registered_patients_with_medical_histories.facility_id, (date(registered_patients_with_medical_histories.visited_at)), registered_patients_with_medical_histories.day_of_year
+        ), daily_follow_ups AS (
+         SELECT DISTINCT ON (all_follow_ups_with_medical_histories.facility_id, (date(all_follow_ups_with_medical_histories.visited_at))) all_follow_ups_with_medical_histories.facility_id,
+            date(all_follow_ups_with_medical_histories.visited_at) AS visit_date,
+            all_follow_ups_with_medical_histories.day_of_year,
+            count(*) AS daily_follow_ups_all,
+            count(*) FILTER (WHERE (all_follow_ups_with_medical_histories.hypertension = 'yes'::text)) AS daily_follow_ups_htn_all,
+            count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.hypertension = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'female'::public.gender_enum))) AS daily_follow_ups_htn_female,
+            count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.hypertension = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'male'::public.gender_enum))) AS daily_follow_ups_htn_male,
+            count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.hypertension = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'transgender'::public.gender_enum))) AS daily_follow_ups_htn_transgender,
+            count(*) FILTER (WHERE (all_follow_ups_with_medical_histories.diabetes = 'yes'::text)) AS daily_follow_ups_dm_all,
+            count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.diabetes = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'female'::public.gender_enum))) AS daily_follow_ups_dm_female,
+            count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.diabetes = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'male'::public.gender_enum))) AS daily_follow_ups_dm_male,
+            count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.diabetes = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'transgender'::public.gender_enum))) AS daily_follow_ups_dm_transgender,
+            count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.hypertension = 'yes'::text) AND (all_follow_ups_with_medical_histories.diabetes = 'yes'::text))) AS daily_follow_ups_htn_and_dm_all,
+            count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.hypertension = 'yes'::text) AND (all_follow_ups_with_medical_histories.diabetes = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'female'::public.gender_enum))) AS daily_follow_ups_htn_and_dm_female,
+            count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.hypertension = 'yes'::text) AND (all_follow_ups_with_medical_histories.diabetes = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'male'::public.gender_enum))) AS daily_follow_ups_htn_and_dm_male,
+            count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.hypertension = 'yes'::text) AND (all_follow_ups_with_medical_histories.diabetes = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'transgender'::public.gender_enum))) AS daily_follow_ups_htn_and_dm_transgender
+           FROM all_follow_ups_with_medical_histories
+          GROUP BY all_follow_ups_with_medical_histories.facility_id, (date(all_follow_ups_with_medical_histories.visited_at)), all_follow_ups_with_medical_histories.day_of_year
+        ), last_30_days AS (
+         SELECT (generate_series((CURRENT_TIMESTAMP - '30 days'::interval), CURRENT_TIMESTAMP, '1 day'::interval))::date AS date
+        )
+ SELECT rf.facility_region_slug,
+    rf.facility_id,
+    rf.facility_region_id,
+    rf.block_region_id,
+    rf.district_region_id,
+    rf.state_region_id,
+    last_30_days.date AS visit_date,
+    (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, (last_30_days.date)::timestamp with time zone))))::integer AS day_of_year,
+    daily_registered_patients.daily_registrations_all,
+    daily_registered_patients.daily_registrations_htn_all,
+    daily_registered_patients.daily_registrations_htn_male,
+    daily_registered_patients.daily_registrations_htn_female,
+    daily_registered_patients.daily_registrations_htn_transgender,
+    daily_registered_patients.daily_registrations_dm_all,
+    daily_registered_patients.daily_registrations_dm_male,
+    daily_registered_patients.daily_registrations_dm_female,
+    daily_registered_patients.daily_registrations_dm_transgender,
+    daily_registered_patients.daily_registrations_htn_and_dm_all,
+    daily_registered_patients.daily_registrations_htn_and_dm_male,
+    daily_registered_patients.daily_registrations_htn_and_dm_female,
+    daily_registered_patients.daily_registrations_htn_and_dm_transgender,
+    daily_follow_ups.daily_follow_ups_all,
+    daily_follow_ups.daily_follow_ups_htn_all,
+    daily_follow_ups.daily_follow_ups_htn_female,
+    daily_follow_ups.daily_follow_ups_htn_male,
+    daily_follow_ups.daily_follow_ups_htn_transgender,
+    daily_follow_ups.daily_follow_ups_dm_all,
+    daily_follow_ups.daily_follow_ups_dm_female,
+    daily_follow_ups.daily_follow_ups_dm_male,
+    daily_follow_ups.daily_follow_ups_dm_transgender,
+    daily_follow_ups.daily_follow_ups_htn_and_dm_all,
+    daily_follow_ups.daily_follow_ups_htn_and_dm_male,
+    daily_follow_ups.daily_follow_ups_htn_and_dm_female,
+    daily_follow_ups.daily_follow_ups_htn_and_dm_transgender
+   FROM (((public.reporting_facilities rf
+     JOIN last_30_days ON (true))
+     LEFT JOIN daily_registered_patients ON (((daily_registered_patients.visit_date = last_30_days.date) AND (daily_registered_patients.facility_id = rf.facility_id))))
+     LEFT JOIN daily_follow_ups ON (((daily_follow_ups.visit_date = last_30_days.date) AND (daily_follow_ups.facility_id = rf.facility_id))))
   WITH NO DATA;
 
 
@@ -3517,6 +3832,20 @@ COMMENT ON COLUMN public.reporting_facility_states.monthly_diabetes_registration
 
 
 --
+-- Name: COLUMN reporting_facility_states.cumulative_hypertension_and_diabetes_registrations; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.cumulative_hypertension_and_diabetes_registrations IS 'The total number of patients registered at the facility with both hypertension and diabetes up to the end of the reporting month';
+
+
+--
+-- Name: COLUMN reporting_facility_states.monthly_hypertension_and_diabetes_registrations; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.monthly_hypertension_and_diabetes_registrations IS 'The number of patients registered at the facility with both hypertensio and diabetes in the reporting month';
+
+
+--
 -- Name: COLUMN reporting_facility_states.under_care; Type: COMMENT; Schema: public; Owner: -
 --
 
@@ -4585,10 +4914,45 @@ CREATE UNIQUE INDEX clean_medicine_to_dosages__unique_name_and_dosage ON public.
 
 
 --
--- Name: daily_follow_ups_day_patient_facility; Type: INDEX; Schema: public; Owner: -
+-- Name: fd_far_facility_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX daily_follow_ups_day_patient_facility ON public.reporting_daily_follow_ups USING btree (patient_id, facility_id, day_of_year);
+CREATE INDEX fd_far_facility_id ON public.reporting_facility_daily_follow_ups_and_registrations USING btree (facility_id);
+
+
+--
+-- Name: fd_far_facility_id_visit_date; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX fd_far_facility_id_visit_date ON public.reporting_facility_daily_follow_ups_and_registrations USING btree (facility_id, visit_date);
+
+
+--
+-- Name: fd_far_visit_date; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX fd_far_visit_date ON public.reporting_facility_daily_follow_ups_and_registrations USING btree (visit_date);
+
+
+--
+-- Name: fs_daily_dimensions_date; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX fs_daily_dimensions_date ON public.reporting_facility_state_daily_dimensions USING btree (visit_date);
+
+
+--
+-- Name: fs_daily_dimensions_facility_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX fs_daily_dimensions_facility_id ON public.reporting_facility_state_daily_dimensions USING btree (facility_id);
+
+
+--
+-- Name: fs_daily_dimensions_facility_id_visit_date; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX fs_daily_dimensions_facility_id_visit_date ON public.reporting_facility_state_daily_dimensions USING btree (facility_id, visit_date);
 
 
 --
@@ -4879,10 +5243,10 @@ CREATE INDEX index_deduplication_logs_on_user_id ON public.deduplication_logs US
 
 
 --
--- Name: index_dfu_facility_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_device_created_at_on_appts; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_dfu_facility_id ON public.reporting_daily_follow_ups USING btree (facility_id);
+CREATE INDEX index_device_created_at_on_appts ON public.appointments USING btree (device_created_at);
 
 
 --
@@ -6099,4 +6463,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220718091454'),
 ('20220902104533'),
 ('20220902114057'),
-('20220902125119');
+('20220902125119'),
+('20220919111725'),
+('20220923105541');
+
+
