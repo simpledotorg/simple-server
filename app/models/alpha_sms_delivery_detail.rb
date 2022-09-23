@@ -12,7 +12,7 @@ class AlphaSmsDeliveryDetail < DeliveryDetail
   end
 
   def in_progress?
-    false
+    request_status.blank?
   end
 
   def self.create_with_communication!(request_id:, recipient_number:, message:)

@@ -7,7 +7,11 @@ RSpec.describe AlphaSmsDeliveryDetail, type: :model do
 
   describe "#in_progress?" do
     it "is always false because messages are reported as either success or failures" do
-      expect(described_class.new.in_progress?).to be false
+      detailable = create(:alpha_sms_delivery_detail, request_status: nil)
+      delivered_detail = create(:alpha_sms_delivery_detail, request_status: "Sent")
+
+      expect(detailable.in_progress?).to be true
+      expect(delivered_detail.in_progress?).to be false
     end
 
     describe "#unsuccessful?" do

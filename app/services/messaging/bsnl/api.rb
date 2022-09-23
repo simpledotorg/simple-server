@@ -11,7 +11,7 @@ class Messaging::Bsnl::Api
 
   def initialize
     unless credentials.values.all?
-      raise Messaging::Bsnl::CredentialsError.new("Missing BSNL credentials")
+      raise Messaging::Bsnl::CredentialsError.new("Missing BSNL credentials: #{missing_credentials}")
     end
   end
 
@@ -59,6 +59,10 @@ class Messaging::Bsnl::Api
       entity_id: ENV["BSNL_IHCI_ENTITY_ID"],
       jwt: Configuration.fetch("bsnl_sms_jwt")
     }
+  end
+
+  def missing_credentials
+    credentials.select { |_, v| v.nil?}.keys.join(",")
   end
 
   def post(path, body = nil)
