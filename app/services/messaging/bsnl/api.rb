@@ -62,7 +62,7 @@ class Messaging::Bsnl::Api
   end
 
   def missing_credentials
-    credentials.select { |_, v| v.nil?}.keys.join(",")
+    credentials.select { |_, v| v.nil? }.keys.join(",")
   end
 
   def post(path, body = nil)

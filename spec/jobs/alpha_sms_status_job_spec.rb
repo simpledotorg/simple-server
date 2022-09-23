@@ -18,17 +18,17 @@ RSpec.describe AlphaSmsStatusJob, type: :job do
       allow(ENV).to receive(:[]).with("ALPHA_SMS_API_KEY").and_return("ABCDEF")
       stub_request(:post, "https://api.sms.net.bd/report/request/#{request_id}")
         .to_return(body: {
-          "error"=> 0,
-          "msg"=> "Success",
-          "data"=> {
-            "request_id"=> request_id,
-            "request_status"=> "Complete",
-            "request_charge"=> "0.5400",
-            "recipients"=> [
+          "error" => 0,
+          "msg" => "Success",
+          "data" => {
+            "request_id" => request_id,
+            "request_status" => "Complete",
+            "request_charge" => "0.5400",
+            "recipients" => [
               {
-                "number"=> "111111111",
-                "charge"=> "0.5400",
-                "status"=> "Sent"
+                "number" => "111111111",
+                "charge" => "0.5400",
+                "status" => "Sent"
               }
             ]
           }
@@ -52,5 +52,3 @@ RSpec.describe AlphaSmsStatusJob, type: :job do
     end
   end
 end
-
-
