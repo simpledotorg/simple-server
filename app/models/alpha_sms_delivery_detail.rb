@@ -3,6 +3,8 @@ class AlphaSmsDeliveryDetail < DeliveryDetail
   validates :request_id, presence: true
   validates :recipient_number, presence: true
 
+  scope :in_progress, -> { where(request_status: nil) }
+
   def unsuccessful?
     request_status != SUCCESSFUL_REQUEST_STATUS
   end
