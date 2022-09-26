@@ -4,7 +4,7 @@ class AlphaSmsDeliveryDetail < DeliveryDetail
   validates :recipient_number, presence: true
 
   def unsuccessful?
-    request_status != SUCCESSFUL_REQUEST_STATUS
+    !successful?
   end
 
   def successful?
