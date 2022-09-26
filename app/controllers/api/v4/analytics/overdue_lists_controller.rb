@@ -7,7 +7,7 @@ class Api::V4::Analytics::OverdueListsController < Api::V4::AnalyticsController
             .includes(:latest_bp_passport, :current_prescription_drugs)
             .order(risk_level: :desc, next_appointment_scheduled_date: :desc, id: :asc)
 
-        send_data render_to_string("show.csv.erb"), filename: download_filename
+        send_data render_to_string("show"), filename: download_filename
       end
     end
   end

@@ -34,7 +34,7 @@ module Reports
     def warm_caches
       Time.use_zone(Period::REPORTING_TIME_ZONE) do
         Region::REGION_TYPES.reject { |t| t == "root" }.each do |region_type|
-          Datadog.tracer.trace("region_cache_warmer.warm_repository_cache", resource: region_type) do |span|
+          Datadog::Tracing.trace("region_cache_warmer.warm_repository_cache", resource: region_type) do |span|
             Region.public_send("#{region_type}_regions").find_in_batches do |batch|
               warm_repository_caches(batch)
             end

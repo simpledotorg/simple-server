@@ -30,8 +30,12 @@ RSpec.describe Experimentation::Experiment, type: :model do
 
   describe "validations" do
     it { should validate_presence_of(:name) }
-    it { experiment.should validate_uniqueness_of(:name) }
     it { should validate_presence_of(:experiment_type) }
+
+    describe "validates uniqueness of name" do
+      subject { build(:experiment) }
+      it { should validate_uniqueness_of(:name) }
+    end
 
     it "there can only be one active experiment of a particular type at a time" do
       create(:experiment, :enrolling, experiment_type: "current_patients")

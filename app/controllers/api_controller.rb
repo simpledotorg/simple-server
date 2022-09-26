@@ -101,7 +101,7 @@ class APIController < ApplicationController
   end
 
   def set_datadog_user_info
-    current_span = Datadog.tracer.active_span
+    current_span = Datadog::Tracing.active_span
     return if current_span.nil? || RequestStore.store[:current_user].blank?
     current_span.set_tags(RequestStore.store[:current_user])
   end
