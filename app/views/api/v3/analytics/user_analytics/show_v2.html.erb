@@ -173,7 +173,7 @@
                locals: {
                  page_id: "daily-report-page",
                  title: t("progress_tab.daily_report_title"),
-                 subtitle: t("progress_tab.last_updated_at", date: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")),
+                 subtitle: t("progress_tab.last_updated_at", date: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime(@date_format+ " at %I:%M %P")),
                  periods: @period_reports_data["daily_periods"],
                  registered_patients: @period_reports_data["daily_registered_patients"],
                  follow_up_patients: @period_reports_data["daily_follow_up_patients"]
@@ -183,7 +183,7 @@
                locals: {
                  page_id: "monthly-report-page",
                  title: t("progress_tab.monthly_report_title"),
-                 subtitle: t("progress_tab.last_updated_at", date: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")),
+                 subtitle: t("progress_tab.last_updated_at", date: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime(@date_format+ " at %I:%M %P")),
                  periods: @period_reports_data["monthly_periods"],
                  registered_patients: @period_reports_data["monthly_registered_patients"],
                  follow_up_patients: @period_reports_data["monthly_follow_up_patients"]
@@ -193,7 +193,7 @@
                locals: {
                  page_id: "yearly-report-page",
                  title: t("progress_tab.yearly_report_title"),
-                 subtitle: t("progress_tab.last_updated_at", date: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")),
+                 subtitle: t("progress_tab.last_updated_at", date: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime(@date_format+ " at %I:%M %P")),
                  periods: @period_reports_data["yearly_periods"],
                  registered_patients: @period_reports_data["yearly_registered_patients"],
                  follow_up_patients: @period_reports_data["yearly_follow_up_patients"]
@@ -205,7 +205,7 @@
                  page_id: "hypertension-report",
                  report_diagnosis: t("progress_tab.diagnoses.hypertension"),
                  title: t("progress_tab.hypertension_report_title"),
-                 subtitle: t("progress_tab.last_updated_at", date: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")),
+                 subtitle: t("progress_tab.last_updated_at", date: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime(@date_format+ " at %I:%M %P")),
                  diagnosis_data: @hypertension_reports_data
                }
     %>
@@ -215,7 +215,7 @@
                  page_id: "diabetes-report",
                  report_diagnosis: t("progress_tab.diagnoses.diabetes"),
                  title: t("progress_tab.diabetes_report_title"),
-                 subtitle: t("progress_tab.last_updated_at", date: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")),
+                 subtitle: t("progress_tab.last_updated_at", date: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime(@date_format+ " at %I:%M %P")),
                  diagnosis_data: @diabetes_reports_data
                }
     %>

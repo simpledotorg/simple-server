@@ -14,7 +14,7 @@ class Reports::DailyProgressComponentV1 < ViewComponent::Base
     @now = Date.current
     @start = @now - DAYS_AGO
     @region = service.region
-    @last_updated_at = DateTime.parse(last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")
+    @last_updated_at = DateTime.parse(last_updated_at).to_date.strftime(DAY_FORMAT + " at %I:%M %P")
     @current_user = current_user
   end
 

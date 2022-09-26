@@ -12,6 +12,8 @@ class Reports::ProgressController < AdminController
     @user_analytics = UserAnalyticsPresenter.new(@region)
     @service = Reports::FacilityProgressService.new(current_facility, @period)
 
+    @date_format = ApplicationHelper::STANDARD_DATE_DISPLAY_FORMAT
+
     @total_follow_ups_dimension = Reports::FacilityProgressDimension.new(:follow_ups, diagnosis: :all, gender: :all)
     @total_registrations_dimension = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :all, gender: :all)
     @total_follow_ups = Reports::MonthlyProgressComponent.new(@total_follow_ups_dimension, service: @service, current_user: @current_user).total_count

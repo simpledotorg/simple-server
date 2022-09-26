@@ -17,7 +17,7 @@
     <div id="progress-start">
       <div class="mb-8px">
         <p class="fs-14px mt-8px">
-          <%= raw t("analytics.updated", time: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")) %>
+          <%= raw t("analytics.updated", time: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime(@date_format+ " at %I:%M %P")) %>
         </p>
         <%= content_tag :div,
                         id: "statistics",
