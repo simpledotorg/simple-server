@@ -131,9 +131,9 @@ class OneOff::CPHCEnrollment::Service
     when 404
       logger.error "Not found", path
     when 200
-      logger.info "Request Successful", JSON.parse(response.body)
+      logger.info "Request Successful", response.body
     else
-      logger.error "Request Failed", {response_body: JSON.parse(response.body), status: response.status, payload: payload}
+      logger.error "Request Failed", {response_body: response.body, status: response.status, payload: payload.payload}
     end
 
     response

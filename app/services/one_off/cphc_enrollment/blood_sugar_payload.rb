@@ -5,7 +5,7 @@ class OneOff::CPHCEnrollment::BloodSugarPayload
     @blood_sugar = blood_sugar
   end
 
-  def as_json
+  def payload
     {
       isVitalsEdited: true,
       exam: {
