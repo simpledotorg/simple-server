@@ -39,11 +39,19 @@ agent:
     type: e1-standard-2
     os_image: ubuntu1804
 promotions:
+  - name: Bangladesh Demo Deployment
+    pipeline_file: bangladesh_demo_deployment.yml
+    auto_promote:
+      when: (branch = 'master' AND result = 'passed') OR (tag =~ '^release-.*' AND result = 'passed')
   - name: India Demo Deployment
     pipeline_file: india_demo_deployment.yml
     auto_promote:
       when: (branch = 'master' AND result = 'passed') OR (tag =~ '^release-.*' AND result = 'passed')
   - name: Ethiopia Demo Deployment
     pipeline_file: ethiopia_demo_deployment.yml
+    auto_promote:
+      when: (branch = 'master' AND result = 'passed') OR (tag =~ '^release-.*' AND result = 'passed')
+  - name: Sri Lanka Demo Deployment
+    pipeline_file: sri_lanka_demo_deployment.yml
     auto_promote:
       when: (branch = 'master' AND result = 'passed') OR (tag =~ '^release-.*' AND result = 'passed')
