@@ -59,9 +59,10 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
       _htn_patient3 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 1.minute.ago)
 
       with_reporting_time_zone do
+        refresh_views
         service = described_class.new(facility, Period.current)
-        expect(service.daily_registrations(3.days.ago)).to eq(3)
-        expect(service.daily_registrations(1.days.ago)).to eq(0)
+        expect(service.daily_registrations(3.days.ago.to_date)).to eq(3)
+        expect(service.daily_registrations(1.days.ago.to_date)).to eq(0)
         expect(service.daily_registrations(Date.current)).to eq(1)
       end
     end
@@ -75,6 +76,7 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
       _htn_patient3 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 1.minute.ago)
 
       with_reporting_time_zone do
+        refresh_views
         service = described_class.new(facility, Period.current)
         expect(service.daily_registrations(3.days.ago)).to eq(2)
         expect(service.daily_registrations(1.days.ago)).to eq(0)
@@ -99,8 +101,8 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
         with_reporting_time_zone do
           refresh_views
           service = described_class.new(facility, Period.current)
-          expect(service.daily_follow_ups(two_days_ago)).to eq(3)
-          expect(service.daily_follow_ups(one_day_ago)).to eq(0)
+          expect(service.daily_follow_ups(two_days_ago.to_date)).to eq(3)
+          expect(service.daily_follow_ups(one_day_ago.to_date)).to eq(0)
         end
       end
     end
@@ -123,9 +125,9 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
         with_reporting_time_zone do
           refresh_views
           service = described_class.new(facility, Period.current)
-          expect(service.daily_follow_ups(seven_days_ago)).to eq(1)
-          expect(service.daily_follow_ups(two_days_ago)).to eq(2)
-          expect(service.daily_follow_ups(one_day_ago)).to eq(0)
+          expect(service.daily_follow_ups(seven_days_ago.to_date)).to eq(1)
+          expect(service.daily_follow_ups(two_days_ago.to_date)).to eq(2)
+          expect(service.daily_follow_ups(one_day_ago.to_date)).to eq(0)
           expect(service.daily_follow_ups(Date.current)).to eq(0)
         end
       end

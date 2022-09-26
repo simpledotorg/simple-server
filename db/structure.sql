@@ -1670,7 +1670,7 @@ CREATE MATERIALIZED VIEW public.reporting_facility_appointment_scheduled_days AS
 
 CREATE MATERIALIZED VIEW public.reporting_facility_daily_follow_ups_and_registrations AS
  WITH follow_up_blood_pressures AS (
-         SELECT DISTINCT ON (p.id, bp.facility_id, ((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))))::integer)) p.id AS patient_id,
+         SELECT DISTINCT ON (((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))))::integer), bp.facility_id, p.id) p.id AS patient_id,
             (p.gender)::public.gender_enum AS patient_gender,
             bp.id AS visit_id,
             'BloodPressure'::text AS visit_type,
@@ -1682,7 +1682,7 @@ CREATE MATERIALIZED VIEW public.reporting_facility_daily_follow_ups_and_registra
              JOIN public.blood_pressures bp ON (((p.id = bp.patient_id) AND (date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))) > date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
           WHERE ((p.deleted_at IS NULL) AND (bp.recorded_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
         ), follow_up_blood_sugars AS (
-         SELECT DISTINCT ON (p.id, bs.facility_id, ((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))))::integer)) p.id AS patient_id,
+         SELECT DISTINCT ON (((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))))::integer), bs.facility_id, p.id) p.id AS patient_id,
             (p.gender)::public.gender_enum AS patient_gender,
             bs.id AS visit_id,
             'BloodSugar'::text AS visit_type,
@@ -1694,7 +1694,7 @@ CREATE MATERIALIZED VIEW public.reporting_facility_daily_follow_ups_and_registra
              JOIN public.blood_sugars bs ON (((p.id = bs.patient_id) AND (date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))) > date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
           WHERE ((p.deleted_at IS NULL) AND (bs.recorded_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
         ), follow_up_prescription_drugs AS (
-         SELECT DISTINCT ON (p.id, pd.facility_id, ((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at))))::integer)) p.id AS patient_id,
+         SELECT DISTINCT ON (((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at))))::integer), pd.facility_id, p.id) p.id AS patient_id,
             (p.gender)::public.gender_enum AS patient_gender,
             pd.id AS visit_id,
             'PrescriptionDrug'::text AS visit_type,
@@ -1706,7 +1706,7 @@ CREATE MATERIALIZED VIEW public.reporting_facility_daily_follow_ups_and_registra
              JOIN public.prescription_drugs pd ON (((p.id = pd.patient_id) AND (date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at))) > date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
           WHERE ((p.deleted_at IS NULL) AND (pd.device_created_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
         ), follow_up_appointments AS (
-         SELECT DISTINCT ON (p.id, app.creation_facility_id, ((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at))))::integer)) p.id AS patient_id,
+         SELECT DISTINCT ON (((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at))))::integer), app.creation_facility_id, p.id) p.id AS patient_id,
             (p.gender)::public.gender_enum AS patient_gender,
             app.id AS visit_id,
             'Appointment'::text AS visit_type,
@@ -1718,7 +1718,7 @@ CREATE MATERIALIZED VIEW public.reporting_facility_daily_follow_ups_and_registra
              JOIN public.appointments app ON (((p.id = app.patient_id) AND (date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at))) > date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
           WHERE ((p.deleted_at IS NULL) AND (app.device_created_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
         ), registered_patients AS (
-         SELECT DISTINCT ON (p.id, p.assigned_facility_id, ((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))))::integer)) p.id AS patient_id,
+         SELECT DISTINCT ON (((date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))))::integer), p.assigned_facility_id, p.id) p.id AS patient_id,
             (p.gender)::public.gender_enum AS patient_gender,
             p.id AS visit_id,
             'Registration'::text AS visit_type,
@@ -1798,38 +1798,36 @@ CREATE MATERIALIZED VIEW public.reporting_facility_daily_follow_ups_and_registra
          SELECT DISTINCT ON (registered_patients_with_medical_histories.facility_id, (date(registered_patients_with_medical_histories.visited_at))) registered_patients_with_medical_histories.facility_id,
             date(registered_patients_with_medical_histories.visited_at) AS visit_date,
             registered_patients_with_medical_histories.day_of_year,
-            count(*) AS daily_registrations_all,
-            count(*) FILTER (WHERE (registered_patients_with_medical_histories.hypertension = 'yes'::text)) AS daily_registrations_htn_all,
-            count(*) FILTER (WHERE ((registered_patients_with_medical_histories.hypertension = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'female'::public.gender_enum))) AS daily_registrations_htn_female,
-            count(*) FILTER (WHERE ((registered_patients_with_medical_histories.hypertension = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'male'::public.gender_enum))) AS daily_registrations_htn_male,
-            count(*) FILTER (WHERE ((registered_patients_with_medical_histories.hypertension = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'transgender'::public.gender_enum))) AS daily_registrations_htn_transgender,
-            count(*) FILTER (WHERE (registered_patients_with_medical_histories.diabetes = 'yes'::text)) AS daily_registrations_dm_all,
-            count(*) FILTER (WHERE ((registered_patients_with_medical_histories.diabetes = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'female'::public.gender_enum))) AS daily_registrations_dm_female,
-            count(*) FILTER (WHERE ((registered_patients_with_medical_histories.diabetes = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'male'::public.gender_enum))) AS daily_registrations_dm_male,
-            count(*) FILTER (WHERE ((registered_patients_with_medical_histories.diabetes = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'transgender'::public.gender_enum))) AS daily_registrations_dm_transgender,
-            count(*) FILTER (WHERE ((registered_patients_with_medical_histories.hypertension = 'yes'::text) AND (registered_patients_with_medical_histories.diabetes = 'yes'::text))) AS daily_registrations_htn_and_dm_all,
-            count(*) FILTER (WHERE ((registered_patients_with_medical_histories.hypertension = 'yes'::text) AND (registered_patients_with_medical_histories.diabetes = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'female'::public.gender_enum))) AS daily_registrations_htn_and_dm_female,
-            count(*) FILTER (WHERE ((registered_patients_with_medical_histories.hypertension = 'yes'::text) AND (registered_patients_with_medical_histories.diabetes = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'male'::public.gender_enum))) AS daily_registrations_htn_and_dm_male,
-            count(*) FILTER (WHERE ((registered_patients_with_medical_histories.hypertension = 'yes'::text) AND (registered_patients_with_medical_histories.diabetes = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'transgender'::public.gender_enum))) AS daily_registrations_htn_and_dm_transgender
+            COALESCE(count(*) FILTER (WHERE (registered_patients_with_medical_histories.hypertension = 'yes'::text)), (0)::bigint) AS daily_registrations_htn_all,
+            COALESCE(count(*) FILTER (WHERE ((registered_patients_with_medical_histories.hypertension = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'female'::public.gender_enum))), (0)::bigint) AS daily_registrations_htn_female,
+            COALESCE(count(*) FILTER (WHERE ((registered_patients_with_medical_histories.hypertension = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'male'::public.gender_enum))), (0)::bigint) AS daily_registrations_htn_male,
+            COALESCE(count(*) FILTER (WHERE ((registered_patients_with_medical_histories.hypertension = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'transgender'::public.gender_enum))), (0)::bigint) AS daily_registrations_htn_transgender,
+            COALESCE(count(*) FILTER (WHERE (registered_patients_with_medical_histories.diabetes = 'yes'::text)), (0)::bigint) AS daily_registrations_dm_all,
+            COALESCE(count(*) FILTER (WHERE ((registered_patients_with_medical_histories.diabetes = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'female'::public.gender_enum))), (0)::bigint) AS daily_registrations_dm_female,
+            COALESCE(count(*) FILTER (WHERE ((registered_patients_with_medical_histories.diabetes = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'male'::public.gender_enum))), (0)::bigint) AS daily_registrations_dm_male,
+            COALESCE(count(*) FILTER (WHERE ((registered_patients_with_medical_histories.diabetes = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'transgender'::public.gender_enum))), (0)::bigint) AS daily_registrations_dm_transgender,
+            COALESCE(count(*) FILTER (WHERE ((registered_patients_with_medical_histories.hypertension = 'yes'::text) AND (registered_patients_with_medical_histories.diabetes = 'yes'::text))), (0)::bigint) AS daily_registrations_htn_and_dm_all,
+            COALESCE(count(*) FILTER (WHERE ((registered_patients_with_medical_histories.hypertension = 'yes'::text) AND (registered_patients_with_medical_histories.diabetes = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'female'::public.gender_enum))), (0)::bigint) AS daily_registrations_htn_and_dm_female,
+            COALESCE(count(*) FILTER (WHERE ((registered_patients_with_medical_histories.hypertension = 'yes'::text) AND (registered_patients_with_medical_histories.diabetes = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'male'::public.gender_enum))), (0)::bigint) AS daily_registrations_htn_and_dm_male,
+            COALESCE(count(*) FILTER (WHERE ((registered_patients_with_medical_histories.hypertension = 'yes'::text) AND (registered_patients_with_medical_histories.diabetes = 'yes'::text) AND (registered_patients_with_medical_histories.patient_gender = 'transgender'::public.gender_enum))), (0)::bigint) AS daily_registrations_htn_and_dm_transgender
            FROM registered_patients_with_medical_histories
           GROUP BY registered_patients_with_medical_histories.facility_id, (date(registered_patients_with_medical_histories.visited_at)), registered_patients_with_medical_histories.day_of_year
         ), daily_follow_ups AS (
          SELECT DISTINCT ON (all_follow_ups_with_medical_histories.facility_id, (date(all_follow_ups_with_medical_histories.visited_at))) all_follow_ups_with_medical_histories.facility_id,
             date(all_follow_ups_with_medical_histories.visited_at) AS visit_date,
             all_follow_ups_with_medical_histories.day_of_year,
-            count(*) AS daily_follow_ups_all,
-            count(*) FILTER (WHERE (all_follow_ups_with_medical_histories.hypertension = 'yes'::text)) AS daily_follow_ups_htn_all,
-            count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.hypertension = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'female'::public.gender_enum))) AS daily_follow_ups_htn_female,
-            count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.hypertension = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'male'::public.gender_enum))) AS daily_follow_ups_htn_male,
-            count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.hypertension = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'transgender'::public.gender_enum))) AS daily_follow_ups_htn_transgender,
-            count(*) FILTER (WHERE (all_follow_ups_with_medical_histories.diabetes = 'yes'::text)) AS daily_follow_ups_dm_all,
-            count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.diabetes = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'female'::public.gender_enum))) AS daily_follow_ups_dm_female,
-            count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.diabetes = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'male'::public.gender_enum))) AS daily_follow_ups_dm_male,
-            count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.diabetes = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'transgender'::public.gender_enum))) AS daily_follow_ups_dm_transgender,
-            count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.hypertension = 'yes'::text) AND (all_follow_ups_with_medical_histories.diabetes = 'yes'::text))) AS daily_follow_ups_htn_and_dm_all,
-            count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.hypertension = 'yes'::text) AND (all_follow_ups_with_medical_histories.diabetes = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'female'::public.gender_enum))) AS daily_follow_ups_htn_and_dm_female,
-            count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.hypertension = 'yes'::text) AND (all_follow_ups_with_medical_histories.diabetes = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'male'::public.gender_enum))) AS daily_follow_ups_htn_and_dm_male,
-            count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.hypertension = 'yes'::text) AND (all_follow_ups_with_medical_histories.diabetes = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'transgender'::public.gender_enum))) AS daily_follow_ups_htn_and_dm_transgender
+            COALESCE(count(*) FILTER (WHERE (all_follow_ups_with_medical_histories.hypertension = 'yes'::text)), (0)::bigint) AS daily_follow_ups_htn_all,
+            COALESCE(count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.hypertension = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'female'::public.gender_enum))), (0)::bigint) AS daily_follow_ups_htn_female,
+            COALESCE(count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.hypertension = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'male'::public.gender_enum))), (0)::bigint) AS daily_follow_ups_htn_male,
+            COALESCE(count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.hypertension = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'transgender'::public.gender_enum))), (0)::bigint) AS daily_follow_ups_htn_transgender,
+            COALESCE(count(*) FILTER (WHERE (all_follow_ups_with_medical_histories.diabetes = 'yes'::text)), (0)::bigint) AS daily_follow_ups_dm_all,
+            COALESCE(count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.diabetes = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'female'::public.gender_enum))), (0)::bigint) AS daily_follow_ups_dm_female,
+            COALESCE(count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.diabetes = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'male'::public.gender_enum))), (0)::bigint) AS daily_follow_ups_dm_male,
+            COALESCE(count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.diabetes = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'transgender'::public.gender_enum))), (0)::bigint) AS daily_follow_ups_dm_transgender,
+            COALESCE(count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.hypertension = 'yes'::text) AND (all_follow_ups_with_medical_histories.diabetes = 'yes'::text))), (0)::bigint) AS daily_follow_ups_htn_and_dm_all,
+            COALESCE(count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.hypertension = 'yes'::text) AND (all_follow_ups_with_medical_histories.diabetes = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'female'::public.gender_enum))), (0)::bigint) AS daily_follow_ups_htn_and_dm_female,
+            COALESCE(count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.hypertension = 'yes'::text) AND (all_follow_ups_with_medical_histories.diabetes = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'male'::public.gender_enum))), (0)::bigint) AS daily_follow_ups_htn_and_dm_male,
+            COALESCE(count(*) FILTER (WHERE ((all_follow_ups_with_medical_histories.hypertension = 'yes'::text) AND (all_follow_ups_with_medical_histories.diabetes = 'yes'::text) AND (all_follow_ups_with_medical_histories.patient_gender = 'transgender'::public.gender_enum))), (0)::bigint) AS daily_follow_ups_htn_and_dm_transgender
            FROM all_follow_ups_with_medical_histories
           GROUP BY all_follow_ups_with_medical_histories.facility_id, (date(all_follow_ups_with_medical_histories.visited_at)), all_follow_ups_with_medical_histories.day_of_year
         ), last_30_days AS (
@@ -1843,7 +1841,6 @@ CREATE MATERIALIZED VIEW public.reporting_facility_daily_follow_ups_and_registra
     rf.state_region_id,
     last_30_days.date AS visit_date,
     (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, (last_30_days.date)::timestamp with time zone))))::integer AS day_of_year,
-    daily_registered_patients.daily_registrations_all,
     daily_registered_patients.daily_registrations_htn_all,
     daily_registered_patients.daily_registrations_htn_male,
     daily_registered_patients.daily_registrations_htn_female,
@@ -1856,7 +1853,6 @@ CREATE MATERIALIZED VIEW public.reporting_facility_daily_follow_ups_and_registra
     daily_registered_patients.daily_registrations_htn_and_dm_male,
     daily_registered_patients.daily_registrations_htn_and_dm_female,
     daily_registered_patients.daily_registrations_htn_and_dm_transgender,
-    daily_follow_ups.daily_follow_ups_all,
     daily_follow_ups.daily_follow_ups_htn_all,
     daily_follow_ups.daily_follow_ups_htn_female,
     daily_follow_ups.daily_follow_ups_htn_male,

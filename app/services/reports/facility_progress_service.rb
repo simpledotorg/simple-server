@@ -27,19 +27,19 @@ module Reports
     end
 
     def daily_registrations(date)
-      repository.daily_follow_ups_and_registrations[facility.region.slug][date]&.daily_registrations_all || 0
+      daily_total_registrations[date]
     end
 
     def daily_follow_ups(date)
-      repository.daily_follow_ups_and_registrations[facility.region.slug][date]&.daily_follow_ups_all || 0
+      daily_total_follow_ups[date]
     end
 
     def daily_statistics
       {
         daily: {
           grouped_by_date: {
-            follow_ups: daily_follow_ups_grouped_by_day,
-            registrations: daily_registrations_grouped_by_day
+            follow_ups: daily_total_follow_ups,
+            registrations: daily_total_registrations
           }
         },
         metadata: {
@@ -82,22 +82,30 @@ module Reports
 
     attr_reader :diabetes_enabled
 
-    memoize def daily_registrations_grouped_by_day
-      field = diabetes_enabled ? :daily_registrations_all : :daily_registrations_htn_all
-      records = Reports::FacilityDailyFollowUpsAndRegistrations.for_region(region).where("visit_date > ?", 30.days.ago)
-      result = records.each_with_object({}) do |record, hsh|
-        hsh[record.period] = record[field]
+    memoize def daily_total_follow_ups
+      records = Reports::FacilityDailyFollowUpAndRegistration.for_region(region).where("visit_date > ?", 30.days.ago)
+      records.each_with_object({}) do |record, hsh|
+        hsh[record.period] = if region.diabetes_management_enabled?
+          values_at(record, :daily_follow_ups_htn_all) + values_at(record, :daily_follow_ups_dm_all) - values_at(record, :daily_follow_ups_htn_and_dm_all)
+        else
+          values_at(record, :daily_follow_ups_htn_all)
+        end
       end
-      result.tap { |hsh| hsh.default = 0 }
     end
 
-    memoize def daily_follow_ups_grouped_by_day
-      field = diabetes_enabled ? :daily_follow_ups_all : :daily_follow_ups_htn_all
-      records = Reports::FacilityDailyFollowUpsAndRegistrations.for_region(region).where("visit_date > ?", 30.days.ago)
-      result = records.each_with_object({}) do |record, hsh|
-        hsh[record.period] = record[field]
+    memoize def daily_total_registrations
+      records = Reports::FacilityDailyFollowUpAndRegistration.for_region(region).where("visit_date > ?", 30.days.ago)
+      records.each_with_object({}) do |record, hsh|
+        hsh[record.period] = if diabetes_enabled
+          values_at(record, :daily_registrations_htn_all) + values_at(record, :daily_registrations_dm_all) - values_at(record, :daily_registrations_htn_and_dm_all)
+        else
+          values_at(record, :daily_registrations_htn_all)
+        end
       end
-      result.tap { |hsh| hsh.default = 0 }
+    end
+
+    memoize def values_at(record, field)
+      record[field] || 0
     end
 
     def create_dimension(*args)

@@ -66,9 +66,9 @@ RSpec.describe RefreshReportingViews do
         create(:blood_pressure, patient: patient, recorded_at: 2.days.ago)
         create(:appointment, patient: patient, recorded_at: 1.day.ago)
 
-        RefreshReportingViews.call(views: ["Reports::DailyFollowUp"])
+        RefreshReportingViews.call(views: ["Reports::FacilityDailyFollowUpAndRegistration"])
       end
-    }.to change { Reports::DailyFollowUp.count }.by(2)
+    }.to change { Reports::FacilityDailyFollowUpAndRegistration.count }.to be > 0
     expect(Reports::PatientState.count).to eq(0)
   end
 end

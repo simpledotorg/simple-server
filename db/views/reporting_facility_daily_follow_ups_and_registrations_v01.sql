@@ -1,5 +1,5 @@
 WITH follow_up_blood_pressures AS (
-    SELECT DISTINCT ON (patient_id, facility_id, day_of_year)
+    SELECT DISTINCT ON (day_of_year, facility_id, patient_id)
         p.id AS patient_id,
         p.gender::gender_enum as patient_gender,
         bp.id as visit_id,
@@ -17,7 +17,7 @@ WITH follow_up_blood_pressures AS (
       AND bp.recorded_at > current_timestamp - interval '30 day'
 ),
      follow_up_blood_sugars AS (
-         SELECT DISTINCT ON (patient_id, facility_id, day_of_year)
+         SELECT DISTINCT ON (day_of_year, facility_id, patient_id)
              p.id AS patient_id,
              p.gender::gender_enum as patient_gender,
              bs.id as visit_id,
@@ -36,7 +36,7 @@ WITH follow_up_blood_pressures AS (
            AND bs.recorded_at > current_timestamp - interval '30 day'
      ),
      follow_up_prescription_drugs AS (
-         SELECT DISTINCT ON (patient_id, facility_id, day_of_year)
+         SELECT DISTINCT ON (day_of_year, facility_id, patient_id)
              p.id AS patient_id,
              p.gender::gender_enum as patient_gender,
              pd.id as visit_id,
@@ -54,7 +54,7 @@ WITH follow_up_blood_pressures AS (
            AND pd.device_created_at > current_timestamp - interval '30 day'
      ),
      follow_up_appointments AS (
-         SELECT DISTINCT ON (patient_id, facility_id, day_of_year)
+         SELECT DISTINCT ON (day_of_year, facility_id, patient_id)
              p.id AS patient_id,
              p.gender::gender_enum as patient_gender,
              app.id as visit_id,
@@ -72,7 +72,7 @@ WITH follow_up_blood_pressures AS (
            AND app.device_created_at > current_timestamp - interval '30 day'
      ),
      registered_patients AS (
-         SELECT DISTINCT ON (patient_id, facility_id, day_of_year)
+         SELECT DISTINCT ON (day_of_year, facility_id, patient_id)
              p.id AS patient_id,
              p.gender::gender_enum as patient_gender,
              p.id as visit_id,
@@ -135,7 +135,6 @@ WITH follow_up_blood_pressures AS (
              date(visited_at) as visit_date,
              day_of_year,
 
-             count(*) AS daily_registrations_all,
              count(*) FILTER (WHERE hypertension = 'yes') AS daily_registrations_htn_all,
              count(*) FILTER (WHERE hypertension = 'yes' and patient_gender = 'female') AS daily_registrations_htn_female,
              count(*) FILTER (WHERE hypertension = 'yes' and patient_gender = 'male') AS daily_registrations_htn_male,
@@ -158,7 +157,6 @@ WITH follow_up_blood_pressures AS (
              date(visited_at) as visit_date,
              day_of_year,
 
-             count(*) AS daily_follow_ups_all,
              count(*) FILTER (WHERE hypertension = 'yes') AS daily_follow_ups_htn_all,
              count(*) FILTER (WHERE hypertension = 'yes' and patient_gender = 'female') AS daily_follow_ups_htn_female,
              count(*) FILTER (WHERE hypertension = 'yes' and patient_gender = 'male') AS daily_follow_ups_htn_male,
@@ -189,7 +187,6 @@ SELECT
     last_30_days.date AS visit_date,
     cast(EXTRACT(DOY FROM last_30_days.date AT TIME ZONE 'UTC' at time zone (SELECT current_setting('TIMEZONE'))) as integer)
                       AS day_of_year,
-    daily_registered_patients.daily_registrations_all,
     daily_registered_patients.daily_registrations_htn_all,
     daily_registered_patients.daily_registrations_htn_male,
     daily_registered_patients.daily_registrations_htn_female,
@@ -202,7 +199,6 @@ SELECT
     daily_registered_patients.daily_registrations_htn_and_dm_male,
     daily_registered_patients.daily_registrations_htn_and_dm_female,
     daily_registered_patients.daily_registrations_htn_and_dm_transgender,
-    daily_follow_ups.daily_follow_ups_all,
     daily_follow_ups.daily_follow_ups_htn_all,
     daily_follow_ups.daily_follow_ups_htn_female,
     daily_follow_ups.daily_follow_ups_htn_male,
