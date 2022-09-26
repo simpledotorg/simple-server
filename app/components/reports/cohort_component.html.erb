@@ -65,16 +65,6 @@
                   <%= (cohort["uncontrolled"] > 1 && uncontrolled_percent == 0) ? "< 1" : uncontrolled_percent %>%
                 </td>
                 <td
-                  class="bar bar-4 bar-missed-visits"
-                  data-toggle="tooltip"
-                  data-placement="top"
-                  data-trigger="hover focus click"
-                  title="<%= number_with_delimiter(cohort["missed_visits"]) %> <%= "patient".pluralize(cohort["missed_visits"]) %> missed visit"
-                  style="width: <%= missed_visits_percent %>%; min-width: 3em;"
-                >
-                  <%= (cohort["missed_visits"] > 0 && missed_visits_percent == 0) ? "< 1" : missed_visits_percent %>%
-                </td>
-                <td
                   class="bar bar-no-bp"
                   data-toggle="tooltip"
                   data-placement="top"
@@ -83,6 +73,16 @@
                   style="width: <%= no_bp_percent %>%; min-width: 3em;"
                 >
                   <%= (cohort["no_bp"] > 0 && no_bp_percent == 0) ? "<1" : no_bp_percent %>%
+                </td>
+                <td
+                  class="bar bar-4 bar-missed-visits"
+                  data-toggle="tooltip"
+                  data-placement="top"
+                  data-trigger="hover focus click"
+                  title="<%= number_with_delimiter(cohort["missed_visits"]) %> <%= "patient".pluralize(cohort["missed_visits"]) %> missed visit"
+                  style="width: <%= missed_visits_percent %>%; min-width: 3em;"
+                >
+                  <%= (cohort["missed_visits"] > 0 && missed_visits_percent == 0) ? "< 1" : missed_visits_percent %>%
                 </td>
               <% else %>
                 <td class="bar bar-none w-100pt">
@@ -105,12 +105,12 @@
       BP not controlled
     </p>
     <p class="mb-8px c-black mr-lg-4 mb-lg-0">
-      <span class="p-relative t-1px d-inline-block w-12px h-12px mr-4px br-2px bg-blue"></span>
-      Missed visits
-    </p>
-    <p class="mb-8px c-black mb-lg-0">
       <span class="p-relative t-1px d-inline-block w-12px h-12px mr-4px br-2px bg-grey-medium"></span>
       Visit but no BP taken
+    </p>
+    <p class="mb-8px c-black mb-lg-0">
+      <span class="p-relative t-1px d-inline-block w-12px h-12px mr-4px br-2px bg-blue"></span>
+      Missed visits
     </p>
   </div>
 </div>
