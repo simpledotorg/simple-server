@@ -1,27 +1,13 @@
 source "https://rubygems.org"
 ruby "2.7.4"
 
-plugin "bootboot", "~> 0.1.1"
-Bundler.settings.set_local("bootboot_env_prefix", "RAILS")
-Plugin.send(:load_plugin, "bootboot") if Plugin.installed?("bootboot")
-
 git_source(:github) do |repo_name|
   repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
   "https://github.com/#{repo_name}.git"
 end
 
 gem "dotenv-rails"
-
-if ENV["RAILS_NEXT"]
-  enable_dual_booting if Plugin.installed?("bootboot")
-
-  # Add any gem you want here, they will be loaded only when running
-  # bundler command prefixed with `RAILS_NEXT=1`.
-  gem "rails", "~> 6"
-else
-  gem "rails", "~> 5"
-end
-
+gem "rails", "~> 6"
 gem "active_hash", "~> 2.3.0"
 gem "active_record_union"
 gem "activerecord-import"
@@ -110,7 +96,7 @@ gem "selenium-webdriver"
 group :development, :test do
   gem "active_record_query_trace", require: false
   gem "byebug", platforms: [:mri, :mingw, :x64_mingw]
-  gem "capistrano", "3.16.0"
+  gem "capistrano", "~> 3.17"
   gem "capistrano-db-tasks", require: false
   gem "capistrano-multiconfig", require: true
   gem "capistrano-passenger", "0.2.1"

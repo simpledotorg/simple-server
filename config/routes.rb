@@ -3,11 +3,11 @@ Rails.application.routes.draw do
 
   devise_scope :email_authentication do
     authenticated :email_authentication do
-      root to: "admin#root"
+      get "/", to: "admin#root", as: :root
     end
 
     unauthenticated :email_authentication do
-      root to: "devise/sessions#new"
+      get "/", to: "devise/sessions#new"
     end
   end
 
@@ -211,7 +211,7 @@ Rails.application.routes.draw do
   resource :regions_search, controller: "regions_search"
 
   namespace :my_facilities do
-    root to: "/my_facilities#index", as: "overview"
+    get "/", to: "/my_facilities#index", as: "overview"
     get "blood_pressure_control", to: redirect("/my_facilities/bp_controlled")
     get "csv_maker", to: "csv_maker" ##################### DO I KEEP THIS ROUTE I MADE
     get "bp_controlled", to: "bp_controlled"

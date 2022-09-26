@@ -10,16 +10,18 @@ module DatadogTagging
   end
 
   def set_datadog_tags
-    current_span = Datadog.tracer.active_span
-    return if current_span.nil?
+    span = Datadog::Tracing.active_span
+    return if span.nil?
 
-    current_enabled_features.each do |name|
-      current_span.set_tag("features.#{name}", "enabled")
+    tags = current_enabled_features.reduce({}) do |hash, name|
+      hash.merge("features.#{name}" => "enabled")
     end
+
+    span.set_tags(tags)
 
     user_hash = RequestStore.store[:current_user]
     unless user_hash.blank?
-      current_span.set_tags(user_hash)
+      span.set_tags(user_hash)
     end
   end
 end

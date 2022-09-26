@@ -209,7 +209,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
     let!(:facility_group) { create(:facility_group, name: "FGTwo", organization_id: organization.id) }
 
     context "with valid data in file" do
-      let(:upload_file) { fixture_file_upload("files/upload_facilities_test.csv", "text/csv") }
+      let(:upload_file) { fixture_file_upload("upload_facilities_test.csv", "text/csv") }
 
       before do
         create(:region, :block, name: "Zone 1", reparent_to: facility_group.region)
@@ -223,7 +223,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
     end
 
     context "with invalid data in file" do
-      let(:upload_file) { fixture_file_upload("files/upload_facilities_invalid_test.csv", "text/csv") }
+      let(:upload_file) { fixture_file_upload("upload_facilities_invalid_test.csv", "text/csv") }
 
       before do
         create(:region, :block, name: "Zone 1", reparent_to: facility_group.region)
@@ -238,7 +238,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
 
     context "with unsupported file type" do
       let(:upload_file) do
-        fixture_file_upload("files/upload_facilities_test.docx",
+        fixture_file_upload("upload_facilities_test.docx",
           "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
       end
 

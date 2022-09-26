@@ -19,23 +19,3 @@ module ActiveSupport::TaggedLogging::Formatter
     _call(severity, time, progname, data)
   end
 end
-
-# Monkeypatch in the Rails 6 ActiveSupport::TaggedLogging initializer.
-# This ensures we always get a new logger that also has our default
-# formatter from Ougai. Taken from https://github.com/rails/webpacker/issues/1155#issuecomment-442208940
-# and tweaked a bit for our particular logging setup.
-# This particular patch can be removed when we get to Rails 6.
-if ActiveSupport::VERSION::MAJOR < 6
-  module ActiveSupport
-    module TaggedLogging
-      def self.new(logger)
-        logger = logger.dup
-        logger.formatter = LoggingExtensions.default_log_formatter
-        logger.formatter.extend Formatter
-        logger.extend(self)
-      end
-    end
-  end
-else
-  ActiveSupport::Deprecation.warn("No longer need to monkeypatch ActiveSupport::TaggedLogging")
-end
