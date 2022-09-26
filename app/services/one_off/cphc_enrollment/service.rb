@@ -37,7 +37,7 @@ class OneOff::CPHCEnrollment::Service
     log = CPHCMigrationAuditLog.find_by(cphc_migratable: patient)
     if log.present?
       logger.error "Patient already migrated to CPHC", patient
-      @individual_id = log.metadata[:individual_id]
+      @individual_id = log.metadata["individual_id"]
       return
     end
 
@@ -56,11 +56,14 @@ class OneOff::CPHCEnrollment::Service
 
     if log.present?
       logger.error "Encounter already migrated to CPHC", encounter
-      @hypertension_examination_id = log.metadata[:hypertension_examination_id]
-      @diabetes_examination_id = log.metadata[:diabetes_examination_id]
-    else
-      add_hypertension_examination if encounter.blood_pressures.present?
-      add_diabetes_examination if encounter.blood_sugars.present?
+      @hypertension_examination_id = log.metadata["hypertension_examination_id"]
+      @diabetes_examination_id = log.metadata["diabetes_examination_id"]
+    end
+
+    add_hypertension_examination if encounter.blood_pressures.present? && !@hypertension_examination_id.present?
+    add_diabetes_examination if encounter.blood_sugars.present? && !@diabetes_examination_id.present?
+
+    if !log.present?
       CPHCMigrationAuditLog.create(cphc_migratable: encounter, metadata: {
         hypertension_examination_id: @hypertension_examination_id,
         diabetes_examination_id: @diabetes_examination_id
@@ -71,7 +74,8 @@ class OneOff::CPHCEnrollment::Service
       add_blood_pressure(blood_pressure)
     end
 
-    encounter.blood_sugars.each do |blood_sugar|
+    # CPHC APIs fail when sending hba1c blood sugar measurements
+    encounter.blood_sugars.where.not(blood_sugar_type: :hba1c).each do |blood_sugar|
       add_blood_sugar(blood_sugar)
     end
   end
@@ -114,7 +118,6 @@ class OneOff::CPHCEnrollment::Service
       patient
         .prescription_drugs
         .where(device_created_at: range)
-        .filter { |pd| pd.cphc_migrate }
 
     appointment =
       patient
@@ -139,6 +142,11 @@ class OneOff::CPHCEnrollment::Service
         measurement_id
       )
     )
+
+    prescription_drugs.each do |prescription_drug|
+      CPHCMigrationAuditLog.create(cphc_migratable: prescription_drug)
+    end
+    CPHCMigrationAuditLog.create(cphc_migratable: appointment)
   end
 
   def add_blood_sugar(blood_sugar)
@@ -150,25 +158,25 @@ class OneOff::CPHCEnrollment::Service
 
     facility_type_id = OneOff::CPHCEnrollment::FACILITY_TYPE_ID["DH"]
     response = make_post_request(
-      measurement_path(:diabetes, diabetes_examination_id, facility_type_id),
+      measurement_path(:diabetes, @diabetes_examination_id, facility_type_id),
       OneOff::CPHCEnrollment::BloodSugarPayload.new(blood_sugar)
     )
 
     measurement_id = JSON.parse(response.body)["encounterId"]
 
     CPHCMigrationAuditLog.create(
-      cphc_migratable: blood_pressure,
+      cphc_migratable: blood_sugar,
       metadata: {
         measurement_id: measurement_id
       }
     )
     make_post_request(
-      diagnosis_path(:diabetes, diabetes_examination_id, facility_type_id),
+      diagnosis_path(:diabetes, @diabetes_examination_id, facility_type_id),
       OneOff::CPHCEnrollment::DiabetesDiagnosisPayload.new(blood_sugar, measurement_id)
     )
   end
 
-  def make_post_request(path, payload, migratable)
+  def make_post_request(path, payload)
     response = OneOff::CPHCEnrollment::Request.new(
       path: path,
       user: user,
@@ -177,14 +185,15 @@ class OneOff::CPHCEnrollment::Service
 
     case response.code
     when 401
-      @is_authorized = false
-      logger.error "The request was unauthorized. Pleas check the config and try again."
+      throw "The request was unauthorized. Pleas check the config and try again."
     when 404
-      logger.error "Not found", path
+      logger.error "Path not found", path
+      throw "Not found", path
     when 200
       logger.info "Request Successful", response.body
     else
-      logger.error "Request Failed", {response_body: response.body, status: response.status, payload: payload.payload}
+      logger.error "Request Failed", {response_body: JSON.parse(response.body), status: response.status, payload: payload.payload}
+      throw "Request Failed"
     end
 
     response

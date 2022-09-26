@@ -4,6 +4,7 @@ class CreateCphcMigrationAuditLogs < ActiveRecord::Migration[5.2]
       t.string :cphc_migratable_type, null: false
       t.uuid :cphc_migratable_id, null: false
       t.json :metadata
+      t.timestamp :deleted_at
       t.timestamps
     end
     add_index :cphc_migration_audit_logs,

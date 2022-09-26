@@ -401,6 +401,7 @@ CREATE TABLE public.cphc_migration_audit_logs (
     cphc_migratable_type character varying NOT NULL,
     cphc_migratable_id uuid NOT NULL,
     metadata json,
+    deleted_at timestamp without time zone,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );

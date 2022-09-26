@@ -180,8 +180,8 @@ namespace :dell_demo do
       auth_manager.sign_in(auto_fill: true)
     end
 
-    Patient.where(assigned_facility_id: Facility.find(args[:facility_id])).each do |patient|
-      CPHCMigrationJob.perform_later(patient.id, auth_manager.user.id)
+    Patient.where(assigned_facility_id: Facility.find(args[:facility_id])).limit(10).each do |patient|
+      CPHCMigrationJob.perform_later(patient, auth_manager.user)
     end
   end
 end
