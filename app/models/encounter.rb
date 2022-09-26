@@ -9,6 +9,8 @@ class Encounter < ApplicationRecord
   has_many :blood_pressures, through: :observations, source: :observable, source_type: "BloodPressure"
   has_many :blood_sugars, through: :observations, source: :observable, source_type: "BloodSugar"
 
+  has_one :cphc_migration_audit_logs, as: :cphc_migratable
+
   scope :for_sync, -> { with_discarded }
 
   def self.generate_id(facility_id, patient_id, encountered_on)

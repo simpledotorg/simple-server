@@ -25,6 +25,8 @@ class PrescriptionDrug < ApplicationRecord
 
   scope :for_sync, -> { with_discarded }
 
+  has_one :cphc_migration_audit_logs, as: :cphc_migratable
+
   def self.prescribed_as_of(date)
     where("device_created_at <= ?", date.end_of_day)
       .where(%(prescription_drugs.is_deleted = false OR
