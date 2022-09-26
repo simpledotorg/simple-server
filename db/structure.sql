@@ -4894,6 +4894,13 @@ CREATE UNIQUE INDEX index_configurations_on_name ON public.configurations USING 
 
 
 --
+-- Name: index_cphc_migration_audit_logs_on_cphc_migratable; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_cphc_migration_audit_logs_on_cphc_migratable ON public.cphc_migration_audit_logs USING btree (cphc_migratable_type, cphc_migratable_id);
+
+
+--
 -- Name: index_deduplication_logs_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 

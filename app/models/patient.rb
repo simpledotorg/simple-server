@@ -54,7 +54,7 @@ class Patient < ApplicationRecord
 
   has_many :call_results
 
-  has_one :cphc_migration_audit_logs, as: :cphc_migratable
+  has_one :cphc_migration_audit_log, as: :cphc_migratable
 
   belongs_to :registration_facility, class_name: "Facility", optional: true
   belongs_to :assigned_facility, class_name: "Facility", optional: true

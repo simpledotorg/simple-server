@@ -19,7 +19,7 @@ class BloodPressure < ApplicationRecord
   has_one :observation, as: :observable
   has_one :encounter, through: :observation
 
-  has_one :cphc_migration_audit_logs, as: :cphc_migratable
+  has_one :cphc_migration_audit_log, as: :cphc_migratable
 
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
