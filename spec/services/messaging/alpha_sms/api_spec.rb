@@ -48,7 +48,7 @@ RSpec.describe Messaging::AlphaSms::Api do
   end
 
   describe "#get_account_balance" do
-    it "gets the status for a message" do
+    it "gets the account's balance" do
       stub_credentials
 
       stub_request(:post, "https://api.sms.net.bd/user/balance").to_return(body: {a: :hash}.to_json)
