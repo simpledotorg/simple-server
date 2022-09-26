@@ -4,6 +4,7 @@ module Reports
 
     MONTHS = -5
     CONTROL_MONTHS = -12
+    DAYS_AGO = 29
     attr_reader :control_range
     attr_reader :facility
     attr_reader :range
@@ -101,6 +102,64 @@ module Reports
         else
           values_at(record, :daily_registrations_htn_all)
         end
+      end
+    end
+
+    def diagnosis_headers
+      {hypertension: "Hypertension only",
+       diabetes: "diabetes only",
+       hypertension_and_diabetes: "Hypertension and Diabetes"}
+    end
+
+    memoize def daily_registrations_breakdown
+      records = Reports::FacilityDailyFollowUpAndRegistration.for_region(region).where("visit_date > ?", 30.days.ago)
+      records.each_with_object({}) do |record, hsh|
+        hsh[record.period] = {
+          hypertension: {
+            all: values_at(record, :daily_registrations_htn_all) - values_at(record, :daily_registrations_htn_and_dm_all),
+            male: values_at(record, :daily_registrations_htn_male) - values_at(record, :daily_registrations_htn_and_dm_male),
+            female: values_at(record, :daily_registrations_htn_female) - values_at(record, :daily_registrations_htn_and_dm_female),
+            transgender: values_at(record, :daily_registrations_htn_transgender) - values_at(record, :daily_registrations_htn_and_dm_transgender)
+          },
+          diabetes:
+            {all: values_at(record, :daily_registrations_dm_all) - values_at(record, :daily_registrations_htn_and_dm_all),
+             male: values_at(record, :daily_registrations_dm_male) - values_at(record, :daily_registrations_htn_and_dm_male),
+             female: values_at(record, :daily_registrations_dm_female) - values_at(record, :daily_registrations_htn_and_dm_female),
+             transgender: values_at(record, :daily_registrations_dm_transgender) - values_at(record, :daily_registrations_htn_and_dm_transgender)},
+          hypertension_and_diabetes:
+            {all: values_at(record, :daily_registrations_htn_and_dm_all),
+             male: values_at(record, :daily_registrations_htn_and_dm_male),
+             female: values_at(record, :daily_registrations_htn_and_dm_female),
+             transgender: values_at(record, :daily_registrations_htn_and_dm_transgender)}
+        }
+      end
+    end
+
+    memoize def daily_follow_ups_breakdown
+      records = Reports::FacilityDailyFollowUpAndRegistration.for_region(region).where("visit_date > ?", 30.days.ago)
+      records.each_with_object({}) do |record, hsh|
+        hsh[record.period] = {
+          hypertension: {
+            all: values_at(record, :daily_follow_ups_htn_all) - values_at(record, :daily_follow_ups_htn_and_dm_all),
+            male: values_at(record, :daily_follow_ups_htn_male) - values_at(record, :daily_follow_ups_htn_and_dm_male),
+            female: values_at(record, :daily_follow_ups_htn_female) - values_at(record, :daily_follow_ups_htn_and_dm_female),
+            transgender: values_at(record, :daily_follow_ups_htn_transgender) - values_at(record, :daily_follow_ups_htn_and_dm_transgender)
+          },
+
+          diabetes: {
+            all: values_at(record, :daily_follow_ups_dm_all) - values_at(record, :daily_follow_ups_htn_and_dm_all),
+            male: values_at(record, :daily_follow_ups_dm_male) - values_at(record, :daily_follow_ups_htn_and_dm_male),
+            female: values_at(record, :daily_follow_ups_htn_female) - values_at(record, :daily_follow_ups_htn_and_dm_female),
+            transgender: values_at(record, :daily_follow_ups_dm_transgender) - values_at(record, :daily_follow_ups_htn_and_dm_transgender)
+          },
+
+          hypertension_and_diabetes: {
+            all: values_at(record, :daily_follow_ups_htn_and_dm_all),
+            male: values_at(record, :daily_follow_ups_htn_and_dm_male),
+            female: values_at(record, :daily_follow_ups_htn_and_dm_female),
+            transgender: values_at(record, :daily_follow_ups_htn_and_dm_transgender)
+          }
+        }
       end
     end
 
