@@ -1,10 +1,12 @@
-class CPHCMigrationJob < ApplicationJob
-  queue_as :cphc_migration
+class CPHCMigrationJob
+  include Sidekiq::Worker
 
-  def perform(patient_id, user_id)
-    OneOff::CPHCEnrollment::Service.new(
-      Patient.find(patient_id),
-      User.find(user_id)
-    ).call
+  sidekiq_options queue: :cphc_migration
+  sidekiq_retry_in { |_, _| 24.hours.to_i }
+
+  def perform(patient_id, user_json)
+    patient = Patient.find(patient_id)
+    user = JSON.parse(user_json)
+    OneOff::CPHCEnrollment::Service.new(patient, user.with_indifferent_access).call
   end
 end

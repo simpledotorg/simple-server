@@ -172,6 +172,10 @@ namespace :dell_demo do
 
   desc "CPHC Migration Demo"
   task :migration_demo, [:facility_id] => :environment do |_t, args|
+    facility_id = args[:facility_id]
+    limit = args[:limit] || 10
+    offset = args[:offset] || 0
+
     auth_token = ENV["CPHC_AUTH_TOKEN"]
     if auth_token.present?
       auth_manager = OneOff::CPHCEnrollment::AuthManager.new(auth_token: auth_token)
@@ -180,8 +184,8 @@ namespace :dell_demo do
       auth_manager.sign_in(auto_fill: true)
     end
 
-    Patient.where(assigned_facility_id: Facility.find(args[:facility_id])).each do |patient|
-      CPHCMigrationJob.perform_later(patient.id, auth_manager.user.id)
+    Patient.where(assigned_facility_id: Facility.find(facility_id).limit(limit).offset(offset)).each do |patient|
+      CPHCMigrationJob.perform_async(patient.id, JSON.dump(auth_manager.user))
     end
   end
 end
