@@ -28,7 +28,7 @@ RSpec.describe Admin::PatientImportsController, type: :controller do
         sign_in(admin.email_authentication)
 
         facility = create(:facility)
-        patient_import_file = fixture_file_upload("files/patient_import_test.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        patient_import_file = fixture_file_upload("patient_import_test.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         params = {patient_import_file: patient_import_file, facility_id: facility.id}
 
         perform_enqueued_jobs do
@@ -52,7 +52,7 @@ RSpec.describe Admin::PatientImportsController, type: :controller do
         sign_in(admin.email_authentication)
 
         facility = create(:facility)
-        patient_import_file = fixture_file_upload("files/patient_import_test.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        patient_import_file = fixture_file_upload("patient_import_test.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         params = {patient_import_file: patient_import_file, facility_id: facility.id}
 
         post :create, params: params
@@ -66,7 +66,7 @@ RSpec.describe Admin::PatientImportsController, type: :controller do
         sign_in(admin.email_authentication)
 
         facility = create(:facility)
-        patient_import_file = fixture_file_upload("files/patient_import_invalid_data_test.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        patient_import_file = fixture_file_upload("patient_import_invalid_data_test.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         params = {patient_import_file: patient_import_file, facility_id: facility.id}
 
         expect { post :create, params: params }.not_to change { Patient.count }
@@ -80,7 +80,7 @@ RSpec.describe Admin::PatientImportsController, type: :controller do
         sign_in(admin.email_authentication)
 
         facility = create(:facility)
-        patient_import_file = fixture_file_upload("files/patient_import_missing_headers_test.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        patient_import_file = fixture_file_upload("patient_import_missing_headers_test.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         params = {patient_import_file: patient_import_file, facility_id: facility.id}
 
         expect { post :create, params: params }.not_to change { Patient.count }
@@ -94,7 +94,7 @@ RSpec.describe Admin::PatientImportsController, type: :controller do
         sign_in(admin.email_authentication)
 
         facility = create(:facility)
-        patient_import_file = fixture_file_upload("files/patient_import_test.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        patient_import_file = fixture_file_upload("patient_import_test.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         params = {patient_import_file: patient_import_file, facility_id: facility.id}
 
         expect { post :create, params: params }.not_to change { Patient.count }

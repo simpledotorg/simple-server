@@ -44,8 +44,8 @@ RSpec.describe ExotelCallDetailsJob, type: :job do
         "duration" => stubbed_call_duration,
         "callee_phone_number" => callee_phone_number,
         "caller_phone_number" => user_phone_number,
-        "start_time" => Time.zone.parse(stubbed_call_start_time),
-        "end_time" => Time.zone.parse(stubbed_call_end_time))
+        "start_time" => Time.zone.parse(stubbed_call_start_time).as_json,
+        "end_time" => Time.zone.parse(stubbed_call_end_time).as_json)
   end
 
   it "should not populate a call log if exotel api is unable to return call details" do
