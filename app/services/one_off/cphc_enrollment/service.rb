@@ -35,7 +35,7 @@ class OneOff::CPHCEnrollment::Service
   end
 
   def enroll_patient
-    log = CPHCMigrationAuditLog.find_by(cphc_migratable: patient)
+    log = CphcMigrationAuditLog.find_by(cphc_migratable: patient)
     if log.present?
       logger.error "Patient already migrated to CPHC", patient
       @individual_id = log.metadata["individual_id"]
@@ -47,13 +47,13 @@ class OneOff::CPHCEnrollment::Service
       OneOff::CPHCEnrollment::EnrollmentPayload.new(patient)
     )
     @individual_id = JSON.parse(response.body)["individualId"]
-    CPHCMigrationAuditLog.create(cphc_migratable: patient, metadata: {
+    CphcMigrationAuditLog.create(cphc_migratable: patient, metadata: {
       individual_id: @individual_id
     })
   end
 
   def add_encounter(encounter)
-    log = CPHCMigrationAuditLog.find_by(cphc_migratable: encounter)
+    log = CphcMigrationAuditLog.find_by(cphc_migratable: encounter)
 
     if log.present?
       logger.error "Encounter already migrated to CPHC", encounter
@@ -65,7 +65,7 @@ class OneOff::CPHCEnrollment::Service
     add_diabetes_examination if encounter.blood_sugars.present? && !@diabetes_examination_id.present?
 
     if !log.present?
-      CPHCMigrationAuditLog.create(cphc_migratable: encounter, metadata: {
+      CphcMigrationAuditLog.create(cphc_migratable: encounter, metadata: {
         hypertension_examination_id: @hypertension_examination_id,
         diabetes_examination_id: @diabetes_examination_id
       })
@@ -92,7 +92,7 @@ class OneOff::CPHCEnrollment::Service
   end
 
   def add_blood_pressure(blood_pressure)
-    log = CPHCMigrationAuditLog.find_by(cphc_migratable: blood_pressure)
+    log = CphcMigrationAuditLog.find_by(cphc_migratable: blood_pressure)
 
     if log.present?
       logger.error "Blood pressure already migrated to CPHC", blood_pressure
@@ -104,7 +104,7 @@ class OneOff::CPHCEnrollment::Service
       OneOff::CPHCEnrollment::BloodPressurePayload.new(blood_pressure)
     )
     measurement_id = JSON.parse(response.body)["encounterId"]
-    CPHCMigrationAuditLog.create(
+    CphcMigrationAuditLog.create(
       cphc_migratable: blood_pressure,
       metadata: {
         measurement_id: measurement_id
@@ -145,13 +145,13 @@ class OneOff::CPHCEnrollment::Service
     )
 
     prescription_drugs.each do |prescription_drug|
-      CPHCMigrationAuditLog.create(cphc_migratable: prescription_drug)
+      CphcMigrationAuditLog.create(cphc_migratable: prescription_drug)
     end
-    CPHCMigrationAuditLog.create(cphc_migratable: appointment)
+    CphcMigrationAuditLog.create(cphc_migratable: appointment)
   end
 
   def add_blood_sugar(blood_sugar)
-    log = CPHCMigrationAuditLog.find_by(cphc_migratable: blood_sugar)
+    log = CphcMigrationAuditLog.find_by(cphc_migratable: blood_sugar)
     if log.present?
       logger.error "Blood pressure already migrated to CPHC", blood_sugar
       return
@@ -165,7 +165,7 @@ class OneOff::CPHCEnrollment::Service
 
     measurement_id = JSON.parse(response.body)["encounterId"]
 
-    CPHCMigrationAuditLog.create(
+    CphcMigrationAuditLog.create(
       cphc_migratable: blood_sugar,
       metadata: {
         measurement_id: measurement_id
@@ -194,7 +194,7 @@ class OneOff::CPHCEnrollment::Service
       logger.info "Request Successful", response.body
     else
       logger.error "Request Failed", {response_body: JSON.parse(response.body), status: response.status, payload: payload.payload}
-      throw "Request Failed: #{response.body.to_s}"
+      throw "Request Failed: #{response.body}"
     end
 
     response
