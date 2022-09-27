@@ -26,6 +26,7 @@ class OneOff::CPHCEnrollment::Service
   end
 
   def call
+    logger.info "Enrolling Patient", {id: patient.id, full_name: patient.full_name}
     enroll_patient
     patient.encounters.each do |encounter|
       add_encounter(encounter)
@@ -193,7 +194,7 @@ class OneOff::CPHCEnrollment::Service
       logger.info "Request Successful", response.body
     else
       logger.error "Request Failed", {response_body: JSON.parse(response.body), status: response.status, payload: payload.payload}
-      throw "Request Failed"
+      throw "Request Failed: #{response.body.to_s}"
     end
 
     response

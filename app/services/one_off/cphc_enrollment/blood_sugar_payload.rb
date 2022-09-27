@@ -24,7 +24,7 @@ class OneOff::CPHCEnrollment::BloodSugarPayload
       {"ppbg" => value.to_i,
        :mthdOfBldTstPpbgCapillaryVenous => "ppbgCapillary"}
     when :fasting
-      {"fbs" => value.to_s}
+      {"fbs" => value.to_i.to_s}
     when :hba1c
       {"hba1c" => value.to_s}
     else
