@@ -43,8 +43,7 @@ class OneOff::CPHCEnrollment::EnrollmentPayload
       .business_identifiers
       .where(identifier_type: :simple_bp_passport)
       .order(device_created_at: :desc)
-      .first
-      .identifier
+      .first&.identifier
 
     phone_number = patient.phone_numbers.first&.number
     individual_info = {
