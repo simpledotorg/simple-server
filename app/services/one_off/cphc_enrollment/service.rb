@@ -162,7 +162,7 @@ class OneOff::CPHCEnrollment::Service
       return
     end
 
-    facility_type_id = OneOff::CPHCEnrollment::FACILITY_TYPE_ID["DH"]
+    facility_type_id = OneOff::CPHCEnrollment::FACILITY_TYPE_ID["PHC"]
     response = make_post_request(
       measurement_path(:diabetes, @diabetes_examination_id, facility_type_id),
       OneOff::CPHCEnrollment::BloodSugarPayload.new(blood_sugar)
