@@ -189,7 +189,7 @@ class OneOff::CPHCEnrollment::Service
       throw "The request was unauthorized. Pleas check the config and try again."
     when 404
       logger.error "Path not found", path
-      throw "Not found", path
+      throw "Not found #{path}"
     when 200
       logger.info "Request Successful", response.body
     else
