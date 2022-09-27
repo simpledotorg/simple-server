@@ -46,7 +46,7 @@ class OneOff::CPHCEnrollment::Service
       CPHC_ENROLLMENT_PATH,
       OneOff::CPHCEnrollment::EnrollmentPayload.new(patient)
     )
-    @individual_id = JSON.parse(response.body)["individualId"]
+    @individual_id = JSON.parse(response.body.to_s)["individualId"]
     CphcMigrationAuditLog.create(cphc_migratable: patient, metadata: {
       individual_id: @individual_id,
       patient_id: patient.id
@@ -86,12 +86,12 @@ class OneOff::CPHCEnrollment::Service
 
   def add_hypertension_examination
     response = make_post_request(examination_path(:hypertension), nil)
-    @hypertension_examination_id = JSON.parse(response.body)["screeningId"]
+    @hypertension_examination_id = JSON.parse(response.body.to_s)["screeningId"]
   end
 
   def add_diabetes_examination
     response = make_post_request(examination_path(:diabetes), nil)
-    @diabetes_examination_id = JSON.parse(response.body)["screeningId"]
+    @diabetes_examination_id = JSON.parse(response.body.to_s)["screeningId"]
   end
 
   def add_blood_pressure(blood_pressure)
@@ -168,7 +168,7 @@ class OneOff::CPHCEnrollment::Service
       OneOff::CPHCEnrollment::BloodSugarPayload.new(blood_sugar)
     )
 
-    measurement_id = JSON.parse(response.body)["encounterId"]
+    measurement_id = JSON.parse(response.body.to_s)["encounterId"]
 
     CphcMigrationAuditLog.create(
       cphc_migratable: blood_sugar,
@@ -198,9 +198,9 @@ class OneOff::CPHCEnrollment::Service
       logger.error "Path not found", path
       throw "Not found #{path}"
     when 200
-      logger.info "Request Successful", response.body
+      logger.info "Request Successful", response.body.to_s
     else
-      logger.error "Request Failed", {response_body: JSON.parse(response.body), status: response.status, payload: payload.payload}
+      logger.error "Request Failed", {response_body: JSON.parse(response.body.to_s), status: response.status, payload: payload.payload}
       throw "Request Failed: #{response.body}"
     end
 
