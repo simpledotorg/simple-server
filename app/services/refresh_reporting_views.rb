@@ -113,7 +113,7 @@ class RefreshReportingViews
   def benchmark_and_statsd(operation)
     name = "refresh_reporting_views.#{operation}"
     benchmark(name) do
-      Datadog.tracer.trace("refresh_matview", resource: operation) do |span|
+      Datadog::Tracing.trace("refresh_matview", resource: operation) do |span|
         yield
       end
     end

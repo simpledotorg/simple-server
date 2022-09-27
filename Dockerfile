@@ -1,7 +1,7 @@
 # Dockerfile development version
 FROM ruby:2.7.4
 
-ENV BUNDLE_VERSION 2.2.29
+ENV BUNDLE_VERSION 2.3.22
 
 ## Install dependencies
 # Yarn

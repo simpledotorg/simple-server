@@ -188,8 +188,7 @@ RSpec.describe Reports::DrugStockCalculation, type: :model do
     end
 
     it "reports error to datadog" do
-      allow_any_instance_of(Datadog::Tracer).to receive(:trace)
-      expect_any_instance_of(Datadog::Tracer).to receive(:trace)
+      expect_any_instance_of(described_class).to receive(:trace).with("patient_days", "Reports::DrugStockCalculation#patient_days", hash_including(exception: FloatDomainError))
 
       result = described_class.new(
         state: state,
