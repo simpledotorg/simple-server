@@ -49,8 +49,7 @@ class OneOff::CPHCEnrollment::Service
     @individual_id = JSON.parse(response.body)["individualId"]
     CphcMigrationAuditLog.create(cphc_migratable: patient, metadata: {
       individual_id: @individual_id,
-      patient_id: patient.id,
-      individual_id: @individual_id
+      patient_id: patient.id
     })
   end
 
@@ -151,9 +150,9 @@ class OneOff::CPHCEnrollment::Service
     )
 
     prescription_drugs.each do |prescription_drug|
-      CphcMigrationAuditLog.create(cphc_migratable: prescription_drug, metadata: { patient_id: patient.id, individual_id: @individual_id})
+      CphcMigrationAuditLog.create(cphc_migratable: prescription_drug, metadata: {patient_id: patient.id, individual_id: @individual_id})
     end
-    CphcMigrationAuditLog.create(cphc_migratable: appointment, metadata: { patient_id: patient.id, individual_id: @individual_id})
+    CphcMigrationAuditLog.create(cphc_migratable: appointment, metadata: {patient_id: patient.id, individual_id: @individual_id})
   end
 
   def add_blood_sugar(blood_sugar)
