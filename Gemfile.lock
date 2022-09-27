@@ -476,7 +476,7 @@ GEM
     rb-inotify (0.10.1)
       ffi (~> 1.0)
     rb-readline (0.5.5)
-    redis (4.8.0)
+    redis (4.7.1)
     redis-prescription (1.0.0)
     regexp_parser (2.5.0)
     render_async (2.1.11)
@@ -770,7 +770,7 @@ DEPENDENCIES
   rails-controller-testing
   rails-erd
   rb-readline
-  redis
+  redis (~> 4.7.1)
   render_async
   request_store
   request_store-sidekiq
@@ -818,4 +818,4 @@ RUBY VERSION
    ruby 2.7.4p191
 
 BUNDLED WITH
-   2.3.22
+   2.3.20

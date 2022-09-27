@@ -61,7 +61,7 @@ gem "phonelib"
 gem "pry-rails"
 gem "rack-attack"
 gem "rack-mini-profiler", require: false
-gem "redis"
+gem "redis", "~> 4.7.1"
 gem "render_async"
 gem "request_store-sidekiq"
 gem "request_store"
