@@ -17,7 +17,7 @@ class PhoneNumberAuthentication < ApplicationRecord
   delegate :facility_group, to: :facility
   delegate :organization, to: :facility_group
 
-  validates :phone_number, presence: true, uniqueness: true, case_sensitive: false
+  validates :phone_number, presence: true, uniqueness: {case_sensitive: false}
   validates :password, allow_blank: true, length: {is: 4}, format: {with: /[0-9]/, message: "only allows numbers"}
   validates :failed_attempts, numericality: {only_integer: true, less_than_or_equal_to: 5}
   validate :presence_of_password

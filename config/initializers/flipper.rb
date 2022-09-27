@@ -11,5 +11,3 @@ Flipper.configure do |config|
     Flipper.new(adapter)
   end
 end
-
-Rails.configuration.middleware.use Flipper::Middleware::Memoizer, preload_all: true
