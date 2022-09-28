@@ -9,7 +9,7 @@ class OneOff::CPHCEnrollment::TreatmentPayload
     @appointment = appointment
   end
 
-  def as_json
+  def payload
     medical_history = patient.medical_history
 
     treatment_date = blood_pressure.recorded_at.strftime("%d-%m-%Y")

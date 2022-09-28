@@ -64,7 +64,7 @@ CREATE TYPE public.gender_enum AS ENUM (
 
 SET default_tablespace = '';
 
-SET default_with_oids = false;
+SET default_table_access_method = heap;
 
 --
 -- Name: accesses; Type: TABLE; Schema: public; Owner: -
@@ -400,6 +400,21 @@ CREATE TABLE public.configurations (
     id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     name character varying NOT NULL,
     value character varying NOT NULL,
+    deleted_at timestamp without time zone,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: cphc_migration_audit_logs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.cphc_migration_audit_logs (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    cphc_migratable_type character varying NOT NULL,
+    cphc_migratable_id uuid NOT NULL,
+    metadata json,
     deleted_at timestamp without time zone,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
@@ -4423,6 +4438,14 @@ ALTER TABLE ONLY public.configurations
 
 
 --
+-- Name: cphc_migration_audit_logs cphc_migration_audit_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cphc_migration_audit_logs
+    ADD CONSTRAINT cphc_migration_audit_logs_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: data_migrations data_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5000,6 +5023,13 @@ CREATE INDEX index_communications_on_notification_id ON public.communications US
 --
 
 CREATE UNIQUE INDEX index_configurations_on_name ON public.configurations USING btree (name);
+
+
+--
+-- Name: index_cphc_migration_audit_logs_on_cphc_migratable; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_cphc_migration_audit_logs_on_cphc_migratable ON public.cphc_migration_audit_logs USING btree (cphc_migratable_type, cphc_migratable_id);
 
 
 --
@@ -6231,6 +6261,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220902104533'),
 ('20220902114057'),
 ('20220902125119'),
+('20220926072823'),
 ('20220923105541');
 
 

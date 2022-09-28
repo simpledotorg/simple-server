@@ -1,6 +1,8 @@
 require "sidekiq-unique-jobs"
 require "sidekiq/throttled"
 
+Dir.glob(Rails.root.join("lib", "sidekiq_middleware", "**", "*.rb")).sort.each { |f| require f }
+
 module SidekiqConfig
   DEFAULT_REDIS_POOL_SIZE = 12
 
