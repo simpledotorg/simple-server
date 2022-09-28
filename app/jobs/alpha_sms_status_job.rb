@@ -17,8 +17,6 @@ class AlphaSmsStatusJob
 
     detailable.request_status = delivery_status_data if delivery_status_data
     detailable.save!
-
-    # log(response)
   end
 
   def raise_api_errors(request_id, response)
