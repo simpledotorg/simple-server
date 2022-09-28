@@ -1,6 +1,4 @@
 class CreateReportingFacilityDailyFollowUpsAndRegistrations < ActiveRecord::Migration[5.2]
-  # Renaming the view to better match that is reporting on facility state daily dimensions,
-  # i.e. daily breakdowns by diagnosis and gender
   def change
     drop_view :reporting_daily_follow_ups, revert_to_version: 3, materialized: true
     create_view :reporting_facility_daily_follow_ups_and_registrations, materialized: true
