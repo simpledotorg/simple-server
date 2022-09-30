@@ -1,6 +1,8 @@
 class OneOff::CPHCEnrollment::EnrollmentPayload
   attr_reader :patient, :cphc_facility
 
+  UNACCEPTED_CHARACTERS = [("0".."9").to_a, ["-", "/", "%", "$", "#"]].flatten
+
   def initialize(patient)
     @patient = patient
     @cphc_location = nil
@@ -45,9 +47,10 @@ class OneOff::CPHCEnrollment::EnrollmentPayload
       .order(device_created_at: :desc)
       .first&.identifier
 
+    full_name = patient.full_name.split("").reject { |c| UNACCEPTED_CHARACTERS.include?(c) }.join
     phone_number = patient.phone_numbers.first&.number
     individual_info = {
-      name: patient.full_name,
+      name: full_name,
       birthDate: patient.date_of_birth,
       age: patient.age,
       gender: gender,

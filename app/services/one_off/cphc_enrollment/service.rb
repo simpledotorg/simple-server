@@ -201,7 +201,7 @@ class OneOff::CPHCEnrollment::Service
       logger.info "Request Successful", response.body.to_s
     else
       logger.error "Request Failed", {response_body: JSON.parse(response.body.to_s), status: response.status, payload: payload.payload}
-      throw "Request Failed: #{response.body}"
+      throw "Request Failed: #{response.body} #{payload.payload}"
     end
 
     response
