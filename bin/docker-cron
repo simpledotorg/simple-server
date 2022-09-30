@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+bundle exec whenever --update-crontab
+
+tail -f /dev/null # Keep the container running
