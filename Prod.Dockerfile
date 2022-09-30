@@ -1,4 +1,3 @@
-# Dockerfile development version
 FROM ruby:2.7.4
 
 SHELL ["/bin/bash", "-c"] 
@@ -15,6 +14,8 @@ RUN apt-get update && apt-get install -y redis-server postgresql-client jq
 # Node
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
 RUN apt-get update && apt-get install -y --no-install-recommends nodejs
+# Install cron
+RUN apt-get install -y cron
 
 # Default directory
 ENV INSTALL_PATH /opt/app
