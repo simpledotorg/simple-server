@@ -22,6 +22,10 @@ ENV INSTALL_PATH /opt/app
 RUN mkdir -p $INSTALL_PATH
 WORKDIR $INSTALL_PATH
 
+# Create Cron logs directory
+RUN mkdir -p /home/deploy/apps/simple-server/shared/log
+RUN touch /home/deploy/apps/simple-server/shared/log/cron.log
+
 # Copy application files
 COPY . .
 
