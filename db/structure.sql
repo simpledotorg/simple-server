@@ -20,7 +20,7 @@ CREATE EXTENSION IF NOT EXISTS ltree WITH SCHEMA public;
 -- Name: EXTENSION ltree; Type: COMMENT; Schema: -; Owner: -
 --
 
--- COMMENT ON EXTENSION ltree IS 'data type for hierarchical tree-like structures';
+COMMENT ON EXTENSION ltree IS 'data type for hierarchical tree-like structures';
 
 
 --
@@ -34,7 +34,7 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
 -- Name: EXTENSION pgcrypto; Type: COMMENT; Schema: -; Owner: -
 --
 
--- COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
+COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
 
 
 --
@@ -403,7 +403,8 @@ CREATE TABLE public.cphc_migration_audit_logs (
     metadata json,
     deleted_at timestamp without time zone,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    facility_id uuid NOT NULL
 );
 
 
@@ -6130,6 +6131,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220902104533'),
 ('20220902114057'),
 ('20220902125119'),
-('20220926072823');
+('20220926072823'),
+('20221002080832');
 
 

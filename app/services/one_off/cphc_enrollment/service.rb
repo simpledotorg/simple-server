@@ -47,10 +47,14 @@ class OneOff::CPHCEnrollment::Service
       OneOff::CPHCEnrollment::EnrollmentPayload.new(patient)
     )
     @individual_id = JSON.parse(response.body.to_s)["individualId"]
-    CphcMigrationAuditLog.create(cphc_migratable: patient, metadata: {
-      individual_id: @individual_id,
-      patient_id: patient.id
-    })
+    CphcMigrationAuditLog.create(
+      cphc_migratable: patient,
+      facility_id: facility.id,
+      metadata: {
+        individual_id: @individual_id,
+        patient_id: patient.id
+      }
+    )
   end
 
   def add_encounter(encounter)
@@ -66,12 +70,16 @@ class OneOff::CPHCEnrollment::Service
     add_diabetes_examination if encounter.blood_sugars.present? && !@diabetes_examination_id.present?
 
     if !log.present?
-      CphcMigrationAuditLog.create(cphc_migratable: encounter, metadata: {
-        hypertension_examination_id: @hypertension_examination_id,
-        diabetes_examination_id: @diabetes_examination_id,
-        patient_id: patient.id,
-        individual_id: @individual_id
-      })
+      CphcMigrationAuditLog.create(
+        cphc_migratable: encounter,
+        facility_id: facility.id,
+        metadata: {
+          hypertension_examination_id: @hypertension_examination_id,
+          diabetes_examination_id: @diabetes_examination_id,
+          patient_id: patient.id,
+          individual_id: @individual_id
+        }
+      )
     end
 
     encounter.blood_pressures.each do |blood_pressure|
@@ -109,6 +117,7 @@ class OneOff::CPHCEnrollment::Service
     measurement_id = JSON.parse(response.body)["encounterId"]
     CphcMigrationAuditLog.create(
       cphc_migratable: blood_pressure,
+      facility_id: facility.id,
       metadata: {
         measurement_id: measurement_id,
         patient_id: patient.id,
@@ -150,9 +159,17 @@ class OneOff::CPHCEnrollment::Service
     )
 
     prescription_drugs.each do |prescription_drug|
-      CphcMigrationAuditLog.create(cphc_migratable: prescription_drug, metadata: {patient_id: patient.id, individual_id: @individual_id})
+      CphcMigrationAuditLog.create(
+        cphc_migratable: prescription_drug,
+        facility_id: facility.id,
+        metadata: {patient_id: patient.id, individual_id: @individual_id}
+      )
     end
-    CphcMigrationAuditLog.create(cphc_migratable: appointment, metadata: {patient_id: patient.id, individual_id: @individual_id})
+    CphcMigrationAuditLog.create(
+      cphc_migratable: appointment,
+      facility_id: facility.id,
+      metadata: {patient_id: patient.id, individual_id: @individual_id}
+    )
   end
 
   def add_blood_sugar(blood_sugar)
@@ -172,6 +189,7 @@ class OneOff::CPHCEnrollment::Service
 
     CphcMigrationAuditLog.create(
       cphc_migratable: blood_sugar,
+      facility_id: facility.id,
       metadata: {
         measurement_id: measurement_id,
         patient_id: patient.id,
@@ -182,6 +200,10 @@ class OneOff::CPHCEnrollment::Service
       diagnosis_path(:diabetes, @diabetes_examination_id, facility_type_id),
       OneOff::CPHCEnrollment::DiabetesDiagnosisPayload.new(blood_sugar, measurement_id)
     )
+  end
+
+  def facility
+    patient.assigned_facility
   end
 
   def make_post_request(path, payload)
