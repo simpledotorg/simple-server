@@ -264,6 +264,10 @@ Rails.application.routes.draw do
     post "deduplication", to: "deduplicate_patients#merge"
 
     resources :error_traces, only: [:index, :create]
+
+    authenticate :email_authentication, ->(a) { a.user.power_user? } do
+      get "cphc_migration", to: "cphc_migration#index", as: "cphc_migration"
+    end
   end
 
   authenticate :email_authentication, ->(a) { a.user.power_user? } do

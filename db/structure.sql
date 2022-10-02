@@ -393,6 +393,50 @@ CREATE TABLE public.configurations (
 
 
 --
+-- Name: cphc_facility_mappings; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.cphc_facility_mappings (
+    id bigint NOT NULL,
+    facility_id uuid,
+    cphc_state_id character varying,
+    cphc_state_name character varying,
+    cphc_district_id character varying,
+    cphc_district_name character varying,
+    cphc_taluka_id character varying,
+    cphc_taluka_name character varying,
+    cphc_phc_id character varying,
+    cphc_phc_name character varying,
+    cphc_subcenter_id character varying,
+    cphc_subcenter_name character varying,
+    cphc_village_id character varying,
+    cphc_village_name character varying,
+    deleted_at timestamp without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: cphc_facility_mappings_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.cphc_facility_mappings_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cphc_facility_mappings_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.cphc_facility_mappings_id_seq OWNED BY public.cphc_facility_mappings.id;
+
+
+--
 -- Name: cphc_migration_audit_logs; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -4185,6 +4229,13 @@ ALTER TABLE ONLY public.call_logs ALTER COLUMN id SET DEFAULT nextval('public.ca
 
 
 --
+-- Name: cphc_facility_mappings id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cphc_facility_mappings ALTER COLUMN id SET DEFAULT nextval('public.cphc_facility_mappings_id_seq'::regclass);
+
+
+--
 -- Name: facility_business_identifiers id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -4319,6 +4370,14 @@ ALTER TABLE ONLY public.communications
 
 ALTER TABLE ONLY public.configurations
     ADD CONSTRAINT configurations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cphc_facility_mappings cphc_facility_mappings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cphc_facility_mappings
+    ADD CONSTRAINT cphc_facility_mappings_pkey PRIMARY KEY (id);
 
 
 --
@@ -6132,6 +6191,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220902114057'),
 ('20220902125119'),
 ('20220926072823'),
-('20221002080832');
+('20221002080832'),
+('20221002111845');
 
 
