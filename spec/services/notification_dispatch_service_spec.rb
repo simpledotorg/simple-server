@@ -63,7 +63,6 @@ RSpec.describe NotificationDispatchService do
     described_class.call(notification)
   end
 
-
   it "accepts a messaging_channel as an override to the country config" do
     mock = mock_messaging_channel
     messaging_channel = Messaging::Bsnl::Sms
