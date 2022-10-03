@@ -25,4 +25,8 @@ class CphcFacilityMapping < ApplicationRecord
     cphc_district_name: "A",
     cphc_taluka_name: "B"
   }, using: {tsearch: {any_word: true, prefix: true}}
+
+  pg_search_scope :search_by_village, against: {
+    cphc_village_name: "A"
+  }, using: {tsearch: {prefix: true}}
 end

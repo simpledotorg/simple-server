@@ -9,16 +9,27 @@ class OneOff::CPHCEnrollment::EnrollmentPayload
   end
 
   def cphc_location
-    {"district_id" => ENV["CPHC_DISTRICT_ID"],
-     "district_name" => ENV["CPHC_DISTRICT_NAME"],
-     "taluka_id" => ENV["CPHC_TALUKA_ID"],
-     "taluka_name" => ENV["CPHC_TALUKA_NAME"],
-     "phc_id" => ENV["CPHC_PHC_ID"],
-     "phc_name" => ENV["CPHC_PHC_NAME"],
-     "subcenter_id" => ENV["CPHC_SUBCENTER_ID"],
-     "subcenter_name" => ENV["CPHC_SUBCENTER_NAME"],
-     "village_id" => ENV["CPHC_VILLAGE_ID"],
-     "village_name" => ENV["CPHC_VILLAGE_NAME"]}
+    potentail_match = CphcFacilityMapping
+      .where(facility: patient.assigned_facility)
+      .search_by_village(patient.address.village_or_colony)
+
+    other_village = CphcFacilityMapping.find_by(
+      facility: patient.assigned_facility,
+      cphc_village_name: "Other"
+    )
+
+    mapping = potentail_match || other_village
+
+    {"district_id" => mapping.cphc_district_id,
+     "district_name" => mapping.cphc_district_name,
+     "taluka_id" => mapping.cphc_taluka_id,
+     "taluka_name" => mapping.cphc_taluka_name,
+     "phc_id" => mapping.cphc_phc_id,
+     "phc_name" => mapping.cphc_phc_name,
+     "subcenter_id" => mapping.cphc_subcenter_id,
+     "subcenter_name" => mapping.cphc_subcenter_name,
+     "village_id" => mapping.cphc_village_id,
+     "village_name" => mapping.cphc_village_name}
   end
 
   def facilities_hashes(file_name)
@@ -68,18 +79,23 @@ class OneOff::CPHCEnrollment::EnrollmentPayload
       }
     }
 
-    family_info = {
-      addressInfo: {
-        addressDetails: "Street Details: #{patient.address.street_address} #{patient.address.village_or_colony}",
-        subcenterName: cphc_location["subcenter_name"],
-        subcenterId: cphc_location["subcenter_id"],
-        village: cphc_location["village_name"],
-        villageId: cphc_location["village_id"],
-        phc: cphc_location["phc_name"],
-        phcId: cphc_location["phc_id"],
-        villageOther: nil
-      }
+    address_info = {
+      addressDetails: "Street Details: #{patient.address.street_address} #{patient.address.village_or_colony}",
+      subcenterName: cphc_location["subcenter_name"],
+      subcenterId: cphc_location["subcenter_id"],
+      phc: cphc_location["phc_name"],
+      phcId: cphc_location["phc_id"]
     }
+
+    address_info["villageId"] = cphc_location["village_id"]
+
+    if cphc_location["village_name"] == "Other"
+      address_info["villageOther"] = patient.address.village_or_colony
+    else
+      address_info["village"] = cphc_location["village_name"]
+    end
+
+    family_info["addressInfo"] = address_info
 
     if bp_passport_id.present?
       family_info["additionalDetails"] = {

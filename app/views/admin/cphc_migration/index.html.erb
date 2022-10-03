@@ -33,53 +33,59 @@
             <div class="subtitle">
               <p>
               Number of patients synced:
-              <%= facility_group.assigned_patients.filter { |p| p.cphc_migration_audit_log.present?}.count %> / <%= facility_group.assigned_patients.count %>
+              <%= CphcMigrationAuditLog.where(facility_id: facility_group.facilities.map(&:id), cphc_migratable_type: 'Patient').count %> / <%= facility_group.assigned_patients.count %>
               </p>
+
+              <p>
+              Number of facilities mapped:
+              <%= CphcFacilityMapping.where(facility_id: facility_group.facilities.map(&:id)).distinct.count(:facility_id) %> / <%= facility_group.facilities.count %>
+              </p>
+
             </div>
           </div>
-          <% if current_admin.accessible_facility_groups(:manage).find_by_id(facility_group) %>
-            <div class="col-md-4 text-md-right mb-16px mb-lg-0">
-              <%# <%= link_to new_admin_facility_group_facility_path(facility_group), class: "btn btn-sm btn-outline-success" do %1> %>
-              <%#   <i class="fas fa-plus mr-1"></i> Add facility mapping %>
-              <%# <% end %1> %>
-          </div>
-        <% end %>
         </div>
 
         <% local_facilities = @facilities.dig(facility_group) %>
         <% if local_facilities&.any? %>
           <div class="mb-0">
-            <a href="#<%= facility_group.slug %>" data-toggle="collapse" data-target="#<%= facility_group.slug %>" aria-expanded="true" aria-controls="<%= facility_group.slug %>">
+            <a href="#<%= facility_group.slug %>" data-toggle="collapse" data-target="#<%= facility_group.slug %>" aria-expanded="false" aria-controls="<%= facility_group.slug %>">
               <i class="fas fa-angle-down mr-4px"></i> <%= pluralize(local_facilities.count, "facilities") %>
             </a>
           </div>
-          <div class="multi-collapse" id="<%= facility_group.slug %>">
+          <div class="collapse multi-collapse" id="<%= facility_group.slug %>">
             <h4 class="mt-24px text-grey">Facilities</h4>
             <% local_facilities.sort_by(&:name)&.each do |facility| %>
               <div class="row card-row">
                 <div class="col-md-5">
                   <h5 class="pb-md-0 pb-1">
-                    <a href="#<%= facility.slug %>">
-                      <%= facility.name %>
+                    <a href="#<%= facility.slug %>" data-toggle="collapse" data-target="#<%= facility.slug %>" aria-expanded="false" aria-controls="<%= facility.slug %>">
+                      <i class="fas fa-angle-down mr-4px"></i> <%= facility.name %>
                     </a>
                   </h5>
                 </div>
                 <div class="col-md-2">
                   <span class="text-muted">
-                    Patients Enrolled: <%= facility.assigned_patients.filter { |p| p.cphc_migration_audit_log.present?}.count %> / <%= facility.assigned_patients.count %>
+                    Patients Enrolled: <%= CphcMigrationAuditLog.where(facility_id: facility.id, cphc_migratable_type: 'Patient').count %> / <%= facility.assigned_patients.count %>
                   </span>
+
+                  <div class="subtitle">
+                    <p>
+                    Number of CPHC Mappings: <%= CphcFacilityMapping.where(facility: facility).count %>
+                    </p>
+                  </div>
                 </div>
               </div>
-              <% if facility.cphc_facility_mappings.present? %>
-                <h4 class="mt-24px text-grey">Current Mappings</h4>
-                <%= render "admin/cphc_migration/cphc_mappings",
-                  facility: facility,
-                  show_button: true,
-                  mappings: facility.cphc_facility_mappings %>
-              <% else %>
-                <div class="mb-24px col-md-12"><span class="text-muted">No CPHC facilities mapped yet</span></div>
-              <% end %>
-
+              <div class="collapse multi-collapse" id="<%= facility.slug %>">
+                <% if facility.cphc_facility_mappings.present? %>
+                  <h4 class="mt-24px text-grey">Current Mappings</h4>
+                  <%= render "admin/cphc_migration/cphc_mappings",
+                    facility: facility,
+                    show_button: true,
+                    mappings: facility.cphc_facility_mappings %>
+                <% else %>
+                  <div class="mb-24px col-md-12"><span class="text-muted">No CPHC facilities mapped yet</span></div>
+                <% end %>
+              </div>
             <% end %>
           </div>
         <% else %>

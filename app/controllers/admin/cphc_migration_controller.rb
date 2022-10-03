@@ -22,7 +22,7 @@ class Admin::CphcMigrationController < AdminController
     @facility_groups = facility_groups.group_by(&:organization)
     @facilities = facilities.group_by(&:facility_group)
 
-    @unmapped_cphc_facilites = CphcFacilityMapping.where(facility: nil).limit(10)
+    @unmapped_cphc_facilites = CphcFacilityMapping.where(facility: nil)
   end
 
   def update_cphc_mapping
