@@ -171,7 +171,7 @@ namespace :dell_demo do
   end
 
   desc "CPHC Migration Demo"
-  task :migration_demo, [:facility_id] => :environment do |_t, args|
+  task :migration_demo, [:facility_id, :limit, :offset] => :environment do |_t, args|
     facility_id = args[:facility_id]
     limit = args[:limit] || 10
     offset = args[:offset] || 0
@@ -184,7 +184,7 @@ namespace :dell_demo do
       auth_manager.sign_in(auto_fill: true)
     end
 
-    Patient.where(assigned_facility_id: Facility.find(facility_id).limit(limit).offset(offset)).each do |patient|
+    Patient.where(assigned_facility_id: Facility.find(facility_id)).limit(limit).offset(offset).each do |patient|
       CPHCMigrationJob.perform_async(patient.id, JSON.dump(auth_manager.user))
     end
   end

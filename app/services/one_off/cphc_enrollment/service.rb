@@ -48,7 +48,8 @@ class OneOff::CPHCEnrollment::Service
     )
     @individual_id = JSON.parse(response.body)["individualId"]
     CphcMigrationAuditLog.create(cphc_migratable: patient, metadata: {
-      individual_id: @individual_id
+      individual_id: @individual_id,
+      patient_id: patient.id
     })
   end
 
@@ -67,7 +68,9 @@ class OneOff::CPHCEnrollment::Service
     if !log.present?
       CphcMigrationAuditLog.create(cphc_migratable: encounter, metadata: {
         hypertension_examination_id: @hypertension_examination_id,
-        diabetes_examination_id: @diabetes_examination_id
+        diabetes_examination_id: @diabetes_examination_id,
+        patient_id: patient.id,
+        individual_id: @individual_id
       })
     end
 
@@ -107,7 +110,9 @@ class OneOff::CPHCEnrollment::Service
     CphcMigrationAuditLog.create(
       cphc_migratable: blood_pressure,
       metadata: {
-        measurement_id: measurement_id
+        measurement_id: measurement_id,
+        patient_id: patient.id,
+        individual_id: @individual_id
       }
     )
 
@@ -145,9 +150,9 @@ class OneOff::CPHCEnrollment::Service
     )
 
     prescription_drugs.each do |prescription_drug|
-      CphcMigrationAuditLog.create(cphc_migratable: prescription_drug)
+      CphcMigrationAuditLog.create(cphc_migratable: prescription_drug, metadata: {patient_id: patient.id, individual_id: @individual_id})
     end
-    CphcMigrationAuditLog.create(cphc_migratable: appointment)
+    CphcMigrationAuditLog.create(cphc_migratable: appointment, metadata: {patient_id: patient.id, individual_id: @individual_id})
   end
 
   def add_blood_sugar(blood_sugar)
@@ -168,7 +173,9 @@ class OneOff::CPHCEnrollment::Service
     CphcMigrationAuditLog.create(
       cphc_migratable: blood_sugar,
       metadata: {
-        measurement_id: measurement_id
+        measurement_id: measurement_id,
+        patient_id: patient.id,
+        individual_id: @individual_id
       }
     )
     make_post_request(
@@ -189,7 +196,7 @@ class OneOff::CPHCEnrollment::Service
       throw "The request was unauthorized. Pleas check the config and try again."
     when 404
       logger.error "Path not found", path
-      throw "Not found", path
+      throw "Not found #{path}"
     when 200
       logger.info "Request Successful", response.body
     else
