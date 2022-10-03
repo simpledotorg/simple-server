@@ -453,6 +453,42 @@ CREATE TABLE public.cphc_migration_audit_logs (
 
 
 --
+-- Name: cphc_migration_error_logs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.cphc_migration_error_logs (
+    id bigint NOT NULL,
+    cphc_migratable_type character varying NOT NULL,
+    cphc_migratable_id uuid NOT NULL,
+    facility_id uuid,
+    patient_id uuid,
+    failures json,
+    deleted_at timestamp without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: cphc_migration_error_logs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.cphc_migration_error_logs_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cphc_migration_error_logs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.cphc_migration_error_logs_id_seq OWNED BY public.cphc_migration_error_logs.id;
+
+
+--
 -- Name: data_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -4236,6 +4272,13 @@ ALTER TABLE ONLY public.cphc_facility_mappings ALTER COLUMN id SET DEFAULT nextv
 
 
 --
+-- Name: cphc_migration_error_logs id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cphc_migration_error_logs ALTER COLUMN id SET DEFAULT nextval('public.cphc_migration_error_logs_id_seq'::regclass);
+
+
+--
 -- Name: facility_business_identifiers id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -4386,6 +4429,14 @@ ALTER TABLE ONLY public.cphc_facility_mappings
 
 ALTER TABLE ONLY public.cphc_migration_audit_logs
     ADD CONSTRAINT cphc_migration_audit_logs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cphc_migration_error_logs cphc_migration_error_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cphc_migration_error_logs
+    ADD CONSTRAINT cphc_migration_error_logs_pkey PRIMARY KEY (id);
 
 
 --
@@ -6199,6 +6250,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220902125119'),
 ('20220926072823'),
 ('20221002080832'),
-('20221002111845');
+('20221002111845'),
+('20221003084709');
 
 

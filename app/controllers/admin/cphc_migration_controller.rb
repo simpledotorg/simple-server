@@ -2,6 +2,8 @@ class Admin::CphcMigrationController < AdminController
   include SearchHelper
   include Pagination
 
+  helper_method :get_migrated_records
+
   MIGRATING_DISTRICT_SLUGS = ["bikaner", "churu"]
   def index
     authorize { current_admin.power_user? }
@@ -10,9 +12,24 @@ class Admin::CphcMigrationController < AdminController
     accessible_facilities = current_admin
       .accessible_facilities(:manage)
       .where(facility_group: migrating_facility_groups)
+    facility_groups = FacilityGroup.where(
+      slug: params[:district_slugs] || MIGRATING_DISTRICT_SLUGS
+    )
 
     facilities = if searching?
       accessible_facilities.search_by_name(search_query)
+    elsif params[:unlinked_facilities]
+      accessible_facilities
+        .where(facility_group: facility_groups)
+        .left_outer_joins(:cphc_facility_mappings)
+        .where(cphc_facility_mappings: {facility_id: nil})
+        .distinct
+    elsif params[:error_facilities]
+      accessible_facilities
+        .where(facility_group: facility_groups)
+        .left_outer_joins(:cphc_migration_error_logs)
+        .where.not(cphc_migration_error_logs: {facility_id: nil})
+        .distinct
     else
       accessible_facilities
     end
@@ -28,16 +45,18 @@ class Admin::CphcMigrationController < AdminController
   def update_cphc_mapping
     authorize { current_admin.power_user? }
     remove_mapping = params[:remove_mapping]
-    CphcFacilityMapping.find_by(
-      params.permit(
-        :cphc_state_id,
-        :cphc_district_id,
-        :cphc_taluka_id,
-        :cphc_phc_id,
-        :cphc_subcenter_id,
-        :cphc_village_id
-      )
-    ).update!(facility_id: remove_mapping ? nil : params[:facility_id])
+    CphcFacilityMapping.where(cphc_phc_id: params[:cphc_phc_id])
+      .update_all(facility_id: remove_mapping ? nil : params[:facility_id])
     redirect_to admin_cphc_migration_path, notice: "CPHC Facility Mapping Added"
+  end
+
+  def migrate_to_cphc
+    authorize { current_admin.power_user? }
+  end
+
+  def get_migrated_records(klass, facility)
+    CphcMigrationAuditLog
+      .where(facility: facility, cphc_migratable_type: klass.to_s.camelcase)
+      .order(created_at: :desc)
   end
 end

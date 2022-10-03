@@ -268,6 +268,7 @@ Rails.application.routes.draw do
     authenticate :email_authentication, ->(a) { a.user.power_user? } do
       get "cphc_migration", to: "cphc_migration#index", as: "cphc_migration"
       post "update_cphc_mapping/:facility_id", to: "cphc_migration#update_cphc_mapping", as: "update_cphc_mapping"
+      post "migrate_to_cphc/:facility_id", to: "cphc_migration#migrate_to_cphc", as: "migrate_to_cphc"
     end
   end
 

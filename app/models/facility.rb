@@ -58,6 +58,8 @@ class Facility < ApplicationRecord
   has_many :facility_states, class_name: "Reports::FacilityState"
 
   has_many :cphc_facility_mappings
+  has_many :cphc_migration_error_logs
+  has_many :cphc_migration_audit_logs
 
   pg_search_scope :search_by_name, against: {name: "A", slug: "B"}, using: {tsearch: {prefix: true}}
   scope :with_block_region_id, -> {
