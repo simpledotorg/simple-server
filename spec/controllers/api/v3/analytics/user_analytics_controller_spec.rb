@@ -100,7 +100,7 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
             get :show, format: :html
 
             expect(response.status).to eq(200)
-            expect(response.content_type).to eq("text/html")
+            expect(response.media_type).to eq("text/html")
 
             # ui cards
             expect(response.body).to have_content(/Tap "Sync" on the home screen for new data/)

@@ -23,7 +23,7 @@ unless SimpleServer.env.sandbox? || SimpleServer.env.qa? || SimpleServer.env.and
   end
 
   class Rack::Attack
-    self.throttled_response = lambda do |_request|
+    self.throttled_responder = lambda do |_request|
       [429, {}, ["Too many requests. Please wait and try again later.\n"]]
     end
 

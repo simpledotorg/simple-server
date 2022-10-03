@@ -15,7 +15,7 @@ class FollowUpsQuery
     table_name = model.table_name.to_sym
     time_column_with_table_name = "#{table_name}.#{time_column}"
 
-    relation = Patient.joins(table_name)
+    relation = Patient.default_scoped.joins(table_name)
       .where("patients.recorded_at < #{model.date_to_period_sql(time_column_with_table_name, period_type)}")
       .group_by_period(period_type, time_column_with_table_name, groupdate_opts)
       .distinct

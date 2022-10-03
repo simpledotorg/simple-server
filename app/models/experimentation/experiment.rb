@@ -38,7 +38,7 @@ module Experimentation
     private
 
     def one_active_experiment_per_type
-      existing_experiments = self.class.where(experiment_type: experiment_type).where.not(id: id)
+      existing_experiments = self.class.default_scoped.where(experiment_type: experiment_type).where.not(id: id)
       any_overlap = existing_experiments.any? { |experiment| overlap?(experiment) }
 
       errors.add(:state, "you cannot have multiple active experiments of type #{experiment_type}") if any_overlap

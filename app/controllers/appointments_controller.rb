@@ -24,7 +24,7 @@ class AppointmentsController < AdminController
       end
       format.csv do
         @patient_summaries = patient_summaries(only_overdue: false)
-        send_data render_to_string("index.csv.erb"), filename: download_filename
+        send_data render_to_string("index"), filename: download_filename
       end
     end
   end
