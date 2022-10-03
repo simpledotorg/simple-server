@@ -64,7 +64,7 @@ CREATE TYPE public.gender_enum AS ENUM (
 
 SET default_tablespace = '';
 
-SET default_table_access_method = heap;
+SET default_with_oids = false;
 
 --
 -- Name: accesses; Type: TABLE; Schema: public; Owner: -
@@ -411,7 +411,7 @@ CREATE TABLE public.configurations (
 --
 
 CREATE TABLE public.cphc_migration_audit_logs (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     cphc_migratable_type character varying NOT NULL,
     cphc_migratable_id uuid NOT NULL,
     metadata json,
@@ -6261,7 +6261,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220902104533'),
 ('20220902114057'),
 ('20220902125119'),
-('20220926072823'),
-('20220923105541');
+('20220923105541'),
+('20220926072823');
 
 
