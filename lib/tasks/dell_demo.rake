@@ -171,25 +171,29 @@ namespace :dell_demo do
   end
 
   desc "CPHC Migration Demo"
-  task :migration_demo, [:facility_id, :limit, :offset] => :environment do |_t, args|
-    facility_id = args[:facility_id]
+  task :migrate_to_cphc, [:district, :limit, :offset] => :environment do |_t, args|
+    district = args[:district]
     limit = args[:limit] || 10
     offset = args[:offset] || 0
 
     auth_token = ENV["CPHC_AUTH_TOKEN"]
     if auth_token.present?
-      auth_manager = OneOff::CPHCEnrollment::AuthManager.new(auth_token: auth_token)
+      auth_manager = OneOff::CphcEnrollment::AuthManager.new(auth_token: auth_token)
     else
-      auth_manager = OneOff::CPHCEnrollment::AuthManager.new
+      auth_manager = OneOff::CphcEnrollment::AuthManager.new
       auth_manager.sign_in(auto_fill: true)
     end
+    eligible_facilities =
+      Facility.where(district: district)
+        .joins(:cphc_facility_mappings)
+        .where.not(cphc_facility_mappings: { facility_id: nil })
 
-    Patient.where(assigned_facility_id: Facility.find(facility_id)).limit(limit).offset(offset).each do |patient|
-      CPHCMigrationJob.perform_async(patient.id, JSON.dump(auth_manager.user))
+    Patient.where(assigned_facility_id: eligible_facilities).order(:assigned_facility_id).limit(limit).offset(offset).each do |patient|
+      CphcMigrationJob.perform_async(patient.id, JSON.dump(auth_manager.user))
     end
   end
 
-  desc "Import CHPHC Facilities"
+  desc "Import CPHC Facilities"
   task :import_cphc_facilities, [:filename, :sheet, :district_id] => :environment do |_t, args|
     xlsx = Roo::Spreadsheet.open(args[:filename])
 
@@ -222,19 +226,27 @@ namespace :dell_demo do
   desc "Map CPHC Facilities"
   task :map_cphc_facilities, [:district] => :environment do |_t, args|
     district = args[:district]
-    Facility.where(district: district).each do |facility|
+    Facility.where(district: district)
+            .left_outer_joins(:cphc_facility_mappings)
+            .where(cphc_facility_mappings: {cphc_phc_id: nil})
+            .order(:name)
+            .each do |facility|
       potential_mappings = CphcFacilityMapping.where(facility: nil)
-        .search_by_facility(facility.name)
+        .search_by_cphc_phc_name(facility.name)
         .search_by_region(district)
+        .uniq(&:cphc_phc_name)
 
-      puts "Potential Mappings for #{facility.name}"
+      next puts("No Mappings | Block: #{facility.block} | Facility: #{facility.name} \n".red) if potential_mappings.empty?
+
+      puts "Potential Mappings | Block: #{facility.block} | Facility: #{facility.name}".green
+
       puts "\n"
       tp potential_mappings,
         :id,
+        :cphc_district_name,
         :cphc_taluka_name,
-        :cphc_phc_name,
         :cphc_subcenter_name,
-        :cphc_village_name
+        :cphc_phc_name
 
       puts "\n"
       jump_to_id = nil
@@ -244,16 +256,16 @@ namespace :dell_demo do
         end
         jump_to_id = nil
 
-        print "Map #{mapping.id} (#{mapping.cphc_village_name}):(#{mapping.cphc_subcenter_name}):(#{mapping.cphc_phc_name}) to #{facility.name}? [(y)es, (n)o, (a)ll (s)kip, (id)jump] "
-
+        print "Map #{facility.name} to #{mapping.cphc_phc_name}? [(y)es, (n)o, (a)ll (s)kip, (id)jump] "
         input = $stdin.gets.strip
+        puts "\n"
 
         if input == "s"
           break
         end
 
         if input == "y"
-          mapping.update(facility: facility)
+          CphcFacilityMapping.where(cphc_phc_name: mapping.cphc_phc_name).update(facility: facility)
         end
 
         if input == "a"
@@ -264,8 +276,6 @@ namespace :dell_demo do
         if input.to_i != 0
           jump_to_id = input.to_i
         end
-
-        puts "\n"
       end
     end
   end

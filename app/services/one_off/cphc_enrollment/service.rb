@@ -1,4 +1,4 @@
-class OneOff::CPHCEnrollment::Service
+class OneOff::CphcEnrollment::Service
   CPHC_BASE_PATH = "#{ENV["CPHC_BASE_URL"]}/cphm"
   CPHC_ENROLLMENT_PATH = "#{CPHC_BASE_PATH}/enrollment/individual"
 
@@ -45,7 +45,7 @@ class OneOff::CPHCEnrollment::Service
     response = make_post_request(
       patient,
       CPHC_ENROLLMENT_PATH,
-      OneOff::CPHCEnrollment::EnrollmentPayload.new(patient)
+      OneOff::CphcEnrollment::EnrollmentPayload.new(patient)
     )
     @individual_id = JSON.parse(response.body.to_s)["individualId"]
     CphcMigrationAuditLog.create(
@@ -114,7 +114,7 @@ class OneOff::CPHCEnrollment::Service
     response = make_post_request(
       blood_pressure,
       measurement_path(:hypertension, hypertension_examination_id),
-      OneOff::CPHCEnrollment::BloodPressurePayload.new(blood_pressure)
+      OneOff::CphcEnrollment::BloodPressurePayload.new(blood_pressure)
     )
 
     measurement_id = JSON.parse(response.body)["encounterId"]
@@ -148,14 +148,14 @@ class OneOff::CPHCEnrollment::Service
       make_post_request(
         blood_pressure,
         diagnosis_path(:hypertension, hypertension_examination_id),
-        OneOff::CPHCEnrollment::HypertensionDiagnosisPayload.new(blood_pressure, measurement_id)
+        OneOff::CphcEnrollment::HypertensionDiagnosisPayload.new(blood_pressure, measurement_id)
       )
     end
 
     make_post_request(
       blood_pressure,
       treatment_path(:hypertension, hypertension_examination_id),
-      OneOff::CPHCEnrollment::TreatmentPayload.new(
+      OneOff::CphcEnrollment::TreatmentPayload.new(
         blood_pressure,
         prescription_drugs,
         appointment,
@@ -185,11 +185,11 @@ class OneOff::CPHCEnrollment::Service
       return
     end
 
-    facility_type_id = OneOff::CPHCEnrollment::FACILITY_TYPE_ID["PHC"]
+    facility_type_id = OneOff::CphcEnrollment::FACILITY_TYPE_ID["DH"]
     response = make_post_request(
       blood_sugar,
       measurement_path(:diabetes, @diabetes_examination_id, facility_type_id),
-      OneOff::CPHCEnrollment::BloodSugarPayload.new(blood_sugar)
+      OneOff::CphcEnrollment::BloodSugarPayload.new(blood_sugar)
     )
 
     measurement_id = JSON.parse(response.body.to_s)["encounterId"]
@@ -206,7 +206,7 @@ class OneOff::CPHCEnrollment::Service
     make_post_request(
       blood_sugar,
       diagnosis_path(:diabetes, @diabetes_examination_id, facility_type_id),
-      OneOff::CPHCEnrollment::DiabetesDiagnosisPayload.new(blood_sugar, measurement_id)
+      OneOff::CphcEnrollment::DiabetesDiagnosisPayload.new(blood_sugar, measurement_id)
     )
   end
 
@@ -215,7 +215,7 @@ class OneOff::CPHCEnrollment::Service
   end
 
   def make_post_request(record, path, payload)
-    response = OneOff::CPHCEnrollment::Request.new(
+    response = OneOff::CphcEnrollment::Request.new(
       path: path,
       user: user,
       payload: payload
@@ -223,11 +223,11 @@ class OneOff::CPHCEnrollment::Service
 
     if response.code == 200
       logger.info "Request Successful", response.body.to_s
-      return reponse
+      return response
     end
 
     CphcMigrationErrorLog.create(
-      cphc_migratable: reocrd,
+      cphc_migratable: record,
       facility_id: patient.assigned_facility_id,
       patient_id: patient.id,
       failures: {
@@ -239,7 +239,7 @@ class OneOff::CPHCEnrollment::Service
       }
     )
 
-    throw "Request Failed", {
+    throw "Request failed", {
       response_code: response.code,
       response_body: json_or_str_body(response)
     }
@@ -279,8 +279,8 @@ class OneOff::CPHCEnrollment::Service
     Rails.logger
   end
 
-  def json_or_str_body(reponse)
-    JSON.parse(reponse.body.to_s)
+  def json_or_str_body(response)
+    JSON.parse(response.body.to_s)
   rescue
     response.body.to_s
   end

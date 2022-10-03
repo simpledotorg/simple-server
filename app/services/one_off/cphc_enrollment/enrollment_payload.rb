@@ -1,4 +1,4 @@
-class OneOff::CPHCEnrollment::EnrollmentPayload
+class OneOff::CphcEnrollment::EnrollmentPayload
   attr_reader :patient, :cphc_facility
 
   UNACCEPTED_CHARACTERS = [("0".."9").to_a, ["-", "/", "%", "$", "#"]].flatten
@@ -9,16 +9,17 @@ class OneOff::CPHCEnrollment::EnrollmentPayload
   end
 
   def cphc_location
-    potentail_match = CphcFacilityMapping
+    potential_match = CphcFacilityMapping
       .where(facility: patient.assigned_facility)
       .search_by_village(patient.address.village_or_colony)
+      .first
 
     other_village = CphcFacilityMapping.find_by(
       facility: patient.assigned_facility,
       cphc_village_name: "Other"
     )
 
-    mapping = potentail_match || other_village
+    mapping = potential_match || other_village
 
     {"district_id" => mapping.cphc_district_id,
      "district_name" => mapping.cphc_district_name,
@@ -95,7 +96,9 @@ class OneOff::CPHCEnrollment::EnrollmentPayload
       address_info["village"] = cphc_location["village_name"]
     end
 
-    family_info["addressInfo"] = address_info
+    family_info = {
+      "addressInfo" => address_info
+    }
 
     if bp_passport_id.present?
       family_info["additionalDetails"] = {

@@ -1,6 +1,6 @@
 require "selenium-webdriver"
 
-class OneOff::CPHCEnrollment::AuthManager
+class OneOff::CphcEnrollment::AuthManager
   attr_reader :auth_token, :is_authorized
 
   CPHC_API_USER_ID = ENV["CPHC_API_USER_ID"]
