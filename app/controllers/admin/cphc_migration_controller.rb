@@ -21,5 +21,23 @@ class Admin::CphcMigrationController < AdminController
     @organizations = Organization.where(facility_groups: facility_groups)
     @facility_groups = facility_groups.group_by(&:organization)
     @facilities = facilities.group_by(&:facility_group)
+
+    @unmapped_cphc_facilites = CphcFacilityMapping.where(facility: nil).limit(10)
+  end
+
+  def update_cphc_mapping
+    authorize { current_admin.power_user? }
+    remove_mapping = params[:remove_mapping]
+    CphcFacilityMapping.find_by(
+      params.permit(
+        :cphc_state_id,
+        :cphc_district_id,
+        :cphc_taluka_id,
+        :cphc_phc_id,
+        :cphc_subcenter_id,
+        :cphc_village_id
+      )
+    ).update!(facility_id: remove_mapping ? nil : params[:facility_id])
+    redirect_to admin_cphc_migration_path, notice: "CPHC Facility Mapping Added"
   end
 end

@@ -188,4 +188,85 @@ namespace :dell_demo do
       CPHCMigrationJob.perform_async(patient.id, JSON.dump(auth_manager.user))
     end
   end
+
+  desc "Import CHPHC Facilities"
+  task :import_cphc_facilities, [:filename, :sheet, :district_id] => :environment do |_t, args|
+    xlsx = Roo::Spreadsheet.open(args[:filename])
+
+    sheet = xlsx.sheet(args[:sheet])
+
+    headers = {
+      cphc_state_id: "state_id",
+      cphc_state_name: "state_name",
+      cphc_district_id: "district_id",
+      cphc_district_name: "district_name",
+      cphc_taluka_id: "taluka_id",
+      cphc_taluka_name: "taluka_name",
+      cphc_phc_id: "phc_id",
+      cphc_phc_name: "phc_name",
+      cphc_subcenter_id: "subcenter_id",
+      cphc_subcenter_name: "subcenter_name",
+      cphc_village_id: "village_id",
+      cphc_village_name: "village_name"
+    }
+
+    sheet.each(headers) do |row|
+      if row[:cphc_district_id].to_s == args[:district_id]
+        CphcFacilityMapping.create(row)
+      end
+    end
+
+    puts "Finished importing facilities"
+  end
+
+  desc "Map CPHC Facilities"
+  task :map_cphc_facilities, [:district] => :environment do |_t, args|
+    district = args[:district]
+    Facility.where(district: district).each do |facility|
+      potential_mappings = CphcFacilityMapping.where(facility: nil)
+        .search_by_facility(facility.name)
+        .search_by_region(district)
+
+      puts "Potential Mappings for #{facility.name}"
+      puts "\n"
+      tp potential_mappings,
+        :id,
+        :cphc_taluka_name,
+        :cphc_phc_name,
+        :cphc_subcenter_name,
+        :cphc_village_name
+
+      puts "\n"
+      jump_to_id = nil
+      potential_mappings.each do |mapping|
+        if jump_to_id.present? && mapping.id != jump_to_id
+          next
+        end
+        jump_to_id = nil
+
+        print "Map #{mapping.id} (#{mapping.cphc_village_name}):(#{mapping.cphc_subcenter_name}):(#{mapping.cphc_phc_name}) to #{facility.name}? [(y)es, (n)o, (a)ll (s)kip, (id)jump] "
+
+        input = $stdin.gets.strip
+
+        if input == "s"
+          break
+        end
+
+        if input == "y"
+          mapping.update(facility: facility)
+        end
+
+        if input == "a"
+          potential_mappings.update(facility: facility)
+          break
+        end
+
+        if input.to_i != 0
+          jump_to_id = input.to_i
+        end
+
+        puts "\n"
+      end
+    end
+  end
 end

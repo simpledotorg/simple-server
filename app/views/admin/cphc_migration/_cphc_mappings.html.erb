@@ -1,0 +1,18 @@
+<div class="row card-row">
+  <div class="col-md-1"><span>State</span></div>
+  <div class="col-md-1"><span>District</span></div>
+  <div class="col-md-2"><span>Taluka</span></div>
+  <div class="col-md-2"><span>PHC Name</span></div>
+  <div class="col-md-2"><span>Subcenter Name</span></div>
+  <div class="col-md-2"><span>Village</span></div>
+</div>
+<% mappings.each do |mapping| %>
+  <div class="row card-row">
+    <div class="col-md-1"><span class="text-muted"><%= mapping.cphc_state_name %></span></div>
+    <div class="col-md-1"><span class="text-muted"><%= mapping.cphc_district_name %></span></div>
+    <div class="col-md-2"><span class="text-muted"><%= mapping.cphc_taluka_name %></span></div>
+    <div class="col-md-2"><span class="text-muted"><%= mapping.cphc_phc_name %></span></div>
+    <div class="col-md-2"><span class="text-muted"><%= mapping.cphc_subcenter_name %></span></div>
+    <div class="col-md-2"><span class="text-muted"><%= mapping.cphc_village_name %></span></div>
+  </div>
+<% end %>

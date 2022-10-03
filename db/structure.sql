@@ -399,17 +399,17 @@ CREATE TABLE public.configurations (
 CREATE TABLE public.cphc_facility_mappings (
     id bigint NOT NULL,
     facility_id uuid,
-    cphc_state_id character varying,
+    cphc_state_id integer,
     cphc_state_name character varying,
-    cphc_district_id character varying,
+    cphc_district_id integer,
     cphc_district_name character varying,
-    cphc_taluka_id character varying,
+    cphc_taluka_id integer,
     cphc_taluka_name character varying,
-    cphc_phc_id character varying,
+    cphc_phc_id integer,
     cphc_phc_name character varying,
-    cphc_subcenter_id character varying,
+    cphc_subcenter_id integer,
     cphc_subcenter_name character varying,
-    cphc_village_id character varying,
+    cphc_village_id integer,
     cphc_village_name character varying,
     deleted_at timestamp without time zone,
     created_at timestamp(6) without time zone NOT NULL,
@@ -4665,6 +4665,13 @@ ALTER TABLE ONLY public.users
 --
 
 CREATE UNIQUE INDEX clean_medicine_to_dosages__unique_name_and_dosage ON public.clean_medicine_to_dosages USING btree (medicine, dosage, rxcui);
+
+
+--
+-- Name: cphc_facility_mappings_unique_cphc_record; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX cphc_facility_mappings_unique_cphc_record ON public.cphc_facility_mappings USING btree (cphc_state_id, cphc_state_name, cphc_district_id, cphc_district_name, cphc_taluka_id, cphc_taluka_name, cphc_phc_id, cphc_phc_name, cphc_subcenter_id, cphc_subcenter_name, cphc_village_id, cphc_village_name);
 
 
 --
