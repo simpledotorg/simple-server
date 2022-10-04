@@ -59,7 +59,7 @@ class OneOff::CphcEnrollment::EnrollmentPayload
       .order(device_created_at: :desc)
       .first&.identifier
 
-    full_name = patient.full_name.split("").reject { |c| UNACCEPTED_CHARACTERS.include?(c) }.join
+    full_name = patient.full_name.chars.reject { |c| UNACCEPTED_CHARACTERS.include?(c) }.join
     phone_number = patient.phone_numbers.first&.number
     individual_info = {
       name: full_name,
