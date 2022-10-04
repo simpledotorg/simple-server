@@ -114,12 +114,11 @@
               </div>
 
               <div class="col-md-2">
-                <%= link_to admin_cphc_migration_path(
-                  district_slugs: [facility_group.slug],
-                  error_facilities: true
-                ), class: "btn btn-sm btn-outline-danger" do %>
-                <i class="fas fa-cloud-exclamation mr-1"></i>
-                Migrate Facility
+                <%= form_with url: admin_migrate_to_cphc_path(facility_id: facility.id), method: :post do |form| %>
+                  <%= form.button type: "submit", class: "btn btn-sm btn-outline-danger" do %>
+                    <i class="fas fa-cloud-exclamation mr-1"></i>
+                    Migrate Facility
+                  <% end %>
                 <% end %>
               </div>
 

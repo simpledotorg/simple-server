@@ -453,6 +453,39 @@ CREATE TABLE public.cphc_migration_audit_logs (
 
 
 --
+-- Name: cphc_migration_configs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.cphc_migration_configs (
+    id bigint NOT NULL,
+    facility_group_id uuid,
+    config json,
+    deleted_at timestamp without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: cphc_migration_configs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.cphc_migration_configs_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cphc_migration_configs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.cphc_migration_configs_id_seq OWNED BY public.cphc_migration_configs.id;
+
+
+--
 -- Name: cphc_migration_error_logs; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -4272,6 +4305,13 @@ ALTER TABLE ONLY public.cphc_facility_mappings ALTER COLUMN id SET DEFAULT nextv
 
 
 --
+-- Name: cphc_migration_configs id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cphc_migration_configs ALTER COLUMN id SET DEFAULT nextval('public.cphc_migration_configs_id_seq'::regclass);
+
+
+--
 -- Name: cphc_migration_error_logs id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -4429,6 +4469,14 @@ ALTER TABLE ONLY public.cphc_facility_mappings
 
 ALTER TABLE ONLY public.cphc_migration_audit_logs
     ADD CONSTRAINT cphc_migration_audit_logs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cphc_migration_configs cphc_migration_configs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cphc_migration_configs
+    ADD CONSTRAINT cphc_migration_configs_pkey PRIMARY KEY (id);
 
 
 --
@@ -5017,6 +5065,13 @@ CREATE UNIQUE INDEX index_configurations_on_name ON public.configurations USING 
 --
 
 CREATE UNIQUE INDEX index_cphc_migration_audit_logs_on_cphc_migratable ON public.cphc_migration_audit_logs USING btree (cphc_migratable_type, cphc_migratable_id);
+
+
+--
+-- Name: index_cphc_migration_configs_on_facility_group_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_cphc_migration_configs_on_facility_group_id ON public.cphc_migration_configs USING btree (facility_group_id);
 
 
 --
@@ -6251,6 +6306,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220926072823'),
 ('20221002080832'),
 ('20221002111845'),
-('20221003084709');
+('20221003084709'),
+('20221004092107');
 
 

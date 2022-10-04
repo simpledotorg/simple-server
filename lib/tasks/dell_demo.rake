@@ -186,7 +186,7 @@ namespace :dell_demo do
     eligible_facilities =
       Facility.where(district: district)
         .joins(:cphc_facility_mappings)
-        .where.not(cphc_facility_mappings: { facility_id: nil })
+        .where.not(cphc_facility_mappings: {facility_id: nil})
 
     Patient.where(assigned_facility_id: eligible_facilities).order(:assigned_facility_id).limit(limit).offset(offset).each do |patient|
       CphcMigrationJob.perform_async(patient.id, JSON.dump(auth_manager.user))
@@ -227,10 +227,10 @@ namespace :dell_demo do
   task :map_cphc_facilities, [:district] => :environment do |_t, args|
     district = args[:district]
     Facility.where(district: district)
-            .left_outer_joins(:cphc_facility_mappings)
-            .where(cphc_facility_mappings: {cphc_phc_id: nil})
-            .order(:name)
-            .each do |facility|
+      .left_outer_joins(:cphc_facility_mappings)
+      .where(cphc_facility_mappings: {cphc_phc_id: nil})
+      .order(:name)
+      .each do |facility|
       potential_mappings = CphcFacilityMapping.where(facility: nil)
         .search_by_cphc_phc_name(facility.name)
         .search_by_region(district)
