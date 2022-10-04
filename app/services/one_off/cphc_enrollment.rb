@@ -1,4 +1,4 @@
-module OneOff::CPHCEnrollment
+module OneOff::CphcEnrollment
   FACILITY_TYPE_ID = {
     "PHC" => 3200,
     "CHC" => 3300,
