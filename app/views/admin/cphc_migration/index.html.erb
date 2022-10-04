@@ -47,13 +47,64 @@
             ), class: "btn btn-sm btn-outline-danger" do %>
             <i class="fas fa-bomb mr-1"></i>
             <%= facility_group
-              .facilities.includes(:cphc_migration_error_logs)
-              .filter{ |f| f.cphc_migration_error_logs.present? }.count %> Facilities with errors
+              .facilities
+              .joins(:cphc_migration_error_logs)
+              .joins("left outer join cphc_migration_audit_logs on cphc_migration_audit_logs.cphc_migratable_id = cphc_migration_error_logs.cphc_migratable_id")
+              .where("cphc_migration_audit_logs.id is null")
+              .distinct(:facility_id)
+              .count %> Facilities with errors
             <% end %>
+          </div>
+          <div class="col-md-12">
+            <table class="table mt-24px">
+              <thead>
+                <tr>
+                  <th>Model</th>
+                  <th>Migrated</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Patients</td>
+                  <td><%= get_migrated_records(:patient, facility_group).count %></td>
+                  <td><%= facility_group.assigned_patients.count %></td>
+                </tr>
+                <tr>
+                  <td>Encounters</td>
+                  <td><%= get_migrated_records(:encounter, facility_group).count %></td>
+                  <td><%= Encounter.where(patient: facility_group.assigned_patients).count %></td>
+                </tr>
+                <tr>
+                  <td>Blood Pressures</td>
+                  <td><%= get_migrated_records(:blood_pressure, facility_group).count %></td>
+                  <td><%= BloodPressure.where(patient: facility_group.assigned_patients).count %></td>
+                </tr>
+                <tr>
+                  <td>Blood Sugars</td>
+                  <td><%= get_migrated_records(:blood_sugar, facility_group).count %></td>
+                  <td><%= BloodSugar.where(patient: facility_group.assigned_patients).count %></td>
+                </tr>
+                <tr>
+                  <td>Prescription Drugs</td>
+                  <td><%= get_migrated_records(:prescription_drug, facility_group).count %></td>
+                  <td><%= PrescriptionDrug.where(patient: facility_group.assigned_patients).count %></td>
+                </tr>
+                <tr>
+                  <td>Appointments</td>
+                  <td><%= get_migrated_records(:appointment, facility_group).count %></td>
+                  <td><%= Appointment.where(patient: facility_group.assigned_patients).count %></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
         <% local_facilities.each do |facility| %>
+          <% facility_errors = facility
+            .cphc_migration_error_logs
+            .joins("left outer join cphc_migration_audit_logs on cphc_migration_audit_logs.cphc_migratable_id = cphc_migration_error_logs.cphc_migratable_id")
+            .where("cphc_migration_audit_logs.id is null") %>
           <% mappings = facility.cphc_facility_mappings %>
           <% if mappings.present? %>
             <div class="row card-row mt-24px">
@@ -109,18 +160,27 @@
                     data-target="#<%= facility.slug %>-errors"
                     aria-controls="<%= facility.slug %>-errors">
                     <i class="fas fa-bomb mr-1"></i>
-                    <%= facility.cphc_migration_error_logs.count %> Errors
+                    <%= facility_errors.count %> Errors
                 </a>
               </div>
 
-              <div class="col-md-2">
-                <%= form_with url: admin_migrate_to_cphc_path(facility_id: facility.id), method: :post do |form| %>
-                  <%= form.button type: "submit", class: "btn btn-sm btn-outline-danger" do %>
-                    <i class="fas fa-cloud-exclamation mr-1"></i>
-                    Migrate Facility
+              <% if get_migrated_records(:patient, facility).count == facility.assigned_patients.count %>
+                <div class="col-md-2">
+                  <%= link_to href:"#", class: "btn btn-sm btn-outline-secondary" do%>
+                    <i class="fas fa-check mr-1"></i>
+                    All patients migrated
                   <% end %>
-                <% end %>
-              </div>
+                </div>
+              <% else %>
+                <div class="col-md-2">
+                  <%= form_with url: admin_migrate_facility_to_cphc_path(facility_id: facility.id), method: :post do |form| %>
+                    <%= form.button type: "submit", class: "btn btn-sm btn-outline-danger" do %>
+                      <i class="fas fa-cloud-exclamation mr-1"></i>
+                      Migrate Facility
+                    <% end %>
+                  <% end %>
+                </div>
+              <% end %>
 
               <div class="col-md-12 collapse multi-collapse" id="<%= facility.slug %>">
                 <table class="table mt-24px">
@@ -134,12 +194,12 @@
                   <tbody>
                     <tr>
                       <td>Patients</td>
-                      <td><%= get_migrated_records(:patients, facility).count %></td>
+                      <td><%= get_migrated_records(:patient, facility).count %></td>
                       <td><%= facility.assigned_patients.count %></td>
                     </tr>
                     <tr>
                       <td>Encounters</td>
-                      <td><%= get_migrated_records(:encounters, facility).count %></td>
+                      <td><%= get_migrated_records(:encounter, facility).count %></td>
                       <td><%= Encounter.where(patient: facility.assigned_patients).count %></td>
                     </tr>
                     <tr>
@@ -166,47 +226,39 @@
                 </table>
               </div>
 
-              <% if facility.cphc_migration_error_logs.present? %>
+              <% if facility_errors.present? %>
                 <div class="col-md-12 collapse multi-collapse c-red" id="<%= facility.slug %>-errors">
                   <table class="table mt-24px">
                     <thead>
                       <tr>
+                        <th>ID</th>
+                        <th>Time</th>
                         <th>Model</th>
-                        <th>Migrated</th>
-                        <th>Total</th>
+                        <th>Path</th>
+                        <th>Response Code</th>
+                        <th>Response Body</th>
+                        <th>Retry</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td>Patients</td>
-                        <td><%= get_migrated_records(:patients, facility).count %></td>
-                        <td><%= facility.assigned_patients.count %></td>
-                      </tr>
-                      <tr>
-                        <td>Encounters</td>
-                        <td><%= get_migrated_records(:encounters, facility).count %></td>
-                        <td><%= Encounter.where(patient: facility.assigned_patients).count %></td>
-                      </tr>
-                      <tr>
-                        <td>Blood Pressures</td>
-                        <td><%= get_migrated_records(:blood_pressure, facility).count %></td>
-                        <td><%= BloodPressure.where(patient: facility.assigned_patients).count %></td>
-                      </tr>
-                      <tr>
-                        <td>Blood Sugars</td>
-                        <td><%= get_migrated_records(:blood_sugar, facility).count %></td>
-                        <td><%= BloodSugar.where(patient: facility.assigned_patients).count %></td>
-                      </tr>
-                      <tr>
-                        <td>Prescription Drugs</td>
-                        <td><%= get_migrated_records(:prescription_drug, facility).count %></td>
-                        <td><%= PrescriptionDrug.where(patient: facility.assigned_patients).count %></td>
-                      </tr>
-                      <tr>
-                        <td>Appointments</td>
-                        <td><%= get_migrated_records(:appointment, facility).count %></td>
-                        <td><%= Appointment.where(patient: facility.assigned_patients).count %></td>
-                      </tr>
+                      <% facility_errors.each do |error_log| %>
+                        <tr>
+                          <td class="text-danger"><%= error_log.id %></td>
+                          <td class="text-danger"><%= error_log.failures["timestamp"] %></td>
+                          <td class="text-danger"><%= error_log.cphc_migratable_type %></td>
+                          <td class="text-danger"><%= error_log.failures["path"] %></td>
+                          <td class="text-danger"><%= error_log.failures["response_code"] %></td>
+                          <td> class="text-danger"<%= error_log.failures["response_body"] %></td>
+                          <td>
+                            <%= form_with url: admin_migrate_patient_to_cphc_path(patient_id: error_log.patient_id), method: :post do |form| %>
+                              <%= form.button type: "submit", class: "btn btn-sm btn-outline-danger" do %>
+                                <i class="fas fa-cloud-exclamation mr-1"></i>
+                                Retry patient
+                              <% end %>
+                            <% end %>
+                          </td>
+                        </tr>
+                      <% end %>
                     </tbody>
                   </table>
 

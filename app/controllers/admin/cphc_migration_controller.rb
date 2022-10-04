@@ -25,11 +25,14 @@ class Admin::CphcMigrationController < AdminController
         .where(cphc_facility_mappings: {facility_id: nil})
         .distinct
     elsif params[:error_facilities]
-      accessible_facilities
+      facility_ids = accessible_facilities
         .where(facility_group: facility_groups)
-        .left_outer_joins(:cphc_migration_error_logs)
-        .where.not(cphc_migration_error_logs: {facility_id: nil})
-        .distinct
+        .cphc_migration_error_logs
+        .joins("left outer join cphc_migration_audit_logs on cphc_migration_audit_logs.cphc_migratable_id = cphc_migration_error_logs.cphc_migratable_id")
+        .where("cphc_migration_audit_logs.id is null")
+        .distinct(:facility_id)
+
+      accessible_facilities(id: facility_ids)
     else
       accessible_facilities
     end
@@ -52,23 +55,30 @@ class Admin::CphcMigrationController < AdminController
 
   def migrate_to_cphc
     authorize { current_admin.power_user? }
-    facility = Facility.find(params[:facility_id])
+    patients = if params[:patient_id].present?
+      [Patient.find(params[:patient_id])]
+    else
+      facility.assigned_patients
+        .includes(:cphc_migration_audit_log)
+        .reject { |p| p.cphc_migration_audit_log.present? }
+    end
+    facility = Patient.find(params[:patient_id])
 
     auth_token = ENV["CPHC_AUTH_TOKEN"]
 
     auth_manager = OneOff::CphcEnrollment::AuthManager.new(auth_token: auth_token)
-    facility.assigned_patients
-      .includes(:cphc_migration_audit_log)
-      .reject { |p| p.cphc_migration_audit_log.present? }
-      .each do |patient|
-        CphcMigrationJob.perform_async(patient.id, JSON.dump(auth_manager.user))
-      end
+    patients.each { |patient| CphcMigrationJob.perform_async(patient.id, JSON.dump(auth_manager.user)) }
     redirect_to admin_cphc_migration_path, notice: "Migration triggered for #{facility.name}"
   end
 
-  def get_migrated_records(klass, facility)
+  def get_migrated_records(klass, region)
+    facilities = if region.is_a? Facility
+      [region]
+    else
+      region.facilities
+    end
     CphcMigrationAuditLog
-      .where(facility: facility, cphc_migratable_type: klass.to_s.camelcase)
+      .where(facility: facilities, cphc_migratable_type: klass.to_s.camelcase)
       .order(created_at: :desc)
   end
 end
