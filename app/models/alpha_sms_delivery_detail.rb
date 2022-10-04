@@ -6,7 +6,7 @@ class AlphaSmsDeliveryDetail < DeliveryDetail
   scope :in_progress, -> { where(request_status: nil) }
 
   def unsuccessful?
-    request_status != SUCCESSFUL_REQUEST_STATUS
+    !successful?
   end
 
   def successful?

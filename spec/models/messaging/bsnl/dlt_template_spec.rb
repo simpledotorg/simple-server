@@ -126,7 +126,7 @@ RSpec.describe Messaging::Bsnl::DltTemplate do
       stub_template(template_name)
       template = described_class.new(template_name)
 
-      expect { template.check_variables_presence({key_1: "Value 1", key_2: "Value 2"}) }.not_to raise_error(Messaging::Bsnl::MissingVariablesError)
+      expect { template.check_variables_presence({key_1: "Value 1", key_2: "Value 2"}) }.not_to raise_error
     end
   end
 
@@ -192,7 +192,7 @@ RSpec.describe Messaging::Bsnl::DltTemplate do
 
       template = described_class.new(template_name)
       expect { template.limit_total_variable_length({key_1: "a" * 2, key_2: "a" * 5}) }.not_to raise_error
-      expect { template.check_total_variable_length({key_1: "a" * 10, key_2: "a" * 10}) }.to raise_error
+      expect { template.check_total_variable_length({key_1: "a" * 10, key_2: "a" * 10}) }.to raise_error(Messaging::Bsnl::VariablesLengthError)
     end
   end
 end

@@ -422,7 +422,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect(response).to be_successful
       expect(response.body).to include("CHC Barnagar Monthly Cohort Report")
       expect(response.headers["Content-Disposition"]).to include('filename="facility-monthly-cohort-report_CHC-Barnagar')
-      expect(result).to render_template("cohort.csv.erb")
+      expect(result).to render_template("cohort")
     end
 
     it "retrieves cohort data for a facility group" do
@@ -440,7 +440,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect(response).to be_successful
       expect(response.body).to include("#{facility_group.name} Quarterly Cohort Report")
       expect(response.headers["Content-Disposition"]).to include('filename="district-quarterly-cohort-report_')
-      expect(result).to render_template("facility_group_cohort.csv.erb")
+      expect(result).to render_template("facility_group_cohort")
     end
   end
 

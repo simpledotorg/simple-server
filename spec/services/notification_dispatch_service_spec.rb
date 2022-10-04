@@ -49,6 +49,20 @@ RSpec.describe NotificationDispatchService do
     described_class.call(notification)
   end
 
+  it "calls send_message for alpha SMS with the right args supplied" do
+    messaging_channel = Messaging::AlphaSms::Sms
+    allow(CountryConfig.current).to receive(:[]).and_call_original
+    allow(CountryConfig.current).to receive(:[]).with(:appointment_reminders_channel).and_return(messaging_channel.to_s)
+
+    notification = create(:notification)
+    expect(messaging_channel).to receive(:send_message).with(
+      recipient_number: notification.patient.latest_mobile_number,
+      message: notification.localized_message
+    )
+
+    described_class.call(notification)
+  end
+
   it "accepts a messaging_channel as an override to the country config" do
     mock = mock_messaging_channel
     messaging_channel = Messaging::Bsnl::Sms

@@ -18,5 +18,6 @@ Rails.application.config.assets.precompile += %w[
   standalone/help.js
   help.scss
   standalone/user_analytics.js
+  standalone/progress_tab.js
   user_analytics.scss
 ]
