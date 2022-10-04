@@ -45,7 +45,7 @@ class OneOff::CphcEnrollment::Service
     response = make_post_request(
       patient,
       CPHC_ENROLLMENT_PATH,
-      OneOff::CphcEnrollment::EnrollmentPayload.new(patient)
+      OneOff::CphcEnrollment::EnrollmentPayload.new(patient, cphc_location)
     )
     @individual_id = JSON.parse(response.body.to_s)["individualId"]
     CphcMigrationAuditLog.create(
@@ -53,7 +53,8 @@ class OneOff::CphcEnrollment::Service
       facility_id: facility.id,
       metadata: {
         individual_id: @individual_id,
-        patient_id: patient.id
+        patient_id: patient.id,
+        cphc_location: cphc_location
       }
     )
   end
@@ -78,7 +79,8 @@ class OneOff::CphcEnrollment::Service
           hypertension_examination_id: @hypertension_examination_id,
           diabetes_examination_id: @diabetes_examination_id,
           patient_id: patient.id,
-          individual_id: @individual_id
+          individual_id: @individual_id,
+          cphc_location: cphc_location
         }
       )
     end
@@ -124,7 +126,8 @@ class OneOff::CphcEnrollment::Service
       metadata: {
         measurement_id: measurement_id,
         patient_id: patient.id,
-        individual_id: @individual_id
+        individual_id: @individual_id,
+        cphc_location: cphc_location
       }
     )
 
@@ -167,14 +170,22 @@ class OneOff::CphcEnrollment::Service
       CphcMigrationAuditLog.create(
         cphc_migratable: prescription_drug,
         facility_id: facility.id,
-        metadata: {patient_id: patient.id, individual_id: @individual_id}
+        metadata: {
+          patient_id: patient.id,
+          individual_id: @individual_id,
+          cphc_location: cphc_location
+        }
       )
     end
 
     CphcMigrationAuditLog.create(
       cphc_migratable: appointment,
       facility_id: facility.id,
-      metadata: {patient_id: patient.id, individual_id: @individual_id}
+      metadata: {
+        patient_id: patient.id,
+        individual_id: @individual_id,
+        cphc_location: cphc_location
+      }
     )
   end
 
@@ -200,7 +211,8 @@ class OneOff::CphcEnrollment::Service
       metadata: {
         measurement_id: measurement_id,
         patient_id: patient.id,
-        individual_id: @individual_id
+        individual_id: @individual_id,
+        cphc_location: cphc_location
       }
     )
     make_post_request(
@@ -283,5 +295,30 @@ class OneOff::CphcEnrollment::Service
     JSON.parse(response.body.to_s)
   rescue
     response.body.to_s
+  end
+
+  def cphc_location
+    potential_match = CphcFacilityMapping
+      .where(facility: patient.assigned_facility)
+      .search_by_village(patient.address.village_or_colony)
+      .first
+
+    other_village = CphcFacilityMapping.find_by(
+      facility: patient.assigned_facility,
+      cphc_village_name: "Other"
+    )
+
+    mapping = potential_match || other_village
+
+    {"district_id" => mapping.cphc_district_id,
+     "district_name" => mapping.cphc_district_name,
+     "taluka_id" => mapping.cphc_taluka_id,
+     "taluka_name" => mapping.cphc_taluka_name,
+     "phc_id" => mapping.cphc_phc_id,
+     "phc_name" => mapping.cphc_phc_name,
+     "subcenter_id" => mapping.cphc_subcenter_id,
+     "subcenter_name" => mapping.cphc_subcenter_name,
+     "village_id" => mapping.cphc_village_id,
+     "village_name" => mapping.cphc_village_name}
   end
 end
