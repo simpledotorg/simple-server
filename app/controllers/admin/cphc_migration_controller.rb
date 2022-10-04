@@ -58,11 +58,11 @@ class Admin::CphcMigrationController < AdminController
     patients = if params[:patient_id].present?
       [Patient.find(params[:patient_id])]
     else
+      facility = Facility.find(params[:facility_id])
       facility.assigned_patients
         .includes(:cphc_migration_audit_log)
         .reject { |p| p.cphc_migration_audit_log.present? }
     end
-    facility = Patient.find(params[:patient_id])
 
     auth_token = ENV["CPHC_AUTH_TOKEN"]
 

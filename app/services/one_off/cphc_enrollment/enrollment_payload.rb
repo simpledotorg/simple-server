@@ -5,7 +5,7 @@ class OneOff::CphcEnrollment::EnrollmentPayload
 
   def initialize(patient, cphc_location)
     @patient = patient
-    @cphc_location = nil
+    @cphc_location = cphc_location
   end
 
   def facilities_hashes(file_name)
