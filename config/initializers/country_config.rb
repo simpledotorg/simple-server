@@ -45,7 +45,7 @@ class CountryConfig
         monthly_registrations: "tI9g0mtCzOv"
       },
       enabled_diabetes_population_coverage: true,
-      appointment_reminders_channel: "Messaging::Twilio::ReminderSms"
+      appointment_reminders_channel: "Messaging::AlphaSms::Sms"
     },
     ET: {
       abbreviation: "ET",
