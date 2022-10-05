@@ -6,16 +6,15 @@ class ProgressTab::DailyProgressComponentV2 < ApplicationComponent
 
   # We use 29 here because we also show today, so its 30 days including today
   DAYS_AGO = 29
-  DAY_FORMAT = ApplicationHelper::STANDARD_DATE_DISPLAY_FORMAT
+  DATE_FORMAT = ApplicationHelper::STANDARD_DATE_DISPLAY_FORMAT
 
   attr_reader :service, :current_user, :title, :subtitle, :region
 
-  def initialize(service, last_updated_at, current_user, title:, subtitle:)
+  def initialize(service, current_user, title:, subtitle:)
     @service = service
     @now = Date.current
     @start = @now - DAYS_AGO
     @region = service.region
-    @last_updated_at = DateTime.parse(last_updated_at).to_date.strftime(DAY_FORMAT + " at %I:%M %P")
     @current_user = current_user
     @title = title
     @subtitle = subtitle
@@ -30,7 +29,7 @@ class ProgressTab::DailyProgressComponentV2 < ApplicationComponent
   end
 
   def display_date(date)
-    date.strftime(DAY_FORMAT)
+    date.strftime(DATE_FORMAT)
   end
 
   delegate :diagnosis_headers, :daily_follow_ups_breakdown, :daily_registrations_breakdown, to: :service

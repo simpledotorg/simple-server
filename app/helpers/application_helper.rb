@@ -1,6 +1,7 @@
 module ApplicationHelper
   DEFAULT_PROGRAM_INCEPTION_DATE = Time.new(2018, 0o1, 0o1)
-  STANDARD_DATE_DISPLAY_FORMAT = "%d-%^b-%Y"
+  STANDARD_DATE_DISPLAY_FORMAT = Time::DATE_FORMATS[:day_mon_year]
+  STANDARD_TIME_DISPLAY_FORMAT = Time::DATE_FORMATS[:time]
 
   def page_title
     title = content_for?(:title) ? content_for(:title) : I18n.t("admin.dashboard_title")
