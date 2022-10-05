@@ -4,7 +4,7 @@ module Reports
 
     MONTHS = -5
     CONTROL_MONTHS = -12
-    DAYS_AGO = 29
+    DAYS_AGO = 30
     attr_reader :control_range
     attr_reader :facility
     attr_reader :range
