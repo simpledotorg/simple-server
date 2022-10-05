@@ -106,9 +106,11 @@ module Reports
     end
 
     def diagnosis_headers
-      {hypertension: "Hypertension only",
-       diabetes: "diabetes only",
-       hypertension_and_diabetes: "Hypertension and Diabetes"}
+      {
+        hypertension: I18n.t("progress_tab.diagnoses.hypertension_only"),
+        diabetes: I18n.t("progress_tab.diagnoses.diabetes_only"),
+        hypertension_and_diabetes: I18n.t("progress_tab.diagnoses.hypertension_and_diabetes")
+      }
     end
 
     memoize def daily_registrations_breakdown

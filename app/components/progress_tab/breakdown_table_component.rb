@@ -16,6 +16,6 @@ class ProgressTab::BreakdownTableComponent < ApplicationComponent
   end
 
   def include_bottom_border
-    true unless title == "Hypertension and Diabetes"
+    title != t("progress_tab.diagnoses.hypertension_and_diabetes")
   end
 end
