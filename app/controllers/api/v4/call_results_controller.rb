@@ -1,9 +1,17 @@
 class Api::V4::CallResultsController < Api::V4::SyncController
   def sync_from_user
-    __sync_from_user__(call_result_params)
+    __sync_from_user__(call_results_params)
+  end
+
+  def sync_to_user
+    __sync_to_user__("call_results")
   end
 
   private
+
+  def transform_to_response(call_result)
+    Api::V4::Transformer.to_response(call_result)
+  end
 
   def merge_if_valid(call_result_params)
     validator = Api::V4::CallResultPayloadValidator.new(call_result_params)
@@ -11,18 +19,23 @@ class Api::V4::CallResultsController < Api::V4::SyncController
     if validator.check_invalid?
       {errors_hash: validator.errors_hash}
     else
-      transformed_params = Api::V4::Transformer.from_request(call_result_params)
+      transformed_params = Api::V4::CallResultTransformer.from_request(
+        call_result_params,
+        fallback_facility_id: current_facility.id
+      )
       call_result = CallResult.merge(transformed_params)
 
       {record: call_result}
     end
   end
 
-  def call_result_params
+  def call_results_params
     params.require(:call_results).map do |call_result_params|
       call_result_params.permit(
         :id,
         :user_id,
+        :patient_id,
+        :facility_id,
         :appointment_id,
         :remove_reason,
         :result_type,

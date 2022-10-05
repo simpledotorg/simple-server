@@ -46,7 +46,7 @@ class Csv::FacilitiesParser
   attr_accessor :facilities
 
   def parse
-    CSV.parse(file_contents, headers: HEADERS, converters: CONVERTERS) do |row|
+    CSV.parse(file_contents, headers: HEADERS, converters: CONVERTERS, encoding: "UTF-8") do |row|
       attrs = facility_attributes(row)
       next if attrs.values.all?(&:blank?)
 

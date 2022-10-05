@@ -35,7 +35,7 @@ class Api::V3::SyncController < APIController
   private
 
   def trace(name)
-    Datadog.tracer.trace(name, resource: datadog_resource) do |span|
+    Datadog::Tracing.trace(name, resource: datadog_resource) do |span|
       yield
     end
   end

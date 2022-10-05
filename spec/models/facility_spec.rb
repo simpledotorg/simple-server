@@ -9,6 +9,7 @@ RSpec.describe Facility, type: :model do
     it { is_expected.to have_many(:patients).through(:encounters) }
     it { is_expected.to have_many(:appointments) }
     it { is_expected.to have_many(:teleconsultations) }
+    it { is_expected.to have_many(:call_results) }
     it { is_expected.to have_and_belong_to_many(:teleconsultation_medical_officers) }
 
     it { is_expected.to have_many(:registered_patients).class_name("Patient").with_foreign_key("registration_facility_id") }

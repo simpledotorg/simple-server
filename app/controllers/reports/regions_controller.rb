@@ -191,9 +191,9 @@ class Reports::RegionsController < AdminController
       format.csv do
         if @region.district_region?
           set_facility_keys
-          send_data render_to_string("facility_group_cohort.csv.erb"), filename: download_filename
+          send_data render_to_string("facility_group_cohort"), filename: download_filename
         else
-          send_data render_to_string("cohort.csv.erb"), filename: download_filename
+          send_data render_to_string("cohort"), filename: download_filename
         end
       end
     end

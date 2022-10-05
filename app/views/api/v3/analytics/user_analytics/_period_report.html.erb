@@ -65,7 +65,7 @@
       %>
     <% end %>
   </div>
-  <% if CountryConfig.current_country?("India") %>
+  <% if render_patient_initiated_on_treatment? %>
     <div class="p-relative mb-8px p-16px bgc-yellow-lightest br-4px bs-card">
       <h1 class="m-0px mb-8px p-0px pr-48px ta-left fw-medium fs-18px lh-135 c-black">
         <%= t("progress_tab.period_report.patients_initiated_on_treatment_card.title") %>

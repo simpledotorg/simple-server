@@ -34,7 +34,7 @@ RSpec.shared_examples "a sync controller that authenticates user requests: sync_
       expect(response.status).not_to eq(401)
     end
     it "does not allow sync_from_user requests to the controller with invalid user_id and access_token" do
-      request.env["X_USER_ID"] = "invalid user id"
+      request.env["HTTP_X_USER_ID"] = "invalid user id"
       request.env["HTTP_AUTHORIZATION"] = "invalid access token"
       post :sync_from_user, params: empty_payload
 
@@ -84,7 +84,7 @@ RSpec.shared_examples "a sync controller that authenticates user requests: sync_
     end
 
     it "does not allow sync_to_user requests to the controller with invalid user_id and access_token" do
-      request.env["X_USER_ID"] = "invalid user id"
+      request.env["HTTP_X_USER_ID"] = "invalid user id"
       request.env["HTTP_AUTHORIZATION"] = "invalid access token"
       get :sync_to_user, params: empty_payload
 

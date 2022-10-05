@@ -30,6 +30,7 @@ class Facility < ApplicationRecord
   has_many :appointments
   has_many :teleconsultations
   has_many :drug_stocks
+  has_many :call_results
 
   has_many :registered_patients,
     class_name: "Patient",
@@ -55,6 +56,10 @@ class Facility < ApplicationRecord
     foreign_key: "assigned_facility_id"
 
   has_many :facility_states, class_name: "Reports::FacilityState"
+
+  has_many :cphc_facility_mappings
+  has_many :cphc_migration_error_logs
+  has_many :cphc_migration_audit_logs
 
   pg_search_scope :search_by_name, against: {name: "A", slug: "B"}, using: {tsearch: {prefix: true}}
   scope :with_block_region_id, -> {

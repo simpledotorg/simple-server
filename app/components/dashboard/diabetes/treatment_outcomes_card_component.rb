@@ -31,6 +31,7 @@ class Dashboard::Diabetes::TreatmentOutcomesCardComponent < ApplicationComponent
       count: "diabetesMissedVisits",
       class: "c-blue",
       title: "Missed visits",
+      description: "patients with no visit",
       tooltip: {
         numerator: t("diabetes_missed_visits_copy.numerator"),
         denominator: t("diabetes_denominator_copy", region_name: @region.name)
@@ -39,6 +40,7 @@ class Dashboard::Diabetes::TreatmentOutcomesCardComponent < ApplicationComponent
        count: "visitButNoBSMeasure",
        class: "c-grey-dark",
        title: "Visit but no blood sugar taken",
+       description: "patients with a visit but no blood sugar taken",
        tooltip: {
          numerator: t("visit_but_no_bs_taken_copy.numerator"),
          denominator: t("diabetes_denominator_copy", region_name: @region.name)
@@ -47,6 +49,7 @@ class Dashboard::Diabetes::TreatmentOutcomesCardComponent < ApplicationComponent
        count: "bsOver300Patients",
        class: "c-red",
        title: "Blood sugar &ge;300".html_safe,
+       description: "patients with blood sugar ≥300 taken",
        tooltip: {
          numerator: t("bs_over_200_copy.bs_over_300.numerator"),
          denominator: t("diabetes_denominator_copy", region_name: @region.name)
@@ -54,6 +57,7 @@ class Dashboard::Diabetes::TreatmentOutcomesCardComponent < ApplicationComponent
       {key: "bs200to300Rate",
        count: "bs200to300Patients",
        title: "Blood sugar 200-299",
+       description: "patients with blood sugar 200-299 taken",
        class: "c-amber",
        tooltip: {numerator: t("bs_over_200_copy.bs_200_to_299.numerator"),
                  denominator: t("diabetes_denominator_copy", region_name: @region.name)}},
@@ -61,6 +65,7 @@ class Dashboard::Diabetes::TreatmentOutcomesCardComponent < ApplicationComponent
        count: "bsBelow200Patients",
        class: "c-green-dark",
        title: "Blood sugar &lt;200".html_safe,
+       description: "patients with blood sugar <200 taken",
        tooltip: {numerator: t("bs_below_200_copy.numerator"),
                  denominator: t("diabetes_denominator_copy", region_name: @region.name)}}]
   end

@@ -1,5 +1,7 @@
 require "rails_helper"
 
+current_date = Date.today
+
 RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
   describe "Associations" do
     it { should belong_to(:patient) }
@@ -22,7 +24,6 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
   context "indicators" do
     describe "current_age" do
       it "determines the current age of the patient given their age, age_updated_at" do
-        current_date = Timecop.unfreeze { Date.today }
         patient = create(:patient, age: 58, recorded_at: 2.years.ago, age_updated_at: current_date - 2.years)
         described_class.refresh
         with_reporting_time_zone do
@@ -31,11 +32,10 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
       end
 
       it "determines the current age of the patient given their dob, and prefers it even when age is present" do
-        current_date = Timecop.unfreeze { Date.today }
-        patient = create(:patient, date_of_birth: current_date - 80.years, age: 58, recorded_at: 2.years.ago, age_updated_at: 2.years.ago)
+        patient = create(:patient, date_of_birth: current_date - 70.years, age: 58, recorded_at: 2.years.ago, age_updated_at: 2.years.ago)
         described_class.refresh
         with_reporting_time_zone do
-          expect(described_class.where(patient_id: patient.id).pluck(:current_age)).to all eq(80)
+          expect(described_class.where(patient_id: patient.id).pluck(:current_age)).to all eq(70)
         end
       end
     end
