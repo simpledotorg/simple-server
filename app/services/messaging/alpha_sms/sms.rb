@@ -3,6 +3,12 @@ class Messaging::AlphaSms::Sms < Messaging::Channel
     Communication.communication_types[:sms]
   end
 
+  def self.get_message_statuses
+    AlphaSmsDeliveryDetail.where("created_at > ?", 2.days.ago).in_progress.find_each do |detailable|
+      AlphaSmsStatusJob.perform_async(detailable.request_id)
+    end
+  end
+
   def send_message(recipient_number:, message:, &with_communication_do)
     track_metrics do
       create_communication(

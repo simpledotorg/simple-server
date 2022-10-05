@@ -5,19 +5,32 @@ RSpec.describe AlphaSmsDeliveryDetail, type: :model do
     it { is_expected.to have_one(:communication) }
   end
 
-  describe "#in_progress?" do
-    it "is always false because messages are reported as either success or failures" do
-      expect(described_class.new.in_progress?).to be false
+  describe ".in_progress" do
+    it "returns detailables where request_status is not set" do
+      in_progress_detailable = create(:alpha_sms_delivery_detail, request_status: nil)
+      _delivered_detail = create(:alpha_sms_delivery_detail, request_status: "Sent")
+
+      expect(described_class.in_progress).to contain_exactly(in_progress_detailable)
     end
+  end
 
-    describe "#unsuccessful?" do
-      it "returns true if the notification could not be delivered" do
-        delivered_detail = create(:alpha_sms_delivery_detail, request_status: "Sent")
-        undelivered_detail = create(:alpha_sms_delivery_detail, request_status: "Failed")
+  describe "#in_progress?" do
+    it "is true when request_status is not set" do
+      in_progress_detailable = create(:alpha_sms_delivery_detail, request_status: nil)
+      delivered_detail = create(:alpha_sms_delivery_detail, request_status: "Sent")
 
-        expect(delivered_detail.unsuccessful?).to be false
-        expect(undelivered_detail.unsuccessful?).to be true
-      end
+      expect(in_progress_detailable.in_progress?).to be true
+      expect(delivered_detail.in_progress?).to be false
+    end
+  end
+
+  describe "#unsuccessful?" do
+    it "returns true if the notification could not be delivered" do
+      delivered_detail = create(:alpha_sms_delivery_detail, request_status: "Sent")
+      undelivered_detail = create(:alpha_sms_delivery_detail, request_status: "Failed")
+
+      expect(delivered_detail.unsuccessful?).to be false
+      expect(undelivered_detail.unsuccessful?).to be true
     end
   end
 

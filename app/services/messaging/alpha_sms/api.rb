@@ -13,11 +13,15 @@ class Messaging::AlphaSms::Api
   end
 
   def send_sms(recipient_number:, message:)
-    post(URL_PATHS[:send_sms], {
-      api_key: api_key,
-      msg: message,
-      to: recipient_number
-    })
+    post(URL_PATHS[:send_sms], msg: message, to: recipient_number)
+  end
+
+  def get_message_status_report(request_id)
+    post("#{URL_PATHS[:request_report]}/#{request_id}")
+  end
+
+  def get_account_balance
+    post(URL_PATHS[:user_balance])
   end
 
   private
@@ -28,7 +32,7 @@ class Messaging::AlphaSms::Api
 
   def post(path, body = {})
     uri = URI("https://#{HOST}#{path}")
-    response = Net::HTTP.post_form(uri, **body)
+    response = Net::HTTP.post_form(uri, **body, api_key: api_key)
 
     unless response.is_a?(Net::HTTPSuccess)
       raise Messaging::AlphaSms::Error.new(

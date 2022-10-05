@@ -3,6 +3,8 @@ class AlphaSmsDeliveryDetail < DeliveryDetail
   validates :request_id, presence: true
   validates :recipient_number, presence: true
 
+  scope :in_progress, -> { where(request_status: nil) }
+
   def unsuccessful?
     !successful?
   end
@@ -12,7 +14,7 @@ class AlphaSmsDeliveryDetail < DeliveryDetail
   end
 
   def in_progress?
-    false
+    request_status.blank?
   end
 
   def self.create_with_communication!(request_id:, recipient_number:, message:)
