@@ -84,7 +84,7 @@ module Reports
     attr_reader :diabetes_enabled
 
     memoize def daily_total_follow_ups
-      records = Reports::FacilityDailyFollowUpAndRegistration.for_region(region).where("visit_date > ?", 30.days.ago)
+      records = Reports::FacilityDailyFollowUpAndRegistration.for_region(region).where("visit_date > ?", DAYS_AGO.days.ago)
       records.each_with_object({}) do |record, hsh|
         hsh[record.period] = if region.diabetes_management_enabled?
           values_at(record, :daily_follow_ups_htn_all) + values_at(record, :daily_follow_ups_dm_all) - values_at(record, :daily_follow_ups_htn_and_dm_all)
@@ -95,7 +95,7 @@ module Reports
     end
 
     memoize def daily_total_registrations
-      records = Reports::FacilityDailyFollowUpAndRegistration.for_region(region).where("visit_date > ?", 30.days.ago)
+      records = Reports::FacilityDailyFollowUpAndRegistration.for_region(region).where("visit_date > ?", DAYS_AGO.days.ago)
       records.each_with_object({}) do |record, hsh|
         hsh[record.period] = if diabetes_enabled
           values_at(record, :daily_registrations_htn_all) + values_at(record, :daily_registrations_dm_all) - values_at(record, :daily_registrations_htn_and_dm_all)
@@ -114,7 +114,7 @@ module Reports
     end
 
     memoize def daily_registrations_breakdown
-      records = Reports::FacilityDailyFollowUpAndRegistration.for_region(region).where("visit_date > ?", 30.days.ago)
+      records = Reports::FacilityDailyFollowUpAndRegistration.for_region(region).where("visit_date > ?", DAYS_AGO.days.ago)
       records.each_with_object({}) do |record, hsh|
         hsh[record.period] = {
           hypertension: {
@@ -138,7 +138,7 @@ module Reports
     end
 
     memoize def daily_follow_ups_breakdown
-      records = Reports::FacilityDailyFollowUpAndRegistration.for_region(region).where("visit_date > ?", 30.days.ago)
+      records = Reports::FacilityDailyFollowUpAndRegistration.for_region(region).where("visit_date > ?", DAYS_AGO.days.ago)
       records.each_with_object({}) do |record, hsh|
         hsh[record.period] = {
           hypertension: {
