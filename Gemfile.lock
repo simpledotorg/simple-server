@@ -90,7 +90,7 @@ GEM
     bootstrap-datepicker-rails (1.9.0.1)
       railties (>= 3.0)
     bootstrap-select-rails (1.13.8)
-    bootstrap_form (5.1.0)
+    bootstrap_form (4.5.0)
       actionpack (>= 5.2)
       activemodel (>= 5.2)
     brpoplpush-redis_script (0.1.2)
@@ -703,7 +703,7 @@ DEPENDENCIES
   bootstrap (~> 4.5.0)
   bootstrap-datepicker-rails (~> 1.9)
   bootstrap-select-rails
-  bootstrap_form (>= 4.5.0)
+  bootstrap_form (~> 4.5.0)
   byebug
   capistrano (~> 3.17)
   capistrano-db-tasks
