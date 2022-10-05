@@ -23,8 +23,20 @@ module ApplicationHelper
     end
   end
 
-  def display_date(date)
-    date&.strftime(STANDARD_DATE_DISPLAY_FORMAT)
+  def display_date(date_time)
+    if date_time.is_a? String
+      DateTime.parse(date_time).strftime(STANDARD_DATE_DISPLAY_FORMAT)
+    else
+      date_time&.strftime(STANDARD_DATE_DISPLAY_FORMAT)
+    end
+  end
+
+  def display_time(date_time)
+    if date_time.is_a? String
+      DateTime.parse(date_time).strftime(STANDARD_TIME_DISPLAY_FORMAT)
+    else
+      date_time&.strftime(STANDARD_TIME_DISPLAY_FORMAT)
+    end
   end
 
   def rounded_time_ago_in_words(date)
