@@ -27,12 +27,11 @@ class Admin::CphcMigrationController < AdminController
     elsif params[:error_facilities]
       facility_ids = accessible_facilities
         .where(facility_group: facility_groups)
-        .cphc_migration_error_logs
-        .joins("left outer join cphc_migration_audit_logs on cphc_migration_audit_logs.cphc_migratable_id = cphc_migration_error_logs.cphc_migratable_id")
-        .where("cphc_migration_audit_logs.id is null")
+        .joins("left outer join cphc_migration_error_logs on cphc_migration_error_logs.facility_id = facilities.id")
+        .joins("inner join cphc_migration_audit_logs on cphc_migration_audit_logs.cphc_migratable_id = cphc_migration_error_logs.cphc_migratable_id")
         .distinct(:facility_id)
 
-      accessible_facilities(id: facility_ids)
+      accessible_facilities.where(id: facility_ids)
     else
       accessible_facilities
     end

@@ -276,8 +276,8 @@
                     CphcFacilityMapping.where(facility: nil).search_by_region(facility.district).uniq(&:cphc_phc_name).sort_by(&:cphc_phc_name),
                     :cphc_phc_id,
                     :cphc_phc_name,
-                    {},
-                    {class: "form-select form-select-sm" }
+                    {label: "Select CPHC PHC"},
+                    {class: "form-select form-select-sm"}
                   %>
                   <%= form.submit "+ Mapping", class: "btn btn-sm btn-outline-primary" %>
                 <% end %>
