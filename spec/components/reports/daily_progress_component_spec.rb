@@ -19,7 +19,7 @@ RSpec.describe Reports::DailyProgressComponent, type: :component do
       Timecop.freeze do
         today = Date.current
         start = today - 29
-        component = described_class.new(service, "29 Mar 2022", user)
+        component = described_class.new(service, user)
         expect(component.last_30_days.size).to eq(30)
         expect(component.last_30_days.first).to eq(today)
         expect(component.last_30_days.last).to eq(start)
