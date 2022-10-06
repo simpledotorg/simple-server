@@ -55,13 +55,19 @@ class Admin::CphcMigrationController < AdminController
 
   def migrate_to_cphc
     authorize { current_admin.power_user? }
+
     patients = if params[:patient_id].present?
       [Patient.find(params[:patient_id])]
     else
-      facility = Facility.find(params[:facility_id])
-      facility.assigned_patients
-        .includes(:cphc_migration_audit_log)
-        .reject { |p| p.cphc_migration_audit_log.present? }
+    region = if params[:facility_group_id].present?
+       FacilityGroup.find(params[:facility_group_id])
+     else
+       facility = Facility.find(params[:facility_id])
+     end
+    region
+      .assigned_patients
+        .left_outer_joins(:cphc_migration_audit_log)
+        .where(cphc_migration_audit_log: {id: nil})
     end
 
     auth_token = ENV["CPHC_AUTH_TOKEN"]

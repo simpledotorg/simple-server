@@ -24,11 +24,12 @@
     <% @facilities.each do |facility_group, local_facilities| %>
       <div class="card">
         <div class="row">
-          <div class="col-md-8">
+          <div class="col-md-6">
             <h5>
               <b><%= facility_group.name %></b>
             </h5>
           </div>
+
           <div class="col-md-2">
             <%= link_to admin_cphc_migration_path(
               district_slugs: [facility_group.slug],
@@ -40,6 +41,7 @@
               .filter{ |f| f.cphc_facility_mappings.empty? }.count %> Unlinked Facilities
             <% end %>
           </div>
+
           <div class="col-md-2">
             <%= link_to admin_cphc_migration_path(
               district_slugs: [facility_group.slug],
@@ -55,6 +57,26 @@
               .count %> Facilities with errors
             <% end %>
           </div>
+
+          <% if get_migrated_records(:patient, facility_group).count == facility_group.assigned_patients.count %>
+            <div class="col-md-2">
+              <%= link_to href:"#", class: "btn btn-sm btn-outline-secondary" do%>
+                <i class="fas fa-check mr-1"></i>
+                All patients migrated
+              <% end %>
+            </div>
+          <% else %>
+            <div class="col-md-2">
+              <%= form_with url: admin_migrate_facility_group_to_cphc_path(facility_group_id: facility_group.id), local: true, method: :post do |form| %>
+                <%= form.button type: "submit", class: "btn btn-sm btn-outline-danger" do %>
+                  <i class="fas fa-cloud-exclamation mr-1"></i>
+                  Migrate District
+                <% end %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+        <div class="row">
           <div class="col-md-12">
             <table class="table mt-24px">
               <thead>
