@@ -173,7 +173,7 @@
                 </div>
               <% else %>
                 <div class="col-md-2">
-                  <%= form_with url: admin_migrate_facility_to_cphc_path(facility_id: facility.id), method: :post do |form| %>
+                  <%= form_with url: admin_migrate_facility_to_cphc_path(facility_id: facility.id), local: true, method: :post do |form| %>
                     <%= form.button type: "submit", class: "btn btn-sm btn-outline-danger" do %>
                       <i class="fas fa-cloud-exclamation mr-1"></i>
                       Migrate Facility
@@ -250,7 +250,7 @@
                           <td class="text-danger"><%= error_log.failures["response_code"] %></td>
                           <td> class="text-danger"<%= error_log.failures["response_body"] %></td>
                           <td>
-                            <%= form_with url: admin_migrate_patient_to_cphc_path(patient_id: error_log.patient_id), method: :post do |form| %>
+                            <%= form_with url: admin_migrate_patient_to_cphc_path(patient_id: error_log.patient_id), local: true, method: :post do |form| %>
                               <%= form.button type: "submit", class: "btn btn-sm btn-outline-danger" do %>
                                 <i class="fas fa-cloud-exclamation mr-1"></i>
                                 Retry patient
@@ -271,7 +271,7 @@
                 <h5 class="c-orange"><%= facility.name %></h5>
               </div>
               <div class="col-md-6">
-                <%= form_with url: admin_update_cphc_mapping_path(facility.id) do |form| %>
+                <%= bootstrap_form_with url: admin_update_cphc_mapping_path(facility.id), local: true do |form| %>
                   <%= form.collection_select :cphc_phc_id,
                     CphcFacilityMapping.where(facility: nil).search_by_region(facility.district).uniq(&:cphc_phc_name).sort_by(&:cphc_phc_name),
                     :cphc_phc_id,
