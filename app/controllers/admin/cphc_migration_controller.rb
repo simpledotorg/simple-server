@@ -55,32 +55,18 @@ class Admin::CphcMigrationController < AdminController
 
   def migrate_to_cphc
     authorize { current_admin.power_user? }
-
-    patients = if params[:patient_id].present?
-      [Patient.find(params[:patient_id])]
-    else
-    region = if params[:facility_group_id].present?
-       FacilityGroup.find(params[:facility_group_id])
-     else
-       facility = Facility.find(params[:facility_id])
-     end
-    region
-      .assigned_patients
-        .left_outer_joins(:cphc_migration_audit_log)
-        .where(cphc_migration_audit_log: {id: nil})
-    end
-
+    set_migratable_patients
     auth_token = ENV["CPHC_AUTH_TOKEN"]
 
     auth_manager = OneOff::CphcEnrollment::AuthManager.new(auth_token: auth_token)
-    patients.each do |patient|
+    @patients.each do |patient|
       CphcMigrationJob.perform_at(
         OneOff::CphcEnrollment.next_migration_time(Time.now),
         patient.id,
         JSON.dump(auth_manager.user)
       )
     end
-    redirect_to admin_cphc_migration_path, notice: "Migration triggered for #{facility.name}"
+    redirect_to admin_cphc_migration_path, notice: "Migration triggered for #{@migratable_name}"
   end
 
   def get_migrated_records(klass, region)
@@ -96,5 +82,28 @@ class Admin::CphcMigrationController < AdminController
 
   def render_only_in_india
     fail_request(:unauthorized, "only allowed in India") unless CountryConfig.current_country?("India")
+  end
+
+  private
+
+  def set_migratable_patients
+    region = if params[:facility_group_id].present?
+               FacilityGroup.find(params[:facility_group_id])
+             elsif params[:facility_id].present?
+               Facility.find(params[:facility_id])
+             else
+               nil
+             end
+
+    if region.present?
+      @patients = region
+                    .assigned_patients
+                    .left_outer_joins(:cphc_migration_audit_log)
+                    .where(cphc_migration_audit_logs: { id: nil })
+      @migratable_name = region.name
+    else
+      @patients = [Patient.find(params[:patient_id])]
+      @migratable_name = patient.full_name
+    end
   end
 end
