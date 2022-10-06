@@ -118,14 +118,15 @@
                     <%= facility.name %>
                   </a>
                 <p class="c-blue mt-24px">
-                <%= mappings.first.cphc_district_name %> | <%= mappings.first.cphc_taluka_name %> | <%= mappings.first.cphc_phc_name %>
+                <%= "District: #{mappings.first.cphc_district_name} | Taluka: #{mappings.first.cphc_taluka_name} | PHC Name: #{mappings.first.cphc_phc_name} | PHC ID: #{mappings.first.cphc_phc_id}" %>
                 </p>
 
-
-                <span>CPHC Subcenters:</span>
-                <p class="muted"><%= mappings.map(&:cphc_subcenter_name).uniq.join(", ") %></p>
-                <span>CPHC Villages:</span>
-                <p class="muted"><%= mappings.map(&:cphc_village_name).uniq.join(", ") %></p>
+                <span class="text-muted">
+                  <span>CPHC Subcenters:</span>
+                  <p><%= mappings.map(&:cphc_subcenter_name).uniq.join(", ") %></p>
+                  <span>CPHC Villages:</span>
+                  <p><%= mappings.map(&:cphc_village_name).uniq.join(", ") %></p>
+                </span>
               </div>
 
               <div class="col-md-1">
