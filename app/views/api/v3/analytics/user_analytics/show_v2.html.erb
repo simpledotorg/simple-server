@@ -41,12 +41,18 @@
               <%= t("progress_tab.monthly_report_title") %>
             </p>
           </a>
-          <a class="f-1 d-flex fd-column ai-center jc-center td-none h-96px ml-10px p-12px bgc-navy-light bs-navy-light-button br-8px" href="#" onclick="goToPage('home-page', 'yearly-report-page'); return false;">
+          <a
+            class="p-relative f-1 d-flex fd-column ai-center jc-center h-96px ml-8px p-12px td-none bgc-grey-light-new br-8px"
+            href="#"
+          >
             <div class="p-relative d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px o-hidden">
-              <div class="p-absolute t-0 l-0 w-100 h-6px bgc-navy"></div>
+              <div class="p-absolute t-0 l-0 w-100 h-6px bgc-grey-dark"></div>
             </div>
-            <p class="m-0px p-0px ta-center fw-medium fs-16px c-navy">
+            <p class="m-0px p-0px ta-left fw-medium fs-16px c-grey-dark">
               <%= t("progress_tab.yearly_report_title") %>
+            </p>
+            <p class="p-absolute b-0 l-0 w-100 fw-regular fs-12px c-grey ta-center bs-border-box">
+              Coming soon
             </p>
           </a>
         </div>
@@ -72,15 +78,17 @@
             </p>
           </a>
           <a
-            class="f-1 d-flex fd-column ai-center jc-center h-96px ml-8px p-12px td-none bgc-purple-light bs-purple-light-button br-8px"
+            class="p-relative f-1 d-flex fd-column ai-center jc-center h-96px ml-8px p-12px td-none bgc-grey-light-new br-8px"
             href="#"
-            onclick="goToPage('home-page', 'diabetes-report'); return false;"
           >
             <div class="d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px">
-              <%= inline_file("graph-purple.svg") %>
+              <%= inline_file("graph-grey.svg") %>
             </div>
-            <p class="m-0px p-0px ta-left fw-medium fs-16px c-purple">
+            <p class="m-0px p-0px ta-left fw-medium fs-16px c-grey-dark">
               <%= t("progress_tab.diabetes_report_title") %>
+            </p>
+            <p class="p-absolute b-0 l-0 w-100 fw-regular fs-12px c-grey ta-center bs-border-box">
+              Coming soon
             </p>
           </a>
         </div>
@@ -188,18 +196,6 @@
                  periods: @period_reports_data["monthly_periods"],
                  registered_patients: @period_reports_data["monthly_registered_patients"],
                  follow_up_patients: @period_reports_data["monthly_follow_up_patients"]
-               }
-    %>
-    <%= render partial: "api/v3/analytics/user_analytics/period_report",
-               locals: {
-                 page_id: "yearly-report-page",
-                 title: t("progress_tab.yearly_report_title"),
-                 subtitle: t("progress_tab.last_updated_at",
-                             date: display_date(@user_analytics.last_updated_at),
-                             time:  display_time(@user_analytics.last_updated_at)),
-                 periods: @period_reports_data["yearly_periods"],
-                 registered_patients: @period_reports_data["yearly_registered_patients"],
-                 follow_up_patients: @period_reports_data["yearly_follow_up_patients"]
                }
     %>
 
