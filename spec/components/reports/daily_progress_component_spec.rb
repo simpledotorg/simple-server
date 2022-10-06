@@ -6,7 +6,7 @@ RSpec.describe Reports::DailyProgressComponent, type: :component do
     user = create(:user)
     service = Reports::FacilityProgressService.new(facility, Period.current)
 
-    component = described_class.new(service, "29 Mar 2022", user)
+    component = described_class.new(service, user)
     current_date = component.display_date(Date.current)
     expect(render_inline(component).to_html).to include(current_date)
   end
