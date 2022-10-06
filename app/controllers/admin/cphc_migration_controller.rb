@@ -2,6 +2,7 @@ class Admin::CphcMigrationController < AdminController
   include SearchHelper
   include Pagination
 
+  before_action :render_only_in_india
   helper_method :get_migrated_records
 
   MIGRATING_DISTRICT_SLUGS = ["bikaner", "churu"]
@@ -85,5 +86,9 @@ class Admin::CphcMigrationController < AdminController
     CphcMigrationAuditLog
       .where(facility: facilities, cphc_migratable_type: klass.to_s.camelcase)
       .order(created_at: :desc)
+  end
+
+  def render_only_in_india
+    fail_request(:unauthorized, "only allowed in India") unless CountryConfig.current_country?("India")
   end
 end
