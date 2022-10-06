@@ -35,7 +35,7 @@ describe ApplicationHelper, type: :helper do
     let(:date) { Date.new(2020, 1, 15) }
 
     it "returns a standard formatted date" do
-      expect(helper.display_date(date)).to eq("15-JAN-2020")
+      expect(helper.display_date(date)).to eq("15-Jan-2020")
     end
 
     context "when date is nil" do
@@ -60,7 +60,7 @@ describe ApplicationHelper, type: :helper do
 
     it "should return date in dd-MMM-yyyy format if date is more than a day ago" do
       date = Date.parse("31-12-2016")
-      expect(helper.rounded_time_ago_in_words(date)).to eq("on 31-DEC-2016")
+      expect(helper.rounded_time_ago_in_words(date)).to eq("on 31-Dec-2016")
     end
   end
 
@@ -70,7 +70,7 @@ describe ApplicationHelper, type: :helper do
     end
 
     it "returns the formatted registraion data if it is greater than the program inception date" do
-      expect(helper.handle_impossible_registration_date(Date.new(2019, 0o1, 0o1))).to eq("01-JAN-2019")
+      expect(helper.handle_impossible_registration_date(Date.new(2019, 0o1, 0o1))).to eq("1-Jan-2019")
     end
 
     it "returns 'unclear' if the date is lesser than the program inception date" do

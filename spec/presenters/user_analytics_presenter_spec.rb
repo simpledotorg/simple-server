@@ -160,7 +160,7 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
         }
 
         expect(data.dig(:metadata, :formatted_next_date))
-          .to eq("02-JAN-2020")
+          .to eq("2-Jan-2020")
       end
     end
   end
