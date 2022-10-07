@@ -9,10 +9,10 @@ WITH follow_up_blood_pressures AS (
         bp.recorded_at AS visited_at,
         cast(EXTRACT(DOY FROM bp.recorded_at AT TIME ZONE 'UTC' at time zone (SELECT current_setting('TIMEZONE'))) as integer) AS day_of_year
     FROM patients p
-             INNER JOIN blood_pressures bp
-                        ON p.id = bp.patient_id
-                            AND date_trunc('day', bp.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
-                               > date_trunc('day', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
+    INNER JOIN blood_pressures bp
+        ON p.id = bp.patient_id
+        AND date_trunc('day', bp.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
+           > date_trunc('day', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
     WHERE p.deleted_at IS NULL
       AND bp.recorded_at > current_timestamp - interval '30 day'
 ),
@@ -28,10 +28,10 @@ WITH follow_up_blood_pressures AS (
              cast(EXTRACT(DOY FROM bs.recorded_at AT TIME ZONE 'UTC' at time zone (SELECT current_setting('TIMEZONE'))) as integer) AS day_of_year
 
          FROM patients p
-                  INNER JOIN blood_sugars bs
-                             ON p.id = bs.patient_id
-                                 AND date_trunc('day', bs.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
-                                    > date_trunc('day', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
+         INNER JOIN blood_sugars bs
+             ON p.id = bs.patient_id
+             AND date_trunc('day', bs.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
+                > date_trunc('day', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
          WHERE p.deleted_at IS NULL
            AND bs.recorded_at > current_timestamp - interval '30 day'
      ),
@@ -46,10 +46,10 @@ WITH follow_up_blood_pressures AS (
              pd.device_created_at AS visited_at,
              cast(EXTRACT(DOY FROM pd.device_created_at AT TIME ZONE 'UTC' at time zone (SELECT current_setting('TIMEZONE'))) as integer) AS day_of_year
          FROM patients p
-                  INNER JOIN prescription_drugs pd
-                             ON p.id = pd.patient_id
-                                 AND date_trunc('day', pd.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
-                                    > date_trunc('day', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
+         INNER JOIN prescription_drugs pd
+             ON p.id = pd.patient_id
+             AND date_trunc('day', pd.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
+                > date_trunc('day', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
          WHERE p.deleted_at IS NULL
            AND pd.device_created_at > current_timestamp - interval '30 day'
      ),
@@ -64,10 +64,10 @@ WITH follow_up_blood_pressures AS (
              app.device_created_at as visited_at,
              cast(EXTRACT(DOY FROM app.device_created_at AT TIME ZONE 'UTC' at time zone (SELECT current_setting('TIMEZONE'))) as integer) AS day_of_year
          FROM patients p
-                  INNER JOIN appointments app
-                             ON p.id = app.patient_id
-                                 AND date_trunc('day', app.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
-                                    > date_trunc('day', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
+         INNER JOIN appointments app
+             ON p.id = app.patient_id
+             AND date_trunc('day', app.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
+                > date_trunc('day', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
          WHERE p.deleted_at IS NULL
            AND app.device_created_at > current_timestamp - interval '30 day'
      ),
@@ -105,10 +105,8 @@ WITH follow_up_blood_pressures AS (
              all_follow_ups.visit_type,
              all_follow_ups.visited_at,
              all_follow_ups.day_of_year
-         FROM
-             all_follow_ups
-                 INNER JOIN medical_histories mh
-                            ON all_follow_ups.patient_id = mh.patient_id
+         FROM all_follow_ups
+         INNER JOIN medical_histories mh ON all_follow_ups.patient_id = mh.patient_id
      ),
 
      registered_patients_with_medical_histories AS (
@@ -123,10 +121,8 @@ WITH follow_up_blood_pressures AS (
              registered_patients.visit_type,
              registered_patients.visited_at,
              registered_patients.day_of_year
-         FROM
-             registered_patients
-                 INNER JOIN medical_histories mh
-                            ON registered_patients.patient_id = mh.patient_id
+         FROM registered_patients
+         INNER JOIN medical_histories mh ON registered_patients.patient_id = mh.patient_id
      ),
 
      daily_registered_patients AS (
@@ -239,13 +235,13 @@ SELECT
     coalesce(daily_follow_ups.daily_follow_ups_htn_and_dm_transgender,0) AS daily_follow_ups_htn_and_dm_transgender
 
 FROM reporting_facilities rf
- INNER JOIN last_30_days
+INNER JOIN last_30_days
 -- ensure a row for every facility and day combination
-        ON TRUE
- LEFT OUTER JOIN daily_registered_patients
-        ON daily_registered_patients.visit_date = last_30_days.date
-            AND daily_registered_patients.facility_id = rf.facility_id
- LEFT OUTER JOIN daily_follow_ups
-        ON daily_follow_ups.visit_date = last_30_days.date
-            AND daily_follow_ups.facility_id = rf.facility_id
+    ON TRUE
+LEFT OUTER JOIN daily_registered_patients
+    ON daily_registered_patients.visit_date = last_30_days.date
+    AND daily_registered_patients.facility_id = rf.facility_id
+LEFT OUTER JOIN daily_follow_ups
+    ON daily_follow_ups.visit_date = last_30_days.date
+    AND daily_follow_ups.facility_id = rf.facility_id
 ORDER BY visit_date DESC
