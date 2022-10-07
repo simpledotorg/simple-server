@@ -32,7 +32,7 @@
                  aria-expanded="false"
                  data-target="#<%= facility_group.slug %>-contents"
                  class="collapse-district-link">
-                <i class="fa fa-caret-right collapse-district-caret"></i>
+                <i class="fa fa-caret-down collapse-district-caret"></i>
               </a>
               <b><%= facility_group.name %></b>
             </h5>
@@ -85,7 +85,7 @@
             </div>
           <% end %>
         </div>
-        <div class="facility-group-contents collapse" id="<%= facility_group.slug %>-contents">
+        <div class="facility-group-contents collapse show" id="<%= facility_group.slug %>-contents">
           <div class="row">
           <div class="col-md-12">
             <table class="table mt-24px">
