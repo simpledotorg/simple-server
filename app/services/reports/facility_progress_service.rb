@@ -105,14 +105,6 @@ module Reports
       end
     end
 
-    def diagnosis_headers
-      {
-        hypertension: I18n.t("progress_tab.diagnoses.hypertension_only"),
-        diabetes: I18n.t("progress_tab.diagnoses.diabetes_only"),
-        hypertension_and_diabetes: I18n.t("progress_tab.diagnoses.hypertension_and_diabetes")
-      }
-    end
-
     memoize def daily_registrations_breakdown
       records = Reports::FacilityDailyFollowUpAndRegistration.for_region(region).where("visit_date >= ?", DAYS_AGO.days.ago.to_date)
       records.each_with_object({}) do |record, hsh|

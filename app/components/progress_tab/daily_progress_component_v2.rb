@@ -32,5 +32,13 @@ class ProgressTab::DailyProgressComponentV2 < ApplicationComponent
     date.strftime(DATE_FORMAT)
   end
 
-  delegate :diagnosis_headers, :daily_follow_ups_breakdown, :daily_registrations_breakdown, to: :service
+  def diagnosis_headers
+    {
+      hypertension: I18n.t("progress_tab.diagnoses.hypertension_only"),
+      diabetes: I18n.t("progress_tab.diagnoses.diabetes_only"),
+      hypertension_and_diabetes: I18n.t("progress_tab.diagnoses.hypertension_and_diabetes")
+    }
+  end
+
+  delegate :daily_follow_ups_breakdown, :daily_registrations_breakdown, to: :service
 end
