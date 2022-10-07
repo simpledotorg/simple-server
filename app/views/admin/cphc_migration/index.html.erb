@@ -315,9 +315,10 @@
 
 <script>
   $(".migrate-btn").click(function() {
-    $(this).children("i").toggleClass("d-none");
-    $(this).children("i.fa-spinner").removeClass("d-none");
-    $(this).prop("disabled",true);;
+    if($(this).children("i.fa-spinner").hasClass("d-none")) {
+      $(this).children("i").toggleClass("d-none");
+      $(this).children("i.fa-spinner").removeClass("d-none");
+    }
   })
 </script>
 

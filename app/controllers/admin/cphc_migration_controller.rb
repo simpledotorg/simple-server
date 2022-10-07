@@ -28,8 +28,9 @@ class Admin::CphcMigrationController < AdminController
     elsif params[:error_facilities]
       facility_ids = accessible_facilities
         .where(facility_group: facility_groups)
-        .joins("left outer join cphc_migration_error_logs on cphc_migration_error_logs.facility_id = facilities.id")
-        .joins("inner join cphc_migration_audit_logs on cphc_migration_audit_logs.cphc_migratable_id = cphc_migration_error_logs.cphc_migratable_id")
+        .joins("inner join cphc_migration_error_logs on cphc_migration_error_logs.facility_id = facilities.id")
+        .joins("left outer join cphc_migration_audit_logs on cphc_migration_audit_logs.cphc_migratable_id = cphc_migration_error_logs.cphc_migratable_id")
+        .where("cphc_migration_audit_logs.id is null")
         .distinct(:facility_id)
 
       accessible_facilities.where(id: facility_ids)
@@ -104,7 +105,8 @@ class Admin::CphcMigrationController < AdminController
                     .where(cphc_migration_audit_logs: { id: nil })
       @migratable_name = region.name
     else
-      @patients = [Patient.find(params[:patient_id])]
+      patient = Patient.find(params[:patient_id])
+      @patients = [patient]
       @migratable_name = patient.full_name
     end
   end
