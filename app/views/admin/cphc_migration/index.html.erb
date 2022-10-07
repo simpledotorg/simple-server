@@ -26,6 +26,14 @@
         <div class="row">
           <div class="col-md-6">
             <h5>
+              <a href="#<%= facility_group.slug %>"
+                 data-toggle="collapse"
+                 role="button"
+                 aria-expanded="false"
+                 data-target="#<%= facility_group.slug %>-contents"
+                 class="collapse-district-link">
+                <i class="fa fa-caret-right collapse-district-caret"></i>
+              </a>
               <b><%= facility_group.name %></b>
             </h5>
           </div>
@@ -77,7 +85,8 @@
             </div>
           <% end %>
         </div>
-        <div class="row">
+        <div class="facility-group-contents collapse" id="<%= facility_group.slug %>-contents">
+          <div class="row">
           <div class="col-md-12">
             <table class="table mt-24px">
               <thead>
@@ -123,7 +132,7 @@
           </div>
         </div>
 
-        <% local_facilities.each do |facility| %>
+          <% local_facilities.each do |facility| %>
           <% facility_errors = @facility_results.dig(:errors, facility.id) || CphcMigrationErrorLog.none %>
           <% mappings = @mappings[facility.id] || CphcFacilityMapping.none %>
           <% if mappings.present? %>
@@ -308,6 +317,7 @@
             </div>
           <% end %>
         <% end %>
+        </div>
       </div>
     <% end %>
   <% end %>
@@ -320,7 +330,24 @@
       $(this).children("i.fa-spinner").removeClass("d-none");
     }
   })
+
+  $(".collapse-district-caret").click(function() {
+    $(this).toggleClass("fa-caret-right");
+    $(this).toggleClass("fa-caret-down");
+  })
 </script>
+
+<style>
+  .collapsing {
+      -webkit-transition: none;
+      transition: none;
+      display: none;
+  }
+
+  .collapse-district-link:hover {
+      text-decoration: none;
+  }
+</style>
 
 <h2 class="mt-5 mb-3">Unmapped CPHC Facilities</h2>
 
