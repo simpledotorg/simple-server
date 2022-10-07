@@ -1,7 +1,7 @@
 class OneOff::CphcEnrollment::EnrollmentPayload
   attr_reader :patient, :cphc_facility, :cphc_location
 
-  UNACCEPTED_CHARACTERS = [("0".."9").to_a, ["-", "/", "%", "$", "#"]].flatten
+  UNACCEPTED_CHARACTERS = [("0".."9").to_a, ["-", ",", "/", "%", "$", "#"]].flatten
 
   def initialize(patient, cphc_location)
     @patient = patient

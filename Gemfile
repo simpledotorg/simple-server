@@ -16,7 +16,7 @@ gem "auto_strip_attributes"
 gem "bcrypt", "~> 3.1"
 gem "bcrypt_pbkdf", "~> 1.1"
 gem "bootsnap", require: false
-gem "bootstrap_form", ">= 4.5.0"
+gem "bootstrap_form", "~> 4.5.0"
 gem "bootstrap-datepicker-rails", "~> 1.9"
 gem "bootstrap-select-rails"
 gem "bootstrap", "~> 4.5.0"
