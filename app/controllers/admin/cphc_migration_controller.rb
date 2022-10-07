@@ -5,17 +5,27 @@ class Admin::CphcMigrationController < AdminController
   before_action :render_only_in_india
   helper_method :get_migrated_records
 
-  MIGRATING_DISTRICT_SLUGS = ["bikaner", "churu"]
   def index
     authorize { current_admin.power_user? }
 
-    migrating_facility_groups = FacilityGroup.where(slug: MIGRATING_DISTRICT_SLUGS)
+    cphc_district_names = CphcFacilityMapping
+      .all
+      .distinct(:cphc_district_name)
+      .map { |n| n.cphc_district_name.strip }
+
+    migrating_facility_groups = current_admin
+      .accessible_facility_groups(:manage)
+      .where(name: cphc_district_names)
+
     accessible_facilities = current_admin
       .accessible_facilities(:manage)
       .where(facility_group: migrating_facility_groups)
-    facility_groups = FacilityGroup.where(
-      slug: params[:district_slugs] || MIGRATING_DISTRICT_SLUGS
-    )
+
+    facility_groups = if params[:district_slugs]
+      migrating_facility_groups.where(slug: params[:district_slugs])
+    else
+      migrating_facility_groups
+    end
 
     facilities = if searching?
       accessible_facilities.search_by_name(search_query)
@@ -91,18 +101,16 @@ class Admin::CphcMigrationController < AdminController
 
   def set_migratable_patients
     region = if params[:facility_group_id].present?
-               FacilityGroup.find(params[:facility_group_id])
-             elsif params[:facility_id].present?
-               Facility.find(params[:facility_id])
-             else
-               nil
-             end
+      FacilityGroup.find(params[:facility_group_id])
+    elsif params[:facility_id].present?
+      Facility.find(params[:facility_id])
+    end
 
     if region.present?
       @patients = region
-                    .assigned_patients
-                    .left_outer_joins(:cphc_migration_audit_log)
-                    .where(cphc_migration_audit_logs: { id: nil })
+        .assigned_patients
+        .left_outer_joins(:cphc_migration_audit_log)
+        .where(cphc_migration_audit_logs: {id: nil})
       @migratable_name = region.name
     else
       patient = Patient.find(params[:patient_id])
