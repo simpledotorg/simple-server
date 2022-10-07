@@ -124,6 +124,11 @@ Navigation
   }
 }
 
+.navigation-development {
+  // To keep rack-mini-profiler on top
+  z-index: 2147483642 !important;
+}
+
 nav.breadcrumb {
   background: transparent;
   padding-left: 0;
