@@ -17,8 +17,8 @@ RSpec.describe Reports::FacilityDailyFollowUpAndRegistration, {type: :model, rep
     described_class.refresh
     result = described_class.find_by(facility_id: facility, visit_date: six_days_ago)
 
-    expect(result.daily_registrations_all).to be_nil
-    expect(result.daily_follow_ups_all).to be_nil
+    expect(result.daily_registrations_htn_or_dm).to eq(0)
+    expect(result.daily_follow_ups_htn_or_dm).to eq(0)
   end
 
   it "patients without a medical history are not included" do
@@ -29,7 +29,7 @@ RSpec.describe Reports::FacilityDailyFollowUpAndRegistration, {type: :model, rep
 
     result = described_class.find_by(facility_id: facility, visit_date: Date.current)
 
-    expect(result.daily_follow_ups_all).to eq(nil)
+    expect(result.daily_follow_ups_htn_or_dm).to eq(0)
   end
 
   it "can be filtered by diagnosis and gender" do
@@ -48,30 +48,26 @@ RSpec.describe Reports::FacilityDailyFollowUpAndRegistration, {type: :model, rep
     daily_statistics_today = described_class.find_by(facility_id: facility, visit_date: now.to_date)
     daily_statistics_yesterday = described_class.find_by(facility_id: facility, visit_date: 1.day.ago.to_date)
 
-    expect(daily_statistics_today.daily_follow_ups_all).to eq(3)
-    expect(daily_statistics_today.daily_follow_ups_htn_all).to eq(2)
-    expect(daily_statistics_today.daily_follow_ups_htn_transgender).to eq(1)
-    expect(daily_statistics_today.daily_follow_ups_htn_male).to eq(1)
+    expect(daily_statistics_today.daily_follow_ups_htn_or_dm).to eq(3)
+    expect(daily_statistics_today.daily_follow_ups_htn_only).to eq(1)
+    expect(daily_statistics_today.daily_follow_ups_htn_only_transgender).to eq(1)
 
-    expect(daily_statistics_today.daily_follow_ups_dm_all).to eq(2)
-    expect(daily_statistics_today.daily_follow_ups_dm_male).to eq(1)
-    expect(daily_statistics_today.daily_follow_ups_dm_female).to eq(1)
+    expect(daily_statistics_today.daily_follow_ups_dm_only).to eq(1)
+    expect(daily_statistics_today.daily_follow_ups_dm_only_female).to eq(1)
 
-    expect(daily_statistics_today.daily_follow_ups_htn_and_dm_all).to eq(1)
+    expect(daily_statistics_today.daily_follow_ups_htn_and_dm).to eq(1)
     expect(daily_statistics_today.daily_follow_ups_htn_and_dm_male).to eq(1)
 
-    expect(daily_statistics_today.daily_registrations_all).to eq(1)
+    expect(daily_statistics_today.daily_registrations_htn_or_dm).to eq(1)
 
-    expect(daily_statistics_yesterday.daily_registrations_all).to eq(3)
-    expect(daily_statistics_yesterday.daily_registrations_htn_all).to eq(2)
-    expect(daily_statistics_yesterday.daily_registrations_htn_transgender).to eq(1)
-    expect(daily_statistics_yesterday.daily_registrations_htn_male).to eq(1)
+    expect(daily_statistics_yesterday.daily_registrations_htn_or_dm).to eq(3)
+    expect(daily_statistics_yesterday.daily_registrations_htn_only).to eq(1)
+    expect(daily_statistics_yesterday.daily_registrations_htn_only_transgender).to eq(1)
 
-    expect(daily_statistics_yesterday.daily_registrations_dm_all).to eq(2)
-    expect(daily_statistics_yesterday.daily_registrations_dm_male).to eq(1)
-    expect(daily_statistics_yesterday.daily_registrations_dm_female).to eq(1)
+    expect(daily_statistics_yesterday.daily_registrations_dm_only).to eq(1)
+    expect(daily_statistics_yesterday.daily_registrations_dm_only_female).to eq(1)
 
-    expect(daily_statistics_yesterday.daily_registrations_htn_and_dm_all).to eq(1)
+    expect(daily_statistics_yesterday.daily_registrations_htn_and_dm).to eq(1)
     expect(daily_statistics_yesterday.daily_registrations_htn_and_dm_male).to eq(1)
   end
 
@@ -83,11 +79,11 @@ RSpec.describe Reports::FacilityDailyFollowUpAndRegistration, {type: :model, rep
 
     daily_statistics = described_class.find_by(facility_id: facility, visit_date: 1.day.ago.to_date)
 
-    expect(daily_statistics.daily_follow_ups_all).to eq(1)
+    expect(daily_statistics.daily_follow_ups_htn_or_dm).to eq(1)
   end
 
   it "contains records for appointments" do
-    patient = create(:patient, recorded_at: june_2021[:long_ago])
+    patient = create(:patient, :hypertension, recorded_at: june_2021[:long_ago])
     now = Time.now
     create(:appointment, patient: patient, facility: facility, device_created_at: now)
 
@@ -95,7 +91,7 @@ RSpec.describe Reports::FacilityDailyFollowUpAndRegistration, {type: :model, rep
 
     daily_statistics = described_class.find_by(facility_id: facility, visit_date: now.to_date)
 
-    expect(daily_statistics.daily_follow_ups_all).to eq(1)
+    expect(daily_statistics.daily_follow_ups_htn_or_dm).to eq(1)
   end
 
   it "contains separate records for distinct days" do
@@ -112,8 +108,8 @@ RSpec.describe Reports::FacilityDailyFollowUpAndRegistration, {type: :model, rep
 
       follow_ups_on_first_day = described_class.find_by(facility_id: facility, visit_date: first_day.to_date)
       follow_ups_on_second_day = described_class.find_by(facility_id: facility, visit_date: second_day.to_date)
-      expect(follow_ups_on_first_day.daily_follow_ups_all).to eq(1)
-      expect(follow_ups_on_second_day.daily_follow_ups_all).to eq(1)
+      expect(follow_ups_on_first_day.daily_follow_ups_htn_or_dm).to eq(1)
+      expect(follow_ups_on_second_day.daily_follow_ups_htn_or_dm).to eq(1)
     end
   end
 
@@ -130,9 +126,9 @@ RSpec.describe Reports::FacilityDailyFollowUpAndRegistration, {type: :model, rep
     daily_statistics_facility = described_class.find_by(facility_id: facility, visit_date: 1.day.ago.to_date)
     daily_statistics_another_facility = described_class.find_by(facility_id: facility, visit_date: 1.day.ago.to_date)
 
-    expect(daily_statistics_facility.daily_follow_ups_all).to eq(1)
-    expect(daily_statistics_another_facility.daily_follow_ups_all).to eq(1)
-    expect(daily_statistics_facility.daily_registrations_all).to eq(1)
+    expect(daily_statistics_facility.daily_follow_ups_htn_or_dm).to eq(1)
+    expect(daily_statistics_another_facility.daily_follow_ups_htn_or_dm).to eq(1)
+    expect(daily_statistics_facility.daily_registrations_htn_or_dm).to eq(1)
   end
 
   it "does not count more than one visit per day for the same patient and facility" do
@@ -153,8 +149,8 @@ RSpec.describe Reports::FacilityDailyFollowUpAndRegistration, {type: :model, rep
       daily_statistics_facility = described_class.find_by(facility_id: facility, visit_date: now.to_date)
       daily_statistics_facility_2 = described_class.find_by(facility_id: facility, visit_date: now.to_date)
 
-      expect(daily_statistics_facility.daily_follow_ups_all).to eq(1)
-      expect(daily_statistics_facility_2.daily_follow_ups_all).to eq(1)
+      expect(daily_statistics_facility.daily_follow_ups_htn_or_dm).to eq(1)
+      expect(daily_statistics_facility_2.daily_follow_ups_htn_or_dm).to eq(1)
     end
   end
 
@@ -167,8 +163,8 @@ RSpec.describe Reports::FacilityDailyFollowUpAndRegistration, {type: :model, rep
 
     daily_statistics = described_class.find_by(facility_id: facility, visit_date: now.to_date)
 
-    expect(daily_statistics.daily_follow_ups_all).to eq(nil)
-    expect(daily_statistics.daily_registrations_all).to eq(1)
+    expect(daily_statistics.daily_follow_ups_htn_or_dm).to eq(0)
+    expect(daily_statistics.daily_registrations_htn_or_dm).to eq(1)
   end
 
   it "counts activity the day after registration as a follow up" do
@@ -181,7 +177,7 @@ RSpec.describe Reports::FacilityDailyFollowUpAndRegistration, {type: :model, rep
     daily_statistics_yesterday = described_class.find_by(facility_id: facility, visit_date: 1.day.ago.to_date)
     daily_statistics_today = described_class.find_by(facility_id: facility, visit_date: now.to_date)
 
-    expect(daily_statistics_today.daily_follow_ups_all).to eq(1)
-    expect(daily_statistics_yesterday.daily_registrations_all).to eq(1)
+    expect(daily_statistics_today.daily_follow_ups_htn_or_dm).to eq(1)
+    expect(daily_statistics_yesterday.daily_registrations_htn_or_dm).to eq(1)
   end
 end
