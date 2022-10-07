@@ -532,8 +532,9 @@ module Reports
     end
 
     def values_at(field)
+      field = field.to_s
       region_summaries.each_with_object({}) { |(slug, period_values), hsh|
-        hsh[slug] = period_values.transform_values { |values| values.fetch(field.to_s) }.tap { |hsh| hsh.default = 0 }
+        hsh[slug] = period_values.transform_values { |values| values.fetch(field) }.tap { |period_hsh| period_hsh.default = 0 }
       }
     end
   end
