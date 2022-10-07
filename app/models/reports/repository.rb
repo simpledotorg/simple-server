@@ -116,20 +116,31 @@ module Reports
       diabetes_blood_sugar_over_200_breakdown_rates
     ]
 
+    RATES_WITHOUT_LTFU = %i[
+      ltfu_rates
+      missed_visits_with_ltfu_rates
+      diabetes_ltfu_rates
+      appts_scheduled_0_to_14_days
+      appts_scheduled_15_to_31_days
+      appts_scheduled_32_to_62_days
+      appts_scheduled_more_than_62_days
+      diabetes_appts_scheduled_0_to_14_days
+      diabetes_appts_scheduled_15_to_31_days
+      diabetes_appts_scheduled_32_to_62_days
+      diabetes_appts_scheduled_more_than_62_days
+    ]
+
     def warm_cache
       DELEGATED_RATES.each do |method|
         public_send(method)
-        public_send(method, with_ltfu: true) unless method.in?([:ltfu_rates, :missed_visits_with_ltfu_rates])
+        public_send(method, with_ltfu: true) unless method.in?(RATES_WITHOUT_LTFU)
       end
-      hypertension_follow_ups
       if regions.all? { |region| region.facility_region? }
-        hypertension_follow_ups(group_by: "blood_pressures.user_id")
         bp_measures_by_user
         blood_sugar_measures_by_user
         monthly_registrations_by_user(diagnosis: :hypertension)
         monthly_registrations_by_user(diagnosis: :diabetes)
         monthly_registrations_by_gender
-        controlled_by_gender
         overdue_calls_by_user
       end
     end
