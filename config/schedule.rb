@@ -40,7 +40,7 @@ every :day, at: FOLLOW_UP_TIMES, roles: [:cron] do
   rake "db:refresh_daily_follow_ups"
 end
 
-every :day, at: local("2:00 pm"), roles: [:cron] do
+every :day, at: local("02:00 pm"), roles: [:cron] do
   if CountryConfig.current_country?("India") && SimpleServer.env.production?
     rake "bsnl:alert_on_low_balance"
   end
@@ -96,7 +96,7 @@ every :day, at: local("02:30 am"), roles: [:cron] do
   runner "RecordCounterJob.perform_async"
 end
 
-every :day, at: local("04:00 am"), roles: [:cron] do
+every :day, at: local("02:30 am"), roles: [:cron] do
   runner "Reports::RegionCacheWarmer.call"
 end
 
