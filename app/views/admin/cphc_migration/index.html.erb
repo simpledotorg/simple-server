@@ -124,11 +124,8 @@
         </div>
 
         <% local_facilities.each do |facility| %>
-          <% facility_errors = facility
-            .cphc_migration_error_logs
-            .joins("left outer join cphc_migration_audit_logs on cphc_migration_audit_logs.cphc_migratable_id = cphc_migration_error_logs.cphc_migratable_id")
-            .where("cphc_migration_audit_logs.id is null") %>
-          <% mappings = facility.cphc_facility_mappings %>
+          <% facility_errors = @facility_results.dig(:errors, facility.id) || CphcMigrationErrorLog.none %>
+          <% mappings = @mappings[facility.id] || CphcFacilityMapping.none %>
           <% if mappings.present? %>
             <div class="row card-row mt-24px">
               <div class="col-md-7">
@@ -188,7 +185,7 @@
                 </a>
               </div>
 
-              <% if get_migrated_records(:patient, facility).count == facility.assigned_patients.count %>
+              <% if @facility_results.dig(:migrated, ["Patient", facility.id]) == @facility_results.dig(:total, :patients, facility.id) %>
                 <div class="col-md-2">
                   <%= link_to href:"#", class: "btn btn-sm btn-outline-secondary" do%>
                     <i class="fas fa-check mr-1"></i>
@@ -219,33 +216,33 @@
                   <tbody>
                     <tr>
                       <td>Patients</td>
-                      <td><%= get_migrated_records(:patient, facility).count %></td>
-                      <td><%= facility.assigned_patients.count %></td>
+                      <td><%= @facility_results.dig(:migrated, ["Patient", facility.id]) || 0 %></td>
+                      <td><%= @facility_results.dig(:total, :patients, facility.id) || 0 %></td>
                     </tr>
                     <tr>
                       <td>Encounters</td>
-                      <td><%= get_migrated_records(:encounter, facility).count %></td>
-                      <td><%= Encounter.where(patient: facility.assigned_patients).count %></td>
+                      <td><%= @facility_results.dig(:migrated, ["Encounter", facility.id]) || 0 %></td>
+                      <td><%= @facility_results.dig(:total, :encounters, facility.id) || 0 %></td>
                     </tr>
                     <tr>
                       <td>Blood Pressures</td>
-                      <td><%= get_migrated_records(:blood_pressure, facility).count %></td>
-                      <td><%= BloodPressure.where(patient: facility.assigned_patients).count %></td>
+                      <td><%= @facility_results.dig(:migrated, ["BloodPressure", facility.id]) || 0 %></td>
+                      <td><%= @facility_results.dig(:total, :blood_pressures, facility.id) || 0 %></td>
                     </tr>
                     <tr>
                       <td>Blood Sugars</td>
-                      <td><%= get_migrated_records(:blood_sugar, facility).count %></td>
-                      <td><%= BloodSugar.where(patient: facility.assigned_patients).count %></td>
+                      <td><%= @facility_results.dig(:migrated, ["BloodSugar", facility.id]) || 0 %></td>
+                      <td><%= @facility_results.dig(:total, :blood_sugars, facility.id) || 0 %></td>
                     </tr>
                     <tr>
                       <td>Prescription Drugs</td>
-                      <td><%= get_migrated_records(:prescription_drug, facility).count %></td>
-                      <td><%= PrescriptionDrug.where(patient: facility.assigned_patients).count %></td>
+                      <td><%= @facility_results.dig(:migrated, ["PrescriptionDrug", facility.id]) || 0 %></td>
+                      <td><%= @facility_results.dig(:total, :prescription_drugs, facility.id) || 0 %></td>
                     </tr>
                     <tr>
                       <td>Appointments</td>
-                      <td><%= get_migrated_records(:appointment, facility).count %></td>
-                      <td><%= Appointment.where(patient: facility.assigned_patients).count %></td>
+                      <td><%= @facility_results.dig(:migrated, ["Appointment", facility.id]) || 0 %></td>
+                      <td><%= @facility_results.dig(:total, :appointments, facility.id) || 0 %></td>
                     </tr>
                   </tbody>
                 </table>

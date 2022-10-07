@@ -43,6 +43,8 @@ class Admin::CphcMigrationController < AdminController
     @facilities = facilities.group_by(&:facility_group)
 
     @unmapped_cphc_facilites = CphcFacilityMapping.where(facility: nil)
+    set_cphc_mappings(facilities)
+    set_facility_results(facilities)
   end
 
   def update_cphc_mapping
@@ -105,5 +107,35 @@ class Admin::CphcMigrationController < AdminController
       @patients = [Patient.find(params[:patient_id])]
       @migratable_name = patient.full_name
     end
+  end
+
+  def set_cphc_mappings(facilities)
+    @mappings = CphcFacilityMapping.where(facility_id: facilities).group_by(&:facility_id)
+  end
+
+  def set_facility_results(facilities)
+    patients = Patient.where(assigned_facility_id: facilities)
+    migratables = %w[Patient Encounter BloodPressure BloodSugar PrescriptionDrug Appointment]
+
+    @facility_results = {
+      total: {
+        patients: patients.group(:assigned_facility_id).count,
+        encounters: Encounter.joins(:patient).where(patient_id: patients).group("patients.assigned_facility_id").count,
+        blood_pressures: BloodPressure.joins(:patient).where(patient_id: patients).group("patients.assigned_facility_id").count,
+        blood_sugars: BloodSugar.joins(:patient).where(patient_id: patients).group("patients.assigned_facility_id").count,
+        prescription_drugs: PrescriptionDrug.joins(:patient).where(patient_id: patients).group("patients.assigned_facility_id").count,
+        appointments: Appointment.joins(:patient).where(patient_id: patients).group("patients.assigned_facility_id").count
+      },
+      migrated:
+        CphcMigrationAuditLog
+          .where(facility_id: facilities, cphc_migratable_type: migratables)
+          .group(:cphc_migratable_type, :facility_id)
+          .count,
+      errors:
+        CphcMigrationErrorLog
+          .joins("left outer join cphc_migration_audit_logs on cphc_migration_audit_logs.cphc_migratable_id = cphc_migration_error_logs.cphc_migratable_id")
+          .where("cphc_migration_audit_logs.id is null")
+          .group_by(&:facility_id)
+    }
   end
 end
