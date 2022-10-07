@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe ImportFacilitiesJob, type: :job do
+RSpec.describe ImportFacilitiesJob do
   include ActiveJob::TestHelper
 
   describe "#perform_later" do
@@ -46,7 +46,8 @@ RSpec.describe ImportFacilitiesJob, type: :job do
         allow_any_instance_of(Facility).to receive(:make_region).and_raise(ActiveRecord::RecordInvalid)
 
         expect {
-          perform_enqueued_jobs { job }
+          job
+          perform_enqueued_jobs
         }.to raise_error(ActiveRecord::RecordInvalid)
 
         expect(Facility.count).to eq(0)

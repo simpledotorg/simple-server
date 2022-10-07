@@ -3,11 +3,11 @@ Rails.application.routes.draw do
 
   devise_scope :email_authentication do
     authenticated :email_authentication do
-      root to: "admin#root"
+      get "/", to: "admin#root", as: :root
     end
 
     unauthenticated :email_authentication do
-      root to: "devise/sessions#new"
+      get "/", to: "devise/sessions#new"
     end
   end
 
@@ -211,7 +211,7 @@ Rails.application.routes.draw do
   resource :regions_search, controller: "regions_search"
 
   namespace :my_facilities do
-    root to: "/my_facilities#index", as: "overview"
+    get "/", to: "/my_facilities#index", as: "overview"
     get "blood_pressure_control", to: redirect("/my_facilities/bp_controlled")
     get "csv_maker", to: "csv_maker" ##################### DO I KEEP THIS ROUTE I MADE
     get "bp_controlled", to: "bp_controlled"
@@ -264,6 +264,13 @@ Rails.application.routes.draw do
     post "deduplication", to: "deduplicate_patients#merge"
 
     resources :error_traces, only: [:index, :create]
+
+    authenticate :email_authentication, ->(a) { a.user.power_user? } do
+      get "cphc_migration", to: "cphc_migration#index", as: "cphc_migration"
+      post "update_cphc_mapping/:facility_id", to: "cphc_migration#update_cphc_mapping", as: "update_cphc_mapping"
+      post "migrate_to_cphc/facility/:facility_id", to: "cphc_migration#migrate_to_cphc", as: "migrate_facility_to_cphc"
+      post "migrate_to_cphc/patient/:patient_id", to: "cphc_migration#migrate_to_cphc", as: "migrate_patient_to_cphc"
+    end
   end
 
   authenticate :email_authentication, ->(a) { a.user.power_user? } do

@@ -31,13 +31,13 @@ class NotificationDispatchService
   def send_message
     messaging_channel.send_message(
       recipient_number: recipient_number,
-      **message_data
+      **messaging_channel_data
     ) do |communication|
       notification.record_communication(communication)
     end
   end
 
-  def message_data
+  def messaging_channel_data
     if messaging_channel == Messaging::Bsnl::Sms
       {
         dlt_template_name: notification.dlt_template_name,

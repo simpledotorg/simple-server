@@ -10,20 +10,6 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-
-
---
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
---
-
--- COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
-
---
 -- Name: ltree; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -34,7 +20,7 @@ CREATE EXTENSION IF NOT EXISTS ltree WITH SCHEMA public;
 -- Name: EXTENSION ltree; Type: COMMENT; Schema: -; Owner: -
 --
 
--- COMMENT ON EXTENSION ltree IS 'data type for hierarchical tree-like structures';
+COMMENT ON EXTENSION ltree IS 'data type for hierarchical tree-like structures';
 
 
 --
@@ -48,7 +34,7 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
 -- Name: EXTENSION pgcrypto; Type: COMMENT; Schema: -; Owner: -
 --
 
--- COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
+COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
 
 
 --
@@ -64,7 +50,7 @@ CREATE TYPE public.gender_enum AS ENUM (
 
 SET default_tablespace = '';
 
-SET default_with_oids = false;
+SET default_table_access_method = heap;
 
 --
 -- Name: accesses; Type: TABLE; Schema: public; Owner: -
@@ -100,6 +86,41 @@ CREATE TABLE public.addresses (
     deleted_at timestamp without time zone,
     zone character varying
 );
+
+
+--
+-- Name: alpha_sms_delivery_details; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.alpha_sms_delivery_details (
+    id bigint NOT NULL,
+    request_id character varying NOT NULL,
+    request_status character varying,
+    recipient_number character varying NOT NULL,
+    message character varying,
+    deleted_at timestamp without time zone,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: alpha_sms_delivery_details_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.alpha_sms_delivery_details_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: alpha_sms_delivery_details_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.alpha_sms_delivery_details_id_seq OWNED BY public.alpha_sms_delivery_details.id;
 
 
 --
@@ -404,6 +425,135 @@ CREATE TABLE public.configurations (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
+
+
+--
+-- Name: cphc_facility_mappings; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.cphc_facility_mappings (
+    id bigint NOT NULL,
+    facility_id uuid,
+    cphc_state_id integer,
+    cphc_state_name character varying,
+    cphc_district_id integer,
+    cphc_district_name character varying,
+    cphc_taluka_id integer,
+    cphc_taluka_name character varying,
+    cphc_phc_id integer,
+    cphc_phc_name character varying,
+    cphc_subcenter_id integer,
+    cphc_subcenter_name character varying,
+    cphc_village_id integer,
+    cphc_village_name character varying,
+    deleted_at timestamp without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: cphc_facility_mappings_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.cphc_facility_mappings_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cphc_facility_mappings_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.cphc_facility_mappings_id_seq OWNED BY public.cphc_facility_mappings.id;
+
+
+--
+-- Name: cphc_migration_audit_logs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.cphc_migration_audit_logs (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    cphc_migratable_type character varying NOT NULL,
+    cphc_migratable_id uuid NOT NULL,
+    metadata json,
+    deleted_at timestamp without time zone,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    facility_id uuid
+);
+
+
+--
+-- Name: cphc_migration_configs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.cphc_migration_configs (
+    id bigint NOT NULL,
+    facility_group_id uuid,
+    config json,
+    deleted_at timestamp without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: cphc_migration_configs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.cphc_migration_configs_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cphc_migration_configs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.cphc_migration_configs_id_seq OWNED BY public.cphc_migration_configs.id;
+
+
+--
+-- Name: cphc_migration_error_logs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.cphc_migration_error_logs (
+    id bigint NOT NULL,
+    cphc_migratable_type character varying NOT NULL,
+    cphc_migratable_id uuid NOT NULL,
+    facility_id uuid,
+    patient_id uuid,
+    failures json,
+    deleted_at timestamp without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: cphc_migration_error_logs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.cphc_migration_error_logs_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cphc_migration_error_logs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.cphc_migration_error_logs_id_seq OWNED BY public.cphc_migration_error_logs.id;
 
 
 --
@@ -3517,6 +3667,20 @@ COMMENT ON COLUMN public.reporting_facility_states.monthly_diabetes_registration
 
 
 --
+-- Name: COLUMN reporting_facility_states.cumulative_hypertension_and_diabetes_registrations; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.cumulative_hypertension_and_diabetes_registrations IS 'The total number of patients registered at the facility with both hypertension and diabetes up to the end of the reporting month';
+
+
+--
+-- Name: COLUMN reporting_facility_states.monthly_hypertension_and_diabetes_registrations; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.monthly_hypertension_and_diabetes_registrations IS 'The number of patients registered at the facility with both hypertensio and diabetes in the reporting month';
+
+
+--
 -- Name: COLUMN reporting_facility_states.under_care; Type: COMMENT; Schema: public; Owner: -
 --
 
@@ -4155,6 +4319,13 @@ CREATE TABLE public.users (
 
 
 --
+-- Name: alpha_sms_delivery_details id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.alpha_sms_delivery_details ALTER COLUMN id SET DEFAULT nextval('public.alpha_sms_delivery_details_id_seq'::regclass);
+
+
+--
 -- Name: bsnl_delivery_details id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -4166,6 +4337,27 @@ ALTER TABLE ONLY public.bsnl_delivery_details ALTER COLUMN id SET DEFAULT nextva
 --
 
 ALTER TABLE ONLY public.call_logs ALTER COLUMN id SET DEFAULT nextval('public.call_logs_id_seq'::regclass);
+
+
+--
+-- Name: cphc_facility_mappings id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cphc_facility_mappings ALTER COLUMN id SET DEFAULT nextval('public.cphc_facility_mappings_id_seq'::regclass);
+
+
+--
+-- Name: cphc_migration_configs id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cphc_migration_configs ALTER COLUMN id SET DEFAULT nextval('public.cphc_migration_configs_id_seq'::regclass);
+
+
+--
+-- Name: cphc_migration_error_logs id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cphc_migration_error_logs ALTER COLUMN id SET DEFAULT nextval('public.cphc_migration_error_logs_id_seq'::regclass);
 
 
 --
@@ -4231,6 +4423,14 @@ ALTER TABLE ONLY public.accesses
 
 ALTER TABLE ONLY public.addresses
     ADD CONSTRAINT addresses_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: alpha_sms_delivery_details alpha_sms_delivery_details_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.alpha_sms_delivery_details
+    ADD CONSTRAINT alpha_sms_delivery_details_pkey PRIMARY KEY (id);
 
 
 --
@@ -4303,6 +4503,38 @@ ALTER TABLE ONLY public.communications
 
 ALTER TABLE ONLY public.configurations
     ADD CONSTRAINT configurations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cphc_facility_mappings cphc_facility_mappings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cphc_facility_mappings
+    ADD CONSTRAINT cphc_facility_mappings_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cphc_migration_audit_logs cphc_migration_audit_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cphc_migration_audit_logs
+    ADD CONSTRAINT cphc_migration_audit_logs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cphc_migration_configs cphc_migration_configs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cphc_migration_configs
+    ADD CONSTRAINT cphc_migration_configs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cphc_migration_error_logs cphc_migration_error_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cphc_migration_error_logs
+    ADD CONSTRAINT cphc_migration_error_logs_pkey PRIMARY KEY (id);
 
 
 --
@@ -4582,6 +4814,13 @@ ALTER TABLE ONLY public.users
 --
 
 CREATE UNIQUE INDEX clean_medicine_to_dosages__unique_name_and_dosage ON public.clean_medicine_to_dosages USING btree (medicine, dosage, rxcui);
+
+
+--
+-- Name: cphc_facility_mappings_unique_cphc_record; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX cphc_facility_mappings_unique_cphc_record ON public.cphc_facility_mappings USING btree (cphc_state_id, cphc_state_name, cphc_district_id, cphc_district_name, cphc_taluka_id, cphc_taluka_name, cphc_phc_id, cphc_phc_name, cphc_subcenter_id, cphc_subcenter_name, cphc_village_id, cphc_village_name);
 
 
 --
@@ -4869,6 +5108,20 @@ CREATE INDEX index_communications_on_notification_id ON public.communications US
 --
 
 CREATE UNIQUE INDEX index_configurations_on_name ON public.configurations USING btree (name);
+
+
+--
+-- Name: index_cphc_migration_audit_logs_on_cphc_migratable; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_cphc_migration_audit_logs_on_cphc_migratable ON public.cphc_migration_audit_logs USING btree (cphc_migratable_type, cphc_migratable_id);
+
+
+--
+-- Name: index_cphc_migration_configs_on_facility_group_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_cphc_migration_configs_on_facility_group_id ON public.cphc_migration_configs USING btree (facility_group_id);
 
 
 --
@@ -6099,4 +6352,10 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220718091454'),
 ('20220902104533'),
 ('20220902114057'),
-('20220902125119');
+('20220902125119'),
+('20220908044630'),
+('20220926072823'),
+('20221002080832'),
+('20221002111845'),
+('20221003084709'),
+('20221004092107');

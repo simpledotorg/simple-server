@@ -1,10 +1,15 @@
-class CPHCMigrationJob < ApplicationJob
-  queue_as :cphc_migration
+class CphcMigrationJob
+  include Sidekiq::Worker
+  include Sidekiq::Throttled::Worker
 
-  def perform(patient_id, user_id)
-    OneOff::CPHCEnrollment::Service.new(
-      Patient.find(patient_id),
-      User.find(user_id)
-    ).call
+  sidekiq_options queue: :cphc_migration, retry: SimpleServer.env.development?
+  sidekiq_throttle(
+    threshold: {limit: 10, period: 10.seconds}
+  )
+
+  def perform(patient_id, user_json)
+    patient = Patient.find(patient_id)
+    user = JSON.parse(user_json)
+    OneOff::CphcEnrollment::Service.new(patient, user.with_indifferent_access).call
   end
 end

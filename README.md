@@ -90,11 +90,11 @@ docker-compose down --volumes
 If the included `bin/setup` script fails for some reason, you can also manually
 set up the application step by step. You can do so as follows.
 
-First, you need to [install ruby](https://www.ruby-lang.org/en/documentation/installation). It is recommended to use [rbenv](https://github.com/rbenv/rbenv) to manage ruby versions. Note that we currently use Bundler version 2.2.29, so that is also hardcoded below.
+First, you need to [install ruby](https://www.ruby-lang.org/en/documentation/installation). It is recommended to use [rbenv](https://github.com/rbenv/rbenv) to manage ruby versions. Note that we currently use Bundler version 2.3.22, so that is also hardcoded below.
 
 ```bash
-gem install bundler -v 2.2.29
-bundle _2.2.29_ install
+gem install bundler -v 2.3.22
+bundle _2.3.22_ install
 rake yarn:install
 rails db:setup
 ```

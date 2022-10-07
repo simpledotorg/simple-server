@@ -1,11 +1,11 @@
-class OneOff::CPHCEnrollment::BloodPressurePayload
+class OneOff::CphcEnrollment::BloodPressurePayload
   attr_reader :blood_pressure
 
   def initialize(blood_pressure)
     @blood_pressure = blood_pressure
   end
 
-  def as_json
+  def payload
     {
       "isVitalsEdited" => true,
       "exam" => {

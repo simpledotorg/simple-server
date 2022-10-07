@@ -40,7 +40,7 @@ RSpec.describe BsnlDeliveryDetail, type: :model do
     end
   end
 
-  describe ".in_progress?" do
+  describe "#in_progress?" do
     it "returns true if the notification is in the process of being delivered" do
       new_detail = create(:bsnl_delivery_detail, message_status: nil)
       created_detail = create(:bsnl_delivery_detail, message_status: "0")
@@ -64,7 +64,7 @@ RSpec.describe BsnlDeliveryDetail, type: :model do
     end
   end
 
-  describe ".unsuccessful?" do
+  describe "#unsuccessful?" do
     it "returns true if the notification could not be delivered" do
       new_detail = create(:bsnl_delivery_detail, message_status: nil)
       created_detail = create(:bsnl_delivery_detail, message_status: "0")
@@ -88,7 +88,7 @@ RSpec.describe BsnlDeliveryDetail, type: :model do
     end
   end
 
-  describe ".successful?" do
+  describe "#successful?" do
     it "returns true if the notification was delivered successfully" do
       new_detail = create(:bsnl_delivery_detail, message_status: nil)
       created_detail = create(:bsnl_delivery_detail, message_status: "0")

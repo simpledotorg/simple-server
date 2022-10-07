@@ -1,4 +1,4 @@
-class OneOff::CPHCEnrollment::HypertensionDiagnosisPayload
+class OneOff::CphcEnrollment::HypertensionDiagnosisPayload
   attr_reader :blood_pressure, :encounter_id
 
   def initialize(blood_pressure, encounter_id)
@@ -6,7 +6,7 @@ class OneOff::CPHCEnrollment::HypertensionDiagnosisPayload
     @encounter_id = encounter_id
   end
 
-  def as_json
+  def payload
     medical_history = blood_pressure.patient.medical_history
     {"encounterId" => encounter_id,
      "assessmentDate" => blood_pressure.recorded_at.strftime("%d-%m-%Y"),
