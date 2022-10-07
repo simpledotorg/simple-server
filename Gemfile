@@ -16,7 +16,7 @@ gem "auto_strip_attributes"
 gem "bcrypt", "~> 3.1"
 gem "bcrypt_pbkdf", "~> 1.1"
 gem "bootsnap", require: false
-gem "bootstrap_form", ">= 4.5.0"
+gem "bootstrap_form", "~> 4.5.0"
 gem "bootstrap-datepicker-rails", "~> 1.9"
 gem "bootstrap-select-rails"
 gem "bootstrap", "~> 4.5.0"
@@ -92,6 +92,7 @@ gem "webpacker", "6.0.0.rc.6"
 gem "whenever", require: false
 gem "wkhtmltoimage-binary"
 gem "selenium-webdriver"
+gem "table_print"
 
 group :development, :test do
   gem "active_record_query_trace", require: false

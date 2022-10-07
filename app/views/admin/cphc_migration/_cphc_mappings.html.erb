@@ -1,0 +1,33 @@
+<div class="row card-row">
+  <div class="col-md-1"><span>State</span></div>
+  <div class="col-md-1"><span>District</span></div>
+  <div class="col-md-2"><span>Taluka</span></div>
+  <div class="col-md-2"><span>PHC Name</span></div>
+  <div class="col-md-2"><span>Subcenter Name</span></div>
+  <div class="col-md-2"><span>Village</span></div>
+</div>
+<% mappings.group_by(&:cphc_phc_name).each do |cphc_phc_name, phc_mappings| %>
+  <div class="row card-row">
+    <div class="col-md-1"><span class="text-muted"><%= phc_mappings.first.cphc_state_name %></span></div>
+    <div class="col-md-1"><span class="text-muted"><%= phc_mappings.first.cphc_district_name %></span></div>
+    <div class="col-md-2"><span class="text-muted"><%= phc_mappings.first.cphc_taluka_name %></span></div>
+    <div class="col-md-2"><span class="text-muted"><%= phc_mappings.first.cphc_phc_name %></span></div>
+    <div class="col-md-2">
+      <span class="text-muted">
+        <ul>
+          <% phc_mappings.map(&:cphc_subcenter_name).uniq.each do |name| %>
+            <li><%= name %></li>
+          <% end %>
+        </ul>
+      </span>
+    </div>
+    <div class="col-md-2"><span class="text-muted">
+        <ul>
+          <% phc_mappings.map(&:cphc_village_name).uniq.each do |name| %>
+            <li><%= name %></li>
+          <% end %>
+        </ul>
+      </span>
+    </div>
+  </div>
+<% end %>

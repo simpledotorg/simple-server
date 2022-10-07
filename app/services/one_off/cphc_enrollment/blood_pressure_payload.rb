@@ -1,4 +1,4 @@
-class OneOff::CPHCEnrollment::BloodPressurePayload
+class OneOff::CphcEnrollment::BloodPressurePayload
   attr_reader :blood_pressure
 
   def initialize(blood_pressure)

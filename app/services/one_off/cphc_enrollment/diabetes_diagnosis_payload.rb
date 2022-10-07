@@ -1,4 +1,4 @@
-class OneOff::CPHCEnrollment::DiabetesDiagnosisPayload
+class OneOff::CphcEnrollment::DiabetesDiagnosisPayload
   attr_reader :blood_sugar, :encounter_id
 
   def initialize(blood_sugar, encounter_id)
