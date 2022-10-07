@@ -106,7 +106,7 @@ every 1.month, at: local("04:00 am"), roles: [:cron] do
   end
 end
 
-every :day, at: local("04:00 am"), roles: [:cron] do
+every 1.month, at: local("04:15 am"), roles: [:cron] do
   if Flipper.enabled?(:maharashtra_dhis2_export)
     rake "dhis2:maharashtra_export"
   end
