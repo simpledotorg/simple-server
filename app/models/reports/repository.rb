@@ -5,6 +5,8 @@ module Reports
     include Memery
     include Scientist
 
+    DAYS_AGO = 29
+
     attr_reader :measures_query
     attr_reader :follow_ups_query
     attr_reader :period_type
@@ -268,6 +270,16 @@ module Reports
     def facility_progress
       regions.each_with_object({}) do |region, result|
         records = Reports::FacilityStateDimension.for_region(region).where(month_date: periods)
+        records_per_period = records.each_with_object({}) do |record, hsh|
+          hsh[record.period] = record
+        end
+        result[region.slug] = records_per_period
+      end
+    end
+
+    def daily_follow_ups_and_registrations
+      regions.each_with_object({}) do |region, result|
+        records = Reports::FacilityDailyFollowUpAndRegistration.for_region(region).where("visit_date > ?", DAYS_AGO.days.ago)
         records_per_period = records.each_with_object({}) do |record, hsh|
           hsh[record.period] = record
         end

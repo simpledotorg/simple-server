@@ -16,7 +16,6 @@ class RefreshReportingViews
   V2_REPORTING_VIEWS = %w[
     Reports::Month
     Reports::Facility
-    Reports::DailyFollowUp
     Reports::PatientBloodPressure
     Reports::PatientBloodSugar
     Reports::OverdueCalls
@@ -28,13 +27,14 @@ class RefreshReportingViews
     Reports::FacilityState
     Reports::QuarterlyFacilityState
     Reports::FacilityStateDimension
+    Reports::FacilityDailyFollowUpAndRegistration
   ].freeze
 
   def self.last_updated_at
     Rails.cache.fetch(REPORTING_VIEW_REFRESH_TIME_KEY)
   end
 
-  def self.last_updated_at_daily_follow_ups
+  def self.last_updated_at_facility_daily_follow_ups_and_registrations
     Rails.cache.fetch(REPORTING_VIEW_DAILY_REFRESH_KEY)
   end
 
@@ -42,7 +42,7 @@ class RefreshReportingViews
     Rails.cache.write(REPORTING_VIEW_REFRESH_TIME_KEY, Time.current.in_time_zone(tz))
   end
 
-  def self.set_last_updated_at_daily_follow_ups
+  def self.set_last_updated_at_facility_daily_follow_ups_and_registrations
     Rails.cache.write(REPORTING_VIEW_DAILY_REFRESH_KEY, Time.current.in_time_zone(tz))
   end
 
@@ -52,8 +52,8 @@ class RefreshReportingViews
     new(views: views).call
   end
 
-  def self.refresh_daily_follow_ups
-    new(views: ["Reports::DailyFollowUp"]).call
+  def self.refresh_daily_follow_ups_and_registrations
+    new(views: ["Reports::FacilityDailyFollowUpsAndRegistrations"]).call
   end
 
   def self.refresh_v2
@@ -83,8 +83,10 @@ class RefreshReportingViews
       refresh
     end
     set_last_updated_at if all_views_refreshed?
-    self.class.set_last_updated_at_daily_follow_ups if views.any? { |view| view.match?(/Daily/) }
-    logger.info "Completed full reporting view refresh"
+    self.class.set_last_updated_at_facility_daily_follow_ups_and_registrations
+    if views.any? { |view| view.match?(/Daily/) }
+      logger.info "Completed full reporting view refresh"
+    end
   end
 
   def self.tz

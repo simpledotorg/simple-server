@@ -37,7 +37,7 @@ FOLLOW_UP_TIMES = [
 ].map { |t| local(t) }
 
 every :day, at: FOLLOW_UP_TIMES, roles: [:cron] do
-  rake "db:refresh_daily_follow_ups"
+  rake "db:refresh_daily_follow_ups_and_registrations"
 end
 
 every :day, at: local("02:00 pm"), roles: [:cron] do

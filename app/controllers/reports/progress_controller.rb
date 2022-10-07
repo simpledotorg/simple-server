@@ -5,12 +5,16 @@ class Reports::ProgressController < AdminController
   before_action :require_feature_flag
   before_action :set_period
   before_action :find_region
+  around_action :set_reporting_time_zone
 
   def show
     @current_user = current_user
     @current_facility = @region
     @user_analytics = UserAnalyticsPresenter.new(@region)
     @service = Reports::FacilityProgressService.new(current_facility, @period)
+
+    @date_format = ApplicationHelper::STANDARD_DATE_DISPLAY_FORMAT
+    @time_format = ApplicationHelper::STANDARD_TIME_DISPLAY_FORMAT
 
     @total_follow_ups_dimension = Reports::FacilityProgressDimension.new(:follow_ups, diagnosis: :all, gender: :all)
     @total_registrations_dimension = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :all, gender: :all)

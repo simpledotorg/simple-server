@@ -4,6 +4,7 @@ module Reports
 
     MONTHS = -5
     CONTROL_MONTHS = -12
+    DAYS_AGO = 29
     attr_reader :control_range
     attr_reader :facility
     attr_reader :range
@@ -23,23 +24,23 @@ module Reports
     # probably matters the most health care workers as they see patients
     # throughout the day and expect to see those reflected in the daily counts.
     def last_updated_at
-      RefreshReportingViews.last_updated_at_daily_follow_ups
+      RefreshReportingViews.last_updated_at_facility_daily_follow_ups_and_registrations
     end
 
     def daily_registrations(date)
-      daily_registrations_grouped_by_day[date.to_date] || 0
+      daily_total_registrations[date]
     end
 
     def daily_follow_ups(date)
-      daily_follow_ups_grouped_by_day[date.to_date] || 0
+      daily_total_follow_ups[date]
     end
 
     def daily_statistics
       {
         daily: {
           grouped_by_date: {
-            follow_ups: daily_follow_ups_grouped_by_day,
-            registrations: daily_registrations_grouped_by_day
+            follow_ups: daily_total_follow_ups,
+            registrations: daily_total_registrations
           }
         },
         metadata: {
@@ -82,15 +83,78 @@ module Reports
 
     attr_reader :diabetes_enabled
 
-    memoize def daily_registrations_grouped_by_day
-      diagnosis = diabetes_enabled ? :all : :hypertension
-      RegisteredPatientsQuery.new.count_daily(facility, diagnosis: diagnosis, last: 30)
+    memoize def daily_total_follow_ups
+      records = Reports::FacilityDailyFollowUpAndRegistration.for_region(region).where("visit_date >= ?", DAYS_AGO.days.ago.to_date)
+      records.each_with_object({}) do |record, hsh|
+        hsh[record.period] = if region.diabetes_management_enabled?
+          record[:daily_follow_ups_htn_or_dm]
+        else
+          record[:daily_follow_ups_htn_only] + record[:daily_follow_ups_htn_and_dm]
+        end
+      end
     end
 
-    memoize def daily_follow_ups_grouped_by_day
-      scope = Reports::DailyFollowUp.with_hypertension
-      scope = scope.or(Reports::DailyFollowUp.with_diabetes) if diabetes_enabled
-      scope.where(facility: facility).group_by_day(:visited_at, last: 30).count
+    memoize def daily_total_registrations
+      records = Reports::FacilityDailyFollowUpAndRegistration.for_region(region).where("visit_date >= ?", DAYS_AGO.days.ago.to_date)
+      records.each_with_object({}) do |record, hsh|
+        hsh[record.period] = if diabetes_enabled
+          record[:daily_registrations_htn_or_dm]
+        else
+          record[:daily_registrations_htn_only] + record[:daily_registrations_htn_and_dm]
+        end
+      end
+    end
+
+    memoize def daily_registrations_breakdown
+      records = Reports::FacilityDailyFollowUpAndRegistration.for_region(region).where("visit_date >= ?", DAYS_AGO.days.ago.to_date)
+      records.each_with_object({}) do |record, hsh|
+        hsh[record.period] = {
+          hypertension: {
+            all: record[:daily_registrations_htn_only],
+            male: record[:daily_registrations_htn_only_male],
+            female: record[:daily_registrations_htn_only_female],
+            transgender: record[:daily_registrations_htn_only_transgender]
+          },
+          diabetes: {
+            all: record[:daily_registrations_dm_only],
+            male: record[:daily_registrations_dm_only_male],
+            female: record[:daily_registrations_dm_only_female],
+            transgender: record[:daily_registrations_dm_only_transgender]
+          },
+          hypertension_and_diabetes: {
+            all: record[:daily_registrations_htn_and_dm],
+            male: record[:daily_registrations_htn_and_dm_male],
+            female: record[:daily_registrations_htn_and_dm_female],
+            transgender: record[:daily_registrations_htn_and_dm_transgender]
+          }
+        }
+      end
+    end
+
+    memoize def daily_follow_ups_breakdown
+      records = Reports::FacilityDailyFollowUpAndRegistration.for_region(region).where("visit_date >= ?", DAYS_AGO.days.ago.to_date)
+      records.each_with_object({}) do |record, hsh|
+        hsh[record.period] = {
+          hypertension: {
+            all: record[:daily_follow_ups_htn_only],
+            male: record[:daily_follow_ups_htn_only_male],
+            female: record[:daily_follow_ups_htn_only_female],
+            transgender: record[:daily_follow_ups_htn_only_transgender]
+          },
+          diabetes: {
+            all: record[:daily_follow_ups_dm_only],
+            male: record[:daily_follow_ups_dm_only_male],
+            female: record[:daily_follow_ups_dm_only_female],
+            transgender: record[:daily_follow_ups_dm_only_transgender]
+          },
+          hypertension_and_diabetes: {
+            all: record[:daily_follow_ups_htn_and_dm],
+            male: record[:daily_follow_ups_htn_and_dm_male],
+            female: record[:daily_follow_ups_htn_and_dm_female],
+            transgender: record[:daily_follow_ups_htn_and_dm_transgender]
+          }
+        }
+      end
     end
 
     def create_dimension(*args)
