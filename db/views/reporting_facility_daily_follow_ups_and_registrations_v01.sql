@@ -135,30 +135,30 @@ WITH follow_up_blood_pressures AS (
              date(visited_at) as visit_date,
              day_of_year,
 
-             COALESCE(count(*) FILTER (WHERE hypertension = 'yes' or diabetes = 'yes'),0) AS daily_registrations_htn_or_dm,
+             count(*) FILTER (WHERE hypertension = 'yes' or diabetes = 'yes') AS daily_registrations_htn_or_dm,
 
-             COALESCE(count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes'),0) AS daily_registrations_htn_and_dm,
-             COALESCE(count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'female'), 0) AS daily_registrations_htn_and_dm_female,
-             COALESCE(count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'male'), 0) AS daily_registrations_htn_and_dm_male,
-             COALESCE(count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'transgender'), 0) AS daily_registrations_htn_and_dm_transgender,
+             count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes') AS daily_registrations_htn_and_dm,
+             count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'female') AS daily_registrations_htn_and_dm_female,
+             count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'male') AS daily_registrations_htn_and_dm_male,
+             count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'transgender') AS daily_registrations_htn_and_dm_transgender,
 
-             COALESCE(count(*) FILTER (WHERE hypertension = 'yes'), 0)
-                 - COALESCE(count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes'),0) AS daily_registrations_htn_only,
-             COALESCE(count(*) FILTER (WHERE hypertension = 'yes' and patient_gender = 'female'), 0)
-                 - COALESCE(count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'female'), 0) AS daily_registrations_htn_only_female,
-             COALESCE(count(*) FILTER (WHERE hypertension = 'yes' and patient_gender = 'male'), 0)
-                 - COALESCE(count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'male'), 0) AS daily_registrations_htn_only_male,
-             COALESCE(count(*) FILTER (WHERE hypertension = 'yes' and patient_gender = 'transgender'), 0)
-                 - COALESCE(count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'transgender'), 0) AS daily_registrations_htn_only_transgender,
+             count(*) FILTER (WHERE hypertension = 'yes')
+                 - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes') AS daily_registrations_htn_only,
+             count(*) FILTER (WHERE hypertension = 'yes' and patient_gender = 'female')
+                 - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'female') AS daily_registrations_htn_only_female,
+             count(*) FILTER (WHERE hypertension = 'yes' and patient_gender = 'male')
+                 - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'male') AS daily_registrations_htn_only_male,
+             count(*) FILTER (WHERE hypertension = 'yes' and patient_gender = 'transgender')
+                 - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'transgender') AS daily_registrations_htn_only_transgender,
 
-             COALESCE(count(*) FILTER (WHERE diabetes = 'yes'), 0)
-                 - COALESCE(count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes'),0) AS daily_registrations_dm_only,
-             COALESCE(count(*) FILTER (WHERE diabetes = 'yes' and patient_gender = 'female'), 0)
-                 - COALESCE(count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'female'), 0) AS daily_registrations_dm_only_female,
-             COALESCE(count(*) FILTER (WHERE diabetes = 'yes' and patient_gender = 'male'), 0)
-                 - COALESCE(count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'male'), 0) AS daily_registrations_dm_only_male,
-             COALESCE(count(*) FILTER (WHERE diabetes = 'yes' and patient_gender = 'transgender'), 0)
-                 - COALESCE(count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'transgender'), 0) AS daily_registrations_dm_only_transgender
+             count(*) FILTER (WHERE diabetes = 'yes')
+                 - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes') AS daily_registrations_dm_only,
+             count(*) FILTER (WHERE diabetes = 'yes' and patient_gender = 'female')
+                 - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'female') AS daily_registrations_dm_only_female,
+             count(*) FILTER (WHERE diabetes = 'yes' and patient_gender = 'male')
+                 - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'male') AS daily_registrations_dm_only_male,
+             count(*) FILTER (WHERE diabetes = 'yes' and patient_gender = 'transgender')
+                 - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'transgender') AS daily_registrations_dm_only_transgender
          FROM registered_patients_with_medical_histories
          GROUP BY facility_id, date(visited_at), day_of_year
      ),
@@ -169,30 +169,30 @@ WITH follow_up_blood_pressures AS (
              date(visited_at) as visit_date,
              day_of_year,
 
-             COALESCE(count(*) FILTER (WHERE hypertension = 'yes' or diabetes = 'yes'),0) AS daily_follow_ups_htn_or_dm,
+             count(*) FILTER (WHERE hypertension = 'yes' or diabetes = 'yes') AS daily_follow_ups_htn_or_dm,
 
-             COALESCE(count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes'),0) AS daily_follow_ups_htn_and_dm,
-             COALESCE(count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'female'), 0) AS daily_follow_ups_htn_and_dm_female,
-             COALESCE(count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'male'), 0) AS daily_follow_ups_htn_and_dm_male,
-             COALESCE(count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'transgender'), 0) AS daily_follow_ups_htn_and_dm_transgender,
+             count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes') AS daily_follow_ups_htn_and_dm,
+             count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'female') AS daily_follow_ups_htn_and_dm_female,
+             count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'male') AS daily_follow_ups_htn_and_dm_male,
+             count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'transgender') AS daily_follow_ups_htn_and_dm_transgender,
 
-             COALESCE(count(*) FILTER (WHERE hypertension = 'yes'), 0)
-                 - COALESCE(count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes'),0) AS daily_follow_ups_htn_only,
-             COALESCE(count(*) FILTER (WHERE hypertension = 'yes' and patient_gender = 'female'), 0)
-                 - COALESCE(count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'female'), 0) AS daily_follow_ups_htn_only_female,
-             COALESCE(count(*) FILTER (WHERE hypertension = 'yes' and patient_gender = 'male'), 0)
-                 - COALESCE(count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'male'), 0) AS daily_follow_ups_htn_only_male,
-             COALESCE(count(*) FILTER (WHERE hypertension = 'yes' and patient_gender = 'transgender'), 0)
-                 - COALESCE(count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'transgender'), 0) AS daily_follow_ups_htn_only_transgender,
+             count(*) FILTER (WHERE hypertension = 'yes')
+                 - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes') AS daily_follow_ups_htn_only,
+             count(*) FILTER (WHERE hypertension = 'yes' and patient_gender = 'female')
+                 - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'female') AS daily_follow_ups_htn_only_female,
+             count(*) FILTER (WHERE hypertension = 'yes' and patient_gender = 'male')
+                 - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'male') AS daily_follow_ups_htn_only_male,
+             count(*) FILTER (WHERE hypertension = 'yes' and patient_gender = 'transgender')
+                 - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'transgender') AS daily_follow_ups_htn_only_transgender,
 
-             COALESCE(count(*) FILTER (WHERE diabetes = 'yes'), 0)
-                 - COALESCE(count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes'),0) AS daily_follow_ups_dm_only,
-             COALESCE(count(*) FILTER (WHERE diabetes = 'yes' and patient_gender = 'female'), 0)
-                 - COALESCE(count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'female'), 0) AS daily_follow_ups_dm_only_female,
-             COALESCE(count(*) FILTER (WHERE diabetes = 'yes' and patient_gender = 'male'), 0)
-                 - COALESCE(count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'male'), 0) AS daily_follow_ups_dm_only_male,
-             COALESCE(count(*) FILTER (WHERE diabetes = 'yes' and patient_gender = 'transgender'), 0)
-                 - COALESCE(count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'transgender'), 0) AS daily_follow_ups_dm_only_transgender
+             count(*) FILTER (WHERE diabetes = 'yes')
+                 - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes') AS daily_follow_ups_dm_only,
+             count(*) FILTER (WHERE diabetes = 'yes' and patient_gender = 'female')
+                 - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'female') AS daily_follow_ups_dm_only_female,
+             count(*) FILTER (WHERE diabetes = 'yes' and patient_gender = 'male')
+                 - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'male') AS daily_follow_ups_dm_only_male,
+             count(*) FILTER (WHERE diabetes = 'yes' and patient_gender = 'transgender')
+                 - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'transgender') AS daily_follow_ups_dm_only_transgender
          FROM all_follow_ups_with_medical_histories
          GROUP BY facility_id, date(visited_at), day_of_year
      ),
@@ -211,32 +211,32 @@ SELECT
     last_30_days.date AS visit_date,
     cast(EXTRACT(DOY FROM last_30_days.date AT TIME ZONE 'UTC' at time zone (SELECT current_setting('TIMEZONE'))) as integer)
                       AS day_of_year,
-    daily_registered_patients.daily_registrations_htn_or_dm,
-    daily_registered_patients.daily_registrations_htn_only,
-    daily_registered_patients.daily_registrations_htn_only_male,
-    daily_registered_patients.daily_registrations_htn_only_female,
-    daily_registered_patients.daily_registrations_htn_only_transgender,
-    daily_registered_patients.daily_registrations_dm_only,
-    daily_registered_patients.daily_registrations_dm_only_male,
-    daily_registered_patients.daily_registrations_dm_only_female,
-    daily_registered_patients.daily_registrations_dm_only_transgender,
-    daily_registered_patients.daily_registrations_htn_and_dm,
-    daily_registered_patients.daily_registrations_htn_and_dm_male,
-    daily_registered_patients.daily_registrations_htn_and_dm_female,
-    daily_registered_patients.daily_registrations_htn_and_dm_transgender,
-    daily_follow_ups.daily_follow_ups_htn_or_dm,
-    daily_follow_ups.daily_follow_ups_htn_only,
-    daily_follow_ups.daily_follow_ups_htn_only_female,
-    daily_follow_ups.daily_follow_ups_htn_only_male,
-    daily_follow_ups.daily_follow_ups_htn_only_transgender,
-    daily_follow_ups.daily_follow_ups_dm_only,
-    daily_follow_ups.daily_follow_ups_dm_only_female,
-    daily_follow_ups.daily_follow_ups_dm_only_male,
-    daily_follow_ups.daily_follow_ups_dm_only_transgender,
-    daily_follow_ups.daily_follow_ups_htn_and_dm,
-    daily_follow_ups.daily_follow_ups_htn_and_dm_male,
-    daily_follow_ups.daily_follow_ups_htn_and_dm_female,
-    daily_follow_ups.daily_follow_ups_htn_and_dm_transgender
+    coalesce(daily_registered_patients.daily_registrations_htn_or_dm,0) AS daily_registrations_htn_or_dm,
+    coalesce(daily_registered_patients.daily_registrations_htn_only,0) AS daily_registrations_htn_only,
+    coalesce(daily_registered_patients.daily_registrations_htn_only_male,0) AS daily_registrations_htn_only_male,
+    coalesce(daily_registered_patients.daily_registrations_htn_only_female,0) AS daily_registrations_htn_only_female,
+    coalesce(daily_registered_patients.daily_registrations_htn_only_transgender,0) AS daily_registrations_htn_only_transgender,
+    coalesce(daily_registered_patients.daily_registrations_dm_only,0) AS daily_registrations_dm_only,
+    coalesce(daily_registered_patients.daily_registrations_dm_only_male,0) AS daily_registrations_dm_only_male,
+    coalesce(daily_registered_patients.daily_registrations_dm_only_female,0) AS daily_registrations_dm_only_female,
+    coalesce(daily_registered_patients.daily_registrations_dm_only_transgender,0) AS daily_registrations_dm_only_transgender,
+    coalesce(daily_registered_patients.daily_registrations_htn_and_dm,0) AS daily_registrations_htn_and_dm,
+    coalesce(daily_registered_patients.daily_registrations_htn_and_dm_male,0) AS daily_registrations_htn_and_dm_male,
+    coalesce(daily_registered_patients.daily_registrations_htn_and_dm_female,0) AS daily_registrations_htn_and_dm_female,
+    coalesce(daily_registered_patients.daily_registrations_htn_and_dm_transgender,0) AS daily_registrations_htn_and_dm_transgender,
+    coalesce(daily_follow_ups.daily_follow_ups_htn_or_dm,0) AS daily_follow_ups_htn_or_dm,
+    coalesce(daily_follow_ups.daily_follow_ups_htn_only,0) AS daily_follow_ups_htn_only,
+    coalesce(daily_follow_ups.daily_follow_ups_htn_only_female,0) AS daily_follow_ups_htn_only_female,
+    coalesce(daily_follow_ups.daily_follow_ups_htn_only_male,0) AS daily_follow_ups_htn_only_male,
+    coalesce(daily_follow_ups.daily_follow_ups_htn_only_transgender,0) AS daily_follow_ups_htn_only_transgender,
+    coalesce(daily_follow_ups.daily_follow_ups_dm_only,0) AS daily_follow_ups_dm_only,
+    coalesce(daily_follow_ups.daily_follow_ups_dm_only_female,0) AS daily_follow_ups_dm_only_female,
+    coalesce(daily_follow_ups.daily_follow_ups_dm_only_male,0) AS daily_follow_ups_dm_only_male,
+    coalesce(daily_follow_ups.daily_follow_ups_dm_only_transgender,0) AS daily_follow_ups_dm_only_transgender,
+    coalesce(daily_follow_ups.daily_follow_ups_htn_and_dm,0) AS daily_follow_ups_htn_and_dm,
+    coalesce(daily_follow_ups.daily_follow_ups_htn_and_dm_male,0) AS daily_follow_ups_htn_and_dm_male,
+    coalesce(daily_follow_ups.daily_follow_ups_htn_and_dm_female,0) AS daily_follow_ups_htn_and_dm_female,
+    coalesce(daily_follow_ups.daily_follow_ups_htn_and_dm_transgender,0) AS daily_follow_ups_htn_and_dm_transgender
 
 FROM reporting_facilities rf
  INNER JOIN last_30_days
@@ -248,3 +248,4 @@ FROM reporting_facilities rf
  LEFT OUTER JOIN daily_follow_ups
         ON daily_follow_ups.visit_date = last_30_days.date
             AND daily_follow_ups.facility_id = rf.facility_id
+ORDER BY visit_date DESC
