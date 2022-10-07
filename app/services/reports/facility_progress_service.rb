@@ -130,7 +130,7 @@ module Reports
             transgender: record[:daily_registrations_dm_only_transgender]
           },
           hypertension_and_diabetes: {
-            all: record[:daily_registrations_htn_and_dm_all],
+            all: record[:daily_registrations_htn_and_dm],
             male: record[:daily_registrations_htn_and_dm_male],
             female: record[:daily_registrations_htn_and_dm_female],
             transgender: record[:daily_registrations_htn_and_dm_transgender]
@@ -156,7 +156,7 @@ module Reports
             transgender: record[:daily_follow_ups_dm_only_transgender]
           },
           hypertension_and_diabetes: {
-            all: record[:daily_follow_ups_htn_and_dm_all],
+            all: record[:daily_follow_ups_htn_and_dm],
             male: record[:daily_follow_ups_htn_and_dm_male],
             female: record[:daily_follow_ups_htn_and_dm_female],
             transgender: record[:daily_follow_ups_htn_and_dm_transgender]
