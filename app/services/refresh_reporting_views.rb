@@ -53,7 +53,7 @@ class RefreshReportingViews
   end
 
   def self.refresh_daily_follow_ups_and_registrations
-    new(views: ["Reports::FacilityDailyFollowUpsAndRegistrations"]).call
+    new(views: ["Reports::FacilityDailyFollowUpAndRegistration"]).call
   end
 
   def self.refresh_v2
