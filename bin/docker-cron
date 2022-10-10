@@ -2,4 +2,4 @@
 
 bundle exec whenever --update-crontab
 
-tail -f /dev/null # Keep the container running
+/usr/sbin/cron -f # Start cron service
