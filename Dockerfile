@@ -2,6 +2,7 @@
 FROM ruby:2.7.4
 
 ENV BUNDLE_VERSION 2.3.22
+ENV EDITOR vim
 
 ## Install dependencies
 # Yarn
@@ -13,6 +14,8 @@ RUN apt-get update && apt-get install -y redis-server postgresql-client jq
 # Node
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
 RUN apt-get update && apt-get install -y --no-install-recommends nodejs
+# Install vim
+RUN apt-get install -y vim
 
 # Default directory
 ENV INSTALL_PATH /opt/app

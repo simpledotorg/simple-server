@@ -3,6 +3,7 @@ FROM ruby:2.7.4
 SHELL ["/bin/bash", "-c"] 
 
 ENV BUNDLE_VERSION 2.2.29
+ENV EDITOR vim
 
 ## Install dependencies
 # Yarn
@@ -16,6 +17,8 @@ RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
 RUN apt-get update && apt-get install -y --no-install-recommends nodejs
 # Install cron
 RUN apt-get install -y cron
+# Install vim
+RUN apt-get install -y vim
 
 # Default directory
 ENV INSTALL_PATH /opt/app
