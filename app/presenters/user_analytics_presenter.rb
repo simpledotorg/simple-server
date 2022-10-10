@@ -58,7 +58,7 @@ class UserAnalyticsPresenter
           cohorts: cohort_stats,
           metadata: {
             is_diabetes_enabled: diabetes_enabled?,
-            last_updated_at: I18n.l(Time.current),
+            last_updated_at: I18n.l(RefreshReportingViews.last_updated_at),
             formatted_next_date: display_date(Time.current + 1.day),
             today_string: I18n.t(:today_str)
           }

@@ -45,7 +45,7 @@ module Reports
         },
         metadata: {
           is_diabetes_enabled: @diabetes_enabled,
-          last_updated_at: I18n.l(Time.current),
+          last_updated_at: last_updated_at,
           formatted_next_date: (Time.current + 1.day).to_s(:mon_year),
           today_string: I18n.t(:today_str)
         }
