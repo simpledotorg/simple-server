@@ -1317,14 +1317,17 @@ Reports = function (withLtfu) {
       registrationsPeriodEndNode.innerHTML = periodInfo.bp_control_end_date;
       registrationsMonthEndNode.innerHTML = period;
 
+      if(hypertensionOnlyRegistrationsNode) {
+        hypertensionOnlyRegistrationsNode.innerHTML = this.formatNumberWithCommas(
+            cumulativeRegistrations - cumulativeHypertensionAndDiabetesRegistrations
+        );
+      }
 
-      hypertensionOnlyRegistrationsNode.innerHTML = this.formatNumberWithCommas(
-          cumulativeRegistrations - cumulativeHypertensionAndDiabetesRegistrations
-      );
-
-      hypertensionAndDiabetesOnlyRegistrationsNode.innerHTML = this.formatNumberWithCommas(
-          cumulativeHypertensionAndDiabetesRegistrations
-      );
+      if(hypertensionAndDiabetesOnlyRegistrationsNode) {
+        hypertensionAndDiabetesOnlyRegistrationsNode.innerHTML = this.formatNumberWithCommas(
+            cumulativeHypertensionAndDiabetesRegistrations
+        );
+      }
     };
 
     const populateCumulativeRegistrationsGraphDefault = () => {
