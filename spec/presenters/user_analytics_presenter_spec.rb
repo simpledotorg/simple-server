@@ -122,7 +122,7 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
           expect(data.dig(:metadata, :last_updated_at)).to eq(I18n.l(time))
         end
 
-        it "says unknown when the reporting views were last refreshed" do
+        it "is blank when the last refresh time is unavailable" do
           allow(RefreshReportingViews).to receive(:last_updated_at).and_return(nil)
           data = described_class.new(current_facility).statistics
 
