@@ -41,7 +41,7 @@ RSpec.describe Reports::FacilityDailyFollowUpAndRegistration, {type: :model, rep
     create(:blood_pressure, patient: patient_1, user: user, facility: facility, recorded_at: now)
     create(:blood_pressure, patient: patient_2, user: user, facility: facility, recorded_at: now)
     create(:blood_pressure, patient: patient_3, user: user, facility: facility, recorded_at: now)
-    create(:patient, :diabetes, gender: "male", recorded_at: now, registration_user: user, registration_facility: facility)
+    create(:patient, :diabetes, gender: "male", recorded_at: now, registration_user: user, registration_facility: facility, assigned_facility_id: create(:facility))
 
     described_class.refresh
 
