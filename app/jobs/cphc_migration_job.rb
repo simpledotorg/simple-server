@@ -21,6 +21,6 @@ class CphcMigrationJob
   end
 
   def user
-    OneOff::CphcEnrollment::AuthManager.new(auth_token: ENV["CPHC_AUTH_TOKEN"]).user.with_indifferent_access
+    assigned_facility.cphc_facility_mappings.first.cphc_user
   end
 end

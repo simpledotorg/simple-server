@@ -1,6 +1,18 @@
 class CphcFacilityMapping < ApplicationRecord
   include PgSearch::Model
 
+  def auth_token
+    decrypt(encrypted_cphc_auth_token)
+  end
+
+  def auth_token=(unencrypted_auth_token)
+    encrypted_cphc_auth_token = encrypt(unencrypted_auth_token)
+  end
+
+  def cphc_user
+    cphc_user_details.merge(user_authorization: auth_token).with_indifferent_access
+  end
+
   validates_uniqueness_of :cphc_village_id, scope: [
     :cphc_state_id,
     :cphc_state_name,
