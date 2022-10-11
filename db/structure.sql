@@ -448,7 +448,9 @@ CREATE TABLE public.cphc_facility_mappings (
     cphc_village_name character varying,
     deleted_at timestamp without time zone,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    encrypted_cphc_auth_token text,
+    cphc_user_details json
 );
 
 
@@ -6478,6 +6480,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20221002111845'),
 ('20221003084709'),
 ('20221004092107'),
-('20221010104304');
+('20221010104304'),
+('20221011124316');
 
 
