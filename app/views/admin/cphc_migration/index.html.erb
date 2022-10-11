@@ -304,14 +304,20 @@
               </div>
               <div class="col-md-6">
                 <%= bootstrap_form_with url: admin_update_cphc_mapping_path(facility.id), local: true do |form| %>
-                  <%= form.collection_select :cphc_phc_id,
-                    CphcFacilityMapping.where(facility: nil).search_by_region(facility.district).uniq(&:cphc_phc_name).sort_by(&:cphc_phc_name),
-                    :cphc_phc_id,
-                    :cphc_phc_name,
-                    {label: "Select CPHC PHC"},
-                    {class: "form-select form-select-sm"}
-                  %>
-                  <%= form.submit "+ Mapping", class: "btn btn-sm btn-outline-primary" %>
+                  <div class="row">
+                    <div class="col-md-10">
+                      <%= form.collection_select :cphc_phc_id,
+                                                 CphcFacilityMapping.where(facility: nil).search_by_region(facility.district).uniq(&:cphc_phc_name).sort_by(&:cphc_phc_name),
+                                                 :cphc_phc_id,
+                                                 :cphc_phc_name,
+                                                 { hide_label: true  },
+                                                 { class: "form-select form-select-sm" }
+                      %>
+                    </div>
+                    <div class="col-md-2">
+                      <%= form.submit "Map", class: "btn btn-sm btn-outline-primary", style: "height: 38px; padding: 6px 12px 6px 12px;" %>
+                    </div>
+                  </div>
                 <% end %>
               </div>
             </div>
@@ -331,9 +337,9 @@
     }
   })
 
-  $(".collapse-district-caret").click(function() {
-    $(this).toggleClass("fa-caret-right");
-    $(this).toggleClass("fa-caret-down");
+  $(".collapse-district-link").click(function() {
+    $(this).children("i").toggleClass("fa-caret-right");
+    $(this).children("i").toggleClass("fa-caret-down");
   })
 </script>
 

@@ -63,7 +63,7 @@ class Admin::CphcMigrationController < AdminController
     remove_mapping = params[:remove_mapping]
     CphcFacilityMapping.where(cphc_phc_id: params[:cphc_phc_id])
       .update_all(facility_id: remove_mapping ? nil : params[:facility_id])
-    redirect_to admin_cphc_migration_path, notice: "CPHC Facility Mapping Added"
+    redirect_to request.referrer, notice: "CPHC Facility Mapping Added"
   end
 
   def migrate_to_cphc
