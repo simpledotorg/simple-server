@@ -5180,6 +5180,20 @@ CREATE INDEX index_bp_months_patient_recorded_at ON public.latest_blood_pressure
 
 
 --
+-- Name: index_bsnl_delivery_details_deleted_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_bsnl_delivery_details_deleted_at ON public.bsnl_delivery_details USING btree (deleted_at);
+
+
+--
+-- Name: index_bsnl_delivery_details_message_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_bsnl_delivery_details_message_id ON public.bsnl_delivery_details USING btree (message_id);
+
+
+--
 -- Name: index_call_results_deleted_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -6478,6 +6492,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20221002111845'),
 ('20221003084709'),
 ('20221004092107'),
-('20221010104304');
+('20221010104304'),
+('20221011071921');
 
 
