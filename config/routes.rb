@@ -269,6 +269,7 @@ Rails.application.routes.draw do
       get "cphc_migration", to: "cphc_migration#index", as: "cphc_migration"
       post "update_cphc_mapping/:facility_id", to: "cphc_migration#update_cphc_mapping", as: "update_cphc_mapping"
       post "migrate_to_cphc/facility/:facility_id", to: "cphc_migration#migrate_to_cphc", as: "migrate_facility_to_cphc"
+      post "migrate_to_cphc/facility_group/:facility_group_id", to: "cphc_migration#migrate_to_cphc", as: "migrate_facility_group_to_cphc"
       post "migrate_to_cphc/patient/:patient_id", to: "cphc_migration#migrate_to_cphc", as: "migrate_patient_to_cphc"
     end
   end

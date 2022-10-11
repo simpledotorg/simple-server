@@ -24,11 +24,20 @@
     <% @facilities.each do |facility_group, local_facilities| %>
       <div class="card">
         <div class="row">
-          <div class="col-md-8">
+          <div class="col-md-6">
             <h5>
+              <a href="#<%= facility_group.slug %>"
+                 data-toggle="collapse"
+                 role="button"
+                 aria-expanded="false"
+                 data-target="#<%= facility_group.slug %>-contents"
+                 class="collapse-district-link">
+                <i class="fa fa-caret-down collapse-district-caret"></i>
+              </a>
               <b><%= facility_group.name %></b>
             </h5>
           </div>
+
           <div class="col-md-2">
             <%= link_to admin_cphc_migration_path(
               district_slugs: [facility_group.slug],
@@ -40,6 +49,7 @@
               .filter{ |f| f.cphc_facility_mappings.empty? }.count %> Unlinked Facilities
             <% end %>
           </div>
+
           <div class="col-md-2">
             <%= link_to admin_cphc_migration_path(
               district_slugs: [facility_group.slug],
@@ -55,6 +65,28 @@
               .count %> Facilities with errors
             <% end %>
           </div>
+
+          <% if get_migrated_records(:patient, facility_group).count == facility_group.assigned_patients.count %>
+            <div class="col-md-2">
+              <%= link_to href:"#", class: "btn btn-sm btn-outline-secondary" do%>
+                <i class="fas fa-check mr-1"></i>
+                All patients migrated
+              <% end %>
+            </div>
+          <% else %>
+            <div class="col-md-2">
+              <%= form_with url: admin_migrate_facility_group_to_cphc_path(facility_group_id: facility_group.id), local: true, method: :post do |form| %>
+                <%= form.button type: "submit", class: "btn btn-sm btn-outline-danger migrate-btn" do %>
+                  <i class="fas fa-cloud-exclamation mr-1"></i>
+                  <i class="fa fa-spinner fa-spin d-none" style="font-size:24px"></i>
+                  Migrate District
+                <% end %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+        <div class="facility-group-contents collapse show" id="<%= facility_group.slug %>-contents">
+          <div class="row">
           <div class="col-md-12">
             <table class="table mt-24px">
               <thead>
@@ -100,12 +132,9 @@
           </div>
         </div>
 
-        <% local_facilities.each do |facility| %>
-          <% facility_errors = facility
-            .cphc_migration_error_logs
-            .joins("left outer join cphc_migration_audit_logs on cphc_migration_audit_logs.cphc_migratable_id = cphc_migration_error_logs.cphc_migratable_id")
-            .where("cphc_migration_audit_logs.id is null") %>
-          <% mappings = facility.cphc_facility_mappings %>
+          <% local_facilities.each do |facility| %>
+          <% facility_errors = @facility_results.dig(:errors, facility.id) || CphcMigrationErrorLog.none %>
+          <% mappings = @mappings[facility.id] || CphcFacilityMapping.none %>
           <% if mappings.present? %>
             <div class="row card-row mt-24px">
               <div class="col-md-7">
@@ -118,14 +147,15 @@
                     <%= facility.name %>
                   </a>
                 <p class="c-blue mt-24px">
-                <%= mappings.first.cphc_district_name %> | <%= mappings.first.cphc_taluka_name %> | <%= mappings.first.cphc_phc_name %>
+                <%= "District: #{mappings.first.cphc_district_name} | Taluka: #{mappings.first.cphc_taluka_name} | PHC Name: #{mappings.first.cphc_phc_name} | PHC ID: #{mappings.first.cphc_phc_id}" %>
                 </p>
 
-
-                <span>CPHC Subcenters:</span>
-                <p class="muted"><%= mappings.map(&:cphc_subcenter_name).uniq.join(", ") %></p>
-                <span>CPHC Villages:</span>
-                <p class="muted"><%= mappings.map(&:cphc_village_name).uniq.join(", ") %></p>
+                <span class="text-muted">
+                  <span>CPHC Subcenters:</span>
+                  <p><%= mappings.map(&:cphc_subcenter_name).uniq.join(", ") %></p>
+                  <span>CPHC Villages:</span>
+                  <p><%= mappings.map(&:cphc_village_name).uniq.join(", ") %></p>
+                </span>
               </div>
 
               <div class="col-md-1">
@@ -164,7 +194,7 @@
                 </a>
               </div>
 
-              <% if get_migrated_records(:patient, facility).count == facility.assigned_patients.count %>
+              <% if @facility_results.dig(:migrated, ["Patient", facility.id]) == @facility_results.dig(:total, :patients, facility.id) %>
                 <div class="col-md-2">
                   <%= link_to href:"#", class: "btn btn-sm btn-outline-secondary" do%>
                     <i class="fas fa-check mr-1"></i>
@@ -173,9 +203,10 @@
                 </div>
               <% else %>
                 <div class="col-md-2">
-                  <%= form_with url: admin_migrate_facility_to_cphc_path(facility_id: facility.id), method: :post do |form| %>
-                    <%= form.button type: "submit", class: "btn btn-sm btn-outline-danger" do %>
+                  <%= form_with url: admin_migrate_facility_to_cphc_path(facility_id: facility.id), local: true, method: :post do |form| %>
+                    <%= form.button type: "submit", class: "btn btn-sm btn-outline-danger migrate-btn" do %>
                       <i class="fas fa-cloud-exclamation mr-1"></i>
+                      <i class="fa fa-spinner fa-spin d-none" style="font-size:24px"></i>
                       Migrate Facility
                     <% end %>
                   <% end %>
@@ -194,33 +225,33 @@
                   <tbody>
                     <tr>
                       <td>Patients</td>
-                      <td><%= get_migrated_records(:patient, facility).count %></td>
-                      <td><%= facility.assigned_patients.count %></td>
+                      <td><%= @facility_results.dig(:migrated, ["Patient", facility.id]) || 0 %></td>
+                      <td><%= @facility_results.dig(:total, :patients, facility.id) || 0 %></td>
                     </tr>
                     <tr>
                       <td>Encounters</td>
-                      <td><%= get_migrated_records(:encounter, facility).count %></td>
-                      <td><%= Encounter.where(patient: facility.assigned_patients).count %></td>
+                      <td><%= @facility_results.dig(:migrated, ["Encounter", facility.id]) || 0 %></td>
+                      <td><%= @facility_results.dig(:total, :encounters, facility.id) || 0 %></td>
                     </tr>
                     <tr>
                       <td>Blood Pressures</td>
-                      <td><%= get_migrated_records(:blood_pressure, facility).count %></td>
-                      <td><%= BloodPressure.where(patient: facility.assigned_patients).count %></td>
+                      <td><%= @facility_results.dig(:migrated, ["BloodPressure", facility.id]) || 0 %></td>
+                      <td><%= @facility_results.dig(:total, :blood_pressures, facility.id) || 0 %></td>
                     </tr>
                     <tr>
                       <td>Blood Sugars</td>
-                      <td><%= get_migrated_records(:blood_sugar, facility).count %></td>
-                      <td><%= BloodSugar.where(patient: facility.assigned_patients).count %></td>
+                      <td><%= @facility_results.dig(:migrated, ["BloodSugar", facility.id]) || 0 %></td>
+                      <td><%= @facility_results.dig(:total, :blood_sugars, facility.id) || 0 %></td>
                     </tr>
                     <tr>
                       <td>Prescription Drugs</td>
-                      <td><%= get_migrated_records(:prescription_drug, facility).count %></td>
-                      <td><%= PrescriptionDrug.where(patient: facility.assigned_patients).count %></td>
+                      <td><%= @facility_results.dig(:migrated, ["PrescriptionDrug", facility.id]) || 0 %></td>
+                      <td><%= @facility_results.dig(:total, :prescription_drugs, facility.id) || 0 %></td>
                     </tr>
                     <tr>
                       <td>Appointments</td>
-                      <td><%= get_migrated_records(:appointment, facility).count %></td>
-                      <td><%= Appointment.where(patient: facility.assigned_patients).count %></td>
+                      <td><%= @facility_results.dig(:migrated, ["Appointment", facility.id]) || 0 %></td>
+                      <td><%= @facility_results.dig(:total, :appointments, facility.id) || 0 %></td>
                     </tr>
                   </tbody>
                 </table>
@@ -250,9 +281,10 @@
                           <td class="text-danger"><%= error_log.failures["response_code"] %></td>
                           <td> class="text-danger"<%= error_log.failures["response_body"] %></td>
                           <td>
-                            <%= form_with url: admin_migrate_patient_to_cphc_path(patient_id: error_log.patient_id), method: :post do |form| %>
-                              <%= form.button type: "submit", class: "btn btn-sm btn-outline-danger" do %>
+                            <%= form_with url: admin_migrate_patient_to_cphc_path(patient_id: error_log.patient_id), local: true, method: :post do |form| %>
+                              <%= form.button type: "submit", class: "btn btn-sm btn-outline-danger migrate-btn" do %>
                                 <i class="fas fa-cloud-exclamation mr-1"></i>
+                                <i class="fa fa-spinner fa-spin d-none" style="font-size:24px"></i>
                                 Retry patient
                               <% end %>
                             <% end %>
@@ -271,13 +303,13 @@
                 <h5 class="c-orange"><%= facility.name %></h5>
               </div>
               <div class="col-md-6">
-                <%= form_with url: admin_update_cphc_mapping_path(facility.id) do |form| %>
+                <%= bootstrap_form_with url: admin_update_cphc_mapping_path(facility.id), local: true do |form| %>
                   <%= form.collection_select :cphc_phc_id,
                     CphcFacilityMapping.where(facility: nil).search_by_region(facility.district).uniq(&:cphc_phc_name).sort_by(&:cphc_phc_name),
                     :cphc_phc_id,
                     :cphc_phc_name,
-                    {},
-                    {class: "form-select form-select-sm" }
+                    {label: "Select CPHC PHC"},
+                    {class: "form-select form-select-sm"}
                   %>
                   <%= form.submit "+ Mapping", class: "btn btn-sm btn-outline-primary" %>
                 <% end %>
@@ -285,13 +317,40 @@
             </div>
           <% end %>
         <% end %>
+        </div>
       </div>
     <% end %>
   <% end %>
 <% end %>
 
+<script>
+  $(".migrate-btn").click(function() {
+    if($(this).children("i.fa-spinner").hasClass("d-none")) {
+      $(this).children("i").toggleClass("d-none");
+      $(this).children("i.fa-spinner").removeClass("d-none");
+    }
+  })
+
+  $(".collapse-district-caret").click(function() {
+    $(this).toggleClass("fa-caret-right");
+    $(this).toggleClass("fa-caret-down");
+  })
+</script>
+
+<style>
+  .collapsing {
+      -webkit-transition: none;
+      transition: none;
+      display: none;
+  }
+
+  .collapse-district-link:hover {
+      text-decoration: none;
+  }
+</style>
+
 <h2 class="mt-5 mb-3">Unmapped CPHC Facilities</h2>
 
 <%= render "admin/cphc_migration/cphc_mappings",
   show_button: false,
-  mappings: @unmapped_cphc_facilites %>
+  mappings: @unmapped_cphc_facilities %>
