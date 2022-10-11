@@ -232,7 +232,7 @@ namespace :dell_demo do
       .order(:name)
       .each do |facility|
       potential_mappings = CphcFacilityMapping.where(facility: nil)
-        .search_by_cphc_phc_name(facility.name)
+        .search_by_facility(facility.name)
         .search_by_region(district)
         .uniq(&:cphc_phc_name)
 
