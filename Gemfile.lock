@@ -597,10 +597,10 @@ GEM
     sidekiq-statsd (2.1.0)
       activesupport
       sidekiq (>= 3.3.1)
-    sidekiq-throttled (0.16.2)
+    sidekiq-throttled (0.17.0)
       concurrent-ruby
       redis-prescription
-      sidekiq
+      sidekiq (>= 6.4)
     sidekiq-unique-jobs (7.1.27)
       brpoplpush-redis_script (> 0.1.1, <= 2.0.0)
       concurrent-ruby (~> 1.0, >= 1.0.5)
