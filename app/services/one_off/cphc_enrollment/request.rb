@@ -1,6 +1,6 @@
 require "http"
 
-class OneOff::CPHCEnrollment::Request
+class OneOff::CphcEnrollment::Request
   attr_reader :path, :user, :payload
 
   def initialize(path:, user:, payload:)
@@ -12,7 +12,7 @@ class OneOff::CPHCEnrollment::Request
   def post
     HTTP.headers(headers)
       .auth(user[:user_authorization])
-      .post(path, json: payload.as_json)
+      .post(path, json: payload&.payload)
   end
 
   def headers

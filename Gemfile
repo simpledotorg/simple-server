@@ -16,7 +16,7 @@ gem "auto_strip_attributes"
 gem "bcrypt", "~> 3.1"
 gem "bcrypt_pbkdf", "~> 1.1"
 gem "bootsnap", require: false
-gem "bootstrap_form", ">= 4.5.0"
+gem "bootstrap_form", "~> 4.5.0"
 gem "bootstrap-datepicker-rails", "~> 1.9"
 gem "bootstrap-select-rails"
 gem "bootstrap", "~> 4.5.0"
@@ -61,7 +61,7 @@ gem "phonelib"
 gem "pry-rails"
 gem "rack-attack"
 gem "rack-mini-profiler", require: false
-gem "redis"
+gem "redis", "~> 4.7.1"
 gem "render_async"
 gem "request_store-sidekiq"
 gem "request_store"
@@ -92,6 +92,7 @@ gem "webpacker", "6.0.0.rc.6"
 gem "whenever", require: false
 gem "wkhtmltoimage-binary"
 gem "selenium-webdriver"
+gem "table_print"
 
 group :development, :test do
   gem "active_record_query_trace", require: false
@@ -118,6 +119,8 @@ end
 group :development, :test, :profiling do
   gem "derailed_benchmarks"
   gem "memory_profiler", require: false
+  gem "prosopite"
+  gem "pg_query"
 end
 
 group :development do

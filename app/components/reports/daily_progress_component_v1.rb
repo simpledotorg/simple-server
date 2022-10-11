@@ -5,7 +5,8 @@ class Reports::DailyProgressComponentV1 < ViewComponent::Base
 
   # We use 29 here because we also show today, so its 30 days including today
   DAYS_AGO = 29
-  DAY_FORMAT = ApplicationHelper::STANDARD_DATE_DISPLAY_FORMAT
+  DATE_FORMAT = ApplicationHelper::STANDARD_DATE_DISPLAY_FORMAT
+  TIME_FORMAT = ApplicationHelper::STANDARD_TIME_DISPLAY_FORMAT
 
   attr_reader :service, :current_user
 
@@ -14,7 +15,8 @@ class Reports::DailyProgressComponentV1 < ViewComponent::Base
     @now = Date.current
     @start = @now - DAYS_AGO
     @region = service.region
-    @last_updated_at = DateTime.parse(last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")
+    @last_updated_on = DateTime.parse(last_updated_at).strftime(DATE_FORMAT)
+    @last_updated_at = DateTime.parse(last_updated_at).strftime(TIME_FORMAT)
     @current_user = current_user
   end
 
@@ -29,6 +31,6 @@ class Reports::DailyProgressComponentV1 < ViewComponent::Base
   end
 
   def display_date(date)
-    date.strftime(DAY_FORMAT)
+    date.strftime(DATE_FORMAT)
   end
 end

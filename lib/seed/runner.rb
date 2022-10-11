@@ -9,7 +9,7 @@ module Seed
     include ActionView::Helpers::NumberHelper
     include ConsoleLogger
     SIZES = Facility.facility_sizes
-    SUMMARY_COUNTS = [:patient, :blood_pressure, :blood_sugar, :appointment, :facility, :facility_group]
+    SUMMARY_COUNTS = [:patient, :blood_pressure, :blood_sugar, :appointment, :facility, :facility_group, :prescription_drug]
 
     attr_reader :config
     attr_reader :logger
@@ -42,6 +42,9 @@ module Seed
       UserSeeder.call(config: config)
       seed_drug_stocks
 
+      ProtocolSeeder.call(config: config)
+      Seed::DrugLookupTablesSeeder.truncate_and_import
+
       announce "Starting to seed patient data for #{Facility.count} facilities..."
 
       progress = create_progress_bar
@@ -60,7 +63,7 @@ module Seed
         hsh[model] = number_with_delimiter(model.to_s.classify.constantize.count)
       }
       announce <<~EOL
-        \n⭐️ Seed complete! Created #{totals[:patient]} patients, #{totals[:blood_pressure]} BPs, #{totals[:blood_sugar]} blood sugars, and #{totals[:appointment]} appointments across #{totals[:facility]} facilities in #{totals[:facility_group]} districts.\n
+        \n⭐️ Seed complete! Created #{totals[:patient]} patients, #{totals[:blood_pressure]} BPs, #{totals[:blood_sugar]} blood sugars, #{totals[:prescription_drug]} prescription drugs, and #{totals[:appointment]} appointments across #{totals[:facility]} facilities in #{totals[:facility_group]} districts.\n
         ⭐️ Elapsed time #{distance_of_time_in_words(start_time, Time.current, include_seconds: true)} ⭐️\n
       EOL
     end
@@ -97,6 +100,9 @@ module Seed
             appt_result = create_appts(patient_info, facility: facility, user_ids: registration_user_ids)
             result[:appointment] = appt_result.ids.size
           end
+          prescription_drugs_result = PrescriptionDrugSeeder.call(config: config, facility: facility, user_ids: registration_user_ids)
+          result.merge!(prescription_drugs_result) { |key, count1, count2| count1 + count2 }
+
           result
         }
         results.concat batch_result

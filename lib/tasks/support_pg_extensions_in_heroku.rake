@@ -14,6 +14,7 @@ task :support_pg_extensions_in_heroku do
   contents.gsub! "public.gen_random_uuid()", "heroku_ext.gen_random_uuid()"
   contents.gsub! "public.subpath", "heroku_ext.subpath"
   contents.gsub! "public.=", "heroku_ext.="
+  contents.gsub! "COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';", ""
 
   IO.write(path, contents)
 end

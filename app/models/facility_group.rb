@@ -22,6 +22,8 @@ class FacilityGroup < ApplicationRecord
   has_one :estimated_population, through: :region, inverse_of: :region
   has_one :estimated_diabetes_population, through: :region, inverse_of: :region
 
+  has_one :cphc_migration_config
+
   alias_method :registered_patients, :patients
 
   validates :name, presence: true
