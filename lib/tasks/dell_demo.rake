@@ -170,29 +170,6 @@ namespace :dell_demo do
     end
   end
 
-  desc "CPHC Migration Demo"
-  task :migrate_to_cphc, [:district, :limit, :offset] => :environment do |_t, args|
-    district = args[:district]
-    limit = args[:limit] || 10
-    offset = args[:offset] || 0
-
-    auth_token = ENV["CPHC_AUTH_TOKEN"]
-    if auth_token.present?
-      auth_manager = OneOff::CphcEnrollment::AuthManager.new(auth_token: auth_token)
-    else
-      auth_manager = OneOff::CphcEnrollment::AuthManager.new
-      auth_manager.sign_in(auto_fill: true)
-    end
-    eligible_facilities =
-      Facility.where(district: district)
-        .joins(:cphc_facility_mappings)
-        .where.not(cphc_facility_mappings: {facility_id: nil})
-
-    Patient.where(assigned_facility_id: eligible_facilities).order(:assigned_facility_id).limit(limit).offset(offset).each do |patient|
-      CphcMigrationJob.perform_async(patient.id, JSON.dump(auth_manager.user))
-    end
-  end
-
   desc "Import CPHC Facilities"
   task :import_cphc_facilities, [:filename, :sheet, :district_id] => :environment do |_t, args|
     xlsx = Roo::Spreadsheet.open(args[:filename])

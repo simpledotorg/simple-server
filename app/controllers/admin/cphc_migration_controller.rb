@@ -69,16 +69,11 @@ class Admin::CphcMigrationController < AdminController
   def migrate_to_cphc
     authorize { current_admin.power_user? }
     set_migratable_patients
-    auth_token = ENV["CPHC_AUTH_TOKEN"]
 
-    auth_manager = OneOff::CphcEnrollment::AuthManager.new(auth_token: auth_token)
     @patients.each do |patient|
-      CphcMigrationJob.perform_at(
-        OneOff::CphcEnrollment.next_migration_time(Time.now),
-        patient.id,
-        JSON.dump(auth_manager.user)
-      )
+      CphcMigrationJob.perform_at(OneOff::CphcEnrollment.next_migration_time(Time.now), patient.id)
     end
+
     redirect_to admin_cphc_migration_path, notice: "Migration triggered for #{@migratable_name}"
   end
 
