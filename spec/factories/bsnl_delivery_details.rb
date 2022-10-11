@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :bsnl_delivery_detail do
-    message_id { "1000000" }
+    sequence(:message_id) { |n| "#{n}000000" }
     message_status { "0" }
     recipient_number { Faker::PhoneNumber.phone_number }
     dlt_template_id { "14071640000000000000" }
