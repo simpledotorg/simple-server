@@ -17,6 +17,11 @@ module Reports
       @range = Range.new(@period.advance(months: MONTHS), @period)
       @control_range = Range.new(@period.advance(months: CONTROL_MONTHS), @period.previous)
       @diabetes_enabled = facility.enable_diabetes_management
+      @daily_facility_data =
+        Reports::FacilityDailyFollowUpAndRegistration
+          .for_region(region)
+          .where("visit_date >= ?", DAYS_AGO.days.ago.to_date)
+          .load
     end
 
     # we use the daily timestamp for the purposes of the last updated at,
@@ -84,8 +89,7 @@ module Reports
     attr_reader :diabetes_enabled
 
     memoize def daily_total_follow_ups
-      records = Reports::FacilityDailyFollowUpAndRegistration.for_region(region).where("visit_date >= ?", DAYS_AGO.days.ago.to_date)
-      records.each_with_object({}) do |record, hsh|
+      @daily_facility_data.each_with_object({}) do |record, hsh|
         hsh[record.period] = if region.diabetes_management_enabled?
           record[:daily_follow_ups_htn_or_dm]
         else
@@ -95,8 +99,7 @@ module Reports
     end
 
     memoize def daily_total_registrations
-      records = Reports::FacilityDailyFollowUpAndRegistration.for_region(region).where("visit_date >= ?", DAYS_AGO.days.ago.to_date)
-      records.each_with_object({}) do |record, hsh|
+      @daily_facility_data.each_with_object({}) do |record, hsh|
         hsh[record.period] = if diabetes_enabled
           record[:daily_registrations_htn_or_dm]
         else
@@ -106,8 +109,7 @@ module Reports
     end
 
     memoize def daily_registrations_breakdown
-      records = Reports::FacilityDailyFollowUpAndRegistration.for_region(region).where("visit_date >= ?", DAYS_AGO.days.ago.to_date)
-      records.each_with_object({}) do |record, hsh|
+      @daily_facility_data.each_with_object({}) do |record, hsh|
         hsh[record.period] = {
           hypertension: {
             all: record[:daily_registrations_htn_only],
@@ -132,8 +134,7 @@ module Reports
     end
 
     memoize def daily_follow_ups_breakdown
-      records = Reports::FacilityDailyFollowUpAndRegistration.for_region(region).where("visit_date >= ?", DAYS_AGO.days.ago.to_date)
-      records.each_with_object({}) do |record, hsh|
+      @daily_facility_data.each_with_object({}) do |record, hsh|
         hsh[record.period] = {
           hypertension: {
             all: record[:daily_follow_ups_htn_only],

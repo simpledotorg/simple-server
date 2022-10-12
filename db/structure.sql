@@ -4930,24 +4930,10 @@ CREATE UNIQUE INDEX cphc_facility_mappings_unique_cphc_record ON public.cphc_fac
 
 
 --
--- Name: fd_far_facility_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX fd_far_facility_id ON public.reporting_facility_daily_follow_ups_and_registrations USING btree (facility_id);
-
-
---
 -- Name: fd_far_facility_id_visit_date; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX fd_far_facility_id_visit_date ON public.reporting_facility_daily_follow_ups_and_registrations USING btree (facility_id, visit_date);
-
-
---
--- Name: fd_far_visit_date; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX fd_far_visit_date ON public.reporting_facility_daily_follow_ups_and_registrations USING btree (visit_date);
 
 
 --
@@ -5182,6 +5168,20 @@ CREATE INDEX index_bp_months_patient_recorded_at ON public.latest_blood_pressure
 
 
 --
+-- Name: index_bsnl_delivery_details_deleted_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_bsnl_delivery_details_deleted_at ON public.bsnl_delivery_details USING btree (deleted_at);
+
+
+--
+-- Name: index_bsnl_delivery_details_message_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_bsnl_delivery_details_message_id ON public.bsnl_delivery_details USING btree (message_id);
+
+
+--
 -- Name: index_call_results_deleted_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -5256,6 +5256,13 @@ CREATE INDEX index_deduplication_logs_on_user_id ON public.deduplication_logs US
 --
 
 CREATE INDEX index_device_created_at_on_appts ON public.appointments USING btree (device_created_at);
+
+
+--
+-- Name: index_df_facility_region_id_visit_date; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_df_facility_region_id_visit_date ON public.reporting_facility_daily_follow_ups_and_registrations USING btree (facility_region_id, visit_date);
 
 
 --
@@ -6481,6 +6488,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20221003084709'),
 ('20221004092107'),
 ('20221010104304'),
-('20221011124316');
+('20221011124316'),
+('20221011064211'),
+('20221011071921');
 
 
