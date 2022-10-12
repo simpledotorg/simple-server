@@ -93,7 +93,6 @@ class Admin::CphcMigrationController < AdminController
     authorize { current_admin.power_user? }
 
     facility = Facility.find_by!(slug: params.require(:facility_slug))
-    binding.pry
     facility.cphc_facility_mappings.presence.map { |mapping|
       mapping.auth_token = params[:user_authorization]
       mapping.cphc_user_details = {
