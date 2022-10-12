@@ -6,7 +6,4 @@ set -e
 # Mainly for cron jobs.
 env >> /etc/environment
 
-# Test entrypoint script
-echo "Running entrypoint script..." > /var/tmp/entrypoint.log
-
 exec "$@"
