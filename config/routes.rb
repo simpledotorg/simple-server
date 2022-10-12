@@ -266,11 +266,14 @@ Rails.application.routes.draw do
     resources :error_traces, only: [:index, :create]
 
     authenticate :email_authentication, ->(a) { a.user.power_user? } do
-      get "cphc_migration", to: "cphc_migration#index", as: "cphc_migration"
-      post "update_cphc_mapping/:facility_id", to: "cphc_migration#update_cphc_mapping", as: "update_cphc_mapping"
-      post "migrate_to_cphc/facility/:facility_id", to: "cphc_migration#migrate_to_cphc", as: "migrate_facility_to_cphc"
-      post "migrate_to_cphc/facility_group/:facility_group_id", to: "cphc_migration#migrate_to_cphc", as: "migrate_facility_group_to_cphc"
-      post "migrate_to_cphc/patient/:patient_id", to: "cphc_migration#migrate_to_cphc", as: "migrate_patient_to_cphc"
+      scope :cphc_migration do
+        get "/", to: "cphc_migration#index", as: "cphc_migration"
+        get "district/:district_slug", to: "cphc_migration#district", as: "cphc_migration_district"
+        post "facility/:facility_slug/update_mapping", to: "cphc_migration#update_cphc_mapping", as: "cphc_migration_update_facility_mapping"
+        post "migrate/facility/:facility_slug", to: "cphc_migration#migrate_to_cphc", as: "cphc_migration_migrate_facility"
+        post "migrate/district/:district_slug", to: "cphc_migration#migrate_to_cphc", as: "cphc_migration_migrate_district"
+        post "migrate/patient/:patient_id", to: "cphc_migration#migrate_to_cphc", as: "cphc_migration_migrate_patient"
+      end
     end
   end
 

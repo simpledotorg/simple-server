@@ -8,54 +8,25 @@ class Admin::CphcMigrationController < AdminController
   def index
     authorize { current_admin.power_user? }
 
-    cphc_district_names = CphcFacilityMapping
-      .all
-      .distinct(:cphc_district_name)
-      .map { |n| n.cphc_district_name.strip }
+    facility_mappings = CphcFacilityMapping.all.select(:facility_id, :district_name)
+    mapped_facilities = Facility.where(id: facility_mappings.pluck(:facility_id).uniq)
+    facility_group_ids = mapped_facilities.pluck(:facility_group_id).uniq
 
-    migrating_facility_groups = current_admin
-      .accessible_facility_groups(:manage)
-      .where(name: cphc_district_names)
-
-    accessible_facilities = current_admin
-      .accessible_facilities(:manage)
-      .where(facility_group: migrating_facility_groups)
-
-    facility_groups = if params[:district_slugs]
-      migrating_facility_groups.where(slug: params[:district_slugs])
-    else
-      migrating_facility_groups
-    end
-
-    facilities = if searching?
-      accessible_facilities.search_by_name(search_query)
-    elsif params[:unlinked_facilities]
-      accessible_facilities
-        .where(facility_group: facility_groups)
-        .left_outer_joins(:cphc_facility_mappings)
-        .where(cphc_facility_mappings: {facility_id: nil})
-        .distinct
-    elsif params[:error_facilities]
-      facility_ids = accessible_facilities
-        .where(facility_group: facility_groups)
-        .joins("inner join cphc_migration_error_logs on cphc_migration_error_logs.facility_id = facilities.id")
-        .joins("left outer join cphc_migration_audit_logs on cphc_migration_audit_logs.cphc_migratable_id = cphc_migration_error_logs.cphc_migratable_id")
-        .where("cphc_migration_audit_logs.id is null")
-        .distinct(:facility_id)
-
-      accessible_facilities.where(id: facility_ids)
-    else
-      accessible_facilities
-    end
-    facility_groups = FacilityGroup.where(facilities: facilities)
-
+    facility_groups = current_admin.accessible_facility_groups(:manage)
     @organizations = Organization.where(facility_groups: facility_groups)
     @facility_groups = facility_groups.group_by(&:organization)
-    @facilities = facilities.group_by(&:facility_group)
 
-    @unmapped_cphc_facilities = CphcFacilityMapping.where(facility: nil)
-    set_cphc_mappings(facilities)
-    set_facility_results(facilities)
+    @districts_with_mappings = FacilityGroup
+      .where(id: facility_group_ids)
+      .group_by(&:organization)
+
+    @districts_without_mappings = FacilityGroup
+      .where
+      .not(id: facility_group_ids)
+      .group_by(&:organization)
+  end
+
+  def district
   end
 
   def update_cphc_mapping
