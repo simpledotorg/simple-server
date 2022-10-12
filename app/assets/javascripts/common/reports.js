@@ -868,6 +868,8 @@ Reports = function (withLtfu) {
     };
     controlledGraphConfig.options.tooltips = {
       enabled: false,
+      mode: "index",
+      intersect: false,
       custom: (tooltip) => {
         let hoveredDatapoint = tooltip.dataPoints;
         if (hoveredDatapoint)
@@ -989,6 +991,8 @@ Reports = function (withLtfu) {
     };
     uncontrolledGraphConfig.options.tooltips = {
       enabled: false,
+      mode: "index",
+      intersect: false,
       custom: (tooltip) => {
         let hoveredDatapoint = tooltip.dataPoints;
         if (hoveredDatapoint)
@@ -1115,6 +1119,8 @@ Reports = function (withLtfu) {
     };
     missedVisitsConfig.options.tooltips = {
       enabled: false,
+      mode: "index",
+      intersect: false,
       custom: (tooltip) => {
         let hoveredDatapoint = tooltip.dataPoints;
         if (hoveredDatapoint)
@@ -1275,6 +1281,8 @@ Reports = function (withLtfu) {
     };
     cumulativeRegistrationsGraphConfig.options.tooltips = {
       enabled: false,
+      mode: "index",
+      intersect: false,
       custom: (tooltip) => {
         let hoveredDatapoint = tooltip.dataPoints;
         if (hoveredDatapoint)
@@ -1434,9 +1442,12 @@ Reports = function (withLtfu) {
         },
       ],
     };
+    visitDetailsGraphConfig.options.hover.mode = "index"; // example only
     visitDetailsGraphConfig.options.tooltips = {
-      mode: "x",
       enabled: false,
+      mode: "index",
+      // mode: "x",
+      intersect: false,
       custom: (tooltip) => {
         let hoveredDatapoint = tooltip.dataPoints;
         if (hoveredDatapoint)
@@ -1629,6 +1640,10 @@ Reports = function (withLtfu) {
         },
         legend: {
           display: false,
+        },
+        hover: {
+          mode: "index",
+          intersect: false,
         },
       },
     };
