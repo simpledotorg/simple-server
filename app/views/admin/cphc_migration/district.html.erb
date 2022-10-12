@@ -126,7 +126,7 @@
           <% first_mapping = mappings.first %>
           <div class="row card-row mt-24px">
             <div class="col-md-7">
-              <a  href="#<%= facility.slug %>"
+              <a href="#<%= facility.slug %>"
                 data-toggle="collapse"
                 role="button"
                 aria-expanded="false"
@@ -135,14 +135,15 @@
                 <%= facility.name %>
               </a>
 
-              <%= bootstrap_form_with url: admin_cphc_migration_update_facility_credentials_path(facility_slug: facility.slug), local: true do |form| %>
-                <%= form.text_field :user_id, id: :user_id, required: true, value: first_mapping.cphc_user_details["user_id"], autocomplete: "off"%>
-                <%= form.text_field :facility_type_id, id: :facility_type_id, required: true, value: first_mapping.cphc_user_details["facility_type_id"], autocomplete: "off"%>
-                <%= form.text_field :state_code, id: :state_code, required: true, value: first_mapping.cphc_user_details["state_code"], autocomplete: "off"%>
-                <%= form.text_field :user_authorization, id: :state_code, required: true, value: first_mapping.auth_token, autocomplete: "off"%>
-                <%= form.submit "Add user credentials", class: "btn btn-sm btn-outline-primary" %>
-              <% end %>
-
+              <div id="<%= facility.slug %>-credentials" class="collapse">
+                <%= bootstrap_form_with url: admin_cphc_migration_update_facility_credentials_path(facility_slug: facility.slug), local: true do |form| %>
+                  <%= form.text_field :user_id, id: :user_id, required: true, value: first_mapping&.cphc_user_details&.dig("user_id"), autocomplete: "off" %>
+                  <%= form.text_field :facility_type_id, id: :facility_type_id, required: true, value: first_mapping&.cphc_user_details&.dig("facility_type_id"), autocomplete: "off" %>
+                  <%= form.text_field :state_code, id: :state_code, required: true, value: first_mapping&.cphc_user_details&.dig("state_code"), autocomplete: "off" %>
+                  <%= form.text_field :user_authorization, id: :state_code, required: true, value: first_mapping&.auth_token, autocomplete: "off" %>
+                  <%= form.submit "Add user credentials", class: "btn btn-sm btn-outline-primary" %>
+                <% end %>
+              </div>
               <p class="c-blue mt-24px">
               <%= "District: #{mappings.first.cphc_district_name} | Taluka: #{mappings.first.cphc_taluka_name} | PHC Name: #{mappings.first.cphc_phc_name} | PHC ID: #{mappings.first.cphc_phc_id}" %>
               </p>
@@ -155,7 +156,7 @@
               </span>
             </div>
 
-            <div class="col-md-1">
+            <div class="col-md-5">
               <a  href="#<%= facility.slug %>"
                 class="btn btn-sm btn-outline-info"
                 data-toggle="collapse"
@@ -166,20 +167,18 @@
                 <i class="fas fa-sigma mr-1"></i>
                 Results
               </a>
-            </div>
 
-            <div class="col-md-1">
-              <%= render "action",
-                method: :post,
-                fa_icon: "link-slash",
-                btn_type: :secondary,
-                path: admin_cphc_migration_update_facility_mapping_path(
-                  facility_slug: facility.slug,
-                  unlink: true),
-                btn_contents: "Unlink" %>
-            </div>
+              <a  href="#<%= facility.slug %>"
+                  class="btn btn-sm btn-outline-info"
+                  data-toggle="collapse"
+                  role="button"
+                  aria-expanded="false"
+                  data-target="#<%= facility.slug %>-credentials"
+                  aria-controls="<%= facility.slug %>-credentials">
+                <i class="fas fa-key mr-1"></i>
+                Add credentials
+              </a>
 
-            <div class="col-md-1">
               <a  href="#<%= facility.slug %>-errors"
                   class="btn btn-sm btn-outline-info"
                   data-toggle="collapse"
@@ -190,17 +189,13 @@
                   <i class="fas fa-bomb mr-1"></i>
                   <%= facility_errors.count %> Errors
               </a>
-            </div>
 
             <% if @facility_results.dig(:migrated, ["Patient", facility.id]) == @facility_results.dig(:total, :patients, facility.id) %>
-              <div class="col-md-2">
                 <button class="btn btn-sm btn-outline-secondary">
                   <i class="fas fa-check mr-1"></i>
                   All patients migrated
                 </button>
-              </div>
             <% else %>
-              <div class="col-md-2">
                 <%= render "action",
                   method: :post,
                   fa_icon: "cloud-exclamation",
@@ -209,8 +204,18 @@
                   btn_contents: "Migrate Facility",
                   confirm: "Are you sure you want to migrate #{migratable_patients(facility).count} patients for facility #{@facility.name}?"
                 %>
-              </div>
             <% end %>
+
+
+          <%= render "action",
+                     method: :post,
+                     fa_icon: "link-slash",
+                     btn_type: :secondary,
+                     path: admin_cphc_migration_update_facility_mapping_path(
+                       facility_slug: facility.slug,
+                       unlink: true),
+                     btn_contents: "Unlink" %>
+            </div>
 
             <div class="col-md-12 collapse multi-collapse" id="<%= facility.slug %>">
               <table class="table mt-24px">
