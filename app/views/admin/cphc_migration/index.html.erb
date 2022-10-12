@@ -24,31 +24,29 @@
         </div>
 
         <div class="col-md-2">
-          <%= link_to admin_cphc_migration_path(
-            district_slug: facility_group.slug,
-            unlinked_facilities: true
-          ), class: "btn btn-sm btn-outline-info" do %>
-          <i class="fas fa-link-slash mr-1"></i>
-          <%= facility_group
-            .facilities.includes(:cphc_facility_mappings)
-            .filter{ |f| f.cphc_facility_mappings.empty? }.count %> Unlinked Facilities
-          <% end %>
+          <%= render "action",
+            method: :get,
+            active: false,
+            fa_icon: "link-slash",
+            btn_type: :info,
+            path: admin_cphc_migration_district_path(
+              district_slug: facility_group.slug,
+              unlinked_facilities: true
+            ),
+            btn_contents: "#{unmapped_facilities(facility_group).count} unlinked facilities" %>
         </div>
 
         <div class="col-md-2">
-          <%= link_to admin_cphc_migration_path(
-            district_slug: facility_group.slug,
-            error_facilities: true
-          ), class: "btn btn-sm btn-outline-danger" do %>
-          <i class="fas fa-bomb mr-1"></i>
-          <%= facility_group
-            .facilities
-            .joins(:cphc_migration_error_logs)
-            .joins("left outer join cphc_migration_audit_logs on cphc_migration_audit_logs.cphc_migratable_id = cphc_migration_error_logs.cphc_migratable_id")
-            .where("cphc_migration_audit_logs.id is null")
-            .distinct(:facility_id)
-            .count %> Facilities with errors
-          <% end %>
+          <%= render "action",
+            method: :get,
+            active: false,
+            fa_icon: "bomb",
+            btn_type: :danger,
+            path: admin_cphc_migration_district_path(
+              district_slug: facility_group.slug,
+              error_facilities: true
+            ),
+            btn_contents: "#{error_facilities(facility_group).count} facilities with errors" %>
         </div>
       </div>
       <div class="facility-group-contents collapse show" id="<%= facility_group.slug %>-contents">

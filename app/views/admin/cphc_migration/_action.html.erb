@@ -1,0 +1,22 @@
+<% icon_class = "fas fa-#{fa_icon} mr-1" %>
+<% if method == :get %>
+  <% if active && clear_path.present? %>
+    <%= link_to clear_path, class: "btn btn-sm btn-#{ btn_type }" do %>
+      <i class="<%= icon_class %>"></i>
+      <%= btn_contents %>
+    <% end %>
+  <% else %>
+    <%= link_to path, class: "btn btn-sm btn-outline-#{ btn_type }", confirm: local_assigns[:confirm] || nil do %>
+      <i class="<%= icon_class %>"></i>
+      <%= btn_contents %>
+    <% end %>
+  <% end %>
+<% elsif method == :post %>
+  <%= form_with url: path, local: true, method: :post do |form| %>
+    <%= form.button type: "submit", class: "btn btn-sm btn-outline-#{ btn_type }", data: { confirm: local_assigns[:confirm] || nil} do %>
+      <i class="<%= icon_class %>"></i>
+      <i class="fa fa-spinner fa-spin d-none"></i>
+      <%= btn_contents %>
+    <% end %>
+  <% end %>
+<% end %>

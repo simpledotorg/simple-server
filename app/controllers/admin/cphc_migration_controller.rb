@@ -4,6 +4,9 @@ class Admin::CphcMigrationController < AdminController
 
   before_action :render_only_in_india
   helper_method :get_migrated_records
+  helper_method :migratable_patients
+  helper_method :unmapped_facilities
+  helper_method :error_facilities
 
   def index
     authorize { current_admin.power_user? }
@@ -27,25 +30,82 @@ class Admin::CphcMigrationController < AdminController
   end
 
   def district
+    authorize { current_admin.power_user? }
+    @facility_group = FacilityGroup.find_by(slug: params[:district_slug])
+
+    @facilities = if searching?
+      @facility_group.facilities.search_by_name(search_query)
+    else
+      @facility_group.facilities
+    end
+
+    facilities = @facility_group.facilities
+    facility_mappings = CphcFacilityMapping.where(facility_id: facilities)
+
+    if params[:unlinked_facilities]
+      @facilities = facilities
+        .left_outer_joins(:cphc_facility_mappings)
+        .where(cphc_facility_mappings: {facility_id: nil})
+        .distinct
+    end
+
+    if params[:error_facilities]
+      facility_ids = facilities
+        .joins("inner join cphc_migration_error_logs on cphc_migration_error_logs.facility_id = facilities.id")
+        .joins("left outer join cphc_migration_audit_logs on cphc_migration_audit_logs.cphc_migratable_id = cphc_migration_error_logs.cphc_migratable_id")
+        .where("cphc_migration_audit_logs.id is null")
+        .distinct(:facility_id)
+
+      @facilities = facilities.where(id: facility_ids)
+    end
+
+    @total_unmapped_facilities_count = unmapped_facilities(@facility_group).count
+    @total_error_facilities_count = @facility_group
+      .facilities
+      .joins(:cphc_migration_error_logs)
+      .joins("left outer join cphc_migration_audit_logs on cphc_migration_audit_logs.cphc_migratable_id = cphc_migration_error_logs.cphc_migratable_id")
+      .where("cphc_migration_audit_logs.id is null")
+      .distinct(:facility_id)
+      .count
+
+    @mappings = facility_mappings.group_by(&:facility_id)
+
+    @unmapped_cphc_facilities = unmapped_facilities(@facility_group)
+
+    set_facility_results(@facilities)
   end
 
   def update_cphc_mapping
     authorize { current_admin.power_user? }
-    remove_mapping = params[:remove_mapping]
-    CphcFacilityMapping.where(cphc_phc_id: params[:cphc_phc_id])
-      .update_all(facility_id: remove_mapping ? nil : params[:facility_id])
+
+    facility = Facility.find_by!(slug: params.require(:facility_slug))
+    if params[:unlink]
+      facility.cphc_facility_mappings.update_all(facility_id: nil)
+    else
+      CphcFacilityMapping.where(cphc_phc_id: params[:cphc_phc_id])
+        .update_all(facility_id: facility.id)
+    end
+
     redirect_to request.referrer, notice: "CPHC Facility Mapping Added"
   end
 
   def migrate_to_cphc
     authorize { current_admin.power_user? }
-    set_migratable_patients
+    if params[:patient_id]
+      @migratable_patients = Patient.where(id: params[:patient_id])
+      @migratable_name = patient.full_name
+    else
+      region = Facility.find_by(slug: params[:facility_slug]) ||
+        FacilityGroup.find_by(slug: params[:district_slug])
+      @migratable_name = migratable_patients(region)
+      @migratable_name = region.name
+    end
 
-    @patients.each do |patient|
+    @migratable_patients.each do |patient|
       CphcMigrationJob.perform_at(OneOff::CphcEnrollment.next_migration_time(Time.now), patient.id)
     end
 
-    redirect_to admin_cphc_migration_path, notice: "Migration triggered for #{@migratable_name}"
+    redirect_to request.referrer, notice: "Migration triggered for #{@migratable_name}"
   end
 
   def get_migrated_records(klass, region)
@@ -65,28 +125,25 @@ class Admin::CphcMigrationController < AdminController
 
   private
 
-  def set_migratable_patients
-    region = if params[:facility_group_id].present?
-      FacilityGroup.find(params[:facility_group_id])
-    elsif params[:facility_id].present?
-      Facility.find(params[:facility_id])
-    end
-
-    if region.present?
-      @patients = region
-        .assigned_patients
-        .left_outer_joins(:cphc_migration_audit_log)
-        .where(cphc_migration_audit_logs: {id: nil})
-      @migratable_name = region.name
-    else
-      patient = Patient.find(params[:patient_id])
-      @patients = [patient]
-      @migratable_name = patient.full_name
-    end
+  def migratable_patients(region)
+    region.assigned_patients
+      .left_outer_joins(:cphc_migration_audit_log)
+      .where(cphc_migration_audit_logs: {id: nil})
   end
 
-  def set_cphc_mappings(facilities)
-    @mappings = CphcFacilityMapping.where(facility_id: facilities).group_by(&:facility_id)
+  def unmapped_facilities(facility_group)
+    facility_group.facilities
+      .left_outer_joins(:cphc_facility_mappings)
+      .where({cphc_facility_mappings: {id: nil}})
+  end
+
+  def error_facilities(facility_group)
+    facility_group
+      .facilities
+      .joins(:cphc_migration_error_logs)
+      .joins("left outer join cphc_migration_audit_logs on cphc_migration_audit_logs.cphc_migratable_id = cphc_migration_error_logs.cphc_migratable_id")
+      .where("cphc_migration_audit_logs.id is null")
+      .distinct(:facility_id)
   end
 
   def set_facility_results(facilities)
