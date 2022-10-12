@@ -2,7 +2,7 @@ class CphcFacilityMapping < ApplicationRecord
   include PgSearch::Model
 
   def auth_token
-    decrypt(encrypted_cphc_auth_token)
+    encrypted_cphc_auth_token && decrypt(encrypted_cphc_auth_token)
   end
 
   def auth_token=(unencrypted_auth_token)
@@ -43,10 +43,10 @@ class CphcFacilityMapping < ApplicationRecord
   }, using: {tsearch: {prefix: true}}
 
   def decrypt(value)
-    "DECRYPTED TOKEN"
+    ActiveSupport::MessageEncryptor.new(Rails.application.secrets.secret_key_base[0..31]).decrypt_and_verify(value)
   end
 
   def encrypt(value)
-    "ENCRYPTED TOKEN"
+    ActiveSupport::MessageEncryptor.new(Rails.application.secrets.secret_key_base[0..31]).encrypt_and_sign(value)
   end
 end
