@@ -609,6 +609,8 @@ DashboardReports = () => {
       };
 
       config.options.tooltips = {
+        mode: "x",
+        intersect: false,
         displayColors: false,
         xAlign: "center",
         yAlign: "top",
@@ -636,6 +638,7 @@ DashboardReports = () => {
           },
         },
       };
+      config.options.hover.mode = "x";
 
       return config;
     },
