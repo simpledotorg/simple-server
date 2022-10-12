@@ -90,7 +90,12 @@ DashboardReports = () => {
         legend: {
           display: false,
         },
+        hover: {
+          mode: "index",
+          intersect: false,
+        },
       },
+      plugins: [intersectDataVerticalLine],
     };
   };
 
