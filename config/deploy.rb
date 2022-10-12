@@ -21,14 +21,16 @@ set :db_local_clean, false
 set :db_remote_clean, true
 set :disallow_pushing, true
 
-set :sentry_api_token, ENV["SENTRY_AUTH_TOKEN"]
-set :sentry_organization, "resolve-to-save-lives"
-set :sentry_repo, "simpledotorg/simple-server"
-
 set :migration_command, "db:migrate:with_data"
 
-before "deploy:starting", "sentry:validate_config"
-after "deploy:published", "sentry:notice_deployment"
+if ENV["SENTRY_AUTH_TOKEN"]
+  set :sentry_api_token, ENV["SENTRY_AUTH_TOKEN"]
+  set :sentry_organization, "resolve-to-save-lives"
+  set :sentry_repo, "simpledotorg/simple-server"
+  before "deploy:starting", "sentry:validate_config"
+  after "deploy:published", "sentry:notice_deployment"
+end
+
 after "deploy:symlink:linked_dirs", "deploy:fix_bundler_plugin_path"
 
 append :linked_dirs, ".bundle"
