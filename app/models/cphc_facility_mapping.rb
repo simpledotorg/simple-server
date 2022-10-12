@@ -6,7 +6,7 @@ class CphcFacilityMapping < ApplicationRecord
   end
 
   def auth_token=(unencrypted_auth_token)
-    encrypted_cphc_auth_token = encrypt(unencrypted_auth_token)
+    self.encrypted_cphc_auth_token = encrypt(unencrypted_auth_token)
   end
 
   def cphc_user
@@ -41,4 +41,12 @@ class CphcFacilityMapping < ApplicationRecord
   pg_search_scope :search_by_village, against: {
     cphc_village_name: "A"
   }, using: {tsearch: {prefix: true}}
+
+  def decrypt(value)
+    "DECRYPTED TOKEN"
+  end
+
+  def encrypt(value)
+    "ENCRYPTED TOKEN"
+  end
 end

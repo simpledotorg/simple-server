@@ -100,9 +100,9 @@
   <% end %>
 <% end %>
 
-<h2 class="mb-16px">Districts without any mappings</h2>
+<h2 class="mt-5">Districts without any mappings</h2>
 <% @districts_without_mappings.each do |organization, facility_groups| %>
-  <h2 class="mt-5 mb-3"><span class="heading-label">Organization: <%= organization.name %></span></h2>
+  <h2 class="mb-3"><span class="heading-label">Organization: <%= organization.name %></span></h2>
 
   <% facility_groups.each do |facility_group| %>
     <div class="card">

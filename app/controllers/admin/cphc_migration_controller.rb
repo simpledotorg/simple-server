@@ -89,6 +89,24 @@ class Admin::CphcMigrationController < AdminController
     redirect_to request.referrer, notice: "CPHC Facility Mapping Added"
   end
 
+  def update_facility_credentials
+    authorize { current_admin.power_user? }
+
+    facility = Facility.find_by!(slug: params.require(:facility_slug))
+    binding.pry
+    facility.cphc_facility_mappings.presence.map { |mapping|
+      mapping.auth_token = params[:user_authorization]
+      mapping.cphc_user_details = {
+        user_id: params[:user_id],
+        facility_type_id: params[:facility_type_id],
+        state_code: params[:state_code]
+      }
+      mapping.save!
+    }
+
+    redirect_to request.referrer, notice: "CPHC Facility #{facility.name} credentials updated"
+  end
+
   def migrate_to_cphc
     authorize { current_admin.power_user? }
     if params[:patient_id]

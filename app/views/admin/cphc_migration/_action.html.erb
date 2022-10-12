@@ -1,7 +1,7 @@
 <% icon_class = "fas fa-#{fa_icon} mr-1" %>
 <% if method == :get %>
   <% if active && clear_path.present? %>
-    <%= link_to clear_path, class: "btn btn-sm btn-#{ btn_type }" do %>
+    <%= link_to clear_path, class: "btn btn-sm btn-outline-#{ btn_type }" do %>
       <i class="<%= icon_class %>"></i>
       <%= btn_contents %>
     <% end %>

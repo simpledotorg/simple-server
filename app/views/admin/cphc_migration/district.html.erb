@@ -123,6 +123,7 @@
         <% facility_errors = @facility_results.dig(:errors, facility.id) || CphcMigrationErrorLog.none %>
         <% mappings = @mappings[facility.id] || CphcFacilityMapping.none %>
         <% if mappings.present? %>
+          <% first_mapping = mappings.first %>
           <div class="row card-row mt-24px">
             <div class="col-md-7">
               <a  href="#<%= facility.slug %>"
@@ -133,6 +134,15 @@
                 aria-controls="<%= facility.slug %>">
                 <%= facility.name %>
               </a>
+
+              <%= bootstrap_form_with url: admin_cphc_migration_update_facility_credentials_path(facility_slug: facility.slug), local: true do |form| %>
+                <%= form.text_field :user_id, id: :user_id, required: true, value: first_mapping.cphc_user_details["user_id"], autocomplete: "off"%>
+                <%= form.text_field :facility_type_id, id: :facility_type_id, required: true, value: first_mapping.cphc_user_details["facility_type_id"], autocomplete: "off"%>
+                <%= form.text_field :state_code, id: :state_code, required: true, value: first_mapping.cphc_user_details["state_code"], autocomplete: "off"%>
+                <%= form.text_field :user_authorization, id: :state_code, required: true, value: first_mapping.auth_token, autocomplete: "off"%>
+                <%= form.submit "Add user credentials", class: "btn btn-sm btn-outline-primary" %>
+              <% end %>
+
               <p class="c-blue mt-24px">
               <%= "District: #{mappings.first.cphc_district_name} | Taluka: #{mappings.first.cphc_taluka_name} | PHC Name: #{mappings.first.cphc_phc_name} | PHC ID: #{mappings.first.cphc_phc_id}" %>
               </p>

@@ -270,6 +270,7 @@ Rails.application.routes.draw do
         get "/", to: "cphc_migration#index", as: "cphc_migration"
         get "district/:district_slug", to: "cphc_migration#district", as: "cphc_migration_district"
         post "facility/:facility_slug/update_mapping", to: "cphc_migration#update_cphc_mapping", as: "cphc_migration_update_facility_mapping"
+        post "facility/:facility_slug/update_facility_credentials", to: "cphc_migration#update_facility_credentials", as: "cphc_migration_update_facility_credentials"
         post "migrate/facility/:facility_slug", to: "cphc_migration#migrate_to_cphc", as: "cphc_migration_migrate_facility"
         post "migrate/district/:district_slug", to: "cphc_migration#migrate_to_cphc", as: "cphc_migration_migrate_district"
         post "migrate/patient/:patient_id", to: "cphc_migration#migrate_to_cphc", as: "cphc_migration_migrate_patient"
