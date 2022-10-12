@@ -1617,6 +1617,38 @@ Reports = function (withLtfu) {
     };
   };
 
+  const intersectDataVerticalLine = {
+    id: "intersectDataVerticalLine",
+    beforeDraw: (chart) => {
+      if (chart.tooltip._active && chart.tooltip._active.length) {
+        const ctx = chart.ctx;
+        ctx.save();
+        console.log(chart);
+        const activePoint = chart.tooltip._active[0];
+        console.log(activePoint);
+        const chartArea = chart.chartArea;
+        console.log(chartArea);
+        // vertical hover line - above "point" (line graph value at specific point)
+        ctx.beginPath();
+        ctx.moveTo(activePoint._model.x, chartArea.top);
+        ctx.lineTo(activePoint._model.x, activePoint._model.y);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "rgba(0,0,0, 0.1)";
+        ctx.stroke();
+        ctx.restore();
+        // vertical hover line - below "point" (line graph value at specific point)
+        ctx.beginPath();
+        ctx.moveTo(activePoint._model.x, activePoint._model.y);
+        ctx.lineTo(activePoint._model.x, chartArea.bottom);
+        ctx.lineWidth = 2;
+        // ctx.strokeStyle = "rgba(0,0,0, 0.1)";
+        ctx.stroke();
+
+        ctx.restore();
+      }
+    },
+  };
+
   this.createBaseGraphConfig = () => {
     return {
       type: "line",
@@ -1646,6 +1678,7 @@ Reports = function (withLtfu) {
           intersect: false,
         },
       },
+      plugins: [intersectDataVerticalLine],
     };
   };
 
