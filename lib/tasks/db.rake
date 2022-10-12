@@ -8,9 +8,9 @@ namespace :db do
   task refresh_matviews: :refresh_reporting_views
 
   desc "Refresh matviews for daily follow ups"
-  task refresh_daily_follow_ups: :environment do
-    RefreshReportingViews.refresh_daily_follow_ups
-    puts "Daily follow ups have been refreshed"
+  task refresh_daily_follow_ups_and_registrations: :environment do
+    RefreshReportingViews.refresh_daily_follow_ups_and_registrations
+    puts "Daily follow ups and registrations have been refreshed"
   end
 
   desc "Generate fake Patient data"

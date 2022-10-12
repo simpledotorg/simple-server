@@ -1,4 +1,4 @@
-class OneOff::CPHCEnrollment::HypertensionDiagnosisPayload
+class OneOff::CphcEnrollment::HypertensionDiagnosisPayload
   attr_reader :blood_pressure, :encounter_id
 
   def initialize(blood_pressure, encounter_id)

@@ -37,10 +37,10 @@ FOLLOW_UP_TIMES = [
 ].map { |t| local(t) }
 
 every :day, at: FOLLOW_UP_TIMES, roles: [:cron] do
-  rake "db:refresh_daily_follow_ups"
+  rake "db:refresh_daily_follow_ups_and_registrations"
 end
 
-every :day, at: local("2:00 pm"), roles: [:cron] do
+every :day, at: local("02:00 pm"), roles: [:cron] do
   if CountryConfig.current_country?("India") && SimpleServer.env.production?
     rake "bsnl:alert_on_low_balance"
   end
@@ -48,6 +48,10 @@ end
 
 every :day, at: local("05:30 pm"), roles: [:cron] do
   runner "Messaging::Bsnl::Sms.get_message_statuses"
+end
+
+every :day, at: local("05:30 pm"), roles: [:cron] do
+  runner "Messaging::AlphaSms::Sms.get_message_statuses"
 end
 
 every :day, at: local("11:00 pm").utc, roles: [:cron] do
@@ -92,7 +96,7 @@ every :day, at: local("02:30 am"), roles: [:cron] do
   runner "RecordCounterJob.perform_async"
 end
 
-every :day, at: local("04:00 am"), roles: [:cron] do
+every :day, at: local("02:30 am"), roles: [:cron] do
   runner "Reports::RegionCacheWarmer.call"
 end
 
@@ -102,7 +106,7 @@ every 1.month, at: local("04:00 am"), roles: [:cron] do
   end
 end
 
-every :day, at: local("04:00 am"), roles: [:cron] do
+every 1.month, at: local("04:15 am"), roles: [:cron] do
   if Flipper.enabled?(:maharashtra_dhis2_export)
     rake "dhis2:maharashtra_export"
   end

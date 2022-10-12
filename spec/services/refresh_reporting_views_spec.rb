@@ -62,13 +62,14 @@ RSpec.describe RefreshReportingViews do
     time = Time.current
     expect {
       Timecop.freeze(time) do
-        patient = create(:patient, recorded_at: 1.month.ago)
-        create(:blood_pressure, patient: patient, recorded_at: 2.days.ago)
-        create(:appointment, patient: patient, recorded_at: 1.day.ago)
+        facility = create(:facility)
+        patient = create(:patient, :diabetes, recorded_at: 1.month.ago, registration_facility: facility)
+        create(:blood_pressure, patient: patient, recorded_at: 2.days.ago, facility: facility)
+        create(:appointment, patient: patient, recorded_at: 2.day.ago, facility: facility)
 
-        RefreshReportingViews.call(views: ["Reports::DailyFollowUp"])
+        RefreshReportingViews.call(views: ["Reports::FacilityDailyFollowUpAndRegistration"])
       end
-    }.to change { Reports::DailyFollowUp.count }.by(2)
+    }.to change { Reports::FacilityDailyFollowUpAndRegistration.count }.to be > 0
     expect(Reports::PatientState.count).to eq(0)
   end
 end

@@ -1,6 +1,6 @@
 require "selenium-webdriver"
 
-class OneOff::CPHCEnrollment::AuthManager
+class OneOff::CphcEnrollment::AuthManager
   attr_reader :auth_token, :is_authorized
 
   CPHC_API_USER_ID = ENV["CPHC_API_USER_ID"]
@@ -35,7 +35,7 @@ class OneOff::CPHCEnrollment::AuthManager
 
   def user
     {user_id: CPHC_API_USER_ID,
-     facility_type_id: ENV["CPHC_FACILITY_TYPE_ID"],
+     facility_type_id: OneOff::CphcEnrollment::FACILITY_TYPE_ID["DH"],
      state_code: CPHC_USER_STATE_CODE,
      user_authorization: "Bearer #{auth_token}"}
   end
