@@ -540,7 +540,7 @@ DashboardReports = () => {
       });
 
       // This is a plugin and is expected to be loaded before creating this graph
-      config.plugins = [ChartDataLabels];
+      config.plugins = [ChartDataLabels, intersectDataVerticalLine];
       config.type = "bar";
       config.data = {
         labels: graphPeriods,
