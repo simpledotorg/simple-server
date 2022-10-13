@@ -1695,34 +1695,23 @@ const intersectDataVerticalLine = {
       ctx.save();
       const activePoint = chart.tooltip._active[0];
       const chartArea = chart.chartArea;
-      // vertical hover line - above FIRST "point" (line graph value at specific point)
+      // grey vertical hover line - full chart height
       ctx.beginPath();
       ctx.moveTo(activePoint._model.x, chartArea.top);
-      ctx.lineTo(activePoint._model.x, activePoint._model.y);
+      ctx.lineTo(activePoint._model.x, chartArea.bottom);
       ctx.lineWidth = 2;
       ctx.strokeStyle = "rgba(0,0,0, 0.1)";
       ctx.stroke();
       ctx.restore();
-      // vertical hover line - below FIRST "point" (line graph value at specific point)
-      ctx.beginPath();
-      ctx.moveTo(activePoint._model.x, activePoint._model.y);
-      ctx.lineTo(activePoint._model.x, chartArea.bottom);
-      ctx.lineWidth = 2;
-      ctx.stroke();
-      ctx.restore();
-      // any extra points after the highest point - hidden behind datapoints (including bars in bar charts)
-      // if (chart.tooltip._active && chart.tooltip._active.length > 1) {
-      //   for (let index = 1; index < chart.tooltip._active.length; index++) {
-      //     const activePointLoop = chart.tooltip._active[index];
-      //     ctx.beginPath();
-      //     ctx.moveTo(activePointLoop._model.x, activePointLoop._model.y + 6);
-      //     ctx.lineTo(activePointLoop._model.x, chartArea.bottom);
-      //     ctx.lineWidth = 2;
-      //     ctx.strokeStyle = activePointLoop._model.borderColor;
-      //     ctx.stroke();
-      //     ctx.restore();
-      //   }
-      // }
+      // colored vertical hover line - ['node' point to chart bottom] - only for line graphs (graphs with 1 data point)
+      if (chart.tooltip._active.length === 1) {
+        ctx.beginPath();
+        ctx.moveTo(activePoint._model.x, activePoint._model.y);
+        ctx.lineTo(activePoint._model.x, chartArea.bottom);
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.restore();
+      }
     }
   },
 };
