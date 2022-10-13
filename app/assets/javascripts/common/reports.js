@@ -1452,11 +1452,10 @@ Reports = function (withLtfu) {
         },
       ],
     };
-    visitDetailsGraphConfig.options.hover.mode = "index"; // example only
+
     visitDetailsGraphConfig.options.tooltips = {
       enabled: false,
       mode: "index",
-      // mode: "x",
       intersect: false,
       custom: (tooltip) => {
         let hoveredDatapoint = tooltip.dataPoints;
