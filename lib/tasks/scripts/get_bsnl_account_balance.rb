@@ -14,6 +14,11 @@ class GetBsnlAccountBalance
 
   def print
     puts recharge_details.map { |r| "#{r["SMS_Balance_Count"]} segments valid until #{r["Balance_Expiry_Time"].to_date}" }
+    begin
+      alert
+    rescue Messaging::Bsnl::BalanceError => e
+      puts e.message
+    end
   end
 
   def alert
