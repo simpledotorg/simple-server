@@ -19,7 +19,7 @@ jobs:
           image: simpledotorg/server
           tags: $GITHUB_SHA, latest
           registry: docker.io
-          dockerfile: Prod.Dockerfile
+          dockerfile: Prod-passenger.Dockerfile
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
   deploy_simple_server:
