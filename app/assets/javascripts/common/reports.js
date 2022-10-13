@@ -745,7 +745,9 @@ DashboardReports = () => {
 
         if(!graphConfig.options.tooltips) {
             graphConfig.options.tooltips = {
-                enabled: false,
+          enabled: false,
+          mode: "index",
+          intersect: false,
                 custom: (tooltip) => {
                     let hoveredDatapoint = tooltip.dataPoints;
                     if (hoveredDatapoint)
