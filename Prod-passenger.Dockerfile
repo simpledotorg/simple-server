@@ -51,5 +51,6 @@ RUN gem install bundler -v $BUNDLE_VERSION
 RUN bundle install
 RUN yarn install
 RUN set -a && source .env.development && set +a && bundle exec rake assets:precompile
+RUN chown -R app:app /home/app
 
 ENTRYPOINT ["/home/app/bin/docker-entrypoint"]
