@@ -887,6 +887,7 @@ Reports = function (withLtfu) {
         else populateControlledGraphDefault();
       },
     };
+    controlledGraphConfig.plugins.push(targetLine(30));
 
     const populateControlledGraph = (period) => {
       const cardNode = document.getElementById("bp-controlled");
@@ -1010,6 +1011,7 @@ Reports = function (withLtfu) {
         else populateUncontrolledGraphDefault();
       },
     };
+    uncontrolledGraphConfig.plugins.push(targetLine(10));
 
     const populateUncontrolledGraph = (period) => {
       const cardNode = document.getElementById("bp-uncontrolled");
@@ -1716,3 +1718,29 @@ const intersectDataVerticalLine = {
     }
   },
 };
+
+// target line plugin
+function targetLine(target, color) {
+  return {
+    id: "targetLine",
+    beforeDraw: (chart) => {
+      const ctx = chart.ctx;
+      console.log(chart);
+      ctx.save();
+      const chartArea = chart.chartArea;
+      const chartTop = chartArea.top;
+      const chartBottom = chartArea.bottom;
+      const chartHeight = chartBottom - chartTop;
+      const targetLineYPosition = chartBottom - (chartHeight / 100) * target;
+      // grey vertical hover line - full chart height
+      ctx.beginPath();
+      ctx.moveTo(chartArea.left, targetLineYPosition);
+      ctx.lineTo(chartArea.right, targetLineYPosition);
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = chart.config.data.datasets[0].borderColor;
+      ctx.setLineDash([5, 4]);
+      ctx.stroke();
+      ctx.restore();
+    },
+  };
+}
