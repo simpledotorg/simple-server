@@ -12,7 +12,7 @@
     <% end %>
   <% end %>
 <% elsif method == :post %>
-  <%= form_with url: path, local: true, method: :post do |form| %>
+  <%= form_with url: path, local: true, method: :post, html: {class: "d-inline"} do |form| %>
     <%= form.button type: "submit", class: "btn btn-sm btn-outline-#{ btn_type }", data: { confirm: local_assigns[:confirm] || nil} do %>
       <i class="<%= icon_class %>"></i>
       <i class="fa fa-spinner fa-spin d-none"></i>
