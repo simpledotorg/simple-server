@@ -114,7 +114,7 @@ class Admin::CphcMigrationController < AdminController
     else
       region = Facility.find_by(slug: params[:facility_slug]) ||
         FacilityGroup.find_by(slug: params[:district_slug])
-      @migratable_name = migratable_patients(region)
+      @migratable_patients = migratable_patients(region)
       @migratable_name = region.name
     end
 

@@ -199,9 +199,9 @@
                   method: :post,
                   fa_icon: "cloud-exclamation",
                   btn_type: :danger,
-                  path: admin_cphc_migration_migrate_facility_path(facility_slug: @facility.slug),
+                  path: admin_cphc_migration_migrate_facility_path(facility_slug: facility.slug),
                   btn_contents: "Migrate Facility",
-                  confirm: "Are you sure you want to migrate #{migratable_patients(facility).count} patients for facility #{@facility.name}?"
+                  confirm: "Are you sure you want to migrate #{migratable_patients(facility).count} patients for facility #{facility.name}?"
                 %>
             <% end %>
 
