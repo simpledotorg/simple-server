@@ -10,7 +10,11 @@ class CphcFacilityMapping < ApplicationRecord
   end
 
   def cphc_user
-    cphc_user_details.merge(user_authorization: auth_token).with_indifferent_access
+    if auth_token.present?
+      cphc_user_details&.merge(user_authorization: auth_token)&.with_indifferent_access
+    else
+      OneOff::CphcEnrollment::AuthManager.new(auth_token: ENV["CPHC_AUTH_TOKEN"]).user
+    end
   end
 
   validates_uniqueness_of :cphc_village_id, scope: [
