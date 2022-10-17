@@ -1,5 +1,5 @@
 <div data-element="monthly_<%= @dimension.indicator %>_table" data-dimension-field="<%= @dimension.field %>"
-     class="<% if @dimension.field == 'monthly_registrations_all' || @dimension.field == 'monthly_follow_ups_all' %>
+     class="<% if @dimension.field == 'monthly_registrations_htn_or_dm' || @dimension.field == 'monthly_follow_ups_htn_or_dm' %>
                 d-block
             <% else %>
                 d-none

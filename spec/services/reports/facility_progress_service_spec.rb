@@ -8,7 +8,7 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
   let(:one_day_ago) { 1.day.ago }
   let(:two_minutes_ago) { 2.minutes.ago }
 
-  it "returns all dimension combinations" do
+  it "returns all dimension combinations for progress tab v0" do
     service = described_class.new(facility, Period.current)
     dimensions = service.dimension_combinations_for(:registrations)
     # (2 diagnosis options) * (4 gender options) + 1 special case of all / all
@@ -16,6 +16,18 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
     expect(dimensions.all? { |d| d.indicator == :registrations }).to be true
     expect(dimensions.count { |d| d.diagnosis == :diabetes }).to eq(4)
     expect(dimensions.count { |d| d.diagnosis == :hypertension }).to eq(4)
+    expect(dimensions.count { |d| d.diagnosis == :all }).to eq(1)
+  end
+
+  it "returns all dimension combinations for progress tab v1" do
+    service = described_class.new(facility, Period.current)
+    dimensions = service.dimension_combinations_for_v1(:registrations)
+    # (3 diagnosis options) * (4 gender options) + 1 special case of all / all
+    expect(dimensions.size).to eq(13)
+    expect(dimensions.all? { |d| d.indicator == :registrations }).to be true
+    expect(dimensions.count { |d| d.diagnosis == :diabetes }).to eq(4)
+    expect(dimensions.count { |d| d.diagnosis == :hypertension }).to eq(4)
+    expect(dimensions.count { |d| d.diagnosis == :hypertension_and_diabetes }).to eq(4)
     expect(dimensions.count { |d| d.diagnosis == :all }).to eq(1)
   end
 

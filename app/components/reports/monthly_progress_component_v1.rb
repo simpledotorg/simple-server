@@ -43,13 +43,13 @@ class Reports::MonthlyProgressComponentV1 < ViewComponent::Base
   end
 
   def total_count
-    @total_counts.attributes[dimension.field]
+    @total_counts.attributes[dimension.field_v1]
   end
 
   def monthly_count(period)
     counts = monthly_counts[period]
     if counts
-      counts.attributes[dimension.field]
+      counts.attributes[dimension.field_v1]
     else
       0
     end

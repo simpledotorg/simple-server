@@ -58,11 +58,11 @@ module Reports
     end
 
     def total_counts
-      @total_counts ||= Reports::FacilityStateDimension.totals(facility)
+      @total_counts ||= Reports::FacilityMonthlyFollowUpAndRegistration.totals(facility)
     end
 
     def monthly_counts
-      @monthly_counts ||= repository.facility_progress[facility.region.slug]
+      @monthly_counts ||= repository.monthly_follow_ups_and_registrations[facility.region.slug]
     end
 
     def repository
@@ -78,6 +78,17 @@ module Reports
     def dimension_combinations_for(indicator)
       dimensions = [create_dimension(indicator, diagnosis: :all, gender: :all)] # special case first
       combinations = [indicator].product([:diabetes, :hypertension]).product([:all, :male, :female, :transgender])
+      combinations.each do |c|
+        indicator, diagnosis = *c.first
+        gender = c.last
+        dimensions << create_dimension(indicator, diagnosis: diagnosis, gender: gender)
+      end
+      dimensions
+    end
+
+    def dimension_combinations_for_v1(indicator)
+      dimensions = [create_dimension(indicator, diagnosis: :all, gender: :all)] # special case first
+      combinations = [indicator].product([:hypertension_and_diabetes, :diabetes, :hypertension]).product([:all, :male, :female, :transgender])
       combinations.each do |c|
         indicator, diagnosis = *c.first
         gender = c.last

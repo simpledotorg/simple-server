@@ -3210,10 +3210,10 @@ COMMENT ON COLUMN public.reporting_patient_states.titrated IS 'True, if the pati
 
 
 --
--- Name: reporting_facility_state_dimensions; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+-- Name: reporting_facility_monthly_follow_ups_and_registrations; Type: MATERIALIZED VIEW; Schema: public; Owner: -
 --
 
-CREATE MATERIALIZED VIEW public.reporting_facility_state_dimensions AS
+CREATE MATERIALIZED VIEW public.reporting_facility_monthly_follow_ups_and_registrations AS
  WITH monthly_registration_patient_states AS (
          SELECT reporting_patient_states.registration_facility_id AS facility_id,
             reporting_patient_states.month_date,
@@ -3233,7 +3233,20 @@ CREATE MATERIALIZED VIEW public.reporting_facility_state_dimensions AS
             count(*) FILTER (WHERE (monthly_registration_patient_states.diabetes = 'yes'::text)) AS monthly_registrations_dm_all,
             count(*) FILTER (WHERE ((monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'female'::text))) AS monthly_registrations_dm_female,
             count(*) FILTER (WHERE ((monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'male'::text))) AS monthly_registrations_dm_male,
-            count(*) FILTER (WHERE ((monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'transgender'::text))) AS monthly_registrations_dm_transgender
+            count(*) FILTER (WHERE ((monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'transgender'::text))) AS monthly_registrations_dm_transgender,
+            count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) OR (monthly_registration_patient_states.diabetes = 'yes'::text))) AS monthly_registrations_htn_or_dm,
+            count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND (monthly_registration_patient_states.diabetes = 'yes'::text))) AS monthly_registrations_htn_and_dm,
+            count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND (monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'female'::text))) AS monthly_registrations_htn_and_dm_female,
+            count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND (monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'male'::text))) AS monthly_registrations_htn_and_dm_male,
+            count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND (monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'transgender'::text))) AS monthly_registrations_htn_and_dm_transgender,
+            (count(*) FILTER (WHERE (monthly_registration_patient_states.hypertension = 'yes'::text)) - count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND (monthly_registration_patient_states.diabetes = 'yes'::text)))) AS monthly_registrations_htn_only,
+            (count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'female'::text))) - count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND (monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'female'::text)))) AS monthly_registrations_htn_only_female,
+            (count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'male'::text))) - count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND (monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'male'::text)))) AS monthly_registrations_htn_only_male,
+            (count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'transgender'::text))) - count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND (monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'transgender'::text)))) AS monthly_registrations_htn_only_transgender,
+            (count(*) FILTER (WHERE (monthly_registration_patient_states.diabetes = 'yes'::text)) - count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND (monthly_registration_patient_states.diabetes = 'yes'::text)))) AS monthly_registrations_dm_only,
+            (count(*) FILTER (WHERE ((monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'female'::text))) - count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND (monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'female'::text)))) AS monthly_registrations_dm_only_female,
+            (count(*) FILTER (WHERE ((monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'male'::text))) - count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND (monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'male'::text)))) AS monthly_registrations_dm_only_male,
+            (count(*) FILTER (WHERE ((monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'transgender'::text))) - count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND (monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'transgender'::text)))) AS monthly_registrations_dm_only_transgender
            FROM monthly_registration_patient_states
           GROUP BY monthly_registration_patient_states.facility_id, monthly_registration_patient_states.month_date
         ), follow_ups AS (
@@ -3247,7 +3260,20 @@ CREATE MATERIALIZED VIEW public.reporting_facility_state_dimensions AS
             count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE (reporting_patient_follow_ups.diabetes = 'yes'::text)) AS monthly_follow_ups_dm_all,
             count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'female'::public.gender_enum))) AS monthly_follow_ups_dm_female,
             count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'male'::public.gender_enum))) AS monthly_follow_ups_dm_male,
-            count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'transgender'::public.gender_enum))) AS monthly_follow_ups_dm_transgender
+            count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'transgender'::public.gender_enum))) AS monthly_follow_ups_dm_transgender,
+            count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) OR (reporting_patient_follow_ups.diabetes = 'yes'::text))) AS monthly_follow_ups_htn_or_dm,
+            count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.diabetes = 'yes'::text))) AS monthly_follow_ups_htn_and_dm,
+            count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'female'::public.gender_enum))) AS monthly_follow_ups_htn_and_dm_female,
+            count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'male'::public.gender_enum))) AS monthly_follow_ups_htn_and_dm_male,
+            count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'transgender'::public.gender_enum))) AS monthly_follow_ups_htn_and_dm_transgender,
+            (count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE (reporting_patient_follow_ups.hypertension = 'yes'::text)) - count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.diabetes = 'yes'::text)))) AS monthly_follow_ups_htn_only,
+            (count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'female'::public.gender_enum))) - count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'female'::public.gender_enum)))) AS monthly_follow_ups_htn_only_female,
+            (count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'male'::public.gender_enum))) - count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'male'::public.gender_enum)))) AS monthly_follow_ups_htn_only_male,
+            (count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'transgender'::public.gender_enum))) - count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'transgender'::public.gender_enum)))) AS monthly_follow_ups_htn_only_transgender,
+            (count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE (reporting_patient_follow_ups.diabetes = 'yes'::text)) - count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.diabetes = 'yes'::text)))) AS monthly_follow_ups_dm_only,
+            (count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'female'::public.gender_enum))) - count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'female'::public.gender_enum)))) AS monthly_follow_ups_dm_only_female,
+            (count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'male'::public.gender_enum))) - count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'male'::public.gender_enum)))) AS monthly_follow_ups_dm_only_male,
+            (count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'transgender'::public.gender_enum))) - count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'transgender'::public.gender_enum)))) AS monthly_follow_ups_dm_only_transgender
            FROM public.reporting_patient_follow_ups
           GROUP BY reporting_patient_follow_ups.facility_id, reporting_patient_follow_ups.month_date
         )
@@ -3258,24 +3284,50 @@ CREATE MATERIALIZED VIEW public.reporting_facility_state_dimensions AS
     rf.district_region_id,
     rf.state_region_id,
     cal.month_date,
-    registered_patients.monthly_registrations_all,
-    registered_patients.monthly_registrations_htn_all,
-    registered_patients.monthly_registrations_htn_male,
-    registered_patients.monthly_registrations_htn_female,
-    registered_patients.monthly_registrations_htn_transgender,
-    registered_patients.monthly_registrations_dm_all,
-    registered_patients.monthly_registrations_dm_male,
-    registered_patients.monthly_registrations_dm_female,
-    registered_patients.monthly_registrations_dm_transgender,
-    follow_ups.monthly_follow_ups_all,
-    follow_ups.monthly_follow_ups_htn_all,
-    follow_ups.monthly_follow_ups_htn_female,
-    follow_ups.monthly_follow_ups_htn_male,
-    follow_ups.monthly_follow_ups_htn_transgender,
-    follow_ups.monthly_follow_ups_dm_all,
-    follow_ups.monthly_follow_ups_dm_female,
-    follow_ups.monthly_follow_ups_dm_male,
-    follow_ups.monthly_follow_ups_dm_transgender
+    COALESCE(registered_patients.monthly_registrations_all, (0)::bigint) AS monthly_registrations_all,
+    COALESCE(registered_patients.monthly_registrations_htn_all, (0)::bigint) AS monthly_registrations_htn_all,
+    COALESCE(registered_patients.monthly_registrations_htn_male, (0)::bigint) AS monthly_registrations_htn_male,
+    COALESCE(registered_patients.monthly_registrations_htn_female, (0)::bigint) AS monthly_registrations_htn_female,
+    COALESCE(registered_patients.monthly_registrations_htn_transgender, (0)::bigint) AS monthly_registrations_htn_transgender,
+    COALESCE(registered_patients.monthly_registrations_dm_all, (0)::bigint) AS monthly_registrations_dm_all,
+    COALESCE(registered_patients.monthly_registrations_dm_male, (0)::bigint) AS monthly_registrations_dm_male,
+    COALESCE(registered_patients.monthly_registrations_dm_female, (0)::bigint) AS monthly_registrations_dm_female,
+    COALESCE(registered_patients.monthly_registrations_dm_transgender, (0)::bigint) AS monthly_registrations_dm_transgender,
+    COALESCE(follow_ups.monthly_follow_ups_all, (0)::bigint) AS monthly_follow_ups_all,
+    COALESCE(follow_ups.monthly_follow_ups_htn_all, (0)::bigint) AS monthly_follow_ups_htn_all,
+    COALESCE(follow_ups.monthly_follow_ups_htn_female, (0)::bigint) AS monthly_follow_ups_htn_female,
+    COALESCE(follow_ups.monthly_follow_ups_htn_male, (0)::bigint) AS monthly_follow_ups_htn_male,
+    COALESCE(follow_ups.monthly_follow_ups_htn_transgender, (0)::bigint) AS monthly_follow_ups_htn_transgender,
+    COALESCE(follow_ups.monthly_follow_ups_dm_all, (0)::bigint) AS monthly_follow_ups_dm_all,
+    COALESCE(follow_ups.monthly_follow_ups_dm_female, (0)::bigint) AS monthly_follow_ups_dm_female,
+    COALESCE(follow_ups.monthly_follow_ups_dm_male, (0)::bigint) AS monthly_follow_ups_dm_male,
+    COALESCE(follow_ups.monthly_follow_ups_dm_transgender, (0)::bigint) AS monthly_follow_ups_dm_transgender,
+    COALESCE(registered_patients.monthly_registrations_htn_or_dm, (0)::bigint) AS monthly_registrations_htn_or_dm,
+    COALESCE(registered_patients.monthly_registrations_htn_only, (0)::bigint) AS monthly_registrations_htn_only,
+    COALESCE(registered_patients.monthly_registrations_htn_only_male, (0)::bigint) AS monthly_registrations_htn_only_male,
+    COALESCE(registered_patients.monthly_registrations_htn_only_female, (0)::bigint) AS monthly_registrations_htn_only_female,
+    COALESCE(registered_patients.monthly_registrations_htn_only_transgender, (0)::bigint) AS monthly_registrations_htn_only_transgender,
+    COALESCE(registered_patients.monthly_registrations_dm_only, (0)::bigint) AS monthly_registrations_dm_only,
+    COALESCE(registered_patients.monthly_registrations_dm_only_male, (0)::bigint) AS monthly_registrations_dm_only_male,
+    COALESCE(registered_patients.monthly_registrations_dm_only_female, (0)::bigint) AS monthly_registrations_dm_only_female,
+    COALESCE(registered_patients.monthly_registrations_dm_only_transgender, (0)::bigint) AS monthly_registrations_dm_only_transgender,
+    COALESCE(registered_patients.monthly_registrations_htn_and_dm, (0)::bigint) AS monthly_registrations_htn_and_dm,
+    COALESCE(registered_patients.monthly_registrations_htn_and_dm_male, (0)::bigint) AS monthly_registrations_htn_and_dm_male,
+    COALESCE(registered_patients.monthly_registrations_htn_and_dm_female, (0)::bigint) AS monthly_registrations_htn_and_dm_female,
+    COALESCE(registered_patients.monthly_registrations_htn_and_dm_transgender, (0)::bigint) AS monthly_registrations_htn_and_dm_transgender,
+    COALESCE(follow_ups.monthly_follow_ups_htn_or_dm, (0)::bigint) AS monthly_follow_ups_htn_or_dm,
+    COALESCE(follow_ups.monthly_follow_ups_htn_only, (0)::bigint) AS monthly_follow_ups_htn_only,
+    COALESCE(follow_ups.monthly_follow_ups_htn_only_female, (0)::bigint) AS monthly_follow_ups_htn_only_female,
+    COALESCE(follow_ups.monthly_follow_ups_htn_only_male, (0)::bigint) AS monthly_follow_ups_htn_only_male,
+    COALESCE(follow_ups.monthly_follow_ups_htn_only_transgender, (0)::bigint) AS monthly_follow_ups_htn_only_transgender,
+    COALESCE(follow_ups.monthly_follow_ups_dm_only, (0)::bigint) AS monthly_follow_ups_dm_only,
+    COALESCE(follow_ups.monthly_follow_ups_dm_only_female, (0)::bigint) AS monthly_follow_ups_dm_only_female,
+    COALESCE(follow_ups.monthly_follow_ups_dm_only_male, (0)::bigint) AS monthly_follow_ups_dm_only_male,
+    COALESCE(follow_ups.monthly_follow_ups_dm_only_transgender, (0)::bigint) AS monthly_follow_ups_dm_only_transgender,
+    COALESCE(follow_ups.monthly_follow_ups_htn_and_dm, (0)::bigint) AS monthly_follow_ups_htn_and_dm,
+    COALESCE(follow_ups.monthly_follow_ups_htn_and_dm_male, (0)::bigint) AS monthly_follow_ups_htn_and_dm_male,
+    COALESCE(follow_ups.monthly_follow_ups_htn_and_dm_female, (0)::bigint) AS monthly_follow_ups_htn_and_dm_female,
+    COALESCE(follow_ups.monthly_follow_ups_htn_and_dm_transgender, (0)::bigint) AS monthly_follow_ups_htn_and_dm_transgender
    FROM (((public.reporting_facilities rf
      JOIN public.reporting_months cal ON (true))
      LEFT JOIN registered_patients ON (((registered_patients.month_date = cal.month_date) AND (registered_patients.facility_id = rf.facility_id))))
@@ -4928,6 +4980,13 @@ CREATE UNIQUE INDEX cphc_facility_mappings_unique_cphc_record ON public.cphc_fac
 
 
 --
+-- Name: facility_monthly_fr_month_date_facility_region_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX facility_monthly_fr_month_date_facility_region_id ON public.reporting_facility_monthly_follow_ups_and_registrations USING btree (month_date, facility_region_id);
+
+
+--
 -- Name: fd_far_facility_id_visit_date; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -5464,20 +5523,6 @@ CREATE UNIQUE INDEX index_flipper_features_on_key ON public.flipper_features USI
 --
 
 CREATE UNIQUE INDEX index_flipper_gates_on_feature_key_and_key_and_value ON public.flipper_gates USING btree (feature_key, key, value);
-
-
---
--- Name: index_fs_dimensions_facility_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_fs_dimensions_facility_id ON public.reporting_facility_state_dimensions USING btree (facility_id);
-
-
---
--- Name: index_fs_dimensions_month_date_facility_region_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_fs_dimensions_month_date_facility_region_id ON public.reporting_facility_state_dimensions USING btree (month_date, facility_region_id);
 
 
 --
@@ -6487,5 +6532,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20221004092107'),
 ('20221010104304'),
 ('20221011064211'),
-('20221011071921');
+('20221011071921'),
+('20221013131043');
+
 

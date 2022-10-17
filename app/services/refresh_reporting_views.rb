@@ -26,8 +26,8 @@ class RefreshReportingViews
     Reports::FacilityAppointmentScheduledDays
     Reports::FacilityState
     Reports::QuarterlyFacilityState
-    Reports::FacilityStateDimension
     Reports::FacilityDailyFollowUpAndRegistration
+    Reports::FacilityMonthlyFollowUpAndRegistration
   ].freeze
 
   def self.last_updated_at
