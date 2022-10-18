@@ -7,6 +7,7 @@ class Admin::CphcMigrationController < AdminController
   helper_method :migratable_patients
   helper_method :unmapped_facilities
   helper_method :error_facilities
+  helper_method :migration_summary
 
   def index
     authorize { current_admin.power_user? }
@@ -27,6 +28,10 @@ class Admin::CphcMigrationController < AdminController
       .where
       .not(id: facility_group_ids)
       .group_by(&:organization)
+
+    @unmapped_facility_counts = unmapped_facilities(Facility.where(facility_group: facility_groups)).group(:facility_group_id).count
+    @error_counts = error_facilities(Facility.where(facility_group: facility_groups)).group(:facility_group_id).count
+    @district_results = migration_summary(Facility.where(facility_group: facility_group_ids), :district)
   end
 
   def district
@@ -59,20 +64,14 @@ class Admin::CphcMigrationController < AdminController
       @facilities = facilities.where(id: facility_ids)
     end
 
-    @total_unmapped_facilities_count = unmapped_facilities(@facility_group).count
-    @total_error_facilities_count = @facility_group
-      .facilities
-      .joins(:cphc_migration_error_logs)
-      .joins("left outer join cphc_migration_audit_logs on cphc_migration_audit_logs.cphc_migratable_id = cphc_migration_error_logs.cphc_migratable_id")
-      .where("cphc_migration_audit_logs.id is null")
-      .distinct(:facility_id)
-      .count
+    @total_unmapped_facilities_count = unmapped_facilities(@facility_group.facilities).count
+    @total_error_facilities_count = error_facilities(@facility_group.facilities).count
 
     @mappings = facility_mappings.group_by(&:facility_id)
 
-    @unmapped_cphc_facilities = unmapped_facilities(@facility_group)
+    @unmapped_cphc_facilities = unmapped_facilities(@facility_group.facilities)
 
-    set_facility_results(@facilities)
+    @facility_results = migration_summary(@facilities, :facility)
   end
 
   def update_cphc_mapping
@@ -148,44 +147,52 @@ class Admin::CphcMigrationController < AdminController
       .where(cphc_migration_audit_logs: {id: nil})
   end
 
-  def unmapped_facilities(facility_group)
-    facility_group.facilities
+  def unmapped_facilities(facilities)
+    facilities
       .left_outer_joins(:cphc_facility_mappings)
       .where({cphc_facility_mappings: {id: nil}})
   end
 
-  def error_facilities(facility_group)
-    facility_group
-      .facilities
+  def error_facilities(facilities)
+    facilities
       .joins(:cphc_migration_error_logs)
       .joins("left outer join cphc_migration_audit_logs on cphc_migration_audit_logs.cphc_migratable_id = cphc_migration_error_logs.cphc_migratable_id")
       .where("cphc_migration_audit_logs.id is null")
       .distinct(:facility_id)
   end
 
-  def set_facility_results(facilities)
+  def migration_summary(facilities, region_type)
     patients = Patient.where(assigned_facility_id: facilities)
     migratables = %w[Patient Encounter BloodPressure BloodSugar PrescriptionDrug Appointment]
+    group_by_columns = {
+      facility: "facilities.id",
+      district: "facilities.district",
+      state: "facilities.state"
+    }
+    group_by_column = group_by_columns[region_type]
 
-    @facility_results = {
+    {
       total: {
-        patients: patients.group(:assigned_facility_id).count,
-        encounters: Encounter.joins(:patient).where(patient_id: patients).group("patients.assigned_facility_id").count,
-        blood_pressures: BloodPressure.joins(:patient).where(patient_id: patients).group("patients.assigned_facility_id").count,
-        blood_sugars: BloodSugar.joins(:patient).where(patient_id: patients).group("patients.assigned_facility_id").count,
-        prescription_drugs: PrescriptionDrug.joins(:patient).where(patient_id: patients).group("patients.assigned_facility_id").count,
-        appointments: Appointment.joins(:patient).where(patient_id: patients).group("patients.assigned_facility_id").count
+        patients: patients.joins(:assigned_facility).group(group_by_column).count,
+        encounters: Encounter.joins(:patient).joins(patient: :assigned_facility).where(patient_id: patients).group(group_by_column).count,
+        blood_pressures: BloodPressure.joins(:patient).joins(patient: :assigned_facility).where(patient_id: patients).group(group_by_column).count,
+        blood_sugars: BloodSugar.joins(:patient).joins(patient: :assigned_facility).where(patient_id: patients).group(group_by_column).count,
+        prescription_drugs: PrescriptionDrug.joins(:patient).joins(patient: :assigned_facility).where(patient_id: patients).group(group_by_column).count,
+        appointments: Appointment.joins(:patient).joins(patient: :assigned_facility).where(patient_id: patients).group(group_by_column).count
       },
       migrated:
-        CphcMigrationAuditLog
-          .where(facility_id: facilities, cphc_migratable_type: migratables)
-          .group(:cphc_migratable_type, :facility_id)
+        CphcMigrationAuditLog.where(facility_id: facilities, cphc_migratable_type: migratables)
+          .joins(:facility)
+          .group(:cphc_migratable_type, group_by_column)
           .count,
       errors:
         CphcMigrationErrorLog
           .joins("left outer join cphc_migration_audit_logs on cphc_migration_audit_logs.cphc_migratable_id = cphc_migration_error_logs.cphc_migratable_id")
+          .joins(:facility)
           .where("cphc_migration_audit_logs.id is null")
-          .group_by(&:facility_id)
+          .where(facility_id: facilities)
+          .group(:cphc_migratable_type, group_by_column)
+          .count
     }
   end
 end

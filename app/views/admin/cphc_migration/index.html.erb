@@ -1,101 +1,136 @@
 <div class="page-header">
   <h1 class="page-title">CPHC Migration</h1>
-
-  <div class="page-nav">
-    <%= link_to new_admin_facility_group_path, class: "btn btn-sm btn-success" do %>
-      <i class="fas fa-plus mr-1"></i> <%= t("facility_group").capitalize %>
-  <% end %>
-  </div>
-
 </div>
 
 <% @districts_with_mappings.each do |organization, facility_groups| %>
   <h2 class="mt-5 mb-3"><span class="heading-label">Organization: <%= organization.name %></span></h2>
   <h2 class="mb-16px"><%= t("facility_group").capitalize %>s</h2>
 
-  <% facility_groups.each do |facility_group| %>
+  <% facility_groups.group_by(&:state).each do |state, facility_groups| %>
     <div class="card">
       <div class="row">
-        <div class="col-md-8">
-          <h5>
-            <%= link_to facility_group.name,
-              admin_cphc_migration_district_path(district_slug: facility_group.slug) %>
-          </h5>
-        </div>
-
-        <div class="col-md-2">
-          <%= render "action",
-            method: :get,
-            active: false,
-            fa_icon: "link-slash",
-            btn_type: :info,
-            path: admin_cphc_migration_district_path(
-              district_slug: facility_group.slug,
-              unlinked_facilities: true
-            ),
-            btn_contents: "#{unmapped_facilities(facility_group).count} unlinked facilities" %>
-        </div>
-
-        <div class="col-md-2">
-          <%= render "action",
-            method: :get,
-            active: false,
-            fa_icon: "bomb",
-            btn_type: :danger,
-            path: admin_cphc_migration_district_path(
-              district_slug: facility_group.slug,
-              error_facilities: true
-            ),
-            btn_contents: "#{error_facilities(facility_group).count} facilities with errors" %>
+        <div class="col-md-12">
+          <h3><%= state %></h3>
         </div>
       </div>
-      <div class="facility-group-contents collapse show" id="<%= facility_group.slug %>-contents">
-        <div class="row">
-          <div class="col-md-12">
-            <table class="table mt-24px">
-              <thead>
-                <tr>
-                  <th>Model</th>
-                  <th>Migrated</th>
-                  <th>Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Patients</td>
-                  <td><%= get_migrated_records(:patient, facility_group).count %></td>
-                  <td><%= facility_group.assigned_patients.count %></td>
-                </tr>
-                <tr>
-                  <td>Encounters</td>
-                  <td><%= get_migrated_records(:encounter, facility_group).count %></td>
-                  <td><%= Encounter.where(patient: facility_group.assigned_patients).count %></td>
-                </tr>
-                <tr>
-                  <td>Blood Pressures</td>
-                  <td><%= get_migrated_records(:blood_pressure, facility_group).count %></td>
-                  <td><%= BloodPressure.where(patient: facility_group.assigned_patients).count %></td>
-                </tr>
-                <tr>
-                  <td>Blood Sugars</td>
-                  <td><%= get_migrated_records(:blood_sugar, facility_group).count %></td>
-                  <td><%= BloodSugar.where(patient: facility_group.assigned_patients).count %></td>
-                </tr>
-                <tr>
-                  <td>Prescription Drugs</td>
-                  <td><%= get_migrated_records(:prescription_drug, facility_group).count %></td>
-                  <td><%= PrescriptionDrug.where(patient: facility_group.assigned_patients).count %></td>
-                </tr>
-                <tr>
-                  <td>Appointments</td>
-                  <td><%= get_migrated_records(:appointment, facility_group).count %></td>
-                  <td><%= Appointment.where(patient: facility_group.assigned_patients).count %></td>
-                </tr>
-              </tbody>
-            </table>
+
+      <div class="row">
+        <div class="col-md-2">
+
+          <%= link_to new_admin_facility_group_path, class: "btn btn-sm btn-success" do %>
+            <i class="fas fa-plus mr-1"></i> <%= t("facility_group").capitalize %>
+        <% end %>
+        </div>
+        <div class="col-md-2">
+
+          <%= link_to new_admin_facility_group_path, class: "btn btn-sm btn-success" do %>
+            <i class="fas fa-plus mr-1"></i> <%= t("facility_group").capitalize %>
+        <% end %>
+        </div>
+        <div class="col-md-2">
+
+          <%= link_to new_admin_facility_group_path, class: "btn btn-sm btn-success" do %>
+            <i class="fas fa-plus mr-1"></i> <%= t("facility_group").capitalize %>
+        <% end %>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <div class="row">
+            <div class="col-md-12">
+              <%= render "migration_summary",
+                summary: migration_summary(Facility.where(state: state), :state),
+                region_id: state
+              %>
+            </div>
           </div>
         </div>
       </div>
+
+      <% facility_groups.each do |facility_group| %>
+        <div class="row">
+          <div class="col-md-8">
+            <h5>
+              <%= link_to facility_group.name,
+                admin_cphc_migration_district_path(district_slug: facility_group.slug) %>
+            </h5>
+          </div>
+
+          <div class="col-md-2">
+            <%= render "action",
+              method: :get,
+              active: false,
+              fa_icon: "link-slash",
+              btn_type: :info,
+              path: admin_cphc_migration_district_path(
+                district_slug: facility_group.slug,
+                unlinked_facilities: true
+              ),
+              btn_contents: "#{@unmapped_facility_counts[facility_group.id].to_i} unlinked facilities" %>
+          </div>
+
+          <div class="col-md-2">
+            <%= render "action",
+              method: :get,
+              active: false,
+              fa_icon: "bomb",
+              btn_type: :danger,
+              path: admin_cphc_migration_district_path(
+                district_slug: facility_group.slug,
+                error_facilities: true
+              ),
+              btn_contents: "#{@error_counts[facility_group.id].to_i} facilities with errors" %>
+          </div>
+        </div>
+        <div class="facility-group-contents collapse show" id="<%= facility_group.slug %>-contents">
+          <div class="row">
+            <div class="col-md-12">
+              <table class="table mt-24px">
+                <thead>
+                  <tr>
+                    <th>Model</th>
+                    <th>Migrated</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Patients</td>
+                    <td><%= get_migrated_records(:patient, facility_group).count %></td>
+                    <td><%= facility_group.assigned_patients.count %></td>
+                  </tr>
+                  <tr>
+                    <td>Encounters</td>
+                    <td><%= get_migrated_records(:encounter, facility_group).count %></td>
+                    <td><%= Encounter.where(patient: facility_group.assigned_patients).count %></td>
+                  </tr>
+                  <tr>
+                    <td>Blood Pressures</td>
+                    <td><%= get_migrated_records(:blood_pressure, facility_group).count %></td>
+                    <td><%= BloodPressure.where(patient: facility_group.assigned_patients).count %></td>
+                  </tr>
+                  <tr>
+                    <td>Blood Sugars</td>
+                    <td><%= get_migrated_records(:blood_sugar, facility_group).count %></td>
+                    <td><%= BloodSugar.where(patient: facility_group.assigned_patients).count %></td>
+                  </tr>
+                  <tr>
+                    <td>Prescription Drugs</td>
+                    <td><%= get_migrated_records(:prescription_drug, facility_group).count %></td>
+                    <td><%= PrescriptionDrug.where(patient: facility_group.assigned_patients).count %></td>
+                  </tr>
+                  <tr>
+                    <td>Appointments</td>
+                    <td><%= get_migrated_records(:appointment, facility_group).count %></td>
+                    <td><%= Appointment.where(patient: facility_group.assigned_patients).count %></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      <% end %>
     </div>
   <% end %>
 <% end %>
@@ -120,9 +155,7 @@
             unlinked_facilities: true
           ), class: "btn btn-sm btn-outline-info" do %>
           <i class="fas fa-link-slash mr-1"></i>
-          <%= facility_group
-            .facilities.includes(:cphc_facility_mappings)
-            .filter{ |f| f.cphc_facility_mappings.empty? }.count %> Unlinked Facilities
+          <%= @unmapped_facility_counts[facility_group.id].to_i %> Unlinked Facilities
           <% end %>
         </div>
 
@@ -132,13 +165,7 @@
             error_facilities: true
           ), class: "btn btn-sm btn-outline-danger" do %>
           <i class="fas fa-bomb mr-1"></i>
-          <%= facility_group
-            .facilities
-            .joins(:cphc_migration_error_logs)
-            .joins("left outer join cphc_migration_audit_logs on cphc_migration_audit_logs.cphc_migratable_id = cphc_migration_error_logs.cphc_migratable_id")
-            .where("cphc_migration_audit_logs.id is null")
-            .distinct(:facility_id)
-            .count %> Facilities with errors
+          <%= @error_counts[facility_group.id].to_i %> Facilities with errors
           <% end %>
         </div>
       </div>
