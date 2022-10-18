@@ -3,9 +3,12 @@
     <colgroup>
       <col>
       <col>
-      <% @drugs_by_category.map do |_drug_category, drugs| %>
-        <col class="table-divider">
-        <% drugs.map do |_drug| %>
+      <% @drugs_by_category.map do |drug_category, drugs| %>
+        <% drugs.each_with_index.map do |_drug, index| %>
+          <col class="<%= "table-divider" if index.zero? %>">
+        <% end %>
+
+        <% unless drug_category == "diabetes" %>
           <col>
         <% end %>
       <% end %>
@@ -15,7 +18,11 @@
     <tr>
       <th colspan="2"></th>
       <% @drugs_by_category.map do |drug_category, drugs| %>
-        <th colspan=<%= drugs.count.next.to_s %>><%= protocol_drug_labels[drug_category][:full] %></th>
+        <% if drug_category == "diabetes" %>
+          <th colspan=<%= drugs.count.to_s %>><%= protocol_drug_labels[drug_category][:full] %></th>
+        <% else %>
+          <th colspan=<%= drugs.count.next.to_s %>><%= protocol_drug_labels[drug_category][:full] %></th>
+        <% end %>
       <% end %>
     </tr>
     <tr data-sort-method="thead" class="sorts">
@@ -26,9 +33,11 @@
             <%= drug.name %><br> <%= drug.dosage %>
           </th>
         <% end %>
-        <th class="row-label sort-label sticky" data-sort-method="number" data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
-          Patient<br>days
-        </th>
+        <% unless drug_category == "diabetes" %>
+          <th class="row-label sort-label sticky" data-sort-method="number" data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
+            Patient<br>days
+          </th>
+        <% end %>
       <% end %>
       <th class="mobile sticky"></th>
     </tr>
@@ -42,7 +51,7 @@
         <% patient_days = @report.dig(:total_patient_days, drug_category, :patient_days) %>
         <% drugs.map do |drug| %>
           <% drug_stock = @report[:total_drugs_in_stock].dig(drug.rxnorm_code) %>
-          <% if drug_stock.present? %>
+          <% if drug_stock.present? && drug_category != "diabetes" %>
             <td class="type-number text-center" data-sort-column-key=<%= drug.id %>>
               <%= drug_stock %>
             </td>
