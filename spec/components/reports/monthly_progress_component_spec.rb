@@ -51,12 +51,12 @@ RSpec.describe Reports::MonthlyProgressComponent, type: :component do
       male = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :hypertension, gender: :male)
       male_component = described_class.new(male, service: service, current_user: user)
       expect(male_component.monthly_count(november_2021_period)).to eq(0)
-      expect(male_component.monthly_count(december_2021_period)).to be_nil
+      expect(male_component.monthly_count(december_2021_period)).to eq(0)
 
       female = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :hypertension, gender: :female)
       female_component = described_class.new(female, service: service, current_user: user)
       expect(female_component.monthly_count(november_2021_period)).to eq(1)
-      expect(female_component.monthly_count(december_2021_period)).to be_nil
+      expect(female_component.monthly_count(december_2021_period)).to eq(0)
     end
   end
 

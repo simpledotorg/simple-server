@@ -104,7 +104,25 @@ RSpec.describe Reports::FacilityMonthlyFollowUpAndRegistration, {type: :model, r
       monthly_follow_ups_htn_and_dm: 0,
       monthly_follow_ups_htn_and_dm_female: 0,
       monthly_follow_ups_htn_and_dm_male: 0,
-      monthly_follow_ups_htn_and_dm_transgender: 0
+      monthly_follow_ups_htn_and_dm_transgender: 0,
+      monthly_registrations_all: 2,
+      monthly_registrations_dm_all: 0,
+      monthly_registrations_dm_female: 0,
+      monthly_registrations_dm_male: 0,
+      monthly_registrations_dm_transgender: 0,
+      monthly_registrations_htn_all: 2,
+      monthly_registrations_htn_female: 1,
+      monthly_registrations_htn_male: 1,
+      monthly_registrations_htn_transgender: 0,
+      monthly_follow_ups_all: 0,
+      monthly_follow_ups_dm_all: 0,
+      monthly_follow_ups_dm_female: 0,
+      monthly_follow_ups_dm_male: 0,
+      monthly_follow_ups_dm_transgender: 0,
+      monthly_follow_ups_htn_all: 0,
+      monthly_follow_ups_htn_female: 0,
+      monthly_follow_ups_htn_male: 0,
+      monthly_follow_ups_htn_transgender: 0
     }
     two_years_ago = described_class.find_by(facility: facility, month_date: two_years_ago.to_date)
     region_keys = [:block_region_id, :district_region_id, :facility_id, :facility_region_id, :facility_region_slug, :state_region_id]
@@ -137,7 +155,25 @@ RSpec.describe Reports::FacilityMonthlyFollowUpAndRegistration, {type: :model, r
       monthly_follow_ups_htn_and_dm: 0,
       monthly_follow_ups_htn_and_dm_female: 0,
       monthly_follow_ups_htn_and_dm_male: 0,
-      monthly_follow_ups_htn_and_dm_transgender: 0
+      monthly_follow_ups_htn_and_dm_transgender: 0,
+      monthly_registrations_all: 0,
+      monthly_registrations_dm_all: 0,
+      monthly_registrations_dm_female: 0,
+      monthly_registrations_dm_male: 0,
+      monthly_registrations_dm_transgender: 0,
+      monthly_registrations_htn_all: 0,
+      monthly_registrations_htn_female: 0,
+      monthly_registrations_htn_male: 0,
+      monthly_registrations_htn_transgender: 0,
+      monthly_follow_ups_all: 2,
+      monthly_follow_ups_dm_all: 0,
+      monthly_follow_ups_dm_female: 0,
+      monthly_follow_ups_dm_male: 0,
+      monthly_follow_ups_dm_transgender: 0,
+      monthly_follow_ups_htn_all: 2,
+      monthly_follow_ups_htn_female: 1,
+      monthly_follow_ups_htn_male: 1,
+      monthly_follow_ups_htn_transgender: 0
     }
 
     six_months_ago = described_class.find_by(facility: facility, month_date: six_months_ago.to_date)
