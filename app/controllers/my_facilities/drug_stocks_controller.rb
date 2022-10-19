@@ -17,10 +17,6 @@ class MyFacilities::DrugStocksController < AdminController
 
     if @facilities.present?
       create_drug_report
-
-      # Move diabetes to the end
-      @drugs_by_category["diabetes"] = @drugs_by_category.delete("diabetes") if @drugs_by_category["diabetes"]
-
       @report = @query.drug_stocks_report
     end
 
