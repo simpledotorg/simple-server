@@ -142,13 +142,30 @@ class Admin::CphcMigrationController < AdminController
     redirect_to request.referrer, notice: "Email will be sent to #{current_admin.email}"
   end
 
-  def cancel
+  def cancel_all
     authorize { current_admin.power_user? }
 
     Sidekiq::Queue.new("cphc_migration").clear
     Sidekiq::ScheduledSet.new
                          .select { |job| job.queue == "cphc_migration" }
                          .map(&:delete)
+  end
+
+  def cancel
+    authorize { current_admin.power_user? }
+
+    region = Region.find_by!(
+      region_type: params.require(:region_type),
+      slug: params.require(:region_slug)
+    )
+    patients = region.assigned_patients.pluck(:id).to_set
+
+    Sidekiq::Queue.new("cphc_migration")
+      .select { |job| patients.include?(job.args.first) }
+      .map(&:delete)
+    Sidekiq::ScheduledSet.new
+      .select { |job| job.queue == "cphc_migration" && patients.include?(job.args.first) }
+      .map(&:delete)
   end
 
   def get_migrated_records(klass, region)
