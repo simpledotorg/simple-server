@@ -203,7 +203,6 @@ class Admin::CphcMigrationController < AdminController
 
   def migration_summary(facilities, region_type)
     patients = Patient.where(assigned_facility_id: facilities)
-    migratables = %w[Patient Encounter BloodPressure BloodSugar PrescriptionDrug Appointment]
     group_by_columns = {
       facility: "facilities.id",
       district: "facilities.district",
@@ -221,7 +220,7 @@ class Admin::CphcMigrationController < AdminController
         appointments: Appointment.joins(:patient).joins(patient: :assigned_facility).where(patient_id: patients).group(group_by_column).count
       },
       migrated:
-        CphcMigrationAuditLog.where(facility_id: facilities, cphc_migratable_type: migratables)
+        CphcMigrationAuditLog.where(facility_id: facilities)
           .joins(:facility)
           .group(:cphc_migratable_type, group_by_column)
           .count,
@@ -232,7 +231,17 @@ class Admin::CphcMigrationController < AdminController
           .where("cphc_migration_audit_logs.id is null")
           .where(facility_id: facilities)
           .group(:cphc_migratable_type, group_by_column)
+          .count,
+      daily:
+        CphcMigrationAuditLog
+          .joins(:facility)
+          .group(:cphc_migratable_type, group_by_column)
+          .group_by_period(:day, :created_at)
           .count
+          .each_with_object({}) { |((model, region_id, date), count), result|
+            result[date] ||= {}
+            result[date][[model, region_id]] = count
+          }
     }
   end
 
