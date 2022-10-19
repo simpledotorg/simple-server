@@ -14,13 +14,13 @@
 <% else %>
   <div class="card">
     <div class="row">
-      <div class="col-md-6">
+      <div class="col-md-7">
         <h5>
           <b><%= @facility_group.name %></b>
         </h5>
       </div>
 
-      <div class="col-md-2">
+      <div class="col-md-5">
         <%= render "action",
           method: :get,
           active: params[:unlinked_facilities].present?,
@@ -34,9 +34,7 @@
             district_slug: @facility_group.slug
           ),
           btn_contents: "#{@total_unmapped_facilities_count} unlinked facilities" %>
-      </div>
 
-      <div class="col-md-2">
         <%= render "action",
           method: :get,
           active: params[:error_facilities].present?,
@@ -50,17 +48,13 @@
             district_slug: @facility_group.slug
           ),
           btn_contents: "#{@total_error_facilities_count} facilities with errors" %>
-      </div>
 
       <% if get_migrated_records(:patient, @facility_group).count == @facility_group.assigned_patients.count %>
-        <div class="col-md-2">
           <button class="btn btn-sm btn-outline-secondary">
             <i class="fas fa-check mr-1"></i>
             All patients migrated
           </button>
-        </div>
       <% else %>
-        <div class="col-md-2">
           <%= render "action",
             method: :post,
             active: false,
@@ -69,8 +63,8 @@
             path: admin_cphc_migration_migrate_district_path(district_slug: @facility_group.slug),
             btn_contents: "Migrate District",
             confirm: "Are you sure you want to migrate #{migratable_patients(@facility_group).count} patients for district #{@facility_group.name}?" %>
-        </div>
       <% end %>
+      </div>
     </div>
     <div class="facility-group-contents collapse show" id="<%= @facility_group.slug %>-contents">
       <div class="row">
@@ -157,17 +151,6 @@
 
             <div class="col-md-5">
               <a  href="#<%= facility.slug %>"
-                  class="btn btn-sm btn-outline-info"
-                  data-toggle="collapse"
-                  role="button"
-                  aria-expanded="false"
-                  data-target="#<%= facility.slug %>-credentials"
-                  aria-controls="<%= facility.slug %>-credentials">
-                <i class="fas fa-key mr-1"></i>
-                Add credentials
-              </a>
-
-              <a  href="#<%= facility.slug %>"
                 class="btn btn-sm btn-outline-info"
                 data-toggle="collapse"
                 role="button"
@@ -189,7 +172,18 @@
                   <%= facility_errors.count %> Errors
               </a>
 
-            <% if @facility_results.dig(:migrated, ["Patient", facility.id]) == @facility_results.dig(:total, :patients, facility.id) %>
+              <a  href="#<%= facility.slug %>"
+                  class="btn btn-sm btn-outline-info"
+                  data-toggle="collapse"
+                  role="button"
+                  aria-expanded="false"
+                  data-target="#<%= facility.slug %>-credentials"
+                  aria-controls="<%= facility.slug %>-credentials">
+                <i class="fas fa-key mr-1"></i>
+                Add credentials
+              </a>
+
+              <% if @facility_results.dig(:migrated, ["Patient", facility.id]) == @facility_results.dig(:total, :patients, facility.id) %>
                 <button class="btn btn-sm btn-outline-secondary">
                   <i class="fas fa-check mr-1"></i>
                   All patients migrated
@@ -302,10 +296,10 @@
           </div>
         <% else %>
           <div class="row card-row mt-24px">
-            <div class="col-md-6">
+            <div class="col-md-7">
               <h5 class="c-orange"><%= facility.name %></h5>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-5">
               <%= bootstrap_form_with url: admin_cphc_migration_update_facility_mapping_path(facility_slug: facility.slug), local: true do |form| %>
                 <div class="row">
                   <div class="col-md-9">
@@ -317,7 +311,7 @@
                       {class: "form-select form-select-sm"} %>
                   </div>
                   <div class="col-md-3">
-                    <%= form.submit "Mapping", class: "btn btn-sm btn-outline-primary" %>
+                    <%= form.submit "Mapping", class: "btn btn-sm btn-outline-primary", style: "margin: 5px 0px" %>
                   </div>
                 </div>
               <% end %>
