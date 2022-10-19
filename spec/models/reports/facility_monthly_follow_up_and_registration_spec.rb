@@ -18,6 +18,8 @@ RSpec.describe Reports::FacilityMonthlyFollowUpAndRegistration, {type: :model, r
     result = described_class.find_by(facility: facility, month_date: six_months_ago.to_date)
     expect(result.monthly_registrations_htn_or_dm).to eq(0)
     expect(result.monthly_follow_ups_htn_or_dm).to eq(0)
+    expect(result.monthly_registrations_all).to eq(0)
+    expect(result.monthly_follow_ups_all).to eq(0)
   end
 
   it "patients without a medical history are not included" do
@@ -28,6 +30,8 @@ RSpec.describe Reports::FacilityMonthlyFollowUpAndRegistration, {type: :model, r
     result = described_class.find_by(facility: facility, month_date: six_months_ago.to_date)
     expect(result.monthly_registrations_htn_or_dm).to eq(0)
     expect(result.monthly_follow_ups_htn_or_dm).to eq(0)
+    expect(result.monthly_registrations_all).to eq(0)
+    expect(result.monthly_follow_ups_all).to eq(0)
   end
 
   context "totals" do
@@ -36,20 +40,28 @@ RSpec.describe Reports::FacilityMonthlyFollowUpAndRegistration, {type: :model, r
       create_list(:patient, 2, :hypertension, recorded_at: two_years_ago, gender: :female, registration_user: user, registration_facility: facility)
       create_list(:patient, 2, :hypertension, recorded_at: six_months_ago, gender: :female, registration_user: user, registration_facility: facility)
       create_list(:patient, 3, :hypertension, recorded_at: two_years_ago, gender: :male, registration_user: user, registration_facility: facility)
-      create_list(:patient, 1, :hypertension, recorded_at: two_years_ago, gender: :transgender, registration_user: user, registration_facility: facility)
+      create_list(:patient, 1, :hypertension_and_diabetes, recorded_at: two_years_ago, gender: :transgender, registration_user: user, registration_facility: facility)
       refresh_views
       total = described_class.totals(facility)
       expect(total.monthly_registrations_htn_or_dm).to eq(8)
-      expect(total.monthly_registrations_htn_only).to eq(8)
+      expect(total.monthly_registrations_htn_only).to eq(7)
       expect(total.monthly_registrations_htn_only_male).to eq(3)
       expect(total.monthly_registrations_htn_only_female).to eq(4)
-      expect(total.monthly_registrations_htn_only_transgender).to eq(1)
+      expect(total.monthly_registrations_htn_only_transgender).to eq(0)
+
+      expect(total.monthly_registrations_all).to eq(8)
+      expect(total.monthly_registrations_htn_all).to eq(8)
+      expect(total.monthly_registrations_htn_male).to eq(3)
+      expect(total.monthly_registrations_htn_female).to eq(4)
+      expect(total.monthly_registrations_htn_transgender).to eq(1)
+      expect(total.monthly_registrations_htn_and_dm).to eq(1)
+      expect(total.monthly_registrations_htn_and_dm_transgender).to eq(1)
     end
 
     it "can sum follow_ups for all count fields for all time totals" do
       two_years_ago, six_months_ago = june_2021.values_at(:two_years_ago, :six_months_ago)
       patient_1 = create(:patient, :hypertension, recorded_at: two_years_ago, gender: :female, registration_user: user, registration_facility: facility)
-      patient_2 = create(:patient, :hypertension, recorded_at: two_years_ago, gender: :female, registration_user: user, registration_facility: facility)
+      patient_2 = create(:patient, :hypertension_and_diabetes, recorded_at: two_years_ago, gender: :female, registration_user: user, registration_facility: facility)
       patient_3 = create(:patient, :hypertension, recorded_at: two_years_ago, gender: :male, registration_user: user, registration_facility: facility)
 
       create(:appointment, patient: patient_1, user: user, facility: facility, recorded_at: six_months_ago)
@@ -60,7 +72,13 @@ RSpec.describe Reports::FacilityMonthlyFollowUpAndRegistration, {type: :model, r
       total = described_class.totals(facility)
       expect(total.monthly_follow_ups_htn_or_dm).to eq(3)
       expect(total.monthly_follow_ups_htn_only_male).to eq(1)
-      expect(total.monthly_follow_ups_htn_only_female).to eq(2)
+      expect(total.monthly_follow_ups_htn_only_female).to eq(1)
+      expect(total.monthly_follow_ups_htn_and_dm).to eq(1)
+      expect(total.monthly_follow_ups_htn_and_dm_female).to eq(1)
+
+      expect(total.monthly_follow_ups_all).to eq(3)
+      expect(total.monthly_follow_ups_htn_male).to eq(1)
+      expect(total.monthly_follow_ups_htn_female).to eq(2)
     end
   end
 
