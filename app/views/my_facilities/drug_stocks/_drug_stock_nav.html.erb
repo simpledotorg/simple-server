@@ -6,10 +6,10 @@
   <div class="d-flex order-2 order-lg-1">
     <nav class="nav">
       <%= link_to(my_facilities_drug_stocks_path(preserve_query_params(request.query_parameters, ["facility_group", "zone", "size", "for_end_of_month"])), class: "nav-link #{active_action?("drug_stocks")}") do %>
-        HTN stock
+        Stock-on-hand
       <% end %>
       <%= link_to(my_facilities_drug_consumption_path(preserve_query_params(request.query_parameters, ["facility_group", "zone", "size", "for_end_of_month"])), class: "nav-link #{active_action?("drug_consumption")}") do %>
-        HTN consumption
+        Drug consumption
       <% end %>
     </nav>
   </div>
