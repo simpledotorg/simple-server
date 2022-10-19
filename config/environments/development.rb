@@ -61,6 +61,9 @@ Rails.application.configure do
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 
   config.active_job.queue_adapter = :inline
+
+  stdout_logger = ActiveSupport::TaggedLogging.new(JsonLogger.new($stdout))
+  config.logger.extend(JsonLogger.broadcast(stdout_logger))
 end
 
 # Set a longer session timeout to make things easier on developers
