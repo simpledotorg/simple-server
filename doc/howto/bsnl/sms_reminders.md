@@ -14,15 +14,17 @@ How to buy
   - Select a plan. 2 or 3 units of Plan VII usually suits our needs for a month of reminder messages.
   - Make payment with a credit card. Note that large transactions (10L) have gotten stuck in the past so its best to buy smaller packs
     every once in a while.
-- To check the current account balance, you can run `rake bsnl:get_account_balance` on production.
-- We have alerts setup to warn us a week in advance if our balance is running low.
+- We have Slack alerts setup to warn us a week in advance if our balance is running low.
+- Additionally, you can run `bundle exec cap india:production deploy:rake task="bsnl:get_account_balance"` at any time.
+  This task will also show a low balance warning if credits are low.
+
 
 ### Managing JWT tokens
 
 - bulksms.bsnl.in uses JWT for authorizing all API requests. The JWT token can be generated using the username and password.
 - We can generate upto 5 tokens with our username and password. Each token gets a token ID (1 to 5). The `BSNL_USERNAME` and `BSNL_PASSWORD` is in IHCI's secrets.
   IHCI uses a fixed token ID stored in `BSNL_TOKEN_ID`.
-- The JWT tokens have an expiration time (1 year) and we run a job every week to refresh it. The rake task `bsnl:refresh_sms_jwt` fetches a new JWT token 
+- The JWT tokens have an expiration time (1 year) and we run a job every week to refresh it. The rake task `bsnl:refresh_sms_jwt` fetches a new JWT token
   and stores it as a `Configuration` object in the DB.
 - None of this requires any maintenance in the regular course. In case a new env (other than IHCI prod) wants to use BSNL:
   - Make sure to use a different token ID than production's.
@@ -61,7 +63,7 @@ We have a script to help with it.
 BSNL_IHCI_ENTITY_ID=140xxxx
 BSNL_IHCI_HEADER=IHCxxx
 ```
-- Create a `Configuration` object with the key as `bsnl_sms_jwt` and copy the value from production. 
+- Create a `Configuration` object with the key as `bsnl_sms_jwt` and copy the value from production.
 - Run `bundle exec rake bsnl:get_template_details`.
 - This will pull the latest configuration from BSNL and save it to `config/data/bsnl_templates.yml`. This will also output a summary of any actions to be taken, go through them carefully.
 - Commit and push changes in this file (if there are any).
