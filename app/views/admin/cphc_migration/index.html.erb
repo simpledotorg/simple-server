@@ -15,12 +15,23 @@
       </div>
 
       <div class="row">
-        <div class="col-md-2">
+        <% if facility_groups.present? %>
+          <div class="col-md-2">
+            <% state_region = facility_groups.first.state_region %>
 
-          <%= link_to new_admin_facility_group_path, class: "btn btn-sm btn-success" do %>
-            <i class="fas fa-plus mr-1"></i> <%= t("facility_group").capitalize %>
+            <%= render "action",
+              method: :post,
+              active: false,
+              fa_icon: "download",
+              btn_type: :info,
+              path: admin_cphc_migration_error_line_list_path(
+                region_type: state_region.region_type,
+                region_slug: state_region.slug,
+              ),
+              btn_contents: "Errored patients" %>
+          </div>
         <% end %>
-        </div>
+
         <div class="col-md-2">
 
           <%= link_to new_admin_facility_group_path, class: "btn btn-sm btn-success" do %>

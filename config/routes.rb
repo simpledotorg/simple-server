@@ -274,6 +274,8 @@ Rails.application.routes.draw do
         post "migrate/facility/:facility_slug", to: "cphc_migration#migrate_to_cphc", as: "cphc_migration_migrate_facility"
         post "migrate/district/:district_slug", to: "cphc_migration#migrate_to_cphc", as: "cphc_migration_migrate_district"
         post "migrate/patient/:patient_id", to: "cphc_migration#migrate_to_cphc", as: "cphc_migration_migrate_patient"
+
+        post "error_line_list/:region_type/:region_slug/", to: "cphc_migration#error_line_list", as: "cphc_migration_error_line_list"
       end
     end
   end

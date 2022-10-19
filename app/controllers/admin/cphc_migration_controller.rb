@@ -124,6 +124,23 @@ class Admin::CphcMigrationController < AdminController
     redirect_to request.referrer, notice: "Migration triggered for #{@migratable_name}"
   end
 
+  def error_line_list
+    authorize { current_admin.power_user? }
+
+    region = Region.find_by!(
+      region_type: params.require(:region_type),
+      slug: params.require(:region_slug)
+    )
+
+    CphcMigrationErrorsDownloadJob.perform_async(
+      current_admin.email,
+      region.region_type,
+      region.slug
+    )
+
+    redirect_to request.referrer, notice: "Email will be sent to #{current_admin.email}"
+  end
+
   def get_migrated_records(klass, region)
     facilities = if region.is_a? Facility
       [region]
