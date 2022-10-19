@@ -11,7 +11,7 @@ class OneOff::CphcEnrollment::Request
 
   def post
     HTTP.headers(headers)
-      .auth(user[:user_authorization])
+      .auth("Bearer #{user[:user_authorization]}")
       .post(path, json: payload&.payload)
   end
 
