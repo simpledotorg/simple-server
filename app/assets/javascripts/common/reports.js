@@ -90,7 +90,12 @@ DashboardReports = () => {
         legend: {
           display: false,
         },
+        hover: {
+          mode: "index",
+          intersect: false,
+        },
       },
+      plugins: [intersectDataVerticalLine],
     };
   };
 
@@ -535,7 +540,7 @@ DashboardReports = () => {
       });
 
       // This is a plugin and is expected to be loaded before creating this graph
-      config.plugins = [ChartDataLabels];
+      config.plugins = [ChartDataLabels, intersectDataVerticalLine];
       config.type = "bar";
       config.data = {
         labels: graphPeriods,
@@ -604,6 +609,8 @@ DashboardReports = () => {
       };
 
       config.options.tooltips = {
+        mode: "x",
+        intersect: false,
         displayColors: false,
         xAlign: "center",
         yAlign: "top",
@@ -631,6 +638,7 @@ DashboardReports = () => {
           },
         },
       };
+      config.options.hover.mode = "x";
 
       return config;
     },
@@ -737,7 +745,9 @@ DashboardReports = () => {
 
         if(!graphConfig.options.tooltips) {
             graphConfig.options.tooltips = {
-                enabled: false,
+          enabled: false,
+          mode: "index",
+          intersect: false,
                 custom: (tooltip) => {
                     let hoveredDatapoint = tooltip.dataPoints;
                     if (hoveredDatapoint)
@@ -868,6 +878,8 @@ Reports = function (withLtfu) {
     };
     controlledGraphConfig.options.tooltips = {
       enabled: false,
+      mode: "index",
+      intersect: false,
       custom: (tooltip) => {
         let hoveredDatapoint = tooltip.dataPoints;
         if (hoveredDatapoint)
@@ -989,6 +1001,8 @@ Reports = function (withLtfu) {
     };
     uncontrolledGraphConfig.options.tooltips = {
       enabled: false,
+      mode: "index",
+      intersect: false,
       custom: (tooltip) => {
         let hoveredDatapoint = tooltip.dataPoints;
         if (hoveredDatapoint)
@@ -1115,6 +1129,8 @@ Reports = function (withLtfu) {
     };
     missedVisitsConfig.options.tooltips = {
       enabled: false,
+      mode: "index",
+      intersect: false,
       custom: (tooltip) => {
         let hoveredDatapoint = tooltip.dataPoints;
         if (hoveredDatapoint)
@@ -1275,6 +1291,8 @@ Reports = function (withLtfu) {
     };
     cumulativeRegistrationsGraphConfig.options.tooltips = {
       enabled: false,
+      mode: "index",
+      intersect: false,
       custom: (tooltip) => {
         let hoveredDatapoint = tooltip.dataPoints;
         if (hoveredDatapoint)
@@ -1434,9 +1452,11 @@ Reports = function (withLtfu) {
         },
       ],
     };
+
     visitDetailsGraphConfig.options.tooltips = {
-      mode: "x",
       enabled: false,
+      mode: "index",
+      intersect: false,
       custom: (tooltip) => {
         let hoveredDatapoint = tooltip.dataPoints;
         if (hoveredDatapoint)
@@ -1630,7 +1650,12 @@ Reports = function (withLtfu) {
         legend: {
           display: false,
         },
+        hover: {
+          mode: "index",
+          intersect: false,
+        },
       },
+      plugins: [intersectDataVerticalLine],
     };
   };
 
@@ -1660,4 +1685,34 @@ Reports = function (withLtfu) {
   this.formatPercentage = (number) => {
     return (number || 0) + "%";
   };
+};
+
+// [plugin] vertical instersect line
+const intersectDataVerticalLine = {
+  id: "intersectDataVerticalLine",
+  beforeDraw: (chart) => {
+    if (chart.tooltip._active && chart.tooltip._active.length) {
+      const ctx = chart.ctx;
+      ctx.save();
+      const activePoint = chart.tooltip._active[0];
+      const chartArea = chart.chartArea;
+      // grey vertical hover line - full chart height
+      ctx.beginPath();
+      ctx.moveTo(activePoint._model.x, chartArea.top);
+      ctx.lineTo(activePoint._model.x, chartArea.bottom);
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "rgba(0,0,0, 0.1)";
+      ctx.stroke();
+      ctx.restore();
+      // colored vertical hover line - ['node' point to chart bottom] - only for line graphs (graphs with 1 data point)
+      if (chart.tooltip._active.length === 1) {
+        ctx.beginPath();
+        ctx.moveTo(activePoint._model.x, activePoint._model.y);
+        ctx.lineTo(activePoint._model.x, chartArea.bottom);
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+  },
 };
