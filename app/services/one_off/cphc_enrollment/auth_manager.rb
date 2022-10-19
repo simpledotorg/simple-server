@@ -37,7 +37,7 @@ class OneOff::CphcEnrollment::AuthManager
     {user_id: CPHC_API_USER_ID,
      facility_type_id: OneOff::CphcEnrollment::FACILITY_TYPE_ID["DH"],
      state_code: CPHC_USER_STATE_CODE,
-     user_authorization: "Bearer #{auth_token}"}
+     user_authorization: auth_token}
   end
 
   def driver

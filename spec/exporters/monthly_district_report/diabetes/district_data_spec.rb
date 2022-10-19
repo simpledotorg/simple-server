@@ -20,8 +20,6 @@ describe MonthlyDistrictReport::Diabetes::DistrictData do
     create(:appointment, facility: facility2, scheduled_date: Date.today, device_created_at: 32.days.ago, patient: create(:patient, :diabetes, recorded_at: 4.months.ago, registration_facility: facility2))
     create(:appointment, facility: facility1, scheduled_date: Date.today, device_created_at: 63.days.ago, patient: create(:patient, :diabetes, recorded_at: 4.months.ago, registration_facility: facility1))
 
-    RefreshReportingViews.refresh_v2
-
     {region: facility_group.region,
      facility_1: facility1,
      facility_2: facility2}
