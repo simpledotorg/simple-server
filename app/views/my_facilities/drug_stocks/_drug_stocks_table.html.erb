@@ -3,9 +3,12 @@
     <colgroup>
       <col>
       <col>
-      <% @drugs_by_category.map do |_drug_category, drugs| %>
-        <col class="table-divider">
-        <% drugs.map do |_drug| %>
+      <% @drugs_by_category.map do |drug_category, drugs| %>
+        <% drugs.each_with_index.map do |_drug, index| %>
+          <col class="<%= "table-divider" if index.zero? %>">
+        <% end %>
+
+        <% unless drug_category == "diabetes" %>
           <col>
         <% end %>
       <% end %>
@@ -15,7 +18,11 @@
     <tr>
       <th colspan="2"></th>
       <% @drugs_by_category.map do |drug_category, drugs| %>
-        <th colspan=<%= drugs.count.next.to_s %>><%= protocol_drug_labels[drug_category][:full] %></th>
+        <% if drug_category == "diabetes" %>
+          <th colspan=<%= drugs.count.to_s %>><%= protocol_drug_labels[drug_category][:full] %></th>
+        <% else %>
+          <th colspan=<%= drugs.count.next.to_s %>><%= protocol_drug_labels[drug_category][:full] %></th>
+        <% end %>
       <% end %>
     </tr>
     <tr data-sort-method="thead" class="sorts">
@@ -26,9 +33,11 @@
             <%= drug.name %><br> <%= drug.dosage %>
           </th>
         <% end %>
-        <th class="row-label sort-label sticky" data-sort-method="number" data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
-          Patient<br>days
-        </th>
+        <% unless drug_category == "diabetes" %>
+          <th class="row-label sort-label sticky" data-sort-method="number" data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
+            Patient<br>days
+          </th>
+        <% end %>
       <% end %>
       <th class="mobile sticky"></th>
     </tr>
@@ -51,17 +60,19 @@
           <% end %>
         <% end %>
 
-        <% if patient_days.present? %>
-          <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
-              data-template="<%= render "wide_tooltip_template" %>"
-              data-original-title="<%= render "drug_stocks_tooltip", report: @report.dig(:total_patient_days, drug_category) %>"
-              data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
-            <em class="<%= patient_days_css_class(patient_days) %>">
-              <%= patient_days %>
-            </em>
-          </td>
-        <% else %>
-          <td class="type-blank"><span>&#8212;</span></td>
+        <% unless drug_category == "diabetes" %>
+          <% if patient_days.present? %>
+            <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
+                data-template="<%= render "wide_tooltip_template" %>"
+                data-original-title="<%= render "drug_stocks_tooltip", report: @report.dig(:total_patient_days, drug_category) %>"
+                data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
+              <em class="<%= patient_days_css_class(patient_days) %>">
+                <%= patient_days %>
+              </em>
+            </td>
+          <% else %>
+            <td class="type-blank"><span>&#8212;</span></td>
+          <% end %>
         <% end %>
       <% end %>
     </tr>
@@ -92,17 +103,20 @@
             <td class="type-blank"><span>&#8212;</span></td>
           <% end %>
         <% end %>
-        <% if patient_days.present? %>
-          <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
-              data-template="<%= render "wide_tooltip_template" %>"
-              data-original-title="<%= render "drug_stocks_tooltip", report: district_patient_days_report[drug_category] %>"
-              data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
-            <em class="<%= patient_days_css_class(patient_days) %>">
-              <%= patient_days %>
-            </em>
-          </td>
-        <% else %>
-          <td class="type-blank"><span>&#8212;</span></td>
+
+        <% unless drug_category == "diabetes" %>
+          <% if patient_days.present? %>
+            <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
+                data-template="<%= render "wide_tooltip_template" %>"
+                data-original-title="<%= render "drug_stocks_tooltip", report: district_patient_days_report[drug_category] %>"
+                data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
+              <em class="<%= patient_days_css_class(patient_days) %>">
+                <%= patient_days %>
+              </em>
+            </td>
+          <% else %>
+            <td class="type-blank"><span>&#8212;</span></td>
+          <% end %>
         <% end %>
       <% end %>
     </tr>
@@ -128,17 +142,20 @@
               <td class="type-blank"><span>&#8212;</span></td>
             <% end %>
           <% end %>
-          <% if patient_days.present? %>
-            <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
-                data-template="<%= render "wide_tooltip_template" %>"
-                data-original-title="<%= render "drug_stocks_tooltip", report: block_patient_days_report[drug_category] %>"
-                data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
-              <em class="<%= patient_days_css_class(patient_days) %>">
-                <%= patient_days %>
-              </em>
-            </td>
-          <% else %>
-            <td class="type-blank"><span>&#8212;</span></td>
+
+          <% unless drug_category == "diabetes" %>
+            <% if patient_days.present? %>
+              <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
+                  data-template="<%= render "wide_tooltip_template" %>"
+                  data-original-title="<%= render "drug_stocks_tooltip", report: block_patient_days_report[drug_category] %>"
+                  data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
+                <em class="<%= patient_days_css_class(patient_days) %>">
+                  <%= patient_days %>
+                </em>
+              </td>
+            <% else %>
+              <td class="type-blank"><span>&#8212;</span></td>
+            <% end %>
           <% end %>
         <% end %>
       </tr>
@@ -160,17 +177,19 @@
           <% end %>
         <% end %>
 
-        <% if patient_days.present? %>
-          <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
-              data-template="<%= render "wide_tooltip_template" %>"
-              data-original-title="<%= render "drug_stocks_tooltip", report: @report.dig(:facilities_total_patient_days, drug_category) %>"
-              data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
-            <em class="<%= patient_days_css_class(patient_days) %>">
-              <%= patient_days %>
-            </em>
-          </td>
-        <% else %>
-          <td class="type-blank"><span>&#8212;</span></td>
+        <% unless drug_category == "diabetes" %>
+          <% if patient_days.present? %>
+            <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
+                data-template="<%= render "wide_tooltip_template" %>"
+                data-original-title="<%= render "drug_stocks_tooltip", report: @report.dig(:facilities_total_patient_days, drug_category) %>"
+                data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
+              <em class="<%= patient_days_css_class(patient_days) %>">
+                <%= patient_days %>
+              </em>
+            </td>
+          <% else %>
+            <td class="type-blank"><span>&#8212;</span></td>
+          <% end %>
         <% end %>
       <% end %>
     </tr>
@@ -200,17 +219,19 @@
               <td class="type-blank"><span>&#8212;</span></td>
             <% end %>
           <% end %>
-          <% if patient_days.present? %>
-            <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
-                data-template="<%= render "wide_tooltip_template" %>"
-                data-original-title="<%= render "drug_stocks_tooltip", report: facility_patient_days_report[drug_category] %>"
-                data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
-              <em class="<%= patient_days_css_class(patient_days) %>">
-                <%= patient_days %>
-              </em>
-            </td>
-          <% else %>
-            <td class="type-blank"><span>&#8212;</span></td>
+          <% unless drug_category == "diabetes" %>
+            <% if patient_days.present? %>
+              <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
+                  data-template="<%= render "wide_tooltip_template" %>"
+                  data-original-title="<%= render "drug_stocks_tooltip", report: facility_patient_days_report[drug_category] %>"
+                  data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
+                <em class="<%= patient_days_css_class(patient_days) %>">
+                  <%= patient_days %>
+                </em>
+              </td>
+            <% else %>
+              <td class="type-blank"><span>&#8212;</span></td>
+            <% end %>
           <% end %>
         <% end %>
       </tr>
