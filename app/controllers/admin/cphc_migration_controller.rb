@@ -147,8 +147,8 @@ class Admin::CphcMigrationController < AdminController
 
     Sidekiq::Queue.new("cphc_migration").clear
     Sidekiq::ScheduledSet.new
-                         .select { |job| job.queue == "cphc_migration" }
-                         .map(&:delete)
+      .select { |job| job.queue == "cphc_migration" }
+      .map(&:delete)
   end
 
   def cancel
