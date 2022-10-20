@@ -40,6 +40,14 @@ module Reports
       daily_total_follow_ups[date]
     end
 
+    def total_registrations
+      total_counts[:monthly_registrations_htn_or_dm]
+    end
+
+    def total_follow_ups
+      total_counts[:monthly_follow_ups_htn_or_dm]
+    end
+
     def daily_statistics
       {
         daily: {
