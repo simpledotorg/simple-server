@@ -116,6 +116,7 @@ module Seed
         user = facility.users.first
         facility.protocol.protocol_drugs.where(stock_tracked: true).each do |protocol_drug|
           attrs << FactoryBot.attributes_for(:drug_stock,
+            for_end_of_month: 1.month.ago.end_of_month,
             facility_id: facility.id,
             user_id: user.id,
             protocol_drug_id: protocol_drug.id,

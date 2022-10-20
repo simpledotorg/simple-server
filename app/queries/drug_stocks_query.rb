@@ -76,7 +76,7 @@ class DrugStocksQuery
 
     custom_drug_category_order = CountryConfig.current.fetch(:custom_drug_category_order, [])
 
-    if custom_drug_category_order.to_set == drugs_by_category.keys.to_set
+    if (drugs_by_category.keys - custom_drug_category_order).empty?
       drugs_by_category.sort_by { |drug_category, _| custom_drug_category_order.find_index(drug_category) }.to_h
     else
       drugs_by_category.sort_by { |drug_category, _| drug_category }.to_h
