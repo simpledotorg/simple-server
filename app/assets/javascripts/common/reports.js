@@ -1776,43 +1776,52 @@ function populateCardData(context, defaultDataFunction, hoveredDataFunction) {
   const isTooltipActive = context.chart.tooltip._active.length > 0;
   if (isTooltipActive) {
     const hoveredDatapoint = context.tooltip.dataPoints[0].label;
-    console.log(hoveredDatapoint);
+    // console.log(hoveredDatapoint);
     defaultDataFunction(hoveredDatapoint);
   } else {
     hoveredDataFunction();
   }
 }
 
-// [plugin] vertical instersect line
-const intersectDataVerticalLine = (belowPointLineColor) => {
-  return {
-    id: "intersectDataVerticalLine",
-    beforeDraw: (chart) => {
-      if (chart.tooltip._active && chart.tooltip._active.length) {
-        const ctx = chart.ctx;
-        // console.log(chart.tooltip._active);
-        ctx.save();
-        const activePoint = chart.tooltip._active[0];
-        const chartArea = chart.chartArea;
-        // grey vertical hover line - full chart height
+// [plugin] vertical instersect line - default color is borderColor set inside 'dataset'
+
+// add a custom below line color if needed inside:
+// options: {
+//   plugins: {
+//     intersectDataVerticalLine: {
+//       belowPointLineColor: this.mediumRedColor,
+//     },
+//   },
+// }
+const intersectDataVerticalLine = {
+  id: "intersectDataVerticalLine",
+  beforeDraw: (chart, arg, options) => {
+    const defaultLineColor = chart.config._config.data.datasets[0].borderColor;
+    const optionLineColor = options.belowPointLineColor;
+    if (chart.tooltip._active && chart.tooltip._active.length) {
+      const ctx = chart.ctx;
+      // console.log(chart.tooltip._active);
+      ctx.save();
+      const activePoint = chart.tooltip._active[0];
+      const chartArea = chart.chartArea;
+      // grey vertical hover line - full chart height
+      ctx.beginPath();
+      ctx.moveTo(activePoint.element.x, chartArea.top);
+      ctx.lineTo(activePoint.element.x, chartArea.bottom);
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "rgba(0,0,0, 0.1)";
+      ctx.stroke();
+      ctx.restore();
+      // colored vertical hover line - ['node' point to chart bottom] - only for line graphs (graphs with 1 data point)
+      if (chart.tooltip._active.length === 1) {
         ctx.beginPath();
-        ctx.moveTo(activePoint.element.x, chartArea.top);
+        ctx.moveTo(activePoint.element.x, activePoint.element.y);
         ctx.lineTo(activePoint.element.x, chartArea.bottom);
         ctx.lineWidth = 2;
-        ctx.strokeStyle = "rgba(0,0,0, 0.1)";
+        ctx.strokeStyle = optionLineColor ? optionLineColor : defaultLineColor;
         ctx.stroke();
         ctx.restore();
-        // colored vertical hover line - ['node' point to chart bottom] - only for line graphs (graphs with 1 data point)
-        if (chart.tooltip._active.length === 1) {
-          ctx.beginPath();
-          ctx.moveTo(activePoint.element.x, activePoint.element.y);
-          ctx.lineTo(activePoint.element.x, chartArea.bottom);
-          ctx.lineWidth = 2;
-          ctx.strokeStyle = belowPointLineColor;
-          ctx.stroke();
-          ctx.restore();
-        }
       }
-    },
-  };
+    }
+  },
 };
