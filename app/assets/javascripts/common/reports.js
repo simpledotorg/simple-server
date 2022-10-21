@@ -1712,6 +1712,12 @@ Reports = function (withLtfu) {
   };
 };
 
+// https://stackoverflow.com/questions/68135270/update-object-with-new-changes-that-dont-override-unchanged-values-vue-js-2
+
+function combineConfigWithBaseConfig(additionalConfig) {
+  return _.merge(baseLineGraphConfig(), additionalConfig);
+}
+
 function baseLineGraphConfig() {
   return {
     type: "line",
