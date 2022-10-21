@@ -843,19 +843,20 @@ Reports = function (withLtfu) {
       ? data.controlWithLtfuRate
       : data.controlRate;
 
-    const controlledGraphConfig = this.createBaseGraphConfig();
-    controlledGraphConfig.data = {
-      labels: Object.keys(controlledGraphRate),
-      datasets: [
-        {
-          label: "BP controlled",
-          backgroundColor: this.lightGreenColor,
-          borderColor: this.mediumGreenColor,
-          borderWidth: 2,
-          pointBackgroundColor: this.whiteColor,
-          hoverBackgroundColor: this.whiteColor,
-          hoverBorderWidth: 2,
-          data: Object.values(controlledGraphRate),
+    const controlledGraphAdditionalConfig = {
+      data: {
+        labels: Object.keys(controlledGraphRate),
+        datasets: [
+          {
+            label: "BP controlled",
+            data: Object.values(controlledGraphRate),
+            backgroundColor: this.lightGreenColor,
+            borderColor: this.mediumGreenColor,
+            fill: true,
+            // borderWidth: 2,
+            // pointBackgroundColor: this.whiteColor,
+            // hoverBackgroundColor: this.whiteColor,
+            // hoverBorderWidth: 2,
         },
       ],
     };
@@ -863,44 +864,64 @@ Reports = function (withLtfu) {
       xAxes: [
         {
           stacked: true,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: true,
           },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 12,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
+          },
+        ],
+      },
+      options: {
+        // scales: {
+        //   // x: {
+        //   //   // id: "x",
+        //   //   // stacked: true,
+        //   //   // display: true,
+        //   //   // grid: { display: false },
+        //   //   ticks: {
+        //   //     // autoSkip: false,
+        //   //     // color: this.darkGreyColor, // dont need?
+        //   //     // color: "green",
+        //   //     // fontSize: 12,
+        //   //     // fontFamily: "Roboto",
+        //   //     // padding: 8,
+        //   //     // min: 0,
+        //   //     // beginAtZero: true,
+        //   //     // minRotation: 50,
+        //   //   },
+        //   // },
+        //   // y: {
+        //   //   // stacked: false,
+        //   //   ticks: {
+        //   //     // autoSkip: false,
+        //   //     // fontColor: this.darkGreyColor,
+        //   //     // fontSize: 10,
+        //   //     // fontFamily: "Roboto",
+        //   //     // padding: 8,
+        //   //     // beginAtZero: true,
+        //   //     // stepSize: 25,
+        //   //   },
+        //   //   // min: 0,
+        //   //   // max: 100,
+        //   // },
+        // },
+        // onHover: function (event, elements) {
+        //   //populateGraphFiguresOnCard
+        //   // console.log("evt", evt);
+        //   // console.log(event);
+        //   // console.log(elements);
+        //   // if (event.type === "mouseout") {
+        //   //   console.log(true);
+        //   // }
+        //   // let hoveredDatapoint = context.tooltip.dataPoints;
+        //   // if (hoveredDatapoint)
+        //   //   populateControlledGraph(hoveredDatapoint[0].label);
+        //   // else populateControlledGraphDefault();
+        // },
+        plugins: {
+          tooltip: {
+            // enabled: false,
+            // mode: "index",
+            // intersect: false,
           },
         },
-      ],
-      yAxes: [
-        {
-          stacked: false,
-          display: true,
-          gridLines: {
-            display: true,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: 25,
-            max: 100,
-          },
-        },
-      ],
-    };
     controlledGraphConfig.options.tooltips = {
       enabled: false,
       mode: "index",
