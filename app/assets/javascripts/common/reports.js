@@ -1075,76 +1075,37 @@ Reports = function (withLtfu) {
       ? data.missedVisitsWithLtfuRate
       : data.missedVisitsRate;
 
-    const missedVisitsConfig = this.createBaseGraphConfig();
-    missedVisitsConfig.data = {
-      labels: Object.keys(missedVisitsGraphRate),
-      datasets: [
-        {
-          label: "Missed visits",
-          backgroundColor: this.lightBlueColor,
-          borderColor: this.mediumBlueColor,
-          borderWidth: 2,
-          pointBackgroundColor: this.whiteColor,
-          hoverBackgroundColor: this.whiteColor,
-          hoverBorderWidth: 2,
-          data: Object.values(missedVisitsGraphRate),
-          type: "line",
-        },
-      ],
-    };
-    missedVisitsConfig.options.scales = {
-      xAxes: [
-        {
-          stacked: false,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: true,
+    const missedVisitsAdditionalConfig = {
+      data: {
+        labels: Object.keys(missedVisitsGraphRate),
+        datasets: [
+          {
+            label: "Missed visits",
+            backgroundColor: this.lightBlueColor,
+            borderColor: this.mediumBlueColor,
+            data: Object.values(missedVisitsGraphRate),
+            fill: true,
           },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 12,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
+        ],
+      },
+      options: {
+        plugins: {
+          tooltip: {
+            external: function (context) {
+              populateCardData(
+                context,
+                populateMissedVisitsGraph,
+                populateMissedVisitsGraphDefault
+              );
+            },
           },
         },
-      ],
-      yAxes: [
-        {
-          stacked: false,
-          display: true,
-          gridLines: {
-            display: true,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: 25,
-            max: 100,
-          },
-        },
-      ],
-    };
-    missedVisitsConfig.options.tooltips = {
-      enabled: false,
-      mode: "index",
-      intersect: false,
-      custom: (tooltip) => {
-        let hoveredDatapoint = tooltip.dataPoints;
-        if (hoveredDatapoint)
-          populateMissedVisitsGraph(hoveredDatapoint[0].label);
-        else populateMissedVisitsGraphDefault();
       },
     };
+
+    const missedVisitsConfig = combineConfigWithBaseConfig(
+      missedVisitsAdditionalConfig
+    );
 
     const populateMissedVisitsGraph = (period) => {
       const cardNode = document.getElementById("missed-visits");
