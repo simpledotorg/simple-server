@@ -933,6 +933,9 @@ Reports = function (withLtfu) {
         else populateControlledGraphDefault();
       },
     };
+    const controlledGraphConfig = combineConfigWithBaseConfig(
+      controlledGraphAdditionalConfig
+    );
 
     const populateControlledGraph = (period) => {
       const cardNode = document.getElementById("bp-controlled");
