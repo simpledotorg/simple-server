@@ -110,7 +110,6 @@ RSpec.describe Reports::RegionCacheWarmer, type: :model do
         /blood_sugar_measures_by_user/,
         /monthly_registrations_by_user\/group_by\/registration_user_id\/period_type\/month\/diagnosis\/hypertension/,
         /monthly_registrations_by_user\/group_by\/registration_user_id\/period_type\/month\/diagnosis\/diabetes/,
-        /monthly_registrations_by_gender/,
         /overdue_calls_by_user/
       ]
 
