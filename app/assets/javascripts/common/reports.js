@@ -1712,6 +1712,95 @@ Reports = function (withLtfu) {
   };
 };
 
+function baseLineGraphConfig() {
+  return {
+    type: "line",
+    options: {
+      animation: false,
+      maintainAspectRatio: false,
+      layout: {
+        autoPadding: false,
+        // padding: 0, // room for improvement?
+        padding: {
+          left: 0,
+          right: 0,
+          top: 20,
+          bottom: 0,
+        },
+      },
+      elements: {
+        point: {
+          pointStyle: "circle",
+          pointBackgroundColor: color.white,
+          hoverBackgroundColor: color.white,
+          borderWidth: 2,
+          hoverRadius: 5,
+          hoverBorderWidth: 2,
+        },
+        line: {
+          tension: 0.4,
+          borderWidth: 2,
+        },
+      },
+      interaction: {
+        mode: "index",
+        intersect: false,
+      },
+      plugins: {
+        legend: {
+          display: false,
+        },
+        tooltip: {
+          enabled: false,
+        },
+      },
+
+      scales: {
+        x: {
+          beginAtZero: true,
+          grid: {
+            drawOnChartArea: false,
+            // drawTicks: true,
+            tickLength: 6,
+          },
+          ticks: {
+            autoSkip: false,
+            font: {
+              family: "Roboto",
+              size: 12,
+            },
+            // min: 0, // not needed?
+            minRotation: 50,
+            padding: 8,
+          },
+        },
+        y: {
+          beginAtZero: true,
+          grid: {
+            drawBorder: false,
+          },
+          min: 0,
+          max: 100,
+          ticks: {
+            autoSkip: false,
+            font: {
+              family: "Roboto",
+              size: 10,
+            },
+            stepSize: 25,
+            padding: 8,
+          },
+        },
+        y1: {
+          display: false,
+        },
+      },
+    },
+    plugins: [intersectDataVerticalLine("green")],
+  };
+}
+
+
 // [plugin] vertical instersect line
 const intersectDataVerticalLine = {
   id: "intersectDataVerticalLine",
