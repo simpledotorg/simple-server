@@ -1,3 +1,28 @@
+const color = {
+  darkGreen: "rgba(0, 122, 49, 1)",
+  mediumGreen: "rgba(0, 184, 73, 1)",
+  lightGreen: "rgba(242, 248, 245, 0.5)",
+  darkRed: "rgba(184, 22, 49, 1)",
+  mediumRed: "rgba(255, 51, 85, 1)",
+  lightRed: "rgba(255, 235, 238, 0.5)",
+  darkPurple: "rgba(83, 0, 224, 1)",
+  lightPurple: "rgba(169, 128, 239, 0.5)",
+  darkBlue: "rgba(12, 57, 102, 1)",
+  mediumBlue: "rgba(0, 117, 235, 1)",
+  lightBlue: "rgba(233, 243, 255, 0.75)",
+  darkGrey: "rgba(108, 115, 122, 1)",
+  mediumGrey: "rgba(173, 178, 184, 1)",
+  lightGrey: "rgba(240, 242, 245, 0.9)",
+  white: "rgba(255, 255, 255, 1)",
+  amber: "rgba(250, 190, 70, 1)",
+  darkAmber: "rgba(223, 165, 50, 1)",
+  transparent: "rgba(0, 0, 0, 0)",
+  teal: "rgba(48, 184, 166, 1)",
+  darkTeal: "rgba(34,140,125,1)",
+  maroon: "rgba(71, 0, 0, 1)",
+  darkMaroon: "rgba(60,0,0,1)",
+};
+
 DashboardReports = () => {
   const COLORS = {
     darkGreen: "rgba(0, 122, 49, 1)",
