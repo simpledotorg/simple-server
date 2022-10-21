@@ -920,17 +920,15 @@ Reports = function (withLtfu) {
             // enabled: false,
             // mode: "index",
             // intersect: false,
+            external: function (context) {
+              populateCardData(
+                context,
+                populateControlledGraph,
+                populateControlledGraphDefault
+              );
+            },
           },
         },
-    controlledGraphConfig.options.tooltips = {
-      enabled: false,
-      mode: "index",
-      intersect: false,
-      custom: (tooltip) => {
-        let hoveredDatapoint = tooltip.dataPoints;
-        if (hoveredDatapoint)
-          populateControlledGraph(hoveredDatapoint[0].label);
-        else populateControlledGraphDefault();
       },
     };
     const controlledGraphConfig = combineConfigWithBaseConfig(
