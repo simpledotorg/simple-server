@@ -1,0 +1,71 @@
+<% facility = region.source %>
+<% mappings = CphcFacilityMapping.where(facility: facility) %>
+<% facility_errors = CphcMigrationErrorLog.where(facility: facility).where.not(cphc_migratable_type: 'Facility') %>
+
+
+<% if mappings.present? %>
+  <div class="row">
+    <p class="c-blue mt-24px">
+    <%= "District: #{mappings.first.cphc_district_name} | Taluka: #{mappings.first.cphc_taluka_name} | PHC Name: #{mappings.first.cphc_phc_name} | PHC ID: #{mappings.first.cphc_phc_id}" %>
+    </p>
+
+    <% if facility_errors.present? %>
+      <div class="col-md-12 c-red">
+        <table class="table mt-24px">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Time</th>
+              <th>Model</th>
+              <th>Path</th>
+              <th>Response Code</th>
+              <th>Response Body</th>
+              <th>Retry</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% facility_errors.each do |error_log| %>
+              <tr>
+                <td class="text-danger"><%= error_log.id %></td>
+                <td class="text-danger"><%= error_log.failures["timestamp"] %></td>
+                <td class="text-danger"><%= error_log.cphc_migratable_type %></td>
+                <td class="text-danger"><%= error_log.failures["path"] %></td>
+                <td class="text-danger"><%= error_log.failures["response_code"] %></td>
+                <td class="text-danger"><%= error_log.failures["response_body"].truncate(500, separator: " ") %></td>
+                <td>
+                  <%= render "action",
+                    method: :post,
+                    fa_icon: "cloud-exclamation",
+                    btn_type: :danger,
+                    path: admin_cphc_migration_migrate_patient_path(patient_id: error_log.patient_id),
+                    btn_contents: "Migrate Patient",
+                    confirm: "Are you sure you want to migrate this patients for facility?" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="row">
+    <div class="col-md-12">
+      <%= bootstrap_form_with url: admin_cphc_migration_update_facility_mapping_path(facility_slug: facility.slug), local: true do |form| %>
+        <div class="row">
+          <div class="col-md-10">
+            <%= form.collection_select :cphc_phc_id,
+              CphcFacilityMapping.where(facility: nil).search_by_region(facility.district).uniq(&:cphc_phc_name).sort_by(&:cphc_phc_name),
+              :cphc_phc_id,
+              :cphc_phc_name,
+              { hide_label: true },
+              {class: "form-select form-select-sm"} %>
+          </div>
+          <div class="col-md-2 text-right">
+            <%= form.submit "Add Mapping", class: "btn btn-sm btn-outline-primary", style: "margin: 5px 0px" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

@@ -269,15 +269,14 @@ Rails.application.routes.draw do
       scope :cphc_migration do
         get "/", to: "cphc_migration#index", as: "cphc_migration"
         get "district/:district_slug", to: "cphc_migration#district", as: "cphc_migration_district"
+        get "region/:region_type/:slug", to: "cphc_migration#region", as: "cphc_migration_region"
+        post "region/:region_type/:slug/migrate", to: "cphc_migration#migrate_region", as: "cphc_migration_migrate_region"
+        post "region/:region_type/:slug/migrate/cancel", to: "cphc_migration#cancel_region_migration", as: "cphc_migration_cancel_region_migration"
         post "facility/:facility_slug/update_mapping", to: "cphc_migration#update_cphc_mapping", as: "cphc_migration_update_facility_mapping"
-        post "facility/:facility_slug/update_facility_credentials", to: "cphc_migration#update_facility_credentials", as: "cphc_migration_update_facility_credentials"
-        post "migrate/facility/:facility_slug", to: "cphc_migration#migrate_to_cphc", as: "cphc_migration_migrate_facility"
-        post "migrate/district/:district_slug", to: "cphc_migration#migrate_to_cphc", as: "cphc_migration_migrate_district"
-        post "migrate/patient/:patient_id", to: "cphc_migration#migrate_to_cphc", as: "cphc_migration_migrate_patient"
+        post "region/:region_type/:slug/update_credentials", to: "cphc_migration#update_credentials", as: "cphc_migration_update_credentials"
+        post "/patient/:patient_id/migrate", to: "cphc_migration#migrate_to_cphc", as: "cphc_migration_migrate_patient"
 
         post "error_line_list/:region_type/:region_slug", to: "cphc_migration#error_line_list", as: "cphc_migration_error_line_list"
-        post "cancel_all", to: "cphc_migration#cancel_all", as: "cphc_migration_cancel_all"
-        post "cancel/:region_type/:region_slug", to: "cphc_migration#cancel", as: "cphc_migration_cancel"
       end
     end
   end
