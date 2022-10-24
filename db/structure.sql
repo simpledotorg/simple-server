@@ -5483,10 +5483,38 @@ CREATE UNIQUE INDEX index_fs_dimensions_month_date_facility_region_id ON public.
 
 
 --
+-- Name: index_fs_month_date_block; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_fs_month_date_block ON public.reporting_facility_states USING btree (month_date, block_region_id);
+
+
+--
+-- Name: index_fs_month_date_district; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_fs_month_date_district ON public.reporting_facility_states USING btree (month_date, district_region_id);
+
+
+--
+-- Name: index_fs_month_date_organization; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_fs_month_date_organization ON public.reporting_facility_states USING btree (month_date, organization_region_id);
+
+
+--
 -- Name: index_fs_month_date_region_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX index_fs_month_date_region_id ON public.reporting_facility_states USING btree (month_date, facility_region_id);
+
+
+--
+-- Name: index_fs_month_date_state; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_fs_month_date_state ON public.reporting_facility_states USING btree (month_date, state_region_id);
 
 
 --
@@ -5627,6 +5655,20 @@ CREATE INDEX index_organizations_on_deleted_at ON public.organizations USING btr
 --
 
 CREATE UNIQUE INDEX index_organizations_on_slug ON public.organizations USING btree (slug);
+
+
+--
+-- Name: index_overdue_calls_appointment_facility; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_overdue_calls_appointment_facility ON public.reporting_overdue_calls USING btree (appointment_facility_region_id);
+
+
+--
+-- Name: index_overdue_calls_call_result_created_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_overdue_calls_call_result_created_at ON public.reporting_overdue_calls USING btree (call_result_created_at);
 
 
 --
@@ -6490,6 +6532,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20221010104304'),
 ('20221011064211'),
 ('20221011071921'),
-('20221011124316');
+('20221011124316'),
+('20221024071410'),
+('20221024071710');
 
 
