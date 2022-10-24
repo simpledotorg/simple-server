@@ -5469,6 +5469,13 @@ CREATE UNIQUE INDEX index_flipper_gates_on_feature_key_and_key_and_value ON publ
 
 
 --
+-- Name: index_fs_block_month_date; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_fs_block_month_date ON public.reporting_facility_states USING btree (block_region_id, month_date);
+
+
+--
 -- Name: index_fs_dimensions_facility_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -5483,24 +5490,10 @@ CREATE UNIQUE INDEX index_fs_dimensions_month_date_facility_region_id ON public.
 
 
 --
--- Name: index_fs_month_date_block; Type: INDEX; Schema: public; Owner: -
+-- Name: index_fs_district_month_date; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_fs_month_date_block ON public.reporting_facility_states USING btree (month_date, block_region_id);
-
-
---
--- Name: index_fs_month_date_district; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_fs_month_date_district ON public.reporting_facility_states USING btree (month_date, district_region_id);
-
-
---
--- Name: index_fs_month_date_organization; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_fs_month_date_organization ON public.reporting_facility_states USING btree (month_date, organization_region_id);
+CREATE INDEX index_fs_district_month_date ON public.reporting_facility_states USING btree (district_region_id, month_date);
 
 
 --
@@ -5511,10 +5504,17 @@ CREATE UNIQUE INDEX index_fs_month_date_region_id ON public.reporting_facility_s
 
 
 --
--- Name: index_fs_month_date_state; Type: INDEX; Schema: public; Owner: -
+-- Name: index_fs_organization_month_date; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_fs_month_date_state ON public.reporting_facility_states USING btree (month_date, state_region_id);
+CREATE INDEX index_fs_organization_month_date ON public.reporting_facility_states USING btree (organization_region_id, month_date);
+
+
+--
+-- Name: index_fs_state_month_date; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_fs_state_month_date ON public.reporting_facility_states USING btree (state_region_id, month_date);
 
 
 --
