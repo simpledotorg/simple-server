@@ -107,6 +107,7 @@ class RefreshReportingViews
         klass = name.constantize
         klass.refresh
       end
+      Statsd.instance.flush
     end
   end
 
@@ -114,7 +115,9 @@ class RefreshReportingViews
     name = "refresh_reporting_views.#{operation}"
     benchmark(name) do
       Datadog::Tracing.trace("refresh_matview", resource: operation) do |span|
-        yield
+        Statsd.instance.time(name) do
+          yield
+        end
       end
     end
   end
