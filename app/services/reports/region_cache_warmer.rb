@@ -1,7 +1,7 @@
 module Reports
   class RegionCacheWarmer
     prepend SentryHandler
-    BATCH_SIZE = 250
+    BATCH_SIZE = 100
 
     def self.call(*args)
       new(*args).call
@@ -29,7 +29,7 @@ module Reports
 
     def queue_job(region_type, batch_index)
       limit = batch_size
-      offset =  batch_index * batch_size
+      offset = batch_index * batch_size
       RegionCacheWarmerJob.perform_async(region_type, limit, offset)
     end
   end

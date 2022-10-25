@@ -4,7 +4,7 @@ class Reports::RegionCacheWarmerJob
 
   sidekiq_options queue: :default
   sidekiq_throttle(
-    concurrency: { limit: 2 }
+    concurrency: {limit: 1}
   )
 
   def perform(region_type, limit, offset)
