@@ -4,11 +4,10 @@ class ProgressTab::Hypertension::ControlComponent < ApplicationComponent
   include AssetsHelper
   include ActionView::Helpers::NumberHelper
 
-  attr_reader :control_range, :repository, :current_user
+  attr_reader :repository, :current_user
 
   def initialize(service, current_user)
-    @repository = service.control_rates_repository
-    @control_range = repository.range
+    @repository = service.repository
     @region = service.region
     @current_user = current_user
   end
