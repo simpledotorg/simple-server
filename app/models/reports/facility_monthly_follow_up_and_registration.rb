@@ -22,7 +22,7 @@ module Reports
     def self.totals(facility)
       count_columns = column_names - NON_COUNT_FIELDS.map(&:to_s)
       calculations = count_columns.map { |c| "sum(#{c}) as #{c}" }
-      where(facility: facility).select(calculations).to_a.first
+      where(facility_region_id: facility.region.id).select(calculations).to_a.first
     end
 
     def self.for_region(region_or_source)
