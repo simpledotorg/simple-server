@@ -31,9 +31,9 @@ jobs:
       - name: Argocd login
         run: argocd login ${{ secrets.BD_K3S_DEMO_ARGOCD_ENDPOINT }} --username ${{ secrets.ARGOCD_USERNAME }} --password ${{ secrets.BD_K3S_DEMO_ARGOCD_PASSWORD }} --insecure --config /home/argocd/.config/argocd/config
       - name: Argocd set simple server image
-        run: argocd app set server --helm-set image=simpledotorg/server:$GITHUB_SHA --config /home/argocd/.config/argocd/config
+        run: argocd app set simple-server --helm-set image=simpledotorg/server:$GITHUB_SHA --config /home/argocd/.config/argocd/config
       - name: Argocd wait for sync
-        run: argocd app wait server --config /home/argocd/.config/argocd/config
+        run: argocd app wait simple-server --config /home/argocd/.config/argocd/config
   deploy_simple_server_staging:
     needs: docker_build_push
     runs-on: ubuntu-latest
@@ -43,6 +43,6 @@ jobs:
       - name: Argocd login
         run: argocd login ${{ secrets.STAGING_ARGOCD_ENDPOINT }} --username ${{ secrets.ARGOCD_USERNAME }} --password ${{ secrets.STAGING_ARGOCD_PASSWORD }} --insecure --config /home/argocd/.config/argocd/config
       - name: Argocd set simple server image
-        run: argocd app set server --helm-set image=simpledotorg/server:$GITHUB_SHA --config /home/argocd/.config/argocd/config
+        run: argocd app set simple-server --helm-set image=simpledotorg/server:$GITHUB_SHA --config /home/argocd/.config/argocd/config
       - name: Argocd wait for sync
-        run: argocd app wait server --config /home/argocd/.config/argocd/config
+        run: argocd app wait simple-server --config /home/argocd/.config/argocd/config
