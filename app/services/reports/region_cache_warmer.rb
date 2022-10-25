@@ -1,7 +1,7 @@
 module Reports
   class RegionCacheWarmer
     prepend SentryHandler
-    BATCH_SIZE = 100
+    BATCH_SIZE = 250
 
     def self.call(*args)
       new(*args).call
