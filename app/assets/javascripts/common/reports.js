@@ -1754,13 +1754,9 @@ function baseLineGraphConfig() {
 
 // Create a dashed line for the last segment of dynamic charts
 const dynamicChartSegementDashed = (ctx, numberOfXAxisTicks) => {
-  console.log("ctx", ctx);
-  console.log(numberOfXAxisTicks);
+  // console.log("ctx", ctx);
+  // console.log(numberOfXAxisTicks);
   return ctx.p0DataIndex === numberOfXAxisTicks - 2 ? [4, 3] : undefined;
-  // console.log(ctx.p1.y, ctx.p0.y, ctx.p1.y < ctx.p0.y);
-  // if (ctx.p1.y < ctx.p0.y) {
-  //   ctx.p1.options.borderColor = "black";
-  // }
 };
 
 // Create a different line color for segments that go down
