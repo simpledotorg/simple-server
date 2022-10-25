@@ -1,22 +1,17 @@
-<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js" integrity="sha256-+8RZJua0aEWg+QVVKg4LEzEEm/8RFez5Tb4JBNiV5xA=" crossorigin="anonymous"></script><% content_for :title do %>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js" integrity="sha256-+8RZJua0aEWg+QVVKg4LEzEEm/8RFez5Tb4JBNiV5xA=" crossorigin="anonymous"></script>
 <% content_for :title do %>
   <%= @region.name %> | Diabetes
 <% end %>
-
 <%= render "header" %>
-
 <% args = { data: @data, region: @region, period: @period } %>
 <% args_with_ltfu = { data: @data, region: @region, period: @period, with_ltfu: @with_ltfu } %>
-
 <div class="d-lg-flex flex-lg-wrap">
   <%= render Dashboard::Diabetes::BsBelow200GraphComponent.new(args_with_ltfu) %>
   <%= render Dashboard::Diabetes::RegistrationsAndFollowUpsGraphComponent.new(args) %>
   <%= render Dashboard::Diabetes::BsOver200GraphComponent.new(args_with_ltfu) %>
   <%= render Dashboard::Diabetes::MissedVisitsGraphComponent.new(args_with_ltfu) %>
 </div>
-
 <%= render Dashboard::Diabetes::TreatmentOutcomesCardComponent.new(args) %>
-
 <h4 class="mt-5 mb-32px">Details</h4>
 <div class="d-lg-flex flex-lg-wrap">
   <%= render Dashboard::Diabetes::CoverageCardComponent.new(
@@ -25,14 +20,12 @@
     period: @period,
     current_admin: current_admin
   ) %>
-
   <%= render(Dashboard::Diabetes::LostToFollowUpComponent.new(args)) %>
 </div>
 <% if current_admin.feature_enabled?(:medications_dispensation) %>
   <h4 class="mt-5 mb-32px">Medications</h4>
   <%= render Dashboard::MedicationDispensationComponent.new(args) %>
 <% end %>
-
 <h4 class="mt-5 mb-32px">Compare performance</h4>
 <% if @children_data.any? %>
   <%= render Dashboard::Diabetes::MeasurementChildComparisonTableComponent.new(args.merge(
@@ -40,7 +33,6 @@
     localized_region_type: @child_regions.first.localized_region_type
   )) %>
 <% end %>
-
 <% if @region.facility_region? %>
   <%= render Dashboard::Diabetes::RegistrationsAndFollowUpsByUserComponent.new(
     region: @region,
@@ -48,14 +40,12 @@
     period_range: @details_period_range,
     current_admin: current_admin
   ) %>
-
   <%= render Dashboard::Diabetes::HealthcareWorkerActivityComponent.new(
     region: @region,
     repository: @repository,
     period_range: @details_period_range,
     current_admin: current_admin
   ) %>
-
   <%= render Dashboard::Diabetes::RecentMeasurementsComponent.new(
     region: @region,
     recent_blood_sugars: @recent_blood_sugars,
@@ -68,5 +58,4 @@
     repository: @details_repository,
     period: @period) %>
 <% end %>
-
 <%= render "reports/regions/diabetes_footnotes" %>
