@@ -1,6 +1,12 @@
 require "rails_helper"
 
 RSpec.describe Reports::RegionCacheWarmer, type: :model do
+  it "skips caching if disabled via Flipper" do
+    Flipper.enable(:disable_region_cache_warmer)
+    expect(Reports::Repository).to receive(:new).never
+    described_class.new.call
+  end
+
   it "calls RegionCacheWarmerJob in batches with limits and offsets" do
     batch_size = 2
     organization = create(:organization)

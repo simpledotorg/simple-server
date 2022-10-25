@@ -14,6 +14,11 @@ module Reports
     end
 
     def call
+      if Flipper.enabled?(:disable_region_cache_warmer)
+        Rails.logger.info "Cache warmer disabled via flipper - exiting"
+        return
+      end
+
       Rails.logger.info "Starting queuing cache warming jobs"
 
       Region::REGION_TYPES.excluding("root").each do |region_type|
