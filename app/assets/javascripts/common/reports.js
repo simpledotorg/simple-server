@@ -1743,12 +1743,9 @@ function baseLineGraphConfig() {
             padding: 8,
           },
         },
-        y1: {
-          display: false,
-        },
       },
     },
-    plugins: [intersectDataVerticalLine("green")],
+    plugins: [intersectDataVerticalLine],
   };
 }
 
