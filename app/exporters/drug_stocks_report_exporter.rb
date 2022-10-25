@@ -33,17 +33,20 @@ class DrugStocksReportExporter
     left_padding_columns = [nil] * left_pad_size
 
     left_padding_columns + @drugs_by_category.flat_map do |category, drugs|
-      [protocol_drug_labels[category][:full], [nil] * drugs.count].flatten
+      category_column_count = show_patient_days?(category) ? drugs.count : drugs.count - 1
+
+      [protocol_drug_labels[category][:full], [nil] * category_column_count].flatten
     end
   end
 
   def drug_names_header
     ["Facilities", "Facility type", "Facility size", I18n.t("region_type.block").capitalize] +
-      @drugs_by_category.flat_map do |_drug_category, drugs|
+      @drugs_by_category.flat_map do |drug_category, drugs|
         drug_columns = drugs.map do |drug|
           "#{drug.name} #{drug.dosage}"
         end
-        drug_columns << "Patient days"
+        drug_columns << "Patient days" if show_patient_days?(drug_category)
+        drug_columns
       end
   end
 
@@ -52,9 +55,12 @@ class DrugStocksReportExporter
       @drugs_by_category.flat_map do |drug_category, drugs|
         patient_days = @report.dig(:total_patient_days, drug_category, :patient_days)
 
-        drugs.map do |drug|
+        row = drugs.map do |drug|
           @report.dig(:total_drugs_in_stock, drug.rxnorm_code)
-        end << patient_days
+        end
+
+        row << patient_days if show_patient_days?(drug_category)
+        row
       end
   end
 
@@ -63,9 +69,12 @@ class DrugStocksReportExporter
       @drugs_by_category.flat_map do |drug_category, drugs|
         patient_days = @report.dig(:district_patient_days, drug_category, :patient_days)
 
-        drugs.map do |drug|
+        row = drugs.map do |drug|
           @report.dig(:district_drugs_in_stock, drug.rxnorm_code)
-        end << patient_days
+        end
+
+        row << patient_days if show_patient_days?(drug_category)
+        row
       end
   end
 
@@ -80,9 +89,16 @@ class DrugStocksReportExporter
       @drugs_by_category.flat_map do |drug_category, drugs|
         patient_days = @report[:patient_days_by_facility_id].dig(facility.id, drug_category, :patient_days)
 
-        drugs.map do |drug|
+        row = drugs.map do |drug|
           @report[:drugs_in_stock_by_facility_id].dig([facility.id, drug.rxnorm_code])
-        end << patient_days
+        end
+
+        row << patient_days if show_patient_days?(drug_category)
+        row
       end
+  end
+
+  def show_patient_days?(drug_category)
+    drug_category != "diabetes"
   end
 end

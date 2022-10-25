@@ -142,7 +142,6 @@ module Reports
         blood_sugar_measures_by_user
         monthly_registrations_by_user(diagnosis: :hypertension)
         monthly_registrations_by_user(diagnosis: :diabetes)
-        monthly_registrations_by_gender
         overdue_calls_by_user
       end
     end
