@@ -1669,6 +1669,7 @@ function baseLineGraphConfig() {
     type: "line",
     options: {
       animation: false,
+      clip: false,
       maintainAspectRatio: false,
       layout: {
         autoPadding: false,
