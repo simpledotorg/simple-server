@@ -11,8 +11,8 @@ RSpec.describe Reports::MonthlyProgressComponent, type: :component do
   let(:user) { create(:user) }
   let(:range) { Range.new(Period.month("June 1st 2021"), Period.month("December 1st 2021")) }
   let(:date_range) { range.map(&:to_date) }
-  let(:counts) { Reports::FacilityStateDimension.where(facility_region_id: facility.region.id, month_date: date_range).to_a }
-  let(:total_counts) { Reports::FacilityStateDimension.totals(facility) }
+  let(:counts) { Reports::FacilityMonthlyFollowUpAndRegistration.where(facility_region_id: facility.region.id, month_date: date_range).to_a }
+  let(:total_counts) { Reports::FacilityMonthlyFollowUpAndRegistration.totals(facility) }
   let(:service) { Reports::FacilityProgressService.new(facility, december_2021_period) }
 
   it "returns totals based the dimension" do
@@ -51,12 +51,12 @@ RSpec.describe Reports::MonthlyProgressComponent, type: :component do
       male = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :hypertension, gender: :male)
       male_component = described_class.new(male, service: service, current_user: user)
       expect(male_component.monthly_count(november_2021_period)).to eq(0)
-      expect(male_component.monthly_count(december_2021_period)).to be_nil
+      expect(male_component.monthly_count(december_2021_period)).to eq(0)
 
       female = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :hypertension, gender: :female)
       female_component = described_class.new(female, service: service, current_user: user)
       expect(female_component.monthly_count(november_2021_period)).to eq(1)
-      expect(female_component.monthly_count(december_2021_period)).to be_nil
+      expect(female_component.monthly_count(december_2021_period)).to eq(0)
     end
   end
 
