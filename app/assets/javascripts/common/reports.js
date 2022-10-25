@@ -1713,7 +1713,6 @@ function baseLineGraphConfig() {
           beginAtZero: true,
           grid: {
             drawOnChartArea: false,
-            // drawTicks: true,
             tickLength: 6,
           },
           ticks: {
