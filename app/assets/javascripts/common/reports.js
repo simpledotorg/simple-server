@@ -1660,6 +1660,10 @@ function combineConfigWithBaseConfig(additionalConfig) {
   return _.merge(baseLineGraphConfig(), additionalConfig);
 }
 
+function combineConfigWithAnotherConfig(intitialConfig, additionalConfig) {
+  return _.merge(intitialConfig, additionalConfig);
+}
+
 function baseLineGraphConfig() {
   return {
     type: "line",
