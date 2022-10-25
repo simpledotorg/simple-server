@@ -16,6 +16,8 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
     @date_format = ApplicationHelper::STANDARD_DATE_DISPLAY_FORMAT
     @time_format = ApplicationHelper::STANDARD_TIME_DISPLAY_FORMAT
 
+    # TODO: Delete `@total_follow_ups` and `@total_registrations`
+    # https://app.shortcut.com/simpledotorg/story/9263/clean-up
     @total_follow_ups_dimension = Reports::FacilityProgressDimension.new(:follow_ups, diagnosis: :all, gender: :all)
     @total_registrations_dimension = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :all, gender: :all)
     @total_follow_ups = Reports::MonthlyProgressComponent.new(@total_follow_ups_dimension, service: @service, current_user: @current_user).total_count
