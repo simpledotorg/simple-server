@@ -1671,16 +1671,6 @@ function baseLineGraphConfig() {
       animation: false,
       clip: false,
       maintainAspectRatio: false,
-      layout: {
-        autoPadding: false,
-        // padding: 0, // room for improvement?
-        padding: {
-          left: 0,
-          right: 0,
-          top: 20,
-          bottom: 0,
-        },
-      },
       elements: {
         point: {
           pointStyle: "circle",
@@ -1698,6 +1688,16 @@ function baseLineGraphConfig() {
       interaction: {
         mode: "index",
         intersect: false,
+      },
+      layout: {
+        autoPadding: false,
+        // padding: 0, // room for improvement?
+        padding: {
+          left: 0,
+          right: 0,
+          top: 20,
+          bottom: 0,
+        },
       },
       plugins: {
         legend: {
