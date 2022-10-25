@@ -22,9 +22,13 @@ module Reports
       [:monthly, indicator, diagnosis_code, gender].compact.join("_")
     end
 
+    # The function 'field_v1' refers to the columns in 'reporting_facility_monthly_follow_ups_and_registrations'
+    # We have introduced one more diagnosis - `Hypertension and diabetes` in the new definition
     def field_v1
       [:monthly, indicator, diagnosis_code_v1, gender_code_v1].compact.join("_")
     end
+
+    private
 
     def diagnosis_code
       case diagnosis
