@@ -1771,14 +1771,14 @@ const down = (ctx, color) =>
 // Plugins
 
 // [plugin: tooltip] Populate graph card data
-function populateCardData(context, defaultDataFunction, hoveredDataFunction) {
+function populateCardData(context, hoveredDataFunction, defaultDataFunction) {
   const isTooltipActive = context.chart.tooltip._active.length > 0;
   if (isTooltipActive) {
     const hoveredDatapoint = context.tooltip.dataPoints[0].label;
     // console.log(hoveredDatapoint);
-    defaultDataFunction(hoveredDatapoint);
+    hoveredDataFunction(hoveredDatapoint);
   } else {
-    hoveredDataFunction();
+    defaultDataFunction();
   }
 }
 
