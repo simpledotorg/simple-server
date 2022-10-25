@@ -96,7 +96,7 @@ every :day, at: local("02:30 am"), roles: [:cron] do
   runner "RecordCounterJob.perform_async"
 end
 
-every :day, at: local("02:30 am"), roles: [:cron] do
+every :day, at: local("04:30 am"), roles: [:cron] do
   runner "Reports::RegionCacheWarmer.call"
 end
 
