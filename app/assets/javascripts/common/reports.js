@@ -1582,13 +1582,44 @@ Reports = function (withLtfu) {
             pointStyle: "circle",
             hoverRadius: 5,
           },
+          line: {
+            tension: 0.4,
+          },
         },
-        legend: {
-          display: false,
-        },
-        hover: {
+        interaction: {
           mode: "index",
           intersect: false,
+        },
+        plugins: {
+          legend: {
+            display: false,
+          },
+        },
+
+        scales: {
+          x: {
+            grid: {
+              display: false,
+            },
+            ticks: {
+              font: {
+                family: "Roboto",
+                size: 20,
+              },
+            },
+          },
+          y: {
+            grid: {
+              drawBorder: false,
+            },
+            ticks: {
+              font: {
+                family: "Roboto",
+                size: 12,
+              },
+              padding: 80,
+            },
+          },
         },
       },
       plugins: [intersectDataVerticalLine],
