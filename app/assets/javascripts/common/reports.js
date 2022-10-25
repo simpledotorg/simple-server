@@ -667,129 +667,97 @@ DashboardReports = () => {
 
       return config;
     },
-    lostToFollowUpTrend: function(data) {
-      const config = createBaseGraphConfig();
-      config.data = {
+    lostToFollowUpTrend: function (data) {
+      const lostToFollowupAdditionalConfig = {
+        data: {
           labels: Object.keys(data.ltfuPatientsRate),
           datasets: [
-              {
-                  label: "Lost to follow-up",
-                  backgroundColor: COLORS['lightBlue'],
-                  borderColor: COLORS['darkBlue'],
-                  borderWidth: 2,
-                  pointBackgroundColor: COLORS['white'],
-                  hoverBackgroundColor: COLORS['white'],
-                  hoverBorderWidth: 2,
-                  data: Object.values(data.ltfuPatientsRate),
-                  type: "line",
-              },
+            {
+              label: "Lost to follow-up",
+              backgroundColor: COLORS["lightBlue"],
+              borderColor: COLORS["darkBlue"],
+              data: Object.values(data.ltfuPatientsRate),
+              fill: true,
+            },
           ],
+        },
       };
-      config.options.scales = {
-          xAxes: [
-              {
-                  stacked: false,
-                  display: true,
-                  gridLines: {
-                      display: false,
-                      drawBorder: true,
-                  },
-                  ticks: {
-                      autoSkip: false,
-                      fontColor: COLORS['darkGrey'],
-                      fontSize: 12,
-                      fontFamily: "Roboto",
-                      padding: 8,
-                      min: 0,
-                      beginAtZero: true,
-                  },
-              },
-          ],
-          yAxes: [
-              {
-                  stacked: false,
-                  display: true,
-                  gridLines: {
-                      display: true,
-                      drawBorder: false,
-                  },
-                  ticks: {
-                      autoSkip: false,
-                      fontColor: COLORS['darkGrey'],
-                      fontSize: 10,
-                      fontFamily: "Roboto",
-                      padding: 8,
-                      min: 0,
-                      beginAtZero: true,
-                      stepSize: 25,
-                      max: 100,
-                  },
-              },
-          ],
-      };
-      return config;
-    }
-  }
+      const lostToFollowupConfig = combineConfigWithBaseConfig(
+        lostToFollowupAdditionalConfig
+      );
+      return lostToFollowupConfig;
+    },
+  };
 
   return {
-      ReportsTable: (id) => {
-        const tableSortAscending = { descending: false };
-        const table = document.getElementById(id);
+    ReportsTable: (id) => {
+      const tableSortAscending = { descending: false };
+      const table = document.getElementById(id);
 
-        if (table) {
-            new Tablesort(table, tableSortAscending);
-        }
-      },
-      ReportsGraph: (id, data) => {
-        const container = document.querySelector(`#${id}`);
-        const graphCanvas = container.querySelector('canvas')
-        const defaultPeriod = container.getAttribute("data-period");
-        const dataKeyNodes = container.querySelectorAll("[data-key]");
-
-        const populateDynamicComponents = (period) => {
-            dataKeyNodes.forEach(dataNode => {
-                const format = dataNode.dataset.format;
-                const key = dataNode.dataset.key;
-
-                if(!data[key]) {
-                    throw `${key}: Key not present in data.`
-                }
-
-                dataNode.innerHTML = formatValue(format, data[key][period]);
-            })
-        };
-
-        if(!ReportsGraphConfig[id]) {
-            throw `Config for ${id} is not defined`;
-        }
-
-        const graphConfig = ReportsGraphConfig[id](data);
-        if(!graphConfig) {
-            throw `Graph config not known for ${id}`
-        }
-
-        if(!graphConfig.options.tooltips) {
-            graphConfig.options.tooltips = {
-          enabled: false,
-          mode: "index",
-          intersect: false,
-                custom: (tooltip) => {
-                    let hoveredDatapoint = tooltip.dataPoints;
-                    if (hoveredDatapoint)
-                        populateDynamicComponents(hoveredDatapoint[0].label);
-                    else populateDynamicComponents(defaultPeriod);
-                },
-            };
-        }
-
-        if(graphCanvas) {
-            // Assumes ChartJS is already imported
-            new Chart(graphCanvas.getContext("2d"), graphConfig);
-            populateDynamicComponents(defaultPeriod);
-        }
+      if (table) {
+        new Tablesort(table, tableSortAscending);
       }
-  }
-}
+    },
+    ReportsGraph: (id, data) => {
+      const container = document.querySelector(`#${id}`);
+      const graphCanvas = container.querySelector("canvas");
+      const defaultPeriod = container.getAttribute("data-period");
+      const dataKeyNodes = container.querySelectorAll("[data-key]");
+
+      const populateDynamicComponents = (period) => {
+        dataKeyNodes.forEach((dataNode) => {
+          const format = dataNode.dataset.format;
+          const key = dataNode.dataset.key;
+
+          if (!data[key]) {
+            throw `${key}: Key not present in data.`;
+          }
+
+          dataNode.innerHTML = formatValue(format, data[key][period]);
+        });
+      };
+
+      function populateDynamicComponentsDefault() {
+        populateDynamicComponents(defaultPeriod);
+      }
+
+      if (!ReportsGraphConfig[id]) {
+        throw `Config for ${id} is not defined`;
+      }
+
+      let graphConfig = ReportsGraphConfig[id](data);
+      if (!graphConfig) {
+        throw `Graph config not known for ${id}`;
+      }
+
+      const tooltipOptionsFunctionInObject = {
+        options: {
+          plugins: {
+            tooltip: {
+              external: function (context) {
+                populateCardData(
+                  context,
+                  populateDynamicComponents,
+                  populateDynamicComponentsDefault
+                );
+              },
+            },
+          },
+        },
+      };
+      graphConfig = combineConfigWithAnotherConfig(
+        graphConfig,
+        tooltipOptionsFunctionInObject
+      );
+
+      if (graphCanvas) {
+        // Assumes ChartJS is already imported
+        new Chart(graphCanvas.getContext("2d"), graphConfig);
+        populateDynamicComponents(defaultPeriod);
+      }
+    },
+  };
+};
 
 Reports = function (withLtfu) {
   this.darkGreenColor = "rgba(0, 122, 49, 1)";
