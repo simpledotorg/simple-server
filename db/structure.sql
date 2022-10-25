@@ -4982,6 +4982,13 @@ CREATE UNIQUE INDEX cphc_facility_mappings_unique_cphc_record ON public.cphc_fac
 
 
 --
+-- Name: facility_monthly_fr_facility_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX facility_monthly_fr_facility_id ON public.reporting_facility_monthly_follow_ups_and_registrations USING btree (facility_id);
+
+
+--
 -- Name: facility_monthly_fr_month_date_facility_region_id; Type: INDEX; Schema: public; Owner: -
 --
 
