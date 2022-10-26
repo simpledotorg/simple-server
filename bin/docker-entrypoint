@@ -6,4 +6,7 @@ set -e
 # Mainly for cron jobs.
 env >> /etc/environment
 
+# Set ownership of /home/app folder to user app.
+chown -R app:app /home/app
+
 exec "$@"
