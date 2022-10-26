@@ -1781,7 +1781,7 @@ function populateCardData(context, hoveredDataFunction, defaultDataFunction) {
 
 // [plugin] vertical instersect line - default color is borderColor set inside 'dataset'
 
-// add a custom below line color if needed inside:
+// add a custom 'below line color' if needed inside graph AdditionalConfig object:
 // options: {
 //   plugins: {
 //     intersectDataVerticalLine: {
