@@ -137,6 +137,7 @@ DashboardReports = () => {
               data: Object.values(data.bsBelow200Rate),
               backgroundColor: COLORS["lightGreen"],
               borderColor: COLORS["mediumGreen"],
+              fill: true,
             },
           ],
         },
@@ -326,70 +327,75 @@ DashboardReports = () => {
 
       return config;
     },
-    bsOver200PatientsTrend: function(data) {
-      const config = createBaseGraphConfig();
-      config.type = "bar";
-      config.data = {
-        labels: Object.keys(data.bsOver300Rate),
-        datasets: [
-          {
-            label: "Blood sugar 200-299",
-            backgroundColor: COLORS['amber'],
-            hoverBackgroundColor: COLORS['darkAmber'],
-            data: Object.values(data.bs200to300Rate),
-          },
-          {
-            label: "Blood sugar ≥300",
-            backgroundColor: COLORS['mediumRed'],
-            hoverBackgroundColor: COLORS['darkRed'],
-            data: Object.values(data.bsOver300Rate),
-          },
-        ],
-      };
+    bsOver200PatientsTrend: function (data) {
+      // const config = createBaseGraphConfig();
+      const bsOver200PatientsAdditionalConfig = {
+        type: "bar",
+        data: {
+          labels: Object.keys(data.bsOver300Rate),
+          datasets: [
+            {
+              label: "Blood sugar 200-299",
+              backgroundColor: COLORS["amber"],
+              hoverBackgroundColor: COLORS["darkAmber"],
+              data: Object.values(data.bs200to300Rate),
+            },
+            {
+              label: "Blood sugar ≥300",
+              backgroundColor: COLORS["mediumRed"],
+              hoverBackgroundColor: COLORS["darkRed"],
+              data: Object.values(data.bsOver300Rate),
+            },
+          ],
+        },
 
-      config.options.scales = {
-        xAxes: [
-          {
-            stacked: true,
-            display: true,
-            gridLines: {
-              display: false,
-              drawBorder: true,
+        options: {
+          scales: {
+            x: {
+              stacked: true,
+              // display: true,
+              // gridLines: {
+              //   display: false,
+              //   drawBorder: true,
+              // },
+              // ticks: {
+              //   autoSkip: false,
+              //   fontColor: COLORS["darkGrey"],
+              //   fontSize: 12,
+              //   fontFamily: "Roboto",
+              //   padding: 8,
+              //   min: 0,
+              //   beginAtZero: true,
+              // },
             },
-            ticks: {
-              autoSkip: false,
-              fontColor: COLORS['darkGrey'],
-              fontSize: 12,
-              fontFamily: "Roboto",
-              padding: 8,
-              min: 0,
-              beginAtZero: true,
+
+            y: {
+              stacked: true,
+              // display: true,
+              // gridLines: {
+              //   display: true,
+              //   drawBorder: false,
+              // },
+              // ticks: {
+              // autoSkip: false,
+              // fontColor: COLORS["darkGrey"],
+              // fontSize: 10,
+              // fontFamily: "Roboto",
+              // padding: 8,
+              // min: 0,
+              // beginAtZero: true,
+              // stepSize: 25,
+              // max: 100,
+              // },
             },
           },
-        ],
-        yAxes: [
-          {
-            stacked: true,
-            display: true,
-            gridLines: {
-              display: true,
-              drawBorder: false,
-            },
-            ticks: {
-              autoSkip: false,
-              fontColor: COLORS['darkGrey'],
-              fontSize: 10,
-              fontFamily: "Roboto",
-              padding: 8,
-              min: 0,
-              beginAtZero: true,
-              stepSize: 25,
-              max: 100,
-            },
-          },
-        ],
+        },
       };
-      return config;
+      const bsOver200PatientsConfig = combineConfigWithBaseConfig(
+        bsOver200PatientsAdditionalConfig
+      );
+
+      return bsOver200PatientsConfig;
     },
     diabetesMissedVisitsTrend: function(data) {
       const config = createBaseGraphConfig();
