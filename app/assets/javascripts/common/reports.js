@@ -1742,20 +1742,6 @@ function baseLineGraphConfig() {
   };
 }
 
-// ----------------------------
-// Segment Functions
-
-// Create a dashed line for the last segment of dynamic charts
-const dynamicChartSegementDashed = (ctx, numberOfXAxisTicks) => {
-  // console.log("ctx", ctx);
-  // console.log(numberOfXAxisTicks);
-  return ctx.p0DataIndex === numberOfXAxisTicks - 2 ? [4, 3] : undefined;
-};
-
-// Create a different line color for segments that go down
-const down = (ctx, color) =>
-  ctx.p0.parsed.y > ctx.p1.parsed.y ? color : undefined;
-
 // -----------------------------
 // -----------------------------
 // Plugins
