@@ -1654,15 +1654,8 @@ Reports = function (withLtfu) {
   };
 };
 
-// https://stackoverflow.com/questions/68135270/update-object-with-new-changes-that-dont-override-unchanged-values-vue-js-2
-
-function combineConfigWithBaseConfig(additionalConfig) {
-  return _.merge(baseLineGraphConfig(), additionalConfig);
-}
-
-function combineConfigWithAnotherConfig(intitialConfig, additionalConfig) {
-  return _.merge(intitialConfig, additionalConfig);
-}
+// Base config object which can be built on using combineConfigWithBaseConfig(AdditionalConfigObject)
+// AdditionalConfigObject is used to add or overwrite specfic key: value - [will take priority]
 
 function baseLineGraphConfig() {
   return {
