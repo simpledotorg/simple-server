@@ -36,7 +36,8 @@
     <meta name="MobileOptimized" content="320">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, shrink-to-fit=no"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js" integrity="sha256-+8RZJua0aEWg+QVVKg4LEzEEm/8RFez5Tb4JBNiV5xA=" crossorigin="anonymous"></script>  </head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js" integrity="sha256-+8RZJua0aEWg+QVVKg4LEzEEm/8RFez5Tb4JBNiV5xA=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.1.0/dist/chartjs-plugin-datalabels.min.js" integrity="sha256-ObWzUwdMWsPTwdkX/Fy6qojnkW+RkgciyUrmSD3upw0=" crossorigin="anonymous"></script>
   </head>
   <body class="bg-grey-100">
     <%= render "shared/nav_bar_v2" %>
@@ -45,6 +46,7 @@
       <%= raw @data.to_json %>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js" integrity="sha256-+8RZJua0aEWg+QVVKg4LEzEEm/8RFez5Tb4JBNiV5xA=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.1.0/dist/chartjs-plugin-datalabels.min.js" integrity="sha256-ObWzUwdMWsPTwdkX/Fy6qojnkW+RkgciyUrmSD3upw0=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/_mergeData.js" integrity="sha256-GywLC+M6ByJbp5y2ZgHX944JrF+JbVP80GABHQ/WZJE=" crossorigin="anonymous"></script>
   </body>
 </html>
