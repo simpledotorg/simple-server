@@ -1714,9 +1714,9 @@ function baseLineGraphConfig() {
               family: "Roboto",
               size: 12,
             },
-            // min: 0, // not needed?
-            minRotation: 50,
-            padding: 8,
+            min: 0, // not needed?
+            // minRotation: 50,
+            // padding: 8,
           },
         },
         y: {
@@ -1735,7 +1735,31 @@ function baseLineGraphConfig() {
             stepSize: 25,
             padding: 8,
           },
+          // callback: (label) => {
+          //   return this.formatNumberWithCommas(label);
+          // },
         },
+        // y1: {
+        //   // type: "linear",
+        //   // beginAtZero: true,
+        //   display: false,
+        //   // min: 0,
+        //   // position: "right",
+        //   // grid: {
+        //   //   drawOnChartArea: false, // only want the grid lines for one axis to show up
+        //   // },
+        //   // ticks: {
+        //   //   autoSkip: false,
+        //   //   font: {
+        //   //     family: "Roboto",
+        //   //     size: 10,
+        //   //   },
+        //   //   padding: 8,
+        //   // },
+        //   // callback: (label) => {
+        //   //   return this.formatNumberWithCommas(label);
+        //   // },
+        // },
       },
     },
     plugins: [intersectDataVerticalLine],
