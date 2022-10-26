@@ -1814,3 +1814,22 @@ const intersectDataVerticalLine = {
     }
   },
 };
+
+function combineConfigWithBaseConfig(additionalConfig) {
+  return _.mergeWith(
+    baseLineGraphConfig(),
+    additionalConfig,
+    customizerArrayMerging
+  );
+}
+
+function combineConfigWithAnotherConfig(intitialConfig, additionalConfig) {
+  return _.mergeWith(intitialConfig, additionalConfig, customizerArrayMerging);
+}
+
+// Object Array merging incorrect without this function
+function customizerArrayMerging(objValue, srcValue) {
+  if (_.isArray(objValue)) {
+    return objValue.concat(srcValue);
+  }
+}
