@@ -125,67 +125,68 @@ DashboardReports = () => {
   };
 
   const ReportsGraphConfig = {
-    bsBelow200PatientsTrend: function(data) {
-      const config = createBaseGraphConfig();
-      config.data = {
-        labels: Object.keys(data.bsBelow200Rate),
-        datasets: [
-          {
-            label: "Blood sugar <200",
-            backgroundColor: COLORS["lightGreen"],
-            borderColor: COLORS["mediumGreen"],
-            borderWidth: 2,
-            pointBackgroundColor: COLORS["white"],
-            hoverBackgroundColor: COLORS["white"],
-            hoverBorderWidth: 2,
-            data: Object.values(data.bsBelow200Rate),
-          },
-        ],
-      };
+    bsBelow200PatientsTrend: function (data) {
+      // unable to test this as no default data in DB!
+      // const config = createBaseGraphConfig();
+      const bsBelow200PatientsAdditionalConfig = {
+        data: {
+          labels: Object.keys(data.bsBelow200Rate),
+          datasets: [
+            {
+              label: "Blood sugar <200",
+              data: Object.values(data.bsBelow200Rate),
+              backgroundColor: COLORS["lightGreen"],
+              borderColor: COLORS["mediumGreen"],
+            },
+          ],
+        },
 
-      config.options.scales = {
-        xAxes: [
-          {
-            stacked: true,
-            display: true,
-            gridLines: {
-              display: false,
-              drawBorder: true,
+        options: {
+          scales: {
+            x: {
+              // stacked: true, // not required
+              // display: true, // default true
+              // gridLines: {  // old v2 syntax
+              //   display: false,
+              //   drawBorder: true,
+              // },
+              ticks: {
+                // autoSkip: false, // set in baseConfig
+                // fontColor: COLORS["darkGrey"], // same as default
+                // fontSize: 12, // set in baseConfig
+                // fontFamily: "Roboto", // set in baseConfig
+                // padding: 8, // set in baseConfig()
+                // min: 0, // set in baseConfig
+                // beginAtZero: // true, set in BaseConfig
+              },
             },
-            ticks: {
-              autoSkip: false,
-              fontColor: COLORS["darkGrey"],
-              fontSize: 12,
-              fontFamily: "Roboto",
-              padding: 8,
-              min: 0,
-              beginAtZero: true,
+            y: {
+              // stacked: true, // not required
+              // display: true, // default true
+              // gridLines: { // old v2 syntax
+              //   display: true,
+              //   drawBorder: false,
+              // },
+              ticks: {
+                // autoSkip: false, // set in baseConfig
+                // fontColor: COLORS["darkGrey"], // same as default
+                // fontSize: 10, // set in baseConfig
+                // fontFamily: "Roboto", // set in baseConfig
+                // padding: 8, // set in baseConfig
+                // min: 0, // set in baseConfig
+                // beginAtZero: true, // set in baseConfig
+                // stepSize: 25, // set in baseConfig
+                // max: 100, // set in baseConfig
+              },
             },
           },
-        ],
-        yAxes: [
-          {
-            stacked: true,
-            display: true,
-            gridLines: {
-              display: true,
-              drawBorder: false,
-            },
-            ticks: {
-              autoSkip: false,
-              fontColor: COLORS["darkGrey"],
-              fontSize: 10,
-              fontFamily: "Roboto",
-              padding: 8,
-              min: 0,
-              beginAtZero: true,
-              stepSize: 25,
-              max: 100,
-            },
-          },
-        ],
+        },
       };
-      return config;
+      const bsBelow200PatientsConfig = combineConfigWithBaseConfig(
+        bsBelow200PatientsAdditionalConfig
+      );
+
+      return bsBelow200PatientsConfig;
     },
     cumulativeDiabetesRegistrationsTrend: function(data) {
       const cumulativeDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(data.cumulativeDiabetesRegistrations);
