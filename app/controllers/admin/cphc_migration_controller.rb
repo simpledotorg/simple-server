@@ -250,6 +250,6 @@ class Admin::CphcMigrationController < AdminController
   end
 
   def ongoing_migrations
-    Sidekiq::Queue.new("cphc_migration").size + Sidekiq::ScheduledSet.new.select { |job| job.queue == "cphc_migration" }.size
+    Sidekiq::Queue.new("cphc_migration").size + Sidekiq::ScheduledSet.new.count { |job| job.queue == "cphc_migration" }
   end
 end
