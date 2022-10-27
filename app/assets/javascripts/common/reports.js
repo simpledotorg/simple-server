@@ -464,102 +464,110 @@ DashboardReports = () => {
 
       return diabetesMissedVisitsConfig;
     },
-    diabetesVisitDetails: function(data) {
-      const config = createBaseGraphConfig();
-      config.type = "bar";
+    diabetesVisitDetails: function (data) {
+      // const config = createBaseGraphConfig();
 
       const maxBarsToDisplay = 6;
       const barsToDisplay = Math.min(
-          Object.keys(data.bsBelow200Rate).length,
-          maxBarsToDisplay
+        Object.keys(data.bsBelow200Rate).length,
+        maxBarsToDisplay
       );
 
-      config.data = {
-        labels: Object.keys(data.bsBelow200Rate).slice(-barsToDisplay),
-        datasets: [
-          {
-            label: "Blood sugar <200",
-            backgroundColor: COLORS['mediumGreen'],
-            hoverBackgroundColor: COLORS['darkGreen'],
-            data: Object.values(data.bsBelow200Rate).slice(-barsToDisplay),
-            type: "bar",
-          },
-          {
-            label: "Blood sugar 200-299",
-            backgroundColor: COLORS['amber'],
-            hoverBackgroundColor: COLORS['darkAmber'],
-            data: Object.values(data.bs200to300Rate).slice(-barsToDisplay),
-            type: "bar",
-          },
-          {
-            label: "Blood sugar ≥300",
-            backgroundColor: COLORS['mediumRed'],
-            hoverBackgroundColor: COLORS['darkRed'],
-            data: Object.values(data.bsOver300Rate).slice(-barsToDisplay),
-            type: "bar",
-          },
-          {
-            label: "Visit but no blood sugar measure",
-            backgroundColor: COLORS['mediumGrey'],
-            hoverBackgroundColor: COLORS['darkGrey'],
-            data: Object.values(data.visitButNoBSMeasureRate).slice(
+      const diabetesVisitDetailsAdditionalConfig = {
+        type: "bar",
+        data: {
+          labels: Object.keys(data.bsBelow200Rate).slice(-barsToDisplay),
+          datasets: [
+            {
+              label: "Blood sugar <200",
+              data: Object.values(data.bsBelow200Rate).slice(-barsToDisplay),
+              backgroundColor: COLORS["mediumGreen"],
+              hoverBackgroundColor: COLORS["darkGreen"],
+              // type: "bar",
+            },
+            {
+              label: "Blood sugar 200-299",
+              data: Object.values(data.bs200to300Rate).slice(-barsToDisplay),
+              backgroundColor: COLORS["amber"],
+              hoverBackgroundColor: COLORS["darkAmber"],
+              // type: "bar",
+            },
+            {
+              label: "Blood sugar ≥300",
+              data: Object.values(data.bsOver300Rate).slice(-barsToDisplay),
+              backgroundColor: COLORS["mediumRed"],
+              hoverBackgroundColor: COLORS["darkRed"],
+              // type: "bar",
+            },
+            {
+              label: "Visit but no blood sugar measure",
+              data: Object.values(data.visitButNoBSMeasureRate).slice(
                 -barsToDisplay
-            ),
-            type: "bar",
-          },
-          {
-            label: "Missed visits",
-            backgroundColor: COLORS['mediumBlue'],
-            hoverBackgroundColor: COLORS['darkBlue'],
-            data: Object.values(data.diabetesMissedVisitsRate).slice(
+              ),
+              backgroundColor: COLORS["mediumGrey"],
+              hoverBackgroundColor: COLORS["darkGrey"],
+              // type: "bar",
+            },
+            {
+              label: "Missed visits",
+              data: Object.values(data.diabetesMissedVisitsRate).slice(
                 -barsToDisplay
-            ),
-            type: "bar",
-          },
-        ],
-      };
-      config.options.scales = {
-        xAxes: [
-          {
-            stacked: true,
-            display: true,
-            gridLines: {
-              display: false,
-              drawBorder: false,
+              ),
+              backgroundColor: COLORS["mediumBlue"],
+              hoverBackgroundColor: COLORS["darkBlue"],
+              // type: "bar",
             },
-            ticks: {
-              autoSkip: false,
-              fontColor: COLORS['darkGrey'],
-              fontSize: 12,
-              fontFamily: "Roboto",
-              padding: 8,
-              min: 0,
-              beginAtZero: true,
+          ],
+        },
+        options: {
+          scales: {
+            x: {
+              stacked: true,
+              grid: {
+                drawBorder: false,
+                drawTicks: false,
+              },
+              // display: true,
+              // gridLines: {
+              //   display: false,
+              //   drawBorder: false,
+              // },
+              // ticks: {
+              //   autoSkip: false,
+              //   fontColor: COLORS["darkGrey"],
+              //   fontSize: 12,
+              //   fontFamily: "Roboto",
+              //   padding: 8,
+              //   min: 0,
+              //   beginAtZero: true,
+              // },
             },
-          },
-        ],
-        yAxes: [
-          {
-            stacked: true,
-            display: false,
-            gridLines: {
-              display: false,
-              drawBorder: false,
-            },
-            ticks: {
-              autoSkip: false,
-              fontColor: COLORS['darkGrey'],
-              fontSize: 10,
-              fontFamily: "Roboto",
-              padding: 8,
-              min: 0,
-              beginAtZero: true,
-            },
-          },
-        ],
-      };
 
-      return config;
+            y: {
+              stacked: true,
+              display: false,
+              // gridLines: {
+              //   display: false,
+              //   drawBorder: false,
+              // },
+              // ticks: {
+              //   autoSkip: false,
+              //   fontColor: COLORS["darkGrey"],
+              //   fontSize: 10,
+              //   fontFamily: "Roboto",
+              //   padding: 8,
+              //   min: 0,
+              //   beginAtZero: true,
+              // },
+            },
+          },
+        },
+      };
+      const diabetesVisitDetailsConfig = combineConfigWithBaseConfig(
+        diabetesVisitDetailsAdditionalConfig
+      );
+
+      return diabetesVisitDetailsConfig;
     },
     MedicationsDispensation: function(data) {
       const config = createBaseGraphConfig();
