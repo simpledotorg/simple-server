@@ -197,8 +197,6 @@ DashboardReports = () => {
         data.monthlyDiabetesRegistrations
       );
 
-      console.log(cumulativeDiabetesRegistrationsYAxis);
-
       // const config = createBaseGraphConfig();
       const cumulativeDiabetesRegistrationsAdditionalConfig = {
         // config.type = "bar";
@@ -1296,7 +1294,6 @@ Reports = function (withLtfu) {
     const cumulativeRegistrationsGraphConfig = combineConfigWithBaseConfig(
       cumulativeRegistrationsGraphAdditionalConfig
     );
-    console.log("cumulative graph", cumulativeRegistrationsGraphConfig);
     const populateCumulativeRegistrationsGraph = (period) => {
       const cardNode = document.getElementById("cumulative-registrations");
       const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
