@@ -1148,126 +1148,152 @@ Reports = function (withLtfu) {
     }
   };
 
+  // ------------------------
+
   this.setupCumulativeRegistrationsGraph = (data) => {
     const cumulativeRegistrationsYAxis = this.createAxisMaxAndStepSize(
       data.cumulativeRegistrations
     );
+
     const monthlyRegistrationsYAxis = this.createAxisMaxAndStepSize(
       data.monthlyRegistrations
     );
-
-    const cumulativeRegistrationsGraphConfig = this.createBaseGraphConfig();
-    cumulativeRegistrationsGraphConfig.type = "bar";
-    cumulativeRegistrationsGraphConfig.data = {
-      labels: Object.keys(data.cumulativeRegistrations),
-      datasets: [
-        {
-          yAxisID: "cumulativeRegistrations",
-          label: "cumulative registrations",
-          backgroundColor: this.transparent,
-          borderColor: this.darkPurpleColor,
-          borderWidth: 2,
-          pointBackgroundColor: this.whiteColor,
-          hoverBackgroundColor: this.whiteColor,
-          hoverBorderWidth: 2,
-          data: Object.values(data.cumulativeRegistrations),
-          type: "line",
-        },
-        {
-          yAxisID: "monthlyRegistrations",
-          label: "monthly registrations",
-          backgroundColor: this.lightPurpleColor,
-          hoverBackgroundColor: this.darkPurpleColor,
-          data: Object.values(data.monthlyRegistrations),
-          type: "bar",
-        },
-      ],
-    };
-    cumulativeRegistrationsGraphConfig.options.scales = {
-      xAxes: [
-        {
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: false,
+    console.log(monthlyRegistrationsYAxis);
+    console.log(Object.values(data.cumulativeRegistrations));
+    const cumulativeRegistrationsGraphAdditionalConfig = {
+      // type: "line",
+      data: {
+        labels: Object.keys(data.cumulativeRegistrations),
+        datasets: [
+          {
+            label: "cumulative registrations",
+            data: Object.values(data.cumulativeRegistrations),
+            backgroundColor: this.transparent,
+            borderColor: this.darkPurpleColor,
+            yAxisID: "y",
+            // borderWidth: 2,
+            // pointBackgroundColor: this.whiteColor,
+            // hoverBackgroundColor: this.whiteColor,
+            // hoverBorderWidth: 2,
           },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 12,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
+          {
+            label: "monthly registrations",
+            data: Object.values(data.monthlyRegistrations),
+            backgroundColor: this.lightPurpleColor,
+            hoverBackgroundColor: this.darkPurpleColor,
+            type: "bar",
+            yAxisID: "y1",
           },
-        },
-      ],
-      yAxes: [
-        {
-          id: "cumulativeRegistrations",
-          position: "left",
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: false,
+        ],
+      },
+      options: {
+        scales: {
+          x: {
+            // stacked: true,
+            // display: true,
+            // gridLines: {
+            //   display: false,
+            //   drawBorder: false,
+            // },
+            // ticks: {
+            //   autoSkip: false,
+            //   fontColor: this.darkGreyColor,
+            //   fontSize: 12,
+            //   fontFamily: "Roboto",
+            //   padding: 8,
+            //   min: 0,
+            //   beginAtZero: true,
+            // },
           },
-          ticks: {
-            display: false,
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: cumulativeRegistrationsYAxis.stepSize,
-            max: cumulativeRegistrationsYAxis.max,
-            callback: (label) => {
-              return this.formatNumberWithCommas(label);
+          // "cumulativeRegistrations"
+          y: {
+            //   // id: "cumulativeRegistrations",
+            //   // position: "left",
+            //   stacked: true,
+            // display: false,
+            //   // gridLines: {
+            //   //   display: false,
+            //   //   drawBorder: false,
+            //   // },
+            //   // grid: {
+            //   //   display: false,
+            //   // },
+            grid: {
+              drawTicks: false,
             },
+            ticks: {
+              display: false,
+              //     // autoSkip: false,
+              //     fontColor: this.darkGreyColor,
+              //     // fontSize: 10,
+              //     // fontFamily: "Roboto",
+              //     // padding: 8,
+              //     // min: 0,
+              //     // beginAtZero: true,
+              //     // step
+              //     // jamie - can I modularise this? - should it be global?
+              //     // callback: (label) => {
+              //     //   return this.formatNumberWithCommas(label);
+              //     // },
+              stepSize: cumulativeRegistrationsYAxis.stepSize, // not wanted - adds lots of lines
+            },
+            max: cumulativeRegistrationsYAxis.max, // no change to design?
           },
-        },
-        {
-          id: "monthlyRegistrations",
-          position: "right",
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: true,
-            drawBorder: false,
-          },
-          ticks: {
-            display: false,
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: monthlyRegistrationsYAxis.stepSize,
+          // "monthlyRegistrations"
+          y1: {
+            // id: "monthlyRegistrations",
+            // position: "right",
+            // stacked: true,
+            // display: true,
+            // gridLines: {
+            //   display: true,
+            //   drawBorder: false,
+            // },
+            ticks: {
+              // display: false,
+              // autoSkip: false,
+              // fontColor: this.darkGreyColor,
+              // fontSize: 10,
+              // fontFamily: "Roboto",
+              // padding: 8,
+              // min: 0,
+              // beginAtZero: true,
+              stepSize: monthlyRegistrationsYAxis.stepSize,
+              // stepSize: "50%",
+              // callback: (label) => {
+              //   return this.formatNumberWithCommas(label);
+              // },
+            },
             max: monthlyRegistrationsYAxis.max,
-            callback: (label) => {
-              return this.formatNumberWithCommas(label);
+          },
+        },
+        plugins: {
+          tooltip: {
+            // enabled: false,
+            // mode: "index",
+            // intersect: false,
+            // custom: (tooltip) => {
+            //   let hoveredDatapoint = tooltip.dataPoints;
+            //   if (hoveredDatapoint)
+            //     populateCumulativeRegistrationsGraph(hoveredDatapoint[0].label);
+            //   else populateCumulativeRegistrationsGraphDefault();
+            // },
+            external: function (context) {
+              populateCardData(
+                context,
+                populateCumulativeRegistrationsGraph,
+                populateCumulativeRegistrationsGraphDefault
+              );
             },
           },
         },
-      ],
-    };
-    cumulativeRegistrationsGraphConfig.options.tooltips = {
-      enabled: false,
-      mode: "index",
-      intersect: false,
-      custom: (tooltip) => {
-        let hoveredDatapoint = tooltip.dataPoints;
-        if (hoveredDatapoint)
-          populateCumulativeRegistrationsGraph(hoveredDatapoint[0].label);
-        else populateCumulativeRegistrationsGraphDefault();
       },
     };
 
+    const cumulativeRegistrationsGraphConfig = combineConfigWithBaseConfig(
+      cumulativeRegistrationsGraphAdditionalConfig
+    );
+    console.log("cumulative graph", cumulativeRegistrationsGraphConfig);
     const populateCumulativeRegistrationsGraph = (period) => {
       const cardNode = document.getElementById("cumulative-registrations");
       const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
