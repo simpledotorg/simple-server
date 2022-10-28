@@ -189,143 +189,151 @@ DashboardReports = () => {
 
       return bsBelow200PatientsConfig;
     },
-    cumulativeDiabetesRegistrationsTrend: function(data) {
-      const cumulativeDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(data.cumulativeDiabetesRegistrations);
-      const monthlyDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(data.monthlyDiabetesRegistrations);
+    cumulativeDiabetesRegistrationsTrend: function (data) {
+      const cumulativeDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(
+        data.cumulativeDiabetesRegistrations
+      );
+      const monthlyDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(
+        data.monthlyDiabetesRegistrations
+      );
 
-      const config = createBaseGraphConfig();
-      config.type = "bar";
-      config.data = {
-        labels: Object.keys(data.cumulativeDiabetesRegistrations),
-        datasets: [
-          {
-            yAxisID: "cumulativeDiabetesRegistrations",
-            label: "cumulative diabetes registrations",
-            backgroundColor: COLORS['transparent'],
-            borderColor: COLORS['darkPurple'],
-            borderWidth: 2,
-            pointBackgroundColor: COLORS['white'],
-            hoverBackgroundColor: COLORS['white'],
-            hoverBorderWidth: 2,
-            data: Object.values(data.cumulativeDiabetesRegistrations),
-            type: "line",
-          },
-          {
-            yAxisID: "monthlyDiabetesFollowups",
-            label: "monthly diabetes followups",
-            backgroundColor: COLORS['transparent'],
-            borderColor: COLORS['darkTeal'],
-            borderWidth: 2,
-            pointBackgroundColor: COLORS['white'],
-            hoverBackgroundColor: COLORS['white'],
-            hoverBorderWidth: 2,
-            data: Object.values(data.monthlyDiabetesFollowups),
-            type: "line",
-          },
-          {
-            yAxisID: "monthlyDiabetesRegistrations",
-            label: "monthly diabetes registrations",
-            backgroundColor: COLORS['lightPurple'],
-            hoverBackgroundColor: COLORS['darkPurple'],
-            data: Object.values(data.monthlyDiabetesRegistrations),
-            type: "bar",
-          },
-        ],
-      };
-      config.options.scales = {
-        xAxes: [
-          {
-            stacked: true,
-            display: true,
-            gridLines: {
-              display: false,
-              drawBorder: false,
+      console.log(cumulativeDiabetesRegistrationsYAxis);
+
+      // const config = createBaseGraphConfig();
+      const cumulativeDiabetesRegistrationsAdditionalConfig = {
+        // config.type = "bar";
+        data: {
+          labels: Object.keys(data.cumulativeDiabetesRegistrations),
+          datasets: [
+            {
+              label: "cumulative diabetes registrations",
+              data: Object.values(data.cumulativeDiabetesRegistrations),
+              backgroundColor: COLORS["transparent"],
+              borderColor: COLORS["darkPurple"],
+              yAxisID: "y1",
+              // borderWidth: 2,
+              // pointBackgroundColor: COLORS["white"],
+              // hoverBackgroundColor: COLORS["white"],
+              // hoverBorderWidth: 2,
+              // type: "line",
             },
-            ticks: {
-              autoSkip: false,
-              fontColor: COLORS['darkGrey'],
-              fontSize: 12,
-              fontFamily: "Roboto",
-              padding: 8,
-              min: 0,
-              beginAtZero: true,
+            {
+              label: "monthly diabetes followups",
+              data: Object.values(data.monthlyDiabetesFollowups),
+              backgroundColor: COLORS["transparent"],
+              borderColor: COLORS["darkTeal"],
+              yAxisID: "y1",
+              // borderWidth: 2,
+              // pointBackgroundColor: COLORS["white"],
+              // hoverBackgroundColor: COLORS["white"],
+              // hoverBorderWidth: 2,
+              // type: "line",
             },
-          },
-        ],
-        yAxes: [
-          {
-            id: "cumulativeDiabetesRegistrations",
-            position: "left",
-            stacked: true,
-            display: true,
-            gridLines: {
-              display: false,
-              drawBorder: false,
+            {
+              label: "monthly diabetes registrations",
+              data: Object.values(data.monthlyDiabetesRegistrations),
+              backgroundColor: COLORS["lightPurple"],
+              hoverBackgroundColor: COLORS["darkPurple"],
+              type: "bar",
+              yAxisID: "y",
             },
-            ticks: {
-              display: false,
-              autoSkip: false,
-              fontColor: COLORS['darkGrey'],
-              fontSize: 10,
-              fontFamily: "Roboto",
-              padding: 8,
-              min: 0,
-              beginAtZero: true,
-              stepSize: cumulativeDiabetesRegistrationsYAxis.stepSize,
-              max: cumulativeDiabetesRegistrationsYAxis.max,
-              callback: formatNumberWithCommas
-            },
-          },
-          {
-            id: "monthlyDiabetesRegistrations",
-            position: "right",
-            stacked: true,
-            display: true,
-            gridLines: {
-              display: true,
-              drawBorder: false,
-            },
-            ticks: {
-              display: false,
-              autoSkip: false,
-              fontColor: COLORS['darkGrey'],
-              fontSize: 10,
-              fontFamily: "Roboto",
-              padding: 8,
-              min: 0,
-              beginAtZero: true,
-              stepSize: monthlyDiabetesRegistrationsYAxis.stepSize,
+          ],
+        },
+        options: {
+          scales: {
+            // x: {
+            // stacked: true,
+            //     display: true,
+            //     gridLines: {
+            //       display: false,
+            //       drawBorder: false,
+            //     },
+            //     ticks: {
+            //       autoSkip: false,
+            //       fontColor: COLORS["darkGrey"],
+            //       fontSize: 12,
+            //       fontFamily: "Roboto",
+            //       padding: 8,
+            //       min: 0,
+            //       beginAtZero: true,
+            //     },
+            // },
+
+            y: {
+              // id: "cumulativeDiabetesRegistrations",
+              // position: "left",
+              // stacked: true,
+              // display: true,
+              // gridLines: {
+              //   display: false,
+              //   drawBorder: false,
+              // },
+              ticks: {
+                display: false,
+                // autoSkip: false,
+                // fontColor: COLORS["darkGrey"],
+                // fontSize: 10,
+                // fontFamily: "Roboto",
+                // padding: 8,
+                // min: 0,
+                // beginAtZero: true,
+                // callback: formatNumberWithCommas,
+                stepSize: monthlyDiabetesRegistrationsYAxis.stepSize,
+              },
               max: monthlyDiabetesRegistrationsYAxis.max,
-              callback: formatNumberWithCommas
             },
-          },
-          {
-            id: "monthlyDiabetesFollowups",
-            position: "right",
-            stacked: true,
-            display: true,
-            gridLines: {
-              display: false,
-              drawBorder: false,
-            },
-            ticks: {
-              display: false,
-              autoSkip: false,
-              fontColor: COLORS['darkGrey'],
-              fontSize: 10,
-              fontFamily: "Roboto",
-              padding: 8,
-              min: 0,
-              beginAtZero: true,
-              stepSize: cumulativeDiabetesRegistrationsYAxis.stepSize,
+            y1: {
+              // id: "monthlyDiabetesRegistrations",
+              // position: "right",
+              // stacked: true,
+              display: true,
+              // gridLines: {
+              //   display: true,
+              //   drawBorder: false,
+              // },
+              ticks: {
+                // display: false,
+                // autoSkip: false,
+                // fontColor: COLORS["darkGrey"],
+                // fontSize: 10,
+                // fontFamily: "Roboto",
+                // padding: 8,
+                // min: 0,
+                // beginAtZero: true,
+                // callback: formatNumberWithCommas,
+                // stepSize: cumulativeDiabetesRegistrationsYAxis.stepSize,
+              },
               max: cumulativeDiabetesRegistrationsYAxis.max,
-              callback: formatNumberWithCommas
             },
+            // {
+            //   id: "monthlyDiabetesFollowups",
+            //   position: "right",
+            //   stacked: true,
+            //   display: true,
+            //   gridLines: {
+            //     display: false,
+            //     drawBorder: false,
+            //   },
+            //   ticks: {
+            //     display: false,
+            //     autoSkip: false,
+            //     fontColor: COLORS["darkGrey"],
+            //     fontSize: 10,
+            //     fontFamily: "Roboto",
+            //     padding: 8,
+            //     min: 0,
+            //     beginAtZero: true,
+            //     stepSize: cumulativeDiabetesRegistrationsYAxis.stepSize,
+            //     max: cumulativeDiabetesRegistrationsYAxis.max,
+            //     // callback: formatNumberWithCommas,
+            //   },
           },
-        ],
+        },
       };
-
-      return config;
+      const cumulativeDiabetesRegistrationsConfig = combineConfigWithBaseConfig(
+        cumulativeDiabetesRegistrationsAdditionalConfig
+      );
+      return cumulativeDiabetesRegistrationsConfig;
     },
     bsOver200PatientsTrend: function (data) {
       // const config = createBaseGraphConfig();
