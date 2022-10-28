@@ -50,6 +50,10 @@ module Reports
       total_counts[:monthly_follow_ups_htn_or_dm]
     end
 
+    memoize def total_overdue_calls
+      Reports::FacilityState.where(facility: facility).pluck(:monthly_overdue_calls).compact.sum
+    end
+
     def daily_statistics
       {
         daily: {

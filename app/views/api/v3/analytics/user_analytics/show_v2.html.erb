@@ -120,10 +120,10 @@
         </h1>
         <div class="mb-24px">
           <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
-            <span class="fw-bold">4,124</span> <%= t("progress_tab.achievements_card.follow_up_visits_section_title", visit_or_visits: "visit".pluralize(4124)) %>
+            <span class="fw-bold"><%= number_with_delimiter(@service.total_follow_ups) %></span> <%= t("progress_tab.achievements_card.follow_up_visits_section_title", visit_or_visits: "visit".pluralize(@service.total_follow_ups)) %>
           </p>
           <div class="d-flex ai-center jc-space-between pt-4px pb-4px pr-16px pl-16px">
-            <% follow_up_badge_goals = create_badge_array(4124) %>
+            <% follow_up_badge_goals = create_badge_array(@service.total_follow_ups) %>
             <% follow_up_badge_goals.each do |badge| %>
               <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
                 locals: { value: badge["goal_value"],
@@ -139,10 +139,10 @@
         </div>
         <div class="mb-24px">
           <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
-            <span class="fw-bold">8,716</span> <%= t("progress_tab.achievements_card.overdue_patients_section_title", call_or_calls: "call".pluralize(8716)) %>
+            <span class="fw-bold"><%= number_with_delimiter(@service.total_overdue_calls) %></span> <%= t("progress_tab.achievements_card.overdue_patients_section_title", call_or_calls: "call".pluralize(@service.total_overdue_calls)) %>
           </p>
           <div class="d-flex ai-center jc-space-between pt-4px pb-4px pr-16px pl-16px">
-            <% overdue_call_badge_goals = create_badge_array(8716) %>
+            <% overdue_call_badge_goals = create_badge_array(@service.total_overdue_calls) %>
             <% overdue_call_badge_goals.each do |badge| %>
               <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
                 locals: { value: badge["goal_value"],
@@ -158,10 +158,10 @@
         </div>
         <div>
           <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
-            <span class="fw-bold">1,512</span> <%= t("progress_tab.achievements_card.registered_patients_title", patient_or_patients: "patient".pluralize(1512)) %>
+            <span class="fw-bold"><%= number_with_delimiter(@service.total_registrations) %></span> <%= t("progress_tab.achievements_card.registered_patients_title", patient_or_patients: "patient".pluralize(@service.total_registrations)) %>
           </p>
           <div class="d-flex ai-center jc-space-between pt-4px pb-4px pr-16px pl-16px">
-            <% registered_patients_badge_goals = create_badge_array(1512) %>
+            <% registered_patients_badge_goals = create_badge_array(@service.total_registrations) %>
             <% registered_patients_badge_goals.each do |badge| %>
               <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
                 locals: { value: badge["goal_value"],
