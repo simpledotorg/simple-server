@@ -1852,16 +1852,20 @@ function combineConfigWithBaseConfig(additionalConfig) {
   return _.mergeWith(
     baseLineGraphConfig(),
     additionalConfig,
-    customizerArrayMerging
+    mergeWithCustomizerArrayMerging
   );
 }
 
 function combineConfigWithAnotherConfig(intitialConfig, additionalConfig) {
-  return _.mergeWith(intitialConfig, additionalConfig, customizerArrayMerging);
+  return _.mergeWith(
+    intitialConfig,
+    additionalConfig,
+    mergeWithCustomizerArrayMerging
+  );
 }
 
 // Object Array merging incorrect without this function
-function customizerArrayMerging(objValue, srcValue) {
+function mergeWithCustomizerArrayMerging(objValue, srcValue) {
   if (_.isArray(objValue)) {
     return objValue.concat(srcValue);
   }
