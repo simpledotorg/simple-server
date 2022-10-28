@@ -1640,7 +1640,7 @@ Reports = function (withLtfu) {
                 family: "Roboto",
                 size: 12,
               },
-              padding: 80,
+              padding: 8,
             },
           },
         },
@@ -1731,15 +1731,14 @@ function baseLineGraphConfig() {
             drawOnChartArea: false,
             tickLength: 6,
           },
+          // min: 0,  // not needed? check value
           ticks: {
             autoSkip: false,
             font: {
               family: "Roboto",
               size: 12,
             },
-            min: 0, // not needed?
-            // minRotation: 50,
-            // padding: 8,
+            padding: 8,
           },
         },
         y: {
@@ -1754,35 +1753,36 @@ function baseLineGraphConfig() {
             font: {
               family: "Roboto",
               size: 10,
+              padding: 8,
             },
             stepSize: 25,
+          },
+          // callback: (label) => {
+          //   return this.formatNumberWithCommas(label);
+          // },
+        },
+        y1: {
+          display: false,
+          beginAtZero: true,
+          min: 0, // needed?
+          position: "right",
+          grid: {
+            drawBorder: false,
+            drawOnChartArea: false,
+          },
+          ticks: {
+            display: false,
+            autoSkip: false,
+            font: {
+              family: "Roboto",
+              size: 10,
+            },
             padding: 8,
           },
           // callback: (label) => {
           //   return this.formatNumberWithCommas(label);
           // },
         },
-        // y1: {
-        //   // type: "linear",
-        //   // beginAtZero: true,
-        //   display: false,
-        //   // min: 0,
-        //   // position: "right",
-        //   // grid: {
-        //   //   drawOnChartArea: false, // only want the grid lines for one axis to show up
-        //   // },
-        //   // ticks: {
-        //   //   autoSkip: false,
-        //   //   font: {
-        //   //     family: "Roboto",
-        //   //     size: 10,
-        //   //   },
-        //   //   padding: 8,
-        //   // },
-        //   // callback: (label) => {
-        //   //   return this.formatNumberWithCommas(label);
-        //   // },
-        // },
       },
     },
     plugins: [intersectDataVerticalLine],
