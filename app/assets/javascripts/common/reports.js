@@ -1361,102 +1361,116 @@ Reports = function (withLtfu) {
   };
 
   this.setupVisitDetailsGraph = (data) => {
-    const visitDetailsGraphConfig = this.createBaseGraphConfig();
-    visitDetailsGraphConfig.type = "bar";
-
     const maxBarsToDisplay = 6;
     const barsToDisplay = Math.min(
       Object.keys(data.controlRate).length,
       maxBarsToDisplay
     );
 
-    visitDetailsGraphConfig.data = {
-      labels: Object.keys(data.controlRate).slice(-barsToDisplay),
-      datasets: [
-        {
-          label: "BP controlled",
-          backgroundColor: this.mediumGreenColor,
-          hoverBackgroundColor: this.darkGreenColor,
-          data: Object.values(data.controlRate).slice(-barsToDisplay),
-          type: "bar",
-        },
-        {
-          label: "BP uncontrolled",
-          backgroundColor: this.mediumRedColor,
-          hoverBackgroundColor: this.darkRedColor,
-          data: Object.values(data.uncontrolledRate).slice(-barsToDisplay),
-          type: "bar",
-        },
-        {
-          label: "Visit but no BP measure",
-          backgroundColor: this.mediumGreyColor,
-          hoverBackgroundColor: this.darkGreyColor,
-          data: Object.values(data.visitButNoBPMeasureRate).slice(
-            -barsToDisplay
-          ),
-          type: "bar",
-        },
-        {
-          label: "Missed visits",
-          backgroundColor: this.mediumBlueColor,
-          hoverBackgroundColor: this.darkBlueColor,
-          data: Object.values(data.missedVisitsRate).slice(-barsToDisplay),
-          type: "bar",
-        },
-      ],
-    };
-    visitDetailsGraphConfig.options.scales = {
-      xAxes: [
-        {
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 12,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-          },
-        },
-      ],
-      yAxes: [
-        {
-          stacked: true,
-          display: false,
-          gridLines: {
-            display: false,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-          },
-        },
-      ],
-    };
+    const visitDetailsGraphAdditionalConfig = {
+      type: "bar",
 
-    visitDetailsGraphConfig.options.tooltips = {
-      enabled: false,
-      mode: "index",
-      intersect: false,
-      custom: (tooltip) => {
-        let hoveredDatapoint = tooltip.dataPoints;
-        if (hoveredDatapoint)
-          populateVisitDetailsGraph(hoveredDatapoint[0].label);
-        else populateVisitDetailsGraphDefault();
+      data: {
+        labels: Object.keys(data.controlRate).slice(-barsToDisplay),
+        datasets: [
+          {
+            label: "BP controlled",
+            data: Object.values(data.controlRate).slice(-barsToDisplay),
+            backgroundColor: this.mediumGreenColor,
+            hoverBackgroundColor: this.darkGreenColor,
+            // type: "bar",
+          },
+          {
+            label: "BP uncontrolled",
+            data: Object.values(data.uncontrolledRate).slice(-barsToDisplay),
+            backgroundColor: this.mediumRedColor,
+            hoverBackgroundColor: this.darkRedColor,
+            // type: "bar",
+          },
+          {
+            label: "Visit but no BP measure",
+            data: Object.values(data.visitButNoBPMeasureRate).slice(
+              -barsToDisplay
+            ),
+            backgroundColor: this.mediumGreyColor,
+            hoverBackgroundColor: this.darkGreyColor,
+            // type: "bar",
+          },
+          {
+            label: "Missed visits",
+            data: Object.values(data.missedVisitsRate).slice(-barsToDisplay),
+            backgroundColor: this.mediumBlueColor,
+            hoverBackgroundColor: this.darkBlueColor,
+            // type: "bar",
+          },
+        ],
+      },
+      options: {
+        scales: {
+          x: {
+            stacked: true,
+            // display: true,
+            grid: {
+              drawBorder: false,
+              drawTicks: false,
+            },
+            // ticks: {
+            //   autoSkip: false,
+            //   fontColor: this.darkGreyColor,
+            //   fontSize: 12,
+            //   fontFamily: "Roboto",
+            //   padding: 8,
+            //   min: 0,
+            //   beginAtZero: true,
+            // },
+          },
+
+          y: {
+            stacked: true,
+            display: false,
+            // gridLines: {
+            //   display: false,
+            //   drawBorder: false,
+            // },
+            // ticks: {
+            //   autoSkip: false,
+            //   fontColor: this.darkGreyColor,
+            //   fontSize: 10,
+            //   fontFamily: "Roboto",
+            //   padding: 8,
+            //   min: 0,
+            //   beginAtZero: true,
+            // },
+          },
+        },
+        plugins: {
+          tooltip: {
+            external: function (context) {
+              populateCardData(
+                context,
+                populateVisitDetailsGraph,
+                populateVisitDetailsGraphDefault
+              );
+            },
+          },
+        },
+        // tooltip: {
+        //   enabled: false,
+        //   mode: "index",
+        //   intersect: false,
+        //   custom: (tooltip) => {
+        //     let hoveredDatapoint = tooltip.dataPoints;
+        //     if (hoveredDatapoint)
+        //       populateVisitDetailsGraph(hoveredDatapoint[0].label);
+        //     else populateVisitDetailsGraphDefault();
+        //   },
+        // },
       },
     };
+
+    const visitDetailsGraphConfig = combineConfigWithBaseConfig(
+      visitDetailsGraphAdditionalConfig
+    );
 
     const populateVisitDetailsGraph = (period) => {
       const cardNode = document.getElementById("visit-details");
