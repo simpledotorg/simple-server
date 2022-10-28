@@ -2,6 +2,15 @@
   <h1 class="page-title">CPHC Migration</h1>
 </div>
 
+<%= render "action",
+           method: :post,
+           active: false,
+           fa_icon: "cloud-exclamation",
+           btn_type: :danger,
+           path: admin_cphc_migration_cancel_all_path,
+           btn_contents: "Cancel ongoing migration of #{@ongoing_migrations} patients",
+           confirm: "Are you sure you want to cancel the migration of #{@ongoing_migrations} patients?" unless @ongoing_migrations.zero? %>
+
 <% @districts_with_mappings.each do |organization, facility_groups| %>
   <h2 class="mt-5 mb-3"><span class="heading-label">Organization: <%= organization.name %></span></h2>
   <h2 class="mb-16px"><%= t("facility_group").capitalize %>s</h2>
@@ -9,26 +18,23 @@
   <% facility_groups.group_by(&:state).each do |state, facility_groups| %>
     <div class="card">
       <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-8">
           <h3><%= state %></h3>
         </div>
-      </div>
 
-      <div class="row">
         <% if facility_groups.present? %>
-          <div class="col-md-2">
+          <div class="col-md-4">
             <% state_region = facility_groups.first.state_region %>
-
             <%= render "action",
-              method: :post,
-              active: false,
-              fa_icon: "download",
-              btn_type: :info,
-              path: admin_cphc_migration_error_line_list_path(
-                region_type: state_region.region_type,
-                region_slug: state_region.slug,
-              ),
-              btn_contents: "Errored patients" %>
+                       method: :post,
+                       active: false,
+                       fa_icon: "download",
+                       btn_type: :info,
+                       path: admin_cphc_migration_error_line_list_path(
+                         region_type: state_region.region_type,
+                         region_slug: state_region.slug,
+                       ),
+                       btn_contents: "Errored patients" %>
           </div>
         <% end %>
       </div>

@@ -39,7 +39,7 @@
           method: :get,
           active: params[:error_facilities].present?,
           fa_icon: "bomb",
-          btn_type: :danger,
+          btn_type: :info,
           path: admin_cphc_migration_district_path(
             district_slug: @facility_group.slug,
             error_facilities: true
@@ -64,6 +64,17 @@
             btn_contents: "Migrate District",
             confirm: "Are you sure you want to migrate #{migratable_patients(@facility_group).count} patients for district #{@facility_group.name}?" %>
       <% end %>
+        <%= render "action",
+                   method: :post,
+                   active: false,
+                   fa_icon: "ban",
+                   btn_type: :danger,
+                   path: admin_cphc_migration_cancel_path(
+                     region_type: @facility_group.region.region_type,
+                     region_slug: @facility_group.region.slug,
+                   ),
+                   btn_contents: "Cancel migration",
+                   confirm: "Are you sure you want to cancel migration patients for district #{@facility_group.name}?" %>
       </div>
     </div>
     <div class="facility-group-contents collapse show" id="<%= @facility_group.slug %>-contents">

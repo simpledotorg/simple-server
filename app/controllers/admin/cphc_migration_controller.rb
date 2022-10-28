@@ -32,6 +32,7 @@ class Admin::CphcMigrationController < AdminController
     @unmapped_facility_counts = unmapped_facilities(Facility.where(facility_group: facility_groups)).group(:facility_group_id).count
     @error_counts = error_facilities(Facility.where(facility_group: facility_groups)).group(:facility_group_id).count
     @district_results = migration_summary(Facility.where(facility_group: facility_group_ids), :district)
+    @ongoing_migrations = ongoing_migrations
   end
 
   def district
@@ -141,6 +142,32 @@ class Admin::CphcMigrationController < AdminController
     redirect_to request.referrer, notice: "Email will be sent to #{current_admin.email}"
   end
 
+  def cancel_all
+    authorize { current_admin.power_user? }
+
+    Sidekiq::Queue.new("cphc_migration").clear
+    Sidekiq::ScheduledSet.new
+      .select { |job| job.queue == "cphc_migration" }
+      .map(&:delete)
+  end
+
+  def cancel
+    authorize { current_admin.power_user? }
+
+    region = Region.find_by!(
+      region_type: params.require(:region_type),
+      slug: params.require(:region_slug)
+    )
+    patients = region.assigned_patients.pluck(:id).to_set
+
+    Sidekiq::Queue.new("cphc_migration")
+      .select { |job| patients.include?(job.args.first) }
+      .map(&:delete)
+    Sidekiq::ScheduledSet.new
+      .select { |job| job.queue == "cphc_migration" && patients.include?(job.args.first) }
+      .map(&:delete)
+  end
+
   def get_migrated_records(klass, region)
     facilities = if region.is_a? Facility
       [region]
@@ -150,10 +177,6 @@ class Admin::CphcMigrationController < AdminController
     CphcMigrationAuditLog
       .where(facility: facilities, cphc_migratable_type: klass.to_s.camelcase)
       .order(created_at: :desc)
-  end
-
-  def render_only_in_india
-    fail_request(:unauthorized, "only allowed in India") unless CountryConfig.current_country?("India")
   end
 
   private
@@ -180,7 +203,6 @@ class Admin::CphcMigrationController < AdminController
 
   def migration_summary(facilities, region_type)
     patients = Patient.where(assigned_facility_id: facilities)
-    migratables = %w[Patient Encounter BloodPressure BloodSugar PrescriptionDrug Appointment]
     group_by_columns = {
       facility: "facilities.id",
       district: "facilities.district",
@@ -198,7 +220,7 @@ class Admin::CphcMigrationController < AdminController
         appointments: Appointment.joins(:patient).joins(patient: :assigned_facility).where(patient_id: patients).group(group_by_column).count
       },
       migrated:
-        CphcMigrationAuditLog.where(facility_id: facilities, cphc_migratable_type: migratables)
+        CphcMigrationAuditLog.where(facility_id: facilities)
           .joins(:facility)
           .group(:cphc_migratable_type, group_by_column)
           .count,
@@ -209,7 +231,25 @@ class Admin::CphcMigrationController < AdminController
           .where("cphc_migration_audit_logs.id is null")
           .where(facility_id: facilities)
           .group(:cphc_migratable_type, group_by_column)
+          .count,
+      daily:
+        CphcMigrationAuditLog
+          .joins(:facility)
+          .group(:cphc_migratable_type, group_by_column)
+          .group_by_period(:day, :created_at)
           .count
+          .each_with_object({}) { |((model, region_id, date), count), result|
+            result[date] ||= {}
+            result[date][[model, region_id]] = count
+          }
     }
+  end
+
+  def render_only_in_india
+    fail_request(:unauthorized, "only allowed in India") unless CountryConfig.current_country?("India")
+  end
+
+  def ongoing_migrations
+    Sidekiq::Queue.new("cphc_migration").size + Sidekiq::ScheduledSet.new.count { |job| job.queue == "cphc_migration" }
   end
 end
