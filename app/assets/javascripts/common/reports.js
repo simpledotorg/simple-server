@@ -761,6 +761,9 @@ DashboardReports = () => {
         throw `Graph config not known for ${id}`;
       }
 
+      // this section is coded differently to withLTFU
+      // this function is created in a different scope
+      // in this scope the tooltip plugin is merge with the graph config
       const tooltipOptionsFunctionInObject = {
         options: {
           plugins: {
