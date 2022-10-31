@@ -5,6 +5,8 @@ module Reports
     MONTHS = -5
     CONTROL_MONTHS = -12
     DAYS_AGO = 29
+    DIAGNOSES_FOR_V1 = [:hypertension_and_diabetes, :diabetes, :hypertension]
+    DIAGNOSES = [:diabetes, :hypertension]
     attr_reader :control_range
     attr_reader :facility
     attr_reader :range
@@ -40,6 +42,14 @@ module Reports
       daily_total_follow_ups[date]
     end
 
+    def total_registrations
+      total_counts[:monthly_registrations_htn_or_dm]
+    end
+
+    def total_follow_ups
+      total_counts[:monthly_follow_ups_htn_or_dm]
+    end
+
     def daily_statistics
       {
         daily: {
@@ -58,11 +68,11 @@ module Reports
     end
 
     def total_counts
-      @total_counts ||= Reports::FacilityStateDimension.totals(facility)
+      @total_counts ||= Reports::FacilityMonthlyFollowUpAndRegistration.totals(facility)
     end
 
     def monthly_counts
-      @monthly_counts ||= repository.facility_progress[facility.region.slug]
+      @monthly_counts ||= repository.monthly_follow_ups_and_registrations[facility.region.slug]
     end
 
     def repository
@@ -75,15 +85,19 @@ module Reports
 
     # Returns all possible combinations of FacilityProgressDimensions for displaying
     # the different slices of progress data.
-    def dimension_combinations_for(indicator)
+    def dimension_combinations_for(indicator, diagnoses: DIAGNOSES)
       dimensions = [create_dimension(indicator, diagnosis: :all, gender: :all)] # special case first
-      combinations = [indicator].product([:diabetes, :hypertension]).product([:all, :male, :female, :transgender])
+      combinations = [indicator].product(diagnoses).product([:all, :male, :female, :transgender])
       combinations.each do |c|
         indicator, diagnosis = *c.first
         gender = c.last
         dimensions << create_dimension(indicator, diagnosis: diagnosis, gender: gender)
       end
       dimensions
+    end
+
+    def dimension_combinations_for_v1(indicator)
+      dimension_combinations_for(indicator, diagnoses: DIAGNOSES_FOR_V1)
     end
 
     attr_reader :diabetes_enabled

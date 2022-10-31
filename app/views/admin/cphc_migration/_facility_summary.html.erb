@@ -31,7 +31,7 @@
                 <td class="text-danger"><%= error_log.cphc_migratable_type %></td>
                 <td class="text-danger"><%= error_log.failures["path"] %></td>
                 <td class="text-danger"><%= error_log.failures["response_code"] %></td>
-                <td class="text-danger"><%= error_log.failures["response_body"].truncate(500, separator: " ") %></td>
+                <td class="text-danger"><%= error_log.failures["response_body"].to_s.truncate(500, separator: " ") %></td>
                 <td>
                   <%= render "action",
                     method: :post,

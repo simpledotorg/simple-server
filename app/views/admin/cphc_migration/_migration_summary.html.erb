@@ -42,14 +42,23 @@
       <% summary[:daily].each do |date, daily_summary| %>
         <tr style="background: #eee">
           <td><%= I18n.l(date) %></td>
-          <td><%= number_or_dash_with_delimiter(daily_summary[["Patient", region_id]]) %></td>
-          <td><%= number_or_dash_with_delimiter(daily_summary[["Encounter", region_id]]) %></td>
-          <td><%= number_or_dash_with_delimiter(daily_summary[["BloodPressure", region_id]]) %></td>
-          <td><%= number_or_dash_with_delimiter(daily_summary[["BloodSugar", region_id]]) %></td>
-          <td><%= number_or_dash_with_delimiter(daily_summary[["PrescriptionDrug", region_id]]) %></td>
-          <td><%= number_or_dash_with_delimiter(daily_summary[["Appointment", region_id]]) %></td>
+          <td><%= number_or_dash_with_delimiter(daily_summary[["Patient", region.id]]) %></td>
+          <td><%= number_or_dash_with_delimiter(daily_summary[["Encounter", region.id]]) %></td>
+          <td><%= number_or_dash_with_delimiter(daily_summary[["BloodPressure", region.id]]) %></td>
+          <td><%= number_or_dash_with_delimiter(daily_summary[["BloodSugar", region.id]]) %></td>
+          <td><%= number_or_dash_with_delimiter(daily_summary[["PrescriptionDrug", region.id]]) %></td>
+          <td><%= number_or_dash_with_delimiter(daily_summary[["Appointment", region.id]]) %></td>
         </tr>
       <% end %>
     <% end %>
+    <tr>
+      <th>Totals</th>
+      <th><%= number_or_dash_with_delimiter(summary.dig(:total, :patients, region.id)) %></th>
+      <th><%= number_or_dash_with_delimiter(summary.dig(:total, :encounters, region.id)) %></th>
+      <th><%= number_or_dash_with_delimiter(summary.dig(:total, :blood_pressures, region.id)) %></th>
+      <th><%= number_or_dash_with_delimiter(summary.dig(:total, :blood_sugars, region.id)) %></th>
+      <th><%= number_or_dash_with_delimiter(summary.dig(:total, :prescription_drugs, region.id)) %></th>
+      <th><%= number_or_dash_with_delimiter(summary.dig(:total, :appointments, region.id)) %></th>
+    </tr>
   </tbody>
 </table>

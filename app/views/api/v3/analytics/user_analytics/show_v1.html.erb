@@ -50,10 +50,10 @@
           </h1>
           <div class="mb-24px">
             <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
-              <span class="fw-bold"><%= number_with_delimiter(@total_follow_ups) %></span> <%= t("progress_tab.achievements_card.follow_up_visits_section_title", visit_or_visits: "visit".pluralize(@total_follow_ups)) %>
+              <span class="fw-bold"><%= number_with_delimiter(@service.total_follow_ups) %></span> <%= t("progress_tab.achievements_card.follow_up_visits_section_title", visit_or_visits: "visit".pluralize(@service.total_follow_ups)) %>
             </p>
             <div class="d-flex ai-center jc-space-between pt-4px pb-4px pr-16px pl-16px">
-              <% follow_up_badge_goals = create_badge_array(@total_follow_ups) %>
+              <% follow_up_badge_goals = create_badge_array(@service.total_follow_ups) %>
               <% follow_up_badge_goals.each do |badge| %>
                 <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
                   locals: { value: badge["goal_value"],
@@ -69,10 +69,10 @@
           </div>
           <div>
             <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
-              <span class="fw-bold"><%= number_with_delimiter(@total_registrations) %></span> <%= t("progress_tab.achievements_card.registered_patients_title", patient_or_patients: "patient".pluralize(@total_registrations)) %>
+              <span class="fw-bold"><%= number_with_delimiter(@service.total_registrations) %></span> <%= t("progress_tab.achievements_card.registered_patients_title", patient_or_patients: "patient".pluralize(@service.total_registrations)) %>
             </p>
             <div class="d-flex ai-center jc-space-between pt-4px pb-4px pr-16px pl-16px">
-              <% registered_patients_badge_goals = create_badge_array(@total_registrations) %>
+              <% registered_patients_badge_goals = create_badge_array(@service.total_registrations) %>
               <% registered_patients_badge_goals.each do |badge| %>
                 <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
                   locals: { value: badge["goal_value"],

@@ -31,7 +31,7 @@
       <%= t("progress_tab.period_report.registered_patients_card.subtitle", facility_name: @region.name) %>
     </p>
     <%= render partial: "api/v3/analytics/user_analytics/progress_monthly_period_dropdown", locals: { element_id: "registrations" } %>
-    <% @service.dimension_combinations_for(:registrations).each do |dimension| %>
+    <% @service.dimension_combinations_for_v1(:registrations).each do |dimension| %>
       <%= render(Reports::MonthlyProgressComponentV1.new(dimension, service: @service, current_user: @current_user)) %>
     <% end %>
   </div>
@@ -45,7 +45,7 @@
       <%= t("progress_tab.period_report.follow_up_patients_card.subtitle", facility_name: @region.name) %>
     </p>
     <%= render partial: "api/v3/analytics/user_analytics/progress_monthly_period_dropdown", locals: { element_id: "follow_ups" } %>
-    <% @service.dimension_combinations_for(:follow_ups).each do |dimension| %>
+    <% @service.dimension_combinations_for_v1(:follow_ups).each do |dimension| %>
       <%= render(Reports::MonthlyProgressComponentV1.new(dimension, service: @service, current_user: @current_user)) %>
     <% end %>
   </div>

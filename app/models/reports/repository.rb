@@ -142,7 +142,6 @@ module Reports
         blood_sugar_measures_by_user
         monthly_registrations_by_user(diagnosis: :hypertension)
         monthly_registrations_by_user(diagnosis: :diabetes)
-        monthly_registrations_by_gender
         overdue_calls_by_user
       end
     end
@@ -267,9 +266,9 @@ module Reports
     #   region => { period_1 => monthly_facility_progress_record, period_2 => monthly_facility_progress_1 }
     # Note that this does differ from the more standard return values returned from the Repository because
     # this data is specifically for the Progress Tab, where all the dimensions are needed at once
-    def facility_progress
+    def monthly_follow_ups_and_registrations
       regions.each_with_object({}) do |region, result|
-        records = Reports::FacilityStateDimension.for_region(region).where(month_date: periods)
+        records = Reports::FacilityMonthlyFollowUpAndRegistration.for_region(region).where(month_date: periods)
         records_per_period = records.each_with_object({}) do |record, hsh|
           hsh[record.period] = record
         end
