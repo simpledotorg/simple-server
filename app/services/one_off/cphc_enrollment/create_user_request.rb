@@ -4,9 +4,7 @@ class OneOff::CphcEnrollment::CreateUserRequest
   CPHC_USER_TYPE = "DEO"
   CPHC_LOCATION_TYPE = "PHC"
   CPHC_TXN_USER = "admin_goi"
-
-  # TODO: Make this env specific
-  CPHC_HOST = "admin-service.staging.ncd.local"
+  CPHC_HOST = ENV["CPHC_ADMIN_HOST"]
 
   def initialize(facility)
     @facility = facility
