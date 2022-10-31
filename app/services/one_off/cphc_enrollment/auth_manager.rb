@@ -1,60 +1,33 @@
-require "selenium-webdriver"
-
 class OneOff::CphcEnrollment::AuthManager
-  attr_reader :auth_token, :is_authorized
+  attr_reader :facility
 
-  CPHC_API_USER_ID = ENV["CPHC_API_USER_ID"]
-  CPHC_API_PASSWORD = ENV["CPHC_API_PASSWORD"]
-  CPHC_USER_STATE_CODE = ENV["CPHC_USER_STATE_CODE"]
-  CPHC_SIGN_IN_URL = "#{ENV["CPHC_BASE_URL"]}/#/login"
-
-  def initialize(auth_token: nil)
-    @auth_token = auth_token
-    @is_authorized = auth_token.present?
-  end
-
-  def sign_in(auto_fill: false)
-    driver.navigate.to(CPHC_SIGN_IN_URL)
-    if auto_fill
-      driver.find_element(class: "close", data: {dismiss: "close"}).click
-      driver.find_element(id: "username").send_keys(CPHC_API_USER_ID)
-      driver.find_element(id: "password").send_keys(CPHC_API_PASSWORD)
-    end
-    sleep 2
-    begin
-      driver.find_element(id: "captchaInput").click
-    rescue
-      logger.error "Could not click on the captcha button"
-    end
-    logger.info "Waiting to get access token"
-    wait.until { driver.find_element(class: "user-profile") }
-    @auth_token = get_auth_token
-    @is_authorized = true
-    driver.quit
+  def initialize(facility)
+    @facility = facility
   end
 
   def user
-    {user_id: CPHC_API_USER_ID,
-     facility_type_id: OneOff::CphcEnrollment::FACILITY_TYPE_ID["DH"],
-     state_code: CPHC_USER_STATE_CODE,
-     user_authorization: auth_token}
+    mapping = CphcFacilityMapping.with_user(facility)
+    {user_id: mapping.cphc_user_details["user_id"],
+     facility_type_id: OneOff::CphcEnrollment::FACILITY_TYPE_ID["PHC"],
+     state_code: mapping.cphc_state_id}
   end
 
-  def driver
-    @driver ||= Selenium::WebDriver.for :firefox
-  end
+  def create_user
+    if facility.cphc_facility_mappings.empty?
+      Rails.logger.info "#{facility.name} has not CPHC facility mappings"
+      throw "#{facility.name} not mapped to any CPHC facilities"
+    end
 
-  def get_auth_token
-    driver.execute_script(
-      "return window.sessionStorage.getItem('access_token')"
+    if CphcFacilityMapping.with_user(facility).present?
+      Rails.logger.info "#{facility.name} already has an user"
+      throw "CPHC user for #{facility.name} aleady exists"
+    end
+
+    response = OneOff::CphcEnrollment::CreateUserRequest.call(facility)
+    facility.cphc_facility_mappings.update_all(
+      cphc_user_details: {
+        user_id: response.first["createdUserId"]
+      }
     )
-  end
-
-  def wait
-    @wait ||= Selenium::WebDriver::Wait.new(timeout: 59)
-  end
-
-  def logger
-    Rails.logger
   end
 end

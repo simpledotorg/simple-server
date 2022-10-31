@@ -1,6 +1,7 @@
 class Admin::CphcMigrationController < AdminController
   include SearchHelper
   include Pagination
+  include Reports::Percentage
 
   before_action :render_only_in_india
   helper_method :get_migrated_records
@@ -8,70 +9,47 @@ class Admin::CphcMigrationController < AdminController
   helper_method :unmapped_facilities
   helper_method :error_facilities
   helper_method :migration_summary
+  helper_method :region_summary
+  helper_method :migratable_region?
+
+  MIGRATABLE_REGIONS = ["state", "district", "block", "facility"]
 
   def index
     authorize { current_admin.power_user? }
 
-    facility_mappings = CphcFacilityMapping.all.select(:facility_id, :district_name)
-    mapped_facilities = Facility.where(id: facility_mappings.pluck(:facility_id).uniq)
-    facility_group_ids = mapped_facilities.pluck(:facility_group_id).uniq
+    authorize { current_admin.power_user? }
 
-    facility_groups = current_admin.accessible_facility_groups(:manage)
-    @organizations = Organization.where(facility_groups: facility_groups)
-    @facility_groups = facility_groups.group_by(&:organization)
+    @region = Region.root
+    @region_summary = region_summary(@region)
 
-    @districts_with_mappings = FacilityGroup
-      .where(id: facility_group_ids)
-      .group_by(&:organization)
+    totals = @region_summary.dig(:totals, "Patient")
+    migrated = @region_summary.dig(:migrated, "Patient")
+    errors = @region_summary.dig(:errors, "Patient")
+    @region_progress = {
+      migrated: percentage(migrated, totals),
+      errors: percentage(errors, totals)
+    }
 
-    @districts_without_mappings = FacilityGroup
-      .where
-      .not(id: facility_group_ids)
-      .group_by(&:organization)
-
-    @unmapped_facility_counts = unmapped_facilities(Facility.where(facility_group: facility_groups)).group(:facility_group_id).count
-    @error_counts = error_facilities(Facility.where(facility_group: facility_groups)).group(:facility_group_id).count
-    @district_results = migration_summary(Facility.where(facility_group: facility_group_ids), :district)
+    render "admin/cphc_migration/region"
   end
 
-  def district
+  def region
     authorize { current_admin.power_user? }
-    @facility_group = FacilityGroup.find_by(slug: params[:district_slug])
 
-    @facilities = if searching?
-      @facility_group.facilities.search_by_name(search_query)
-    else
-      @facility_group.facilities
+    @region = Region.find_by!(region_type: params.require(:region_type), slug: params.require(:slug))
+    @region_summary = region_summary(@region)
+
+    totals = @region_summary.dig(:totals, "Patient")
+    migrated = @region_summary.dig(:migrated, "Patient")
+    errors = @region_summary.dig(:errors, "Patient")
+    @region_progress = {
+      migrated: percentage(migrated, totals),
+      errors: percentage(errors, totals)
+    }
+
+    if MIGRATABLE_REGIONS.include?(@region.child_region_type)
+      @child_summary = child_summary(@region)
     end
-
-    facilities = @facility_group.facilities
-    facility_mappings = CphcFacilityMapping.where(facility_id: facilities)
-
-    if params[:unlinked_facilities]
-      @facilities = facilities
-        .left_outer_joins(:cphc_facility_mappings)
-        .where(cphc_facility_mappings: {facility_id: nil})
-        .distinct
-    end
-
-    if params[:error_facilities]
-      facility_ids = facilities
-        .joins("inner join cphc_migration_error_logs on cphc_migration_error_logs.facility_id = facilities.id")
-        .joins("left outer join cphc_migration_audit_logs on cphc_migration_audit_logs.cphc_migratable_id = cphc_migration_error_logs.cphc_migratable_id")
-        .where("cphc_migration_audit_logs.id is null")
-        .distinct(:facility_id)
-
-      @facilities = facilities.where(id: facility_ids)
-    end
-
-    @total_unmapped_facilities_count = unmapped_facilities(@facility_group.facilities).count
-    @total_error_facilities_count = error_facilities(@facility_group.facilities).count
-
-    @mappings = facility_mappings.group_by(&:facility_id)
-
-    @unmapped_cphc_facilities = unmapped_facilities(@facility_group.facilities)
-
-    @facility_results = migration_summary(@facilities, :facility)
   end
 
   def update_cphc_mapping
@@ -88,21 +66,27 @@ class Admin::CphcMigrationController < AdminController
     redirect_to request.referrer, notice: "CPHC Facility Mapping Added"
   end
 
-  def update_facility_credentials
+  def update_credentials
     authorize { current_admin.power_user? }
 
-    facility = Facility.find_by!(slug: params.require(:facility_slug))
-    facility.cphc_facility_mappings.presence.map { |mapping|
-      mapping.auth_token = params[:user_authorization]
-      mapping.cphc_user_details = {
-        user_id: params[:user_id],
-        facility_type_id: params[:facility_type_id],
-        state_code: params[:state_code]
-      }
-      mapping.save!
-    }
+    region = Region.find_by!(region_type: params.require(:region_type), slug: params.require(:slug))
+    region.facilities.each do |facility|
+      CphcCreateUserJob.perform_async(facility.id)
+    end
 
-    redirect_to request.referrer, notice: "CPHC Facility #{facility.name} credentials updated"
+    redirect_to request.referrer, notice: "Started updating credentials for #{region.region_type} #{region.name}"
+  end
+
+  def migrate_region
+    authorize { current_admin.power_user? }
+
+    region = Region.find_by!(region_type: params.require(:region_type), slug: params.require(:slug))
+
+    migratable_patients(region).each do |patient|
+      CphcMigrationJob.perform_at(OneOff::CphcEnrollment.next_migration_time(Time.now), patient.id)
+    end
+
+    redirect_to request.referrer, notice: "Migration triggered for #{region.name}"
   end
 
   def migrate_to_cphc
@@ -141,6 +125,32 @@ class Admin::CphcMigrationController < AdminController
     redirect_to request.referrer, notice: "Email will be sent to #{current_admin.email}"
   end
 
+  def cancel_all
+    authorize { current_admin.power_user? }
+
+    Sidekiq::Queue.new("cphc_migration").clear
+    Sidekiq::ScheduledSet.new
+      .select { |job| job.queue == "cphc_migration" }
+      .map(&:delete)
+  end
+
+  def cancel_region_migration
+    authorize { current_admin.power_user? }
+
+    region = Region.find_by!(
+      region_type: params.require(:region_type),
+      slug: params.require(:slug)
+    )
+    patients = region.assigned_patients.pluck(:id).to_set
+
+    Sidekiq::Queue.new("cphc_migration")
+      .select { |job| patients.include?(job.args.first) }
+      .map(&:delete)
+    Sidekiq::ScheduledSet.new
+      .select { |job| job.queue == "cphc_migration" && patients.include?(job.args.first) }
+      .map(&:delete)
+  end
+
   def get_migrated_records(klass, region)
     facilities = if region.is_a? Facility
       [region]
@@ -152,10 +162,6 @@ class Admin::CphcMigrationController < AdminController
       .order(created_at: :desc)
   end
 
-  def render_only_in_india
-    fail_request(:unauthorized, "only allowed in India") unless CountryConfig.current_country?("India")
-  end
-
   private
 
   def migratable_patients(region)
@@ -164,8 +170,14 @@ class Admin::CphcMigrationController < AdminController
       .where(cphc_migration_audit_logs: {id: nil})
   end
 
-  def unmapped_facilities(facilities)
-    facilities
+  def mapped_facilities(region)
+    region.facilities
+      .left_outer_joins(:cphc_facility_mappings)
+      .where.not({cphc_facility_mappings: {id: nil}})
+  end
+
+  def unmapped_facilities(region)
+    region.facilities
       .left_outer_joins(:cphc_facility_mappings)
       .where({cphc_facility_mappings: {id: nil}})
   end
@@ -180,12 +192,11 @@ class Admin::CphcMigrationController < AdminController
 
   def migration_summary(facilities, region_type)
     patients = Patient.where(assigned_facility_id: facilities)
-    migratables = %w[Patient Encounter BloodPressure BloodSugar PrescriptionDrug Appointment]
     group_by_columns = {
       facility: "facilities.id",
       district: "facilities.district",
       state: "facilities.state"
-    }
+    }.with_indifferent_access
     group_by_column = group_by_columns[region_type]
 
     {
@@ -198,7 +209,7 @@ class Admin::CphcMigrationController < AdminController
         appointments: Appointment.joins(:patient).joins(patient: :assigned_facility).where(patient_id: patients).group(group_by_column).count
       },
       migrated:
-        CphcMigrationAuditLog.where(facility_id: facilities, cphc_migratable_type: migratables)
+        CphcMigrationAuditLog.where(facility_id: facilities)
           .joins(:facility)
           .group(:cphc_migratable_type, group_by_column)
           .count,
@@ -209,7 +220,107 @@ class Admin::CphcMigrationController < AdminController
           .where("cphc_migration_audit_logs.id is null")
           .where(facility_id: facilities)
           .group(:cphc_migratable_type, group_by_column)
+          .count,
+      daily:
+        CphcMigrationAuditLog
+          .joins(:facility)
+          .group(:cphc_migratable_type, group_by_column)
+          .group_by_period(:day, :created_at)
           .count
+          .each_with_object({}) { |((model, region_id, date), count), result|
+            result[date] ||= {}
+            result[date][[model, region_id]] = count
+          }
     }
+  end
+
+  def render_only_in_india
+    fail_request(:unauthorized, "only allowed in India") unless CountryConfig.current_country?("India")
+  end
+
+  def ongoing_migrations
+    Sidekiq::Queue.new("cphc_migration").size + Sidekiq::ScheduledSet.new.count { |job| job.queue == "cphc_migration" }
+  end
+
+  def region_summary(region)
+    facilities = region.facilities
+    patients = region.assigned_patients
+
+    totals = {
+      "Patient" => patients.joins(:assigned_facility).count,
+      "Encounter" => Encounter.joins(:patient).joins(patient: :assigned_facility).where(patient_id: patients).count,
+      "BloodPressure" => BloodPressure.joins(:patient).joins(patient: :assigned_facility).where(patient_id: patients).count,
+      "BloodSugar" => BloodSugar.joins(:patient).joins(patient: :assigned_facility).where(patient_id: patients).count,
+      "PrescriptionDrug" => PrescriptionDrug.joins(:patient).joins(patient: :assigned_facility).where(patient_id: patients).count,
+      "Appointment" => Appointment.joins(:patient).joins(patient: :assigned_facility).where(patient_id: patients).count
+    }
+
+    migrated = CphcMigrationAuditLog.where(facility: facilities)
+      .joins(:facility)
+      .group(:cphc_migratable_type)
+      .count
+
+    errors = CphcMigrationErrorLog
+      .joins("left outer join cphc_migration_audit_logs on cphc_migration_audit_logs.cphc_migratable_id = cphc_migration_error_logs.cphc_migratable_id")
+      .joins(:facility)
+      .where("cphc_migration_audit_logs.id is null")
+      .where(facility_id: facilities)
+      .group(:cphc_migratable_type)
+      .count
+
+    {totals: totals,
+     migrated: migrated,
+     errors: errors,
+     mapped_facilities: mapped_facilities(region).count,
+     unmapped_facilities: unmapped_facilities(region).count}
+  end
+
+  def child_summary(region)
+    facilities = region.facilities
+    patients = region.assigned_patients
+    group_by_columns = {
+      facility: "facilities.name",
+      block: "facilities.block",
+      district: "facilities.district",
+      state: "facilities.state"
+    }.with_indifferent_access
+    group_by_column = group_by_columns[region.child_region_type]
+
+    totals = patients.joins(:assigned_facility).group(group_by_column).count
+    migrated = CphcMigrationAuditLog.where(facility: facilities)
+      .joins(:facility)
+      .where(cphc_migratable_type: "Patient")
+      .group(group_by_column)
+      .count
+
+    errors = CphcMigrationErrorLog
+      .joins("left outer join cphc_migration_audit_logs on cphc_migration_audit_logs.cphc_migratable_id = cphc_migration_error_logs.cphc_migratable_id")
+      .joins(:facility)
+      .where("cphc_migration_audit_logs.id is null")
+      .where(facility_id: facilities)
+      .distinct(:patient_id)
+      .group(group_by_column)
+      .count
+
+    mapped_facilities = mapped_facilities(region).group(group_by_column).distinct("facilities.id").count
+    unmapped_facilities = unmapped_facilities(region).group(group_by_column).distinct("facilities.id").count
+
+    region.children.map do |child|
+      [child.slug, {
+        totals: totals[child.name],
+        migrated: migrated[child.name],
+        errors: errors[child.name],
+        mapped_facilities: mapped_facilities[child.name],
+        unmapped_facilities: unmapped_facilities[child.name],
+        progress: {
+          migrated: percentage(migrated[child.name], totals[child.name]),
+          errors: percentage(errors[child.name], totals[child.name])
+        }
+      }]
+    end.to_h
+  end
+
+  def migratable_region?(region)
+    MIGRATABLE_REGIONS.include?(region.region_type.to_s)
   end
 end

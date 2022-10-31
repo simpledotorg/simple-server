@@ -792,7 +792,6 @@ DEPENDENCIES
   sassc-rails
   scenic
   scientist
-  selenium-webdriver
   sentry-rails
   sentry-ruby
   sentry-sidekiq

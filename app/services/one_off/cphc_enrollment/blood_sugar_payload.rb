@@ -31,4 +31,8 @@ class OneOff::CphcEnrollment::BloodSugarPayload
       throw "Unknown blood sugar type #{blood_sugar.blood_sugar_type}"
     end
   end
+
+  def headers
+    {"Host" => ENV.fetch("CPHC_DIABETES_HOST")}
+  end
 end
