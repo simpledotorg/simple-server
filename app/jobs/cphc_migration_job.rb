@@ -11,7 +11,7 @@ class CphcMigrationJob
     patient = Patient.find(patient_id)
 
     if OneOff::CphcEnrollment.in_migration_window?(Time.now)
-      user = patient.assigned_facility.cphc_facility_mappings.first.cphc_user
+      user = OneOff::CphcEnrollment::AuthManager.new(patient.assigned_facility).user
       return OneOff::CphcEnrollment::Service.new(patient, user).call
     end
 

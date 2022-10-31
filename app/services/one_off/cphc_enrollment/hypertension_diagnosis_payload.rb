@@ -13,4 +13,8 @@ class OneOff::CphcEnrollment::HypertensionDiagnosisPayload
      "bloodPressureControl" => blood_pressure.hypertensive? ? "Uncontrolled" : "Controlled",
      "selectedDiagnosis" => medical_history.hypertension ? "CONFIRMED_STAGE_1" : "NAD"}
   end
+
+  def headers
+    {"Host" => ENV.fetch("CPHC_HYPERTENSION_HOST")}
+  end
 end

@@ -1,5 +1,5 @@
 class OneOff::CphcEnrollment::Service
-  CPHC_BASE_PATH = "#{ENV["CPHC_BASE_URL"]}/cphm"
+  CPHC_BASE_PATH = ENV["CPHC_BASE_URL"]
   CPHC_ENROLLMENT_PATH = "#{CPHC_BASE_PATH}/enrollment/individual"
 
   CONFIG = {
@@ -96,12 +96,12 @@ class OneOff::CphcEnrollment::Service
   end
 
   def add_hypertension_examination(encounter)
-    response = make_post_request(encounter, examination_path(:hypertension), nil)
+    response = make_post_request(encounter, examination_path(:hypertension), OneOff::CphcEnrollment::HypertensionExaminationPayload.new)
     @hypertension_examination_id = JSON.parse(response.body.to_s)["screeningId"]
   end
 
   def add_diabetes_examination(encounter)
-    response = make_post_request(encounter, examination_path(:diabetes), nil)
+    response = make_post_request(encounter, examination_path(:diabetes), OneOff::CphcEnrollment::DiabetesExaminationPayload.new)
     @diabetes_examination_id = JSON.parse(response.body.to_s)["screeningId"]
   end
 
@@ -196,7 +196,7 @@ class OneOff::CphcEnrollment::Service
       return
     end
 
-    facility_type_id = OneOff::CphcEnrollment::FACILITY_TYPE_ID["DH"]
+    facility_type_id = OneOff::CphcEnrollment::FACILITY_TYPE_ID["PHC"]
     response = make_post_request(
       blood_sugar,
       measurement_path(:diabetes, @diabetes_examination_id, facility_type_id),
