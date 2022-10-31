@@ -15,4 +15,8 @@ class OneOff::CphcEnrollment::BloodPressurePayload
       }
     }
   end
+
+  def headers
+    {"Host" => ENV.fetch("CPHC_HYPERTENSION_HOST")}
+  end
 end

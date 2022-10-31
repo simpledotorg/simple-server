@@ -87,4 +87,8 @@ class OneOff::CphcEnrollment::EnrollmentPayload
       familyInfo: family_info
     }
   end
+
+  def headers
+    {"Host" => ENV.fetch("CPHC_ENROLLMENT_HOST")}
+  end
 end

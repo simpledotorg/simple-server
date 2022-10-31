@@ -9,6 +9,10 @@ class CphcFacilityMapping < ApplicationRecord
     self.encrypted_cphc_auth_token = encrypt(unencrypted_auth_token)
   end
 
+  def self.with_user(facility)
+    facility.cphc_facility_mappings.where.not(cphc_user_details: nil).first
+  end
+
   def cphc_user
     if auth_token.present?
       cphc_user_details&.merge(user_authorization: auth_token)&.with_indifferent_access
