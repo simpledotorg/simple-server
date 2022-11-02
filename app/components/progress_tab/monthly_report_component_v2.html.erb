@@ -1,0 +1,83 @@
+<div id="monthly-report-page" class="d-none">
+  <div class="mb-8px pt-16px pb-16px bgc-white br-4px bs-card">
+    <a
+      class="d-block w-24px h-24px mb-24px pl-16px"
+      href="#"
+      onclick="goToPage('monthly-report-page', 'home-page'); return false;"
+    >
+      <div class="d-inline-block">
+        <%= inline_file("chevron-left.svg") %>
+      </div>
+    </a>
+    <div class="pr-16px pl-16px">
+      <h1 class="m-0px mb-8px fw-bold fs-24px">
+        <%= title %> report
+      </h1>
+      <% if subtitle %>
+        <p class="m-0px p-0px ta-left fw-normal fs-16px c-grey-dark">
+          <%= subtitle %>
+        </p>
+      <% end %>
+      <%= select_tag "period", options_for_select(last_6_months, last_6_months.first),  id: "monthly-period-dropdown", onchange: "updateMonthlyReport()",
+                     class: "w-100 mt-16px p-12px fw-medium fs-16px ls-1_25px c-blue bgc-blue-light b-none br-1px bs-secondary-button o-none a-none chevron-down-icon"
+      %>
+    </div>
+  </div>
+
+  <% last_6_months.each_with_index do |date, index| %>
+    <div data-element="monthly-cards" data-date="<%= date %>" class="<% unless index == 0 %>d-none<% end %>">
+      <div class="mb-8px p-16px bgc-white br-4px bs-card">
+        <div class="d-flex ai-center jc-space-between mb-8px">
+          <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
+            <%= t("progress_tab.period_report.registered_patients_card.title") %>
+          </h2>
+          <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
+            <%= total_registrations(date.to_date) %>
+          </p>
+        </div>
+        <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+          <%= t("progress_tab.period_report.registered_patients_card.subtitle", facility_name: region.name) %>
+        </p>
+        <% diagnosis_headers.each do |diagnosis, title| %>
+          <%= render ProgressTab::BreakdownTableComponent.new(
+            title: title,
+            breakdown: monthly_registrations_breakdown[Period.month(date.to_date)][diagnosis])
+          %>
+        <% end %>
+      </div>
+      <div class="mb-8px p-16px bgc-white br-4px bs-card">
+        <div class="d-flex ai-center jc-space-between mb-8px">
+          <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
+            <%= t("progress_tab.period_report.follow_up_patients_card.title") %>
+          </h2>
+          <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
+            <%= total_follow_ups(date.to_date) %>
+          </p>
+        </div>
+        <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+          <%= t("progress_tab.period_report.follow_up_patients_card.subtitle", facility_name: region.name) %>
+        </p>
+        <% diagnosis_headers.each do |diagnosis, title|%>
+          <%= render ProgressTab::BreakdownTableComponent.new(
+            title: title,
+            breakdown: monthly_follow_ups_breakdown[Period.month(date.to_date)][diagnosis])
+          %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <% if render_patient_initiated_on_treatment? %>
+    <div class="p-relative mb-8px p-16px bgc-yellow-lightest br-4px bs-card">
+      <h1 class="m-0px mb-8px p-0px pr-48px ta-left fw-medium fs-18px lh-135 c-black">
+        <%= t("progress_tab.period_report.patients_initiated_on_treatment_card.title") %>
+      </h1>
+      <p class="m-0px p-0px ta-left fw-normal fs-16px lh-165 c-black">
+        <%= t("progress_tab.period_report.patients_initiated_on_treatment_card.main_text") %>
+      </p>
+      <div class="p-absolute t-8px r-8px w-48px h-48px">
+        <%= inline_svg("exclamation-mark.svg") %>
+      </div>
+    </div>
+  <% end %>
+</div>
