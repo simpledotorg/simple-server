@@ -51,7 +51,7 @@ class OneOff::CphcEnrollment::CreateUserRequest
         mobileNumber: mobile_number,
         locationId: location_id,
         userType: CPHC_USER_TYPE,
-        locationType: cphc_facility_type_id
+        locationType: OneOff::CphcEnrollment::FACILITY_TYPE_MAPPING[facility.facility_type]
       }
     ]
   end
@@ -74,10 +74,5 @@ class OneOff::CphcEnrollment::CreateUserRequest
 
   def cphc_facility_mapping
     facility.cphc_facility_mappings.first
-  end
-
-  def cphc_facility_type_id
-    cphc_type = OneOff::CphcEnrollment::FACILITY_TYPE_MAPPING[facility.facility_type]
-    OneOff::CphcEnrollment::FACILITY_TYPE_ID[cphc_type]
   end
 end
