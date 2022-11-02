@@ -4,3 +4,4 @@ server "ec2-3-110-79-4.ap-south-1.compute.amazonaws.com", user: "deploy", roles:
 server "ec2-3-111-50-131.ap-south-1.compute.amazonaws.com", user: "deploy", roles: %w[web app db whitelist_phone_numbers]
 server "ec2-3-111-56-99.ap-south-1.compute.amazonaws.com", user: "deploy", roles: %w[web app db]
 server "ec2-3-110-91-74.ap-south-1.compute.amazonaws.com", user: "deploy", roles: %w[web sidekiq]
+server "ec2-43-205-92-179.ap-south-1.compute.amazonaws.com", user: "deploy", roles: %w[web sidekiq]
