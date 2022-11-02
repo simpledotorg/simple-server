@@ -1,5 +1,6 @@
 module OneOff::CphcEnrollment
   FACILITY_TYPE_ID = {
+    "SUBCENTER" => 3100,
     "PHC" => 3200,
     "CHC" => 3300,
     "DH" => 3400,

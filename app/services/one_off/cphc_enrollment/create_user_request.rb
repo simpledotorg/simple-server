@@ -58,7 +58,7 @@ class OneOff::CphcEnrollment::CreateUserRequest
   end
 
   def username
-    "deo_ihci_#{cphc_facility_mapping.cphc_phc_id}_#{facility.slug}"
+    "deo_ihci_#{cphc_facility_mapping.cphc_phc_id}"
   end
 
   def mobile_number
