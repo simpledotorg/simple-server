@@ -1,7 +1,7 @@
 class CphcCreateUserJob
   include Sidekiq::Worker
 
-  sidekiq_options queue: :default
+  sidekiq_options queue: :cphc_migration
 
   def perform(facility_id)
     facility = Facility.find(facility_id)
