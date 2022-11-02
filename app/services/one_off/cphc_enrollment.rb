@@ -10,9 +10,9 @@ module OneOff::CphcEnrollment
   FACILITY_TYPE_MAPPING = {
     "SDH" => "DH",
     "PHC" => "PHC",
-    "CHC" => "CHC",
+    "CHC" => "PHC",
     "UPHC" => "PHC",
-    "UCHC" => "CHC",
+    "UCHC" => "PHC",
     "DH" => "DH"
   }
 
