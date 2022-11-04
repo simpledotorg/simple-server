@@ -22,9 +22,9 @@ class CphcFacility < ApplicationRecord
         facility.cphc_district_id = mapping.cphc_district_id
         facility.cphc_district_name = mapping.cphc_district_name
         facility.cphc_taluka_id = mapping.cphc_taluka_id
-        facility.cphc_taluka_name = mapping.cphc_taluka_id
-        facility.cphc_state_name = mapping.cphc_state_name
+        facility.cphc_taluka_name = mapping.cphc_taluka_name
         facility.cphc_state_id = mapping.cphc_state_id
+        facility.cphc_state_name = mapping.cphc_state_name
         facility.cphc_user_details = mapping.cphc_user_details
         facility.cphc_facility_type = "PHC"
         facility.cphc_facility_type_id = OneOff::CphcEnrollment::FACILITY_TYPE_ID["PHC"]
@@ -39,9 +39,9 @@ class CphcFacility < ApplicationRecord
         facility.cphc_district_id = mapping.cphc_district_id
         facility.cphc_district_name = mapping.cphc_district_name
         facility.cphc_taluka_id = mapping.cphc_taluka_id
-        facility.cphc_taluka_name = mapping.cphc_taluka_id
-        facility.cphc_state_name = mapping.cphc_state_name
+        facility.cphc_taluka_name = mapping.cphc_taluka_name
         facility.cphc_state_id = mapping.cphc_state_id
+        facility.cphc_state_name = mapping.cphc_state_name
         facility.cphc_user_details = nil
         facility.cphc_facility_type = "SUBCENTER"
         facility.cphc_facility_type_id = OneOff::CphcEnrollment::FACILITY_TYPE_ID["SUBCENTER"]
