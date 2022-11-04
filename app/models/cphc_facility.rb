@@ -4,14 +4,14 @@ class CphcFacility < ApplicationRecord
   belongs_to :facility, optional: true
   has_many :cphc_facility_villages
 
-  pg_search_scope :search_by_subcenter,
-                  against: :cphc_subcenter_name,
-                  using: { tsearch: { any_word: true, prefix: true } }
+  pg_search_scope :search_by_facility_name,
+    against: :cphc_facility_name,
+    using: {tsearch: {any_word: true, prefix: true}}
 
   pg_search_scope :search_by_region, against: {
     cphc_district_name: "A",
     cphc_taluka_name: "B"
-  }, using: { tsearch: { any_word: true, prefix: true } }
+  }, using: {tsearch: {any_word: true, prefix: true}}
 
   def self.copy_phcs_from_mapping
     CphcFacilityMapping.select("DISTINCT ON(cphc_phc_id) *").each do |mapping|

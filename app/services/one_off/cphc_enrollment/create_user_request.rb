@@ -51,13 +51,13 @@ class OneOff::CphcEnrollment::CreateUserRequest
         mobileNumber: mobile_number,
         locationId: location_id,
         userType: CPHC_USER_TYPE,
-        locationType: OneOff::CphcEnrollment::FACILITY_TYPE_MAPPING[facility.facility_type]
+        locationType: "PHC"
       }
     ]
   end
 
   def username
-    "deo_ihci_#{cphc_facility_mapping.cphc_phc_id}"
+    "deo_ihci_phc_#{cphc_facility_mapping.cphc_phc_id}"
   end
 
   def mobile_number

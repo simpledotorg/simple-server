@@ -243,6 +243,7 @@ namespace :dell_demo do
 
         if input == "y"
           CphcFacilityMapping.where(cphc_phc_name: mapping.cphc_phc_name).update(facility: facility)
+          CphcCreateUserJob.perform_async(facility.id)
         end
 
         if input == "a"
@@ -261,14 +262,15 @@ namespace :dell_demo do
   task :map_cphc_subcenters, [:district] => :environment do |_t, args|
     district = args[:district]
     Facility.where(district: district)
-            .left_outer_joins(:cphc_facilities)
-            .where(cphc_facilities: {cphc_facility_id: nil})
-            .order(:name)
-            .reject { |facility| facility.name.starts_with?(/CHC|PHC|UPHC|UCHC|DH /)}
-            .each do |facility|
+      .left_outer_joins(:cphc_facility)
+      .where(cphc_facilities: {cphc_facility_id: nil})
+      .order(:name)
+      .reject { |facility| facility.name.starts_with?(/CHC|PHC|UPHC|UCHC|DH /) }
+      .each do |facility|
       potential_mappings =
         CphcFacility
-          .search_by_subcenter(facility.name)
+          .search_by_facility_name(facility.name)
+          .where(cphc_facility_type: "SUBCENTER")
           .search_by_region(district)
           .where(facility_id: nil)
 
@@ -278,10 +280,10 @@ namespace :dell_demo do
 
       puts "\n"
       tp potential_mappings,
-         :id,
-         :cphc_district_name,
-         :cphc_taluka_name,
-         :cphc_facility_name
+        :id,
+        :cphc_district_name,
+        :cphc_taluka_name,
+        :cphc_facility_name
 
       puts "\n"
       jump_to_id = nil
@@ -300,7 +302,8 @@ namespace :dell_demo do
         end
 
         if input == "y"
-          mapping.update!(facility_id: mapping.facility_id)
+          mapping.update!(facility_id: facility.id)
+          CphcCreateUserJob.perform_async(facility.id)
         end
 
         if input.to_i != 0

@@ -6,7 +6,7 @@ class OneOff::CphcEnrollment::AuthManager
   end
 
   def user
-    facility.cphc_facility.cphc_user_details
+    facility.cphc_facility.cphc_user_details.with_indifferent_access
   end
 
   def create_user
@@ -22,13 +22,13 @@ class OneOff::CphcEnrollment::AuthManager
       throw "CPHC user for #{facility.name} aleady exists"
     end
 
-    response = if cphc_facility.cphc_facility_tpye == "SUBCENTER"
-                 OneOff::CphcEnrollment::CreateSubcenterUserRequest.call(facility)
-               elsif cphc_facility.cphc_facility_tpye == "PHC"
-                 OneOff::CphcEnrollment::CreateUserRequest.call(facility)
-               end
+    response = if cphc_facility.cphc_facility_type == "SUBCENTER"
+      OneOff::CphcEnrollment::CreateSubcenterUserRequest.call(facility)
+    elsif cphc_facility.cphc_facility_type == "PHC"
+      OneOff::CphcEnrollment::CreateUserRequest.call(facility)
+    end
 
-    cphc_facility.update(
+    cphc_facility.update!(
       cphc_user_details: {
         user_id: response.first["createdUserId"],
         facility_type_id: cphc_facility.cphc_facility_type_id,

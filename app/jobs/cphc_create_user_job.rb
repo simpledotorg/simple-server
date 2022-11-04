@@ -1,7 +1,7 @@
 class CphcCreateUserJob
   include Sidekiq::Worker
 
-  sidekiq_options queue: :cphc_migration
+  sidekiq_options queue: :cphc_migration, retry: SimpleServer.env.development?
 
   def perform(facility_id)
     facility = Facility.find(facility_id)

@@ -38,7 +38,7 @@ class OneOff::CphcEnrollment::CreateSubcenterUserRequest
   end
 
   def path
-    "#{ENV['CPHC_BASE_URL']}/adminOperations/locationType/SUBCENTER/locationId/#{location_id}/createUser?userType=MLHP"
+    "#{ENV["CPHC_BASE_URL"]}/adminOperations/locationType/SUBCENTER/locationId/#{location_id}/createUser?userType=MLHP"
   end
 
   def headers
