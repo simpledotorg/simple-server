@@ -247,7 +247,7 @@ class OneOff::CphcEnrollment::Service
       failures: {
         timestamp: Time.now,
         path: path,
-        payload: payload,
+        payload: payload.payload,
         response_code: response.code,
         response_body: json_or_str_body(response)
       }
@@ -300,14 +300,23 @@ class OneOff::CphcEnrollment::Service
   end
 
   def cphc_location
+    cphc_facility = patient.assigned_facility.cphc_facility
+
+    query =
+      case cphc_facility.cphc_facility_type
+            when "SUBCENTER"
+              { cphc_subcenter_id: cphc_facility.cphc_facility_id }
+            when "PHC"
+              { cphc_phc_id: cphc_facility.cphc_facility_id }
+          end
+
     potential_match = CphcFacilityMapping
-      .where(facility: patient.assigned_facility)
+      .where(query)
       .search_by_village(patient.address.village_or_colony)
       .first
 
     other_village = CphcFacilityMapping.find_by(
-      facility: patient.assigned_facility,
-      cphc_village_name: "Other"
+      query.merge(cphc_village_name: "Other")
     )
 
     mapping = potential_match || other_village

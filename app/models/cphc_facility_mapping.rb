@@ -41,6 +41,10 @@ class CphcFacilityMapping < ApplicationRecord
     against: :cphc_phc_name,
     using: {tsearch: {any_word: true, prefix: true}}
 
+  pg_search_scope :search_by_subcenter,
+                  against: :cphc_subcenter_name,
+                  using: {tsearch: {any_word: true, prefix: true}}
+
   pg_search_scope :search_by_region, against: {
     cphc_district_name: "A",
     cphc_taluka_name: "B"

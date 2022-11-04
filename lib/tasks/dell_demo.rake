@@ -256,4 +256,57 @@ namespace :dell_demo do
       end
     end
   end
+
+  desc "Map CPHC Subcenters"
+  task :map_cphc_subcenters, [:district] => :environment do |_t, args|
+    district = args[:district]
+    Facility.where(district: district)
+            .left_outer_joins(:cphc_facilities)
+            .where(cphc_facilities: {cphc_facility_id: nil})
+            .order(:name)
+            .reject { |facility| facility.name.starts_with?(/CHC|PHC|UPHC|UCHC|DH /)}
+            .each do |facility|
+      potential_mappings =
+        CphcFacility
+          .search_by_subcenter(facility.name)
+          .search_by_region(district)
+          .where(facility_id: nil)
+
+      next puts("No Mappings | Block: #{facility.block} | Facility: #{facility.name} \n".red) if potential_mappings.empty?
+
+      puts "Potential Mappings | Block: #{facility.block} | Facility: #{facility.name}".green
+
+      puts "\n"
+      tp potential_mappings,
+         :id,
+         :cphc_district_name,
+         :cphc_taluka_name,
+         :cphc_facility_name
+
+      puts "\n"
+      jump_to_id = nil
+      potential_mappings.each do |mapping|
+        if jump_to_id.present? && mapping.id != jump_to_id
+          next
+        end
+        jump_to_id = nil
+
+        print "Map #{facility.name} to #{mapping.cphc_facility_name}? [(y)es, (n)o, (a)ll (s)kip, (id)jump] "
+        input = $stdin.gets.strip
+        puts "\n"
+
+        if input == "s"
+          break
+        end
+
+        if input == "y"
+          mapping.update!(facility_id: mapping.facility_id)
+        end
+
+        if input.to_i != 0
+          jump_to_id = input.to_i
+        end
+      end
+    end
+  end
 end

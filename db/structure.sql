@@ -434,7 +434,7 @@ CREATE TABLE public.configurations (
 CREATE TABLE public.cphc_facilities (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     facility_id uuid,
-    cphc_facility_id character varying,
+    cphc_facility_id integer,
     cphc_facility_name character varying,
     cphc_district_id integer,
     cphc_district_name character varying,
@@ -444,6 +444,7 @@ CREATE TABLE public.cphc_facilities (
     cphc_state_id integer,
     cphc_facility_type character varying,
     cphc_facility_type_id character varying,
+    cphc_user_details json,
     deleted_at timestamp without time zone,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
