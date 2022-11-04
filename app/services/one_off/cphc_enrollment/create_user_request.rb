@@ -2,7 +2,6 @@ class OneOff::CphcEnrollment::CreateUserRequest
   attr_reader :facility
 
   CPHC_USER_TYPE = "DEO"
-  CPHC_LOCATION_TYPE = "PHC"
   CPHC_TXN_USER = "admin_goi"
   CPHC_HOST = ENV["CPHC_ADMIN_HOST"]
 
@@ -52,7 +51,7 @@ class OneOff::CphcEnrollment::CreateUserRequest
         mobileNumber: mobile_number,
         locationId: location_id,
         userType: CPHC_USER_TYPE,
-        locationType: CPHC_LOCATION_TYPE
+        locationType: OneOff::CphcEnrollment::FACILITY_TYPE_MAPPING[facility.facility_type]
       }
     ]
   end

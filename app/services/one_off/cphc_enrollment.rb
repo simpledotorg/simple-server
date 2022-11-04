@@ -7,6 +7,15 @@ module OneOff::CphcEnrollment
     "TERTIARY" => 3500
   }
 
+  FACILITY_TYPE_MAPPING = {
+    "SDH" => "DH",
+    "PHC" => "PHC",
+    "CHC" => "CHC",
+    "UPHC" => "PHC",
+    "UCHC" => "CHC",
+    "DH" => "DH"
+  }
+
   CPHC_MIGRATION_WINDOW_START = "cphc_migration_window_start_hours"
   CPHC_MIGRATION_WINDOW_END = "cphc_migration_window_end_hours"
 

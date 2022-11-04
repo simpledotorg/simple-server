@@ -7,8 +7,9 @@ class OneOff::CphcEnrollment::AuthManager
 
   def user
     mapping = CphcFacilityMapping.with_user(facility)
+    cphc_type = OneOff::CphcEnrollment::FACILITY_TYPE_MAPPING[facility.facility_type]
     {user_id: mapping.cphc_user_details["user_id"],
-     facility_type_id: OneOff::CphcEnrollment::FACILITY_TYPE_ID["PHC"],
+     facility_type_id: OneOff::CphcEnrollment::FACILITY_TYPE_ID[cphc_type],
      state_code: mapping.cphc_state_id}
   end
 
