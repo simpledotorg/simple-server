@@ -428,6 +428,29 @@ CREATE TABLE public.configurations (
 
 
 --
+-- Name: cphc_facilities; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.cphc_facilities (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    facility_id uuid,
+    cphc_facility_id character varying,
+    cphc_facility_name character varying,
+    cphc_district_id integer,
+    cphc_district_name character varying,
+    cphc_taluka_id integer,
+    cphc_taluka_name character varying,
+    cphc_state_name character varying,
+    cphc_state_id integer,
+    cphc_facility_type character varying,
+    cphc_facility_type_id character varying,
+    deleted_at timestamp without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: cphc_facility_mappings; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -471,6 +494,21 @@ CREATE SEQUENCE public.cphc_facility_mappings_id_seq
 --
 
 ALTER SEQUENCE public.cphc_facility_mappings_id_seq OWNED BY public.cphc_facility_mappings.id;
+
+
+--
+-- Name: cphc_facility_villages; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.cphc_facility_villages (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    cphc_facility_id uuid,
+    cphc_village_name character varying,
+    cphc_village_id character varying,
+    deleted_at timestamp without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
 
 
 --
@@ -4664,11 +4702,27 @@ ALTER TABLE ONLY public.configurations
 
 
 --
+-- Name: cphc_facilities cphc_facilities_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cphc_facilities
+    ADD CONSTRAINT cphc_facilities_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: cphc_facility_mappings cphc_facility_mappings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.cphc_facility_mappings
     ADD CONSTRAINT cphc_facility_mappings_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cphc_facility_villages cphc_facility_villages_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cphc_facility_villages
+    ADD CONSTRAINT cphc_facility_villages_pkey PRIMARY KEY (id);
 
 
 --
@@ -6587,6 +6641,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20221011124316'),
 ('20221013131043'),
 ('20221024071410'),
-('20221024071710');
+('20221024071710'),
+('20221104075303');
 
 
