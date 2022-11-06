@@ -226,7 +226,7 @@ namespace :dell_demo do
 
       puts "\n"
       tp potential_mappings,
-        :id,
+        {id: {width: 37}},
         :cphc_district_name,
         :cphc_taluka_name,
         :cphc_facility_name
@@ -250,6 +250,7 @@ namespace :dell_demo do
         if input == "y"
           mapping.update!(facility_id: facility.id)
           CphcCreateUserJob.perform_async(facility.id)
+          break
         end
 
         if input.to_i != 0
@@ -266,7 +267,7 @@ namespace :dell_demo do
       .left_outer_joins(:cphc_facility)
       .where(cphc_facilities: {cphc_facility_id: nil})
       .order(:name)
-      .reject { |facility| facility.name.starts_with?(/CHC|PHC|UPHC|UCHC|DH /) }
+      .reject { |facility| facility.name.starts_with?(/CHC|PHC|UPHC|UCHC|DH /i) }
       .each do |facility|
       potential_mappings =
         CphcFacility
@@ -281,7 +282,7 @@ namespace :dell_demo do
 
       puts "\n"
       tp potential_mappings,
-        :id,
+        {id: {width: 37}},
         :cphc_district_name,
         :cphc_taluka_name,
         :cphc_facility_name
@@ -305,6 +306,7 @@ namespace :dell_demo do
         if input == "y"
           mapping.update!(facility_id: facility.id)
           CphcCreateUserJob.perform_async(facility.id)
+          break
         end
 
         if input.to_i != 0

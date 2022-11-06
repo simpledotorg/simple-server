@@ -498,21 +498,6 @@ ALTER SEQUENCE public.cphc_facility_mappings_id_seq OWNED BY public.cphc_facilit
 
 
 --
--- Name: cphc_facility_villages; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.cphc_facility_villages (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
-    cphc_facility_id uuid,
-    cphc_village_name character varying,
-    cphc_village_id character varying,
-    deleted_at timestamp without time zone,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
-);
-
-
---
 -- Name: cphc_migration_audit_logs; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -4716,14 +4701,6 @@ ALTER TABLE ONLY public.cphc_facilities
 
 ALTER TABLE ONLY public.cphc_facility_mappings
     ADD CONSTRAINT cphc_facility_mappings_pkey PRIMARY KEY (id);
-
-
---
--- Name: cphc_facility_villages cphc_facility_villages_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.cphc_facility_villages
-    ADD CONSTRAINT cphc_facility_villages_pkey PRIMARY KEY (id);
 
 
 --
