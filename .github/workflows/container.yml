@@ -3,8 +3,6 @@ name: Build & push Docker image
 on:
   push:
     branches: [ containerization, master ]
-  pull_request:
-    branches: [ docker-build, master ]
 
 jobs:
   docker_build_push:
