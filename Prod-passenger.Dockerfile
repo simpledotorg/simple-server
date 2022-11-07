@@ -1,4 +1,5 @@
-FROM phusion/passenger-ruby27
+# Ruby version 2.7.4
+FROM phusion/passenger-ruby27:2.0.1
 
 SHELL ["/bin/bash", "-c"]
 
