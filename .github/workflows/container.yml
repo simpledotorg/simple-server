@@ -28,7 +28,7 @@ jobs:
       options: --user 0
     steps:
       - name: Argocd deployment
-        run: ${GITHUB_WORKSPACE}/scripts/argocd_deployment.sh ${{ secrets.BD_K3S_DEMO_ARGOCD_ENDPOINT }} ${{ secrets.ARGOCD_USERNAME }} ${{ secrets.BD_K3S_DEMO_ARGOCD_PASSWORD }}
+        run: ${GITHUB_WORKSPACE}/script/argocd_deployment.sh ${{ secrets.BD_K3S_DEMO_ARGOCD_ENDPOINT }} ${{ secrets.ARGOCD_USERNAME }} ${{ secrets.BD_K3S_DEMO_ARGOCD_PASSWORD }}
   deploy_simple_server_staging:
     needs: docker_build_push
     runs-on: ubuntu-latest
@@ -37,4 +37,4 @@ jobs:
       options: --user 0
     steps:
       - name: Argocd deployment
-        run: ${GITHUB_WORKSPACE}/scripts/argocd_deployment.sh ${{ secrets.STAGING_ARGOCD_ENDPOINT }} ${{ secrets.ARGOCD_USERNAME }} ${{ secrets.STAGING_ARGOCD_PASSWORD }}
+        run: ${GITHUB_WORKSPACE}/script/argocd_deployment.sh ${{ secrets.STAGING_ARGOCD_ENDPOINT }} ${{ secrets.ARGOCD_USERNAME }} ${{ secrets.STAGING_ARGOCD_PASSWORD }}
