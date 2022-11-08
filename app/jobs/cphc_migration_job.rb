@@ -4,7 +4,7 @@ class CphcMigrationJob
 
   sidekiq_options queue: :cphc_migration, retry: SimpleServer.env.development?
   sidekiq_throttle(
-    threshold: {limit: 10, period: 10.seconds}
+    threshold: {limit: 15, period: 10.seconds}
   )
 
   def perform(patient_id)
