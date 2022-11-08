@@ -18,7 +18,7 @@
           <%= subtitle %>
         </p>
       <% end %>
-      <%= select_tag "period", options_for_select(last_30_days, last_30_days.first),  id: "period-dropdown", onchange: "updateDailyReport()",
+      <%= select_tag "period", options_for_select(last_30_days, last_30_days.first),  id: "daily-period-dropdown", onchange: "updateDailyReport()",
                      class: "w-100 mt-16px p-12px fw-medium fs-16px ls-1_25px c-blue bgc-blue-light b-none br-1px bs-secondary-button o-none a-none chevron-down-icon"
       %>
     </div>
