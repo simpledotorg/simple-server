@@ -24,6 +24,10 @@ module ApplicationHelper
   end
 
   def display_date(date_time)
+    unless date_time.present?
+      date_time
+
+    end
     if date_time.is_a? String
       DateTime.parse(date_time).strftime(STANDARD_DATE_DISPLAY_FORMAT)
     else
