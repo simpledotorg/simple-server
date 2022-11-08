@@ -1134,56 +1134,6 @@ en.notifications.set03.gratitude.2:
   Version: 2
   Is_Latest_Version: true
   Latest_Template_Version: en.notifications.set03.gratitude.2
-en.notifications.set03.no_date.3:
-  Template_Id: '1407166687938362043'
-  Template_Keys: []
-  Non_Variable_Text_Length: '0'
-  Max_Length_Permitted: '0'
-  Template_Status: '0'
-  Is_Unicode: '1'
-  Version: 3
-  Is_Latest_Version: true
-  Latest_Template_Version: en.notifications.set03.no_date.3
-en.notifications.set03.official_no_date.3:
-  Template_Id: '1407166687949992239'
-  Template_Keys: []
-  Non_Variable_Text_Length: '0'
-  Max_Length_Permitted: '0'
-  Template_Status: '0'
-  Is_Unicode: '1'
-  Version: 3
-  Is_Latest_Version: true
-  Latest_Template_Version: en.notifications.set03.official_no_date.3
-en.notifications.set03.official_short.3:
-  Template_Id: '1407166687879970514'
-  Template_Keys: []
-  Non_Variable_Text_Length: '0'
-  Max_Length_Permitted: '0'
-  Template_Status: '0'
-  Is_Unicode: '1'
-  Version: 3
-  Is_Latest_Version: true
-  Latest_Template_Version: en.notifications.set03.official_short.3
-en.notifications.set03.official_short_medicines.3:
-  Template_Id: '1407166687944138197'
-  Template_Keys: []
-  Non_Variable_Text_Length: '0'
-  Max_Length_Permitted: '0'
-  Template_Status: '0'
-  Is_Unicode: '1'
-  Version: 3
-  Is_Latest_Version: true
-  Latest_Template_Version: en.notifications.set03.official_short_medicines.3
-en.notifications.set03.official_you_must.3:
-  Template_Id: '1407166687947425713'
-  Template_Keys: []
-  Non_Variable_Text_Length: '0'
-  Max_Length_Permitted: '0'
-  Template_Status: '0'
-  Is_Unicode: '1'
-  Version: 3
-  Is_Latest_Version: true
-  Latest_Template_Version: en.notifications.set03.official_you_must.3
 en.notifications.set03.professional_request:
   Template_Id: '1407164725844182825'
   Template_Keys:
@@ -1220,36 +1170,6 @@ en.notifications.set03.response.2:
   Version: 2
   Is_Latest_Version: true
   Latest_Template_Version: en.notifications.set03.response.2
-en.notifications.set03.short.3:
-  Template_Id: '1407166687922147192'
-  Template_Keys: []
-  Non_Variable_Text_Length: '0'
-  Max_Length_Permitted: '0'
-  Template_Status: '0'
-  Is_Unicode: '1'
-  Version: 3
-  Is_Latest_Version: true
-  Latest_Template_Version: en.notifications.set03.short.3
-en.notifications.set03.short_medicines.3:
-  Template_Id: '1407166687929030750'
-  Template_Keys: []
-  Non_Variable_Text_Length: '0'
-  Max_Length_Permitted: '0'
-  Template_Status: '0'
-  Is_Unicode: '1'
-  Version: 3
-  Is_Latest_Version: true
-  Latest_Template_Version: en.notifications.set03.short_medicines.3
-en.notifications.set03.you_must.3:
-  Template_Id: '1407166687935345361'
-  Template_Keys: []
-  Non_Variable_Text_Length: '0'
-  Max_Length_Permitted: '0'
-  Template_Status: '0'
-  Is_Unicode: '1'
-  Version: 3
-  Is_Latest_Version: true
-  Latest_Template_Version: en.notifications.set03.you_must.3
 hi-IN.notifications.covid.medication_reminder:
   Template_Id: '1407164904210999916'
   Template_Keys:
