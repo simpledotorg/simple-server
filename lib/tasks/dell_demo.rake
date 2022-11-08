@@ -193,7 +193,11 @@ namespace :dell_demo do
 
     sheet.each(headers) do |row|
       if row[:cphc_district_id].to_s == args[:district_id]
-        CphcFacilityMapping.create(row)
+        mapping = CphcFacilityMapping.create(row)
+        if mapping.present?
+          CphcFacility.create_phc_from_mapping(mapping)
+          CphcFacility.create_subcenter_from_mapping(mapping)
+        end
       end
     end
 
@@ -204,14 +208,17 @@ namespace :dell_demo do
   task :map_cphc_facilities, [:district] => :environment do |_t, args|
     district = args[:district]
     Facility.where(district: district)
-      .left_outer_joins(:cphc_facility_mappings)
-      .where(cphc_facility_mappings: {cphc_phc_id: nil})
+      .left_outer_joins(:cphc_facility)
+      .where(cphc_facilities: {cphc_facility_id: nil})
       .order(:name)
+      .reject { |facility| facility.name.starts_with?(/CHC|SC|HSC|HWC|UCHC|DH |SDH|PHC HWC/i) }
       .each do |facility|
-      potential_mappings = CphcFacilityMapping.where(facility: nil)
-        .search_by_facility(facility.name)
-        .search_by_region(district)
-        .uniq(&:cphc_phc_name)
+      potential_mappings =
+        CphcFacility
+          .search_by_facility_name(facility.name)
+          .where(cphc_facility_type: "PHC")
+          .search_by_region(district)
+          .where(facility_id: nil)
 
       next puts("No Mappings | Block: #{facility.block} | Facility: #{facility.name} \n".red) if potential_mappings.empty?
 
@@ -219,11 +226,10 @@ namespace :dell_demo do
 
       puts "\n"
       tp potential_mappings,
-        :id,
+        {id: {width: 37}},
         :cphc_district_name,
         :cphc_taluka_name,
-        :cphc_subcenter_name,
-        :cphc_phc_name
+        :cphc_facility_name
 
       puts "\n"
       jump_to_id = nil
@@ -233,7 +239,7 @@ namespace :dell_demo do
         end
         jump_to_id = nil
 
-        print "Map #{facility.name} to #{mapping.cphc_phc_name}? [(y)es, (n)o, (a)ll (s)kip, (id)jump] "
+        print "Map #{facility.name} to #{mapping.cphc_facility_name}? [(y)es, (n)o, (a)ll (s)kip, (id)jump] "
         input = $stdin.gets.strip
         puts "\n"
 
@@ -242,11 +248,64 @@ namespace :dell_demo do
         end
 
         if input == "y"
-          CphcFacilityMapping.where(cphc_phc_name: mapping.cphc_phc_name).update(facility: facility)
+          mapping.update!(facility_id: facility.id)
+          CphcCreateUserJob.perform_async(facility.id)
+          break
         end
 
-        if input == "a"
-          potential_mappings.update(facility: facility)
+        if input.to_i != 0
+          jump_to_id = input.to_i
+        end
+      end
+    end
+  end
+
+  desc "Map CPHC Subcenters"
+  task :map_cphc_subcenters, [:district] => :environment do |_t, args|
+    district = args[:district]
+    Facility.where(district: district)
+      .left_outer_joins(:cphc_facility)
+      .where(cphc_facilities: {cphc_facility_id: nil})
+      .order(:name)
+      .reject { |facility| facility.name.starts_with?(/CHC|PHC|UPHC|UCHC|DH /i) }
+      .each do |facility|
+      potential_mappings =
+        CphcFacility
+          .search_by_facility_name(facility.name)
+          .where(cphc_facility_type: "SUBCENTER")
+          .search_by_region(district)
+          .where(facility_id: nil)
+
+      next puts("No Mappings | Block: #{facility.block} | Facility: #{facility.name} \n".red) if potential_mappings.empty?
+
+      puts "Potential Mappings | Block: #{facility.block} | Facility: #{facility.name}".green
+
+      puts "\n"
+      tp potential_mappings,
+        {id: {width: 37}},
+        :cphc_district_name,
+        :cphc_taluka_name,
+        :cphc_facility_name
+
+      puts "\n"
+      jump_to_id = nil
+      potential_mappings.each do |mapping|
+        if jump_to_id.present? && mapping.id != jump_to_id
+          next
+        end
+        jump_to_id = nil
+
+        print "Map #{facility.name} to #{mapping.cphc_facility_name}? [(y)es, (n)o, (a)ll (s)kip, (id)jump] "
+        input = $stdin.gets.strip
+        puts "\n"
+
+        if input == "s"
+          break
+        end
+
+        if input == "y"
+          mapping.update!(facility_id: facility.id)
+          CphcCreateUserJob.perform_async(facility.id)
           break
         end
 

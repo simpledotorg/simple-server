@@ -1,4 +1,4 @@
-class OneOff::CphcEnrollment::CreateUserRequest
+class OneOff::CphcEnrollment::CreateSubcenterUserRequest
   attr_reader :facility
 
   CPHC_USER_TYPE = "DEO"
@@ -26,6 +26,7 @@ class OneOff::CphcEnrollment::CreateUserRequest
         cphc_migratable: facility,
         facility_id: facility.id,
         failures: {
+          payload: payload,
           response_code: response.code,
           response_body: response.body.to_s
         }
@@ -37,7 +38,7 @@ class OneOff::CphcEnrollment::CreateUserRequest
   end
 
   def path
-    "#{ENV["CPHC_BASE_URL"]}/adminOperations/locationType/PHC/locationId/#{location_id}/createUser"
+    "#{ENV["CPHC_BASE_URL"]}/adminOperations/locationType/SUBCENTER/locationId/#{location_id}/createUser?userType=MLHP"
   end
 
   def headers
@@ -47,17 +48,17 @@ class OneOff::CphcEnrollment::CreateUserRequest
   def payload
     [
       {
-        username: username,
-        mobileNumber: mobile_number,
-        locationId: location_id,
-        userType: CPHC_USER_TYPE,
-        locationType: "PHC"
+
+        "mobileNumber" => mobile_number,
+        "locationId" => location_id,
+        "userType" => "MLHP",
+        "locationType" => "SUBCENTER"
       }
     ]
   end
 
   def username
-    "deo_ihci_phc_#{location_id}"
+    "deo_ihci_sc_#{cphc_facility_mapping.cphc_subcenter_id}"
   end
 
   def mobile_number
@@ -65,14 +66,14 @@ class OneOff::CphcEnrollment::CreateUserRequest
   end
 
   def state_code
-    cphc_facility.cphc_state_id
+    cphc_facility_mapping.cphc_state_id
   end
 
   def location_id
-    cphc_facility.cphc_facility_id
+    cphc_facility_mapping.cphc_subcenter_id
   end
 
-  def cphc_facility
-    facility.cphc_facility
+  def cphc_facility_mapping
+    CphcFacilityMapping.find_by(cphc_subcenter_id: facility.cphc_facility.cphc_facility_id)
   end
 end
