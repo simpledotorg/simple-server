@@ -167,6 +167,8 @@ module Reports
       follow_ups_breakdown(period_type: "monthly", facility_data: @monthly_facility_data)
     end
 
+    private
+
     memoize def registrations_breakdown(period_type:, facility_data:)
       facility_data.each_with_object({}) do |record, hsh|
         hsh[record.period] = {
