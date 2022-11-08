@@ -8,7 +8,8 @@ set -euo pipefail
 BUNDLER_VERSION=2.3.22
 
 init (){
-  verify_ruby_version && verify_bundled_gems && verify_yarn_packages
+  verify_ruby_version && verify_node_version
+  verify_bundled_gems && verify_yarn_packages
   verify_foreman
   verify_postgres && verify_database_migrations
   configure_parallel_testing
@@ -98,11 +99,28 @@ verify_ruby_version (){
   has_ruby_version || install_ruby_version
 }
 
+verify_node_version (){
+  echo 'Checking for node version'
+  has_node_version || install_nodejs
+}
+
 verify_bundled_gems (){
   echo 'Updating gems...'
   {
     (gem list -i -v ${BUNDLER_VERSION} bundler || gem install bundler -v ${BUNDLER_VERSION}) && bundle _${BUNDLER_VERSION}_ install --binstubs=./bundle/bin
   } 2>&1
+}
+
+has_node_version (){
+  INSTALLED_NODE_VERSION=$(node -v)
+  [ "$INSTALLED_NODE_VERSION" == "v18.11.0" ]
+}
+
+install_nodejs (){
+  echo 'Installing NodeJS...'
+  brew install nvm
+  nvm install 18.11.0
+  node -v
 }
 
 verify_yarn_packages (){
