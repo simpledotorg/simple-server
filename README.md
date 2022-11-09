@@ -45,7 +45,7 @@ There is one possible caveat to this -- if you see any problems with google-prot
 
 ```
 gem uninstall google-protobuf
-gem install google-protobuf -v 3.17.3 --platform=ruby
+gem install google-protobuf -v 3.21.5 --platform=ruby
 ```
 
 Then rerun bundler and everything will work. This is being tracked over in https://github.com/protocolbuffers/protobuf/issues/8682, hopefully there will be a better fix soon.
