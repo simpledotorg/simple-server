@@ -40,7 +40,7 @@ task prepare_security_environment: :environment do
     password: USER_PIN
   }
 
-  bp_passports = PatientBusinessIdentifier.simple_bp_passport.sample(5)
+  bp_passports = PatientBusinessIdentifier.simple_bp_passport.sample(5).map(&:identifier)
 
   dashboard_users = %Q(
     Role: Admin User
@@ -120,5 +120,5 @@ task prepare_security_environment: :environment do
   puts "BP Passports"
   puts "---------------"
   puts "Here are a few BP Passport IDs that can be used with the API"
-  bp_passports.each { |id| puts id }
+  bp_passports.each { |id| puts "  #{id}" }
 end
