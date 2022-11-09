@@ -8,7 +8,7 @@ class ProgressTab::MonthlyReportComponentV2 < ApplicationComponent
 
   attr_reader :service, :current_user, :title, :subtitle, :region
 
-  def initialize(service, current_user, title:, subtitle:)
+  def initialize(service:, current_user:, title:, subtitle:)
     @service = service
     @current_user = current_user
     @title = title
