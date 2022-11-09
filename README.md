@@ -45,7 +45,7 @@ There is one possible caveat to this -- if you see any problems with google-prot
 
 ```
 gem uninstall google-protobuf
-gem install google-protobuf -v 3.17.3 --platform=ruby
+gem install google-protobuf -v 3.21.5 --platform=ruby
 ```
 
 Then rerun bundler and everything will work. This is being tracked over in https://github.com/protocolbuffers/protobuf/issues/8682, hopefully there will be a better fix soon.
@@ -92,9 +92,13 @@ set up the application step by step. You can do so as follows.
 
 First, you need to [install ruby](https://www.ruby-lang.org/en/documentation/installation). It is recommended to use [rbenv](https://github.com/rbenv/rbenv) to manage ruby versions. Note that we currently use Bundler version 2.3.22, so that is also hardcoded below.
 
+Next, [install NodeJS v18.11.0](https://nodejs.org/en/) using [nvm](https://github.com/nvm-sh/nvm).
+
 ```bash
 gem install bundler -v 2.3.22
 bundle _2.3.22_ install
+brew install nvm
+nvm install 18.11.0
 rake yarn:install
 rails db:setup
 ```
