@@ -79,6 +79,14 @@ task prepare_security_environment: :environment do
     password: Resolve2SaveLives
   )
 
+  passport_authentications = PatientBusinessIdentifier.simple_bp_passport.sample(5).map do |bp_passport|
+    auth = PassportAuthentication.create!(patient_business_identifier: bp_passport)
+
+    {
+      identifier: bp_passport.identifier
+    }
+  end
+
   puts "Mobile app user logins"
   puts "---------------"
   puts "Log into the Simple app using these user accounts"
@@ -121,4 +129,9 @@ task prepare_security_environment: :environment do
   puts "---------------"
   puts "Here are a few BP Passport IDs that can be used with the API"
   bp_passports.each { |id| puts "  #{id}" }
+
+  puts "Patient API"
+  puts "---------------"
+  puts "Here are a few BP Passport IDs that can be used with the Patient API for individual patient login and lookup"
+  passport_authentications.each { |auth| puts "  #{auth[:identifier]}"}
 end
