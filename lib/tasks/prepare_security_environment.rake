@@ -83,7 +83,8 @@ task prepare_security_environment: :environment do
     auth = PassportAuthentication.create!(patient_business_identifier: bp_passport)
 
     {
-      identifier: bp_passport.identifier
+      identifier: bp_passport.identifier,
+      otp: USER_OTP
     }
   end
 
@@ -129,9 +130,14 @@ task prepare_security_environment: :environment do
   puts "---------------"
   puts "Here are a few BP Passport IDs that can be used with the API"
   bp_passports.each { |id| puts "  #{id}" }
+  puts
 
   puts "Patient API"
   puts "---------------"
   puts "Here are a few BP Passport IDs that can be used with the Patient API for individual patient login and lookup"
-  passport_authentications.each { |auth| puts "  #{auth[:identifier]}"}
+  passport_authentications.each do |auth|
+    puts "  Identifier: #{auth[:identifier]}"
+    puts "  OTP: #{auth[:otp]}"
+    puts
+  end
 end
