@@ -172,6 +172,8 @@
         </div>
       </div>
     </div>
+
+    <!-- TODO: Remove "api/v3/analytics/user_analytics/period_report"-->
     <%= render(ProgressTab::DailyProgressComponentV2.new(
       service: @service,
       current_user: @current_user,
@@ -181,6 +183,7 @@
                    time:  display_time(@service.last_updated_at))
        ))
     %>
+
     <%= render(ProgressTab::MonthlyReportComponentV2.new(
       service: @service,
       current_user: @current_user,
@@ -190,7 +193,6 @@
                   time:  display_time(@service.last_updated_at))
     ))
     %>
-<!-- TODO: Remove "api/v3/analytics/user_analytics/period_report"-->
 
     <%= render(ProgressTab::YearlyReportComponentV2.new(
       @service,
@@ -214,8 +216,19 @@
     ))
     %>
 
-<!--  TODO:  The partial "api/v3/analytics/user_analytics/diagnosis_report" need to be removed once the Diabetes reports are released -->
+    <%= render(ProgressTab::Hypertension::DiagnosisReportComponent.new(
+      service: @service,
+      current_facility: @current_facility,
+      current_user: @current_user,
+      period: @period,
+      drug_stock_query: @drug_stock_query,
+      drugs_by_category: @drugs_by_category,
+      last_updated_at: @user_analytics.last_updated_at,
+      cohort_data: @user_analytics.statistics.dig(:cohorts)
+    ))
+    %>
 
+<!--  TODO:  The partial "api/v3/analytics/user_analytics/diagnosis_report" need to be removed once the Diabetes reports are released -->
     <%= render partial: "api/v3/analytics/user_analytics/diagnosis_report",
                locals: {
                  page_id: "diabetes-report",

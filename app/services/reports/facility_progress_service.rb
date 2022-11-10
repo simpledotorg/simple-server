@@ -185,6 +185,8 @@ module Reports
       end
     end
 
+    private
+
     memoize def registrations_breakdown(period_type:, facility_data:)
       facility_data.each_with_object({}) do |record, hsh|
         period = period_type == "yearly" ? record["year"] : record.period
