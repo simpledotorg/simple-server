@@ -48,14 +48,14 @@
       <div class="mb-8px p-16px bgc-white br-4px bs-card">
         <div class="d-flex ai-center jc-space-between mb-8px">
           <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
-            <%= t("progress_tab.period_report.follow_up_visits_card.title") %>
+            <%= t("progress_tab.period_report.follow_up_patients_card.title") %>
           </h2>
           <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
             <%= total_follow_ups(date.to_date) %>
           </p>
         </div>
         <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-          <%= t("progress_tab.period_report.follow_up_visits_card.subtitle", facility_name: region.name) %>
+          <%= t("progress_tab.period_report.follow_up_patients_card.subtitle", facility_name: region.name) %>
         </p>
         <% diagnosis_headers.each do |diagnosis, title|%>
           <%= render ProgressTab::BreakdownTableComponent.new(
