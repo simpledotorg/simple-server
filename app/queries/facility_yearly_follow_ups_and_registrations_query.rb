@@ -8,11 +8,13 @@ class FacilityYearlyFollowUpsAndRegistrationsQuery
     month_date
     state_region_id
   ]
+  FINANCIAL_YEAR_START_MONTH = 4
+  YEAR_START_MONTH = 1
 
   def initialize(region, current_user)
     @region = region
     @current_user = current_user
-    @year_start_month = Flipper.enabled?(:progress_financial_year, @current_user) ? 4 : 1
+    @year_start_month = Flipper.enabled?(:progress_financial_year, @current_user) ? FINANCIAL_YEAR_START_MONTH : YEAR_START_MONTH
   end
 
   def call

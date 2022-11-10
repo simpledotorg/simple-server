@@ -18,13 +18,13 @@
           <%= subtitle %>
         </p>
       <% end %>
-      <%= select_tag "period", options_for_select(last_n_years, last_n_years.first),  id: "yearly-period-dropdown", onchange: "updateYearlyReport()",
+      <%= select_tag "period", options_from_collection_for_select(last_n_years, "first","second"),  id: "yearly-period-dropdown", onchange: "updateYearlyReport()",
                      class: "w-100 mt-16px p-12px fw-medium fs-16px ls-1_25px c-blue bgc-blue-light b-none br-1px bs-secondary-button o-none a-none chevron-down-icon"
       %>
     </div>
   </div>
 
-  <% last_n_years.each_with_index do |year, index| %>
+  <% last_n_years.keys.each_with_index do |year, index| %>
     <div data-element="yearly-cards" data-date="<%= year %>" class="<% unless index == 0 %>d-none<% end %>">
       <div class="mb-8px p-16px bgc-white br-4px bs-card">
         <div class="d-flex ai-center jc-space-between mb-8px">
