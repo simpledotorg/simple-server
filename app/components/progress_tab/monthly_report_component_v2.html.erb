@@ -1,9 +1,9 @@
-<div id="daily-report-page" class="d-none">
+<div id="monthly-report-page" class="d-none">
   <div class="mb-8px pt-16px pb-16px bgc-white br-4px bs-card">
     <a
       class="d-block w-24px h-24px mb-24px pl-16px"
       href="#"
-      onclick="goToPage('daily-report-page', 'home-page'); return false;"
+      onclick="goToPage('monthly-report-page', 'home-page'); return false;"
     >
       <div class="d-inline-block">
         <%= inline_file("chevron-left.svg") %>
@@ -18,21 +18,21 @@
           <%= subtitle %>
         </p>
       <% end %>
-      <%= select_tag "period", options_for_select(last_30_days, last_30_days.first),  id: "daily-period-dropdown", onchange: "updateDailyReport()",
+      <%= select_tag "period", options_for_select(last_6_months, last_6_months.first),  id: "monthly-period-dropdown", onchange: "updateMonthlyReport()",
                      class: "w-100 mt-16px p-12px fw-medium fs-16px ls-1_25px c-blue bgc-blue-light b-none br-1px bs-secondary-button o-none a-none chevron-down-icon"
       %>
     </div>
   </div>
 
-  <% last_30_days.each_with_index do |date, index| %>
-    <div data-element="daily-cards" data-date="<%= date %>" class="<% unless index == 0 %>d-none<% end %>">
+  <% last_6_months.each_with_index do |date, index| %>
+    <div data-element="monthly-cards" data-date="<%= date %>" class="<% unless index == 0 %>d-none<% end %>">
       <div class="mb-8px p-16px bgc-white br-4px bs-card">
         <div class="d-flex ai-center jc-space-between mb-8px">
           <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
             <%= t("progress_tab.period_report.registered_patients_card.title") %>
           </h2>
           <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
-            <%= service.daily_registrations(date.to_date) %>
+            <%= total_registrations(date.to_date) %>
           </p>
         </div>
         <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
@@ -41,7 +41,7 @@
         <% diagnosis_headers.each do |diagnosis, title| %>
           <%= render ProgressTab::BreakdownTableComponent.new(
             title: title,
-            breakdown: daily_registrations_breakdown[date.to_date][diagnosis])
+            breakdown: monthly_registrations_breakdown[Period.month(date.to_date)][diagnosis])
           %>
         <% end %>
       </div>
@@ -51,7 +51,7 @@
             <%= t("progress_tab.period_report.follow_up_patients_card.title") %>
           </h2>
           <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
-            <%= service.daily_follow_ups(date.to_date) %>
+            <%= total_follow_ups(date.to_date) %>
           </p>
         </div>
         <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
@@ -60,7 +60,7 @@
         <% diagnosis_headers.each do |diagnosis, title|%>
           <%= render ProgressTab::BreakdownTableComponent.new(
             title: title,
-            breakdown: daily_follow_ups_breakdown[date.to_date][diagnosis])
+            breakdown: monthly_follow_ups_breakdown[Period.month(date.to_date)][diagnosis])
           %>
         <% end %>
       </div>
