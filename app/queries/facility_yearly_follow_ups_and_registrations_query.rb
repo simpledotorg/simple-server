@@ -14,7 +14,7 @@ class FacilityYearlyFollowUpsAndRegistrationsQuery
   def initialize(region, current_user)
     @region = region
     @current_user = current_user
-    @year_start_month = Flipper.enabled?(:progress_financial_year, @current_user) ? FINANCIAL_YEAR_START_MONTH : YEAR_START_MONTH
+    @year_start_month = Flipper.enabled?(:yearly_reports_start_from_april, @current_user) ? FINANCIAL_YEAR_START_MONTH : YEAR_START_MONTH
   end
 
   def call
@@ -33,7 +33,7 @@ class FacilityYearlyFollowUpsAndRegistrationsQuery
   private
 
   def year(month_date)
-    if Flipper.enabled?(:progress_financial_year, @current_user)
+    if Flipper.enabled?(:yearly_reports_start_from_april, @current_user)
       if month_date.month >= @year_start_month
         month_date.year
       elsif month_date.month < @year_start_month

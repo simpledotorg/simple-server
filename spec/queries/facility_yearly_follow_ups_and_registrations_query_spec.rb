@@ -74,10 +74,10 @@ RSpec.describe FacilityYearlyFollowUpsAndRegistrationsQuery do
       expect(yearly_reports_of_3_years_ago.except("year").values.all? { |x| x.zero? }).to be_truthy
     end
 
-    it "aggregates by financial year when progress_financial_year is enabled" do
+    it "aggregates by financial year when 'yearly_reports_start_from_april' is enabled" do
       user = create(:user)
       facility = create(:facility)
-      Flipper.enable(:progress_financial_year)
+      Flipper.enable(:yearly_reports_start_from_april)
       patient_1 = create(:patient, :hypertension, recorded_at: 2.years.ago, gender: :transgender, registration_user: user, registration_facility: facility)
       patient_2 = create(:patient, :hypertension_and_diabetes, recorded_at: 2.years.ago, gender: :female, registration_user: user, registration_facility: facility)
       patient_3 = create(:patient, :diabetes, recorded_at: 2.years.ago, gender: :male, registration_user: user, registration_facility: facility)

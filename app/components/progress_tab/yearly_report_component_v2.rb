@@ -27,7 +27,7 @@ class ProgressTab::YearlyReportComponentV2 < ApplicationComponent
   end
 
   memoize def report_in_financial_year?
-    Flipper.enabled?(:progress_financial_year, @current_user)
+    Flipper.enabled?(:yearly_reports_start_from_april, @current_user)
   end
 
   def last_n_years
