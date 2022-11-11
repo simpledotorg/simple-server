@@ -32,7 +32,7 @@
             <%= t("progress_tab.period_report.registered_patients_card.title") %>
           </h2>
           <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
-            <%= total_registrations(date.to_date) %>
+            <%= total_registrations(Period.month(date.to_date)) %>
           </p>
         </div>
         <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
@@ -51,7 +51,7 @@
             <%= t("progress_tab.period_report.follow_up_patients_card.title") %>
           </h2>
           <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
-            <%= total_follow_ups(date.to_date) %>
+            <%= total_follow_ups(Period.month(date.to_date)) %>
           </p>
         </div>
         <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
