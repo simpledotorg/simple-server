@@ -22,11 +22,11 @@ class FacilityYearlyFollowUpsAndRegistrationsQuery
     records_per_period = records.group_by { |facility|
       year(facility.month_date)
     }
-    records_per_period.each_with_object(Hash.new(0)) do |record_per_period, result|
+    records_per_period.each_with_object([]) do |record_per_period, result|
       period, records = record_per_period
       yearly_data = totals(records)
       yearly_data["year"] = period
-      result[period] = yearly_data
+      result.push(yearly_data)
     end
   end
 
@@ -47,11 +47,9 @@ class FacilityYearlyFollowUpsAndRegistrationsQuery
   def totals(yearly_data)
     count_columns = Reports::FacilityMonthlyFollowUpAndRegistration.column_names - NON_COUNT_FIELDS.map(&:to_s)
     yearly_data.each_with_object(Hash.new(0)) do |monthly_data, totals|
-      monthly_data.attributes.map do |key, value|
-        if count_columns.include?(key)
-          key = "yearly" + key[7..]
-          totals[key] += value
-        end
+      count_columns.map do |key|
+        new_key = key.gsub("monthly", "yearly")
+        totals[new_key] += monthly_data[key]
       end
     end
   end

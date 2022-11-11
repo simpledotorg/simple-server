@@ -30,7 +30,7 @@ module Reports
           .for_region(region)
           .where("month_date > ?", 6.months.ago.beginning_of_month.to_date)
           .load
-      @yearly_facility_data = FacilityYearlyFollowUpsAndRegistrationsQuery.new(facility, @current_user).call.values
+      @yearly_facility_data = FacilityYearlyFollowUpsAndRegistrationsQuery.new(facility, @current_user).call
     end
 
     # we use the daily timestamp for the purposes of the last updated at,
