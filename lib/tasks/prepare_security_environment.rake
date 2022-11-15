@@ -1,17 +1,17 @@
 desc "Get user credentials to attach to request headers"
 task prepare_security_environment: :environment do
-  abort "This task can only be run in development or security environments!" unless (Rails.env.development? || Rails.env.security?)
+  abort "This task can only be run in development or security environments!" unless Rails.env.development? || Rails.env.security?
 
   # Feature flags
   Flipper.disable(:auto_approve_users)
   Flipper.enable(:fixed_otp)
 
   # Mobile users
-  USER_PIN = "1234"
-  USER_OTP = "000000"
+  user_pin = "1234"
+  user_otp = "000000"
   users = User.sync_approval_status_allowed.joins(:phone_number_authentications).sample(5)
 
-  users.each { |user| user.phone_number_authentication.update!(password: USER_PIN) }
+  users.each { |user| user.phone_number_authentication.update!(password: user_pin) }
 
   user_credentials = users.map do |user|
     {
@@ -19,8 +19,8 @@ task prepare_security_environment: :environment do
       facility_id: user.registration_facility.id,
       access_token: user.access_token,
       phone_number: user.phone_number,
-      password: USER_PIN,
-      otp: USER_OTP
+      password: user_pin,
+      otp: user_otp
     }
   end
 
@@ -32,17 +32,17 @@ task prepare_security_environment: :environment do
   teleconsultation_facility.enable_teleconsultation = true
   teleconsultation_facility.save!
 
-  medical_officer.phone_number_authentication.update!(password: USER_PIN)
+  medical_officer.phone_number_authentication.update!(password: user_pin)
 
   teleconsultation = {
     facility_name: teleconsultation_facility.name,
     phone_number: medical_officer.phone_number,
-    password: USER_PIN
+    password: user_pin
   }
 
   bp_passports = PatientBusinessIdentifier.simple_bp_passport.sample(5).map(&:identifier)
 
-  dashboard_users = %Q(
+  dashboard_users = %(
     Role: Admin User
     Authorization: Power User
     username: admin@simple.org
@@ -80,11 +80,11 @@ task prepare_security_environment: :environment do
   )
 
   passport_authentications = PatientBusinessIdentifier.simple_bp_passport.sample(5).map do |bp_passport|
-    auth = PassportAuthentication.create!(patient_business_identifier: bp_passport)
+    PassportAuthentication.create!(patient_business_identifier: bp_passport)
 
     {
       identifier: bp_passport.identifier,
-      otp: USER_OTP
+      otp: user_otp
     }
   end
 
