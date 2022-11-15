@@ -222,3 +222,20 @@ function updateMonthlyReport() {
         }
     });
 }
+
+function updateYearlyReport() {
+    const dropdown = document.getElementById("yearly-period-dropdown");
+    const selectValue = dropdown.value;
+
+    const monthly_cards = document.querySelectorAll("[data-element='yearly-cards']");
+
+    monthly_cards.forEach($card => {
+        if ($card.getAttribute("data-date") == selectValue) {
+            $card.classList.remove("d-none");
+            $card.classList.add("d-block");
+        } else {
+            $card.classList.remove("d-block");
+            $card.classList.add("d-none");
+        }
+    });
+}
