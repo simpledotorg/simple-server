@@ -71,7 +71,7 @@ RSpec.describe FacilityYearlyFollowUpsAndRegistrationsQuery do
       expect(yearly_reports_of_6_months_ago["yearly_follow_ups_dm_female"]).to eq(2)
       expect(yearly_reports_of_6_months_ago["yearly_follow_ups_dm_transgender"]).to eq(0)
 
-      expect(yearly_reports_of_3_years_ago.except("year").values.all? { |x| x.zero? }).to be_truthy
+      expect(yearly_reports_of_3_years_ago.except("year").values).to all(be_zero)
     end
 
     it "aggregates by financial year when 'yearly_reports_start_from_april' is enabled" do
