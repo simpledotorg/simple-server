@@ -22,11 +22,11 @@ class FacilityYearlyFollowUpsAndRegistrationsQuery
     records_per_period = records.group_by { |facility|
       year(facility.month_date)
     }
-    records_per_period.each_with_object([]) do |record_per_period, result|
+    records_per_period.map do |record_per_period|
       period, records = record_per_period
       yearly_data = totals(records)
       yearly_data["year"] = period
-      result.push(yearly_data)
+      yearly_data
     end
   end
 
