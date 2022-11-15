@@ -48,7 +48,7 @@ class FacilityYearlyFollowUpsAndRegistrationsQuery
     count_columns = Reports::FacilityMonthlyFollowUpAndRegistration.column_names - NON_COUNT_FIELDS.map(&:to_s)
     yearly_data.each_with_object(Hash.new(0)) do |monthly_data, totals|
       count_columns.map do |key|
-        new_key = key.gsub("monthly", "yearly")
+        new_key = key.gsub(/^monthly/, "yearly")
         totals[new_key] += monthly_data[key]
       end
     end
