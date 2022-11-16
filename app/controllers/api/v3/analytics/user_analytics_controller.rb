@@ -11,7 +11,7 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
     @region = current_facility
     @period = Period.month(Date.current)
     @user_analytics = UserAnalyticsPresenter.new(current_facility)
-    @service = Reports::FacilityProgressService.new(current_facility, @period)
+    @service = Reports::FacilityProgressService.new(current_facility, @period, current_user: @current_user)
 
     @date_format = ApplicationHelper::STANDARD_DATE_DISPLAY_FORMAT
     @time_format = ApplicationHelper::STANDARD_TIME_DISPLAY_FORMAT

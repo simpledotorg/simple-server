@@ -1,5 +1,5 @@
 <div>
-  <div class="d-flex ai-center jc-space-between <% if include_bottom_border %>pb-3px bb-grey-mid<% end %> mb-4px">
+  <div class="d-flex ai-center jc-space-between pb-3px bb-grey-mid mb-4px">
     <h3 class="m-0px p-0px ta-left fw-medium fs-16px c-grey-darkest">
       <%= title %>
     </h3>
@@ -9,18 +9,18 @@
   </div>
   <div class="d-flex ai-center jc-space-between pb-3px bb-grey-mid mb-4px">
     <p class="m-0px p-0px pl-16px ta-left fw-normal fs-16px c-grey-dark">
-      <%= t("progress_tab.genders.male") %>
-    </p>
-    <p class="m-0px p-0px ta-right fw-normal fs-16px c-grey-dark">
-      <%= breakdown[:male] %>
-    </p>
-  </div>
-  <div class="d-flex ai-center jc-space-between pb-3px bb-grey-mid mb-4px">
-    <p class="m-0px p-0px pl-16px ta-left fw-normal fs-16px c-grey-dark">
       <%= t("progress_tab.genders.female") %>
     </p>
     <p class="m-0px p-0px ta-right fw-normal fs-16px c-grey-dark">
       <%= breakdown[:female] %>
+    </p>
+  </div>
+  <div class="d-flex ai-center jc-space-between pb-3px bb-grey-mid mb-4px">
+    <p class="m-0px p-0px pl-16px ta-left fw-normal fs-16px c-grey-dark">
+      <%= t("progress_tab.genders.male") %>
+    </p>
+    <p class="m-0px p-0px ta-right fw-normal fs-16px c-grey-dark">
+      <%= breakdown[:male] %>
     </p>
   </div>
   <div class="d-flex ai-center jc-space-between <% if include_bottom_border %>pb-3px bb-grey-mid<% end %> mb-4px">
