@@ -53,4 +53,3 @@ en:
       official_no_date: "Come today to %{facility_name} for a BP measure, %{patient_name}. Your doctor wishes for your good health. - IHCI"
     covid:
       medication_reminder: "Dear %{patient_name}: Our staff at %{facility_name} are thinking of you and your heart health during this COVID emergency. It is very important to continue your BP medicines. Collect your free medicine from the nearest sub center or health wellness center. Contact your ANM or ASHA. - IHCI"
-
