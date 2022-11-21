@@ -12,4 +12,8 @@ class OneOff::CphcEnrollment::DiabetesDiagnosisPayload
      "date" => blood_sugar.recorded_at.strftime("%d-%m-%Y"),
      "selectedDiagnosis" => medical_history.diabetes ? "CONFIRMED" : "NAD"}
   end
+
+  def headers
+    {"Host" => ENV.fetch("CPHC_DIABETES_HOST")}
+  end
 end

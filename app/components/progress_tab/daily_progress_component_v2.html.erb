@@ -1,13 +1,12 @@
 <div id="daily-report-page" class="d-none">
   <div class="mb-8px pt-16px pb-16px bgc-white br-4px bs-card">
     <a
-      class="d-block w-24px h-24px mb-24px pl-16px"
+      class="d-inline-flex ai-center h-24px mb-24px pl-16px tt-uppercase"
       href="#"
       onclick="goToPage('daily-report-page', 'home-page'); return false;"
     >
-      <div class="d-inline-block">
-        <%= inline_file("chevron-left.svg") %>
-      </div>
+      <%= inline_file("chevron-left.svg") %>
+      back
     </a>
     <div class="pr-16px pl-16px">
       <h1 class="m-0px mb-8px fw-bold fs-24px">
@@ -18,7 +17,7 @@
           <%= subtitle %>
         </p>
       <% end %>
-      <%= select_tag "period", options_for_select(last_30_days, last_30_days.first),  id: "period-dropdown", onchange: "updateDailyReport()",
+      <%= select_tag "period", options_for_select(last_30_days, last_30_days.first),  id: "daily-period-dropdown", onchange: "updateDailyReport()",
                      class: "w-100 mt-16px p-12px fw-medium fs-16px ls-1_25px c-blue bgc-blue-light b-none br-1px bs-secondary-button o-none a-none chevron-down-icon"
       %>
     </div>

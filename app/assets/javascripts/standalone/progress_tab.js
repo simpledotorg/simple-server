@@ -187,12 +187,49 @@ function removeCSSClasses(element, cssClasses) {
 // Daily report
 //
 function updateDailyReport() {
-    const dropdown = document.getElementById("period-dropdown");
+    const dropdown = document.getElementById("daily-period-dropdown");
     const selectValue = dropdown.value;
 
     const dailyCards = document.querySelectorAll("[data-element='daily-cards']");
 
     dailyCards.forEach($card => {
+        if ($card.getAttribute("data-date") == selectValue) {
+            $card.classList.remove("d-none");
+            $card.classList.add("d-block");
+        } else {
+            $card.classList.remove("d-block");
+            $card.classList.add("d-none");
+        }
+    });
+}
+
+//
+// Monthly report
+//
+function updateMonthlyReport() {
+    const dropdown = document.getElementById("monthly-period-dropdown");
+    const selectValue = dropdown.value;
+
+    const monthly_cards = document.querySelectorAll("[data-element='monthly-cards']");
+
+    monthly_cards.forEach($card => {
+        if ($card.getAttribute("data-date") == selectValue) {
+            $card.classList.remove("d-none");
+            $card.classList.add("d-block");
+        } else {
+            $card.classList.remove("d-block");
+            $card.classList.add("d-none");
+        }
+    });
+}
+
+function updateYearlyReport() {
+    const dropdown = document.getElementById("yearly-period-dropdown");
+    const selectValue = dropdown.value;
+
+    const monthly_cards = document.querySelectorAll("[data-element='yearly-cards']");
+
+    monthly_cards.forEach($card => {
         if ($card.getAttribute("data-date") == selectValue) {
             $card.classList.remove("d-none");
             $card.classList.add("d-block");

@@ -182,6 +182,9 @@ en:
       follow_up_patients_card:
         title: "Follow-up patients"
         subtitle: "Patients that had a BP taken, a blood sugar taken, an appointment scheduled, or their medications updated at %{facility_name}."
+      follow_up_visits_card:
+        title: "Follow-up visits"
+        subtitle: "Follow-up visits recorded at %{facility_name}. A follow-up is a visit when a patient had a BP taken, a blood sugar taken, an appointment scheduled, or medications were updated."
       patients_initiated_on_treatment_card:
         title: 'Where is the "Patients initiated on treatment" data?'
         main_text: 'Use "Registered patients", it will always equal "Patients initiated on treatment" for patients registered on Simple.'

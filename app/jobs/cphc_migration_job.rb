@@ -4,14 +4,14 @@ class CphcMigrationJob
 
   sidekiq_options queue: :cphc_migration, retry: SimpleServer.env.development?
   sidekiq_throttle(
-    threshold: {limit: 10, period: 10.seconds}
+    threshold: {limit: 15, period: 10.seconds}
   )
 
   def perform(patient_id)
     patient = Patient.find(patient_id)
 
     if OneOff::CphcEnrollment.in_migration_window?(Time.now)
-      user = patient.assigned_facility.cphc_facility_mappings.first.cphc_user
+      user = OneOff::CphcEnrollment::AuthManager.new(patient.assigned_facility).user
       return OneOff::CphcEnrollment::Service.new(patient, user).call
     end
 

@@ -1,5 +1,5 @@
 class OneOff::CphcEnrollment::Service
-  CPHC_BASE_PATH = "#{ENV["CPHC_BASE_URL"]}/cphm"
+  CPHC_BASE_PATH = ENV["CPHC_BASE_URL"]
   CPHC_ENROLLMENT_PATH = "#{CPHC_BASE_PATH}/enrollment/individual"
 
   CONFIG = {
@@ -96,12 +96,12 @@ class OneOff::CphcEnrollment::Service
   end
 
   def add_hypertension_examination(encounter)
-    response = make_post_request(encounter, examination_path(:hypertension), nil)
+    response = make_post_request(encounter, examination_path(:hypertension), OneOff::CphcEnrollment::HypertensionExaminationPayload.new)
     @hypertension_examination_id = JSON.parse(response.body.to_s)["screeningId"]
   end
 
   def add_diabetes_examination(encounter)
-    response = make_post_request(encounter, examination_path(:diabetes), nil)
+    response = make_post_request(encounter, examination_path(:diabetes), OneOff::CphcEnrollment::DiabetesExaminationPayload.new)
     @diabetes_examination_id = JSON.parse(response.body.to_s)["screeningId"]
   end
 
@@ -196,10 +196,10 @@ class OneOff::CphcEnrollment::Service
       return
     end
 
-    facility_type_id = OneOff::CphcEnrollment::FACILITY_TYPE_ID["DH"]
+    facility = blood_sugar.patient.assigned_facility
     response = make_post_request(
       blood_sugar,
-      measurement_path(:diabetes, @diabetes_examination_id, facility_type_id),
+      measurement_path(:diabetes, @diabetes_examination_id),
       OneOff::CphcEnrollment::BloodSugarPayload.new(blood_sugar)
     )
 
@@ -217,7 +217,7 @@ class OneOff::CphcEnrollment::Service
     )
     make_post_request(
       blood_sugar,
-      diagnosis_path(:diabetes, @diabetes_examination_id, facility_type_id),
+      diagnosis_path(:diabetes, @diabetes_examination_id),
       OneOff::CphcEnrollment::DiabetesDiagnosisPayload.new(blood_sugar, measurement_id)
     )
   end
@@ -227,11 +227,13 @@ class OneOff::CphcEnrollment::Service
   end
 
   def make_post_request(record, path, payload)
-    response = OneOff::CphcEnrollment::Request.new(
+    request = OneOff::CphcEnrollment::Request.new(
       path: path,
       user: user,
       payload: payload
-    ).post
+    )
+
+    response = request.post
 
     if response.code == 200
       logger.info "Request Successful", response.body.to_s
@@ -245,7 +247,8 @@ class OneOff::CphcEnrollment::Service
       failures: {
         timestamp: Time.now,
         path: path,
-        payload: payload,
+        headers: request.headers,
+        payload: payload.payload,
         response_code: response.code,
         response_body: json_or_str_body(response)
       }
@@ -262,27 +265,27 @@ class OneOff::CphcEnrollment::Service
     "#{CPHC_BASE_PATH}/condition/#{diagnosis_id}/individual/#{individual_id}/program/1/addExamination"
   end
 
-  def measurement_path(diagnosis, screening_id, facility_type_id = nil)
+  def measurement_path(diagnosis, screening_id)
     diagnosis_id = CONFIG[diagnosis][:diagnosis_id]
     case diagnosis
     when :hypertension
       "#{CPHC_BASE_PATH}/condition/#{diagnosis_id}/individual/#{individual_id}/program/1/examination/#{screening_id}"
     when :diabetes
-      "#{CPHC_BASE_PATH}/condition/#{diagnosis_id}/individual/#{individual_id}/examination/#{screening_id}/facility/#{facility_type_id}"
+      "#{CPHC_BASE_PATH}/condition/#{diagnosis_id}/individual/#{individual_id}/examination/#{screening_id}/facility/#{user[:facility_type_id]}"
     end
   end
 
-  def diagnosis_path(diagnosis, screening_id, facility_type_id = nil)
+  def diagnosis_path(diagnosis, screening_id)
     diagnosis_id = CONFIG[diagnosis][:diagnosis_id]
     case diagnosis
     when :hypertension
       "#{CPHC_BASE_PATH}/condition/#{diagnosis_id}/individual/#{individual_id}/program/1/examination/#{screening_id}/diagnosis"
     when :diabetes
-      "#{CPHC_BASE_PATH}/condition/#{diagnosis_id}/individual/#{individual_id}/examination/#{screening_id}/facility/#{facility_type_id}/diagnosis"
+      "#{CPHC_BASE_PATH}/condition/#{diagnosis_id}/individual/#{individual_id}/examination/#{screening_id}/facility/#{user[:facility_type_id]}/diagnosis"
     end
   end
 
-  def treatment_path(diagnosis, screening_id, facility_type_id = nil)
+  def treatment_path(diagnosis, screening_id)
     diagnosis_id = CONFIG[diagnosis][:diagnosis_id]
     "#{CPHC_BASE_PATH}/condition/#{diagnosis_id}/individual/#{individual_id}/program/1/examination/#{screening_id}/treatment"
   end
@@ -298,14 +301,23 @@ class OneOff::CphcEnrollment::Service
   end
 
   def cphc_location
+    cphc_facility = patient.assigned_facility.cphc_facility
+
+    query =
+      case cphc_facility.cphc_facility_type
+            when "SUBCENTER"
+              {cphc_subcenter_id: cphc_facility.cphc_facility_id}
+            when "PHC"
+              {cphc_phc_id: cphc_facility.cphc_facility_id}
+      end
+
     potential_match = CphcFacilityMapping
-      .where(facility: patient.assigned_facility)
+      .where(query)
       .search_by_village(patient.address.village_or_colony)
       .first
 
     other_village = CphcFacilityMapping.find_by(
-      facility: patient.assigned_facility,
-      cphc_village_name: "Other"
+      query.merge(cphc_village_name: "Other")
     )
 
     mapping = potential_match || other_village

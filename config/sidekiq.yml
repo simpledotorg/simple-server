@@ -4,7 +4,6 @@
 
 :queues:
   - [tracer, 4]
-  - [cphc_migration, 4]
   - [high, 3]
   - [default, 2]
   - [low, 1]

@@ -11,7 +11,7 @@ class Reports::ProgressController < AdminController
     @current_user = current_user
     @current_facility = @region
     @user_analytics = UserAnalyticsPresenter.new(@region)
-    @service = Reports::FacilityProgressService.new(current_facility, @period)
+    @service = Reports::FacilityProgressService.new(current_facility, @period, current_user: @current_user)
 
     @date_format = ApplicationHelper::STANDARD_DATE_DISPLAY_FORMAT
     @time_format = ApplicationHelper::STANDARD_TIME_DISPLAY_FORMAT

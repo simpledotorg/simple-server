@@ -91,7 +91,6 @@ gem "view_component"
 gem "webpacker", "6.0.0.rc.6"
 gem "whenever", require: false
 gem "wkhtmltoimage-binary"
-gem "selenium-webdriver"
 gem "table_print"
 
 group :development, :test do
@@ -141,6 +140,6 @@ group :test do
   gem "puma"
   gem "rspec-sidekiq"
   gem "simplecov", require: false
-  gem "webdrivers"
+  gem "webdrivers", ">= 5.2.0"
   gem "webmock"
 end

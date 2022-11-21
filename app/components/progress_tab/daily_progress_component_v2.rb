@@ -10,7 +10,7 @@ class ProgressTab::DailyProgressComponentV2 < ApplicationComponent
 
   attr_reader :service, :current_user, :title, :subtitle, :region
 
-  def initialize(service, current_user, title:, subtitle:)
+  def initialize(service:, current_user:, title:, subtitle:)
     @service = service
     @now = Date.current
     @start = @now - DAYS_AGO
