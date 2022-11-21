@@ -5287,6 +5287,13 @@ CREATE INDEX index_call_results_deleted_at ON public.call_results USING btree (d
 
 
 --
+-- Name: index_call_results_on_facility_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_call_results_on_facility_id ON public.call_results USING btree (facility_id);
+
+
+--
 -- Name: index_call_results_patient_id_and_updated_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -6620,6 +6627,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20221013131043'),
 ('20221024071410'),
 ('20221024071710'),
-('20221104075303');
+('20221104075303'),
+('20221121063116');
 
 
