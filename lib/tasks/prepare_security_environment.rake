@@ -1,4 +1,4 @@
-desc "Get user credentials to attach to request headers"
+desc "Prepare security environment with necesssary data setup, and print audit prerequisites"
 task prepare_security_environment: :environment do
   abort "This task can only be run in development or security environments!" unless Rails.env.development? || Rails.env.security?
 
