@@ -5021,6 +5021,13 @@ CREATE INDEX facility_monthly_fr_facility_id ON public.reporting_facility_monthl
 
 
 --
+-- Name: facility_monthly_fr_facility_region_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX facility_monthly_fr_facility_region_id ON public.reporting_facility_monthly_follow_ups_and_registrations USING btree (facility_region_id);
+
+
+--
 -- Name: facility_monthly_fr_month_date_facility_region_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -6628,6 +6635,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20221024071410'),
 ('20221024071710'),
 ('20221104075303'),
-('20221121063116');
+('20221121063116'),
+('20221122081032');
 
 
