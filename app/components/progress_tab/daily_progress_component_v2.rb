@@ -30,7 +30,7 @@ class ProgressTab::DailyProgressComponentV2 < ApplicationComponent
   end
 
   def is_data_available_for(date)
-    data_available_for_dates.include?(date.to_date)
+    daily_registrations_breakdown[date.to_date].present?
   end
 
   def display_date(date)
