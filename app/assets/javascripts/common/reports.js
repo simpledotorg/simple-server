@@ -1,28 +1,29 @@
+const color = {
+  darkGreen: "rgba(0, 122, 49, 1)",
+  mediumGreen: "rgba(0, 184, 73, 1)",
+  lightGreen: "rgba(242, 248, 245, 0.5)",
+  darkRed: "rgba(184, 22, 49, 1)",
+  mediumRed: "rgba(255, 51, 85, 1)",
+  lightRed: "rgba(255, 235, 238, 0.5)",
+  darkPurple: "rgba(83, 0, 224, 1)",
+  lightPurple: "rgba(169, 128, 239, 0.5)",
+  darkBlue: "rgba(12, 57, 102, 1)",
+  mediumBlue: "rgba(0, 117, 235, 1)",
+  lightBlue: "rgba(233, 243, 255, 0.75)",
+  darkGrey: "rgba(108, 115, 122, 1)",
+  mediumGrey: "rgba(173, 178, 184, 1)",
+  lightGrey: "rgba(240, 242, 245, 0.9)",
+  white: "rgba(255, 255, 255, 1)",
+  amber: "rgba(250, 190, 70, 1)",
+  darkAmber: "rgba(223, 165, 50, 1)",
+  transparent: "rgba(0, 0, 0, 0)",
+  teal: "rgba(48, 184, 166, 1)",
+  darkTeal: "rgba(34,140,125,1)",
+  maroon: "rgba(71, 0, 0, 1)",
+  darkMaroon: "rgba(60,0,0,1)"
+}
+
 DashboardReports = () => {
-  const COLORS = {
-    darkGreen: "rgba(0, 122, 49, 1)",
-    mediumGreen: "rgba(0, 184, 73, 1)",
-    lightGreen: "rgba(242, 248, 245, 0.5)",
-    darkRed: "rgba(184, 22, 49, 1)",
-    mediumRed: "rgba(255, 51, 85, 1)",
-    lightRed: "rgba(255, 235, 238, 0.5)",
-    darkPurple: "rgba(83, 0, 224, 1)",
-    lightPurple: "rgba(169, 128, 239, 0.5)",
-    darkBlue: "rgba(12, 57, 102, 1)",
-    mediumBlue: "rgba(0, 117, 235, 1)",
-    lightBlue: "rgba(233, 243, 255, 0.75)",
-    darkGrey: "rgba(108, 115, 122, 1)",
-    mediumGrey: "rgba(173, 178, 184, 1)",
-    lightGrey: "rgba(240, 242, 245, 0.9)",
-    white: "rgba(255, 255, 255, 1)",
-    amber: "rgba(250, 190, 70, 1)",
-    darkAmber: "rgba(223, 165, 50, 1)",
-    transparent: "rgba(0, 0, 0, 0)",
-    teal: "rgba(48, 184, 166, 1)",
-    darkTeal: "rgba(34,140,125,1)",
-    maroon: "rgba(71, 0, 0, 1)",
-    darkMaroon: "rgba(60,0,0,1)"
-  }
 
   const formatPercentage = (number) => {
     return (number || 0) + "%";
@@ -107,11 +108,11 @@ DashboardReports = () => {
         datasets: [
           {
             label: "Blood sugar <200",
-            backgroundColor: COLORS["lightGreen"],
-            borderColor: COLORS["mediumGreen"],
+            backgroundColor: color.lightGreen,
+            borderColor: color.mediumGreen,
             borderWidth: 2,
-            pointBackgroundColor: COLORS["white"],
-            hoverBackgroundColor: COLORS["white"],
+            pointBackgroundColor: color.white,
+            hoverBackgroundColor: color.white,
             hoverBorderWidth: 2,
             data: Object.values(data.bsBelow200Rate),
           },
@@ -129,7 +130,7 @@ DashboardReports = () => {
             },
             ticks: {
               autoSkip: false,
-              fontColor: COLORS["darkGrey"],
+              fontColor: color.darkGrey,
               fontSize: 12,
               fontFamily: "Roboto",
               padding: 8,
@@ -148,7 +149,7 @@ DashboardReports = () => {
             },
             ticks: {
               autoSkip: false,
-              fontColor: COLORS["darkGrey"],
+              fontColor: color.darkGrey,
               fontSize: 10,
               fontFamily: "Roboto",
               padding: 8,
@@ -174,11 +175,11 @@ DashboardReports = () => {
           {
             yAxisID: "cumulativeDiabetesRegistrations",
             label: "cumulative diabetes registrations",
-            backgroundColor: COLORS['transparent'],
-            borderColor: COLORS['darkPurple'],
+            backgroundColor: color.transparent,
+            borderColor: color.darkPurple,
             borderWidth: 2,
-            pointBackgroundColor: COLORS['white'],
-            hoverBackgroundColor: COLORS['white'],
+            pointBackgroundColor: color.white,
+            hoverBackgroundColor: color.white,
             hoverBorderWidth: 2,
             data: Object.values(data.cumulativeDiabetesRegistrations),
             type: "line",
@@ -186,11 +187,11 @@ DashboardReports = () => {
           {
             yAxisID: "monthlyDiabetesFollowups",
             label: "monthly diabetes followups",
-            backgroundColor: COLORS['transparent'],
-            borderColor: COLORS['darkTeal'],
+            backgroundColor: color.transparent,
+            borderColor: color.darkTeal,
             borderWidth: 2,
-            pointBackgroundColor: COLORS['white'],
-            hoverBackgroundColor: COLORS['white'],
+            pointBackgroundColor: color.white,
+            hoverBackgroundColor: color.white,
             hoverBorderWidth: 2,
             data: Object.values(data.monthlyDiabetesFollowups),
             type: "line",
@@ -198,8 +199,8 @@ DashboardReports = () => {
           {
             yAxisID: "monthlyDiabetesRegistrations",
             label: "monthly diabetes registrations",
-            backgroundColor: COLORS['lightPurple'],
-            hoverBackgroundColor: COLORS['darkPurple'],
+            backgroundColor: color.lightPurple,
+            hoverBackgroundColor: color.darkPurple,
             data: Object.values(data.monthlyDiabetesRegistrations),
             type: "bar",
           },
@@ -216,7 +217,7 @@ DashboardReports = () => {
             },
             ticks: {
               autoSkip: false,
-              fontColor: COLORS['darkGrey'],
+              fontColor: color.darkGrey,
               fontSize: 12,
               fontFamily: "Roboto",
               padding: 8,
@@ -238,7 +239,7 @@ DashboardReports = () => {
             ticks: {
               display: false,
               autoSkip: false,
-              fontColor: COLORS['darkGrey'],
+              fontColor: color.darkGrey,
               fontSize: 10,
               fontFamily: "Roboto",
               padding: 8,
@@ -261,7 +262,7 @@ DashboardReports = () => {
             ticks: {
               display: false,
               autoSkip: false,
-              fontColor: COLORS['darkGrey'],
+              fontColor: color.darkGrey,
               fontSize: 10,
               fontFamily: "Roboto",
               padding: 8,
@@ -284,7 +285,7 @@ DashboardReports = () => {
             ticks: {
               display: false,
               autoSkip: false,
-              fontColor: COLORS['darkGrey'],
+              fontColor: color.darkGrey,
               fontSize: 10,
               fontFamily: "Roboto",
               padding: 8,
@@ -308,14 +309,14 @@ DashboardReports = () => {
         datasets: [
           {
             label: "Blood sugar 200-299",
-            backgroundColor: COLORS['amber'],
-            hoverBackgroundColor: COLORS['darkAmber'],
+            backgroundColor: color.amber,
+            hoverBackgroundColor: color.darkAmber,
             data: Object.values(data.bs200to300Rate),
           },
           {
             label: "Blood sugar ≥300",
-            backgroundColor: COLORS['mediumRed'],
-            hoverBackgroundColor: COLORS['darkRed'],
+            backgroundColor: color.mediumRed,
+            hoverBackgroundColor: color.darkRed,
             data: Object.values(data.bsOver300Rate),
           },
         ],
@@ -332,7 +333,7 @@ DashboardReports = () => {
             },
             ticks: {
               autoSkip: false,
-              fontColor: COLORS['darkGrey'],
+              fontColor: color.darkGrey,
               fontSize: 12,
               fontFamily: "Roboto",
               padding: 8,
@@ -351,7 +352,7 @@ DashboardReports = () => {
             },
             ticks: {
               autoSkip: false,
-              fontColor: COLORS['darkGrey'],
+              fontColor: color.darkGrey,
               fontSize: 10,
               fontFamily: "Roboto",
               padding: 8,
@@ -372,11 +373,11 @@ DashboardReports = () => {
         datasets: [
           {
             label: "Missed visits",
-            backgroundColor: COLORS['lightBlue'],
-            borderColor: COLORS['mediumBlue'],
+            backgroundColor: color.lightBlue,
+            borderColor: color.mediumBlue,
             borderWidth: 2,
-            pointBackgroundColor: COLORS['white'],
-            hoverBackgroundColor: COLORS['white'],
+            pointBackgroundColor: color.white,
+            hoverBackgroundColor: color.white,
             hoverBorderWidth: 2,
             data: Object.values(data.diabetesMissedVisitsGraphRate),
             type: "line",
@@ -394,7 +395,7 @@ DashboardReports = () => {
             },
             ticks: {
               autoSkip: false,
-              fontColor: COLORS['darkGrey'],
+              fontColor: color.darkGrey,
               fontSize: 12,
               fontFamily: "Roboto",
               padding: 8,
@@ -413,7 +414,7 @@ DashboardReports = () => {
             },
             ticks: {
               autoSkip: false,
-              fontColor: COLORS['darkGrey'],
+              fontColor: color.darkGrey,
               fontSize: 10,
               fontFamily: "Roboto",
               padding: 8,
@@ -442,29 +443,29 @@ DashboardReports = () => {
         datasets: [
           {
             label: "Blood sugar <200",
-            backgroundColor: COLORS['mediumGreen'],
-            hoverBackgroundColor: COLORS['darkGreen'],
+            backgroundColor: color.mediumGreen,
+            hoverBackgroundColor: color.darkGreen,
             data: Object.values(data.bsBelow200Rate).slice(-barsToDisplay),
             type: "bar",
           },
           {
             label: "Blood sugar 200-299",
-            backgroundColor: COLORS['amber'],
-            hoverBackgroundColor: COLORS['darkAmber'],
+            backgroundColor: color.amber,
+            hoverBackgroundColor: color.darkAmber,
             data: Object.values(data.bs200to300Rate).slice(-barsToDisplay),
             type: "bar",
           },
           {
             label: "Blood sugar ≥300",
-            backgroundColor: COLORS['mediumRed'],
-            hoverBackgroundColor: COLORS['darkRed'],
+            backgroundColor: color.mediumRed,
+            hoverBackgroundColor: color.darkRed,
             data: Object.values(data.bsOver300Rate).slice(-barsToDisplay),
             type: "bar",
           },
           {
             label: "Visit but no blood sugar measure",
-            backgroundColor: COLORS['mediumGrey'],
-            hoverBackgroundColor: COLORS['darkGrey'],
+            backgroundColor: color.mediumGrey,
+            hoverBackgroundColor: color.darkGrey,
             data: Object.values(data.visitButNoBSMeasureRate).slice(
                 -barsToDisplay
             ),
@@ -472,8 +473,8 @@ DashboardReports = () => {
           },
           {
             label: "Missed visits",
-            backgroundColor: COLORS['mediumBlue'],
-            hoverBackgroundColor: COLORS['darkBlue'],
+            backgroundColor: color.mediumBlue,
+            hoverBackgroundColor: color.darkBlue,
             data: Object.values(data.diabetesMissedVisitsRate).slice(
                 -barsToDisplay
             ),
@@ -492,7 +493,7 @@ DashboardReports = () => {
             },
             ticks: {
               autoSkip: false,
-              fontColor: COLORS['darkGrey'],
+              fontColor: color.darkGrey,
               fontSize: 12,
               fontFamily: "Roboto",
               padding: 8,
@@ -511,7 +512,7 @@ DashboardReports = () => {
             },
             ticks: {
               autoSkip: false,
-              fontColor: COLORS['darkGrey'],
+              fontColor: color.darkGrey,
               fontSize: 10,
               fontFamily: "Roboto",
               padding: 8,
@@ -558,7 +559,7 @@ DashboardReports = () => {
             },
             ticks: {
               autoSkip: false,
-              fontColor: COLORS['darkGrey'],
+              fontColor: color.darkGrey,
               fontSize: 12,
               fontFamily: "Roboto Condensed",
               padding: 0,
@@ -579,7 +580,7 @@ DashboardReports = () => {
             ticks: {
               display: false,
               autoSkip: false,
-              fontColor: COLORS['darkGrey'],
+              fontColor: color.darkGrey,
               fontSize: 12,
               fontFamily: "Roboto Condensed",
               padding: 8,
@@ -649,11 +650,11 @@ DashboardReports = () => {
           datasets: [
               {
                   label: "Lost to follow-up",
-                  backgroundColor: COLORS['lightBlue'],
-                  borderColor: COLORS['darkBlue'],
+                  backgroundColor: color.lightBlue,
+                  borderColor: color.darkBlue,
                   borderWidth: 2,
-                  pointBackgroundColor: COLORS['white'],
-                  hoverBackgroundColor: COLORS['white'],
+                  pointBackgroundColor: color.white,
+                  hoverBackgroundColor: color.white,
                   hoverBorderWidth: 2,
                   data: Object.values(data.ltfuPatientsRate),
                   type: "line",
@@ -671,7 +672,7 @@ DashboardReports = () => {
                   },
                   ticks: {
                       autoSkip: false,
-                      fontColor: COLORS['darkGrey'],
+                      fontColor: color.darkGrey,
                       fontSize: 12,
                       fontFamily: "Roboto",
                       padding: 8,
@@ -690,7 +691,7 @@ DashboardReports = () => {
                   },
                   ticks: {
                       autoSkip: false,
-                      fontColor: COLORS['darkGrey'],
+                      fontColor: color.darkGrey,
                       fontSize: 10,
                       fontFamily: "Roboto",
                       padding: 8,
@@ -767,29 +768,6 @@ DashboardReports = () => {
 }
 
 Reports = function (withLtfu) {
-  this.darkGreenColor = "rgba(0, 122, 49, 1)";
-  this.mediumGreenColor = "rgba(0, 184, 73, 1)";
-  this.lightGreenColor = "rgba(242, 248, 245, 0.5)";
-  this.darkRedColor = "rgba(184, 22, 49, 1)";
-  this.mediumRedColor = "rgba(255, 51, 85, 1)";
-  this.lightRedColor = "rgba(255, 235, 238, 0.5)";
-  this.darkPurpleColor = "rgba(83, 0, 224, 1)";
-  this.lightPurpleColor = "rgba(169, 128, 239, 0.5)";
-  this.darkBlueColor = "rgba(12, 57, 102, 1)";
-  this.mediumBlueColor = "rgba(0, 117, 235, 1)";
-  this.lightBlueColor = "rgba(233, 243, 255, 0.75)";
-  this.darkGreyColor = "rgba(108, 115, 122, 1)";
-  this.mediumGreyColor = "rgba(173, 178, 184, 1)";
-  this.lightGreyColor = "rgba(240, 242, 245, 0.9)";
-  this.whiteColor = "rgba(255, 255, 255, 1)";
-  this.amberColor = "rgba(250, 190, 70, 1)";
-  this.darkAmberColor = "rgba(223, 165, 50, 1)";
-  this.transparent = "rgba(0, 0, 0, 0)";
-  this.tealColor = "rgba(48, 184, 166, 1)";
-  this.darkTealColor = "rgba(34,140,125,1)";
-  this.maroonColor = "rgba(71, 0, 0, 1)";
-  this.darkMaroonColor = "rgba(60,0,0,1)";
-
   this.initialize = () => {
     this.initializeCharts();
     this.initializeTables();
@@ -824,11 +802,11 @@ Reports = function (withLtfu) {
       datasets: [
         {
           label: "BP controlled",
-          backgroundColor: this.lightGreenColor,
-          borderColor: this.mediumGreenColor,
+          backgroundColor: color.lightGreen,
+          borderColor: color.mediumGreen,
           borderWidth: 2,
-          pointBackgroundColor: this.whiteColor,
-          hoverBackgroundColor: this.whiteColor,
+          pointBackgroundColor: color.white,
+          hoverBackgroundColor: color.white,
           hoverBorderWidth: 2,
           data: Object.values(controlledGraphRate),
         },
@@ -845,7 +823,7 @@ Reports = function (withLtfu) {
           },
           ticks: {
             autoSkip: false,
-            fontColor: this.darkGreyColor,
+            fontColor: color.darkGrey,
             fontSize: 12,
             fontFamily: "Roboto",
             padding: 8,
@@ -864,7 +842,7 @@ Reports = function (withLtfu) {
           },
           ticks: {
             autoSkip: false,
-            fontColor: this.darkGreyColor,
+            fontColor: color.darkGrey,
             fontSize: 10,
             fontFamily: "Roboto",
             padding: 8,
@@ -946,11 +924,11 @@ Reports = function (withLtfu) {
       datasets: [
         {
           label: "BP uncontrolled",
-          backgroundColor: this.lightRedColor,
-          borderColor: this.mediumRedColor,
+          backgroundColor: color.lightRed,
+          borderColor: color.mediumRed,
           borderWidth: 2,
-          pointBackgroundColor: this.whiteColor,
-          hoverBackgroundColor: this.whiteColor,
+          pointBackgroundColor: color.white,
+          hoverBackgroundColor: color.white,
           hoverBorderWidth: 2,
           data: Object.values(uncontrolledGraphRate),
           type: "line",
@@ -968,7 +946,7 @@ Reports = function (withLtfu) {
           },
           ticks: {
             autoSkip: false,
-            fontColor: this.darkGreyColor,
+            fontColor: color.darkGrey,
             fontSize: 12,
             fontFamily: "Roboto",
             padding: 8,
@@ -987,7 +965,7 @@ Reports = function (withLtfu) {
           },
           ticks: {
             autoSkip: false,
-            fontColor: this.darkGreyColor,
+            fontColor: color.darkGrey,
             fontSize: 10,
             fontFamily: "Roboto",
             padding: 8,
@@ -1074,11 +1052,11 @@ Reports = function (withLtfu) {
       datasets: [
         {
           label: "Missed visits",
-          backgroundColor: this.lightBlueColor,
-          borderColor: this.mediumBlueColor,
+          backgroundColor: color.lightBlue,
+          borderColor: color.mediumBlue,
           borderWidth: 2,
-          pointBackgroundColor: this.whiteColor,
-          hoverBackgroundColor: this.whiteColor,
+          pointBackgroundColor: color.white,
+          hoverBackgroundColor: color.white,
           hoverBorderWidth: 2,
           data: Object.values(missedVisitsGraphRate),
           type: "line",
@@ -1096,7 +1074,7 @@ Reports = function (withLtfu) {
           },
           ticks: {
             autoSkip: false,
-            fontColor: this.darkGreyColor,
+            fontColor: color.darkGrey,
             fontSize: 12,
             fontFamily: "Roboto",
             padding: 8,
@@ -1115,7 +1093,7 @@ Reports = function (withLtfu) {
           },
           ticks: {
             autoSkip: false,
-            fontColor: this.darkGreyColor,
+            fontColor: color.darkGrey,
             fontSize: 10,
             fontFamily: "Roboto",
             padding: 8,
@@ -1197,11 +1175,11 @@ Reports = function (withLtfu) {
         {
           yAxisID: "cumulativeRegistrations",
           label: "cumulative registrations",
-          backgroundColor: this.transparent,
-          borderColor: this.darkPurpleColor,
+          backgroundColor: color.transparent,
+          borderColor: color.darkPurple,
           borderWidth: 2,
-          pointBackgroundColor: this.whiteColor,
-          hoverBackgroundColor: this.whiteColor,
+          pointBackgroundColor: color.white,
+          hoverBackgroundColor: color.white,
           hoverBorderWidth: 2,
           data: Object.values(data.cumulativeRegistrations),
           type: "line",
@@ -1209,8 +1187,8 @@ Reports = function (withLtfu) {
         {
           yAxisID: "monthlyRegistrations",
           label: "monthly registrations",
-          backgroundColor: this.lightPurpleColor,
-          hoverBackgroundColor: this.darkPurpleColor,
+          backgroundColor: color.lightPurple,
+          hoverBackgroundColor: color.darkPurple,
           data: Object.values(data.monthlyRegistrations),
           type: "bar",
         },
@@ -1227,7 +1205,7 @@ Reports = function (withLtfu) {
           },
           ticks: {
             autoSkip: false,
-            fontColor: this.darkGreyColor,
+            fontColor: color.darkGrey,
             fontSize: 12,
             fontFamily: "Roboto",
             padding: 8,
@@ -1249,7 +1227,7 @@ Reports = function (withLtfu) {
           ticks: {
             display: false,
             autoSkip: false,
-            fontColor: this.darkGreyColor,
+            fontColor: color.darkGrey,
             fontSize: 10,
             fontFamily: "Roboto",
             padding: 8,
@@ -1274,7 +1252,7 @@ Reports = function (withLtfu) {
           ticks: {
             display: false,
             autoSkip: false,
-            fontColor: this.darkGreyColor,
+            fontColor: color.darkGrey,
             fontSize: 10,
             fontFamily: "Roboto",
             padding: 8,
@@ -1382,22 +1360,22 @@ Reports = function (withLtfu) {
       datasets: [
         {
           label: "BP controlled",
-          backgroundColor: this.mediumGreenColor,
-          hoverBackgroundColor: this.darkGreenColor,
+          backgroundColor: color.mediumGreen,
+          hoverBackgroundColor: color.darkGreen,
           data: Object.values(data.controlRate).slice(-barsToDisplay),
           type: "bar",
         },
         {
           label: "BP uncontrolled",
-          backgroundColor: this.mediumRedColor,
-          hoverBackgroundColor: this.darkRedColor,
+          backgroundColor: color.mediumRed,
+          hoverBackgroundColor: color.darkRed,
           data: Object.values(data.uncontrolledRate).slice(-barsToDisplay),
           type: "bar",
         },
         {
           label: "Visit but no BP measure",
-          backgroundColor: this.mediumGreyColor,
-          hoverBackgroundColor: this.darkGreyColor,
+          backgroundColor: color.mediumGrey,
+          hoverBackgroundColor: color.darkGrey,
           data: Object.values(data.visitButNoBPMeasureRate).slice(
             -barsToDisplay
           ),
@@ -1405,8 +1383,8 @@ Reports = function (withLtfu) {
         },
         {
           label: "Missed visits",
-          backgroundColor: this.mediumBlueColor,
-          hoverBackgroundColor: this.darkBlueColor,
+          backgroundColor: color.mediumBlue,
+          hoverBackgroundColor: color.darkBlue,
           data: Object.values(data.missedVisitsRate).slice(-barsToDisplay),
           type: "bar",
         },
@@ -1423,7 +1401,7 @@ Reports = function (withLtfu) {
           },
           ticks: {
             autoSkip: false,
-            fontColor: this.darkGreyColor,
+            fontColor: color.darkGrey,
             fontSize: 12,
             fontFamily: "Roboto",
             padding: 8,
@@ -1442,7 +1420,7 @@ Reports = function (withLtfu) {
           },
           ticks: {
             autoSkip: false,
-            fontColor: this.darkGreyColor,
+            fontColor: color.darkGrey,
             fontSize: 10,
             fontFamily: "Roboto",
             padding: 8,
