@@ -222,7 +222,7 @@ namespace :dell_demo do
 
       next puts("No Mappings | Block: #{facility.block} | Facility: #{facility.name} \n".red) if potential_mappings.empty?
 
-      puts "Potential Mappings | Block: #{facility.block} | Facility: #{facility.name}".green
+      puts "Potential Mappings | Block: #{facility.block} | Type: #{facility.facility_type} | Facility: #{facility.name}".green
 
       puts "\n"
       tp potential_mappings,
@@ -253,7 +253,7 @@ namespace :dell_demo do
           break
         end
 
-        if input.to_i != 0
+        if input.size == 36
           jump_to_id = input.to_i
         end
       end
@@ -278,7 +278,7 @@ namespace :dell_demo do
 
       next puts("No Mappings | Block: #{facility.block} | Facility: #{facility.name} \n".red) if potential_mappings.empty?
 
-      puts "Potential Mappings | Block: #{facility.block} | Facility: #{facility.name}".green
+      puts "Potential Mappings | Block: #{facility.block} | Type: #{facility.facility_type} | Facility: #{facility.name}".green
 
       puts "\n"
       tp potential_mappings,
@@ -309,7 +309,7 @@ namespace :dell_demo do
           break
         end
 
-        if input.to_i != 0
+        if input.size != 36
           jump_to_id = input.to_i
         end
       end
