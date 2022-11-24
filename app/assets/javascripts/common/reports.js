@@ -341,66 +341,28 @@ DashboardReports = () => {
       };
       return config;
     },
-    diabetesMissedVisitsTrend: function(data) {
-      const config = createBaseGraphConfig();
-      config.data = {
-        labels: Object.keys(data.diabetesMissedVisitsGraphRate),
-        datasets: [
-          {
-            label: "Missed visits",
-            backgroundColor: color.lightBlue,
-            borderColor: color.mediumBlue,
-            borderWidth: 2,
-            pointBackgroundColor: color.white,
-            hoverBackgroundColor: color.white,
-            hoverBorderWidth: 2,
-            data: Object.values(data.diabetesMissedVisitsGraphRate),
-            type: "line",
-          },
-        ],
+    diabetesMissedVisitsTrend: function (data) {
+      const additionalDiabetesMissedVisitsTrendConfig = {
+        data: {
+          labels: Object.keys(data.diabetesMissedVisitsGraphRate),
+          datasets: [
+            {
+              label: "Missed visits",
+              backgroundColor: color.lightBlue,
+              borderColor: color.mediumBlue,
+              borderWidth: 2,
+              pointBackgroundColor: color.white,
+              hoverBackgroundColor: color.white,
+              hoverBorderWidth: 2,
+              data: Object.values(data.diabetesMissedVisitsGraphRate),
+              type: "line",
+            },
+          ],
+        },
       };
-      config.options.scales = {
-        xAxes: [
-          {
-            stacked: false,
-            display: true,
-            gridLines: {
-              display: false,
-              drawBorder: true,
-            },
-            ticks: {
-              autoSkip: false,
-              fontColor: color.darkGrey,
-              fontSize: 12,
-              fontFamily: "Roboto",
-              padding: 8,
-              min: 0,
-              beginAtZero: true,
-            },
-          },
-        ],
-        yAxes: [
-          {
-            stacked: false,
-            display: true,
-            gridLines: {
-              display: true,
-              drawBorder: false,
-            },
-            ticks: {
-              autoSkip: false,
-              fontColor: color.darkGrey,
-              fontSize: 10,
-              fontFamily: "Roboto",
-              padding: 8,
-              min: 0,
-              beginAtZero: true,
-              stepSize: 25,
-              max: 100,
-            },
-          },
-        ],
-      };
+      const config = combineConfigWithBaseConfig(
+        additionalDiabetesMissedVisitsTrendConfig
+      );
       return config;
     },
     diabetesVisitDetails: function(data) {
