@@ -1747,14 +1747,6 @@ function combineConfigWithBaseConfig(additionalConfig) {
   );
 }
 
-function combineConfigWithAnotherConfig(intitialConfig, additionalConfig) {
-  return _.mergeWith(
-    intitialConfig,
-    additionalConfig,
-    mergeWithCustomizerArrayMerging
-  );
-}
-
 //  Array merging function within object
 function mergeWithCustomizerArrayMerging(objValue, srcValue) {
   if (_.isArray(objValue)) {
