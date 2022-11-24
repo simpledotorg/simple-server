@@ -580,69 +580,32 @@ DashboardReports = () => {
 
       return config;
     },
-    lostToFollowUpTrend: function(data) {
-      const config = createBaseGraphConfig();
-      config.data = {
+    lostToFollowUpTrend: function (data) {
+      const additionalLostToFollowUpTrendConfig = {
+        data: {
           labels: Object.keys(data.ltfuPatientsRate),
           datasets: [
-              {
-                  label: "Lost to follow-up",
-                  backgroundColor: color.lightBlue,
-                  borderColor: color.darkBlue,
-                  borderWidth: 2,
-                  pointBackgroundColor: color.white,
-                  hoverBackgroundColor: color.white,
-                  hoverBorderWidth: 2,
-                  data: Object.values(data.ltfuPatientsRate),
-                  type: "line",
-              },
+            {
+              label: "Lost to follow-up",
+              backgroundColor: color.lightBlue,
+              borderColor: color.darkBlue,
+              borderWidth: 2,
+              pointBackgroundColor: color.white,
+              hoverBackgroundColor: color.white,
+              hoverBorderWidth: 2,
+              data: Object.values(data.ltfuPatientsRate),
+              type: "line",
+            },
           ],
+        },
       };
-      config.options.scales = {
-          xAxes: [
-              {
-                  stacked: false,
-                  display: true,
-                  gridLines: {
-                      display: false,
-                      drawBorder: true,
-                  },
-                  ticks: {
-                      autoSkip: false,
-                      fontColor: color.darkGrey,
-                      fontSize: 12,
-                      fontFamily: "Roboto",
-                      padding: 8,
-                      min: 0,
-                      beginAtZero: true,
-                  },
-              },
-          ],
-          yAxes: [
-              {
-                  stacked: false,
-                  display: true,
-                  gridLines: {
-                      display: true,
-                      drawBorder: false,
-                  },
-                  ticks: {
-                      autoSkip: false,
-                      fontColor: color.darkGrey,
-                      fontSize: 10,
-                      fontFamily: "Roboto",
-                      padding: 8,
-                      min: 0,
-                      beginAtZero: true,
-                      stepSize: 25,
-                      max: 100,
-                  },
-              },
-          ],
-      };
+      const config = combineConfigWithBaseConfig(
+        additionalLostToFollowUpTrendConfig
+      );
+
       return config;
-    }
-  }
+    },
+  };
 
   return {
       ReportsTable: (id) => {
