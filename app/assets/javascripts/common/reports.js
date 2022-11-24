@@ -1743,12 +1743,6 @@ function baseLineGraphConfig() {
   };
 }
 
-function baseBarChartConfig() {
-  return {
-    type: 'bar'
-  }
-}
-
 // [plugin] vertical instersect line
 const intersectDataVerticalLine = {
   id: "intersectDataVerticalLine",
