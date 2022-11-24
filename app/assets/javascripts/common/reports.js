@@ -101,66 +101,29 @@ DashboardReports = () => {
   };
 
   const ReportsGraphConfig = {
-    bsBelow200PatientsTrend: function(data) {
-      const config = createBaseGraphConfig();
-      config.data = {
-        labels: Object.keys(data.bsBelow200Rate),
-        datasets: [
-          {
-            label: "Blood sugar <200",
-            backgroundColor: color.lightGreen,
-            borderColor: color.mediumGreen,
-            borderWidth: 2,
-            pointBackgroundColor: color.white,
-            hoverBackgroundColor: color.white,
-            hoverBorderWidth: 2,
-            data: Object.values(data.bsBelow200Rate),
-          },
-        ],
+    bsBelow200PatientsTrend: function (data) {
+      const additionalBsBelow200PatientsTrendConfig = {
+        data: {
+          labels: Object.keys(data.bsBelow200Rate),
+          datasets: [
+            {
+              label: "Blood sugar <200",
+              backgroundColor: color.lightGreen,
+              borderColor: color.mediumGreen,
+              borderWidth: 2,
+              pointBackgroundColor: color.white,
+              hoverBackgroundColor: color.white,
+              hoverBorderWidth: 2,
+              data: Object.values(data.bsBelow200Rate),
+            },
+          ],
+        },
       };
 
-      config.options.scales = {
-        xAxes: [
-          {
-            stacked: true,
-            display: true,
-            gridLines: {
-              display: false,
-              drawBorder: true,
-            },
-            ticks: {
-              autoSkip: false,
-              fontColor: color.darkGrey,
-              fontSize: 12,
-              fontFamily: "Roboto",
-              padding: 8,
-              min: 0,
-              beginAtZero: true,
-            },
-          },
-        ],
-        yAxes: [
-          {
-            stacked: true,
-            display: true,
-            gridLines: {
-              display: true,
-              drawBorder: false,
-            },
-            ticks: {
-              autoSkip: false,
-              fontColor: color.darkGrey,
-              fontSize: 10,
-              fontFamily: "Roboto",
-              padding: 8,
-              min: 0,
-              beginAtZero: true,
-              stepSize: 25,
-              max: 100,
-            },
-          },
-        ],
-      };
+      const config = combineConfigWithBaseConfig(
+        additionalBsBelow200PatientsTrendConfig
+      );
+
       return config;
     },
     cumulativeDiabetesRegistrationsTrend: function(data) {
