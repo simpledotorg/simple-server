@@ -271,26 +271,31 @@ DashboardReports = () => {
 
       return config;
     },
-    bsOver200PatientsTrend: function(data) {
-      const config = createBaseGraphConfig();
-      config.type = "bar";
-      config.data = {
-        labels: Object.keys(data.bsOver300Rate),
-        datasets: [
-          {
-            label: "Blood sugar 200-299",
-            backgroundColor: color.amber,
-            hoverBackgroundColor: color.darkAmber,
-            data: Object.values(data.bs200to300Rate),
-          },
-          {
-            label: "Blood sugar ≥300",
-            backgroundColor: color.mediumRed,
-            hoverBackgroundColor: color.darkRed,
-            data: Object.values(data.bsOver300Rate),
-          },
-        ],
+    bsOver200PatientsTrend: function (data) {
+      const additionalbsOver200PatientsTrendconfig = {
+        type: "bar",
+        data: {
+          labels: Object.keys(data.bsOver300Rate),
+          datasets: [
+            {
+              label: "Blood sugar 200-299",
+              backgroundColor: color.amber,
+              hoverBackgroundColor: color.darkAmber,
+              data: Object.values(data.bs200to300Rate),
+            },
+            {
+              label: "Blood sugar ≥300",
+              backgroundColor: color.mediumRed,
+              hoverBackgroundColor: color.darkRed,
+              data: Object.values(data.bsOver300Rate),
+            },
+          ],
+        },
       };
+
+      const config = combineConfigWithBaseConfig(
+        additionalbsOver200PatientsTrendconfig
+      );
 
       config.options.scales = {
         xAxes: [
