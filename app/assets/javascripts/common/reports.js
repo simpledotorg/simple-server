@@ -1696,6 +1696,48 @@ function baseLineGraphConfig() {
         mode: "index",
         intersect: false,
       },
+      scales: {
+        xAxes: [
+          {
+            stacked: true,
+            display: true,
+            gridLines: {
+              display: false,
+              drawBorder: true,
+            },
+            ticks: {
+              autoSkip: false,
+              fontColor: color.darkGrey,
+              fontSize: 12,
+              fontFamily: "Roboto",
+              padding: 8,
+              min: 0,
+              beginAtZero: true,
+            },
+          },
+        ],
+        yAxes: [
+          {
+            stacked: false,
+            display: true,
+            gridLines: {
+              display: true,
+              drawBorder: false,
+            },
+            ticks: {
+              autoSkip: false,
+              fontColor: color.darkGrey,
+              fontSize: 10,
+              fontFamily: "Roboto",
+              padding: 8,
+              min: 0,
+              beginAtZero: true,
+              stepSize: 25,
+              max: 100,
+            },
+          },
+        ],
+      },
     },
     plugins: [intersectDataVerticalLine],
   };
