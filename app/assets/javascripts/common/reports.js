@@ -1636,7 +1636,7 @@ function baseLineGraphConfig() {
       scales: {
         xAxes: [
           {
-            stacked: true,
+            stacked: false,
             display: true,
             gridLines: {
               display: false,
