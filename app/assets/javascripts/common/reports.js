@@ -130,45 +130,52 @@ DashboardReports = () => {
       const cumulativeDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(data.cumulativeDiabetesRegistrations);
       const monthlyDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(data.monthlyDiabetesRegistrations);
 
-      const config = createBaseGraphConfig();
-      config.type = "bar";
-      config.data = {
-        labels: Object.keys(data.cumulativeDiabetesRegistrations),
-        datasets: [
-          {
-            yAxisID: "cumulativeDiabetesRegistrations",
-            label: "cumulative diabetes registrations",
-            backgroundColor: color.transparent,
-            borderColor: color.darkPurple,
-            borderWidth: 2,
-            pointBackgroundColor: color.white,
-            hoverBackgroundColor: color.white,
-            hoverBorderWidth: 2,
-            data: Object.values(data.cumulativeDiabetesRegistrations),
-            type: "line",
-          },
-          {
-            yAxisID: "monthlyDiabetesFollowups",
-            label: "monthly diabetes followups",
-            backgroundColor: color.transparent,
-            borderColor: color.darkTeal,
-            borderWidth: 2,
-            pointBackgroundColor: color.white,
-            hoverBackgroundColor: color.white,
-            hoverBorderWidth: 2,
-            data: Object.values(data.monthlyDiabetesFollowups),
-            type: "line",
-          },
-          {
-            yAxisID: "monthlyDiabetesRegistrations",
-            label: "monthly diabetes registrations",
-            backgroundColor: color.lightPurple,
-            hoverBackgroundColor: color.darkPurple,
-            data: Object.values(data.monthlyDiabetesRegistrations),
-            type: "bar",
-          },
-        ],
+      const additionalCumulativeDiabetesRegistrationsTrendConfig = {
+        type: "bar",
+        data: {
+          labels: Object.keys(data.cumulativeDiabetesRegistrations),
+          datasets: [
+            {
+              yAxisID: "cumulativeDiabetesRegistrations",
+              label: "cumulative diabetes registrations",
+              backgroundColor: color.transparent,
+              borderColor: color.darkPurple,
+              borderWidth: 2,
+              pointBackgroundColor: color.white,
+              hoverBackgroundColor: color.white,
+              hoverBorderWidth: 2,
+              data: Object.values(data.cumulativeDiabetesRegistrations),
+              type: "line",
+            },
+            {
+              yAxisID: "monthlyDiabetesFollowups",
+              label: "monthly diabetes followups",
+              backgroundColor: color.transparent,
+              borderColor: color.darkTeal,
+              borderWidth: 2,
+              pointBackgroundColor: color.white,
+              hoverBackgroundColor: color.white,
+              hoverBorderWidth: 2,
+              data: Object.values(data.monthlyDiabetesFollowups),
+              type: "line",
+            },
+            {
+              yAxisID: "monthlyDiabetesRegistrations",
+              label: "monthly diabetes registrations",
+              backgroundColor: color.lightPurple,
+              hoverBackgroundColor: color.darkPurple,
+              data: Object.values(data.monthlyDiabetesRegistrations),
+              type: "bar",
+            },
+          ],
+        },
       };
+
+      const config = combineConfigWithBaseConfig(
+        additionalCumulativeDiabetesRegistrationsTrendConfig
+      );
+
+      // will dry this later
       config.options.scales = {
         xAxes: [
           {
