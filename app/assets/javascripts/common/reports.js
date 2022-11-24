@@ -1866,19 +1866,21 @@ function populateCardData(context, hoveredDataFunction, defaultDataFunction) {
 const intersectDataVerticalLine = {
   id: "intersectDataVerticalLine",
   beforeDraw: (chart, arg, options) => {
+    // console.log(chart);
     const defaultLineColor = chart.config._config.data.datasets[0].borderColor;
     const optionLineColor = options.belowPointLineColor;
     if (chart.tooltip._active && chart.tooltip._active.length) {
       const ctx = chart.ctx;
-      // console.log(chart.tooltip._active);
+      // console.log("tooltip", chart.tooltip);
       ctx.save();
       const activePoint = chart.tooltip._active[0];
+      // console.log(activePoint);
       const chartArea = chart.chartArea;
       // grey vertical hover line - full chart height
       ctx.beginPath();
       ctx.moveTo(activePoint.element.x, chartArea.top);
       ctx.lineTo(activePoint.element.x, chartArea.bottom);
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 0.5;
       ctx.strokeStyle = "rgba(0,0,0, 0.1)";
       ctx.stroke();
       ctx.restore();
@@ -1887,7 +1889,7 @@ const intersectDataVerticalLine = {
         ctx.beginPath();
         ctx.moveTo(activePoint.element.x, activePoint.element.y);
         ctx.lineTo(activePoint.element.x, chartArea.bottom);
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 0.5;
         ctx.strokeStyle = optionLineColor ? optionLineColor : defaultLineColor;
         ctx.stroke();
         ctx.restore();
