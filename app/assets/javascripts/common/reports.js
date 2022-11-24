@@ -1665,6 +1665,48 @@ Reports = function (withLtfu) {
   };
 };
 
+// Base config object which can be built on using combineConfigWithBaseConfig(AdditionalConfigObject)
+// AdditionalConfigObject is used to add or overwrite specfic key: value - [will take priority]
+
+function baseLineGraphConfig() {
+  return {
+    type: "line",
+    options: {
+      animation: false,
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 20,
+          bottom: 0,
+        },
+      },
+      elements: {
+        point: {
+          pointStyle: "circle",
+          hoverRadius: 5,
+        },
+      },
+      legend: {
+        display: false,
+      },
+      hover: {
+        mode: "index",
+        intersect: false,
+      },
+    },
+    plugins: [intersectDataVerticalLine],
+  };
+}
+
+function baseBarChartConfig() {
+  return {
+    type: 'bar'
+  }
+}
+
 // [plugin] vertical instersect line
 const intersectDataVerticalLine = {
   id: "intersectDataVerticalLine",
