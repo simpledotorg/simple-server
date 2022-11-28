@@ -55,7 +55,7 @@ Beyond that, the setup instructions are now the same for Intel or M1 macs, as yo
 #### Docker Compose
 Dev environment setup using docker and docker-compose
 
-##### Prerequisite 
+##### Prerequisite
 - [Docker](https://docs.docker.com/engine/install/)
 - [Docker compose](https://docs.docker.com/compose/install/)
 
@@ -317,7 +317,7 @@ $ bin/rails 'create_admin_user[<name>,<email>,<password>]'
 
 ### View Sandbox data in your local environment
 
-NOTE: generating seed data locally is the recommended way to get data in your env. Sandbox data is actually just generated via `db:seed`, so the below 
+NOTE: generating seed data locally is the recommended way to get data in your env. Sandbox data is actually just generated via `db:seed`, so the below
 process really just adds SCP overhead to the process.
 
 1. Follow the steps in the "How to add an SSH key..." section [here](https://github.com/simpledotorg/deployment) to add your SSH key to the deployment repo
@@ -330,6 +330,18 @@ process really just adds SCP overhead to the process.
 ### Profiling
 
 We use the [vegeta](https://github.com/tsenart/vegeta) utility to run performance benchmarks. The suite and additional instructions are [here](./profiling/README.md).
+
+### Security audits
+
+Security audits generally require some test data to be set up in a specific way, and account credentials and other
+information to be shared with the auditor. Run the following command to set up the necessary test data and print out
+an information sheet to be shared.
+
+```
+$ bin/rails 'prepare_security_environment'
+```
+
+This task can only be executed in development and security environments.
 
 ## Documentation
 
