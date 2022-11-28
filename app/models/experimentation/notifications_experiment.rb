@@ -43,7 +43,7 @@ module Experimentation
                                              Time.current, MONITORING_BUFFER.ago
                                            ).select(:patient_id))
         .then { |patients| exclude_bangladesh_blocks(patients) }
-        .then { |patients| restrict_indian_states(patients) }
+        .then { |patients| include_only_allowed_india_states(patients) }
     end
 
     def self.exclude_bangladesh_blocks(patients)
@@ -55,11 +55,11 @@ module Experimentation
         .where.not(block_region: {id: excluded_block_ids.presence})
     end
 
-    def self.restrict_indian_states(patients)
+    def self.include_only_allowed_india_states(patients)
       return patients unless CountryConfig.current_country?("India") && SimpleServer.env.production?
-      return patients unless ENV["EXPERIMENT_INCLUDED_STATES"].present?
+      return patients unless ENV["EXPERIMENT_ALLOWED_STATES"].present?
 
-      states = ENV.fetch("EXPERIMENT_INCLUDED_STATES", "").split(",").map(&:strip)
+      states = ENV.fetch("EXPERIMENT_ALLOWED_STATES", "").split(",").map(&:strip)
       patients.where(facilities: {state: states})
     end
 
