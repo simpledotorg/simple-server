@@ -5021,6 +5021,13 @@ CREATE INDEX facility_monthly_fr_facility_id ON public.reporting_facility_monthl
 
 
 --
+-- Name: facility_monthly_fr_facility_region_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX facility_monthly_fr_facility_region_id ON public.reporting_facility_monthly_follow_ups_and_registrations USING btree (facility_region_id);
+
+
+--
 -- Name: facility_monthly_fr_month_date_facility_region_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -5284,6 +5291,13 @@ CREATE UNIQUE INDEX index_bsnl_delivery_details_message_id ON public.bsnl_delive
 --
 
 CREATE INDEX index_call_results_deleted_at ON public.call_results USING btree (deleted_at);
+
+
+--
+-- Name: index_call_results_on_facility_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_call_results_on_facility_id ON public.call_results USING btree (facility_id);
 
 
 --
@@ -6620,6 +6634,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20221013131043'),
 ('20221024071410'),
 ('20221024071710'),
-('20221104075303');
+('20221104075303'),
+('20221121063116'),
+('20221122081032');
 
 

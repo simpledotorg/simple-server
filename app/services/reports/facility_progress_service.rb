@@ -50,7 +50,9 @@ module Reports
     end
 
     def total_registrations
-      total_counts[:monthly_registrations_htn_or_dm]
+      repository.cumulative_registrations[@facility.region.slug][@period] +
+        repository.cumulative_diabetes_registrations[@facility.region.slug][@period] -
+        repository.cumulative_hypertension_and_diabetes_registrations[@facility.region.slug][@period]
     end
 
     def total_follow_ups
@@ -58,7 +60,7 @@ module Reports
     end
 
     memoize def total_overdue_calls
-      Reports::FacilityState.where(facility: facility).pluck(:monthly_overdue_calls).compact.sum
+      CallResult.where(facility_id: @facility.id).count
     end
 
     def daily_statistics

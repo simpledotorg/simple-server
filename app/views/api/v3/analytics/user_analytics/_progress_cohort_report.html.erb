@@ -30,7 +30,7 @@
     <% @user_analytics.statistics.dig(:cohorts).each do |cohort| %>
       <div class="card cohort">
         <h6>
-          <%= cohort[:registered] %> <%= raw t("analytics.patient", count: cohort[:registered]) %>
+          <%= registered_patients = cohort[:registered] || 0 %> <%= raw t("analytics.patient", count: registered_patients) %>
           <%= raw t("analytics.registered_in") %> <%= cohort[:registration_period] %>
         </h6>
         <div style="font-size: 16px; margin: 8px 0 12px 0;">
@@ -38,7 +38,7 @@
         </div>
         <table class="cohort-bars">
           <tr>
-            <% if cohort[:registered].blank? %>
+            <% if registered_patients.zero? %>
               <td class="cohort-none">
                   <%= raw t("analytics.no_patients") %>
               </td>

@@ -97,6 +97,9 @@
     "LANG": {
       "value": "en_US.UTF-8"
     },
+    "NODE_OPTIONS" : {
+      "value": "--openssl-legacy-provider"
+    },
     "OWNER_EMAILS": {
       "value": "Test Owner <test.owner@example.com>"
     },

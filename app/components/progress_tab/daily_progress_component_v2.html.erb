@@ -1,13 +1,12 @@
 <div id="daily-report-page" class="d-none">
   <div class="mb-8px pt-16px pb-16px bgc-white br-4px bs-card">
     <a
-      class="d-block w-24px h-24px mb-24px pl-16px"
+      class="d-inline-flex ai-center h-24px mb-24px pl-16px tt-uppercase"
       href="#"
       onclick="goToPage('daily-report-page', 'home-page'); return false;"
     >
-      <div class="d-inline-block">
-        <%= inline_file("chevron-left.svg") %>
-      </div>
+      <%= inline_file("chevron-left.svg") %>
+      back
     </a>
     <div class="pr-16px pl-16px">
       <h1 class="m-0px mb-8px fw-bold fs-24px">
@@ -26,44 +25,52 @@
 
   <% last_30_days.each_with_index do |date, index| %>
     <div data-element="daily-cards" data-date="<%= date %>" class="<% unless index == 0 %>d-none<% end %>">
-      <div class="mb-8px p-16px bgc-white br-4px bs-card">
-        <div class="d-flex ai-center jc-space-between mb-8px">
-          <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
-            <%= t("progress_tab.period_report.registered_patients_card.title") %>
-          </h2>
-          <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
-            <%= service.daily_registrations(date.to_date) %>
+      <% if is_data_available_for(date) %>
+        <div class="mb-8px p-16px bgc-white br-4px bs-card">
+          <div class="d-flex ai-center jc-space-between mb-8px">
+            <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
+              <%= t("progress_tab.period_report.registered_patients_card.title") %>
+            </h2>
+            <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
+              <%= service.daily_registrations(date.to_date) %>
+            </p>
+          </div>
+          <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+            <%= t("progress_tab.period_report.registered_patients_card.subtitle", facility_name: region.name) %>
           </p>
+          <% diagnosis_headers.each do |diagnosis, title| %>
+            <%= render ProgressTab::BreakdownTableComponent.new(
+              title: title,
+              breakdown: daily_registrations_breakdown[date.to_date][diagnosis])
+            %>
+          <% end %>
         </div>
-        <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-          <%= t("progress_tab.period_report.registered_patients_card.subtitle", facility_name: region.name) %>
-        </p>
-        <% diagnosis_headers.each do |diagnosis, title| %>
-          <%= render ProgressTab::BreakdownTableComponent.new(
-            title: title,
-            breakdown: daily_registrations_breakdown[date.to_date][diagnosis])
-          %>
-        <% end %>
-      </div>
-      <div class="mb-8px p-16px bgc-white br-4px bs-card">
-        <div class="d-flex ai-center jc-space-between mb-8px">
-          <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
-            <%= t("progress_tab.period_report.follow_up_patients_card.title") %>
-          </h2>
-          <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
-            <%= service.daily_follow_ups(date.to_date) %>
+        <div class="mb-8px p-16px bgc-white br-4px bs-card">
+          <div class="d-flex ai-center jc-space-between mb-8px">
+            <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
+              <%= t("progress_tab.period_report.follow_up_patients_card.title") %>
+            </h2>
+            <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
+              <%= service.daily_follow_ups(date.to_date) %>
+            </p>
+          </div>
+          <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+            <%= t("progress_tab.period_report.follow_up_patients_card.subtitle", facility_name: region.name) %>
           </p>
+          <% diagnosis_headers.each do |diagnosis, title|%>
+            <%= render ProgressTab::BreakdownTableComponent.new(
+              title: title,
+              breakdown: daily_follow_ups_breakdown[date.to_date][diagnosis])
+            %>
+          <% end %>
         </div>
-        <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-          <%= t("progress_tab.period_report.follow_up_patients_card.subtitle", facility_name: region.name) %>
-        </p>
-        <% diagnosis_headers.each do |diagnosis, title|%>
-          <%= render ProgressTab::BreakdownTableComponent.new(
-            title: title,
-            breakdown: daily_follow_ups_breakdown[date.to_date][diagnosis])
-          %>
-        <% end %>
-      </div>
+      <%else %>
+        <div class="mb-8px p-16px pt-48px pb-24px bgc-white br-4px bs-card">
+          <%= inline_svg("sandtimer.svg") %>
+          <p class="fs-20px fw-bold mt-32px mb-12px">Today's report is coming soon</p>
+          <p class="fs-16px c-grey-dark">You can still view previous reports.</p>
+        </div>
+      <%end %>
     </div>
   <% end %>
 
