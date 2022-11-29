@@ -1,4 +1,4 @@
-pa-Guru-IN:
+pa:
   date:
     month_names: [~, "ਜਨਵਰੀ", "ਫ਼ਰਵਰੀ", "ਮਾਰਚ", "ਅਪ੍ਰੈਲ", "ਮਈ", "ਜੂਨ", "ਜੁਲਾਈ", "ਅਗਸਤ", "ਸਤੰਬਰ", "ਅਕਤੂਬਰ", "ਨਵੰਬਰ", "ਦਸੰਬਰ"]
     abbr_month_names: [~, "ਜਨਵਰੀ", "ਫਰਵਰੀ", "ਮਾਰਚ", "ਅਪ੍ਰੈਲ", "ਮਈ", "ਜੂਨ", "ਜੁਲਾਈ", "ਅਗਸਤ", "ਸਤੰਬਰ", "ਅਕਤੂਬਰ", "ਨਵੰਬਰ", "ਦਸੰਬਰ"]
@@ -315,3 +315,116 @@ pa-Guru-IN:
         language_tigrinya_html: ਟਾਈਗਰਿਨਿਆ
     privacy_policy_html: ਪਰਦੇਦਾਰੀ ਨੀਤੀ
     terms_of_service_html: ਸੇਵਾ ਦੀਆਂ ਸ਼ਰਤਾਂ
+
+  progress_tab:
+    registrations_and_follow_ups_card:
+      title: "ਰਜਿਸਟ੍ਰੇਸ਼ਨ ਅਤੇ ਫਾਲੋ-ਅੱਪ"
+    daily_report_title: "ਰੋਜ਼ਾਨਾ"
+    monthly_report_title: "ਮਹੀਨਾਵਾਰ"
+    yearly_report_title: "ਸਾਲਾਨਾ"
+    hypertension_report_title: "ਹਾਈਪਰਟੈਂਸ਼ਨ"
+    diabetes_report_title: "ਸ਼ੂਗਰ"
+    last_updated_at: "ਡੇਟਾ ਆਖਰੀ ਵਾਰ %{date} ਨੂੰ %{time} ਵਜੇ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ ਸੀ"
+    diagnoses:
+      all: "ਸਾਰੇ ਹਾਈਪਰਟੈਨਸ਼ਨ ਅਤੇ ਸ਼ੂਗਰ"
+      hypertension: "ਹਾਈਪਰਟੈਂਸ਼ਨ"
+      diabetes: "ਸ਼ੂਗਰ"
+      hypertension_only: "ਸਿਰਫ਼ ਹਾਈਪਰਟੈਂਸ਼ਨ"
+      diabetes_only: "ਸਿਰਫ਼ ਸ਼ੂਗਰ"
+      hypertension_and_diabetes: "ਹਾਈਪਰਟੈਂਸ਼ਨ ਅਤੇ ਸ਼ੂਗਰ"
+    genders:
+      male: "ਮਰਦ"
+      female: "ਔਰਤ"
+      transgender: "ਦੁਲਿੰਗੀ"
+    period_card:
+      title: "ਰਜਿਸਟ੍ਰੇਸ਼ਨ ਅਤੇ ਫਾਲੋ-ਅੱਪ"
+    reports_card:
+      title: "ਰਿਪੋਰਟਾਂ"
+      subtitle: "ਕਿਵੇਂ %{facility_name} ਮਰੀਜ਼ਾਂ ਨੂੰ ਉਨ੍ਹਾਂ ਦੇ ਹਾਈਪਰਟੈਂਸ਼ਨ ਅਤੇ ਸ਼ੂਗਰ ਦੇ ਇਲਾਜ ਵਿੱਚ ਮਦਦ ਕਰ ਰਿਹਾ ਹੈ।"
+    drug_stock_report_card:
+      title: "ਡਰੱਗ ਸਟਾਕ ਰਿਪੋਰਟ"
+      subtitle: "%{period} ਲਈ %{facility_name} ਦੀ ਡਰੱਗ ਸਟਾਕ ਰਿਪੋਰਟ ਸਪੁਰਦ ਕਰੋ।"
+      button_title: "ਡਰੱਗ ਸਟਾਕ ਦਾਖ਼ਲ ਕਰੋ"
+    achievements_card:
+      title: "ਪ੍ਰਾਪਤੀਆਂ"
+      follow_up_visits_section_title: "ਫਾਲੋ-ਅੱਪ %{visit_or_visits} ਰਿਕਾਰਡ ਕੀਤਾ ਗਿਆ"
+      overdue_patients_section_title: "ਓਵਰਡਿਊ ਮਰੀਜ਼ਾਂ ਲਈ %{call_or_calls}"
+      registered_patients_title: "ਰਜਿਸਟਰ ਕੀਤੇ %{patient_or_patients}"
+    period_report:
+      registered_patients_card:
+        title: "ਰਜਿਸਟਰ ਕੀਤੇ ਮਰੀਜ਼"
+        subtitle: "%{facility_name} 'ਤੇ ਰਜਿਸਟਰਡ ਕੀਤੇ ਗਏ ਮਰੀਜ਼।"
+      follow_up_patients_card:
+        title: "ਮਰੀਜ਼ਾਂ ਨੂੰ ਫਾਲੋ-ਅੱਪ ਕਰੋ"
+        subtitle: "ਮਰੀਜ਼ ਜਿਨ੍ਹਾਂ ਦਾ ਬੀਪੀ ਲਿਆ ਗਿਆ ਸੀ, ਬਲੱਡ ਸ਼ੂਗਰ ਲਿਆ ਗਿਆ ਸੀ, ਮੁਲਾਕਾਤ ਨਿਯਤ ਕੀਤੀ ਗਈ ਸੀ, ਜਾਂ ਉਨ੍ਹਾਂ ਦੀਆਂ ਦਵਾਈਆਂ ਨੂੰ %{facility_name} ਤੇ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ ਸੀ।"
+      follow_up_visits_card:
+        title: "ਫਾਲੋ-ਅੱਪ ਵਿਜ਼ਿਟ"
+        subtitle: "%{facility_name} 'ਤੇ ਫਾਲੋ-ਅੱਪ ਵਿਜ਼ਿਟ ਰਿਕਾਰਡ ਕੀਤੇ ਗਏ। ਫਾਲੋ-ਅੱਪ ਉਹ ਵਿਜ਼ਿਟ ਹੁੰਦਾ ਹੈ ਜਦੋਂ ਮਰੀਜ਼ ਦਾ ਬੀਪੀ ਲਿਆ ਗਿਆ ਸੀ, ਬਲੱਡ ਸ਼ੂਗਰ ਲਿਆ ਗਿਆ ਸੀ, ਮੁਲਾਕਾਤ ਨਿਯਤ ਕੀਤੀ ਗਈ ਸੀ, ਜਾਂ ਦਵਾਈਆਂ ਨੂੰ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ ਸੀ।"
+      patients_initiated_on_treatment_card:
+        title: '"ਇਲਾਜ ਸ਼ੁਰੂ ਕੀਤੇ ਗਏ ਮਰੀਜ਼ਾਂ" ਦਾ ਡੇਟਾ ਕਿੱਥੇ ਹੈ?'
+        main_text: 'ਰਜਿਸਟਰ ਕੀਤੇ ਗਏ ਮਰੀਜ਼ਾਂ ਦੀ ਵਰਤੋਂ ਕਰੋ, ਇਹ ਸਿੰਪਲ ਤੇ ਰਜਿਸਟਰ ਕੀਤੇ ਮਰੀਜ਼ਾਂ ਲਈ ਹਮੇਸ਼ਾ "ਇਲਾਜ ਸ਼ੁਰੂ ਕੀਤੇ ਗਏ ਮਰੀਜ਼ਾਂ" ਦੇ ਬਰਾਬਰ ਹੋਵੇਗਾ।'
+      more_patient_data_coming_soon_card:
+        title: "ਮਰੀਜ਼ ਦਾ ਅਧਿਕ ਡੇਟਾ ਜਲਦੀ ਆ ਰਿਹਾ ਹੈ"
+        main_text: "ਬਿਮਾਰੀ ਅਤੇ ਲਿੰਗ ਦੁਆਰਾ ਵੰਡਿਆ ਗਿਆ ਰੋਜ਼ਾਨਾ ਰਜਿਸਟ੍ਰੇਸ਼ਨ ਅਤੇ ਫਾਲੋ-ਅੱਪ ਡੇਟਾ ਜਲਦੀ ਹੀ ਜੋੜਿਆ ਜਾਵੇਗਾ।"
+    diagnosis_report:
+      diagnosis_thresholds:
+        hypertension_controlled_short: "ਬੀਪੀ ਕੰਟਰੋਲ ਕੀਤਾ ਗਿਆ"
+        hypertension_controlled_long: "ਬੀਪੀ <140/90"
+        diabetes_controlled_short: "ਬਲੱਡ ਸ਼ੂਗਰ <200"
+        diabetes_controlled_long: "RBS/PPBS <200, FBS <126, ਜਾਂ HbA1c <7.0"
+        hypertension_uncontrolled_short: "ਬੀਪੀ ਕੰਟਰੋਲ ਨਹੀਂ ਕੀਤਾ ਗਿਆ"
+        hypertension_uncontrolled_long: "ਬੀਪੀ ≥140/90"
+        diabetes_uncontrolled_short: "ਬਲੱਡ ਸ਼ੂਗਰ 200-299"
+        diabetes_uncontrolled_long: "RBS/PPBS 200-99, FBS 126-199, ਜਾਂ HbA1c 7.0-8.9"
+        diabetes_very_uncontrolled_short: "ਬਲੱਡ ਸ਼ੂਗਰ ≥300"
+        diabetes_very_uncontrolled_long: "RBS/PPBS ≥300, FBS ≥200, ਜਾਂ HbA1c ≥9.0"
+        hypertension_visited_but_no_bp_taken_short: "ਵਿਜ਼ਿਟ ਕੀਤਾ ਗਿਆ ਪਰ ਬੀਪੀ ਨਹੀਂ ਲਿਆ ਗਿਆ"
+        hypertension_visited_but_no_bp_taken_long: "ਬੀਪੀ ਨਹੀਂ ਲਿਆ ਗਿਆ"
+        missed_visits_short: "ਖੁੰਝੀਆਂ ਵਿਜ਼ਿਟਾਂ"
+        missed_visits_long: "ਕੋਈ ਵਿਜ਼ਿਟ ਨਹੀਂ"
+      assigned_patients_card:
+        title: "ਨਿਰਧਾਰਿਤ ਕੀਤੇ ਮਰੀਜ਼"
+        subtitle: "ਮਰੀਜ਼ਾਂ ਨੂੰ %{diagnosis} ਇਲਾਜ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ %{facility_name} 'ਤੇ ਫਾਲੋ-ਅੱਪ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।"
+        assigned_patients_breakdown:
+          registered_patients: "ਰਜਿਸਟਰ ਕੀਤੇ ਮਰੀਜ਼"
+          transferred_in_patients: "ਟ੍ਰਾਂਸਫਰ-ਇਨ"
+          transferred_out_patients: "ਟ੍ਰਾਂਸਫਰ-ਆਉਟ"
+      total_registered_patients:
+        title: "ਰਜਿਸਟਰ ਕੀਤੇ ਕੁੱਲ ਮਰੀਜ਼"
+        subtitle: "ਸਾਰੇ %{diagnosis} ਮਰੀਜ਼ %{facility_name} 'ਤੇ ਰਜਿਸਟਰ ਕੀਤੇ ਗਏ ਹਨ।"
+      monthly_follow_up_patients:
+        title: "ਮਹੀਨਾਵਾਰ ਫਾਲੋ-ਅੱਪ ਮਰੀਜ਼"
+        subtitle: "%{diagnosis} ਮਰੀਜ਼ ਜਿਨ੍ਹਾਂ ਦਾ ਇੱਕ ਮਹੀਨੇ ਦੌਰਾਨ ਬੀਪੀ ਲਿਆ ਗਿਆ ਹੈ, ਬਲੱਡ ਸ਼ੂਗਰ ਲਿਆ ਗਿਆ ਹੈ, ਇੱਕ ਮੁਲਾਕਾਤ ਨਿਯਤ ਕੀਤੀ ਗਈ ਹੈ, ਜਾਂ %{facility_name} 'ਤੇ ਦਵਾਈ ਅੱਪਡੇਟ ਕੀਤੀ ਗਈ ਹੈ।"
+      patient_treatment_outcomes:
+        section_title: "ਮਰੀਜ਼ ਦੇ ਇਲਾਜ ਦੀ ਸਥਿਤੀ"
+        chart_tooltip: "%{number_of_patients} %{number_of_patient_or_patients} %{threshold} ਦੇ ਨਾਲ %{start_period} ਅਤੇ %{end_period} ਦੇ ਵਿਚਕਾਰ %{number_of_registered_patients} %{number_of_registered_patient_or_patients} %{registration_period} ਤੱਕ ਰਜਿਸਟਰ ਕੀਤਾ ਗਿਆ ਹੈ।"
+        controlled_card:
+          subtitle: "%{facility_name} ਵਿਖੇ %{diagnosis} ਮਰੀਜ਼ >3 ਮਹੀਨੇ ਪਹਿਲਾਂ %{controlled_threshold} ਦੇ ਨਾਲ ਪਿਛਲੇ 3 ਮਹੀਨਿਆਂ ਵਿੱਚ ਆਪਣੀ ਆਖਰੀ ਵਿਜ਼ਿਟ ਤੇ ਰਜਿਸਟਰ ਕੀਤੇ ਗਏ ਸਨ।"
+          help_tooltip:
+            numerator: "%{controlled_threshold} ਵਾਲੇ ਮਰੀਜ਼ ਪਿਛਲੇ 3 ਮਹੀਨਿਆਂ ਵਿੱਚ ਆਪਣੀ ਆਖਰੀ ਵਿਜ਼ਿਟ 'ਤੇ।"
+            denominator: "%{diagnosis} ਮਰੀਜ਼ %{facility_name} ਨੂੰ ਸੌਂਪੇ ਗਏ, ਜੋ ਪਿਛਲੇ 3 ਮਹੀਨਿਆਂ ਤੋਂ ਪਹਿਲਾਂ ਰਜਿਸਟਰ ਕੀਤੇ ਗਏ ਸਨ। ਮਰ ਚੁੱਕੇ ਅਤੇ ਫਾਲੋ-ਅਪ ਤੋਂ ਖੁੰਝੇ ਮਰੀਜ਼ਾਂ ਨੂੰ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ।"
+        uncontrolled_card:
+          subtitle: "%{facility_name} ਵਿਖੇ %{diagnosis} ਮਰੀਜ਼ >3 ਮਹੀਨੇ ਪਹਿਲਾਂ %{uncontrolled_threshold} ਦੇ ਨਾਲ ਪਿਛਲੇ 3 ਮਹੀਨਿਆਂ ਵਿੱਚ ਆਪਣੀ ਆਖਰੀ ਵਿਜ਼ਿਟ ਤੇ ਰਜਿਸਟਰ ਕੀਤੇ ਗਏ ਸਨ।"
+          help_tooltip:
+            numerator: "%{uncontrolled_threshold} ਵਾਲੇ ਮਰੀਜ਼ ਪਿਛਲੇ 3 ਮਹੀਨਿਆਂ ਵਿੱਚ ਆਪਣੀ ਆਖਰੀ ਵਿਜ਼ਿਟ 'ਤੇ।"
+            denominator: "%{diagnosis} ਮਰੀਜ਼ %{facility_name} ਨੂੰ ਸੌਂਪੇ ਗਏ, ਜੋ ਪਿਛਲੇ 3 ਮਹੀਨਿਆਂ ਤੋਂ ਪਹਿਲਾਂ ਰਜਿਸਟਰ ਕੀਤੇ ਗਏ ਸਨ। ਮਰ ਚੁੱਕੇ ਅਤੇ ਫਾਲੋ-ਅਪ ਤੋਂ ਖੁੰਝੇ ਮਰੀਜ਼ਾਂ ਨੂੰ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ।"
+        very_uncontrolled_card:
+          subtitle: "%{facility_name} ਤੇ ਸ਼ੂਗਰ ਦੇ ਮਰੀਜ਼ >3 ਮਹੀਨੇ ਪਹਿਲਾਂ %{very_uncontrolled_threshold} ਨਾਲ ਪਿਛਲੇ 3 ਮਹੀਨਿਆਂ ਵਿੱਚ ਆਪਣੀ ਆਖਰੀ ਵਿਜ਼ਿਟ 'ਤੇ ਰਜਿਸਟਰ ਕੀਤੇ ਗਏ ਸਨ।"
+          help_tooltip:
+            numerator: "%{very_uncontrolled_threshold} ਵਿੱਚ ਸ਼ੂਗਰ ਦੇ ਮਰੀਜ਼ ਪਿਛਲੇ 3 ਮਹੀਨਿਆਂ ਵਿੱਚ ਆਪਣੀ ਆਖਰੀ ਵਿਜ਼ਿਟ 'ਤੇ।"
+            denominator: "ਸ਼ੂਗਰ ਦੇ ਮਰੀਜ਼ %{facility_name} ਨੂੰ ਨਿਰਧਾਰਿਤ ਕੀਤੇ ਗਏ, ਜੋ ਪਿਛਲੇ 3 ਮਹੀਨਿਆਂ ਤੋਂ ਪਹਿਲਾਂ ਰਜਿਸਟਰ ਕੀਤੇ ਗਏ ਸਨ। ਮਰ ਚੁੱਕੇ ਅਤੇ ਫਾਲੋ-ਅਪ ਤੋਂ ਖੁੰਝੇ ਮਰੀਜ਼ਾਂ ਨੂੰ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ।"
+        missed_visits_card:
+          subtitle: "%{facility_name} ਤੇ %{diagnosis} ਮਰੀਜ਼ >3 ਮਹੀਨੇ ਪਹਿਲਾਂ ਰਜਿਸਟਰ ਕੀਤੇ ਗਏ ਹਨ, ਪਿਛਲੇ 3 ਮਹੀਨਿਆਂ ਵਿੱਚ ਕੋਈ ਵਿਜ਼ਿਟ ਨਹੀਂ ਹੋਈ।"
+          help_tooltip:
+            numerator: "%{diagnosis} ਮਰੀਜ਼ ਜਿਨ੍ਹਾਂ ਦਾ ਪਿਛਲੇ 3 ਮਹੀਨਿਆਂ ਵਿੱਚ ਕੋਈ ਵਿਜ਼ਿਟ ਨਹੀਂ ਹੋਇਆ"
+            denominator: "%{diagnosis} ਮਰੀਜ਼ %{facility_name} ਨੂੰ ਸੌਂਪੇ ਗਏ, ਜੋ ਪਿਛਲੇ 3 ਮਹੀਨਿਆਂ ਤੋਂ ਪਹਿਲਾਂ ਰਜਿਸਟਰ ਕੀਤੇ ਗਏ ਸਨ। ਮਰ ਚੁੱਕੇ ਅਤੇ ਫਾਲੋ-ਅਪ ਤੋਂ ਖੁੰਝੇ ਮਰੀਜ਼ਾਂ ਨੂੰ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ।"
+      drug_stock_report:
+        section_title: "ਡਰੱਗ ਸਟਾਕ ਰਿਪੋਰਟ"
+        card_subtitle: "ਟੈਬਲੇਟ %{number_of_days} %{day_or_days} ਸਟਾਕ ਵਿੱਚ ਹਨ"
+      cohort_report:
+        section_title: "ਸਮੂਹ ਰਿਪੋਰਟਾਂ"
+        card_title: "ਤਿਮਾਹੀ ਸਮੂਹ ਰਿਪੋਰਟਾਂ"
+        card_subtitle: "ਅਗਲੀ ਤਿਮਾਹੀ ਵਿੱਚ ਉਹਨਾਂ ਦੇ ਫਾਲੋ-ਅੱਪ ਵਿਜ਼ਿਟ 'ਤੇ ਇੱਕ ਤਿਮਾਹੀ ਵਿੱਚ ਰਜਿਸਟਰ ਕੀਤੇ ਸਾਰੇ ਨਿਰਧਾਰਤ ਹਾਈਪਰਟੈਨਸ਼ਨ ਵਾਲੇ ਮਰੀਜ਼ਾਂ ਦਾ ਨਤੀਜਾ।"
+        cohort_title: "%{period} ਵਿੱਚ ਪਿਛਲੀ ਵਿਜ਼ਿਟ ਦਾ ਨਤੀਜਾ"
+        cohort_subtitle: "%{number_of_patients} %{patient_or_patients} %{registration_period} ਵਿੱਚ ਰਜਿਸਟਰ ਕੀਤਾ ਗਿਆ"
+        cohort_bar_tooltip: "%{threshold} ਦੇ ਨਾਲ %{total_patients} %{patient_or_patients}"
