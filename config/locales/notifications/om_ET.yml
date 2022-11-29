@@ -1,4 +1,4 @@
-om-ET:
+om:
   notifications:
     set01:
       basic: "%{patient_name}, maaloo %{facility_name} gaafa %{appointment_date} irratti safaraa fi dawaadhaf akka argamtan. "
@@ -46,10 +46,10 @@ om-ET:
       short: "Beellama kee BP dhaatif barfattee jirta. BP kee %{patient_name}tiif dafii %{facility_name} ilaali."
       short_medicines: "Beellama kee BP fi dawaawwan keetif barfattee jirta. BP kee %{patient_name}tiif dafii %{facility_name} ilaali."
       you_must: "BP dhaaf hanga danda'ameen daddaffiin dirqama %{facility_name}%{patient_name} tti dhufuu qabda."
-      no_date: ""
+      no_date: "%{patient_name}, Safafa BPdhaaf har'a gara %{facility_name}tti koottu."
       official_short: "Beellama kee BP dhaatif barfattee jirta. BP kee %{patient_name}tiif dafii %{facility_name} ilaali. Haakimni kee fayyaa gaarii siif hawwa."
       official_short_medicines: "Beellama kee BP fi dawaawwaniitif barfattee jirta. BP kee %{patient_name}tiif dafii %{facility_name} ilaali. Haakimni kee fayyaa gaarii siif hawwa."
       official_you_must: "BP dhaaf hanga danda'ameen daddaffiidhan dirqama %{facility_name}%{patient_name} irratti dhufuu qabda. Haakimni kee fayyaa gaarii siif hawwa."
-      official_no_date: ""
+      official_no_date: "%{patient_name}, Safafa BPdhaaf har'a gara %{facility_name}tti koottu. Haakimni kee waan gaarii siif hawwa."
     covid:
       medication_reminder: "Kabajamoo %{patient_name}: Hojjattootni keenya kan %{facility_name} yeroo fayyaa hatattamaa COVUD kanatti waa'ee fayyaa onnee keetii yaadu. Dawaa BPP itti fufuun kee baayyee murteessaadha. Jiddugala fayyaa dhihoo fi eeggumsa fayyaa irraa dawaawwan kee fudhadhu. ANM yookan ASHA kee qunnami."
