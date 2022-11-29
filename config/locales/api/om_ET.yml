@@ -1,4 +1,4 @@
-om-ET:
+om:
   date:
     month_names: [~, "Amajji", "Guraandhala", "Bitootessa", "Ebla", "Caamsaa", "Waxabajjii", "Adoolessa", "Hagayya", "Fulbaana", "Onkoloolessa", "Sadaasa", "Muddee"]
     abbr_month_names: [~, "Amajjii", "Guraandhala", "Bitootessa", "Ebla", "Caamsaa", "Waxabajjii", "Adooleessa", "Hagayya", "Fulbaana", "Onkoloolessa", "Sadaasa", "Mud"]
@@ -315,3 +315,116 @@ om-ET:
         language_tigrinya_html: Tigrinya
     privacy_policy_html: Poolisii Iccitaa'ummaa
     terms_of_service_html: Danbii Tajaajilaa
+
+  progress_tab:
+    registrations_and_follow_ups_card:
+      title: "Galmeewwanii fi hordoffiiwwan"
+    daily_report_title: "Guyyaan"
+    monthly_report_title: "Ji'aan"
+    yearly_report_title: "Waggaan"
+    hypertension_report_title: "Dhiibbaa Dhiiga"
+    diabetes_report_title: "Sukkaara"
+    last_updated_at: "Xumuraaf kan fooyya'e %{date}sa'aatii %{time} irratti"
+    diagnoses:
+      all: "Dhiibbaa dhiigaa fi sukkaara hunda"
+      hypertension: "Dhiibbaa Dhiiga"
+      diabetes: "Sukkaara"
+      hypertension_only: "Dhiibbaa dhiigaa qofa"
+      diabetes_only: "Sukkaara qofa"
+      hypertension_and_diabetes: "Dhiibbaa dhiigaa fi sukkaara"
+    genders:
+      male: "Dhiira"
+      female: "Dubara"
+      transgender: "Saaldarbaa"
+    period_card:
+      title: "Galmeewwanii fi hordoffiiwwan"
+    reports_card:
+      title: "Gabaasawwan "
+      subtitle: "%{facility_name}dhukkubsatoota akkamiin dhiibbaa dhiigaa fi sukkaara isaanii irratti gargaara."
+    drug_stock_report_card:
+      title: "Gabaasa kuusa dawaa"
+      subtitle: "Gabaasa dawaa %{facility_name} kan %{period}galchi."
+      button_title: "Kuufama dawaa galchi"
+    achievements_card:
+      title: "Milkaa'inoota"
+      follow_up_visits_section_title: "%{visit_or_visits}galmaa'eera hordofi"
+      overdue_patients_section_title: "%{call_or_calls}dhukkubsatoota yeroon irra darbeef"
+      registered_patients_title: "%{patient_or_patients} galmaa'eera"
+    period_report:
+      registered_patients_card:
+        title: "Dhukkubsatoota galmaa'an"
+        subtitle: "Dhukkubsatoota %{facility_name}tti galmaa'an"
+      follow_up_patients_card:
+        title: "Dhukkubsattoota hordofi"
+        subtitle: "Dhukkubsatoota %{facility_name} kan BPn isaanii fudhatame, sukkaarri isaanii fudhatame, beellamni dawaa isaanii kennameef."
+      follow_up_visits_card:
+        title: "Beellamoota hordoffii"
+        subtitle: "Beellamawwan hordoffii %{facility_name} tti galmaa'an. Beellama hordoffii jechuun yoo dhukkubsataan kan BPn isaa fudhatamu, sukkaarri isaa fudhatamu, beellamni kan kennamuuf ta'edha."
+      patients_initiated_on_treatment_card:
+        title: 'Gaafa "dhukkusataan dawaa itti jalqabe" eessa jira?'
+        main_text: '"Dhukkubsatoota Galmaa''an" fayyadami, dhukkubsatoota Simple irratti galmaa''aniif "dhukkusataan dawaa itti jalqabe" wajiin wal qixa'
+      more_patient_data_coming_soon_card:
+        title: "Guyyaa dhukkubsataan heddu dhufu"
+        main_text: "Gabaasni galmee fi hordoffii akkaataa dhukkubaa fi saalaa irratti hundaa'e dhiyootti ni dabalama."
+    diagnosis_report:
+      diagnosis_thresholds:
+        hypertension_controlled_short: "BPn too'atameera"
+        hypertension_controlled_long: "BP <140/90"
+        diabetes_controlled_short: "Sukkaara <200"
+        diabetes_controlled_long: "RBS/PPBS <200, FBS <126, or HbA1c <7.0"
+        hypertension_uncontrolled_short: "BPn hin too'atamne"
+        hypertension_uncontrolled_long: "BP ≥140/90"
+        diabetes_uncontrolled_short: "Sukkaara 200-299"
+        diabetes_uncontrolled_long: "RBS/PPBS 200-99, FBS 126-199, or HbA1c 7.0-8.9"
+        diabetes_very_uncontrolled_short: "Sukkaara ≥300"
+        diabetes_very_uncontrolled_long: "RBS/PPBS ≥300, FBS ≥200, or HbA1c ≥9.0"
+        hypertension_visited_but_no_bp_taken_short: "Ilaalameera, garuu BPn hin fudhatamne"
+        hypertension_visited_but_no_bp_taken_long: "BPn hin fudhatamne"
+        missed_visits_short: "Beellama darbe"
+        missed_visits_long: "Beellamni hin jiru"
+      assigned_patients_card:
+        title: "Dhukkubsatoota kennaman"
+        subtitle: "Dhukkubsatoota yaala %{diagnosis} argachuudhaaf %{facility_name} tti hordoffii gochuudhaf eeggaman"
+        assigned_patients_breakdown:
+          registered_patients: "Dhukkubsatoota galmaa'an"
+          transferred_in_patients: "Dabarfameera"
+          transferred_out_patients: "Bafaameera"
+      total_registered_patients:
+        title: "Dimshaasha galmee dhukkubsataa"
+        subtitle: "Dhukkubsatoota %{diagnosis} kan %{facility_name} tti galmaa'an"
+      monthly_follow_up_patients:
+        title: "Dhukkubsatoota hordoffii ji'aa qaban"
+        subtitle: "Dhukkubsatoota  %{diagnosis}kan BPn isaanii fudhatame, sukkaarri isaanii fudhatame, beellamni dawaa isaanii kennameef ji'a keessatti %{facility_name}"
+      patient_treatment_outcomes:
+        section_title: "Haala yaala dhukkusbataa"
+        chart_tooltip: "%{number_of_patients} %{number_of_patient_or_patients} fi %{threshold} akkasumas %{start_period} fi %{end_period} kan%{number_of_registered_patients} %{number_of_registered_patient_or_patients} kan %{registration_period} tti galmaa'an."
+        controlled_card:
+          subtitle: "Dhukkubsatoota %{diagnosis} kan %{facility_name} tti ji'oota  >3 galmaa'anii %{controlled_threshold}yoo xiqqaate ji'oota 3 darbaniif qabaatan."
+          help_tooltip:
+            numerator: "Dhukkubsatoota %{controlled_threshold} daawwannaa isaanii ji'oota 3 wajjiin."
+            denominator: "Dhukkubsatootni %{diagnosis} bakka kanatti qajeelfamu, kan ji'oota 3n darban keessa %{facility_name}tti galmaa'an. Dhukkubsatootni du'anii fi hordoffii hin qabne keessaa baafamanii jiru."
+        uncontrolled_card:
+          subtitle: "Dhukkubsatoota %{diagnosis} kan %{facility_name} tti ji'oota  >3 galmaa'anii %{controlled_threshold}yoo xiqqaate ji'oota 3 darbaniif qabaatan."
+          help_tooltip:
+            numerator: "Dhukkubsatoota %{controlled_threshold} daawwannaa isaanii ji'oota 3 wajjiin."
+            denominator: "Dhukkubsatootni %{diagnosis} bakka kanatti qajeelfamu, kan ji'oota 3n darban keessa %{facility_name}tti galmaa'an. Dhukkubsatootni du'anii fi hordoffii hin qabne keessaa baafamanii jiru."
+        very_uncontrolled_card:
+          subtitle: "Dhukkubsatoota Sukkaaraa kan %{facility_name} tti ji'oota  >3 galmaa'anii %{very_uncontrolled_threshold}yoo xiqqaate ji'oota 3 darbaniif qabaatan."
+          help_tooltip:
+            numerator: "Dhukkubsatoota Sukkaaraa %{very_uncontrolled_threshold} daawwannaa isaanii ji'oota 3 wajjiin."
+            denominator: "Dhukkubsatootni Sukkaaraa bakka kanatti qajeelfamu, kan ji'oota 3n darban keessa %{facility_name}tti galmaa'an. Dhukkubsatootni du'anii fi hordoffii hin qabne keessaa baafamanii jiru."
+        missed_visits_card:
+          subtitle: "Dhukkubsatoota %{diagnosis} kan %{facility_name} tti ji'oota  >3 galmaa'anii yoo xiqqaate ji'oota 3 darbaniif hordoffii hin qabne."
+          help_tooltip:
+            numerator: "Dhukkubsatoota %{diagnosis} kan ji'oota 3 hordoffii hin qabne"
+            denominator: "Dhukkubsatootni %{diagnosis} bakka kanatti qajeelfamu, kan ji'oota 3n darban keessa %{facility_name}tti galmaa'an. Dhukkubsatootni du'anii fi hordoffii hin qabne keessaa baafamanii jiru."
+      drug_stock_report:
+        section_title: "Gabaasa kuusa dawaa"
+        card_subtitle: "%{number_of_days}%{day_or_days}taableetii kuusa keessatti"
+      cohort_report:
+        section_title: "Gabaasa gare"
+        card_title: "Gabaasa garee kurmaanaa"
+        card_subtitle: "Bu'aa dhukkubsatoota dhiibbaa dhiiggaa dhiiggaa abbalaman hundaa kan hordoffii isaanii kurmaana kanatti ta'u."
+        cohort_title: "Bu'aa kan tarree  %{period}"
+        cohort_subtitle: "%{number_of_patients} %{patient_or_patients} kan %{registration_period} keessatti galmaa'an"
+        cohort_bar_tooltip: "%{total_patients} %{patient_or_patients} kan %{threshold}"
