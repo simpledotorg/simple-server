@@ -9,7 +9,7 @@
   ) do |c| %>
     <%= c.tooltip({ "Types of blood sugars measured" => t("bs_measurement_details_copy.numerator", region_name: @region.name) }) %>
   <% end %>
-  <div class="table-responsive-md oy-scroll w-100">
+  <div class="table-responsive">
     <%= render Dashboard::Card::TableComponent.new(id: "measurementChildComparisonTable") do |table| %>
       <% table.column_group do %>
         <colgroup>
