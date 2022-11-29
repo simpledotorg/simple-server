@@ -1,4 +1,4 @@
-so-ET:
+so:
   date:
     month_names: [~, "Janaayo ", "Febraayo ", "Maarso", "Abriil", "Maay", "Juun", "Julaay", "Agoosto", "Sebteember", "Oktoobar", "Noofember", "Diseember"]
     abbr_month_names: [~, "Janaayo", "Febraayo", "Maarso", "Abriil", "Maay", "Juun", "Julaay", "Agoosto", "Sebteember", "Oktoober", "Noofember", "Diseember"]
@@ -315,3 +315,116 @@ so-ET:
         language_tigrinya_html: Tigrinya
     privacy_policy_html: Xeerka Sirta
     terms_of_service_html: Shuruudaha Adeega
+
+  progress_tab:
+    registrations_and_follow_ups_card:
+      title: "Isduwaan geli oo la soco"
+    daily_report_title: "Maalin walba"
+    monthly_report_title: "Bishii"
+    yearly_report_title: "Sanadkii"
+    hypertension_report_title: "Dhiikar"
+    diabetes_report_title: "Macaan"
+    last_updated_at: "Markii ugu danbeeyay la cusboonaysiiyay %{date} markay ahayd %{time}"
+    diagnoses:
+      all: "Dhamaan dhiigarka iyo macaanka"
+      hypertension: "Dhiikar"
+      diabetes: "Macaan"
+      hypertension_only: "Kaliya kacsanaanta"
+      diabetes_only: "Kaliya macaanka"
+      hypertension_and_diabetes: "Kacsanaan iyo macaan"
+    genders:
+      male: "Lab"
+      female: "Dhedig"
+      transgender: "Jinsiga Badalay"
+    period_card:
+      title: "Isduwaan geli oo la soco"
+    reports_card:
+      title: "Warbixino"
+      subtitle: "Sida %{facility_name} uga caawiso bukaanada daawayndooda dhiikarka iyo macaanka."
+    drug_stock_report_card:
+      title: "Warbixinta kaydka dawada"
+      subtitle: "Gudbi %{facility_name}warbixinta kaydka dawada ee %{period}."
+      button_title: "Geli kaydka dawada"
+    achievements_card:
+      title: "Guulaha"
+      follow_up_visits_section_title: "la soco %{visit_or_visits} la duubay"
+      overdue_patients_section_title: "%{call_or_calls} ee bukaanka dhaafa"
+      registered_patients_title: "duwaan gashan %{patient_or_patients}"
+    period_report:
+      registered_patients_card:
+        title: "Bukaanada duwaan gashan"
+        subtitle: "Bukaanku waxa uu ka duwaan gashan yahay %{facility_name}."
+      follow_up_patients_card:
+        title: "La socodka bukaanka"
+        subtitle: "Bukaanka hore looga qaaday BP, laga qaaday sonkorta dhiiga, balanta loo qabto, ama dawooyinkooda ka wada qaatay %{facility_name}."
+      follow_up_visits_card:
+        title: "Booqashada la socodka"
+        subtitle: "Booqashooyinka la socodka waxaa lagu duubaa %{facility_name}. Booqashada la socodka ee bukaanka laga qaaday BP, laga qaaday sonkorta dhiiga, loo qabtay balan, ama wada qaatay dawooyinka."
+      patients_initiated_on_treatment_card:
+        title: 'Halkee ayay taalaa xogta "daawaynta hore ee bukaanadu"?'
+        main_text: 'Isticmaal "Bukaanada duwaan gashan", waxay markasta lamid tahay "Bukaanka bilaabay daawaynta" bukaanada ka duwaan gashan Simple.'
+      more_patient_data_coming_soon_card:
+        title: "Xog dheeraad ah oo bukaanka ah ayaa soo socda"
+        main_text: "Xogta Duwaan gelinta iyo la socodka maalin walba waxaa oo loo jajabiyaa xanuunada iyo jinsiga dhawaan ayaa lagu darayaa"
+    diagnosis_report:
+      diagnosis_thresholds:
+        hypertension_controlled_short: "BP la xakameeyay"
+        hypertension_controlled_long: "BP <140/90"
+        diabetes_controlled_short: "Sonkorta dhiiga <200"
+        diabetes_controlled_long: "RBS/PPBS <200, FBS <126, ama HbA1c <7.0"
+        hypertension_uncontrolled_short: "BP lama maamulin"
+        hypertension_uncontrolled_long: "BP ≥140/90"
+        diabetes_uncontrolled_short: "Sonkorta dhiiga 200-299"
+        diabetes_uncontrolled_long: "RBS/PPBS 200-99, FBS 126-199, ama HbA1c 7.0-8.9"
+        diabetes_very_uncontrolled_short: "Sonkorta dhiiga ≥300"
+        diabetes_very_uncontrolled_long: "RBS/PPBS ≥300, FBS ≥200, ama HbA1c ≥9.0"
+        hypertension_visited_but_no_bp_taken_short: "Booqday laakiin lama qaadin BP"
+        hypertension_visited_but_no_bp_taken_long: "BP lama qaadin"
+        missed_visits_short: "Booqashooyinka laga maqnaa"
+        missed_visits_long: "ma jirto booqasho"
+      assigned_patients_card:
+        title: "Bukaanada saxeexay"
+        subtitle: "Bukaanka la filanayo inay la socdaan %{facility_name} si ay u helaan daawaynta %{diagnosis} ."
+        assigned_patients_breakdown:
+          registered_patients: "Bukaanada duwaan gashan"
+          transferred_in_patients: "Laga soo gudbiyay"
+          transferred_out_patients: "Loo gudbiyay"
+      total_registered_patients:
+        title: "Wadarta bukaanka duwaan gashan"
+        subtitle: "Dhamaan %{diagnosis} bukaanka ka duwaan gashan %{facility_name}."
+      monthly_follow_up_patients:
+        title: "La socodka bukaanka bil walba"
+        subtitle: "%{diagnosis} bukaanada laga qaaday BP, laga qaaday sonkorta dhiiga, balanta loo qabtay, ama dawooyinka ka wada qaatay %{facility_name} bisha."
+      patient_treatment_outcomes:
+        section_title: "Xaalada daawaynta bukaanka"
+        chart_tooltip: "%{number_of_patients} %{number_of_patient_or_patients} leh %{threshold} inta u dhaxaysa %{start_period} iyo %{end_period} ee %{number_of_registered_patients} %{number_of_registered_patient_or_patients} ka duwaan gashan ilaa %{registration_period}."
+        controlled_card:
+          subtitle: "%{diagnosis} bukaanada ka duwaan gashan%{facility_name} >3 bilood wax ka horeeya %{controlled_threshold} oo booqashadoodii ugu danbeeyay ay ahaayeen 3 bilood ee lasoo dhaafay dhaxdood."
+          help_tooltip:
+            numerator: "Bukaanka qabta %{controlled_threshold} ugu yaraan 3 bilood ee lasoo dhaafay gudahood booqday."
+            denominator: "%{diagnosis} bukaanada saxeexay %{facility_name}, is duwaan geliyay wixii ka horeeyay 3 bilood kahor. Bukaanka dhintay ee la waayay waxaa laga reebayaa la socodka."
+        uncontrolled_card:
+          subtitle: "%{diagnosis} bukaanada %{facility_name} laga duwaan geliyay >3 kahor %{uncontrolled_threshold} ee maray booqashadoodii ugu danbaysay 3 bilood ee lasoo dhaafay gudaheed."
+          help_tooltip:
+            numerator: "Bukaana qaba%{uncontrolled_threshold} booqashadoodii ugu danbaysay 3 bilood ee lasoo dhaafay gudaheed."
+            denominator: "%{diagnosis} bukaanada saxeexay %{facility_name}, is duwaan geliyay wixii ka horeeyay 3 bilood kahor. Bukaanka dhintay ee la waayay waxaa laga reebayaa la socodka."
+        very_uncontrolled_card:
+          subtitle: "Bukaanka qaba macaanka %{facility_name} laga duwaan geliyay >3 bilood kahor %{very_uncontrolled_threshold} ee maray booqashadoodii ugu danbeeyay 3 dii bilood ee lasoo dhaafay dhaxdeeda."
+          help_tooltip:
+            numerator: "Bukaanada qaba macaanka %{very_uncontrolled_threshold} ee maray booqashadoodii ugu danbeeyay 3 bilood ee lasoo dhaafay dhaxdeeda."
+            denominator: "Bukaanka qaba macaanka ee axeexay %{facility_name}, is duwaan geliyay kahor 3 bilood ee lasoo dhaafay. Bukaanada dhintay iyo kuwa la waayay waa laga reebayaa la socodka."
+        missed_visits_card:
+          subtitle: "%{diagnosis} bukaanada %{facility_name} is duwaan geliyay >3 bilood kahor ee aan yeelan wax booqasho ah 3 bilood ee lasoo dhaafay."
+          help_tooltip:
+            numerator: "%{diagnosis} bukaanka aan marin booqasho 3 bilood ee lasoo dhaafay."
+            denominator: "%{diagnosis} bukaanada saxeexay %{facility_name}, is duwaan geliyay wixii ka horeeyay 3 bilood kahor. Bukaanka dhintay ee la waayay waxaa laga reebayaa la socodka."
+      drug_stock_report:
+        section_title: "Warbixinta kaydka dawada"
+        card_subtitle: "%{number_of_days} %{day_or_days} oo kiniin ayaa la hayaa"
+      cohort_report:
+        section_title: "Warbixinaha kooxda"
+        card_title: "Warbixinaha kooxda sadexdii bilood"
+        card_subtitle: "Natiijada dhamaan duwaanada la saxeexay ee bukaanak dhiikarka ee booqashadooda sadexdii bilood ee la socodka ee sadexda bilood ee soo socda."
+        cohort_title: "Natiijada booqashada ugu danbaysay%{period}"
+        cohort_subtitle: "%{number_of_patients} %{patient_or_patients} ka duwaan gashan %{registration_period}"
+        cohort_bar_tooltip: "%{total_patients} %{patient_or_patients} leh %{threshold}"
