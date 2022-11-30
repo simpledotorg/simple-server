@@ -1305,7 +1305,7 @@ Reports = function (withLtfu) {
           },
           ticks: {
             autoSkip: false,
-            fontColor: this.darkGreyColor,
+            fontColor: colors.darkGrey,
             fontSize: 12,
             fontFamily: "Roboto",
             padding: 8,
@@ -1324,7 +1324,7 @@ Reports = function (withLtfu) {
           },
           ticks: {
             autoSkip: false,
-            fontColor: this.darkGreyColor,
+            fontColor: colors.darkGrey,
             fontSize: 10,
             fontFamily: "Roboto",
             padding: 8,
