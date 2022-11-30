@@ -1,4 +1,4 @@
-hi-IN:
+hi_IN:
   date:
     month_names: [~, "जनवरी", "फरवरी", "मार्च", "अप्रैल", "मई", "जून", "जुलाई", "अगस्त", "सितंबर", "अक्टूबर", "नवंबर", "दिसंबर"]
     abbr_month_names: [~, "जनवरी", "फ़रवरी", "मार्च", "अप्रैल", "मई", "जून", "जुलाई", "अगस्त", "सितंबर", "अक्टूबर", "नवंबर", "दिसंबर"]
@@ -315,3 +315,116 @@ hi-IN:
         language_tigrinya_html: टिग्रिन्या
     privacy_policy_html: गोपनीयता नीति
     terms_of_service_html: सेवा की शर्तें
+
+  progress_tab:
+    registrations_and_follow_ups_card:
+      title: "रजिस्ट्रेशन और फ़ॉलो-अप"
+    daily_report_title: "दैनिक"
+    monthly_report_title: "मासिक"
+    yearly_report_title: "वार्षिक"
+    hypertension_report_title: "हाइपरटेंशन"
+    diabetes_report_title: "मधुमेह"
+    last_updated_at: "डेटा आखिरी बार %{date} को %{time} बजे अपडेट किया गया"
+    diagnoses:
+      all: "सभी हाइपरटेंशन और मधुमेह"
+      hypertension: "हाइपरटेंशन"
+      diabetes: "मधुमेह"
+      hypertension_only: "सिर्फ़ हाइपरटेंशन"
+      diabetes_only: "सिर्फ़ डायबिटीज़"
+      hypertension_and_diabetes: "हाइपरटेंशन और डायबिटीज़"
+    genders:
+      male: "पुरूष"
+      female: "महिला"
+      transgender: "ट्रांसजेंडर"
+    period_card:
+      title: "रजिस्ट्रेशन और फ़ॉलो-अप"
+    reports_card:
+      title: "रिपोर्ट"
+      subtitle: "%{facility_name} हाइपरटेंशन और डायबिटीज़ के उपचार में रोगियों की कैसे मदद करता है।"
+    drug_stock_report_card:
+      title: "ड्रग स्टॉक की रिपोर्ट"
+      subtitle: "%{period} के लिए %{facility_name} की ड्रग स्टॉक रिपोर्ट सबमिट करें।"
+      button_title: "ड्रग स्टॉक दर्ज़ करें"
+    achievements_card:
+      title: "उपलब्धियां"
+      follow_up_visits_section_title: "फ़ॉलो-अप %{visit_or_visits} रिकॉर्ड की गईं"
+      overdue_patients_section_title: "बाकी रोगियों को %{call_or_calls} करें"
+      registered_patients_title: "%{patient_or_patients} रजिस्टर किए गए"
+    period_report:
+      registered_patients_card:
+        title: "रजिस्टर किए गए रोगी"
+        subtitle: "%{facility_name} पर रोगियों को रजिस्टर किया गया।"
+      follow_up_patients_card:
+        title: "रोगियों से फ़ॉलो-अप लें"
+        subtitle: "वे रोगी जिनका %{facility_name} पर बीपी जाँचा गया, खून का नमूना लिया गया, अपॉइंटमेंट शेड्यूल किया गया या जिनकी दवाएँ अपडेट की गईं।"
+      follow_up_visits_card:
+        title: "फ़ॉलो अप विज़िट"
+        subtitle: "%{facility_name} पर रिकॉर्ड की गईं फ़ॉलो-अप विज़िट। फ़ॉलो-अप एक ऐसी विज़िट है, जब रोगी का बीपी जाँचा जाता है, खून का नमूना लिया जाता है, अपॉइंटमेंट शेड्यूल किया जाता है, या दवाएँ अपडेट की जाती हैं।"
+      patients_initiated_on_treatment_card:
+        title: '"रोगियों ने उपचार की शुरुआत की" डेटा कहाँ है?'
+        main_text: '"रजिस्टर किए गए रोगी" का इस्तेमाल करें, यह हमेशा सिंपल पर रजिस्टर रोगियों के लिए "रोगियों ने उपचार की शुरुआत की" के समान होगा।'
+      more_patient_data_coming_soon_card:
+        title: "और रोगी डेटा जल्द आ रहा है"
+        main_text: "रोग और लिंग के अनुसार विभाजित किया हुआ दैनिक रजिस्ट्रेशन और फ़ॉलो-अप डेटा जल्द ही जोड़ा जाएगा।"
+    diagnosis_report:
+      diagnosis_thresholds:
+        hypertension_controlled_short: "बीपी नियंत्रित है"
+        hypertension_controlled_long: "बीपी <140/90"
+        diabetes_controlled_short: "ब्लड शुगर <200"
+        diabetes_controlled_long: "RBS/PPBS <200, FBS <126 या HbA1c <7.0"
+        hypertension_uncontrolled_short: "बीपी नियंत्रित नहीं है"
+        hypertension_uncontrolled_long: "बीपी ≥140/90"
+        diabetes_uncontrolled_short: "ब्लड शुगर 200-299"
+        diabetes_uncontrolled_long: "RBS/PPBS 200-99, FBS 126-199 या HbA1c 7.0-8.9"
+        diabetes_very_uncontrolled_short: "ब्लड शुगर ≥300"
+        diabetes_very_uncontrolled_long: "RBS/PPBS ≥300, FBS ≥200 या HbA1c ≥9.0"
+        hypertension_visited_but_no_bp_taken_short: "विज़िट किया गया, लेकिन बीपी चेक नहीं किया गया"
+        hypertension_visited_but_no_bp_taken_long: "बीपी चेक नहीं किया गया"
+        missed_visits_short: "विज़िट छूट गई"
+        missed_visits_long: "कोई विज़िट नहीं"
+      assigned_patients_card:
+        title: "असाइन किए गए रोगी"
+        subtitle: "रोगियों को %{diagnosis} पर उपचार पाने के लिए %{facility_name} पर फॉलो-अप करने की उम्मीद है।"
+        assigned_patients_breakdown:
+          registered_patients: "रजिस्टर किए गए रोगी"
+          transferred_in_patients: "ट्रांसफर-इन किया गया"
+          transferred_out_patients: "ट्रांसफर-आउट किया गया"
+      total_registered_patients:
+        title: "कुल रजिस्टर रोगी"
+        subtitle: "%{facility_name} पर रजिस्टर सभी %{diagnosis} रोगी।"
+      monthly_follow_up_patients:
+        title: "मासिक फ़ॉलो-अप रोगी"
+        subtitle: "एक महीने के दौरान %{facility_name} पर %{diagnosis} रोगी जिनका बीपी जाँचा गया, खून का नमूना लिया गया, अपॉइंटमेंट शेड्यूल किया गया, या जिनकी दवाएँ अपडेट की गईं।"
+      patient_treatment_outcomes:
+        section_title: "रोगी के उपचार की स्थिति"
+        chart_tooltip: "%{registration_period} तक %{number_of_registered_patients} %{number_of_registered_patient_or_patients} के %{start_period} और %{end_period} के बीच %{threshold} के साथ %{number_of_patients} %{number_of_patient_or_patients} रजिस्टर किए गए।"
+        controlled_card:
+          subtitle: "पिछले 3 माह में अपनी पिछली विज़िट पर %{controlled_threshold} वाले >3 माह में रजिस्टर किए गए %{facility_name} पर %{diagnosis} रोगी।"
+          help_tooltip:
+            numerator: "पिछले 3 माह में अपनी पिछली विज़िट पर %{controlled_threshold} वाले रोगी।"
+            denominator: "पिछले 3 माह से पहले रजिस्टर किए गए %{diagnosis} रोगी %{facility_name} को असाइन किए गए। फॉलो-अप रोगियों में मृत और लावारिस शव को बाहर रखा गया था।"
+        uncontrolled_card:
+          subtitle: "पिछले 3 माह में अपनी पिछली विज़िट पर %{uncontrolled_threshold} वाले >3 माह में रजिस्टर किए गए %{facility_name} पर %{diagnosis} रोगी।"
+          help_tooltip:
+            numerator: "पिछले 3 माह में अपनी पिछली विज़िट पर %{uncontrolled_threshold} वाले रोगी।"
+            denominator: "पिछले 3 माह से पहले रजिस्टर किए गए %{diagnosis} रोगी %{facility_name} को असाइन किए गए। फॉलो-अप रोगियों में मृत और लावारिस शव को बाहर रखा गया था।"
+        very_uncontrolled_card:
+          subtitle: "पिछले 3 माह में अपनी पिछली विज़िट पर %{very_uncontrolled_threshold} वाले >3 में रजिस्टर किए गए %{facility_name} पर डायबिटीज़ रोगी।"
+          help_tooltip:
+            numerator: "पिछले 3 माह में अपनी पिछली विज़िट पर %{very_uncontrolled_threshold} में डायबिटीज़ रोगी।"
+            denominator: "पिछले 3 माह से पहले रजिस्टर किए गए डायबिटीज़ रोगी %{facility_name} को असाइन किए गए। फॉलो-अप रोगियों में मृत और लावारिस शव को बाहर रखा गया था।"
+        missed_visits_card:
+          subtitle: "पिछले 3 माह में कोई विज़िट न करने वाले >3 माह पहले रजिस्टर किए गए %{facility_name} पर %{diagnosis} रोगी।"
+          help_tooltip:
+            numerator: "पिछले 3 माह में कोई विज़िट न करने वाले %{diagnosis} रोगी"
+            denominator: "पिछले 3 माह से पहले रजिस्टर किए गए %{diagnosis} रोगी %{facility_name} को असाइन किए गए। फॉलो-अप रोगियों में मृत और लावारिस शव को बाहर रखा गया था।"
+      drug_stock_report:
+        section_title: "ड्रग स्टॉक की रिपोर्ट"
+        card_subtitle: "स्टॉक में %{number_of_days} %{day_or_days} टेब्लेट"
+      cohort_report:
+        section_title: "कोहॉर्ट रिपोर्ट"
+        card_title: "त्रैमासिक कोहॉर्ट रिपोर्ट"
+        card_subtitle: "आगामी तिमाही में उनकी फ़ॉलो-अप विज़िट पर एक तिमाही में रजिस्टर किए गए सभी असाइन हाइपरटेंसिव रोगियों के लिए परिणाम।"
+        cohort_title: "%{period} में पिछली विज़िट के परिणाम"
+        cohort_subtitle: "%{registration_period} में %{number_of_patients} %{patient_or_patients} रजिस्टर किए गए"
+        cohort_bar_tooltip: "%{threshold} वाले %{total_patients} %{patient_or_patients}"
