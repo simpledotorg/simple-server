@@ -1,4 +1,4 @@
-<div class="card mb-0">
+<div class="card mb-16px">
   <%= render Dashboard::Card::TitleComponent.new(
     title: "Types of blood sugars measured",
     subtitle: t("bs_measurement_details_copy.reports_card_subtitle",
@@ -9,8 +9,7 @@
   ) do |c| %>
     <%= c.tooltip({ "Types of blood sugars measured" => t("bs_measurement_details_copy.numerator", region_name: @region.name) }) %>
   <% end %>
-
-  <div class="table-responsive-md">
+  <div class="table-responsive">
     <%= render Dashboard::Card::TableComponent.new(id: "measurementChildComparisonTable") do |table| %>
       <% table.column_group do %>
         <colgroup>
@@ -48,8 +47,7 @@
                 <%= number_to_percentage(total[:rate] || 0, precision: 0) %>
               </em>
             </td>
-
-            <td class="ta-left">
+            <td class="ta-right">
               <%= number_or_dash_with_delimiter(total[:count]) %>
             </td>
           <% end %>
@@ -76,8 +74,7 @@
                   <%= number_to_percentage(total[:rate] || 0, precision: 0) %>
                 </em>
               </td>
-
-              <td class="ta-left">
+              <td class="ta-right">
                 <%= number_or_dash_with_delimiter(total[:count]) %>
               </td>
             <% end %>
