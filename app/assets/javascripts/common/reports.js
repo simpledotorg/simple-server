@@ -1573,6 +1573,7 @@ Reports = function (withLtfu) {
 // AdditionalConfigObject is used to add or overwrite specfic key: value - [will take priority]
 
 function baseLineGraphConfig() {
+  const colors = dashboardReportsChartJSColors()
   return {
     type: "line",
     options: {
