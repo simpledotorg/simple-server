@@ -40,3 +40,13 @@ jobs:
       - uses: actions/checkout@v2
       - name: Argocd deployment
         run: ${GITHUB_WORKSPACE}/script/argocd_deployment.sh ${{ secrets.STAGING_ARGOCD_ENDPOINT }} ${{ secrets.ARGOCD_USERNAME }} ${{ secrets.STAGING_ARGOCD_PASSWORD }}
+  deploy_simple_server_qa:
+    needs: docker_build_push
+    runs-on: ubuntu-latest
+    container:
+      image: argoproj/argocd:v2.4.11
+      options: --user 0
+    steps:
+      - uses: actions/checkout@v2
+      - name: Argocd deployment
+        run: ${GITHUB_WORKSPACE}/script/argocd_deployment.sh ${{ secrets.QA_ARGOCD_ENDPOINT }} ${{ secrets.ARGOCD_USERNAME }} ${{ secrets.QA_ARGOCD_PASSWORD }}
