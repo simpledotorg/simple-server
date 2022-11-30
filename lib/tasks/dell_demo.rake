@@ -309,7 +309,7 @@ namespace :dell_demo do
           break
         end
 
-        if input.size != 36
+        if input.size == 36
           jump_to_id = input.to_i
         end
       end
