@@ -1582,10 +1582,10 @@ function baseLineGraphConfig() {
       maintainAspectRatio: false,
       layout: {
         padding: {
-          left: -2,
+          left: 0,
           right: 0,
           top: 20,
-          bottom: -2,
+          bottom: 0,
         },
       },
       elements: {
