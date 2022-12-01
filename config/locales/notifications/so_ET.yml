@@ -1,4 +1,4 @@
-so:
+so-ET:
   notifications:
     set01:
       basic: "%{patient_name}, fadlan booqo %{facility_name} ee %{appointment_date} ee qiyaasta iyo dawooyinka."

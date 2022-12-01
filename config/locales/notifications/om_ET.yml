@@ -1,4 +1,4 @@
-om:
+om-ET:
   notifications:
     set01:
       basic: "%{patient_name}, maaloo %{facility_name} gaafa %{appointment_date} irratti safaraa fi dawaadhaf akka argamtan. "
