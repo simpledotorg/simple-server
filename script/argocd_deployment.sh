@@ -16,7 +16,7 @@ argocd login $ARGOCD_ENDPOINT \
   --insecure --config /home/argocd/.config/argocd/config
 
 # Argocd set simple server image
-argocd app set simple-server --helm-set image=simpledotorg/server:$GITHUB_SHA --config /home/argocd/.config/argocd/config
+argocd app set simple-server --helm-set image.tag=$GITHUB_SHA --config /home/argocd/.config/argocd/config
 
 # Argocd wait for sync
 argocd app wait simple-server --config /home/argocd/.config/argocd/config
