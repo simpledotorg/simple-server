@@ -23,6 +23,9 @@ ENV INSTALL_PATH /home/app
 RUN mkdir -p $INSTALL_PATH
 WORKDIR $INSTALL_PATH
 
+# Create cron logs directory
+RUN mkdir -p /home/deploy/apps/simple-server/shared/log
+
 # Copy application files
 COPY --chown=app:app ./ $INSTALL_PATH
 
