@@ -9,7 +9,7 @@
     <%= render Dashboard::Card::TableComponent.new(id: "measurementChildComparisonTable") do |table| %>
       <% table.column_group do %>
         <colgroup>
-          <col>
+          <col class="table-first-col">
           <col>
           <col class="table-divider">
           <col class="table-divider">
@@ -38,8 +38,7 @@
             <td class="row-title">
               <%= link_to user.full_name, admin_user_path(user, period: @period) %>
             </td>
-
-            <td class="ta-center">
+            <td class="ta-right">
               <%= number_or_dash_with_delimiter(user_registrations_count(user)) %>
             </td>
 
