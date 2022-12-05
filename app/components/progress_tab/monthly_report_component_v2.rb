@@ -27,7 +27,6 @@ class ProgressTab::MonthlyReportComponentV2 < ApplicationComponent
 
   memoize def last_6_months
     service.range.to_a.reverse.map { |date| display_date(date) }
-    ["May 2022"]
   end
 
   def display_date(period)
