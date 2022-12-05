@@ -325,6 +325,9 @@ en:
     hypertension_report_title: "Hypertension"
     diabetes_report_title: "Diabetes"
     last_updated_at: "Data last updated on %{date} at %{time}"
+    coming_soon:
+      title: "Today's report is coming soon"
+      subtitle: "You can still view previous reports"
     diagnoses:
       all: "All hypertension and diabetes"
       hypertension: "Hypertension"
