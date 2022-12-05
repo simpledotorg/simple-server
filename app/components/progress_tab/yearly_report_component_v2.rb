@@ -30,7 +30,11 @@ class ProgressTab::YearlyReportComponentV2 < ApplicationComponent
     Flipper.enabled?(:yearly_reports_start_from_april, @current_user)
   end
 
-  def last_n_years
+  def is_data_available_for(year)
+    yearly_registrations_breakdown[year].present?
+  end
+
+  memoize def last_n_years
     years = (SIMPLE_START_YEAR..Date.current.year).to_a.reverse
     if report_in_financial_year?
       years.push(SIMPLE_START_YEAR - 1)
@@ -39,6 +43,7 @@ class ProgressTab::YearlyReportComponentV2 < ApplicationComponent
     years.each_with_object({}) do |year, hsh|
       hsh[year] = display_year(year)
     end
+    {2023 => "Jan-2023 to Dec-2023", 2022 => "Jan-2022 to Dec-2022", 2021 => "Jan-2021 to Dec-2021", 2020 => "Jan-2020 to Dec-2020", 2019 => "Jan-2019 to Dec-2019", 2018 => "Jan-2018 to Dec-2018"}
   end
 
   def display_date(period)

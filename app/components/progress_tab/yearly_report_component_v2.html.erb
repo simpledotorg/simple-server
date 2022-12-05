@@ -25,26 +25,27 @@
 
   <% last_n_years.keys.each_with_index do |year, index| %>
     <div data-element="yearly-cards" data-date="<%= year %>" class="<% unless index == 0 %>d-none<% end %>">
-      <div class="mb-8px p-16px bgc-white br-4px bs-card">
-        <div class="d-flex ai-center jc-space-between mb-8px">
-          <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
-            <%= t("progress_tab.period_report.registered_patients_card.title") %>
-          </h2>
-          <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
-            <%= total_registrations(year) %>
+      <% if is_data_available_for(year) %>
+        <div class="mb-8px p-16px bgc-white br-4px bs-card">
+          <div class="d-flex ai-center jc-space-between mb-8px">
+            <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
+              <%= t("progress_tab.period_report.registered_patients_card.title") %>
+            </h2>
+            <p class="m-0px p-0px ta-right fw-medium fs-18px c-black">
+              <%= total_registrations(year) %>
+            </p>
+          </div>
+          <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+            <%= t("progress_tab.period_report.registered_patients_card.subtitle", facility_name: region.name) %>
           </p>
+          <% diagnosis_headers.each do |diagnosis, title| %>
+            <%= render ProgressTab::BreakdownTableComponent.new(
+              title: title,
+              breakdown: yearly_registrations_breakdown[year][diagnosis])
+            %>
+          <% end %>
         </div>
-        <p class="m-0px mb-24px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-          <%= t("progress_tab.period_report.registered_patients_card.subtitle", facility_name: region.name) %>
-        </p>
-        <% diagnosis_headers.each do |diagnosis, title| %>
-          <%= render ProgressTab::BreakdownTableComponent.new(
-            title: title,
-            breakdown: yearly_registrations_breakdown[year][diagnosis])
-          %>
-        <% end %>
-      </div>
-      <div class="mb-8px p-16px bgc-white br-4px bs-card">
+        <div class="mb-8px p-16px bgc-white br-4px bs-card">
         <div class="d-flex ai-center jc-space-between mb-8px">
           <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">
             <%= t("progress_tab.period_report.follow_up_visits_card.title") %>
@@ -63,6 +64,14 @@
           %>
         <% end %>
       </div>
+      <%else %>
+        <div class="mb-8px p-16px pt-48px pb-24px bgc-white br-4px bs-card">
+          <%= inline_svg("sandtimer.svg") %>
+<!--      Add coming soon title in en.yml file. Use 'progress_tab.coming_soon.yearly_title' as the key -->
+          <p class="fs-20px fw-bold mt-32px mb-12px"><%= t("progress_tab.coming_soon.yearly_title") %></p>
+          <p class="fs-16px c-grey-dark"><%= t("progress_tab.coming_soon.subtitle") %></p>
+        </div>
+      <%end %>
     </div>
   <% end %>
 

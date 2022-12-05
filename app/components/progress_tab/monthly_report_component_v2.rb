@@ -3,6 +3,7 @@
 class ProgressTab::MonthlyReportComponentV2 < ApplicationComponent
   include AssetsHelper
   include ProgressTabHelper
+  include Memery
 
   MONTH_DATE_FORMAT = Date::DATE_FORMATS[:month_year]
 
@@ -20,8 +21,13 @@ class ProgressTab::MonthlyReportComponentV2 < ApplicationComponent
     Flipper.enabled?(:new_progress_tab_v2, current_user) || Flipper.enabled?(:new_progress_tab_v2)
   end
 
-  def last_6_months
+  def is_data_available_for(date)
+    monthly_registrations_breakdown[Period.month(date.to_date)].present?
+  end
+
+  memoize def last_6_months
     service.range.to_a.reverse.map { |date| display_date(date) }
+    ["May 2022"]
   end
 
   def display_date(period)
