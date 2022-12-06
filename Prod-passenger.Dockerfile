@@ -47,7 +47,6 @@ RUN apt-get install -y vim
 # Configure rails env
 ENV RAILS_ENV production
 ENV RAILS_SERVE_STATIC_FILES true
-ENV RAILS_LOG_TO_STDOUT true
 
 # Build
 RUN gem install bundler -v "$(grep -A 1 "BUNDLED WITH" Gemfile.lock | tail -n 1)"
