@@ -20,26 +20,6 @@ jobs:
           dockerfile: Prod-passenger.Dockerfile
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-  deploy_simple_server_bd_k3s_demo:
-    needs: docker_build_push
-    runs-on: ubuntu-latest
-    container:
-      image: argoproj/argocd:v2.4.11
-      options: --user 0
-    steps:
-      - uses: actions/checkout@v2
-      - name: Argocd deployment
-        run: ${GITHUB_WORKSPACE}/script/argocd_deployment.sh ${{ secrets.BD_K3S_DEMO_ARGOCD_ENDPOINT }} ${{ secrets.ARGOCD_USERNAME }} ${{ secrets.BD_K3S_DEMO_ARGOCD_PASSWORD }}
-  deploy_simple_server_staging:
-    needs: docker_build_push
-    runs-on: ubuntu-latest
-    container:
-      image: argoproj/argocd:v2.4.11
-      options: --user 0
-    steps:
-      - uses: actions/checkout@v2
-      - name: Argocd deployment
-        run: ${GITHUB_WORKSPACE}/script/argocd_deployment.sh ${{ secrets.STAGING_ARGOCD_ENDPOINT }} ${{ secrets.ARGOCD_USERNAME }} ${{ secrets.STAGING_ARGOCD_PASSWORD }}
   deploy_simple_server_qa:
     needs: docker_build_push
     runs-on: ubuntu-latest
