@@ -39,19 +39,18 @@ RUN apt-get update && apt-get install -y redis-server postgresql-client jq
 # Node
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
 RUN apt-get update && apt-get install -y --no-install-recommends nodejs
-# Install cron
+# Cron
 RUN apt-get install -y cron
-# Install vim
+# Vim
 RUN apt-get install -y vim
 
 # Configure rails env
 ENV RAILS_ENV production
 ENV RAILS_SERVE_STATIC_FILES true
 ENV RAILS_LOG_TO_STDOUT true
-ENV BUNDLE_VERSION 2.2.29
 
 # Build
-RUN gem install bundler -v $BUNDLE_VERSION
+RUN gem install bundler -v "$(grep -A 1 "BUNDLED WITH" Gemfile.lock | tail -n 1)"
 RUN bundle install
 RUN yarn install
 RUN set -a && source .env.development && set +a && bundle exec rake assets:precompile
