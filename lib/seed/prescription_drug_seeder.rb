@@ -27,7 +27,7 @@ module Seed
     end
 
     def prescription_drugs_to_create
-      (0...config.max_prescription_drugs_to_create_per_encounter).to_a.sample
+      (0...config.max_prescription_drugs_to_create_per_encounter).to_a.sample.to_i
     end
 
     def call
