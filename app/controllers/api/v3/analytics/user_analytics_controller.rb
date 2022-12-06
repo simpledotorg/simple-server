@@ -4,6 +4,8 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
   before_action :set_for_end_of_month
   before_action :set_bust_cache
 
+  APP_OLD_VERSION_RELEASE_DATE = "2022-07-04"
+
   layout false
 
   def show
@@ -37,10 +39,8 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
     @diabetes_reports_data = Reports::ReportsFakeFacilityProgressService.new(@current_facility.name).diabetes_reports
 
     respond_to do |format|
-      if Flipper.enabled?(:new_progress_tab_v2, current_user) || Flipper.enabled?(:new_progress_tab_v2)
+      if new_progress_tab_enabled?
         format.html { render :show_v2 }
-      elsif Flipper.enabled?(:new_progress_tab_v1, current_user) || Flipper.enabled?(:new_progress_tab_v1)
-        format.html { render :show_v1 }
       else
         format.html { render :show }
       end
@@ -54,5 +54,10 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
 
   def set_bust_cache
     RequestStore.store[:bust_cache] = true if params[:bust_cache].present?
+  end
+
+  def new_progress_tab_enabled?
+    (request.headers["HTTP-X-APP-VERSION"] >= APP_OLD_VERSION_RELEASE_DATE) &&
+      (Flipper.enabled?(:new_progress_tab_v2, current_user) || Flipper.enabled?(:new_progress_tab_v2))
   end
 end
