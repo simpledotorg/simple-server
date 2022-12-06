@@ -325,6 +325,10 @@ en:
     hypertension_report_title: "Hypertension"
     diabetes_report_title: "Diabetes"
     last_updated_at: "Data last updated on %{date} at %{time}"
+    coming_soon: "Coming soon"
+    no_data_card:
+      title: "This report is coming soon"
+      subtitle: "You can still view previous reports"
     diagnoses:
       all: "All hypertension and diabetes"
       hypertension: "Hypertension"
@@ -348,8 +352,17 @@ en:
     achievements_card:
       title: "Achievements"
       follow_up_visits_section_title: "follow-up %{visit_or_visits} recorded"
+      visit:
+        one: "visit"
+        other: "visits"
       overdue_patients_section_title: "%{call_or_calls} to overdue patients"
+      call:
+        one: "call"
+        other: "calls"
       registered_patients_title: "registered %{patient_or_patients}"
+      patient:
+        one: "patient"
+        other: "patients"
     period_report:
       registered_patients_card:
         title: "Registered patients"
