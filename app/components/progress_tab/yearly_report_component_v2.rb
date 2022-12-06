@@ -30,7 +30,7 @@ class ProgressTab::YearlyReportComponentV2 < ApplicationComponent
     Flipper.enabled?(:yearly_reports_start_from_april, @current_user)
   end
 
-  def is_data_available_for(year)
+  def data_available?(year:)
     yearly_registrations_breakdown[year].present?
   end
 

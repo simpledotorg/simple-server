@@ -25,7 +25,7 @@
 
   <% last_6_months.each_with_index do |date, index| %>
     <div data-element="monthly-cards" data-date="<%= date %>" class="<% unless index == 0 %>d-none<% end %>">
-      <% if is_data_available_for(date) %>
+      <% if data_available?(date: date)%>
         <div class="mb-8px p-16px bgc-white br-4px bs-card">
           <div class="d-flex ai-center jc-space-between mb-8px">
             <h2 class="m-0px p-0px ta-left fw-medium fs-18px c-black">

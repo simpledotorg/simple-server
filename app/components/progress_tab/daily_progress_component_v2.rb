@@ -29,7 +29,7 @@ class ProgressTab::DailyProgressComponentV2 < ApplicationComponent
     (@start..@now).to_a.reverse.map { |date| display_date(date) }
   end
 
-  def is_data_available_for(date)
+  def data_available?(date:)
     daily_registrations_breakdown[date.to_date].present?
   end
 
