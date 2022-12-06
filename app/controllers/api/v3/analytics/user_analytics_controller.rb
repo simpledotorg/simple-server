@@ -57,7 +57,8 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
   end
 
   def new_progress_tab_enabled?
-    (request.headers["HTTP-X-APP-VERSION"] >= APP_OLD_VERSION_RELEASE_DATE) &&
+    app_version = request.headers["HTTP-X-APP-VERSION"] || "" # Default to old progress tab when app version is nil
+    (app_version >= APP_OLD_VERSION_RELEASE_DATE) &&
       (Flipper.enabled?(:new_progress_tab_v2, current_user) || Flipper.enabled?(:new_progress_tab_v2))
   end
 end
