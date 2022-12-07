@@ -8,13 +8,25 @@ blocks:
         commands:
           - checkout
           - image_name="$DOCKER_USERNAME/server"
-          - tag1="$image_name:latest"
-          - tag2="$image_name:$SEMAPHORE_GIT_SHA"
+          - tag_latest="$image_name:latest"
+          - tag_git_sha="$image_name:$SEMAPHORE_GIT_SHA"
           - echo $DOCKER_PASSWORD | docker login --username "$DOCKER_USERNAME" --password-stdin
-          - docker build -t tag1 -t tag2 -f Prod-passenger.Dockerfile  .
-          - docker push $image_name -a
+          - docker build -t tag_latest -t tag_git_sha -f Prod-passenger.Dockerfile  .
+          - docker push tag_latest
+          - docker push tag_git_sha
       secrets:
       - name: docker-hub
+  - name: Deploy to QA
+    dependencies: ["Build push Docker image to registry"]
+    task:
+      secrets:
+        - name: argocd
+      jobs:
+        - name: Deploy to QA
+          commands:
+            - checkout
+            - script/argocd_install.sh
+            - script/argocd_deployment.sh $QA_ARGOCD_ENDPOINT $ARGOCD_USERNAME $QA_ARGOCD_PASSWORD
 queue:
   name: Deployment queue
   scope: project
