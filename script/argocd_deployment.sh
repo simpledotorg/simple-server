@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 
-if [ "$#" -ne 3 ]; then
-  echo "Usage: $0 <argocd-endpoint> <argocd-user> <argocd-password>" >&2
+if [ "$#" -ne 4 ]; then
+  echo "Usage: $0 <argocd-endpoint> <argocd-user> <argocd-password> <image-tag>" >&2
   exit 1
 fi
 
 ARGOCD_ENDPOINT=$1
 ARGOCD_USERNAME=$2
 ARGOCD_PASSWORD=$3
+IMAGE_TAG=$4
 
 # Argocd login
 argocd login $ARGOCD_ENDPOINT \
@@ -16,7 +17,7 @@ argocd login $ARGOCD_ENDPOINT \
   --insecure --config /home/argocd/.config/argocd/config
 
 # Argocd set simple server image
-argocd app set simple-server --helm-set image.tag=$GITHUB_SHA --config /home/argocd/.config/argocd/config
+argocd app set simple-server --helm-set image.tag=$IMAGE_TAG --config /home/argocd/.config/argocd/config
 
 # Argocd wait for sync
 argocd app wait simple-server --config /home/argocd/.config/argocd/config

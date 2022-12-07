@@ -29,4 +29,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Argocd deployment
-        run: ${GITHUB_WORKSPACE}/script/argocd_deployment.sh ${{ secrets.QA_ARGOCD_ENDPOINT }} ${{ secrets.ARGOCD_USERNAME }} ${{ secrets.QA_ARGOCD_PASSWORD }}
+        run: ${GITHUB_WORKSPACE}/script/argocd_deployment.sh ${{ secrets.QA_ARGOCD_ENDPOINT }} ${{ secrets.ARGOCD_USERNAME }} ${{ secrets.QA_ARGOCD_PASSWORD }} $GITHUB_SHA

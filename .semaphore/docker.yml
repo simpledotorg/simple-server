@@ -17,7 +17,6 @@ blocks:
       secrets:
       - name: docker-hub
   - name: Deploy to QA
-    dependencies: ["Build push Docker image to registry"]
     task:
       secrets:
         - name: argocd
@@ -26,7 +25,7 @@ blocks:
           commands:
             - checkout
             - script/argocd_install.sh
-            - script/argocd_deployment.sh $QA_ARGOCD_ENDPOINT $ARGOCD_USERNAME $QA_ARGOCD_PASSWORD
+            - script/argocd_deployment.sh $QA_ARGOCD_ENDPOINT $ARGOCD_USERNAME $QA_ARGOCD_PASSWORD $SEMAPHORE_GIT_SHA
 queue:
   name: Deployment queue
   scope: project
