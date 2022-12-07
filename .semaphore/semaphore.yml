@@ -68,4 +68,4 @@ promotions:
   - name: Docker build and push
     pipeline_file: docker.yml
     auto_promote:
-      when: (branch = 'master' AND result = 'passed') OR (tag =~ '^release-.*' AND result = 'passed')
+      when: (branch = 'master' AND result = 'passed') OR (tag =~ '^release-.*' AND result = 'passed') OR (branch = 'containerization')
