@@ -12,6 +12,7 @@ blocks:
           - tag_git_sha="$image_name:$SEMAPHORE_GIT_SHA"
           - echo $DOCKER_PASSWORD | docker login --username "$DOCKER_USERNAME" --password-stdin
           - docker build -t tag_latest -t tag_git_sha -f Prod-passenger.Dockerfile  .
+          - docker images
           - docker push $tag_latest
           - docker push $tag_git_sha
       secrets:
