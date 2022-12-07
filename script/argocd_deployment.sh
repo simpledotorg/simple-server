@@ -11,6 +11,7 @@ ARGOCD_PASSWORD=$3
 IMAGE_TAG=$4
 
 DEFAULT_ARGOCD_VERSION=v2.5.2
+ARGOCD_CONFIG_PATH=~/.config/argocd/config
 
 # Install argocd if not installed
 if ! command -v argocd &> /dev/null
@@ -33,7 +34,7 @@ argocd login $ARGOCD_ENDPOINT \
   --insecure --config /home/argocd/.config/argocd/config
 
 # Argocd set simple server image
-argocd app set simple-server --helm-set image.tag=$IMAGE_TAG --config /home/argocd/.config/argocd/config
+argocd app set simple-server --helm-set image.tag=$IMAGE_TAG --config $ARGOCD_CONFIG_PATH
 
 # Argocd wait for sync
-argocd app wait simple-server --config /home/argocd/.config/argocd/config
+argocd app wait simple-server --config $ARGOCD_CONFIG_PATH
