@@ -2,7 +2,7 @@
 
 # When callling the ping endpoint, Passenger is returning 301 (https redirect)
 # K8s follows the redirect and the health check fails (port 443 is not exposed)
-# This scirpt is a workaround to check if Passenger is responding with 301
+# This script is a workaround to check if Passenger is responding with 301
 
 # Health check timeout
 max_time=$1
