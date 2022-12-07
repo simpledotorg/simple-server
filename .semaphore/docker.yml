@@ -1,0 +1,31 @@
+version: v1.0
+name: Docker build and push
+blocks:
+  - name: Build push Docker image to registry
+    task:
+      jobs:
+      - name: Docker Hub
+        commands:
+          - checkout
+          - image_name="$DOCKER_USERNAME/server"
+          - tag_latest="$image_name:latest"
+          - tag_git_sha="$image_name:$SEMAPHORE_GIT_SHA"
+          - echo $DOCKER_PASSWORD | docker login --username "$DOCKER_USERNAME" --password-stdin
+          - docker build -t $tag_latest -t $tag_git_sha -f Prod-passenger.Dockerfile  .
+          - docker images
+          - docker push $tag_latest
+          - docker push $tag_git_sha
+      secrets:
+      - name: docker-hub
+queue:
+  name: Deployment queue
+  scope: project
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu2004
+promotions:
+  - name: Deploy
+    pipeline_file: deploy.yml
+    auto_promote:
+      when: (branch = 'master' AND result = 'passed') OR (tag =~ '^release-.*' AND result = 'passed')
