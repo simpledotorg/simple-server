@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -e
+
+# Set environment variables system-wide.
+# Mainly for cron jobs.
+env >> /etc/environment
+
+# Set ownership of /home/app folder to user app.
+chown -R app:app /home/app
+
+exec "$@"

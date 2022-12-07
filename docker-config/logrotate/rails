@@ -1,0 +1,14 @@
+/home/app/log/*.log {
+  su app app
+  daily
+  rotate 3
+  missingok
+  notifempty
+  compress
+  delaycompress
+  copytruncate
+  dateext
+  lastaction
+    /usr/bin/s3cmd sync /home/app/log/*.gz "s3://$LOG_ARCHIVE_S3_PATH_PREFIX/$HOSTNAME/rails/"
+  endscript
+}
