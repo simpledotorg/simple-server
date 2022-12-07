@@ -4,7 +4,7 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
   before_action :set_for_end_of_month
   before_action :set_bust_cache
 
-  APP_OLD_VERSION_RELEASE_DATE = "2022-07-04"
+  NEW_PROGRESS_TAB_MIN_APP_VERSION = "2022-07-04-8318"
 
   layout false
 
@@ -57,8 +57,8 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
   end
 
   def new_progress_tab_enabled?
-    app_version = request.headers["HTTP-X-APP-VERSION"] || "" # Default to old progress tab when app version is nil
-    (app_version >= APP_OLD_VERSION_RELEASE_DATE) &&
-      (Flipper.enabled?(:new_progress_tab_v2, current_user) || Flipper.enabled?(:new_progress_tab_v2))
+    app_version = request.headers["HTTP-X-APP-VERSION"]
+    return false unless app_version.present?
+    app_version >= NEW_PROGRESS_TAB_MIN_APP_VERSION && Flipper.enabled?(:new_progress_tab_v2, current_user)
   end
 end
