@@ -17,15 +17,6 @@ blocks:
           - docker push $tag_git_sha
       secrets:
       - name: docker-hub
-  - name: Deploy to QA
-    task:
-      secrets:
-        - name: argocd
-      jobs:
-        - name: Deploy to QA
-          commands:
-            - checkout
-            - script/argocd_deployment.sh $QA_ARGOCD_ENDPOINT $ARGOCD_USERNAME $QA_ARGOCD_PASSWORD $SEMAPHORE_GIT_SHA
 queue:
   name: Deployment queue
   scope: project
