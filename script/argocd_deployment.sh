@@ -31,7 +31,7 @@ fi
 argocd login $ARGOCD_ENDPOINT \
   --username $ARGOCD_USERNAME \
   --password $ARGOCD_PASSWORD \
-  --insecure --config /home/argocd/.config/argocd/config
+  --insecure --config $ARGOCD_CONFIG_PATH
 
 # Argocd set simple server image
 argocd app set simple-server --helm-set image.tag=$IMAGE_TAG --config $ARGOCD_CONFIG_PATH

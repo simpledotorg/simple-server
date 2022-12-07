@@ -25,7 +25,6 @@ blocks:
         - name: Deploy to QA
           commands:
             - checkout
-            - script/argocd_install.sh
             - script/argocd_deployment.sh $QA_ARGOCD_ENDPOINT $ARGOCD_USERNAME $QA_ARGOCD_PASSWORD $SEMAPHORE_GIT_SHA
 queue:
   name: Deployment queue
