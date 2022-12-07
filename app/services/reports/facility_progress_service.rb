@@ -11,6 +11,7 @@ module Reports
     attr_reader :facility
     attr_reader :range
     attr_reader :region
+    attr_reader :diabetes_enabled
 
     def initialize(facility, period, current_user: nil)
       @facility = facility
@@ -88,12 +89,30 @@ module Reports
       @monthly_counts ||= repository.monthly_follow_ups_and_registrations[facility.region.slug]
     end
 
-    def repository
-      @repository ||= Reports::Repository.new(facility, periods: @range)
+    memoize def repository
+      Reports::Repository.new(facility, periods: @range)
     end
 
     def control_rates_repository
       @control_rates_repository ||= Reports::Repository.new(facility, periods: control_range)
+    end
+
+    def hypertension_reports_data
+      {
+        monthly_follow_ups: repository.hypertension_follow_ups[@region.slug],
+        total_registrations: repository.cumulative_registrations[@region.slug],
+        assigned_patients: repository.cumulative_assigned_patients[@region.slug][@period],
+        missed_visits_rates: repository.missed_visits_rate[@region.slug],
+        missed_visits: repository.missed_visits[@region.slug],
+        uncontrolled_rates: repository.uncontrolled_rates[@region.slug],
+        uncontrolled: repository.uncontrolled[@region.slug],
+        controlled_rates: repository.controlled_rates[@region.slug],
+        controlled: repository.controlled[@region.slug],
+        adjusted_patients: repository.adjusted_patients[@region.slug],
+        period_info: repository.period_info(@region),
+        region: @region,
+        current_user: @current_user
+      }
     end
 
     # Returns all possible combinations of FacilityProgressDimensions for displaying
@@ -108,12 +127,6 @@ module Reports
       end
       dimensions
     end
-
-    def dimension_combinations_for_v1(indicator)
-      dimension_combinations_for(indicator, diagnoses: DIAGNOSES_FOR_V1)
-    end
-
-    attr_reader :diabetes_enabled
 
     memoize def daily_total_follow_ups
       total_follow_ups_per_period(period_type: "daily", facility_data: @daily_facility_data)
@@ -186,8 +199,6 @@ module Reports
         end
       end
     end
-
-    private
 
     memoize def registrations_breakdown(period_type:, facility_data:)
       facility_data.each_with_object({}) do |record, hsh|

@@ -21,11 +21,7 @@ class ProgressTab::DailyProgressComponentV2 < ApplicationComponent
     @subtitle = subtitle
   end
 
-  def render?
-    Flipper.enabled?(:new_progress_tab_v2, current_user) || Flipper.enabled?(:new_progress_tab_v2)
-  end
-
-  def last_30_days
+  memoize def last_30_days
     (@start..@now).to_a.reverse.map { |date| display_date(date) }
   end
 

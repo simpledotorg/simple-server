@@ -22,10 +22,6 @@ class ProgressTab::YearlyReportComponentV2 < ApplicationComponent
     @region = service.region
   end
 
-  def render?
-    Flipper.enabled?(:new_progress_tab_v2, current_user) || Flipper.enabled?(:new_progress_tab_v2)
-  end
-
   memoize def report_in_financial_year?
     Flipper.enabled?(:yearly_reports_start_from_april, @current_user)
   end
