@@ -7,11 +7,12 @@ blocks:
       - name: Docker Hub
         commands:
           - checkout
-          - tag1="simpledotorg/server:latest"
-          - tag2="simpledotorg/server:$SEMAPHORE_GIT_SHA"
+          - image_name="$DOCKER_USERNAME/server"
+          - tag1="$image_name:latest"
+          - tag2="$image_name:$SEMAPHORE_GIT_SHA"
           - echo $DOCKER_PASSWORD | docker login --username "$DOCKER_USERNAME" --password-stdin
           - docker build -t tag1 -t tag2 -f Prod-passenger.Dockerfile  .
-          - docker push tag1 tag2 
+          - docker push $image_name -a
       secrets:
       - name: docker-hub
 queue:
