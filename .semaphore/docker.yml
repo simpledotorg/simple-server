@@ -1,0 +1,28 @@
+version: v1.0
+name: Docker build and push
+blocks:
+  - name: Build push Docker image to registry
+    task:
+      jobs:
+      - name: Docker Hub
+        commands:
+          - checkout
+          - tag1="simpledotorg/server:latest"
+          - tag2="simpledotorg/server:$SEMAPHORE_GIT_SHA"
+          - echo $DOCKER_PASSWORD | docker login --username "$DOCKER_USERNAME" --password-stdin
+          - docker build -t tag1 -t tag2 -f Prod-passenger.Dockerfile  .
+          - docker push tag1 tag2 
+      secrets:
+      - name: docker-hub
+queue:
+  name: Deployment queue
+  scope: project
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu2004
+promotions:
+  - name: Deploy
+    pipeline_file: deploy.yml
+    auto_promote:
+      when: (branch = 'master' AND result = 'passed') OR (tag =~ '^release-.*' AND result = 'passed')
