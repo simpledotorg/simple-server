@@ -324,6 +324,7 @@ en:
     yearly_report_title: "Yearly"
     hypertension_report_title: "Hypertension"
     diabetes_report_title: "Diabetes"
+    report: "report"
     last_updated_at: "Data last updated on %{date} at %{time}"
     coming_soon: "Coming soon"
     no_data_card:
