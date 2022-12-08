@@ -5,7 +5,6 @@ module Reports
     MONTHS = -5
     CONTROL_MONTHS = -12
     DAYS_AGO = 29
-    DIAGNOSES_FOR_V1 = [:hypertension_and_diabetes, :diabetes, :hypertension]
     DIAGNOSES = [:diabetes, :hypertension]
     attr_reader :control_range
     attr_reader :facility
