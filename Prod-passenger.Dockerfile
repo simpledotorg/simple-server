@@ -20,6 +20,7 @@ ADD docker-config/webapp.conf /etc/nginx/sites-enabled/webapp.conf
 
 # Add logrotate config
 ADD docker-config/logrotate/* /etc/logrotate.d/
+RUN chmod 644 /etc/logrotate.d/*
 
 # Default directory setup
 ENV INSTALL_PATH /home/app
