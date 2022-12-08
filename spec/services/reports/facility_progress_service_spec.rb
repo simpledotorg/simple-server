@@ -30,30 +30,6 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
     end
   end
 
-  context "returns all dimension combinations for progress tab v1" do
-    it "when given indicator is 'registrations'" do
-      service = described_class.new(facility, Period.current)
-      dimensions = service.dimension_combinations_for_v1(:follow_ups)
-      expect(dimensions.size).to eq(13)
-      expect(dimensions.all? { |d| d.indicator == :follow_ups }).to be true
-      expect(dimensions.count { |d| d.diagnosis == :diabetes }).to eq(4)
-      expect(dimensions.count { |d| d.diagnosis == :hypertension }).to eq(4)
-      expect(dimensions.count { |d| d.diagnosis == :hypertension_and_diabetes }).to eq(4)
-      expect(dimensions.count { |d| d.diagnosis == :all }).to eq(1)
-    end
-
-    it "when given indicator is 'follow ups'" do
-      service = described_class.new(facility, Period.current)
-      dimensions = service.dimension_combinations_for_v1(:follow_ups)
-      expect(dimensions.size).to eq(13)
-      expect(dimensions.all? { |d| d.indicator == :follow_ups }).to be true
-      expect(dimensions.count { |d| d.diagnosis == :diabetes }).to eq(4)
-      expect(dimensions.count { |d| d.diagnosis == :hypertension }).to eq(4)
-      expect(dimensions.count { |d| d.diagnosis == :hypertension_and_diabetes }).to eq(4)
-      expect(dimensions.count { |d| d.diagnosis == :all }).to eq(1)
-    end
-  end
-
   context "control_range" do
     it "returns range of months for control rates going back 12 months (not including current month)" do
       Timecop.freeze("February 15th 2022") do
