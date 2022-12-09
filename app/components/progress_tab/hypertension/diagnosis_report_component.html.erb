@@ -20,21 +20,45 @@
       </p>
     </div>
   </div>
-  <%= render(Reports::ProgressAssignedPatientsComponent.new(@service, @period)) %>
-  <%= render(Reports::ProgressTotalRegistrationsComponent.new(@service, @period)) %>
-  <%= render(Reports::ProgressMonthlyFollowUpsComponent.new(@service, @period)) %>
+  <%= render(Reports::ProgressAssignedPatientsComponent.new(
+    assigned_patients: hypertension_reports_data[:assigned_patients],
+    region: hypertension_reports_data[:region]
+  )) %>
+  <%= render(Reports::ProgressTotalRegistrationsComponent.new(
+    total_registrations: hypertension_reports_data[:total_registrations],
+    period_info: hypertension_reports_data[:period_info],
+    region: hypertension_reports_data[:region]
+  )) %>
+  <%= render(Reports::ProgressMonthlyFollowUpsComponent.new(
+    monthly_follow_ups: hypertension_reports_data[:monthly_follow_ups],
+    period_info: hypertension_reports_data[:period_info],
+    region: hypertension_reports_data[:region]
+  )) %>
   <div class="mt-48px mb-16px pr-16px pl-16px">
     <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey-dark">
       <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.section_title") %>
     </h3>
   </div>
-  <%= render(ProgressTab::Hypertension::ControlComponent.new(@service, @current_user)) %>
-  <%= render(ProgressTab::Hypertension::UncontrolledComponent.new(@service)) %>
-  <%= render(ProgressTab::Hypertension::MissedVisitsComponent.new(@service)) %>
-  <%= render(ProgressTab::DrugStockComponent.new(
-    drug_stocks_query: @drug_stocks_query,
-    drugs_by_category: @drugs_by_category,
-    current_facility: @current_facility
+  <%= render(ProgressTab::Hypertension::ControlComponent.new(
+    controlled_rates: hypertension_reports_data[:controlled_rates],
+    controlled: hypertension_reports_data[:controlled],
+    adjusted_patients: hypertension_reports_data[:adjusted_patients],
+    period_info: hypertension_reports_data[:period_info],
+    region: hypertension_reports_data[:region]
+  )) %>
+  <%= render(ProgressTab::Hypertension::UncontrolledComponent.new(
+    uncontrolled_rates: hypertension_reports_data[:uncontrolled_rates],
+    uncontrolled: hypertension_reports_data[:uncontrolled],
+    adjusted_patients: hypertension_reports_data[:adjusted_patients],
+    period_info: hypertension_reports_data[:period_info],
+    region: hypertension_reports_data[:region]
+  )) %>
+  <%= render(ProgressTab::Hypertension::MissedVisitsComponent.new(
+    missed_visits_rates: hypertension_reports_data[:missed_visits_rates],
+    missed_visits: hypertension_reports_data[:missed_visits],
+    adjusted_patients: hypertension_reports_data[:adjusted_patients],
+    period_info: hypertension_reports_data[:period_info],
+    region: hypertension_reports_data[:region]
   )) %>
   <%= render(ProgressTab::CohortReportsComponent.new(data: @cohort_data)) %>
 </div>
