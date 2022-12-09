@@ -14,11 +14,143 @@
     <%= inline_stylesheet("user_analytics.css") %>
   </head>
   <body class="bgc-grey-lightest">
-    <div class="mb-8px p-16px pt-48px pb-24px bgc-white br-4px bs-card">
-      <%= inline_svg("warning_sign.svg") %>
-      <p class="fs-20px fw-bold mt-32px mb-12px"><%= t("progress_tab.update_required_card.title") %></p>
-      <p class="fs-16px c-grey-dark"><%= t("progress_tab.update_required_card.subtitle") %></p>
+    <div id="progress-start">
+      <div class="mb-8px">
+        <p class="fs-14px mt-8px">
+          <%= t("progress_tab.last_updated_at",
+                date: display_date(@service.last_updated_at),
+                time: display_time(@service.last_updated_at))
+          %>
+        </p>
+        <%= content_tag :div,
+                        id: "statistics",
+                        data: { statistics: @service.daily_statistics },
+                        style: "display: none" do %>
+        <% end %>
+        <%= render(Reports::DailyProgressComponent.new(@service, @current_user)) %>
+        <div class="mb-8px p-16px bgc-white bs-card">
+          <div class="d-flex ai-center">
+            <h3 class="m-0px mr-4px fw-bold fs-24px c-black">
+              <%= raw t("analytics.registered_patients") %>
+            </h3>
+            <a
+              class="d-flex ai-center w-32px h-32px"
+              href="#"
+              onclick="openWindow('progress-registrations-help', 'progress-start'); return false"
+            >
+              <%= inline_file("help-circle.svg") %>
+            </a>
+          </div>
+          <% registrations_table_name = 'registrations' %>
+          <%= render partial: 'api/v3/analytics/user_analytics/gender_filter',
+                    locals: { data_table_name: registrations_table_name,
+                              is_diabetes_enabled: current_facility.diabetes_enabled? } %>
+          <% @service.dimension_combinations_for(:registrations).each do |dimension| %>
+            <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service, current_user: @current_user)) %>
+          <% end %>
+        </div>
+        <div class="mb-8px p-16px bgc-white bs-card">
+            <div class="d-flex ai-center">
+              <h3 class="m-0px mr-4px fw-bold fs-24px c-black">
+                <%= raw t("analytics.follow_up_patients") %>
+              </h3>
+              <a
+                class="d-flex ai-center w-32px h-32px"
+                href="#"
+                onclick="openWindow('progress-follow-ups-help', 'progress-start'); return false"
+              >
+                <%= inline_file("help-circle.svg") %>
+              </a>
+            </div>
+            <% follow_ups_table_name = 'follow_ups' %>
+            <%= render partial: 'api/v3/analytics/user_analytics/gender_filter',
+                      locals: { data_table_name: follow_ups_table_name,
+                                is_diabetes_enabled: current_facility.diabetes_enabled? } %>
+            <% @service.dimension_combinations_for(:follow_ups).each do |dimension| %>
+              <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service, current_user: @current_user)) %>
+            <% end %>
+          </div>
+
+        <% if current_facility_group.region.feature_enabled?(:drug_stocks) && controller_name == "user_analytics" %>
+          <div class="mb-16px p-16px bgc-white br-4px bs-card">
+            <div class="d-flex ai-flex-start jc-space-between mb-16px">
+              <div class="f-1">
+                <h3 class="m-0px mb-8px fw-bold fs-24px">
+                  Drug stock report
+                </h3>
+                <p class="m-0px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+                  Submit <%= current_facility.name %>'s drug stock report for end of <%= @period.to_s(:mon_year) %>
+                </p>
+              </div>
+              <div>
+                <%= inline_svg("drug-stock.svg") %>
+              </div>
+            </div>
+            <%= link_to "Enter drug stock", new_webview_drug_stock_url(user_id: current_user.id,
+                                                                       access_token: current_user.access_token,
+                                                                       facility_id: current_facility.id),
+                        style: "font-weight: 500;",
+                        class: "d-block p-16px ta-center fs-16px fw-regular tt-uppercase ls-1_25px c-blue b-none bb-blue-mid br-1px bgc-blue-light bs-secondary-button"
+            %>
+          </div>
+        <% end %>
+
+        <%= render(Reports::ProgressControlComponent.new(@service, @current_user)) %>
+        <div class="card">
+          <a href="#" onclick="openWindow('progress-cohort-report', 'progress-start'); return false" class="nav-next">
+            Cohort report
+          </a>
+        </div>
+        <div class="mb-8px pt-16px pb-16px bgc-white bs-card">
+          <h1 class="m-0px mb-24px pr-16px pl-16px fw-bold fs-24px">
+            <%= t("progress_tab.achievements_card.title") %>
+          </h1>
+          <div class="mb-24px">
+            <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
+              <span class="fw-bold"><%= number_with_delimiter(@total_follow_ups) %></span> <%= t("progress_tab.achievements_card.follow_up_visits_section_title", visit_or_visits: "visit".pluralize(@total_follow_ups)) %>
+            </p>
+            <div class="d-flex ai-center jc-space-between pt-4px pb-4px pr-16px pl-16px">
+              <% follow_up_badge_goals = create_badge_array(@total_follow_ups) %>
+              <% follow_up_badge_goals.each do |badge| %>
+                <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
+                  locals: { value: badge["goal_value"],
+                            is_goal_completed: badge["is_goal_completed"],
+                            text_color: "c-lavander",
+                            circle_color: "bgc-lavander",
+                            badge_color: "bgc-lavander-light",
+                            icon_completed: "refresh-arrow-white.svg",
+                            icon_goal: "refresh-arrow-grey.svg"
+                } %>
+              <% end %>
+            </div>
+          </div>
+          <div>
+            <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
+              <span class="fw-bold"><%= number_with_delimiter(@total_registrations) %></span> <%= t("progress_tab.achievements_card.registered_patients_title", patient_or_patients: "patient".pluralize(@total_registrations)) %>
+            </p>
+            <div class="d-flex ai-center jc-space-between pt-4px pb-4px pr-16px pl-16px">
+              <% registered_patients_badge_goals = create_badge_array(@total_registrations) %>
+              <% registered_patients_badge_goals.each do |badge| %>
+                <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
+                  locals: { value: badge["goal_value"],
+                            is_goal_completed: badge["is_goal_completed"],
+                            text_color: "c-yellow-dark-new",
+                            circle_color: "bgc-yellow-new",
+                            badge_color: "bgc-yellow-light",
+                            icon_completed: "face-yellow-darkest.svg",
+                            icon_goal: "face-grey.svg"
+                } %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+
+      <%= render partial: "api/v3/analytics/user_analytics/progress_controlled_help" %>
+      <%= render partial: "api/v3/analytics/user_analytics/progress_cohort_report" %>
+      <%= render partial: "api/v3/analytics/user_analytics/progress_registrations_help" %>
+      <%= render partial: "api/v3/analytics/user_analytics/progress_follow_ups_help" %>
   </body>
   <%= inline_js("standalone/user_analytics.js") %>
 </html>
