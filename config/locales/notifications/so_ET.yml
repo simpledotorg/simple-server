@@ -46,10 +46,10 @@ so-ET:
       short: "Waxaad ka daahday Booqashada BP gaaga %{facility_name} sida degdega ah ee suuragalka ah BP gaaga %{patient_name}."
       short_medicines: "Waxaad ka daahday BP Booqashadaada %{facility_name} sida degdega ah ee suuragalka ah ee BP gaaga iyo dawooyinka %{patient_name}."
       you_must: "Waa inaad timaado sida degdega ah ee suuragalka ah ee BP saacada %{facility_name} %{patient_name}."
-      no_date: ""
+      no_date: "Maanta kaalay si %{facility_name} loo cabiro BP, %{patient_name}."
       official_short: "Waxaad ka daahday Booqshada BP gaaga %{facility_name} sida degdega ah ee suuraglka ah BP gaaga%{patient_name} . Dhakhtarkaagu waxa uu kula rabaa caafimaadkaaga wanaagsan.."
       official_short_medicines: "Waxaad ka daahday Booqashada BP gaaga %{facility_name} sida ugu dhakhsaha badan ee suuragalka ah BP gaaga iyo dawooyinka %{patient_name}. Dhakhtarkaagu waxa uu kula rabaa caafimaadkaaga wanaagsan.."
       official_you_must: "Waa inaad u timaadaa sida dhakhsaha ah ee suuragalka BP saacada %{facility_name} %{patient_name}. Dhakhtarkaagu waxa uu kula rabaa caafimaadkaaga wanaagsan.."
-      official_no_date: ""
+      official_no_date: "Maanta kaalay %{facility_name} si loo cabiro BP, %{patient_name}. Dhakhtarkaagu waxa uu kuu rajaynayaa caafimaad wanaagsan."
     covid:
       medication_reminder: "Gacaliye %{patient_name}: Shaqaalahayaga jooga xaga %{facility_name} way kaa fekeriyaan adiga iyo caafimaadkaaga wadnaha muddada gurmadkan COVID. Aad ayay muhiim u tahay in la sii wado dawooyinkaaga BP. Ka qaado dawooyinkaaga blaashka ah xarunta hoose ee ugu dhow ama xarunta fayo qabka caafimaadkaaga. La xidhiidh ANM kaaga ama ASHA."
