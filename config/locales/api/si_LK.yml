@@ -315,3 +315,116 @@ si-LK:
         language_tigrinya_html: ටයිග්‍රින්යා
     privacy_policy_html: රහසිගතභාවයේ ප්‍රතිපත්තිය
     terms_of_service_html: සේවා නියම
+
+  progress_tab:
+    registrations_and_follow_ups_card:
+      title: "ලියාපදිංචි කිරීම් හා පසු විපරම්"
+    daily_report_title: "දෛනික"
+    monthly_report_title: "මාසික"
+    yearly_report_title: "වාර්ෂික"
+    hypertension_report_title: "අධ්‍යාතතිය"
+    diabetes_report_title: "දියවැඩියාව"
+    last_updated_at: "දත්ත අවසන් වරට යාවත්කාලීන කරන ලද්දේ %{date} %{time} ටය"
+    diagnoses:
+      all: "සියලු අධ්‍යාතති සහ දියවැඩියා"
+      hypertension: "අධ්‍යාතතිය"
+      diabetes: "දියවැඩියාව"
+      hypertension_only: "අධි රුධිර පීඩනය පමණි"
+      diabetes_only: "දියවැඩියාව පමණි"
+      hypertension_and_diabetes: "අධි රුධිර පීඩනය සහ දියවැඩියාව"
+    genders:
+      male: "පුරුෂ"
+      female: "ස්ත්‍රී"
+      transgender: "සංක්‍රාන්ති"
+    period_card:
+      title: "ලියාපදිංචි කිරීම් හා පසු විපරම්"
+    reports_card:
+      title: "වාර්තා"
+      subtitle: "%{facility_name} රෝගීන්ට තම අධි රුධිර පීඩනයට සහ දියවැඩියාවට ප්‍රතිකාර කිරීමට උපකාර කරන්නේ කෙසේද."
+    drug_stock_report_card:
+      title: "ඖෂධ තොග වාර්තාව"
+      subtitle: "%{facility_name}හි ඖෂධ තොග වාර්තාව %{period} සඳහා ඉදිරිපත් කරන්න."
+      button_title: "ඖෂධ තොගය ඇතුළත් කරන්න"
+    achievements_card:
+      title: "ජයග්‍රහණයන්"
+      follow_up_visits_section_title: "පසු විපරම් %{visit_or_visits} පටිගත කරන ලදී"
+      overdue_patients_section_title: "කල් ඉකුත් වූ රෝගීන් සඳහා %{call_or_calls}"
+      registered_patients_title: "ලියාපදිංචි වූ %{patient_or_patients}"
+    period_report:
+      registered_patients_card:
+        title: "ලියාපදිංචි රෝගීන්"
+        subtitle: "%{facility_name} හි ලියාපදිංචි වූ රෝගීන්."
+      follow_up_patients_card:
+        title: "පසු-විපරම් බලන රෝගීන්"
+        subtitle: "%{facility_name} හිදී බීපී ලබා ගත්, රුධිර සීනි ලබා ගත්, හමුවීමක් කාලසටහන් කර ඇති විට හෝ තම ඖෂධ යාවත්කාලීන කරගත් රෝගීන්."
+      follow_up_visits_card:
+        title: "පසු විපරම් සංචාර"
+        subtitle: "%{facility_name} හි වාර්තා වී ඇති පසු විපරම් සංචාර. පසු විපරමක් යනු රෝගියෙකු බීපී ලබා ගත් විට, රුධිර සීනි ලබා ගත් විට, හමුවීමක් කාලසටහන් කර ඇති විට හෝ ඖෂධ යාවත්කාලීන කර ඇති විට සංචාරය කිරීමකි."
+      patients_initiated_on_treatment_card:
+        title: '"ප්‍රතිකාර ආරම්භ කරන ලද රෝගීන්" දත්ත කොහිද?'
+        main_text: '"ලියාපදිංචි වූ රෝගීන්" භාවිතා කරන්න, එය සෑම විටම Simple මත ලියාපදිංචි වූ රෝගීන් සඳහා "ප්‍රතිකාර ආරම්භ කරන ලද රෝගීන්" ට සමාන වේ.'
+      more_patient_data_coming_soon_card:
+        title: "තවත් රෝගීන්ගේ දත්ත ඉක්මනින් පැමිණේ"
+        main_text: "රෝගය සහ ස්ත්‍රී පුරුෂ භාවය අනුව බෙදන ලද දෛනික ලියාපදිංචිය සහ පසු විපරම් දත්ත ඉක්මනින් එක් කරනු ඇත."
+    diagnosis_report:
+      diagnosis_thresholds:
+        hypertension_controlled_short: "බීපී පාලනය කර ඇත"
+        hypertension_controlled_long: "බීපී <140/90"
+        diabetes_controlled_short: "රුධිර සීනි <200"
+        diabetes_controlled_long: "RBS/PPBS <200, FBS <126, හෝ HbA1c <7.0"
+        hypertension_uncontrolled_short: "බීපී පාලනය කර නොමැත"
+        hypertension_uncontrolled_long: "බීපී ≥140/90"
+        diabetes_uncontrolled_short: "රුධිර සීනි 200-299"
+        diabetes_uncontrolled_long: "RBS/PPBS 200-99, FBS 126-199, හෝ HbA1c 7.0-8.9"
+        diabetes_very_uncontrolled_short: "රුධිර සීනි ≥300"
+        diabetes_very_uncontrolled_long: "RBS/PPBS ≥300, FBS ≥200, හෝ HbA1c ≥9.0"
+        hypertension_visited_but_no_bp_taken_short: "සංචාරය කළ නමුත් බීපී ලබාගෙන නොමැත"
+        hypertension_visited_but_no_bp_taken_long: "බීපී ලබාගෙන නොමැත"
+        missed_visits_short: "මඟ හැරුණු සංචාර"
+        missed_visits_long: "සංචාර නොමැත"
+      assigned_patients_card:
+        title: "වෙන් කර ඇති රෝගීන්"
+        subtitle: "%{diagnosis} ප්‍රතිකාර ලබා ගැනීම සඳහා %{facility_name} හි පසු විපරම් කිරීමට බලාපොරොත්තු වන රෝගීන්."
+        assigned_patients_breakdown:
+          registered_patients: "ලියාපදිංචි රෝගීන්"
+          transferred_in_patients: "ඇතුළතට මාරු කර ඇත"
+          transferred_out_patients: "පිටතට මාරු කර ඇත"
+      total_registered_patients:
+        title: "ලියාපදිංචි වී ඇති මුළු රෝගීන්"
+        subtitle: "සියලුම %{diagnosis} රෝගීන් %{facility_name} හි ලියාපදිංචි වී ඇත."
+      monthly_follow_up_patients:
+        title: "මාසික පසු විපරම් රෝගීන්"
+        subtitle: "මාසයක් තුළ %{facility_name} හි බීපී ලබා ගත් විට, රුධිර සීනි ලබා ගත් විට, හමුවීමක් කාලසටහන් කර ඇති විට හෝ ඖෂධ යාවත්කාලීන කර ඇති %{diagnosis} රෝගීන්."
+      patient_treatment_outcomes:
+        section_title: "රෝගියාගේ ප්‍රතිකාර තත්ත්වය"
+        chart_tooltip: "%{threshold} සමඟ %{number_of_patients} %{number_of_patient_or_patients} %{start_period} සහ %{end_period} අතර %{number_of_registered_patients} %{number_of_registered_patient_or_patients} %{registration_period} තෙක් ලියාපදිංචි වූ."
+        controlled_card:
+          subtitle: "%{facility_name} හි %{diagnosis} රෝගීන් > පසුගිය මාස 3 තුළ ඔවුන්ගේ අවසන් සංචාරයේ දී %{controlled_threshold} සමඟ මාස 3 කට පෙර ලියාපදිංචි විය."
+          help_tooltip:
+            numerator: "පසුගිය මාස 3 තුළ ඔවුන්ගේ අවසන් සංචාරයේ දී %{controlled_threshold} සමඟ රෝගීන්."
+            denominator: "අවසන් මාස 3 ට පෙර ලියාපදිංචි කළ, %{facility_name} වෙත වෙන් කර ඇති %{diagnosis} රෝගීන්. පසු-විපරම් රෝගීන්ගෙන් මරණයට පත් සහ අහිමි වූ රෝගීන් ඉවත් කරනු ලැබේ."
+        uncontrolled_card:
+          subtitle: "%{facility_name} හි %{diagnosis} රෝගීන් > පසුගිය මාස 3 තුළ ඔවුන්ගේ අවසන් සංචාරයේ දී %{uncontrolled_threshold} සමඟ මාස 3 කට පෙර ලියාපදිංචි විය."
+          help_tooltip:
+            numerator: "පසුගිය මාස 3 තුළ ඔවුන්ගේ අවසන් සංචාරයේ දී %{uncontrolled_threshold} සමඟ රෝගීන්."
+            denominator: "අවසන් මාස 3 ට පෙර ලියාපදිංචි කළ, %{facility_name} වෙත වෙන් කර ඇති %{diagnosis} රෝගීන්. පසු-විපරම් රෝගීන්ගෙන් මරණයට පත් සහ අහිමි වූ රෝගීන් ඉවත් කරනු ලැබේ."
+        very_uncontrolled_card:
+          subtitle: "%{facility_name} හි දියවැඩියා රෝගීන්> මාස 3කට පෙර %{very_uncontrolled_threshold} සමඟ පසුගිය මාස 3 තුළ ඔවුන්ගේ අවසන් සංචාරයේදී ලියාපදිංචි වී ඇත."
+          help_tooltip:
+            numerator: "පසුගිය මාස 3 තුළ ඔවුන්ගේ අවසන් සංචාරයේදී %{very_uncontrolled_threshold} තුළ සිටින දියවැඩියා රෝගීන්."
+            denominator: "අවසන් මාස 3 ට පෙර ලියාපදිංචි කළ, %{facility_name}වෙත වෙන් කර ඇති දියවැඩියා රෝගීන්. පසු-විපරම් රෝගීන්ගෙන් මරණයට පත් සහ අහිමි වූ රෝගීන් ඉවත් කරනු ලැබේ."
+        missed_visits_card:
+          subtitle: "%{facility_name} හි %{diagnosis} රෝගීන් පසුගිය මාස 3 තුළ සංචාරයකින් තොරව > මාස 3 කට පෙර ලියාපදිංචි විය."
+          help_tooltip:
+            numerator: "පසුගිය මාස 3 තුළ කිසිදු සංචාරයක් නොමැති %{diagnosis} රෝගීන්"
+            denominator: "අවසන් මාස 3 ට පෙර ලියාපදිංචි කළ, %{facility_name} වෙත වෙන් කර ඇති %{diagnosis} රෝගීන්. පසු-විපරම් රෝගීන්ගෙන් මරණයට පත් සහ අහිමි වූ රෝගීන් ඉවත් කරනු ලැබේ."
+      drug_stock_report:
+        section_title: "ඖෂධ තොග වාර්තාව"
+        card_subtitle: "පෙති තොගයේ %{number_of_days} %{day_or_days}"
+      cohort_report:
+        section_title: "කොහෝට වාර්තා"
+        card_title: "කාර්තුමය කොහෝට වාර්තා"
+        card_subtitle: "ඊළඟ කාර්තුවේ තම පසු විපරම් සංචාරයේ දී කාර්තුවක ලියාපදිංචි වූ සියලුම අධි රුධිර පීඩන රෝගීන් සඳහා ප්‍රතිඵලය."
+        cohort_title: "%{period} හි අවසන් සංචාරයේ ප්‍රතිඵලය"
+        cohort_subtitle: "%{number_of_patients} %{patient_or_patients} %{registration_period} හි ලියාපදිංචි වී ඇත"
+        cohort_bar_tooltip: "%{threshold} සමඟ %{total_patients} %{patient_or_patients}"
