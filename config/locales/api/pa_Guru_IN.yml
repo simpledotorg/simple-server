@@ -324,7 +324,12 @@ pa:
     yearly_report_title: "ਸਾਲਾਨਾ"
     hypertension_report_title: "ਹਾਈਪਰਟੈਂਸ਼ਨ"
     diabetes_report_title: "ਸ਼ੂਗਰ"
+    report: "ਰਿਪੋਰਟ"
     last_updated_at: "ਡੇਟਾ ਆਖਰੀ ਵਾਰ %{date} ਨੂੰ %{time} ਵਜੇ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ ਸੀ"
+    coming_soon: "ਜਲਦ ਆ ਰਿਹਾ ਹੈ"
+    no_data_card:
+      title: "ਇਹ ਰਿਪੋਰਟ ਜਲਦ ਆ ਰਹੀ ਹੈ"
+      subtitle: "ਤੁਸੀਂ ਅਜੇ ਵੀ ਪਿਛਲੀਆਂ ਰਿਪੋਰਟਾਂ ਦੇਖ ਸਕਦੇ ਹੋ"
     diagnoses:
       all: "ਸਾਰੇ ਹਾਈਪਰਟੈਨਸ਼ਨ ਅਤੇ ਸ਼ੂਗਰ"
       hypertension: "ਹਾਈਪਰਟੈਂਸ਼ਨ"
@@ -348,8 +353,17 @@ pa:
     achievements_card:
       title: "ਪ੍ਰਾਪਤੀਆਂ"
       follow_up_visits_section_title: "ਫਾਲੋ-ਅੱਪ %{visit_or_visits} ਰਿਕਾਰਡ ਕੀਤਾ ਗਿਆ"
+      visit:
+        one: "ਮੁਲਾਕਾਤ"
+        other: "ਮੁਲਾਕਾਤਾਂ"
       overdue_patients_section_title: "ਓਵਰਡਿਊ ਮਰੀਜ਼ਾਂ ਲਈ %{call_or_calls}"
+      call:
+        one: "ਕਾਲ ਕਰੋ"
+        other: "ਕਾਲਾਂ"
       registered_patients_title: "ਰਜਿਸਟਰ ਕੀਤੇ %{patient_or_patients}"
+      patient:
+        one: "ਮਰੀਜ਼"
+        other: "ਮਰੀਜ਼"
     period_report:
       registered_patients_card:
         title: "ਰਜਿਸਟਰ ਕੀਤੇ ਮਰੀਜ਼"
