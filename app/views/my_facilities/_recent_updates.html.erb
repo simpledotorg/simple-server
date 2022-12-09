@@ -3,7 +3,11 @@
     Recent updates
   </h2>
   <p class="c-grey-dark">
-    Last updated 23-Nov-2022. For feedback, email us: help@simple.org
+    <% if CountryConfig.current[:name] == "India" || CountryConfig.current[:name] == "Bangladesh" %>
+      Last updated 23-Nov-2022. For feedback, email us: help@simple.org
+    <% else %>
+      Last updated 9-Dec-2022. For feedback, email us: help@simple.org
+    <% end %>
   </p>
   <% if CountryConfig.current[:name] == "India" || CountryConfig.current[:name] == "Bangladesh" %>
     <section class="update">
