@@ -324,7 +324,12 @@ te-IN:
     yearly_report_title: "సంవత్సరం వారీ"
     hypertension_report_title: "అధిక రక్తపోటు"
     diabetes_report_title: "మధుమేహం"
+    report: "నివేదిక"
     last_updated_at: "డేటా చివరగా %{date}నాడు %{time}వద్ద అప్‌డేట్ చేయబడింది"
+    coming_soon: "త్వరలో రాబోతుంది"
+    no_data_card:
+      title: "ఈ నివేదిక త్వరలో రాబోతుంది"
+      subtitle: "మీరు ఇప్పకిటీ మునుపటి నివేదికలను వీక్షించగలరు"
     diagnoses:
       all: "అధిక రక్తపోటు మరియు మధుమేహం ఉన్న వారు అందరూ"
       hypertension: "అధిక రక్తపోటు"
@@ -348,8 +353,17 @@ te-IN:
     achievements_card:
       title: "కార్యసాధనములు"
       follow_up_visits_section_title: "అనుసరణీయత %{visit_or_visits} రికార్డు చేయబడింది"
+      visit:
+        one: "సందర్శన"
+        other: "సందర్శనలు"
       overdue_patients_section_title: "మిగిలియున్న రోగులకు %{call_or_calls}"
+      call:
+        one: "కాల్"
+        other: "కాల్లు"
       registered_patients_title: "రిజిస్టర్ అయిన %{patient_or_patients}"
+      patient:
+        one: "పేషంట్"
+        other: "పేషంట్లు"
     period_report:
       registered_patients_card:
         title: "నమోదు చేయబడిన రోగులు"
@@ -362,7 +376,7 @@ te-IN:
         subtitle: "%{facility_name} వద్ద రికార్డు చేయబడిన అనుసరణీయ సందర్శనలు. అనుసరణీయత అనేది, ఒక రోగి బిపి తీసుకోబడి, బ్లడ్ షుగర్ తీసుకోబడి, ఒక అపాయింట్‌మెంట్ షెడ్యూల్ చేయబడి, లేదా మందులు అప్‌డేట్ చేయబడిన రోగి యొక్క ఒక సందర్శన."
       patients_initiated_on_treatment_card:
         title: '"చికిత్స ప్రారంభించబడిన రోగులు" యొక్క డేటా ఎక్కడ ఉంది?'
-        main_text: '"రిజిస్టర్ చేయబడిన రోగులు" ను ఉపయోగించండి, అది ఎల్లప్పుడూ Simpleపై రిజిస్టర్ చేయబడిన "చికిత్స ప్రారంభించబడిన రోగులు" కు సమానంగా ఉంటుంది.'
+        main_text: '"రిజిస్టర్ చేయబడిన రోగులు" ను ఉపయోగించండి, అది ఎల్లప్పుడూ సింపుల్ పై రిజిస్టర్ చేయబడిన "చికిత్స ప్రారంభించబడిన రోగులు" కు సమానంగా ఉంటుంది.'
       more_patient_data_coming_soon_card:
         title: "మరింత రోగుల డేటా త్వరలో వస్తోంది"
         main_text: "వ్యాధి మరియు లింగం వారీగా విడగొట్టబడిన రోజువారీ రిజిస్ట్రేషన్ మరియు అనుసరణీయత డేటా త్వరలో జోడించబడుతుంది."
