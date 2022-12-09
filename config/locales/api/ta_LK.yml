@@ -324,7 +324,12 @@ ta-LK:
     yearly_report_title: "வருடாந்தம்"
     hypertension_report_title: "உயர் இரத்த அழுத்தம்"
     diabetes_report_title: "நீரிழிவு நோய்"
+    report: "அறிக்கை"
     last_updated_at: "%{date}அன்று %{time} மணிக்குத் தரவு கடைசியாகப் புதுப்பிக்கப்பட்டது"
+    coming_soon: "விரைவில் கிடைக்கும்"
+    no_data_card:
+      title: "இந்த அறிக்கை விரைவில் கிடைக்கும்"
+      subtitle: "நீங்கள் இப்போதும் முந்தைய அறிக்கைகளைப் பார்க்கலாம்"
     diagnoses:
       all: "அனைத்து உயர் இரத்த அழுத்த மற்றும் நீரிழிவு நோயாளர்களும்"
       hypertension: "உயர் இரத்த அழுத்தம்"
@@ -348,8 +353,17 @@ ta-LK:
     achievements_card:
       title: "சாதனைகள்"
       follow_up_visits_section_title: "%{visit_or_visits} பின்தொடர்தல்கள் பதிவு செய்யப்பட்டது"
+      visit:
+        one: "வருகை"
+        other: "வருகைகள்"
       overdue_patients_section_title: "காலம் கடந்த நோயாளர்களுக்கு %{call_or_calls}"
+      call:
+        one: "அழைப்பு"
+        other: "அழைப்புகள்"
       registered_patients_title: "பதிவுசெய்யப்பட்ட %{patient_or_patients}"
+      patient:
+        one: "நோயாளர்"
+        other: "நோயாளர்கள்"
     period_report:
       registered_patients_card:
         title: "பதிவு செய்யப்பட்ட நோயாளர்கள்"
@@ -362,7 +376,7 @@ ta-LK:
         subtitle: "%{facility_name} இல் பின்தொடர்தல் வருகைகள் பதிவு செய்யப்பட்டன. பின்தொடர்தல் வருகை என்பது ஒரு நோயாளருக்கு பிபி அளவீடு எடுக்கப்பட்டபோது, ​​இரத்தத்தில் சர்க்கரை அளவு எடுக்கப்பட்டபோது, சந்திப்புத் திட்டமிடப்பட்டபோது அல்லது மருந்துகள் புதுப்பிக்கப்பட்டபோது வருகை தருவதாகும்."
       patients_initiated_on_treatment_card:
         title: '"சிகிச்சையை ஆரம்பித்த நோயாளர்கள்" தரவு எங்கே?'
-        main_text: '"பதிவுசெய்யப்பட்ட நோயாளர்கள்" என்பதைப் பயன்படுத்தவும், இது Simple செயலியில் "சிகிச்சையை ஆரம்பித்த நோயாளர்கள்" என்பதற்கு எப்போதும் சமமாக இருக்கும்.'
+        main_text: '"பதிவுசெய்யப்பட்ட நோயாளர்கள்" என்பதைப் பயன்படுத்தவும், இது சிம்பிள் செயலியில் "சிகிச்சையை ஆரம்பித்த நோயாளர்கள்" என்பதற்கு எப்போதும் சமமாக இருக்கும்.'
       more_patient_data_coming_soon_card:
         title: "இன்னும் நோயாளர் தரவு விரைவில் வரும்"
         main_text: "நோய் மற்றும் பாலினம் என்பவற்றால் செயலிழக்கப்பட்ட தினசரி பதிவு மற்றும் பின்தொடர்தல் தரவு ஆகியன விரைவில் சேர்க்கப்படும்."
@@ -397,7 +411,7 @@ ta-LK:
         subtitle: "ஒரு மாதத்தில் %{facility_name} இல் பிபி எடுத்துக்கொள்ளப்பட்ட %{diagnosis} நோயாளர்கள், இரத்த சர்க்கரை எடுத்தவர்கள், சந்திப்பொன்றைத் திட்டமிட்டவர்கள் அல்லது மருந்தைப் புதுப்பித்தவர்கள்."
       patient_treatment_outcomes:
         section_title: "நோயாளரின் சிகிச்சை நிலை"
-        chart_tooltip: "%{number_of_patients} %{number_of_patient_or_patients} உடன் %{threshold} between %{start_period} மற்றும் %{end_period} இல் %{number_of_registered_patients} %{number_of_registered_patient_or_patients} l %{registration_period} அன்று வரை பதிவு செய்தவர்கள்."
+        chart_tooltip: "%{number_of_patients} %{number_of_patient_or_patients} உடன் %{threshold} இடையே %{start_period} மற்றும் %{end_period} இல் %{number_of_registered_patients} %{number_of_registered_patient_or_patients} l %{registration_period} அன்று வரை பதிவு செய்தவர்கள்."
         controlled_card:
           subtitle: "> 3 மாதங்களுக்கு முன்பு %{controlled_threshold} உடன் கடந்த 3 மாதங்களில் தங்கள் கடைசி வருகையின் போது பதிவு செய்த %{facility_name} இல் உள்ள %{diagnosis} நோயாளர்கள்."
           help_tooltip:
