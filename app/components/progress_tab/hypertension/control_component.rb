@@ -13,8 +13,7 @@ class ProgressTab::Hypertension::ControlComponent < ApplicationComponent
   end
 
   def render?
-    Flipper.enabled?(:new_progress_tab_v2, current_user) || Flipper.enabled?(:new_progress_tab_v2) ||
-      Flipper.enabled?(:new_progress_tab_v1, current_user) || Flipper.enabled?(:new_progress_tab_v1)
+    Flipper.enabled?(:new_progress_tab_v2, current_user) || Flipper.enabled?(:new_progress_tab_v2)
   end
 
   def control_summary
