@@ -1,4 +1,4 @@
-kn-IN:
+kn_IN:
   date:
     month_names: [~, "ಜನವರಿ", "ಫೆಬ್ರವರಿ", "ಮಾರ್ಚ್", "ಏಪ್ರಿಲ್", "ಮೇ", "ಜೂನ್", "ಜುಲೈ", "ಆಗಸ್ಟ್", "ಸೆಪ್ಟೆಂಬರ್", "ಅಕ್ಟೋಬರ್", "ನವೆಂಬರ್", "ಡಿಸೆಂಬರ್"]
     abbr_month_names: [~, "ಜನ", "ಫೆಬ್ರ", "ಮಾರ್ಚ್", "ಏಪ್ರಿ", "ಮೇ", "ಜೂನ್", "ಜುಲೈ", "ಆಗಸ್ಟ್", "ಸೆಪ್ಟೆಂ", "ಅಕ್ಟೋ", "ನವೆಂ", "ಡಿಸೆಂ"]
@@ -324,7 +324,12 @@ kn-IN:
     yearly_report_title: "ವಾರ್ಷಿಕ"
     hypertension_report_title: "ಹೈಪರ್‌ಟೆನ್ಶನ್"
     diabetes_report_title: "ಡಯಾಬಿಟಿಸ್"
+    report: "ವರದಿ"
     last_updated_at: "%{date} ರಂದು %{time} ಸಮಯಕ್ಕೆ ಕೊನೆಯದಾಗಿ ಡೇಟಾ ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾಗಿದೆ"
+    coming_soon: "ಶೀಘ್ರವೇ ಬರುತ್ತಿದೆ"
+    no_data_card:
+      title: "ಈ ವರದಿ ಶೀಘ್ರವೇ ಬರುತ್ತಿದೆ"
+      subtitle: "ನೀವು ಇನ್ನೂ ಸಹ ಹಿಂದಿನ ವರದಿಗಳನ್ನು ವೀಕ್ಷಿಸಬಹುದು"
     diagnoses:
       all: "ಎಲ್ಲಾ ಹೈಪರ್ ಟೆನ್ಶನ್ ಮತ್ತು ಮಧುಮೇಹ"
       hypertension: "ಹೈಪರ್‌ಟೆನ್ಶನ್"
@@ -348,8 +353,17 @@ kn-IN:
     achievements_card:
       title: "ಸಾಧನೆಗಳು"
       follow_up_visits_section_title: "ಫಾಲೋ-ಅಪ್ %{visit_or_visits} ದಾಖಲಿಸಲಾಗಿದೆ"
+      visit:
+        one: "ಭೇಟಿ"
+        other: "ಭೇಟಿಗಳು"
       overdue_patients_section_title: "ಅವಧಿ ಮೀರಿ ಬಾಕಿ ಇರುವ ರೋಗಿಗಳಿಗೆ %{call_or_calls}"
+      call:
+        one: "ಕರೆ"
+        other: "ಕರೆಗಳು"
       registered_patients_title: "ನೋಂದಾಯಿತ %{patient_or_patients}"
+      patient:
+        one: "ರೋಗಿ"
+        other: "ರೋಗಿಗಳು"
     period_report:
       registered_patients_card:
         title: "ನೋಂದಾಯಿತ ರೋಗಿಗಳು"
@@ -359,10 +373,10 @@ kn-IN:
         subtitle: "ರೋಗಿಗಳ ಬಿಪಿ, ರಕ್ತದ ಸಕ್ಕರೆಯ ಅಳತೆಯನ್ನು ತೆಗೆದುಕೊಳ್ಳಲಾಗಿದೆ, ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ನಿಗದಿಗೊಳಿಸಲಾಗಿದೆ ಅಥವಾ ಅವರ ಔಷಧೋಪಚಾರಗಳನ್ನು %{facility_name} ನಲ್ಲಿ ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗಿದೆ."
       follow_up_visits_card:
         title: "ಫಾಲೋ-ಅಪ್ ಭೇಟಿಗಳು"
-        subtitle: "\\%{facility_name} ನಲ್ಲಿ ಫಾಲೋ-ಅಪ್ ಭೇಟಿಗಳನ್ನು ದಾಖಲಿಸಲಾಗಿದೆ. ಫಾಲೋ-ಅಪ್ ಎನ್ನುವುದು ರೋಗಿಯ ಬಿಪಿ, ರಕ್ತದ ಸಕ್ಕರೆಯ ಅಳತೆಯನ್ನು ತೆಗೆದುಕೊಂಡ, ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಅನ್ನು ನಿಗದಿಪಡಿಸಿರುವ ಅಥವಾ ಔಷಧೋಪಚಾರಗಳನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗಿರುವ ಭೇಟಿಯಾಗಿದೆ."
+        subtitle: "%{facility_name} ನಲ್ಲಿ ಫಾಲೋ-ಅಪ್ ಭೇಟಿಗಳನ್ನು ದಾಖಲಿಸಲಾಗಿದೆ. ಫಾಲೋ-ಅಪ್ ಎನ್ನುವುದು ರೋಗಿಯ ಬಿಪಿ, ರಕ್ತದ ಸಕ್ಕರೆಯ ಅಳತೆಯನ್ನು ತೆಗೆದುಕೊಂಡ, ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಅನ್ನು ನಿಗದಿಪಡಿಸಿರುವ ಅಥವಾ ಔಷಧೋಪಚಾರಗಳನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗಿರುವ ಭೇಟಿಯಾಗಿದೆ."
       patients_initiated_on_treatment_card:
         title: '"ಚಿಕಿತ್ಸೆಯನ್ನು ಆರಂಭಿಸಿರುವ ರೋಗಿಗಳು" ಡೇಟಾ ಎಲ್ಲಿದೆ?'
-        main_text: '"ನೋಂದಾಯಿತ ರೋಗಿಗಳು" ಅನ್ನು ಬಳಸಿ, ಇದು Simple ನಲ್ಲಿ ನೋಂದಾಯಿತವಾಗಿರುವ ರೋಗಿಗಳಿಗೆ ಯಾವಾಗಲೂ "ಚಿಕಿತ್ಸೆಯನ್ನು ಆರಂಭಿಸಿರುವ ರೋಗಿಗಳು" ಎಂಬುದಕ್ಕೆ ಸಮನಾಗಿರುತ್ತದೆ.'
+        main_text: '"ನೋಂದಾಯಿತ ರೋಗಿಗಳು" ಅನ್ನು ಬಳಸಿ, ಇದು ಸಿಂಪಲ್‌ನಲ್ಲಿ ನೋಂದಾಯಿತವಾಗಿರುವ ರೋಗಿಗಳಿಗೆ ಯಾವಾಗಲೂ "ಚಿಕಿತ್ಸೆಯನ್ನು ಆರಂಭಿಸಿರುವ ರೋಗಿಗಳು" ಎಂಬುದಕ್ಕೆ ಸಮನಾಗಿರುತ್ತದೆ.'
       more_patient_data_coming_soon_card:
         title: "ಹೆಚ್ಚಿನ ರೋಗಿ ಡೇಟಾ ನಿರೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ"
         main_text: "ರೋಗಿ ಮತ್ತು ಲಿಂಗ ಪ್ರಕಾರ ವಿಭಾಗಿಸಿದ ಪ್ರತಿದಿನದ ನೋಂದಣಿ ಮತ್ತು ಫಾಲೋ-ಅಪ್ ಡೇಟಾವನ್ನು ಶೀಘ್ರವೇ ಸೇರಿಸಲಾಗುತ್ತದೆ."
@@ -397,7 +411,7 @@ kn-IN:
         subtitle: "ತಿಂಗಳ ಸಮಯದಲ್ಲಿ ಬಿಪಿ, ರಕ್ತದ ಸಕ್ಕರೆ ಅಳತೆ ತೆಗೆದುಕೊಂಡಿರುವ, ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ನಿಗದಿಪಡಿಸಲಾಗಿರುವ ಅಥವಾ %{facility_name} ನಲ್ಲಿ ಔಷಧೋಪಚಾರವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗಿರುವ %{diagnosis} ರೋಗಿಗಳು."
       patient_treatment_outcomes:
         section_title: "ರೋಗಿ ಚಿಕಿತ್ಸೆ ಸ್ಥಿತಿ"
-        chart_tooltip: "%{registration_period} ತನಕ ನೋಂದಾಯಿಸಿರುವ %{number_of_registered_patients} %{number_of_registered_patient_or_patients} ರಲ್ಲಿ %{start_period} and %{end_period} ನಡುವಿನ %{threshold} ಹೊಂದಿರುವ %{number_of_patients} %{number_of_patient_or_patients}."
+        chart_tooltip: "%{registration_period} ತನಕ ನೋಂದಾಯಿಸಿರುವ %{number_of_registered_patients} %{number_of_registered_patient_or_patients} ರಲ್ಲಿ %{start_period} ಮತ್ತು %{end_period} ನಡುವಿನ %{threshold} ಹೊಂದಿರುವ %{number_of_patients} %{number_of_patient_or_patients}."
         controlled_card:
           subtitle: "ಕಳೆದ 3 ತಿಂಗಳುಗಳಲ್ಲಿ ತಮ್ಮ ಕೊನೆಯ ಭೇಟಿಯಲ್ಲಿ %{controlled_threshold} ಹೊಂದಿರುವ >3 ತಿಂಗಳುಗಳ ಹಿಂದೆ ನೋಂದಾಯಿಸಿಕೊಂಡಿರುವ %{facility_name} ನಲ್ಲಿರುವ %{diagnosis} ರೋಗಿಗಳು."
           help_tooltip:
