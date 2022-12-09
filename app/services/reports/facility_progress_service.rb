@@ -10,6 +10,7 @@ module Reports
     attr_reader :facility
     attr_reader :range
     attr_reader :region
+    attr_reader :diabetes_enabled
 
     def initialize(facility, period, current_user: nil)
       @facility = facility
@@ -71,7 +72,7 @@ module Reports
           }
         },
         metadata: {
-          is_diabetes_enabled: @diabetes_enabled,
+          is_diabetes_enabled: diabetes_enabled,
           last_updated_at: last_updated_at,
           formatted_next_date: (Time.current + 1.day).to_s(:mon_year),
           today_string: I18n.t(:today_str)
@@ -87,12 +88,30 @@ module Reports
       @monthly_counts ||= repository.monthly_follow_ups_and_registrations[facility.region.slug]
     end
 
-    def repository
-      @repository ||= Reports::Repository.new(facility, periods: @range)
+    memoize def repository
+      Reports::Repository.new(facility, periods: @range)
     end
 
     def control_rates_repository
       @control_rates_repository ||= Reports::Repository.new(facility, periods: control_range)
+    end
+
+    def hypertension_reports_data
+      {
+        monthly_follow_ups: repository.hypertension_follow_ups[@region.slug],
+        total_registrations: repository.cumulative_registrations[@region.slug],
+        assigned_patients: repository.cumulative_assigned_patients[@region.slug][@period],
+        missed_visits_rates: repository.missed_visits_rate[@region.slug],
+        missed_visits: repository.missed_visits[@region.slug],
+        uncontrolled_rates: repository.uncontrolled_rates[@region.slug],
+        uncontrolled: repository.uncontrolled[@region.slug],
+        controlled_rates: repository.controlled_rates[@region.slug],
+        controlled: repository.controlled[@region.slug],
+        adjusted_patients: repository.adjusted_patients[@region.slug],
+        period_info: repository.period_info(@region),
+        region: @region,
+        current_user: @current_user
+      }
     end
 
     # Returns all possible combinations of FacilityProgressDimensions for displaying
@@ -107,8 +126,6 @@ module Reports
       end
       dimensions
     end
-
-    attr_reader :diabetes_enabled
 
     memoize def daily_total_follow_ups
       total_follow_ups_per_period(period_type: "daily", facility_data: @daily_facility_data)
@@ -132,17 +149,6 @@ module Reports
 
     memoize def yearly_total_registrations
       total_registrations_per_period(period_type: "yearly", facility_data: @yearly_facility_data)
-    end
-
-    memoize def total_registrations_per_period(period_type:, facility_data:)
-      facility_data.each_with_object({}) do |record, hsh|
-        period = period_type == "yearly" ? record["year"] : record.period
-        hsh[period] = if diabetes_enabled
-          record["#{period_type}_registrations_htn_or_dm"]
-        else
-          record["#{period_type}_registrations_htn_only"] + record["#{period_type}_registrations_htn_and_dm"]
-        end
-      end
     end
 
     memoize def daily_registrations_breakdown
@@ -171,18 +177,27 @@ module Reports
 
     private
 
+    memoize def total_registrations_per_period(period_type:, facility_data:)
+      facility_data.each_with_object({}) do |record, hsh|
+        period = period_type == "yearly" ? record["year"] : record.period
+        hsh[period] = if diabetes_enabled
+          record["#{period_type}_registrations_htn_or_dm"]
+        else
+          record["#{period_type}_registrations_htn_only"] + record["#{period_type}_registrations_htn_and_dm"]
+        end
+      end
+    end
+
     memoize def total_follow_ups_per_period(period_type:, facility_data:)
       facility_data.each_with_object({}) do |record, hsh|
         period = period_type == "yearly" ? record["year"] : record.period
-        hsh[period] = if region.diabetes_management_enabled?
+        hsh[period] = if diabetes_enabled
           record["#{period_type}_follow_ups_htn_or_dm"]
         else
           record["#{period_type}_follow_ups_htn_only"] + record["#{period_type}_follow_ups_htn_and_dm"]
         end
       end
     end
-
-    private
 
     memoize def registrations_breakdown(period_type:, facility_data:)
       facility_data.each_with_object({}) do |record, hsh|

@@ -4,26 +4,13 @@ class ProgressTab::Hypertension::UncontrolledComponent < ApplicationComponent
   include AssetsHelper
   include ActionView::Helpers::NumberHelper
 
-  attr_reader :repository
+  attr_reader :uncontrolled_rates, :uncontrolled, :adjusted_patients, :period_info, :region
 
-  def initialize(service)
-    @repository = service.repository
-    @region = service.region
-  end
-
-  def uncontrolled_rates
-    repository.uncontrolled_rates[@region.slug]
-  end
-
-  def uncontrolled
-    repository.uncontrolled[@region.slug]
-  end
-
-  def adjusted_patients
-    repository.adjusted_patients[@region.slug]
-  end
-
-  def period_info
-    repository.period_info(@region)
+  def initialize(uncontrolled_rates:, uncontrolled:, adjusted_patients:, period_info:, region:)
+    @uncontrolled_rates = uncontrolled_rates
+    @uncontrolled = uncontrolled
+    @adjusted_patients = adjusted_patients
+    @period_info = period_info
+    @region = region
   end
 end
