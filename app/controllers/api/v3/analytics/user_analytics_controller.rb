@@ -61,7 +61,7 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
   end
 
   def less_than_min_app_version?
-    app_version = request.headers["HTTP-X-APP-VERSION"]
+    app_version = request.headers["HTTP_X_APP_VERSION"]
     return true unless app_version.present?
     app_version < NEW_PROGRESS_TAB_MIN_APP_VERSION
   end
