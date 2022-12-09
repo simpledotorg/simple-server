@@ -324,7 +324,12 @@ mr-IN:
     yearly_report_title: "वार्षिक"
     hypertension_report_title: "उच्च रक्तदाब"
     diabetes_report_title: "मधुमेह"
+    report: "अहवाल"
     last_updated_at: "डेटा %{date} रोजी %{time} वाजता शेवटचा अपडेट केला"
+    coming_soon: "लवकरच येत आहे"
+    no_data_card:
+      title: "हा अहवाल लवकरच येत आहे"
+      subtitle: "तुम्ही अजूनही आधीचे अहवाल पाहू शकता"
     diagnoses:
       all: "सर्व उच्च रक्तदाब आणि मधुमेह"
       hypertension: "उच्च रक्तदाब"
@@ -348,8 +353,17 @@ mr-IN:
     achievements_card:
       title: "उपलब्धी"
       follow_up_visits_section_title: "पाठपुरावा %{visit_or_visits} रेकॉर्ड केले"
+      visit:
+        one: "भेट"
+        other: "भेटी"
       overdue_patients_section_title: "थकीत रुग्णांना %{call_or_calls}"
+      call:
+        one: "कॉल"
+        other: "कॉल्स"
       registered_patients_title: "नोंदणीकृत %{patient_or_patients}"
+      patient:
+        one: "रूग्ण"
+        other: "रुग्ण"
     period_report:
       registered_patients_card:
         title: "नोंदणीकृत रुग्ण"
@@ -362,7 +376,7 @@ mr-IN:
         subtitle: "पाठपुरावा भेटी %{facility_name} येथे रेकॉर्ड केल्या गेल्या. पाठपुरावा म्हणजे एखाद्या रुग्णाचे बीपी घेतले, रक्तातील साखर घेतली गेली, भेटीची वेळ निश्चित केली गेली किंवा औषधे अपडेट केली गेली."
       patients_initiated_on_treatment_card:
         title: '"रुग्णांनी उपचार सुरू केले" याचा डेटा कुठे आहे?'
-        main_text: '"नोंदणीकृत रुग्ण" वापरा, हे नेहमी साध्यावर नोंदणीकृत रूग्णांसाठी "उपचार सुरू केलेल्या रूग्णांच्या" सारखे असेल.'
+        main_text: '"नोंदणीकृत रुग्ण" वापरा, हे नेहमी सिंपलवर नोंदणीकृत रूग्णांसाठी "उपचार सुरू केलेल्या रूग्णांच्या" सारखे असेल.'
       more_patient_data_coming_soon_card:
         title: "अधिक रुग्ण डेटा लवकरच येत आहे"
         main_text: "रोग आणि लिंगानुसार विघटित दैनिक नोंदणी आणि पाठपुरावा डेटा लवकरच जोडला जाईल."
