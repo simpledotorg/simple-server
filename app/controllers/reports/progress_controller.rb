@@ -37,8 +37,6 @@ class Reports::ProgressController < AdminController
 
     if Flipper.enabled?(:new_progress_tab_v2, @current_user) || Flipper.enabled?(:new_progress_tab_v2)
       render "api/v3/analytics/user_analytics/show_v2"
-    elsif Flipper.enabled?(:new_progress_tab_v1, @current_user) || Flipper.enabled?(:new_progress_tab_v1)
-      render "api/v3/analytics/user_analytics/show_v1"
     else
       render "api/v3/analytics/user_analytics/show"
     end

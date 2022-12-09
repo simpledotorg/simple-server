@@ -39,8 +39,6 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
     respond_to do |format|
       if Flipper.enabled?(:new_progress_tab_v2, current_user) || Flipper.enabled?(:new_progress_tab_v2)
         format.html { render :show_v2 }
-      elsif Flipper.enabled?(:new_progress_tab_v1, current_user) || Flipper.enabled?(:new_progress_tab_v1)
-        format.html { render :show_v1 }
       else
         format.html { render :show }
       end
