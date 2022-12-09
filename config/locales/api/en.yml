@@ -330,6 +330,9 @@ en:
     no_data_card:
       title: "This report is coming soon"
       subtitle: "You can still view previous reports"
+    update_required_card:
+      title: "Update required"
+      subtitle: "Update app to view this report"
     diagnoses:
       all: "All hypertension and diabetes"
       hypertension: "Hypertension"
