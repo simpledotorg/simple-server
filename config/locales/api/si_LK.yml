@@ -324,7 +324,12 @@ si-LK:
     yearly_report_title: "වාර්ෂික"
     hypertension_report_title: "අධ්‍යාතතිය"
     diabetes_report_title: "දියවැඩියාව"
-    last_updated_at: "දත්ත අවසන් වරට යාවත්කාලීන කරන ලද්දේ %{date} %{time} ටය"
+    report: "වාර්තාව"
+    last_updated_at: "දත්ත අවසන් වරට යාවත්කාලීන කරන ලද්දේ %{date}, %{time} ටය"
+    coming_soon: "ළඟදී ම"
+    no_data_card:
+      title: "මෙම වාර්තාව ළඟදී ම ලැබේ"
+      subtitle: "ඔබට තවදුරටත් පෙර වාර්තා බැලිය හැක"
     diagnoses:
       all: "සියලු අධ්‍යාතති සහ දියවැඩියා"
       hypertension: "අධ්‍යාතතිය"
@@ -348,8 +353,17 @@ si-LK:
     achievements_card:
       title: "ජයග්‍රහණයන්"
       follow_up_visits_section_title: "පසු විපරම් %{visit_or_visits} පටිගත කරන ලදී"
+      visit:
+        one: "සංචාරය"
+        other: "බැහැ දැකීම්"
       overdue_patients_section_title: "කල් ඉකුත් වූ රෝගීන් සඳහා %{call_or_calls}"
+      call:
+        one: "ඇමතුම"
+        other: "ඇමතුම්"
       registered_patients_title: "ලියාපදිංචි වූ %{patient_or_patients}"
+      patient:
+        one: "රෝගියා"
+        other: "රෝගීන්"
     period_report:
       registered_patients_card:
         title: "ලියාපදිංචි රෝගීන්"
@@ -407,17 +421,17 @@ si-LK:
           subtitle: "%{facility_name} හි %{diagnosis} රෝගීන් > පසුගිය මාස 3 තුළ ඔවුන්ගේ අවසන් සංචාරයේ දී %{uncontrolled_threshold} සමඟ මාස 3 කට පෙර ලියාපදිංචි විය."
           help_tooltip:
             numerator: "පසුගිය මාස 3 තුළ ඔවුන්ගේ අවසන් සංචාරයේ දී %{uncontrolled_threshold} සමඟ රෝගීන්."
-            denominator: "අවසන් මාස 3 ට පෙර ලියාපදිංචි කළ, %{facility_name} වෙත වෙන් කර ඇති %{diagnosis} රෝගීන්. පසු-විපරම් රෝගීන්ගෙන් මරණයට පත් සහ අහිමි වූ රෝගීන් ඉවත් කරනු ලැබේ."
+            denominator: "අවසන් මාස 3 ට පෙර ලියාපදිංචි කළ, %{facility_name} වෙත වෙන් කර ඇති %{diagnosis} රෝගීන්. මරණයට පත් සහ පසු-විපරම් නැතිවූ රෝගීන් බැහැර කරනු ලැබේ."
         very_uncontrolled_card:
-          subtitle: "%{facility_name} හි දියවැඩියා රෝගීන්> මාස 3කට පෙර %{very_uncontrolled_threshold} සමඟ පසුගිය මාස 3 තුළ ඔවුන්ගේ අවසන් සංචාරයේදී ලියාපදිංචි වී ඇත."
+          subtitle: "%{facility_name} හි දියවැඩියා රෝගීන් > මාස 3කට පෙර %{very_uncontrolled_threshold} සමඟ පසුගිය මාස 3 තුළ ඔවුන්ගේ අවසන් සංචාරයේදී ලියාපදිංචි වී ඇත."
           help_tooltip:
             numerator: "පසුගිය මාස 3 තුළ ඔවුන්ගේ අවසන් සංචාරයේදී %{very_uncontrolled_threshold} තුළ සිටින දියවැඩියා රෝගීන්."
-            denominator: "අවසන් මාස 3 ට පෙර ලියාපදිංචි කළ, %{facility_name}වෙත වෙන් කර ඇති දියවැඩියා රෝගීන්. පසු-විපරම් රෝගීන්ගෙන් මරණයට පත් සහ අහිමි වූ රෝගීන් ඉවත් කරනු ලැබේ."
+            denominator: "අවසන් මාස 3 ට පෙර ලියාපදිංචි කළ, %{facility_name}වෙත වෙන් කර ඇති දියවැඩියා රෝගීන්. මරණයට පත් සහ පසු-විපරම් නැතිවූ රෝගීන් බැහැර කරනු ලැබේ."
         missed_visits_card:
           subtitle: "%{facility_name} හි %{diagnosis} රෝගීන් පසුගිය මාස 3 තුළ සංචාරයකින් තොරව > මාස 3 කට පෙර ලියාපදිංචි විය."
           help_tooltip:
             numerator: "පසුගිය මාස 3 තුළ කිසිදු සංචාරයක් නොමැති %{diagnosis} රෝගීන්"
-            denominator: "අවසන් මාස 3 ට පෙර ලියාපදිංචි කළ, %{facility_name} වෙත වෙන් කර ඇති %{diagnosis} රෝගීන්. පසු-විපරම් රෝගීන්ගෙන් මරණයට පත් සහ අහිමි වූ රෝගීන් ඉවත් කරනු ලැබේ."
+            denominator: "අවසන් මාස 3 ට පෙර ලියාපදිංචි කළ, %{facility_name} වෙත වෙන් කර ඇති %{diagnosis} රෝගීන්. මරණයට පත් සහ පසු-විපරම් නැතිවූ රෝගීන් බැහැර කරනු ලැබේ."
       drug_stock_report:
         section_title: "ඖෂධ තොග වාර්තාව"
         card_subtitle: "පෙති තොගයේ %{number_of_days} %{day_or_days}"
