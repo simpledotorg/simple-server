@@ -46,10 +46,10 @@ sid-ET:
       short: "Mundeete xiiwokkira barrisirootto.dandiitto bikkinni mundeekki xiiwora %{facility_name}towaati.%{patient_name}"
       short_medicines: "Mundeekki xiiwora barrisirootto dandiitto bikkinni mundeekki xiiworanna xagichoho %{facility_name}towaati.%{patient_name}"
       you_must: "Dandiitto bikkinni mundeekki xiiwora daa %{facility_name}noohe %{patient_name}"
-      no_date: ""
+      no_date: "Techo amo %{facility_name} mundeete xiiwo bikkirate,                       %{patient_name}."
       official_short: "Mundeekki xiiwora barrisirootto dandiitto bikkinni mundeekki xiiwora %{facility_name} towaati.dottorchikki dancha fayyimma halchannohe%{patient_name}"
       official_short_medicines: "Mundeekki xiiwora barrisirootto dandiitto bikkinni mundeekki xiiworanna xagichoho %{facility_name}%{patient_name}towaati.dootorchikki dancha fayyimma halchannohe."
       official_you_must: "dandiitto bikkinni mundeekki xiiwora %{facility_name}%{patient_name}Dottorchikki dancha fayyimma halchannohe."
-      official_no_date: ""
+      official_no_date: "Techo amo %{facility_name} mundeete xiiwo bikkirate,                        %{patient_name}. dottorikki atera dancha fayyimma halchannohe."
     covid:
       medication_reminder: "roodoya 1% (xiiwaminohu suuma): nnike ledohu 2% (hoorosirano suuma) atte qaaganina atte faayima kuni COVID wiinamira. loowogesha muundete xiiwaa xaagichu guufate danchaho. sinu meererimin mulla xaagicho gaaniba asse qoleno faayimate laanani meererimn. atti ANM leedeno ASHA  xaadi."
