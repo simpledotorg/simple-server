@@ -575,11 +575,11 @@ DashboardReports = () => {
         },
       };
       config.options.hover.mode = "x";
-
       return config;
     },
+    
     lostToFollowUpTrend: function (data) {
-      const additionalLostToFollowUpTrendConfig = {
+      const config = {
         data: {
           labels: Object.keys(data.ltfuPatientsRate),
           datasets: [
@@ -597,12 +597,9 @@ DashboardReports = () => {
           ],
         },
       };
-      const config = combineConfigWithBaseConfig(
-        additionalLostToFollowUpTrendConfig
-      );
-
-      return config;
+      return combineConfigWithBaseConfig(config);
     },
+  
   };
 
   return {
