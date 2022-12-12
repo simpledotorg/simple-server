@@ -67,7 +67,7 @@ brew install docker-compose
 
 ##### Setup
 ```
-docker-compose up
+docker-compose -f .docker/docker-compose.yml up
 ```
 
 After a successful docker-compose initialisation, an admin dashboard account is automatically created.
@@ -82,7 +82,7 @@ Use below Ngrok [guide](#developing-with-the-android-app) for Android developmen
 
 ##### Teardown (delete docker containers and volumes)
 ```
-docker-compose down --volumes
+docker-compose -f  .docker/docker-compose.yml down --volumes
 ```
 
 #### Manual Setup
