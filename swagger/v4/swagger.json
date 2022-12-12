@@ -995,6 +995,120 @@
           }
         }
       }
+    },
+    "/api/v4/questionnaire_responses/sync": {
+      "get": {
+        "summary": "Syncs questionnaire responses from server to device",
+        "tags": [
+          "Questionnaire Responses"
+        ],
+        "security": [
+          {
+            "access_token": [
+
+            ],
+            "user_id": [
+
+            ],
+            "facility_id": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "appointments",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "questionnaire_responses": {
+                  "$ref": "#/definitions/questionnaire_responses"
+                },
+                "process_token": {
+                  "$ref": "#/definitions/process_token"
+                }
+              },
+              "required": [
+                "questionnaire_responses",
+                "process_token"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful"
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
+      },
+      "post": {
+        "summary": "Syncs questionnaire responses from device to server",
+        "tags": [
+          "Questionnaire Responses"
+        ],
+        "security": [
+          {
+            "access_token": [
+
+            ],
+            "user_id": [
+
+            ],
+            "facility_id": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "appointments",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "questionnaire_responses": {
+                  "$ref": "#/definitions/questionnaire_responses"
+                }
+              },
+              "required": [
+                "questionnaire_responses"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "successful"
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -2516,6 +2630,57 @@
       ],
       "items": {
         "$ref": "#/definitions/prescription_drug"
+      }
+    },
+    "questionnaire_response": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "questionnaire_type": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "questionnaire_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "facility_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "user_id": {
+          "$ref": "#/definitions/nullable_uuid"
+        },
+        "content": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "created_at",
+        "updated_at",
+        "questionnaire_type",
+        "questionnaire_id",
+        "facility_id",
+        "user_id",
+        "content"
+      ]
+    },
+    "questionnaire_responses": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/questionnaire_response"
       }
     },
     "teleconsultation": {

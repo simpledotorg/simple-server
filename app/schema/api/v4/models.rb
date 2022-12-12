@@ -389,6 +389,31 @@ class Api::V4::Models
        required: %w[protocol_drug_id in_stock received]}
     end
 
+    def questionnaire_response
+      {type: :object,
+       properties: {
+         id: {"$ref" => "#/definitions/uuid"},
+         deleted_at: {"$ref" => "#/definitions/nullable_timestamp"},
+         created_at: {"$ref" => "#/definitions/timestamp"},
+         updated_at: {"$ref" => "#/definitions/timestamp"},
+         # TODO: Change non_empty_string to questionnaire_type enum.
+         questionnaire_type: {"$ref" => "#/definitions/non_empty_string"},
+         questionnaire_id: {"$ref" => "#/definitions/uuid"},
+         facility_id: {"$ref" => "#/definitions/uuid"},
+         user_id: {"$ref" => "#/definitions/nullable_uuid"},
+         content: {type: :object}
+       },
+       required: %w[id
+        created_at
+        updated_at
+        questionnaire_type
+        questionnaire_id
+        facility_id
+        user_id
+        content]
+      }
+    end
+
     def definitions
       {
         activate_user: activate_user,
@@ -425,6 +450,8 @@ class Api::V4::Models
         phone_numbers: array_of("phone_number"),
         prescription_drug: Api::V3::Models.prescription_drug,
         prescription_drugs: array_of("prescription_drug"),
+        questionnaire_response: Api::V4::Models.questionnaire_response,
+        questionnaire_responses: array_of("questionnaire_response"),
         teleconsultation: teleconsultation,
         teleconsultations: array_of("teleconsultation"),
         timestamp: timestamp,

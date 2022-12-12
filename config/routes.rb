@@ -148,6 +148,11 @@ Rails.application.routes.draw do
         post "/sync", to: "call_results#sync_from_user"
       end
 
+      scope :questionnaire_responses do
+        get "/sync", to: "questionnaire_responses#sync_to_user"
+        post "/sync", to: "questionnaire_responses#sync_from_user"
+      end
+
       namespace :analytics do
         resource :overdue_list, only: [:show]
       end

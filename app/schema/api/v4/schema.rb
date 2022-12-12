@@ -225,6 +225,14 @@ class Api::V4::Schema
        description: "List of available state names"}
     end
 
+    def questionnaire_responses_sync_from_user_request
+      sync_from_user_request(:questionnaire_responses)
+    end
+
+    def questionnaire_responses_sync_to_user_response
+      sync_to_user_response(:questionnaire_responses)
+    end
+
     def definitions
       {error: error,
        errors: Api::V4::Models.array_of("error"),
