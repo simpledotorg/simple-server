@@ -1672,12 +1672,11 @@ function withBaseConfig(config) {
   return _.mergeWith(
     baseLineGraphConfig(),
     config,
-    mergeWithCustomizerArrayMerging
+    mergeArraysWithConcatenation
   );
 }
 
-//  Array merging function within object
-function mergeWithCustomizerArrayMerging(objValue, srcValue) {
+function mergeArraysWithConcatenation(objValue, srcValue) {
   if (_.isArray(objValue)) {
     return objValue.concat(srcValue);
   }
