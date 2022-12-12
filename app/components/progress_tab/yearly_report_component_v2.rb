@@ -22,15 +22,15 @@ class ProgressTab::YearlyReportComponentV2 < ApplicationComponent
     @region = service.region
   end
 
-  def render?
-    Flipper.enabled?(:new_progress_tab_v2, current_user) || Flipper.enabled?(:new_progress_tab_v2)
-  end
-
   memoize def report_in_financial_year?
     Flipper.enabled?(:yearly_reports_start_from_april, @current_user)
   end
 
-  def last_n_years
+  def data_available?(year:)
+    yearly_registrations_breakdown[year].present?
+  end
+
+  memoize def last_n_years
     years = (SIMPLE_START_YEAR..Date.current.year).to_a.reverse
     if report_in_financial_year?
       years.push(SIMPLE_START_YEAR - 1)

@@ -83,7 +83,7 @@
               <%= t("progress_tab.diabetes_report_title") %>
             </p>
             <p class="p-absolute b-0 l-0 w-100 fw-regular fs-12px c-grey ta-center bs-border-box">
-              Coming soon
+              <%= t("progress_tab.coming_soon") %>
             </p>
           </a>
         </div>
@@ -117,7 +117,8 @@
         </h1>
         <div class="mb-24px">
           <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
-            <span class="fw-bold"><%= number_with_delimiter(@service.total_follow_ups) %></span> <%= t("progress_tab.achievements_card.follow_up_visits_section_title", visit_or_visits: "visit".pluralize(@service.total_follow_ups)) %>
+            <% visit_or_visits = t("progress_tab.achievements_card.visit", count: @service.total_follow_ups)%>
+            <span class="fw-bold"><%= number_with_delimiter(@service.total_follow_ups) %></span> <%= t("progress_tab.achievements_card.follow_up_visits_section_title", visit_or_visits: visit_or_visits) %>
           </p>
           <div class="d-flex ai-center jc-space-between pt-4px pb-4px pr-16px pl-16px">
             <% follow_up_badge_goals = create_badge_array(@service.total_follow_ups) %>
@@ -136,7 +137,8 @@
         </div>
         <div class="mb-24px">
           <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
-            <span class="fw-bold"><%= number_with_delimiter(@service.total_overdue_calls) %></span> <%= t("progress_tab.achievements_card.overdue_patients_section_title", call_or_calls: "call".pluralize(@service.total_overdue_calls)) %>
+            <% call_or_calls = t("progress_tab.achievements_card.call", count: @service.total_overdue_calls)%>
+            <span class="fw-bold"><%= number_with_delimiter(@service.total_overdue_calls) %></span> <%= t("progress_tab.achievements_card.overdue_patients_section_title", call_or_calls: call_or_calls) %>
           </p>
           <div class="d-flex ai-center jc-space-between pt-4px pb-4px pr-16px pl-16px">
             <% overdue_call_badge_goals = create_badge_array(@service.total_overdue_calls) %>
@@ -155,7 +157,9 @@
         </div>
         <div>
           <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
-            <span class="fw-bold"><%= number_with_delimiter(@service.total_registrations) %></span> <%= t("progress_tab.achievements_card.registered_patients_title", patient_or_patients: "patient".pluralize(@service.total_registrations)) %>
+            <span class="fw-bold"><%= number_with_delimiter(@service.total_registrations) %></span>
+            <% patient_or_patients = t("progress_tab.achievements_card.patient", count: @service.total_registrations)%>
+            <%= t("progress_tab.achievements_card.registered_patients_title", patient_or_patients: patient_or_patients) %>
           </p>
           <div class="d-flex ai-center jc-space-between pt-4px pb-4px pr-16px pl-16px">
             <% registered_patients_badge_goals = create_badge_array(@service.total_registrations) %>
@@ -175,7 +179,6 @@
       </div>
     </div>
 
-    <!-- TODO: Remove "api/v3/analytics/user_analytics/period_report"-->
     <%= render(ProgressTab::DailyProgressComponentV2.new(
       service: @service,
       current_user: @current_user,
@@ -207,41 +210,19 @@
     %>
 
     <%= render(ProgressTab::Hypertension::DiagnosisReportComponent.new(
-      service: @service,
-      current_facility: @current_facility,
-      current_user: @current_user,
-      period: @period,
-      drug_stock_query: @drug_stock_query,
-      drugs_by_category: @drugs_by_category,
-      last_updated_at: @user_analytics.last_updated_at,
-      cohort_data: @user_analytics.statistics.dig(:cohorts)
+      hypertension_reports_data: @service.hypertension_reports_data,
+      cohort_data: @user_analytics.statistics.dig(:cohorts),
+      last_updated_at: @user_analytics.last_updated_at
     ))
     %>
-
-    <%= render(ProgressTab::Hypertension::DiagnosisReportComponent.new(
-      service: @service,
-      current_facility: @current_facility,
-      current_user: @current_user,
-      period: @period,
-      drug_stock_query: @drug_stock_query,
-      drugs_by_category: @drugs_by_category,
-      last_updated_at: @user_analytics.last_updated_at,
-      cohort_data: @user_analytics.statistics.dig(:cohorts)
-    ))
-    %>
-
 <!--  TODO:  The partial "api/v3/analytics/user_analytics/diagnosis_report" need to be removed once the Diabetes reports are released -->
-    <%= render partial: "api/v3/analytics/user_analytics/diagnosis_report",
-               locals: {
-                 page_id: "diabetes-report",
-                 report_diagnosis: t("progress_tab.diagnoses.diabetes"),
-                 title: t("progress_tab.diabetes_report_title"),
-                 subtitle: t("progress_tab.last_updated_at",
-                             date: display_date(@user_analytics.last_updated_at),
-                             time:  display_time(@user_analytics.last_updated_at)),
-                 diagnosis_data: @diabetes_reports_data
-               }
-    %>
+
+    <%= render(ProgressTab::DrugStockComponent.new(
+      drug_stocks_query: @drug_stocks_query,
+      drugs_by_category: @drugs_by_category,
+      current_facility: @current_facility
+    )) %>
+
   </body>
   <%= inline_js("standalone/progress_tab.js") %>
 </html>
