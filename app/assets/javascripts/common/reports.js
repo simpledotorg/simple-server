@@ -104,7 +104,7 @@ DashboardReports = () => {
 
   const ReportsGraphConfig = {
     bsBelow200PatientsTrend: function (data) {
-      const additionalBsBelow200PatientsTrendConfig = {
+      const config = {
         data: {
           labels: Object.keys(data.bsBelow200Rate),
           datasets: [
@@ -121,13 +121,9 @@ DashboardReports = () => {
           ],
         },
       };
-
-      const config = combineConfigWithBaseConfig(
-        additionalBsBelow200PatientsTrendConfig
-      );
-
-      return config;
+      return combineConfigWithBaseConfig(config);
     },
+
     cumulativeDiabetesRegistrationsTrend: function(data) {
       const cumulativeDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(data.cumulativeDiabetesRegistrations);
       const monthlyDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(data.monthlyDiabetesRegistrations);
