@@ -169,11 +169,11 @@ DashboardReports = () => {
         },
       };
 
+      // will dry this post upgrade
       const config = combineConfigWithBaseConfig(
         additionalCumulativeDiabetesRegistrationsTrendConfig
       );
 
-      // will dry this later
       config.options.scales = {
         xAxes: [
           {
@@ -266,9 +266,9 @@ DashboardReports = () => {
           },
         ],
       };
-
       return config;
     },
+
     bsOver200PatientsTrend: function (data) {
       const additionalbsOver200PatientsTrendconfig = {
         type: "bar",
@@ -291,6 +291,7 @@ DashboardReports = () => {
         },
       };
 
+      // will dry this post upgrade
       const config = combineConfigWithBaseConfig(
         additionalbsOver200PatientsTrendconfig
       );
