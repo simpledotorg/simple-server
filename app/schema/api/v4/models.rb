@@ -398,7 +398,8 @@ class Api::V4::Models
          # TODO: Change non_empty_string to questionnaire_type enum.
          # Using questionnaire_type instead of type because of STI Activerecord workflow issue.
          questionnaire_type: {"$ref" => "#/definitions/non_empty_string"},
-         layout: {type: :object}
+         layout: {type: :object,
+                  example: Api::V4::Models::Questionnaire.layout}
        },
        required: %w[id
          created_at
