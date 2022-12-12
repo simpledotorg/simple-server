@@ -340,8 +340,9 @@ DashboardReports = () => {
       };
       return config;
     },
+
     diabetesMissedVisitsTrend: function (data) {
-      const additionalDiabetesMissedVisitsTrendConfig = {
+      const config = {
         data: {
           labels: Object.keys(data.diabetesMissedVisitsGraphRate),
           datasets: [
@@ -359,11 +360,9 @@ DashboardReports = () => {
           ],
         },
       };
-      const config = combineConfigWithBaseConfig(
-        additionalDiabetesMissedVisitsTrendConfig
-      );
-      return config;
+      return combineConfigWithBaseConfig(config);
     },
+  
     diabetesVisitDetails: function(data) {
       const config = createBaseGraphConfig();
       config.type = "bar";
