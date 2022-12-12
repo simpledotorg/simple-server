@@ -17,10 +17,6 @@ class ProgressTab::MonthlyReportComponentV2 < ApplicationComponent
     @region = service.region
   end
 
-  def render?
-    Flipper.enabled?(:new_progress_tab_v2, current_user) || Flipper.enabled?(:new_progress_tab_v2)
-  end
-
   def data_available?(date:)
     monthly_registrations_breakdown[Period.month(date.to_date)].present?
   end

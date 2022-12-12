@@ -210,17 +210,19 @@
     %>
 
     <%= render(ProgressTab::Hypertension::DiagnosisReportComponent.new(
-      service: @service,
-      current_facility: @current_facility,
-      current_user: @current_user,
-      period: @period,
-      drug_stock_query: @drug_stock_query,
-      drugs_by_category: @drugs_by_category,
-      last_updated_at: @user_analytics.last_updated_at,
-      cohort_data: @user_analytics.statistics.dig(:cohorts)
+      hypertension_reports_data: @service.hypertension_reports_data,
+      cohort_data: @user_analytics.statistics.dig(:cohorts),
+      last_updated_at: @user_analytics.last_updated_at
     ))
     %>
 <!--  TODO:  The partial "api/v3/analytics/user_analytics/diagnosis_report" need to be removed once the Diabetes reports are released -->
+
+    <%= render(ProgressTab::DrugStockComponent.new(
+      drug_stocks_query: @drug_stocks_query,
+      drugs_by_category: @drugs_by_category,
+      current_facility: @current_facility
+    )) %>
+
   </body>
   <%= inline_js("standalone/progress_tab.js") %>
 </html>

@@ -4,26 +4,13 @@ class ProgressTab::Hypertension::MissedVisitsComponent < ApplicationComponent
   include AssetsHelper
   include ActionView::Helpers::NumberHelper
 
-  attr_reader :repository
+  attr_reader :missed_visits_rates, :missed_visits, :adjusted_patients, :period_info, :region
 
-  def initialize(service)
-    @repository = service.repository
-    @region = service.region
-  end
-
-  def missed_visits_rates
-    repository.missed_visits_rate[@region.slug]
-  end
-
-  def missed_visits
-    repository.missed_visits[@region.slug]
-  end
-
-  def adjusted_patients
-    repository.adjusted_patients[@region.slug]
-  end
-
-  def period_info
-    repository.period_info(@region)
+  def initialize(missed_visits_rates:, missed_visits:, adjusted_patients:, period_info:, region:)
+    @missed_visits_rates = missed_visits_rates
+    @missed_visits = missed_visits
+    @adjusted_patients = adjusted_patients
+    @period_info = period_info
+    @region = region
   end
 end
