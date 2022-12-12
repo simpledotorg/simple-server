@@ -233,6 +233,10 @@ class Api::V4::Schema
       sync_to_user_response(:questionnaire_responses)
     end
 
+    def questionnaires_sync_to_user_response
+      sync_to_user_response(:questionnaires)
+    end
+
     def definitions
       {error: error,
        errors: Api::V4::Models.array_of("error"),
