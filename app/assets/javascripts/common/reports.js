@@ -121,7 +121,7 @@ DashboardReports = () => {
           ],
         },
       };
-      return combineConfigWithBaseConfig(config);
+      return withBaseConfig(config);
     },
 
     cumulativeDiabetesRegistrationsTrend: function(data) {
@@ -170,7 +170,7 @@ DashboardReports = () => {
       };
 
       // will dry this post upgrade
-      const config = combineConfigWithBaseConfig(
+      const config = withBaseConfig(
         additionalCumulativeDiabetesRegistrationsTrendConfig
       );
 
@@ -292,7 +292,7 @@ DashboardReports = () => {
       };
 
       // will dry this post upgrade
-      const config = combineConfigWithBaseConfig(
+      const config = withBaseConfig(
         additionalbsOver200PatientsTrendconfig
       );
 
@@ -360,7 +360,7 @@ DashboardReports = () => {
           ],
         },
       };
-      return combineConfigWithBaseConfig(config);
+      return withBaseConfig(config);
     },
   
     diabetesVisitDetails: function(data) {
@@ -597,7 +597,7 @@ DashboardReports = () => {
           ],
         },
       };
-      return combineConfigWithBaseConfig(config);
+      return withBaseConfig(config);
     },
   
   };
@@ -1562,9 +1562,6 @@ Reports = function (withLtfu) {
   };
 };
 
-// Base config object which can be built on using combineConfigWithBaseConfig(AdditionalConfigObject)
-// AdditionalConfigObject is used to add or overwrite specfic key: value - [will take priority]
-
 function baseLineGraphConfig() {
   const colors = dashboardReportsChartJSColors()
   return {
@@ -1671,12 +1668,10 @@ const intersectDataVerticalLine = {
   },
 };
 
-// ---
-// Object merging functions
-function combineConfigWithBaseConfig(additionalConfig) {
+function withBaseConfig(config) {
   return _.mergeWith(
     baseLineGraphConfig(),
-    additionalConfig,
+    config,
     mergeWithCustomizerArrayMerging
   );
 }
@@ -1687,5 +1682,3 @@ function mergeWithCustomizerArrayMerging(objValue, srcValue) {
     return objValue.concat(srcValue);
   }
 }
-
-// ---
