@@ -121,7 +121,7 @@ DashboardReports = () => {
           ],
         },
       };
-      return withBaseConfig(config);
+      return withBaseLineConfig(config);
     },
 
     cumulativeDiabetesRegistrationsTrend: function(data) {
@@ -170,7 +170,7 @@ DashboardReports = () => {
       };
 
       // will dry this post upgrade
-      const config = withBaseConfig(
+      const config = withBaseLineConfig(
         additionalCumulativeDiabetesRegistrationsTrendConfig
       );
 
@@ -292,7 +292,7 @@ DashboardReports = () => {
       };
 
       // will dry this post upgrade
-      const config = withBaseConfig(
+      const config = withBaseLineConfig(
         additionalbsOver200PatientsTrendconfig
       );
 
@@ -360,7 +360,7 @@ DashboardReports = () => {
           ],
         },
       };
-      return withBaseConfig(config);
+      return withBaseLineConfig(config);
     },
   
     diabetesVisitDetails: function(data) {
@@ -597,7 +597,7 @@ DashboardReports = () => {
           ],
         },
       };
-      return withBaseConfig(config);
+      return withBaseLineConfig(config);
     },
   
   };
