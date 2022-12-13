@@ -46,10 +46,10 @@ ti-ET:
       short: "ብዝተኸኣለካ መጠን ቀልጢፍካ ናብ BP %{facility_name} %{patient_name} ምብጻሕ ግበር።"
       short_medicines: "ንBP ዘንጊዕኻ ኣለኻ። ብዝተኸኣለ መጠን ቀልጢፍካ %{patient_name} ናብ %{facility_name} ምብጻሕ ግበር።"
       you_must: "ብዝተኸኣለካ መጠን ቀልጢፍካ ናብ BP ኣብ %{facility_name} %{patient_name} ክትመጽእ ኣለካ።"
-      no_date: ""
+      no_date: "ጸቕጢ ደም ንምዕቃን ሎሚ ናብ %{facility_name} ምጻእ, %{patient_name}።"
       official_short: "ንBP ዘንጊዕኻ ኣለኻ። ብዝተኸኣለ መጠን ቀልጢፍካ ናብ %{patient_name} %{facility_name} ምብጻሕ ግበር። ሓኪምካ ጽቡቕ ጥዕና ኺህልወካ ይደሊ እዩ።"
       official_short_medicines: "ንBP ዘንጊዕኻ ኣለኻ። ብዝተኸኣለ መጠን ቀልጢፍካ %{patient_name} ናብ %{facility_name} ምብጻሕ ግበር ። ሓኪምካ ጽቡቕ ጥዕና ኺህልወካ ይደሊ እዩ።"
       official_you_must: "ብዝተኸኣለካ መጠን ቀልጢፍካ ናብ BP %{patient_name} %{facility_name} ብጻሕ። ሓኪምካ ጽቡቕ ጥዕና ኺህልወካ ይደሊ እዩ ።"
-      official_no_date: ""
+      official_no_date: "ጸቕጢ ደም ንምዕቃን ሎሚ ናብ %{facility_name}ምጻእ, %{patient_name}። ሓኪምካ ጥዕናኻ ክትረክብ እዩ ዝምነ።"
     covid:
       medication_reminder: "ክቡር %{patient_name}፡ ኣብ %{facility_name} ዝርከቡ ሰራሕተኛታትና ኣብዚ ናይ ኮቪድ ህጹጽ ግዜ ብዛዕባኹምን ብዛዕባ ጥዕና ልብኹምን ይሓስቡ ኣለዉ እዮም። ናይ BP መድሓኒታትኩም ክትቅጽሉሉ ኣገዳሲ እዩ። ነጻ መድሓኒትኩም ካብ ቐረባ ንኡስ ማእኸል ወይ ማእኸል ድሕነት ጥዕና ከይድኩም ርኸቡ። ምስ ናትኩም ANM ወይ ASHA ተራኸቡ። "
