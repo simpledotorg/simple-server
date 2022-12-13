@@ -1110,7 +1110,7 @@
         }
       }
     },
-    "/api/v4/questionnaires/sync": {
+    "/questionnaires/sync": {
       "get": {
         "summary": "Syncs questionnaires from server to device",
         "tags": [

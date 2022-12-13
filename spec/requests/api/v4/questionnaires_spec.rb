@@ -1,7 +1,7 @@
 require "swagger_helper"
 
-RSpec.describe "api/v4/questionnaires", type: :request do
-  path "/api/v4/questionnaires/sync" do
+RSpec.xdescribe "api/v4/questionnaires", type: :request do
+  path "/questionnaires/sync" do
     get("Syncs questionnaires from server to device") do
       tags "Questionnaires"
       security [access_token: [], user_id: [], facility_id: []]
