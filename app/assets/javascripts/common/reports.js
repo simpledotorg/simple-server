@@ -951,117 +951,105 @@ Reports = function (withLtfu) {
       data.monthlyRegistrations
     );
 
-    const cumulativeRegistrationsGraphConfig = this.createBaseGraphConfig();
-    cumulativeRegistrationsGraphConfig.type = "bar";
-    cumulativeRegistrationsGraphConfig.data = {
-      labels: Object.keys(data.cumulativeRegistrations),
-      datasets: [
-        {
-          yAxisID: "cumulativeRegistrations",
-          label: "cumulative registrations",
-          backgroundColor: colors.transparent,
-          borderColor: colors.darkPurple,
-          borderWidth: 2,
-          pointBackgroundColor: colors.white,
-          hoverBackgroundColor: colors.white,
-          hoverBorderWidth: 2,
-          data: Object.values(data.cumulativeRegistrations),
-          type: "line",
-        },
-        {
-          yAxisID: "monthlyRegistrations",
-          label: "monthly registrations",
-          backgroundColor: colors.lightPurple,
-          hoverBackgroundColor: colors.darkPurple,
-          data: Object.values(data.monthlyRegistrations),
-          type: "bar",
-        },
-      ],
-    };
-    cumulativeRegistrationsGraphConfig.options.scales = {
-      xAxes: [
-        {
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: false,
+    const config = {
+      type: "bar",
+      data: {
+        labels: Object.keys(data.cumulativeRegistrations),
+        datasets: [
+          {
+            yAxisID: "cumulativeRegistrations",
+            label: "cumulative registrations",
+            backgroundColor: colors.transparent,
+            borderColor: colors.darkPurple,
+            borderWidth: 2,
+            pointBackgroundColor: colors.white,
+            hoverBackgroundColor: colors.white,
+            hoverBorderWidth: 2,
+            data: Object.values(data.cumulativeRegistrations),
+            type: "line",
           },
-          ticks: {
-            autoSkip: false,
-            fontColor: colors.darkGrey,
-            fontSize: 12,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
+          {
+            yAxisID: "monthlyRegistrations",
+            label: "monthly registrations",
+            backgroundColor: colors.lightPurple,
+            hoverBackgroundColor: colors.darkPurple,
+            data: Object.values(data.monthlyRegistrations),
+            type: "bar",
+          },
+        ],
+      },
+      options: {
+        tooltips: {
+          enabled: false,
+          mode: "index",
+          intersect: false,
+          custom: (tooltip) => {
+            let hoveredDatapoint = tooltip.dataPoints;
+            if (hoveredDatapoint)
+              populateCumulativeRegistrationsGraph(hoveredDatapoint[0].label);
+            else populateCumulativeRegistrationsGraphDefault();
           },
         },
-      ],
-      yAxes: [
-        {
-          id: "cumulativeRegistrations",
-          position: "left",
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: false,
-          },
-          ticks: {
-            display: false,
-            autoSkip: false,
-            fontColor: colors.darkGrey,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: cumulativeRegistrationsYAxis.stepSize,
-            max: cumulativeRegistrationsYAxis.max,
-            callback: (label) => {
-              return this.formatNumberWithCommas(label);
-            },
-          },
-        },
-        {
-          id: "monthlyRegistrations",
-          position: "right",
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: true,
-            drawBorder: false,
-          },
-          ticks: {
-            display: false,
-            autoSkip: false,
-            fontColor: colors.darkGrey,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: monthlyRegistrationsYAxis.stepSize,
-            max: monthlyRegistrationsYAxis.max,
-            callback: (label) => {
-              return this.formatNumberWithCommas(label);
-            },
-          },
-        },
-      ],
-    };
-    cumulativeRegistrationsGraphConfig.options.tooltips = {
-      enabled: false,
-      mode: "index",
-      intersect: false,
-      custom: (tooltip) => {
-        let hoveredDatapoint = tooltip.dataPoints;
-        if (hoveredDatapoint)
-          populateCumulativeRegistrationsGraph(hoveredDatapoint[0].label);
-        else populateCumulativeRegistrationsGraphDefault();
       },
     };
+
+    // Will comeback and dry this after upgrade
+    const cumulativeRegistrationsGraphConfig = withBaseLineConfig(
+      config
+    );
+
+    cumulativeRegistrationsGraphConfig.options.scales.yAxes = [
+      {
+        id: "cumulativeRegistrations",
+        position: "left",
+        stacked: true,
+        display: true,
+        gridLines: {
+          display: false,
+          drawBorder: false,
+        },
+        ticks: {
+          display: false,
+          autoSkip: false,
+          fontColor: colors.darkGrey,
+          fontSize: 10,
+          fontFamily: "Roboto",
+          padding: 8,
+          min: 0,
+          beginAtZero: true,
+          stepSize: cumulativeRegistrationsYAxis.stepSize,
+          max: cumulativeRegistrationsYAxis.max,
+          callback: (label) => {
+            return this.formatNumberWithCommas(label);
+          },
+        },
+      },
+      {
+        id: "monthlyRegistrations",
+        position: "right",
+        stacked: true,
+        display: true,
+        gridLines: {
+          display: true,
+          drawBorder: false,
+        },
+        ticks: {
+          display: false,
+          autoSkip: false,
+          fontColor: colors.darkGrey,
+          fontSize: 10,
+          fontFamily: "Roboto",
+          padding: 8,
+          min: 0,
+          beginAtZero: true,
+          stepSize: monthlyRegistrationsYAxis.stepSize,
+          max: monthlyRegistrationsYAxis.max,
+          callback: (label) => {
+            return this.formatNumberWithCommas(label);
+          },
+        },
+      },
+    ];
 
     const populateCumulativeRegistrationsGraph = (period) => {
       const cardNode = document.getElementById("cumulative-registrations");
