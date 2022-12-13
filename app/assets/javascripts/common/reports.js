@@ -779,74 +779,34 @@ Reports = function (withLtfu) {
       ? data.uncontrolledWithLtfuRate
       : data.uncontrolledRate;
 
-    const uncontrolledGraphConfig = this.createBaseGraphConfig();
-    uncontrolledGraphConfig.data = {
-      labels: Object.keys(uncontrolledGraphRate),
-      datasets: [
-        {
-          label: "BP uncontrolled",
-          backgroundColor: colors.lightRed,
-          borderColor: colors.mediumRed,
-          borderWidth: 2,
-          pointBackgroundColor: colors.white,
-          hoverBackgroundColor: colors.white,
-          hoverBorderWidth: 2,
-          data: Object.values(uncontrolledGraphRate),
-          type: "line",
-        },
-      ],
-    };
-    uncontrolledGraphConfig.options.scales = {
-      xAxes: [
-        {
-          stacked: false,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: true,
+    const config = {
+      data: {
+        labels: Object.keys(uncontrolledGraphRate),
+        datasets: [
+          {
+            label: "BP uncontrolled",
+            backgroundColor: colors.lightRed,
+            borderColor: colors.mediumRed,
+            borderWidth: 2,
+            pointBackgroundColor: colors.white,
+            hoverBackgroundColor: colors.white,
+            hoverBorderWidth: 2,
+            data: Object.values(uncontrolledGraphRate),
           },
-          ticks: {
-            autoSkip: false,
-            fontColor: colors.darkGrey,
-            fontSize: 12,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
+        ],
+      },
+      options: {
+        tooltips: {
+          enabled: false,
+          mode: "index",
+          intersect: false,
+          custom: (tooltip) => {
+            let hoveredDatapoint = tooltip.dataPoints;
+            if (hoveredDatapoint)
+              populateUncontrolledGraph(hoveredDatapoint[0].label);
+            else populateUncontrolledGraphDefault();
           },
         },
-      ],
-      yAxes: [
-        {
-          stacked: false,
-          display: true,
-          gridLines: {
-            display: true,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: colors.darkGrey,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: 25,
-            max: 100,
-          },
-        },
-      ],
-    };
-    uncontrolledGraphConfig.options.tooltips = {
-      enabled: false,
-      mode: "index",
-      intersect: false,
-      custom: (tooltip) => {
-        let hoveredDatapoint = tooltip.dataPoints;
-        if (hoveredDatapoint)
-          populateUncontrolledGraph(hoveredDatapoint[0].label);
-        else populateUncontrolledGraphDefault();
       },
     };
 
@@ -890,7 +850,7 @@ Reports = function (withLtfu) {
     if (uncontrolledGraphCanvas) {
       new Chart(
         uncontrolledGraphCanvas.getContext("2d"),
-        uncontrolledGraphConfig
+        withBaseLineConfig(config)
       );
       populateUncontrolledGraphDefault();
     }
