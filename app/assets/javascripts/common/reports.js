@@ -693,73 +693,34 @@ Reports = function (withLtfu) {
       ? data.controlWithLtfuRate
       : data.controlRate;
 
-    const controlledGraphConfig = this.createBaseGraphConfig();
-    controlledGraphConfig.data = {
-      labels: Object.keys(controlledGraphRate),
-      datasets: [
-        {
-          label: "BP controlled",
-          backgroundColor: colors.lightGreen,
-          borderColor: colors.mediumGreen,
-          borderWidth: 2,
-          pointBackgroundColor: colors.white,
-          hoverBackgroundColor: colors.white,
-          hoverBorderWidth: 2,
-          data: Object.values(controlledGraphRate),
-        },
-      ],
-    };
-    controlledGraphConfig.options.scales = {
-      xAxes: [
-        {
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: true,
+    const config = {
+      data: {
+        labels: Object.keys(controlledGraphRate),
+        datasets: [
+          {
+            label: "BP controlled",
+            backgroundColor: colors.lightGreen,
+            borderColor: colors.mediumGreen,
+            borderWidth: 2,
+            pointBackgroundColor: colors.white,
+            hoverBackgroundColor: colors.white,
+            hoverBorderWidth: 2,
+            data: Object.values(controlledGraphRate),
           },
-          ticks: {
-            autoSkip: false,
-            fontColor: colors.darkGrey,
-            fontSize: 12,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
+        ],
+      },
+      options: {
+        tooltips: {
+          enabled: false,
+          mode: "index",
+          intersect: false,
+          custom: (tooltip) => {
+            let hoveredDatapoint = tooltip.dataPoints;
+            if (hoveredDatapoint)
+              populateControlledGraph(hoveredDatapoint[0].label);
+            else populateControlledGraphDefault();
           },
         },
-      ],
-      yAxes: [
-        {
-          stacked: false,
-          display: true,
-          gridLines: {
-            display: true,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: colors.darkGrey,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: 25,
-            max: 100,
-          },
-        },
-      ],
-    };
-    controlledGraphConfig.options.tooltips = {
-      enabled: false,
-      mode: "index",
-      intersect: false,
-      custom: (tooltip) => {
-        let hoveredDatapoint = tooltip.dataPoints;
-        if (hoveredDatapoint)
-          populateControlledGraph(hoveredDatapoint[0].label);
-        else populateControlledGraphDefault();
       },
     };
 
@@ -801,7 +762,10 @@ Reports = function (withLtfu) {
       "controlledPatientsTrend"
     );
     if (controlledGraphCanvas) {
-      new Chart(controlledGraphCanvas.getContext("2d"), controlledGraphConfig);
+      new Chart(
+        controlledGraphCanvas.getContext("2d"),
+        withBaseLineConfig(config)
+      );
       populateControlledGraphDefault();
     }
   };
