@@ -103,111 +103,77 @@ DashboardReports = () => {
   };
 
   const ReportsGraphConfig = {
-    bsBelow200PatientsTrend: function(data) {
-      const config = createBaseGraphConfig();
-      config.data = {
-        labels: Object.keys(data.bsBelow200Rate),
-        datasets: [
-          {
-            label: "Blood sugar <200",
-            backgroundColor: colors.lightGreen,
-            borderColor: colors.mediumGreen,
-            borderWidth: 2,
-            pointBackgroundColor: colors.white,
-            hoverBackgroundColor: colors.white,
-            hoverBorderWidth: 2,
-            data: Object.values(data.bsBelow200Rate),
-          },
-        ],
+    bsBelow200PatientsTrend: function (data) {
+      const config = {
+        data: {
+          labels: Object.keys(data.bsBelow200Rate),
+          datasets: [
+            {
+              label: "Blood sugar <200",
+              backgroundColor: colors.lightGreen,
+              borderColor: colors.mediumGreen,
+              borderWidth: 2,
+              pointBackgroundColor: colors.white,
+              hoverBackgroundColor: colors.white,
+              hoverBorderWidth: 2,
+              data: Object.values(data.bsBelow200Rate),
+            },
+          ],
+        },
       };
-
-      config.options.scales = {
-        xAxes: [
-          {
-            stacked: true,
-            display: true,
-            gridLines: {
-              display: false,
-              drawBorder: true,
-            },
-            ticks: {
-              autoSkip: false,
-              fontColor: colors.darkGrey,
-              fontSize: 12,
-              fontFamily: "Roboto",
-              padding: 8,
-              min: 0,
-              beginAtZero: true,
-            },
-          },
-        ],
-        yAxes: [
-          {
-            stacked: true,
-            display: true,
-            gridLines: {
-              display: true,
-              drawBorder: false,
-            },
-            ticks: {
-              autoSkip: false,
-              fontColor: colors.darkGrey,
-              fontSize: 10,
-              fontFamily: "Roboto",
-              padding: 8,
-              min: 0,
-              beginAtZero: true,
-              stepSize: 25,
-              max: 100,
-            },
-          },
-        ],
-      };
-      return config;
+      return withBaseLineConfig(config);
     },
+
     cumulativeDiabetesRegistrationsTrend: function(data) {
       const cumulativeDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(data.cumulativeDiabetesRegistrations);
       const monthlyDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(data.monthlyDiabetesRegistrations);
 
-      const config = createBaseGraphConfig();
-      config.type = "bar";
-      config.data = {
-        labels: Object.keys(data.cumulativeDiabetesRegistrations),
-        datasets: [
-          {
-            yAxisID: "cumulativeDiabetesRegistrations",
-            label: "cumulative diabetes registrations",
-            backgroundColor: colors.transparent,
-            borderColor: colors.darkPurple,
-            borderWidth: 2,
-            pointBackgroundColor: colors.white,
-            hoverBackgroundColor: colors.white,
-            hoverBorderWidth: 2,
-            data: Object.values(data.cumulativeDiabetesRegistrations),
-            type: "line",
-          },
-          {
-            yAxisID: "monthlyDiabetesFollowups",
-            label: "monthly diabetes followups",
-            backgroundColor: colors.transparent,
-            borderColor: colors.darkTeal,
-            borderWidth: 2,
-            pointBackgroundColor: colors.white,
-            hoverBackgroundColor: colors.white,
-            hoverBorderWidth: 2,
-            data: Object.values(data.monthlyDiabetesFollowups),
-            type: "line",
-          },
-          {
-            yAxisID: "monthlyDiabetesRegistrations",
-            label: "monthly diabetes registrations",
-            backgroundColor: colors.lightPurple,
-            hoverBackgroundColor: colors.darkPurple,
-            data: Object.values(data.monthlyDiabetesRegistrations),
-            type: "bar",
-          },
-        ],
+      const additionalCumulativeDiabetesRegistrationsTrendConfig = {
+        type: "bar",
+        data: {
+          labels: Object.keys(data.cumulativeDiabetesRegistrations),
+          datasets: [
+            {
+              yAxisID: "cumulativeDiabetesRegistrations",
+              label: "cumulative diabetes registrations",
+              backgroundColor: colors.transparent,
+              borderColor: colors.darkPurple,
+              borderWidth: 2,
+              pointBackgroundColor: colors.white,
+              hoverBackgroundColor: colors.white,
+              hoverBorderWidth: 2,
+              data: Object.values(data.cumulativeDiabetesRegistrations),
+              type: "line",
+            },
+            {
+              yAxisID: "monthlyDiabetesFollowups",
+              label: "monthly diabetes followups",
+              backgroundColor: colors.transparent,
+              borderColor: colors.darkTeal,
+              borderWidth: 2,
+              pointBackgroundColor: colors.white,
+              hoverBackgroundColor: colors.white,
+              hoverBorderWidth: 2,
+              data: Object.values(data.monthlyDiabetesFollowups),
+              type: "line",
+            },
+            {
+              yAxisID: "monthlyDiabetesRegistrations",
+              label: "monthly diabetes registrations",
+              backgroundColor: colors.lightPurple,
+              hoverBackgroundColor: colors.darkPurple,
+              data: Object.values(data.monthlyDiabetesRegistrations),
+              type: "bar",
+            },
+          ],
+        },
       };
+
+      // will dry this post upgrade
+      const config = withBaseLineConfig(
+        additionalCumulativeDiabetesRegistrationsTrendConfig
+      );
+
       config.options.scales = {
         xAxes: [
           {
@@ -300,29 +266,35 @@ DashboardReports = () => {
           },
         ],
       };
-
       return config;
     },
-    bsOver200PatientsTrend: function(data) {
-      const config = createBaseGraphConfig();
-      config.type = "bar";
-      config.data = {
-        labels: Object.keys(data.bsOver300Rate),
-        datasets: [
-          {
-            label: "Blood sugar 200-299",
-            backgroundColor: colors.amber,
-            hoverBackgroundColor: colors.darkAmber,
-            data: Object.values(data.bs200to300Rate),
-          },
-          {
-            label: "Blood sugar ≥300",
-            backgroundColor: colors.mediumRed,
-            hoverBackgroundColor: colors.darkRed,
-            data: Object.values(data.bsOver300Rate),
-          },
-        ],
+
+    bsOver200PatientsTrend: function (data) {
+      const additionalbsOver200PatientsTrendconfig = {
+        type: "bar",
+        data: {
+          labels: Object.keys(data.bsOver300Rate),
+          datasets: [
+            {
+              label: "Blood sugar 200-299",
+              backgroundColor: colors.amber,
+              hoverBackgroundColor: colors.darkAmber,
+              data: Object.values(data.bs200to300Rate),
+            },
+            {
+              label: "Blood sugar ≥300",
+              backgroundColor: colors.mediumRed,
+              hoverBackgroundColor: colors.darkRed,
+              data: Object.values(data.bsOver300Rate),
+            },
+          ],
+        },
       };
+
+      // will dry this post upgrade
+      const config = withBaseLineConfig(
+        additionalbsOver200PatientsTrendconfig
+      );
 
       config.options.scales = {
         xAxes: [
@@ -368,68 +340,29 @@ DashboardReports = () => {
       };
       return config;
     },
-    diabetesMissedVisitsTrend: function(data) {
-      const config = createBaseGraphConfig();
-      config.data = {
-        labels: Object.keys(data.diabetesMissedVisitsGraphRate),
-        datasets: [
-          {
-            label: "Missed visits",
-            backgroundColor: colors.lightBlue,
-            borderColor: colors.mediumBlue,
-            borderWidth: 2,
-            pointBackgroundColor: colors.white,
-            hoverBackgroundColor: colors.white,
-            hoverBorderWidth: 2,
-            data: Object.values(data.diabetesMissedVisitsGraphRate),
-            type: "line",
-          },
-        ],
+
+    diabetesMissedVisitsTrend: function (data) {
+      const config = {
+        data: {
+          labels: Object.keys(data.diabetesMissedVisitsGraphRate),
+          datasets: [
+            {
+              label: "Missed visits",
+              backgroundColor: colors.lightBlue,
+              borderColor: colors.mediumBlue,
+              borderWidth: 2,
+              pointBackgroundColor: colors.white,
+              hoverBackgroundColor: colors.white,
+              hoverBorderWidth: 2,
+              data: Object.values(data.diabetesMissedVisitsGraphRate),
+              type: "line",
+            },
+          ],
+        },
       };
-      config.options.scales = {
-        xAxes: [
-          {
-            stacked: false,
-            display: true,
-            gridLines: {
-              display: false,
-              drawBorder: true,
-            },
-            ticks: {
-              autoSkip: false,
-              fontColor: colors.darkGrey,
-              fontSize: 12,
-              fontFamily: "Roboto",
-              padding: 8,
-              min: 0,
-              beginAtZero: true,
-            },
-          },
-        ],
-        yAxes: [
-          {
-            stacked: false,
-            display: true,
-            gridLines: {
-              display: true,
-              drawBorder: false,
-            },
-            ticks: {
-              autoSkip: false,
-              fontColor: colors.darkGrey,
-              fontSize: 10,
-              fontFamily: "Roboto",
-              padding: 8,
-              min: 0,
-              beginAtZero: true,
-              stepSize: 25,
-              max: 100,
-            },
-          },
-        ],
-      };
-      return config;
+      return withBaseLineConfig(config);
     },
+  
     diabetesVisitDetails: function(data) {
       const config = createBaseGraphConfig();
       config.type = "bar";
@@ -642,72 +575,32 @@ DashboardReports = () => {
         },
       };
       config.options.hover.mode = "x";
-
       return config;
     },
-    lostToFollowUpTrend: function(data) {
-      const config = createBaseGraphConfig();
-      config.data = {
+    
+    lostToFollowUpTrend: function (data) {
+      const config = {
+        data: {
           labels: Object.keys(data.ltfuPatientsRate),
           datasets: [
-              {
-                  label: "Lost to follow-up",
-            backgroundColor: colors.lightBlue,
-            borderColor: colors.darkBlue,
-                  borderWidth: 2,
-            pointBackgroundColor: colors.white,
-            hoverBackgroundColor: colors.white,
-                  hoverBorderWidth: 2,
-                  data: Object.values(data.ltfuPatientsRate),
-                  type: "line",
-              },
+            {
+              label: "Lost to follow-up",
+              backgroundColor: colors.lightBlue,
+              borderColor: colors.darkBlue,
+              borderWidth: 2,
+              pointBackgroundColor: colors.white,
+              hoverBackgroundColor: colors.white,
+              hoverBorderWidth: 2,
+              data: Object.values(data.ltfuPatientsRate),
+              type: "line",
+            },
           ],
+        },
       };
-      config.options.scales = {
-          xAxes: [
-              {
-                  stacked: false,
-                  display: true,
-                  gridLines: {
-                      display: false,
-                      drawBorder: true,
-                  },
-                  ticks: {
-                      autoSkip: false,
-              fontColor: colors.darkGrey,
-                      fontSize: 12,
-                      fontFamily: "Roboto",
-                      padding: 8,
-                      min: 0,
-                      beginAtZero: true,
-                  },
-              },
-          ],
-          yAxes: [
-              {
-                  stacked: false,
-                  display: true,
-                  gridLines: {
-                      display: true,
-                      drawBorder: false,
-                  },
-                  ticks: {
-                      autoSkip: false,
-              fontColor: colors.darkGrey,
-                      fontSize: 10,
-                      fontFamily: "Roboto",
-                      padding: 8,
-                      min: 0,
-                      beginAtZero: true,
-                      stepSize: 25,
-                      max: 100,
-                  },
-              },
-          ],
-      };
-      return config;
-    }
-  }
+      return withBaseLineConfig(config);
+    },
+  
+  };
 
   return {
       ReportsTable: (id) => {
@@ -1669,6 +1562,82 @@ Reports = function (withLtfu) {
   };
 };
 
+function baseLineGraphConfig() {
+  const colors = dashboardReportsChartJSColors()
+  return {
+    type: "line",
+    options: {
+      animation: false,
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 20,
+          bottom: 0,
+        },
+      },
+      elements: {
+        point: {
+          pointStyle: "circle",
+          hoverRadius: 5,
+        },
+      },
+      legend: {
+        display: false,
+      },
+      hover: {
+        mode: "index",
+        intersect: false,
+      },
+      scales: {
+        xAxes: [
+          {
+            stacked: false,
+            display: true,
+            gridLines: {
+              display: false,
+              drawBorder: true,
+            },
+            ticks: {
+              autoSkip: false,
+              fontColor: colors.darkGrey,
+              fontSize: 12,
+              fontFamily: "Roboto",
+              padding: 8,
+              min: 0,
+              beginAtZero: true,
+            },
+          },
+        ],
+        yAxes: [
+          {
+            stacked: false,
+            display: true,
+            gridLines: {
+              display: true,
+              drawBorder: false,
+            },
+            ticks: {
+              autoSkip: false,
+              fontColor: colors.darkGrey,
+              fontSize: 10,
+              fontFamily: "Roboto",
+              padding: 8,
+              min: 0,
+              beginAtZero: true,
+              stepSize: 25,
+              max: 100,
+            },
+          },
+        ],
+      },
+    },
+    plugins: [intersectDataVerticalLine],
+  };
+}
+
 // [plugin] vertical instersect line
 const intersectDataVerticalLine = {
   id: "intersectDataVerticalLine",
@@ -1699,3 +1668,16 @@ const intersectDataVerticalLine = {
   },
 };
 
+function withBaseLineConfig(config) {
+  return _.mergeWith(
+    baseLineGraphConfig(),
+    config,
+    mergeArraysWithConcatenation
+  );
+}
+
+function mergeArraysWithConcatenation(objValue, srcValue) {
+  if (_.isArray(objValue)) {
+    return objValue.concat(srcValue);
+  }
+}
