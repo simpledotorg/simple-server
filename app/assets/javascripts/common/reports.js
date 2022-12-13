@@ -1668,7 +1668,7 @@ const intersectDataVerticalLine = {
   },
 };
 
-function withBaseConfig(config) {
+function withBaseLineConfig(config) {
   return _.mergeWith(
     baseLineGraphConfig(),
     config,
