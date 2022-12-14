@@ -1,4 +1,4 @@
-om-ET:
+om:
   date:
     month_names: [~, "Amajji", "Guraandhala", "Bitootessa", "Ebla", "Caamsaa", "Waxabajjii", "Adoolessa", "Hagayya", "Fulbaana", "Onkoloolessa", "Sadaasa", "Muddee"]
     abbr_month_names: [~, "Amajjii", "Guraandhala", "Bitootessa", "Ebla", "Caamsaa", "Waxabajjii", "Adooleessa", "Hagayya", "Fulbaana", "Onkoloolessa", "Sadaasa", "Mud"]
@@ -324,7 +324,15 @@ om-ET:
     yearly_report_title: "Waggaan"
     hypertension_report_title: "Dhiibbaa Dhiiga"
     diabetes_report_title: "Sukkaara"
+    report: "gabaasa"
     last_updated_at: "Xumuraaf kan fooyya'e %{date}sa'aatii %{time} irratti"
+    coming_soon: "Dhiyootti"
+    no_data_card:
+      title: "Gabaasni kuni dhiyootti dhufa"
+      subtitle: "Gabaasota darban ilaaluu ni dandeessa"
+    update_required_card:
+      title: "Haaromsa barbaachisa"
+      subtitle: "Gabaasa kana ilaaluf gabaasa haaromsi"
     diagnoses:
       all: "Dhiibbaa dhiigaa fi sukkaara hunda"
       hypertension: "Dhiibbaa Dhiiga"
@@ -348,8 +356,17 @@ om-ET:
     achievements_card:
       title: "Milkaa'inoota"
       follow_up_visits_section_title: "%{visit_or_visits}galmaa'eera hordofi"
+      visit:
+        one: "Daawwannaa"
+        other: "Daawwannaawwan"
       overdue_patients_section_title: "%{call_or_calls}dhukkubsatoota yeroon irra darbeef"
+      call:
+        one: "bilbila"
+        other: "bilbilawwan"
       registered_patients_title: "%{patient_or_patients} galmaa'eera"
+      patient:
+        one: "dhukkubsataa"
+        other: "dhukkubsatoota"
     period_report:
       registered_patients_card:
         title: "Dhukkubsatoota galmaa'an"
