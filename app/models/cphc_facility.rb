@@ -47,6 +47,52 @@ class CphcFacility < ApplicationRecord
     end
   end
 
+  def self.create_chc_from_row(row)
+    CphcFacility.find_or_create_by!(cphc_facility_id: row[:cphc_facility_id]) do |facility|
+      facility.facility_id = nil
+      facility.cphc_facility_id = row[:cphc_facility_id]
+      facility.cphc_facility_name = row[:cphc_facility_name]
+      facility.cphc_district_id = row[:cphc_district_id]
+      facility.cphc_district_name = row[:cphc_district_name]
+      facility.cphc_taluka_id = row[:cphc_taluka_id]
+      facility.cphc_taluka_name = row[:cphc_taluka_name]
+      facility.cphc_user_details = nil
+      facility.cphc_facility_type = "CHC"
+      facility.cphc_facility_type_id = OneOff::CphcEnrollment::FACILITY_TYPE_ID["CHC"]
+      facility.cphc_location_details = {
+        cphc_phc_id: row[:cphc_phc_id],
+        cphc_phc_name: row[:cphc_phc_name],
+        cphc_subcenter_id: row[:cphc_subcenter_id],
+        cphc_subcenter_name: row[:cphc_subcenter_name],
+        cphc_village_id: row[:cphc_village_id],
+        cphc_village_name: row[:cphc_village_name]
+      }
+    end
+  end
+
+  def self.create_dh_from_row(row)
+    CphcFacility.find_or_create_by!(cphc_facility_id: row[:cphc_facility_id]) do |facility|
+      facility.facility_id = nil
+      facility.cphc_facility_id = row[:cphc_facility_id]
+      facility.cphc_facility_name = row[:cphc_facility_name]
+      facility.cphc_district_id = row[:cphc_district_id]
+      facility.cphc_district_name = row[:cphc_district_name]
+      facility.cphc_taluka_id = row[:cphc_taluka_id]
+      facility.cphc_taluka_name = row[:cphc_taluka_name]
+      facility.cphc_user_details = nil
+      facility.cphc_facility_type = "DH"
+      facility.cphc_facility_type_id = OneOff::CphcEnrollment::FACILITY_TYPE_ID["DH"]
+      facility.cphc_location_details = {
+        cphc_phc_id: row[:cphc_phc_id],
+        cphc_phc_name: row[:cphc_phc_name],
+        cphc_subcenter_id: row[:cphc_subcenter_id],
+        cphc_subcenter_name: row[:cphc_subcenter_name],
+        cphc_village_id: row[:cphc_village_id],
+        cphc_village_name: row[:cphc_village_name]
+      }
+    end
+  end
+
   def self.copy_phcs_from_mapping
     CphcFacilityMapping.select("DISTINCT ON(cphc_phc_id) *").each do |mapping|
       CphcFacility.create_phc_from_mapping(mapping)

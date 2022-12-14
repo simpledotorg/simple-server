@@ -24,7 +24,7 @@ class OneOff::CphcEnrollment::AuthManager
 
     response = if cphc_facility.cphc_facility_type == "SUBCENTER"
       OneOff::CphcEnrollment::CreateSubcenterUserRequest.call(facility)
-    elsif cphc_facility.cphc_facility_type == "PHC"
+    else
       OneOff::CphcEnrollment::CreateUserRequest.call(facility)
     end
 

@@ -303,6 +303,8 @@ class OneOff::CphcEnrollment::Service
   def cphc_location
     cphc_facility = patient.assigned_facility.cphc_facility
 
+    return chc_dh_location if ["CHC", "DH"].include?(cphc_facility.cphc_facility_type)
+
     query =
       case cphc_facility.cphc_facility_type
             when "SUBCENTER"
@@ -332,5 +334,20 @@ class OneOff::CphcEnrollment::Service
      "subcenter_name" => mapping.cphc_subcenter_name,
      "village_id" => mapping.cphc_village_id,
      "village_name" => mapping.cphc_village_name}
+  end
+
+  def chc_dh_location
+    cphc_facility = patient.assigned_facility.cphc_facility
+
+    {"district_id" => cphc_facility.cphc_district_id,
+     "district_name" => cphc_facility.cphc_district_name,
+     "taluka_id" => cphc_facility.cphc_taluka_id,
+     "taluka_name" => cphc_facility.cphc_taluka_name,
+     "phc_id" => cphc_facility.cphc_location_details["cphc_phc_id"],
+     "phc_name" => cphc_facility.cphc_location_details["cphc_phc_name"],
+     "subcenter_id" => cphc_facility.cphc_location_details["cphc_subcenter_id"],
+     "subcenter_name" => cphc_facility.cphc_location_details["cphc_subcenter_name"],
+     "village_id" => cphc_facility.cphc_location_details["cphc_village_id"],
+     "village_name" => cphc_facility.cphc_location_details["cphc_village_name"]}
   end
 end
