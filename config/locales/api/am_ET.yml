@@ -1,4 +1,4 @@
-am-ET:
+am_ET:
   date:
     month_names: [~, "ጥር", "የካቲት", "መጋቢት", "ሚያዚያ", "ግንቦት", "ሰኔ", "ሃምሌ", "ነሃሴ", "መስከረም", "ጥቅምት", "ህዳር", "ታህሳስ"]
     abbr_month_names: [~, "ጥር", "የካቲ", "መጋ", "ሚያ", "ግን", "ሰኔ", "ሃም", "ነሃ", "መስከ", "ጥቅም", "ህዳር", "ታህ"]
@@ -324,7 +324,15 @@ am-ET:
     yearly_report_title: "በአመት"
     hypertension_report_title: "ደም ግፊት"
     diabetes_report_title: "ደም ግፊት"
+    report: "ሪፖርቶች"
     last_updated_at: "ውሂቡ ለመጨረሻ ጊዜ የዘመነው %{date} በ %{time} ነው"
+    coming_soon: "በቅርብ ቀን"
+    no_data_card:
+      title: "ይህ ዘገባ በቅርቡ ይመጣል"
+      subtitle: "ሪፖርቶችን"
+    update_required_card:
+      title: "ማዘመን ያስፈልጋል"
+      subtitle: "ይህንን ሪፖርት ለመመልከት መተግበሪያውን ያዘምኑ"
     diagnoses:
       all: "ሁሉም የደም ግፊት እና የስኳር በሽታ"
       hypertension: "ደም ግፊት"
@@ -348,8 +356,17 @@ am-ET:
     achievements_card:
       title: "ስኬቶች"
       follow_up_visits_section_title: "ክትትል %{visit_or_visits} ተመዝግቧል"
+      visit:
+        one: "ጉብኝት"
+        other: "ጉብኝቶች"
       overdue_patients_section_title: "%{call_or_calls}ግዜ ላለፈባቸው ታካሚዎች"
+      call:
+        one: "ጥሪ"
+        other: "ጥሪዎች"
       registered_patients_title: "%{patient_or_patients} ተመዝግቧል"
+      patient:
+        one: "ታካሚ"
+        other: "ታካሚዎች"
     period_report:
       registered_patients_card:
         title: "የተመዘገቡ ታካሚዎች"
