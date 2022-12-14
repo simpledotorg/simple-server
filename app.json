@@ -176,11 +176,11 @@
   "formation": {
     "web": {
       "quantity": 1,
-      "size": "Eco"
+      "size": "Basic"
     },
     "worker": {
       "quantity": 1,
-      "size": "Eco"
+      "size": "Basic"
     }
   },
   "addons": [
