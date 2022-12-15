@@ -1,6 +1,6 @@
 require "swagger_helper"
 
-describe "Questionnaires v4 API", swagger_doc: "v4/swagger.json" do
+xdescribe "Questionnaires v4 API", swagger_doc: "v4/swagger.json" do
   path "/questionnaires/sync" do
     get "Syncs Questionnaires from Server to Device" do
       tags "Questionnaires"
