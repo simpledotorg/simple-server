@@ -56,6 +56,8 @@ class CphcFacility < ApplicationRecord
       facility.cphc_district_name = row[:cphc_district_name]
       facility.cphc_taluka_id = row[:cphc_taluka_id]
       facility.cphc_taluka_name = row[:cphc_taluka_name]
+      facility.cphc_state_id = row[:cphc_state_id]
+      facility.cphc_state_name = row[:cphc_state_name]
       facility.cphc_user_details = nil
       facility.cphc_facility_type = "CHC"
       facility.cphc_facility_type_id = OneOff::CphcEnrollment::FACILITY_TYPE_ID["CHC"]
@@ -79,6 +81,8 @@ class CphcFacility < ApplicationRecord
       facility.cphc_district_name = row[:cphc_district_name]
       facility.cphc_taluka_id = row[:cphc_taluka_id]
       facility.cphc_taluka_name = row[:cphc_taluka_name]
+      facility.cphc_state_id = row[:cphc_state_id]
+      facility.cphc_state_name = row[:cphc_state_name]
       facility.cphc_user_details = nil
       facility.cphc_facility_type = "DH"
       facility.cphc_facility_type_id = OneOff::CphcEnrollment::FACILITY_TYPE_ID["DH"]
