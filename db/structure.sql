@@ -447,7 +447,8 @@ CREATE TABLE public.cphc_facilities (
     cphc_user_details json,
     deleted_at timestamp without time zone,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    cphc_location_details json
 );
 
 
@@ -6636,6 +6637,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20221024071710'),
 ('20221104075303'),
 ('20221121063116'),
-('20221122081032');
+('20221122081032'),
+('20221212061852');
 
 
