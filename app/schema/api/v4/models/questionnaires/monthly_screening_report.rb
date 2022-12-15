@@ -1,4 +1,4 @@
-class Api::V4::Models::Questionnaire
+class Api::V4::Models::Questionnaires::MonthlyScreeningReport
   class << self
     def layout
       {"item" => [

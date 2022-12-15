@@ -171,10 +171,10 @@
             "in": "query"
           },
           {
-            "in": "query",
             "name": "limit",
             "type": "integer",
-            "description": "Number of record to retrieve (a.k.a batch-size)"
+            "description": "Number of record to retrieve (a.k.a batch-size)",
+            "in": "query"
           }
         ],
         "responses": {
@@ -302,10 +302,10 @@
             "in": "query"
           },
           {
-            "in": "query",
             "name": "limit",
             "type": "integer",
-            "description": "Number of record to retrieve (a.k.a batch-size)"
+            "description": "Number of record to retrieve (a.k.a batch-size)",
+            "in": "query"
           }
         ],
         "responses": {
@@ -495,10 +495,10 @@
             "in": "query"
           },
           {
-            "in": "query",
             "name": "limit",
             "type": "integer",
-            "description": "Number of record to retrieve (a.k.a batch-size)"
+            "description": "Number of record to retrieve (a.k.a batch-size)",
+            "in": "query"
           }
         ],
         "responses": {
@@ -698,6 +698,85 @@
           },
           "404": {
             "description": "No patients found with this identifier"
+          }
+        }
+      }
+    },
+    "/questionnaires/sync": {
+      "get": {
+        "summary": "Syncs Questionnaires from Server to Device",
+        "tags": [
+          "Questionnaires"
+        ],
+        "security": [
+          {
+            "access_token": [
+
+            ],
+            "user_id": [
+
+            ],
+            "facility_id": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_ACCEPT_LANGUAGE",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "process_token",
+            "type": "string",
+            "format": "byte",
+            "description": "Token containing all the information needed to process batch requests from the user",
+            "in": "query"
+          },
+          {
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)",
+            "in": "query"
+          },
+          {
+            "name": "questionnaire_api_version",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Questionnaires Synced to user device",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "questionnaires": {
+                  "$ref": "#/definitions/questionnaires"
+                },
+                "process_token": {
+                  "$ref": "#/definitions/process_token"
+                }
+              },
+              "required": [
+                "questionnaires",
+                "process_token"
+              ]
+            }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
           }
         }
       }
@@ -998,7 +1077,7 @@
     },
     "/questionnaire_responses/sync": {
       "get": {
-        "summary": "Syncs questionnaire responses from server to device",
+        "summary": "Syncs questionnaires responses from server to device",
         "tags": [
           "Questionnaire Responses"
         ],
@@ -1056,7 +1135,7 @@
         }
       },
       "post": {
-        "summary": "Syncs questionnaire responses from device to server",
+        "summary": "Syncs questionnaires responses from device to server",
         "tags": [
           "Questionnaire Responses"
         ],
@@ -1102,66 +1181,6 @@
         ],
         "responses": {
           "201": {
-            "description": "successful"
-          },
-          "403": {
-            "description": "user is not allowed to sync"
-          }
-        }
-      }
-    },
-    "/questionnaires/sync": {
-      "get": {
-        "summary": "Syncs questionnaires from server to device",
-        "tags": [
-          "Questionnaires"
-        ],
-        "security": [
-          {
-            "access_token": [
-
-            ],
-            "user_id": [
-
-            ],
-            "facility_id": [
-
-            ]
-          }
-        ],
-        "parameters": [
-          {
-            "name": "HTTP_X_USER_ID",
-            "in": "header",
-            "type": "uuid"
-          },
-          {
-            "name": "HTTP_X_FACILITY_ID",
-            "in": "header",
-            "type": "uuid"
-          },
-          {
-            "name": "questionnaires",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "questionnaires": {
-                  "$ref": "#/definitions/questionnaires"
-                },
-                "process_token": {
-                  "$ref": "#/definitions/process_token"
-                }
-              },
-              "required": [
-                "questionnaires",
-                "process_token"
-              ]
-            }
-          }
-        ],
-        "responses": {
-          "200": {
             "description": "successful"
           },
           "403": {

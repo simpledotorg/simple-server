@@ -399,7 +399,7 @@ class Api::V4::Models
          # Using questionnaire_type instead of type because of STI Activerecord workflow issue.
          questionnaire_type: {"$ref" => "#/definitions/non_empty_string"},
          layout: {type: :object,
-                  example: Api::V4::Models::Questionnaire.layout}
+                  example: Api::V4::Models::Questionnaires::MonthlyScreeningReport.layout}
        },
        required: %w[id
          created_at

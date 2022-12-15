@@ -7,6 +7,12 @@ class Api::V4::Schema
        description: "Token containing all the information needed to process batch requests from the user"}
     end
 
+    def limit_query_param
+      {name: :limit,
+       type: :integer,
+       description: "Number of record to retrieve (a.k.a batch-size)"}
+    end
+
     def error
       {type: :object,
        properties: {
@@ -38,8 +44,7 @@ class Api::V4::Schema
 
     def sync_to_user_request
       [process_token.merge(in: :query),
-        {in: :query, name: :limit, type: :integer,
-         description: "Number of record to retrieve (a.k.a batch-size)"}]
+        limit_query_param.merge(in: :query)]
     end
 
     def sync_to_user_response(response_key, schema_type = response_key)
