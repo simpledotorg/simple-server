@@ -302,4 +302,50 @@ namespace :dell_demo do
       end
     end
   end
+
+  desc "Import manually mapped facilties"
+  task :import_manually_mapped_facilities, [:cphc_facility_mappings, :simple_to_cphc_mapping] => :environment do |t, _args|
+    cphc_facility_mappings = Roo::Spreadsheet.open(args[:cphc_facility_mappings]).sheet(0)
+    simple_to_cphc_mapping = Roo::Spreadsheet.open(args[:simple_to_cphc_mapping]).sheet(0)
+
+    cphc_facility_mappings.each({
+      cphc_state_id: "state_id",
+      cphc_state_name: "state_name",
+      cphc_district_id: "district_id",
+      cphc_district_name: "district_name",
+      cphc_taluka_id: "taluka_id",
+      cphc_taluka_name: "taluka_name",
+      cphc_phc_id: "phc_id",
+      cphc_phc_name: "phc_name",
+      cphc_subcenter_id: "subcenter_id",
+      cphc_subcenter_name: "subcenter_name",
+      cphc_village_id: "village_id",
+      cphc_village_name: "village_name"
+    }) do |row|
+      mapping = CphcFacilityMapping.create(row)
+      if mapping.present?
+        CphcFacility.create_phc_from_mapping(mapping)
+        CphcFacility.create_subcenter_from_mapping(mapping)
+      end
+    end
+
+    simple_to_cphc_mapping.each({
+      state_name: "state_name",
+      district_name: "district_name",
+      block_name: "block_name",
+      facility_name: "facility_name",
+      cphc_facility_id: "CPHC Facility ID"
+    }) do |row|
+      facility = Facility.find_by!(state: row[:state_name], district: row[:district_name], name: row[:facility_name])
+      mapping = CphcFacility.find_by!(cphc_facility_id: row[:cphc_facility_id])
+      if mapping.facility_id.present?
+        puts "CPHC facility #{mapping.cphc_facility_id} #{mapping.cphc_facility_name} is already mapped to #{mapping.facility.name}"
+      else
+        mapping.update!(facility_id: facility.id)
+        CphcCreateUserJob.perform_async(facility.id)
+      end
+    end
+
+    puts "Finished importing manually mapped facilities"
+  end
 end
