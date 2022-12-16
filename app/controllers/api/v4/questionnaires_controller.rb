@@ -8,7 +8,6 @@ class Api::V4::QuestionnairesController < Api::V4::SyncController
   end
 
   def transform_to_response(questionnaire)
-    questionnaire
-    # Api::V3::QuestionnaireTransformer.to_response(questionnaire)
+    Api::V3::QuestionnaireTransformer.to_response(questionnaire)
   end
 end

@@ -442,3 +442,6 @@ hi-IN:
         cohort_title: "%{period} में पिछली विज़िट के परिणाम"
         cohort_subtitle: "%{registration_period} में %{number_of_patients} %{patient_or_patients} रजिस्टर किए गए"
         cohort_bar_tooltip: "%{threshold} वाले %{total_patients} %{patient_or_patients}"
+
+  monthly_screening_reports:
+    male: "purush"
