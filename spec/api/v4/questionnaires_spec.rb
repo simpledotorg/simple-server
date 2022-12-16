@@ -14,7 +14,7 @@ xdescribe "Questionnaires v4 API", swagger_doc: "v4/swagger.json" do
       Api::V4::Schema.sync_to_user_request.each do |param|
         parameter param
       end
-      parameter name: "questionnaires_api_version", in: :query, type: :string
+      parameter name: "questionnaire_dsl_version", in: :query, type: :string
 
       response "200", "Questionnaires Synced to user device" do
         schema Api::V4::Schema.questionnaires_sync_to_user_response

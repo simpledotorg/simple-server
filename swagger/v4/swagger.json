@@ -882,7 +882,7 @@
             "in": "query"
           },
           {
-            "name": "questionnaires_api_version",
+            "name": "questionnaire_dsl_version",
             "in": "query",
             "type": "string"
           }
