@@ -9,7 +9,7 @@ xdescribe "Questionnaires v4 API", swagger_doc: "v4/swagger.json" do
 
       parameter name: "HTTP_X_USER_ID", in: :header, type: :uuid
       parameter name: "HTTP_X_FACILITY_ID", in: :header, type: :uuid
-      parameter name: "HTTP_ACCEPT_LANGUAGE", in: :header, type: :string
+      parameter name: "Accept-Language", in: :header, type: :string
 
       Api::V4::Schema.sync_to_user_request.each do |param|
         parameter param
