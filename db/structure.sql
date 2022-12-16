@@ -1552,6 +1552,20 @@ CREATE TABLE public.protocols (
 
 
 --
+-- Name: questionnaires; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.questionnaires (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    questionnaire_type character varying NOT NULL,
+    questionnaire_dsl_version integer NOT NULL,
+    layout jsonb NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    deleted_at timestamp without time zone
+);
+
+
+--
 -- Name: raw_to_clean_medicines; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -4929,6 +4943,14 @@ ALTER TABLE ONLY public.protocols
 
 
 --
+-- Name: questionnaires questionnaires_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.questionnaires
+    ADD CONSTRAINT questionnaires_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: regions regions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -6638,6 +6660,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20221104075303'),
 ('20221121063116'),
 ('20221122081032'),
-('20221212061852');
+('20221212061852'),
+('20221216093905');
 
 
