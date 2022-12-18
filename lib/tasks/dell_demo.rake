@@ -240,7 +240,7 @@ namespace :dell_demo do
   end
 
   desc "Map CPHC facilities of a given size"
-  task :map_cphc_facilities, [:district, :facility_size] => :environment do |_t, args|
+  task :map_cphc_facilities, [:state, :facility_size] => :environment do |_t, args|
     facility_types = {
       community: "SUBCENTER",
       small: "PHC",
@@ -248,10 +248,10 @@ namespace :dell_demo do
       large: "DH"
     }.with_indifferent_access
 
-    district = args[:district]
+    state = args[:state]
     facility_size = args[:facility_size]
 
-    Facility.where(district: district)
+    Facility.where(state: state)
       .left_outer_joins(:cphc_facility)
       .where(cphc_facilities: {cphc_facility_id: nil})
       .where(facility_size: facility_size)
@@ -261,7 +261,7 @@ namespace :dell_demo do
         CphcFacility
           .search_by_facility_name(facility.name)
           .where(cphc_facility_type: facility_types[facility_size])
-          .search_by_region(district)
+          .search_by_region(state)
           .where(facility_id: nil)
 
       next puts("No Mappings | Block: #{facility.block} | Facility: #{facility.name} \n".red) if potential_mappings.empty?
@@ -305,7 +305,7 @@ namespace :dell_demo do
   end
 
   desc "Import manually mapped facilties"
-  task :import_manually_mapped_facilities, [:cphc_facility_mappings, :simple_to_cphc_mapping] => :environment do |t, _args|
+  task :import_manually_mapped_facilities, [:cphc_facility_mappings, :simple_to_cphc_mapping] => :environment do |_t, args|
     cphc_facility_mappings = Roo::Spreadsheet.open(args[:cphc_facility_mappings]).sheet(0)
     simple_to_cphc_mapping = Roo::Spreadsheet.open(args[:simple_to_cphc_mapping]).sheet(0)
 
@@ -335,12 +335,30 @@ namespace :dell_demo do
       district_name: "district_name",
       block_name: "block_name",
       facility_name: "facility_name",
+      facility_size: "facility_size",
       cphc_facility_id: "CPHC Facility ID"
     }) do |row|
-      facility = Facility.find_by!(state: row[:state_name], district: row[:district_name], name: row[:facility_name])
-      mapping = CphcFacility.find_by!(cphc_facility_id: row[:cphc_facility_id])
+      next if ["medium", "large"].include? row[:facility_size]
+
+      facility = Facility.find_by(state: row[:state_name], district: row[:district_name], name: row[:facility_name])
+      mapping = CphcFacility.find_by(cphc_facility_id: row[:cphc_facility_id])
+
+      unless facility.present?
+        puts "Couldn't find facility"
+        puts({state: row[:state_name], district: row[:district_name], name: row[:facility_name]})
+        next
+      end
+
+      unless mapping.present?
+        puts "Couldn't find cphc facility"
+        puts({cphc_facility_id: row[:cphc_facility_id]})
+        next
+      end
+
       if mapping.facility_id.present?
         puts "CPHC facility #{mapping.cphc_facility_id} #{mapping.cphc_facility_name} is already mapped to #{mapping.facility.name}"
+      elsif facility.cphc_facility.present?
+        puts "Facility #{facility.name} is already mapped to #{facility.cphc_facility.cphc_facility_name}"
       else
         mapping.update!(facility_id: facility.id)
         CphcCreateUserJob.perform_async(facility.id)

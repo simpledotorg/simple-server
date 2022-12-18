@@ -10,7 +10,8 @@ class CphcFacility < ApplicationRecord
 
   pg_search_scope :search_by_region, against: {
     cphc_district_name: "A",
-    cphc_taluka_name: "B"
+    cphc_taluka_name: "B",
+    cphc_state_name: "C"
   }, using: {tsearch: {any_word: true, prefix: true}}
 
   def self.create_phc_from_mapping(mapping)
