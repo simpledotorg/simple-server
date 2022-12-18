@@ -14,7 +14,7 @@ class CphcFacility < ApplicationRecord
   }, using: {tsearch: {any_word: true, prefix: true}}
 
   def self.create_phc_from_mapping(mapping)
-    CphcFacility.find_or_create_by!(cphc_facility_id: mapping.cphc_phc_id) do |facility|
+    CphcFacility.find_or_create_by!(cphc_facility_id: mapping.cphc_phc_id, cphc_facility_type: "PHC") do |facility|
       facility.facility_id = mapping.facility_id
       facility.cphc_facility_id = mapping.cphc_phc_id
       facility.cphc_facility_name = mapping.cphc_phc_name
@@ -31,7 +31,7 @@ class CphcFacility < ApplicationRecord
   end
 
   def self.create_subcenter_from_mapping(mapping)
-    CphcFacility.find_or_create_by!(cphc_facility_id: mapping.cphc_subcenter_id) do |facility|
+    CphcFacility.find_or_create_by!(cphc_facility_id: mapping.cphc_subcenter_id, cphc_facility_type: "SUBCENTER") do |facility|
       facility.facility_id = nil
       facility.cphc_facility_id = mapping.cphc_subcenter_id
       facility.cphc_facility_name = mapping.cphc_subcenter_name
@@ -48,7 +48,7 @@ class CphcFacility < ApplicationRecord
   end
 
   def self.create_chc_from_row(row)
-    CphcFacility.find_or_create_by!(cphc_facility_id: row[:cphc_facility_id]) do |facility|
+    CphcFacility.find_or_create_by!(cphc_facility_id: row[:cphc_facility_id], cphc_facility_type: "CHC") do |facility|
       facility.facility_id = nil
       facility.cphc_facility_id = row[:cphc_facility_id]
       facility.cphc_facility_name = row[:cphc_facility_name]
@@ -73,7 +73,7 @@ class CphcFacility < ApplicationRecord
   end
 
   def self.create_dh_from_row(row)
-    CphcFacility.find_or_create_by!(cphc_facility_id: row[:cphc_facility_id]) do |facility|
+    CphcFacility.find_or_create_by!(cphc_facility_id: row[:cphc_facility_id], cphc_facility_type: "DH") do |facility|
       facility.facility_id = nil
       facility.cphc_facility_id = row[:cphc_facility_id]
       facility.cphc_facility_name = row[:cphc_facility_name]
