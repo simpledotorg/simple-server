@@ -445,3 +445,28 @@ en:
         cohort_title: "Result from last visit in %{period}"
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients} registered in %{registration_period}"
         cohort_bar_tooltip: "%{total_patients} %{patient_or_patients} with %{threshold}"
+
+  monthly_screening_reports:
+    male:
+    female:
+    monthly_opd_visits:
+    outpatient_department_visits:
+    htm_and_dm_screening:
+    total_bp_checks:
+    total_blood_sugar_checks:
+    new_suspected_individuals:
+    new_suspected_individuals_htn:
+    new_suspected_individuals_dm:
+    new_suspected_individuals_htn_and_dm:
+    diagnosed_cases_on_follow_up:
+    diagnosed_cases_on_follow_up_htn:
+    diagnosed_cases_on_follow_up_dm:
+    diagnosed_cases_on_follow_up_htn_and_dm:
+    cancer_screening:
+    cancer_screening_oral:
+    cancer_screening_breast:
+    cancer_screening_cervical:
+    oral_cancer:
+    breast_cancer:
+    cervical_cancer:
+
