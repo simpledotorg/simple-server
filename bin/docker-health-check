@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-# When callling the ping endpoint, Passenger is returning 301 (https redirect)
+# Rails is configured to use only https (config.force_ssl = true) in production configuration
+# When callling the ping endpoint direclty to pod, Passenger is returning 301 (https redirect)
 # K8s follows the redirect and the health check fails (port 443 is not exposed)
 # This script is a workaround to check if Passenger is responding with 301
 

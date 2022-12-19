@@ -16,7 +16,7 @@ RUN rm -f /etc/service/nginx/down
 RUN rm /etc/nginx/sites-enabled/default
 
 # Add nginx site for simple-server
-ADD .docker/config/webapp.conf /etc/nginx/sites-enabled/webapp.conf
+ADD .docker/config/nginx/webapp.conf /etc/nginx/sites-enabled/webapp.conf
 
 # Add logrotate config
 ADD .docker/config/logrotate/* /etc/logrotate.d/
