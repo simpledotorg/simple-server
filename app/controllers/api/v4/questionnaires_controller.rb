@@ -20,7 +20,7 @@ class Api::V4::QuestionnairesController < Api::V4::SyncController
   private
 
   def locale_modified?
-    process_token[:locale] != I18n.locale
+    process_token[:locale] != I18n.locale.to_s
   end
 
   def force_resync?

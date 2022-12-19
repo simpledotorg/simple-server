@@ -864,7 +864,7 @@
             "type": "uuid"
           },
           {
-            "name": "HTTP_ACCEPT_LANGUAGE",
+            "name": "Accept-Language",
             "in": "header",
             "type": "string"
           },
@@ -884,7 +884,8 @@
           {
             "name": "dsl_version",
             "in": "query",
-            "type": "string"
+            "type": "string",
+            "required": true
           }
         ],
         "responses": {
