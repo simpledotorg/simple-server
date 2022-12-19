@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe Questionnaire, type: :model do
   describe "#localized_layout" do
