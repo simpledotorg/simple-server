@@ -1558,7 +1558,7 @@ CREATE TABLE public.protocols (
 CREATE TABLE public.questionnaires (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     questionnaire_type character varying NOT NULL,
-    questionnaire_dsl_version integer NOT NULL,
+    dsl_version integer NOT NULL,
     layout jsonb NOT NULL,
     deleted_at timestamp without time zone,
     created_at timestamp(6) without time zone NOT NULL,

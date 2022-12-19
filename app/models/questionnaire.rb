@@ -1,13 +1,17 @@
 class Questionnaire < ApplicationRecord
   scope :for_sync, -> { with_discarded }
 
-  def localize_layout(sub_layout = layout)
+  def localized_layout
+    localize_layout(layout)
+  end
+
+  private
+
+  def localize_layout(sub_layout)
     sub_layout
       .then { |l| localize_text(l) }
       .then { |l| localize_items_recursively(l) }
   end
-
-  private
 
   def localize_text(sub_layout)
     text = sub_layout["text"]
