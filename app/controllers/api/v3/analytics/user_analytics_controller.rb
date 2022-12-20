@@ -25,11 +25,7 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
     end
 
     respond_to do |format|
-      if less_than_min_app_version?
-        format.html { render :progress_update_required }
-      else
-        format.html { render :show_v2 }
-      end
+      format.html { render :progress_update_required if less_than_min_app_version? }
       format.json { render json: @user_analytics.statistics }
     end
   end

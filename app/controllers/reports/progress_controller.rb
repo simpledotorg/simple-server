@@ -22,7 +22,7 @@ class Reports::ProgressController < AdminController
       @drugs_by_category = @drug_stocks_query.protocol_drugs_by_category
     end
 
-    render "api/v3/analytics/user_analytics/show_v2"
+    render "api/v3/analytics/user_analytics/show"
   end
 
   helper_method :current_facility, :current_user, :current_facility_group
