@@ -12,8 +12,11 @@ class Api::V4::QuestionnairesController < Api::V4::SyncController
   end
 
   def other_facility_records
+    # TODO: Current implementation always responds with 1 JSON minimum. Reason:
+    # process_token.last_updated_at has precision upto 3 milliseconds & is always lesser than updated_at.
     Questionnaire
-      .with_discarded
+      .for_sync
+      .where(dsl_version: params.require("dsl_version").to_i)
       .updated_on_server_since(other_facilities_processed_since, limit)
   end
 

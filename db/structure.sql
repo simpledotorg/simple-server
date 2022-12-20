@@ -1552,17 +1552,28 @@ CREATE TABLE public.protocols (
 
 
 --
--- Name: questionnaires; Type: TABLE; Schema: public; Owner: -
+-- Name: questionnaire_versions; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.questionnaires (
+CREATE TABLE public.questionnaire_versions (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     questionnaire_type character varying NOT NULL,
     dsl_version integer NOT NULL,
     layout jsonb NOT NULL,
-    deleted_at timestamp without time zone,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    created_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: questionnaires; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.questionnaires (
+    version_id uuid NOT NULL,
+    questionnaire_type character varying NOT NULL,
+    dsl_version integer NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    deleted_at timestamp without time zone
 );
 
 
@@ -4944,11 +4955,11 @@ ALTER TABLE ONLY public.protocols
 
 
 --
--- Name: questionnaires questionnaires_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: questionnaire_versions questionnaire_versions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.questionnaires
-    ADD CONSTRAINT questionnaires_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.questionnaire_versions
+    ADD CONSTRAINT questionnaire_versions_pkey PRIMARY KEY (id);
 
 
 --
@@ -6315,6 +6326,14 @@ ALTER TABLE ONLY public.treatment_groups
 
 ALTER TABLE ONLY public.patients
     ADD CONSTRAINT fk_rails_256d8f15cb FOREIGN KEY (registration_facility_id) REFERENCES public.facilities(id);
+
+
+--
+-- Name: questionnaires fk_rails_265bc223df; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.questionnaires
+    ADD CONSTRAINT fk_rails_265bc223df FOREIGN KEY (version_id) REFERENCES public.questionnaire_versions(id);
 
 
 --
