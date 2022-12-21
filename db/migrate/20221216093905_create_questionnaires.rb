@@ -13,6 +13,8 @@ class CreateQuestionnaires < ActiveRecord::Migration[6.1]
       t.integer :dsl_version, null: false
       t.timestamp :updated_at, null: false
       t.timestamp :deleted_at
+
+      t.index [:questionnaire_type, :dsl_version], unique: true
     end
 
     add_foreign_key(:questionnaires, :questionnaire_versions, column: :version_id)

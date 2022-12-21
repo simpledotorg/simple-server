@@ -5987,6 +5987,13 @@ CREATE UNIQUE INDEX index_qfs_quarter_string_region_id ON public.reporting_quart
 
 
 --
+-- Name: index_questionnaires_on_questionnaire_type_and_dsl_version; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_questionnaires_on_questionnaire_type_and_dsl_version ON public.questionnaires USING btree (questionnaire_type, dsl_version);
+
+
+--
 -- Name: index_regions_on_path; Type: INDEX; Schema: public; Owner: -
 --
 
