@@ -623,7 +623,7 @@ RSpec.shared_examples "a sync controller that audits the data access: sync_to_us
           get :sync_to_user, params: {
             processed_since: 20.minutes.ago,
             limit: 5
-          }, as: :json
+          }.merge(custom_params), as: :json
         end
       end
     end
