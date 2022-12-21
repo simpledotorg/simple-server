@@ -16,10 +16,10 @@ RUN rm -f /etc/service/nginx/down
 RUN rm /etc/nginx/sites-enabled/default
 
 # Add nginx site for simple-server
-ADD docker-config/webapp.conf /etc/nginx/sites-enabled/webapp.conf
+ADD .docker/config/nginx/webapp.conf /etc/nginx/sites-enabled/webapp.conf
 
 # Add logrotate config
-ADD docker-config/logrotate/* /etc/logrotate.d/
+ADD .docker/config/logrotate/* /etc/logrotate.d/
 RUN chmod 644 /etc/logrotate.d/*
 
 # Default directory setup
@@ -34,9 +34,8 @@ RUN mkdir -p /home/deploy/apps/simple-server/shared/log
 COPY --chown=app:app ./ ./
 
 ## Install dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get upgrade -y && apt-get autoclean -y && apt-get autoremove -y && apt-get install -y \
   redis-server \
-  postgresql-client \
   jq \
   cron \
   vim \
@@ -48,6 +47,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends yarn
 # Node
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
 RUN apt-get update && apt-get install -y --no-install-recommends nodejs
+# Postgres client 14
+RUN apt policy postgresql && \
+  curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg && \
+  echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
+  apt update && apt install -y postgresql-client-14 && apt autoremove -y
 
 # Configure rails env
 ENV RAILS_ENV production

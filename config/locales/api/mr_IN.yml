@@ -315,3 +315,130 @@ mr-IN:
         language_tigrinya_html: तिग्रिन्‍या
     privacy_policy_html: गोपनीयता धोरण
     terms_of_service_html: सेवा अटी
+
+  progress_tab:
+    registrations_and_follow_ups_card:
+      title: "नोंदणी आणि पाठपुरावा"
+    daily_report_title: "दैनंदिन"
+    monthly_report_title: "मासिक"
+    yearly_report_title: "वार्षिक"
+    hypertension_report_title: "उच्च रक्तदाब"
+    diabetes_report_title: "मधुमेह"
+    report: "अहवाल"
+    last_updated_at: "डेटा %{date} रोजी %{time} वाजता शेवटचा अपडेट केला"
+    coming_soon: "लवकरच येत आहे"
+    no_data_card:
+      title: "हा अहवाल लवकरच येत आहे"
+      subtitle: "तुम्ही अजूनही आधीचे अहवाल पाहू शकता"
+    diagnoses:
+      all: "सर्व उच्च रक्तदाब आणि मधुमेह"
+      hypertension: "उच्च रक्तदाब"
+      diabetes: "मधुमेह"
+      hypertension_only: "उच्च रक्तदाब नियंत्रण"
+      diabetes_only: "फक्त मधुमेह"
+      hypertension_and_diabetes: "उच्च रक्तदाब आणि मधुमेह"
+    genders:
+      male: "पुरुष"
+      female: "स्त्री"
+      transgender: "किन्नर"
+    period_card:
+      title: "नोंदणी आणि पाठपुरावा"
+    reports_card:
+      title: "अहवाल"
+      subtitle: "%{facility_name} रुग्णांना त्यांच्या उच्च रक्तदाब आणि मधुमेहावर उपचार करण्यासाठी कशी मदत करत आहे."
+    drug_stock_report_card:
+      title: "औषधांचा साठा अहवाल"
+      subtitle: "%{facility_name} चा %{period} साठी औषधांच्या साठ्याचा अहवाल सबमिट करा."
+      button_title: "औषधांचा साठा प्रविष्ट करा"
+    achievements_card:
+      title: "उपलब्धी"
+      follow_up_visits_section_title: "पाठपुरावा %{visit_or_visits} रेकॉर्ड केले"
+      visit:
+        one: "भेट"
+        other: "भेटी"
+      overdue_patients_section_title: "थकीत रुग्णांना %{call_or_calls}"
+      call:
+        one: "कॉल"
+        other: "कॉल्स"
+      registered_patients_title: "नोंदणीकृत %{patient_or_patients}"
+      patient:
+        one: "रूग्ण"
+        other: "रुग्ण"
+    period_report:
+      registered_patients_card:
+        title: "नोंदणीकृत रुग्ण"
+        subtitle: "%{facility_name} येथे नोंदणीकृत रुग्ण."
+      follow_up_patients_card:
+        title: "फॉलो-अप रूग्ण"
+        subtitle: "ज्या रुग्णांचे बीपी घेतले आहे, रक्तातील साखर घेतली आहे, भेटीची वेळ निश्चित केली आहे किंवा त्यांची औषधे %{facility_name} वर अपडेट केली आहेत."
+      follow_up_visits_card:
+        title: "पाठपुरावा भेटी"
+        subtitle: "पाठपुरावा भेटी %{facility_name} येथे रेकॉर्ड केल्या गेल्या. पाठपुरावा म्हणजे एखाद्या रुग्णाचे बीपी घेतले, रक्तातील साखर घेतली गेली, भेटीची वेळ निश्चित केली गेली किंवा औषधे अपडेट केली गेली."
+      patients_initiated_on_treatment_card:
+        title: '"रुग्णांनी उपचार सुरू केले" याचा डेटा कुठे आहे?'
+        main_text: '"नोंदणीकृत रुग्ण" वापरा, हे नेहमी सिंपलवर नोंदणीकृत रूग्णांसाठी "उपचार सुरू केलेल्या रूग्णांच्या" सारखे असेल.'
+      more_patient_data_coming_soon_card:
+        title: "अधिक रुग्ण डेटा लवकरच येत आहे"
+        main_text: "रोग आणि लिंगानुसार विघटित दैनिक नोंदणी आणि पाठपुरावा डेटा लवकरच जोडला जाईल."
+    diagnosis_report:
+      diagnosis_thresholds:
+        hypertension_controlled_short: "बीपी नियंत्रित होते"
+        hypertension_controlled_long: "बीपी <140/90"
+        diabetes_controlled_short: "रक्तातील साखर <200"
+        diabetes_controlled_long: "RBS/PPBS <200, FBS <126, किंवा HbA1c <7.0"
+        hypertension_uncontrolled_short: "बीपी नियंत्रणात नाही"
+        hypertension_uncontrolled_long: "बीपी ≥140/90"
+        diabetes_uncontrolled_short: "रक्तातील साखर 200-299"
+        diabetes_uncontrolled_long: "RBS/PPBS 200-99, FBS 126-199, किंवा HbA1c 7.0-8.9"
+        diabetes_very_uncontrolled_short: "रक्तातील साखर ≥300"
+        diabetes_very_uncontrolled_long: "RBS/PPBS ≥300, FBS ≥200, किंवा HbA1c ≥9.0"
+        hypertension_visited_but_no_bp_taken_short: "भेट दिली पण बीपी घेतलेला नाही"
+        hypertension_visited_but_no_bp_taken_long: "बीपी घेतलेला नाही"
+        missed_visits_short: "सुटलेल्या भेटी"
+        missed_visits_long: "भेट नाही"
+      assigned_patients_card:
+        title: "नियुक्त केलेले रुग्ण"
+        subtitle: "%{diagnosis} उपचार घेण्यासाठी रुग्णांनी %{facility_name} येथे पाठपुरावा करणे अपेक्षित आहे."
+        assigned_patients_breakdown:
+          registered_patients: "नोंदणीकृत रुग्ण"
+          transferred_in_patients: "ट्रान्सफर-इन"
+          transferred_out_patients: "ट्रान्सफर-आउट"
+      total_registered_patients:
+        title: "एकूण नोंदणीकृत रुग्ण"
+        subtitle: "%{facility_name} येथे नोंदणीकृत सर्व %{diagnosis} रुग्ण."
+      monthly_follow_up_patients:
+        title: "मासिक पाठपुरावा रुग्ण"
+        subtitle: "%{diagnosis} रुग्णांनी बीपी घेतले, रक्तातील साखर घेतली, भेटीची वेळ ठरलेली किंवा %{facility_name} वर महिन्याभरात अपडेट केलेले औषध."
+      patient_treatment_outcomes:
+        section_title: "रुग्णाच्या उपचाराची स्थिती"
+        chart_tooltip: "%{start_period} आणि %{end_period} पैकी %{number_of_registered_patients} %{number_of_registered_patient_or_patients} सह %{registration_period} %{number_of_patients} %{number_of_patient_or_patients} %{threshold} पर्यंत नोंदणीकृत."
+        controlled_card:
+          subtitle: "%{facility_name} वरील %{diagnosis} रुग्णांनी >3 महिन्यांपूर्वी %{controlled_threshold} सह गेल्या 3 महिन्यांत त्यांच्या शेवटच्या भेटीत नोंदणी केली."
+          help_tooltip:
+            numerator: "%{controlled_threshold} असलेले रुग्ण त्यांच्या शेवटच्या 3 महिन्यांतील शेवटच्या भेटीत."
+            denominator: "%{diagnosis} रुग्ण %{facility_name} ला नियुक्त केले गेले आहेत, गेल्या 3 महिन्यांपूर्वी नोंदणीकृत आहेत. पाठपुराव्यासाठी मृत आणि हरवलेल्या रुग्णांना वगळण्यात आले आहे."
+        uncontrolled_card:
+          subtitle: "%{facility_name} वरील %{diagnosis} रुग्णांनी >3 महिन्यांपूर्वी %{uncontrolled_threshold} सह गेल्या 3 महिन्यांत त्यांच्या शेवटच्या भेटीत नोंदणी केली."
+          help_tooltip:
+            numerator: "%{uncontrolled_threshold} असलेले रुग्ण त्यांच्या शेवटच्या 3 महिन्यांतील शेवटच्या भेटीत."
+            denominator: "%{diagnosis} रुग्ण %{facility_name} ला नियुक्त केले गेले आहेत, गेल्या 3 महिन्यांपूर्वी नोंदणीकृत आहेत. पाठपुराव्यासाठी मृत आणि हरवलेल्या रुग्णांना वगळण्यात आले आहे."
+        very_uncontrolled_card:
+          subtitle: "%{facility_name} येथील मधुमेह रुग्णांनी >3 महिन्यांपूर्वी %{very_uncontrolled_threshold} सह गेल्या 3 महिन्यांत त्यांच्या शेवटच्या भेटीत नोंदणी केली होती."
+          help_tooltip:
+            numerator: "%{very_uncontrolled_threshold} मध्ये मधुमेहाचे रुग्ण गेल्या 3 महिन्यांत त्यांच्या शेवटच्या भेटीत."
+            denominator: "%{facility_name} ला नियुक्त केलेले मधुमेहाचे रुग्ण, गेल्या 3 महिन्यांपूर्वी नोंदणीकृत. पाठपुराव्यासाठी मृत आणि हरवलेल्या रुग्णांना वगळण्यात आले आहे."
+        missed_visits_card:
+          subtitle: "%{facility_name} वरील %{diagnosis} रुग्णांची नोंदणी >3 महिन्यांपूर्वी झाली असून गेल्या 3 महिन्यांत कोणतीही भेट दिली नाही."
+          help_tooltip:
+            numerator: "%{diagnosis} रूग्ण ज्यांनी गेल्या 3 महिन्यांत भेट दिली नाही"
+            denominator: "%{diagnosis} रुग्ण %{facility_name} ला नियुक्त केले गेले आहेत, गेल्या 3 महिन्यांपूर्वी नोंदणीकृत आहेत. पाठपुराव्यासाठी मृत आणि हरवलेल्या रुग्णांना वगळण्यात आले आहे."
+      drug_stock_report:
+        section_title: "औषधांचा साठा अहवाल"
+        card_subtitle: "%{number_of_days} %{day_or_days} टॅब्लेट स्टॉकमध्ये आहेत"
+      cohort_report:
+        section_title: "समूह अहवाल"
+        card_title: "त्रैमासिक समूह अहवाल"
+        card_subtitle: "पुढील तिमाहीत त्यांच्या पाठपुरावा भेटीमध्ये एका तिमाहीत नोंदणी केलेल्या सर्व नियुक्त उच्च रक्तदाब असलेल्या रुग्णांसाठी परिणाम."
+        cohort_title: "%{period} मध्ये शेवटच्या भेटीचा परिणाम"
+        cohort_subtitle: "%{number_of_patients} %{patient_or_patients} %{registration_period} मध्ये नोंदणीकृत आहेत"
+        cohort_bar_tooltip: "%{threshold} सह %{total_patients} %{patient_or_patients}"

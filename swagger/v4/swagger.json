@@ -171,10 +171,10 @@
             "in": "query"
           },
           {
-            "in": "query",
             "name": "limit",
             "type": "integer",
-            "description": "Number of record to retrieve (a.k.a batch-size)"
+            "description": "Number of record to retrieve (a.k.a batch-size)",
+            "in": "query"
           }
         ],
         "responses": {
@@ -302,10 +302,10 @@
             "in": "query"
           },
           {
-            "in": "query",
             "name": "limit",
             "type": "integer",
-            "description": "Number of record to retrieve (a.k.a batch-size)"
+            "description": "Number of record to retrieve (a.k.a batch-size)",
+            "in": "query"
           }
         ],
         "responses": {
@@ -495,10 +495,10 @@
             "in": "query"
           },
           {
-            "in": "query",
             "name": "limit",
             "type": "integer",
-            "description": "Number of record to retrieve (a.k.a batch-size)"
+            "description": "Number of record to retrieve (a.k.a batch-size)",
+            "in": "query"
           }
         ],
         "responses": {
@@ -698,6 +698,216 @@
           },
           "404": {
             "description": "No patients found with this identifier"
+          }
+        }
+      }
+    },
+    "/questionnaire_responses/sync": {
+      "post": {
+        "summary": "Syncs Questionnaire Responses from Device to Server",
+        "tags": [
+          "Questionnaire Responses"
+        ],
+        "security": [
+          {
+            "access_token": [
+
+            ],
+            "user_id": [
+
+            ],
+            "facility_id": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "questionnaire_responses",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "questionnaire_responses": {
+                  "$ref": "#/definitions/questionnaire_responses"
+                }
+              },
+              "required": [
+                "questionnaire_responses"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Questionnaire Responses created",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "$ref": "#/definitions/errors"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
+      },
+      "get": {
+        "summary": "Syncs Questionnaire Responses from Server to Device",
+        "tags": [
+          "Questionnaire Responses"
+        ],
+        "security": [
+          {
+            "access_token": [
+
+            ],
+            "user_id": [
+
+            ],
+            "facility_id": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "process_token",
+            "type": "string",
+            "format": "byte",
+            "description": "Token containing all the information needed to process batch requests from the user",
+            "in": "query"
+          },
+          {
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Questionnaires Synced to user device",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "questionnaire_responses": {
+                  "$ref": "#/definitions/questionnaire_responses"
+                },
+                "process_token": {
+                  "$ref": "#/definitions/process_token"
+                }
+              },
+              "required": [
+                "questionnaire_responses",
+                "process_token"
+              ]
+            }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
+      }
+    },
+    "/questionnaires/sync": {
+      "get": {
+        "summary": "Syncs Questionnaires from Server to Device",
+        "tags": [
+          "Questionnaires"
+        ],
+        "security": [
+          {
+            "access_token": [
+
+            ],
+            "user_id": [
+
+            ],
+            "facility_id": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_ACCEPT_LANGUAGE",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "process_token",
+            "type": "string",
+            "format": "byte",
+            "description": "Token containing all the information needed to process batch requests from the user",
+            "in": "query"
+          },
+          {
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)",
+            "in": "query"
+          },
+          {
+            "name": "questionnaire_dsl_version",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Questionnaires Synced to user device",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "questionnaires": {
+                  "$ref": "#/definitions/questionnaires"
+                },
+                "process_token": {
+                  "$ref": "#/definitions/process_token"
+                }
+              },
+              "required": [
+                "questionnaires",
+                "process_token"
+              ]
+            }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
           }
         }
       }
@@ -2516,6 +2726,212 @@
       ],
       "items": {
         "$ref": "#/definitions/prescription_drug"
+      }
+    },
+    "questionnaire": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "questionnaire_type": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "layout": {
+          "type": "object",
+          "example": {
+            "item": [
+              {
+                "link_id": "monthly_opd_visits",
+                "text": "Monthly OPD visits for adults >30 years old",
+                "type": "group",
+                "display": {
+                  "view_type": "sub_header",
+                  "orientation": "vertical"
+                },
+                "item": [
+                  {
+                    "link_id": "outpatient_department_visits",
+                    "text": "Outpatient department visits",
+                    "type": "integer",
+                    "validations": {
+                      "min": 0,
+                      "max": 1000000
+                    },
+                    "display": {
+                      "view_type": "input_field",
+                      "orientation": "vertical"
+                    }
+                  }
+                ]
+              },
+              {
+                "link_id": "htm_and_dm_screening",
+                "text": "HTN & DM SCREENING",
+                "type": "group",
+                "display": {
+                  "view_type": "header_group",
+                  "orientation": "vertical"
+                },
+                "item": [
+                  {
+                    "link_id": "total_bp_checks",
+                    "text": "Total BP Checks done",
+                    "type": "group",
+                    "display": {
+                      "view_type": "sub_header",
+                      "orientation": "horizontal"
+                    },
+                    "item": [
+                      {
+                        "link_id": "blood_pressure_checks_male",
+                        "text": "Male",
+                        "type": "integer",
+                        "validations": {
+                          "min": 0,
+                          "max": 1000000
+                        },
+                        "display": {
+                          "view_type": "input_field"
+                        }
+                      },
+                      {
+                        "link_id": "blood_pressure_checks_female",
+                        "text": "Female",
+                        "type": "integer",
+                        "validations": {
+                          "min": 0,
+                          "max": 1000000
+                        },
+                        "display": {
+                          "view_type": "input_field"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "link_id": "total_blood_sugar_checks",
+                    "text": "Total blood sugar checks done",
+                    "display": {
+                      "view_type": "sub_header_group",
+                      "orientation": "horizontal"
+                    },
+                    "item": [
+                      {
+                        "link_id": "blood_sugar_checks_male",
+                        "text": "Male",
+                        "type": "integer",
+                        "display": {
+                          "view_type": "input_field"
+                        },
+                        "validations": {
+                          "min": 0,
+                          "max": 1000000
+                        }
+                      },
+                      {
+                        "link_id": "blood_sugar_checks_female",
+                        "text": "Female",
+                        "type": "integer",
+                        "display": {
+                          "view_type": "input_field"
+                        },
+                        "validations": {
+                          "min": 0,
+                          "max": 1000000
+                        }
+                      },
+                      {
+                        "link_id": "blood_sugar_checks_transgender",
+                        "text": "Transgender",
+                        "type": "integer",
+                        "display": {
+                          "view_type": "input_field"
+                        },
+                        "validations": {
+                          "min": 0,
+                          "max": 1000000
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "required": [
+        "id",
+        "created_at",
+        "questionnaire_type",
+        "layout"
+      ]
+    },
+    "questionnaires": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/questionnaire"
+      }
+    },
+    "questionnaire_response": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "questionnaire_type": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "questionnaire_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "facility_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "user_id": {
+          "$ref": "#/definitions/nullable_uuid"
+        },
+        "content": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "created_at",
+        "updated_at",
+        "questionnaire_type",
+        "questionnaire_id",
+        "facility_id",
+        "user_id",
+        "content"
+      ]
+    },
+    "questionnaire_responses": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/questionnaire_response"
       }
     },
     "teleconsultation": {
