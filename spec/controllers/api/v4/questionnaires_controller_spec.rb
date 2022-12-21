@@ -9,21 +9,6 @@ describe Api::V4::QuestionnairesController, type: :controller do
     record.update(deleted_at: Time.now())
   end
 
-  def mock_questionnaire_types(n)
-    new_types = (1..n).to_h { |i| ["type_#{i}".to_sym, "type_#{i}"] }
-
-    questionnaire_types = Questionnaire.questionnaire_types.merge(new_types)
-    allow(ActiveRecord::Enum::EnumType).to receive(:new).and_call_original
-    allow(ActiveRecord::Enum::EnumType).to receive(:new).with("questionnaire_type", any_args).and_return(
-      ActiveRecord::Enum::EnumType.new(
-            "questionnaire_type",
-            questionnaire_types,
-            ActiveModel::Type::String.new)
-    )
-
-    questionnaire_types
-  end
-
   before do
     @questionnaire_types = mock_questionnaire_types(15)
     @used_questionnaire_types = []
@@ -33,7 +18,8 @@ describe Api::V4::QuestionnairesController, type: :controller do
   let(:request_facility_group) { request_user.facility.facility_group }
   let(:request_facility) { create(:facility, facility_group: request_facility_group) }
   let(:model) { Questionnaire }
-  let(:custom_params) { {dsl_version: 2} }
+  let(:dsl_version) { 2 }
+  let(:custom_params) { {dsl_version: dsl_version} }
 
   def create_record(options = {})
     create(:questionnaire, **options)
@@ -42,25 +28,31 @@ describe Api::V4::QuestionnairesController, type: :controller do
   def create_record_list(n, options = {})
     (@questionnaire_types.keys-@used_questionnaire_types).take(n).map do |questionnaire_type|
       @used_questionnaire_types << questionnaire_type
-      create(:questionnaire, questionnaire_type: questionnaire_type, dsl_version: custom_params[:dsl_version], **options)
+      create(:questionnaire, questionnaire_type: questionnaire_type, dsl_version: dsl_version, **options)
     end
   end
 
   describe "GET sync: send data from server to device;" do
+    before :each do
+      set_authentication_headers
+    end
+
     it_behaves_like "a working V3 sync controller sending records"
 
     it "returns questionnaires only for given DSL Version" do
-      #   Create questionnaire for 2 dsl_versions & expect only 1
-    end
+      version_1_questionnaire = create(:questionnaire, questionnaire_type: "monthly_screening_reports" , dsl_version: 1)
+      version_2_questionnaire = create(:questionnaire, questionnaire_type: "monthly_screening_reports", dsl_version: 2)
 
-    it
+      get :sync_to_user, params: {dsl_version: 1}
+      expect(JSON(response.body)["questionnaires"].first["id"]).to eq version_1_questionnaire.id
+
+      get :sync_to_user, params: {dsl_version: 2}
+      expect(JSON(response.body)["questionnaires"].first["id"]).to eq version_2_questionnaire.id
+    end
 
     it "returns 400 when DSL version isn't given" do
-
-    end
-
-    it "does a force-resync when mismatch between locale in header and process token" do
-
+      get :sync_to_user
+      expect(response.status).to eq 400
     end
 
     # Specs which are included in Shared specs & excluded here:

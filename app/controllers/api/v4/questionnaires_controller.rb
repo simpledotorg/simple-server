@@ -33,7 +33,7 @@ class Api::V4::QuestionnairesController < Api::V4::SyncController
   def response_process_token
     {
       other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since,
-      locale: I18n.locale,
+      locale: I18n.locale.to_s,
       resync_token: resync_token
     }
   end
