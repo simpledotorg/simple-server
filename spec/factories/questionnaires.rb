@@ -18,7 +18,8 @@ def mock_questionnaire_types(n)
     ActiveRecord::Enum::EnumType.new(
       "questionnaire_type",
       questionnaire_types,
-      ActiveModel::Type::String.new)
+      ActiveModel::Type::String.new
+    )
   )
 
   questionnaire_types

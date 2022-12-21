@@ -23,14 +23,14 @@ RSpec.describe "Questionnaires sync", type: :request do
       create(:questionnaire, questionnaire_type: questionnaire_type)
     end
 
-    get sync_route, params: {dsl_version: dsl_version}, headers: { "Accept-Language" => "en-IN" }.merge(headers)
+    get sync_route, params: {dsl_version: dsl_version}, headers: {"Accept-Language" => "en-IN"}.merge(headers)
     expect(JSON(response.body)["questionnaires"].count).to eq 3
     process_token = JSON(response.body)["process_token"]
 
-    get sync_route, params: {dsl_version: dsl_version, process_token: process_token}, headers: { "Accept-Language" => "en-IN" }.merge(headers)
+    get sync_route, params: {dsl_version: dsl_version, process_token: process_token}, headers: {"Accept-Language" => "en-IN"}.merge(headers)
     expect(JSON(response.body)["questionnaires"].count).to eq 1
 
-    get sync_route, params: {dsl_version: dsl_version, process_token: process_token}, headers: { "Accept-Language" => "hi-IN" }.merge(headers)
+    get sync_route, params: {dsl_version: dsl_version, process_token: process_token}, headers: {"Accept-Language" => "hi-IN"}.merge(headers)
     expect(JSON(response.body)["questionnaires"].count).to eq 3
   end
 end

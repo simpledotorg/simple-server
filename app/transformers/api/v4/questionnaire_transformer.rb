@@ -10,7 +10,7 @@ class Api::V4::QuestionnaireTransformer < Api::V4::Transformer
         )
         .merge(
           "id" => questionnaire.version_id,
-          "layout" => questionnaire.localized_layout,
+          "layout" => questionnaire.localized_layout
         )
     end
   end

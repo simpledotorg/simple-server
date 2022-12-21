@@ -38,5 +38,4 @@ RSpec.describe QuestionnaireVersion, type: :model do
       expect(questionnaire.localized_layout).to eq(localized_layout)
     end
   end
-
 end
