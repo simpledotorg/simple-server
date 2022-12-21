@@ -2,7 +2,7 @@ class Api::V4::QuestionnaireTransformer < Api::V4::Transformer
   class << self
     def to_response(questionnaire)
       questionnaire
-        .attributes
+        .as_json
         .except(
           "dsl_version",
           "version_id",

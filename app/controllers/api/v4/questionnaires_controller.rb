@@ -1,6 +1,6 @@
 class Api::V4::QuestionnairesController < Api::V4::SyncController
   def sync_to_user
-    __sync_to_user__("questionnnaires")
+    __sync_to_user__("questionnaires")
   end
 
   def transform_to_response(questionnaire)

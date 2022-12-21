@@ -17,6 +17,7 @@ class CreateQuestionnaires < ActiveRecord::Migration[6.1]
       t.index [:questionnaire_type, :dsl_version], unique: true
     end
 
+    # TO_THINK: Shall we put FK constraint on all 3 columns: id, type & dsl_version?
     add_foreign_key(:questionnaires, :questionnaire_versions, column: :version_id)
   end
 end

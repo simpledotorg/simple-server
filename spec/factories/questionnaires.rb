@@ -2,7 +2,10 @@ FactoryBot.define do
   factory :questionnaire do
     version_id { SecureRandom.uuid }
     questionnaire_type { "monthly_screening_reports" }
-    sequence :dsl_version
-    association :questionnaire_version, strategy: :create
+    dsl_version { 1 }
+    questionnaire_version do
+      association :questionnaire_version, strategy: :create, dsl_version: dsl_version
+    end
+
   end
 end

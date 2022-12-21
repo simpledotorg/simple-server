@@ -2738,11 +2738,11 @@
         "deleted_at": {
           "$ref": "#/definitions/nullable_timestamp"
         },
-        "created_at": {
-          "$ref": "#/definitions/timestamp"
-        },
         "questionnaire_type": {
-          "$ref": "#/definitions/non_empty_string"
+          "type": "string",
+          "enum": [
+            "monthly_screening_reports"
+          ]
         },
         "layout": {
           "type": "object",
