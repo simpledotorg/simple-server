@@ -45,7 +45,7 @@ RSpec.describe "Questionnaires sync", type: :request do
           process_token: make_process_token(current_facility_processed_since: Time.current,
             other_facilities_processed_since: Time.current,
             resync_token: "2"),
-                 dsl_version: dsl_version
+          dsl_version: dsl_version
         },
         headers: headers_with_resync_token
       response_body = JSON(response.body)

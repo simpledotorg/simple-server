@@ -124,7 +124,7 @@ describe Api::V4::QuestionnairesController, type: :controller do
         discard_record = expected_records.first
         discard_record.discard
 
-        get :sync_to_user, params: { dsl_version: dsl_version }
+        get :sync_to_user, params: {dsl_version: dsl_version}
 
         response_body = JSON(response.body)
         expect(response_body[response_key].count).to eq 15
