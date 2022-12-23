@@ -73,6 +73,5 @@ class Api::V4::Models::Questionnaires::Version1
         required: %w[link_id text type display validations]
       }
     end
-
   end
 end
