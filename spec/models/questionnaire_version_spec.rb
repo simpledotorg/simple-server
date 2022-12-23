@@ -34,8 +34,10 @@ RSpec.describe QuestionnaireVersion, type: :model do
         {"text" => "Test"}
       ]}
 
-      questionnaire = build(:questionnaire, layout: layout)
+      questionnaire = build(:questionnaire_version, layout: layout)
       expect(questionnaire.localized_layout).to eq(localized_layout)
     end
   end
+
+  it ""
 end

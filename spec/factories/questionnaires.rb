@@ -9,9 +9,8 @@ FactoryBot.define do
   end
 end
 
-def mock_questionnaire_types(n)
-  new_types = (1..n).to_h { |i| ["type_#{i}".to_sym, "type_#{i}"] }
-
+def stub_questionnaire_types(number_of_types = 15)
+  new_types = (1..number_of_types).to_h { |i| ["type_#{i}".to_sym, "type_#{i}"] }
   questionnaire_types = Questionnaire.questionnaire_types.merge(new_types)
   allow(ActiveRecord::Enum::EnumType).to receive(:new).and_call_original
   allow(ActiveRecord::Enum::EnumType).to receive(:new).with("questionnaire_type", any_args).and_return(
@@ -22,5 +21,5 @@ def mock_questionnaire_types(n)
     )
   )
 
-  questionnaire_types
+  questionnaire_types.keys
 end

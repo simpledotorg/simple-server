@@ -5,23 +5,23 @@ describe Api::V4::QuestionnairesController, type: :controller do
     Base64.encode64({locale: I18n.locale}.merge(params).to_json)
   end
 
-  before do
-    @questionnaire_types = mock_questionnaire_types(15)
-    @used_questionnaire_types = []
-  end
-
   let(:request_user) { create(:user) }
   let(:request_facility_group) { request_user.facility.facility_group }
   let(:request_facility) { create(:facility, facility_group: request_facility_group) }
   let(:model) { Questionnaire }
   let(:dsl_version) { 2 }
 
+  before do
+    @questionnaire_types = stub_questionnaire_types
+  end
+
   def create_record(options = {})
     create(:questionnaire, **options)
   end
 
   def create_record_list(n, options = {})
-    (@questionnaire_types.keys - @used_questionnaire_types).take(n).map do |questionnaire_type|
+    @used_questionnaire_types ||= []
+    (@questionnaire_types - @used_questionnaire_types).take(n).map do |questionnaire_type|
       @used_questionnaire_types << questionnaire_type
       create(:questionnaire, questionnaire_type: questionnaire_type, dsl_version: dsl_version, **options)
     end
@@ -54,7 +54,10 @@ describe Api::V4::QuestionnairesController, type: :controller do
 
       it "Returns new records added since last sync" do
         expected_records = create_record_list(5, updated_at: 5.minutes.ago)
-        get :sync_to_user, params: {process_token: make_process_token(other_facilities_processed_since: 10.minutes.ago)}.merge(custom_params)
+        get :sync_to_user, params: {
+          process_token: make_process_token(other_facilities_processed_since: 10.minutes.ago),
+          dsl_version: dsl_version
+        }
 
         response_body = JSON(response.body)
         expect(response_body[response_key].count).to eq 5
@@ -72,7 +75,7 @@ describe Api::V4::QuestionnairesController, type: :controller do
         get :sync_to_user, params: {
           process_token: make_process_token(other_facilities_processed_since: sync_time),
           dsl_version: dsl_version
-        }.merge(custom_params)
+        }
         response_body = JSON(response.body)
         response_process_token = parse_process_token(response_body)
         expect(response_body[response_key].count).to eq 0
@@ -118,9 +121,10 @@ describe Api::V4::QuestionnairesController, type: :controller do
 
       it "Returns discarded records" do
         expected_records = create_record_list(5, updated_at: 5.minutes.ago)
-        expected_records.first.update(deleted_at: Time.now)
+        discard_record = expected_records.first
+        discard_record.discard
 
-        get :sync_to_user, params: custom_params
+        get :sync_to_user, params: { dsl_version: dsl_version }
 
         response_body = JSON(response.body)
         expect(response_body[response_key].count).to eq 15
@@ -206,8 +210,8 @@ describe Api::V4::QuestionnairesController, type: :controller do
     let(:request_key) { model.to_s.underscore.pluralize }
     let(:model_class_sym) { model.to_s.underscore.to_sym }
 
-    let!(:records) { create_record_list(5) }
     it "creates an audit log for data fetched by the user" do
+      records = create_record_list(5)
       Timecop.freeze do
         Sidekiq::Testing.inline! do
           records.each do |record|
