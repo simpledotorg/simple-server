@@ -2745,132 +2745,11 @@
           ]
         },
         "layout": {
-          "type": "object",
-          "example": {
-            "item": [
-              {
-                "link_id": "monthly_opd_visits",
-                "text": "Monthly OPD visits for adults >30 years old",
-                "type": "group",
-                "display": {
-                  "view_type": "sub_header",
-                  "orientation": "vertical"
-                },
-                "item": [
-                  {
-                    "link_id": "outpatient_department_visits",
-                    "text": "Outpatient department visits",
-                    "type": "integer",
-                    "validations": {
-                      "min": 0,
-                      "max": 1000000
-                    },
-                    "display": {
-                      "view_type": "input_field",
-                      "orientation": "vertical"
-                    }
-                  }
-                ]
-              },
-              {
-                "link_id": "htm_and_dm_screening",
-                "text": "HTN & DM SCREENING",
-                "type": "group",
-                "display": {
-                  "view_type": "header_group",
-                  "orientation": "vertical"
-                },
-                "item": [
-                  {
-                    "link_id": "total_bp_checks",
-                    "text": "Total BP Checks done",
-                    "type": "group",
-                    "display": {
-                      "view_type": "sub_header",
-                      "orientation": "horizontal"
-                    },
-                    "item": [
-                      {
-                        "link_id": "blood_pressure_checks_male",
-                        "text": "Male",
-                        "type": "integer",
-                        "validations": {
-                          "min": 0,
-                          "max": 1000000
-                        },
-                        "display": {
-                          "view_type": "input_field"
-                        }
-                      },
-                      {
-                        "link_id": "blood_pressure_checks_female",
-                        "text": "Female",
-                        "type": "integer",
-                        "validations": {
-                          "min": 0,
-                          "max": 1000000
-                        },
-                        "display": {
-                          "view_type": "input_field"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "link_id": "total_blood_sugar_checks",
-                    "text": "Total blood sugar checks done",
-                    "display": {
-                      "view_type": "sub_header_group",
-                      "orientation": "horizontal"
-                    },
-                    "item": [
-                      {
-                        "link_id": "blood_sugar_checks_male",
-                        "text": "Male",
-                        "type": "integer",
-                        "display": {
-                          "view_type": "input_field"
-                        },
-                        "validations": {
-                          "min": 0,
-                          "max": 1000000
-                        }
-                      },
-                      {
-                        "link_id": "blood_sugar_checks_female",
-                        "text": "Female",
-                        "type": "integer",
-                        "display": {
-                          "view_type": "input_field"
-                        },
-                        "validations": {
-                          "min": 0,
-                          "max": 1000000
-                        }
-                      },
-                      {
-                        "link_id": "blood_sugar_checks_transgender",
-                        "text": "Transgender",
-                        "type": "integer",
-                        "display": {
-                          "view_type": "input_field"
-                        },
-                        "validations": {
-                          "min": 0,
-                          "max": 1000000
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
+          "$ref": "#/definitions/questionnaire_layout"
         }
       },
       "required": [
         "id",
-        "created_at",
         "questionnaire_type",
         "layout"
       ]
@@ -2934,6 +2813,93 @@
       "items": {
         "$ref": "#/definitions/questionnaire_response"
       }
+    },
+    "questionnaire_layout": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/questionnaire_sub_layout_with_link_id"
+        },
+        {
+          "$ref": "#/definitions/questionnaire_sub_layout_without_link_id"
+        }
+      ]
+    },
+    "questionnaire_sub_layout_with_link_id": {
+      "type": "object",
+      "properties": {
+        "item": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/questionnaire_layout"
+          }
+        },
+        "link_id": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "integer",
+            "group"
+          ]
+        },
+        "display": {
+          "type": "object",
+          "properties": {
+            "orientation": {
+              "type": "string",
+              "enum": [
+                "vertical",
+                "horizontal"
+              ]
+            },
+            "view_type": {
+              "type": "string",
+              "enum": [
+                "header",
+                "sub_header",
+                "input_field"
+              ]
+            }
+          },
+          "required": [
+            "orientation",
+            "view_type"
+          ]
+        },
+        "validations": {
+          "type": "object",
+          "properties": {
+            "min": {
+              "type": "integer"
+            },
+            "max": {
+              "type": "integer"
+            }
+          }
+        }
+      },
+      "required": [
+        "link_id",
+        "text",
+        "type",
+        "display"
+      ]
+    },
+    "questionnaire_sub_layout_without_link_id": {
+      "type": "object",
+      "properties": {
+        "item": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/questionnaire_layout"
+          }
+        }
+      },
+      "additionalProperties": false
     },
     "teleconsultation": {
       "type": "object",
