@@ -394,60 +394,15 @@ class Api::V4::Models
        properties: {
          id: {"$ref" => "#/definitions/uuid"},
          deleted_at: {"$ref" => "#/definitions/nullable_timestamp"},
-         # TODO: Change non_empty_string to questionnaire_type enum.
-         # Using questionnaire_type instead of type because of STI Activerecord workflow issue.
          questionnaire_type: {type: :string,
                               enum: Questionnaire.questionnaire_types.keys},
-         layout: {"$ref" => "#/definitions/questionnaire_layout"}
+         layout: {
+           oneOf: [
+             {"$ref" => "#/definitions/questionnaire_layout_dsl_version_1"}
+           ]
+         }
        },
        required: %w[id questionnaire_type layout]}
-    end
-
-    def questionnaire_layout
-      {
-        oneOf: [
-          {"$ref" => "#/definitions/questionnaire_sub_layout_with_link_id"},
-          {"$ref" => "#/definitions/questionnaire_sub_layout_without_link_id"}
-        ]
-      }
-    end
-
-    def questionnaire_sub_layout_with_link_id
-      {
-        type: :object,
-        properties: {
-          item: {type: :array, items: {"$ref" => "#/definitions/questionnaire_layout"}},
-          link_id: {type: :string},
-          text: {type: :string},
-          type: {type: :string, enum: %w[integer group]},
-          display: {
-            type: :object,
-            properties: {
-              orientation: {type: :string, enum: %w[vertical horizontal]},
-              view_type: {type: :string, enum: %w[header sub_header input_field]}
-            },
-            required: %w[orientation view_type]
-          },
-          validations: {
-            type: :object,
-            properties: {
-              min: {type: :integer},
-              max: {type: :integer}
-            }
-          }
-        },
-        required: %w[link_id text type display]
-      }
-    end
-
-    def questionnaire_sub_layout_without_link_id
-      {
-        type: :object,
-        properties: {
-          item: {type: :array, items: {"$ref" => "#/definitions/questionnaire_layout"}}
-        },
-        additionalProperties: false
-      }
     end
 
     def questionnaire_response
@@ -514,9 +469,7 @@ class Api::V4::Models
         questionnaires: array_of("questionnaire"),
         questionnaire_response: Api::V4::Models.questionnaire_response,
         questionnaire_responses: array_of("questionnaire_response"),
-        questionnaire_layout: questionnaire_layout,
-        questionnaire_sub_layout_with_link_id: questionnaire_sub_layout_with_link_id,
-        questionnaire_sub_layout_without_link_id: questionnaire_sub_layout_without_link_id,
+        **Api::V4::Models::Questionnaires::Version1.definitions,
         teleconsultation: teleconsultation,
         teleconsultations: array_of("teleconsultation"),
         timestamp: timestamp,

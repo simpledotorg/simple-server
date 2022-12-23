@@ -2745,7 +2745,14 @@
           ]
         },
         "layout": {
-          "$ref": "#/definitions/questionnaire_layout"
+          "oneOf": [
+            {
+              "$ref": "#/definitions/questionnaire_layout_dsl_version_1"
+            },
+            {
+              "$ref": "#/definitions/questionnaire_layout_dsl_version_2"
+            }
+          ]
         }
       },
       "required": [
@@ -2814,25 +2821,31 @@
         "$ref": "#/definitions/questionnaire_response"
       }
     },
-    "questionnaire_layout": {
-      "oneOf": [
-        {
-          "$ref": "#/definitions/questionnaire_sub_layout_with_link_id"
-        },
-        {
-          "$ref": "#/definitions/questionnaire_sub_layout_without_link_id"
-        }
-      ]
-    },
-    "questionnaire_sub_layout_with_link_id": {
+    "questionnaire_layout_dsl_version_1": {
       "type": "object",
       "properties": {
         "item": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/questionnaire_layout"
+            "$ref": "#/definitions/questionnaire_group"
           }
-        },
+        }
+      }
+    },
+    "questionnaire_layout_dsl_version_2": {
+      "type": "object",
+      "properties": {
+        "item": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/questionnaire_group"
+          }
+        }
+      }
+    },
+    "questionnaire_integer_input": {
+      "type": "object",
+      "properties": {
         "link_id": {
           "type": "string"
         },
@@ -2842,7 +2855,59 @@
         "type": {
           "type": "string",
           "enum": [
-            "integer",
+            "integer"
+          ]
+        },
+        "display": {
+          "type": "object",
+          "properties": {
+            "view_type": {
+              "type": "string",
+              "enum": [
+                "input_field"
+              ]
+            }
+          },
+          "required": [
+            "view_type"
+          ]
+        },
+        "validations": {
+          "type": "object",
+          "properties": {
+            "min": {
+              "type": "integer"
+            },
+            "max": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "min",
+            "max"
+          ]
+        }
+      },
+      "required": [
+        "link_id",
+        "text",
+        "type",
+        "display",
+        "validations"
+      ]
+    },
+    "questionnaire_group": {
+      "type": "object",
+      "properties": {
+        "link_id": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
             "group"
           ]
         },
@@ -2860,8 +2925,7 @@
               "type": "string",
               "enum": [
                 "header",
-                "sub_header",
-                "input_field"
+                "sub_header"
               ]
             }
           },
@@ -2870,15 +2934,17 @@
             "view_type"
           ]
         },
-        "validations": {
-          "type": "object",
-          "properties": {
-            "min": {
-              "type": "integer"
-            },
-            "max": {
-              "type": "integer"
-            }
+        "item": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/definitions/questionnaire_group"
+              },
+              {
+                "$ref": "#/definitions/questionnaire_integer_input"
+              }
+            ]
           }
         }
       },
@@ -2886,20 +2952,9 @@
         "link_id",
         "text",
         "type",
-        "display"
+        "display",
+        "item"
       ]
-    },
-    "questionnaire_sub_layout_without_link_id": {
-      "type": "object",
-      "properties": {
-        "item": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/questionnaire_layout"
-          }
-        }
-      },
-      "additionalProperties": false
     },
     "teleconsultation": {
       "type": "object",
