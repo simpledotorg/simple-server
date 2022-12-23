@@ -2748,9 +2748,6 @@
           "oneOf": [
             {
               "$ref": "#/definitions/questionnaire_layout_dsl_version_1"
-            },
-            {
-              "$ref": "#/definitions/questionnaire_layout_dsl_version_2"
             }
           ]
         }
@@ -2786,7 +2783,10 @@
           "$ref": "#/definitions/timestamp"
         },
         "questionnaire_type": {
-          "$ref": "#/definitions/non_empty_string"
+          "type": "string",
+          "enum": [
+            "monthly_screening_reports"
+          ]
         },
         "questionnaire_id": {
           "$ref": "#/definitions/uuid"
@@ -2822,17 +2822,6 @@
       }
     },
     "questionnaire_layout_dsl_version_1": {
-      "type": "object",
-      "properties": {
-        "item": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/questionnaire_group"
-          }
-        }
-      }
-    },
-    "questionnaire_layout_dsl_version_2": {
       "type": "object",
       "properties": {
         "item": {
