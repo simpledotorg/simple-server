@@ -28,7 +28,7 @@ class Api::V4::Models::Questionnaires::MonthlyScreeningReport
               view: "input_group",
               orientation: "horizontal"
             },
-            items: [
+            item: [
               {
                 link_id: "blood_pressure_checks_male",
                 text: "Male",
