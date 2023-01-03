@@ -17,7 +17,7 @@ class QuestionnaireVersion < ActiveRecord::Base
     text = sub_layout["text"]
     return sub_layout unless text
 
-    sub_layout.merge({"text" => I18n.t(text)})
+    sub_layout.merge({"text" => I18n.t!(text)})
   end
 
   def localize_items_recursively(sub_layout)

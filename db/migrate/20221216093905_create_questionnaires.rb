@@ -5,6 +5,9 @@ class CreateQuestionnaires < ActiveRecord::Migration[6.1]
       t.integer :dsl_version, null: false
       t.jsonb :layout, null: false
       t.timestamp :created_at, null: false
+
+      # A uniqueness index is necessary only for composite FK constraint from questionnaires to questionnaire_versions.
+      t.index [:id, :questionnaire_type, :dsl_version], name: "index_questionnaire_versions_uniqueness", unique: true
     end
 
     create_table :questionnaires, id: false, primary_key: :version_id do |t|
@@ -16,8 +19,5 @@ class CreateQuestionnaires < ActiveRecord::Migration[6.1]
 
       t.index [:questionnaire_type, :dsl_version], unique: true
     end
-
-    # TO_THINK: Shall we put FK constraint on all 3 columns: id, type & dsl_version?
-    add_foreign_key(:questionnaires, :questionnaire_versions, column: :version_id)
   end
 end
