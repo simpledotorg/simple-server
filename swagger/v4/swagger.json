@@ -2747,7 +2747,7 @@
         "layout": {
           "oneOf": [
             {
-              "$ref": "#/definitions/questionnaire_layout_dsl_version_1"
+              "$ref": "#/definitions/questionnaire_layout_dsl_1"
             }
           ]
         }
@@ -2821,18 +2821,195 @@
         "$ref": "#/definitions/questionnaire_response"
       }
     },
-    "questionnaire_layout_dsl_version_1": {
+    "questionnaire_layout_dsl_1": {
+      "$ref": "#/definitions/questionnaire_group_dsl_1"
+    },
+    "questionnaire_group_dsl_1": {
       "type": "object",
+      "example": {
+        "type": "group",
+        "display_properties": {
+          "view": "form_group",
+          "orientation": "vertical"
+        },
+        "item": [
+          {
+            "text": "HTN & DM SCREENING",
+            "type": "display",
+            "display_properties": {
+              "view": "header"
+            }
+          },
+          {
+            "text": "Total BP Checks done",
+            "type": "display",
+            "display_properties": {
+              "view": "sub_header"
+            }
+          },
+          {
+            "type": "group",
+            "display_properties": {
+              "view": "input_group",
+              "orientation": "horizontal"
+            },
+            "items": [
+              {
+                "link_id": "blood_pressure_checks_male",
+                "text": "Male",
+                "type": "integer",
+                "display_properties": {
+                  "view": "input_field"
+                },
+                "validations": {
+                  "min": 0,
+                  "max": 1000000
+                }
+              },
+              {
+                "link_id": "blood_pressure_checks_female",
+                "text": "Female",
+                "type": "integer",
+                "display_properties": {
+                  "view": "input_field"
+                },
+                "validations": {
+                  "min": 0,
+                  "max": 1000000
+                }
+              }
+            ]
+          },
+          {
+            "type": "display",
+            "display_properties": {
+              "view": "separator"
+            }
+          },
+          {
+            "type": "display",
+            "display_properties": {
+              "view": "line_separator"
+            }
+          }
+        ]
+      },
       "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "group"
+          ]
+        },
+        "display_properties": {
+          "type": "object",
+          "properties": {
+            "view": {
+              "type": "string",
+              "enum": [
+                "form_group",
+                "input_group"
+              ]
+            },
+            "orientation": {
+              "type": "string",
+              "enum": [
+                "horizontal",
+                "vertical"
+              ]
+            }
+          },
+          "required": [
+            "view",
+            "orientation"
+          ]
+        },
         "item": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/questionnaire_group"
+            "oneOf": [
+              {
+                "$ref": "#/definitions/questionnaire_group_dsl_1"
+              },
+              {
+                "$ref": "#/definitions/questionnaire_display_dsl_1"
+              },
+              {
+                "$ref": "#/definitions/questionnaire_line_break_dsl_1"
+              },
+              {
+                "$ref": "#/definitions/questionnaire_integer_input_dsl_1"
+              }
+            ]
           }
         }
       }
     },
-    "questionnaire_integer_input": {
+    "questionnaire_display_dsl_1": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "display"
+          ]
+        },
+        "display_properties": {
+          "type": "object",
+          "properties": {
+            "view": {
+              "type": "string",
+              "enum": [
+                "header",
+                "sub_header"
+              ]
+            }
+          },
+          "required": [
+            "view"
+          ]
+        }
+      },
+      "required": [
+        "text",
+        "type",
+        "display_properties"
+      ]
+    },
+    "questionnaire_line_break_dsl_1": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "display"
+          ]
+        },
+        "display_properties": {
+          "type": "object",
+          "properties": {
+            "view": {
+              "type": "string",
+              "enum": [
+                "separator",
+                "line_separator"
+              ]
+            }
+          },
+          "required": [
+            "view"
+          ]
+        }
+      },
+      "required": [
+        "type",
+        "display_properties"
+      ]
+    },
+    "questionnaire_integer_input_dsl_1": {
       "type": "object",
       "properties": {
         "link_id": {
@@ -2847,10 +3024,10 @@
             "integer"
           ]
         },
-        "display": {
+        "display_properties": {
           "type": "object",
           "properties": {
-            "view_type": {
+            "view": {
               "type": "string",
               "enum": [
                 "input_field"
@@ -2858,7 +3035,7 @@
             }
           },
           "required": [
-            "view_type"
+            "view"
           ]
         },
         "validations": {
@@ -2881,68 +3058,8 @@
         "link_id",
         "text",
         "type",
-        "display",
+        "display_properties",
         "validations"
-      ]
-    },
-    "questionnaire_group": {
-      "type": "object",
-      "properties": {
-        "link_id": {
-          "type": "string"
-        },
-        "text": {
-          "type": "string"
-        },
-        "type": {
-          "type": "string",
-          "enum": [
-            "group"
-          ]
-        },
-        "display": {
-          "type": "object",
-          "properties": {
-            "orientation": {
-              "type": "string",
-              "enum": [
-                "vertical",
-                "horizontal"
-              ]
-            },
-            "view_type": {
-              "type": "string",
-              "enum": [
-                "header",
-                "sub_header"
-              ]
-            }
-          },
-          "required": [
-            "orientation",
-            "view_type"
-          ]
-        },
-        "item": {
-          "type": "array",
-          "items": {
-            "oneOf": [
-              {
-                "$ref": "#/definitions/questionnaire_group"
-              },
-              {
-                "$ref": "#/definitions/questionnaire_integer_input"
-              }
-            ]
-          }
-        }
-      },
-      "required": [
-        "link_id",
-        "text",
-        "type",
-        "display",
-        "item"
       ]
     },
     "teleconsultation": {

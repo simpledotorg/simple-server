@@ -22,7 +22,7 @@ class QuestionnaireVersion < ActiveRecord::Base
   def layout_schema
     case dsl_version
       when 1
-        Api::V4::Models::Questionnaires::Version1.questionnaire_layout.merge(
+        Api::V4::Models::Questionnaires::Version1.layout.merge(
           definitions: Api::V4::Schema.all_definitions
         )
       else
