@@ -89,10 +89,10 @@ RSpec.describe FacilityYearlyFollowUpsAndRegistrationsQuery do
       refresh_views
 
       last_year = if Date.today.month >= 1 && Date.today.month < 4
-                    1.year.ago.year
-                  else
-                    Date.current.year
-                  end
+        1.year.ago.year
+      else
+        Date.current.year
+      end
 
       expected_years = (2017..last_year).to_a.reverse
 
