@@ -4,7 +4,10 @@ FactoryBot.define do
     questionnaire_type { "monthly_screening_reports" }
     dsl_version { 1 }
     questionnaire_version do
-      association :questionnaire_version, strategy: :create, dsl_version: dsl_version
+      association :questionnaire_version, strategy: :create,
+                  id: version_id,
+                  dsl_version: dsl_version,
+                  questionnaire_type: questionnaire_type
     end
   end
 end
