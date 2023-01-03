@@ -5987,6 +5987,13 @@ CREATE UNIQUE INDEX index_qfs_quarter_string_region_id ON public.reporting_quart
 
 
 --
+-- Name: index_questionnaire_versions_uniqueness; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_questionnaire_versions_uniqueness ON public.questionnaire_versions USING btree (id, questionnaire_type, dsl_version);
+
+
+--
 -- Name: index_questionnaires_on_questionnaire_type_and_dsl_version; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -6288,6 +6295,14 @@ CREATE UNIQUE INDEX user_authentications_master_users_authenticatable_uniq_index
 
 
 --
+-- Name: questionnaires fk_questionnaire_versions_id_type_dsl; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.questionnaires
+    ADD CONSTRAINT fk_questionnaire_versions_id_type_dsl FOREIGN KEY (version_id, questionnaire_type, dsl_version) REFERENCES public.questionnaire_versions(id, questionnaire_type, dsl_version);
+
+
+--
 -- Name: patient_phone_numbers fk_rails_0145dd0b05; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -6333,14 +6348,6 @@ ALTER TABLE ONLY public.treatment_groups
 
 ALTER TABLE ONLY public.patients
     ADD CONSTRAINT fk_rails_256d8f15cb FOREIGN KEY (registration_facility_id) REFERENCES public.facilities(id);
-
-
---
--- Name: questionnaires fk_rails_265bc223df; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.questionnaires
-    ADD CONSTRAINT fk_rails_265bc223df FOREIGN KEY (version_id) REFERENCES public.questionnaire_versions(id);
 
 
 --
@@ -6688,6 +6695,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20221121063116'),
 ('20221122081032'),
 ('20221212061852'),
-('20221216093905');
+('20221216093905'),
+('20230103063720');
 
 
