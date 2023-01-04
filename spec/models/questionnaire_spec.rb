@@ -2,13 +2,6 @@ require "rails_helper"
 
 RSpec.describe Questionnaire, type: :model do
   describe "Validations" do
-    subject { create(:questionnaire) }
-    it "validates uniqueness" do
-      should validate_uniqueness_of(:dsl_version)
-        .scoped_to(:questionnaire_type)
-        .with_message("has already been taken for given questionnaire_type")
-    end
-
     it "allows only one active form per type" do
       expect {
         create_list(:questionnaire,
@@ -25,13 +18,26 @@ RSpec.describe Questionnaire, type: :model do
         create(:questionnaire, questionnaire_type: "monthly_screening_reports", dsl_version: 1, is_active: true)
       }.to change { Questionnaire.count }.by 3
     end
+
+    it "validates the layout using the swagger schema" do
+      questionnaire = build(:questionnaire)
+      expect(questionnaire).to receive(:validate_layout)
+
+      questionnaire.save!
+    end
   end
 
   describe ".for_sync" do
     it "includes discarded questionnaires" do
-      discarded_questionnaire = create(:questionnaire, deleted_at: Time.now)
+      questionnaire = create(:questionnaire, :active, deleted_at: Time.now)
 
-      expect(described_class.for_sync).to include(discarded_questionnaire)
+      expect(described_class.for_sync).to include(questionnaire)
+    end
+
+    it "doesn't include discarded questionnaires that have been marked inactive" do
+      questionnaire = create(:questionnaire, is_active: false, deleted_at: Time.now)
+
+      expect(described_class.for_sync).not_to include(questionnaire)
     end
 
     it "includes only the active forms" do
@@ -65,6 +71,29 @@ RSpec.describe Questionnaire, type: :model do
 
       questionnaire = build(:questionnaire, layout: layout)
       expect(questionnaire.localized_layout).to eq(localized_layout)
+    end
+  end
+
+  describe "#validate_layout" do
+    it "adds errors if the layout schema is invalid" do
+      invalid_questionnaire = build(:questionnaire, layout: {"broken" => "layout"})
+      valid_questionnaire = build(:questionnaire)
+
+      invalid_questionnaire.validate_layout
+      valid_questionnaire.validate_layout
+
+      expect(valid_questionnaire.errors).to be_empty
+      expect(invalid_questionnaire.errors).not_to be_empty
+    end
+  end
+
+  describe "#layout_valid?" do
+    it "returns false if the layout schema is invalid" do
+      invalid_questionnaire = build(:questionnaire, layout: {"broken" => "layout"})
+      valid_questionnaire = build(:questionnaire)
+
+      expect(invalid_questionnaire.layout_valid?).to eq false
+      expect(valid_questionnaire.layout_valid?).to eq true
     end
   end
 end

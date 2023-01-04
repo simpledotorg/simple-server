@@ -23,7 +23,7 @@ describe Api::V4::QuestionnairesController, type: :controller do
     @used_questionnaire_types ||= []
     (@questionnaire_types - @used_questionnaire_types).take(n).map do |questionnaire_type|
       @used_questionnaire_types << questionnaire_type
-      create(:questionnaire, questionnaire_type: questionnaire_type, is_active: true, dsl_version: dsl_version, **options)
+      create(:questionnaire, :active, questionnaire_type: questionnaire_type, dsl_version: dsl_version, **options)
     end
   end
 
