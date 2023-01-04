@@ -1,5 +1,4 @@
 class Questionnaire < ApplicationRecord
-
   enum questionnaire_type: {
     monthly_screening_reports: "monthly_screening_reports"
   }
