@@ -10,7 +10,20 @@ RSpec.describe Questionnaire, type: :model do
     end
 
     it "allows only one active form per type" do
+      expect {
+        create_list(:questionnaire,
+          2,
+          questionnaire_type: "monthly_screening_reports",
+          dsl_version: 1,
+          is_active: true)
+      }.to raise_error(ActiveRecord::RecordInvalid)
+    end
 
+    it "allows multiple inactive forms per type" do
+      expect {
+        create_list(:questionnaire, 2, questionnaire_type: "monthly_screening_reports", dsl_version: 1, is_active: false)
+        create(:questionnaire, questionnaire_type: "monthly_screening_reports", dsl_version: 1, is_active: true)
+      }.to change { Questionnaire.count }.by 3
     end
   end
 
@@ -22,7 +35,10 @@ RSpec.describe Questionnaire, type: :model do
     end
 
     it "includes only the active forms" do
+      active_questionnaire = create(:questionnaire, questionnaire_type: "monthly_screening_reports", dsl_version: 1, is_active: true)
+      _inactive_questionnaire = create(:questionnaire, questionnaire_type: "monthly_screening_reports", dsl_version: 1, is_active: false)
 
+      expect(described_class.for_sync).to include(active_questionnaire)
     end
   end
 

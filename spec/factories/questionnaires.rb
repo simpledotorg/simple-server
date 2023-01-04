@@ -14,6 +14,10 @@ FactoryBot.define do
         item: []
       }
     }
+
+    trait :active do
+      is_active { true }
+    end
   end
 end
 

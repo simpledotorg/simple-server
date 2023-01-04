@@ -5,8 +5,9 @@ class Questionnaire < ApplicationRecord
   }
 
   validates :dsl_version, uniqueness: {
-    scope: :questionnaire_type,
-    message: "has already been taken for given questionnaire_type"
+    scope: [:questionnaire_type, :is_active],
+    message: "has already been taken for given questionnaire_type",
+    conditions: -> { active }
   }
   validate :validate_layout
 
