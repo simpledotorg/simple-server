@@ -1,11 +1,30 @@
 class QuestionnaireVersion < ActiveRecord::Base
   has_one :questionnaire, required: false
 
+  validate :validate_layout
+
   def localized_layout
     localize_layout(layout)
   end
 
+  def layout_valid?
+    JSON::Validator.validate(layout_schema, layout)
+  end
+
+  def validate_layout
+    JSON::Validator.fully_validate(layout_schema, layout).each do |error_string|
+      errors.add(:layout_schema, error_string.split("in schema").first)
+    end
+  end
+
   private
+
+  def layout_schema
+    # TODO: When dsl_version is incremented, insert a switch here.
+    Api::V4::Models::Questionnaires::Version1.layout.merge(
+      definitions: Api::V4::Schema.all_definitions
+    )
+  end
 
   def localize_layout(sub_layout)
     sub_layout

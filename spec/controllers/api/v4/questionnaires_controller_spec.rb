@@ -9,7 +9,7 @@ describe Api::V4::QuestionnairesController, type: :controller do
   let(:request_facility_group) { request_user.facility.facility_group }
   let(:request_facility) { create(:facility, facility_group: request_facility_group) }
   let(:model) { Questionnaire }
-  let(:dsl_version) { 2 }
+  let(:dsl_version) { 1 }
 
   before do
     @questionnaire_types = stub_questionnaire_types

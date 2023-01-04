@@ -394,15 +394,14 @@ class Api::V4::Models
        properties: {
          id: {"$ref" => "#/definitions/uuid"},
          deleted_at: {"$ref" => "#/definitions/nullable_timestamp"},
-         # Using questionnaire_type instead of type because of STI Activerecord workflow issue.
          questionnaire_type: {type: :string, enum: Questionnaire.questionnaire_types.keys},
-         layout: {type: :object,
-                  example: Api::V4::Models::Questionnaires::MonthlyScreeningReport.layout}
+         layout: {
+           oneOf: [
+             {"$ref" => "#/definitions/questionnaire_layout_dsl_1"}
+           ]
+         }
        },
-       required: %w[id
-         created_at
-         questionnaire_type
-         layout]}
+       required: %w[id questionnaire_type layout]}
     end
 
     def questionnaire_response
@@ -468,6 +467,7 @@ class Api::V4::Models
         questionnaires: array_of("questionnaire"),
         questionnaire_response: Api::V4::Models.questionnaire_response,
         questionnaire_responses: array_of("questionnaire_response"),
+        **Api::V4::Models::Questionnaires::Version1.definitions,
         teleconsultation: teleconsultation,
         teleconsultations: array_of("teleconsultation"),
         timestamp: timestamp,
