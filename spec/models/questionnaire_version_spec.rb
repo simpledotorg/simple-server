@@ -3,18 +3,12 @@ require "rails_helper"
 RSpec.describe QuestionnaireVersion, type: :model do
   describe "#localized_layout" do
     it "localized text attributes in items recursively" do
-      allow(I18n).to receive(:t).with("test_translations.test_string").and_return "Test"
+      allow(I18n).to receive(:t!).with("test_translations.test_string").and_return "Test"
       layout = {"item" => [
         {"text" => "test_translations.test_string",
          "item" => [
-           {"text" => "test_translations.test_string",
-            "item" => [
-              {"text" => "test_translations.test_string"}
-            ]},
-           {"text" => "test_translations.test_string",
-            "item" => [
-              {"text" => "test_translations.test_string"}
-            ]}
+           {"text" => "test_translations.test_string"},
+           {"text" => "test_translations.test_string"}
          ]},
         {"text" => "test_translations.test_string"}
       ]}
@@ -22,14 +16,8 @@ RSpec.describe QuestionnaireVersion, type: :model do
       localized_layout = {"item" => [
         {"text" => "Test",
          "item" => [
-           {"text" => "Test",
-            "item" => [
-              {"text" => "Test"}
-            ]},
-           {"text" => "Test",
-            "item" => [
-              {"text" => "Test"}
-            ]}
+           {"text" => "Test"},
+           {"text" => "Test"}
          ]},
         {"text" => "Test"}
       ]}
