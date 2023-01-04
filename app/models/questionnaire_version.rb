@@ -47,6 +47,6 @@ class QuestionnaireVersion < ActiveRecord::Base
     items = sub_layout["item"]
     return sub_layout unless items
 
-    sub_layout.merge({ "item" => items.map { |item| localize_layout(item) } })
+    sub_layout.merge({ "item" => items.map { |item| localize_layout(item) }})
   end
 end
