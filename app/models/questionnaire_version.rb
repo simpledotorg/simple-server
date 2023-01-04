@@ -20,14 +20,10 @@ class QuestionnaireVersion < ActiveRecord::Base
   private
 
   def layout_schema
-    case dsl_version
-      when 1
-        Api::V4::Models::Questionnaires::Version1.layout.merge(
-          definitions: Api::V4::Schema.all_definitions
-        )
-      else
-        raise "unknown DSL version"
-    end
+    # TODO: When dsl_version is incremented, insert a switch here.
+    Api::V4::Models::Questionnaires::Version1.layout.merge(
+      definitions: Api::V4::Schema.all_definitions
+    )
   end
 
   def localize_layout(sub_layout)
