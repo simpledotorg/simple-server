@@ -394,10 +394,8 @@ class Api::V4::Models
        properties: {
          id: {"$ref" => "#/definitions/uuid"},
          deleted_at: {"$ref" => "#/definitions/nullable_timestamp"},
-         created_at: {"$ref" => "#/definitions/timestamp"},
-         # TODO: Change non_empty_string to questionnaire_type enum.
          # Using questionnaire_type instead of type because of STI Activerecord workflow issue.
-         questionnaire_type: {"$ref" => "#/definitions/non_empty_string"},
+         questionnaire_type: {type: :string, enum: Questionnaire.questionnaire_types.keys},
          layout: {type: :object,
                   example: Api::V4::Models::Questionnaires::MonthlyScreeningReport.layout}
        },
@@ -414,8 +412,7 @@ class Api::V4::Models
          deleted_at: {"$ref" => "#/definitions/nullable_timestamp"},
          created_at: {"$ref" => "#/definitions/timestamp"},
          updated_at: {"$ref" => "#/definitions/timestamp"},
-         # TODO: Change non_empty_string to questionnaire_type enum.
-         questionnaire_type: {"$ref" => "#/definitions/non_empty_string"},
+         questionnaire_type: {type: :string, enum: Questionnaire.questionnaire_types.keys},
          questionnaire_id: {"$ref" => "#/definitions/uuid"},
          facility_id: {"$ref" => "#/definitions/uuid"},
          user_id: {"$ref" => "#/definitions/nullable_uuid"},
