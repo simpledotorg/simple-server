@@ -5,7 +5,6 @@ module Reports
     MONTHS = -5
     CONTROL_MONTHS = -12
     DAYS_AGO = 29
-    DIAGNOSES = [:diabetes, :hypertension]
     attr_reader :control_range
     attr_reader :facility
     attr_reader :range
@@ -63,37 +62,12 @@ module Reports
       CallResult.where(facility_id: @facility.id).count
     end
 
-    def daily_statistics
-      {
-        daily: {
-          grouped_by_date: {
-            follow_ups: daily_total_follow_ups,
-            registrations: daily_total_registrations
-          }
-        },
-        metadata: {
-          is_diabetes_enabled: diabetes_enabled,
-          last_updated_at: last_updated_at,
-          formatted_next_date: (Time.current + 1.day).to_s(:mon_year),
-          today_string: I18n.t(:today_str)
-        }
-      }
-    end
-
     def total_counts
       @total_counts ||= Reports::FacilityMonthlyFollowUpAndRegistration.totals(facility)
     end
 
-    def monthly_counts
-      @monthly_counts ||= repository.monthly_follow_ups_and_registrations[facility.region.slug]
-    end
-
     memoize def repository
       Reports::Repository.new(facility, periods: @range)
-    end
-
-    def control_rates_repository
-      @control_rates_repository ||= Reports::Repository.new(facility, periods: control_range)
     end
 
     def hypertension_reports_data
@@ -112,19 +86,6 @@ module Reports
         region: @region,
         current_user: @current_user
       }
-    end
-
-    # Returns all possible combinations of FacilityProgressDimensions for displaying
-    # the different slices of progress data.
-    def dimension_combinations_for(indicator, diagnoses: DIAGNOSES)
-      dimensions = [create_dimension(indicator, diagnosis: :all, gender: :all)] # special case first
-      combinations = [indicator].product(diagnoses).product([:all, :male, :female, :transgender])
-      combinations.each do |c|
-        indicator, diagnosis = *c.first
-        gender = c.last
-        dimensions << create_dimension(indicator, diagnosis: diagnosis, gender: gender)
-      end
-      dimensions
     end
 
     memoize def daily_total_follow_ups
@@ -249,10 +210,6 @@ module Reports
           }
         }
       end
-    end
-
-    def create_dimension(*args)
-      Reports::FacilityProgressDimension.new(*args)
     end
   end
 end
