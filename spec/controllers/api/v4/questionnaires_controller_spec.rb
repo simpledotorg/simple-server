@@ -23,7 +23,7 @@ describe Api::V4::QuestionnairesController, type: :controller do
     @used_questionnaire_types ||= []
     (@questionnaire_types - @used_questionnaire_types).take(n).map do |questionnaire_type|
       @used_questionnaire_types << questionnaire_type
-      create(:questionnaire, questionnaire_type: questionnaire_type, dsl_version: dsl_version, **options)
+      create(:questionnaire, questionnaire_type: questionnaire_type, is_active: true, dsl_version: dsl_version, **options)
     end
   end
 
@@ -143,6 +143,10 @@ describe Api::V4::QuestionnairesController, type: :controller do
 
       get :sync_to_user, params: {dsl_version: 2}
       expect(JSON(response.body)["questionnaires"].first["id"]).to eq version_2_questionnaire.id
+    end
+
+    it "returns only one questionnaire per questionnaire_type" do
+
     end
 
     it "returns 400 when DSL version isn't given" do
