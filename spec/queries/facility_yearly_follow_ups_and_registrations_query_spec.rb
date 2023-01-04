@@ -87,7 +87,14 @@ RSpec.describe FacilityYearlyFollowUpsAndRegistrationsQuery do
       create(:blood_pressure, patient: patient_2, user: user, facility: facility, recorded_at: 6.months.ago)
       create(:blood_pressure, patient: patient_3, user: user, facility: facility, recorded_at: 6.months.ago)
       refresh_views
-      expected_years = (2017..Date.current.year).to_a.reverse
+
+      last_year = if Date.today.month >= 1 && Date.today.month < 4
+        1.year.ago.year
+      else
+        Date.current.year
+      end
+
+      expected_years = (2017..last_year).to_a.reverse
 
       yearly_reports = described_class.new(facility, user).call
 

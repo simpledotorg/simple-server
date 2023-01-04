@@ -62,7 +62,9 @@ class OneOff::CphcEnrollment::CreateUserRequest
   end
 
   def username
-    "deo_ihci_#{location_type}_#{location_id}"
+    return "deo_ihci_phc_#{location_id}" if hospital_type == "PHC"
+
+    "deo_h_#{location_id}_ihci"
   end
 
   def mobile_number
