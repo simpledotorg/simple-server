@@ -2828,29 +2828,44 @@
       "type": "object",
       "example": {
         "type": "group",
+        "view_type": "view_group",
         "display_properties": {
-          "view": "form_group",
           "orientation": "vertical"
         },
         "item": [
           {
+            "text": "Monthly OPD visits for adults >30 years old",
+            "type": "display",
+            "view_type": "sub_header"
+          },
+          {
+            "link_id": "outpatient_department_visits",
+            "text": "Outpatient department visits",
+            "type": "integer",
+            "view_type": "input_field",
+            "validations": {
+              "min": 0,
+              "max": 1000000
+            }
+          },
+          {
+            "type": "display",
+            "view_type": "separator"
+          },
+          {
             "text": "HTN & DM SCREENING",
             "type": "display",
-            "display_properties": {
-              "view": "header"
-            }
+            "view_type": "header"
           },
           {
             "text": "Total BP Checks done",
             "type": "display",
-            "display_properties": {
-              "view": "sub_header"
-            }
+            "view_type": "sub_header"
           },
           {
             "type": "group",
+            "view_type": "view_group",
             "display_properties": {
-              "view": "input_group",
               "orientation": "horizontal"
             },
             "item": [
@@ -2858,9 +2873,7 @@
                 "link_id": "blood_pressure_checks_male",
                 "text": "Male",
                 "type": "integer",
-                "display_properties": {
-                  "view": "input_field"
-                },
+                "view_type": "input_field",
                 "validations": {
                   "min": 0,
                   "max": 1000000
@@ -2870,9 +2883,7 @@
                 "link_id": "blood_pressure_checks_female",
                 "text": "Female",
                 "type": "integer",
-                "display_properties": {
-                  "view": "input_field"
-                },
+                "view_type": "input_field",
                 "validations": {
                   "min": 0,
                   "max": 1000000
@@ -2882,15 +2893,11 @@
           },
           {
             "type": "display",
-            "display_properties": {
-              "view": "separator"
-            }
+            "view_type": "separator"
           },
           {
             "type": "display",
-            "display_properties": {
-              "view": "line_separator"
-            }
+            "view_type": "line_separator"
           }
         ]
       },
@@ -2901,16 +2908,15 @@
             "group"
           ]
         },
+        "view_type": {
+          "type": "string",
+          "enum": [
+            "view_group"
+          ]
+        },
         "display_properties": {
           "type": "object",
           "properties": {
-            "view": {
-              "type": "string",
-              "enum": [
-                "form_group",
-                "input_group"
-              ]
-            },
             "orientation": {
               "type": "string",
               "enum": [
@@ -2920,7 +2926,6 @@
             }
           },
           "required": [
-            "view",
             "orientation"
           ]
         },
@@ -2943,7 +2948,13 @@
             ]
           }
         }
-      }
+      },
+      "required": [
+        "type",
+        "view_type",
+        "display_properties",
+        "item"
+      ]
     },
     "questionnaire_display_dsl_1": {
       "type": "object",
@@ -2957,26 +2968,18 @@
             "display"
           ]
         },
-        "display_properties": {
-          "type": "object",
-          "properties": {
-            "view": {
-              "type": "string",
-              "enum": [
-                "header",
-                "sub_header"
-              ]
-            }
-          },
-          "required": [
-            "view"
+        "view_type": {
+          "type": "string",
+          "enum": [
+            "header",
+            "sub_header"
           ]
         }
       },
       "required": [
         "text",
         "type",
-        "display_properties"
+        "view_type"
       ]
     },
     "questionnaire_line_break_dsl_1": {
@@ -2988,25 +2991,17 @@
             "display"
           ]
         },
-        "display_properties": {
-          "type": "object",
-          "properties": {
-            "view": {
-              "type": "string",
-              "enum": [
-                "separator",
-                "line_separator"
-              ]
-            }
-          },
-          "required": [
-            "view"
+        "view_type": {
+          "type": "string",
+          "enum": [
+            "separator",
+            "line_separator"
           ]
         }
       },
       "required": [
         "type",
-        "display_properties"
+        "view_type"
       ]
     },
     "questionnaire_integer_input_dsl_1": {
@@ -3024,18 +3019,10 @@
             "integer"
           ]
         },
-        "display_properties": {
-          "type": "object",
-          "properties": {
-            "view": {
-              "type": "string",
-              "enum": [
-                "input_field"
-              ]
-            }
-          },
-          "required": [
-            "view"
+        "view_type": {
+          "type": "string",
+          "enum": [
+            "input_field"
           ]
         },
         "validations": {
@@ -3058,7 +3045,7 @@
         "link_id",
         "text",
         "type",
-        "display_properties",
+        "view_type",
         "validations"
       ]
     },

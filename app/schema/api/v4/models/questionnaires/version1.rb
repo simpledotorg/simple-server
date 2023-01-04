@@ -20,13 +20,13 @@ class Api::V4::Models::Questionnaires::Version1
         example: Api::V4::Models::Questionnaires::MonthlyScreeningReport.layout,
         properties: {
           type: {type: :string, enum: %w[group]},
+          view_type: {type: :string, enum: %w[view_group]},
           display_properties: {
             type: :object,
             properties: {
-              view: {type: :string, enum: %w[form_group input_group]},
               orientation: {type: :string, enum: %w[horizontal vertical]}
             },
-            required: %w[view orientation]
+            required: %w[orientation]
           },
           item: {
             type: :array,
@@ -39,7 +39,8 @@ class Api::V4::Models::Questionnaires::Version1
               ]
             }
           }
-        }
+        },
+        required: %w[type view_type display_properties item]
       }
     end
 
@@ -48,15 +49,9 @@ class Api::V4::Models::Questionnaires::Version1
         type: :object,
         properties: {
           type: {type: :string, enum: %w[display]},
-          display_properties: {
-            type: :object,
-            properties: {
-              view: {type: :string, enum: %w[separator line_separator]}
-            },
-            required: %w[view]
-          }
+          view_type: {type: :string, enum: %w[separator line_separator]}
         },
-        required: %w[type display_properties]
+        required: %w[type view_type]
       }
     end
 
@@ -66,15 +61,9 @@ class Api::V4::Models::Questionnaires::Version1
         properties: {
           text: {type: :string},
           type: {type: :string, enum: %w[display]},
-          display_properties: {
-            type: :object,
-            properties: {
-              view: {type: :string, enum: %w[header sub_header]}
-            },
-            required: %w[view]
-          }
+          view_type: {type: :string, enum: %w[header sub_header]}
         },
-        required: %w[text type display_properties]
+        required: %w[text type view_type]
       }
     end
 
@@ -85,14 +74,7 @@ class Api::V4::Models::Questionnaires::Version1
           link_id: {type: :string},
           text: {type: :string},
           type: {type: :string, enum: %w[integer]},
-          display_properties:
-            {
-              type: :object,
-              properties: {
-                view: {type: :string, enum: %w[input_field]}
-              },
-              required: %w[view]
-            },
+          view_type: {type: :string, enum: %w[input_field]},
           validations: {
             type: :object,
             properties: {
@@ -102,7 +84,7 @@ class Api::V4::Models::Questionnaires::Version1
             required: %w[min max]
           }
         },
-        required: %w[link_id text type display_properties validations]
+        required: %w[link_id text type view_type validations]
       }
     end
   end
