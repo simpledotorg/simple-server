@@ -364,101 +364,59 @@ DashboardReports = () => {
     },
   
     diabetesVisitDetails: function(data) {
-      const config = createBaseGraphConfig();
-      config.type = "bar";
-
       const maxBarsToDisplay = 6;
       const barsToDisplay = Math.min(
           Object.keys(data.bsBelow200Rate).length,
           maxBarsToDisplay
       );
+      const config = {
+        data: {
+          labels: Object.keys(data.bsBelow200Rate).slice(-barsToDisplay),
+          datasets: [
+            {
+              label: "Blood sugar <200",
+              backgroundColor: colors.mediumGreen,
+              hoverBackgroundColor: colors.darkGreen,
+              data: Object.values(data.bsBelow200Rate).slice(-barsToDisplay),
+              type: "bar",
+            },
+            {
+              label: "Blood sugar 200-299",
+              backgroundColor: colors.amber,
+              hoverBackgroundColor: colors.darkAmber,
+              data: Object.values(data.bs200to300Rate).slice(-barsToDisplay),
+              type: "bar",
+            },
+            {
+              label: "Blood sugar ≥300",
+              backgroundColor: colors.mediumRed,
+              hoverBackgroundColor: colors.darkRed,
+              data: Object.values(data.bsOver300Rate).slice(-barsToDisplay),
+              type: "bar",
+            },
+            {
+              label: "Visit but no blood sugar measure",
+              backgroundColor: colors.mediumGrey,
+              hoverBackgroundColor: colors.darkGrey,
+              data: Object.values(data.visitButNoBSMeasureRate).slice(
+                  -barsToDisplay
+              ),
+              type: "bar",
+            },
+            {
+              label: "Missed visits",
+              backgroundColor: colors.mediumBlue,
+              hoverBackgroundColor: colors.darkBlue,
+              data: Object.values(data.diabetesMissedVisitsRate).slice(
+                  -barsToDisplay
+              ),
+              type: "bar",
+            },
+          ],
+        }
+      }
 
-      config.data = {
-        labels: Object.keys(data.bsBelow200Rate).slice(-barsToDisplay),
-        datasets: [
-          {
-            label: "Blood sugar <200",
-            backgroundColor: colors.mediumGreen,
-            hoverBackgroundColor: colors.darkGreen,
-            data: Object.values(data.bsBelow200Rate).slice(-barsToDisplay),
-            type: "bar",
-          },
-          {
-            label: "Blood sugar 200-299",
-            backgroundColor: colors.amber,
-            hoverBackgroundColor: colors.darkAmber,
-            data: Object.values(data.bs200to300Rate).slice(-barsToDisplay),
-            type: "bar",
-          },
-          {
-            label: "Blood sugar ≥300",
-            backgroundColor: colors.mediumRed,
-            hoverBackgroundColor: colors.darkRed,
-            data: Object.values(data.bsOver300Rate).slice(-barsToDisplay),
-            type: "bar",
-          },
-          {
-            label: "Visit but no blood sugar measure",
-            backgroundColor: colors.mediumGrey,
-            hoverBackgroundColor: colors.darkGrey,
-            data: Object.values(data.visitButNoBSMeasureRate).slice(
-                -barsToDisplay
-            ),
-            type: "bar",
-          },
-          {
-            label: "Missed visits",
-            backgroundColor: colors.mediumBlue,
-            hoverBackgroundColor: colors.darkBlue,
-            data: Object.values(data.diabetesMissedVisitsRate).slice(
-                -barsToDisplay
-            ),
-            type: "bar",
-          },
-        ],
-      };
-      config.options.scales = {
-        xAxes: [
-          {
-            stacked: true,
-            display: true,
-            gridLines: {
-              display: false,
-              drawBorder: false,
-            },
-            ticks: {
-              autoSkip: false,
-              fontColor: colors.darkGrey,
-              fontSize: 12,
-              fontFamily: "Roboto",
-              padding: 8,
-              min: 0,
-              beginAtZero: true,
-            },
-          },
-        ],
-        yAxes: [
-          {
-            stacked: true,
-            display: false,
-            gridLines: {
-              display: false,
-              drawBorder: false,
-            },
-            ticks: {
-              autoSkip: false,
-              fontColor: colors.darkGrey,
-              fontSize: 10,
-              fontFamily: "Roboto",
-              padding: 8,
-              min: 0,
-              beginAtZero: true,
-            },
-          },
-        ],
-      };
-
-      return config;
+      return withBaseBarConfig(config);
     },
     MedicationsDispensation: function(data) {
       const config = createBaseGraphConfig();
