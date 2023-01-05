@@ -19,7 +19,7 @@ RSpec.describe "Questionnaires sync", type: :request do
 
   before do
     stub_questionnaire_types.take(5).each do |questionnaire_type|
-      create(:questionnaire, questionnaire_type: questionnaire_type, dsl_version: dsl_version)
+      create(:questionnaire, :active, questionnaire_type: questionnaire_type, dsl_version: dsl_version)
     end
   end
 

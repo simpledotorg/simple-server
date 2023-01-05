@@ -23,7 +23,7 @@ describe Api::V4::QuestionnairesController, type: :controller do
     @used_questionnaire_types ||= []
     (@questionnaire_types - @used_questionnaire_types).take(n).map do |questionnaire_type|
       @used_questionnaire_types << questionnaire_type
-      create(:questionnaire, questionnaire_type: questionnaire_type, dsl_version: dsl_version, **options)
+      create(:questionnaire, :active, questionnaire_type: questionnaire_type, dsl_version: dsl_version, **options)
     end
   end
 
@@ -135,14 +135,22 @@ describe Api::V4::QuestionnairesController, type: :controller do
     end
 
     it "returns questionnaires only for given DSL Version" do
-      version_1_questionnaire = create(:questionnaire, questionnaire_type: "monthly_screening_reports", dsl_version: 1)
-      version_2_questionnaire = create(:questionnaire, questionnaire_type: "monthly_screening_reports", dsl_version: 2)
+      version_1_questionnaire = create(:questionnaire, :active, questionnaire_type: "monthly_screening_reports", dsl_version: 1)
+      version_2_questionnaire = create(:questionnaire, :active, questionnaire_type: "monthly_screening_reports", dsl_version: 2)
 
       get :sync_to_user, params: {dsl_version: 1}
       expect(JSON(response.body)["questionnaires"].first["id"]).to eq version_1_questionnaire.id
 
       get :sync_to_user, params: {dsl_version: 2}
       expect(JSON(response.body)["questionnaires"].first["id"]).to eq version_2_questionnaire.id
+    end
+
+    it "returns only one questionnaire per questionnaire_type" do
+      _inactive_questionnaire = create(:questionnaire, questionnaire_type: "monthly_screening_reports", dsl_version: 1)
+      active_questionnaire = create(:questionnaire, :active, questionnaire_type: "monthly_screening_reports", dsl_version: 1)
+
+      get :sync_to_user, params: {dsl_version: 1}
+      expect(JSON(response.body)["questionnaires"].pluck("id")).to contain_exactly active_questionnaire.id
     end
 
     it "returns 400 when DSL version isn't given" do

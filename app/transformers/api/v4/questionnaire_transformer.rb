@@ -5,13 +5,11 @@ class Api::V4::QuestionnaireTransformer < Api::V4::Transformer
         .as_json
         .except(
           "dsl_version",
-          "version_id",
+          "is_active",
+          "created_at",
           "updated_at"
         )
-        .merge(
-          "id" => questionnaire.version_id,
-          "layout" => questionnaire.localized_layout
-        )
+        .merge("layout" => questionnaire.localized_layout)
     end
   end
 end

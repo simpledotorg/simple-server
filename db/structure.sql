@@ -1552,27 +1552,17 @@ CREATE TABLE public.protocols (
 
 
 --
--- Name: questionnaire_versions; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.questionnaire_versions (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
-    questionnaire_type character varying NOT NULL,
-    dsl_version integer NOT NULL,
-    layout jsonb NOT NULL,
-    created_at timestamp without time zone NOT NULL
-);
-
-
---
 -- Name: questionnaires; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.questionnaires (
-    version_id uuid NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     questionnaire_type character varying NOT NULL,
     dsl_version integer NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    is_active boolean NOT NULL,
+    layout jsonb NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     deleted_at timestamp without time zone
 );
 
@@ -4955,11 +4945,11 @@ ALTER TABLE ONLY public.protocols
 
 
 --
--- Name: questionnaire_versions questionnaire_versions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: questionnaires questionnaires_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.questionnaire_versions
-    ADD CONSTRAINT questionnaire_versions_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.questionnaires
+    ADD CONSTRAINT questionnaires_pkey PRIMARY KEY (id);
 
 
 --
@@ -5987,17 +5977,10 @@ CREATE UNIQUE INDEX index_qfs_quarter_string_region_id ON public.reporting_quart
 
 
 --
--- Name: index_questionnaire_versions_uniqueness; Type: INDEX; Schema: public; Owner: -
+-- Name: index_questionnaires_uniqueness; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_questionnaire_versions_uniqueness ON public.questionnaire_versions USING btree (id, questionnaire_type, dsl_version);
-
-
---
--- Name: index_questionnaires_on_questionnaire_type_and_dsl_version; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_questionnaires_on_questionnaire_type_and_dsl_version ON public.questionnaires USING btree (questionnaire_type, dsl_version);
+CREATE UNIQUE INDEX index_questionnaires_uniqueness ON public.questionnaires USING btree (questionnaire_type, dsl_version, is_active) WHERE (is_active = true);
 
 
 --
@@ -6292,14 +6275,6 @@ CREATE UNIQUE INDEX reporting_prescriptions_patient_month_date ON public.reporti
 --
 
 CREATE UNIQUE INDEX user_authentications_master_users_authenticatable_uniq_index ON public.user_authentications USING btree (user_id, authenticatable_type, authenticatable_id);
-
-
---
--- Name: questionnaires fk_questionnaire_versions_id_type_dsl; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.questionnaires
-    ADD CONSTRAINT fk_questionnaire_versions_id_type_dsl FOREIGN KEY (version_id, questionnaire_type, dsl_version) REFERENCES public.questionnaire_versions(id, questionnaire_type, dsl_version);
 
 
 --
@@ -6696,6 +6671,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20221122081032'),
 ('20221212061852'),
 ('20221216093905'),
-('20230103063720');
+('20230103063720'),
+('20230104104248');
 
 
