@@ -69,39 +69,6 @@ DashboardReports = () => {
     };
   };
 
-  const createBaseGraphConfig = () => {
-    return {
-      type: "line",
-      options: {
-        animation: false,
-        responsive: true,
-        maintainAspectRatio: false,
-        layout: {
-          padding: {
-            left: 0,
-            right: 0,
-            top: 20,
-            bottom: 0,
-          },
-        },
-        elements: {
-          point: {
-            pointStyle: "circle",
-            hoverRadius: 5,
-          },
-        },
-        legend: {
-          display: false,
-        },
-        hover: {
-          mode: "index",
-          intersect: false,
-        },
-      },
-      plugins: [intersectDataVerticalLine],
-    };
-  };
-
   const ReportsGraphConfig = {
     bsBelow200PatientsTrend: function (data) {
       const config = {
@@ -1293,39 +1260,6 @@ Reports = function (withLtfu) {
       bsOver300WithLtfuRate: jsonData.bs_over_300_with_ltfu_rates,
       visitButNoBSMeasure: jsonData.visited_without_bs_taken,
       visitButNoBSMeasureRate: jsonData.visited_without_bs_taken_rates,
-    };
-  };
-
-  this.createBaseGraphConfig = () => {
-    return {
-      type: "line",
-      options: {
-        animation: false,
-        responsive: true,
-        maintainAspectRatio: false,
-        layout: {
-          padding: {
-            left: 0,
-            right: 0,
-            top: 20,
-            bottom: 0,
-          },
-        },
-        elements: {
-          point: {
-            pointStyle: "circle",
-            hoverRadius: 5,
-          },
-        },
-        legend: {
-          display: false,
-        },
-        hover: {
-          mode: "index",
-          intersect: false,
-        },
-      },
-      plugins: [intersectDataVerticalLine],
     };
   };
 
