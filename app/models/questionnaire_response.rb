@@ -3,5 +3,5 @@ class QuestionnaireResponse < ApplicationRecord
 
   scope :for_sync, -> { with_discarded }
 
-#  TODO: do union of 2 `contents`, preferring latest updated_at in case of conflicts.
+  #  TODO: do union of 2 `contents`, preferring latest updated_at in case of conflicts.
 end
