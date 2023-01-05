@@ -6,7 +6,7 @@ RSpec.describe Api::V4::QuestionnaireTransformer do
       questionnaire = create(:questionnaire)
 
       expect(described_class.to_response(questionnaire)).to eq({
-        id: questionnaire.version_id,
+        id: questionnaire.id,
         questionnaire_type: questionnaire.questionnaire_type,
         deleted_at: nil,
         layout: questionnaire.localized_layout

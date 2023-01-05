@@ -1,13 +1,22 @@
 FactoryBot.define do
   factory :questionnaire do
-    version_id { SecureRandom.uuid }
+    id { SecureRandom.uuid }
     questionnaire_type { "monthly_screening_reports" }
     dsl_version { 1 }
-    questionnaire_version do
-      association :questionnaire_version, strategy: :create,
-                  id: version_id,
-                  dsl_version: dsl_version,
-                  questionnaire_type: questionnaire_type
+    is_active { false }
+    layout {
+      {
+        type: "group",
+        view_type: "view_group",
+        display_properties: {
+          orientation: "vertical"
+        },
+        item: []
+      }
+    }
+
+    trait :active do
+      is_active { true }
     end
   end
 end

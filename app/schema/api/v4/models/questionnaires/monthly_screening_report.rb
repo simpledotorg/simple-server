@@ -3,29 +3,44 @@ class Api::V4::Models::Questionnaires::MonthlyScreeningReport
     def layout
       {
         type: "group",
+        view_type: "view_group",
         display_properties: {
-          view: "form_group",
           orientation: "vertical"
         },
         item: [
           {
+            text: "Monthly OPD visits for adults >30 years old",
+            type: "display",
+            view_type: "sub_header"
+          },
+          {
+            link_id: "outpatient_department_visits",
+            text: "Outpatient department visits",
+            type: "integer",
+            view_type: "input_field",
+            validations: {
+              min: 0,
+              max: 1000000
+            }
+          },
+          {
+            type: "display",
+            view_type: "separator"
+          },
+          {
             text: "HTN & DM SCREENING",
             type: "display",
-            display_properties: {
-              view: "header"
-            }
+            view_type: "header"
           },
           {
             text: "Total BP Checks done",
             type: "display",
-            display_properties: {
-              view: "sub_header"
-            }
+            view_type: "sub_header"
           },
           {
             type: "group",
+            view_type: "view_group",
             display_properties: {
-              view: "input_group",
               orientation: "horizontal"
             },
             item: [
@@ -33,9 +48,7 @@ class Api::V4::Models::Questionnaires::MonthlyScreeningReport
                 link_id: "blood_pressure_checks_male",
                 text: "Male",
                 type: "integer",
-                display_properties: {
-                  view: "input_field"
-                },
+                view_type: "input_field",
                 validations: {
                   min: 0,
                   max: 1000000
@@ -45,9 +58,7 @@ class Api::V4::Models::Questionnaires::MonthlyScreeningReport
                 link_id: "blood_pressure_checks_female",
                 text: "Female",
                 type: "integer",
-                display_properties: {
-                  view: "input_field"
-                },
+                view_type: "input_field",
                 validations: {
                   min: 0,
                   max: 1000000
@@ -57,15 +68,11 @@ class Api::V4::Models::Questionnaires::MonthlyScreeningReport
           },
           {
             type: "display",
-            display_properties: {
-              view: "separator"
-            }
+            view_type: "separator"
           },
           {
             type: "display",
-            display_properties: {
-              view: "line_separator"
-            }
+            view_type: "line_separator"
           }
         ]
       }
