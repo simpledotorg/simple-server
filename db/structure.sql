@@ -1557,12 +1557,12 @@ CREATE TABLE public.protocols (
 
 CREATE TABLE public.questionnaire_responses (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
-    questionnaire_id uuid,
-    facility_id uuid,
+    questionnaire_id uuid NOT NULL,
+    facility_id uuid NOT NULL,
     user_id uuid,
-    content jsonb,
-    device_created_at timestamp without time zone,
-    device_updated_at timestamp without time zone,
+    content jsonb DEFAULT '{}'::jsonb NOT NULL,
+    device_created_at timestamp without time zone NOT NULL,
+    device_updated_at timestamp without time zone NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
     deleted_at timestamp without time zone
@@ -6562,6 +6562,14 @@ ALTER TABLE ONLY public.teleconsultations
 
 ALTER TABLE ONLY public.facilities
     ADD CONSTRAINT fk_rails_c44117c78f FOREIGN KEY (facility_group_id) REFERENCES public.facility_groups(id);
+
+
+--
+-- Name: questionnaire_responses fk_rails_cd769e0a12; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.questionnaire_responses
+    ADD CONSTRAINT fk_rails_cd769e0a12 FOREIGN KEY (questionnaire_id) REFERENCES public.questionnaires(id);
 
 
 --
