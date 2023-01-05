@@ -33,6 +33,7 @@ class ProgressTab::YearlyReportComponentV2 < ApplicationComponent
   memoize def last_n_years
     years = (SIMPLE_START_YEAR..Date.current.year).to_a.reverse
     if report_in_financial_year?
+      years.delete(Date.current.year) if Date.current.month < FINANCIAL_YEAR_START_MONTH
       years.push(SIMPLE_START_YEAR - 1)
     end
 
