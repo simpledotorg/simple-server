@@ -1513,6 +1513,74 @@ function baseLineGraphConfig() {
   };
 }
 
+function baseBarChartConfig() {
+  const colors = dashboardReportsChartJSColors()
+  return {
+    type: "bar",
+    options: {
+      animation: false,
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 20,
+          bottom: 0,
+        },
+      },
+      legend: {
+        display: false,
+      },
+      hover: {
+        mode: "index",
+        intersect: false,
+      },
+      scales: {
+        xAxes: [
+          {
+            stacked: true,
+            display: true,
+            gridLines: {
+              display: false,
+              drawBorder: false,
+            },
+            ticks: {
+              autoSkip: false,
+              fontColor: colors.darkGrey,
+              fontSize: 12,
+              fontFamily: "Roboto",
+              padding: 8,
+              min: 0,
+              beginAtZero: true,
+            },
+          },
+        ],
+        yAxes: [
+          {
+            stacked: true,
+            display: false,
+            gridLines: {
+              display: false,
+              drawBorder: false,
+            },
+            ticks: {
+              autoSkip: false,
+              fontColor: colors.darkGrey,
+              fontSize: 10,
+              fontFamily: "Roboto",
+              padding: 8,
+              min: 0,
+              beginAtZero: true,
+            },
+          },
+        ],
+      }
+    },
+    plugins: [intersectDataVerticalLine],
+  }
+}
+
 // [plugin] vertical instersect line
 const intersectDataVerticalLine = {
   id: "intersectDataVerticalLine",
@@ -1546,6 +1614,14 @@ const intersectDataVerticalLine = {
 function withBaseLineConfig(config) {
   return _.mergeWith(
     baseLineGraphConfig(),
+    config,
+    mergeArraysWithConcatenation
+  );
+}
+
+function withBaseBarConfig(config) {
+  return _.mergeWith(
+    baseBarChartConfig(),
     config,
     mergeArraysWithConcatenation
   );
