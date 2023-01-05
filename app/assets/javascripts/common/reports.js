@@ -1079,102 +1079,61 @@ Reports = function (withLtfu) {
   };
 
   this.setupVisitDetailsGraph = (data) => {
-    const visitDetailsGraphConfig = this.createBaseGraphConfig();
-    visitDetailsGraphConfig.type = "bar";
-
     const maxBarsToDisplay = 6;
     const barsToDisplay = Math.min(
       Object.keys(data.controlRate).length,
       maxBarsToDisplay
     );
-
-    visitDetailsGraphConfig.data = {
-      labels: Object.keys(data.controlRate).slice(-barsToDisplay),
-      datasets: [
-        {
-          label: "BP controlled",
-          backgroundColor: colors.mediumGreen,
-          hoverBackgroundColor: colors.darkGreen,
-          data: Object.values(data.controlRate).slice(-barsToDisplay),
-          type: "bar",
-        },
-        {
-          label: "BP uncontrolled",
-          backgroundColor: colors.mediumRed,
-          hoverBackgroundColor: colors.darkRed,
-          data: Object.values(data.uncontrolledRate).slice(-barsToDisplay),
-          type: "bar",
-        },
-        {
-          label: "Visit but no BP measure",
-          backgroundColor: colors.mediumGrey,
-          hoverBackgroundColor: colors.darkGrey,
-          data: Object.values(data.visitButNoBPMeasureRate).slice(
-            -barsToDisplay
-          ),
-          type: "bar",
-        },
-        {
-          label: "Missed visits",
-          backgroundColor: colors.mediumBlue,
-          hoverBackgroundColor: colors.darkBlue,
-          data: Object.values(data.missedVisitsRate).slice(-barsToDisplay),
-          type: "bar",
-        },
-      ],
-    };
-    visitDetailsGraphConfig.options.scales = {
-      xAxes: [
-        {
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: false,
+    const config = {
+      data: {
+        labels: Object.keys(data.controlRate).slice(-barsToDisplay),
+        datasets: [
+          {
+            label: "BP controlled",
+            backgroundColor: colors.mediumGreen,
+            hoverBackgroundColor: colors.darkGreen,
+            data: Object.values(data.controlRate).slice(-barsToDisplay),
+            type: "bar",
           },
-          ticks: {
-            autoSkip: false,
-            fontColor: colors.darkGrey,
-            fontSize: 12,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
+          {
+            label: "BP uncontrolled",
+            backgroundColor: colors.mediumRed,
+            hoverBackgroundColor: colors.darkRed,
+            data: Object.values(data.uncontrolledRate).slice(-barsToDisplay),
+            type: "bar",
           },
-        },
-      ],
-      yAxes: [
-        {
-          stacked: true,
-          display: false,
-          gridLines: {
-            display: false,
-            drawBorder: false,
+          {
+            label: "Visit but no BP measure",
+            backgroundColor: colors.mediumGrey,
+            hoverBackgroundColor: colors.darkGrey,
+            data: Object.values(data.visitButNoBPMeasureRate).slice(
+              -barsToDisplay
+            ),
+            type: "bar",
           },
-          ticks: {
-            autoSkip: false,
-            fontColor: colors.darkGrey,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
+          {
+            label: "Missed visits",
+            backgroundColor: colors.mediumBlue,
+            hoverBackgroundColor: colors.darkBlue,
+            data: Object.values(data.missedVisitsRate).slice(-barsToDisplay),
+            type: "bar",
           },
-        },
-      ],
-    };
-
-    visitDetailsGraphConfig.options.tooltips = {
-      enabled: false,
-      mode: "index",
-      intersect: false,
-      custom: (tooltip) => {
-        let hoveredDatapoint = tooltip.dataPoints;
-        if (hoveredDatapoint)
-          populateVisitDetailsGraph(hoveredDatapoint[0].label);
-        else populateVisitDetailsGraphDefault();
+        ],
       },
-    };
+      options: {
+        tooltips: {
+          enabled: false,
+          mode: "index",
+          intersect: false,
+          custom: (tooltip) => {
+            let hoveredDatapoint = tooltip.dataPoints;
+            if (hoveredDatapoint)
+              populateVisitDetailsGraph(hoveredDatapoint[0].label);
+            else populateVisitDetailsGraphDefault();
+          },
+        }
+      }
+    }
 
     const populateVisitDetailsGraph = (period) => {
       const cardNode = document.getElementById("visit-details");
@@ -1271,7 +1230,7 @@ Reports = function (withLtfu) {
     if (visitDetailsGraphCanvas) {
       new Chart(
         visitDetailsGraphCanvas.getContext("2d"),
-        visitDetailsGraphConfig
+        withBaseBarConfig(config)
       );
       populateVisitDetailsGraphDefault();
     }
