@@ -4973,7 +4973,6 @@ ALTER TABLE ONLY public.questionnaire_responses
 --
 -- Name: questionnaires questionnaires_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
-
 ALTER TABLE ONLY public.questionnaires
     ADD CONSTRAINT questionnaires_pkey PRIMARY KEY (id);
 
