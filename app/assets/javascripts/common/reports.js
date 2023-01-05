@@ -419,7 +419,6 @@ DashboardReports = () => {
       return withBaseBarConfig(config);
     },
     MedicationsDispensation: function(data) {
-      const config = createBaseGraphConfig();
       const graphPeriods = Object.keys(Object.values(data)[0]["counts"])
 
       let datasets = Object.keys(data).map(function (bucket, index) {
@@ -432,16 +431,68 @@ DashboardReports = () => {
           backgroundColor: data[bucket]["color"],
         };
       });
+      const config = {
+        data: {
+          labels: graphPeriods,
+          datasets: datasets,
+        },
+        options: {
+          hover: {
+            mode: "x"
+          },
+          plugins: {
+            datalabels: {
+              align: "end",
+              color: "black",
+              anchor: "end",
+              offset: 1,
+              font: {
+                family: "Roboto Condensed",
+                size: 12,
+              },
+              formatter: function (value) {
+                return value + "%";
+              },
+            },
+          },
+          tooltips: {
+            mode: "x",
+            intersect: false,
+            displayColors: false,
+            xAlign: "center",
+            yAlign: "top",
+            xPadding: 6,
+            yPadding: 6,
+            caretSize: 3,
+            caretPadding: 1,
+            callbacks: {
+              title: function () {
+                return "";
+              },
+              label: function (tooltipItem, data) {
+                let numerators = Object.values(
+                    data.datasets[tooltipItem.datasetIndex].numerators
+                );
+                let denominators = Object.values(
+                    data.datasets[tooltipItem.datasetIndex].denominators
+                );
+                return (
+                    formatNumberWithCommas(numerators[tooltipItem.index]) +
+                    " of " +
+                    formatNumberWithCommas(denominators[tooltipItem.index]) +
+                    " follow-up patients"
+                );
+              },
+            },
+          }
+        },
+        plugins: [ChartDataLabels],
+      }
 
-      // This is a plugin and is expected to be loaded before creating this graph
-      config.plugins = [ChartDataLabels, intersectDataVerticalLine];
-      config.type = "bar";
-      config.data = {
-        labels: graphPeriods,
-        datasets: datasets,
-      };
+      const medicationsDispensationConfig = withBaseBarConfig(config)
 
-      config.options.scales = {
+      // will dry after update
+      medicationsDispensationConfig.options.scales = {
         xAxes: [
           {
             stacked: false,
@@ -485,55 +536,7 @@ DashboardReports = () => {
           },
         ],
       };
-
-      config.options.plugins = {
-        datalabels: {
-          align: "end",
-          color: "black",
-          anchor: "end",
-          offset: 1,
-          font: {
-            family: "Roboto Condensed",
-            size: 12,
-          },
-          formatter: function (value) {
-            return value + "%";
-          },
-        },
-      };
-
-      config.options.tooltips = {
-        mode: "x",
-        intersect: false,
-        displayColors: false,
-        xAlign: "center",
-        yAlign: "top",
-        xPadding: 6,
-        yPadding: 6,
-        caretSize: 3,
-        caretPadding: 1,
-        callbacks: {
-          title: function () {
-            return "";
-          },
-          label: function (tooltipItem, data) {
-            let numerators = Object.values(
-                data.datasets[tooltipItem.datasetIndex].numerators
-            );
-            let denominators = Object.values(
-                data.datasets[tooltipItem.datasetIndex].denominators
-            );
-            return (
-                formatNumberWithCommas(numerators[tooltipItem.index]) +
-                " of " +
-                formatNumberWithCommas(denominators[tooltipItem.index]) +
-                " follow-up patients"
-            );
-          },
-        },
-      };
-      config.options.hover.mode = "x";
-      return config;
+      return medicationsDispensationConfig;
     },
     
     lostToFollowUpTrend: function (data) {
