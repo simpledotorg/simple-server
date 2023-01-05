@@ -1552,6 +1552,24 @@ CREATE TABLE public.protocols (
 
 
 --
+-- Name: questionnaire_responses; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.questionnaire_responses (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    questionnaire_id uuid,
+    facility_id uuid,
+    user_id uuid,
+    content jsonb,
+    device_created_at timestamp without time zone,
+    device_updated_at timestamp without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    deleted_at timestamp without time zone
+);
+
+
+--
 -- Name: questionnaires; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -4945,6 +4963,14 @@ ALTER TABLE ONLY public.protocols
 
 
 --
+-- Name: questionnaire_responses questionnaire_responses_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.questionnaire_responses
+    ADD CONSTRAINT questionnaire_responses_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: questionnaires questionnaires_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5977,6 +6003,27 @@ CREATE UNIQUE INDEX index_qfs_quarter_string_region_id ON public.reporting_quart
 
 
 --
+-- Name: index_questionnaire_responses_on_facility_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_questionnaire_responses_on_facility_id ON public.questionnaire_responses USING btree (facility_id);
+
+
+--
+-- Name: index_questionnaire_responses_on_updated_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_questionnaire_responses_on_updated_at ON public.questionnaire_responses USING btree (updated_at);
+
+
+--
+-- Name: index_questionnaires_on_updated_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_questionnaires_on_updated_at ON public.questionnaires USING btree (updated_at);
+
+
+--
 -- Name: index_questionnaires_uniqueness; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -6672,6 +6719,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20221212061852'),
 ('20221216093905'),
 ('20230103063720'),
-('20230104104248');
+('20230104104248'),
+('20230105062307');
 
 
