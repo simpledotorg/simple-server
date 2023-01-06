@@ -1297,6 +1297,7 @@ function baseLineGraphConfig() {
     type: "line",
     options: {
       animation: false,
+      clip: false,
       responsive: true,
       maintainAspectRatio: false,
       layout: {
@@ -1312,55 +1313,60 @@ function baseLineGraphConfig() {
           pointStyle: "circle",
           hoverRadius: 5,
         },
+        line: {
+          tension: 0.4
+        }
       },
-      legend: {
-        display: false,
-      },
-      hover: {
+      interaction: {
         mode: "index",
         intersect: false,
       },
+      plugins: {
+        legend: {
+          display: false,
+        },
+      },
       scales: {
-        xAxes: [
-          {
-            stacked: false,
-            display: true,
-            gridLines: {
-              display: false,
-              drawBorder: true,
-            },
-            ticks: {
-              autoSkip: false,
-              fontColor: colors.darkGrey,
-              fontSize: 12,
-              fontFamily: "Roboto",
-              padding: 8,
-              min: 0,
-              beginAtZero: true,
-            },
+        x: {
+          stacked: false,
+          display: true,
+          grid: {
+            display: false,
+            drawBorder: true,
           },
-        ],
-        yAxes: [
-          {
-            stacked: false,
-            display: true,
-            gridLines: {
-              display: true,
-              drawBorder: false,
+          ticks: {
+            autoSkip: false,
+            font: {
+              fontColor: colors.darkGrey, // not working!
+              size: 12, // default is 12
+              family: "Roboto",
             },
-            ticks: {
-              autoSkip: false,
-              fontColor: colors.darkGrey,
-              fontSize: 10,
-              fontFamily: "Roboto",
-              padding: 8,
-              min: 0,
-              beginAtZero: true,
-              stepSize: 25,
-              max: 100,
-            },
+            padding: 8,
           },
-        ],
+          beginAtZero: true,
+          min: 0,
+        },
+        y: {
+          stacked: false,
+          display: true,
+          grid: {
+            display: true,
+            drawBorder: false,
+          },
+          ticks: {
+            autoSkip: false,
+            font: {
+              color: colors.darkGrey,
+              size: 10,
+              family: "Roboto",
+            },
+            padding: 8,
+            stepSize: 25, // unitStepSize??
+          },
+          beginAtZero: true,
+          min: 0,
+          max: 100,
+        },
       },
     },
     plugins: [intersectDataVerticalLine],
