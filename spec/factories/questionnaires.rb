@@ -35,3 +35,11 @@ def stub_questionnaire_types(number_of_types = 15)
 
   questionnaire_types.keys
 end
+
+def build_questionnaire_response_payload(questionnaire_response = FactoryBot.build(:questionnaire_response))
+  Api::V3::Transformer.to_response(questionnaire_response).with_indifferent_access
+end
+
+def build_invalid_questionnaire_response_payload
+  build_questionnaire_response_payload.merge("created_at" => nil)
+end
