@@ -1389,52 +1389,54 @@ function baseBarChartConfig() {
           bottom: 0,
         },
       },
-      legend: {
-        display: false,
+      plugins: {
+        legend: {
+          display: false,
+        },
       },
-      hover: {
+      interaction: {
         mode: "index",
         intersect: false,
       },
       scales: {
-        xAxes: [
-          {
-            stacked: true,
-            display: true,
-            gridLines: {
-              display: false,
-              drawBorder: false,
-            },
-            ticks: {
-              autoSkip: false,
-              fontColor: colors.darkGrey,
-              fontSize: 12,
-              fontFamily: "Roboto",
-              padding: 8,
-              min: 0,
-              beginAtZero: true,
-            },
-          },
-        ],
-        yAxes: [
-          {
-            stacked: true,
+        x: {
+          stacked: true,
+          display: true,
+          grid: {
             display: false,
-            gridLines: {
-              display: false,
-              drawBorder: false,
-            },
-            ticks: {
-              autoSkip: false,
-              fontColor: colors.darkGrey,
-              fontSize: 10,
-              fontFamily: "Roboto",
-              padding: 8,
-              min: 0,
-              beginAtZero: true,
-            },
+            drawBorder: false,
           },
-        ],
+          ticks: {
+            autoSkip: false,
+            font: {
+              color: colors.darkGrey,
+              size: 12,
+              family: "Roboto",
+            },
+            padding: 8,
+          },
+          min: 0,
+          beginAtZero: true,
+        },
+        y: {
+          stacked: true,
+          display: false,
+          grid: {
+            display: false,
+            drawBorder: false,
+          },
+          ticks: {
+            autoSkip: false,
+            font: {
+              color: colors.darkGrey,
+              size: 10,
+              family: "Roboto",
+            },
+            padding: 8,
+          },
+          min: 0,
+          beginAtZero: true,
+        },
       }
     },
     plugins: [intersectDataVerticalLine],
