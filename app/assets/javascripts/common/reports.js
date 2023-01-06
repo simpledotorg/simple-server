@@ -1446,8 +1446,8 @@ const intersectDataVerticalLine = {
       const chartArea = chart.chartArea;
       // grey vertical hover line - full chart height
       ctx.beginPath();
-      ctx.moveTo(activePoint._model.x, chartArea.top);
-      ctx.lineTo(activePoint._model.x, chartArea.bottom);
+      ctx.moveTo(activePoint.element.x, chartArea.top);
+      ctx.lineTo(activePoint.element.x, chartArea.bottom);
       ctx.lineWidth = 2;
       ctx.strokeStyle = "rgba(0,0,0, 0.1)";
       ctx.stroke();
@@ -1455,8 +1455,8 @@ const intersectDataVerticalLine = {
       // colored vertical hover line - ['node' point to chart bottom] - only for line graphs (graphs with 1 data point)
       if (chart.tooltip._active.length === 1) {
         ctx.beginPath();
-        ctx.moveTo(activePoint._model.x, activePoint._model.y);
-        ctx.lineTo(activePoint._model.x, chartArea.bottom);
+        ctx.moveTo(activePoint.element.x, activePoint.element.y);
+        ctx.lineTo(activePoint.element.x, chartArea.bottom);
         ctx.lineWidth = 2;
         ctx.stroke();
         ctx.restore();
