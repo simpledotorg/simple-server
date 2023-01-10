@@ -59,8 +59,7 @@ class Api::V4::QuestionnaireResponsesController < Api::V4::SyncController
       {errors_hash: validator.errors_hash}
     else
       transformed_params = Api::V4::QuestionnaireResponseTransformer.from_request(questionnaire_response_params)
-      # merge transformed_params into DB
-      {record: QuestionnaireResponse.merge_with_content(transformed_params)}
+      {record: QuestionnaireResponse.merge(transformed_params)}
     end
   end
 end
