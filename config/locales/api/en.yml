@@ -448,6 +448,7 @@ en:
   monthly_screening_reports:
     male: "Male"
     female: "Female"
+    transgender: "Transgender"
     monthly_opd_visits_gt_30: "Monthly OPD visits for adults >30 years old"
     monthly_opd_visits_gt_18: "Monthly OPD visits for adults >18 years old"
     outpatient_department_visits: "Outpatient department visits"
