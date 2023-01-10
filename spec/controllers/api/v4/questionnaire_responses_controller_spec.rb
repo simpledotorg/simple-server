@@ -38,7 +38,7 @@ RSpec.describe Api::V4::QuestionnaireResponsesController, type: :controller do
       create_record_list(3, facility: other_facility)
 
       set_authentication_headers
-      get :sync_to_user, params: { limit: 4 }
+      get :sync_to_user, params: {limit: 4}
       response_1_body = JSON(response.body)
 
       expect(response_1_body["questionnaire_responses"].pluck("id")).to match_array questionnaire_responses.pluck(:id)
@@ -50,14 +50,14 @@ RSpec.describe Api::V4::QuestionnaireResponsesController, type: :controller do
       questionnaire_responses = create_record_list(3, facility: other_facility)
 
       set_authentication_headers
-      get :sync_to_user, params: { limit: 4 }
+      get :sync_to_user, params: {limit: 4}
       response_1_body = JSON(response.body)
       process_token = response_1_body["process_token"]
 
       reset_controller
 
       request.env["HTTP_X_FACILITY_ID"] = other_facility.id
-      get :sync_to_user, params: { limit: 4, process_token: process_token }
+      get :sync_to_user, params: {limit: 4, process_token: process_token}
       response_2_body = JSON(response.body)
 
       expect(response_2_body["questionnaire_responses"].pluck("id")).to match_array questionnaire_responses.pluck(:id)
@@ -93,7 +93,8 @@ RSpec.describe Api::V4::QuestionnaireResponsesController, type: :controller do
           process_token: make_process_token(
             current_facility_processed_since: 10.minutes.ago,
             current_facility_id: request_facility.id
-          ) }
+          )
+        }
 
         response_body = JSON(response.body)
         expect(response_body[response_key].count).to eq 5
@@ -112,7 +113,8 @@ RSpec.describe Api::V4::QuestionnaireResponsesController, type: :controller do
           process_token: make_process_token(
             current_facility_processed_since: sync_time,
             current_facility_id: request_facility.id
-          ) }
+          )
+        }
         response_body = JSON(response.body)
         response_process_token = parse_process_token(response_body)
         expect(response_body[response_key].count).to eq 0

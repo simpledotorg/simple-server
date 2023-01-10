@@ -3,6 +3,10 @@ class Api::V4::QuestionnaireResponsesController < Api::V4::SyncController
     __sync_to_user__("questionnaire_responses")
   end
 
+  def sync_from_user
+    __sync_from_user__(questionnaire_responses_params)
+  end
+
   def current_facility_records
     @current_facility_records ||=
       QuestionnaireResponse
@@ -31,5 +35,32 @@ class Api::V4::QuestionnaireResponsesController < Api::V4::SyncController
 
   def force_resync?
     resync_token_modified?
+  end
+
+  def questionnaire_responses_params
+    params.require(:questionnaire_responses).map do |questionnaire_response_params|
+      questionnaire_response_params.permit(
+        :id,
+        :questionnaire_id,
+        :facility_id,
+        :user_id,
+        :content,
+        :created_at,
+        :updated_at,
+        :deleted_at
+      )
+    end
+  end
+
+  def merge_if_valid(questionnaire_response_params)
+    validator = Api::V4::QuestionnaireResponsePayloadValidator.new(questionnaire_response_params)
+    logger.debug "Questionnaire response payload had errors: #{validator.errors_hash}" if validator.invalid?
+    if validator.check_invalid?
+      {errors_hash: validator.errors_hash}
+    else
+      transformed_params = Api::V4::QuestionnaireResponseTransformer.from_request(questionnaire_response_params)
+      # merge transformed_params into DB
+      {record: QuestionnaireResponse.merge_with_content(transformed_params)}
+    end
   end
 end
