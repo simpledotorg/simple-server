@@ -18,8 +18,8 @@ class QuestionnaireResponse < ApplicationRecord
   validate :facility_change
 
   def facility_change
-    q = QuestionnaireResponse.with_discarded.find_by(id: id)
-    if q && facility_id != q.facility_id
+    questionnaire_response = QuestionnaireResponse.with_discarded.find_by(id: id)
+    if questionnaire_response && facility_id != questionnaire_response.facility_id
       errors.add(:facility_id, "cannot be changed for a questionnaire response")
     end
   end

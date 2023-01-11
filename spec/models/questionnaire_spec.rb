@@ -1,6 +1,10 @@
 require "rails_helper"
 
 RSpec.describe Questionnaire, type: :model do
+  describe "Associations" do
+    it { is_expected.to have_many(:questionnaire_responses) }
+  end
+
   describe "Validations" do
     it "allows only one active form per type" do
       expect {

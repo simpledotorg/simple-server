@@ -1,5 +1,5 @@
 class Questionnaire < ApplicationRecord
-  has_many :questionnaire_response
+  has_many :questionnaire_responses
 
   enum questionnaire_type: {
     monthly_screening_reports: "monthly_screening_reports"
