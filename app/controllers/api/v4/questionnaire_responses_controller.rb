@@ -21,8 +21,8 @@ class Api::V4::QuestionnaireResponsesController < Api::V4::SyncController
 
   private
 
-  def transform_to_response(questionnaire)
-    Api::V4::QuestionnaireResponseTransformer.to_response(questionnaire)
+  def transform_to_response(questionnaire_response)
+    Api::V4::QuestionnaireResponseTransformer.to_response(questionnaire_response)
   end
 
   def response_process_token
@@ -42,12 +42,13 @@ class Api::V4::QuestionnaireResponsesController < Api::V4::SyncController
       questionnaire_response_params.permit(
         :id,
         :questionnaire_id,
+        :questionnaire_type,
         :facility_id,
         :user_id,
-        :content,
         :created_at,
         :updated_at,
-        :deleted_at
+        :deleted_at,
+        content: {}
       )
     end
   end

@@ -5,19 +5,31 @@ class QuestionnaireResponse < ApplicationRecord
   belongs_to :facility
   belongs_to :user
 
-  scope :for_sync, -> { with_discarded }
+  scope :for_sync, -> {
+    with_discarded
+      .joins(:questionnaire)
+      .select("questionnaires.questionnaire_type, questionnaire_responses.*")
+  }
 
   validates :questionnaire_id, presence: true
   validates :facility_id, presence: true
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
+  validate :facility_change
+
+  def facility_change
+    q = QuestionnaireResponse.with_discarded.find_by(id: id)
+    if q && facility_id != q.facility_id
+      errors.add(:facility_id, "cannot be changed for a questionnaire response")
+    end
+  end
 
   class << self
     def merge(attributes)
       new_record = new(attributes)
 
       QuestionnaireResponse.transaction do
-        existing_record = with_discarded.lock.find_by(id: attributes["id"])
+        existing_record = lock.with_discarded.find_by(id: attributes["id"])
         case merge_status(new_record, existing_record)
           when :discarded
             discarded_record(existing_record)
@@ -30,7 +42,7 @@ class QuestionnaireResponse < ApplicationRecord
             update_existing_record(existing_record, attributes.merge("content" => new_content))
           when :old
             new_content = new_record.content.merge(existing_record.content)
-            update_existing_record(existing_record, { "content" => new_content })
+            update_existing_record(existing_record, {"content" => new_content})
         end
       end
     end

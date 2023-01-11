@@ -1,16 +1,5 @@
 require "rails_helper"
 
-def without_transactional_fixtures(&block)
-  self.use_transactional_tests = false
-
-  yield
-
-  after(:all) do
-    `bundle exec rake db:drop db:create`
-  end
-end
-
-
 RSpec.describe QuestionnaireResponse, type: :model do
   describe ".merge" do
     it "returns record with errors if invalid, and does not merge" do
@@ -51,7 +40,7 @@ RSpec.describe QuestionnaireResponse, type: :model do
       expect(QuestionnaireResponse.find(existing_questionnaire_response.id).attributes.with_int_timestamps.except("updated_at"))
         .to eq(updated_questionnaire_response.attributes.with_int_timestamps.except("updated_at"))
       expect(QuestionnaireResponse.count).to eq 1
-      expect(existing_questionnaire_response.reload.content).to eq({ "a" => "b", "c" => "c" })
+      expect(existing_questionnaire_response.reload.content).to eq({"a" => "b", "c" => "c"})
     end
 
     it "skips existing keys in content and merges new keys when input record is older" do
@@ -123,21 +112,21 @@ RSpec.describe QuestionnaireResponse, type: :model do
       QuestionnaireResponse.merge(updated_questionnaire_response.attributes)
     end
 
-    # without_transactional_fixtures do
-    #   it "merges all the keys in content from concurrent requests" do
-    #     existing_response = create(:questionnaire_response)
-    #     attributes = existing_response.attributes
-    #     threads = []
-    #     5.times do |i|
-    #       threads << Thread.new do
-    #         QuestionnaireResponse.merge(attributes.merge("content" => {i => i}))
-    #       end
-    #     end
-    #
-    #     threads.each { |thr| thr.join }
-    #     existing_response.reload
-    #     expect(existing_response.content).to eq((0..4).map(&:to_s).zip((0..4)).to_h)
-    #   end
-    # end
+    it "acquires a lock before merging to avoid race conditions" do
+      existing_response = create(:questionnaire_response)
+      expect(QuestionnaireResponse).to receive(:lock).and_call_original
+      QuestionnaireResponse.merge(existing_response.attributes)
+    end
+
+    it "doesn't allow facility_id to be changed" do
+      existing_questionnaire_response = create(:questionnaire_response)
+      facility = create(:facility)
+      update_attributes = existing_questionnaire_response.attributes.merge(
+        facility_id: facility.id
+      )
+
+      updated_questionnaire_response = QuestionnaireResponse.merge(update_attributes)
+      expect(updated_questionnaire_response.merge_status).to eq(:invalid)
+    end
   end
 end

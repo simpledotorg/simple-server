@@ -393,13 +393,13 @@ class Api::V4::Models
       {type: :object,
        properties: {
          id: {"$ref" => "#/definitions/uuid"},
-         deleted_at: {"$ref" => "#/definitions/nullable_timestamp"},
          questionnaire_type: {type: :string, enum: Questionnaire.questionnaire_types.keys},
          layout: {
            oneOf: [
              {"$ref" => "#/definitions/questionnaire_layout_dsl_1"}
            ]
-         }
+         },
+         deleted_at: {"$ref" => "#/definitions/nullable_timestamp"}
        },
        required: %w[id questionnaire_type layout]}
     end
@@ -408,23 +408,23 @@ class Api::V4::Models
       {type: :object,
        properties: {
          id: {"$ref" => "#/definitions/uuid"},
-         deleted_at: {"$ref" => "#/definitions/nullable_timestamp"},
-         created_at: {"$ref" => "#/definitions/timestamp"},
-         updated_at: {"$ref" => "#/definitions/timestamp"},
-         questionnaire_type: {type: :string, enum: Questionnaire.questionnaire_types.keys},
          questionnaire_id: {"$ref" => "#/definitions/uuid"},
+         questionnaire_type: {type: :string, enum: Questionnaire.questionnaire_types.keys},
          facility_id: {"$ref" => "#/definitions/uuid"},
          user_id: {"$ref" => "#/definitions/nullable_uuid"},
-         content: {type: :object}
+         content: {type: :object},
+         created_at: {"$ref" => "#/definitions/timestamp"},
+         updated_at: {"$ref" => "#/definitions/timestamp"},
+         deleted_at: {"$ref" => "#/definitions/nullable_timestamp"}
        },
        required: %w[id
-         created_at
-         updated_at
-         questionnaire_type
          questionnaire_id
+         questionnaire_type
          facility_id
          user_id
-         content]}
+         content
+         created_at
+         updated_at]}
     end
 
     def definitions
