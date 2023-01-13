@@ -92,48 +92,40 @@ describe MaterializedPatientSummary, type: :model do
     it "includes registration facility details", :aggregate_failures do
       expect(patient_summary.registration_facility_name).to eq(patient.registration_facility.name)
       expect(patient_summary.registration_facility_type).to eq(patient.registration_facility.facility_type)
-      expect(patient_summary.registration_district).to eq(patient.registration_facility.district)
-      expect(patient_summary.registration_state).to eq(patient.registration_facility.state)
+      expect(patient_summary.registration_facility_district).to eq(patient.registration_facility.district)
+      expect(patient_summary.registration_facility_state).to eq(patient.registration_facility.state)
     end
 
     it "includes latest BP measurements", :aggregate_failures do
-      expect(patient_summary.latest_blood_pressure_systolic).to eq(new_bp.systolic)
-      expect(patient_summary.latest_blood_pressure_diastolic).to eq(new_bp.diastolic)
+      expect(patient_summary.latest_blood_pressure_1_systolic).to eq(new_bp.systolic)
+      expect(patient_summary.latest_blood_pressure_1_diastolic).to eq(new_bp.diastolic)
     end
 
     it "includes latest BP date" do
-      expect(patient_summary.latest_blood_pressure_recorded_at).to eq(new_bp.recorded_at)
-    end
-
-    it "includes latest BP quarter" do
-      expect(patient_summary.latest_blood_pressure_quarter).to eq(new_quarter)
+      expect(patient_summary.latest_blood_pressure_1_recorded_at).to eq(new_bp.recorded_at)
     end
 
     it "includes latest BP facility details", :aggregate_failures do
-      expect(patient_summary.latest_blood_pressure_facility_name).to eq(new_bp.facility.name)
-      expect(patient_summary.latest_blood_pressure_facility_type).to eq(new_bp.facility.facility_type)
-      expect(patient_summary.latest_blood_pressure_district).to eq(new_bp.facility.district)
-      expect(patient_summary.latest_blood_pressure_state).to eq(new_bp.facility.state)
+      expect(patient_summary.latest_blood_pressure_1_facility_name).to eq(new_bp.facility.name)
+      expect(patient_summary.latest_blood_pressure_1_facility_type).to eq(new_bp.facility.facility_type)
+      expect(patient_summary.latest_blood_pressure_1_district).to eq(new_bp.facility.district)
+      expect(patient_summary.latest_blood_pressure_1_state).to eq(new_bp.facility.state)
     end
 
     it "includes latest blood sugar measurements", :aggregate_failures do
-      expect(patient_summary.latest_blood_sugar_type).to eq(blood_sugar.blood_sugar_type)
-      expect(patient_summary.latest_blood_sugar_value).to eq(blood_sugar.blood_sugar_value)
+      expect(patient_summary.latest_blood_sugar_1_blood_sugar_type).to eq(blood_sugar.blood_sugar_type)
+      expect(patient_summary.latest_blood_sugar_1_blood_sugar_value).to eq(blood_sugar.blood_sugar_value)
     end
 
     it "includes latest blood sugar date" do
-      expect(patient_summary.latest_blood_sugar_recorded_at).to eq(blood_sugar.recorded_at)
-    end
-
-    it "includes latest blood sugar quarter" do
-      expect(patient_summary.latest_blood_sugar_quarter).to eq(new_quarter)
+      expect(patient_summary.latest_blood_sugar_1_recorded_at).to eq(blood_sugar.recorded_at)
     end
 
     it "includes latest blood sugar facility details", :aggregate_failures do
-      expect(patient_summary.latest_blood_sugar_facility_name).to eq(blood_sugar.facility.name)
-      expect(patient_summary.latest_blood_sugar_facility_type).to eq(blood_sugar.facility.facility_type)
-      expect(patient_summary.latest_blood_sugar_district).to eq(blood_sugar.facility.district)
-      expect(patient_summary.latest_blood_sugar_state).to eq(blood_sugar.facility.state)
+      expect(patient_summary.latest_blood_sugar_1_facility_name).to eq(blood_sugar.facility.name)
+      expect(patient_summary.latest_blood_sugar_1_facility_type).to eq(blood_sugar.facility.facility_type)
+      expect(patient_summary.latest_blood_sugar_1_district).to eq(blood_sugar.facility.district)
+      expect(patient_summary.latest_blood_sugar_1_state).to eq(blood_sugar.facility.state)
     end
 
     it "includes latest BP passport" do

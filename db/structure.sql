@@ -1003,79 +1003,67 @@ CREATE TABLE public.patient_phone_numbers (
 
 
 --
+-- Name: prescription_drugs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.prescription_drugs (
+    id uuid NOT NULL,
+    name character varying NOT NULL,
+    rxnorm_code character varying,
+    dosage character varying,
+    device_created_at timestamp without time zone NOT NULL,
+    device_updated_at timestamp without time zone NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    patient_id uuid NOT NULL,
+    facility_id uuid NOT NULL,
+    is_protocol_drug boolean NOT NULL,
+    is_deleted boolean NOT NULL,
+    deleted_at timestamp without time zone,
+    user_id uuid,
+    frequency character varying,
+    duration_in_days integer,
+    teleconsultation_id uuid
+);
+
+
+--
 -- Name: materialized_patient_summaries; Type: MATERIALIZED VIEW; Schema: public; Owner: -
 --
 
 CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
- SELECT p.recorded_at,
-    concat(date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))), ' Q', date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) AS registration_quarter,
-    p.full_name,
-        CASE
-            WHEN (p.date_of_birth IS NOT NULL) THEN date_part('year'::text, age((p.date_of_birth)::timestamp with time zone))
-            ELSE floor(((p.age)::double precision + date_part('year'::text, age(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.age_updated_at))))))
-        END AS current_age,
-    p.gender,
-    p.status,
-    latest_phone_number.number AS latest_phone_number,
-    addresses.village_or_colony,
-    addresses.street_address,
-    addresses.district,
-    addresses.state,
-    addresses.zone AS block,
-    reg_facility.name AS registration_facility_name,
-    reg_facility.facility_type AS registration_facility_type,
-    reg_facility.district AS registration_district,
-    reg_facility.state AS registration_state,
-    p.assigned_facility_id,
-    assigned_facility.name AS assigned_facility_name,
-    assigned_facility.facility_type AS assigned_facility_type,
-    assigned_facility.district AS assigned_facility_district,
-    assigned_facility.state AS assigned_facility_state,
-    latest_blood_pressure.systolic AS latest_blood_pressure_systolic,
-    latest_blood_pressure.diastolic AS latest_blood_pressure_diastolic,
-    latest_blood_pressure.recorded_at AS latest_blood_pressure_recorded_at,
-    concat(date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_blood_pressure.recorded_at))), ' Q', date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_blood_pressure.recorded_at)))) AS latest_blood_pressure_quarter,
-    latest_blood_pressure_facility.name AS latest_blood_pressure_facility_name,
-    latest_blood_pressure_facility.facility_type AS latest_blood_pressure_facility_type,
-    latest_blood_pressure_facility.district AS latest_blood_pressure_district,
-    latest_blood_pressure_facility.state AS latest_blood_pressure_state,
-    latest_blood_sugar.id AS latest_blood_sugar_id,
-    latest_blood_sugar.blood_sugar_type AS latest_blood_sugar_type,
-    latest_blood_sugar.blood_sugar_value AS latest_blood_sugar_value,
-    latest_blood_sugar.recorded_at AS latest_blood_sugar_recorded_at,
-    concat(date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_blood_sugar.recorded_at))), ' Q', date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_blood_sugar.recorded_at)))) AS latest_blood_sugar_quarter,
-    latest_blood_sugar_facility.name AS latest_blood_sugar_facility_name,
-    latest_blood_sugar_facility.facility_type AS latest_blood_sugar_facility_type,
-    latest_blood_sugar_facility.district AS latest_blood_sugar_district,
-    latest_blood_sugar_facility.state AS latest_blood_sugar_state,
-    GREATEST((0)::double precision, date_part('day'::text, (now() - (next_scheduled_appointment.scheduled_date)::timestamp with time zone))) AS days_overdue,
-    next_scheduled_appointment.id AS next_scheduled_appointment_id,
-    next_scheduled_appointment.scheduled_date AS next_scheduled_appointment_scheduled_date,
-    next_scheduled_appointment.status AS next_scheduled_appointment_status,
-    next_scheduled_appointment.remind_on AS next_scheduled_appointment_remind_on,
-    next_scheduled_appointment_facility.id AS next_scheduled_appointment_facility_id,
-    next_scheduled_appointment_facility.name AS next_scheduled_appointment_facility_name,
-    next_scheduled_appointment_facility.facility_type AS next_scheduled_appointment_facility_type,
-    next_scheduled_appointment_facility.district AS next_scheduled_appointment_district,
-    next_scheduled_appointment_facility.state AS next_scheduled_appointment_state,
-        CASE
-            WHEN (next_scheduled_appointment.scheduled_date IS NULL) THEN 0
-            WHEN (next_scheduled_appointment.scheduled_date > date_trunc('day'::text, (now() - '30 days'::interval))) THEN 0
-            WHEN ((latest_blood_pressure.systolic >= 180) OR (latest_blood_pressure.diastolic >= 110)) THEN 1
-            WHEN (((mh.prior_heart_attack = 'yes'::text) OR (mh.prior_stroke = 'yes'::text)) AND ((latest_blood_pressure.systolic >= 140) OR (latest_blood_pressure.diastolic >= 90))) THEN 1
-            WHEN ((((latest_blood_sugar.blood_sugar_type)::text = 'random'::text) AND (latest_blood_sugar.blood_sugar_value >= (300)::numeric)) OR (((latest_blood_sugar.blood_sugar_type)::text = 'post_prandial'::text) AND (latest_blood_sugar.blood_sugar_value >= (300)::numeric)) OR (((latest_blood_sugar.blood_sugar_type)::text = 'fasting'::text) AND (latest_blood_sugar.blood_sugar_value >= (200)::numeric)) OR (((latest_blood_sugar.blood_sugar_type)::text = 'hba1c'::text) AND (latest_blood_sugar.blood_sugar_value >= 9.0))) THEN 1
-            ELSE 0
-        END AS risk_level,
-    latest_bp_passport.id AS latest_bp_passport_id,
-    latest_bp_passport.identifier AS latest_bp_passport_identifier,
-    mh.hypertension,
-    mh.diabetes,
-    p.id
-   FROM ((((((((((((public.patients p
-     LEFT JOIN public.addresses ON ((addresses.id = p.address_id)))
-     LEFT JOIN public.facilities reg_facility ON ((reg_facility.id = p.registration_facility_id)))
-     LEFT JOIN public.facilities assigned_facility ON ((assigned_facility.id = p.assigned_facility_id)))
-     LEFT JOIN ( SELECT DISTINCT ON (medical_histories.patient_id) medical_histories.id,
+ WITH latest_bp_passport AS (
+         SELECT DISTINCT ON (patient_business_identifiers.patient_id) patient_business_identifiers.id,
+            patient_business_identifiers.identifier,
+            patient_business_identifiers.identifier_type,
+            patient_business_identifiers.patient_id,
+            patient_business_identifiers.metadata_version,
+            patient_business_identifiers.metadata,
+            patient_business_identifiers.device_created_at,
+            patient_business_identifiers.device_updated_at,
+            patient_business_identifiers.deleted_at,
+            patient_business_identifiers.created_at,
+            patient_business_identifiers.updated_at
+           FROM public.patient_business_identifiers
+          WHERE (((patient_business_identifiers.identifier_type)::text = 'simple_bp_passport'::text) AND (patient_business_identifiers.deleted_at IS NULL))
+          ORDER BY patient_business_identifiers.patient_id, patient_business_identifiers.device_created_at DESC
+        ), latest_phone_number AS (
+         SELECT DISTINCT ON (patient_phone_numbers.patient_id) patient_phone_numbers.id,
+            patient_phone_numbers.number,
+            patient_phone_numbers.phone_type,
+            patient_phone_numbers.active,
+            patient_phone_numbers.created_at,
+            patient_phone_numbers.updated_at,
+            patient_phone_numbers.patient_id,
+            patient_phone_numbers.device_created_at,
+            patient_phone_numbers.device_updated_at,
+            patient_phone_numbers.deleted_at,
+            patient_phone_numbers.dnd_status
+           FROM public.patient_phone_numbers
+          WHERE (patient_phone_numbers.deleted_at IS NULL)
+          ORDER BY patient_phone_numbers.patient_id, patient_phone_numbers.device_created_at DESC
+        ), latest_medical_history AS (
+         SELECT DISTINCT ON (medical_histories.patient_id) medical_histories.id,
             medical_histories.patient_id,
             medical_histories.prior_heart_attack_boolean,
             medical_histories.prior_stroke_boolean,
@@ -1098,68 +1086,203 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
             medical_histories.hypertension,
             medical_histories.receiving_treatment_for_diabetes
            FROM public.medical_histories
-          WHERE (medical_histories.deleted_at IS NULL)) mh ON ((mh.patient_id = p.id)))
-     LEFT JOIN ( SELECT DISTINCT ON (patient_phone_numbers.patient_id) patient_phone_numbers.id,
-            patient_phone_numbers.number,
-            patient_phone_numbers.phone_type,
-            patient_phone_numbers.active,
-            patient_phone_numbers.created_at,
-            patient_phone_numbers.updated_at,
-            patient_phone_numbers.patient_id,
-            patient_phone_numbers.device_created_at,
-            patient_phone_numbers.device_updated_at,
-            patient_phone_numbers.deleted_at,
-            patient_phone_numbers.dnd_status
-           FROM public.patient_phone_numbers
-          WHERE (patient_phone_numbers.deleted_at IS NULL)
-          ORDER BY patient_phone_numbers.patient_id, patient_phone_numbers.device_created_at DESC) latest_phone_number ON ((latest_phone_number.patient_id = p.id)))
-     LEFT JOIN ( SELECT DISTINCT ON (blood_pressures.patient_id) blood_pressures.id,
-            blood_pressures.systolic,
-            blood_pressures.diastolic,
-            blood_pressures.patient_id,
-            blood_pressures.created_at,
-            blood_pressures.updated_at,
-            blood_pressures.device_created_at,
-            blood_pressures.device_updated_at,
-            blood_pressures.facility_id,
-            blood_pressures.user_id,
-            blood_pressures.deleted_at,
-            blood_pressures.recorded_at
-           FROM public.blood_pressures
-          WHERE (blood_pressures.deleted_at IS NULL)
-          ORDER BY blood_pressures.patient_id, blood_pressures.recorded_at DESC) latest_blood_pressure ON ((latest_blood_pressure.patient_id = p.id)))
-     LEFT JOIN public.facilities latest_blood_pressure_facility ON ((latest_blood_pressure_facility.id = latest_blood_pressure.facility_id)))
-     LEFT JOIN ( SELECT DISTINCT ON (blood_sugars.patient_id) blood_sugars.id,
-            blood_sugars.blood_sugar_type,
-            blood_sugars.blood_sugar_value,
-            blood_sugars.patient_id,
-            blood_sugars.user_id,
-            blood_sugars.facility_id,
-            blood_sugars.device_created_at,
-            blood_sugars.device_updated_at,
-            blood_sugars.deleted_at,
-            blood_sugars.recorded_at,
-            blood_sugars.created_at,
-            blood_sugars.updated_at
-           FROM public.blood_sugars
-          WHERE (blood_sugars.deleted_at IS NULL)
-          ORDER BY blood_sugars.patient_id, blood_sugars.recorded_at DESC) latest_blood_sugar ON ((latest_blood_sugar.patient_id = p.id)))
-     LEFT JOIN public.facilities latest_blood_sugar_facility ON ((latest_blood_sugar_facility.id = latest_blood_sugar.facility_id)))
-     LEFT JOIN ( SELECT DISTINCT ON (patient_business_identifiers.patient_id) patient_business_identifiers.id,
-            patient_business_identifiers.identifier,
-            patient_business_identifiers.identifier_type,
-            patient_business_identifiers.patient_id,
-            patient_business_identifiers.metadata_version,
-            patient_business_identifiers.metadata,
-            patient_business_identifiers.device_created_at,
-            patient_business_identifiers.device_updated_at,
-            patient_business_identifiers.deleted_at,
-            patient_business_identifiers.created_at,
-            patient_business_identifiers.updated_at
-           FROM public.patient_business_identifiers
-          WHERE (((patient_business_identifiers.identifier_type)::text = 'simple_bp_passport'::text) AND (patient_business_identifiers.deleted_at IS NULL))
-          ORDER BY patient_business_identifiers.patient_id, patient_business_identifiers.device_created_at DESC) latest_bp_passport ON ((latest_bp_passport.patient_id = p.id)))
-     LEFT JOIN ( SELECT DISTINCT ON (appointments.patient_id) appointments.id,
+          WHERE (medical_histories.deleted_at IS NULL)
+        ), ranked_prescription_drugs AS (
+         SELECT bp.id AS bp_id,
+            prescription_drugs.id,
+            prescription_drugs.name,
+            prescription_drugs.rxnorm_code,
+            prescription_drugs.dosage,
+            prescription_drugs.device_created_at,
+            prescription_drugs.device_updated_at,
+            prescription_drugs.created_at,
+            prescription_drugs.updated_at,
+            prescription_drugs.patient_id,
+            prescription_drugs.facility_id,
+            prescription_drugs.is_protocol_drug,
+            prescription_drugs.is_deleted,
+            prescription_drugs.deleted_at,
+            prescription_drugs.user_id,
+            prescription_drugs.frequency,
+            prescription_drugs.duration_in_days,
+            prescription_drugs.teleconsultation_id,
+            rank() OVER (PARTITION BY bp.id ORDER BY prescription_drugs.is_deleted DESC, prescription_drugs.name, prescription_drugs.device_created_at DESC) AS rank
+           FROM (public.blood_pressures bp
+             LEFT JOIN public.prescription_drugs ON (((prescription_drugs.patient_id = bp.patient_id) AND (prescription_drugs.device_created_at < (date(bp.recorded_at) + '1 day'::interval)) AND ((prescription_drugs.is_deleted IS FALSE) OR ((prescription_drugs.is_deleted IS TRUE) AND (prescription_drugs.updated_at >= (date(bp.recorded_at) + '1 day'::interval)))))))
+          WHERE ((bp.deleted_at IS NULL) AND (prescription_drugs.deleted_at IS NULL))
+        ), other_medications AS (
+         SELECT ranked_prescription_drugs.bp_id,
+            string_agg((((ranked_prescription_drugs.name)::text || ' '::text) || (ranked_prescription_drugs.dosage)::text), ','::text) FILTER (WHERE (ranked_prescription_drugs.rank > 5)) AS other_prescription_drugs
+           FROM ranked_prescription_drugs
+          GROUP BY ranked_prescription_drugs.bp_id
+        ), ranked_blood_pressures AS (
+         SELECT bp.id,
+            bp.patient_id,
+            bp.recorded_at,
+            bp.systolic,
+            bp.diastolic,
+            f.name AS facility_name,
+            f.facility_type,
+            f.district,
+            f.state,
+            follow_up_facility.name AS follow_up_facility_name,
+            a.scheduled_date AS follow_up_date,
+            GREATEST((0)::double precision, date_part('day'::text, ((a.scheduled_date)::timestamp without time zone - a.device_created_at))) AS follow_up_days,
+            pd_1.name AS prescription_drug_1_name,
+            pd_1.dosage AS prescription_drug_1_dosage,
+            pd_2.name AS prescription_drug_2_name,
+            pd_2.dosage AS prescription_drug_2_dosage,
+            pd_3.name AS prescription_drug_3_name,
+            pd_3.dosage AS prescription_drug_3_dosage,
+            pd_4.name AS prescription_drug_4_name,
+            pd_4.dosage AS prescription_drug_4_dosage,
+            pd_5.name AS prescription_drug_5_name,
+            pd_5.dosage AS prescription_drug_5_dosage,
+            other_medications.other_prescription_drugs,
+            rank() OVER (PARTITION BY bp.patient_id ORDER BY bp.recorded_at DESC) AS rank
+           FROM (((((((((public.blood_pressures bp
+             LEFT JOIN public.facilities f ON ((bp.facility_id = f.id)))
+             LEFT JOIN public.appointments a ON (((a.patient_id = bp.patient_id) AND (date_trunc('day'::text, a.device_created_at) = date_trunc('day'::text, bp.device_created_at)))))
+             LEFT JOIN public.facilities follow_up_facility ON ((follow_up_facility.id = a.facility_id)))
+             LEFT JOIN ranked_prescription_drugs pd_1 ON (((bp.id = pd_1.bp_id) AND (pd_1.rank = 1))))
+             LEFT JOIN ranked_prescription_drugs pd_2 ON (((bp.id = pd_2.bp_id) AND (pd_2.rank = 2))))
+             LEFT JOIN ranked_prescription_drugs pd_3 ON (((bp.id = pd_3.bp_id) AND (pd_3.rank = 3))))
+             LEFT JOIN ranked_prescription_drugs pd_4 ON (((bp.id = pd_4.bp_id) AND (pd_4.rank = 4))))
+             LEFT JOIN ranked_prescription_drugs pd_5 ON (((bp.id = pd_5.bp_id) AND (pd_5.rank = 5))))
+             LEFT JOIN other_medications ON ((pd_1.bp_id = other_medications.bp_id)))
+          WHERE ((bp.deleted_at IS NULL) AND (a.deleted_at IS NULL))
+        ), latest_blood_pressures AS (
+         SELECT latest_blood_pressure_1.patient_id,
+            latest_blood_pressure_1.id AS latest_blood_pressure_1_id,
+            latest_blood_pressure_1.recorded_at AS latest_blood_pressure_1_recorded_at,
+            latest_blood_pressure_1.systolic AS latest_blood_pressure_1_systolic,
+            latest_blood_pressure_1.diastolic AS latest_blood_pressure_1_diastolic,
+            latest_blood_pressure_1.facility_name AS latest_blood_pressure_1_facility_name,
+            latest_blood_pressure_1.facility_type AS latest_blood_pressure_1_facility_type,
+            latest_blood_pressure_1.district AS latest_blood_pressure_1_district,
+            latest_blood_pressure_1.state AS latest_blood_pressure_1_state,
+            latest_blood_pressure_1.follow_up_facility_name AS latest_blood_pressure_1_follow_up_facility_name,
+            latest_blood_pressure_1.follow_up_date AS latest_blood_pressure_1_follow_up_date,
+            latest_blood_pressure_1.follow_up_days AS latest_blood_pressure_1_follow_up_days,
+            latest_blood_pressure_1.prescription_drug_1_name AS latest_blood_pressure_1_prescription_drug_1_name,
+            latest_blood_pressure_1.prescription_drug_1_dosage AS latest_blood_pressure_1_prescription_drug_1_dosage,
+            latest_blood_pressure_1.prescription_drug_2_name AS latest_blood_pressure_1_prescription_drug_2_name,
+            latest_blood_pressure_1.prescription_drug_2_dosage AS latest_blood_pressure_1_prescription_drug_2_dosage,
+            latest_blood_pressure_1.prescription_drug_3_name AS latest_blood_pressure_1_prescription_drug_3_name,
+            latest_blood_pressure_1.prescription_drug_3_dosage AS latest_blood_pressure_1_prescription_drug_3_dosage,
+            latest_blood_pressure_1.prescription_drug_4_name AS latest_blood_pressure_1_prescription_drug_4_name,
+            latest_blood_pressure_1.prescription_drug_4_dosage AS latest_blood_pressure_1_prescription_drug_4_dosage,
+            latest_blood_pressure_1.prescription_drug_5_name AS latest_blood_pressure_1_prescription_drug_5_name,
+            latest_blood_pressure_1.prescription_drug_5_dosage AS latest_blood_pressure_1_prescription_drug_5_dosage,
+            latest_blood_pressure_1.other_prescription_drugs AS latest_blood_pressure_1_other_prescription_drugs,
+            latest_blood_pressure_2.id AS latest_blood_pressure_2_id,
+            latest_blood_pressure_2.recorded_at AS latest_blood_pressure_2_recorded_at,
+            latest_blood_pressure_2.systolic AS latest_blood_pressure_2_systolic,
+            latest_blood_pressure_2.diastolic AS latest_blood_pressure_2_diastolic,
+            latest_blood_pressure_2.facility_name AS latest_blood_pressure_2_facility_name,
+            latest_blood_pressure_2.facility_type AS latest_blood_pressure_2_facility_type,
+            latest_blood_pressure_2.district AS latest_blood_pressure_2_district,
+            latest_blood_pressure_2.state AS latest_blood_pressure_2_state,
+            latest_blood_pressure_2.follow_up_facility_name AS latest_blood_pressure_2_follow_up_facility_name,
+            latest_blood_pressure_2.follow_up_date AS latest_blood_pressure_2_follow_up_date,
+            latest_blood_pressure_2.follow_up_days AS latest_blood_pressure_2_follow_up_days,
+            latest_blood_pressure_2.prescription_drug_1_name AS latest_blood_pressure_2_prescription_drug_1_name,
+            latest_blood_pressure_2.prescription_drug_1_dosage AS latest_blood_pressure_2_prescription_drug_1_dosage,
+            latest_blood_pressure_2.prescription_drug_2_name AS latest_blood_pressure_2_prescription_drug_2_name,
+            latest_blood_pressure_2.prescription_drug_2_dosage AS latest_blood_pressure_2_prescription_drug_2_dosage,
+            latest_blood_pressure_2.prescription_drug_3_name AS latest_blood_pressure_2_prescription_drug_3_name,
+            latest_blood_pressure_2.prescription_drug_3_dosage AS latest_blood_pressure_2_prescription_drug_3_dosage,
+            latest_blood_pressure_2.prescription_drug_4_name AS latest_blood_pressure_2_prescription_drug_4_name,
+            latest_blood_pressure_2.prescription_drug_4_dosage AS latest_blood_pressure_2_prescription_drug_4_dosage,
+            latest_blood_pressure_2.prescription_drug_5_name AS latest_blood_pressure_2_prescription_drug_5_name,
+            latest_blood_pressure_2.prescription_drug_5_dosage AS latest_blood_pressure_2_prescription_drug_5_dosage,
+            latest_blood_pressure_2.other_prescription_drugs AS latest_blood_pressure_2_other_prescription_drugs,
+            latest_blood_pressure_3.id AS latest_blood_pressure_3_id,
+            latest_blood_pressure_3.recorded_at AS latest_blood_pressure_3_recorded_at,
+            latest_blood_pressure_3.systolic AS latest_blood_pressure_3_systolic,
+            latest_blood_pressure_3.diastolic AS latest_blood_pressure_3_diastolic,
+            latest_blood_pressure_3.facility_name AS latest_blood_pressure_3_facility_name,
+            latest_blood_pressure_3.facility_type AS latest_blood_pressure_3_facility_type,
+            latest_blood_pressure_3.district AS latest_blood_pressure_3_district,
+            latest_blood_pressure_3.state AS latest_blood_pressure_3_state,
+            latest_blood_pressure_3.follow_up_facility_name AS latest_blood_pressure_3_follow_up_facility_name,
+            latest_blood_pressure_3.follow_up_date AS latest_blood_pressure_3_follow_up_date,
+            latest_blood_pressure_3.follow_up_days AS latest_blood_pressure_3_follow_up_days,
+            latest_blood_pressure_3.prescription_drug_1_name AS latest_blood_pressure_3_prescription_drug_1_name,
+            latest_blood_pressure_3.prescription_drug_1_dosage AS latest_blood_pressure_3_prescription_drug_1_dosage,
+            latest_blood_pressure_3.prescription_drug_2_name AS latest_blood_pressure_3_prescription_drug_2_name,
+            latest_blood_pressure_3.prescription_drug_2_dosage AS latest_blood_pressure_3_prescription_drug_2_dosage,
+            latest_blood_pressure_3.prescription_drug_3_name AS latest_blood_pressure_3_prescription_drug_3_name,
+            latest_blood_pressure_3.prescription_drug_3_dosage AS latest_blood_pressure_3_prescription_drug_3_dosage,
+            latest_blood_pressure_3.prescription_drug_4_name AS latest_blood_pressure_3_prescription_drug_4_name,
+            latest_blood_pressure_3.prescription_drug_4_dosage AS latest_blood_pressure_3_prescription_drug_4_dosage,
+            latest_blood_pressure_3.prescription_drug_5_name AS latest_blood_pressure_3_prescription_drug_5_name,
+            latest_blood_pressure_3.prescription_drug_5_dosage AS latest_blood_pressure_3_prescription_drug_5_dosage,
+            latest_blood_pressure_3.other_prescription_drugs AS latest_blood_pressure_3_other_prescription_drugs
+           FROM ((ranked_blood_pressures latest_blood_pressure_1
+             LEFT JOIN ranked_blood_pressures latest_blood_pressure_2 ON (((latest_blood_pressure_2.patient_id = latest_blood_pressure_1.patient_id) AND (latest_blood_pressure_2.rank = 2))))
+             LEFT JOIN ranked_blood_pressures latest_blood_pressure_3 ON (((latest_blood_pressure_3.patient_id = latest_blood_pressure_1.patient_id) AND (latest_blood_pressure_3.rank = 3))))
+          WHERE (latest_blood_pressure_1.rank = 1)
+        ), ranked_blood_sugars AS (
+         SELECT bs.id,
+            bs.patient_id,
+            bs.recorded_at,
+            bs.blood_sugar_type,
+            bs.blood_sugar_value,
+            f.name AS facility_name,
+            f.facility_type,
+            f.district,
+            f.state,
+            follow_up_facility.name AS follow_up_facility_name,
+            a.scheduled_date AS follow_up_date,
+            GREATEST((0)::double precision, date_part('day'::text, ((a.scheduled_date)::timestamp without time zone - a.device_created_at))) AS follow_up_days,
+            rank() OVER (PARTITION BY bs.patient_id ORDER BY bs.recorded_at DESC) AS rank
+           FROM (((public.blood_sugars bs
+             LEFT JOIN public.facilities f ON ((bs.facility_id = f.id)))
+             LEFT JOIN public.appointments a ON (((a.patient_id = bs.patient_id) AND (date_trunc('day'::text, a.device_created_at) = date_trunc('day'::text, bs.device_created_at)))))
+             LEFT JOIN public.facilities follow_up_facility ON ((follow_up_facility.id = a.facility_id)))
+          WHERE ((bs.deleted_at IS NULL) AND (a.deleted_at IS NULL))
+        ), latest_blood_sugars AS (
+         SELECT latest_blood_sugar_1.patient_id,
+            latest_blood_sugar_1.id AS latest_blood_sugar_1_id,
+            latest_blood_sugar_1.recorded_at AS latest_blood_sugar_1_recorded_at,
+            latest_blood_sugar_1.blood_sugar_type AS latest_blood_sugar_1_blood_sugar_type,
+            latest_blood_sugar_1.blood_sugar_value AS latest_blood_sugar_1_blood_sugar_value,
+            latest_blood_sugar_1.facility_name AS latest_blood_sugar_1_facility_name,
+            latest_blood_sugar_1.facility_type AS latest_blood_sugar_1_facility_type,
+            latest_blood_sugar_1.district AS latest_blood_sugar_1_district,
+            latest_blood_sugar_1.state AS latest_blood_sugar_1_state,
+            latest_blood_sugar_1.follow_up_facility_name AS latest_blood_sugar_1_follow_up_facility_name,
+            latest_blood_sugar_1.follow_up_date AS latest_blood_sugar_1_follow_up_date,
+            latest_blood_sugar_1.follow_up_days AS latest_blood_sugar_1_follow_up_days,
+            latest_blood_sugar_2.id AS latest_blood_sugar_2_id,
+            latest_blood_sugar_2.recorded_at AS latest_blood_sugar_2_recorded_at,
+            latest_blood_sugar_2.blood_sugar_type AS latest_blood_sugar_2_blood_sugar_type,
+            latest_blood_sugar_2.blood_sugar_value AS latest_blood_sugar_2_blood_sugar_value,
+            latest_blood_sugar_2.facility_name AS latest_blood_sugar_2_facility_name,
+            latest_blood_sugar_2.facility_type AS latest_blood_sugar_2_facility_type,
+            latest_blood_sugar_2.district AS latest_blood_sugar_2_district,
+            latest_blood_sugar_2.state AS latest_blood_sugar_2_state,
+            latest_blood_sugar_2.follow_up_facility_name AS latest_blood_sugar_2_follow_up_facility_name,
+            latest_blood_sugar_2.follow_up_date AS latest_blood_sugar_2_follow_up_date,
+            latest_blood_sugar_2.follow_up_days AS latest_blood_sugar_2_follow_up_days,
+            latest_blood_sugar_3.id AS latest_blood_sugar_3_id,
+            latest_blood_sugar_3.recorded_at AS latest_blood_sugar_3_recorded_at,
+            latest_blood_sugar_3.blood_sugar_type AS latest_blood_sugar_3_blood_sugar_type,
+            latest_blood_sugar_3.blood_sugar_value AS latest_blood_sugar_3_blood_sugar_value,
+            latest_blood_sugar_3.facility_name AS latest_blood_sugar_3_facility_name,
+            latest_blood_sugar_3.facility_type AS latest_blood_sugar_3_facility_type,
+            latest_blood_sugar_3.district AS latest_blood_sugar_3_district,
+            latest_blood_sugar_3.state AS latest_blood_sugar_3_state,
+            latest_blood_sugar_3.follow_up_facility_name AS latest_blood_sugar_3_follow_up_facility_name,
+            latest_blood_sugar_3.follow_up_date AS latest_blood_sugar_3_follow_up_date,
+            latest_blood_sugar_3.follow_up_days AS latest_blood_sugar_3_follow_up_days
+           FROM ((ranked_blood_sugars latest_blood_sugar_1
+             LEFT JOIN ranked_blood_sugars latest_blood_sugar_2 ON (((latest_blood_sugar_2.patient_id = latest_blood_sugar_1.patient_id) AND (latest_blood_sugar_2.rank = 2))))
+             LEFT JOIN ranked_blood_sugars latest_blood_sugar_3 ON (((latest_blood_sugar_3.patient_id = latest_blood_sugar_1.patient_id) AND (latest_blood_sugar_3.rank = 3))))
+          WHERE (latest_blood_sugar_1.rank = 1)
+        ), next_scheduled_appointment AS (
+         SELECT DISTINCT ON (appointments.patient_id) appointments.id,
             appointments.patient_id,
             appointments.facility_id,
             appointments.scheduled_date,
@@ -1174,11 +1297,169 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
             appointments.deleted_at,
             appointments.appointment_type,
             appointments.user_id,
-            appointments.creation_facility_id
-           FROM public.appointments
-          WHERE (appointments.deleted_at IS NULL)
-          ORDER BY appointments.patient_id, appointments.device_created_at DESC) next_scheduled_appointment ON (((next_scheduled_appointment.patient_id = p.id) AND ((next_scheduled_appointment.status)::text = 'scheduled'::text))))
-     LEFT JOIN public.facilities next_scheduled_appointment_facility ON (((next_scheduled_appointment_facility.id = next_scheduled_appointment.facility_id) AND ((next_scheduled_appointment.status)::text = 'scheduled'::text))))
+            appointments.creation_facility_id,
+            f.id AS appointment_facility_id,
+            f.name AS appointment_facility_name,
+            f.facility_type AS appointment_facility_type,
+            f.district AS appointment_district,
+            f.state AS appointment_state
+           FROM (public.appointments
+             LEFT JOIN public.facilities f ON ((f.id = appointments.facility_id)))
+          WHERE ((appointments.deleted_at IS NULL) AND ((appointments.status)::text = 'scheduled'::text))
+          ORDER BY appointments.patient_id, appointments.device_created_at DESC
+        )
+ SELECT p.id,
+    p.recorded_at,
+    concat(date_part('year'::text, ((p.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))), ' Q', EXTRACT(quarter FROM ((p.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))) AS registration_quarter,
+    p.full_name,
+    latest_bp_passport.id AS latest_bp_passport_id,
+    latest_bp_passport.identifier AS latest_bp_passport_identifier,
+    EXTRACT(year FROM COALESCE(age((p.date_of_birth)::timestamp with time zone), (make_interval(years => p.age) + age(p.age_updated_at)))) AS current_age,
+    p.gender,
+    p.status,
+    latest_phone_number.number,
+    addresses.village_or_colony,
+    addresses.street_address,
+    addresses.district,
+    addresses.state,
+    addresses.zone,
+    assigned_facility.name AS assigned_facility_name,
+    assigned_facility.facility_type AS assigned_facility_type,
+    assigned_facility.state AS assigned_facility_state,
+    assigned_facility.district AS assigned_facility_district,
+    registration_facility.name AS registration_facility_name,
+    registration_facility.facility_type AS registration_facility_type,
+    registration_facility.state AS registration_facility_state,
+    registration_facility.district AS registration_facility_district,
+    mh.hypertension,
+    mh.diabetes,
+    GREATEST((0)::double precision, date_part('day'::text, (now() - (next_scheduled_appointment.scheduled_date)::timestamp with time zone))) AS days_overdue,
+    next_scheduled_appointment.id AS next_scheduled_appointment_id,
+    next_scheduled_appointment.scheduled_date AS next_scheduled_appointment_scheduled_date,
+    next_scheduled_appointment.status AS next_scheduled_appointment_status,
+    next_scheduled_appointment.remind_on AS next_scheduled_appointment_remind_on,
+    next_scheduled_appointment.appointment_facility_id AS next_scheduled_appointment_facility_id,
+    next_scheduled_appointment.appointment_facility_name AS next_scheduled_appointment_facility_name,
+    next_scheduled_appointment.appointment_facility_type AS next_scheduled_appointment_facility_type,
+    next_scheduled_appointment.appointment_district AS next_scheduled_appointment_district,
+    next_scheduled_appointment.appointment_state AS next_scheduled_appointment_state,
+    latest_blood_pressures.latest_blood_pressure_1_id,
+    latest_blood_pressures.latest_blood_pressure_1_recorded_at,
+    latest_blood_pressures.latest_blood_pressure_1_systolic,
+    latest_blood_pressures.latest_blood_pressure_1_diastolic,
+    latest_blood_pressures.latest_blood_pressure_1_facility_name,
+    latest_blood_pressures.latest_blood_pressure_1_facility_type,
+    latest_blood_pressures.latest_blood_pressure_1_district,
+    latest_blood_pressures.latest_blood_pressure_1_state,
+    latest_blood_pressures.latest_blood_pressure_1_follow_up_facility_name,
+    latest_blood_pressures.latest_blood_pressure_1_follow_up_date,
+    latest_blood_pressures.latest_blood_pressure_1_follow_up_days,
+    latest_blood_pressures.latest_blood_pressure_1_prescription_drug_1_name,
+    latest_blood_pressures.latest_blood_pressure_1_prescription_drug_1_dosage,
+    latest_blood_pressures.latest_blood_pressure_1_prescription_drug_2_name,
+    latest_blood_pressures.latest_blood_pressure_1_prescription_drug_2_dosage,
+    latest_blood_pressures.latest_blood_pressure_1_prescription_drug_3_name,
+    latest_blood_pressures.latest_blood_pressure_1_prescription_drug_3_dosage,
+    latest_blood_pressures.latest_blood_pressure_1_prescription_drug_4_name,
+    latest_blood_pressures.latest_blood_pressure_1_prescription_drug_4_dosage,
+    latest_blood_pressures.latest_blood_pressure_1_prescription_drug_5_name,
+    latest_blood_pressures.latest_blood_pressure_1_prescription_drug_5_dosage,
+    latest_blood_pressures.latest_blood_pressure_1_other_prescription_drugs,
+    latest_blood_pressures.latest_blood_pressure_2_id,
+    latest_blood_pressures.latest_blood_pressure_2_recorded_at,
+    latest_blood_pressures.latest_blood_pressure_2_systolic,
+    latest_blood_pressures.latest_blood_pressure_2_diastolic,
+    latest_blood_pressures.latest_blood_pressure_2_facility_name,
+    latest_blood_pressures.latest_blood_pressure_2_facility_type,
+    latest_blood_pressures.latest_blood_pressure_2_district,
+    latest_blood_pressures.latest_blood_pressure_2_state,
+    latest_blood_pressures.latest_blood_pressure_2_follow_up_facility_name,
+    latest_blood_pressures.latest_blood_pressure_2_follow_up_date,
+    latest_blood_pressures.latest_blood_pressure_2_follow_up_days,
+    latest_blood_pressures.latest_blood_pressure_2_prescription_drug_1_name,
+    latest_blood_pressures.latest_blood_pressure_2_prescription_drug_1_dosage,
+    latest_blood_pressures.latest_blood_pressure_2_prescription_drug_2_name,
+    latest_blood_pressures.latest_blood_pressure_2_prescription_drug_2_dosage,
+    latest_blood_pressures.latest_blood_pressure_2_prescription_drug_3_name,
+    latest_blood_pressures.latest_blood_pressure_2_prescription_drug_3_dosage,
+    latest_blood_pressures.latest_blood_pressure_2_prescription_drug_4_name,
+    latest_blood_pressures.latest_blood_pressure_2_prescription_drug_4_dosage,
+    latest_blood_pressures.latest_blood_pressure_2_prescription_drug_5_name,
+    latest_blood_pressures.latest_blood_pressure_2_prescription_drug_5_dosage,
+    latest_blood_pressures.latest_blood_pressure_2_other_prescription_drugs,
+    latest_blood_pressures.latest_blood_pressure_3_id,
+    latest_blood_pressures.latest_blood_pressure_3_recorded_at,
+    latest_blood_pressures.latest_blood_pressure_3_systolic,
+    latest_blood_pressures.latest_blood_pressure_3_diastolic,
+    latest_blood_pressures.latest_blood_pressure_3_facility_name,
+    latest_blood_pressures.latest_blood_pressure_3_facility_type,
+    latest_blood_pressures.latest_blood_pressure_3_district,
+    latest_blood_pressures.latest_blood_pressure_3_state,
+    latest_blood_pressures.latest_blood_pressure_3_follow_up_facility_name,
+    latest_blood_pressures.latest_blood_pressure_3_follow_up_date,
+    latest_blood_pressures.latest_blood_pressure_3_follow_up_days,
+    latest_blood_pressures.latest_blood_pressure_3_prescription_drug_1_name,
+    latest_blood_pressures.latest_blood_pressure_3_prescription_drug_1_dosage,
+    latest_blood_pressures.latest_blood_pressure_3_prescription_drug_2_name,
+    latest_blood_pressures.latest_blood_pressure_3_prescription_drug_2_dosage,
+    latest_blood_pressures.latest_blood_pressure_3_prescription_drug_3_name,
+    latest_blood_pressures.latest_blood_pressure_3_prescription_drug_3_dosage,
+    latest_blood_pressures.latest_blood_pressure_3_prescription_drug_4_name,
+    latest_blood_pressures.latest_blood_pressure_3_prescription_drug_4_dosage,
+    latest_blood_pressures.latest_blood_pressure_3_prescription_drug_5_name,
+    latest_blood_pressures.latest_blood_pressure_3_prescription_drug_5_dosage,
+    latest_blood_pressures.latest_blood_pressure_3_other_prescription_drugs,
+    latest_blood_sugars.latest_blood_sugar_1_id,
+    latest_blood_sugars.latest_blood_sugar_1_recorded_at,
+    latest_blood_sugars.latest_blood_sugar_1_blood_sugar_type,
+    latest_blood_sugars.latest_blood_sugar_1_blood_sugar_value,
+    latest_blood_sugars.latest_blood_sugar_1_facility_name,
+    latest_blood_sugars.latest_blood_sugar_1_facility_type,
+    latest_blood_sugars.latest_blood_sugar_1_district,
+    latest_blood_sugars.latest_blood_sugar_1_state,
+    latest_blood_sugars.latest_blood_sugar_1_follow_up_facility_name,
+    latest_blood_sugars.latest_blood_sugar_1_follow_up_date,
+    latest_blood_sugars.latest_blood_sugar_1_follow_up_days,
+    latest_blood_sugars.latest_blood_sugar_2_id,
+    latest_blood_sugars.latest_blood_sugar_2_recorded_at,
+    latest_blood_sugars.latest_blood_sugar_2_blood_sugar_type,
+    latest_blood_sugars.latest_blood_sugar_2_blood_sugar_value,
+    latest_blood_sugars.latest_blood_sugar_2_facility_name,
+    latest_blood_sugars.latest_blood_sugar_2_facility_type,
+    latest_blood_sugars.latest_blood_sugar_2_district,
+    latest_blood_sugars.latest_blood_sugar_2_state,
+    latest_blood_sugars.latest_blood_sugar_2_follow_up_facility_name,
+    latest_blood_sugars.latest_blood_sugar_2_follow_up_date,
+    latest_blood_sugars.latest_blood_sugar_2_follow_up_days,
+    latest_blood_sugars.latest_blood_sugar_3_id,
+    latest_blood_sugars.latest_blood_sugar_3_recorded_at,
+    latest_blood_sugars.latest_blood_sugar_3_blood_sugar_type,
+    latest_blood_sugars.latest_blood_sugar_3_blood_sugar_value,
+    latest_blood_sugars.latest_blood_sugar_3_facility_name,
+    latest_blood_sugars.latest_blood_sugar_3_facility_type,
+    latest_blood_sugars.latest_blood_sugar_3_district,
+    latest_blood_sugars.latest_blood_sugar_3_state,
+    latest_blood_sugars.latest_blood_sugar_3_follow_up_facility_name,
+    latest_blood_sugars.latest_blood_sugar_3_follow_up_date,
+    latest_blood_sugars.latest_blood_sugar_3_follow_up_days,
+        CASE
+            WHEN (next_scheduled_appointment.scheduled_date IS NULL) THEN 0
+            WHEN (next_scheduled_appointment.scheduled_date > date_trunc('day'::text, (now() - '30 days'::interval))) THEN 0
+            WHEN ((latest_blood_pressures.latest_blood_pressure_1_systolic >= 180) OR (latest_blood_pressures.latest_blood_pressure_1_diastolic >= 110)) THEN 1
+            WHEN (((mh.prior_heart_attack = 'yes'::text) OR (mh.prior_stroke = 'yes'::text)) AND ((latest_blood_pressures.latest_blood_pressure_1_systolic >= 140) OR (latest_blood_pressures.latest_blood_pressure_1_diastolic >= 90))) THEN 1
+            WHEN ((((latest_blood_sugars.latest_blood_sugar_1_blood_sugar_type)::text = 'random'::text) AND (latest_blood_sugars.latest_blood_sugar_1_blood_sugar_value >= (300)::numeric)) OR (((latest_blood_sugars.latest_blood_sugar_1_blood_sugar_type)::text = 'post_prandial'::text) AND (latest_blood_sugars.latest_blood_sugar_1_blood_sugar_value >= (300)::numeric)) OR (((latest_blood_sugars.latest_blood_sugar_1_blood_sugar_type)::text = 'fasting'::text) AND (latest_blood_sugars.latest_blood_sugar_1_blood_sugar_value >= (200)::numeric)) OR (((latest_blood_sugars.latest_blood_sugar_1_blood_sugar_type)::text = 'hba1c'::text) AND (latest_blood_sugars.latest_blood_sugar_1_blood_sugar_value >= 9.0))) THEN 1
+            ELSE 0
+        END AS risk_level
+   FROM (((((((((public.patients p
+     LEFT JOIN latest_bp_passport ON ((latest_bp_passport.patient_id = p.id)))
+     LEFT JOIN latest_phone_number ON ((latest_phone_number.patient_id = p.id)))
+     LEFT JOIN public.addresses ON ((addresses.id = p.address_id)))
+     LEFT JOIN public.facilities assigned_facility ON ((assigned_facility.id = p.assigned_facility_id)))
+     LEFT JOIN public.facilities registration_facility ON ((registration_facility.id = p.registration_facility_id)))
+     LEFT JOIN latest_medical_history mh ON ((mh.patient_id = p.id)))
+     LEFT JOIN latest_blood_pressures ON ((latest_blood_pressures.patient_id = p.id)))
+     LEFT JOIN latest_blood_sugars ON ((latest_blood_sugars.patient_id = p.id)))
+     LEFT JOIN next_scheduled_appointment ON ((next_scheduled_appointment.patient_id = p.id)))
   WHERE (p.deleted_at IS NULL)
   WITH NO DATA;
 
@@ -1491,31 +1772,6 @@ CREATE TABLE public.phone_number_authentications (
     deleted_at timestamp without time zone,
     failed_attempts integer DEFAULT 0 NOT NULL,
     locked_at timestamp without time zone
-);
-
-
---
--- Name: prescription_drugs; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.prescription_drugs (
-    id uuid NOT NULL,
-    name character varying NOT NULL,
-    rxnorm_code character varying,
-    dosage character varying,
-    device_created_at timestamp without time zone NOT NULL,
-    device_updated_at timestamp without time zone NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
-    patient_id uuid NOT NULL,
-    facility_id uuid NOT NULL,
-    is_protocol_drug boolean NOT NULL,
-    is_deleted boolean NOT NULL,
-    deleted_at timestamp without time zone,
-    user_id uuid,
-    frequency character varying,
-    duration_in_days integer,
-    teleconsultation_id uuid
 );
 
 
@@ -5697,13 +5953,6 @@ CREATE INDEX index_latest_bp_per_patient_per_quarters_patient_id ON public.lates
 
 
 --
--- Name: index_materialized_patient_summaries_on_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_materialized_patient_summaries_on_id ON public.materialized_patient_summaries USING btree (id);
-
-
---
 -- Name: index_medical_histories_on_patient_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -6672,6 +6921,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20221212061852'),
 ('20221216093905'),
 ('20230103063720'),
-('20230104104248');
+('20230104104248'),
+('20230105114342');
 
 
