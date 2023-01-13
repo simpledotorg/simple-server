@@ -567,18 +567,20 @@ DashboardReports = () => {
             throw `Graph config not known for ${id}`
         }
 
-        if(!graphConfig.options.tooltips) {
-            graphConfig.options.tooltips = {
-          enabled: false,
-          mode: "index",
-          intersect: false,
-                custom: (tooltip) => {
-                    let hoveredDatapoint = tooltip.dataPoints;
-                    if (hoveredDatapoint)
-                        populateDynamicComponents(hoveredDatapoint[0].label);
-                    else populateDynamicComponents(defaultPeriod);
-                },
-            };
+        if (!graphConfig.options.plugins.tooltip) {
+          graphConfig.options.plugins.tooltip = {
+            enabled: false,
+            mode: "index",
+            intersect: false,
+            external: (context) => {
+              const isTooltipActive = context.tooltip._active.length > 0;
+              if (isTooltipActive) {
+                let hoveredDatapoint = context.tooltip.dataPoints;
+                populateDynamicComponents(hoveredDatapoint[0].label);
+              }
+              else populateDynamicComponents(defaultPeriod);
+            },
+          };
         }
 
         if(graphCanvas) {
