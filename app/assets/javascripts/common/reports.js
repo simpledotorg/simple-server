@@ -1337,8 +1337,8 @@ function baseLineGraphConfig() {
           },
           ticks: {
             autoSkip: false,
+            color: colors.darkGrey,
             font: {
-              fontColor: colors.darkGrey, // not working!
               size: 12, // default is 12
               family: "Roboto",
             },
@@ -1409,8 +1409,8 @@ function baseBarChartConfig() {
           },
           ticks: {
             autoSkip: false,
+            color: colors.darkGrey,
             font: {
-              color: colors.darkGrey,
               size: 12,
               family: "Roboto",
             },
