@@ -48,6 +48,7 @@ function createBaseTrendChartConfig() {
       elements: {
         line: {
           borderJoinStyle: "round",
+          tension: 0.4,
         },
         point: {
           radius: 0,
@@ -67,8 +68,8 @@ function createBaseTrendChartConfig() {
         display: false
       },
       scales: {
-        xAxes: [{ display: false }],
-        yAxes: [{ display: false }],
+        x: { display: false },
+        y: { display: false },
       },
     },
   };
