@@ -1314,7 +1314,8 @@ function baseLineGraphConfig() {
           hoverRadius: 5,
         },
         line: {
-          tension: 0.4
+          tension: 0.4,
+          fill: true,
         }
       },
       interaction: {
