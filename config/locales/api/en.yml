@@ -452,7 +452,7 @@ en:
     monthly_opd_visits_gt_30: "Monthly OPD visits for adults >30 years old"
     monthly_opd_visits_gt_18: "Monthly OPD visits for adults >18 years old"
     outpatient_department_visits: "Outpatient department visits"
-    htm_and_dm_screening: "HTN & DM SCREENING"
+    htn_and_dm_screening: "HTN & DM SCREENING"
     total_bp_checks: "Total BP checks done"
     total_blood_sugar_checks: "Total blood sugar checks done"
     new_suspected_individuals: "NEW SUSPECTED INDIVIDUALS"
