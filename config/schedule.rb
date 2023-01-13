@@ -100,10 +100,6 @@ every :day, at: local("04:30 am"), roles: [:cron] do
   runner "Reports::RegionCacheWarmer.call"
 end
 
-every 1.month, at: local("03:00 am"), roles: [:cron] do
-  rake "questionnaires:seed_questionnaire_responses"
-end
-
 every 1.month, at: local("04:00 am"), roles: [:cron] do
   if Flipper.enabled?(:dhis2_export)
     rake "dhis2:export"
@@ -125,6 +121,10 @@ every :day, at: local("05:45 am"), roles: [:cron] do
 end
 
 every 1.month, at: local("06:00 am"), roles: [:cron] do
+  rake "questionnaires:seed_questionnaire_responses"
+end
+
+every 1.month, at: local("07:00 am"), roles: [:cron] do
   if Flipper.enabled?(:automated_telemed_report)
     rake "reports:telemedicine"
   end
