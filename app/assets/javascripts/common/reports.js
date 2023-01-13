@@ -1342,7 +1342,7 @@ function baseLineGraphConfig() {
               size: 12, // default is 12
               family: "Roboto",
             },
-            padding: 8,
+            padding: 6,
           },
           beginAtZero: true,
           min: 0,
@@ -1414,7 +1414,7 @@ function baseBarChartConfig() {
               size: 12,
               family: "Roboto",
             },
-            padding: 8,
+            padding: 6,
           },
           min: 0,
           beginAtZero: true,
