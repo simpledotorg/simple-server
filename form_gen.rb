@@ -50,7 +50,7 @@ end
 
 def input(text, link_id, min: 0, max: 100_000)
   {
-    link_id: link_id || text,
+    link_id: link_id || text.split("monthly_screening_reports.")[1..],
     text: text,
     type: "integer",
     view_type: "input_field",
@@ -64,23 +64,23 @@ end
 def q
   group(item: [
     sub_header("monthly_screening_reports.monthly_opd_visits_gt_30"),
-    input("monthly_screening_reports.outpatient_department_visits", "monthly_screening_reports.outpatient_department_visits"),
+    input("monthly_screening_reports.outpatient_department_visits", "outpatient_department_visits"),
     separator,
     header("monthly_screening_reports.htn_and_dm_screening"),
     sub_header("monthly_screening_reports.total_bp_checks"),
     horizontal_group(
       item: [
-        input("monthly_screening_reports.male", "monthly_screening_reports.total_bp_checks.male"),
-        input("monthly_screening_reports.female", "monthly_screening_reports.total_bp_checks.female"),
+        input("monthly_screening_reports.male", "total_bp_checks.male"),
+        input("monthly_screening_reports.female", "total_bp_checks.female"),
       ]
     ),
     sub_header("monthly_screening_reports.total_blood_sugar_checks"),
     horizontal_group(
       item: [
         input("monthly_screening_reports.male",
-              "monthly_screening_reports.total_blood_sugar_checks.male"),
+              "total_blood_sugar_checks.male"),
         input("monthly_screening_reports.female",
-              "monthly_screening_reports.total_blood_sugar_checks.female"),
+              "total_blood_sugar_checks.female"),
       ]
     ),
     separator,
@@ -89,27 +89,27 @@ def q
     horizontal_group(
       item: [
         input("monthly_screening_reports.male",
-              "monthly_screening_reports.new_suspected_individuals_htn.male"),
+              "new_suspected_individuals_htn.male"),
         input("monthly_screening_reports.female",
-              "monthly_screening_reports.new_suspected_individuals_htn.female"),
+              "new_suspected_individuals_htn.female"),
       ]
     ),
     sub_header("monthly_screening_reports.new_suspected_individuals_dm"),
     horizontal_group(
       item: [
         input("monthly_screening_reports.male",
-              "monthly_screening_reports.new_suspected_individuals_dm.male"),
+              "new_suspected_individuals_dm.male"),
         input("monthly_screening_reports.female",
-              "monthly_screening_reports.new_suspected_individuals_dm.female"),
+              "new_suspected_individuals_dm.female"),
       ]
     ),
     sub_header("monthly_screening_reports.new_suspected_individuals_htn_and_dm"),
     horizontal_group(
       item: [
         input("monthly_screening_reports.male",
-              "monthly_screening_reports.new_suspected_individuals_htn_and_dm.male"),
+              "new_suspected_individuals_htn_and_dm.male"),
         input("monthly_screening_reports.female",
-              "monthly_screening_reports.new_suspected_individuals_htn_and_dm.female"),
+              "new_suspected_individuals_htn_and_dm.female"),
       ]
     ),
     separator,
@@ -118,27 +118,27 @@ def q
     horizontal_group(
       item: [
         input("monthly_screening_reports.male",
-              "monthly_screening_reports.diagnosed_cases_on_follow_up_htn.male"),
+              "diagnosed_cases_on_follow_up_htn.male"),
         input("monthly_screening_reports.female",
-              "monthly_screening_reports.diagnosed_cases_on_follow_up_htn.female"),
+              "diagnosed_cases_on_follow_up_htn.female"),
       ]
     ),
     sub_header("monthly_screening_reports.diagnosed_cases_on_follow_up_dm"),
     horizontal_group(
       item: [
         input("monthly_screening_reports.male",
-              "monthly_screening_reports.diagnosed_cases_on_follow_up_dm.male"),
+              "diagnosed_cases_on_follow_up_dm.male"),
         input("monthly_screening_reports.female",
-              "monthly_screening_reports.diagnosed_cases_on_follow_up_dm.female"),
+              "diagnosed_cases_on_follow_up_dm.female"),
       ]
     ),
     sub_header("monthly_screening_reports.diagnosed_cases_on_follow_up_htn_and_dm"),
     horizontal_group(
       item: [
         input("monthly_screening_reports.male",
-              "monthly_screening_reports.diagnosed_cases_on_follow_up_htn_and_dm.male"),
+              "diagnosed_cases_on_follow_up_htn_and_dm.male"),
         input("monthly_screening_reports.female",
-              "monthly_screening_reports.diagnosed_cases_on_follow_up_htn_and_dm.female"),
+              "diagnosed_cases_on_follow_up_htn_and_dm.female"),
       ]
     ),
     line_separator,
@@ -147,23 +147,23 @@ def q
     horizontal_group(
       item: [
         input("monthly_screening_reports.male",
-              "monthly_screening_reports.total_cancer_screening_oral.male"),
+              "total_cancer_screening_oral.male"),
         input("monthly_screening_reports.female",
-              "monthly_screening_reports.total_cancer_screening_oral.female"),
+              "total_cancer_screening_oral.female"),
       ]
     ),
     sub_header("monthly_screening_reports.total_cancer_screening_breast"),
     group(
       item: [
         input("monthly_screening_reports.female",
-              "monthly_screening_reports.total_cancer_screening_breast.female")
+              "total_cancer_screening_breast.female")
       ]
     ),
     sub_header("monthly_screening_reports.total_cancer_screening_cervical"),
     group(
       item: [
         input("monthly_screening_reports.female",
-              "monthly_screening_reports.total_cancer_screening_cervical.female")
+              "total_cancer_screening_cervical.female")
       ]
     ),
     separator,
@@ -172,23 +172,23 @@ def q
     horizontal_group(
       item: [
         input("monthly_screening_reports.male",
-              "monthly_screening_reports.oral_cancer.male"),
+              "oral_cancer.male"),
         input("monthly_screening_reports.female",
-              "monthly_screening_reports.oral_cancer.female"),
+              "oral_cancer.female"),
       ]
     ),
     sub_header("monthly_screening_reports.breast_cancer"),
     group(
       item: [
         input("monthly_screening_reports.female",
-              "monthly_screening_reports.breast_cancer.female"),
+              "breast_cancer.female"),
       ]
     ),
     sub_header("monthly_screening_reports.cervical_cancer"),
     group(
       item: [
         input("monthly_screening_reports.female",
-              "monthly_screening_reports.cervical_cancer.female"),
+              "cervical_cancer.female"),
       ]
     ),
   ])
